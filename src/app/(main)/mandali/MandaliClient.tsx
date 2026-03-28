@@ -372,7 +372,7 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
       <div>
         <h2 className="font-display font-bold text-2xl text-gray-900 mb-2">Find Your Mandali</h2>
         <p className="text-gray-500 max-w-sm text-sm">
-          Select your city to join your local Sanatani community. We'll match you with others nearby.
+          Select your city to join your neighbourhood Sanatani community — Wembley Mandali, Brampton Mandali, Andheri Mandali and more.
         </p>
       </div>
 
@@ -710,15 +710,22 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
             <div className="flex items-center gap-2 mb-1">
               <Users size={16} className="text-white/80" />
               <span className="font-display font-bold text-lg">
-                {mandali?.name ?? 'Your Mandali'}
+                {/* Show neighbourhood-level name if available */}
+                {(profile as any)?.neighbourhood
+                  ? `${(profile as any).neighbourhood} Mandali`
+                  : mandali?.name ?? 'Your Mandali'}
               </span>
             </div>
-            {mandali && (
-              <div className="flex items-center gap-1 text-white/70 text-sm">
-                <MapPin size={12} />
-                <span>{mandali.city}, {mandali.country}</span>
-              </div>
-            )}
+            <div className="flex items-center gap-1 text-white/70 text-sm">
+              <MapPin size={12} />
+              <span>
+                {(profile as any)?.neighbourhood
+                  ? `${(profile as any).neighbourhood}, ${mandali?.city ?? profile?.city ?? ''}`
+                  : mandali
+                  ? `${mandali.city}, ${mandali.country}`
+                  : profile?.city ?? ''}
+              </span>
+            </div>
           </div>
           <div className="text-right">
             <div className="font-bold text-2xl">{members.length}</div>

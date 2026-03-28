@@ -17,6 +17,7 @@ import { calculatePanchang } from '@/lib/panchang';
 import { getGreeting, GREETING_POOLS } from '@/lib/traditions';
 import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
+import { APP } from '@/lib/config';
 
 interface Panchang {
   tithi:     string;
@@ -58,25 +59,27 @@ function generateInviteCode(userId: string): string {
 
 // ── Invite Modal ──────────────────────────────────────────────────────────────
 function InviteModal({ userId, onClose }: { userId: string; onClose: () => void }) {
-  const code = generateInviteCode(userId);
-  const link = `https://sanatansangam.app/join?ref=${code}`;
+  const code    = generateInviteCode(userId);
+  // Use actual deployment domain at runtime so share links always point to the right URL
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : APP.BASE_URL;
+  const link    = `${baseUrl}/join?ref=${code}`;
 
   async function share() {
-    if (navigator.share) {
+    const shareText = `Join me on Sanatana Sangam — your home for dharma, Panchang, scriptures, and community.\n\nUse my invite: ${code}\n${link}`;
+    // Try Web Share API first (mobile / some desktop browsers)
+    if (typeof navigator !== 'undefined' && navigator.share) {
       try {
-        await navigator.share({
-          title: 'Join me on Sanatana Sangam 🙏',
-          text: `Join me on Sanatana Sangam — your home for dharma, Panchang, scriptures, and community.\n\nUse my invite: ${code}\n`,
-          url: link,
-        });
+        await navigator.share({ title: 'Join me on Sanatana Sangam 🙏', text: shareText, url: link });
         return;
-      } catch { /* cancelled */ }
+      } catch { /* user cancelled — fall through to clipboard */ }
     }
+    // Clipboard fallback
     try {
-      await navigator.clipboard.writeText(link);
+      await navigator.clipboard.writeText(shareText);
       toast.success('Invite link copied! 🙏');
     } catch {
-      toast.error('Unable to copy');
+      // Final fallback — prompt user to copy manually
+      window.prompt('Copy your invite link:', link);
     }
   }
 
@@ -181,22 +184,16 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center" onClick={onClose}>
-      {/* Backdrop blur */}
-      <div className="absolute inset-0 bg-black/30" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4" onClick={onClose}>
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/40" />
 
       <div
-        className="relative w-full max-w-lg bg-white rounded-t-3xl shadow-2xl flex flex-col"
-        style={{ maxHeight: '78vh' }}
+        className="relative w-80 bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
-        {/* Drag handle */}
-        <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
-          <div className="w-10 h-1 rounded-full bg-gray-200" />
-        </div>
-
         {/* Title row */}
-        <div className="flex items-center justify-between px-5 pt-1 pb-3 border-b border-gray-100 flex-shrink-0">
+        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-100 flex-shrink-0">
           <button onClick={() => setViewDate(v => subMonths(v, 1))}
             className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
             <ChevronLeft size={16} className="text-gray-600" />
@@ -212,60 +209,58 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
           </button>
         </div>
 
-        {/* Scrollable content */}
-        <div className="overflow-y-auto flex-1">
-          {showYearPicker ? (
-            <div className="grid grid-cols-4 gap-2 p-5">
-              {years.map(y => (
-                <button key={y}
-                  onClick={() => { setViewDate(d => new Date(y, d.getMonth(), 1)); setShowYearPicker(false); }}
-                  className="py-2.5 rounded-xl text-sm font-medium transition"
-                  style={y === viewDate.getFullYear()
-                    ? { background: '#7B1A1A', color: 'white' }
-                    : { background: '#f9fafb', color: '#374151' }}>
-                  {y}
-                </button>
+        {/* Calendar content — naturally sized, no overflow needed */}
+        {showYearPicker ? (
+          <div className="grid grid-cols-4 gap-2 p-4">
+            {years.map(y => (
+              <button key={y}
+                onClick={() => { setViewDate(d => new Date(y, d.getMonth(), 1)); setShowYearPicker(false); }}
+                className="py-2 rounded-xl text-xs font-medium transition"
+                style={y === viewDate.getFullYear()
+                  ? { background: '#7B1A1A', color: 'white' }
+                  : { background: '#f9fafb', color: '#374151' }}>
+                {y}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="px-3 pt-2 pb-4">
+            {/* Day labels */}
+            <div className="grid grid-cols-7 mb-1">
+              {DAY_LABELS.map(d => (
+                <div key={d} className="text-center text-[10px] text-gray-400 font-medium py-1">{d}</div>
               ))}
             </div>
-          ) : (
-            <div className="px-4 pt-3 pb-6">
-              {/* Day labels */}
-              <div className="grid grid-cols-7 mb-1">
-                {DAY_LABELS.map(d => (
-                  <div key={d} className="text-center text-xs text-gray-400 font-medium py-1">{d}</div>
-                ))}
-              </div>
-              {/* Day grid */}
-              <div className="grid grid-cols-7 gap-y-1">
-                {calDays.map(day => {
-                  const inMonth    = isSameMonth(day, viewDate);
-                  const isSelected = isSameDay(day, selectedDate);
-                  const isToday    = isDayToday(day);
-                  return (
-                    <button key={day.toString()}
-                      onClick={() => { onSelect(day); onClose(); }}
-                      className="h-9 w-9 mx-auto rounded-full text-sm flex items-center justify-center transition active:scale-95"
-                      style={
-                        isSelected ? { background: '#7B1A1A', color: 'white', fontWeight: 700 } :
-                        isToday    ? { border: '1.5px solid #7B1A1A', color: '#7B1A1A', fontWeight: 700 } :
-                        !inMonth   ? { color: '#d1d5db' } :
-                                     { color: '#1f2937' }
-                      }>
-                      {fmtDate(day, 'd')}
-                    </button>
-                  );
-                })}
-              </div>
-              {/* Jump to today */}
-              <div className="mt-4 flex justify-center">
-                <button onClick={() => { onSelect(new Date()); onClose(); }}
-                  className="text-xs px-6 py-2 rounded-full border border-gray-200 text-gray-500 hover:border-[#7B1A1A] hover:text-[#7B1A1A] transition font-medium">
-                  Jump to Today
-                </button>
-              </div>
+            {/* Day grid */}
+            <div className="grid grid-cols-7 gap-y-0.5">
+              {calDays.map(day => {
+                const inMonth    = isSameMonth(day, viewDate);
+                const isSelected = isSameDay(day, selectedDate);
+                const isToday    = isDayToday(day);
+                return (
+                  <button key={day.toString()}
+                    onClick={() => { onSelect(day); onClose(); }}
+                    className="h-8 w-8 mx-auto rounded-full text-xs flex items-center justify-center transition active:scale-95"
+                    style={
+                      isSelected ? { background: '#7B1A1A', color: 'white', fontWeight: 700 } :
+                      isToday    ? { border: '1.5px solid #7B1A1A', color: '#7B1A1A', fontWeight: 700 } :
+                      !inMonth   ? { color: '#d1d5db' } :
+                                   { color: '#1f2937' }
+                    }>
+                    {fmtDate(day, 'd')}
+                  </button>
+                );
+              })}
             </div>
-          )}
-        </div>
+            {/* Jump to today */}
+            <div className="mt-3 flex justify-center">
+              <button onClick={() => { onSelect(new Date()); onClose(); }}
+                className="text-xs px-5 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-[#7B1A1A] hover:text-[#7B1A1A] transition font-medium">
+                Today
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -637,14 +632,14 @@ export default function HomeDashboard({
             <span className="text-white/70 text-xs">Rahu Kaal: </span>
             <span className="text-white text-xs font-semibold">{panchang.rahuKaal}</span>
           </div>
-          {/* Calendar button — opens full interactive date picker */}
-          <button
-            onClick={() => setDatePickerOpen(true)}
+          {/* Full Panchang page link */}
+          <Link
+            href="/panchang"
             className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition"
             style={{ background: 'rgba(255,255,255,0.18)', color: 'white' }}
           >
-            <CalendarDays size={12} /> Calendar
-          </button>
+            <CalendarDays size={12} /> Full Panchang
+          </Link>
           {/* Share button */}
           <button
             onClick={sharePanchang}

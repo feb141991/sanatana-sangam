@@ -6,7 +6,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { ArrowRight, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Eye, EyeOff, MapPin, Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { SAMPRADAYAS, ISHTA_DEVATAS, SPIRITUAL_LEVELS } from '@/lib/utils';
 
@@ -19,13 +19,18 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
 
+  const [geoLoading, setGeoLoading] = useState(false);
+
   const [form, setForm] = useState({
     email:          '',
     password:       '',
     full_name:      '',
     username:       '',
+    neighbourhood:  '',
     city:           '',
     country:        '',
+    latitude:       null as number | null,
+    longitude:      null as number | null,
     sampradaya:     '',
     ishta_devata:   '',
     spiritual_level:'jigyasu',
@@ -33,6 +38,52 @@ export default function SignupPage() {
     kul:            '',
     gotra:          '',
   });
+
+  // ── Detect location via browser geolocation + Nominatim reverse geocode ──
+  async function detectLocation() {
+    if (!navigator.geolocation) {
+      toast.error('Geolocation not supported on this device');
+      return;
+    }
+    setGeoLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`,
+            { headers: { 'Accept-Language': 'en' } }
+          );
+          const data = await res.json();
+          const addr = data.address ?? {};
+          // Extract neighbourhood → suburb → town → city (whichever is most specific)
+          const neighbourhood =
+            addr.neighbourhood || addr.suburb || addr.quarter || addr.village || '';
+          const city =
+            addr.city || addr.town || addr.municipality || addr.county || '';
+          const country = addr.country || '';
+          setForm(f => ({
+            ...f,
+            neighbourhood,
+            city,
+            country,
+            latitude,
+            longitude,
+          }));
+          toast.success(`📍 ${neighbourhood ? neighbourhood + ', ' : ''}${city} detected!`);
+        } catch {
+          toast.error('Could not look up your area — please enter manually');
+        } finally {
+          setGeoLoading(false);
+        }
+      },
+      () => {
+        toast.error('Location access denied — please enter your city manually');
+        setGeoLoading(false);
+      },
+      { timeout: 8000 }
+    );
+  }
 
   const seeking_options = [
     { value: 'community',   label: '🤝 Local community' },
@@ -75,8 +126,11 @@ export default function SignupPage() {
         .update({
           full_name:       form.full_name,
           username:        form.username.toLowerCase().replace(/\s+/g, '_'),
-          city:            form.city    || null,
-          country:         form.country || null,
+          neighbourhood:   form.neighbourhood || null,
+          city:            form.city          || null,
+          country:         form.country       || null,
+          latitude:        form.latitude,
+          longitude:       form.longitude,
           sampradaya:      form.sampradaya    || null,
           ishta_devata:    form.ishta_devata  || null,
           spiritual_level: form.spiritual_level,
@@ -219,23 +273,37 @@ export default function SignupPage() {
               <h2 className="font-display font-semibold text-lg text-gray-900">Your Dharmic Identity</h2>
               <p className="text-sm text-gray-500">This personalises your feed. You can always update it later.</p>
 
-              {/* Location */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">City</label>
+              {/* Location — detect or enter manually */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Your Location</label>
+                {/* Detect button */}
+                <button
+                  type="button"
+                  onClick={detectLocation}
+                  disabled={geoLoading}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-orange-200 text-orange-600 text-sm font-medium hover:border-orange-400 hover:bg-orange-50 transition disabled:opacity-60 mb-3"
+                >
+                  {geoLoading
+                    ? <><Loader2 size={15} className="animate-spin" /> Detecting…</>
+                    : <><MapPin size={15} /> Detect my neighbourhood automatically</>}
+                </button>
+                {/* Detected result or manual inputs */}
+                {form.neighbourhood && (
+                  <div className="mb-2 px-3 py-2 rounded-xl bg-green-50 border border-green-200 text-sm text-green-700 font-medium">
+                    📍 {form.neighbourhood}, {form.city}, {form.country}
+                  </div>
+                )}
+                <div className="grid grid-cols-2 gap-2">
                   <input
                     type="text"
-                    placeholder="Leicester"
+                    placeholder="City (e.g. Leicester)"
                     value={form.city}
                     onChange={(e) => setForm({ ...form, city: e.target.value })}
                     className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-400 outline-none transition text-sm"
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Country</label>
                   <input
                     type="text"
-                    placeholder="UK"
+                    placeholder="Country (e.g. UK)"
                     value={form.country}
                     onChange={(e) => setForm({ ...form, country: e.target.value })}
                     className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-400 outline-none transition text-sm"

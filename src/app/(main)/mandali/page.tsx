@@ -9,7 +9,7 @@ export default async function MandaliPage() {
   // Mandali requires auth — guests redirected to signup
   if (!user) redirect('/signup');
 
-  // Fetch profile with mandali
+  // Fetch profile with mandali + neighbourhood fields
   const { data: profile } = await supabase
     .from('profiles')
     .select('*, mandalis(*)')
