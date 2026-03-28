@@ -9,7 +9,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 // System persona: a warm, knowledgeable guide on Sanatan Dharma and general life
 // questions. Answers from a dharmic perspective without being preachy.
 
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`;
 
 const SYSTEM_INSTRUCTION = `You are Dharma Mitra — a warm, knowledgeable AI companion on Sanatana Sangam, a spiritual community app for Sanatani families worldwide.
 
@@ -101,8 +101,13 @@ export async function POST(req: NextRequest) {
     if (!res.ok) {
       const errText = await res.text();
       console.error('Gemini API error:', res.status, errText);
+      let hint = '';
+      if (res.status === 400) hint = 'Bad request format.';
+      if (res.status === 403) hint = 'Invalid API key — check GEMINI_API_KEY in Vercel env vars.';
+      if (res.status === 404) hint = 'Model not found — check model name.';
+      if (res.status === 429) hint = 'Rate limit hit — try again in a moment.';
       return NextResponse.json(
-        { error: `AI service error (${res.status}). Please try again.` },
+        { error: `AI error (${res.status})${hint ? ': ' + hint : ''}` },
         { status: 502 }
       );
     }
