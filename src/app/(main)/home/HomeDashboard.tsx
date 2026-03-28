@@ -1,0 +1,837 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { MapPin, ChevronDown, ChevronUp, Share2, CalendarDays, X, ChevronLeft, ChevronRight, Pencil, User } from 'lucide-react';
+import toast from 'react-hot-toast';
+import {
+  startOfMonth, endOfMonth, startOfWeek, endOfWeek,
+  eachDayOfInterval, format as fmtDate, isSameDay, isSameMonth,
+  isToday as isDayToday, addMonths, subMonths,
+} from 'date-fns';
+import type { Shloka } from '@/lib/shlokas';
+import type { Festival } from '@/lib/festivals';
+import { FESTIVALS_2026 } from '@/lib/festivals';
+import { calculatePanchang } from '@/lib/panchang';
+import { getGreeting, GREETING_POOLS } from '@/lib/traditions';
+import { useLocation } from '@/lib/LocationContext';
+import { createClient } from '@/lib/supabase';
+
+interface Panchang {
+  tithi:     string;
+  nakshatra: string;
+  yoga:      string;
+  sunrise:   string;
+  sunset:    string;
+  rahuKaal:  string;
+}
+
+interface Props {
+  userId:            string;
+  userName:          string;
+  city:              string;
+  savedLat:          number | null;
+  savedLon:          number | null;
+  shloka:            Shloka;
+  festival:          Festival | null;
+  daysUntilFestival: number | null;
+  initialPanchang:   Panchang;
+  shlokaStreak:      number;
+  lastShlokaDate:    string | null;
+  tradition:         string | null;
+  sampradaya:        string | null;
+  customGreeting:    string | null;
+}
+
+const quickAccessItems = [
+  { label: 'Nearby Tirthas', icon: '🛕', href: '/tirtha-map',       desc: 'Find sacred places near you', bg: 'bg-orange-50',  border: 'border-orange-100',  iconBg: 'bg-orange-100'  },
+  { label: 'My Mandali',     icon: '🏡', href: '/mandali',           desc: 'Your local sangam',           bg: 'bg-rose-50',    border: 'border-rose-100',    iconBg: 'bg-rose-100'    },
+  { label: 'My Kul',         icon: '❤️', href: '/kul',               desc: 'Family sadhana together',     bg: 'bg-pink-50',    border: 'border-pink-100',    iconBg: 'bg-pink-100'    },
+  { label: 'Shastra Study',  icon: '📖', href: '/library',            desc: 'Vedas, Puranas & more',       bg: 'bg-emerald-50', border: 'border-emerald-100', iconBg: 'bg-emerald-100' },
+];
+
+// ── Invite code — deterministic from userId (no DB needed) ─────────────────
+function generateInviteCode(userId: string): string {
+  return userId.replace(/-/g, '').slice(-6).toUpperCase();
+}
+
+// ── Invite Modal ──────────────────────────────────────────────────────────────
+function InviteModal({ userId, onClose }: { userId: string; onClose: () => void }) {
+  const code = generateInviteCode(userId);
+  const link = `https://sanatansangam.app/join?ref=${code}`;
+
+  async function share() {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Join me on Sanatana Sangam 🙏',
+          text: `Join me on Sanatana Sangam — your home for dharma, Panchang, scriptures, and community.\n\nUse my invite: ${code}\n`,
+          url: link,
+        });
+        return;
+      } catch { /* cancelled */ }
+    }
+    try {
+      await navigator.clipboard.writeText(link);
+      toast.success('Invite link copied! 🙏');
+    } catch {
+      toast.error('Unable to copy');
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end" onClick={onClose}>
+      <div className="w-full bg-white rounded-t-3xl shadow-2xl p-6 space-y-5"
+        onClick={e => e.stopPropagation()}>
+
+        <div className="flex items-center justify-between">
+          <h3 className="font-display font-bold text-gray-900">Invite Friends & Family</h3>
+          <button onClick={onClose}
+            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+            <X size={16} className="text-gray-500" />
+          </button>
+        </div>
+
+        <p className="text-sm text-gray-500 leading-relaxed">
+          Share Sanatana Sangam with your family and friends. When they join with your code, they'll be connected to you.
+        </p>
+
+        {/* Invite code display */}
+        <div className="bg-gradient-to-br from-[#7B1A1A]/5 to-orange-50 rounded-2xl p-5 text-center border border-orange-100">
+          <p className="text-xs text-gray-400 mb-2 font-medium uppercase tracking-wider">Your Invite Code</p>
+          <p className="font-display font-bold text-3xl text-[#7B1A1A] tracking-widest">{code}</p>
+          <p className="text-xs text-gray-400 mt-2">{link}</p>
+        </div>
+
+        {/* Actions */}
+        <div className="grid grid-cols-2 gap-3">
+          <button onClick={share}
+            className="py-3 text-white font-semibold rounded-xl hover:opacity-90 transition text-sm"
+            style={{ background: '#7B1A1A' }}>
+            Share 🙏
+          </button>
+          <button onClick={async () => {
+            await navigator.clipboard.writeText(code);
+            toast.success('Code copied!');
+          }}
+            className="py-3 text-[#7B1A1A] font-semibold rounded-xl border border-[#7B1A1A]/20 hover:bg-[#7B1A1A]/5 transition text-sm">
+            Copy Code
+          </button>
+        </div>
+
+        <p className="text-xs text-center text-gray-400">
+          🙏 Spread the light of dharma
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ── Share helper ──────────────────────────────────────────────────────────────
+async function shareContent(title: string, text: string) {
+  if (navigator.share) {
+    try { await navigator.share({ title, text }); return; } catch { /* cancelled */ }
+  }
+  try {
+    await navigator.clipboard.writeText(text);
+    toast.success('Copied to clipboard!');
+  } catch {
+    toast.error('Unable to share');
+  }
+}
+
+// ── Format date for calendar ──────────────────────────────────────────────────
+function formatFestDate(dateStr: string) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', weekday: 'short' });
+}
+function daysFromNow(dateStr: string) {
+  const fest  = new Date(dateStr + 'T00:00:00');
+  const today = new Date();
+  const d     = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  return Math.ceil((fest.getTime() - d.getTime()) / 86400000);
+}
+
+// ── Time-aware greeting helper ─────────────────────────────────────────────
+function getTimeGreeting(hour: number): string | null {
+  if (hour >= 5  && hour < 12) return 'Suprabhat';
+  if (hour >= 17 && hour < 20) return 'Shubh Sandhya';
+  if (hour >= 20 || hour < 5)  return 'Shubh Ratri';
+  return null; // afternoon → use tradition greeting
+}
+
+// ── Date Picker Modal ─────────────────────────────────────────────────────────
+const DAY_LABELS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+
+function DatePickerModal({ selectedDate, onSelect, onClose }: {
+  selectedDate: Date;
+  onSelect: (date: Date) => void;
+  onClose: () => void;
+}) {
+  const [viewDate,      setViewDate]      = useState(new Date(selectedDate));
+  const [showYearPicker, setShowYearPicker] = useState(false);
+
+  const curYear = new Date().getFullYear();
+  const years   = Array.from({ length: 12 }, (_, i) => curYear - 4 + i);
+
+  const calDays = eachDayOfInterval({
+    start: startOfWeek(startOfMonth(viewDate), { weekStartsOn: 0 }),
+    end:   endOfWeek(endOfMonth(viewDate),     { weekStartsOn: 0 }),
+  });
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center" onClick={onClose}>
+      {/* Backdrop blur */}
+      <div className="absolute inset-0 bg-black/30" />
+
+      <div
+        className="relative w-full max-w-lg bg-white rounded-t-3xl shadow-2xl flex flex-col"
+        style={{ maxHeight: '78vh' }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Drag handle */}
+        <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
+          <div className="w-10 h-1 rounded-full bg-gray-200" />
+        </div>
+
+        {/* Title row */}
+        <div className="flex items-center justify-between px-5 pt-1 pb-3 border-b border-gray-100 flex-shrink-0">
+          <button onClick={() => setViewDate(v => subMonths(v, 1))}
+            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+            <ChevronLeft size={16} className="text-gray-600" />
+          </button>
+          <button onClick={() => setShowYearPicker(v => !v)}
+            className="flex items-center gap-1 font-bold text-gray-900 text-base">
+            {fmtDate(viewDate, 'MMMM yyyy')}
+            <ChevronDown size={14} className="text-gray-400" />
+          </button>
+          <button onClick={() => setViewDate(v => addMonths(v, 1))}
+            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+            <ChevronRight size={16} className="text-gray-600" />
+          </button>
+        </div>
+
+        {/* Scrollable content */}
+        <div className="overflow-y-auto flex-1">
+          {showYearPicker ? (
+            <div className="grid grid-cols-4 gap-2 p-5">
+              {years.map(y => (
+                <button key={y}
+                  onClick={() => { setViewDate(d => new Date(y, d.getMonth(), 1)); setShowYearPicker(false); }}
+                  className="py-2.5 rounded-xl text-sm font-medium transition"
+                  style={y === viewDate.getFullYear()
+                    ? { background: '#7B1A1A', color: 'white' }
+                    : { background: '#f9fafb', color: '#374151' }}>
+                  {y}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="px-4 pt-3 pb-6">
+              {/* Day labels */}
+              <div className="grid grid-cols-7 mb-1">
+                {DAY_LABELS.map(d => (
+                  <div key={d} className="text-center text-xs text-gray-400 font-medium py-1">{d}</div>
+                ))}
+              </div>
+              {/* Day grid */}
+              <div className="grid grid-cols-7 gap-y-1">
+                {calDays.map(day => {
+                  const inMonth    = isSameMonth(day, viewDate);
+                  const isSelected = isSameDay(day, selectedDate);
+                  const isToday    = isDayToday(day);
+                  return (
+                    <button key={day.toString()}
+                      onClick={() => { onSelect(day); onClose(); }}
+                      className="h-9 w-9 mx-auto rounded-full text-sm flex items-center justify-center transition active:scale-95"
+                      style={
+                        isSelected ? { background: '#7B1A1A', color: 'white', fontWeight: 700 } :
+                        isToday    ? { border: '1.5px solid #7B1A1A', color: '#7B1A1A', fontWeight: 700 } :
+                        !inMonth   ? { color: '#d1d5db' } :
+                                     { color: '#1f2937' }
+                      }>
+                      {fmtDate(day, 'd')}
+                    </button>
+                  );
+                })}
+              </div>
+              {/* Jump to today */}
+              <div className="mt-4 flex justify-center">
+                <button onClick={() => { onSelect(new Date()); onClose(); }}
+                  className="text-xs px-6 py-2 rounded-full border border-gray-200 text-gray-500 hover:border-[#7B1A1A] hover:text-[#7B1A1A] transition font-medium">
+                  Jump to Today
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Greeting Edit Sheet ───────────────────────────────────────────────────────
+function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onClose }: {
+  tradition:       string | null;
+  sampradaya:      string | null;
+  currentGreeting: string | null;
+  onSave:          (greeting: string | null) => void;
+  onClose:         () => void;
+}) {
+  const key  = tradition && sampradaya ? `${tradition}:${sampradaya}` : 'default';
+  const pool = (GREETING_POOLS as Record<string, string[]>)[key]
+            ?? (GREETING_POOLS as Record<string, string[]>)[`${tradition}:other`]
+            ?? (GREETING_POOLS as Record<string, string[]>)['default'];
+
+  const [selected, setSelected] = useState<string | null>(currentGreeting);
+  const [custom,   setCustom]   = useState('');
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end" onClick={onClose}>
+      <div className="w-full bg-white rounded-t-3xl shadow-2xl p-5 space-y-4"
+        onClick={e => e.stopPropagation()}>
+
+        <div className="flex items-center justify-between">
+          <h3 className="font-display font-bold text-gray-900">Change Greeting</h3>
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+            <X size={16} className="text-gray-500" />
+          </button>
+        </div>
+
+        <div className="space-y-2 max-h-[40vh] overflow-y-auto">
+          <button onClick={() => setSelected(null)}
+            className={`w-full text-left px-4 py-3 rounded-xl border text-sm transition ${
+              selected === null ? 'border-[#7B1A1A] bg-[#7B1A1A]/5 text-[#7B1A1A] font-medium' : 'border-gray-100 text-gray-500'
+            }`}>
+            ✨ Auto — rotates with your tradition
+          </button>
+          {pool.map(g => (
+            <button key={g} onClick={() => { setSelected(g); setCustom(''); }}
+              className={`w-full text-left px-4 py-3 rounded-xl border text-sm transition ${
+                selected === g ? 'border-[#7B1A1A] bg-[#7B1A1A]/5 font-medium' : 'border-gray-100 text-gray-700 hover:border-gray-200'
+              }`}>
+              {g}
+            </button>
+          ))}
+        </div>
+
+        <div>
+          <p className="text-xs text-gray-400 mb-1.5">Or write your own:</p>
+          <input type="text" placeholder="e.g. Jai Mahakal! 🔱"
+            value={custom}
+            onChange={e => { setCustom(e.target.value); setSelected(e.target.value || null); }}
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm" />
+        </div>
+
+        <button onClick={() => { onSave(selected); onClose(); }}
+          className="w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 transition"
+          style={{ background: '#7B1A1A' }}>
+          Save Greeting 🙏
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Calendar Modal ────────────────────────────────────────────────────────────
+function CalendarModal({ onClose, onDateSelect }: { onClose: () => void; onDateSelect?: (date: Date) => void }) {
+  const todayStr = new Date().toISOString().split('T')[0];
+  const upcoming = FESTIVALS_2026.filter(f => f.date >= todayStr);
+  const past     = FESTIVALS_2026.filter(f => f.date <  todayStr);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end" onClick={onClose}>
+      <div className="w-full bg-white rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
+        onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            <CalendarDays size={18} style={{ color: '#7B1A1A' }} />
+            <h2 className="font-display font-bold text-gray-900 text-base">Parva Calendar 2026</h2>
+            {onDateSelect && <span className="text-xs text-orange-500 ml-1">tap date → view Panchang</span>}
+          </div>
+          <button onClick={onClose}
+            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+            <X size={16} className="text-gray-500" />
+          </button>
+        </div>
+
+        <div className="overflow-y-auto flex-1 px-4 py-3 space-y-2 pb-8">
+          {upcoming.length > 0 && (
+            <>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 mt-1">Upcoming</p>
+              {upcoming.map(f => {
+                const days = daysFromNow(f.date);
+                return (
+                  <div key={f.name + f.date}
+                    onClick={() => { if (onDateSelect) { onDateSelect(new Date(f.date + 'T00:00:00')); onClose(); } }}
+                    className={`flex items-center gap-3 bg-white border border-gray-100 rounded-2xl p-3 transition ${onDateSelect ? 'hover:border-[#7B1A1A]/40 cursor-pointer active:scale-95' : 'hover:border-[#7B1A1A]/20'}`}>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                      style={{ background: '#7B1A1A0D' }}>
+                      {f.emoji}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm text-gray-900 leading-tight">{f.name}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{formatFestDate(f.date)}</p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      {days === 0 ? (
+                        <span className="text-xs font-bold px-2 py-1 rounded-full text-white" style={{ background: '#7B1A1A' }}>Today</span>
+                      ) : days === 1 ? (
+                        <span className="text-xs font-semibold text-orange-600">Tomorrow</span>
+                      ) : (
+                        <span className="text-xs text-gray-400">{days}d</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </>
+          )}
+          {past.length > 0 && (
+            <>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 mt-4">Past</p>
+              {past.map(f => (
+                <div key={f.name + f.date}
+                  className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-2xl p-3 opacity-60">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0 bg-gray-100">{f.emoji}</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm text-gray-600 leading-tight">{f.name}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{formatFestDate(f.date)}</p>
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main Dashboard ────────────────────────────────────────────────────────────
+export default function HomeDashboard({
+  userId,
+  userName,
+  city: savedCity,
+  savedLat,
+  savedLon,
+  shloka,
+  festival,
+  daysUntilFestival,
+  initialPanchang,
+  shlokaStreak:   initialStreak,
+  lastShlokaDate,
+  tradition,
+  sampradaya,
+  customGreeting,
+}: Props) {
+  const supabase = createClient();
+  const router   = useRouter();
+
+  const [shlokaExpanded,    setShlokaExpanded]    = useState(false);
+  const [panchang,          setPanchang]          = useState<Panchang>(initialPanchang);
+  const [calendarOpen,      setCalendarOpen]      = useState(false);
+  const [datePickerOpen,    setDatePickerOpen]    = useState(false);
+  const [greetingSheetOpen, setGreetingSheetOpen] = useState(false);
+  const [inviteOpen,        setInviteOpen]        = useState(false);
+  const [localGreeting,     setLocalGreeting]     = useState<string | null>(customGreeting);
+  const [streak,           setStreak]           = useState(initialStreak);
+  const [selectedDate,     setSelectedDate]     = useState<Date>(new Date());
+  const [readToday,        setReadToday]        = useState(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return lastShlokaDate === today;
+  });
+
+  const { coords, city: liveCity } = useLocation();
+
+  const lat = coords?.lat ?? savedLat ?? undefined;
+  const lon = coords?.lon ?? savedLon ?? undefined;
+
+  // Recalculate Panchang whenever date or coords change
+  useEffect(() => {
+    const p = calculatePanchang(selectedDate, lat, lon);
+    setPanchang({
+      tithi:     p.tithi,
+      nakshatra: p.nakshatra,
+      yoga:      p.yoga,
+      sunrise:   p.sunrise,
+      sunset:    p.sunset,
+      rahuKaal:  p.rahuKaal,
+    });
+  }, [selectedDate, lat, lon]);
+
+  const todayStr   = new Date().toISOString().split('T')[0];
+  const selDateStr = selectedDate.toISOString().split('T')[0];
+  const isToday    = selDateStr === todayStr;
+
+  function navigateDay(delta: number) {
+    setSelectedDate(prev => {
+      const d = new Date(prev);
+      d.setDate(d.getDate() + delta);
+      return d;
+    });
+  }
+
+  const displayCity = liveCity || savedCity;
+
+  // Welcome back: user hasn't been active in 2+ days
+  const isWelcomeBack = (() => {
+    if (!lastShlokaDate) return false;
+    const last = new Date(lastShlokaDate + 'T00:00:00');
+    return (new Date().getTime() - last.getTime()) > 2 * 24 * 60 * 60 * 1000;
+  })();
+
+  // Time-aware greeting
+  const hour        = new Date().getHours();
+  const timeGreeting = getTimeGreeting(hour);
+  const tradGreeting = localGreeting || getGreeting(tradition, sampradaya, new Date().getDate());
+  const greeting     = isWelcomeBack && !localGreeting
+    ? 'Welcome back! 🙏'
+    : timeGreeting || tradGreeting;
+
+  async function saveGreeting(newGreeting: string | null) {
+    setLocalGreeting(newGreeting);
+    await supabase.from('profiles').update({ custom_greeting: newGreeting }).eq('id', userId);
+    toast.success(newGreeting ? 'Greeting updated 🙏' : 'Greeting reset to auto');
+  }
+
+  // ── Shloka streak ──────────────────────────────────────────────────────────
+  async function markShlokaRead() {
+    if (readToday || !userId) return;
+    const today     = new Date().toISOString().split('T')[0];
+    const yesterday = new Date(Date.now() - 86_400_000).toISOString().split('T')[0];
+
+    // Streak continues only if last read was exactly yesterday; otherwise reset to 1
+    const newStreak = lastShlokaDate === yesterday ? streak + 1 : 1;
+
+    // Optimistic UI first
+    setReadToday(true);
+    setStreak(newStreak);
+
+    await supabase
+      .from('profiles')
+      .update({
+        shloka_streak:    newStreak,
+        last_shloka_date: today,
+      })
+      .eq('id', userId);
+
+    // Increment seva_score by 5 — try RPC first, fall back to direct update
+    try {
+      const { error: rpcError } = await supabase.rpc('increment_seva_score', { user_id: userId, points: 5 });
+      if (rpcError) throw rpcError;
+    } catch {
+      // RPC may not exist yet — direct update fallback
+      const { data } = await supabase.from('profiles').select('seva_score').eq('id', userId).single();
+      if (data) {
+        await supabase.from('profiles')
+          .update({ seva_score: (data.seva_score ?? 0) + 5 })
+          .eq('id', userId);
+      }
+    }
+
+    toast.success(`🔥 ${newStreak}-day streak! +5 seva points`);
+    router.refresh(); // Ensure server state syncs on next visit
+  }
+
+  // ── Share helpers ──────────────────────────────────────────────────────────
+  function sharePanchang() {
+    const dateLabel = selectedDate.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
+    shareContent('Panchang',
+      `🪔 Panchang — ${dateLabel}\n\n` +
+      `📅 Tithi: ${panchang.tithi}\n⭐ Nakshatra: ${panchang.nakshatra}\n🕉️ Yoga: ${panchang.yoga}\n` +
+      `🌅 Sunrise: ${panchang.sunrise}\n🌆 Sunset: ${panchang.sunset}\n⚠️ Rahu Kaal: ${panchang.rahuKaal}\n\n` +
+      `— Shared via Sanatana Sangam`
+    );
+  }
+
+  function shareShloka() {
+    shareContent('Aaj Ka Shloka',
+      `🕉️ Aaj Ka Shloka — ${shloka.source}\n\n${shloka.sanskrit}\n\n${shloka.transliteration}\n\nMeaning: ${shloka.meaning}\n\n— Shared via Sanatana Sangam`
+    );
+  }
+
+  return (
+    <div className="space-y-4 pb-2 fade-in">
+
+      {/* ── Greeting ── */}
+      <div className="pt-2 flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <button
+            onClick={() => setGreetingSheetOpen(true)}
+            className="group flex items-center gap-1.5 text-left"
+          >
+            <h1 className="font-display text-xl font-bold text-gray-900 leading-tight">
+              {greeting}, {userName.split(' ')[0]}!
+            </h1>
+            <Pencil size={13} className="text-gray-300 group-hover:text-[#7B1A1A] transition flex-shrink-0 mt-1" />
+          </button>
+          {displayCity && (
+            <p className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
+              <MapPin size={12} className="text-[#7B1A1A]" />
+              {displayCity}
+              {coords && <span className="text-[10px] text-gray-400 ml-1">📍 live</span>}
+            </p>
+          )}
+        </div>
+        {/* Profile avatar — replaces Profile from bottom nav */}
+        <Link href="/profile" className="flex-shrink-0">
+          <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm"
+            style={{ background: 'linear-gradient(135deg, #7B1A1A, #b45309)' }}>
+            <User size={18} />
+          </div>
+        </Link>
+      </div>
+
+      {/* ── Panchang Widget ── */}
+      <div className="rounded-2xl overflow-hidden shadow-sm" style={{ background: '#7B1A1A' }}>
+        <div className="px-4 pt-3 pb-1 flex items-center gap-2">
+          <span className="text-base">🪔</span>
+          <span className="text-white/80 text-xs font-medium tracking-wider uppercase">
+            {isToday ? 'Aaj Ka Panchang' : 'Panchang'}
+          </span>
+          {/* Day navigation */}
+          <div className="ml-auto flex items-center gap-1">
+            <button onClick={() => navigateDay(-1)}
+              className="w-6 h-6 rounded-full flex items-center justify-center transition"
+              style={{ background: 'rgba(255,255,255,0.15)' }}>
+              <ChevronLeft size={13} color="white" />
+            </button>
+            {/* Tap date label to open full date picker */}
+            <button onClick={() => setDatePickerOpen(true)}
+              className="text-white/90 text-xs min-w-[80px] text-center font-medium hover:text-white transition underline-offset-2 hover:underline">
+              {isToday ? 'Today' : selectedDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+            </button>
+            <button onClick={() => navigateDay(1)}
+              className="w-6 h-6 rounded-full flex items-center justify-center transition"
+              style={{ background: 'rgba(255,255,255,0.15)' }}>
+              <ChevronRight size={13} color="white" />
+            </button>
+            {!isToday && (
+              <button onClick={() => setSelectedDate(new Date())}
+                className="text-[10px] px-2 py-0.5 rounded-full font-medium ml-1"
+                style={{ background: 'rgba(255,255,255,0.2)', color: 'white' }}>
+                Today
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* 3-column grid: Tithi, Nakshatra, Yoga, Sunrise, Sunset */}
+        <div className="grid grid-cols-3 gap-0 px-4 py-2">
+          <PanchangItem label="Tithi"     value={panchang.tithi}     />
+          <PanchangItem label="Nakshatra" value={panchang.nakshatra} />
+          <PanchangItem label="Yoga"      value={panchang.yoga}      />
+          <PanchangItem label="Sunrise"   value={panchang.sunrise}   />
+          <PanchangItem label="Sunset"    value={panchang.sunset}    />
+        </div>
+
+        {/* Rahu Kaal + action buttons */}
+        <div className="mx-4 mb-3 rounded-xl px-3 py-2 flex items-center gap-2"
+          style={{ background: 'rgba(255,255,255,0.12)' }}>
+          <span className="text-sm">⚠️</span>
+          <div className="flex-1">
+            <span className="text-white/70 text-xs">Rahu Kaal: </span>
+            <span className="text-white text-xs font-semibold">{panchang.rahuKaal}</span>
+          </div>
+          {/* Calendar button — opens full interactive date picker */}
+          <button
+            onClick={() => setDatePickerOpen(true)}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition"
+            style={{ background: 'rgba(255,255,255,0.18)', color: 'white' }}
+          >
+            <CalendarDays size={12} /> Calendar
+          </button>
+          {/* Share button */}
+          <button
+            onClick={sharePanchang}
+            className="w-7 h-7 rounded-full flex items-center justify-center transition"
+            style={{ background: 'rgba(255,255,255,0.18)' }}
+            title="Share Panchang"
+          >
+            <Share2 size={13} color="white" />
+          </button>
+        </div>
+      </div>
+
+      {/* ── Aaj Ka Shloka ── */}
+      <div className="bg-white rounded-2xl border border-orange-100 shadow-sm p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">🕉️</span>
+            <span className="font-display font-semibold text-gray-800 text-sm">Aaj Ka Shloka</span>
+            {streak > 0 && (
+              <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100">
+                🔥 {streak}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full">{shloka.source}</span>
+            <button onClick={shareShloka}
+              className="w-7 h-7 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center hover:bg-orange-100 transition"
+              title="Share Shloka">
+              <Share2 size={13} style={{ color: '#7B1A1A' }} />
+            </button>
+          </div>
+        </div>
+
+        <p className="font-devanagari text-[#7B1A1A] leading-relaxed text-base mb-2 whitespace-pre-line">
+          {shloka.sanskrit}
+        </p>
+        <p className="text-sm text-gray-500 italic leading-relaxed mb-3 whitespace-pre-line">
+          {shloka.transliteration}
+        </p>
+
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setShlokaExpanded(!shlokaExpanded)}
+            className="flex items-center gap-1 text-[#7B1A1A] text-xs font-medium"
+          >
+            {shlokaExpanded ? 'Hide meaning' : 'Show meaning'}
+            {shlokaExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+          </button>
+
+          {/* Streak mark-as-read button */}
+          <button
+            onClick={markShlokaRead}
+            disabled={readToday}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition ${
+              readToday
+                ? 'bg-green-50 text-green-700 border border-green-200 cursor-default'
+                : 'text-white hover:opacity-90'
+            }`}
+            style={readToday ? {} : { background: '#7B1A1A' }}
+          >
+            {readToday ? '✓ Read today' : '🕉️ Mark as read'}
+          </button>
+        </div>
+
+        {shlokaExpanded && (
+          <div className="mt-3 pt-3 border-t border-orange-50">
+            <p className="text-sm text-gray-700 leading-relaxed">{shloka.meaning}</p>
+          </div>
+        )}
+      </div>
+
+      {/* ── Coming Up ── */}
+      <div className="rounded-2xl border overflow-hidden shadow-sm"
+        style={{ background: 'linear-gradient(135deg, #FFF8F0 0%, #FDF6E3 100%)', borderColor: '#f8c88a' }}>
+        <div className="px-4 pt-3 pb-1 flex items-center justify-between">
+          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Coming Up</p>
+          <button
+            onClick={() => setCalendarOpen(true)}
+            className="text-xs font-semibold flex items-center gap-1 hover:underline"
+            style={{ color: '#7B1A1A' }}>
+            <CalendarDays size={11} /> All Festivals →
+          </button>
+        </div>
+        {festival && daysUntilFestival !== null ? (
+          <div className="px-4 pb-3 flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+              style={{ background: '#7B1A1A1A' }}>
+              {festival.emoji}
+            </div>
+            <div className="flex-1">
+              <p className="font-display font-bold text-gray-900 text-base">{festival.name}</p>
+              <p className="text-xs text-gray-500 mt-0.5">{festival.description}</p>
+            </div>
+            <div className="text-center">
+              <div className="font-display font-bold text-2xl text-[#7B1A1A]">
+                {daysUntilFestival === 0 ? '🎉' : daysUntilFestival}
+              </div>
+              <div className="text-xs text-gray-400">
+                {daysUntilFestival === 0 ? 'Today!' : daysUntilFestival === 1 ? 'Tomorrow' : 'days'}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="px-4 pb-3 text-sm text-gray-500">
+            Tap <span className="font-semibold text-[#7B1A1A]">All Festivals</span> to browse the Parva calendar 🙏
+          </div>
+        )}
+      </div>
+
+      {/* ── Quick Access ── */}
+      <div>
+        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">Quick Access</p>
+        <div className="grid grid-cols-2 gap-3">
+          {quickAccessItems.map((item) => (
+            <Link key={item.href} href={item.href}
+              className={`${item.bg} ${item.border} border rounded-2xl p-4 flex items-start gap-3 hover:shadow-sm active:scale-95 transition-all`}>
+              <div className={`${item.iconBg} w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0`}>
+                {item.icon}
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800 text-sm leading-tight">{item.label}</p>
+                <p className="text-xs text-gray-500 mt-0.5 leading-tight">{item.desc}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Vichaar Sabha CTA ── */}
+      <Link href="/vichaar-sabha"
+        className="block w-full rounded-2xl border border-dashed border-[#7B1A1A]/30 p-4 text-center hover:bg-[#7B1A1A]/5 transition-colors">
+        <span className="text-lg">💬</span>
+        <p className="font-semibold text-[#7B1A1A] text-sm mt-1">Join the Vichaar Sabha</p>
+        <p className="text-xs text-gray-500 mt-0.5">Discuss dharma, share wisdom, ask questions</p>
+      </Link>
+
+      {/* ── Invite Friends ── */}
+      <button onClick={() => setInviteOpen(true)}
+        className="w-full rounded-2xl border border-dashed border-orange-200 p-4 text-center hover:bg-orange-50 transition-colors">
+        <span className="text-lg">🙏</span>
+        <p className="font-semibold text-orange-700 text-sm mt-1">Invite Friends & Family</p>
+        <p className="text-xs text-gray-400 mt-0.5">Share Sanatana Sangam — spread the light of dharma</p>
+      </button>
+
+      {/* ── Parva / Festivals modal ── */}
+      {calendarOpen && (
+        <CalendarModal
+          onClose={() => setCalendarOpen(false)}
+          onDateSelect={(date) => { setSelectedDate(date); setCalendarOpen(false); }}
+        />
+      )}
+
+      {/* ── Full date picker (tap date label in Panchang) ── */}
+      {datePickerOpen && (
+        <DatePickerModal
+          selectedDate={selectedDate}
+          onSelect={(date) => setSelectedDate(date)}
+          onClose={() => setDatePickerOpen(false)}
+        />
+      )}
+
+      {/* ── Greeting edit sheet (tap greeting text) ── */}
+      {greetingSheetOpen && (
+        <GreetingEditSheet
+          tradition={tradition}
+          sampradaya={sampradaya}
+          currentGreeting={localGreeting}
+          onSave={saveGreeting}
+          onClose={() => setGreetingSheetOpen(false)}
+        />
+      )}
+
+      {/* ── Invite modal ── */}
+      {inviteOpen && (
+        <InviteModal userId={userId} onClose={() => setInviteOpen(false)} />
+      )}
+
+    </div>
+  );
+}
+
+function PanchangItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="py-1.5 pr-2">
+      <p className="text-white/60 text-[10px] uppercase tracking-wider">{label}</p>
+      <p className="text-white font-semibold text-sm leading-snug">{value}</p>
+    </div>
+  );
+}

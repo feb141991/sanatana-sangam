@@ -1,0 +1,53 @@
+import { redirect } from 'next/navigation';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
+import MandaliClient from './MandaliClient';
+
+export default async function MandaliPage() {
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // Mandali requires auth — guests redirected to signup
+  if (!user) redirect('/signup');
+
+  // Fetch profile with mandali
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*, mandalis(*)')
+    .eq('id', user.id)
+    .single();
+
+  const mandaliId = profile?.mandali_id;
+
+  // Fetch mandali posts
+  let posts: any[] = [];
+  if (mandaliId) {
+    const { data } = await supabase
+      .from('posts')
+      .select('*, profiles(full_name, username, avatar_url, sampradaya, spiritual_level)')
+      .eq('mandali_id', mandaliId)
+      .order('created_at', { ascending: false })
+      .limit(30);
+    posts = data ?? [];
+  }
+
+  // Fetch real mandali members
+  let members: any[] = [];
+  if (mandaliId) {
+    const { data } = await supabase
+      .from('profiles')
+      .select('id, full_name, username, avatar_url, sampradaya, ishta_devata, spiritual_level, city, seva_score')
+      .eq('mandali_id', mandaliId)
+      .order('seva_score', { ascending: false })
+      .limit(50);
+    members = data ?? [];
+  }
+
+  return (
+    <MandaliClient
+      profile={profile}
+      posts={posts}
+      members={members}
+      userId={user.id}
+    />
+  );
+}

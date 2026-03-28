@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/festival-reminder",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/shloka-reminder",
+      "schedule": "0 13 * * *"
+    }
+  ]
+}
