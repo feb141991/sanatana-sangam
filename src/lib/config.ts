@@ -100,11 +100,6 @@ export const LOCATION = {
   },
 } as const;
 
-// ─── App URLs ─────────────────────────────────────────────────────────────────
-
-export const APP = {
-  BASE_URL: process.env.NEXT_PUBLIC_APP_URL ?? 'https://sanatansangam.app',
-} as const;
 
 // ─── App URLs ─────────────────────────────────────────────────────────────────
 
