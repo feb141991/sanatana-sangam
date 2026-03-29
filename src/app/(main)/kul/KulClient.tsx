@@ -686,7 +686,7 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
   );
 }
 
-// ── Vamsha (Family Lineage) Tab ───────────────────────────────────────────────
+// ── Vansh (Family Lineage) Tab ───────────────────────────────────────────────
 const GENERATION_LABELS: Record<number, string> = {
   1: 'परदादा / परदादी — Great-Grandparents',
   2: 'दादा / दादी / नाना / नानी — Grandparents',
@@ -711,7 +711,7 @@ function daysUntilNextOccurrence(dateStr: string): number {
   return Math.ceil((thisYear.getTime() - today.setHours(0,0,0,0)) / 86_400_000);
 }
 
-function VamshaTab({ familyMembers: initial, kulEvents: initialEvents, kulId, userId }: {
+function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, userId }: {
   familyMembers: FamilyMember[]; kulEvents: KulEvent[]; kulId: string; userId: string;
 }) {
   const supabase = createClient();
@@ -800,7 +800,7 @@ function VamshaTab({ familyMembers: initial, kulEvents: initialEvents, kulId, us
           event_type: 'anniversary', event_date: form.marriage_date, recurring: true,
         });
       }
-      toast.success('Member added to Vamsha 🙏');
+      toast.success('Member added to Vansh 🙏');
     }
 
     resetForm(); setEditMember(null); setShowAdd(false);
@@ -808,7 +808,7 @@ function VamshaTab({ familyMembers: initial, kulEvents: initialEvents, kulId, us
   }
 
   async function deleteMember(id: string, name: string) {
-    if (!confirm(`Remove ${name} from the Vamsha?`)) return;
+    if (!confirm(`Remove ${name} from the Vansh?`)) return;
     await supabase.from('kul_family_members').delete().eq('id', id);
     setMembers(prev => prev.filter(m => m.id !== id));
     toast.success(`${name} removed`);
@@ -852,7 +852,7 @@ function VamshaTab({ familyMembers: initial, kulEvents: initialEvents, kulId, us
           {(['tree', 'events'] as const).map(v => (
             <button key={v} onClick={() => setActiveView(v)}
               className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition ${activeView === v ? 'bg-white text-[#7B1A1A] shadow-sm font-semibold' : 'text-gray-500'}`}>
-              {v === 'tree' ? '🌳 Vamsha' : `📅 Events (${upcomingEvents.length})`}
+              {v === 'tree' ? '🌳 Vansh' : `📅 Events (${upcomingEvents.length})`}
             </button>
           ))}
         </div>
@@ -936,7 +936,7 @@ function VamshaTab({ familyMembers: initial, kulEvents: initialEvents, kulId, us
           <button onClick={saveMember}
             className="w-full py-2.5 text-white font-semibold rounded-xl hover:opacity-90 transition text-sm"
             style={{ background: '#7B1A1A' }}>
-            {editMember ? 'Save Changes 🙏' : 'Add to Vamsha 🙏'}
+            {editMember ? 'Save Changes 🙏' : 'Add to Vansh 🙏'}
           </button>
         </div>
       )}
@@ -947,7 +947,7 @@ function VamshaTab({ familyMembers: initial, kulEvents: initialEvents, kulId, us
           {members.length === 0 && !showAdd && (
             <div className="text-center py-12 text-gray-400">
               <div className="text-5xl mb-3">🌳</div>
-              <p className="text-sm font-medium text-gray-500">Start your Vamsha tree</p>
+              <p className="text-sm font-medium text-gray-500">Start your Vansh tree</p>
               <p className="text-xs mt-1">Add family members to preserve your lineage</p>
             </div>
           )}
@@ -1089,7 +1089,7 @@ function VamshaTab({ familyMembers: initial, kulEvents: initialEvents, kulId, us
 export default function KulClient({ userId, userName, userProfile, kul, members, tasks, messages, familyMembers, kulEvents, myRole }: Props) {
   const supabase  = createClient();
   const router    = useRouter();
-  const [activeTab,    setActiveTab]    = useState<'board' | 'members' | 'tasks' | 'sabha' | 'vamsha'>('board');
+  const [activeTab,    setActiveTab]    = useState<'board' | 'members' | 'tasks' | 'sabha' | 'vansh'>('board');
   const [editingName,  setEditingName]  = useState(false);
   const [newKulName,   setNewKulName]   = useState(kul?.name ?? '');
   const [savingName,   setSavingName]   = useState(false);
@@ -1122,7 +1122,7 @@ export default function KulClient({ userId, userName, userProfile, kul, members,
     { key: 'members', label: 'Members', icon: <Users size={14} />, badge: members.length },
     { key: 'tasks',   label: 'Tasks',   icon: <CheckSquare size={14} />, badge: pendingTasks || undefined },
     { key: 'sabha',   label: 'Sabha',   icon: <MessageSquare size={14} /> },
-    { key: 'vamsha',  label: 'Vamsha',  icon: <span className="text-xs">🌳</span> },
+    { key: 'vansh',  label: 'Vansh',  icon: <span className="text-xs">🌳</span> },
   ];
 
   return (
@@ -1202,7 +1202,7 @@ export default function KulClient({ userId, userName, userProfile, kul, members,
       {activeTab === 'members' && <MembersTab members={members} userId={userId} myRole={myRole} kul={kul} />}
       {activeTab === 'tasks'   && <TasksTab   tasks={tasks} members={members} userId={userId} myRole={myRole} kulId={kul.id} />}
       {activeTab === 'sabha'   && <SabhaTab   messages={messages} userId={userId} kulId={kul.id} userName={userName} />}
-      {activeTab === 'vamsha'  && <VamshaTab  familyMembers={familyMembers} kulEvents={kulEvents} kulId={kul.id} userId={userId} />}
+      {activeTab === 'vansh'  && <VanshTab  familyMembers={familyMembers} kulEvents={kulEvents} kulId={kul.id} userId={userId} />}
     </div>
   );
 }

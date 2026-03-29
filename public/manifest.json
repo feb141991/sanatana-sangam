@@ -2,7 +2,7 @@
   "name": "Sanatana Sangam",
   "short_name": "Sangam",
   "description": "The Global Home for Sanatani — community, knowledge, and bhakti.",
-  "start_url": "/mandali",
+  "start_url": "/home",
   "display": "standalone",
   "background_color": "#fff8f0",
   "theme_color": "#ff7722",

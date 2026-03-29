@@ -106,6 +106,19 @@ export const APP = {
   BASE_URL: process.env.NEXT_PUBLIC_APP_URL ?? 'https://sanatansangam.app',
 } as const;
 
+// ─── App URLs ─────────────────────────────────────────────────────────────────
+
+export const APP = {
+  /**
+   * Public base URL for share links and invite deep-links.
+   * Set NEXT_PUBLIC_APP_URL in .env.local to override (e.g. your Vercel domain).
+   * Falls back to sanatansangam.app — but at runtime in client components
+   * prefer window.location.origin so any deployment domain works automatically.
+   */
+  BASE_URL: process.env.NEXT_PUBLIC_APP_URL ?? 'https://sanatansangam.app',
+} as const;
+
+
 // ─── App-wide Visual / Brand Config ──────────────────────────────────────────
 
 export const BRAND = {

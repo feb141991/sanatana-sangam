@@ -102,6 +102,23 @@ function LoginForm() {
             Join free
           </Link>
         </p>
+
+        {/* Continue as Guest */}
+        <div className="text-center mt-4">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex-1 h-px bg-gray-200" />
+            <span className="text-xs text-gray-400">or</span>
+            <div className="flex-1 h-px bg-gray-200" />
+          </div>
+          <Link
+            href="/vichaar-sabha"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gray-200 text-sm text-gray-500 hover:border-orange-300 hover:text-orange-600 transition bg-white"
+          >
+            <span>👁️</span>
+            <span>Continue as Guest</span>
+          </Link>
+          <p className="text-xs text-gray-400 mt-2">Browse Vichaar Sabha & Tirtha Map without an account</p>
+        </div>
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { LogOut, Edit3, MapPin } from 'lucide-react';
+import { LogOut, Edit3, MapPin, Lock } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { getInitials, ISHTA_DEVATAS, SAMPRADAYAS, SPIRITUAL_LEVELS, TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getIshtaDevataLabel, getSampradayaLabel } from '@/lib/utils';
 import type { TraditionKey } from '@/lib/traditions';
@@ -191,7 +191,9 @@ export default function ProfileClient({
 
   async function saveProfile() {
     setSaving(true);
-    const { error } = await supabase.from('profiles').update(form).eq('id', userId);
+    // tradition is locked at signup — never include it in updates
+    const { tradition: _locked, ...formToSave } = form;
+    const { error } = await supabase.from('profiles').update(formToSave).eq('id', userId);
     if (error) toast.error(error.message);
     else { toast.success('Profile updated 🙏'); setEditing(false); router.refresh(); }
     setSaving(false);
@@ -281,26 +283,28 @@ export default function ProfileClient({
         <div className="bg-white rounded-2xl border border-orange-100 p-5 space-y-4 fade-in">
           <h2 className="font-display font-semibold text-lg text-gray-900">Edit Profile</h2>
 
-          {/* ── Tradition (first, adapts everything below) ── */}
+          {/* ── Tradition — locked at signup, not editable ── */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Tradition</label>
-            <div className="grid grid-cols-1 gap-2">
-              {TRADITIONS.map((t) => (
-                <button key={t.value} type="button"
-                  onClick={() => setForm({ ...form, tradition: t.value, sampradaya: '', ishta_devata: '' })}
-                  className={`text-left px-3 py-2.5 rounded-xl border text-sm transition flex items-center gap-3 ${
-                    form.tradition === t.value
-                      ? 'border-[#7B1A1A] bg-[#7B1A1A08] text-[#7B1A1A] font-medium'
-                      : 'border-gray-200 text-gray-600 hover:border-[#7B1A1A]/30'
-                  }`}>
-                  <span className="text-xl">{t.emoji}</span>
-                  <div>
-                    <p className="font-medium leading-tight">{t.label}</p>
-                    <p className="text-xs text-gray-400 leading-tight mt-0.5">{t.desc}</p>
-                  </div>
-                </button>
-              ))}
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium text-gray-700">Tradition</label>
+              <span className="flex items-center gap-1 text-[10px] text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                <Lock size={9} /> Set at signup
+              </span>
             </div>
+            {(() => {
+              const t = TRADITIONS.find(t => t.value === form.tradition);
+              return t ? (
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 border border-gray-200">
+                  <span className="text-2xl">{t.emoji}</span>
+                  <div>
+                    <p className="font-semibold text-sm text-gray-800">{t.label}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{t.desc}</p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400 italic">No tradition set — contact support to update.</p>
+              );
+            })()}
           </div>
 
           {/* ── Basic info ── */}

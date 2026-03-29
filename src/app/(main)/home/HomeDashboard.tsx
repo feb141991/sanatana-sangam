@@ -12,6 +12,7 @@ import {
 } from 'date-fns';
 import type { Shloka } from '@/lib/shlokas';
 import type { Festival } from '@/lib/festivals';
+import type { DailySacredText } from '@/lib/sacred-texts';
 import { FESTIVALS_2026 } from '@/lib/festivals';
 import { calculatePanchang } from '@/lib/panchang';
 import { getGreeting, GREETING_POOLS } from '@/lib/traditions';
@@ -28,6 +29,14 @@ interface Panchang {
   rahuKaal:  string;
 }
 
+interface SacredTextMeta {
+  label:        string;   // "Aaj Ka Shloka" / "Aaj Ka Shabad" etc.
+  icon:         string;   // 🕉️ / ☬ / ☸️ / 🤲
+  shareLabel:   string;   // used in share sheet title
+  accentColour: string;   // hex
+  accentLight:  string;   // light tint hex
+}
+
 interface Props {
   userId:            string;
   userName:          string;
@@ -35,6 +44,9 @@ interface Props {
   savedLat:          number | null;
   savedLon:          number | null;
   shloka:            Shloka;
+  /** Non-null for Sikh / Buddhist / Jain traditions */
+  sacredText:        DailySacredText | null;
+  sacredTextMeta:    SacredTextMeta;
   festival:          Festival | null;
   daysUntilFestival: number | null;
   initialPanchang:   Panchang;
@@ -414,6 +426,8 @@ export default function HomeDashboard({
   savedLat,
   savedLon,
   shloka,
+  sacredText,
+  sacredTextMeta,
   festival,
   daysUntilFestival,
   initialPanchang,
@@ -544,9 +558,15 @@ export default function HomeDashboard({
   }
 
   function shareShloka() {
-    shareContent('Aaj Ka Shloka',
-      `🕉️ Aaj Ka Shloka — ${shloka.source}\n\n${shloka.sanskrit}\n\n${shloka.transliteration}\n\nMeaning: ${shloka.meaning}\n\n— Shared via Sanatana Sangam`
-    );
+    if (sacredText) {
+      shareContent(sacredTextMeta.shareLabel,
+        `${sacredTextMeta.icon} ${sacredTextMeta.label}\n\n${sacredText.original}\n\n${sacredText.transliteration}\n\nMeaning: ${sacredText.meaning}\n\n${sacredText.source}\n\n— Shared via Sanatana Sangam`
+      );
+    } else {
+      shareContent('Aaj Ka Shloka',
+        `🕉️ Aaj Ka Shloka — ${shloka.source}\n\n${shloka.sanskrit}\n\n${shloka.transliteration}\n\nMeaning: ${shloka.meaning}\n\n— Shared via Sanatana Sangam`
+      );
+    }
   }
 
   return (
@@ -652,12 +672,13 @@ export default function HomeDashboard({
         </div>
       </div>
 
-      {/* ── Aaj Ka Shloka ── */}
-      <div className="bg-white rounded-2xl border border-orange-100 shadow-sm p-4">
+      {/* ── Daily Sacred Text — tradition-aware ── */}
+      <div className="bg-white rounded-2xl shadow-sm p-4"
+        style={{ borderWidth: 1, borderStyle: 'solid', borderColor: sacredTextMeta.accentLight }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <span className="text-lg">🕉️</span>
-            <span className="font-display font-semibold text-gray-800 text-sm">Aaj Ka Shloka</span>
+            <span className="text-lg">{sacredTextMeta.icon}</span>
+            <span className="font-display font-semibold text-gray-800 text-sm">{sacredTextMeta.label}</span>
             {streak > 0 && (
               <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100">
                 🔥 {streak}
@@ -665,49 +686,55 @@ export default function HomeDashboard({
             )}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full">{shloka.source}</span>
+            <span className="text-xs text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full">
+              {sacredText ? sacredText.source : shloka.source}
+            </span>
             <button onClick={shareShloka}
-              className="w-7 h-7 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center hover:bg-orange-100 transition"
-              title="Share Shloka">
-              <Share2 size={13} style={{ color: '#7B1A1A' }} />
+              className="w-7 h-7 rounded-full border flex items-center justify-center hover:opacity-80 transition"
+              style={{ background: sacredTextMeta.accentLight, borderColor: sacredTextMeta.accentLight }}
+              title={`Share ${sacredTextMeta.shareLabel}`}>
+              <Share2 size={13} style={{ color: sacredTextMeta.accentColour }} />
             </button>
           </div>
         </div>
 
-        <p className="font-devanagari text-[#7B1A1A] leading-relaxed text-base mb-2 whitespace-pre-line">
-          {shloka.sanskrit}
+        {/* Original script */}
+        <p className="font-devanagari leading-relaxed text-base mb-2 whitespace-pre-line"
+          style={{ color: sacredTextMeta.accentColour }}>
+          {sacredText ? sacredText.original : shloka.sanskrit}
         </p>
+
+        {/* Transliteration */}
         <p className="text-sm text-gray-500 italic leading-relaxed mb-3 whitespace-pre-line">
-          {shloka.transliteration}
+          {sacredText ? sacredText.transliteration : shloka.transliteration}
         </p>
 
         <div className="flex items-center justify-between">
-          <button
-            onClick={() => setShlokaExpanded(!shlokaExpanded)}
-            className="flex items-center gap-1 text-[#7B1A1A] text-xs font-medium"
-          >
+          <button onClick={() => setShlokaExpanded(!shlokaExpanded)}
+            className="flex items-center gap-1 text-xs font-medium"
+            style={{ color: sacredTextMeta.accentColour }}>
             {shlokaExpanded ? 'Hide meaning' : 'Show meaning'}
             {shlokaExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
           </button>
 
-          {/* Streak mark-as-read button */}
-          <button
-            onClick={markShlokaRead}
-            disabled={readToday}
+          <button onClick={markShlokaRead} disabled={readToday}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition ${
               readToday
                 ? 'bg-green-50 text-green-700 border border-green-200 cursor-default'
                 : 'text-white hover:opacity-90'
             }`}
-            style={readToday ? {} : { background: '#7B1A1A' }}
-          >
-            {readToday ? '✓ Read today' : '🕉️ Mark as read'}
+            style={readToday ? {} : { background: sacredTextMeta.accentColour }}>
+            {readToday
+              ? '✓ Read today'
+              : `${sacredTextMeta.icon} Mark as read`}
           </button>
         </div>
 
         {shlokaExpanded && (
-          <div className="mt-3 pt-3 border-t border-orange-50">
-            <p className="text-sm text-gray-700 leading-relaxed">{shloka.meaning}</p>
+          <div className="mt-3 pt-3 border-t" style={{ borderColor: sacredTextMeta.accentLight }}>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              {sacredText ? sacredText.meaning : shloka.meaning}
+            </p>
           </div>
         )}
       </div>

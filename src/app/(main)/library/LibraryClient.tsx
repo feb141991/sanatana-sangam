@@ -98,8 +98,8 @@ function EntryCard({ entry }: { entry: LibraryEntry }) {
 }
 
 // ── Main Library Client ────────────────────────────────────────────────────────
-export default function LibraryClient() {
-  const [activeSection, setActiveSection] = useState<string>('all');
+export default function LibraryClient({ defaultSection = 'all' }: { defaultSection?: string }) {
+  const [activeSection, setActiveSection] = useState<string>(defaultSection);
   const [searchQuery,   setSearchQuery]   = useState('');
 
   const entries = useMemo(() => {
