@@ -12,10 +12,12 @@ import type { Profile, PostWithAuthor } from '@/types/database';
 type MemberRow = Pick<Profile, 'id' | 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'ishta_devata' | 'spiritual_level' | 'city' | 'seva_score'>;
 
 type Props = {
-  profile:  (Profile & { mandalis?: { name: string; city: string; country: string; member_count: number } | null }) | null;
-  posts:    PostWithAuthor[];
-  members:  MemberRow[];
-  userId:   string;
+  profile:      (Profile & { mandalis?: { name: string; city: string; country: string; member_count: number } | null }) | null;
+  posts:        PostWithAuthor[];
+  members:      MemberRow[];
+  userId:       string;
+  /** Posts from other Mandalis shown when local Mandali has < 5 members */
+  blendedPosts?: PostWithAuthor[];
 };
 
 const POST_TYPES = [
@@ -339,29 +341,80 @@ function CityPicker({ value, onChange }: {
 function NoMandaliPrompt({ userId }: { userId: string }) {
   const supabase = createClient();
   const router   = useRouter();
-  const { city: liveCity } = useLocation();
+  const { city: liveCity, country: liveCountry } = useLocation();
 
-  const [selected, setSelected] = useState<{ city: string; country: string } | null>(null);
-  const [saving,   setSaving]   = useState(false);
+  const [locating,  setLocating]  = useState(false);
+  const [detected,  setDetected]  = useState<{ city: string; country: string } | null>(null);
+  const [saving,    setSaving]    = useState(false);
+  const [geoError,  setGeoError]  = useState('');
 
-  // Auto-select from GPS city
+  // If LocationContext already has a city (from saved profile GPS), pre-fill it
   useEffect(() => {
-    if (liveCity && !selected) {
-      const match = CITIES.find(c => c.city.toLowerCase() === liveCity.toLowerCase());
-      if (match) setSelected({ city: match.city, country: match.country });
+    if (liveCity && !detected) {
+      setDetected({ city: liveCity, country: liveCountry ?? '' });
     }
-  }, [liveCity]);
+  }, [liveCity, liveCountry]);
+
+  function detectLocation() {
+    if (!navigator.geolocation) {
+      setGeoError('Geolocation is not supported by your browser.'); return;
+    }
+    setLocating(true);
+    setGeoError('');
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const res  = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`
+          );
+          const data = await res.json();
+          const city    = data.address?.city || data.address?.town || data.address?.village || '';
+          const country = data.address?.country ?? '';
+          if (city) {
+            setDetected({ city, country });
+          } else {
+            setGeoError('Could not detect your city. Please try again.');
+          }
+        } catch {
+          setGeoError('Location lookup failed. Please try again.');
+        } finally {
+          setLocating(false);
+        }
+      },
+      () => {
+        setGeoError('Location permission denied. Please allow location access and try again.');
+        setLocating(false);
+      },
+      { timeout: 10000 }
+    );
+  }
 
   async function joinMandali() {
-    if (!selected?.city || !selected?.country) {
-      toast.error('Please select your city'); return;
+    if (!detected?.city || !detected?.country) {
+      toast.error('Please detect your location first');
+      return;
     }
     setSaving(true);
+
+    // Call find_or_create_mandali directly — don't rely on the DB trigger
+    // (trigger only fires when city changes; user may already have city from GPS auto-save)
+    const { data: mandaliId, error: rpcError } = await supabase.rpc('find_or_create_mandali', {
+      p_city:    detected.city.trim(),
+      p_country: detected.country.trim(),
+    });
+    if (rpcError) { toast.error(rpcError.message); setSaving(false); return; }
+
+    // Save city, country AND mandali_id in one update
     const { error } = await supabase
       .from('profiles')
-      .update({ city: selected.city.trim(), country: selected.country.trim() })
+      .update({
+        city:       detected.city.trim(),
+        country:    detected.country.trim(),
+        mandali_id: mandaliId,
+      })
       .eq('id', userId);
     if (error) { toast.error(error.message); setSaving(false); return; }
+
     toast.success('Mandali found! Welcome 🙏');
     router.refresh();
   }
@@ -372,34 +425,57 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
       <div>
         <h2 className="font-display font-bold text-2xl text-gray-900 mb-2">Find Your Mandali</h2>
         <p className="text-gray-500 max-w-sm text-sm">
-          Select your city to join your neighbourhood Sanatani community — Wembley Mandali, Brampton Mandali, Andheri Mandali and more.
+          We'll place you in your city's Sanatani Mandali — Wembley, Brampton, Andheri, or wherever you are. We'll create one if it doesn't exist yet.
         </p>
       </div>
 
       <div className="bg-white rounded-2xl border border-orange-100 shadow-card p-5 w-full max-w-sm space-y-3">
-        <CityPicker
-          value={selected}
-          onChange={setSelected}
-        />
 
-        {selected && (
-          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-orange-50 border border-orange-100">
-            <MapPin size={13} style={{ color: '#7B1A1A' }} />
-            <span className="text-sm font-medium text-gray-800">{selected.city}</span>
-            <span className="text-xs text-gray-400">{selected.country}</span>
+        {/* Detected city display */}
+        {detected ? (
+          <div className="flex items-center gap-2 px-3 py-3 rounded-xl bg-green-50 border border-green-200">
+            <MapPin size={14} className="text-green-600 flex-shrink-0" />
+            <div className="flex-1 text-left">
+              <p className="text-sm font-semibold text-green-800">{detected.city}</p>
+              {detected.country && <p className="text-xs text-green-600">{detected.country}</p>}
+            </div>
+            <button onClick={() => setDetected(null)}
+              className="text-xs text-gray-400 hover:text-gray-600">
+              <X size={14} />
+            </button>
           </div>
+        ) : (
+          <button
+            onClick={detectLocation}
+            disabled={locating}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-[#7B1A1A]/30 text-[#7B1A1A] font-medium text-sm hover:border-[#7B1A1A]/60 hover:bg-orange-50 transition disabled:opacity-60"
+          >
+            {locating ? (
+              <>
+                <span className="w-4 h-4 border-2 border-[#7B1A1A] border-t-transparent rounded-full animate-spin" />
+                Detecting location…
+              </>
+            ) : (
+              <>
+                <MapPin size={16} />
+                Detect My Location
+              </>
+            )}
+          </button>
         )}
 
-        <button onClick={joinMandali} disabled={saving || !selected}
+        {geoError && <p className="text-xs text-red-500 text-center">{geoError}</p>}
+
+        <button onClick={joinMandali} disabled={saving || !detected}
           className="w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
           style={{ background: '#7B1A1A' }}>
-          {saving ? 'Finding your Mandali…' : 'Find My Mandali 🙏'}
+          {saving ? 'Finding your Mandali…' : 'Join My Mandali 🙏'}
         </button>
       </div>
 
       <div className="flex items-center gap-2 text-xs text-gray-400">
         <Globe size={12} />
-        <span>80+ cities worldwide — we'll create a Mandali if one doesn't exist yet</span>
+        <span>City-level groups only — your exact location is never shared</span>
       </div>
     </div>
   );
@@ -639,14 +715,17 @@ function PostCard({ post, userId, upvoted, onUpvote }: {
 }
 
 // ─── Main Component ──────────────────────────────────────────────
-export default function MandaliClient({ profile, posts: initialPosts, members, userId }: Props) {
+export default function MandaliClient({ profile, posts: initialPosts, members, userId, blendedPosts = [] }: Props) {
   const router   = useRouter();
   const supabase = createClient();
 
-  const [activeTab,    setActiveTab]   = useState<'members' | 'events' | 'vichaar'>('members');
-  const [posts,        setPosts]       = useState(initialPosts);
-  const [showSearch,   setShowSearch]  = useState(false);
-  const [showCompose,  setShowCompose] = useState(false);
+  const [activeTab,       setActiveTab]       = useState<'members' | 'events' | 'vichaar'>('members');
+  const [posts,           setPosts]           = useState(initialPosts);
+  const [widerPosts,      setWiderPosts]      = useState(blendedPosts);
+  const [showSearch,      setShowSearch]      = useState(false);
+  const [showCompose,     setShowCompose]     = useState(false);
+  const [showMandaliMenu, setShowMandaliMenu] = useState(false);
+  const [leavingMandali,  setLeavingMandali]  = useState(false);
   const [postType,    setPostType]    = useState<'update' | 'event' | 'question' | 'announcement'>('update');
   const [content,     setContent]     = useState('');
   const [eventDate,   setEventDate]   = useState('');
@@ -682,15 +761,29 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
     router.refresh();
   }
 
+  async function leaveMandali() {
+    if (!confirm('Leave your current Mandali? You can re-join any time by detecting your location again.')) return;
+    setLeavingMandali(true);
+    const { error } = await supabase
+      .from('profiles')
+      .update({ mandali_id: null })
+      .eq('id', userId);
+    if (error) { toast.error(error.message); setLeavingMandali(false); return; }
+    toast.success('You have left the Mandali');
+    router.refresh();
+  }
+
   async function toggleUpvote(postId: string) {
     if (upvoted.has(postId)) {
       await supabase.from('post_upvotes').delete().match({ post_id: postId, user_id: userId });
       setUpvoted((s) => { const n = new Set(s); n.delete(postId); return n; });
       setPosts((p) => p.map((post) => post.id === postId ? { ...post, upvotes: post.upvotes - 1 } : post));
+      setWiderPosts((p) => p.map((post) => post.id === postId ? { ...post, upvotes: post.upvotes - 1 } : post));
     } else {
       await supabase.from('post_upvotes').insert({ post_id: postId, user_id: userId });
       setUpvoted((s) => new Set([...s, postId]));
       setPosts((p) => p.map((post) => post.id === postId ? { ...post, upvotes: post.upvotes + 1 } : post));
+      setWiderPosts((p) => p.map((post) => post.id === postId ? { ...post, upvotes: post.upvotes + 1 } : post));
     }
   }
 
@@ -732,12 +825,48 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
             <div className="text-white/60 text-xs">members</div>
           </div>
         </div>
-        {/* Find Sanatani button */}
-        <button onClick={() => setShowSearch(true)}
-          className="mt-3 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition w-full justify-center"
-          style={{ background: 'rgba(255,255,255,0.15)', color: 'white' }}>
-          <Search size={13} /> Find Sanatani
-        </button>
+        {/* Action row */}
+        <div className="mt-3 flex items-center gap-2">
+          <button onClick={() => setShowSearch(true)}
+            className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition justify-center"
+            style={{ background: 'rgba(255,255,255,0.15)', color: 'white' }}>
+            <Search size={13} /> Find Sanatani
+          </button>
+
+          {/* Mandali options menu */}
+          <div className="relative">
+            <button
+              onClick={() => setShowMandaliMenu(m => !m)}
+              className="flex items-center justify-center w-8 h-8 rounded-xl text-white transition"
+              style={{ background: 'rgba(255,255,255,0.15)' }}
+              title="Mandali options"
+            >
+              ⋯
+            </button>
+            {showMandaliMenu && (
+              <div className="absolute right-0 top-10 z-50 bg-white rounded-2xl shadow-xl border border-gray-100 w-52 overflow-hidden"
+                onClick={() => setShowMandaliMenu(false)}>
+                <button
+                  onClick={async () => {
+                    // Clear mandali_id → redirect to join flow
+                    await supabase.from('profiles').update({ mandali_id: null }).eq('id', userId);
+                    router.refresh();
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 transition text-left border-b border-gray-50">
+                  <MapPin size={14} className="text-[#7B1A1A]" />
+                  Change my Mandali
+                </button>
+                <button
+                  onClick={leaveMandali}
+                  disabled={leavingMandali}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition text-left disabled:opacity-50">
+                  <X size={14} />
+                  {leavingMandali ? 'Leaving…' : 'Leave this Mandali'}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {showSearch && <FindSanataniModal userId={userId} onClose={() => setShowSearch(false)} />}
@@ -772,15 +901,41 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
         <EventsTab posts={posts} />
       )}
       {activeTab === 'vichaar' && (
-        <VichaarTab
-          posts={posts}
-          userId={userId}
-          onToggleUpvote={toggleUpvote}
-          upvoted={upvoted}
-          onCompose={submitPost}
-          showCompose={showCompose}
-          setShowCompose={setShowCompose}
-        />
+        <>
+          <VichaarTab
+            posts={posts}
+            userId={userId}
+            onToggleUpvote={toggleUpvote}
+            upvoted={upvoted}
+            onCompose={submitPost}
+            showCompose={showCompose}
+            setShowCompose={setShowCompose}
+          />
+          {/* "Don't feel alone" — blended Sangam posts when local Mandali is small */}
+          {widerPosts.length > 0 && (
+            <div className="space-y-3 mt-2">
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-px bg-orange-100" />
+                <span className="text-xs text-gray-400 font-medium px-2">
+                  🌸 Wisdom from the wider Sangam
+                </span>
+                <div className="flex-1 h-px bg-orange-100" />
+              </div>
+              <p className="text-[11px] text-gray-400 text-center -mt-1">
+                Your Mandali is growing — here are voices from our broader community
+              </p>
+              <VichaarTab
+                posts={widerPosts}
+                userId={userId}
+                onToggleUpvote={toggleUpvote}
+                upvoted={upvoted}
+                onCompose={submitPost}
+                showCompose={false}
+                setShowCompose={() => {}}
+              />
+            </div>
+          )}
+        </>
       )}
     </div>
   );

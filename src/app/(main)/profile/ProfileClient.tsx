@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { LogOut, Edit3, MapPin, Lock } from 'lucide-react';
+import { LogOut, Edit3, MapPin, Lock, Camera } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { getInitials, ISHTA_DEVATAS, SAMPRADAYAS, SPIRITUAL_LEVELS, TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getIshtaDevataLabel, getSampradayaLabel } from '@/lib/utils';
 import type { TraditionKey } from '@/lib/traditions';
@@ -128,8 +128,10 @@ export default function ProfileClient({
 }) {
   const router   = useRouter();
   const supabase = createClient();
-  const [editing, setEditing] = useState(false);
-  const [saving,  setSaving]  = useState(false);
+  const [editing,   setEditing]   = useState(false);
+  const [saving,    setSaving]    = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>((profile as any)?.avatar_url ?? null);
   const [form, setForm] = useState({
     full_name:        profile?.full_name        ?? '',
     bio:              profile?.bio              ?? '',
@@ -189,6 +191,42 @@ export default function ProfileClient({
     });
   }, [userId]);
 
+  async function uploadAvatar(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { toast.error('Photo must be under 2 MB'); return; }
+    if (!file.type.startsWith('image/')) { toast.error('Please select an image file'); return; }
+
+    setUploading(true);
+    try {
+      const ext  = file.name.split('.').pop() ?? 'jpg';
+      const path = `${userId}/avatar.${ext}`;
+
+      // Upload to a public avatars bucket so photos can render across the app.
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(path, file, { upsert: true, contentType: file.type });
+      if (uploadError) throw uploadError;
+
+      const { data: pubData } = supabase.storage.from('avatars').getPublicUrl(path);
+      const publicUrl = pubData.publicUrl;
+      const { error: dbError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', userId);
+      if (dbError) throw dbError;
+
+      setAvatarUrl(`${publicUrl}?t=${Date.now()}`);
+      toast.success('Photo updated 🙏');
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err.message ?? 'Upload failed');
+    } finally {
+      setUploading(false);
+      // reset handled by the input's own state via key change if needed
+    }
+  }
+
   async function saveProfile() {
     setSaving(true);
     // tradition is locked at signup — never include it in updates
@@ -225,8 +263,30 @@ export default function ProfileClient({
       <div className="rounded-2xl text-white p-5" style={{ background: '#7B1A1A' }}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-16 h-16 rounded-full bg-white/20 border-2 border-white/40 flex items-center justify-center text-white text-xl font-bold">
-              {initials}
+            {/* Avatar with upload — label approach works on iOS Safari */}
+            <div className="relative">
+              <div className="w-16 h-16 rounded-full bg-white/20 border-2 border-white/40 flex items-center justify-center text-white text-xl font-bold overflow-hidden">
+                {avatarUrl
+                  ? <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                  : initials}
+              </div>
+              <label
+                htmlFor="avatar-upload"
+                className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-md border border-gray-100 ${uploading ? 'opacity-60' : 'cursor-pointer'}`}
+                title="Change photo"
+              >
+                {uploading
+                  ? <span className="w-3 h-3 border-2 border-[#7B1A1A] border-t-transparent rounded-full animate-spin" />
+                  : <Camera size={12} className="text-[#7B1A1A]" />}
+              </label>
+              <input
+                id="avatar-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                disabled={uploading}
+                onChange={uploadAvatar}
+              />
             </div>
             <div>
               <h1 className="font-display font-bold text-xl text-white">{profile?.full_name}</h1>

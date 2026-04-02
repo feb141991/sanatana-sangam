@@ -7,10 +7,19 @@ import { calculatePanchang } from '@/lib/panchang';
 import type { PanchangData } from '@/lib/panchang';
 
 interface Props {
-  lat:  number;
-  lon:  number;
-  city: string;
+  lat:       number;
+  lon:       number;
+  city:      string;
+  tradition?: string;
 }
+
+// ─── Tradition calendar metadata ──────────────────────────────────────────────
+const TRADITION_CALENDAR: Record<string, { badge: string; note: string; colour: string }> = {
+  hindu:    { badge: '🕉️ Vedic',        note: 'Vikram Samvat calendar',           colour: '#7B1A1A' },
+  sikh:     { badge: '☬ Nanakshahi',    note: 'Nanakshahi Sikh calendar month',   colour: '#1a4d7b' },
+  buddhist: { badge: '☸️ Buddhist',      note: 'Buddhist lunar calendar',          colour: '#5c6b1a' },
+  jain:     { badge: '🤲 Jain',          note: 'Jain Vira Samvat calendar',        colour: '#7b5a1a' },
+};
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const MONTHS = ['January','February','March','April','May','June',
@@ -39,7 +48,8 @@ function Row({ emoji, label, value, highlight = false }: {
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function PanchangClient({ lat, lon, city }: Props) {
+export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: Props) {
+  const calMeta = TRADITION_CALENDAR[tradition] ?? TRADITION_CALENDAR.hindu;
   const today = useMemo(() => new Date(), []);
   const [selected, setSelected] = useState<Date>(today);
   const [viewYear,  setViewYear]  = useState(today.getFullYear());
@@ -105,7 +115,13 @@ export default function PanchangClient({ lat, lon, city }: Props) {
           <ArrowLeft size={15} className="text-gray-500" />
         </Link>
         <div className="flex-1">
-          <h1 className="font-display font-bold text-gray-900 text-xl leading-tight">Panchang</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="font-display font-bold text-gray-900 text-xl leading-tight">Panchang</h1>
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full text-white"
+              style={{ background: calMeta.colour }}>
+              {calMeta.badge}
+            </span>
+          </div>
           {city && <p className="text-xs text-gray-400 mt-0.5">📍 {city}</p>}
         </div>
         <button onClick={share}
@@ -124,7 +140,9 @@ export default function PanchangClient({ lat, lon, city }: Props) {
           </button>
           <div className="text-center">
             <p className="font-semibold text-gray-900 text-sm">{MONTHS[viewMonth]} {viewYear}</p>
-            <p className="text-[10px] text-gray-400">{p.masaName} Masa</p>
+            <p className="text-[10px] text-gray-400">
+              {tradition === 'hindu' ? `${p.masaName} Masa` : calMeta.note}
+            </p>
           </div>
           <button onClick={nextMonth}
             className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition">
