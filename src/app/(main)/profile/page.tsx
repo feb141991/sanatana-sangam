@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getUserSafetyDashboardData, getUserSafetyState } from '@/lib/user-safety';
 import { redirect } from 'next/navigation';
 import ProfileClient from './ProfileClient';
 
@@ -23,6 +24,9 @@ export default async function ProfilePage() {
     .select('id', { count: 'exact', head: true })
     .eq('author_id', user.id);
 
+  const safetyState = await getUserSafetyState(supabase, user.id);
+  const safetyDashboard = await getUserSafetyDashboardData(supabase, user.id, safetyState);
+
   return (
     <ProfileClient
       profile={profile}
@@ -30,6 +34,9 @@ export default async function ProfilePage() {
       postCount={postCount ?? 0}
       userId={user.id}
       userEmail={user.email ?? ''}
+      blockedProfiles={safetyDashboard.blockedProfiles}
+      mutedProfiles={safetyDashboard.mutedProfiles}
+      hiddenItems={safetyDashboard.hiddenItems}
     />
   );
 }

@@ -6,6 +6,8 @@ const CONTENT_TABLE_BY_TYPE = {
   post: 'posts',
   mandali_post: 'posts',
   kul_message: 'kul_messages',
+  thread: 'forum_threads',
+  reply: 'forum_replies',
 } as const;
 
 export async function PATCH(

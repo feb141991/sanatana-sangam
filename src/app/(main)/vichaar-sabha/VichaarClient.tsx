@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
 import { Plus, MessageSquare, ArrowUp, CheckCircle, Search, X } from 'lucide-react';
+import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
 import { createClient } from '@/lib/supabase';
 import { formatRelativeTime, getInitials, FORUM_CATEGORIES } from '@/lib/utils';
 import type { ThreadWithAuthor } from '@/types/database';
@@ -186,6 +187,14 @@ export default function VichaarClient({
     }
   }
 
+  function hideThreadFromView(threadId: string) {
+    setThreads((current) => current.filter((thread) => thread.id !== threadId));
+  }
+
+  function hideAuthorFromView(authorId: string) {
+    setThreads((current) => current.filter((thread) => thread.author_id !== authorId));
+  }
+
   return (
     <div className="space-y-4 fade-in">
 
@@ -328,9 +337,12 @@ export default function VichaarClient({
             <ThreadCard
               key={thread.id}
               thread={thread}
+              viewerId={userId}
               isGuest={isGuest}
               isUpvoted={upvoted.has(thread.id)}
               onUpvote={() => toggleUpvote(thread.id)}
+              onHideContent={hideThreadFromView}
+              onHideAuthor={hideAuthorFromView}
             />
           ))}
         </div>
@@ -525,14 +537,20 @@ function ComposeThreadModal({
 
 function ThreadCard({
   thread,
+  viewerId,
   isGuest,
   isUpvoted,
   onUpvote,
+  onHideContent,
+  onHideAuthor,
 }: {
   thread: ThreadWithAuthor;
+  viewerId: string;
   isGuest: boolean;
   isUpvoted: boolean;
   onUpvote: () => void;
+  onHideContent: (threadId: string) => void;
+  onHideAuthor: (authorId: string) => void;
 }) {
   const cat     = FORUM_CATEGORIES.find((c) => c.value === thread.category);
   const author  = thread.profiles;
@@ -543,25 +561,35 @@ function ThreadCard({
     <Link href={`/vichaar-sabha/${thread.id}`}>
       <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-4 space-y-3 card-hover cursor-pointer">
         {/* Category + answered badge */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs bg-orange-50 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full font-medium">
-            {cat?.emoji} {cat?.label}
-          </span>
-          {thread.reply_count === 0 && !thread.is_answered && (
-            <span className="text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full font-medium">
-              Unanswered
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs bg-orange-50 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full font-medium">
+              {cat?.emoji} {cat?.label}
             </span>
-          )}
-          {thread.is_answered && (
-            <span className="text-xs bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
-              <CheckCircle size={10} /> Answered
-            </span>
-          )}
-          {thread.is_pinned && (
-            <span className="text-xs bg-yellow-50 text-yellow-700 border border-yellow-200 px-2 py-0.5 rounded-full font-medium">
-              📌 Pinned
-            </span>
-          )}
+            {thread.reply_count === 0 && !thread.is_answered && (
+              <span className="text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full font-medium">
+                Unanswered
+              </span>
+            )}
+            {thread.is_answered && (
+              <span className="text-xs bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                <CheckCircle size={10} /> Answered
+              </span>
+            )}
+            {thread.is_pinned && (
+              <span className="text-xs bg-yellow-50 text-yellow-700 border border-yellow-200 px-2 py-0.5 rounded-full font-medium">
+                📌 Pinned
+              </span>
+            )}
+          </div>
+          <ContentSafetyMenu
+            userId={viewerId}
+            authorId={thread.author_id}
+            contentId={thread.id}
+            contentType="thread"
+            onHideContent={onHideContent}
+            onHideAuthor={onHideAuthor}
+          />
         </div>
 
         {/* Title */}

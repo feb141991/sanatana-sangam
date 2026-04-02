@@ -1,9 +1,11 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { filterAuthoredItems, getUserSafetyState } from '@/lib/user-safety';
 import VichaarClient from './VichaarClient';
 
 export default async function VichaarSabhaPage() {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const safetyState = user ? await getUserSafetyState(supabase, user.id) : null;
 
   const { data: threads } = await supabase
     .from('forum_threads')
@@ -13,5 +15,5 @@ export default async function VichaarSabhaPage() {
     .limit(40);
 
   // Pass userId as empty string for guests — VichaarClient shows read-only mode
-  return <VichaarClient threads={threads ?? []} userId={user?.id ?? ''} />;
+  return <VichaarClient threads={filterAuthoredItems(threads ?? [], 'thread', safetyState)} userId={user?.id ?? ''} />;
 }

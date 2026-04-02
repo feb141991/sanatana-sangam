@@ -114,6 +114,54 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['thread_upvotes']['Row'], 'created_at'>;
         Update: never;
       };
+      content_reports: {
+        Row: {
+          id: string;
+          reported_by: string;
+          content_type: string;
+          content_id: string;
+          reason: string;
+          status: 'pending' | 'reviewed' | 'actioned' | 'dismissed';
+          admin_note: string | null;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['content_reports']['Row'], 'id' | 'created_at' | 'status' | 'admin_note'> & {
+          status?: Database['public']['Tables']['content_reports']['Row']['status'];
+          admin_note?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['content_reports']['Insert']>;
+      };
+      user_blocked_profiles: {
+        Row: {
+          id: string;
+          blocker_id: string;
+          blocked_user_id: string;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['user_blocked_profiles']['Row'], 'id' | 'created_at'>;
+        Update: never;
+      };
+      user_muted_profiles: {
+        Row: {
+          id: string;
+          muter_id: string;
+          muted_user_id: string;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['user_muted_profiles']['Row'], 'id' | 'created_at'>;
+        Update: never;
+      };
+      user_hidden_content: {
+        Row: {
+          id: string;
+          user_id: string;
+          content_type: 'mandali_post' | 'thread' | 'reply';
+          content_id: string;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['user_hidden_content']['Row'], 'id' | 'created_at'>;
+        Update: never;
+      };
       notifications: {
         Row: {
           id: string;
@@ -144,5 +192,6 @@ export type ForumThread    = Database['public']['Tables']['forum_threads']['Row'
 export type ForumReply     = Database['public']['Tables']['forum_replies']['Row'];
 
 export type Notification    = Database['public']['Tables']['notifications']['Row'];
+export type ContentReport   = Database['public']['Tables']['content_reports']['Row'];
 export type PostWithAuthor = Post & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'spiritual_level'> };
 export type ThreadWithAuthor = ForumThread & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya'> };

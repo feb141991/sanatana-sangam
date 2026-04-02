@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { LogOut, Edit3, MapPin, Lock, Camera } from 'lucide-react';
+import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
+import type { HiddenContentSummary, SafetyProfileSummary } from '@/lib/user-safety';
 import { getInitials, ISHTA_DEVATAS, SAMPRADAYAS, SPIRITUAL_LEVELS, TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getIshtaDevataLabel, getSampradayaLabel } from '@/lib/utils';
 import type { TraditionKey } from '@/lib/traditions';
 import { useLocation } from '@/lib/LocationContext';
@@ -119,12 +120,18 @@ export default function ProfileClient({
   postCount,
   userId,
   userEmail,
+  blockedProfiles: initialBlockedProfiles,
+  mutedProfiles: initialMutedProfiles,
+  hiddenItems: initialHiddenItems,
 }: {
   profile:     Profile | null;
   threadCount: number;
   postCount:   number;
   userId:      string;
   userEmail:   string;
+  blockedProfiles: SafetyProfileSummary[];
+  mutedProfiles: SafetyProfileSummary[];
+  hiddenItems: HiddenContentSummary[];
 }) {
   const router   = useRouter();
   const supabase = createClient();
@@ -132,7 +139,11 @@ export default function ProfileClient({
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
   const [sendingTestNotification, setSendingTestNotification] = useState(false);
+  const [safetyBusyKey, setSafetyBusyKey] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>((profile as any)?.avatar_url ?? null);
+  const [blockedProfiles, setBlockedProfiles] = useState(initialBlockedProfiles);
+  const [mutedProfiles, setMutedProfiles] = useState(initialMutedProfiles);
+  const [hiddenItems, setHiddenItems] = useState(initialHiddenItems);
   const [form, setForm] = useState({
     full_name:        profile?.full_name        ?? '',
     bio:              profile?.bio              ?? '',
@@ -283,6 +294,64 @@ export default function ProfileClient({
     }
   }
 
+  async function unblockProfile(profileId: string) {
+    setSafetyBusyKey(`block:${profileId}`);
+    const { error } = await supabase
+      .from('user_blocked_profiles')
+      .delete()
+      .eq('blocker_id', userId)
+      .eq('blocked_user_id', profileId);
+
+    setSafetyBusyKey(null);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    setBlockedProfiles((current) => current.filter((profile) => profile.id !== profileId));
+    toast.success('User unblocked.');
+  }
+
+  async function unmuteProfile(profileId: string) {
+    setSafetyBusyKey(`mute:${profileId}`);
+    const { error } = await supabase
+      .from('user_muted_profiles')
+      .delete()
+      .eq('muter_id', userId)
+      .eq('muted_user_id', profileId);
+
+    setSafetyBusyKey(null);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    setMutedProfiles((current) => current.filter((profile) => profile.id !== profileId));
+    toast.success('User unmuted.');
+  }
+
+  async function unhideContent(contentType: HiddenContentSummary['content_type'], contentId: string) {
+    setSafetyBusyKey(`hide:${contentType}:${contentId}`);
+    const { error } = await supabase
+      .from('user_hidden_content')
+      .delete()
+      .eq('user_id', userId)
+      .eq('content_type', contentType)
+      .eq('content_id', contentId);
+
+    setSafetyBusyKey(null);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    setHiddenItems((current) => current.filter((item) => !(item.content_type === contentType && item.content_id === contentId)));
+    toast.success('Content restored to your feed.');
+  }
+
   const traditionLabel = TRADITIONS.find(t => t.value === (profile as any)?.tradition);
   const identityRows = [
     { label: 'Tradition',    value: traditionLabel ? `${traditionLabel.emoji} ${traditionLabel.label}` : null, emoji: null },
@@ -377,6 +446,95 @@ export default function ProfileClient({
           <p className="text-sm text-gray-700 leading-relaxed">{profile.bio}</p>
         </div>
       )}
+
+      <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-4">
+        <div>
+          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Safety & Visibility</p>
+          <p className="text-sm text-gray-600 mt-1">
+            Manage the people and posts you have hidden, muted, or blocked.
+          </p>
+        </div>
+
+        {blockedProfiles.length === 0 && mutedProfiles.length === 0 && hiddenItems.length === 0 ? (
+          <p className="text-sm text-gray-500">
+            Nothing is hidden right now. Safety actions from Mandali and Vichaar will appear here when you use them.
+          </p>
+        ) : (
+          <div className="space-y-4">
+            {blockedProfiles.length > 0 && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+                  <ShieldBan size={15} className="text-red-500" />
+                  Blocked people
+                </div>
+                {blockedProfiles.map((item) => {
+                  const busy = safetyBusyKey === `block:${item.id}`;
+                  return (
+                    <SafetyProfileRow
+                      key={`blocked-${item.id}`}
+                      profile={item}
+                      actionLabel={busy ? 'Updating…' : 'Unblock'}
+                      disabled={busy}
+                      onAction={() => unblockProfile(item.id)}
+                    />
+                  );
+                })}
+              </div>
+            )}
+
+            {mutedProfiles.length > 0 && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+                  <BellOff size={15} className="text-[#7B1A1A]" />
+                  Muted people
+                </div>
+                {mutedProfiles.map((item) => {
+                  const busy = safetyBusyKey === `mute:${item.id}`;
+                  return (
+                    <SafetyProfileRow
+                      key={`muted-${item.id}`}
+                      profile={item}
+                      actionLabel={busy ? 'Updating…' : 'Unmute'}
+                      disabled={busy}
+                      onAction={() => unmuteProfile(item.id)}
+                    />
+                  );
+                })}
+              </div>
+            )}
+
+            {hiddenItems.length > 0 && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+                  <EyeOff size={15} className="text-[#7B1A1A]" />
+                  Hidden content
+                </div>
+                {hiddenItems.map((item) => {
+                  const busy = safetyBusyKey === `hide:${item.content_type}:${item.content_id}`;
+                  return (
+                    <div key={`${item.content_type}:${item.content_id}`} className="rounded-2xl border border-gray-100 px-3 py-3 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-[#7B1A1A]/8 text-[#7B1A1A] flex items-center justify-center flex-shrink-0">
+                        <EyeOff size={16} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">{item.title}</p>
+                        <p className="text-xs text-gray-500">{item.subtitle}</p>
+                      </div>
+                      <button
+                        onClick={() => unhideContent(item.content_type, item.content_id)}
+                        disabled={busy}
+                        className="px-3 py-1.5 rounded-full border border-[#7B1A1A]/20 text-[#7B1A1A] text-xs font-semibold hover:bg-[#7B1A1A]/5 transition disabled:opacity-60"
+                      >
+                        {busy ? 'Updating…' : 'Unhide'}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* ── Edit Form ── */}
       {editing && (
@@ -532,6 +690,41 @@ function StatPill({ label, value, suffix }: { label: string; value: number; suff
     <div className="bg-white/15 rounded-xl px-3 py-2 text-center">
       <p className="font-bold text-lg text-white">{value}{suffix}</p>
       <p className="text-white/60 text-[10px]">{label}</p>
+    </div>
+  );
+}
+
+function SafetyProfileRow({
+  profile,
+  actionLabel,
+  disabled,
+  onAction,
+}: {
+  profile: SafetyProfileSummary;
+  actionLabel: string;
+  disabled: boolean;
+  onAction: () => void;
+}) {
+  const initials = getInitials(profile.full_name || profile.username || 'S');
+
+  return (
+    <div className="rounded-2xl border border-gray-100 px-3 py-3 flex items-center gap-3">
+      <div className="w-10 h-10 rounded-full bg-gradient-sacred text-white flex items-center justify-center text-xs font-bold overflow-hidden flex-shrink-0">
+        {profile.avatar_url
+          ? <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+          : initials}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-gray-900 truncate">{profile.full_name || profile.username}</p>
+        <p className="text-xs text-gray-500 truncate">{profile.username ? `@${profile.username}` : 'Sanatana Sangam member'}</p>
+      </div>
+      <button
+        onClick={onAction}
+        disabled={disabled}
+        className="px-3 py-1.5 rounded-full border border-[#7B1A1A]/20 text-[#7B1A1A] text-xs font-semibold hover:bg-[#7B1A1A]/5 transition disabled:opacity-60"
+      >
+        {actionLabel}
+      </button>
     </div>
   );
 }

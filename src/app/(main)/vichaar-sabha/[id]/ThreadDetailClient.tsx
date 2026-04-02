@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { ArrowLeft, CheckCircle, Send } from 'lucide-react';
+import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
 import { createClient } from '@/lib/supabase';
 import { formatRelativeTime, getInitials, FORUM_CATEGORIES, SPIRITUAL_LEVELS } from '@/lib/utils';
 import type { ThreadWithAuthor, ForumReply, Profile } from '@/types/database';
@@ -25,28 +26,47 @@ export default function ThreadDetailClient({
   const router   = useRouter();
   const supabase = createClient();
   const isGuest = !userId;
-  const [replies,    setReplies]   = useState(initialReplies);
-  const [replyBody,  setReplyBody] = useState('');
+  const [threadState] = useState(thread);
+  const [replies,     setReplies]   = useState(initialReplies);
+  const [replyBody,   setReplyBody] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const cat = FORUM_CATEGORIES.find((c) => c.value === thread.category);
-  const author = thread.profiles;
+  const cat = FORUM_CATEGORIES.find((c) => c.value === threadState.category);
+  const author = threadState.profiles;
 
   async function submitReply() {
     if (!replyBody.trim()) return;
     setSubmitting(true);
     const { data, error } = await supabase
       .from('forum_replies')
-      .insert({ thread_id: thread.id, author_id: userId, body: replyBody.trim() })
+      .insert({ thread_id: threadState.id, author_id: userId, body: replyBody.trim() })
       .select('*, profiles(full_name, username, avatar_url, sampradaya, spiritual_level)')
       .single();
     if (error) { toast.error(error.message); }
     else {
-      setReplies([...replies, data as ReplyWithAuthor]);
+      setReplies((current) => [...current, data as ReplyWithAuthor]);
       setReplyBody('');
       toast.success('Reply posted! 🙏');
     }
     setSubmitting(false);
+  }
+
+  function leaveThreadView() {
+    router.replace('/vichaar-sabha');
+    router.refresh();
+  }
+
+  function hideReply(replyId: string) {
+    setReplies((current) => current.filter((reply) => reply.id !== replyId));
+  }
+
+  function hideReplyAuthor(authorId: string) {
+    if (authorId === threadState.author_id) {
+      leaveThreadView();
+      return;
+    }
+
+    setReplies((current) => current.filter((reply) => reply.author_id !== authorId));
   }
 
   return (
@@ -65,19 +85,29 @@ export default function ThreadDetailClient({
           <span className="text-xs bg-orange-50 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full font-medium">
             {cat?.emoji} {cat?.label}
           </span>
-          {thread.is_answered && (
+          {threadState.is_answered && (
             <span className="text-xs bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
               <CheckCircle size={10} /> Answered
             </span>
           )}
         </div>
 
-        <h1 className="font-display font-bold text-xl text-gray-900">{thread.title}</h1>
-        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{thread.body}</p>
+        <div className="flex items-start justify-between gap-3">
+          <h1 className="font-display font-bold text-xl text-gray-900">{threadState.title}</h1>
+          <ContentSafetyMenu
+            userId={userId}
+            authorId={threadState.author_id}
+            contentId={threadState.id}
+            contentType="thread"
+            onHideContent={leaveThreadView}
+            onHideAuthor={leaveThreadView}
+          />
+        </div>
+        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{threadState.body}</p>
 
-        {thread.tags.length > 0 && (
+        {threadState.tags.length > 0 && (
           <div className="flex gap-1.5 flex-wrap">
-            {thread.tags.map((tag) => (
+            {threadState.tags.map((tag) => (
               <span key={tag} className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">#{tag}</span>
             ))}
           </div>
@@ -89,7 +119,7 @@ export default function ThreadDetailClient({
           </div>
           <span className="font-medium text-gray-700">{author?.full_name}</span>
           <span className="text-gray-300">·</span>
-          <span>{formatRelativeTime(thread.created_at)}</span>
+          <span>{formatRelativeTime(threadState.created_at)}</span>
         </div>
       </div>
 
@@ -100,7 +130,14 @@ export default function ThreadDetailClient({
         </h2>
 
         {replies.map((reply) => (
-          <ReplyCard key={reply.id} reply={reply} isOwn={reply.author_id === userId} />
+          <ReplyCard
+            key={reply.id}
+            reply={reply}
+            userId={userId}
+            isOwn={reply.author_id === userId}
+            onHideContent={hideReply}
+            onHideAuthor={hideReplyAuthor}
+          />
         ))}
       </div>
 
@@ -146,7 +183,19 @@ export default function ThreadDetailClient({
   );
 }
 
-function ReplyCard({ reply, isOwn }: { reply: ReplyWithAuthor; isOwn: boolean }) {
+function ReplyCard({
+  reply,
+  userId,
+  isOwn,
+  onHideContent,
+  onHideAuthor,
+}: {
+  reply: ReplyWithAuthor;
+  userId: string;
+  isOwn: boolean;
+  onHideContent: (replyId: string) => void;
+  onHideAuthor: (authorId: string) => void;
+}) {
   const author   = reply.profiles;
   const initials = getInitials(author?.full_name ?? 'S');
   const level    = SPIRITUAL_LEVELS.find((l) => l.value === author?.spiritual_level);
@@ -161,15 +210,25 @@ function ReplyCard({ reply, isOwn }: { reply: ReplyWithAuthor; isOwn: boolean })
         </div>
       )}
       <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-wrap">{reply.body}</p>
-      <div className="flex items-center gap-2 pt-1 text-xs text-gray-400">
-        <div className="w-6 h-6 rounded-full bg-gradient-sacred flex items-center justify-center text-white text-[10px] font-bold">
-          {initials}
+      <div className="flex items-start justify-between gap-3 pt-1 text-xs text-gray-400">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-6 h-6 rounded-full bg-gradient-sacred flex items-center justify-center text-white text-[10px] font-bold">
+            {initials}
+          </div>
+          <span className="font-medium text-gray-600 truncate">{author?.full_name}</span>
+          {level && <span className="text-orange-500">· {level.label}</span>}
+          <span className="text-gray-300">·</span>
+          <span>{formatRelativeTime(reply.created_at)}</span>
+          {isOwn && <span className="ml-1 bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full">You</span>}
         </div>
-        <span className="font-medium text-gray-600">{author?.full_name}</span>
-        {level && <span className="text-orange-500">· {level.label}</span>}
-        <span className="text-gray-300">·</span>
-        <span>{formatRelativeTime(reply.created_at)}</span>
-        {isOwn && <span className="ml-1 bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full">You</span>}
+        <ContentSafetyMenu
+          userId={userId}
+          authorId={reply.author_id}
+          contentId={reply.id}
+          contentType="reply"
+          onHideContent={onHideContent}
+          onHideAuthor={onHideAuthor}
+        />
       </div>
     </div>
   );

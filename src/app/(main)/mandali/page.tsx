@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { filterAuthoredItems, filterProfileRows, getUserSafetyState } from '@/lib/user-safety';
 import MandaliClient from './MandaliClient';
 
 // If the local Mandali has fewer than this many members, blend in Sangam-wide posts
@@ -20,6 +21,7 @@ export default async function MandaliPage() {
     .single();
 
   const mandaliId = profile?.mandali_id;
+  const safetyState = await getUserSafetyState(supabase, user.id);
 
   // Fetch mandali posts
   let posts: any[] = [];
@@ -30,7 +32,7 @@ export default async function MandaliPage() {
       .eq('mandali_id', mandaliId)
       .order('created_at', { ascending: false })
       .limit(30);
-    posts = data ?? [];
+    posts = filterAuthoredItems(data ?? [], 'mandali_post', safetyState);
   }
 
   // Fetch real mandali members
@@ -42,7 +44,7 @@ export default async function MandaliPage() {
       .eq('mandali_id', mandaliId)
       .order('seva_score', { ascending: false })
       .limit(50);
-    members = data ?? [];
+    members = filterProfileRows(data ?? [], safetyState);
   }
 
   // "Don't feel alone" — blend in posts from across the Sangam when local Mandali is small
@@ -54,7 +56,7 @@ export default async function MandaliPage() {
       .neq('mandali_id', mandaliId)   // other Mandalis only
       .order('created_at', { ascending: false })
       .limit(15);
-    blendedPosts = data ?? [];
+    blendedPosts = filterAuthoredItems(data ?? [], 'mandali_post', safetyState);
   }
 
   return (

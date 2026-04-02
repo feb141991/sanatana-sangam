@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
+import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
 import { formatRelativeTime, getInitials, ISHTA_DEVATAS } from '@/lib/utils';
 import { useLocation } from '@/lib/LocationContext';
 import type { Profile, PostWithAuthor } from '@/types/database';
@@ -577,23 +578,48 @@ function EventsTab({ posts }: { posts: PostWithAuthor[] }) {
 }
 
 // ─── Vichaar Tab (Posts Feed) ────────────────────────────────────
-function VichaarTab({ posts, userId, onToggleUpvote, upvoted, onCompose, showCompose, setShowCompose }: {
+function VichaarTab({ posts, userId, onToggleUpvote, upvoted, onCompose, showCompose, setShowCompose, onHideContent, onHideAuthor }: {
   posts: PostWithAuthor[];
   userId: string;
   onToggleUpvote: (id: string) => void;
   upvoted: Set<string>;
-  onCompose: () => void;
+  onCompose: (payload: {
+    postType: 'update' | 'event' | 'question' | 'announcement';
+    content: string;
+    eventDate: string;
+    eventLoc: string;
+  }) => Promise<boolean>;
   showCompose: boolean;
   setShowCompose: (v: boolean) => void;
+  onHideContent: (contentId: string) => void;
+  onHideAuthor: (authorId: string) => void;
 }) {
   const [postType,   setPostType]   = useState<'update' | 'event' | 'question' | 'announcement'>('update');
   const [content,    setContent]    = useState('');
   const [eventDate,  setEventDate]  = useState('');
   const [eventLoc,   setEventLoc]   = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const supabase = createClient();
 
   const nonEvents = posts.filter((p) => p.type !== 'event');
+
+  async function handleComposePost() {
+    setSubmitting(true);
+    const didPost = await onCompose({
+      postType,
+      content,
+      eventDate,
+      eventLoc,
+    });
+    setSubmitting(false);
+
+    if (didPost) {
+      setContent('');
+      setEventDate('');
+      setEventLoc('');
+      setPostType('update');
+      setShowCompose(false);
+    }
+  }
 
   return (
     <div className="space-y-3">
@@ -614,9 +640,9 @@ function VichaarTab({ posts, userId, onToggleUpvote, upvoted, onCompose, showCom
           content={content} setContent={setContent}
           eventDate={eventDate} setEventDate={setEventDate}
           eventLoc={eventLoc} setEventLoc={setEventLoc}
-          submitting={submitting} setSubmitting={setSubmitting}
+          submitting={submitting}
           onClose={() => setShowCompose(false)}
-          onPost={onCompose}
+          onPost={handleComposePost}
         />
       )}
 
@@ -629,13 +655,21 @@ function VichaarTab({ posts, userId, onToggleUpvote, upvoted, onCompose, showCom
       )}
 
       {nonEvents.map((post) => (
-        <PostCard key={post.id} post={post} userId={userId} upvoted={upvoted} onUpvote={onToggleUpvote} />
+        <PostCard
+          key={post.id}
+          post={post}
+          userId={userId}
+          upvoted={upvoted}
+          onUpvote={onToggleUpvote}
+          onHideContent={onHideContent}
+          onHideAuthor={onHideAuthor}
+        />
       ))}
     </div>
   );
 }
 
-function ComposePanel({ postType, setPostType, content, setContent, eventDate, setEventDate, eventLoc, setEventLoc, submitting, setSubmitting, onClose, onPost }: any) {
+function ComposePanel({ postType, setPostType, content, setContent, eventDate, setEventDate, eventLoc, setEventLoc, submitting, onClose, onPost }: any) {
   return (
     <div className="bg-white rounded-2xl border border-orange-100 p-4 shadow-card space-y-3 fade-in">
       <div className="flex gap-2 flex-wrap">
@@ -673,8 +707,13 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
   );
 }
 
-function PostCard({ post, userId, upvoted, onUpvote }: {
-  post: PostWithAuthor; userId: string; upvoted: Set<string>; onUpvote: (id: string) => void;
+function PostCard({ post, userId, upvoted, onUpvote, onHideContent, onHideAuthor }: {
+  post: PostWithAuthor;
+  userId: string;
+  upvoted: Set<string>;
+  onUpvote: (id: string) => void;
+  onHideContent: (contentId: string) => void;
+  onHideAuthor: (authorId: string) => void;
 }) {
   const author = post.profiles;
   const isUpvoted = upvoted.has(post.id);
@@ -692,7 +731,17 @@ function PostCard({ post, userId, upvoted, onUpvote }: {
             </span>
             <span className="text-gray-300">·</span>
             <span className="text-xs text-gray-400">{formatRelativeTime(post.created_at)}</span>
-            <span className="ml-auto">{typeIcon[post.type]}</span>
+            <div className="ml-auto flex items-center gap-1">
+              <span>{typeIcon[post.type]}</span>
+              <ContentSafetyMenu
+                userId={userId}
+                authorId={post.author_id}
+                contentId={post.id}
+                contentType="mandali_post"
+                onHideContent={onHideContent}
+                onHideAuthor={onHideAuthor}
+              />
+            </div>
           </div>
           <p className="text-sm text-gray-700 leading-relaxed">{post.content}</p>
           {post.event_date && (
@@ -722,14 +771,11 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
   const [activeTab,       setActiveTab]       = useState<'members' | 'events' | 'vichaar'>('members');
   const [posts,           setPosts]           = useState(initialPosts);
   const [widerPosts,      setWiderPosts]      = useState(blendedPosts);
+  const [visibleMembers,  setVisibleMembers]  = useState(members);
   const [showSearch,      setShowSearch]      = useState(false);
   const [showCompose,     setShowCompose]     = useState(false);
   const [showMandaliMenu, setShowMandaliMenu] = useState(false);
   const [leavingMandali,  setLeavingMandali]  = useState(false);
-  const [postType,    setPostType]    = useState<'update' | 'event' | 'question' | 'announcement'>('update');
-  const [content,     setContent]     = useState('');
-  const [eventDate,   setEventDate]   = useState('');
-  const [eventLoc,    setEventLoc]    = useState('');
   const [upvoted,     setUpvoted]     = useState<Set<string>>(new Set());
 
   if (!profile?.city || !profile?.mandali_id) {
@@ -739,26 +785,42 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
   const mandali    = profile?.mandalis;
   const eventCount = posts.filter((p) => p.type === 'event').length;
 
-  async function submitPost() {
-    if (!content.trim()) { toast.error('Write something first'); return; }
-    if (!profile?.mandali_id) { toast.error('You are not in a Mandali yet'); return; }
+  function hideContentFromView(contentId: string) {
+    setPosts((current) => current.filter((post) => post.id !== contentId));
+    setWiderPosts((current) => current.filter((post) => post.id !== contentId));
+  }
+
+  function hideAuthorFromView(authorId: string) {
+    setPosts((current) => current.filter((post) => post.author_id !== authorId));
+    setWiderPosts((current) => current.filter((post) => post.author_id !== authorId));
+    setVisibleMembers((current) => current.filter((member) => member.id !== authorId));
+  }
+
+  async function submitPost(payload: {
+    postType: 'update' | 'event' | 'question' | 'announcement';
+    content: string;
+    eventDate: string;
+    eventLoc: string;
+  }) {
+    if (!payload.content.trim()) { toast.error('Write something first'); return false; }
+    if (!profile?.mandali_id) { toast.error('You are not in a Mandali yet'); return false; }
     const { data, error } = await supabase
       .from('posts')
       .insert({
         author_id:      userId,
         mandali_id:     profile.mandali_id,
-        content:        content.trim(),
-        type:           postType,
-        event_date:     eventDate || null,
-        event_location: eventLoc  || null,
+        content:        payload.content.trim(),
+        type:           payload.postType,
+        event_date:     payload.eventDate || null,
+        event_location: payload.eventLoc  || null,
       })
       .select('*, profiles(full_name, username, avatar_url, sampradaya, spiritual_level)')
       .single();
-    if (error) { toast.error(error.message); return; }
-    setPosts([data as PostWithAuthor, ...posts]);
-    setContent(''); setEventDate(''); setEventLoc(''); setShowCompose(false);
+    if (error) { toast.error(error.message); return false; }
+    setPosts((current) => [data as PostWithAuthor, ...current]);
     toast.success('Posted! 🙏');
     router.refresh();
+    return true;
   }
 
   async function leaveMandali() {
@@ -788,7 +850,7 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
   }
 
   const tabs = [
-    { key: 'members', label: 'Members', count: members.length },
+    { key: 'members', label: 'Members', count: visibleMembers.length },
     { key: 'events',  label: 'Events',  count: eventCount },
     { key: 'vichaar', label: 'Vichaar', count: posts.filter(p => p.type !== 'event').length },
   ] as const;
@@ -821,7 +883,7 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
             </div>
           </div>
           <div className="text-right">
-            <div className="font-bold text-2xl">{members.length}</div>
+            <div className="font-bold text-2xl">{visibleMembers.length}</div>
             <div className="text-white/60 text-xs">members</div>
           </div>
         </div>
@@ -895,7 +957,7 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
 
       {/* ── Tab Content ── */}
       {activeTab === 'members' && (
-        <MembersTab members={members} userId={userId} />
+        <MembersTab members={visibleMembers} userId={userId} />
       )}
       {activeTab === 'events' && (
         <EventsTab posts={posts} />
@@ -910,6 +972,8 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
             onCompose={submitPost}
             showCompose={showCompose}
             setShowCompose={setShowCompose}
+            onHideContent={hideContentFromView}
+            onHideAuthor={hideAuthorFromView}
           />
           {/* "Don't feel alone" — blended Sangam posts when local Mandali is small */}
           {widerPosts.length > 0 && (
@@ -932,6 +996,8 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
                 onCompose={submitPost}
                 showCompose={false}
                 setShowCompose={() => {}}
+                onHideContent={hideContentFromView}
+                onHideAuthor={hideAuthorFromView}
               />
             </div>
           )}

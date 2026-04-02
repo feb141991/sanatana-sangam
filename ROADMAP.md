@@ -200,7 +200,7 @@ Current slice:
 
 ### A1.5 User-side safety basics
 
-Status: `Planned`
+Status: `In Build`
 
 Outcome:
 
@@ -216,6 +216,13 @@ Exit criteria:
 
 - reporting exists in user-facing product
 - users can control unwanted interactions
+
+Current slice:
+
+- Mandali and Vichaar now have user-facing report / block / mute / hide controls
+- hidden, muted, and blocked content is now filtered out of the main social surfaces
+- profile now includes a `Safety & Visibility` section for undoing those actions
+- this still needs live migration rollout and end-to-end product QA on the deployed app
 
 ## Phase A2 — Social Safety And Platform Hardening
 
