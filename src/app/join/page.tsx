@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import BrandMark from '@/components/BrandMark';
 
 export default async function JoinPage({
   searchParams,
@@ -14,7 +15,7 @@ export default async function JoinPage({
   return (
     <main className="min-h-screen px-4 py-12 flex items-center justify-center">
       <div className="w-full max-w-md glass-panel-strong rounded-[2rem] p-8 text-center">
-        <div className="text-5xl mb-4 om-pulse">🕉️</div>
+        <BrandMark size="lg" className="mx-auto mb-4" />
         <p className="text-xs uppercase tracking-[0.24em] text-[#7B1A1A]/70 mb-3">Invitation</p>
         <h1 className="font-display text-3xl font-bold text-gray-900 mb-3">
           Join Sanatana Sangam

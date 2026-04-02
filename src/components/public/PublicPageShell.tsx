@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import BrandMark from '@/components/BrandMark';
 
 type PublicPageShellProps = {
   eyebrow: string;
@@ -31,7 +32,7 @@ export default function PublicPageShell({
       <div className="max-w-6xl mx-auto space-y-6">
         <nav className="glass-panel-strong rounded-[1.85rem] px-4 py-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <Link href="/" className="flex items-center gap-2 text-gray-900">
-            <span className="text-2xl om-pulse">Om</span>
+            <BrandMark size="sm" />
             <span className="font-display font-bold text-lg">
               Sanatana <span className="text-gradient">Sangam</span>
             </span>

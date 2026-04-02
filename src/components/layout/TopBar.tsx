@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
+import BrandMark from '@/components/BrandMark';
 import {
   requestNotificationPermission,
   getPlayerId,
@@ -99,7 +100,9 @@ export default function TopBar({
 
         {/* Left — logo + page title */}
         <div className="flex items-center gap-2">
-          <Link href="/home" className="text-xl om-pulse">🕉️</Link>
+          <Link href="/home" className="inline-flex">
+            <BrandMark size="sm" />
+          </Link>
           <span className="font-display font-semibold text-white text-base">{title}</span>
         </div>
 

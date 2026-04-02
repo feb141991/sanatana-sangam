@@ -8,14 +8,23 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() ?? '';
+  const isConfigured = Boolean(supportEmail);
 
   return (
     <PublicPageShell
       eyebrow="Contact"
       title="Support should be easy to find."
-      intro="If you need help with your account, a safety issue, or a product question, this is where support information should live. Before public launch, the production support email should be configured here."
-      asideTitle="Configuration Needed"
-      asideBody="Set NEXT_PUBLIC_SUPPORT_EMAIL in the environment to publish the support address on this page before launch."
+      intro={
+        isConfigured
+          ? 'If you need help with your account, a safety issue, or a product question, you can reach the team through the support address on this page.'
+          : 'If you need help with your account, a safety issue, or a product question, this is where support information should live. Before public launch, the production support email should be configured here.'
+      }
+      asideTitle={isConfigured ? 'Support Is Live' : 'Configuration Needed'}
+      asideBody={
+        isConfigured
+          ? 'This page now exposes the public support route for account help, moderation concerns, and launch questions.'
+          : 'Set NEXT_PUBLIC_SUPPORT_EMAIL in the environment to publish the support address on this page before launch.'
+      }
     >
       <section>
         <h2 className="font-display text-2xl font-semibold text-gray-900 mb-2">General Support</h2>

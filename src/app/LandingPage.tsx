@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Users, MapPin, BookOpen, Heart, Star, ArrowRight, Globe, Flame } from 'lucide-react';
+import BrandMark from '@/components/BrandMark';
 
 const features = [
   {
@@ -66,7 +67,7 @@ export default function LandingPage() {
       <nav className="sticky top-0 z-50 px-4 pt-4">
         <div className="glass-panel-strong max-w-6xl mx-auto px-4 h-16 rounded-[1.85rem] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-2xl om-pulse">🕉️</span>
+            <BrandMark size="sm" />
             <span className="font-display font-bold text-lg text-gray-900">
               Sanatana <span className="text-gradient">Sangam</span>
             </span>
@@ -185,7 +186,7 @@ export default function LandingPage() {
 
       {/* ── CTA ── */}
       <section className="max-w-3xl mx-auto px-4 py-24 text-center">
-        <span className="text-5xl block mb-6 om-pulse">🕉️</span>
+        <BrandMark size="lg" className="mx-auto mb-6" />
         <h2 className="font-display text-4xl font-bold text-gray-900 mb-5">Your Mandali is waiting.</h2>
         <p className="text-gray-500 mb-8 text-lg">Join thousands of Sanatani who have already found their community.</p>
         <Link href="/signup"
@@ -199,7 +200,7 @@ export default function LandingPage() {
       <footer className="py-8 px-4">
         <div className="glass-panel max-w-6xl mx-auto px-4 py-5 rounded-[1.85rem] flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-400">
           <div className="flex items-center gap-2">
-            <span>🕉️</span>
+            <BrandMark size="sm" />
             <span>Sanatana Sangam — सनातन संगम</span>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-4">

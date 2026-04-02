@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { ArrowRight, ArrowLeft, Eye, EyeOff, MapPin, Loader2, Lock } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
+import BrandMark from '@/components/BrandMark';
 import { TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getSampradayaLabel, getIshtaDevataLabel } from '@/lib/utils';
 import { SPIRITUAL_LEVELS } from '@/lib/utils';
 import type { TraditionKey } from '@/lib/traditions';
@@ -109,6 +110,7 @@ export default function SignupPage() {
 
     setLoading(true);
     try {
+      const normalizedEmail = form.email.trim().toLowerCase();
       const normalizedUsername = form.username.toLowerCase().trim().replace(/\s+/g, '_');
       const profilePayload = {
         full_name:       form.full_name.trim(),
@@ -128,7 +130,7 @@ export default function SignupPage() {
       };
 
       const { data, error } = await supabase.auth.signUp({
-        email:    form.email,
+        email:    normalizedEmail,
         password: form.password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
@@ -153,8 +155,8 @@ export default function SignupPage() {
         router.push('/home');
         router.refresh();
       } else {
-        toast.success('Check your email to confirm your account 🙏');
-        router.push('/login?message=check_email');
+        toast.success('Check your inbox to continue. If this email already has an account, sign in, reset your password, or resend confirmation from the next screen.');
+        router.push(`/login?message=check_email&email=${encodeURIComponent(normalizedEmail)}`);
       }
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong');
@@ -171,7 +173,9 @@ export default function SignupPage() {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="text-3xl om-pulse inline-block">🕉️</Link>
+          <Link href="/" className="inline-flex">
+            <BrandMark />
+          </Link>
           <h1 className="font-display text-2xl font-bold text-gray-900 mt-2">Join Sanatana Sangam</h1>
           <p className="text-gray-500 text-sm mt-1">Your dharmic home awaits</p>
         </div>

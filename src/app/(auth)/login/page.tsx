@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
+import BrandMark from '@/components/BrandMark';
 
 function LoginForm() {
   const router       = useRouter();
@@ -17,22 +18,47 @@ function LoginForm() {
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [loading,  setLoading]  = useState(false);
+  const presetEmail = searchParams.get('email')?.trim().toLowerCase() ?? '';
+  const message = searchParams.get('message');
+  const errorCode = searchParams.get('error');
+  const emailHint = email.trim().toLowerCase() || presetEmail;
+
+  const forgotPasswordHref = emailHint
+    ? `/forgot-password?email=${encodeURIComponent(emailHint)}`
+    : '/forgot-password';
+  const confirmEmailHref = emailHint
+    ? `/confirm-email?email=${encodeURIComponent(emailHint)}`
+    : '/confirm-email';
 
   useEffect(() => {
-    const msg = searchParams.get('message');
-    const err = searchParams.get('error');
-    if (msg === 'check_email') {
-      toast('Check your email and click the confirmation link 📧', { icon: '🙏' });
+    if (presetEmail) {
+      setEmail((current) => current || presetEmail);
     }
-    if (err === 'email_verification_failed') {
+    if (message === 'check_email') {
+      toast('Check your inbox for the confirmation link. If this email already has an account, sign in, reset your password, or resend confirmation below.', { icon: '📧' });
+    }
+    if (message === 'password_reset_requested') {
+      toast.success('Password reset link sent. Check your email and open the secure link.');
+    }
+    if (message === 'password_reset_success') {
+      toast.success('Password updated successfully. You can sign in now.');
+    }
+    if (message === 'confirmation_resent') {
+      toast.success('Confirmation email resent. Check your inbox and spam folder.');
+    }
+    if (errorCode === 'email_verification_failed') {
       toast.error('Email verification failed — please try signing up again.');
     }
-  }, []);
+    if (errorCode === 'password_reset_failed') {
+      toast.error('Password reset link was invalid or expired. Request a fresh one.');
+    }
+  }, [errorCode, message, presetEmail]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const normalizedEmail = email.trim().toLowerCase();
+    const { error } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
     if (error) {
       toast.error(error.message);
     } else {
@@ -48,7 +74,9 @@ function LoginForm() {
       <div className="w-full max-w-sm">
 
         <div className="text-center mb-8">
-          <Link href="/" className="text-3xl om-pulse inline-block">🕉️</Link>
+          <Link href="/" className="inline-flex">
+            <BrandMark />
+          </Link>
           <h1 className="font-display text-2xl font-bold text-gray-900 mt-2">Welcome back</h1>
           <p className="text-gray-500 text-sm mt-1">Sign in to your Sangam</p>
         </div>
@@ -67,7 +95,12 @@ function LoginForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+            <div className="mb-1.5 flex items-center justify-between gap-3">
+              <label className="block text-sm font-medium text-gray-700">Password</label>
+              <Link href={forgotPasswordHref} className="text-xs font-medium text-orange-600 hover:underline">
+                Forgot password?
+              </Link>
+            </div>
             <div className="relative">
               <input
                 type={showPass ? 'text' : 'password'}
@@ -95,6 +128,16 @@ function LoginForm() {
             {loading ? 'Signing in...' : 'Sign In 🙏'}
           </button>
         </form>
+
+        <div className="glass-panel rounded-2xl px-4 py-3 mt-4 text-sm text-gray-600">
+          <p className="font-medium text-gray-800">Didn&apos;t get your confirmation email?</p>
+          <p className="mt-1 text-xs leading-5 text-gray-500">
+            If you already started signup, you can resend the confirmation link here.
+          </p>
+          <Link href={confirmEmailHref} className="mt-2 inline-flex text-xs font-semibold text-orange-600 hover:underline">
+            Resend confirmation email
+          </Link>
+        </div>
 
         <p className="text-center text-sm text-gray-500 mt-6">
           New to Sanatana Sangam?{' '}
@@ -128,7 +171,7 @@ export default function LoginPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">
-        <span className="text-3xl om-pulse">🕉️</span>
+        <BrandMark />
       </div>
     }>
       <LoginForm />

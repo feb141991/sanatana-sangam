@@ -1,10 +1,15 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 
+function getSafeNext(rawNext: string | null, fallback: string) {
+  if (!rawNext || !rawNext.startsWith('/')) return fallback;
+  return rawNext;
+}
+
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/home';
+  const next = getSafeNext(searchParams.get('next'), '/home');
 
   if (code) {
     const supabase = await createServerSupabaseClient();
@@ -14,6 +19,9 @@ export async function GET(request: Request) {
     }
   }
 
-  // If something went wrong, send to login with error
-  return NextResponse.redirect(`${origin}/login?error=email_verification_failed`);
+  const failureTarget = next === '/reset-password'
+    ? '/login?error=password_reset_failed'
+    : '/login?error=email_verification_failed';
+
+  return NextResponse.redirect(`${origin}${failureTarget}`);
 }
