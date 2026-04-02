@@ -60,11 +60,11 @@ const testimonials = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#fff8f0] to-white">
+    <div className="relative min-h-screen overflow-hidden">
 
       {/* ── NAV ── */}
-      <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-orange-100">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <nav className="sticky top-0 z-50 px-4 pt-4">
+        <div className="glass-panel-strong max-w-6xl mx-auto px-4 h-16 rounded-[1.85rem] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-2xl om-pulse">🕉️</span>
             <span className="font-display font-bold text-lg text-gray-900">
@@ -77,8 +77,7 @@ export default function LandingPage() {
               Sign in
             </Link>
             <Link href="/signup"
-              className="px-4 py-2 text-white text-sm font-semibold rounded-full hover:opacity-90 transition-opacity shadow-sm"
-              style={{ background: '#7B1A1A' }}>
+              className="glass-button-primary px-4 py-2 text-white text-sm font-semibold rounded-full hover:opacity-90 transition-opacity shadow-sm">
               Join Free
             </Link>
           </div>
@@ -87,7 +86,7 @@ export default function LandingPage() {
 
       {/* ── HERO ── */}
       <section className="max-w-4xl mx-auto px-4 pt-20 pb-16 text-center fade-in">
-        <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-200 text-orange-700 text-sm font-medium px-4 py-2 rounded-full mb-8">
+        <div className="glass-chip inline-flex items-center gap-2 text-orange-700 text-sm font-medium px-4 py-2 rounded-full mb-8">
           <Globe size={14} />
           <span>The Global Home for 1.2 Billion Sanatani</span>
         </div>
@@ -105,13 +104,12 @@ export default function LandingPage() {
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link href="/signup"
-            className="flex items-center gap-2 px-8 py-4 text-white font-semibold rounded-full hover:opacity-90 transition-opacity text-lg shadow-lg"
-            style={{ background: '#7B1A1A' }}>
+            className="glass-button-primary flex items-center gap-2 px-8 py-4 text-white font-semibold rounded-full hover:opacity-90 transition-opacity text-lg shadow-lg">
             Join Your Mandali
             <ArrowRight size={18} />
           </Link>
           <Link href="/login"
-            className="flex items-center gap-2 px-8 py-4 bg-white text-gray-700 font-semibold rounded-full border border-gray-200 hover:border-orange-300 transition-colors text-lg">
+            className="glass-button-secondary flex items-center gap-2 px-8 py-4 text-gray-700 font-semibold rounded-full transition-colors text-lg">
             Sign In
           </Link>
         </div>
@@ -125,7 +123,7 @@ export default function LandingPage() {
       <section className="max-w-4xl mx-auto px-4 pb-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {stats.map((stat) => (
-            <div key={stat.label} className="bg-white rounded-2xl p-5 text-center border border-orange-100 shadow-card">
+            <div key={stat.label} className="glass-panel rounded-2xl p-5 text-center shadow-card">
               <div className="font-display text-3xl font-bold text-gradient mb-1">{stat.value}</div>
               <div className="text-sm text-gray-500">{stat.label}</div>
             </div>
@@ -145,7 +143,7 @@ export default function LandingPage() {
         </div>
         <div className="grid md:grid-cols-2 gap-6">
           {features.map((f) => (
-            <div key={f.title} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-card card-hover">
+            <div key={f.title} className="glass-panel rounded-2xl p-6 shadow-card card-hover">
               <div className={`inline-flex p-3 rounded-xl mb-4 ${f.color}`}>
                 <f.icon size={22} />
               </div>
@@ -157,7 +155,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── TESTIMONIALS ── */}
-      <section className="bg-[#fdf6e3] py-20">
+      <section className="py-20">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="font-display text-3xl font-bold text-gray-900 mb-3">From the community</h2>
@@ -165,7 +163,7 @@ export default function LandingPage() {
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((t) => (
-              <div key={t.name} className="bg-white rounded-2xl p-6 shadow-card border border-orange-100">
+              <div key={t.name} className="glass-panel rounded-2xl p-6 shadow-card">
                 <div className="flex items-center gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} size={14} className="fill-amber-400 text-amber-400" />
@@ -191,16 +189,15 @@ export default function LandingPage() {
         <h2 className="font-display text-4xl font-bold text-gray-900 mb-5">Your Mandali is waiting.</h2>
         <p className="text-gray-500 mb-8 text-lg">Join thousands of Sanatani who have already found their community.</p>
         <Link href="/signup"
-          className="inline-flex items-center gap-2 px-10 py-4 text-white font-semibold rounded-full hover:opacity-90 transition-opacity text-lg shadow-lg"
-          style={{ background: '#7B1A1A' }}>
+          className="glass-button-primary inline-flex items-center gap-2 px-10 py-4 text-white font-semibold rounded-full hover:opacity-90 transition-opacity text-lg shadow-lg">
           <Heart size={18} />
           Begin Your Journey
         </Link>
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="border-t border-orange-100 py-8">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-400">
+      <footer className="py-8 px-4">
+        <div className="glass-panel max-w-6xl mx-auto px-4 py-5 rounded-[1.85rem] flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-400">
           <div className="flex items-center gap-2">
             <span>🕉️</span>
             <span>Sanatana Sangam — सनातन संगम</span>

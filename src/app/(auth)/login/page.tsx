@@ -44,7 +44,7 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#fff8f0] via-white to-[#fdf6e3] flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
 
         <div className="text-center mb-8">
@@ -53,7 +53,7 @@ function LoginForm() {
           <p className="text-gray-500 text-sm mt-1">Sign in to your Sangam</p>
         </div>
 
-        <form onSubmit={handleLogin} className="bg-white rounded-2xl shadow-card border border-orange-50 p-6 space-y-4">
+        <form onSubmit={handleLogin} className="glass-panel-strong rounded-[2rem] shadow-card p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
             <input
@@ -62,7 +62,7 @@ function LoginForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm"
+              className="glass-input w-full px-4 py-3 rounded-xl focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm"
             />
           </div>
 
@@ -75,7 +75,7 @@ function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm"
+                className="glass-input w-full px-4 py-3 pr-12 rounded-xl focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm"
               />
               <button
                 type="button"
@@ -90,7 +90,7 @@ function LoginForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-gradient-sacred text-white font-semibold rounded-xl hover:opacity-90 transition disabled:opacity-60"
+            className="glass-button-primary w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 transition disabled:opacity-60"
           >
             {loading ? 'Signing in...' : 'Sign In 🙏'}
           </button>
@@ -112,7 +112,7 @@ function LoginForm() {
           </div>
           <Link
             href="/vichaar-sabha"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gray-200 text-sm text-gray-500 hover:border-orange-300 hover:text-orange-600 transition bg-white"
+            className="glass-button-secondary inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm text-gray-500 hover:text-orange-600 transition"
           >
             <span>👁️</span>
             <span>Continue as Guest</span>
@@ -127,7 +127,7 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-[#fff8f0] via-white to-[#fdf6e3] flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <span className="text-3xl om-pulse">🕉️</span>
       </div>
     }>

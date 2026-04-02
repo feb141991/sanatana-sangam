@@ -94,8 +94,8 @@ export default function TopBar({
   }
 
   return (
-    <header className="sticky top-0 z-40" style={{ background: '#7B1A1A' }}>
-      <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+    <header className="sticky top-0 z-40 px-3 pt-3">
+      <div className="glass-nav max-w-2xl mx-auto px-4 h-14 rounded-[1.65rem] flex items-center justify-between">
 
         {/* Left — logo + page title */}
         <div className="flex items-center gap-2">
@@ -109,7 +109,7 @@ export default function TopBar({
           {isGuest ? (
             <Link
               href="/signup"
-              className="px-4 py-1.5 bg-white text-[#7B1A1A] text-sm font-semibold rounded-full hover:opacity-90 transition"
+              className="glass-button-secondary px-4 py-1.5 text-[#7B1A1A] text-sm font-semibold rounded-full hover:opacity-90 transition"
             >
               Join Free
             </Link>
@@ -120,7 +120,7 @@ export default function TopBar({
                 <button
                   onClick={handleBellClick}
                   aria-label="Notifications"
-                  className="w-9 h-9 rounded-full hover:bg-white/20 transition flex items-center justify-center relative"
+                  className="w-9 h-9 rounded-full hover:bg-white/12 transition flex items-center justify-center relative"
                 >
                   <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" stroke="white"/>
@@ -134,7 +134,7 @@ export default function TopBar({
                 </button>
 
                 {open && (
-                  <div className="absolute right-0 top-11 w-80 bg-white rounded-2xl shadow-xl border border-orange-100 overflow-hidden z-50">
+                  <div className="glass-panel-strong absolute right-0 top-11 w-80 rounded-3xl overflow-hidden z-50">
 
                     {/* Header */}
                     <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
@@ -148,7 +148,7 @@ export default function TopBar({
 
                     {/* Permission prompt — shown when not yet granted */}
                     {permission !== 'granted' && (
-                      <div className="mx-3 mt-3 px-3 py-2.5 rounded-xl border border-orange-200 bg-orange-50 flex items-start gap-2.5">
+                      <div className="glass-panel mx-3 mt-3 px-3 py-2.5 rounded-xl flex items-start gap-2.5">
                         <span className="text-lg mt-0.5">🔔</span>
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-semibold text-gray-800">
@@ -174,8 +174,7 @@ export default function TopBar({
                                   }
                                 }
                               }}
-                              className="mt-1.5 text-xs font-semibold px-3 py-1 rounded-full text-white transition"
-                              style={{ background: '#7B1A1A' }}
+                              className="glass-button-primary mt-1.5 text-xs font-semibold px-3 py-1 rounded-full text-white transition"
                             >
                               Enable
                             </button>
@@ -197,7 +196,7 @@ export default function TopBar({
                           <div
                             key={n.id}
                             className={`px-4 py-3 flex items-start gap-3 transition cursor-pointer ${
-                              !n.read ? 'bg-orange-50/40 hover:bg-orange-50' : 'hover:bg-gray-50'
+                              !n.read ? 'bg-orange-50/20 hover:bg-orange-50/30' : 'hover:bg-white/40'
                             }`}
                             onClick={() => {
                               if (!n.read) {
@@ -231,7 +230,7 @@ export default function TopBar({
               {/* Avatar */}
               <Link
                 href="/profile"
-                className="w-8 h-8 rounded-full bg-white/20 border border-white/40 flex items-center justify-center text-white text-xs font-bold"
+                className="w-8 h-8 rounded-full bg-white/12 border border-white/30 flex items-center justify-center text-white text-xs font-bold"
               >
                 🙏
               </Link>

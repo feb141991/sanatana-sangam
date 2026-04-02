@@ -22,7 +22,7 @@ export default async function AdminPage() {
   const [usersRes, reportsRes, postsRes, kulRes, mandaliRes] = await Promise.all([
     supabase
       .from('profiles')
-      .select('id, full_name, username, email, tradition, city, country, shloka_streak, seva_score, is_admin, created_at')
+      .select('id, full_name, username, tradition, city, country, shloka_streak, seva_score, is_admin, created_at')
       .order('created_at', { ascending: false }),
     supabase
       .from('content_reports')

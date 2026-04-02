@@ -109,7 +109,7 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
         </div>
 
         <p className="text-sm text-gray-500 leading-relaxed">
-          Share Sanatana Sangam with your family and friends. When they join with your code, they'll be connected to you.
+          Share Sanatana Sangam with your family and friends. They can use your invite code while joining.
         </p>
 
         {/* Invite code display */}

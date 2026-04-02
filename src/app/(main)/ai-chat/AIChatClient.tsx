@@ -18,17 +18,49 @@ interface Props {
   tradition: string | null;
 }
 
-// ─── Suggested questions ──────────────────────────────────────────────────────
-const SUGGESTIONS = [
-  'What is the meaning of Om?',
-  'How do I start a daily sadhana practice?',
-  'What does the Gita say about anxiety?',
-  'How to balance work and spiritual life?',
-  'What is the difference between karma and destiny?',
-  'Explain the concept of dharma simply',
-  'How do I deal with grief from a dharmic perspective?',
-  'What are the four Purusharthas?',
-];
+// ─── Tradition-aware suggestions ──────────────────────────────────────────────
+const SUGGESTIONS_BY_TRADITION: Record<string, string[]> = {
+  hindu: [
+    'What does the Gita say about anxiety?',
+    'How do I start a daily sadhana practice?',
+    'What is the meaning of Om?',
+    'Explain the concept of dharma simply',
+    'What is the difference between karma and destiny?',
+    'How to balance work and spiritual life?',
+    'How do I deal with grief from a dharmic perspective?',
+    'What are the four Purusharthas?',
+  ],
+  sikh: [
+    'What is the meaning of Ik Onkar?',
+    'How do I start a daily Nitnem practice?',
+    'What does Gurbani say about dealing with hardship?',
+    'Explain Seva and its importance in Sikhi',
+    'What is the significance of the Ardas?',
+    'How to find peace through Naam Simran?',
+    'What are the five Kakars and why do they matter?',
+    'How does the Guru Granth Sahib guide daily life?',
+  ],
+  buddhist: [
+    'What is the Noble Eightfold Path?',
+    'How do I start a daily meditation practice?',
+    'What does the Dhammapada say about the mind?',
+    'Explain the concept of impermanence simply',
+    'What is the difference between compassion and attachment?',
+    'How to deal with suffering from a Buddhist perspective?',
+    'What are the Three Jewels (Tisarana)?',
+    'How do I cultivate Metta (loving-kindness)?',
+  ],
+  jain: [
+    'What is the meaning of Ahimsa in daily life?',
+    'How do I start a daily Pratikraman practice?',
+    'What does the Namokar Mantra mean?',
+    'Explain Anekantavada — the Jain view of truth',
+    'What is Aparigraha and how to practice it today?',
+    'How to deal with anger through Jain teachings?',
+    'What are the Five Major Vows (Mahavrata)?',
+    'How does Jainism view karma differently from Hinduism?',
+  ],
+};
 
 // ─── Message Bubble ───────────────────────────────────────────────────────────
 function MessageBubble({ msg }: { msg: Message }) {
@@ -46,8 +78,8 @@ function MessageBubble({ msg }: { msg: Message }) {
       <div className={`max-w-[80%] ${isUser ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
         <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
           isUser
-            ? 'bg-[#7B1A1A] text-white rounded-tr-sm'
-            : 'bg-white text-gray-800 rounded-tl-sm border border-orange-100 shadow-sm'
+            ? 'glass-button-primary text-white rounded-tr-sm'
+            : 'glass-panel text-gray-800 rounded-tl-sm'
         }`}>
           {msg.text}
         </div>
@@ -66,7 +98,7 @@ function TypingIndicator() {
       <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-sm bg-gradient-to-br from-amber-400 to-orange-500 text-white">
         ✨
       </div>
-      <div className="bg-white border border-orange-100 shadow-sm rounded-2xl rounded-tl-sm px-4 py-3">
+      <div className="glass-panel rounded-2xl rounded-tl-sm px-4 py-3">
         <div className="flex gap-1 items-center h-5">
           <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce" style={{ animationDelay: '0ms' }} />
           <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -85,6 +117,16 @@ export default function AIChatClient({ userId, userName, tradition }: Props) {
   const [showSuggestions, setShowSuggestions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef       = useRef<HTMLTextAreaElement>(null);
+
+  // Tradition-aware content
+  const suggestions = SUGGESTIONS_BY_TRADITION[tradition ?? 'hindu'] ?? SUGGESTIONS_BY_TRADITION.hindu;
+  const greetingMap: Record<string, string> = {
+    hindu:    'Hari Om 🕉️',
+    sikh:     'Sat Sri Akal ☬',
+    buddhist: 'Namo Buddhaya ☸️',
+    jain:     'Jai Jinendra 🤲',
+  };
+  const greeting = greetingMap[tradition ?? 'hindu'] ?? 'Namaste 🙏';
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -113,7 +155,7 @@ export default function AIChatClient({ userId, userName, tradition }: Props) {
       const res = await fetch('/api/ai/chat', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ message: msgText, history }),
+        body:    JSON.stringify({ message: msgText, history, tradition }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -149,7 +191,7 @@ export default function AIChatClient({ userId, userName, tradition }: Props) {
     <div className="flex flex-col h-[calc(100vh-8.5rem)] fade-in">
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="glass-panel rounded-[1.75rem] px-4 py-3 flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl"
             style={{ background: 'linear-gradient(135deg, #ff770220, #d4a01720)' }}>
@@ -162,7 +204,7 @@ export default function AIChatClient({ userId, userName, tradition }: Props) {
         </div>
         {!isEmpty && (
           <button onClick={clearChat}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs text-gray-500 hover:text-[#7B1A1A] border border-gray-200 hover:border-orange-200 transition bg-white">
+            className="glass-button-secondary flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs text-gray-500 hover:text-[#7B1A1A] transition">
             <RotateCcw size={12} />
             New chat
           </button>
@@ -180,7 +222,7 @@ export default function AIChatClient({ userId, userName, tradition }: Props) {
                 🙏
               </div>
               <h2 className="font-display font-bold text-xl text-gray-900">
-                Namaste, {userName}
+                {greeting}, {userName}
               </h2>
               <p className="text-sm text-gray-500 max-w-xs">
                 Ask me anything — life questions, spiritual wisdom, dharmic perspectives, or just a thoughtful conversation.
@@ -192,9 +234,9 @@ export default function AIChatClient({ userId, userName, tradition }: Props) {
               <div className="w-full max-w-sm space-y-2">
                 <p className="text-xs text-gray-400 font-medium">Try asking…</p>
                 <div className="flex flex-col gap-2">
-                  {SUGGESTIONS.slice(0, 4).map(s => (
+                  {suggestions.slice(0, 4).map(s => (
                     <button key={s} onClick={() => sendMessage(s)}
-                      className="text-left px-4 py-2.5 rounded-xl bg-white border border-orange-100 text-sm text-gray-700 hover:border-orange-300 hover:text-[#7B1A1A] transition shadow-sm">
+                      className="glass-panel text-left px-4 py-2.5 rounded-xl text-sm text-gray-700 hover:text-[#7B1A1A] transition shadow-sm">
                       {s}
                     </button>
                   ))}
@@ -210,13 +252,13 @@ export default function AIChatClient({ userId, userName, tradition }: Props) {
       </div>
 
       {/* ── Input area ─────────────────────────────────────────────────────── */}
-      <div className="pt-3 border-t border-orange-100/60 mt-2">
+      <div className="glass-panel rounded-[1.75rem] px-3 py-3 mt-2">
         {/* Quick suggestion chips (after conversation starts) */}
         {!isEmpty && !loading && (
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {SUGGESTIONS.slice(4).map(s => (
+            {suggestions.slice(4).map(s => (
               <button key={s} onClick={() => sendMessage(s)}
-                className="flex-shrink-0 px-3 py-1.5 rounded-full bg-white border border-orange-100 text-xs text-gray-600 hover:border-orange-300 hover:text-[#7B1A1A] transition whitespace-nowrap">
+                className="glass-chip flex-shrink-0 px-3 py-1.5 rounded-full text-xs text-gray-600 hover:text-[#7B1A1A] transition whitespace-nowrap">
                 {s}
               </button>
             ))}
@@ -224,7 +266,7 @@ export default function AIChatClient({ userId, userName, tradition }: Props) {
         )}
 
         <div className="flex items-end gap-2">
-          <div className="flex-1 bg-white rounded-2xl border border-gray-200 focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100 transition overflow-hidden">
+          <div className="glass-input flex-1 rounded-2xl focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100 transition overflow-hidden">
             <textarea
               ref={inputRef}
               value={input}
@@ -245,8 +287,8 @@ export default function AIChatClient({ userId, userName, tradition }: Props) {
           <button
             onClick={() => sendMessage()}
             disabled={!input.trim() || loading}
-            className="w-11 h-11 rounded-2xl flex items-center justify-center text-white transition disabled:opacity-40"
-            style={{ background: '#7B1A1A', flexShrink: 0 }}>
+            className="glass-button-primary w-11 h-11 rounded-2xl flex items-center justify-center text-white transition disabled:opacity-40"
+            style={{ flexShrink: 0 }}>
             <Send size={16} />
           </button>
         </div>

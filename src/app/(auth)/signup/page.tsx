@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
@@ -21,6 +21,7 @@ export default function SignupPage() {
   const [loading,    setLoading]    = useState(false);
   const [showPass,   setShowPass]   = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
+  const [inviteCode, setInviteCode] = useState('');
 
   const [form, setForm] = useState({
     email:          '',
@@ -46,6 +47,11 @@ export default function SignupPage() {
   const devataOptions     = ISHTA_DEVATAS_BY_TRADITION[activeTradition] ?? ISHTA_DEVATAS_BY_TRADITION['hindu'];
   const sampradayaLabel   = getSampradayaLabel(form.tradition);
   const devataLabel       = getIshtaDevataLabel(form.tradition);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setInviteCode(params.get('ref')?.trim().toUpperCase() ?? '');
+  }, []);
 
   // ── Detect location via browser geolocation + Nominatim reverse geocode ──
   async function detectLocation() {
@@ -97,42 +103,49 @@ export default function SignupPage() {
   async function handleSubmit() {
     setLoading(true);
     try {
+      const normalizedUsername = form.username.toLowerCase().trim().replace(/\s+/g, '_');
+      const profilePayload = {
+        full_name:       form.full_name.trim(),
+        username:        normalizedUsername,
+        tradition:       form.tradition || null,
+        neighbourhood:   form.neighbourhood.trim() || null,
+        city:            form.city.trim() || null,
+        country:         form.country.trim() || null,
+        latitude:        form.latitude,
+        longitude:       form.longitude,
+        sampradaya:      form.sampradaya || null,
+        ishta_devata:    form.ishta_devata || null,
+        spiritual_level: form.spiritual_level,
+        seeking:         form.seeking,
+        kul:             form.kul.trim() || null,
+        gotra:           form.gotra.trim() || null,
+      };
+
       const { data, error } = await supabase.auth.signUp({
         email:    form.email,
         password: form.password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
-          data: { full_name: form.full_name, username: form.username.toLowerCase().replace(/\s+/g, '_') },
+          data: {
+            ...profilePayload,
+            referred_by_code: inviteCode || null,
+          },
         },
       });
       if (error) throw error;
       if (!data.user) throw new Error('Signup failed — please try again.');
 
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          full_name:       form.full_name,
-          username:        form.username.toLowerCase().replace(/\s+/g, '_'),
-          tradition:       form.tradition  || null,
-          neighbourhood:   form.neighbourhood || null,
-          city:            form.city          || null,
-          country:         form.country       || null,
-          latitude:        form.latitude,
-          longitude:       form.longitude,
-          sampradaya:      form.sampradaya    || null,
-          ishta_devata:    form.ishta_devata  || null,
-          spiritual_level: form.spiritual_level,
-          seeking:         form.seeking,
-          kul:             form.kul   || null,
-          gotra:           form.gotra || null,
-        })
-        .eq('id', data.user.id);
-
-      if (profileError) console.warn('Profile update:', profileError.message);
-
       if (data.session) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update(profilePayload)
+          .eq('id', data.user.id);
+
+        if (profileError) throw profileError;
+
         toast.success('Welcome to Sanatana Sangam! 🙏');
         router.push('/home');
+        router.refresh();
       } else {
         toast.success('Check your email to confirm your account 🙏');
         router.push('/login?message=check_email');
@@ -147,7 +160,7 @@ export default function SignupPage() {
   const progress = ((step - 1) / 2) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#fff8f0] via-white to-[#fdf6e3] flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md">
 
         {/* Header */}
@@ -157,6 +170,12 @@ export default function SignupPage() {
           <p className="text-gray-500 text-sm mt-1">Your dharmic home awaits</p>
         </div>
 
+        {inviteCode && (
+          <div className="glass-panel mb-5 rounded-2xl px-4 py-3 text-sm text-orange-900">
+            Joining with invite code <span className="font-semibold">{inviteCode}</span>
+          </div>
+        )}
+
         {/* Progress */}
         <div className="mb-6">
           <div className="flex justify-between text-xs text-gray-400 mb-2">
@@ -164,13 +183,13 @@ export default function SignupPage() {
             <span className={step >= 2 ? 'text-orange-600 font-medium' : ''}>Identity</span>
             <span className={step >= 3 ? 'text-orange-600 font-medium' : ''}>Seeking</span>
           </div>
-          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div className="glass-panel h-1.5 rounded-full overflow-hidden">
             <div className="h-full bg-gradient-sacred rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }} />
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-card border border-orange-50 p-6">
+        <div className="glass-panel-strong rounded-[2rem] shadow-card p-6">
 
           {/* ── STEP 1: Account ─────────────────────────────────────────────── */}
           {step === 1 && (
@@ -181,7 +200,7 @@ export default function SignupPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
                 <input type="text" placeholder="Arjun Sharma" value={form.full_name}
                   onChange={e => setForm({ ...form, full_name: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm" />
+                  className="glass-input w-full px-4 py-3 rounded-xl focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm" />
               </div>
 
               <div>
@@ -190,7 +209,7 @@ export default function SignupPage() {
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">@</span>
                   <input type="text" placeholder="arjun_sharma" value={form.username}
                     onChange={e => setForm({ ...form, username: e.target.value })}
-                    className="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm" />
+                    className="glass-input w-full pl-8 pr-4 py-3 rounded-xl focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm" />
                 </div>
               </div>
 
@@ -198,7 +217,7 @@ export default function SignupPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
                 <input type="email" placeholder="arjun@email.com" value={form.email}
                   onChange={e => setForm({ ...form, email: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm" />
+                  className="glass-input w-full px-4 py-3 rounded-xl focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm" />
               </div>
 
               <div>
@@ -206,7 +225,7 @@ export default function SignupPage() {
                 <div className="relative">
                   <input type={showPass ? 'text' : 'password'} placeholder="Min. 8 characters" value={form.password}
                     onChange={e => setForm({ ...form, password: e.target.value })}
-                    className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm" />
+                    className="glass-input w-full px-4 py-3 pr-12 rounded-xl focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm" />
                   <button type="button" onClick={() => setShowPass(!showPass)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                     {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -220,7 +239,7 @@ export default function SignupPage() {
                 }
                 if (form.password.length < 8) { toast.error('Password must be at least 8 characters'); return; }
                 setStep(2);
-              }} className="w-full py-3 bg-gradient-sacred text-white font-semibold rounded-xl hover:opacity-90 transition flex items-center justify-center gap-2">
+              }} className="glass-button-primary w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 transition flex items-center justify-center gap-2">
                 Continue <ArrowRight size={16} />
               </button>
             </div>
