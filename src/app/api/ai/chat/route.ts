@@ -4,15 +4,16 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 // ─── General AI Chat Route ────────────────────────────────────────────────────
 // POST /api/ai/chat
 // Body: { message: string; tradition?: string | null; history: { role: 'user' | 'model'; text: string }[] }
-// Uses Google Gemini Flash — fast, free-tier available, multilingual.
+// Uses Gemini Flash-Lite / Flash with model fallback for better reliability.
 
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`;
+const GEMINI_API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 const MAX_MESSAGE_LENGTH = 1500;
 const MAX_HISTORY_ITEMS = 12;
 const MAX_HISTORY_MESSAGE_LENGTH = 1200;
 const MAX_HISTORY_TOTAL_CHARS = 8000;
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX_REQUESTS = 8;
+const DEFAULT_GEMINI_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash'] as const;
 
 type ChatHistoryEntry = {
   role: 'user' | 'model';
@@ -81,6 +82,44 @@ function parseHistory(value: unknown): ChatHistoryEntry[] | null {
   }
 
   return parsed;
+}
+
+function getGeminiModels() {
+  const configuredModels = process.env.GEMINI_MODELS
+    ?.split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  if (configuredModels && configuredModels.length > 0) {
+    return configuredModels;
+  }
+
+  return [...DEFAULT_GEMINI_MODELS];
+}
+
+async function callGeminiModel(model: string, apiKey: string, requestBody: unknown) {
+  const response = await fetch(
+    `${GEMINI_API_BASE_URL}/${encodeURIComponent(model)}:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody),
+      signal: AbortSignal.timeout(20_000),
+    }
+  );
+
+  if (!response.ok) {
+    return {
+      ok: false as const,
+      status: response.status,
+      errorText: await response.text(),
+    };
+  }
+
+  return {
+    ok: true as const,
+    data: await response.json(),
+  };
 }
 
 // ─── Tradition-aware system instructions ──────────────────────────────────────
@@ -201,6 +240,7 @@ export async function POST(req: NextRequest) {
   }
 
   const tradition = typeof body.tradition === 'string' ? body.tradition : null;
+  const geminiModels = getGeminiModels();
 
   // Build Gemini contents array from history + new message
   const contents = [
@@ -234,34 +274,45 @@ export async function POST(req: NextRequest) {
   };
 
   try {
-    const res = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(requestBody),
-      signal:  AbortSignal.timeout(20_000),
-    });
+    let lastError: { model: string; status: number; errorText: string } | null = null;
 
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error('Gemini API error:', res.status, errText);
-      let hint = '';
-      if (res.status === 400) hint = 'Bad request format.';
-      if (res.status === 403) hint = 'Invalid API key — check GEMINI_API_KEY in Vercel env vars.';
-      if (res.status === 404) hint = 'Model not found — check model name.';
-      if (res.status === 429) hint = 'Rate limit hit — try again in a moment.';
-      return NextResponse.json(
-        { error: `AI error (${res.status})${hint ? ': ' + hint : ''}` },
-        { status: 502 }
-      );
+    for (const model of geminiModels) {
+      const result = await callGeminiModel(model, apiKey, requestBody);
+
+      if (result.ok) {
+        const text = result.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!text) {
+          return NextResponse.json({ error: 'No response from AI. Please try again.' }, { status: 502 });
+        }
+
+        return NextResponse.json({ reply: text, model });
+      }
+
+      console.error('Gemini API error:', model, result.status, result.errorText);
+      lastError = { model, status: result.status, errorText: result.errorText };
+
+      if (result.status === 400 || result.status === 403) {
+        break;
+      }
     }
 
-    const data = await res.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) {
-      return NextResponse.json({ error: 'No response from AI. Please try again.' }, { status: 502 });
+    if (!lastError) {
+      return NextResponse.json({ error: 'AI service is unavailable right now.' }, { status: 502 });
     }
 
-    return NextResponse.json({ reply: text });
+    let hint = '';
+    if (lastError.status === 400) hint = 'Bad request format.';
+    if (lastError.status === 403) hint = 'Invalid API key or project permissions — check GEMINI_API_KEY in Vercel env vars.';
+    if (lastError.status === 404) hint = 'Configured model is unavailable. Update GEMINI_MODELS.';
+    if (lastError.status === 429) hint = 'Current model quota is exhausted. Add billing or use a model with available quota.';
+
+    return NextResponse.json(
+      {
+        error: `AI error (${lastError.status})${hint ? ': ' + hint : ''}`,
+        model: lastError.model,
+      },
+      { status: 502 }
+    );
   } catch (err) {
     console.error('AI chat error:', err);
     return NextResponse.json({ error: 'Network error. Please try again.' }, { status: 502 });

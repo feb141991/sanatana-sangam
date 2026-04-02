@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { sendOneSignalPush } from '@/lib/onesignal-server';
 
 // ─── Shloka Streak Reminder Cron ─────────────────────────────────────────────
 // Schedule: 0 13 * * * (1 PM UTC = ~6:30 PM IST — evening nudge)
@@ -52,8 +53,19 @@ export async function GET(request: Request) {
     totalInserted += batch.length;
   }
 
+  const pushResult = await sendOneSignalPush({
+    userIds: users.map((user) => user.id),
+    title: 'Aaj Ka Shloka awaits',
+    body: 'Take a quiet moment for today\'s sacred text and keep your practice flowing.',
+    url: '/home',
+    data: {
+      type: 'streak',
+    },
+  });
+
   return NextResponse.json({
     message:  'Shloka reminders sent',
     reminded: totalInserted,
+    push_targets: pushResult.sent,
   });
 }

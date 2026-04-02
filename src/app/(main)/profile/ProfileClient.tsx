@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase';
 import { getInitials, ISHTA_DEVATAS, SAMPRADAYAS, SPIRITUAL_LEVELS, TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getIshtaDevataLabel, getSampradayaLabel } from '@/lib/utils';
 import type { TraditionKey } from '@/lib/traditions';
 import { useLocation } from '@/lib/LocationContext';
-import { getPlayerId, getPermissionState } from '@/lib/onesignal';
+import { getPlayerId, getPermissionState, logoutFromOneSignal } from '@/lib/onesignal';
 import type { Profile } from '@/types/database';
 
 const SEVA_LEVELS = [
@@ -238,6 +238,7 @@ export default function ProfileClient({
   }
 
   async function signOut() {
+    await logoutFromOneSignal();
     await supabase.auth.signOut();
     router.push('/');
     router.refresh();

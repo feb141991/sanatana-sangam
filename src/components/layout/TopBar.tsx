@@ -10,6 +10,8 @@ import {
   requestNotificationPermission,
   getPlayerId,
   getPermissionState,
+  isOneSignalConfigured,
+  loginToOneSignal,
 } from '@/lib/onesignal';
 import type { Notification } from '@/types/database';
 
@@ -33,6 +35,7 @@ export default function TopBar({
   const pathname = usePathname();
   const title    = titles[pathname] ?? 'Sanatana Sangam';
   const supabase = createClient();
+  const pushConfigured = isOneSignalConfigured();
 
   const [open,       setOpen]       = useState(false);
   const [notifs,     setNotifs]     = useState<Notification[]>([]);
@@ -42,6 +45,11 @@ export default function TopBar({
   useEffect(() => {
     setPermission(getPermissionState());
   }, []);
+
+  useEffect(() => {
+    if (!pushConfigured || !userId) return;
+    loginToOneSignal(userId);
+  }, [pushConfigured, userId]);
 
   // Fetch real notifications from DB
   const fetchNotifs = useCallback(async () => {
@@ -65,7 +73,7 @@ export default function TopBar({
     setOpen((prev) => !prev);
 
     // First-time permission request
-    if (permission === 'default') {
+    if (pushConfigured && permission === 'default') {
       const granted = await requestNotificationPermission();
       const newState = getPermissionState();
       setPermission(newState);
@@ -150,7 +158,7 @@ export default function TopBar({
                     </div>
 
                     {/* Permission prompt — shown when not yet granted */}
-                    {permission !== 'granted' && (
+                    {pushConfigured && permission !== 'granted' && (
                       <div className="glass-panel mx-3 mt-3 px-3 py-2.5 rounded-xl flex items-start gap-2.5">
                         <span className="text-lg mt-0.5">🔔</span>
                         <div className="flex-1 min-w-0">

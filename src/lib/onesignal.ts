@@ -7,6 +7,25 @@ import { API } from '@/lib/config';
 
 export const ONESIGNAL_APP_ID = API.ONESIGNAL.APP_ID;
 
+function withOneSignal<T>(callback: (OneSignal: any) => Promise<T> | T): Promise<T | null> {
+  if (typeof window === 'undefined' || !ONESIGNAL_APP_ID) return Promise.resolve(null);
+
+  return new Promise((resolve) => {
+    (window as any).OneSignalDeferred = (window as any).OneSignalDeferred || [];
+    (window as any).OneSignalDeferred.push(async (OneSignal: any) => {
+      try {
+        resolve(await callback(OneSignal));
+      } catch {
+        resolve(null);
+      }
+    });
+  });
+}
+
+export function isOneSignalConfigured() {
+  return Boolean(ONESIGNAL_APP_ID);
+}
+
 export function initOneSignal() {
   if (typeof window === 'undefined' || !ONESIGNAL_APP_ID) return;
 
@@ -28,27 +47,33 @@ export function initOneSignal() {
 }
 
 export async function requestNotificationPermission(): Promise<boolean> {
-  if (typeof window === 'undefined') return false;
-  const OneSignal = (window as any).OneSignal;
-  if (!OneSignal) return false;
-  try {
+  const result = await withOneSignal(async (OneSignal) => {
     await OneSignal.Notifications.requestPermission();
-    return OneSignal.Notifications.permission;
-  } catch {
-    return false;
-  }
+    return OneSignal.Notifications.permission === true || OneSignal.Notifications.permission === 'granted';
+  });
+
+  return Boolean(result);
 }
 
 /** Returns the OneSignal push subscription player ID, or null if unavailable */
 export async function getPlayerId(): Promise<string | null> {
-  if (typeof window === 'undefined') return null;
-  const OneSignal = (window as any).OneSignal;
-  if (!OneSignal) return null;
-  try {
-    return (await OneSignal.User?.PushSubscription?.id) ?? null;
-  } catch {
-    return null;
-  }
+  const id = await withOneSignal(async (OneSignal) =>
+    OneSignal.User?.PushSubscription?.id ?? null
+  );
+  return id ?? null;
+}
+
+export async function loginToOneSignal(externalId: string) {
+  if (!externalId) return;
+  await withOneSignal(async (OneSignal) => {
+    await OneSignal.login(externalId);
+  });
+}
+
+export async function logoutFromOneSignal() {
+  await withOneSignal(async (OneSignal) => {
+    await OneSignal.logout();
+  });
 }
 
 /** Returns current push permission state: 'default' | 'granted' | 'denied' */

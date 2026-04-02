@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { sendOneSignalPush } from '@/lib/onesignal-server';
 
 // ─── Festival Reminder Cron ───────────────────────────────────────────────────
 // Schedule: 0 2 * * * (2 AM UTC daily = ~7:30 AM IST)
@@ -47,6 +48,7 @@ export async function GET(request: Request) {
   }
 
   let totalInserted = 0;
+  let totalPushTargets = 0;
 
   for (const festival of festivals) {
     const daysAway = Math.round((new Date(festival.date).getTime() - today.getTime()) / 86400000);
@@ -69,11 +71,23 @@ export async function GET(request: Request) {
     // Insert in batches of 100
     for (let i = 0; i < notifications.length; i += 100) {
       const batch = notifications.slice(i, i + 100);
-      const { count } = await supabase
+      await supabase
         .from('notifications')
         .insert(batch);
       totalInserted += batch.length;
     }
+
+    const pushResult = await sendOneSignalPush({
+      userIds: users.map((user) => user.id),
+      title,
+      body,
+      url: '/home',
+      data: {
+        type: 'festival',
+        festival_id: String(festival.id ?? ''),
+      },
+    });
+    totalPushTargets += pushResult.sent;
   }
 
   return NextResponse.json({
@@ -81,5 +95,6 @@ export async function GET(request: Request) {
     festivals: festivals.map((f) => f.name),
     users:    users.length,
     inserted: totalInserted,
+    push_targets: totalPushTargets,
   });
 }
