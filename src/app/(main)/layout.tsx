@@ -50,7 +50,7 @@ export default async function MainLayout({
           {children}
         </LocationProvider>
       </main>
-      <BottomNav libraryLabel={libraryLabel} />
+      <BottomNav libraryLabel={libraryLabel} isGuest={!user} />
     </div>
   );
 }

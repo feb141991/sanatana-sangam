@@ -26,6 +26,9 @@ export async function GET(request: Request) {
   const supabase = createClient(supabaseUrl, serviceRoleKey);
 
   try {
+    const baseUrl = new URL(request.url).origin;
+    const actionPath = '/home?focus=shloka';
+    const actionUrl = new URL(actionPath, baseUrl).toString();
     const today = new Date().toISOString().split('T')[0];
 
     // Find users who haven't read today — last_shloka_date is null or not today
@@ -57,7 +60,7 @@ export async function GET(request: Request) {
         body:       `${streakMsg} Take a moment for today's shloka and earn +5 seva points.`,
         emoji:      '🕉️',
         type:       'streak',
-        action_url: '/home',
+        action_url: actionPath,
       };
     });
 
@@ -82,7 +85,7 @@ export async function GET(request: Request) {
       userIds: users.map((user) => user.id),
       title: 'Aaj Ka Shloka awaits',
       body: 'Take a quiet moment for today\'s sacred text and keep your practice flowing.',
-      url: '/home',
+      url: actionUrl,
       data: {
         type: 'streak',
       },

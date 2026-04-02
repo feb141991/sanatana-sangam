@@ -23,10 +23,21 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     let active = true;
 
-    async function loadRecoveryState() {
-      const { data: { user } } = await supabase.auth.getUser();
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (!active) return;
-      setHasRecoverySession(Boolean(user));
+      if (event === 'PASSWORD_RECOVERY') {
+        toast.success('Recovery link verified. You can set a new password now.');
+      }
+
+      setHasRecoverySession(Boolean(session));
+      setCheckingSession(false);
+    });
+
+    async function loadRecoveryState() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!active) return;
+
+      setHasRecoverySession(Boolean(session));
       setCheckingSession(false);
     }
 
@@ -34,6 +45,7 @@ export default function ResetPasswordPage() {
 
     return () => {
       active = false;
+      authListener.subscription.unsubscribe();
     };
   }, []);
 

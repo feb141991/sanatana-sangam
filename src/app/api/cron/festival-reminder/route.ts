@@ -28,6 +28,9 @@ export async function GET(request: Request) {
   const supabase = createClient(supabaseUrl, serviceRoleKey);
 
   try {
+    const baseUrl = new URL(request.url).origin;
+    const actionPath = '/home?focus=festivals';
+    const actionUrl = new URL(actionPath, baseUrl).toString();
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -89,7 +92,7 @@ export async function GET(request: Request) {
         body,
         emoji:      festival.emoji,
         type:       'festival',
-        action_url: '/home',
+        action_url: actionPath,
       }));
 
       // Insert in batches of 100
@@ -114,7 +117,7 @@ export async function GET(request: Request) {
         userIds: users.map((user) => user.id),
         title,
         body,
-        url: '/home',
+        url: actionUrl,
         data: {
           type: 'festival',
           festival_id: String(festival.id ?? ''),

@@ -131,6 +131,7 @@ export default function ProfileClient({
   const [editing,   setEditing]   = useState(false);
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [sendingTestNotification, setSendingTestNotification] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>((profile as any)?.avatar_url ?? null);
   const [form, setForm] = useState({
     full_name:        profile?.full_name        ?? '',
@@ -242,6 +243,34 @@ export default function ProfileClient({
     await supabase.auth.signOut();
     router.push('/');
     router.refresh();
+  }
+
+  async function sendTestNotification() {
+    if (sendingTestNotification) return;
+
+    setSendingTestNotification(true);
+    try {
+      const response = await fetch('/api/notifications/test', {
+        method: 'POST',
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        toast.error(data.error ?? 'Could not send a test notification.');
+        return;
+      }
+
+      toast.success(
+        data.push_targets > 0
+          ? 'Test notification sent. Check your bell and browser.'
+          : 'Test notification created. Check your bell first.'
+      );
+      router.refresh();
+    } catch {
+      toast.error('Could not reach the notification test service.');
+    } finally {
+      setSendingTestNotification(false);
+    }
   }
 
   const traditionLabel = TRADITIONS.find(t => t.value === (profile as any)?.tradition);
@@ -467,6 +496,17 @@ export default function ProfileClient({
         <div className="text-sm text-gray-500">
           Signed in as <span className="font-medium text-gray-700">{userEmail}</span>
         </div>
+        <button
+          onClick={sendTestNotification}
+          disabled={sendingTestNotification}
+          className="glass-button-secondary inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-[#7B1A1A] font-medium disabled:opacity-60"
+        >
+          <span>🔔</span>
+          <span>{sendingTestNotification ? 'Sending test notification…' : 'Send test notification'}</span>
+        </button>
+        <p className="text-xs text-gray-400">
+          Use this to verify both the bell feed and browser push on your current device.
+        </p>
         <button onClick={signOut}
           className="flex items-center gap-2 text-sm text-red-500 hover:text-red-700 transition font-medium">
           <LogOut size={15} /> Sign out

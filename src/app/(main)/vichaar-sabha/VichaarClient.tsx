@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Plus, MessageSquare, ArrowUp, CheckCircle, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
@@ -101,6 +100,25 @@ export default function VichaarClient({
         )}
       </div>
 
+      {isGuest && (
+        <div className="glass-panel rounded-[1.6rem] px-4 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <p className="text-sm font-semibold text-gray-900">You&apos;re browsing in guest mode</p>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              Read threads and replies freely. Join when you&apos;re ready to post, reply, and upvote.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/signup" className="glass-button-primary px-4 py-2 rounded-full text-sm font-semibold text-white">
+              Join free
+            </Link>
+            <Link href="/tirtha-map" className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold text-[#7B1A1A]">
+              Open Tirtha Map
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Category tabs */}
       <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
         <button
@@ -111,7 +129,7 @@ export default function VichaarClient({
               : 'bg-white text-gray-500 border border-gray-200 hover:border-orange-200'
           }`}
         >
-          🕉️ All
+          All topics
         </button>
         {FORUM_CATEGORIES.map((cat) => (
           <button
@@ -226,6 +244,7 @@ export default function VichaarClient({
             <ThreadCard
               key={thread.id}
               thread={thread}
+              isGuest={isGuest}
               isUpvoted={upvoted.has(thread.id)}
               onUpvote={() => toggleUpvote(thread.id)}
             />
@@ -238,10 +257,12 @@ export default function VichaarClient({
 
 function ThreadCard({
   thread,
+  isGuest,
   isUpvoted,
   onUpvote,
 }: {
   thread: ThreadWithAuthor;
+  isGuest: boolean;
   isUpvoted: boolean;
   onUpvote: () => void;
 }) {
@@ -297,13 +318,20 @@ function ThreadCard({
             <span className="text-xs text-gray-400">{formatRelativeTime(thread.created_at)}</span>
           </div>
           <div className="flex items-center gap-3 text-xs text-gray-400">
-            <button
-              onClick={(e) => { e.preventDefault(); onUpvote(); }}
-              className={`flex items-center gap-1 transition ${isUpvoted ? 'text-orange-600 font-medium' : 'hover:text-orange-500'}`}
-            >
-              <ArrowUp size={13} className={isUpvoted ? 'text-orange-500' : ''} />
-              {thread.upvotes}
-            </button>
+            {isGuest ? (
+              <span className="flex items-center gap-1">
+                <ArrowUp size={13} />
+                {thread.upvotes}
+              </span>
+            ) : (
+              <button
+                onClick={(e) => { e.preventDefault(); onUpvote(); }}
+                className={`flex items-center gap-1 transition ${isUpvoted ? 'text-orange-600 font-medium' : 'hover:text-orange-500'}`}
+              >
+                <ArrowUp size={13} className={isUpvoted ? 'text-orange-500' : ''} />
+                {thread.upvotes}
+              </button>
+            )}
             <span className="flex items-center gap-1">
               <MessageSquare size={12} />
               {thread.reply_count}

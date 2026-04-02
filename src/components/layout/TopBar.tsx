@@ -16,6 +16,7 @@ import {
 import type { Notification } from '@/types/database';
 
 const titles: Record<string, string> = {
+  '/guest':         'Explore',
   '/home':          'Sanatana Sangam',
   '/mandali':       'My Mandali',
   '/vichaar-sabha': 'Vichaar Sabha',
@@ -33,9 +34,12 @@ export default function TopBar({
   isGuest?: boolean;
 }) {
   const pathname = usePathname();
-  const title    = titles[pathname] ?? 'Sanatana Sangam';
+  const title = Object.entries(titles).find(([route]) => (
+    pathname === route || pathname.startsWith(`${route}/`)
+  ))?.[1] ?? 'Sanatana Sangam';
   const supabase = createClient();
   const pushConfigured = isOneSignalConfigured();
+  const homeHref = isGuest ? '/guest' : '/home';
 
   const [open,       setOpen]       = useState(false);
   const [notifs,     setNotifs]     = useState<Notification[]>([]);
@@ -108,22 +112,30 @@ export default function TopBar({
 
         {/* Left — logo + page title */}
         <div className="flex items-center gap-2">
-          <Link href="/home" className="inline-flex">
+          <Link href={homeHref} className="inline-flex">
             <BrandMark size="sm" />
           </Link>
-          <span className="font-display font-semibold text-white text-base">{title}</span>
+          <span className="font-display font-semibold text-white text-sm sm:text-base">{title}</span>
         </div>
 
         {/* Right */}
         <div className="flex items-center gap-2">
 
           {isGuest ? (
-            <Link
-              href="/signup"
-              className="glass-button-secondary px-4 py-1.5 text-[#7B1A1A] text-sm font-semibold rounded-full hover:opacity-90 transition"
-            >
-              Join Free
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/login"
+                className="text-xs font-medium text-white/75 hover:text-white transition"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/signup"
+                className="glass-button-secondary px-4 py-1.5 text-[#7B1A1A] text-sm font-semibold rounded-full hover:opacity-90 transition"
+              >
+                Join Free
+              </Link>
+            </div>
           ) : (
             <>
               {/* Bell */}

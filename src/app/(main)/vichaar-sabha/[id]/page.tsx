@@ -25,7 +25,7 @@ export default async function ThreadPage({ params }: { params: Promise<{ id: str
     <ThreadDetailClient
       thread={thread}
       replies={replies ?? []}
-      userId={user!.id}
+      userId={user?.id ?? ''}
     />
   );
 }

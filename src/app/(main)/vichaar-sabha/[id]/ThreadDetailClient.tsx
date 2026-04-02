@@ -1,9 +1,10 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { ArrowLeft, ArrowUp, CheckCircle, Send } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Send } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { formatRelativeTime, getInitials, FORUM_CATEGORIES, SPIRITUAL_LEVELS } from '@/lib/utils';
 import type { ThreadWithAuthor, ForumReply, Profile } from '@/types/database';
@@ -23,6 +24,7 @@ export default function ThreadDetailClient({
 }) {
   const router   = useRouter();
   const supabase = createClient();
+  const isGuest = !userId;
   const [replies,    setReplies]   = useState(initialReplies);
   const [replyBody,  setReplyBody] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -102,26 +104,44 @@ export default function ThreadDetailClient({
         ))}
       </div>
 
-      {/* Reply composer */}
-      <div className="bg-white rounded-2xl border border-orange-100 p-4 shadow-card space-y-3 sticky bottom-20">
-        <textarea
-          placeholder="Share your wisdom or perspective… 🙏"
-          value={replyBody}
-          onChange={(e) => setReplyBody(e.target.value)}
-          rows={3}
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-400 outline-none resize-none text-sm"
-        />
-        <div className="flex justify-end">
-          <button
-            onClick={submitReply}
-            disabled={submitting || !replyBody.trim()}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-sacred text-white text-sm font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
-          >
-            <Send size={14} />
-            {submitting ? 'Posting…' : 'Reply'}
-          </button>
+      {isGuest ? (
+        <div className="glass-panel rounded-[1.6rem] p-4 sm:p-5 space-y-3 sticky bottom-20">
+          <div>
+            <p className="text-sm font-semibold text-gray-900">Join to continue the conversation</p>
+            <p className="text-sm text-gray-600 leading-relaxed mt-1">
+              Guests can read threads and replies. Join free to ask follow-up questions, reply, and upvote helpful answers.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/signup" className="glass-button-primary inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-white">
+              Join free
+            </Link>
+            <Link href="/login" className="glass-button-secondary inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-[#7B1A1A]">
+              Sign in
+            </Link>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="bg-white rounded-2xl border border-orange-100 p-4 shadow-card space-y-3 sticky bottom-20">
+          <textarea
+            placeholder="Share your wisdom or perspective… 🙏"
+            value={replyBody}
+            onChange={(e) => setReplyBody(e.target.value)}
+            rows={3}
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-400 outline-none resize-none text-sm"
+          />
+          <div className="flex justify-end">
+            <button
+              onClick={submitReply}
+              disabled={submitting || !replyBody.trim()}
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-sacred text-white text-sm font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
+            >
+              <Send size={14} />
+              {submitting ? 'Posting…' : 'Reply'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { MapPin, ChevronDown, ChevronUp, Share2, CalendarDays, X, ChevronLeft, ChevronRight, Pencil, User } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
@@ -439,6 +440,9 @@ export default function HomeDashboard({
 }: Props) {
   const supabase = createClient();
   const router   = useRouter();
+  const searchParams = useSearchParams();
+  const shlokaRef = useRef<HTMLDivElement | null>(null);
+  const festivalsRef = useRef<HTMLDivElement | null>(null);
 
   const [shlokaExpanded,    setShlokaExpanded]    = useState(false);
   const [panchang,          setPanchang]          = useState<Panchang>(initialPanchang);
@@ -471,6 +475,25 @@ export default function HomeDashboard({
       rahuKaal:  p.rahuKaal,
     });
   }, [selectedDate, lat, lon]);
+
+  useEffect(() => {
+    const focus = searchParams.get('focus');
+    if (!focus) return;
+
+    const timer = window.setTimeout(() => {
+      if (focus === 'shloka') {
+        setShlokaExpanded(true);
+        shlokaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      if (focus === 'festivals') {
+        setCalendarOpen(true);
+        festivalsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 150);
+
+    return () => window.clearTimeout(timer);
+  }, [searchParams]);
 
   const todayStr   = new Date().toISOString().split('T')[0];
   const selDateStr = selectedDate.toISOString().split('T')[0];
@@ -673,7 +696,9 @@ export default function HomeDashboard({
       </div>
 
       {/* ── Daily Sacred Text — tradition-aware ── */}
-      <div className="bg-white rounded-2xl shadow-sm p-4"
+      <div
+        ref={shlokaRef}
+        className="bg-white rounded-2xl shadow-sm p-4"
         style={{ borderWidth: 1, borderStyle: 'solid', borderColor: sacredTextMeta.accentLight }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -740,7 +765,9 @@ export default function HomeDashboard({
       </div>
 
       {/* ── Coming Up ── */}
-      <div className="rounded-2xl border overflow-hidden shadow-sm"
+      <div
+        ref={festivalsRef}
+        className="rounded-2xl border overflow-hidden shadow-sm"
         style={{ background: 'linear-gradient(135deg, #FFF8F0 0%, #FDF6E3 100%)', borderColor: '#f8c88a' }}>
         <div className="px-4 pt-3 pb-1 flex items-center justify-between">
           <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Coming Up</p>

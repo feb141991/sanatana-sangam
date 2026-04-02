@@ -486,12 +486,12 @@ export default function SignupPage() {
             <span className="text-xs text-gray-400">or</span>
             <div className="flex-1 h-px bg-gray-200" />
           </div>
-          <Link href="/vichaar-sabha"
+          <Link href="/guest"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gray-200 text-sm text-gray-500 hover:border-orange-300 hover:text-orange-600 transition bg-white">
             <span>👁️</span>
-            <span>Continue as Guest</span>
+            <span>Explore as Guest</span>
           </Link>
-          <p className="text-xs text-gray-400 mt-2">Browse Vichaar Sabha & Tirtha Map without an account</p>
+          <p className="text-xs text-gray-400 mt-2">Read discussions and discover nearby sacred places without creating an account</p>
         </div>
       </div>
     </div>
