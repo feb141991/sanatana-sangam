@@ -6,16 +6,25 @@
 import { API } from '@/lib/config';
 
 export const ONESIGNAL_APP_ID = API.ONESIGNAL.APP_ID;
+const ONESIGNAL_TIMEOUT_MS = 1500;
 
 function withOneSignal<T>(callback: (OneSignal: any) => Promise<T> | T): Promise<T | null> {
   if (typeof window === 'undefined' || !ONESIGNAL_APP_ID) return Promise.resolve(null);
 
+  const existingOneSignal = (window as any).OneSignal;
+  if (existingOneSignal) {
+    return Promise.resolve(callback(existingOneSignal)).catch(() => null);
+  }
+
   return new Promise((resolve) => {
+    const timeout = window.setTimeout(() => resolve(null), ONESIGNAL_TIMEOUT_MS);
     (window as any).OneSignalDeferred = (window as any).OneSignalDeferred || [];
     (window as any).OneSignalDeferred.push(async (OneSignal: any) => {
       try {
+        window.clearTimeout(timeout);
         resolve(await callback(OneSignal));
       } catch {
+        window.clearTimeout(timeout);
         resolve(null);
       }
     });

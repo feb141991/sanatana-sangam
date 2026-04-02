@@ -105,7 +105,7 @@ export default function ThreadDetailClient({
       </div>
 
       {isGuest ? (
-        <div className="glass-panel rounded-[1.6rem] p-4 sm:p-5 space-y-3 sticky bottom-20">
+        <div className="glass-panel rounded-[1.6rem] p-4 sm:p-5 space-y-3 sm:sticky sm:bottom-20">
           <div>
             <p className="text-sm font-semibold text-gray-900">Join to continue the conversation</p>
             <p className="text-sm text-gray-600 leading-relaxed mt-1">
@@ -122,7 +122,7 @@ export default function ThreadDetailClient({
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-orange-100 p-4 shadow-card space-y-3 sticky bottom-20">
+        <div className="bg-white rounded-2xl border border-orange-100 p-4 shadow-card space-y-3 sm:sticky sm:bottom-20">
           <textarea
             placeholder="Share your wisdom or perspective… 🙏"
             value={replyBody}

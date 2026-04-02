@@ -8,7 +8,8 @@ export default async function VichaarSabhaPage() {
   const { data: threads } = await supabase
     .from('forum_threads')
     .select('*, profiles(full_name, username, avatar_url, sampradaya)')
-    .order('created_at', { ascending: false })
+    .order('is_pinned', { ascending: false })
+    .order('updated_at', { ascending: false })
     .limit(40);
 
   // Pass userId as empty string for guests — VichaarClient shows read-only mode

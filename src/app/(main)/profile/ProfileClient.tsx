@@ -239,8 +239,18 @@ export default function ProfileClient({
   }
 
   async function signOut() {
-    await logoutFromOneSignal();
-    await supabase.auth.signOut();
+    try {
+      await logoutFromOneSignal();
+    } catch {
+      // Never let push cleanup block the actual auth sign-out.
+    }
+
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
     router.push('/');
     router.refresh();
   }
