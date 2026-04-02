@@ -3,6 +3,7 @@ import BottomNav from '@/components/layout/BottomNav';
 import TopBar from '@/components/layout/TopBar';
 import { LocationProvider } from '@/lib/LocationContext';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import { getInitials } from '@/lib/utils';
 
 export default async function MainLayout({
   children,
@@ -20,11 +21,13 @@ export default async function MainLayout({
   let savedCountry:     string        = '';
   let savedCountryCode: string        = '';
   let libraryLabel:     string        = 'Library';
+  let avatarUrl:        string | null = null;
+  let userInitials:     string        = 'SS';
 
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('latitude, longitude, city, country, country_code, tradition')
+      .select('latitude, longitude, city, country, country_code, tradition, avatar_url, full_name, username')
       .eq('id', user.id)
       .single();
 
@@ -34,11 +37,13 @@ export default async function MainLayout({
     savedCountry     = profile?.country      ?? '';
     savedCountryCode = profile?.country_code ?? '';
     libraryLabel     = getTraditionMeta(profile?.tradition).navLibraryLabel;
+    avatarUrl        = profile?.avatar_url ?? null;
+    userInitials     = getInitials(profile?.full_name ?? profile?.username ?? 'Sanatana');
   }
 
   return (
     <div className="min-h-screen flex flex-col">
-      <TopBar userId={userId} isGuest={!user} />
+      <TopBar userId={userId} isGuest={!user} avatarUrl={avatarUrl} userInitials={userInitials} />
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 pt-4 pb-28">
         <LocationProvider
           savedLat={savedLat}

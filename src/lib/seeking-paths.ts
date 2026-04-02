@@ -85,13 +85,21 @@ function normalizeSeeking(values: string[]): SeekingKey[] {
   );
 }
 
+function getDefaultSeeking(spiritualLevel?: string | null): SeekingKey[] {
+  if (spiritualLevel === 'jigyasu') return ['knowledge', 'community'];
+  if (spiritualLevel === 'sadhaka') return ['events', 'knowledge'];
+  return ['community', 'mentorship'];
+}
+
 export function buildPersonalizedPaths({
   seeking,
   spiritualLevel,
   city,
 }: BuildPersonalizedPathsOptions): PersonalizedPath[] {
   const normalized = normalizeSeeking(seeking);
+  const effectiveSeeking = normalized.length > 0 ? normalized : getDefaultSeeking(spiritualLevel);
   const cards: PersonalizedPath[] = [];
+  const isExplicitlyPersonalized = normalized.length > 0;
 
   if (spiritualLevel === 'jigyasu') {
     cards.push({
@@ -108,13 +116,16 @@ export function buildPersonalizedPaths({
     });
   }
 
-  if (city && normalized.some((value) => value === 'community' || value === 'events')) {
+  if (city) {
+    const cityIsEntryPath = normalized.some((value) => value === 'community' || value === 'events');
     cards.push({
-      id: 'new-to-city',
+      id: 'city-anchor',
       eyebrow: 'Guided Path',
-      title: `New to ${city}?`,
-      description: 'Use your city as the anchor: find sacred places nearby, then take one step toward your local Sangam.',
-      badges: ['Local discovery', 'Diaspora-friendly'],
+      title: cityIsEntryPath ? `New to ${city}?` : `In ${city} this week`,
+      description: cityIsEntryPath
+        ? 'Use your city as the anchor: find sacred places nearby, then take one step toward your local Sangam.'
+        : 'Let your city guide your next step: check nearby sacred places, community, and one concrete rhythm for the week.',
+      badges: cityIsEntryPath ? ['Local discovery', 'Diaspora-friendly'] : ['Local rhythm', 'This week'],
       accentClass: 'clay-card-city',
       actions: [
         { label: 'Find nearby tirthas', href: '/tirtha-map', icon: '🛕' },
@@ -123,14 +134,16 @@ export function buildPersonalizedPaths({
     });
   }
 
-  for (const key of normalized.slice(0, 2)) {
+  for (const key of effectiveSeeking.slice(0, 2)) {
     const definition = PATH_DEFINITIONS[key];
     cards.push({
       id: `seeking-${key}`,
       ...definition,
-      badges: ['Personalized from signup'],
+      badges: [isExplicitlyPersonalized ? 'Personalized from signup' : 'Suggested next step'],
     });
   }
 
-  return cards.slice(0, 3);
+  const uniqueCards = cards.filter((card, index, current) => current.findIndex((item) => item.id === card.id) === index);
+
+  return uniqueCards.slice(0, 3);
 }

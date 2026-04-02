@@ -162,12 +162,25 @@ body::after {
 }
 
 .clay-card {
-  background: linear-gradient(145deg, rgba(245, 236, 226, 0.96), rgba(236, 224, 211, 0.96));
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(155deg, rgba(248, 239, 229, 0.98), rgba(232, 216, 201, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.72);
   box-shadow:
-    14px 14px 28px rgba(117, 77, 55, 0.14),
-    -8px -8px 18px rgba(255, 255, 255, 0.62),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.5);
+    18px 18px 34px rgba(128, 86, 60, 0.16),
+    -10px -10px 22px rgba(255, 255, 255, 0.72),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.6),
+    inset -6px -6px 16px rgba(171, 127, 92, 0.08);
+}
+
+.clay-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.34), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(160, 117, 83, 0.08), transparent 42%);
 }
 
 .clay-pill {
@@ -183,10 +196,13 @@ body::after {
 }
 
 .clay-action {
-  background: linear-gradient(145deg, rgba(249, 242, 235, 0.98), rgba(237, 226, 214, 0.98));
+  position: relative;
+  background: linear-gradient(150deg, rgba(251, 245, 238, 0.98), rgba(236, 224, 211, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.7);
   box-shadow:
-    10px 10px 22px rgba(123, 86, 62, 0.12),
-    -6px -6px 14px rgba(255, 255, 255, 0.54);
+    12px 12px 24px rgba(123, 86, 62, 0.12),
+    -7px -7px 14px rgba(255, 255, 255, 0.58),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.56);
 }
 
 .clay-icon-well {

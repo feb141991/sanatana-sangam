@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { MapPin, ChevronDown, ChevronUp, Share2, CalendarDays, X, ChevronLeft, ChevronRight, Pencil, User } from 'lucide-react';
+import { MapPin, ChevronDown, ChevronUp, Share2, CalendarDays, X, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek,
@@ -625,13 +625,6 @@ export default function HomeDashboard({
             </p>
           )}
         </div>
-        {/* Profile avatar — replaces Profile from bottom nav */}
-        <Link href="/profile" className="flex-shrink-0">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm"
-            style={{ background: 'linear-gradient(135deg, #7B1A1A, #b45309)' }}>
-            <User size={18} />
-          </div>
-        </Link>
       </div>
 
       {personalizedPaths.length > 0 && (
@@ -639,7 +632,7 @@ export default function HomeDashboard({
           <div>
             <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Your path this week</p>
             <p className="text-sm text-gray-600 mt-0.5">
-              Personalized from what you selected at signup. You can refine this later in Profile.
+              Personalized from your signup choices, spiritual level, and city. You can refine this later in Profile.
             </p>
           </div>
 

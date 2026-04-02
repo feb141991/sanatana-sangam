@@ -578,7 +578,7 @@ function EventsTab({ posts }: { posts: PostWithAuthor[] }) {
 }
 
 // ─── Vichaar Tab (Posts Feed) ────────────────────────────────────
-function VichaarTab({ posts, userId, onToggleUpvote, upvoted, onCompose, showCompose, setShowCompose, onHideContent, onHideAuthor }: {
+function VichaarTab({ posts, userId, onToggleUpvote, upvoted, onCompose, showCompose, setShowCompose, onHideContent, onHideAuthor, allowCompose = true }: {
   posts: PostWithAuthor[];
   userId: string;
   onToggleUpvote: (id: string) => void;
@@ -593,6 +593,7 @@ function VichaarTab({ posts, userId, onToggleUpvote, upvoted, onCompose, showCom
   setShowCompose: (v: boolean) => void;
   onHideContent: (contentId: string) => void;
   onHideAuthor: (authorId: string) => void;
+  allowCompose?: boolean;
 }) {
   const [postType,   setPostType]   = useState<'update' | 'event' | 'question' | 'announcement'>('update');
   const [content,    setContent]    = useState('');
@@ -623,18 +624,19 @@ function VichaarTab({ posts, userId, onToggleUpvote, upvoted, onCompose, showCom
 
   return (
     <div className="space-y-3">
-      {/* Compose button */}
-      <button
-        onClick={() => setShowCompose(!showCompose)}
-        className="w-full bg-white border border-dashed border-[#7B1A1A]/30 rounded-2xl p-3 flex items-center gap-3 text-gray-400 hover:border-[#7B1A1A]/50 hover:text-[#7B1A1A] transition"
-      >
-        <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: '#7B1A1A15' }}>
-          <Plus size={15} style={{ color: '#7B1A1A' }} />
-        </div>
-        <span className="text-sm">Share with your Mandali…</span>
-      </button>
+      {allowCompose && (
+        <button
+          onClick={() => setShowCompose(!showCompose)}
+          className="w-full bg-white border border-dashed border-[#7B1A1A]/30 rounded-2xl p-3 flex items-center gap-3 text-gray-400 hover:border-[#7B1A1A]/50 hover:text-[#7B1A1A] transition"
+        >
+          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: '#7B1A1A15' }}>
+            <Plus size={15} style={{ color: '#7B1A1A' }} />
+          </div>
+          <span className="text-sm">Share with your Mandali…</span>
+        </button>
+      )}
 
-      {showCompose && (
+      {allowCompose && showCompose && (
         <ComposePanel
           postType={postType} setPostType={setPostType}
           content={content} setContent={setContent}
@@ -998,6 +1000,7 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
                 setShowCompose={() => {}}
                 onHideContent={hideContentFromView}
                 onHideAuthor={hideAuthorFromView}
+                allowCompose={false}
               />
             </div>
           )}

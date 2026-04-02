@@ -29,9 +29,13 @@ const titles: Record<string, string> = {
 export default function TopBar({
   userId,
   isGuest = false,
+  avatarUrl = null,
+  userInitials = 'SS',
 }: {
   userId:   string;
   isGuest?: boolean;
+  avatarUrl?: string | null;
+  userInitials?: string;
 }) {
   const pathname = usePathname();
   const title = Object.entries(titles).find(([route]) => (
@@ -253,9 +257,13 @@ export default function TopBar({
               {/* Avatar */}
               <Link
                 href="/profile"
-                className="w-8 h-8 rounded-full bg-white/12 border border-white/30 flex items-center justify-center text-white text-xs font-bold"
+                className="w-8 h-8 rounded-full bg-white/12 border border-white/30 flex items-center justify-center text-white text-[11px] font-bold overflow-hidden"
               >
-                🙏
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  userInitials
+                )}
               </Link>
             </>
           )}
