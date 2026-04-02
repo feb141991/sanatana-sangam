@@ -14,7 +14,7 @@ export default async function HomePage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, tradition, custom_greeting')
+    .select('full_name, username, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, tradition, spiritual_level, seeking, custom_greeting')
     .eq('id', user.id)
     .single();
 
@@ -60,6 +60,8 @@ export default async function HomePage() {
       lastShlokaDate={profile?.last_shloka_date ?? null}
       tradition={tradition}
       sampradaya={profile?.sampradaya ?? null}
+      spiritualLevel={profile?.spiritual_level ?? null}
+      seeking={profile?.seeking ?? []}
       customGreeting={(profile as any)?.custom_greeting ?? null}
     />
   );

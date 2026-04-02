@@ -17,6 +17,7 @@ import type { DailySacredText } from '@/lib/sacred-texts';
 import { FESTIVALS_2026 } from '@/lib/festivals';
 import { calculatePanchang } from '@/lib/panchang';
 import { getGreeting, GREETING_POOLS } from '@/lib/traditions';
+import { buildPersonalizedPaths } from '@/lib/seeking-paths';
 import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
 import { APP } from '@/lib/config';
@@ -55,6 +56,8 @@ interface Props {
   lastShlokaDate:    string | null;
   tradition:         string | null;
   sampradaya:        string | null;
+  spiritualLevel:    string | null;
+  seeking:           string[];
   customGreeting:    string | null;
 }
 
@@ -436,6 +439,8 @@ export default function HomeDashboard({
   lastShlokaDate,
   tradition,
   sampradaya,
+  spiritualLevel,
+  seeking,
   customGreeting,
 }: Props) {
   const supabase = createClient();
@@ -508,6 +513,11 @@ export default function HomeDashboard({
   }
 
   const displayCity = liveCity || savedCity;
+  const personalizedPaths = buildPersonalizedPaths({
+    seeking,
+    spiritualLevel,
+    city: displayCity || null,
+  });
 
   // Welcome back: user hasn't been active in 2+ days
   const isWelcomeBack = (() => {
@@ -623,6 +633,54 @@ export default function HomeDashboard({
           </div>
         </Link>
       </div>
+
+      {personalizedPaths.length > 0 && (
+        <section className="space-y-2">
+          <div>
+            <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Your path this week</p>
+            <p className="text-sm text-gray-600 mt-0.5">
+              Personalized from what you selected at signup. You can refine this later in Profile.
+            </p>
+          </div>
+
+          <div className="grid gap-3">
+            {personalizedPaths.map((path) => (
+              <div key={path.id} className={`clay-card ${path.accentClass} rounded-[1.8rem] p-4`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#7B1A1A]/65">
+                      {path.eyebrow}
+                    </p>
+                    <h2 className="font-display text-lg font-bold text-gray-900 mt-1">{path.title}</h2>
+                  </div>
+                  <div className="flex flex-wrap justify-end gap-2">
+                    {path.badges.map((badge) => (
+                      <span key={badge} className="clay-pill text-[11px] font-medium text-[#7B1A1A]">
+                        {badge}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <p className="text-sm text-gray-600 leading-relaxed mt-2">{path.description}</p>
+
+                <div className="grid gap-2 sm:grid-cols-2 mt-4">
+                  {path.actions.map((action) => (
+                    <Link
+                      key={`${path.id}-${action.href}`}
+                      href={action.href}
+                      className="clay-action rounded-2xl px-4 py-3 flex items-center gap-3 transition hover:-translate-y-0.5"
+                    >
+                      <span className="clay-icon-well text-base">{action.icon}</span>
+                      <span className="text-sm font-semibold text-gray-800">{action.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ── Panchang Widget ── */}
       <div className="rounded-2xl overflow-hidden shadow-sm" style={{ background: '#7B1A1A' }}>

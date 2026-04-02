@@ -1,14 +1,19 @@
 # Launch Tracker
 
-Last updated: 2026-04-02
+Last updated: 2026-04-03
 
 ## Current Focus
 
 - [x] Create strategy brief: `PRODUCT_LAUNCH_PLAN.md`
+- [x] Review original brainstorm and product moat: `BRAINSTORM_REVIEW.md`
+- [x] Create execution roadmap: `ROADMAP.md`
 - [x] Add public trust pages: `about`, `privacy`, `terms`, `contact`, `guidelines`
 - [x] Add signup consent linked to public policies
 - [x] Verify build after trust-surface pass
 - [x] Tighten Kul / Vansh guardian permissions in UI and RLS
+- [ ] Complete `Phase A1` trust core before major `Phase B` build starts
+- [ ] Run dual-track delivery: `Phase A` as build lane, `Phase B` as shaping / low-risk parallel lane
+- [ ] Deepen the current dual-track slice: Library/AI trust layer + personalized home from `seeking`
 
 ## P0 Launch Blockers
 
@@ -30,6 +35,7 @@ Last updated: 2026-04-02
 ## P1 Beta Work
 
 - [ ] Personalize onboarding and home experience from `seeking`
+- [ ] Turn current personalized home cards into stateful first-week onboarding
 - [ ] Add Mandali comments and replies
 - [ ] Add Mandali event RSVP flow
 - [ ] Add analytics, funnel tracking, and error monitoring
@@ -41,3 +47,4 @@ Last updated: 2026-04-02
 
 - The best near-term market story is: diaspora Hindu / Sanatani launch first, then broader dharmic expansion after parity improves.
 - Current implementation pass is intentionally focused on launch credibility at the front door before deeper social or growth work.
+- `ROADMAP.md` is now the main sequencing document for `Phase A` vs `Phase B`.

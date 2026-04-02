@@ -160,3 +160,72 @@ body::after {
     0 16px 30px rgba(101, 58, 39, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.62);
 }
+
+.clay-card {
+  background: linear-gradient(145deg, rgba(245, 236, 226, 0.96), rgba(236, 224, 211, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    14px 14px 28px rgba(117, 77, 55, 0.14),
+    -8px -8px 18px rgba(255, 255, 255, 0.62),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.clay-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 9999px;
+  background: linear-gradient(145deg, rgba(247, 239, 231, 0.95), rgba(233, 220, 207, 0.95));
+  box-shadow:
+    6px 6px 14px rgba(120, 82, 58, 0.12),
+    -5px -5px 10px rgba(255, 255, 255, 0.5);
+}
+
+.clay-action {
+  background: linear-gradient(145deg, rgba(249, 242, 235, 0.98), rgba(237, 226, 214, 0.98));
+  box-shadow:
+    10px 10px 22px rgba(123, 86, 62, 0.12),
+    -6px -6px 14px rgba(255, 255, 255, 0.54);
+}
+
+.clay-icon-well {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 1rem;
+  background: linear-gradient(145deg, rgba(236, 221, 205, 0.9), rgba(250, 243, 236, 0.95));
+  box-shadow:
+    inset 2px 2px 6px rgba(255, 255, 255, 0.5),
+    inset -3px -3px 8px rgba(163, 124, 95, 0.12);
+}
+
+.clay-card-guided {
+  background: linear-gradient(145deg, rgba(248, 236, 223, 0.98), rgba(238, 223, 210, 0.98));
+}
+
+.clay-card-city {
+  background: linear-gradient(145deg, rgba(247, 232, 220, 0.98), rgba(236, 217, 205, 0.98));
+}
+
+.clay-card-community {
+  background: linear-gradient(145deg, rgba(245, 229, 223, 0.98), rgba(234, 215, 210, 0.98));
+}
+
+.clay-card-knowledge {
+  background: linear-gradient(145deg, rgba(240, 233, 224, 0.98), rgba(228, 219, 210, 0.98));
+}
+
+.clay-card-events {
+  background: linear-gradient(145deg, rgba(247, 235, 220, 0.98), rgba(236, 224, 210, 0.98));
+}
+
+.clay-card-mentorship {
+  background: linear-gradient(145deg, rgba(244, 230, 226, 0.98), rgba(233, 217, 214, 0.98));
+}
+
+.clay-card-youth {
+  background: linear-gradient(145deg, rgba(242, 235, 224, 0.98), rgba(231, 223, 210, 0.98));
+}

@@ -5,11 +5,20 @@ import { Send, Sparkles, RotateCcw, ChevronDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+interface MessageReference {
+  id: string;
+  title: string;
+  source: string;
+  tradition: string;
+}
+
 interface Message {
   id:        string;
   role:      'user' | 'model';
   text:      string;
   timestamp: Date;
+  references?: MessageReference[];
+  trustMode?: 'source-guided' | 'reflective';
 }
 
 interface Props {
@@ -83,6 +92,29 @@ function MessageBubble({ msg }: { msg: Message }) {
         }`}>
           {msg.text}
         </div>
+        {!isUser && (
+          <div className="space-y-1.5 px-1">
+            <span className={`inline-flex text-[10px] font-semibold px-2 py-1 rounded-full border ${
+              msg.trustMode === 'source-guided'
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                : 'bg-amber-50 text-amber-700 border-amber-200'
+            }`}>
+              {msg.trustMode === 'source-guided' ? 'Source-guided' : 'Reflective guidance'}
+            </span>
+            {msg.references && msg.references.length > 0 && (
+              <div className="clay-card rounded-2xl px-3 py-2.5 max-w-full">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">Suggested sources</p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {msg.references.map((reference) => (
+                    <span key={reference.id} className="clay-pill text-[11px] text-gray-700">
+                      {reference.source}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
         <span className="text-[10px] text-gray-400 px-1">
           {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </span>
@@ -163,7 +195,14 @@ export default function AIChatClient({ userId, userName, tradition }: Props) {
         setLoading(false);
         return;
       }
-      const modelMsg: Message = { id: newId(), role: 'model', text: data.reply, timestamp: new Date() };
+      const modelMsg: Message = {
+        id: newId(),
+        role: 'model',
+        text: data.reply,
+        timestamp: new Date(),
+        references: Array.isArray(data.references) ? data.references : [],
+        trustMode: data.trustMode === 'source-guided' ? 'source-guided' : 'reflective',
+      };
       setMessages(prev => [...prev, modelMsg]);
     } catch {
       toast.error('Network error — please try again');
@@ -199,7 +238,7 @@ export default function AIChatClient({ userId, userName, tradition }: Props) {
           </div>
           <div>
             <h1 className="font-display font-bold text-gray-900 text-lg leading-tight">Dharma Mitra</h1>
-            <p className="text-xs text-gray-400">AI guide for life & spirituality</p>
+            <p className="text-xs text-gray-400">AI guide for life, spirituality, and source-aware reflection</p>
           </div>
         </div>
         {!isEmpty && (
@@ -226,6 +265,9 @@ export default function AIChatClient({ userId, userName, tradition }: Props) {
               </h2>
               <p className="text-sm text-gray-500 max-w-xs">
                 Ask me anything — life questions, spiritual wisdom, dharmic perspectives, or just a thoughtful conversation.
+              </p>
+              <p className="text-xs text-gray-400 max-w-sm">
+                When relevant, I now surface internal scripture references so the conversation feels more grounded and easier to verify.
               </p>
             </div>
 

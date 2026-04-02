@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { formatDharmaReferencePack, getDharmaReferences } from '@/lib/dharma-sources';
 
 // ─── General AI Chat Route ────────────────────────────────────────────────────
 // POST /api/ai/chat
@@ -192,8 +193,20 @@ ${BASE_RULES}
 Begin fresh conversations with a warm "Jai Jinendra 🤲" greeting.`,
 };
 
-function getSystemInstruction(tradition?: string | null): string {
-  return SYSTEM_INSTRUCTIONS[tradition ?? 'hindu'] ?? SYSTEM_INSTRUCTIONS.hindu;
+function buildSystemInstruction(tradition: string | null, referencePack: string): string {
+  const baseInstruction = SYSTEM_INSTRUCTIONS[tradition ?? 'hindu'] ?? SYSTEM_INSTRUCTIONS.hindu;
+
+  return `${baseInstruction}
+
+Answering standard:
+- If you refer to scripture or a tradition text, cite the source inline in square brackets, for example [Bhagavad Gita 2.47].
+- Prefer the internal reference pack below when it is relevant to the user's question.
+- If the reference pack is weak or not clearly relevant, say that plainly and offer careful general guidance instead of pretending certainty.
+- Do not invent verse numbers, direct quotations, or historical claims you are not confident about.
+- Keep answers warm and useful, but make the boundary between grounded guidance and reflective advice clear.
+
+Internal reference pack:
+${referencePack}`;
 }
 
 export async function POST(req: NextRequest) {
@@ -241,6 +254,8 @@ export async function POST(req: NextRequest) {
 
   const tradition = typeof body.tradition === 'string' ? body.tradition : null;
   const geminiModels = getGeminiModels();
+  const references = getDharmaReferences(rawMessage, tradition);
+  const referencePack = formatDharmaReferencePack(references);
 
   // Build Gemini contents array from history + new message
   const contents = [
@@ -256,7 +271,7 @@ export async function POST(req: NextRequest) {
 
   const requestBody = {
     system_instruction: {
-      parts: [{ text: getSystemInstruction(tradition) }],
+      parts: [{ text: buildSystemInstruction(tradition, referencePack) }],
     },
     contents,
     generationConfig: {
@@ -285,7 +300,12 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({ error: 'No response from AI. Please try again.' }, { status: 502 });
         }
 
-        return NextResponse.json({ reply: text, model });
+        return NextResponse.json({
+          reply: text,
+          model,
+          references,
+          trustMode: references.length > 0 ? 'source-guided' : 'reflective',
+        });
       }
 
       console.error('Gemini API error:', model, result.status, result.errorText);

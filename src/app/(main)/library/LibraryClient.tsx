@@ -10,6 +10,7 @@ import {
   searchEntries,
   type LibraryEntry,
 } from '@/lib/library-content';
+import { getLibrarySourceMeta } from '@/lib/library-provenance';
 
 // ── Share helper ───────────────────────────────────────────────────────────────
 async function shareEntry(entry: LibraryEntry) {
@@ -36,6 +37,7 @@ function EntryCard({ entry }: { entry: LibraryEntry }) {
   const [expanded, setExpanded] = useState(false);
   const style = TRADITION_STYLE[entry.tradition] ?? TRADITION_STYLE.hindu;
   const section = LIBRARY_SECTIONS.find((s) => s.id === entry.category || (s.id === 'gurbani' && (entry.category === 'gurbani' || entry.category === 'nitnem')));
+  const sourceMeta = getLibrarySourceMeta(entry);
 
   return (
     <div className={`${style.bg} ${style.border} border rounded-2xl p-4 space-y-3`}>
@@ -45,6 +47,9 @@ function EntryCard({ entry }: { entry: LibraryEntry }) {
           <div className="flex items-center gap-2 flex-wrap mb-1">
             <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${style.badge}`}>
               {section?.emoji} {section?.title ?? entry.category}
+            </span>
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/80 text-gray-600 border border-gray-200">
+              {sourceMeta.label}
             </span>
           </div>
           <h3 className={`font-display font-bold text-sm leading-tight ${style.text}`}>{entry.title}</h3>
@@ -81,6 +86,10 @@ function EntryCard({ entry }: { entry: LibraryEntry }) {
 
       {expanded && (
         <div className="pt-2 border-t border-white/40">
+          <div className="clay-card rounded-2xl px-3 py-2.5 mb-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">Source note</p>
+            <p className="text-xs text-gray-600 leading-relaxed mt-1">{sourceMeta.note}</p>
+          </div>
           <p className="text-sm text-gray-700 leading-relaxed">{entry.meaning}</p>
           {entry.tags.length > 0 && (
             <div className="flex gap-1.5 flex-wrap mt-2">
@@ -116,6 +125,16 @@ export default function LibraryClient({ defaultSection = 'all' }: { defaultSecti
         <h1 className="font-display font-bold text-xl text-gray-900">Parampara Library</h1>
         <p className="text-sm text-gray-500 mt-0.5">
           Scriptures of Sanatan Dharma — Hindu · Sikh · Buddhist · Jain
+        </p>
+      </div>
+
+      <div className="clay-card rounded-[1.6rem] px-4 py-4 space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7B1A1A]/70">Trust layer</p>
+        <p className="text-sm text-gray-700 leading-relaxed">
+          Every entry now shows its source type so users can tell whether they are reading a canonical text, a traditional composition, or a curated learning excerpt.
+        </p>
+        <p className="text-xs text-gray-500 leading-relaxed">
+          This library is for study and return. Use the cited source as the path deeper, especially for formal recitation or tradition-specific practice.
         </p>
       </div>
 
@@ -207,7 +226,7 @@ export default function LibraryClient({ defaultSection = 'all' }: { defaultSecti
       {/* ── Footer note ── */}
       <div className="text-center py-4">
         <p className="text-xs text-gray-400">
-          Translations are for understanding — consult a qualified teacher for deep study
+          Translations are for understanding. For deep study, lineage-specific practice, or formal recitation, consult a qualified teacher.
         </p>
       </div>
     </div>
