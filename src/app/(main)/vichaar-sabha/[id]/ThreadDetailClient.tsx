@@ -40,7 +40,7 @@ export default function ThreadDetailClient({
     const { data, error } = await supabase
       .from('forum_replies')
       .insert({ thread_id: threadState.id, author_id: userId, body: replyBody.trim() })
-      .select('*, profiles(full_name, username, avatar_url, sampradaya, spiritual_level)')
+      .select('*, profiles!forum_replies_author_id_fkey(full_name, username, avatar_url, sampradaya, spiritual_level)')
       .single();
     if (error) { toast.error(error.message); }
     else {

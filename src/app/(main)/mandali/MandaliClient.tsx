@@ -816,7 +816,7 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
         event_date:     payload.eventDate || null,
         event_location: payload.eventLoc  || null,
       })
-      .select('*, profiles(full_name, username, avatar_url, sampradaya, spiritual_level)')
+      .select('*, profiles!posts_author_id_fkey(full_name, username, avatar_url, sampradaya, spiritual_level)')
       .single();
     if (error) { toast.error(error.message); return false; }
     setPosts((current) => [data as PostWithAuthor, ...current]);

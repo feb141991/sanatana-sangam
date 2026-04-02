@@ -30,7 +30,7 @@ export default async function AdminPage() {
       .order('created_at', { ascending: false }),
     supabase
       .from('posts')
-      .select('id, content, type, created_at, mandali_id, author_id, profiles(full_name, username)')
+      .select('id, content, type, created_at, mandali_id, author_id, profiles!posts_author_id_fkey(full_name, username)')
       .order('created_at', { ascending: false })
       .limit(50),
     supabase

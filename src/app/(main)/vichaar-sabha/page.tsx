@@ -9,7 +9,7 @@ export default async function VichaarSabhaPage() {
 
   const { data: threads } = await supabase
     .from('forum_threads')
-    .select('*, profiles(full_name, username, avatar_url, sampradaya)')
+    .select('*, profiles!forum_threads_author_id_fkey(full_name, username, avatar_url, sampradaya)')
     .order('is_pinned', { ascending: false })
     .order('updated_at', { ascending: false })
     .limit(40);

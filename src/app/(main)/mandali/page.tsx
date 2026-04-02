@@ -28,7 +28,7 @@ export default async function MandaliPage() {
   if (mandaliId) {
     const { data } = await supabase
       .from('posts')
-      .select('*, profiles(full_name, username, avatar_url, sampradaya, spiritual_level)')
+      .select('*, profiles!posts_author_id_fkey(full_name, username, avatar_url, sampradaya, spiritual_level)')
       .eq('mandali_id', mandaliId)
       .order('created_at', { ascending: false })
       .limit(30);
@@ -52,7 +52,7 @@ export default async function MandaliPage() {
   if (mandaliId && members.length < BLEND_THRESHOLD) {
     const { data } = await supabase
       .from('posts')
-      .select('*, profiles(full_name, username, avatar_url, sampradaya, spiritual_level)')
+      .select('*, profiles!posts_author_id_fkey(full_name, username, avatar_url, sampradaya, spiritual_level)')
       .neq('mandali_id', mandaliId)   // other Mandalis only
       .order('created_at', { ascending: false })
       .limit(15);

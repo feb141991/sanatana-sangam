@@ -582,7 +582,7 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
           // Fetch full row with profile
           const { data } = await supabase
             .from('kul_messages')
-            .select('*, profiles(full_name, username, avatar_url)')
+            .select('*, profiles!kul_messages_sender_id_fkey(full_name, username, avatar_url)')
             .eq('id', payload.new.id)
             .single();
           if (data) setMsgs(prev => [...prev, data as MessageRow]);

@@ -151,7 +151,7 @@ export default function VichaarClient({
         body:      form.body.trim(),
         tags:      form.tags ? form.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
       })
-      .select('*, profiles(full_name, username, avatar_url, sampradaya)')
+      .select('*, profiles!forum_threads_author_id_fkey(full_name, username, avatar_url, sampradaya)')
       .single();
 
     if (error) { toast.error(error.message); }

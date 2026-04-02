@@ -11,7 +11,7 @@ export default async function ThreadPage({ params }: { params: Promise<{ id: str
 
   const { data: thread } = await supabase
     .from('forum_threads')
-    .select('*, profiles(full_name, username, avatar_url, sampradaya)')
+    .select('*, profiles!forum_threads_author_id_fkey(full_name, username, avatar_url, sampradaya)')
     .eq('id', id)
     .single();
 
@@ -20,7 +20,7 @@ export default async function ThreadPage({ params }: { params: Promise<{ id: str
 
   const { data: replies } = await supabase
     .from('forum_replies')
-    .select('*, profiles(full_name, username, avatar_url, sampradaya, spiritual_level)')
+    .select('*, profiles!forum_replies_author_id_fkey(full_name, username, avatar_url, sampradaya, spiritual_level)')
     .eq('thread_id', id)
     .order('created_at', { ascending: true });
 
