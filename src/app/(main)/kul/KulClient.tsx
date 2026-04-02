@@ -711,11 +711,12 @@ function daysUntilNextOccurrence(dateStr: string): number {
   return Math.ceil((thisYear.getTime() - today.setHours(0,0,0,0)) / 86_400_000);
 }
 
-function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, userId }: {
-  familyMembers: FamilyMember[]; kulEvents: KulEvent[]; kulId: string; userId: string;
+function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, userId, myRole }: {
+  familyMembers: FamilyMember[]; kulEvents: KulEvent[]; kulId: string; userId: string; myRole: 'guardian' | 'sadhak';
 }) {
   const supabase = createClient();
   const router   = useRouter();
+  const canManageVansh = myRole === 'guardian';
 
   const [members,     setMembers]     = useState(initial);
   const [events,      setEvents]      = useState(initialEvents);
@@ -756,6 +757,10 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
   }
 
   async function saveMember() {
+    if (!canManageVansh) {
+      toast.error('Only Kul guardians can update the Vansh');
+      return;
+    }
     if (!form.name.trim()) { toast.error('Name is required'); return; }
     const payload = {
       kul_id:        kulId,
@@ -808,6 +813,10 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
   }
 
   async function deleteMember(id: string, name: string) {
+    if (!canManageVansh) {
+      toast.error('Only Kul guardians can remove Vansh members');
+      return;
+    }
     if (!confirm(`Remove ${name} from the Vansh?`)) return;
     await supabase.from('kul_family_members').delete().eq('id', id);
     setMembers(prev => prev.filter(m => m.id !== id));
@@ -815,6 +824,10 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
   }
 
   async function saveEvent() {
+    if (!canManageVansh) {
+      toast.error('Only Kul guardians can create Vansh events');
+      return;
+    }
     if (!eForm.title.trim() || !eForm.event_date) { toast.error('Title and date required'); return; }
     const { data, error } = await supabase.from('kul_events').insert({
       kul_id: kulId, created_by: userId,
@@ -856,12 +869,27 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
             </button>
           ))}
         </div>
-        <button onClick={() => { resetForm(); setEditMember(null); setShowAdd(true); }}
-          className="w-9 h-9 rounded-xl flex items-center justify-center text-white flex-shrink-0"
-          style={{ background: '#7B1A1A' }}>
-          <Plus size={16} />
-        </button>
+        {canManageVansh ? (
+          <button onClick={() => { resetForm(); setEditMember(null); setShowAdd(true); }}
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-white flex-shrink-0"
+            style={{ background: '#7B1A1A' }}>
+            <Plus size={16} />
+          </button>
+        ) : (
+          <div className="px-3 py-2 rounded-xl border border-amber-200 bg-amber-50 text-[11px] font-medium text-amber-700 flex-shrink-0">
+            Guardian managed
+          </div>
+        )}
       </div>
+
+      {!canManageVansh && (
+        <div className="bg-white rounded-2xl border border-amber-200 p-4">
+          <p className="text-sm font-semibold text-gray-800">Vansh editing is guardian-only</p>
+          <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+            Kul guardians can add, update, and remove lineage members and family events. Other members can still view the family tree and upcoming dates.
+          </p>
+        </div>
+      )}
 
       {/* ── Add / Edit Member form ── */}
       {showAdd && (
@@ -979,16 +1007,18 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
                         {parent && <p>↑ {parent.name}</p>}
                       </div>
                       {/* Edit button */}
-                      <div className="flex gap-1 mt-2 justify-center">
-                        <button onClick={() => openEdit(m)}
-                          className="px-2 py-1 rounded-lg text-[10px] border border-gray-200 text-gray-500 hover:border-[#7B1A1A] hover:text-[#7B1A1A] transition">
-                          Edit
-                        </button>
-                        <button onClick={() => deleteMember(m.id, m.name)}
-                          className="px-2 py-1 rounded-lg text-[10px] border border-gray-200 text-gray-500 hover:border-red-300 hover:text-red-500 transition">
-                          ✕
-                        </button>
-                      </div>
+                      {canManageVansh && (
+                        <div className="flex gap-1 mt-2 justify-center">
+                          <button onClick={() => openEdit(m)}
+                            className="px-2 py-1 rounded-lg text-[10px] border border-gray-200 text-gray-500 hover:border-[#7B1A1A] hover:text-[#7B1A1A] transition">
+                            Edit
+                          </button>
+                          <button onClick={() => deleteMember(m.id, m.name)}
+                            className="px-2 py-1 rounded-lg text-[10px] border border-gray-200 text-gray-500 hover:border-red-300 hover:text-red-500 transition">
+                            ✕
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -1001,13 +1031,15 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
       {/* ── Events View ── */}
       {activeView === 'events' && (
         <div className="space-y-3">
-          <button onClick={() => setShowAddEvent(!showAddEvent)}
-            className="w-full bg-white border border-dashed border-[#7B1A1A]/30 rounded-2xl p-3 flex items-center gap-3 text-gray-400 hover:border-[#7B1A1A]/50 hover:text-[#7B1A1A] transition">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: '#7B1A1A15' }}>
-              <Plus size={14} style={{ color: '#7B1A1A' }} />
-            </div>
-            <span className="text-sm">Add event, puja date, anniversary…</span>
-          </button>
+          {canManageVansh && (
+            <button onClick={() => setShowAddEvent(!showAddEvent)}
+              className="w-full bg-white border border-dashed border-[#7B1A1A]/30 rounded-2xl p-3 flex items-center gap-3 text-gray-400 hover:border-[#7B1A1A]/50 hover:text-[#7B1A1A] transition">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: '#7B1A1A15' }}>
+                <Plus size={14} style={{ color: '#7B1A1A' }} />
+              </div>
+              <span className="text-sm">Add event, puja date, anniversary…</span>
+            </button>
+          )}
 
           {showAddEvent && (
             <div className="bg-white rounded-2xl border border-orange-100 p-4 space-y-3 fade-in">
@@ -1202,7 +1234,7 @@ export default function KulClient({ userId, userName, userProfile, kul, members,
       {activeTab === 'members' && <MembersTab members={members} userId={userId} myRole={myRole} kul={kul} />}
       {activeTab === 'tasks'   && <TasksTab   tasks={tasks} members={members} userId={userId} myRole={myRole} kulId={kul.id} />}
       {activeTab === 'sabha'   && <SabhaTab   messages={messages} userId={userId} kulId={kul.id} userName={userName} />}
-      {activeTab === 'vansh'  && <VanshTab  familyMembers={familyMembers} kulEvents={kulEvents} kulId={kul.id} userId={userId} />}
+      {activeTab === 'vansh'  && <VanshTab  familyMembers={familyMembers} kulEvents={kulEvents} kulId={kul.id} userId={userId} myRole={myRole} />}
     </div>
   );
 }

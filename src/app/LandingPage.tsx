@@ -202,9 +202,11 @@ export default function LandingPage() {
             <span>🕉️</span>
             <span>Sanatana Sangam — सनातन संगम</span>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center justify-center gap-4">
             <Link href="/about"   className="hover:text-gray-700 transition-colors">About</Link>
             <Link href="/privacy" className="hover:text-gray-700 transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-gray-700 transition-colors">Terms</Link>
+            <Link href="/guidelines" className="hover:text-gray-700 transition-colors">Guidelines</Link>
             <Link href="/contact" className="hover:text-gray-700 transition-colors">Contact</Link>
           </div>
           <div>Built with 🙏 for the global Sanatani community</div>

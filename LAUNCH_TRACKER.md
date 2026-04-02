@@ -1,0 +1,43 @@
+# Launch Tracker
+
+Last updated: 2026-04-02
+
+## Current Focus
+
+- [x] Create strategy brief: `PRODUCT_LAUNCH_PLAN.md`
+- [x] Add public trust pages: `about`, `privacy`, `terms`, `contact`, `guidelines`
+- [x] Add signup consent linked to public policies
+- [x] Verify build after trust-surface pass
+- [x] Tighten Kul / Vansh guardian permissions in UI and RLS
+
+## P0 Launch Blockers
+
+- [ ] Trust and legal pages are live and linked from the public app
+- [ ] Support contact path is configured for production
+- [ ] User reporting, block, mute, and hide flows exist in the main app
+- [ ] Festival data is no longer hardcoded to a single year
+- [ ] Panchang accuracy strategy is finalized and reflected in product copy
+- [ ] Push notifications are either fully implemented or removed from product claims
+- [ ] Notification jobs are segmented, deduplicated, and timezone-aware
+- [ ] `schema.sql`, migrations, and app types are aligned
+- [ ] `package.json` and installed dependency versions are aligned
+- [ ] Lockfile is committed
+- [ ] ESLint runs non-interactively
+- [ ] CI is added for build and lint checks
+- [ ] PWA assets and registration are complete, or incomplete claims are removed
+- [ ] Kul lineage destructive permissions are enforced in the database, not just the UI
+
+## P1 Beta Work
+
+- [ ] Personalize onboarding and home experience from `seeking`
+- [ ] Add Mandali comments and replies
+- [ ] Add Mandali event RSVP flow
+- [ ] Add analytics, funnel tracking, and error monitoring
+- [ ] Replace browser `confirm`, `alert`, and `window.prompt` flows with app-native UI
+- [ ] Add scripture bookmarks and reading plans
+- [ ] Activate referral attribution from invite codes
+
+## Notes
+
+- The best near-term market story is: diaspora Hindu / Sanatani launch first, then broader dharmic expansion after parity improves.
+- Current implementation pass is intentionally focused on launch credibility at the front door before deeper social or growth work.

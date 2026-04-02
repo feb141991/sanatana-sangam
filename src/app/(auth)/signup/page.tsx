@@ -22,6 +22,7 @@ export default function SignupPage() {
   const [showPass,   setShowPass]   = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
   const [inviteCode, setInviteCode] = useState('');
+  const [acceptedPolicies, setAcceptedPolicies] = useState(false);
 
   const [form, setForm] = useState({
     email:          '',
@@ -101,6 +102,11 @@ export default function SignupPage() {
   }
 
   async function handleSubmit() {
+    if (!acceptedPolicies) {
+      toast.error('Please accept the Terms, Privacy Policy, and Community Guidelines');
+      return;
+    }
+
     setLoading(true);
     try {
       const normalizedUsername = form.username.toLowerCase().trim().replace(/\s+/g, '_');
@@ -424,12 +430,39 @@ export default function SignupPage() {
                 ))}
               </div>
 
+              <div className="glass-panel rounded-2xl px-4 py-3 text-sm text-gray-600">
+                <div className="flex items-start gap-3">
+                <input
+                  id="policy-consent"
+                  type="checkbox"
+                  checked={acceptedPolicies}
+                  onChange={(e) => setAcceptedPolicies(e.target.checked)}
+                  className="mt-1 h-4 w-4 rounded border-gray-300 text-[#7B1A1A] focus:ring-[#7B1A1A]"
+                />
+                <label htmlFor="policy-consent" className="leading-6">
+                  I agree to the{' '}
+                  <Link href="/terms" className="text-[#7B1A1A] font-semibold hover:underline">
+                    Terms
+                  </Link>
+                  ,{' '}
+                  <Link href="/privacy" className="text-[#7B1A1A] font-semibold hover:underline">
+                    Privacy Policy
+                  </Link>
+                  {' '}and{' '}
+                  <Link href="/guidelines" className="text-[#7B1A1A] font-semibold hover:underline">
+                    Community Guidelines
+                  </Link>
+                  .
+                </label>
+                </div>
+              </div>
+
               <div className="flex gap-3 pt-2">
                 <button onClick={() => setStep(2)}
                   className="flex items-center gap-1 px-4 py-3 text-gray-500 hover:text-gray-800 transition text-sm">
                   <ArrowLeft size={16} /> Back
                 </button>
-                <button onClick={handleSubmit} disabled={loading}
+                <button onClick={handleSubmit} disabled={loading || !acceptedPolicies}
                   className="flex-1 py-3 bg-gradient-sacred text-white font-semibold rounded-xl hover:opacity-90 transition flex items-center justify-center gap-2 disabled:opacity-60">
                   {loading ? 'Joining…' : <>Enter the Sangam 🙏</>}
                 </button>
