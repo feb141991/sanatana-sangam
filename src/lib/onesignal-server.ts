@@ -41,36 +41,41 @@ export async function sendOneSignalPush(message: PushMessage) {
   let sent = 0;
 
   for (const batch of chunk(targetUserIds, BATCH_SIZE)) {
-    const response = await fetch(ONESIGNAL_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Key ${config.apiKey}`,
-      },
-      body: JSON.stringify({
-        app_id: config.appId,
-        include_aliases: {
-          external_id: batch,
+    try {
+      const response = await fetch(ONESIGNAL_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Key ${config.apiKey}`,
         },
-        target_channel: 'push',
-        headings: {
-          en: message.title,
-        },
-        contents: {
-          en: message.body,
-        },
-        url: message.url ?? undefined,
-        data: message.data ?? undefined,
-      }),
-    });
+        body: JSON.stringify({
+          app_id: config.appId,
+          include_aliases: {
+            external_id: batch,
+          },
+          target_channel: 'push',
+          headings: {
+            en: message.title,
+          },
+          contents: {
+            en: message.body,
+          },
+          url: message.url ?? undefined,
+          data: message.data ?? undefined,
+        }),
+      });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OneSignal push failed:', response.status, errorText);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('OneSignal push failed:', response.status, errorText);
+        continue;
+      }
+
+      sent += batch.length;
+    } catch (error) {
+      console.error('OneSignal push request crashed:', error);
       continue;
     }
-
-    sent += batch.length;
   }
 
   return {

@@ -13,59 +13,91 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  const today = new Date().toISOString().split('T')[0];
-
-  // Find users who haven't read today — last_shloka_date is null or not today
-  const { data: users } = await supabase
-    .from('profiles')
-    .select('id, shloka_streak, full_name')
-    .or(`last_shloka_date.is.null,last_shloka_date.neq.${today}`);
-
-  if (!users || users.length === 0) {
-    return NextResponse.json({ message: 'All users have read today\'s shloka', sent: 0 });
+  if (!supabaseUrl || !serviceRoleKey) {
+    return NextResponse.json(
+      { error: 'Supabase cron environment is missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY' },
+      { status: 500 }
+    );
   }
 
-  const notifications = users.map((u) => {
-    const streak = u.shloka_streak ?? 0;
-    const streakMsg = streak > 0
-      ? `Don't break your ${streak}-day streak! 🔥`
-      : 'Start your shloka journey today 🌱';
-    return {
-      user_id:    u.id,
-      title:      '🕉️ Aaj Ka Shloka awaits',
-      body:       `${streakMsg} Take a moment for today's shloka and earn +5 seva points.`,
-      emoji:      '🕉️',
-      type:       'streak',
-      action_url: '/home',
-    };
-  });
+  const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-  // Insert in batches of 100
-  let totalInserted = 0;
-  for (let i = 0; i < notifications.length; i += 100) {
-    const batch = notifications.slice(i, i + 100);
-    await supabase.from('notifications').insert(batch);
-    totalInserted += batch.length;
+  try {
+    const today = new Date().toISOString().split('T')[0];
+
+    // Find users who haven't read today — last_shloka_date is null or not today
+    const { data: users, error: usersError } = await supabase
+      .from('profiles')
+      .select('id, shloka_streak, full_name')
+      .or(`last_shloka_date.is.null,last_shloka_date.neq.${today}`);
+
+    if (usersError) {
+      console.error('Shloka cron users query failed:', usersError);
+      return NextResponse.json(
+        { error: `Profiles query failed: ${usersError.message}` },
+        { status: 500 }
+      );
+    }
+
+    if (!users || users.length === 0) {
+      return NextResponse.json({ message: 'All users have read today\'s shloka', sent: 0 });
+    }
+
+    const notifications = users.map((u) => {
+      const streak = u.shloka_streak ?? 0;
+      const streakMsg = streak > 0
+        ? `Don't break your ${streak}-day streak! 🔥`
+        : 'Start your shloka journey today 🌱';
+      return {
+        user_id:    u.id,
+        title:      '🕉️ Aaj Ka Shloka awaits',
+        body:       `${streakMsg} Take a moment for today's shloka and earn +5 seva points.`,
+        emoji:      '🕉️',
+        type:       'streak',
+        action_url: '/home',
+      };
+    });
+
+    // Insert in batches of 100
+    let totalInserted = 0;
+    for (let i = 0; i < notifications.length; i += 100) {
+      const batch = notifications.slice(i, i + 100);
+      const { error: insertError } = await supabase.from('notifications').insert(batch);
+
+      if (insertError) {
+        console.error('Shloka cron notification insert failed:', insertError);
+        return NextResponse.json(
+          { error: `Notification insert failed: ${insertError.message}` },
+          { status: 500 }
+        );
+      }
+
+      totalInserted += batch.length;
+    }
+
+    const pushResult = await sendOneSignalPush({
+      userIds: users.map((user) => user.id),
+      title: 'Aaj Ka Shloka awaits',
+      body: 'Take a quiet moment for today\'s sacred text and keep your practice flowing.',
+      url: '/home',
+      data: {
+        type: 'streak',
+      },
+    });
+
+    return NextResponse.json({
+      message:  'Shloka reminders sent',
+      reminded: totalInserted,
+      push_targets: pushResult.sent,
+    });
+  } catch (error) {
+    console.error('Shloka cron crashed:', error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Shloka cron crashed' },
+      { status: 500 }
+    );
   }
-
-  const pushResult = await sendOneSignalPush({
-    userIds: users.map((user) => user.id),
-    title: 'Aaj Ka Shloka awaits',
-    body: 'Take a quiet moment for today\'s sacred text and keep your practice flowing.',
-    url: '/home',
-    data: {
-      type: 'streak',
-    },
-  });
-
-  return NextResponse.json({
-    message:  'Shloka reminders sent',
-    reminded: totalInserted,
-    push_targets: pushResult.sent,
-  });
 }

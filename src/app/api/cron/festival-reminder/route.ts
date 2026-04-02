@@ -15,86 +15,126 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const in1day  = new Date(today); in1day.setDate(in1day.getDate() + 1);
-  const in7days = new Date(today); in7days.setDate(in7days.getDate() + 7);
-
-  const fmt = (d: Date) => d.toISOString().split('T')[0];
-
-  // Fetch festivals that are 1 or 7 days away
-  const { data: festivals } = await supabase
-    .from('festivals')
-    .select('*')
-    .in('date', [fmt(in1day), fmt(in7days)]);
-
-  if (!festivals || festivals.length === 0) {
-    return NextResponse.json({ message: 'No festivals due for reminder', sent: 0 });
+  if (!supabaseUrl || !serviceRoleKey) {
+    return NextResponse.json(
+      { error: 'Supabase cron environment is missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY' },
+      { status: 500 }
+    );
   }
 
-  // Fetch all user IDs
-  const { data: users } = await supabase
-    .from('profiles')
-    .select('id');
+  const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-  if (!users || users.length === 0) {
-    return NextResponse.json({ message: 'No users', sent: 0 });
-  }
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-  let totalInserted = 0;
-  let totalPushTargets = 0;
+    const in1day  = new Date(today); in1day.setDate(in1day.getDate() + 1);
+    const in7days = new Date(today); in7days.setDate(in7days.getDate() + 7);
 
-  for (const festival of festivals) {
-    const daysAway = Math.round((new Date(festival.date).getTime() - today.getTime()) / 86400000);
-    const title = daysAway === 1
-      ? `${festival.emoji} ${festival.name} — Tomorrow!`
-      : `${festival.emoji} ${festival.name} — In 7 days`;
-    const body  = daysAway === 1
-      ? `${festival.description}. Prepare your puja and celebrations.`
-      : `${festival.name} is coming up on ${new Date(festival.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' })}. Plan ahead.`;
+    const fmt = (d: Date) => d.toISOString().split('T')[0];
 
-    const notifications = users.map((u) => ({
-      user_id:    u.id,
-      title,
-      body,
-      emoji:      festival.emoji,
-      type:       'festival',
-      action_url: '/home',
-    }));
+    // Fetch festivals that are 1 or 7 days away
+    const { data: festivals, error: festivalsError } = await supabase
+      .from('festivals')
+      .select('*')
+      .in('date', [fmt(in1day), fmt(in7days)]);
 
-    // Insert in batches of 100
-    for (let i = 0; i < notifications.length; i += 100) {
-      const batch = notifications.slice(i, i + 100);
-      await supabase
-        .from('notifications')
-        .insert(batch);
-      totalInserted += batch.length;
+    if (festivalsError) {
+      console.error('Festival cron festivals query failed:', festivalsError);
+      return NextResponse.json(
+        { error: `Festival query failed: ${festivalsError.message}` },
+        { status: 500 }
+      );
     }
 
-    const pushResult = await sendOneSignalPush({
-      userIds: users.map((user) => user.id),
-      title,
-      body,
-      url: '/home',
-      data: {
-        type: 'festival',
-        festival_id: String(festival.id ?? ''),
-      },
-    });
-    totalPushTargets += pushResult.sent;
-  }
+    if (!festivals || festivals.length === 0) {
+      return NextResponse.json({ message: 'No festivals due for reminder', sent: 0 });
+    }
 
-  return NextResponse.json({
-    message: `Festival reminders sent`,
-    festivals: festivals.map((f) => f.name),
-    users:    users.length,
-    inserted: totalInserted,
-    push_targets: totalPushTargets,
-  });
+    // Fetch all user IDs
+    const { data: users, error: usersError } = await supabase
+      .from('profiles')
+      .select('id');
+
+    if (usersError) {
+      console.error('Festival cron users query failed:', usersError);
+      return NextResponse.json(
+        { error: `Profiles query failed: ${usersError.message}` },
+        { status: 500 }
+      );
+    }
+
+    if (!users || users.length === 0) {
+      return NextResponse.json({ message: 'No users', sent: 0 });
+    }
+
+    let totalInserted = 0;
+    let totalPushTargets = 0;
+
+    for (const festival of festivals) {
+      const daysAway = Math.round((new Date(festival.date).getTime() - today.getTime()) / 86400000);
+      const title = daysAway === 1
+        ? `${festival.emoji} ${festival.name} — Tomorrow!`
+        : `${festival.emoji} ${festival.name} — In 7 days`;
+      const body  = daysAway === 1
+        ? `${festival.description}. Prepare your puja and celebrations.`
+        : `${festival.name} is coming up on ${new Date(festival.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' })}. Plan ahead.`;
+
+      const notifications = users.map((u) => ({
+        user_id:    u.id,
+        title,
+        body,
+        emoji:      festival.emoji,
+        type:       'festival',
+        action_url: '/home',
+      }));
+
+      // Insert in batches of 100
+      for (let i = 0; i < notifications.length; i += 100) {
+        const batch = notifications.slice(i, i + 100);
+        const { error: insertError } = await supabase
+          .from('notifications')
+          .insert(batch);
+
+        if (insertError) {
+          console.error('Festival cron notification insert failed:', insertError);
+          return NextResponse.json(
+            { error: `Notification insert failed: ${insertError.message}` },
+            { status: 500 }
+          );
+        }
+
+        totalInserted += batch.length;
+      }
+
+      const pushResult = await sendOneSignalPush({
+        userIds: users.map((user) => user.id),
+        title,
+        body,
+        url: '/home',
+        data: {
+          type: 'festival',
+          festival_id: String(festival.id ?? ''),
+        },
+      });
+      totalPushTargets += pushResult.sent;
+    }
+
+    return NextResponse.json({
+      message: `Festival reminders sent`,
+      festivals: festivals.map((f) => f.name),
+      users:    users.length,
+      inserted: totalInserted,
+      push_targets: totalPushTargets,
+    });
+  } catch (error) {
+    console.error('Festival cron crashed:', error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Festival cron crashed' },
+      { status: 500 }
+    );
+  }
 }
