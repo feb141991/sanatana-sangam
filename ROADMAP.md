@@ -360,6 +360,32 @@ Exit criteria:
 
 - a newcomer can complete a short, confidence-building guided journey in their first session or week
 
+### B1.3 Religious language and script support
+
+Status: `Planned`
+
+Outcome:
+
+- the app can welcome users in familiar devotional languages without turning content accuracy into guesswork
+
+Plan:
+
+- separate UI localization from sacred-text script and translation support
+- support script toggles first: original script, transliteration, and trusted English meaning
+- then add product-language packs for common launch audiences such as English, Hindi, and Punjabi
+
+Build slices:
+
+- content: normalize original-script, transliteration, and meaning fields across Library, Home, and AI references
+- platform: add locale dictionaries and route-safe UI copy switching
+- trust: mark whether a translation is canonical, curated, or reflective
+- UX: remember per-user language and script preferences
+
+Exit criteria:
+
+- users can change script / language preferences without losing source trust
+- the core devotional surfaces remain legible and accurate in at least the launch languages
+
 ## Phase B2 — Knowledge Retention And Trust
 
 Status: `Blocked`

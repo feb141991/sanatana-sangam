@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
@@ -38,6 +38,7 @@ export default function TopBar({
   userInitials?: string;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const title = Object.entries(titles).find(([route]) => (
     pathname === route || pathname.startsWith(`${route}/`)
   ))?.[1] ?? 'Sanatana Sangam';
@@ -234,7 +235,13 @@ export default function TopBar({
                                 supabase.from('notifications').update({ read: true }).eq('id', n.id);
                                 setNotifs((prev) => prev.map((x) => x.id === n.id ? { ...x, read: true } : x));
                               }
-                              if (n.action_url) window.location.href = n.action_url;
+                              if (!n.action_url) return;
+                              if (/^https?:\/\//.test(n.action_url)) {
+                                window.location.href = n.action_url;
+                                return;
+                              }
+                              setOpen(false);
+                              router.push(n.action_url);
                             }}
                           >
                             <span className="text-lg mt-0.5 flex-shrink-0">{n.emoji}</span>

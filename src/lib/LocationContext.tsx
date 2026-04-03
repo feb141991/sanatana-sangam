@@ -17,6 +17,7 @@
  */
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
 import { API, LOCATION } from '@/lib/config';
 
 export interface Coords {
@@ -53,6 +54,9 @@ interface GeoInfo {
   country:     string;
   countryCode: string;
 }
+
+const AUTO_REQUEST_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+const AUTO_REQUEST_STORAGE_KEY = 'sangam:auto-location-requested-at';
 
 async function reverseGeocode(lat: number, lon: number): Promise<GeoInfo> {
   try {
@@ -95,6 +99,7 @@ export function LocationProvider({
   savedCountry     = '',
   savedCountryCode = '',
 }: Props) {
+  const pathname = usePathname();
   const [coords,      setCoords]      = useState<Coords | null>(
     savedLat && savedLon ? { lat: savedLat, lon: savedLon } : null
   );
@@ -103,6 +108,8 @@ export function LocationProvider({
   const [countryCode, setCountryCode] = useState<string>(savedCountryCode);
   const [loading,     setLoading]     = useState(false);
   const [error,       setError]       = useState<string | null>(null);
+
+  const shouldAutoLocate = pathname === '/home' || pathname === '/mandali' || pathname === '/tirtha-map' || pathname === '/profile';
 
   const requestLocation = useCallback(() => {
     if (!navigator.geolocation) {
@@ -134,12 +141,44 @@ export function LocationProvider({
     );
   }, []);
 
-  // Ask for location on first mount (only if no saved coords)
+  // Ask for location lazily, only on location-aware screens, and not on every launch.
   useEffect(() => {
-    if (!savedLat || !savedLon) {
+    if (savedLat && savedLon) return;
+    if (!shouldAutoLocate) return;
+    if (typeof window === 'undefined') return;
+
+    const lastAttempt = Number(window.localStorage.getItem(AUTO_REQUEST_STORAGE_KEY) ?? '0');
+    const shouldSkipForCooldown = lastAttempt && (Date.now() - lastAttempt) < AUTO_REQUEST_COOLDOWN_MS;
+    if (shouldSkipForCooldown) return;
+
+    const run = () => {
+      window.localStorage.setItem(AUTO_REQUEST_STORAGE_KEY, String(Date.now()));
       requestLocation();
+    };
+
+    const browserWindow = window as Window & typeof globalThis & {
+      requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+
+    let idleCallbackId: number | null = null;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+    if (typeof browserWindow.requestIdleCallback === 'function') {
+      idleCallbackId = browserWindow.requestIdleCallback(() => run(), { timeout: 1500 });
+    } else {
+      timeoutId = globalThis.setTimeout(run, 900);
     }
-  }, []);
+
+    return () => {
+      if (typeof browserWindow.cancelIdleCallback === 'function' && idleCallbackId !== null) {
+        browserWindow.cancelIdleCallback(idleCallbackId);
+      }
+      if (timeoutId !== null) {
+        globalThis.clearTimeout(timeoutId);
+      }
+    };
+  }, [requestLocation, savedLat, savedLon, shouldAutoLocate]);
 
   return (
     <LocationContext.Provider value={{

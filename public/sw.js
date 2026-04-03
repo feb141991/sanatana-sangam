@@ -1,12 +1,12 @@
 // Sanatana Sangam — Service Worker
 // Enables offline support and PWA "Add to Home Screen"
 
-const CACHE_NAME = 'sangam-v1';
+const CACHE_NAME = 'sangam-v2';
 const OFFLINE_URL = '/offline';
 
 const PRECACHE_ASSETS = [
   '/',
-  '/mandali',
+  '/home',
   '/vichaar-sabha',
   '/manifest.json',
 ];

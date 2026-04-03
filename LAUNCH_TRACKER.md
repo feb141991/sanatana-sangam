@@ -44,6 +44,7 @@ Last updated: 2026-04-03
 - [ ] Add analytics, funnel tracking, and error monitoring
 - [ ] Replace browser `confirm`, `alert`, and `window.prompt` flows with app-native UI
 - [ ] Add scripture bookmarks and reading plans
+- [ ] Define religious language support: script toggles first, then launch-language UI packs
 - [ ] Activate referral attribution from invite codes
 
 ## Notes
