@@ -38,11 +38,11 @@ const config: Config = {
         devanagari: ["Noto Sans Devanagari", "sans-serif"],
       },
       backgroundImage: {
-        "gradient-sacred": "linear-gradient(135deg, #ff7722 0%, #d4a017 100%)",
+        "gradient-sacred": "linear-gradient(135deg, #7B1A1A 0%, #c3872f 100%)",
         "gradient-subtle": "linear-gradient(180deg, #fff8f0 0%, #fdf6e3 100%)",
       },
       boxShadow: {
-        sacred: "0 4px 20px rgba(255, 119, 34, 0.15)",
+        sacred: "0 4px 20px rgba(123, 26, 26, 0.18)",
         card:   "0 2px 12px rgba(0, 0, 0, 0.08)",
       },
     },
