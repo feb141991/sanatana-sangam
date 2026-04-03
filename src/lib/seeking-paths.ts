@@ -40,7 +40,7 @@ const PATH_DEFINITIONS: Record<SeekingKey, Omit<PersonalizedPath, 'id' | 'badges
     description: 'Begin with one text, one question, and one place to return tomorrow so learning feels grounded, not overwhelming.',
     accentClass: 'clay-card-knowledge',
     actions: [
-      { label: 'Browse Library', href: '/library', icon: '📚' },
+      { label: 'Open Pathshala', href: '/library', icon: '📚' },
       { label: 'Enter Vichaar Sabha', href: '/vichaar-sabha', icon: '💬' },
     ],
   },
@@ -61,7 +61,7 @@ const PATH_DEFINITIONS: Record<SeekingKey, Omit<PersonalizedPath, 'id' | 'badges
     accentClass: 'clay-card-mentorship',
     actions: [
       { label: 'Ask in Vichaar Sabha', href: '/vichaar-sabha', icon: '🙏' },
-      { label: 'Read a foundational text', href: '/library', icon: '📖' },
+      { label: 'Read in Pathshala', href: '/library', icon: '📖' },
     ],
   },
   youth: {
@@ -70,7 +70,7 @@ const PATH_DEFINITIONS: Record<SeekingKey, Omit<PersonalizedPath, 'id' | 'badges
     description: 'Use shorter, friendlier entry points first: simple explanations, local discovery, and one clear next step.',
     accentClass: 'clay-card-youth',
     actions: [
-      { label: 'Read beginner-friendly texts', href: '/library', icon: '🌱' },
+      { label: 'Start beginner Pathshala', href: '/library', icon: '🌱' },
       { label: 'Explore community questions', href: '/vichaar-sabha', icon: '💭' },
     ],
   },

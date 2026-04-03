@@ -26,7 +26,7 @@ export interface TraditionMeta {
   accentColour:     string;
   /** Light tint for card backgrounds */
   accentLight:      string;
-  /** Default library section id to land on */
+  /** Default Pathshala section id to land on */
   librarySection:   string;
   /** Label for the daily sacred text card */
   sacredTextLabel:  string;
@@ -36,7 +36,7 @@ export interface TraditionMeta {
   sacredTextShareLabel: string;
   /** Calendar system used by this tradition */
   calendarType:     'vedic' | 'nanakshahi' | 'buddhist_lunar' | 'jain' | 'gregorian';
-  /** Bottom-nav Library tab label */
+  /** Bottom-nav Pathshala tab label */
   navLibraryLabel:  string;
   /** Dharma Mitra AI opening message */
   aiGreeting:       string;
@@ -56,12 +56,12 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     shortLabel:           'Hindu',
     accentColour:         '#1f6b72',
     accentLight:          '#eef6f6',
-    librarySection:       'bhagavad_gita',
+    librarySection:       'gita',
     sacredTextLabel:      "Aaj Ka Shloka",
     sacredTextIcon:       '🕉️',
     sacredTextShareLabel: 'Aaj Ka Shloka',
     calendarType:         'vedic',
-    navLibraryLabel:      'Shastra',
+    navLibraryLabel:      'Pathshala',
     aiGreeting:           'Hari Om 🕉️ I am Dharma Mitra — your guide on the Sanatana path. Ask me anything about dharma, scripture, your sampradaya, or spiritual practice.',
     sampradayaLabel:      'Sampradaya',
     devataLabel:          'Ishta Devata',
@@ -79,7 +79,7 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     sacredTextIcon:       '☬',
     sacredTextShareLabel: 'Aaj Ka Shabad',
     calendarType:         'nanakshahi',
-    navLibraryLabel:      'Gurbani',
+    navLibraryLabel:      'Pathshala',
     aiGreeting:           'Sat Sri Akal ☬ I am Dharma Mitra — here to explore the Guru\'s wisdom with you. Ask me about Gurbani, Sikh history, Gurmat, or your spiritual journey.',
     sampradayaLabel:      'Sikh Panth',
     devataLabel:          'Simran Focus',
@@ -97,7 +97,7 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     sacredTextIcon:       '☸️',
     sacredTextShareLabel: 'Dhamma Verse',
     calendarType:         'buddhist_lunar',
-    navLibraryLabel:      'Dhamma',
+    navLibraryLabel:      'Pathshala',
     aiGreeting:           'Namo Buddhaya ☸️ I am Dharma Mitra — walking the Eightfold Path with you. Ask me about the Dhamma, meditation, mindfulness, or the Buddha\'s teachings.',
     sampradayaLabel:      'Buddhist School',
     devataLabel:          'Bodhisattva / Buddha',
@@ -115,7 +115,7 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     sacredTextIcon:       '🤲',
     sacredTextShareLabel: 'Aaj Ka Sutra',
     calendarType:         'jain',
-    navLibraryLabel:      'Agam',
+    navLibraryLabel:      'Pathshala',
     aiGreeting:           'Jai Jinendra 🤲 I am Dharma Mitra — exploring the Jain path of Ahimsa with you. Ask me about the Agamas, Mahavir\'s teachings, Anekantavada, or Jain philosophy.',
     sampradayaLabel:      'Jain Sect',
     devataLabel:          'Tirthankar Devotion',
@@ -128,12 +128,12 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     shortLabel:           'Exploring',
     accentColour:         '#4a1a7b',
     accentLight:          '#f8f4ff',
-    librarySection:       'bhagavad_gita',
+    librarySection:       'gita',
     sacredTextLabel:      "Today's Wisdom",
     sacredTextIcon:       '✨',
     sacredTextShareLabel: 'Daily Wisdom',
     calendarType:         'gregorian',
-    navLibraryLabel:      'Library',
+    navLibraryLabel:      'Pathshala',
     aiGreeting:           'Pranam ✨ I am Dharma Mitra — here to explore all dharmic traditions with you. Ask me anything about Hindu, Sikh, Buddhist, or Jain wisdom and philosophy.',
     sampradayaLabel:      'Tradition / Path',
     devataLabel:          'Spiritual Guide',

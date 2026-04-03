@@ -6,12 +6,12 @@ import { Home, MapPin, Users, BookOpen, Heart, Sparkles, Compass, MessageSquare 
 import { cn } from '@/lib/utils';
 
 interface Props {
-  /** Tradition-aware label for the Library tab — 'Shastra' | 'Gurbani' | 'Dhamma' | 'Agam' */
+  /** Pathshala tab label, kept short for bottom-nav space */
   libraryLabel?: string;
   isGuest?: boolean;
 }
 
-export default function BottomNav({ libraryLabel = 'Library', isGuest = false }: Props) {
+export default function BottomNav({ libraryLabel = 'Pathshala', isGuest = false }: Props) {
   const pathname = usePathname();
 
   const memberNavItems = [

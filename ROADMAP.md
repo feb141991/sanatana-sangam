@@ -86,6 +86,8 @@ At any given time:
 ### Parallel design lane
 
 - `Sacred Clay` system for selected `Phase B` surfaces
+- palette unification around the new ivory + teal + saffron system
+- reusable editor-sheet pattern based on the home greeting flow
 
 ### Next eligible low-risk `Phase B` implementation
 
@@ -223,6 +225,42 @@ Current slice:
 - hidden, muted, and blocked content is now filtered out of the main social surfaces
 - profile now includes a `Safety & Visibility` section for undoing those actions
 - this still needs live migration rollout and end-to-end product QA on the deployed app
+
+### A1.6 Parampara Pathshala corpus and source governance
+
+Status: `Planned`
+
+Outcome:
+
+- scripture learning becomes a trustworthy product surface instead of a quote archive
+
+Plan:
+
+- rename `Parampara Library` to `Parampara Pathshala`
+- define a tradition-first information architecture:
+  - tradition -> scripture category -> text / lesson
+- create a source governance model for every text:
+  - source owner
+  - rights status
+  - canonical vs commentary vs curated lesson
+  - language and script support
+  - provenance and revision metadata
+- prefer a catalog-first rollout where rights-cleared full texts are ingested and everything else remains clearly linked out
+
+Exit criteria:
+
+- the Pathshala structure is tradition-first
+- every in-product text has a rights status and provenance label
+- source legitimacy is clear enough for production, not just development
+
+Current slice:
+
+- `PARAMPARA_PATHSHALA_PLAN.md` now defines the recommended structure and source strategy
+- this work belongs in `Phase A` because corpus legitimacy is a trust issue, not just a content issue
+- the first local UI slice is now in build:
+  - `Parampara Library` has been renamed to `Parampara Pathshala`
+  - the reading surface now starts with tradition tiles
+  - scripture categories and study tracks now sit between tradition and individual passages
 
 ## Phase A2 — Social Safety And Platform Hardening
 
@@ -454,6 +492,38 @@ Exit criteria:
 
 - `Vichaar Sabha` can distinguish helpful, accepted, and trusted answers clearly
 
+### B2.3 Pathshala learning engine
+
+Status: `Blocked`
+
+Depends on:
+
+- `A1.6 Parampara Pathshala corpus and source governance`
+
+Outcome:
+
+- Pathshala becomes a repeat-learning system rather than a static reading surface
+
+Plan:
+
+- add bookmarks, reading plans, and continue-learning loops
+- add flashcards and spaced revision prompts
+- add chapter quizzes and mastery checkpoints
+- add interleaved review across related concepts
+- add exams or milestone assessments only after the corpus and provenance layer is trustworthy
+
+Build slices:
+
+- data: course progress, flashcard state, quiz attempts, mastery thresholds
+- backend: recommendation and revisit scheduling
+- UI: chapter cards, revision prompts, quiz surfaces, exam flow
+- trust: keep canonical text and assessment content clearly labeled
+
+Exit criteria:
+
+- users can learn, revise, and demonstrate mastery inside Pathshala
+- the learning loop is grounded in source-aware content rather than random excerpts
+
 ## Phase B3 — Family Memory Moat
 
 Status: `Blocked`
@@ -524,6 +594,8 @@ Current slice:
 - the app shell palette is now shifting toward ivory, peacock teal, saffron, and soft earth
 - `Kul` / `Vansh` is moving from rough clay figurines to keepsake medallions and calmer lineage cards
 - `COLOR_STRATEGY.md` now tracks the research basis and usage rules for the palette direction
+- the next polish pass is to remove obvious maroon holdouts from high-traffic screens
+- the home greeting editor is becoming the reusable sheet pattern for profile and other key edit flows
 - the rest of the app shell remains glass-first
 
 Do not lead with it on:

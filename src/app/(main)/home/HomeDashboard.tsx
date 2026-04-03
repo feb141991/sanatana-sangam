@@ -68,7 +68,7 @@ const quickAccessItems = [
   { label: 'Nearby Tirthas', icon: '🛕', href: '/tirtha-map',       desc: 'Find sacred places near you', bg: 'bg-orange-50',  border: 'border-orange-100',  iconBg: 'bg-orange-100'  },
   { label: 'My Mandali',     icon: '🏡', href: '/mandali',           desc: 'Your local sangam',           bg: 'bg-rose-50',    border: 'border-rose-100',    iconBg: 'bg-rose-100'    },
   { label: 'My Kul',         icon: '❤️', href: '/kul',               desc: 'Family sadhana together',     bg: 'bg-pink-50',    border: 'border-pink-100',    iconBg: 'bg-pink-100'    },
-  { label: 'Shastra Study',  icon: '📖', href: '/library',            desc: 'Vedas, Puranas & more',       bg: 'bg-emerald-50', border: 'border-emerald-100', iconBg: 'bg-emerald-100' },
+  { label: 'Pathshala',      icon: '📖', href: '/library',            desc: 'Tradition-first study tracks', bg: 'bg-emerald-50', border: 'border-emerald-100', iconBg: 'bg-emerald-100' },
 ];
 
 // ── Invite code — deterministic from userId (no DB needed) ─────────────────

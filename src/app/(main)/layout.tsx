@@ -20,7 +20,7 @@ export default async function MainLayout({
   let savedCity:        string        = '';
   let savedCountry:     string        = '';
   let savedCountryCode: string        = '';
-  let libraryLabel:     string        = 'Library';
+  let libraryLabel:     string        = 'Pathshala';
   let avatarUrl:        string | null = null;
   let userInitials:     string        = 'SS';
 

@@ -1,4 +1,4 @@
-// ─── Parampara Library — Sanatan Scripture Content ────────────────────────────
+// ─── Parampara Pathshala — Sanatan Scripture Content ──────────────────────────
 // Covers Hindu, Sikh, Buddhist, Jain traditions
 // Each entry: id, title, source, original, transliteration, meaning, tradition, category
 
@@ -890,7 +890,7 @@ export const ALL_LIBRARY_ENTRIES: LibraryEntry[] = [
   ...JAIN_ADDITIONAL_ENTRIES,
 ];
 
-// ─── Library sections (for tabs / navigation) ─────────────────────────────────
+// ─── Pathshala sections (for tracks / navigation) ─────────────────────────────
 export interface LibrarySection {
   id:        string;
   title:     string;
@@ -899,6 +899,22 @@ export interface LibrarySection {
   category:  LibraryCategory;
   desc:      string;
   count:     number;
+}
+
+export interface PathshalaTraditionMeta {
+  id: LibraryTradition;
+  label: string;
+  emoji: string;
+  description: string;
+  studyPrompt: string;
+}
+
+export interface PathshalaTrackGroup {
+  id: string;
+  tradition: LibraryTradition;
+  title: string;
+  desc: string;
+  sectionIds: string[];
 }
 
 export const LIBRARY_SECTIONS: LibrarySection[] = [
@@ -928,6 +944,105 @@ export const LIBRARY_SECTIONS: LibrarySection[] = [
   // ── Jain ─────────────────────────────────────────────────────────────────────
   { id: 'jain',               title: 'Jain Agamas',           emoji: '🤲', tradition: 'jain',     category: 'jain_scripture',     desc: 'Navkar Mantra, Tattvartha Sutra, Samayasara & Mahavir\'s teachings',       count: JAIN_ENTRIES.length + JAIN_ADDITIONAL_ENTRIES.length },
 ];
+
+export const PATHSHALA_TRADITIONS: PathshalaTraditionMeta[] = [
+  {
+    id: 'hindu',
+    label: 'Hindu Pathshala',
+    emoji: '🕉️',
+    description: 'Gita, Upanishads, Vedas, epics, bhakti, yoga, and disciplined study tracks.',
+    studyPrompt: 'Begin from the text-family that matches your current path: Shruti, Itihasa, Bhakti, or Sadhana.',
+  },
+  {
+    id: 'sikh',
+    label: 'Sikh Pathshala',
+    emoji: '☬',
+    description: 'Guru Granth Sahib study, Gurbani, and daily bani for grounded remembrance.',
+    studyPrompt: 'Move from Gurbani and Nitnem toward steady recitation, reflection, and return.',
+  },
+  {
+    id: 'buddhist',
+    label: 'Buddhist Pathshala',
+    emoji: '☸️',
+    description: 'Foundational Dhamma, early teachings, compassion, mindfulness, and steady understanding.',
+    studyPrompt: 'Start with foundational Dhamma, then deepen through suttas, reflection, and practical study.',
+  },
+  {
+    id: 'jain',
+    label: 'Jain Pathshala',
+    emoji: '🤲',
+    description: 'Agama-rooted study, ahimsa, discipline, doctrine, and foundational Jain wisdom.',
+    studyPrompt: 'Use the Agama and doctrine tracks to build a quieter, clearer path of understanding.',
+  },
+];
+
+export const PATHSHALA_TRACK_GROUPS: PathshalaTrackGroup[] = [
+  {
+    id: 'hindu-shruti',
+    tradition: 'hindu',
+    title: 'Shruti & Vedanta',
+    desc: 'Core wisdom texts, Vedantic foundations, and the philosophical heart of Sanatana study.',
+    sectionIds: ['gita', 'upanishad', 'veda'],
+  },
+  {
+    id: 'hindu-itihasa',
+    tradition: 'hindu',
+    title: 'Itihasa & Epics',
+    desc: 'Civilizational narratives, Rama katha, and the lived ideals of dharma in story form.',
+    sectionIds: ['ramayana', 'ramcharitmanas'],
+  },
+  {
+    id: 'hindu-bhakti',
+    tradition: 'hindu',
+    title: 'Bhakti & Devotional Practice',
+    desc: 'Purana, sahasranama, stotra, and temple-facing recitation for heart-centered study.',
+    sectionIds: ['bhagavatam', 'vishnu_sahasranama', 'stotra', 'shiva_purana', 'shakta'],
+  },
+  {
+    id: 'hindu-sadhana',
+    tradition: 'hindu',
+    title: 'Sadhana & Living Wisdom',
+    desc: 'Yoga, discipline, ethics, and practical guidance for steadier daily living.',
+    sectionIds: ['yoga_sutra', 'chanakya'],
+  },
+  {
+    id: 'sikh-gurbani',
+    tradition: 'sikh',
+    title: 'Gurbani & Nitnem',
+    desc: 'Foundational bani, daily recitation, and Guru-centered remembrance.',
+    sectionIds: ['gurbani'],
+  },
+  {
+    id: 'buddhist-foundations',
+    tradition: 'buddhist',
+    title: 'Foundational Dhamma',
+    desc: 'Early teachings, ethical clarity, mindfulness, and the path of practice.',
+    sectionIds: ['dhammapada'],
+  },
+  {
+    id: 'jain-foundations',
+    tradition: 'jain',
+    title: 'Agama & Doctrine',
+    desc: 'Agamic study, doctrinal foundations, vows, and the disciplines of ahimsa.',
+    sectionIds: ['jain'],
+  },
+];
+
+export function getSectionsByTradition(tradition: LibraryTradition): LibrarySection[] {
+  return LIBRARY_SECTIONS.filter((section) => section.tradition === tradition);
+}
+
+export function getPathshalaTraditionMeta(tradition: LibraryTradition): PathshalaTraditionMeta {
+  return PATHSHALA_TRADITIONS.find((item) => item.id === tradition) ?? PATHSHALA_TRADITIONS[0];
+}
+
+export function getPathshalaTrackGroups(tradition: LibraryTradition): PathshalaTrackGroup[] {
+  return PATHSHALA_TRACK_GROUPS.filter((group) => group.tradition === tradition);
+}
+
+export function getDefaultSectionForTradition(tradition: LibraryTradition): string {
+  return getSectionsByTradition(tradition)[0]?.id ?? 'gita';
+}
 
 export function getEntriesBySection(sectionId: string): LibraryEntry[] {
   // Multi-array sections need special handling
