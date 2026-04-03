@@ -258,6 +258,7 @@ Current slice:
 - `PARAMPARA_PATHSHALA_PLAN.md` now defines the recommended structure and source strategy
 - this work belongs in `Phase A` because corpus legitimacy is a trust issue, not just a content issue
 - the first Pathshala UI slice is now shipped:
+ - text-level trust checks now show source class, translation readiness, original-text status, and recitation readiness directly on Pathshala reading pages, so source truth is visible where people actually study
   - `Parampara Library` has been renamed to `Parampara Pathshala`
   - the reading surface now starts with tradition tiles
   - scripture categories and study tracks now sit between tradition and individual passages
@@ -298,6 +299,8 @@ Current slice:
   - the first import cleaner now strips scrape junk like embedded English `Part / Canto` headings and broken glyph artifacts before those texts are treated as live in app
   - where the official source is still summary-plus-flipbook, Pathshala now keeps that honestly in `companion` state instead of pretending full original-text ingestion is complete
   - this creates a visible study-layer model: translated text live, original Sanskrit live where source-accessible, recitation still companion-first
+  - the Upanishad track now surfaces that model clearly to users by grouping live-original texts ahead of companion-original texts instead of leaving the source state implicit
+  - the remaining blockers are now described in-product too, so users can see when a text is companion-only because the official source is still summary/flipbook shaped rather than clean scripture text
 - AI-assisted reading and recitation are staged behind that corpus work:
   - first: source-aware explain, quiz, flashcards, and guided reading
   - first live bridge is now in place:

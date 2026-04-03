@@ -32,6 +32,9 @@ Last updated: 2026-04-03
 - [x] Clean the first Upanishad original-text import so live Sanskrit pages do not carry scrape junk like English section headings or broken glyphs
 - [x] Add the first Upanishad study actions so principal texts can open explain / quiz / flashcard flows instead of behaving like static longform pages
 - [x] Promote Taittiriya Upanishad from companion-only to a live Sanskrit layer by stitching the three Valli source pages into one in-app Pathshala text
+- [x] Make the Upanishad track clearer by grouping texts into live-original and companion-original paths, so users can immediately see which originals are fully in-app
+- [x] Make the remaining Upanishad source blockers explicit in Pathshala so companion-linked texts are understood as source-shape constraints, not silent gaps
+- [x] Add a trust-check panel on Pathshala text pages so readers can see source class, translation readiness, original-text status, and recitation readiness before studying deeper
 - [x] Replace the current green / teal brand bias with a warmer dharmic palette that fits the Sanatan product identity better
 - [x] Add the first Framer Motion polish pass across the shell, Home overlays, and Pathshala cards so the app feels calmer and less abrupt
 - [ ] Define Jyotish / Rashiphal strategy under the trust core before shipping any horoscope-style feature
