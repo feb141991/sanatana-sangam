@@ -24,6 +24,7 @@ import {
 import { getUpanishadStudyMeta } from '@/lib/upanishad-study';
 import {
   getAIChatHref,
+  getGitaRecitationHref,
   getGitaStoryEpisodeHref,
   getPathshalaEntryHrefFromSection,
   getPathshalaSectionHref,
@@ -210,6 +211,13 @@ export default async function PathshalaEntryPage({
               >
                 Listen / recite
               </a>
+              <Link
+                href={getGitaRecitationHref(canonicalChapter.id)}
+                className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold text-center"
+                style={{ color: 'var(--brand-primary)' }}
+              >
+                Guided recitation mode
+              </Link>
             </div>
           </div>
 

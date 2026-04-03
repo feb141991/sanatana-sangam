@@ -35,6 +35,7 @@ Last updated: 2026-04-03
 - [x] Make the Upanishad track clearer by grouping texts into live-original and companion-original paths, so users can immediately see which originals are fully in-app
 - [x] Make the remaining Upanishad source blockers explicit in Pathshala so companion-linked texts are understood as source-shape constraints, not silent gaps
 - [x] Add a trust-check panel on Pathshala text pages so readers can see source class, translation readiness, original-text status, and recitation readiness before studying deeper
+- [x] Start a Gita-first recitation mode that keeps local study inside Pathshala and routes authoritative audio to the IIT companion source
 - [x] Replace the current green / teal brand bias with a warmer dharmic palette that fits the Sanatan product identity better
 - [x] Add the first Framer Motion polish pass across the shell, Home overlays, and Pathshala cards so the app feels calmer and less abrupt
 - [ ] Define Jyotish / Rashiphal strategy under the trust core before shipping any horoscope-style feature
@@ -81,6 +82,7 @@ Last updated: 2026-04-03
 - [x] Replace the partial Gita pilot with a full local public-domain corpus so chapter study no longer depends on external full-text fallback
 - [x] Replace the partial Upanishad pilot with a principal-Upanishad corpus so the Pathshala track opens into full study texts instead of only a few Mahavakya excerpts
 - [ ] Add recitation mode with authoritative-source audio first, then later pronunciation guidance
+- [ ] Keep non-Gita scripture expansion on hold while the Gita study + recitation flow is completed end to end
 - [ ] Add a focused Howler-backed Pathshala audio layer later for recitation and guided reading, not generic app-wide UI sounds
 - [ ] Continue the Upanishad original-text iteration until the larger texts that still sit behind official flipbooks can be ingested locally
 - [ ] Explore opt-in Jyotish / Rashi guidance after Panchang and sacred-time trust work is credible
