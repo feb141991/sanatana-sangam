@@ -1,6 +1,6 @@
 'use client';
 
-import type { CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import type { StoryCharacterAgeState } from '@/lib/story/kanu-story';
 
@@ -230,8 +230,13 @@ export function KanuGuideAvatar({
   emphasis = 'support',
 }: KanuGuideAvatarProps) {
   const prefersReducedMotion = useReducedMotion();
+  const [motionReady, setMotionReady] = useState(false);
   const [primary, accent, glow] = state.costumePalette;
   const profile = getAvatarProfile(state);
+
+  useEffect(() => {
+    setMotionReady(true);
+  }, []);
 
   const style = {
     '--kanu-primary': primary,
@@ -247,7 +252,7 @@ export function KanuGuideAvatar({
       className={`kanu-avatar-shell kanu-avatar-${size} ${emphasis === 'lead' ? 'kanu-avatar-lead' : ''}`}
       style={style}
       animate={
-        prefersReducedMotion
+        !motionReady || prefersReducedMotion
           ? undefined
           : { y: [0, -floatY, 0], rotate: [0, state.characterId === 'arjuna' ? -0.3 : 0.5, 0] }
       }
@@ -277,13 +282,13 @@ export function KanuGuideAvatar({
           rx={86 * profile.glowScale}
           ry={104 * profile.glowScale}
           fill={`url(#halo-${state.id})`}
-          animate={prefersReducedMotion ? undefined : { scale: [1, 1.05, 1] }}
+          animate={!motionReady || prefersReducedMotion ? undefined : { scale: [1, 1.05, 1] }}
           transition={{ duration: 5.2, repeat: Infinity, ease: 'easeInOut' }}
         />
         <ellipse cx="110" cy="260" rx="52" ry="10" fill="rgba(28, 33, 68, 0.16)" />
 
         <motion.g
-          animate={prefersReducedMotion ? undefined : { rotate: [0, 2.5, 0] }}
+          animate={!motionReady || prefersReducedMotion ? undefined : { rotate: [0, 2.5, 0] }}
           transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
           style={{ transformOrigin: '150px 40px' }}
         >
@@ -320,7 +325,7 @@ export function KanuGuideAvatar({
 
         <motion.g
           animate={
-            prefersReducedMotion
+            !motionReady || prefersReducedMotion
               ? undefined
               : {
                   scaleY: [1, 1, 0.16, 1, 1],
@@ -350,7 +355,17 @@ export function KanuGuideAvatar({
           strokeWidth="4"
           strokeLinecap="round"
           fill="none"
-          animate={prefersReducedMotion ? undefined : { d: [buildMouthPath(profile), buildMouthPath({ ...profile, mouthCurve: profile.mouthCurve + 1 }), buildMouthPath(profile)] }}
+          animate={
+            !motionReady || prefersReducedMotion
+              ? undefined
+              : {
+                  d: [
+                    buildMouthPath(profile),
+                    buildMouthPath({ ...profile, mouthCurve: profile.mouthCurve + 1 }),
+                    buildMouthPath(profile),
+                  ],
+                }
+          }
           transition={{ duration: 4.4, repeat: Infinity, ease: 'easeInOut' }}
         />
 

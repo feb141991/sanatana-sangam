@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import type { StoryCharacterAgeState, StoryLanguage, StorySceneCard } from '@/lib/story/kanu-story';
 import { KanuGuideAvatar } from '@/components/story/KanuGuideAvatar';
@@ -12,10 +13,15 @@ interface StorySceneStageProps {
 
 export function StorySceneStage({ scene, language, characterStates }: StorySceneStageProps) {
   const prefersReducedMotion = useReducedMotion();
+  const [motionReady, setMotionReady] = useState(false);
   const leadState = characterStates.find((state) => state.characterId === 'kanu') ?? characterStates[0];
   const supportingStates = leadState
     ? characterStates.filter((state) => state.id !== leadState.id)
     : characterStates;
+
+  useEffect(() => {
+    setMotionReady(true);
+  }, []);
 
   return (
     <section className={`story-stage story-stage-${scene.motionPreset}`} data-artwork-key={scene.artworkKey}>
@@ -29,7 +35,7 @@ export function StorySceneStage({ scene, language, characterStates }: StoryScene
           <motion.span
             key={`particle-${index}`}
             className={`story-particle particle-${(index % 4) + 1}`}
-            animate={prefersReducedMotion ? undefined : { y: [0, -10, 0], opacity: [0.4, 1, 0.45] }}
+            animate={!motionReady || prefersReducedMotion ? undefined : { y: [0, -10, 0], opacity: [0.4, 1, 0.45] }}
             transition={{ duration: 4.8 + index * 0.3, repeat: Infinity, ease: 'easeInOut', delay: index * 0.15 }}
           />
         ))}
@@ -39,8 +45,8 @@ export function StorySceneStage({ scene, language, characterStates }: StoryScene
         <motion.div
           key={`${scene.id}-${language}-copy`}
           className="story-stage-copy"
-          initial={prefersReducedMotion ? undefined : { opacity: 0, y: 18 }}
-          animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+          initial={false}
+          animate={motionReady && !prefersReducedMotion ? { opacity: 1, y: 0 } : undefined}
           transition={{ duration: 0.38, ease: 'easeOut' }}
         >
           <div className="flex flex-wrap gap-2">
@@ -55,8 +61,8 @@ export function StorySceneStage({ scene, language, characterStates }: StoryScene
           <motion.div
             key={`${scene.id}-${leadState.id}`}
             className="story-stage-portrait"
-            initial={prefersReducedMotion ? undefined : { opacity: 0, x: 18, scale: 0.96 }}
-            animate={prefersReducedMotion ? undefined : { opacity: 1, x: 0, scale: 1 }}
+            initial={false}
+            animate={motionReady && !prefersReducedMotion ? { opacity: 1, x: 0, scale: 1 } : undefined}
             transition={{ duration: 0.42, ease: 'easeOut' }}
           >
             <KanuGuideAvatar state={leadState} size="lg" emphasis="lead" />
@@ -79,8 +85,8 @@ export function StorySceneStage({ scene, language, characterStates }: StoryScene
             <motion.div
               key={state.id}
               className="story-supporting-card"
-              initial={prefersReducedMotion ? undefined : { opacity: 0, y: 12 }}
-              animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+              initial={false}
+              animate={motionReady && !prefersReducedMotion ? { opacity: 1, y: 0 } : undefined}
               transition={{ duration: 0.3, delay: 0.12 + index * 0.08, ease: 'easeOut' }}
             >
               <KanuGuideAvatar state={state} size="sm" />

@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { KanuGuideAvatar } from '@/components/story/KanuGuideAvatar';
 import type { StoryCharacterAgeState } from '@/lib/story/kanu-story';
@@ -10,6 +11,11 @@ interface KanuCharacterGalleryProps {
 
 export function KanuCharacterGallery({ states }: KanuCharacterGalleryProps) {
   const prefersReducedMotion = useReducedMotion();
+  const [motionReady, setMotionReady] = useState(false);
+
+  useEffect(() => {
+    setMotionReady(true);
+  }, []);
 
   return (
     <section className="clay-card rounded-[1.9rem] px-5 py-5 space-y-4">
@@ -33,10 +39,8 @@ export function KanuCharacterGallery({ states }: KanuCharacterGalleryProps) {
           <motion.article
             key={state.id}
             className="story-character-card"
-            initial={prefersReducedMotion ? undefined : { opacity: 0, y: 14 }}
-            whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.38, delay: index * 0.06, ease: 'easeOut' }}
+            whileHover={motionReady && !prefersReducedMotion ? { y: -4, scale: 1.01 } : undefined}
+            transition={{ duration: 0.22, delay: index * 0.02, ease: 'easeOut' }}
           >
             <div className="story-character-stage">
               <KanuGuideAvatar state={state} size="md" emphasis={index === states.length - 1 ? 'lead' : 'support'} />
