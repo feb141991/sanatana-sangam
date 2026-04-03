@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
@@ -17,7 +17,10 @@ type Step = 1 | 2 | 3;
 
 export default function SignupPage() {
   const router   = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    return createClient();
+  }, []);
   const [step,       setStep]       = useState<Step>(1);
   const [loading,    setLoading]    = useState(false);
   const [showPass,   setShowPass]   = useState(false);
@@ -103,6 +106,11 @@ export default function SignupPage() {
   }
 
   async function handleSubmit() {
+    if (!supabase) {
+      toast.error('Auth is still initializing. Please try again.');
+      return;
+    }
+
     if (!acceptedPolicies) {
       toast.error('Please accept the Terms, Privacy Policy, and Community Guidelines');
       return;

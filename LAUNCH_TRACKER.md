@@ -24,7 +24,7 @@ Last updated: 2026-04-03
 - [ ] Finalize the Pathshala source-and-rights strategy before promising full scripture corpora in production
 - [x] Finish the first live Pathshala UI slice: rename the Library surface, make it tradition-first, and map the current corpus into scripture-category tracks
 - [x] Start Pathshala phase 2: add section-level corpus metadata, source-governance cues, and fuller scripture-track detail
-- [ ] Start Pathshala return loops: bookmarks, continue-learning state, and reading-plan foundations
+- [x] Start Pathshala return loops: bookmarks, continue-learning state, and first reading-plan foundations
 - [ ] Build Bhagavad Gita as the first complete chapter-structured Pathshala pilot
 - [x] Replace the current green / teal brand bias with a warmer dharmic palette that fits the Sanatan product identity better
 - [ ] Define Jyotish / Rashiphal strategy under the trust core before shipping any horoscope-style feature
@@ -56,15 +56,18 @@ Last updated: 2026-04-03
 - [x] Persist guided-path progress so home cards can be dismissed, completed, and restored
 - [ ] Turn current personalized home cards into fuller first-week onboarding logic
 - [x] Rebrand `Parampara Library` to `Parampara Pathshala` and switch it to tradition-first navigation
-- [ ] Continue Pathshala phase 2 with route-driven tradition, track, and text pages plus continue-learning loops
+- [x] Continue Pathshala phase 2 with route-driven tradition, track, and text pages plus continue-learning loops
+- [x] Make `/library` a clean tradition gateway so scripture browsing starts on the next page instead of mixing excerpts into the first screen
 - [ ] Replace rough `Kul / Vansh` clay figurines with polished keepsake memory cards
 - [ ] Expand the new `Kul` hub + full-page section pattern into other major app areas where it improves clarity
 - [ ] Add Mandali comments and replies
 - [ ] Add Mandali event RSVP flow
 - [ ] Add analytics, funnel tracking, and error monitoring
 - [ ] Replace browser `confirm`, `alert`, and `window.prompt` flows with app-native UI
-- [ ] Add scripture bookmarks and reading plans
-- [ ] Add chapter-level AI study assist in Pathshala after source-grounded Gita flows are stable
+- [x] Add scripture bookmarks and the first Pathshala reading-plan layer
+- [x] Extend Pathshala return loops to chapter-level Gita study so users can resume and bookmark full chapter paths, not just excerpts
+- [x] Add first chapter-level AI study entry points in Pathshala with prefilled source-aware prompts
+- [x] Reuse the existing daily-shloka Gita corpus inside Pathshala so chapter coverage expands locally without waiting on a separate import pipeline
 - [ ] Add recitation mode with authoritative-source audio first, then later pronunciation guidance
 - [ ] Explore opt-in Jyotish / Rashi guidance after Panchang and sacred-time trust work is credible
 - [ ] Add Pathshala quizzes, cards, and mastery checkpoints after the corpus source layer is trustworthy

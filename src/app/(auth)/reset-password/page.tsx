@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
@@ -12,7 +12,10 @@ import BrandMark from '@/components/BrandMark';
 
 export default function ResetPasswordPage() {
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    return createClient();
+  }, []);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -21,9 +24,12 @@ export default function ResetPasswordPage() {
   const [hasRecoverySession, setHasRecoverySession] = useState(false);
 
   useEffect(() => {
-    let active = true;
+    if (!supabase) return;
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    let active = true;
+    const auth = supabase.auth;
+
+    const { data: authListener } = auth.onAuthStateChange((event, session) => {
       if (!active) return;
       if (event === 'PASSWORD_RECOVERY') {
         toast.success('Recovery link verified. You can set a new password now.');
@@ -34,7 +40,7 @@ export default function ResetPasswordPage() {
     });
 
     async function loadRecoveryState() {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await auth.getSession();
       if (!active) return;
 
       setHasRecoverySession(Boolean(session));
@@ -47,10 +53,15 @@ export default function ResetPasswordPage() {
       active = false;
       authListener.subscription.unsubscribe();
     };
-  }, []);
+  }, [supabase]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (!supabase) {
+      toast.error('Auth is still initializing. Please try again.');
+      return;
+    }
 
     if (password.length < 8) {
       toast.error('Password must be at least 8 characters.');

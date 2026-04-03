@@ -19,3 +19,9 @@ export function getPathshalaEntryHrefFromSection(section: LibrarySection, entry:
 export function getPathshalaChapterHref(tradition: LibraryTradition, sectionId: string, chapterId: string) {
   return getPathshalaEntryHref(tradition, sectionId, chapterId);
 }
+
+export function getAIChatHref(prompt: string, context?: string) {
+  const params = new URLSearchParams({ prefill: prompt });
+  if (context) params.set('context', context);
+  return `/ai-chat?${params.toString()}`;
+}

@@ -2,6 +2,8 @@
 // Covers Hindu, Sikh, Buddhist, Jain traditions
 // Each entry: id, title, source, original, transliteration, meaning, tradition, category
 
+import { SHLOKAS } from '@/lib/shlokas';
+
 export type LibraryTradition = 'hindu' | 'sikh' | 'buddhist' | 'jain';
 
 export type LibraryCategory =
@@ -25,8 +27,22 @@ export interface LibraryEntry {
   tags:             string[];
 }
 
+function parseBhagavadGitaSource(source: string) {
+  const match = source.match(/^Bhagavad Gita\s+(\d+)\.(\d+)$/i);
+  if (!match) return null;
+
+  return {
+    chapterNumber: Number(match[1]),
+    verseNumber: Number(match[2]),
+  };
+}
+
+function createGeneratedGitaEntryTitle(chapterNumber: number, verseNumber: number) {
+  return `Bhagavad Gita ${chapterNumber}.${verseNumber}`;
+}
+
 // ─── BHAGAVAD GITA ────────────────────────────────────────────────────────────
-export const GITA_ENTRIES: LibraryEntry[] = [
+const CURATED_GITA_ENTRIES: LibraryEntry[] = [
   {
     id: 'gita-2-47',
     title: 'The Supreme Secret of Action',
@@ -87,6 +103,33 @@ export const GITA_ENTRIES: LibraryEntry[] = [
     tradition: 'hindu', category: 'gita',
     tags: ['mind', 'self-improvement', 'discipline', 'yoga'],
   },
+];
+
+const curatedGitaSourceSet = new Set(CURATED_GITA_ENTRIES.map((entry) => entry.source.toLowerCase()));
+
+const GENERATED_GITA_ENTRIES_FROM_SHLOKAS: LibraryEntry[] = SHLOKAS
+  .map((shloka) => {
+    const reference = parseBhagavadGitaSource(shloka.source);
+    if (!reference) return null;
+    if (curatedGitaSourceSet.has(shloka.source.toLowerCase())) return null;
+
+    return {
+      id: `gita-${reference.chapterNumber}-${reference.verseNumber}-pathshala`,
+      title: createGeneratedGitaEntryTitle(reference.chapterNumber, reference.verseNumber),
+      source: shloka.source,
+      original: shloka.sanskrit,
+      transliteration: shloka.transliteration,
+      meaning: shloka.meaning,
+      tradition: 'hindu' as const,
+      category: 'gita' as const,
+      tags: ['gita', 'pathshala', 'daily-shloka', `chapter-${reference.chapterNumber}`],
+    };
+  })
+  .filter(Boolean) as LibraryEntry[];
+
+export const GITA_ENTRIES: LibraryEntry[] = [
+  ...CURATED_GITA_ENTRIES,
+  ...GENERATED_GITA_ENTRIES_FROM_SHLOKAS,
 ];
 
 // ─── RAMAYANA ─────────────────────────────────────────────────────────────────
@@ -1043,7 +1086,7 @@ export const PATHSHALA_SECTION_DETAILS: PathshalaSectionDetail[] = [
     sectionId: 'gita',
     pathType: 'Canonical study',
     corpusState: 'Catalog-first expansion',
-    liveScope: 'Foundational passages are live now for guided study and orientation.',
+    liveScope: 'Foundational passages plus the in-app daily shloka corpus are now live for guided study, chapter navigation, and return loops.',
     completeTextGoal: 'Expand toward a full chapter-structured Bhagavad Gita study path with reliable source provenance and commentary layers.',
     sourceTargets: ['Gita Supersite', 'rights-audited Gita editions'],
     studyModes: ['Verse study', 'chapter summaries', 'future quizzes'],

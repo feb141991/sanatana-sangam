@@ -261,6 +261,7 @@ Current slice:
   - `Parampara Library` has been renamed to `Parampara Pathshala`
   - the reading surface now starts with tradition tiles
   - scripture categories and study tracks now sit between tradition and individual passages
+  - the root `/library` page is now being tightened into a true tradition gateway, so excerpts and track browsing happen only after the user chooses a tradition
 - the next active slice is to deepen section-level corpus metadata, rights-awareness, and source-governance cues inside the Pathshala tracks
 - the current build now adds section-level metadata such as:
   - corpus state
@@ -275,9 +276,18 @@ Current slice:
 - Bhagavad Gita is becoming the first complete chapter-structured Pathshala pilot:
   - all 18 chapters are now mapped as a study path
   - chapter pages can route users to official-source full text and audio while local ingestion grows
+  - chapter pages now include a verse navigator that makes the split explicit:
+    - warm chips for passages already live in-app
+    - neutral chips for verses that still open the official source directly
+  - the existing daily-shloka Gita bank is now being reused inside Pathshala so chapter coverage grows from the app’s own scripture corpus instead of staying siloed
+  - first reading plans now point into the chapter map so users can study in a defined rhythm instead of browsing randomly
+  - return loops now work at the chapter layer too, so users can bookmark and resume canonical Gita chapters rather than only the smaller excerpt entries
   - this is the model text family for future Ramayana and broader canon work
 - AI-assisted reading and recitation are staged behind that corpus work:
   - first: source-aware explain, quiz, flashcards, and guided reading
+  - first live bridge is now in place:
+    - Gita chapter pages open Pathshala-aware prompts inside Dharma Mitra
+    - the AI surface receives the chapter context so users can start with a prefilled study question instead of restating the source
   - later: authoritative audio support, pronunciation help, and only then recitation scoring
 
 ### A1.7 Sacred time and Jyotish strategy
@@ -573,6 +583,9 @@ Build slices:
 - data: course progress, flashcard state, quiz attempts, mastery thresholds
 - backend: recommendation and revisit scheduling
 - UI: chapter cards, revision prompts, quiz surfaces, exam flow
+- bridge state:
+  - Pathshala-aware AI prompt links
+  - official-source verse navigation until the full in-app corpus is ingested
 - trust: keep canonical text and assessment content clearly labeled
 
 Exit criteria:

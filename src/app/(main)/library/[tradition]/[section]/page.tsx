@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getLibrarySourceMeta } from '@/lib/library-provenance';
 import {
   getCanonicalChaptersForSection,
+  getCanonicalReadingPlansForSection,
   getOfficialGitaAudioUrl,
   getOfficialGitaChapterUrl,
 } from '@/lib/pathshala-canonical';
@@ -43,6 +44,7 @@ export default async function PathshalaSectionPage({
   const detail = getPathshalaSectionDetail(section);
   const entries = getEntriesBySection(section);
   const canonicalChapters = getCanonicalChaptersForSection(section);
+  const readingPlans = getCanonicalReadingPlansForSection(section);
 
   return (
     <div className="space-y-4 pb-6 fade-in">
@@ -169,6 +171,49 @@ export default async function PathshalaSectionPage({
                   </div>
                   <p className="text-sm text-gray-600 leading-relaxed mt-3">{chapter.summary}</p>
                 </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {readingPlans.length > 0 && (
+        <section className="space-y-3">
+          <div className="glass-panel rounded-[1.6rem] px-4 py-4 space-y-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Reading plans</p>
+              <p className="text-sm text-gray-700 leading-relaxed mt-2">
+                Start with a guided rhythm instead of browsing at random. These plans point into the same canonical Gita chapter map above.
+              </p>
+            </div>
+
+            <div className="grid gap-3 lg:grid-cols-3">
+              {readingPlans.map((plan) => (
+                <div key={plan.id} className="clay-card rounded-[1.4rem] px-4 py-4 space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-gray-900">{plan.title}</p>
+                      <p className="text-xs text-gray-500 mt-1">{plan.cadence}</p>
+                    </div>
+                    <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">
+                      {plan.chapters.length} chapters
+                    </span>
+                  </div>
+
+                  <p className="text-sm text-gray-700 leading-relaxed">{plan.subtitle}</p>
+
+                  <div className="flex flex-wrap gap-2">
+                    {plan.chapters.map((chapterNumber) => (
+                      <Link
+                        key={`${plan.id}-${chapterNumber}`}
+                        href={getPathshalaChapterHref(tradition, section, `chapter-${chapterNumber}`)}
+                        className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-700 hover:text-[color:var(--brand-primary)] transition"
+                      >
+                        Ch {chapterNumber}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </div>

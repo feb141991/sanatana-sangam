@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getLibrarySourceMeta } from '@/lib/library-provenance';
 import {
   getCanonicalChapter,
+  getCanonicalVerseLinksForChapter,
   getGitaEntriesForChapter,
   getOfficialGitaAudioUrl,
   getOfficialGitaChapterUrl,
@@ -16,7 +17,12 @@ import {
   getSectionForEntry,
   isLibraryTradition,
 } from '@/lib/library-content';
-import { getPathshalaEntryHrefFromSection, getPathshalaSectionHref, getPathshalaTraditionHref } from '@/lib/pathshala-links';
+import {
+  getAIChatHref,
+  getPathshalaEntryHrefFromSection,
+  getPathshalaSectionHref,
+  getPathshalaTraditionHref,
+} from '@/lib/pathshala-links';
 import PathshalaActionBar from '@/app/(main)/library/PathshalaActionBar';
 
 export default async function PathshalaEntryPage({
@@ -35,6 +41,21 @@ export default async function PathshalaEntryPage({
   const canonicalChapter = getCanonicalChapter(section, entryId);
   const entry = getLibraryEntryById(entryId);
   const entrySection = entry ? getSectionForEntry(entry) : undefined;
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let isBookmarked = false;
+
+  if (user) {
+    const { data: stateRow } = await supabase
+      .from('pathshala_user_state')
+      .select('bookmarked_at')
+      .eq('user_id', user.id)
+      .eq('entry_id', entryId)
+      .maybeSingle();
+
+    isBookmarked = !!stateRow?.bookmarked_at;
+  }
 
   if (!sectionMeta || sectionMeta.tradition !== tradition) {
     notFound();
@@ -42,6 +63,35 @@ export default async function PathshalaEntryPage({
 
   if (canonicalChapter) {
     const chapterEntries = getGitaEntriesForChapter(canonicalChapter.chapterNumber);
+    const verseLinks = getCanonicalVerseLinksForChapter(canonicalChapter.chapterNumber);
+    const localVerseCount = verseLinks.filter((verse) => !!verse.localEntry).length;
+    const chapterContext = `Bhagavad Gita Chapter ${canonicalChapter.chapterNumber} — ${canonicalChapter.englishTitle}`;
+    const studyPrompts = [
+      {
+        title: 'Explain with AI',
+        description: 'Ask for a simple but source-aware explanation of the chapter’s main teaching.',
+        href: getAIChatHref(
+          `Explain Bhagavad Gita Chapter ${canonicalChapter.chapterNumber} (${canonicalChapter.englishTitle}) in simple words. Keep it source-aware and practical.`,
+          chapterContext,
+        ),
+      },
+      {
+        title: 'Quiz me',
+        description: 'Turn the chapter into a few short recall questions to check understanding.',
+        href: getAIChatHref(
+          `Quiz me on Bhagavad Gita Chapter ${canonicalChapter.chapterNumber} (${canonicalChapter.englishTitle}) with 5 short questions and then give the answers after I try.`,
+          chapterContext,
+        ),
+      },
+      {
+        title: 'Make flashcards',
+        description: 'Create quick revision cards for key ideas, verses, and Sanskrit terms.',
+        href: getAIChatHref(
+          `Make 6 study flashcards for Bhagavad Gita Chapter ${canonicalChapter.chapterNumber} (${canonicalChapter.englishTitle}) with one key idea per card.`,
+          chapterContext,
+        ),
+      },
+    ];
 
     return (
       <div className="space-y-4 pb-6 fade-in">
@@ -101,21 +151,99 @@ export default async function PathshalaEntryPage({
             </div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-3">
-            <div className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">Study with AI</p>
-              <p className="text-sm text-gray-700 leading-relaxed mt-2">Use AI to explain this chapter, simplify verses, generate flashcards, or quiz your understanding.</p>
-            </div>
-            <div className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">Guided reading</p>
-              <p className="text-sm text-gray-700 leading-relaxed mt-2">Move chapter by chapter with transliteration, meaning, bookmarks, and continue-learning state.</p>
-            </div>
-            <div className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {studyPrompts.map((prompt) => (
+              <Link
+                key={prompt.title}
+                href={prompt.href}
+                className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">{prompt.title}</p>
+                <p className="text-sm text-gray-700 leading-relaxed mt-2">{prompt.description}</p>
+              </Link>
+            ))}
+            <a
+              href={getOfficialGitaAudioUrl(canonicalChapter.chapterNumber)}
+              target="_blank"
+              rel="noreferrer"
+              className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
+            >
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">Recitation mode</p>
-              <p className="text-sm text-gray-700 leading-relaxed mt-2">Listen along with authoritative sources first. Pronunciation coaching and recitation scoring come later.</p>
-            </div>
+              <p className="text-sm text-gray-700 leading-relaxed mt-2">
+                Start with authoritative audio and recite along verse by verse. Pronunciation guidance comes after the trusted audio layer is in place.
+              </p>
+            </a>
           </div>
         </div>
+
+        {user && (
+          <PathshalaActionBar
+            userId={user.id}
+            tradition={tradition}
+            sectionId={sectionMeta.id}
+            entryId={canonicalChapter.id}
+            initiallyBookmarked={isBookmarked}
+          />
+        )}
+
+        <section className="space-y-3">
+          <div className="glass-panel rounded-[1.6rem] px-4 py-4 space-y-3">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Verse navigator</p>
+                <p className="text-sm text-gray-700 leading-relaxed mt-2">
+                  Every verse in the chapter is mapped here. Warm chips open the in-app passage when available; neutral chips open the official verse source directly.
+                </p>
+              </div>
+              <div className="flex flex-wrap justify-end gap-2 text-[11px] font-medium">
+                <span className="clay-pill text-[color:var(--brand-primary)]">Live in app</span>
+                <span className="glass-chip px-3 py-1.5 rounded-full text-gray-600">Official source</span>
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="clay-card rounded-[1.35rem] px-4 py-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Current in-app coverage</p>
+                <p className="font-display text-2xl font-bold text-gray-900 mt-2">{localVerseCount} / {canonicalChapter.verseCount}</p>
+                <p className="text-sm text-gray-600 mt-1">verses currently supported with local Pathshala entries</p>
+              </div>
+              <div className="glass-panel rounded-[1.35rem] px-4 py-4 border border-white/60">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Best way to study today</p>
+                <p className="text-sm text-gray-700 leading-relaxed mt-2">
+                  Use the in-app verses for meaning, bookmarks, and AI study prompts, then use the official source links above to complete the full chapter flow.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-9">
+              {verseLinks.map((verse) => {
+                if (verse.localEntry) {
+                  return (
+                    <Link
+                      key={`verse-${verse.verseNumber}`}
+                      href={getPathshalaEntryHrefFromSection(sectionMeta, verse.localEntry)}
+                      className="clay-pill text-center text-sm font-semibold text-[color:var(--brand-primary)] py-2 hover:-translate-y-0.5 transition"
+                    >
+                      {verse.verseNumber}
+                    </Link>
+                  );
+                }
+
+                return (
+                  <a
+                    key={`verse-${verse.verseNumber}`}
+                    href={verse.officialUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="glass-chip text-center rounded-full px-3 py-2 text-sm font-medium text-gray-700 hover:text-[color:var(--brand-primary)] transition"
+                  >
+                    {verse.verseNumber}
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </section>
 
         <section className="space-y-3">
           <div>
@@ -156,21 +284,6 @@ export default async function PathshalaEntryPage({
 
   if (!entry || !entrySection || sectionMeta.id !== entrySection.id) {
     notFound();
-  }
-
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  let isBookmarked = false;
-
-  if (user) {
-    const { data: stateRow } = await supabase
-      .from('pathshala_user_state')
-      .select('bookmarked_at')
-      .eq('user_id', user.id)
-      .eq('entry_id', entry.id)
-      .maybeSingle();
-
-    isBookmarked = !!stateRow?.bookmarked_at;
   }
 
   const sourceMeta = getLibrarySourceMeta(entry);

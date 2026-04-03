@@ -12,6 +12,23 @@ export interface CanonicalChapter {
   summary: string;
 }
 
+export interface CanonicalVerseLink {
+  chapterNumber: number;
+  verseNumber: number;
+  officialUrl: string;
+  officialAudioUrl: string;
+  localEntry?: LibraryEntry;
+}
+
+export interface CanonicalReadingPlan {
+  id: string;
+  sectionId: 'gita';
+  title: string;
+  subtitle: string;
+  cadence: string;
+  chapters: number[];
+}
+
 export const GITA_CHAPTERS: CanonicalChapter[] = [
   {
     id: 'chapter-1',
@@ -213,6 +230,33 @@ export const GITA_CHAPTERS: CanonicalChapter[] = [
   },
 ];
 
+export const GITA_READING_PLANS: CanonicalReadingPlan[] = [
+  {
+    id: 'gita-18-day-journey',
+    sectionId: 'gita',
+    title: '18-day chapter journey',
+    subtitle: 'Read one chapter a day and move through the whole Gita in order.',
+    cadence: 'Daily',
+    chapters: Array.from({ length: 18 }, (_, index) => index + 1),
+  },
+  {
+    id: 'gita-7-day-essentials',
+    sectionId: 'gita',
+    title: '7-day essentials',
+    subtitle: 'A strong first pass through the most returned-to teachings on duty, meditation, devotion, and surrender.',
+    cadence: '7 sessions',
+    chapters: [2, 3, 6, 9, 12, 15, 18],
+  },
+  {
+    id: 'gita-bhakti-path',
+    sectionId: 'gita',
+    title: 'Bhakti focus',
+    subtitle: 'A devotional reading arc centered on loving remembrance, divine presence, and surrender.',
+    cadence: '5 sessions',
+    chapters: [7, 9, 10, 12, 18],
+  },
+];
+
 function getOfficialGitaBaseParams(chapterNumber: number, verseNumber = 1) {
   return `field_chapter_value=${chapterNumber}&field_nsutra_value=${verseNumber}&language=dv&setgb=1`;
 }
@@ -223,6 +267,10 @@ export function getOfficialGitaChapterUrl(chapterNumber: number, verseNumber = 1
 
 export function getOfficialGitaAudioUrl(chapterNumber: number, verseNumber = 1) {
   return `https://www.gitasupersite.iitk.ac.in/srimad?choose=1&${getOfficialGitaBaseParams(chapterNumber, verseNumber)}`;
+}
+
+export function getOfficialGitaVerseUrl(chapterNumber: number, verseNumber: number) {
+  return getOfficialGitaChapterUrl(chapterNumber, verseNumber);
 }
 
 export function getCanonicalChaptersForSection(sectionId: string) {
@@ -245,5 +293,71 @@ export function getGitaChapterForEntry(entry: LibraryEntry) {
 }
 
 export function getGitaEntriesForChapter(chapterNumber: number) {
-  return GITA_ENTRIES.filter((entry) => entry.id.startsWith(`gita-${chapterNumber}-`));
+  return GITA_ENTRIES
+    .filter((entry) => entry.id.startsWith(`gita-${chapterNumber}-`))
+    .sort((left, right) => {
+      const leftCoverage = getGitaVerseCoverage(left);
+      const rightCoverage = getGitaVerseCoverage(right);
+      return (leftCoverage?.startVerse ?? 0) - (rightCoverage?.startVerse ?? 0);
+    });
+}
+
+function getGitaVerseCoverage(entry: LibraryEntry) {
+  if (entry.category !== 'gita') return null;
+
+  const idMatch = entry.id.match(/^gita-(\d+)-(\d+)/);
+  if (!idMatch) return null;
+
+  const chapterNumber = Number(idMatch[1]);
+  const startVerse = Number(idMatch[2]);
+  const sourceMatch = entry.source.match(/Bhagavad Gita\s+(\d+)\.(\d+)(?:[–-](?:(\d+)\.)?(\d+))?/i);
+
+  if (!sourceMatch) {
+    return { chapterNumber, startVerse, endVerse: startVerse };
+  }
+
+  const endingChapter = sourceMatch[3] ? Number(sourceMatch[3]) : Number(sourceMatch[1]);
+  if (endingChapter !== chapterNumber) {
+    return { chapterNumber, startVerse, endVerse: startVerse };
+  }
+
+  return {
+    chapterNumber,
+    startVerse,
+    endVerse: sourceMatch[4] ? Number(sourceMatch[4]) : startVerse,
+  };
+}
+
+export function getCanonicalVerseLinksForChapter(chapterNumber: number): CanonicalVerseLink[] {
+  const chapter = GITA_CHAPTERS.find((item) => item.chapterNumber === chapterNumber);
+  if (!chapter) return [];
+
+  const chapterEntries = getGitaEntriesForChapter(chapterNumber);
+
+  return Array.from({ length: chapter.verseCount }, (_, index) => {
+    const verseNumber = index + 1;
+    const exactEntry = chapterEntries.find((entry) => {
+      const coverage = getGitaVerseCoverage(entry);
+      if (!coverage) return false;
+      return coverage.startVerse === verseNumber && coverage.endVerse === verseNumber;
+    });
+    const localEntry = exactEntry ?? chapterEntries.find((entry) => {
+      const coverage = getGitaVerseCoverage(entry);
+      if (!coverage) return false;
+      return verseNumber >= coverage.startVerse && verseNumber <= coverage.endVerse;
+    });
+
+    return {
+      chapterNumber,
+      verseNumber,
+      officialUrl: getOfficialGitaVerseUrl(chapterNumber, verseNumber),
+      officialAudioUrl: getOfficialGitaAudioUrl(chapterNumber, verseNumber),
+      localEntry,
+    };
+  });
+}
+
+export function getCanonicalReadingPlansForSection(sectionId: string) {
+  if (sectionId === 'gita') return GITA_READING_PLANS;
+  return [];
 }

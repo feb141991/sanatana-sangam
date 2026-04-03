@@ -22,9 +22,11 @@ interface Message {
 }
 
 interface Props {
-  userId:    string;
-  userName:  string;
+  userId: string;
+  userName: string;
   tradition: string | null;
+  initialPrompt?: string;
+  contextLabel?: string;
 }
 
 // ─── Tradition-aware suggestions ──────────────────────────────────────────────
@@ -142,13 +144,14 @@ function TypingIndicator() {
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function AIChatClient({ userId, userName, tradition }: Props) {
+export default function AIChatClient({ userId, userName, tradition, initialPrompt, contextLabel }: Props) {
   const [messages,   setMessages]   = useState<Message[]>([]);
   const [input,      setInput]      = useState('');
   const [loading,    setLoading]    = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef       = useRef<HTMLTextAreaElement>(null);
+  const seededPromptRef = useRef(false);
 
   // Tradition-aware content
   const suggestions = SUGGESTIONS_BY_TRADITION[tradition ?? 'hindu'] ?? SUGGESTIONS_BY_TRADITION.hindu;
@@ -163,6 +166,23 @@ export default function AIChatClient({ userId, userName, tradition }: Props) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
+
+  useEffect(() => {
+    if (!initialPrompt || seededPromptRef.current) return;
+
+    seededPromptRef.current = true;
+    setInput(initialPrompt);
+    setShowSuggestions(false);
+
+    requestAnimationFrame(() => {
+      const el = inputRef.current;
+      if (!el) return;
+      el.focus();
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+      el.setSelectionRange(el.value.length, el.value.length);
+    });
+  }, [initialPrompt]);
 
   function newId() {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -270,6 +290,45 @@ export default function AIChatClient({ userId, userName, tradition }: Props) {
                 When relevant, I now surface internal scripture references so the conversation feels more grounded and easier to verify.
               </p>
             </div>
+
+            {initialPrompt && (
+              <div className="w-full max-w-xl">
+                <div className="clay-card rounded-[1.6rem] px-4 py-4 text-left space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">
+                        {contextLabel ?? 'Pathshala study prompt'}
+                      </p>
+                      <p className="text-sm text-gray-700 leading-relaxed mt-2">
+                        A study prompt was brought in from Pathshala. You can send it as-is or edit it before asking.
+                      </p>
+                    </div>
+                    <Sparkles size={18} className="text-[color:var(--brand-primary)] flex-shrink-0 mt-0.5" />
+                  </div>
+                  <div className="glass-panel rounded-2xl px-4 py-3 text-sm text-gray-800">
+                    {initialPrompt}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => sendMessage(initialPrompt)}
+                      className="glass-button-primary px-4 py-2 rounded-full text-sm text-white"
+                    >
+                      Ask this now
+                    </button>
+                    <button
+                      onClick={() => {
+                        setInput(initialPrompt);
+                        inputRef.current?.focus();
+                      }}
+                      className="glass-button-secondary px-4 py-2 rounded-full text-sm"
+                      style={{ color: 'var(--brand-primary)' }}
+                    >
+                      Edit first
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Suggestions */}
             {showSuggestions && (

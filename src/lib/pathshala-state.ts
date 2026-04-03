@@ -3,6 +3,7 @@ import {
   getLibrarySectionById,
   type LibraryTradition,
 } from '@/lib/library-content';
+import { getCanonicalChapter } from '@/lib/pathshala-canonical';
 import { getPathshalaEntryHref } from '@/lib/pathshala-links';
 
 export interface PathshalaUserStateRow {
@@ -26,10 +27,29 @@ export interface PathshalaStudySummary {
 }
 
 function resolveStateRow(row: PathshalaUserStateRow): PathshalaStudySummary | null {
-  const entry = getLibraryEntryById(row.entry_id);
   const section = getLibrarySectionById(row.section_id);
+  const canonicalChapter = getCanonicalChapter(row.section_id, row.entry_id);
+  const entry = getLibraryEntryById(row.entry_id);
 
-  if (!entry || !section || section.tradition !== row.tradition) {
+  if (!section || section.tradition !== row.tradition) {
+    return null;
+  }
+
+  if (canonicalChapter) {
+    return {
+      entryId: row.entry_id,
+      title: `Chapter ${canonicalChapter.chapterNumber} · ${canonicalChapter.englishTitle}`,
+      source: `Bhagavad Gita ${canonicalChapter.chapterNumber}`,
+      tradition: row.tradition,
+      sectionId: row.section_id,
+      sectionTitle: section.title,
+      href: getPathshalaEntryHref(row.tradition, row.section_id, row.entry_id),
+      lastOpenedAt: row.last_opened_at,
+      bookmarkedAt: row.bookmarked_at,
+    };
+  }
+
+  if (!entry) {
     return null;
   }
 

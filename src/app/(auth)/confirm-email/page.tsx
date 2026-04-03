@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
@@ -13,7 +13,10 @@ import BrandMark from '@/components/BrandMark';
 function ConfirmEmailForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const supabase = createClient();
+  const supabase = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    return createClient();
+  }, []);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const presetEmail = searchParams.get('email')?.trim().toLowerCase() ?? '';
@@ -26,6 +29,11 @@ function ConfirmEmailForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!supabase) {
+      toast.error('Auth is still initializing. Please try again.');
+      return;
+    }
+
     const normalizedEmail = email.trim().toLowerCase();
     if (!normalizedEmail) {
       toast.error('Enter your email address first.');

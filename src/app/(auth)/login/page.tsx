@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
@@ -13,7 +13,10 @@ import BrandMark from '@/components/BrandMark';
 function LoginForm() {
   const router       = useRouter();
   const searchParams = useSearchParams();
-  const supabase     = createClient();
+  const supabase     = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    return createClient();
+  }, []);
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
@@ -56,6 +59,11 @@ function LoginForm() {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
+    if (!supabase) {
+      toast.error('Auth is still initializing. Please try again.');
+      return;
+    }
+
     setLoading(true);
     const normalizedEmail = email.trim().toLowerCase();
     const { error } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
