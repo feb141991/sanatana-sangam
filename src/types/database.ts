@@ -194,6 +194,24 @@ export interface Database {
         };
         Update: Partial<Database['public']['Tables']['guided_path_progress']['Insert']>;
       };
+      pathshala_user_state: {
+        Row: {
+          id: string;
+          user_id: string;
+          tradition: 'hindu' | 'sikh' | 'buddhist' | 'jain';
+          section_id: string;
+          entry_id: string;
+          last_opened_at: string;
+          bookmarked_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['pathshala_user_state']['Row'], 'id' | 'created_at' | 'updated_at' | 'last_opened_at'> & {
+          last_opened_at?: string;
+          bookmarked_at?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['pathshala_user_state']['Insert']>;
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -210,5 +228,6 @@ export type ForumReply     = Database['public']['Tables']['forum_replies']['Row'
 
 export type Notification    = Database['public']['Tables']['notifications']['Row'];
 export type ContentReport   = Database['public']['Tables']['content_reports']['Row'];
+export type PathshalaUserState = Database['public']['Tables']['pathshala_user_state']['Row'];
 export type PostWithAuthor = Post & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'spiritual_level'> };
 export type ThreadWithAuthor = ForumThread & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya'> };

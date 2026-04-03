@@ -27,6 +27,7 @@ import {
   getPathshalaTraditionHref,
 } from '@/lib/pathshala-links';
 import { getLibrarySourceMeta } from '@/lib/library-provenance';
+import type { PathshalaStudySummary } from '@/lib/pathshala-state';
 
 async function shareEntry(entry: LibraryEntry) {
   const text = `${entry.title} — ${entry.source}\n\n${entry.original}\n\n${entry.transliteration}\n\nMeaning: ${entry.meaning}\n\n— Shared via Sanatana Sangam Pathshala`;
@@ -161,7 +162,15 @@ function EntryCard({ entry }: { entry: LibraryEntry }) {
   );
 }
 
-export default function LibraryClient({ defaultSection = 'gita' }: { defaultSection?: string }) {
+export default function LibraryClient({
+  defaultSection = 'gita',
+  continueLearning = null,
+  bookmarkedEntries = [],
+}: {
+  defaultSection?: string;
+  continueLearning?: PathshalaStudySummary | null;
+  bookmarkedEntries?: PathshalaStudySummary[];
+}) {
   const validDefaultSection = getLibrarySectionById(defaultSection)?.id ?? 'gita';
   const defaultTradition = getLibrarySectionById(validDefaultSection)?.tradition ?? 'hindu';
   const defaultGroup = getPathshalaTrackGroups(defaultTradition).find((group) => group.sectionIds.includes(validDefaultSection));
@@ -244,6 +253,46 @@ export default function LibraryClient({ defaultSection = 'gita' }: { defaultSect
           This is the first structural step. Rights-cleared full texts, deeper cataloging, and learning loops will come in stages.
         </p>
       </div>
+
+      {(continueLearning || bookmarkedEntries.length > 0) && (
+        <section className="space-y-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Return loop</p>
+            <p className="text-sm text-gray-600 mt-1">Come back to your latest text, or reopen something you intentionally saved.</p>
+          </div>
+
+          {continueLearning && (
+            <Link href={continueLearning.href} className="glass-panel rounded-[1.6rem] px-4 py-4 border border-white/70 block hover:-translate-y-0.5 transition">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">Continue learning</p>
+                  <h2 className="font-display text-lg font-bold text-gray-900 mt-2">{continueLearning.title}</h2>
+                  <p className="text-sm text-gray-600 mt-1">{continueLearning.sectionTitle} · {continueLearning.source}</p>
+                </div>
+                <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">
+                  Resume →
+                </span>
+              </div>
+            </Link>
+          )}
+
+          {bookmarkedEntries.length > 0 && (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {bookmarkedEntries.map((entry) => (
+                <Link
+                  key={entry.entryId}
+                  href={entry.href}
+                  className="clay-card rounded-[1.45rem] px-4 py-4 block hover:-translate-y-0.5 transition"
+                >
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">Bookmarked</p>
+                  <p className="font-semibold text-gray-900 mt-2">{entry.title}</p>
+                  <p className="text-sm text-gray-600 mt-1">{entry.sectionTitle}</p>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       <div className="relative">
         <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />

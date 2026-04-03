@@ -272,6 +272,43 @@ Current slice:
   - `/library/[tradition]/[section]` for track pages
   - `/library/[tradition]/[section]/[entryId]` for text / lesson pages
 - the next active slice is to add continue-learning loops, bookmarks, and deeper rights metadata around those routes
+- Bhagavad Gita is becoming the first complete chapter-structured Pathshala pilot:
+  - all 18 chapters are now mapped as a study path
+  - chapter pages can route users to official-source full text and audio while local ingestion grows
+  - this is the model text family for future Ramayana and broader canon work
+- AI-assisted reading and recitation are staged behind that corpus work:
+  - first: source-aware explain, quiz, flashcards, and guided reading
+  - later: authoritative audio support, pronunciation help, and only then recitation scoring
+
+### A1.7 Sacred time and Jyotish strategy
+
+Status: `Planned`
+
+Outcome:
+
+- any future Rashi guidance feels spiritually credible rather than like a generic horoscope widget
+
+Work:
+
+- define what `Rashiphal` means in-product:
+  - transit-based rashi guidance
+  - janma-rashi guidance
+  - or a broader Jyotish surface
+- define the calculation and data model:
+  - date
+  - time
+  - place
+  - timezone
+  - school / tradition assumptions
+- align product language toward guidance, humility, and opt-in use rather than prediction certainty
+- connect the feature to Panchang and sacred-time trust work instead of building it as a separate entertainment layer
+
+Exit criteria:
+
+- the feature scope is explicitly defined
+- privacy and birth-data handling are documented
+- disclaimers and trust language are ready before UI promises expand
+- no horoscope-like product claims ship before the calculation model is agreed
 
 ## Phase A2 — Social Safety And Platform Hardening
 
@@ -522,6 +559,14 @@ Plan:
 - add chapter quizzes and mastery checkpoints
 - add interleaved review across related concepts
 - add exams or milestone assessments only after the corpus and provenance layer is trustworthy
+- add AI-assisted study helpers:
+  - explain this verse
+  - simplify this chapter
+  - make flashcards
+  - quiz me
+- add recitation mode in two stages:
+  - authoritative audio / recite-along where source rights allow
+  - pronunciation / recitation feedback only after the trust and audio layer are credible
 
 Build slices:
 
@@ -608,6 +653,19 @@ Current slice:
 - the next polish pass is to remove remaining green and cool-color holdouts from high-traffic screens
 - the home greeting editor is becoming the reusable sheet pattern for profile and other key edit flows
 - the rest of the app shell remains glass-first
+
+## Sacred Time Expansion
+
+Status: `Planned`
+
+Goal:
+Grow `Panchang`, festivals, and later Jyotish into one coherent sacred-time product instead of disconnected utilities.
+
+Next candidate slices:
+
+- trustworthy Panchang and festival backbone
+- opt-in `Rashi guidance` after the time and calculation layer is credible
+- personalized sacred-time reminders only after timezone and trust controls are stable
 
 Do not lead with it on:
 

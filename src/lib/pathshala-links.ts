@@ -15,3 +15,7 @@ export function getPathshalaEntryHref(tradition: LibraryTradition, sectionId: st
 export function getPathshalaEntryHrefFromSection(section: LibrarySection, entry: LibraryEntry) {
   return getPathshalaEntryHref(section.tradition, section.id, entry.id);
 }
+
+export function getPathshalaChapterHref(tradition: LibraryTradition, sectionId: string, chapterId: string) {
+  return getPathshalaEntryHref(tradition, sectionId, chapterId);
+}

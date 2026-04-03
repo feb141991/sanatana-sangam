@@ -24,7 +24,11 @@ Last updated: 2026-04-03
 - [ ] Finalize the Pathshala source-and-rights strategy before promising full scripture corpora in production
 - [x] Finish the first live Pathshala UI slice: rename the Library surface, make it tradition-first, and map the current corpus into scripture-category tracks
 - [x] Start Pathshala phase 2: add section-level corpus metadata, source-governance cues, and fuller scripture-track detail
+- [ ] Start Pathshala return loops: bookmarks, continue-learning state, and reading-plan foundations
+- [ ] Build Bhagavad Gita as the first complete chapter-structured Pathshala pilot
 - [x] Replace the current green / teal brand bias with a warmer dharmic palette that fits the Sanatan product identity better
+- [ ] Define Jyotish / Rashiphal strategy under the trust core before shipping any horoscope-style feature
+- [ ] Stage Pathshala AI-assisted reading and recitation support: explain, quiz, flashcards, and later pronunciation / scoring
 
 ## P0 Launch Blockers
 
@@ -33,9 +37,11 @@ Last updated: 2026-04-03
 - [ ] User reporting, block, mute, and hide flows exist in the main app
 - [ ] Festival data is no longer hardcoded to a single year
 - [ ] Panchang accuracy strategy is finalized and reflected in product copy
+- [ ] Jyotish / Rashiphal scope, calculation model, and disclaimer strategy are finalized before launch claims expand
 - [ ] Push notifications are either fully implemented or removed from product claims
 - [ ] Notification jobs are segmented, deduplicated, and timezone-aware
 - [ ] Scripture corpus source legitimacy, permissions, and provenance policy are finalized for production
+- [ ] Full-text launch scope is explicit: what is fully in-app vs what still routes to official source partners
 - [ ] `schema.sql`, migrations, and app types are aligned
 - [ ] `package.json` and installed dependency versions are aligned
 - [x] Lockfile is committed
@@ -58,6 +64,9 @@ Last updated: 2026-04-03
 - [ ] Add analytics, funnel tracking, and error monitoring
 - [ ] Replace browser `confirm`, `alert`, and `window.prompt` flows with app-native UI
 - [ ] Add scripture bookmarks and reading plans
+- [ ] Add chapter-level AI study assist in Pathshala after source-grounded Gita flows are stable
+- [ ] Add recitation mode with authoritative-source audio first, then later pronunciation guidance
+- [ ] Explore opt-in Jyotish / Rashi guidance after Panchang and sacred-time trust work is credible
 - [ ] Add Pathshala quizzes, cards, and mastery checkpoints after the corpus source layer is trustworthy
 - [ ] Define religious language support: script toggles first, then launch-language UI packs
 - [ ] Activate referral attribution from invite codes
