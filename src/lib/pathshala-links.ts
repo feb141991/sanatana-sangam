@@ -20,6 +20,11 @@ export function getPathshalaChapterHref(tradition: LibraryTradition, sectionId: 
   return getPathshalaEntryHref(tradition, sectionId, chapterId);
 }
 
+export function getGitaRecitationHref(chapterId?: string) {
+  const base = '/library/hindu/gita/recite';
+  if (!chapterId) return base;
+  return `${base}?chapter=${encodeURIComponent(chapterId)}`;
+}
 export function getAIChatHref(prompt: string, context?: string) {
   const params = new URLSearchParams({ prefill: prompt });
   if (context) params.set('context', context);

@@ -282,11 +282,13 @@ Current slice:
   - the Pathshala source note now makes it explicit that Sanskrit + meaning are source-backed and transliteration is generated from the Sanskrit text
   - first reading plans now point into the complete chapter map so users can study in a defined rhythm instead of browsing randomly
   - return loops now work at the chapter layer too, so users can bookmark and resume canonical Gita chapters rather than only the smaller excerpt entries
-  - this is the model text family for future Ramayana and broader canon work
+  - this is now the active canonical focus for the next iteration, with a dedicated Gita-first recitation mode that keeps Pathshala local for study and uses authoritative IIT audio as the recitation companion
+  - this is the model text family for future Ramayana and broader canon work, but those wider canon expansions are intentionally on hold until the Gita study + recitation flow feels complete end to end
 - the next canon lane is now active for Valmiki Ramayana:
   - Ramayana now opens as a Kanda-first study path instead of a flat excerpt list
   - Kanda pages carry summaries, reading plans, AI study prompts, and companion-source links
   - the live Ramayana passages are now grouped back into their wider narrative home rather than feeling like disconnected quotations
+  - this lane is now paused while the Gita study + authoritative recitation flow is completed
 - the Upanishad lane is now materially deeper too:
   - the 13 principal Upanishads are now live locally as full translated study texts
   - the live source path is Robert Ernest Hume's 1921 public-domain translation via the Internet Archive OCR corpus
@@ -301,6 +303,7 @@ Current slice:
   - this creates a visible study-layer model: translated text live, original Sanskrit live where source-accessible, recitation still companion-first
   - the Upanishad track now surfaces that model clearly to users by grouping live-original texts ahead of companion-original texts instead of leaving the source state implicit
   - the remaining blockers are now described in-product too, so users can see when a text is companion-only because the official source is still summary/flipbook shaped rather than clean scripture text
+  - this wider original-text expansion is now temporarily paused while the Gita-first recitation/audio lane is completed
 - AI-assisted reading and recitation are staged behind that corpus work:
   - first: source-aware explain, quiz, flashcards, and guided reading
   - first live bridge is now in place:
@@ -308,7 +311,8 @@ Current slice:
     - the AI surface receives the chapter context so users can start with a prefilled study question instead of restating the source
     - principal Upanishad pages now carry the same first-wave study actions so long-form texts can open into explanation, recall, and revision flows instead of dead-ending as static reading pages
   - first UX polish layer is now live with Framer Motion on shell, Home overlays, and Pathshala transitions so the app feels calmer without over-animating long reading surfaces
-  - later: authoritative audio support, pronunciation help, and only then recitation scoring
+  - first recitation implementation is now Gita-specific: a dedicated Gita recitation mode that keeps authoritative audio on the IIT companion source instead of faking local chanting
+  - later: Pathshala audio controls, pronunciation help, and only then recitation scoring
 
 ### A1.7 Sacred time and Jyotish strategy
 

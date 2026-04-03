@@ -19,8 +19,9 @@ import {
   getSectionForEntry,
   isLibraryTradition,
 } from '@/lib/library-content';
-import { getUpanishadLayerCounts } from '@/lib/upanishad-study';
+import { getUpanishadLayerCounts, getUpanishadStudyMeta } from '@/lib/upanishad-study';
 import {
+  getGitaRecitationHref,
   getPathshalaChapterHref,
   getPathshalaEntryHrefFromSection,
   getPathshalaTraditionHref,
@@ -59,6 +60,19 @@ export default async function PathshalaSectionPage({
       ? entries.filter((entry) => ['ram-bal-1', 'ram-sundara-1', 'ram-yuddha-1', 'ram-uttara-1'].includes(entry.id))
       : entries;
   const upanishadLayerCounts = section === 'upanishad' ? getUpanishadLayerCounts() : null;
+  const upanishadLiveEntries = section === 'upanishad'
+    ? [...featuredEntries]
+        .filter((entry) => getUpanishadStudyMeta(entry.id)?.originalLayerStatus === 'live')
+        .sort((a, b) => a.title.localeCompare(b.title))
+    : [];
+  const upanishadCompanionEntries = section === 'upanishad'
+    ? [...featuredEntries]
+        .filter((entry) => getUpanishadStudyMeta(entry.id)?.originalLayerStatus !== 'live')
+        .sort((a, b) => a.title.localeCompare(b.title))
+    : [];
+  const displayedFeaturedEntries = section === 'upanishad'
+    ? [...upanishadLiveEntries, ...upanishadCompanionEntries]
+    : featuredEntries;
 
   return (
     <MotionFade className="space-y-4 pb-6 fade-in">
@@ -170,6 +184,56 @@ export default async function PathshalaSectionPage({
                 <p className="text-sm text-gray-600 mt-1">texts still relying on official companion sources for the original layer</p>
               </div>
             </div>
+
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="clay-card rounded-[1.25rem] px-4 py-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Original live now</p>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {upanishadLiveEntries.map((entry) => (
+                    <Link
+                      key={entry.id}
+                      href={getPathshalaEntryHrefFromSection(sectionMeta, entry)}
+                      className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]"
+                    >
+                      {entry.title}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+              <div className="glass-panel rounded-[1.25rem] px-4 py-4 border border-white/60">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Official companion originals</p>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {upanishadCompanionEntries.map((entry) => (
+                    <Link
+                      key={entry.id}
+                      href={getPathshalaEntryHrefFromSection(sectionMeta, entry)}
+                      className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-600 hover:text-[color:var(--brand-primary)] transition"
+                    >
+                      {entry.title}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {upanishadCompanionEntries.length > 0 && (
+              <div className="glass-panel rounded-[1.25rem] px-4 py-4 border border-white/60">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">What still blocks the rest</p>
+                <p className="text-sm text-gray-700 leading-relaxed mt-2">
+                  The remaining principal Upanishads are still companion-linked because their current official Vedic Heritage pages are mostly summary or flipbook surfaces, not clean scripture-text pages. Pathshala keeps that boundary explicit instead of pretending those originals are already ingested.
+                </p>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {upanishadCompanionEntries.slice(0, 6).map((entry) => (
+                    <span
+                      key={`blocked-${entry.id}`}
+                      className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-600"
+                    >
+                      {entry.title}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -207,6 +271,13 @@ export default async function PathshalaSectionPage({
                     >
                       Official audio
                     </a>
+                    <Link
+                      href={getGitaRecitationHref()}
+                      className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold text-center"
+                      style={{ color: 'var(--brand-primary)' }}
+                    >
+                      Recitation mode
+                    </Link>
                   </>
                 ) : (
                   <>
@@ -321,14 +392,14 @@ export default async function PathshalaSectionPage({
                   ? 'The full verse corpus now lives inside the chapter pages above. These featured openings are good places to begin.'
                   : 'The Kanda flow now holds the narrative structure. These local passages are strong first openings inside the broader Ramayana path.'
                 : section === 'upanishad'
-                  ? 'Open a principal Upanishad to read the full translated study text, see the original-text layer, and jump to official companions where needed.'
+                  ? 'Open a principal Upanishad to read the full translated study text. Texts with live original Sanskrit are surfaced first, and the companion-linked texts remain visible so the source boundary stays honest.'
                   : 'Open a text to read the passage, source note, and related material.'}
             </p>
           </div>
         </div>
 
         <MotionStagger className="grid gap-3" delay={0.08}>
-          {featuredEntries.map((entry) => {
+          {displayedFeaturedEntries.map((entry) => {
             const sourceMeta = getLibrarySourceMeta(entry);
             const entrySection = getSectionForEntry(entry) ?? sectionMeta;
             const isUpanishad = section === 'upanishad';
