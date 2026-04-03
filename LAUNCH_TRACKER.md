@@ -17,6 +17,7 @@ Last updated: 2026-04-03
 - [ ] Finish the user-side safety slice: report, block, mute, hide, and profile management
 - [ ] Ship the current home polish slice: reliable tradition greeting editor + custom override
 - [ ] Deepen the `Kul / Vansh` visual system into the first clay-family memory surface
+- [ ] Finish the first research-backed palette rationalization pass and roll it through shared surfaces
 
 ## P0 Launch Blockers
 
@@ -40,6 +41,7 @@ Last updated: 2026-04-03
 - [ ] Personalize onboarding and home experience from `seeking`
 - [x] Persist guided-path progress so home cards can be dismissed, completed, and restored
 - [ ] Turn current personalized home cards into fuller first-week onboarding logic
+- [ ] Replace rough `Kul / Vansh` clay figurines with polished keepsake memory cards
 - [ ] Add Mandali comments and replies
 - [ ] Add Mandali event RSVP flow
 - [ ] Add analytics, funnel tracking, and error monitoring
@@ -53,3 +55,4 @@ Last updated: 2026-04-03
 - The best near-term market story is: diaspora Hindu / Sanatani launch first, then broader dharmic expansion after parity improves.
 - Current implementation pass is intentionally focused on launch credibility at the front door before deeper social or growth work.
 - `ROADMAP.md` is now the main sequencing document for `Phase A` vs `Phase B`.
+- `COLOR_STRATEGY.md` now tracks the palette research, token direction, and rollout rules.

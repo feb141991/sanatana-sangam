@@ -84,33 +84,37 @@ function TaskBadge({ type }: { type: string }) {
   );
 }
 
-function ClayFamilyPortrait({ member }: { member: FamilyMember }) {
-  const figurePalette = member.is_alive ? {
-    female: { skin: '#e7c4ab', hair: '#6d4331', body: '#bd7a56', accent: '#d8b06e' },
-    male:   { skin: '#ddb292', hair: '#5d3d2f', body: '#a96a49', accent: '#cf9d61' },
-    other:  { skin: '#e0b79a', hair: '#6a4738', body: '#b37651', accent: '#d2a668' },
-  } : {
-    female: { skin: '#cfb5a3', hair: '#7b6a5e', body: '#9d8270', accent: '#ccb69a' },
-    male:   { skin: '#c8ad97', hair: '#746256', body: '#947867', accent: '#c3ae92' },
-    other:  { skin: '#ccb09c', hair: '#77655a', body: '#987c69', accent: '#c8b39a' },
-  };
-  const palette = member.gender === 'female'
-    ? figurePalette.female
-    : member.gender === 'male'
-      ? figurePalette.male
-      : figurePalette.other;
+function FamilyKeepsakeStage({ member }: { member: FamilyMember }) {
+  const initials = getInitials(member.name || '?');
+  const medallionRing = member.is_alive
+    ? 'linear-gradient(145deg, rgba(31, 107, 114, 0.22), rgba(195, 135, 47, 0.26))'
+    : 'linear-gradient(145deg, rgba(95, 82, 72, 0.16), rgba(125, 138, 139, 0.22))';
+  const medallionFill = member.is_alive
+    ? 'linear-gradient(145deg, rgba(247, 243, 235, 0.98), rgba(226, 239, 239, 0.96))'
+    : 'linear-gradient(145deg, rgba(242, 238, 233, 0.98), rgba(230, 235, 235, 0.96))';
+  const statusTone = member.is_alive ? 'var(--brand-primary-strong)' : 'var(--brand-earth)';
+  const railTone = member.is_alive ? 'rgba(22, 77, 84, 0.72)' : 'rgba(95, 82, 72, 0.72)';
+  const branchLabel = member.parent_id ? 'Linked branch' : 'Root branch';
 
   return (
     <div className="clay-portrait-stage">
-      <div className="clay-figure">
-        <span className="clay-figure-hair" style={{ background: palette.hair }} />
-        <span className="clay-figure-head" style={{ background: palette.skin }} />
-        {member.gender === 'female' && member.is_alive && <span className="clay-figure-bindi" />}
-        <span className="clay-figure-body" style={{ background: palette.body }} />
-        <span className="clay-figure-accent" style={{ background: palette.accent }} />
+      <div className="clay-memory-orbit" />
+      <div className="clay-memory-medallion" style={{ background: medallionRing }}>
+        <div className="clay-memory-medallion-inner" style={{ background: medallionFill }}>
+          {member.photo_url ? (
+            <img src={member.photo_url} className="w-full h-full object-cover rounded-[1.2rem]" alt={`${member.name} keepsake`} />
+          ) : (
+            <span className="font-display text-lg font-bold tracking-[0.16em]" style={{ color: statusTone }}>
+              {initials}
+            </span>
+          )}
+        </div>
       </div>
-      <div className="absolute inset-x-3 bottom-2 flex items-center justify-between text-[10px] font-medium" style={{ color: 'rgba(140, 77, 45, 0.72)' }}>
-        <span>{member.is_alive ? 'Living memory' : 'Remembrance'}</span>
+      <div className="clay-memory-badge" style={{ color: statusTone }}>
+        {member.is_alive ? 'Living memory' : 'In remembrance'}
+      </div>
+      <div className="absolute inset-x-3 bottom-2 flex items-center justify-between text-[10px] font-medium" style={{ color: railTone }}>
+        <span>{branchLabel}</span>
         <span>{member.generation ? `Gen ${member.generation}` : 'Kul'}</span>
       </div>
     </div>
@@ -161,12 +165,12 @@ function NoKulPrompt({ userId, userName }: { userId: string; userName: string })
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center space-y-6 fade-in">
       <div className="w-24 h-24 rounded-full flex items-center justify-center text-5xl"
-        style={{ background: 'linear-gradient(135deg, #7B1A1A15, #b4530915)' }}>
+        style={{ background: 'linear-gradient(135deg, rgba(31, 107, 114, 0.12), rgba(195, 135, 47, 0.14))' }}>
         🏡
       </div>
       <div>
         <h1 className="font-display font-bold text-3xl text-gray-900 mb-2">Kul</h1>
-        <p className="text-[#7B1A1A] font-semibold text-sm mb-3">कुल — Your Family Sangam</p>
+        <p className="font-semibold text-sm mb-3" style={{ color: 'var(--brand-primary)' }}>कुल — Your Family Sangam</p>
         <p className="text-gray-500 max-w-sm text-sm leading-relaxed">
           A private space for your family to learn, practice dharma together — tasks, streaks, chat, and more.
         </p>
@@ -176,7 +180,8 @@ function NoKulPrompt({ userId, userName }: { userId: string; userName: string })
       <div className="flex bg-gray-100 rounded-2xl p-1 w-full max-w-sm">
         {(['create', 'join'] as const).map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${tab === t ? 'bg-white shadow-sm text-[#7B1A1A] font-semibold' : 'text-gray-500'}`}>
+            className={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${tab === t ? 'bg-white shadow-sm font-semibold' : 'text-gray-500'}`}
+            style={tab === t ? { color: 'var(--brand-primary)' } : undefined}>
             {t === 'create' ? '✨ Create Kul' : '🔗 Join Kul'}
           </button>
         ))}
@@ -190,7 +195,8 @@ function NoKulPrompt({ userId, userName }: { userId: string; userName: string })
             <div className="flex gap-2 flex-wrap justify-center">
               {KUL_EMOJIS.map(e => (
                 <button key={e} onClick={() => setEmoji(e)}
-                  className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center transition ${emoji === e ? 'border-2 border-[#7B1A1A] bg-[#7B1A1A]/5' : 'border border-gray-100 hover:border-orange-200'}`}>
+                  className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center transition ${emoji === e ? 'border-2 border-[color:var(--brand-primary)]' : 'border border-gray-100 hover:border-orange-200'}`}
+                  style={emoji === e ? { background: 'rgba(31, 107, 114, 0.08)' } : undefined}>
                   {e}
                 </button>
               ))}
@@ -199,10 +205,10 @@ function NoKulPrompt({ userId, userName }: { userId: string; userName: string })
           <input type="text" placeholder="Name your Kul (e.g. Sharma Parivar)"
             value={kulName} onChange={e => setKulName(e.target.value)}
             maxLength={40}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm" />
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[color:var(--brand-primary)] outline-none text-sm" />
           <button onClick={createKul} disabled={saving || !kulName.trim()}
             className="w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
-            style={{ background: '#7B1A1A' }}>
+            style={{ background: 'var(--brand-primary)' }}>
             {saving ? 'Creating…' : `Create ${emoji} ${kulName || 'My Kul'} 🙏`}
           </button>
         </div>
@@ -212,10 +218,10 @@ function NoKulPrompt({ userId, userName }: { userId: string; userName: string })
           <input type="text" placeholder="e.g. AB12CD"
             value={joinCode} onChange={e => setJoinCode(e.target.value.toUpperCase())}
             maxLength={6}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm tracking-widest font-bold text-center text-2xl uppercase" />
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[color:var(--brand-primary)] outline-none text-sm tracking-widest font-bold text-center text-2xl uppercase" />
           <button onClick={joinKul} disabled={saving || joinCode.length < 4}
             className="w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
-            style={{ background: '#7B1A1A' }}>
+            style={{ background: 'var(--brand-primary)' }}>
             {saving ? 'Joining…' : 'Join Kul 🙏'}
           </button>
         </div>
@@ -252,7 +258,7 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
   return (
     <div className="space-y-4">
       {/* Kul header card */}
-      <div className="rounded-2xl p-5 text-white" style={{ background: '#7B1A1A' }}>
+      <div className="rounded-2xl p-5 text-white" style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
         <div className="flex items-center gap-3 mb-4">
           <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl bg-white/10">
             {kul.avatar_emoji}
@@ -299,12 +305,12 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
             return (
               <div key={m.id} className="bg-white rounded-2xl border border-gray-100 p-3 flex items-center gap-3">
                 <Avatar name={p?.full_name || p?.username || '?'} url={p?.avatar_url} size={10}
-                  gradient={m.user_id === userId ? '#7B1A1A' : 'linear-gradient(135deg, #ff7722, #d4a017)'} />
+                  gradient={m.user_id === userId ? 'var(--brand-primary)' : 'linear-gradient(135deg, var(--brand-accent), #d6b06a)'} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <p className="text-sm font-semibold text-gray-900 truncate">{p?.full_name || p?.username}</p>
                     {m.role === 'guardian' && <Crown size={11} className="text-amber-500 flex-shrink-0" />}
-                    {m.user_id === userId && <span className="text-[10px] text-[#7B1A1A]">(you)</span>}
+                    {m.user_id === userId && <span className="text-[10px]" style={{ color: 'var(--brand-primary)' }}>(you)</span>}
                   </div>
                   <p className="text-xs text-gray-400">{p?.spiritual_level ?? 'Seeker'} · {TRADITION_EMOJI[p?.tradition ?? ''] ?? '🙏'}</p>
                 </div>
@@ -897,7 +903,8 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
         <div className="flex bg-gray-100 rounded-xl p-1 gap-1 flex-1">
           {(['tree', 'events'] as const).map(v => (
             <button key={v} onClick={() => setActiveView(v)}
-              className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition ${activeView === v ? 'bg-white text-[#7B1A1A] shadow-sm font-semibold' : 'text-gray-500'}`}>
+              className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition ${activeView === v ? 'bg-white shadow-sm font-semibold' : 'text-gray-500'}`}
+              style={activeView === v ? { color: 'var(--brand-primary)' } : undefined}>
               {v === 'tree' ? '🫶 Vansh' : `📅 Events (${upcomingEvents.length})`}
             </button>
           ))}
@@ -905,7 +912,7 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
         {canManageVansh ? (
           <button onClick={() => { resetForm(); setEditMember(null); setShowAdd(true); }}
             className="w-9 h-9 rounded-xl flex items-center justify-center text-white flex-shrink-0"
-            style={{ background: '#7B1A1A' }}>
+            style={{ background: 'var(--brand-primary)' }}>
             <Plus size={16} />
           </button>
         ) : (
@@ -1006,12 +1013,12 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
       {activeView === 'tree' && (
         <div className="space-y-6">
           <div className="clay-card rounded-[1.8rem] p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(140, 77, 45, 0.72)' }}>
-              Clay family portraits
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(22, 77, 84, 0.72)' }}>
+              Family keepsakes
             </p>
-            <h3 className="font-display text-lg font-bold text-gray-900 mt-1">Hold your Vansh like a memory wall, not just a tree</h3>
+            <h3 className="font-display text-lg font-bold text-gray-900 mt-1">Hold your Vansh like a keepsake wall, not just a tree</h3>
             <p className="text-sm text-gray-600 mt-2 leading-relaxed">
-              Each lineage card keeps the structure readable, but feels warmer and more personal. This is the visual base for the future family memory vault.
+              Each lineage card keeps the structure readable, but now feels calmer and more polished. This is the visual base for the future family memory vault.
             </p>
           </div>
 
@@ -1019,11 +1026,24 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
             <div className="clay-card rounded-[1.8rem] text-center py-12 px-6 text-gray-400">
               <div className="mx-auto max-w-[10rem]">
                 <div className="clay-portrait-stage">
-                  <div className="clay-figure" style={{ transform: 'translateX(34%) scale(0.95)' }}>
-                    <span className="clay-figure-hair" style={{ background: '#6a4738' }} />
-                    <span className="clay-figure-head" style={{ background: '#e0b79a' }} />
-                    <span className="clay-figure-body" style={{ background: '#b37651' }} />
-                    <span className="clay-figure-accent" style={{ background: '#d2a668' }} />
+                  <div className="clay-memory-orbit" />
+                  <div
+                    className="clay-memory-medallion"
+                    style={{ background: 'linear-gradient(145deg, rgba(31, 107, 114, 0.18), rgba(195, 135, 47, 0.22))' }}>
+                    <div
+                      className="clay-memory-medallion-inner"
+                      style={{ background: 'linear-gradient(145deg, rgba(247, 243, 235, 0.98), rgba(226, 239, 239, 0.96))' }}>
+                      <span className="font-display text-xl font-bold" style={{ color: 'var(--brand-primary-strong)' }}>
+                        वं
+                      </span>
+                    </div>
+                  </div>
+                  <div className="clay-memory-badge" style={{ color: 'var(--brand-primary-strong)' }}>
+                    Ready for first lineage
+                  </div>
+                  <div className="absolute inset-x-3 bottom-2 flex items-center justify-between text-[10px] font-medium" style={{ color: 'rgba(22, 77, 84, 0.72)' }}>
+                    <span>Family roots</span>
+                    <span>Kul</span>
                   </div>
                 </div>
               </div>
@@ -1046,7 +1066,7 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
                   return (
                     <div key={m.id}
                       className="clay-portrait-card flex-shrink-0 w-40 rounded-[1.7rem] p-3 text-center relative">
-                      <ClayFamilyPortrait member={m} />
+                      <FamilyKeepsakeStage member={m} />
                       <p className="text-xs font-bold text-gray-900 leading-tight mt-3">{m.name}</p>
                       {m.role && <p className="text-[10px] mt-0.5" style={{ color: 'var(--brand-primary)' }}>{m.role}</p>}
                       <div className="text-[10px] text-gray-500 mt-1.5 space-y-0.5 leading-relaxed">

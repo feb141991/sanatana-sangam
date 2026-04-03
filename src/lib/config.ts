@@ -118,11 +118,11 @@ export const APP = {
 
 export const BRAND = {
   COLORS: {
-    MAROON:       '#7B1A1A',
-    MAROON_DARK:  '#5c1212',
-    MAROON_LIGHT: '#a02222',
-    CREAM:        '#F5F0E8',
-    ORANGE:       '#E8640A',
+    MAROON:       '#1F6B72',
+    MAROON_DARK:  '#164D54',
+    MAROON_LIGHT: '#6F9E9B',
+    CREAM:        '#F7F3EB',
+    ORANGE:       '#C3872F',
   },
 } as const;
 

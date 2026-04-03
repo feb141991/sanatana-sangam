@@ -494,6 +494,7 @@ Exit criteria:
 Current slice:
 
 - the first clay-inspired `Vansh` portrait cards are now live while preserving the lineage structure
+- the rough figurine-style avatar treatment is being removed in favor of calmer keepsake medallions
 - this is a visual and emotional groundwork slice, not the full family memory vault yet
 
 ## Cross-Cutting Design Track — Sacred Clay
@@ -519,8 +520,9 @@ Apply first to:
 Current slice:
 
 - claymorphic treatment has started on personalized home guidance and trust panels
-- the app shell palette is now shifting toward terracotta, sandalwood, and temple bronze
-- `Kul` / `Vansh` now has a first clay-family portrait pass instead of only tree-style lineage cards
+- the app shell palette is now shifting toward ivory, peacock teal, saffron, and soft earth
+- `Kul` / `Vansh` is moving from rough clay figurines to keepsake medallions and calmer lineage cards
+- `COLOR_STRATEGY.md` now tracks the research basis and usage rules for the palette direction
 - the rest of the app shell remains glass-first
 
 Do not lead with it on:
