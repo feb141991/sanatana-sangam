@@ -22,7 +22,8 @@ Last updated: 2026-04-03
 - [ ] Reuse the greeting-sheet editing pattern for other key edit flows instead of leaving it isolated to Home
 - [ ] Define `Parampara Pathshala` as a tradition-first scripture product instead of a flat Library
 - [ ] Finalize the Pathshala source-and-rights strategy before promising full scripture corpora in production
-- [ ] Finish the first live Pathshala UI slice: rename the Library surface, make it tradition-first, and map the current corpus into scripture-category tracks
+- [x] Finish the first live Pathshala UI slice: rename the Library surface, make it tradition-first, and map the current corpus into scripture-category tracks
+- [ ] Start Pathshala phase 2: add section-level corpus metadata, source-governance cues, and fuller scripture-track detail
 
 ## P0 Launch Blockers
 

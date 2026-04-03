@@ -917,6 +917,16 @@ export interface PathshalaTrackGroup {
   sectionIds: string[];
 }
 
+export interface PathshalaSectionDetail {
+  sectionId: string;
+  pathType: 'Canonical study' | 'Practice track' | 'Commentarial / teaching track';
+  corpusState: 'Passage set live' | 'Catalog-first expansion' | 'Rights review required';
+  liveScope: string;
+  completeTextGoal: string;
+  sourceTargets: string[];
+  studyModes: string[];
+}
+
 export const LIBRARY_SECTIONS: LibrarySection[] = [
   // ── Vaishnava ────────────────────────────────────────────────────────────────
   { id: 'gita',               title: 'Bhagavad Gita',         emoji: '🦚', tradition: 'hindu',    category: 'gita',               desc: 'Krishna\'s eternal teachings to Arjuna on dharma, yoga & liberation',       count: GITA_ENTRIES.length },
@@ -1028,6 +1038,144 @@ export const PATHSHALA_TRACK_GROUPS: PathshalaTrackGroup[] = [
   },
 ];
 
+export const PATHSHALA_SECTION_DETAILS: PathshalaSectionDetail[] = [
+  {
+    sectionId: 'gita',
+    pathType: 'Canonical study',
+    corpusState: 'Catalog-first expansion',
+    liveScope: 'Foundational passages are live now for guided study and orientation.',
+    completeTextGoal: 'Expand toward a full chapter-structured Bhagavad Gita study path with reliable source provenance and commentary layers.',
+    sourceTargets: ['Gita Supersite', 'rights-audited Gita editions'],
+    studyModes: ['Verse study', 'chapter summaries', 'future quizzes'],
+  },
+  {
+    sectionId: 'bhagavatam',
+    pathType: 'Canonical study',
+    corpusState: 'Rights review required',
+    liveScope: 'Selected devotional passages are live now as a study-entry surface.',
+    completeTextGoal: 'Grow into a Skandha-structured Bhagavata study path once text rights and editorial scope are clear.',
+    sourceTargets: ['rights-cleared Bhagavata editions', 'publisher-approved corpora'],
+    studyModes: ['Bhakti passages', 'narrative study', 'festival-linked reading'],
+  },
+  {
+    sectionId: 'vishnu_sahasranama',
+    pathType: 'Practice track',
+    corpusState: 'Catalog-first expansion',
+    liveScope: 'Representative names and study passages are live now.',
+    completeTextGoal: 'Support full recitation structure, name-by-name study, and memory loops.',
+    sourceTargets: ['Mahabharata critical references', 'rights-cleared recitation texts'],
+    studyModes: ['Recitation', 'name study', 'flashcards'],
+  },
+  {
+    sectionId: 'ramayana',
+    pathType: 'Canonical study',
+    corpusState: 'Rights review required',
+    liveScope: 'Key passages are live now for a first guided Itihasa track.',
+    completeTextGoal: 'Expand into Kanda-based study with narrative continuity and character-path lessons.',
+    sourceTargets: ['rights-cleared Valmiki editions', 'scholarly Itihasa catalogs'],
+    studyModes: ['Narrative study', 'character arcs', 'ethics prompts'],
+  },
+  {
+    sectionId: 'ramcharitmanas',
+    pathType: 'Commentarial / teaching track',
+    corpusState: 'Rights review required',
+    liveScope: 'Selected devotional passages are live now.',
+    completeTextGoal: 'Grow into a bhakti-facing study path with kand and chaupai structure where rights allow.',
+    sourceTargets: ['rights-cleared Ramcharitmanas editions', 'public devotional references'],
+    studyModes: ['Bhakti reading', 'recitation', 'festival-linked study'],
+  },
+  {
+    sectionId: 'upanishad',
+    pathType: 'Canonical study',
+    corpusState: 'Catalog-first expansion',
+    liveScope: 'Major mahavakya and foundational passages are live now.',
+    completeTextGoal: 'Expand into text-by-text Upanishad study with source-tracked translations and commentary context.',
+    sourceTargets: ['Vedic Heritage Portal', 'rights-cleared Upanishad editions', 'GRETIL with permission review'],
+    studyModes: ['Mahavakya study', 'concept cards', 'teacher-guided reading later'],
+  },
+  {
+    sectionId: 'veda',
+    pathType: 'Canonical study',
+    corpusState: 'Catalog-first expansion',
+    liveScope: 'Representative hymns and prayers are live now.',
+    completeTextGoal: 'Move toward a curated Vedic study catalog rather than a false claim of full Veda coverage on day one.',
+    sourceTargets: ['Vedic Heritage Portal', 'rights-cleared Vedic resources'],
+    studyModes: ['Hymn study', 'chant context', 'ritual orientation'],
+  },
+  {
+    sectionId: 'yoga_sutra',
+    pathType: 'Canonical study',
+    corpusState: 'Catalog-first expansion',
+    liveScope: 'Foundational sutras are live now.',
+    completeTextGoal: 'Support sutra-by-sutra study, concept chains, and practice-oriented revision loops.',
+    sourceTargets: ['rights-cleared Yoga Sutra editions', 'scholarly translations'],
+    studyModes: ['Sutra study', 'concept maps', 'future revision cards'],
+  },
+  {
+    sectionId: 'chanakya',
+    pathType: 'Commentarial / teaching track',
+    corpusState: 'Catalog-first expansion',
+    liveScope: 'Selected niti passages are live now.',
+    completeTextGoal: 'Position as a practical wisdom lane alongside rather than above canonical scripture study.',
+    sourceTargets: ['rights-cleared Chanakya Niti editions', 'scholarly Sanskrit references'],
+    studyModes: ['Practical wisdom', 'scenario cards', 'discussion prompts'],
+  },
+  {
+    sectionId: 'shiva_purana',
+    pathType: 'Practice track',
+    corpusState: 'Rights review required',
+    liveScope: 'Shaiva hymns and devotional study passages are live now.',
+    completeTextGoal: 'Expand into Shaiva text families and recitation paths once the corpus rights are clear.',
+    sourceTargets: ['Muktabodha Digital Library', 'rights-cleared Shaiva editions'],
+    studyModes: ['Devotional reading', 'stotra study', 'recitation support'],
+  },
+  {
+    sectionId: 'shakta',
+    pathType: 'Practice track',
+    corpusState: 'Rights review required',
+    liveScope: 'Selected Devi-oriented passages are live now.',
+    completeTextGoal: 'Expand into a clearer Devi Mahatmyam and Shakta study path with source-aware structure.',
+    sourceTargets: ['Muktabodha Digital Library', 'rights-cleared Shakta editions'],
+    studyModes: ['Devi study', 'festival-linked reading', 'recitation support'],
+  },
+  {
+    sectionId: 'stotra',
+    pathType: 'Practice track',
+    corpusState: 'Catalog-first expansion',
+    liveScope: 'Daily-use mantras and stotras are live now.',
+    completeTextGoal: 'Support recitation packs, memorization, and daily practice loops.',
+    sourceTargets: ['rights-cleared recitation sources', 'tradition-reviewed liturgical texts'],
+    studyModes: ['Daily recitation', 'memory cards', 'beginner practice'],
+  },
+  {
+    sectionId: 'gurbani',
+    pathType: 'Canonical study',
+    corpusState: 'Catalog-first expansion',
+    liveScope: 'Gurbani and Nitnem passages are live now under one Sikh study track.',
+    completeTextGoal: 'Deepen toward fuller bani structure and source-linked Sikh Pathshala flows once usage terms are finalized.',
+    sourceTargets: ['BaniDB', 'SriGranth', 'SGPC-aligned references'],
+    studyModes: ['Bani study', 'Nitnem return loop', 'future recitation progress'],
+  },
+  {
+    sectionId: 'dhammapada',
+    pathType: 'Canonical study',
+    corpusState: 'Catalog-first expansion',
+    liveScope: 'Foundational Buddhist passages are live now for entry-level Dhamma study.',
+    completeTextGoal: 'Expand toward a source-grounded early-Buddhist study path with sutta families and clearer canon structure.',
+    sourceTargets: ['SuttaCentral', '84000 for later expansion'],
+    studyModes: ['Dhamma reading', 'concept review', 'mindfulness-linked prompts'],
+  },
+  {
+    sectionId: 'jain',
+    pathType: 'Canonical study',
+    corpusState: 'Rights review required',
+    liveScope: 'Foundational Jain passages are live now as a first doctrinal surface.',
+    completeTextGoal: 'Stay catalog-first until permissions are clarified for broader Agama ingestion.',
+    sourceTargets: ['Jain eLibrary', 'permission-cleared Jain publishers or institutions'],
+    studyModes: ['Doctrine study', 'ahimsa concepts', 'future quizzes'],
+  },
+];
+
 export function getSectionsByTradition(tradition: LibraryTradition): LibrarySection[] {
   return LIBRARY_SECTIONS.filter((section) => section.tradition === tradition);
 }
@@ -1042,6 +1190,10 @@ export function getPathshalaTrackGroups(tradition: LibraryTradition): PathshalaT
 
 export function getDefaultSectionForTradition(tradition: LibraryTradition): string {
   return getSectionsByTradition(tradition)[0]?.id ?? 'gita';
+}
+
+export function getPathshalaSectionDetail(sectionId: string): PathshalaSectionDetail | undefined {
+  return PATHSHALA_SECTION_DETAILS.find((detail) => detail.sectionId === sectionId);
 }
 
 export function getEntriesBySection(sectionId: string): LibraryEntry[] {

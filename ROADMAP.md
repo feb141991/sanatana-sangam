@@ -257,10 +257,16 @@ Current slice:
 
 - `PARAMPARA_PATHSHALA_PLAN.md` now defines the recommended structure and source strategy
 - this work belongs in `Phase A` because corpus legitimacy is a trust issue, not just a content issue
-- the first local UI slice is now in build:
+- the first Pathshala UI slice is now shipped:
   - `Parampara Library` has been renamed to `Parampara Pathshala`
   - the reading surface now starts with tradition tiles
   - scripture categories and study tracks now sit between tradition and individual passages
+- the next active slice is to deepen section-level corpus metadata, rights-awareness, and source-governance cues inside the Pathshala tracks
+- the current local build now adds section-level metadata such as:
+  - corpus state
+  - complete-text goal
+  - source targets
+  - planned study modes
 
 ## Phase A2 — Social Safety And Platform Hardening
 

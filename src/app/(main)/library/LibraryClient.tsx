@@ -9,6 +9,7 @@ import {
   PATHSHALA_TRADITIONS,
   getDefaultSectionForTradition,
   getEntriesBySection,
+  getPathshalaSectionDetail,
   getPathshalaTrackGroups,
   getPathshalaTraditionMeta,
   getSectionsByTradition,
@@ -184,6 +185,7 @@ export default function LibraryClient({ defaultSection = 'gita' }: { defaultSect
   const activeSection = visibleSections.find((section) => section.id === activeSectionId)
     ?? visibleSections[0]
     ?? getSectionById(getDefaultSectionForTradition(selectedTradition));
+  const activeSectionDetail = activeSection ? getPathshalaSectionDetail(activeSection.id) : undefined;
 
   const entries = useMemo(() => {
     if (searchQuery.trim()) {
@@ -378,14 +380,62 @@ export default function LibraryClient({ defaultSection = 'gita' }: { defaultSect
       )}
 
       {activeSection && !searchQuery && (
-        <div className="glass-panel rounded-[1.5rem] px-4 py-4">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">{activeSection.emoji}</span>
-            <div>
-              <p className="font-semibold text-sm text-gray-800">{activeSection.title}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{activeSection.desc}</p>
+        <div className="space-y-3">
+          <div className="glass-panel rounded-[1.5rem] px-4 py-4">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">{activeSection.emoji}</span>
+              <div>
+                <p className="font-semibold text-sm text-gray-800">{activeSection.title}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{activeSection.desc}</p>
+              </div>
             </div>
           </div>
+
+          {activeSectionDetail && (
+            <div className="clay-card rounded-[1.6rem] px-4 py-4 space-y-3">
+              <div className="flex flex-wrap gap-2">
+                <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">
+                  {activeSectionDetail.pathType}
+                </span>
+                <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">
+                  {activeSectionDetail.corpusState}
+                </span>
+              </div>
+
+              <div className="space-y-2">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Live now</p>
+                  <p className="text-sm text-gray-700 leading-relaxed mt-1">{activeSectionDetail.liveScope}</p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Complete text goal</p>
+                  <p className="text-sm text-gray-700 leading-relaxed mt-1">{activeSectionDetail.completeTextGoal}</p>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500 mb-2">Source targets</p>
+                <div className="flex flex-wrap gap-2">
+                  {activeSectionDetail.sourceTargets.map((source) => (
+                    <span key={source} className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-600">
+                      {source}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500 mb-2">Planned study modes</p>
+                <div className="flex flex-wrap gap-2">
+                  {activeSectionDetail.studyModes.map((mode) => (
+                    <span key={mode} className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-600">
+                      {mode}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
