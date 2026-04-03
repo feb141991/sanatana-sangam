@@ -124,9 +124,9 @@ export default async function PathshalaEntryPage({
         <div className="clay-card rounded-[1.7rem] px-5 py-5 space-y-4">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Official source</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Companion source</p>
               <p className="text-sm text-gray-700 leading-relaxed mt-2">
-                Use the IIT Kanpur Gita Supersite for the full chapter text and its authoritative study layers while we expand the in-app corpus chapter by chapter.
+                This full chapter is now available inside Pathshala. Use the IIT Kanpur Gita Supersite alongside it when you want authoritative audio, recitation support, or extra commentary layers.
               </p>
             </div>
             <div className="flex flex-col gap-2 sm:items-end">
@@ -137,7 +137,7 @@ export default async function PathshalaEntryPage({
                 className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold"
                 style={{ color: 'var(--brand-primary)' }}
               >
-                Read full chapter
+                Open companion text
               </a>
               <a
                 href={getOfficialGitaAudioUrl(canonicalChapter.chapterNumber)}
@@ -192,12 +192,12 @@ export default async function PathshalaEntryPage({
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Verse navigator</p>
                 <p className="text-sm text-gray-700 leading-relaxed mt-2">
-                  Every verse in the chapter is mapped here. Warm chips open the in-app passage when available; neutral chips open the official verse source directly.
+                  Every verse in the chapter is now mapped to a local Pathshala page. Use these chips to move verse by verse inside the app, or jump to the companion source when you want audio and commentary.
                 </p>
               </div>
               <div className="flex flex-wrap justify-end gap-2 text-[11px] font-medium">
                 <span className="clay-pill text-[color:var(--brand-primary)]">Live in app</span>
-                <span className="glass-chip px-3 py-1.5 rounded-full text-gray-600">Official source</span>
+                <span className="glass-chip px-3 py-1.5 rounded-full text-gray-600">Companion source</span>
               </div>
             </div>
 
@@ -210,7 +210,7 @@ export default async function PathshalaEntryPage({
               <div className="glass-panel rounded-[1.35rem] px-4 py-4 border border-white/60">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Best way to study today</p>
                 <p className="text-sm text-gray-700 leading-relaxed mt-2">
-                  Use the in-app verses for meaning, bookmarks, and AI study prompts, then use the official source links above to complete the full chapter flow.
+                  Stay inside Pathshala for the full verse flow, bookmarks, and AI study prompts, then use the companion links above for audio and deeper reference layers.
                 </p>
               </div>
             </div>
@@ -247,15 +247,15 @@ export default async function PathshalaEntryPage({
 
         <section className="space-y-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">In-app study passages</p>
-            <p className="text-sm text-gray-600 mt-1">These are the chapter passages currently live in-app while full corpus ingestion is being built.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Chapter verses</p>
+            <p className="text-sm text-gray-600 mt-1">These verses are all live in Pathshala now, in order, as a complete local chapter reading surface.</p>
           </div>
 
           {chapterEntries.length === 0 ? (
             <div className="glass-panel rounded-[1.5rem] px-4 py-5">
-              <p className="text-sm font-semibold text-gray-900">This chapter is mapped, but not yet ingested in-app.</p>
+              <p className="text-sm font-semibold text-gray-900">This chapter should be fully live, but no local verse entries were found.</p>
               <p className="text-sm text-gray-600 mt-2">
-                For now, use the official source link above. The Pathshala goal is a complete chapter-and-verse model, not random excerpts forever.
+                That means the local corpus and chapter map have drifted out of sync. Use the companion source above for now while we fix the import.
               </p>
             </div>
           ) : (

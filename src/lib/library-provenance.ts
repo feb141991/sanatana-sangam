@@ -7,6 +7,7 @@ export interface LibrarySourceMeta {
 
 export function getLibrarySourceMeta(entry: LibraryEntry): LibrarySourceMeta {
   const source = entry.source.toLowerCase();
+  const attributionNote = entry.attribution;
 
   if (
     source.includes('gita') ||
@@ -22,7 +23,7 @@ export function getLibrarySourceMeta(entry: LibraryEntry): LibrarySourceMeta {
   ) {
     return {
       label: 'Canonical text',
-      note: 'This entry points to a canonical scripture or primary source within the tradition.',
+      note: attributionNote ?? 'This entry points to a canonical scripture or primary source within the tradition.',
     };
   }
 

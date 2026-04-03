@@ -45,6 +45,11 @@ export default async function PathshalaSectionPage({
   const entries = getEntriesBySection(section);
   const canonicalChapters = getCanonicalChaptersForSection(section);
   const readingPlans = getCanonicalReadingPlansForSection(section);
+  const featuredEntries = canonicalChapters.length > 0
+    ? entries.filter((entry) => (
+        ['gita-2-47', 'gita-2-20', 'gita-4-7', 'gita-6-5', 'gita-9-22', 'gita-18-66'].includes(entry.id)
+      ))
+    : entries;
 
   return (
     <div className="space-y-4 pb-6 fade-in">
@@ -125,7 +130,7 @@ export default async function PathshalaSectionPage({
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Complete study path</p>
                 <p className="text-sm text-gray-700 leading-relaxed mt-2">
-                  This text is being rebuilt as a full chapter-and-verse Pathshala. Use the chapter map below for structured study, and open the official source when you want the complete text immediately.
+                  The full chapter-and-verse Gita is now live inside Pathshala. Use the chapter map below for structured study, and open the companion source when you want audio or extra commentary layers.
                 </p>
               </div>
               <div className="flex flex-col gap-2 sm:items-end">
@@ -136,7 +141,7 @@ export default async function PathshalaSectionPage({
                   className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold"
                   style={{ color: 'var(--brand-primary)' }}
                 >
-                  Official full text
+                  Companion source
                 </a>
                 <a
                   href={getOfficialGitaAudioUrl(1)}
@@ -223,13 +228,19 @@ export default async function PathshalaSectionPage({
       <section className="space-y-3">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Texts and lessons</p>
-            <p className="text-sm text-gray-600 mt-1">Open a text to read the passage, source note, and related material.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
+              {canonicalChapters.length > 0 ? 'Featured entry points' : 'Texts and lessons'}
+            </p>
+            <p className="text-sm text-gray-600 mt-1">
+              {canonicalChapters.length > 0
+                ? 'The full verse corpus now lives inside the chapter pages above. These featured openings are good places to begin.'
+                : 'Open a text to read the passage, source note, and related material.'}
+            </p>
           </div>
         </div>
 
         <div className="grid gap-3">
-          {entries.map((entry) => {
+          {featuredEntries.map((entry) => {
             const sourceMeta = getLibrarySourceMeta(entry);
             const entrySection = getSectionForEntry(entry) ?? sectionMeta;
 

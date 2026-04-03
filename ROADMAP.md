@@ -273,14 +273,13 @@ Current slice:
   - `/library/[tradition]/[section]` for track pages
   - `/library/[tradition]/[section]/[entryId]` for text / lesson pages
 - the next active slice is to add continue-learning loops, bookmarks, and deeper rights metadata around those routes
-- Bhagavad Gita is becoming the first complete chapter-structured Pathshala pilot:
-  - all 18 chapters are now mapped as a study path
-  - chapter pages can route users to official-source full text and audio while local ingestion grows
-  - chapter pages now include a verse navigator that makes the split explicit:
-    - warm chips for passages already live in-app
-    - neutral chips for verses that still open the official source directly
-  - the existing daily-shloka Gita bank is now being reused inside Pathshala so chapter coverage grows from the app’s own scripture corpus instead of staying siloed
-  - first reading plans now point into the chapter map so users can study in a defined rhythm instead of browsing randomly
+- Bhagavad Gita is now the first complete chapter-structured Pathshala pilot:
+  - all 18 chapters are mapped as a study path
+  - the full local chapter-and-verse corpus is now live from a public-domain Annie Besant Wikisource edition
+  - this source path currently yields 701 verses because it follows the 35-verse chapter-13 tradition; that edition truth should remain explicit in product copy and provenance
+  - chapter pages now keep the full reading flow inside Pathshala while still linking out to companion official audio and commentary layers
+  - the Pathshala source note now makes it explicit that Sanskrit + meaning are source-backed and transliteration is generated from the Sanskrit text
+  - first reading plans now point into the complete chapter map so users can study in a defined rhythm instead of browsing randomly
   - return loops now work at the chapter layer too, so users can bookmark and resume canonical Gita chapters rather than only the smaller excerpt entries
   - this is the model text family for future Ramayana and broader canon work
 - AI-assisted reading and recitation are staged behind that corpus work:

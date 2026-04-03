@@ -2,7 +2,7 @@
 // Covers Hindu, Sikh, Buddhist, Jain traditions
 // Each entry: id, title, source, original, transliteration, meaning, tradition, category
 
-import { SHLOKAS } from '@/lib/shlokas';
+import { GITA_FULL_DATA } from '@/lib/gita-full-data';
 
 export type LibraryTradition = 'hindu' | 'sikh' | 'buddhist' | 'jain';
 
@@ -25,112 +25,14 @@ export interface LibraryEntry {
   tradition:        LibraryTradition;
   category:         LibraryCategory;
   tags:             string[];
-}
-
-function parseBhagavadGitaSource(source: string) {
-  const match = source.match(/^Bhagavad Gita\s+(\d+)\.(\d+)$/i);
-  if (!match) return null;
-
-  return {
-    chapterNumber: Number(match[1]),
-    verseNumber: Number(match[2]),
-  };
-}
-
-function createGeneratedGitaEntryTitle(chapterNumber: number, verseNumber: number) {
-  return `Bhagavad Gita ${chapterNumber}.${verseNumber}`;
+  attribution?:     string;
 }
 
 // ─── BHAGAVAD GITA ────────────────────────────────────────────────────────────
-const CURATED_GITA_ENTRIES: LibraryEntry[] = [
-  {
-    id: 'gita-2-47',
-    title: 'The Supreme Secret of Action',
-    source: 'Bhagavad Gita 2.47',
-    original: 'कर्मण्येवाधिकारस्ते मा फलेषु कदाचन ।\nमा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि ॥',
-    transliteration: 'karmaṇy evādhikāras te mā phaleṣu kadācana\nmā karma-phala-hetur bhūr mā te saṅgo \'stv akarmaṇi',
-    meaning: 'You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions. Never consider yourself the cause of the results of your activities, and never be attached to not doing your duty.',
-    tradition: 'hindu', category: 'gita',
-    tags: ['karma', 'duty', 'detachment', 'action', 'krishna'],
-  },
-  {
-    id: 'gita-4-7',
-    title: 'The Promise of the Divine',
-    source: 'Bhagavad Gita 4.7–4.8',
-    original: 'यदा यदा हि धर्मस्य ग्लानिर्भवति भारत ।\nअभ्युत्थानमधर्मस्य तदात्मानं सृजाम्यहम् ॥\nपरित्राणाय साधूनां विनाशाय च दुष्कृताम् ।\nधर्मसंस्थापनार्थाय सम्भवामि युगे युगे ॥',
-    transliteration: 'yadā yadā hi dharmasya glānir bhavati bhārata\nabhyutthānam adharmasya tadātmānaṁ sṛjāmy aham\nparitrāṇāya sādhūnāṁ vināśāya ca duṣkṛtām\ndharma-saṁsthāpanārthāya sambhavāmi yuge yuge',
-    meaning: 'Whenever and wherever there is a decline in religious practice and a predominant rise of irreligion, at that time I descend Myself. To deliver the pious and to annihilate the miscreants, as well as to reestablish the principles of religion, I Myself appear, millennium after millennium.',
-    tradition: 'hindu', category: 'gita',
-    tags: ['avatar', 'dharma', 'krishna', 'divine'],
-  },
-  {
-    id: 'gita-9-22',
-    title: 'The Yoga of Devotion',
-    source: 'Bhagavad Gita 9.22',
-    original: 'अनन्याश्चिन्तयन्तो मां ये जनाः पर्युपासते ।\nतेषां नित्याभियुक्तानां योगक्षेमं वहाम्यहम् ॥',
-    transliteration: 'ananyāś cintayanto māṁ ye janāḥ paryupāsate\nteṣāṁ nityābhiyuktānāṁ yoga-kṣemaṁ vahāmy aham',
-    meaning: 'For those who worship Me with devotion, meditating on My transcendental form, I carry what they lack and preserve what they have.',
-    tradition: 'hindu', category: 'gita',
-    tags: ['bhakti', 'devotion', 'krishna', 'protection'],
-  },
-  {
-    id: 'gita-18-66',
-    title: 'The Final Teaching',
-    source: 'Bhagavad Gita 18.66',
-    original: 'सर्वधर्मान्परित्यज्य मामेकं शरणं व्रज ।\nअहं त्वा सर्वपापेभ्यो मोक्षयिष्यामि मा शुचः ॥',
-    transliteration: 'sarva-dharmān parityajya mām ekaṁ śaraṇaṁ vraja\nahaṁ tvāṁ sarva-pāpebhyo mokṣayiṣyāmi mā śucaḥ',
-    meaning: 'Abandon all varieties of dharma and simply surrender unto Me alone. I shall deliver you from all sinful reactions; do not fear.',
-    tradition: 'hindu', category: 'gita',
-    tags: ['surrender', 'moksha', 'krishna', 'liberation'],
-  },
-  {
-    id: 'gita-2-20',
-    title: 'Immortality of the Soul',
-    source: 'Bhagavad Gita 2.20',
-    original: 'न जायते म्रियते वा कदाचिन् नायं भूत्वा भविता वा न भूयः ।\nअजो नित्यः शाश्वतोऽयं पुराणो न हन्यते हन्यमाने शरीरे ॥',
-    transliteration: 'na jāyate mriyate vā kadācin nāyaṁ bhūtvā bhavitā vā na bhūyaḥ\najo nityaḥ śāśvato \'yaṁ purāṇo na hanyate hanyamāne śarīre',
-    meaning: 'The soul is never born nor dies at any time. It has not come into being, does not come into being, and will not come into being. It is unborn, eternal, ever-existing, and primeval. It is not slain when the body is slain.',
-    tradition: 'hindu', category: 'gita',
-    tags: ['atman', 'soul', 'immortality', 'death', 'krishna'],
-  },
-  {
-    id: 'gita-6-5',
-    title: 'Be Your Own Best Friend',
-    source: 'Bhagavad Gita 6.5',
-    original: 'उद्धरेदात्मनात्मानं नात्मानमवसादयेत् ।\nआत्मैव ह्यात्मनो बन्धुरात्मैव रिपुरात्मनः ॥',
-    transliteration: 'uddhared ātmanātmānaṁ nātmānam avasādayet\nātmaiva hy ātmano bandhur ātmaiva ripur ātmanaḥ',
-    meaning: 'One must elevate oneself by one\'s own mind, not degrade oneself. The mind is the friend of the conditioned soul, and its enemy as well.',
-    tradition: 'hindu', category: 'gita',
-    tags: ['mind', 'self-improvement', 'discipline', 'yoga'],
-  },
-];
-
-const curatedGitaSourceSet = new Set(CURATED_GITA_ENTRIES.map((entry) => entry.source.toLowerCase()));
-
-const GENERATED_GITA_ENTRIES_FROM_SHLOKAS: LibraryEntry[] = SHLOKAS
-  .map((shloka) => {
-    const reference = parseBhagavadGitaSource(shloka.source);
-    if (!reference) return null;
-    if (curatedGitaSourceSet.has(shloka.source.toLowerCase())) return null;
-
-    return {
-      id: `gita-${reference.chapterNumber}-${reference.verseNumber}-pathshala`,
-      title: createGeneratedGitaEntryTitle(reference.chapterNumber, reference.verseNumber),
-      source: shloka.source,
-      original: shloka.sanskrit,
-      transliteration: shloka.transliteration,
-      meaning: shloka.meaning,
-      tradition: 'hindu' as const,
-      category: 'gita' as const,
-      tags: ['gita', 'pathshala', 'daily-shloka', `chapter-${reference.chapterNumber}`],
-    };
-  })
-  .filter(Boolean) as LibraryEntry[];
-
-export const GITA_ENTRIES: LibraryEntry[] = [
-  ...CURATED_GITA_ENTRIES,
-  ...GENERATED_GITA_ENTRIES_FROM_SHLOKAS,
-];
+export const GITA_ENTRIES: LibraryEntry[] = GITA_FULL_DATA.map((entry) => ({
+  ...entry,
+  tags: [...entry.tags],
+}));
 
 // ─── RAMAYANA ─────────────────────────────────────────────────────────────────
 export const RAMAYANA_ENTRIES: LibraryEntry[] = [
@@ -963,7 +865,7 @@ export interface PathshalaTrackGroup {
 export interface PathshalaSectionDetail {
   sectionId: string;
   pathType: 'Canonical study' | 'Practice track' | 'Commentarial / teaching track';
-  corpusState: 'Passage set live' | 'Catalog-first expansion' | 'Rights review required';
+  corpusState: 'Passage set live' | 'Catalog-first expansion' | 'Rights review required' | 'Complete local text live';
   liveScope: string;
   completeTextGoal: string;
   sourceTargets: string[];
@@ -1085,11 +987,11 @@ export const PATHSHALA_SECTION_DETAILS: PathshalaSectionDetail[] = [
   {
     sectionId: 'gita',
     pathType: 'Canonical study',
-    corpusState: 'Catalog-first expansion',
-    liveScope: 'Foundational passages plus the in-app daily shloka corpus are now live for guided study, chapter navigation, and return loops.',
-    completeTextGoal: 'Expand toward a full chapter-structured Bhagavad Gita study path with reliable source provenance and commentary layers.',
-    sourceTargets: ['Gita Supersite', 'rights-audited Gita editions'],
-    studyModes: ['Verse study', 'chapter summaries', 'future quizzes'],
+    corpusState: 'Complete local text live',
+    liveScope: 'The full chapter-and-verse Bhagavad Gita corpus is now live in-app using a public-domain translation with source attribution, bookmarks, chapter navigation, and return loops.',
+    completeTextGoal: 'Deepen this into a fuller study system with script preferences, commentary layers, quizzes, and recitation support on top of the complete local text.',
+    sourceTargets: ['Wikisource (Annie Besant public-domain edition)', 'Gita Supersite for official audio and companion study layers'],
+    studyModes: ['Verse study', 'chapter summaries', 'bookmarks', 'AI study prompts', 'future quizzes'],
   },
   {
     sectionId: 'bhagavatam',

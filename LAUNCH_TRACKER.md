@@ -25,7 +25,7 @@ Last updated: 2026-04-03
 - [x] Finish the first live Pathshala UI slice: rename the Library surface, make it tradition-first, and map the current corpus into scripture-category tracks
 - [x] Start Pathshala phase 2: add section-level corpus metadata, source-governance cues, and fuller scripture-track detail
 - [x] Start Pathshala return loops: bookmarks, continue-learning state, and first reading-plan foundations
-- [ ] Build Bhagavad Gita as the first complete chapter-structured Pathshala pilot
+- [x] Build Bhagavad Gita as the first complete chapter-structured Pathshala pilot with full local verse coverage and source attribution
 - [x] Replace the current green / teal brand bias with a warmer dharmic palette that fits the Sanatan product identity better
 - [ ] Define Jyotish / Rashiphal strategy under the trust core before shipping any horoscope-style feature
 - [ ] Stage Pathshala AI-assisted reading and recitation support: explain, quiz, flashcards, and later pronunciation / scoring
@@ -68,6 +68,7 @@ Last updated: 2026-04-03
 - [x] Extend Pathshala return loops to chapter-level Gita study so users can resume and bookmark full chapter paths, not just excerpts
 - [x] Add first chapter-level AI study entry points in Pathshala with prefilled source-aware prompts
 - [x] Reuse the existing daily-shloka Gita corpus inside Pathshala so chapter coverage expands locally without waiting on a separate import pipeline
+- [x] Replace the partial Gita pilot with a full local public-domain corpus so chapter study no longer depends on external full-text fallback
 - [ ] Add recitation mode with authoritative-source audio first, then later pronunciation guidance
 - [ ] Explore opt-in Jyotish / Rashi guidance after Panchang and sacred-time trust work is credible
 - [ ] Add Pathshala quizzes, cards, and mastery checkpoints after the corpus source layer is trustworthy
