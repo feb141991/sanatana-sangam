@@ -4,12 +4,16 @@ Last updated: 2026-04-03
 
 ## Decision
 
-Move the app away from a terracotta-heavy shell and toward a calmer, more repeat-use-friendly palette:
+The current green / teal direction is not the final brand direction.
+
+For this product, the better fit is a warmer dharmic palette:
 
 - `Ivory` for the base
-- `Peacock teal` for primary actions and trust surfaces
-- `Saffron` as a selective accent, not the dominant screen color
-- `Soft earth` only for grounding details, not the whole interface
+- `Saffron` for spiritual emphasis
+- `Deep maroon / sindoor` for authority and sacred identity
+- `Soft earth` for grounding details
+
+Any cool green or teal should be reduced to a supporting role at most, not the dominant brand color.
 
 ## Why We Are Changing It
 
@@ -68,11 +72,11 @@ Ecological Valence Theory argues that people prefer colors partly because of the
 
 Implication:
 
-- for a dharmic product, saffron still matters culturally
-- but it should function as a meaningful accent, not the full reading environment
-- a calm teal base can carry trust while saffron carries spiritual and festive emphasis
+- for a dharmic product, saffron and maroon carry stronger cultural resonance than a green-first shell
+- the app should feel rooted in sacred familiarity, not generic wellness or finance-app coolness
+- we still need calm light reading surfaces, but the identity color story should come from warm dharmic tones rather than teal dominance
 
-This is partly a research-backed inference applied to the app's cultural context.
+This is partly a research-backed inference applied to the app's cultural and product context.
 
 Source:
 
@@ -98,15 +102,15 @@ Source:
 
 - [WCAG Contrast Minimum](https://www.w3.org/WAI/WCAG20/Understanding/contrast-minimum.html)
 
-## Chosen Palette
+## Updated Palette Direction
 
 ### Core tokens
 
-- `--brand-primary`: `#1f6b72`
-- `--brand-primary-strong`: `#164d54`
-- `--brand-primary-soft`: `#e2efef`
-- `--brand-accent`: `#c3872f`
-- `--brand-accent-soft`: `#f2e4c7`
+- `--brand-primary`: move toward a deep maroon / sindoor family
+- `--brand-primary-strong`: darker maroon for emphasis and headers
+- `--brand-primary-soft`: warm blush / saffron-tinted light surface
+- `--brand-accent`: saffron / sacred gold
+- `--brand-accent-soft`: pale saffron wash
 - `--sacred-cream`: `#f7f3eb`
 - `--brand-earth`: `#5f5248`
 
@@ -120,20 +124,19 @@ Measured ratios used in this pass:
 
 Meaning:
 
-- primary teal is safe for standard text on light surfaces
-- strong teal is safe for high-emphasis UI and icons
-- saffron should mainly stay in accents, chips, highlights, and gradients rather than small white-text buttons
+- accessibility remains non-negotiable even as the palette warms up
+- maroon and saffron should be used with disciplined contrast checks
+- the final palette should feel recognizably dharmic without becoming visually heavy
 
 ## Usage Rules
 
-### Use teal for
+### Use maroon for
 
 - navigation
 - primary buttons
-- trust surfaces
-- links
-- focus states
-- quiet authority
+- sacred authority
+- high-importance actions
+- strong section headers
 
 ### Use saffron for
 
@@ -142,6 +145,13 @@ Meaning:
 - guided-path highlights
 - memory accents
 - notification or festival emphasis
+
+### Use neutral warm light surfaces for
+
+- reading
+- study
+- forms
+- longer sessions
 
 ### Use ivory for
 
@@ -152,7 +162,8 @@ Meaning:
 
 ### Avoid
 
-- full-screen maroon or terracotta dominance
+- green / teal as the dominant identity color
+- full-screen dark maroon dominance
 - saffron as a primary text color on white
 - multiple strong warm gradients on one screen
 - mixing too many tradition colors in the same dense surface
@@ -161,14 +172,15 @@ Meaning:
 
 ### Current pass
 
-- global brand tokens shifted to ivory + teal + saffron
+- Pathshala and structure work are ahead of the final palette correction
 - `Kul / Vansh` clay portraits replaced by keepsake medallions
-- shared glass and clay surfaces re-tuned around the calmer palette
+- shared glass and clay surfaces still need the warm dharmic palette pass
 
 ### Next pass
 
-- replace remaining hardcoded maroon values in high-traffic screens
-- align public/auth pages to the new palette
+- replace the current green / teal brand tokens with a warmer dharmic system
+- unify high-traffic screens around ivory + saffron + maroon
+- align public/auth pages and the main app shell to the new palette
 - tune tradition-aware accents so they still feel distinct without fragmenting the brand
 
 ### Final pass

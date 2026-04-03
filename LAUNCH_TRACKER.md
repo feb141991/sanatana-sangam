@@ -24,6 +24,7 @@ Last updated: 2026-04-03
 - [ ] Finalize the Pathshala source-and-rights strategy before promising full scripture corpora in production
 - [x] Finish the first live Pathshala UI slice: rename the Library surface, make it tradition-first, and map the current corpus into scripture-category tracks
 - [ ] Start Pathshala phase 2: add section-level corpus metadata, source-governance cues, and fuller scripture-track detail
+- [ ] Replace the current green / teal brand bias with a warmer dharmic palette that fits the Sanatan product identity better
 
 ## P0 Launch Blockers
 

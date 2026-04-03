@@ -267,6 +267,9 @@ Current slice:
   - complete-text goal
   - source targets
   - planned study modes
+- the palette direction is being corrected again:
+  - the current green / teal bias is not the desired long-term fit
+  - the next design pass should move toward ivory + saffron + maroon with strong readability controls
 
 ## Phase A2 — Social Safety And Platform Hardening
 
