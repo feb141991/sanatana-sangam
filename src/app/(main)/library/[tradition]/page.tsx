@@ -8,6 +8,7 @@ import {
   isLibraryTradition,
 } from '@/lib/library-content';
 import { getPathshalaSectionHref } from '@/lib/pathshala-links';
+import { MotionFade, MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
 
 export default async function PathshalaTraditionPage({
   params,
@@ -26,7 +27,7 @@ export default async function PathshalaTraditionPage({
   const totalEntries = getEntriesByTradition(tradition).length;
 
   return (
-    <div className="space-y-4 pb-6 fade-in">
+    <MotionFade className="space-y-4 pb-6 fade-in">
       <div className="glass-panel rounded-[1.8rem] px-5 py-5">
         <Link href="/library" className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">
           Parampara Pathshala
@@ -51,9 +52,10 @@ export default async function PathshalaTraditionPage({
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Scripture categories</p>
           <p className="text-sm text-gray-600 mt-1">Choose a category first, then open a study track inside it.</p>
         </div>
-        <div className="grid gap-3">
+        <MotionStagger className="grid gap-3" delay={0.05}>
           {groups.map((group) => (
-            <div key={group.id} className="clay-card rounded-[1.6rem] px-4 py-4 space-y-3">
+            <MotionItem key={group.id}>
+            <div className="clay-card rounded-[1.6rem] px-4 py-4 space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="font-display text-lg font-bold text-gray-900">{group.title}</p>
@@ -64,12 +66,13 @@ export default async function PathshalaTraditionPage({
                 </span>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
+              <MotionStagger className="grid gap-3 sm:grid-cols-2" delay={0.04}>
                 {group.sectionIds.map((sectionId) => {
                   const section = sections.find((item) => item.id === sectionId);
                   if (!section) return null;
 
                   return (
+                    <MotionItem key={section.id}>
                     <Link
                       key={section.id}
                       href={getPathshalaSectionHref(tradition, section.id)}
@@ -85,13 +88,15 @@ export default async function PathshalaTraditionPage({
                       <p className="text-sm text-gray-600 leading-relaxed mt-2">{section.desc}</p>
                       <p className="text-xs font-semibold text-[color:var(--brand-primary)] mt-3">Open track →</p>
                     </Link>
+                    </MotionItem>
                   );
                 })}
-              </div>
+              </MotionStagger>
             </div>
+            </MotionItem>
           ))}
-        </div>
+        </MotionStagger>
       </section>
-    </div>
+    </MotionFade>
   );
 }

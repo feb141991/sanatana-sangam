@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import BrandMark from '@/components/BrandMark';
@@ -45,6 +46,7 @@ export default function TopBar({
     pathname === route || pathname.startsWith(`${route}/`)
   ))?.[1] ?? 'Sanatana Sangam';
   const supabase = useRef(createClient()).current;
+  const prefersReducedMotion = useReducedMotion();
   const pushConfigured = isOneSignalConfigured();
   const homeHref = isGuest ? '/guest' : '/home';
 
@@ -167,8 +169,15 @@ export default function TopBar({
                   )}
                 </button>
 
+                <AnimatePresence>
                 {open && (
-                  <div className="glass-panel-strong absolute right-0 top-11 w-80 rounded-3xl overflow-hidden z-50">
+                  <motion.div
+                    initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10, scale: 0.985 }}
+                    animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
+                    exit={prefersReducedMotion ? undefined : { opacity: 0, y: 6, scale: 0.985 }}
+                    transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                    className="glass-panel-strong absolute right-0 top-11 w-80 rounded-3xl overflow-hidden z-50 origin-top-right"
+                  >
 
                     {/* Header */}
                     <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
@@ -218,7 +227,20 @@ export default function TopBar({
                     )}
 
                     {/* Notification list */}
-                    <div className="divide-y divide-gray-50 max-h-72 overflow-y-auto">
+                    <motion.div
+                      className="divide-y divide-gray-50 max-h-72 overflow-y-auto"
+                      initial="hidden"
+                      animate="show"
+                      variants={{
+                        hidden: {},
+                        show: {
+                          transition: {
+                            staggerChildren: prefersReducedMotion ? 0 : 0.035,
+                            delayChildren: prefersReducedMotion ? 0 : 0.04,
+                          },
+                        },
+                      }}
+                    >
                       {notifs.length === 0 ? (
                         <div className="px-4 py-8 text-center">
                           <p className="text-3xl mb-2">🪔</p>
@@ -227,8 +249,12 @@ export default function TopBar({
                         </div>
                       ) : (
                         notifs.map((n) => (
-                          <div
+                          <motion.div
                             key={n.id}
+                            variants={{
+                              hidden: { opacity: 0, y: 8 },
+                              show: { opacity: 1, y: 0, transition: { duration: 0.18 } },
+                            }}
                             className={`px-4 py-3 flex items-start gap-3 transition cursor-pointer ${
                               !n.read ? 'bg-orange-50/20 hover:bg-orange-50/30' : 'hover:bg-white/40'
                             }`}
@@ -259,12 +285,13 @@ export default function TopBar({
                             {!n.read && (
                               <span className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ background: 'var(--orange-accent)' }} />
                             )}
-                          </div>
+                          </motion.div>
                         ))
                       )}
-                    </div>
-                  </div>
+                    </motion.div>
+                  </motion.div>
                 )}
+                </AnimatePresence>
               </div>
 
               {/* Avatar */}
@@ -283,7 +310,17 @@ export default function TopBar({
         </div>
       </div>
 
-      {open && <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="fixed inset-0 z-30"
+            onClick={() => setOpen(false)}
+            initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+            animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+            exit={prefersReducedMotion ? undefined : { opacity: 0 }}
+          />
+        )}
+      </AnimatePresence>
     </header>
   );
 }

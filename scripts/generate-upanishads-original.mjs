@@ -20,6 +20,20 @@ const TEXTS = [
     id: 'upa-taittiriya-full',
     title: 'Taittiriya Upanishad',
     url: 'https://vedicheritage.gov.in/upanishads/taittiriya-upanishads/',
+    segments: [
+      {
+        url: 'https://vedicheritage.gov.in/upanishads/taittiriya-upanishads/',
+        mode: 'content-column',
+      },
+      {
+        url: 'https://vedicheritage.gov.in/upanishads/taittiriya-upanishadsbrahmananda-valli/',
+        mode: 'content-column',
+      },
+      {
+        url: 'https://vedicheritage.gov.in/upanishads/taittiriya-upanishadsbhighu-valli/',
+        mode: 'content-column',
+      },
+    ],
   },
   {
     id: 'upa-aitareya-full',
@@ -81,6 +95,7 @@ function decodeHtmlEntities(text) {
 function cleanExtractedText(text) {
   return text
     .replace(/[\uE000-\uF8FF]/g, '')
+    .replace(/�/g, '')
     .replace(/^\s*Part\s+[IVXLC]+\s*$/gim, '')
     .replace(/^\s*Canto\s+[IVXLC]+\s*$/gim, '')
     .replace(/^\s*इति\s+.*समाप्\s*$/gim, '')
@@ -90,7 +105,22 @@ function cleanExtractedText(text) {
     .trim();
 }
 
-function extractOriginalText(html) {
+function htmlToText(raw) {
+  return decodeHtmlEntities(raw)
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n\n')
+    .replace(/<p[^>]*>/gi, '')
+    .replace(/<li[^>]*>/gi, '')
+    .replace(/<\/li>/gi, '\n')
+    .replace(/<h\d[^>]*>/gi, '')
+    .replace(/<\/h\d>/gi, '\n\n')
+    .replace(/<video[\s\S]*?<\/video>/gi, '')
+    .replace(/<source[^>]*>/gi, '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\r/g, '');
+}
+
+function extractVideoText(html) {
   const start = html.indexOf('<div id="videotext"');
   if (start === -1) {
     return null;
@@ -104,20 +134,60 @@ function extractOriginalText(html) {
   }
 
   const raw = html.slice(contentStart, end);
-  const cleaned = cleanExtractedText(
-    decodeHtmlEntities(raw)
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/p>/gi, '\n\n')
-    .replace(/<p[^>]*>/gi, '')
-    .replace(/<[^>]+>/g, '')
-    .replace(/\r/g, ''),
-  );
+  const cleaned = cleanExtractedText(htmlToText(raw));
 
   if (!cleaned.includes('॥')) {
     return null;
   }
 
   return cleaned;
+}
+
+function extractContentColumn(html) {
+  const blocks = Array.from(
+    html.matchAll(/<div class="col-lg-6 col-md-6 col-sm-6"[^>]*>([\s\S]*?)<\/div>/g),
+    (match) => match[1],
+  );
+
+  if (blocks.length === 0) {
+    return null;
+  }
+
+  const candidates = blocks
+    .map((block) => {
+      const text = cleanExtractedText(htmlToText(block));
+      const lines = text
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .filter((line) => /[ऀ-ॿॐ᳚᳛᳡ꣳ॥।]/u.test(line))
+        .filter((line) => !/^(Samhita|Brahmana|Aranyaka|UPANISHAD|Upanishad)$/i.test(line));
+
+      const cleaned = lines.join('\n\n').replace(/\n{3,}/g, '\n\n').trim();
+      const verseMarkers = (cleaned.match(/॥/g) ?? []).length;
+      const devanagariChars = (cleaned.match(/[ऀ-ॿॐ᳚᳛᳡ꣳ]/gu) ?? []).length;
+
+      return {
+        cleaned,
+        score: verseMarkers * 100 + devanagariChars,
+      };
+    })
+    .filter((candidate) => candidate.cleaned.includes('॥'));
+
+  if (candidates.length === 0) {
+    return null;
+  }
+
+  candidates.sort((a, b) => b.score - a.score);
+  return candidates[0].cleaned;
+}
+
+function extractOriginalText(html, mode = 'videotext') {
+  if (mode === 'content-column') {
+    return extractContentColumn(html);
+  }
+
+  return extractVideoText(html);
 }
 
 function serialize(value) {
@@ -128,18 +198,28 @@ async function main() {
   const rows = [];
 
   for (const text of TEXTS) {
-    const { stdout: html } = await execFileAsync('curl', ['-L', '--max-time', '30', text.url], {
-      maxBuffer: 10 * 1024 * 1024,
-    });
+    const segments = text.segments ?? [{ url: text.url, mode: 'videotext' }];
+    const originals = [];
 
-    const original = extractOriginalText(html);
+    for (const segment of segments) {
+      const { stdout: html } = await execFileAsync('curl', ['-L', '--max-time', '30', segment.url], {
+        maxBuffer: 10 * 1024 * 1024,
+      });
+
+      const original = extractOriginalText(html, segment.mode);
+      if (original) {
+        originals.push(original);
+      }
+    }
+
+    const combinedOriginal = originals.join('\n\n');
 
     rows.push({
       id: text.id,
-      original: original ?? '',
+      original: combinedOriginal,
       companionSourceUrl: text.url,
-      companionSourceLabel: 'Vedic Heritage original text',
-      originalLayerStatus: original ? 'live' : 'companion',
+      companionSourceLabel: 'Vedic Heritage source page',
+      originalLayerStatus: combinedOriginal ? 'live' : 'companion',
       recitationLayerStatus: 'companion',
     });
   }

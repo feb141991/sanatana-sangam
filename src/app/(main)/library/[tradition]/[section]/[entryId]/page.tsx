@@ -29,6 +29,7 @@ import {
   getPathshalaTraditionHref,
 } from '@/lib/pathshala-links';
 import PathshalaActionBar from '@/app/(main)/library/PathshalaActionBar';
+import { MotionFade, MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
 
 export default async function PathshalaEntryPage({
   params,
@@ -100,7 +101,7 @@ export default async function PathshalaEntryPage({
     ];
 
     return (
-      <div className="space-y-4 pb-6 fade-in">
+      <MotionFade className="space-y-4 pb-6 fade-in">
         <div className="glass-panel rounded-[1.8rem] px-5 py-5 space-y-4">
           <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
             <Link href="/library" className="text-[color:var(--brand-primary)]">Pathshala</Link>
@@ -157,29 +158,33 @@ export default async function PathshalaEntryPage({
             </div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            {studyPrompts.map((prompt) => (
-              <Link
-                key={prompt.title}
-                href={prompt.href}
+            <MotionStagger className="grid gap-3 md:grid-cols-2 xl:grid-cols-4" delay={0.04}>
+              {studyPrompts.map((prompt) => (
+                <MotionItem key={prompt.title}>
+                <Link
+                  key={prompt.title}
+                  href={prompt.href}
+                  className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
+                >
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">{prompt.title}</p>
+                  <p className="text-sm text-gray-700 leading-relaxed mt-2">{prompt.description}</p>
+                </Link>
+                </MotionItem>
+              ))}
+              <MotionItem>
+              <a
+                href={getOfficialGitaAudioUrl(canonicalChapter.chapterNumber)}
+                target="_blank"
+                rel="noreferrer"
                 className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
               >
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">{prompt.title}</p>
-                <p className="text-sm text-gray-700 leading-relaxed mt-2">{prompt.description}</p>
-              </Link>
-            ))}
-            <a
-              href={getOfficialGitaAudioUrl(canonicalChapter.chapterNumber)}
-              target="_blank"
-              rel="noreferrer"
-              className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
-            >
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">Recitation mode</p>
-              <p className="text-sm text-gray-700 leading-relaxed mt-2">
-                Start with authoritative audio and recite along verse by verse. Pronunciation guidance comes after the trusted audio layer is in place.
-              </p>
-            </a>
-          </div>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">Recitation mode</p>
+                <p className="text-sm text-gray-700 leading-relaxed mt-2">
+                  Start with authoritative audio and recite along verse by verse. Pronunciation guidance comes after the trusted audio layer is in place.
+                </p>
+              </a>
+              </MotionItem>
+            </MotionStagger>
         </div>
 
         {user && (
@@ -265,8 +270,9 @@ export default async function PathshalaEntryPage({
               </p>
             </div>
           ) : (
-            <div className="grid gap-3">
+            <MotionStagger className="grid gap-3" delay={0.05}>
               {chapterEntries.map((chapterEntry) => (
+                <MotionItem key={chapterEntry.id}>
                 <Link
                   key={chapterEntry.id}
                   href={getPathshalaEntryHrefFromSection(sectionMeta, chapterEntry)}
@@ -280,11 +286,12 @@ export default async function PathshalaEntryPage({
                     <span className="text-xs font-semibold text-[color:var(--brand-primary)]">Open →</span>
                   </div>
                 </Link>
+                </MotionItem>
               ))}
-            </div>
+            </MotionStagger>
           )}
         </section>
-      </div>
+      </MotionFade>
     );
   }
 
@@ -319,7 +326,7 @@ export default async function PathshalaEntryPage({
     ];
 
     return (
-      <div className="space-y-4 pb-6 fade-in">
+      <MotionFade className="space-y-4 pb-6 fade-in">
         <div className="glass-panel rounded-[1.8rem] px-5 py-5 space-y-4">
           <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
             <Link href="/library" className="text-[color:var(--brand-primary)]">Pathshala</Link>
@@ -376,8 +383,9 @@ export default async function PathshalaEntryPage({
             </div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-3">
+          <MotionStagger className="grid gap-3 md:grid-cols-3" delay={0.04}>
             {studyPrompts.map((prompt) => (
+              <MotionItem key={prompt.title}>
               <Link
                 key={prompt.title}
                 href={prompt.href}
@@ -386,8 +394,9 @@ export default async function PathshalaEntryPage({
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">{prompt.title}</p>
                 <p className="text-sm text-gray-700 leading-relaxed mt-2">{prompt.description}</p>
               </Link>
+              </MotionItem>
             ))}
-          </div>
+          </MotionStagger>
         </div>
 
         {user && (
@@ -422,8 +431,9 @@ export default async function PathshalaEntryPage({
                 </p>
               </div>
             ) : (
-              <div className="grid gap-3">
+              <MotionStagger className="grid gap-3" delay={0.05}>
                 {kandaEntries.map((kandaEntry) => (
+                  <MotionItem key={kandaEntry.id}>
                   <Link
                     key={kandaEntry.id}
                     href={getPathshalaEntryHrefFromSection(sectionMeta, kandaEntry)}
@@ -437,12 +447,13 @@ export default async function PathshalaEntryPage({
                       <span className="text-xs font-semibold text-[color:var(--brand-primary)]">Open →</span>
                     </div>
                   </Link>
+                  </MotionItem>
                 ))}
-              </div>
+              </MotionStagger>
             )}
           </div>
         </section>
-      </div>
+      </MotionFade>
     );
   }
 
@@ -483,7 +494,7 @@ export default async function PathshalaEntryPage({
     : [];
 
   return (
-    <div className="space-y-4 pb-6 fade-in">
+    <MotionFade className="space-y-4 pb-6 fade-in">
       <div className="glass-panel rounded-[1.8rem] px-5 py-5 space-y-4">
         <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
           <Link href="/library" className="text-[color:var(--brand-primary)]">Pathshala</Link>
@@ -531,8 +542,9 @@ export default async function PathshalaEntryPage({
             )}
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <MotionStagger className="grid gap-3 md:grid-cols-2 xl:grid-cols-4" delay={0.04}>
             {upanishadStudyPrompts.map((prompt) => (
+              <MotionItem key={prompt.title}>
               <Link
                 key={prompt.title}
                 href={prompt.href}
@@ -541,8 +553,10 @@ export default async function PathshalaEntryPage({
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">{prompt.title}</p>
                 <p className="text-sm text-gray-700 leading-relaxed mt-2">{prompt.description}</p>
               </Link>
+              </MotionItem>
             ))}
 
+            <MotionItem>
             <div className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">Recitation layer</p>
               <p className="text-sm text-gray-700 leading-relaxed mt-2">
@@ -551,7 +565,8 @@ export default async function PathshalaEntryPage({
                   : 'Recitation support will be layered in after the source-backed text foundation is complete.'}
               </p>
             </div>
-          </div>
+            </MotionItem>
+          </MotionStagger>
         </div>
       )}
 
@@ -701,8 +716,9 @@ export default async function PathshalaEntryPage({
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Study next</p>
             <p className="text-sm text-gray-600 mt-1">Continue inside the same text family without returning to the top-level Pathshala browse.</p>
           </div>
-          <div className="grid gap-3">
+          <MotionStagger className="grid gap-3" delay={0.05}>
             {relatedEntries.map((relatedEntry) => (
+              <MotionItem key={relatedEntry.id}>
               <Link
                 key={relatedEntry.id}
                 href={getPathshalaEntryHrefFromSection(sectionMeta, relatedEntry)}
@@ -716,10 +732,11 @@ export default async function PathshalaEntryPage({
                   <span className="text-xs font-semibold text-[color:var(--brand-primary)]">Open →</span>
                 </div>
               </Link>
+              </MotionItem>
             ))}
-          </div>
+          </MotionStagger>
         </section>
       )}
-    </div>
+    </MotionFade>
   );
 }

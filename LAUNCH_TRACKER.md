@@ -31,7 +31,9 @@ Last updated: 2026-04-03
 - [x] Start the Upanishad source-layer iteration: show which principal texts have live Sanskrit in Pathshala and which still open official companion sources
 - [x] Clean the first Upanishad original-text import so live Sanskrit pages do not carry scrape junk like English section headings or broken glyphs
 - [x] Add the first Upanishad study actions so principal texts can open explain / quiz / flashcard flows instead of behaving like static longform pages
+- [x] Promote Taittiriya Upanishad from companion-only to a live Sanskrit layer by stitching the three Valli source pages into one in-app Pathshala text
 - [x] Replace the current green / teal brand bias with a warmer dharmic palette that fits the Sanatan product identity better
+- [x] Add the first Framer Motion polish pass across the shell, Home overlays, and Pathshala cards so the app feels calmer and less abrupt
 - [ ] Define Jyotish / Rashiphal strategy under the trust core before shipping any horoscope-style feature
 - [ ] Stage Pathshala AI-assisted reading and recitation support: explain, quiz, flashcards, and later pronunciation / scoring
 
@@ -76,6 +78,7 @@ Last updated: 2026-04-03
 - [x] Replace the partial Gita pilot with a full local public-domain corpus so chapter study no longer depends on external full-text fallback
 - [x] Replace the partial Upanishad pilot with a principal-Upanishad corpus so the Pathshala track opens into full study texts instead of only a few Mahavakya excerpts
 - [ ] Add recitation mode with authoritative-source audio first, then later pronunciation guidance
+- [ ] Add a focused Howler-backed Pathshala audio layer later for recitation and guided reading, not generic app-wide UI sounds
 - [ ] Continue the Upanishad original-text iteration until the larger texts that still sit behind official flipbooks can be ingested locally
 - [ ] Explore opt-in Jyotish / Rashi guidance after Panchang and sacred-time trust work is credible
 - [ ] Add Pathshala quizzes, cards, and mastery checkpoints after the corpus source layer is trustworthy
@@ -87,6 +90,8 @@ Last updated: 2026-04-03
 - The best near-term market story is: diaspora Hindu / Sanatani launch first, then broader dharmic expansion after parity improves.
 - Current implementation pass is intentionally focused on launch credibility at the front door before deeper social or growth work.
 - Active polish pass: palette unification across high-traffic screens plus reuse of the greeting-sheet editor pattern in other key flows.
+- Motion is now active as a light polish layer. Keep it strongest on shell, cards, drawers, and overlays; avoid heavy animation on long-form reading surfaces.
+- `Howler` is intentionally deferred to the Pathshala recitation/audio layer so sound stays authoritative, optional, and non-intrusive.
 - `ROADMAP.md` is now the main sequencing document for `Phase A` vs `Phase B`.
 - `COLOR_STRATEGY.md` now tracks the palette research, token direction, and rollout rules.
 - `PARAMPARA_PATHSHALA_PLAN.md` now defines the source strategy and learning-product direction for turning Library into Pathshala.

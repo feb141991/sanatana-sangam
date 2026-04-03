@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Home, MapPin, Users, BookOpen, Heart, Sparkles, Compass, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -13,6 +14,7 @@ interface Props {
 
 export default function BottomNav({ libraryLabel = 'Pathshala', isGuest = false }: Props) {
   const pathname = usePathname();
+  const prefersReducedMotion = useReducedMotion();
 
   const memberNavItems = [
     { href: '/home',       label: 'Home',        icon: Home     },
@@ -40,18 +42,34 @@ export default function BottomNav({ libraryLabel = 'Pathshala', isGuest = false 
               key={href}
               href={href}
               className={cn(
-                'flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all',
+                'relative flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all',
                 active ? 'text-white' : 'text-white/60 hover:text-white'
               )}
             >
+              {active && (
+                <motion.span
+                  layoutId="bottom-nav-active-shell"
+                  className="absolute inset-x-1 inset-y-0 rounded-[1.1rem] bg-white/10"
+                  transition={
+                    prefersReducedMotion
+                      ? { duration: 0 }
+                      : { type: 'spring', stiffness: 360, damping: 30, mass: 0.8 }
+                  }
+                />
+              )}
               <div className={cn(
-                'w-8 h-8 rounded-xl flex items-center justify-center transition-all',
-                active ? 'bg-white/18 shadow-lg' : ''
+                'relative z-10 w-8 h-8 rounded-xl flex items-center justify-center transition-all',
+                active ? 'shadow-lg' : ''
               )}>
-                <Icon size={20} strokeWidth={active ? 2.5 : 1.8} />
+                <motion.div
+                  animate={prefersReducedMotion ? undefined : { scale: active ? 1.08 : 1 }}
+                  transition={{ type: 'spring', stiffness: 420, damping: 26 }}
+                >
+                  <Icon size={20} strokeWidth={active ? 2.5 : 1.8} />
+                </motion.div>
               </div>
               <span className={cn(
-                'text-[10px] font-medium leading-none',
+                'relative z-10 text-[10px] font-medium leading-none',
                 active && 'font-semibold text-white'
               )}>
                 {label}

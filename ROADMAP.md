@@ -294,6 +294,7 @@ Current slice:
 - the next Upanishad iteration is now underway:
   - official Vedic Heritage companion pages are mapped for the principal Upanishads
   - where those pages expose the Sanskrit directly, the original layer is now being brought into Pathshala itself
+  - Taittiriya Upanishad has now been promoted into that live original-text lane by stitching together Shiksha Valli, Brahmananda Valli, and Bhrigu Valli from the official source pages
   - the first import cleaner now strips scrape junk like embedded English `Part / Canto` headings and broken glyph artifacts before those texts are treated as live in app
   - where the official source is still summary-plus-flipbook, Pathshala now keeps that honestly in `companion` state instead of pretending full original-text ingestion is complete
   - this creates a visible study-layer model: translated text live, original Sanskrit live where source-accessible, recitation still companion-first
@@ -303,6 +304,7 @@ Current slice:
     - Gita chapter pages open Pathshala-aware prompts inside Dharma Mitra
     - the AI surface receives the chapter context so users can start with a prefilled study question instead of restating the source
     - principal Upanishad pages now carry the same first-wave study actions so long-form texts can open into explanation, recall, and revision flows instead of dead-ending as static reading pages
+  - first UX polish layer is now live with Framer Motion on shell, Home overlays, and Pathshala transitions so the app feels calmer without over-animating long reading surfaces
   - later: authoritative audio support, pronunciation help, and only then recitation scoring
 
 ### A1.7 Sacred time and Jyotish strategy
@@ -592,6 +594,10 @@ Plan:
 - add recitation mode in two stages:
   - authoritative audio / recite-along where source rights allow
   - pronunciation / recitation feedback only after the trust and audio layer are credible
+- use `Howler` only at that audio stage:
+  - Pathshala recitation playback
+  - guided reading audio
+  - optional, not ambient app-wide sound
 
 Build slices:
 

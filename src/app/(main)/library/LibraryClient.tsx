@@ -8,6 +8,7 @@ import {
 } from '@/lib/library-content';
 import { getPathshalaTraditionHref } from '@/lib/pathshala-links';
 import type { PathshalaStudySummary } from '@/lib/pathshala-state';
+import { MotionFade, MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
 
 export default function LibraryClient({
   defaultSection = 'gita',
@@ -21,7 +22,7 @@ export default function LibraryClient({
   const preferredTradition = getLibrarySectionById(defaultSection)?.tradition ?? 'hindu';
 
   return (
-    <div className="space-y-4 pb-6 fade-in">
+    <MotionFade className="space-y-4 pb-6 fade-in">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--brand-primary)]">
           Tradition-first study
@@ -65,8 +66,9 @@ export default function LibraryClient({
           )}
 
           {bookmarkedEntries.length > 0 && (
-            <div className="grid gap-3 sm:grid-cols-2">
+            <MotionStagger className="grid gap-3 sm:grid-cols-2" delay={0.05}>
               {bookmarkedEntries.map((entry) => (
+                <MotionItem key={entry.entryId}>
                 <Link
                   key={entry.entryId}
                   href={entry.href}
@@ -76,8 +78,9 @@ export default function LibraryClient({
                   <p className="font-semibold text-gray-900 mt-2">{entry.title}</p>
                   <p className="text-sm text-gray-600 mt-1">{entry.sectionTitle}</p>
                 </Link>
+                </MotionItem>
               ))}
-            </div>
+            </MotionStagger>
           )}
         </section>
       )}
@@ -88,13 +91,14 @@ export default function LibraryClient({
           <p className="text-sm text-gray-500 mt-1">Each tradition opens into its own scripture categories and study tracks on the next page.</p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <MotionStagger className="grid gap-3 sm:grid-cols-2" delay={0.06}>
           {PATHSHALA_TRADITIONS.map((tradition) => {
             const sections = getSectionsByTradition(tradition.id);
             const entryCount = getEntriesByTradition(tradition.id).length;
             const isPreferred = tradition.id === preferredTradition;
 
             return (
+              <MotionItem key={tradition.id}>
               <TraditionGatewayCard
                 key={tradition.id}
                 tradition={tradition.id}
@@ -106,11 +110,12 @@ export default function LibraryClient({
                 trackCount={sections.length}
                 isPreferred={isPreferred}
               />
+              </MotionItem>
             );
           })}
-        </div>
+        </MotionStagger>
       </section>
-    </div>
+    </MotionFade>
   );
 }
 

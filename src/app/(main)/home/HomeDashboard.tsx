@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { MapPin, ChevronDown, ChevronUp, Share2, CalendarDays, X, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
@@ -23,6 +24,7 @@ import { buildGuidedPathStatusMap } from '@/lib/guided-paths';
 import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
 import { APP } from '@/lib/config';
+import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
 
 interface Panchang {
   tithi:     string;
@@ -78,6 +80,7 @@ function generateInviteCode(userId: string): string {
 
 // ── Invite Modal ──────────────────────────────────────────────────────────────
 function InviteModal({ userId, onClose }: { userId: string; onClose: () => void }) {
+  const prefersReducedMotion = useReducedMotion();
   const code    = generateInviteCode(userId);
   // Use actual deployment domain at runtime so share links always point to the right URL
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : APP.BASE_URL;
@@ -103,10 +106,21 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end" onClick={onClose}>
-      <div className="w-full bg-white rounded-t-3xl shadow-2xl p-6 space-y-5"
-        onClick={e => e.stopPropagation()}>
-
+    <motion.div
+      className="fixed inset-0 z-50 flex items-end"
+      onClick={onClose}
+      initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+      animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+      exit={prefersReducedMotion ? undefined : { opacity: 0 }}
+    >
+      <motion.div
+        className="w-full bg-white rounded-t-3xl shadow-2xl p-6 space-y-5"
+        onClick={e => e.stopPropagation()}
+        initial={prefersReducedMotion ? undefined : { y: 28, opacity: 0.96 }}
+        animate={prefersReducedMotion ? undefined : { y: 0, opacity: 1 }}
+        exit={prefersReducedMotion ? undefined : { y: 18, opacity: 0.98 }}
+        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+      >
         <div className="flex items-center justify-between">
           <h3 className="font-display font-bold text-gray-900">Invite Friends & Family</h3>
           <button onClick={onClose}
@@ -151,8 +165,8 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
         <p className="text-xs text-center text-gray-400">
           🙏 Spread the light of dharma
         </p>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -210,6 +224,7 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
   onSelect: (date: Date) => void;
   onClose: () => void;
 }) {
+  const prefersReducedMotion = useReducedMotion();
   const [viewDate,      setViewDate]      = useState(new Date(selectedDate));
   const [showYearPicker, setShowYearPicker] = useState(false);
 
@@ -222,13 +237,23 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4" onClick={onClose}>
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      onClick={onClose}
+      initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+      animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+      exit={prefersReducedMotion ? undefined : { opacity: 0 }}
+    >
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/40" />
 
-      <div
+      <motion.div
         className="relative w-80 bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
         onClick={e => e.stopPropagation()}
+        initial={prefersReducedMotion ? undefined : { y: 16, opacity: 0.98, scale: 0.99 }}
+        animate={prefersReducedMotion ? undefined : { y: 0, opacity: 1, scale: 1 }}
+        exit={prefersReducedMotion ? undefined : { y: 12, opacity: 0.98, scale: 0.99 }}
+        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
       >
         {/* Title row */}
         <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-100 flex-shrink-0">
@@ -299,8 +324,8 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -312,6 +337,7 @@ function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onC
   onSave:          (greeting: string | null) => void;
   onClose:         () => void;
 }) {
+  const prefersReducedMotion = useReducedMotion();
   const key  = tradition && sampradaya ? `${tradition}:${sampradaya}` : 'default';
   const pool = (GREETING_POOLS as Record<string, string[]>)[key]
             ?? (GREETING_POOLS as Record<string, string[]>)[`${tradition}:other`]
@@ -351,13 +377,23 @@ function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onC
   if (!mounted) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[80] bg-black/45 backdrop-blur-[2px] overflow-y-auto" onClick={onClose}>
+    <motion.div
+      className="fixed inset-0 z-[80] bg-black/45 backdrop-blur-[2px] overflow-y-auto"
+      onClick={onClose}
+      initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+      animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+      exit={prefersReducedMotion ? undefined : { opacity: 0 }}
+    >
       <div className="min-h-full flex items-end justify-center p-3 sm:items-center sm:p-6">
-        <div
+        <motion.div
           role="dialog"
           aria-modal="true"
           className="glass-panel-strong w-full max-w-lg rounded-[1.85rem] overflow-hidden"
           onClick={(event) => event.stopPropagation()}
+          initial={prefersReducedMotion ? undefined : { y: 24, opacity: 0.98, scale: 0.99 }}
+          animate={prefersReducedMotion ? undefined : { y: 0, opacity: 1, scale: 1 }}
+          exit={prefersReducedMotion ? undefined : { y: 18, opacity: 0.98, scale: 0.99 }}
+          transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
         >
           <div className="max-h-[calc(100dvh-1.5rem)] overflow-y-auto">
             <div className="sticky top-0 z-10 bg-white/88 backdrop-blur px-5 py-4 border-b border-white/60 flex items-center justify-between">
@@ -452,24 +488,36 @@ function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onC
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </div>,
+    </motion.div>,
     document.body
   );
 }
 
 // ── Calendar Modal ────────────────────────────────────────────────────────────
 function CalendarModal({ onClose, onDateSelect }: { onClose: () => void; onDateSelect?: (date: Date) => void }) {
+  const prefersReducedMotion = useReducedMotion();
   const todayStr = new Date().toISOString().split('T')[0];
   const upcoming = FESTIVALS_2026.filter(f => f.date >= todayStr);
   const past     = FESTIVALS_2026.filter(f => f.date <  todayStr);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end" onClick={onClose}>
-      <div className="w-full bg-white rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
-        onClick={e => e.stopPropagation()}>
-
+    <motion.div
+      className="fixed inset-0 z-50 flex items-end"
+      onClick={onClose}
+      initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+      animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+      exit={prefersReducedMotion ? undefined : { opacity: 0 }}
+    >
+      <motion.div
+        className="w-full bg-white rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
+        onClick={e => e.stopPropagation()}
+        initial={prefersReducedMotion ? undefined : { y: 26, opacity: 0.98 }}
+        animate={prefersReducedMotion ? undefined : { y: 0, opacity: 1 }}
+        exit={prefersReducedMotion ? undefined : { y: 18, opacity: 0.98 }}
+        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-gray-100">
           <div className="flex items-center gap-2">
@@ -531,8 +579,8 @@ function CalendarModal({ onClose, onDateSelect }: { onClose: () => void; onDateS
             </>
           )}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -560,6 +608,7 @@ export default function HomeDashboard({
 }: Props) {
   const supabase = createClient();
   const router   = useRouter();
+  const prefersReducedMotion = useReducedMotion();
   const searchParams = useSearchParams();
   const shlokaRef = useRef<HTMLDivElement | null>(null);
   const festivalsRef = useRef<HTMLDivElement | null>(null);
@@ -828,9 +877,10 @@ export default function HomeDashboard({
           </div>
 
           {visiblePersonalizedPaths.length > 0 ? (
-            <div className="grid gap-3">
+            <MotionStagger className="grid gap-3" delay={0.04}>
               {visiblePersonalizedPaths.map((path) => (
-              <div key={path.id} className={`clay-card ${path.accentClass} rounded-[1.8rem] p-4`}>
+              <MotionItem key={path.id}>
+              <div className={`clay-card ${path.accentClass} rounded-[1.8rem] p-4`}>
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: 'rgba(140, 77, 45, 0.65)' }}>
@@ -886,8 +936,9 @@ export default function HomeDashboard({
                   </div>
                 </div>
               </div>
+              </MotionItem>
               ))}
-            </div>
+            </MotionStagger>
           ) : (
             <div className="glass-panel rounded-[1.75rem] px-4 py-4 flex items-center justify-between gap-3">
               <div>
@@ -1043,13 +1094,22 @@ export default function HomeDashboard({
           </button>
         </div>
 
+        <AnimatePresence initial={false}>
         {shlokaExpanded && (
-          <div className="mt-3 pt-3 border-t" style={{ borderColor: sacredTextMeta.accentLight }}>
+          <motion.div
+            className="mt-3 pt-3 border-t"
+            style={{ borderColor: sacredTextMeta.accentLight }}
+            initial={prefersReducedMotion ? undefined : { opacity: 0, height: 0, y: -6 }}
+            animate={prefersReducedMotion ? undefined : { opacity: 1, height: 'auto', y: 0 }}
+            exit={prefersReducedMotion ? undefined : { opacity: 0, height: 0, y: -6 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+          >
             <p className="text-sm text-gray-700 leading-relaxed">
               {sacredText ? sacredText.meaning : shloka.meaning}
             </p>
-          </div>
+          </motion.div>
         )}
+        </AnimatePresence>
       </div>
 
       {/* ── Coming Up ── */}
@@ -1095,9 +1155,10 @@ export default function HomeDashboard({
       {/* ── Quick Access ── */}
       <div>
         <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">Quick Access</p>
-        <div className="grid grid-cols-2 gap-3">
+        <MotionStagger className="grid grid-cols-2 gap-3" delay={0.08}>
           {quickAccessItems.map((item) => (
-            <Link key={item.href} href={item.href}
+            <MotionItem key={item.href}>
+            <Link href={item.href}
               className={`${item.bg} ${item.border} border rounded-2xl p-4 flex items-start gap-3 hover:shadow-sm active:scale-95 transition-all`}>
               <div className={`${item.iconBg} w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0`}>
                 {item.icon}
@@ -1107,8 +1168,9 @@ export default function HomeDashboard({
                 <p className="text-xs text-gray-500 mt-0.5 leading-tight">{item.desc}</p>
               </div>
             </Link>
+            </MotionItem>
           ))}
-        </div>
+        </MotionStagger>
       </div>
 
       {/* ── Vichaar Sabha CTA ── */}
@@ -1130,37 +1192,45 @@ export default function HomeDashboard({
       </button>
 
       {/* ── Parva / Festivals modal ── */}
-      {calendarOpen && (
-        <CalendarModal
-          onClose={() => setCalendarOpen(false)}
-          onDateSelect={(date) => { setSelectedDate(date); setCalendarOpen(false); }}
-        />
-      )}
+      <AnimatePresence>
+        {calendarOpen && (
+          <CalendarModal
+            onClose={() => setCalendarOpen(false)}
+            onDateSelect={(date) => { setSelectedDate(date); setCalendarOpen(false); }}
+          />
+        )}
+      </AnimatePresence>
 
       {/* ── Full date picker (tap date label in Panchang) ── */}
-      {datePickerOpen && (
-        <DatePickerModal
-          selectedDate={selectedDate}
-          onSelect={(date) => setSelectedDate(date)}
-          onClose={() => setDatePickerOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {datePickerOpen && (
+          <DatePickerModal
+            selectedDate={selectedDate}
+            onSelect={(date) => setSelectedDate(date)}
+            onClose={() => setDatePickerOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* ── Greeting edit sheet (tap greeting text) ── */}
-      {greetingSheetOpen && (
-        <GreetingEditSheet
-          tradition={tradition}
-          sampradaya={sampradaya}
-          currentGreeting={localGreeting}
-          onSave={saveGreeting}
-          onClose={() => setGreetingSheetOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {greetingSheetOpen && (
+          <GreetingEditSheet
+            tradition={tradition}
+            sampradaya={sampradaya}
+            currentGreeting={localGreeting}
+            onSave={saveGreeting}
+            onClose={() => setGreetingSheetOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* ── Invite modal ── */}
-      {inviteOpen && (
-        <InviteModal userId={userId} onClose={() => setInviteOpen(false)} />
-      )}
+      <AnimatePresence>
+        {inviteOpen && (
+          <InviteModal userId={userId} onClose={() => setInviteOpen(false)} />
+        )}
+      </AnimatePresence>
 
     </div>
   );
