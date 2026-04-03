@@ -46,7 +46,7 @@ export default function BottomNav({ libraryLabel = 'Library', isGuest = false }:
             >
               <div className={cn(
                 'w-8 h-8 rounded-xl flex items-center justify-center transition-all',
-                active ? 'bg-white/16 shadow-lg' : ''
+                active ? 'bg-white/18 shadow-lg' : ''
               )}>
                 <Icon size={20} strokeWidth={active ? 2.5 : 1.8} />
               </div>

@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { MapPin, ChevronDown, ChevronUp, Share2, CalendarDays, X, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { createPortal } from 'react-dom';
 import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek,
   eachDayOfInterval, format as fmtDate, isSameDay, isSameMonth,
@@ -180,6 +180,19 @@ function getTimeGreeting(hour: number): string | null {
   return null; // afternoon → use tradition greeting
 }
 
+function formatTraditionGreetingLabel(tradition: string | null, sampradaya: string | null) {
+  const label = sampradaya && sampradaya !== 'other'
+    ? sampradaya
+    : tradition && tradition !== 'other'
+      ? tradition
+      : 'your path';
+
+  return label
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
 // ── Date Picker Modal ─────────────────────────────────────────────────────────
 const DAY_LABELS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
@@ -270,8 +283,8 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
             </div>
             {/* Jump to today */}
             <div className="mt-3 flex justify-center">
-              <button onClick={() => { onSelect(new Date()); onClose(); }}
-                className="text-xs px-5 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-[#7B1A1A] hover:text-[#7B1A1A] transition font-medium">
+          <button onClick={() => { onSelect(new Date()); onClose(); }}
+            className="text-xs px-5 py-1.5 rounded-full border border-gray-200 text-gray-500 transition font-medium hover:border-[#8c4d2d] hover:text-[#8c4d2d]">
                 Today
               </button>
             </div>
@@ -295,53 +308,145 @@ function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onC
             ?? (GREETING_POOLS as Record<string, string[]>)[`${tradition}:other`]
             ?? (GREETING_POOLS as Record<string, string[]>)['default'];
 
+  const [mounted, setMounted] = useState(false);
   const [selected, setSelected] = useState<string | null>(currentGreeting);
-  const [custom,   setCustom]   = useState('');
+  const [custom,   setCustom]   = useState(() => (
+    currentGreeting && !pool.includes(currentGreeting) ? currentGreeting : ''
+  ));
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end" onClick={onClose}>
-      <div className="w-full bg-white rounded-t-3xl shadow-2xl p-5 space-y-4"
-        onClick={e => e.stopPropagation()}>
+  const pathLabel = formatTraditionGreetingLabel(tradition, sampradaya);
+  const previewGreeting = selected ?? getGreeting(tradition, sampradaya, new Date().getDate());
+  const previewTone = selected
+    ? pool.includes(selected) ? 'Saved tradition greeting' : 'Saved custom greeting'
+    : 'Auto greeting';
 
-        <div className="flex items-center justify-between">
-          <h3 className="font-display font-bold text-gray-900">Change Greeting</h3>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-            <X size={16} className="text-gray-500" />
-          </button>
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [onClose]);
+
+  if (!mounted) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[80] bg-black/45 backdrop-blur-[2px] overflow-y-auto" onClick={onClose}>
+      <div className="min-h-full flex items-end justify-center p-3 sm:items-center sm:p-6">
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="glass-panel-strong w-full max-w-lg rounded-[1.85rem] overflow-hidden"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div className="max-h-[calc(100dvh-1.5rem)] overflow-y-auto">
+            <div className="sticky top-0 z-10 bg-white/88 backdrop-blur px-5 py-4 border-b border-white/60 flex items-center justify-between">
+              <div>
+                <h3 className="font-display font-bold text-gray-900 text-lg">Choose your greeting</h3>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Suggested for {pathLabel}. You can stay on auto or save a personal greeting.
+                </p>
+              </div>
+              <button onClick={onClose} className="w-9 h-9 rounded-full bg-white/70 flex items-center justify-center hover:bg-white transition">
+                <X size={16} className="text-gray-500" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              <div className="clay-card rounded-[1.6rem] p-4">
+                <p
+                  className="text-[11px] font-semibold uppercase tracking-[0.18em]"
+                  style={{ color: 'rgba(140, 77, 45, 0.7)' }}
+                >
+                  {previewTone}
+                </p>
+                <p className="font-display text-xl font-bold text-gray-900 mt-1">{previewGreeting}</p>
+                <p className="text-xs text-gray-500 mt-1">This is what will appear in your home greeting.</p>
+              </div>
+
+              <div className="space-y-2 max-h-[38vh] overflow-y-auto pr-1">
+                <button
+                  onClick={() => { setSelected(null); setCustom(''); }}
+                  className={`w-full text-left px-4 py-3 rounded-2xl border text-sm transition ${
+                    selected === null
+                      ? 'font-medium'
+                      : 'border-gray-100 text-gray-600 hover:border-[#d0a15a]/40'
+                  }`}
+                  style={selected === null ? {
+                    borderColor: 'var(--brand-primary)',
+                    background: 'var(--brand-primary-soft)',
+                    color: 'var(--brand-primary-strong)',
+                  } : undefined}
+                >
+                  <span className="block font-semibold">✨ Auto</span>
+                  <span className="block text-xs mt-0.5 text-gray-500">Rotate a suggested greeting from your tradition.</span>
+                </button>
+
+                <div className="pt-1">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400 mb-2">
+                    Suggested for {pathLabel}
+                  </p>
+                  <div className="space-y-2">
+                    {pool.map((g) => (
+                      <button
+                        key={g}
+                        onClick={() => { setSelected(g); setCustom(''); }}
+                        className={`w-full text-left px-4 py-3 rounded-2xl border text-sm transition ${
+                          selected === g
+                            ? 'font-medium'
+                            : 'border-gray-100 text-gray-700 hover:border-[#d0a15a]/40'
+                        }`}
+                        style={selected === g ? {
+                          borderColor: 'var(--brand-primary)',
+                          background: 'var(--brand-primary-soft)',
+                          color: 'var(--brand-primary-strong)',
+                        } : undefined}
+                      >
+                        {g}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs text-gray-400 mb-1.5">Or write your own greeting:</p>
+                <input
+                  type="text"
+                  placeholder="e.g. Jai Mahakal! 🔱"
+                  value={custom}
+                  onChange={(event) => {
+                    const nextValue = event.target.value;
+                    setCustom(nextValue);
+                    setSelected(nextValue.trim() || null);
+                  }}
+                  className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-[color:var(--brand-primary)] outline-none text-sm"
+                />
+              </div>
+
+              <button
+                onClick={() => { onSave(selected); onClose(); }}
+                className="glass-button-primary w-full py-3 text-white font-semibold rounded-2xl hover:opacity-90 transition"
+              >
+                Save Greeting 🙏
+              </button>
+            </div>
+          </div>
         </div>
-
-        <div className="space-y-2 max-h-[40vh] overflow-y-auto">
-          <button onClick={() => setSelected(null)}
-            className={`w-full text-left px-4 py-3 rounded-xl border text-sm transition ${
-              selected === null ? 'border-[#7B1A1A] bg-[#7B1A1A]/5 text-[#7B1A1A] font-medium' : 'border-gray-100 text-gray-500'
-            }`}>
-            ✨ Auto — rotates with your tradition
-          </button>
-          {pool.map(g => (
-            <button key={g} onClick={() => { setSelected(g); setCustom(''); }}
-              className={`w-full text-left px-4 py-3 rounded-xl border text-sm transition ${
-                selected === g ? 'border-[#7B1A1A] bg-[#7B1A1A]/5 font-medium' : 'border-gray-100 text-gray-700 hover:border-gray-200'
-              }`}>
-              {g}
-            </button>
-          ))}
-        </div>
-
-        <div>
-          <p className="text-xs text-gray-400 mb-1.5">Or write your own:</p>
-          <input type="text" placeholder="e.g. Jai Mahakal! 🔱"
-            value={custom}
-            onChange={e => { setCustom(e.target.value); setSelected(e.target.value || null); }}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm" />
-        </div>
-
-        <button onClick={() => { onSave(selected); onClose(); }}
-          className="w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 transition"
-          style={{ background: '#7B1A1A' }}>
-          Save Greeting 🙏
-        </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -359,7 +464,7 @@ function CalendarModal({ onClose, onDateSelect }: { onClose: () => void; onDateS
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-gray-100">
           <div className="flex items-center gap-2">
-            <CalendarDays size={18} style={{ color: '#7B1A1A' }} />
+            <CalendarDays size={18} style={{ color: 'var(--brand-primary)' }} />
             <h2 className="font-display font-bold text-gray-900 text-base">Parva Calendar 2026</h2>
             {onDateSelect && <span className="text-xs text-orange-500 ml-1">tap date → view Panchang</span>}
           </div>
@@ -378,9 +483,9 @@ function CalendarModal({ onClose, onDateSelect }: { onClose: () => void; onDateS
                 return (
                   <div key={f.name + f.date}
                     onClick={() => { if (onDateSelect) { onDateSelect(new Date(f.date + 'T00:00:00')); onClose(); } }}
-                    className={`flex items-center gap-3 bg-white border border-gray-100 rounded-2xl p-3 transition ${onDateSelect ? 'hover:border-[#7B1A1A]/40 cursor-pointer active:scale-95' : 'hover:border-[#7B1A1A]/20'}`}>
+                    className={`flex items-center gap-3 bg-white border border-gray-100 rounded-2xl p-3 transition ${onDateSelect ? 'hover:border-[#8c4d2d]/40 cursor-pointer active:scale-95' : 'hover:border-[#8c4d2d]/20'}`}>
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-                      style={{ background: '#7B1A1A0D' }}>
+                      style={{ background: 'rgba(140, 77, 45, 0.08)' }}>
                       {f.emoji}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -389,7 +494,7 @@ function CalendarModal({ onClose, onDateSelect }: { onClose: () => void; onDateS
                     </div>
                     <div className="text-right flex-shrink-0">
                       {days === 0 ? (
-                        <span className="text-xs font-bold px-2 py-1 rounded-full text-white" style={{ background: '#7B1A1A' }}>Today</span>
+                        <span className="text-xs font-bold px-2 py-1 rounded-full text-white" style={{ background: 'var(--brand-primary)' }}>Today</span>
                       ) : days === 1 ? (
                         <span className="text-xs font-semibold text-orange-600">Tomorrow</span>
                       ) : (
@@ -529,14 +634,22 @@ export default function HomeDashboard({
   // Time-aware greeting
   const hour        = new Date().getHours();
   const timeGreeting = getTimeGreeting(hour);
-  const tradGreeting = localGreeting || getGreeting(tradition, sampradaya, new Date().getDate());
-  const greeting     = isWelcomeBack && !localGreeting
-    ? 'Welcome back! 🙏'
-    : timeGreeting || tradGreeting;
+  const autoGreeting = getGreeting(tradition, sampradaya, new Date().getDate());
+  const greeting     = localGreeting ?? (isWelcomeBack ? 'Welcome back! 🙏' : autoGreeting);
+  const greetingMode = localGreeting
+    ? 'Custom greeting saved'
+    : timeGreeting
+      ? `${timeGreeting} · auto tradition greeting`
+      : 'Auto tradition greeting';
 
   async function saveGreeting(newGreeting: string | null) {
     setLocalGreeting(newGreeting);
-    await supabase.from('profiles').update({ custom_greeting: newGreeting }).eq('id', userId);
+    const { error } = await supabase.from('profiles').update({ custom_greeting: newGreeting }).eq('id', userId);
+    if (error) {
+      setLocalGreeting(customGreeting);
+      toast.error(error.message);
+      return;
+    }
     toast.success(newGreeting ? 'Greeting updated 🙏' : 'Greeting reset to auto');
   }
 
@@ -610,16 +723,19 @@ export default function HomeDashboard({
         <div className="flex-1 min-w-0">
           <button
             onClick={() => setGreetingSheetOpen(true)}
-            className="group flex items-center gap-1.5 text-left"
+            className="group -ml-1 rounded-2xl px-1 py-1 flex items-center gap-1.5 text-left hover:bg-white/50 transition"
           >
             <h1 className="font-display text-xl font-bold text-gray-900 leading-tight">
               {greeting}, {userName.split(' ')[0]}!
             </h1>
-            <Pencil size={13} className="text-gray-300 group-hover:text-[#7B1A1A] transition flex-shrink-0 mt-1" />
+            <Pencil size={13} className="text-gray-300 group-hover:text-[color:var(--brand-primary)] transition flex-shrink-0 mt-1" />
           </button>
+          <p className="text-xs mt-1 font-medium" style={{ color: 'rgba(140, 77, 45, 0.78)' }}>
+            {greetingMode}
+          </p>
           {displayCity && (
             <p className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
-              <MapPin size={12} className="text-[#7B1A1A]" />
+              <MapPin size={12} className="text-[color:var(--brand-primary)]" />
               {displayCity}
               {coords && <span className="text-[10px] text-gray-400 ml-1">📍 live</span>}
             </p>
@@ -641,14 +757,14 @@ export default function HomeDashboard({
               <div key={path.id} className={`clay-card ${path.accentClass} rounded-[1.8rem] p-4`}>
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#7B1A1A]/65">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: 'rgba(140, 77, 45, 0.65)' }}>
                       {path.eyebrow}
                     </p>
                     <h2 className="font-display text-lg font-bold text-gray-900 mt-1">{path.title}</h2>
                   </div>
                   <div className="flex flex-wrap justify-end gap-2">
                     {path.badges.map((badge) => (
-                      <span key={badge} className="clay-pill text-[11px] font-medium text-[#7B1A1A]">
+                      <span key={badge} className="clay-pill text-[11px] font-medium" style={{ color: 'var(--brand-primary)' }}>
                         {badge}
                       </span>
                     ))}
@@ -676,7 +792,7 @@ export default function HomeDashboard({
       )}
 
       {/* ── Panchang Widget ── */}
-      <div className="rounded-2xl overflow-hidden shadow-sm" style={{ background: '#7B1A1A' }}>
+      <div className="rounded-2xl overflow-hidden shadow-sm" style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
         <div className="px-4 pt-3 pb-1 flex items-center gap-2">
           <span className="text-base">🪔</span>
           <span className="text-white/80 text-xs font-medium tracking-wider uppercase">
@@ -825,14 +941,14 @@ export default function HomeDashboard({
           <button
             onClick={() => setCalendarOpen(true)}
             className="text-xs font-semibold flex items-center gap-1 hover:underline"
-            style={{ color: '#7B1A1A' }}>
+            style={{ color: 'var(--brand-primary)' }}>
             <CalendarDays size={11} /> All Festivals →
           </button>
         </div>
         {festival && daysUntilFestival !== null ? (
           <div className="px-4 pb-3 flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
-              style={{ background: '#7B1A1A1A' }}>
+              style={{ background: 'rgba(140, 77, 45, 0.12)' }}>
               {festival.emoji}
             </div>
             <div className="flex-1">
@@ -840,7 +956,7 @@ export default function HomeDashboard({
               <p className="text-xs text-gray-500 mt-0.5">{festival.description}</p>
             </div>
             <div className="text-center">
-              <div className="font-display font-bold text-2xl text-[#7B1A1A]">
+              <div className="font-display font-bold text-2xl" style={{ color: 'var(--brand-primary)' }}>
                 {daysUntilFestival === 0 ? '🎉' : daysUntilFestival}
               </div>
               <div className="text-xs text-gray-400">
@@ -850,7 +966,7 @@ export default function HomeDashboard({
           </div>
         ) : (
           <div className="px-4 pb-3 text-sm text-gray-500">
-            Tap <span className="font-semibold text-[#7B1A1A]">All Festivals</span> to browse the Parva calendar 🙏
+            Tap <span className="font-semibold" style={{ color: 'var(--brand-primary)' }}>All Festivals</span> to browse the Parva calendar 🙏
           </div>
         )}
       </div>
@@ -876,9 +992,10 @@ export default function HomeDashboard({
 
       {/* ── Vichaar Sabha CTA ── */}
       <Link href="/vichaar-sabha"
-        className="block w-full rounded-2xl border border-dashed border-[#7B1A1A]/30 p-4 text-center hover:bg-[#7B1A1A]/5 transition-colors">
+        className="block w-full rounded-2xl border border-dashed p-4 text-center transition-colors hover:bg-[#8c4d2d]/5"
+        style={{ borderColor: 'rgba(140, 77, 45, 0.3)' }}>
         <span className="text-lg">💬</span>
-        <p className="font-semibold text-[#7B1A1A] text-sm mt-1">Join the Vichaar Sabha</p>
+        <p className="font-semibold text-sm mt-1" style={{ color: 'var(--brand-primary)' }}>Join the Vichaar Sabha</p>
         <p className="text-xs text-gray-500 mt-0.5">Discuss dharma, share wisdom, ask questions</p>
       </Link>
 

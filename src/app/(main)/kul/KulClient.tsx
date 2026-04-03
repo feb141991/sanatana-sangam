@@ -65,7 +65,7 @@ function generateInviteCode(): string {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
 }
 
-function Avatar({ name, url, size = 10, gradient = 'linear-gradient(135deg, #ff7722, #d4a017)' }: { name: string; url?: string | null; size?: number; gradient?: string }) {
+function Avatar({ name, url, size = 10, gradient = 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))' }: { name: string; url?: string | null; size?: number; gradient?: string }) {
   const s = `w-${size} h-${size}`;
   return (
     <div className={`${s} rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 overflow-hidden`}
@@ -81,6 +81,39 @@ function TaskBadge({ type }: { type: string }) {
     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-orange-50 text-orange-700 border border-orange-100">
       {t.emoji} {t.label}
     </span>
+  );
+}
+
+function ClayFamilyPortrait({ member }: { member: FamilyMember }) {
+  const figurePalette = member.is_alive ? {
+    female: { skin: '#e7c4ab', hair: '#6d4331', body: '#bd7a56', accent: '#d8b06e' },
+    male:   { skin: '#ddb292', hair: '#5d3d2f', body: '#a96a49', accent: '#cf9d61' },
+    other:  { skin: '#e0b79a', hair: '#6a4738', body: '#b37651', accent: '#d2a668' },
+  } : {
+    female: { skin: '#cfb5a3', hair: '#7b6a5e', body: '#9d8270', accent: '#ccb69a' },
+    male:   { skin: '#c8ad97', hair: '#746256', body: '#947867', accent: '#c3ae92' },
+    other:  { skin: '#ccb09c', hair: '#77655a', body: '#987c69', accent: '#c8b39a' },
+  };
+  const palette = member.gender === 'female'
+    ? figurePalette.female
+    : member.gender === 'male'
+      ? figurePalette.male
+      : figurePalette.other;
+
+  return (
+    <div className="clay-portrait-stage">
+      <div className="clay-figure">
+        <span className="clay-figure-hair" style={{ background: palette.hair }} />
+        <span className="clay-figure-head" style={{ background: palette.skin }} />
+        {member.gender === 'female' && member.is_alive && <span className="clay-figure-bindi" />}
+        <span className="clay-figure-body" style={{ background: palette.body }} />
+        <span className="clay-figure-accent" style={{ background: palette.accent }} />
+      </div>
+      <div className="absolute inset-x-3 bottom-2 flex items-center justify-between text-[10px] font-medium" style={{ color: 'rgba(140, 77, 45, 0.72)' }}>
+        <span>{member.is_alive ? 'Living memory' : 'Remembrance'}</span>
+        <span>{member.generation ? `Gen ${member.generation}` : 'Kul'}</span>
+      </div>
+    </div>
   );
 }
 
@@ -865,7 +898,7 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
           {(['tree', 'events'] as const).map(v => (
             <button key={v} onClick={() => setActiveView(v)}
               className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition ${activeView === v ? 'bg-white text-[#7B1A1A] shadow-sm font-semibold' : 'text-gray-500'}`}>
-              {v === 'tree' ? '🌳 Vansh' : `📅 Events (${upcomingEvents.length})`}
+              {v === 'tree' ? '🫶 Vansh' : `📅 Events (${upcomingEvents.length})`}
             </button>
           ))}
         </div>
@@ -972,16 +1005,35 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
       {/* ── Tree View ── */}
       {activeView === 'tree' && (
         <div className="space-y-6">
+          <div className="clay-card rounded-[1.8rem] p-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(140, 77, 45, 0.72)' }}>
+              Clay family portraits
+            </p>
+            <h3 className="font-display text-lg font-bold text-gray-900 mt-1">Hold your Vansh like a memory wall, not just a tree</h3>
+            <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+              Each lineage card keeps the structure readable, but feels warmer and more personal. This is the visual base for the future family memory vault.
+            </p>
+          </div>
+
           {members.length === 0 && !showAdd && (
-            <div className="text-center py-12 text-gray-400">
-              <div className="text-5xl mb-3">🌳</div>
+            <div className="clay-card rounded-[1.8rem] text-center py-12 px-6 text-gray-400">
+              <div className="mx-auto max-w-[10rem]">
+                <div className="clay-portrait-stage">
+                  <div className="clay-figure" style={{ transform: 'translateX(34%) scale(0.95)' }}>
+                    <span className="clay-figure-hair" style={{ background: '#6a4738' }} />
+                    <span className="clay-figure-head" style={{ background: '#e0b79a' }} />
+                    <span className="clay-figure-body" style={{ background: '#b37651' }} />
+                    <span className="clay-figure-accent" style={{ background: '#d2a668' }} />
+                  </div>
+                </div>
+              </div>
               <p className="text-sm font-medium text-gray-500">Start your Vansh tree</p>
               <p className="text-xs mt-1">Add family members to preserve your lineage</p>
             </div>
           )}
           {generations.map(gen => (
-            <div key={gen}>
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">
+            <div key={gen} className="clay-lineage-rail">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-3 px-1">
                 {GENERATION_LABELS[gen] ?? `Generation ${gen}`}
               </p>
               <div className="flex gap-3 overflow-x-auto pb-2">
@@ -993,15 +1045,11 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
                     : m.birth_year ? new Date().getFullYear() - m.birth_year : null;
                   return (
                     <div key={m.id}
-                      className="flex-shrink-0 w-36 bg-white rounded-2xl border border-gray-100 p-3 text-center shadow-sm relative">
-                      {/* Avatar */}
-                      <div className="w-12 h-12 rounded-full mx-auto flex items-center justify-center text-white text-lg font-bold mb-2"
-                        style={{ background: m.is_alive ? 'linear-gradient(135deg, #ff7722, #d4a017)' : '#9ca3af' }}>
-                        {m.gender === 'female' ? '👩' : m.gender === 'male' ? '👨' : '🧑'}
-                      </div>
-                      <p className="text-xs font-bold text-gray-900 leading-tight">{m.name}</p>
-                      {m.role && <p className="text-[10px] text-[#7B1A1A] mt-0.5">{m.role}</p>}
-                      <div className="text-[10px] text-gray-400 mt-1 space-y-0.5">
+                      className="clay-portrait-card flex-shrink-0 w-40 rounded-[1.7rem] p-3 text-center relative">
+                      <ClayFamilyPortrait member={m} />
+                      <p className="text-xs font-bold text-gray-900 leading-tight mt-3">{m.name}</p>
+                      {m.role && <p className="text-[10px] mt-0.5" style={{ color: 'var(--brand-primary)' }}>{m.role}</p>}
+                      <div className="text-[10px] text-gray-500 mt-1.5 space-y-0.5 leading-relaxed">
                         {age !== null && <p>{m.is_alive ? `Age ${age}` : `${m.birth_year ?? new Date(m.birth_date!).getFullYear()} – ${m.death_year ?? new Date(m.death_date!).getFullYear()}`}</p>}
                         {spouse && <p>💍 {spouse.name}</p>}
                         {parent && <p>↑ {parent.name}</p>}
@@ -1010,7 +1058,8 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
                       {canManageVansh && (
                         <div className="flex gap-1 mt-2 justify-center">
                           <button onClick={() => openEdit(m)}
-                            className="px-2 py-1 rounded-lg text-[10px] border border-gray-200 text-gray-500 hover:border-[#7B1A1A] hover:text-[#7B1A1A] transition">
+                            className="px-2 py-1 rounded-lg text-[10px] border border-gray-200 text-gray-500 transition"
+                            style={{ boxShadow: '0 4px 10px rgba(90, 61, 43, 0.06)' }}>
                             Edit
                           </button>
                           <button onClick={() => deleteMember(m.id, m.name)}
@@ -1154,7 +1203,7 @@ export default function KulClient({ userId, userName, userProfile, kul, members,
     { key: 'members', label: 'Members', icon: <Users size={14} />, badge: members.length },
     { key: 'tasks',   label: 'Tasks',   icon: <CheckSquare size={14} />, badge: pendingTasks || undefined },
     { key: 'sabha',   label: 'Sabha',   icon: <MessageSquare size={14} /> },
-    { key: 'vansh',  label: 'Vansh',  icon: <span className="text-xs">🌳</span> },
+    { key: 'vansh',   label: 'Vansh',   icon: <span className="text-xs">🫶</span> },
   ];
 
   return (

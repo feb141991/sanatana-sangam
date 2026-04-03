@@ -33,17 +33,18 @@ export default function BrandMark({ className, size = 'md' }: BrandMarkProps) {
     <span
       aria-hidden="true"
       className={cn(
-        'brand-mark-pulse relative inline-flex items-center justify-center overflow-hidden border border-white/60 bg-[linear-gradient(145deg,rgba(123,26,26,0.92),rgba(232,100,10,0.84))] shadow-[0_18px_32px_rgba(123,26,26,0.2),inset_0_1px_0_rgba(255,255,255,0.28)]',
+        'brand-mark-pulse relative inline-flex items-center justify-center overflow-hidden border border-white/60 shadow-[0_18px_32px_rgba(108,56,36,0.2),inset_0_1px_0_rgba(255,255,255,0.28)]',
         classes.wrapper,
         className
       )}
+      style={{ background: 'linear-gradient(145deg, rgba(108, 56, 36, 0.94), rgba(201, 124, 50, 0.86))' }}
     >
       <span className={cn('absolute border border-white/28 bg-white/10', classes.shell)} />
       <span className={cn('absolute rounded-full bg-white shadow-[0_0_18px_rgba(255,255,255,0.5)]', classes.core)} />
-      <span className={cn('absolute left-[22%] top-[24%] rounded-full bg-[#ffd08c]', classes.dot)} />
-      <span className={cn('absolute right-[22%] top-[24%] rounded-full bg-[#fff2c4]', classes.dot)} />
-      <span className={cn('absolute bottom-[22%] left-[24%] rounded-full bg-[#f8d4ae]', classes.dot)} />
-      <span className={cn('absolute bottom-[22%] right-[24%] rounded-full bg-[#ffedd5]', classes.dot)} />
+      <span className={cn('absolute left-[22%] top-[24%] rounded-full bg-[#eac48a]', classes.dot)} />
+      <span className={cn('absolute right-[22%] top-[24%] rounded-full bg-[#fff0cf]', classes.dot)} />
+      <span className={cn('absolute bottom-[22%] left-[24%] rounded-full bg-[#efd3b3]', classes.dot)} />
+      <span className={cn('absolute bottom-[22%] right-[24%] rounded-full bg-[#fbeedd]', classes.dot)} />
     </span>
   );
 }

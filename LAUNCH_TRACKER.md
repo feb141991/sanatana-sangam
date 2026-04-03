@@ -15,6 +15,8 @@ Last updated: 2026-04-03
 - [ ] Run dual-track delivery: `Phase A` as build lane, `Phase B` as shaping / low-risk parallel lane
 - [ ] Deepen the current dual-track slice: Library/AI trust layer + personalized home from `seeking`
 - [ ] Finish the user-side safety slice: report, block, mute, hide, and profile management
+- [ ] Ship the current home polish slice: reliable tradition greeting editor + custom override
+- [ ] Deepen the `Kul / Vansh` visual system into the first clay-family memory surface
 
 ## P0 Launch Blockers
 

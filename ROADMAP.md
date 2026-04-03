@@ -332,6 +332,7 @@ Current slice:
 
 - Home now renders personalized path cards from `seeking`
 - early guided paths for `New to dharma` and `New to the city` are live
+- the home greeting editor now uses tradition-based presets with a reliable custom override flow
 - next step is to deepen these into first-week stateful onboarding rather than static guidance only
 
 ### B1.2 `New to the city` and `new to dharma` guided paths
@@ -456,6 +457,11 @@ Exit criteria:
 
 - a family can preserve and revisit meaningful memories privately and intentionally
 
+Current slice:
+
+- the first clay-inspired `Vansh` portrait cards are now live while preserving the lineage structure
+- this is a visual and emotional groundwork slice, not the full family memory vault yet
+
 ## Cross-Cutting Design Track — Sacred Clay
 
 Status: `In Build`
@@ -479,6 +485,8 @@ Apply first to:
 Current slice:
 
 - claymorphic treatment has started on personalized home guidance and trust panels
+- the app shell palette is now shifting toward terracotta, sandalwood, and temple bronze
+- `Kul` / `Vansh` now has a first clay-family portrait pass instead of only tree-style lineage cards
 - the rest of the app shell remains glass-first
 
 Do not lead with it on:

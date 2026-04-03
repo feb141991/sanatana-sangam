@@ -135,7 +135,8 @@ export default function TopBar({
               </Link>
               <Link
                 href="/signup"
-                className="glass-button-secondary px-4 py-1.5 text-[#7B1A1A] text-sm font-semibold rounded-full hover:opacity-90 transition"
+                className="glass-button-secondary px-4 py-1.5 text-sm font-semibold rounded-full hover:opacity-90 transition"
+                style={{ color: 'var(--brand-primary-strong)' }}
               >
                 Join Free
               </Link>
@@ -154,7 +155,10 @@ export default function TopBar({
                     <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" stroke="white"/>
                   </svg>
                   {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 w-4 h-4 bg-[#E8640A] rounded-full flex items-center justify-center text-[9px] text-white font-bold">
+                    <span
+                      className="absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] text-white font-bold"
+                      style={{ background: 'var(--orange-accent)' }}
+                    >
                       {unreadCount}
                     </span>
                   )}
@@ -167,7 +171,7 @@ export default function TopBar({
                     <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
                       <span className="font-semibold text-sm text-gray-900">Notifications</span>
                       {unreadCount > 0 && (
-                        <button onClick={markAllRead} className="text-xs text-[#7B1A1A] hover:underline">
+                        <button onClick={markAllRead} className="text-xs hover:underline" style={{ color: 'var(--brand-primary)' }}>
                           Mark all read
                         </button>
                       )}
@@ -244,7 +248,7 @@ export default function TopBar({
                               </p>
                             </div>
                             {!n.read && (
-                              <span className="w-2 h-2 bg-[#E8640A] rounded-full mt-1.5 flex-shrink-0" />
+                              <span className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ background: 'var(--orange-accent)' }} />
                             )}
                           </div>
                         ))
