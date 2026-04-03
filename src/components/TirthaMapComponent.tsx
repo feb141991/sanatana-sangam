@@ -42,6 +42,7 @@ function makeMarkerHtml(tradition: string) {
 export default function TirthaMapComponent({ temples, center, loading }: Props) {
   const mapRef    = useRef<any>(null);
   const mapDivRef = useRef<HTMLDivElement>(null);
+  const initialCenterRef = useRef(center);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -56,7 +57,7 @@ export default function TirthaMapComponent({ temples, center, loading }: Props) 
         shadowUrl:     MAP.MARKER_SHADOW,
       });
 
-      const map = L.map(mapDivRef.current!, { center, zoom: 12, zoomControl: true });
+      const map = L.map(mapDivRef.current!, { center: initialCenterRef.current, zoom: 12, zoomControl: true });
 
       L.tileLayer(MAP.TILE_URL, { attribution: MAP.TILE_ATTRIBUTION, maxZoom: 19 }).addTo(map);
 
@@ -65,7 +66,7 @@ export default function TirthaMapComponent({ temples, center, loading }: Props) 
         html: `<div style="background:#ff7722;border:3px solid white;border-radius:50%;width:16px;height:16px;box-shadow:0 0 0 4px rgba(255,119,34,0.25);"></div>`,
         className: '', iconSize: [16, 16], iconAnchor: [8, 8],
       });
-      L.marker(center, { icon: userIcon }).addTo(map).bindPopup('<b>📍 Your location</b>').openPopup();
+      L.marker(initialCenterRef.current, { icon: userIcon }).addTo(map).bindPopup('<b>📍 Your location</b>').openPopup();
 
       mapRef.current = { map, L };
       setReady(true);

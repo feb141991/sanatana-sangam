@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan } from 'lucide-react';
@@ -134,7 +135,7 @@ export default function ProfileClient({
   hiddenItems: HiddenContentSummary[];
 }) {
   const router   = useRouter();
-  const supabase = createClient();
+  const supabase = useRef(createClient()).current;
   const [editing,   setEditing]   = useState(false);
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -173,6 +174,8 @@ export default function ProfileClient({
   const initials  = getInitials(profile?.full_name ?? 'S');
   const sevaScore = profile?.seva_score ?? 0;
   const streak    = (profile as any)?.shloka_streak ?? 0;
+  const profileCountryCode = (profile as any)?.country_code ?? null;
+  const onesignalPlayerId = (profile as any)?.onesignal_player_id ?? null;
 
   // Silently save coords + city + country + country_code when location resolves
   useEffect(() => {
@@ -188,20 +191,20 @@ export default function ProfileClient({
     };
     if (liveCity        && !profile?.city)         update.city         = liveCity;
     if (liveCountry     && !profile?.country)      update.country      = liveCountry;
-    if (liveCountryCode && !(profile as any)?.country_code)
+    if (liveCountryCode && !profileCountryCode)
                                                    update.country_code = liveCountryCode;
     supabase.from('profiles').update(update).eq('id', userId);
-  }, [coords]);
+  }, [coords, liveCity, liveCountry, liveCountryCode, profile?.latitude, profile?.longitude, profile?.city, profile?.country, profileCountryCode, supabase, userId]);
 
   // Save OneSignal player ID when permission is granted
   useEffect(() => {
     if (!userId) return;
     if (getPermissionState() !== 'granted') return;
-    if ((profile as any)?.onesignal_player_id) return; // already saved
+    if (onesignalPlayerId) return; // already saved
     getPlayerId().then((id) => {
       if (id) supabase.from('profiles').update({ onesignal_player_id: id }).eq('id', userId);
     });
-  }, [userId]);
+  }, [onesignalPlayerId, supabase, userId]);
 
   async function uploadAvatar(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -374,9 +377,9 @@ export default function ProfileClient({
           <div className="flex items-center gap-3">
             {/* Avatar with upload — label approach works on iOS Safari */}
             <div className="relative">
-              <div className="w-16 h-16 rounded-full bg-white/20 border-2 border-white/40 flex items-center justify-center text-white text-xl font-bold overflow-hidden">
+              <div className="relative w-16 h-16 rounded-full bg-white/20 border-2 border-white/40 flex items-center justify-center text-white text-xl font-bold overflow-hidden">
                 {avatarUrl
-                  ? <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                  ? <Image src={avatarUrl} alt="avatar" fill sizes="64px" className="object-cover" />
                   : initials}
               </div>
               <label
@@ -709,9 +712,9 @@ function SafetyProfileRow({
 
   return (
     <div className="rounded-2xl border border-gray-100 px-3 py-3 flex items-center gap-3">
-      <div className="w-10 h-10 rounded-full bg-gradient-sacred text-white flex items-center justify-center text-xs font-bold overflow-hidden flex-shrink-0">
+      <div className="relative w-10 h-10 rounded-full bg-gradient-sacred text-white flex items-center justify-center text-xs font-bold overflow-hidden flex-shrink-0">
         {profile.avatar_url
-          ? <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+          ? <Image src={profile.avatar_url} alt="" fill sizes="40px" className="object-cover" />
           : initials}
       </div>
       <div className="flex-1 min-w-0">

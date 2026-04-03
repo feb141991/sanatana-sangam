@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useEffect, useRef, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -71,9 +72,9 @@ function generateInviteCode(): string {
 function Avatar({ name, url, size = 10, gradient = 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))' }: { name: string; url?: string | null; size?: number; gradient?: string }) {
   const s = `w-${size} h-${size}`;
   return (
-    <div className={`${s} rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 overflow-hidden`}
+    <div className={`${s} relative rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 overflow-hidden`}
       style={{ background: gradient }}>
-      {url ? <img src={url} className="w-full h-full object-cover" alt="" /> : getInitials(name || '?')}
+      {url ? <Image src={url} alt="" fill sizes={`${size * 4}px`} className="object-cover" /> : getInitials(name || '?')}
     </div>
   );
 }
@@ -103,9 +104,15 @@ function FamilyKeepsakeStage({ member }: { member: FamilyMember }) {
     <div className="clay-portrait-stage">
       <div className="clay-memory-orbit" />
       <div className="clay-memory-medallion" style={{ background: medallionRing }}>
-        <div className="clay-memory-medallion-inner" style={{ background: medallionFill }}>
+        <div className="clay-memory-medallion-inner relative overflow-hidden" style={{ background: medallionFill }}>
           {member.photo_url ? (
-            <img src={member.photo_url} className="w-full h-full object-cover rounded-[1.2rem]" alt={`${member.name} keepsake`} />
+            <Image
+              src={member.photo_url}
+              alt={`${member.name} keepsake`}
+              fill
+              sizes="160px"
+              className="object-cover rounded-[1.2rem]"
+            />
           ) : (
             <span className="font-display text-lg font-bold tracking-[0.16em]" style={{ color: statusTone }}>
               {initials}
@@ -602,7 +609,7 @@ function TaskCard({ task, isMyTask, userId, onComplete }: {
 function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
   messages: MessageRow[]; userId: string; kulId: string; userName: string;
 }) {
-  const supabase    = createClient();
+  const supabase    = useRef(createClient()).current;
   const router      = useRouter();
   const bottomRef   = useRef<HTMLDivElement>(null);
   const [msgs,    setMsgs]    = useState(initialMessages);
@@ -632,7 +639,7 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
       )
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [kulId]);
+  }, [kulId, supabase]);
 
   async function sendMessage() {
     if (!content.trim()) return;

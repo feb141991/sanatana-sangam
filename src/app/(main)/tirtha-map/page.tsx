@@ -119,7 +119,7 @@ export default function TirthaMapPage() {
       loadTemples(coords.lat, coords.lon, radius);
       setLocUsed(true);
     }
-  }, [coords, locUsed]);
+  }, [coords, locUsed, loadTemples, radius]);
 
   // If location context is still loading, show a placeholder state
   // If no coords at all after context settles, fall back to London
@@ -128,7 +128,7 @@ export default function TirthaMapPage() {
       loadTemples(51.5074, -0.1278, radius);
       setLocUsed(true);
     }
-  }, [locLoading, coords, locUsed]);
+  }, [locLoading, coords, locUsed, loadTemples, radius]);
 
   async function searchCity() {
     if (!cityInput.trim()) return;

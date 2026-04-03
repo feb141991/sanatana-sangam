@@ -1,8 +1,9 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import BrandMark from '@/components/BrandMark';
@@ -43,7 +44,7 @@ export default function TopBar({
   const title = Object.entries(titles).find(([route]) => (
     pathname === route || pathname.startsWith(`${route}/`)
   ))?.[1] ?? 'Sanatana Sangam';
-  const supabase = createClient();
+  const supabase = useRef(createClient()).current;
   const pushConfigured = isOneSignalConfigured();
   const homeHref = isGuest ? '/guest' : '/home';
 
@@ -71,7 +72,7 @@ export default function TopBar({
       .order('created_at', { ascending: false })
       .limit(20);
     setNotifs((data as Notification[]) ?? []);
-  }, [userId]);
+  }, [supabase, userId]);
 
   useEffect(() => {
     fetchNotifs();
@@ -269,10 +270,10 @@ export default function TopBar({
               {/* Avatar */}
               <Link
                 href="/profile"
-                className="w-8 h-8 rounded-full bg-white/12 border border-white/30 flex items-center justify-center text-white text-[11px] font-bold overflow-hidden"
+                className="relative w-8 h-8 rounded-full bg-white/12 border border-white/30 flex items-center justify-center text-white text-[11px] font-bold overflow-hidden"
               >
                 {avatarUrl ? (
-                  <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+                  <Image src={avatarUrl} alt="Profile" fill sizes="32px" className="object-cover" />
                 ) : (
                   userInitials
                 )}

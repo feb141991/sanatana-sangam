@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
@@ -117,10 +118,10 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
           {results.map(user => (
             <div key={user.id}
               className="bg-white border border-gray-100 rounded-2xl p-3 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
+              <div className="relative w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 overflow-hidden"
                 style={{ background: 'linear-gradient(135deg, #ff7722, #d4a017)' }}>
                 {user.avatar_url
-                  ? <img src={user.avatar_url} className="w-10 h-10 rounded-full object-cover" alt="" />
+                  ? <Image src={user.avatar_url} alt="" fill sizes="40px" className="object-cover" />
                   : getInitials(user.full_name || user.username || '?')}
               </div>
               <div className="flex-1 min-w-0">
@@ -354,7 +355,7 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
     if (liveCity && !detected) {
       setDetected({ city: liveCity, country: liveCountry ?? '' });
     }
-  }, [liveCity, liveCountry]);
+  }, [detected, liveCity, liveCountry]);
 
   function detectLocation() {
     if (!navigator.geolocation) {
@@ -506,10 +507,10 @@ function MembersTab({ members, userId }: { members: MemberRow[]; userId: string 
               {idx + 1}
             </div>
             {/* Avatar */}
-            <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
+            <div className="relative w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 overflow-hidden"
               style={{ background: isMe ? '#7B1A1A' : 'linear-gradient(135deg, #ff7722, #d4a017)' }}>
               {m.avatar_url
-                ? <img src={m.avatar_url} className="w-10 h-10 rounded-full object-cover" alt="" />
+                ? <Image src={m.avatar_url} alt="" fill sizes="40px" className="object-cover" />
                 : getInitials(m.full_name || m.username || '?')
               }
             </div>
