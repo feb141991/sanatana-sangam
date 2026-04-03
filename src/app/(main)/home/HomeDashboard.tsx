@@ -65,10 +65,10 @@ interface Props {
 }
 
 const quickAccessItems = [
-  { label: 'Nearby Tirthas', icon: '🛕', href: '/tirtha-map',       desc: 'Find sacred places near you', bg: 'bg-orange-50',  border: 'border-orange-100',  iconBg: 'bg-orange-100'  },
-  { label: 'My Mandali',     icon: '🏡', href: '/mandali',           desc: 'Your local sangam',           bg: 'bg-rose-50',    border: 'border-rose-100',    iconBg: 'bg-rose-100'    },
-  { label: 'My Kul',         icon: '❤️', href: '/kul',               desc: 'Family sadhana together',     bg: 'bg-pink-50',    border: 'border-pink-100',    iconBg: 'bg-pink-100'    },
-  { label: 'Pathshala',      icon: '📖', href: '/library',            desc: 'Tradition-first study tracks', bg: 'bg-emerald-50', border: 'border-emerald-100', iconBg: 'bg-emerald-100' },
+  { label: 'Nearby Tirthas', icon: '🛕', href: '/tirtha-map', desc: 'Find sacred places near you', bg: 'bg-amber-50', border: 'border-amber-100', iconBg: 'bg-amber-100' },
+  { label: 'My Mandali', icon: '🏡', href: '/mandali', desc: 'Your local sangam', bg: 'bg-rose-50', border: 'border-rose-100', iconBg: 'bg-rose-100' },
+  { label: 'My Kul', icon: '❤️', href: '/kul', desc: 'Family sadhana together', bg: 'bg-stone-50', border: 'border-stone-200', iconBg: 'bg-stone-200' },
+  { label: 'Pathshala', icon: '📖', href: '/library', desc: 'Tradition-first study tracks', bg: 'bg-yellow-50', border: 'border-yellow-100', iconBg: 'bg-yellow-100' },
 ];
 
 // ── Invite code — deterministic from userId (no DB needed) ─────────────────
@@ -120,7 +120,13 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
         </p>
 
         {/* Invite code display */}
-        <div className="bg-gradient-to-br from-[#7B1A1A]/5 to-orange-50 rounded-2xl p-5 text-center border border-orange-100">
+        <div
+          className="rounded-2xl p-5 text-center border"
+          style={{
+            background: 'linear-gradient(135deg, rgba(123, 26, 26, 0.06), rgba(195, 135, 47, 0.08))',
+            borderColor: 'rgba(123, 26, 26, 0.1)',
+          }}
+        >
           <p className="text-xs text-gray-400 mb-2 font-medium uppercase tracking-wider">Your Invite Code</p>
           <p className="font-display font-bold text-3xl text-[#7B1A1A] tracking-widest">{code}</p>
           <p className="text-xs text-gray-400 mt-2">{link}</p>
@@ -469,7 +475,7 @@ function CalendarModal({ onClose, onDateSelect }: { onClose: () => void; onDateS
           <div className="flex items-center gap-2">
             <CalendarDays size={18} style={{ color: 'var(--brand-primary)' }} />
             <h2 className="font-display font-bold text-gray-900 text-base">Parva Calendar 2026</h2>
-            {onDateSelect && <span className="text-xs text-orange-500 ml-1">tap date → view Panchang</span>}
+            {onDateSelect && <span className="text-xs ml-1" style={{ color: 'var(--brand-primary)' }}>tap date → view Panchang</span>}
           </div>
           <button onClick={onClose}
             className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
@@ -499,7 +505,7 @@ function CalendarModal({ onClose, onDateSelect }: { onClose: () => void; onDateS
                       {days === 0 ? (
                         <span className="text-xs font-bold px-2 py-1 rounded-full text-white" style={{ background: 'var(--brand-primary)' }}>Today</span>
                       ) : days === 1 ? (
-                        <span className="text-xs font-semibold text-orange-600">Tomorrow</span>
+                        <span className="text-xs font-semibold" style={{ color: 'var(--brand-primary)' }}>Tomorrow</span>
                       ) : (
                         <span className="text-xs text-gray-400">{days}d</span>
                       )}
@@ -985,7 +991,7 @@ export default function HomeDashboard({
             <span className="text-lg">{sacredTextMeta.icon}</span>
             <span className="font-display font-semibold text-gray-800 text-sm">{sacredTextMeta.label}</span>
             {streak > 0 && (
-              <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100">
+              <span className="text-xs font-bold px-2 py-0.5 rounded-full border" style={{ color: 'var(--brand-primary)', background: 'var(--brand-primary-soft)', borderColor: 'rgba(123, 26, 26, 0.12)' }}>
                 🔥 {streak}
               </span>
             )}
@@ -1025,10 +1031,12 @@ export default function HomeDashboard({
           <button onClick={markShlokaRead} disabled={readToday}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition ${
               readToday
-                ? 'bg-green-50 text-green-700 border border-green-200 cursor-default'
+                ? 'cursor-default'
                 : 'text-white hover:opacity-90'
             }`}
-            style={readToday ? {} : { background: sacredTextMeta.accentColour }}>
+            style={readToday
+              ? { background: 'var(--brand-primary-soft)', color: 'var(--brand-primary)', border: '1px solid rgba(123, 26, 26, 0.14)' }
+              : { background: sacredTextMeta.accentColour }}>
             {readToday
               ? '✓ Read today'
               : `${sacredTextMeta.icon} Mark as read`}
@@ -1114,9 +1122,10 @@ export default function HomeDashboard({
 
       {/* ── Invite Friends ── */}
       <button onClick={() => setInviteOpen(true)}
-        className="w-full rounded-2xl border border-dashed border-orange-200 p-4 text-center hover:bg-orange-50 transition-colors">
+        className="w-full rounded-2xl border border-dashed p-4 text-center transition-colors"
+        style={{ borderColor: 'rgba(123, 26, 26, 0.18)', background: 'rgba(123, 26, 26, 0.02)' }}>
         <span className="text-lg">🙏</span>
-        <p className="font-semibold text-orange-700 text-sm mt-1">Invite Friends & Family</p>
+        <p className="font-semibold text-sm mt-1" style={{ color: 'var(--brand-primary)' }}>Invite Friends & Family</p>
         <p className="text-xs text-gray-400 mt-0.5">Share Sanatana Sangam — spread the light of dharma</p>
       </button>
 

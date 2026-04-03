@@ -82,11 +82,11 @@ export default function ThreadDetailClient({
       {/* Thread */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-5 space-y-4">
         <div className="flex items-center gap-2">
-          <span className="text-xs bg-orange-50 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full font-medium">
+          <span className="text-xs px-2 py-0.5 rounded-full font-medium border" style={{ background: 'var(--brand-primary-soft)', color: 'var(--brand-primary)', borderColor: 'rgba(123, 26, 26, 0.16)' }}>
             {cat?.emoji} {cat?.label}
           </span>
           {threadState.is_answered && (
-            <span className="text-xs bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+            <span className="text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1 border" style={{ background: '#fbf4e8', color: '#8c5a1f', borderColor: '#ead5ad' }}>
               <CheckCircle size={10} /> Answered
             </span>
           )}
@@ -159,13 +159,13 @@ export default function ThreadDetailClient({
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-orange-100 p-4 shadow-card space-y-3 sm:sticky sm:bottom-20">
+        <div className="glass-panel rounded-2xl border border-white/70 p-4 shadow-card space-y-3 sm:sticky sm:bottom-20">
           <textarea
             placeholder="Share your wisdom or perspective… 🙏"
             value={replyBody}
             onChange={(e) => setReplyBody(e.target.value)}
             rows={3}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-400 outline-none resize-none text-sm"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[color:var(--brand-primary)] outline-none resize-none text-sm"
           />
           <div className="flex justify-end">
             <button
@@ -202,11 +202,11 @@ function ReplyCard({
 
   return (
     <div className={`bg-white rounded-2xl border shadow-card p-4 space-y-2 ${
-      reply.is_accepted ? 'border-green-300 bg-green-50/30' : 'border-gray-100'
+      reply.is_accepted ? 'border-[#ead5ad]' : 'border-gray-100'
     }`}>
       {reply.is_accepted && (
-        <div className="flex items-center gap-1.5 text-xs text-green-700 font-semibold">
-          <CheckCircle size={13} className="fill-green-100" /> Accepted Answer
+        <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: '#8c5a1f' }}>
+          <CheckCircle size={13} /> Accepted Answer
         </div>
       )}
       <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-wrap">{reply.body}</p>
@@ -216,7 +216,7 @@ function ReplyCard({
             {initials}
           </div>
           <span className="font-medium text-gray-600 truncate">{author?.full_name}</span>
-          {level && <span className="text-orange-500">· {level.label}</span>}
+          {level && <span style={{ color: 'var(--brand-primary)' }}>· {level.label}</span>}
           <span className="text-gray-300">·</span>
           <span>{formatRelativeTime(reply.created_at)}</span>
           {isOwn && <span className="ml-1 bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full">You</span>}

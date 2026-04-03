@@ -306,7 +306,7 @@ function CityPicker({ value, onChange }: {
             <button
               key={`${c.city}-${c.country}`}
               onMouseDown={() => select(c)}
-              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-orange-50 text-left transition"
+              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[rgba(123,26,26,0.05)] text-left transition"
             >
               <span className="text-base flex-shrink-0">{c.flag}</span>
               <div className="flex-1 min-w-0">
@@ -323,7 +323,7 @@ function CityPicker({ value, onChange }: {
                 onChange({ city: parts[0].trim(), country: parts[1]?.trim() || '' });
                 setOpen(false);
               }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-orange-50 text-left border-t border-gray-100 transition"
+              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[rgba(123,26,26,0.05)] text-left border-t border-gray-100 transition"
             >
               <span className="text-base">🌍</span>
               <div>
@@ -430,15 +430,15 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-orange-100 shadow-card p-5 w-full max-w-sm space-y-3">
+      <div className="glass-panel rounded-2xl border border-white/70 shadow-card p-5 w-full max-w-sm space-y-3">
 
         {/* Detected city display */}
         {detected ? (
-          <div className="flex items-center gap-2 px-3 py-3 rounded-xl bg-green-50 border border-green-200">
-            <MapPin size={14} className="text-green-600 flex-shrink-0" />
+          <div className="flex items-center gap-2 px-3 py-3 rounded-xl border" style={{ background: 'var(--brand-primary-soft)', borderColor: 'rgba(123, 26, 26, 0.12)' }}>
+            <MapPin size={14} className="flex-shrink-0" style={{ color: 'var(--brand-primary)' }} />
             <div className="flex-1 text-left">
-              <p className="text-sm font-semibold text-green-800">{detected.city}</p>
-              {detected.country && <p className="text-xs text-green-600">{detected.country}</p>}
+              <p className="text-sm font-semibold" style={{ color: 'var(--brand-primary-strong)' }}>{detected.city}</p>
+              {detected.country && <p className="text-xs" style={{ color: 'rgba(123, 26, 26, 0.72)' }}>{detected.country}</p>}
             </div>
             <button onClick={() => setDetected(null)}
               className="text-xs text-gray-400 hover:text-gray-600">
@@ -449,7 +449,7 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
           <button
             onClick={detectLocation}
             disabled={locating}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-[#7B1A1A]/30 text-[#7B1A1A] font-medium text-sm hover:border-[#7B1A1A]/60 hover:bg-orange-50 transition disabled:opacity-60"
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-[#7B1A1A]/30 text-[#7B1A1A] font-medium text-sm hover:border-[#7B1A1A]/60 hover:bg-[rgba(123,26,26,0.05)] transition disabled:opacity-60"
           >
             {locating ? (
               <>
@@ -673,7 +673,7 @@ function VichaarTab({ posts, userId, onToggleUpvote, upvoted, onCompose, showCom
 
 function ComposePanel({ postType, setPostType, content, setContent, eventDate, setEventDate, eventLoc, setEventLoc, submitting, onClose, onPost }: any) {
   return (
-    <div className="bg-white rounded-2xl border border-orange-100 p-4 shadow-card space-y-3 fade-in">
+    <div className="glass-panel rounded-2xl border border-white/70 p-4 shadow-card space-y-3 fade-in">
       <div className="flex gap-2 flex-wrap">
         {POST_TYPES.map((t) => (
           <button key={t.value} onClick={() => setPostType(t.value)}
@@ -723,7 +723,7 @@ function PostCard({ post, userId, upvoted, onUpvote, onHideContent, onHideAuthor
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-4">
       <div className="flex items-start gap-3">
-        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#7B1A1A] to-[#c3872f] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
           {getInitials((author?.full_name || author?.username) ?? '?')}
         </div>
         <div className="flex-1 min-w-0">
@@ -916,7 +916,7 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
                     await supabase.from('profiles').update({ mandali_id: null }).eq('id', userId);
                     router.refresh();
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 transition text-left border-b border-gray-50">
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-[rgba(123,26,26,0.05)] transition text-left border-b border-gray-50">
                   <MapPin size={14} className="text-[#7B1A1A]" />
                   Change my Mandali
                 </button>
@@ -981,11 +981,11 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
           {widerPosts.length > 0 && (
             <div className="space-y-3 mt-2">
               <div className="flex items-center gap-2">
-                <div className="flex-1 h-px bg-orange-100" />
+                <div className="flex-1 h-px" style={{ background: 'rgba(123, 26, 26, 0.12)' }} />
                 <span className="text-xs text-gray-400 font-medium px-2">
                   🌸 Wisdom from the wider Sangam
                 </span>
-                <div className="flex-1 h-px bg-orange-100" />
+                <div className="flex-1 h-px" style={{ background: 'rgba(123, 26, 26, 0.12)' }} />
               </div>
               <p className="text-[11px] text-gray-400 text-center -mt-1">
                 Your Mandali is growing — here are voices from our broader community

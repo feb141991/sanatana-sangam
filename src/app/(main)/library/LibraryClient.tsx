@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Link from 'next/link';
 import { Search, X, ChevronDown, ChevronUp, Share2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
@@ -9,15 +10,22 @@ import {
   PATHSHALA_TRADITIONS,
   getDefaultSectionForTradition,
   getEntriesBySection,
+  getLibrarySectionById,
   getPathshalaSectionDetail,
   getPathshalaTrackGroups,
   getPathshalaTraditionMeta,
+  getSectionForEntry,
   getSectionsByTradition,
   searchEntries,
   type LibraryEntry,
   type LibrarySection,
   type LibraryTradition,
 } from '@/lib/library-content';
+import {
+  getPathshalaEntryHrefFromSection,
+  getPathshalaSectionHref,
+  getPathshalaTraditionHref,
+} from '@/lib/pathshala-links';
 import { getLibrarySourceMeta } from '@/lib/library-provenance';
 
 async function shareEntry(entry: LibraryEntry) {
@@ -40,47 +48,37 @@ async function shareEntry(entry: LibraryEntry) {
 
 const TRADITION_STYLE: Record<LibraryTradition, { panel: string; border: string; badge: string; accent: string }> = {
   hindu: {
-    panel: 'bg-orange-50/85',
-    border: 'border-orange-100',
-    badge: 'bg-orange-100 text-orange-700',
+    panel: 'bg-amber-50/90',
+    border: 'border-amber-100',
+    badge: 'bg-amber-100 text-amber-800',
     accent: 'var(--brand-primary-strong)',
   },
   sikh: {
-    panel: 'bg-sky-50/85',
-    border: 'border-sky-100',
-    badge: 'bg-sky-100 text-sky-700',
-    accent: '#1f5d8a',
+    panel: 'bg-stone-50/95',
+    border: 'border-stone-200',
+    badge: 'bg-stone-200 text-stone-700',
+    accent: '#5c4538',
   },
   buddhist: {
-    panel: 'bg-amber-50/90',
-    border: 'border-amber-100',
-    badge: 'bg-amber-100 text-amber-700',
+    panel: 'bg-yellow-50/95',
+    border: 'border-yellow-100',
+    badge: 'bg-yellow-100 text-yellow-800',
     accent: '#8c5a1f',
   },
   jain: {
-    panel: 'bg-emerald-50/85',
-    border: 'border-emerald-100',
-    badge: 'bg-emerald-100 text-emerald-700',
-    accent: '#25624a',
+    panel: 'bg-rose-50/90',
+    border: 'border-rose-100',
+    badge: 'bg-rose-100 text-rose-800',
+    accent: '#7b1a1a',
   },
 };
-
-function getSectionForEntry(entry: LibraryEntry) {
-  return LIBRARY_SECTIONS.find((section) => (
-    (section.tradition === entry.tradition && section.category === entry.category) ||
-    (section.id === 'gurbani' && entry.tradition === 'sikh' && (entry.category === 'gurbani' || entry.category === 'nitnem'))
-  ));
-}
-
-function getSectionById(sectionId: string): LibrarySection | undefined {
-  return LIBRARY_SECTIONS.find((section) => section.id === sectionId);
-}
 
 function EntryCard({ entry }: { entry: LibraryEntry }) {
   const [expanded, setExpanded] = useState(false);
   const style = TRADITION_STYLE[entry.tradition] ?? TRADITION_STYLE.hindu;
   const section = getSectionForEntry(entry);
   const sourceMeta = getLibrarySourceMeta(entry);
+  const detailHref = section ? getPathshalaEntryHrefFromSection(section, entry) : null;
 
   return (
     <div className={`${style.panel} ${style.border} border rounded-[1.6rem] p-4 space-y-3`}>
@@ -139,6 +137,15 @@ function EntryCard({ entry }: { entry: LibraryEntry }) {
             <p className="text-xs text-gray-600 leading-relaxed mt-1">{sourceMeta.note}</p>
           </div>
           <p className="text-sm text-gray-700 leading-relaxed">{entry.meaning}</p>
+          {detailHref && (
+            <Link
+              href={detailHref}
+              className="inline-flex items-center gap-2 mt-3 text-xs font-semibold"
+              style={{ color: style.accent }}
+            >
+              Open full lesson →
+            </Link>
+          )}
           {entry.tags.length > 0 && (
             <div className="flex gap-1.5 flex-wrap mt-2">
               {entry.tags.map((tag) => (
@@ -155,8 +162,8 @@ function EntryCard({ entry }: { entry: LibraryEntry }) {
 }
 
 export default function LibraryClient({ defaultSection = 'gita' }: { defaultSection?: string }) {
-  const validDefaultSection = getSectionById(defaultSection)?.id ?? 'gita';
-  const defaultTradition = getSectionById(validDefaultSection)?.tradition ?? 'hindu';
+  const validDefaultSection = getLibrarySectionById(defaultSection)?.id ?? 'gita';
+  const defaultTradition = getLibrarySectionById(validDefaultSection)?.tradition ?? 'hindu';
   const defaultGroup = getPathshalaTrackGroups(defaultTradition).find((group) => group.sectionIds.includes(validDefaultSection));
 
   const [selectedTradition, setSelectedTradition] = useState<LibraryTradition>(defaultTradition);
@@ -177,14 +184,14 @@ export default function LibraryClient({ defaultSection = 'gita' }: { defaultSect
   const activeGroup = trackGroups.find((group) => group.id === activeGroupId) ?? trackGroups[0] ?? null;
   const visibleSections = useMemo(
     () => (activeGroup
-      ? activeGroup.sectionIds.map((sectionId) => getSectionById(sectionId)).filter(Boolean) as LibrarySection[]
+      ? activeGroup.sectionIds.map((sectionId) => getLibrarySectionById(sectionId)).filter(Boolean) as LibrarySection[]
       : getSectionsByTradition(selectedTradition)),
     [activeGroup, selectedTradition]
   );
 
   const activeSection = visibleSections.find((section) => section.id === activeSectionId)
     ?? visibleSections[0]
-    ?? getSectionById(getDefaultSectionForTradition(selectedTradition));
+    ?? getLibrarySectionById(getDefaultSectionForTradition(selectedTradition));
   const activeSectionDetail = activeSection ? getPathshalaSectionDetail(activeSection.id) : undefined;
 
   const entries = useMemo(() => {
@@ -317,21 +324,21 @@ export default function LibraryClient({ defaultSection = 'gita' }: { defaultSect
             const active = group.id === activeGroupId;
             const sectionCount = group.sectionIds.length;
             const passageCount = group.sectionIds.reduce((sum, sectionId) => {
-              const section = getSectionById(sectionId);
+              const section = getLibrarySectionById(sectionId);
               return sum + (section?.count ?? 0);
             }, 0);
 
             return (
-              <button
-                key={group.id}
-                onClick={() => handleGroupChange(group.id)}
+                <button
+                  key={group.id}
+                  onClick={() => handleGroupChange(group.id)}
                 className={`text-left rounded-[1.45rem] p-4 border transition ${
                   active
                     ? 'clay-card'
                     : 'glass-panel hover:-translate-y-0.5'
                 }`}
                 style={active ? {
-                  borderColor: 'rgba(31, 107, 114, 0.22)',
+                  borderColor: 'rgba(123, 26, 26, 0.16)',
                 } : undefined}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -348,6 +355,12 @@ export default function LibraryClient({ defaultSection = 'gita' }: { defaultSect
             );
           })}
         </div>
+        <Link
+          href={getPathshalaTraditionHref(selectedTradition)}
+          className="inline-flex items-center gap-2 text-sm font-semibold text-[color:var(--brand-primary)]"
+        >
+          Open full {traditionMeta.label.replace(' Pathshala', '')} Pathshala →
+        </Link>
       </section>
 
       {visibleSections.length > 0 && (
@@ -434,6 +447,13 @@ export default function LibraryClient({ defaultSection = 'gita' }: { defaultSect
                   ))}
                 </div>
               </div>
+
+              <Link
+                href={getPathshalaSectionHref(activeSection.tradition, activeSection.id)}
+                className="inline-flex items-center gap-2 text-sm font-semibold text-[color:var(--brand-primary)]"
+              >
+                Open full track page →
+              </Link>
             </div>
           )}
         </div>

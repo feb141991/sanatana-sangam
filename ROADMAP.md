@@ -86,7 +86,7 @@ At any given time:
 ### Parallel design lane
 
 - `Sacred Clay` system for selected `Phase B` surfaces
-- palette unification around the new ivory + teal + saffron system
+- palette unification around the new warm maroon + saffron + ivory system
 - reusable editor-sheet pattern based on the home greeting flow
 
 ### Next eligible low-risk `Phase B` implementation
@@ -228,7 +228,7 @@ Current slice:
 
 ### A1.6 Parampara Pathshala corpus and source governance
 
-Status: `Planned`
+Status: `In Build`
 
 Outcome:
 
@@ -262,14 +262,16 @@ Current slice:
   - the reading surface now starts with tradition tiles
   - scripture categories and study tracks now sit between tradition and individual passages
 - the next active slice is to deepen section-level corpus metadata, rights-awareness, and source-governance cues inside the Pathshala tracks
-- the current local build now adds section-level metadata such as:
+- the current build now adds section-level metadata such as:
   - corpus state
   - complete-text goal
   - source targets
   - planned study modes
-- the palette direction is being corrected again:
-  - the current green / teal bias is not the desired long-term fit
-  - the next design pass should move toward ivory + saffron + maroon with strong readability controls
+- route-driven Pathshala detail architecture is now active:
+  - `/library/[tradition]` for tradition home pages
+  - `/library/[tradition]/[section]` for track pages
+  - `/library/[tradition]/[section]/[entryId]` for text / lesson pages
+- the next active slice is to add continue-learning loops, bookmarks, and deeper rights metadata around those routes
 
 ## Phase A2 — Social Safety And Platform Hardening
 
@@ -600,10 +602,10 @@ Apply first to:
 Current slice:
 
 - claymorphic treatment has started on personalized home guidance and trust panels
-- the app shell palette is now shifting toward ivory, peacock teal, saffron, and soft earth
+- the app shell palette is now shifting toward warm maroon, saffron, ivory, and soft earth
 - `Kul` / `Vansh` is moving from rough clay figurines to keepsake medallions and calmer lineage cards
 - `COLOR_STRATEGY.md` now tracks the research basis and usage rules for the palette direction
-- the next polish pass is to remove obvious maroon holdouts from high-traffic screens
+- the next polish pass is to remove remaining green and cool-color holdouts from high-traffic screens
 - the home greeting editor is becoming the reusable sheet pattern for profile and other key edit flows
 - the rest of the app shell remains glass-first
 

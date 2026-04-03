@@ -262,7 +262,7 @@ export default function VichaarClient({
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="Search threads, tags, or themes"
-            className="glass-input w-full rounded-xl pl-10 pr-4 py-3 text-sm outline-none focus:border-orange-300"
+            className="glass-input w-full rounded-xl pl-10 pr-4 py-3 text-sm outline-none focus:border-[color:var(--brand-primary)]"
           />
         </div>
 
@@ -274,7 +274,7 @@ export default function VichaarClient({
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition ${
                 feedFilter === filter.value
                   ? 'bg-[#7B1A1A] text-white'
-                  : 'bg-white text-gray-500 border border-gray-200 hover:border-orange-200'
+                  : 'bg-white text-gray-500 border border-gray-200 hover:border-[rgba(123,26,26,0.18)]'
               }`}
             >
               {filter.label}
@@ -289,9 +289,12 @@ export default function VichaarClient({
           onClick={() => setActiveTab('all')}
           className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition ${
             activeTab === 'all'
-              ? 'bg-orange-100 text-orange-700 border border-orange-300'
-              : 'bg-white text-gray-500 border border-gray-200 hover:border-orange-200'
+              ? 'text-[#7B1A1A] border'
+              : 'bg-white text-gray-500 border border-gray-200 hover:border-[rgba(123,26,26,0.18)]'
           }`}
+          style={activeTab === 'all'
+            ? { background: 'var(--brand-primary-soft)', borderColor: 'rgba(123, 26, 26, 0.16)' }
+            : undefined}
         >
           All topics
         </button>
@@ -301,9 +304,12 @@ export default function VichaarClient({
             onClick={() => setActiveTab(cat.value)}
             className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition ${
               activeTab === cat.value
-                ? 'bg-orange-100 text-orange-700 border border-orange-300'
-                : 'bg-white text-gray-500 border border-gray-200 hover:border-orange-200'
+                ? 'text-[#7B1A1A] border'
+                : 'bg-white text-gray-500 border border-gray-200 hover:border-[rgba(123,26,26,0.18)]'
             }`}
+            style={activeTab === cat.value
+              ? { background: 'var(--brand-primary-soft)', borderColor: 'rgba(123, 26, 26, 0.16)' }
+              : undefined}
           >
             {cat.emoji} {cat.label}
           </button>
@@ -442,9 +448,12 @@ function ComposeThreadModal({
                       onClick={() => onChange((prev) => ({ ...prev, category: cat.value }))}
                       className={`text-left px-3 py-3 rounded-xl border text-xs transition ${
                         form.category === cat.value
-                          ? 'border-orange-400 bg-orange-50 text-orange-700 font-medium'
-                          : 'border-gray-200 text-gray-600 hover:border-orange-200'
+                          ? 'text-[#7B1A1A] font-medium'
+                          : 'border-gray-200 text-gray-600 hover:border-[rgba(123,26,26,0.18)]'
                       }`}
+                      style={form.category === cat.value
+                        ? { borderColor: 'rgba(123, 26, 26, 0.2)', background: 'var(--brand-primary-soft)' }
+                        : undefined}
                     >
                       <span className="font-medium">{cat.emoji} {cat.label}</span>
                       <span className="block text-gray-400 mt-0.5 leading-tight">{cat.desc}</span>
@@ -465,7 +474,7 @@ function ComposeThreadModal({
                   placeholder="e.g. How should I understand Ekadashi fasting if I am just starting?"
                   value={form.title}
                   onChange={(event) => onChange((prev) => ({ ...prev, title: event.target.value }))}
-                  className="glass-input w-full px-4 py-3 rounded-xl outline-none text-sm focus:border-orange-300"
+                  className="glass-input w-full px-4 py-3 rounded-xl outline-none text-sm focus:border-[color:var(--brand-primary)]"
                 />
                 {suggestedThreads.length > 0 && (
                   <div className="glass-panel rounded-2xl mt-3 px-4 py-3">
@@ -493,7 +502,7 @@ function ComposeThreadModal({
                   value={form.body}
                   onChange={(event) => onChange((prev) => ({ ...prev, body: event.target.value }))}
                   rows={7}
-                  className="glass-input w-full px-4 py-3 rounded-xl outline-none resize-none text-sm focus:border-orange-300"
+                  className="glass-input w-full px-4 py-3 rounded-xl outline-none resize-none text-sm focus:border-[color:var(--brand-primary)]"
                 />
               </div>
 
@@ -504,7 +513,7 @@ function ComposeThreadModal({
                   placeholder="e.g. ekadashi, vrat, beginner"
                   value={form.tags}
                   onChange={(event) => onChange((prev) => ({ ...prev, tags: event.target.value }))}
-                  className="glass-input w-full px-4 py-3 rounded-xl outline-none text-sm focus:border-orange-300"
+                  className="glass-input w-full px-4 py-3 rounded-xl outline-none text-sm focus:border-[color:var(--brand-primary)]"
                 />
                 <p className="text-xs text-gray-400 mt-1.5">
                   Use tags for specific themes. Categories should stay broad; tags can be more detailed.
@@ -563,7 +572,7 @@ function ThreadCard({
         {/* Category + answered badge */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs bg-orange-50 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full font-medium">
+            <span className="text-xs px-2 py-0.5 rounded-full font-medium border" style={{ background: 'var(--brand-primary-soft)', color: 'var(--brand-primary)', borderColor: 'rgba(123, 26, 26, 0.16)' }}>
               {cat?.emoji} {cat?.label}
             </span>
             {thread.reply_count === 0 && !thread.is_answered && (
@@ -572,7 +581,7 @@ function ThreadCard({
               </span>
             )}
             {thread.is_answered && (
-              <span className="text-xs bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+              <span className="text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1 border" style={{ background: '#fbf4e8', color: '#8c5a1f', borderColor: '#ead5ad' }}>
                 <CheckCircle size={10} /> Answered
               </span>
             )}
@@ -628,9 +637,10 @@ function ThreadCard({
             ) : (
               <button
                 onClick={(e) => { e.preventDefault(); onUpvote(); }}
-                className={`flex items-center gap-1 transition ${isUpvoted ? 'text-orange-600 font-medium' : 'hover:text-orange-500'}`}
+                className={`flex items-center gap-1 transition ${isUpvoted ? 'font-medium' : 'hover:text-[#7B1A1A]'}`}
+                style={isUpvoted ? { color: 'var(--brand-primary)' } : undefined}
               >
-                <ArrowUp size={13} className={isUpvoted ? 'text-orange-500' : ''} />
+                <ArrowUp size={13} className={isUpvoted ? 'text-[#7B1A1A]' : ''} />
                 {thread.upvotes}
               </button>
             )}

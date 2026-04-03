@@ -1180,6 +1180,10 @@ export function getSectionsByTradition(tradition: LibraryTradition): LibrarySect
   return LIBRARY_SECTIONS.filter((section) => section.tradition === tradition);
 }
 
+export function isLibraryTradition(value: string): value is LibraryTradition {
+  return PATHSHALA_TRADITIONS.some((item) => item.id === value);
+}
+
 export function getPathshalaTraditionMeta(tradition: LibraryTradition): PathshalaTraditionMeta {
   return PATHSHALA_TRADITIONS.find((item) => item.id === tradition) ?? PATHSHALA_TRADITIONS[0];
 }
@@ -1188,8 +1192,20 @@ export function getPathshalaTrackGroups(tradition: LibraryTradition): PathshalaT
   return PATHSHALA_TRACK_GROUPS.filter((group) => group.tradition === tradition);
 }
 
+export function getPathshalaTrackGroupById(groupId: string): PathshalaTrackGroup | undefined {
+  return PATHSHALA_TRACK_GROUPS.find((group) => group.id === groupId);
+}
+
+export function getPathshalaTrackGroupForSection(sectionId: string): PathshalaTrackGroup | undefined {
+  return PATHSHALA_TRACK_GROUPS.find((group) => group.sectionIds.includes(sectionId));
+}
+
 export function getDefaultSectionForTradition(tradition: LibraryTradition): string {
   return getSectionsByTradition(tradition)[0]?.id ?? 'gita';
+}
+
+export function getLibrarySectionById(sectionId: string): LibrarySection | undefined {
+  return LIBRARY_SECTIONS.find((section) => section.id === sectionId);
 }
 
 export function getPathshalaSectionDetail(sectionId: string): PathshalaSectionDetail | undefined {
@@ -1205,6 +1221,35 @@ export function getEntriesBySection(sectionId: string): LibraryEntry[] {
   const section = LIBRARY_SECTIONS.find((s) => s.id === sectionId);
   if (!section) return ALL_LIBRARY_ENTRIES;
   return ALL_LIBRARY_ENTRIES.filter((e) => e.category === section.category);
+}
+
+export function getEntriesByTradition(tradition: LibraryTradition): LibraryEntry[] {
+  return ALL_LIBRARY_ENTRIES.filter((entry) => entry.tradition === tradition);
+}
+
+export function getLibraryEntryById(entryId: string): LibraryEntry | undefined {
+  return ALL_LIBRARY_ENTRIES.find((entry) => entry.id === entryId);
+}
+
+export function getSectionForEntry(entry: LibraryEntry): LibrarySection | undefined {
+  return LIBRARY_SECTIONS.find((section) => (
+    (section.tradition === entry.tradition && section.category === entry.category) ||
+    (section.id === 'gurbani' && entry.tradition === 'sikh' && (entry.category === 'gurbani' || entry.category === 'nitnem'))
+  ));
+}
+
+export function getRelatedEntries(entry: LibraryEntry, limit = 4): LibraryEntry[] {
+  const section = getSectionForEntry(entry);
+
+  if (section) {
+    return getEntriesBySection(section.id)
+      .filter((candidate) => candidate.id !== entry.id)
+      .slice(0, limit);
+  }
+
+  return getEntriesByTradition(entry.tradition)
+    .filter((candidate) => candidate.id !== entry.id)
+    .slice(0, limit);
 }
 
 export function searchEntries(query: string): LibraryEntry[] {
