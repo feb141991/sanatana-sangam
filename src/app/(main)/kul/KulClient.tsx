@@ -1,15 +1,17 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, type ReactNode } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import {
-  Users, MessageSquare, CheckSquare, Heart, Plus, X, Copy,
-  Send, Crown, Shield, ChevronRight, Flame, Star, Pencil,
+  Users, MessageSquare, CheckSquare, Plus, X, Copy,
+  Send, Crown, ChevronRight, Flame, Pencil,
   Check, ClipboardList, Share2,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { getInitials } from '@/lib/utils';
+import type { KulSectionView } from './sections';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 type KulData   = { id: string; name: string; invite_code: string; avatar_emoji: string; created_by: string; created_at: string };
@@ -46,6 +48,7 @@ interface Props {
   familyMembers: FamilyMember[];
   kulEvents:     KulEvent[];
   myRole:        'guardian' | 'sadhak';
+  view?:         'hub' | KulSectionView;
 }
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -750,8 +753,371 @@ function daysUntilNextOccurrence(dateStr: string): number {
   return Math.ceil((thisYear.getTime() - today.setHours(0,0,0,0)) / 86_400_000);
 }
 
-function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, userId, myRole }: {
-  familyMembers: FamilyMember[]; kulEvents: KulEvent[]; kulId: string; userId: string; myRole: 'guardian' | 'sadhak';
+type KulView = 'hub' | KulSectionView;
+
+const KUL_SECTION_META: Record<KulSectionView, {
+  label: string;
+  eyebrow: string;
+  emoji: string;
+  description: string;
+}> = {
+  board: {
+    label: 'Family Board',
+    eyebrow: 'Daily pulse',
+    emoji: '✨',
+    description: 'See the overall state of your Kul, streaks, task momentum, and invite activity.',
+  },
+  members: {
+    label: 'Members',
+    eyebrow: 'Care circle',
+    emoji: '👨‍👩‍👧‍👦',
+    description: 'Manage roles, view who is participating, and keep the family circle clear.',
+  },
+  tasks: {
+    label: 'Tasks',
+    eyebrow: 'Shared sadhana',
+    emoji: '📋',
+    description: 'Assign and complete family practices without squeezing them into a tiny tab.',
+  },
+  sabha: {
+    label: 'Kul Sabha',
+    eyebrow: 'Family conversation',
+    emoji: '💬',
+    description: 'Keep your Kul chat in a dedicated, full-page conversation space.',
+  },
+  vansh: {
+    label: 'Vansh',
+    eyebrow: 'Lineage',
+    emoji: '🫶',
+    description: 'Read your family tree as a warm keepsake wall with room to breathe.',
+  },
+  events: {
+    label: 'Family Dates',
+    eyebrow: 'Ritual calendar',
+    emoji: '📅',
+    description: 'Birthdays, anniversaries, pujas, and remembrance dates in one dedicated page.',
+  },
+};
+
+function getKulSectionHref(section: KulSectionView) {
+  return `/kul/${section}`;
+}
+
+function KulSectionTiles({
+  currentView,
+  members,
+  tasks,
+  messages,
+  familyMembers,
+  kulEvents,
+  large = false,
+}: {
+  currentView?: KulView;
+  members: MemberRow[];
+  tasks: TaskRow[];
+  messages: MessageRow[];
+  familyMembers: FamilyMember[];
+  kulEvents: KulEvent[];
+  large?: boolean;
+}) {
+  const pendingTasks = tasks.filter((task) => !task.completed).length;
+  const upcomingEvents = kulEvents
+    .map((event) => ({ ...event, daysUntil: daysUntilNextOccurrence(event.event_date) }))
+    .filter((event) => event.daysUntil <= 90).length;
+
+  const tiles: Array<{ key: KulSectionView; badge?: number }> = [
+    { key: 'board' },
+    { key: 'members', badge: members.length || undefined },
+    { key: 'tasks', badge: pendingTasks || undefined },
+    { key: 'sabha', badge: messages.length || undefined },
+    { key: 'vansh', badge: familyMembers.length || undefined },
+    { key: 'events', badge: upcomingEvents || undefined },
+  ];
+
+  return (
+    <div className={`grid gap-3 ${large ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2 sm:grid-cols-3'}`}>
+      {tiles.map(({ key, badge }) => {
+        const meta = KUL_SECTION_META[key];
+        const active = currentView === key;
+        return (
+          <Link
+            key={key}
+            href={getKulSectionHref(key)}
+            className={`group rounded-[1.6rem] p-4 transition-all ${active ? 'clay-card' : 'glass-panel'}`}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3 min-w-0">
+                <div className="clay-icon-well text-lg flex-shrink-0">{meta.emoji}</div>
+                <div className="min-w-0">
+                  <p className="text-[10px] uppercase tracking-[0.18em] font-semibold" style={{ color: 'rgba(22, 77, 84, 0.68)' }}>
+                    {meta.eyebrow}
+                  </p>
+                  <h3 className={`font-display font-bold leading-tight mt-1 ${large ? 'text-base' : 'text-sm'}`} style={{ color: 'var(--brand-primary-strong)' }}>
+                    {meta.label}
+                  </h3>
+                </div>
+              </div>
+              <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                {badge != null && badge > 0 && (
+                  <span className="px-2 py-1 rounded-full text-[10px] font-bold text-white" style={{ background: 'var(--brand-primary)' }}>
+                    {badge > 99 ? '99+' : badge}
+                  </span>
+                )}
+                <ChevronRight size={16} className="text-gray-400 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </div>
+            <p className={`text-gray-500 mt-3 leading-relaxed ${large ? 'text-sm' : 'text-xs'}`}>
+              {meta.description}
+            </p>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+function KulHubView({
+  kul,
+  members,
+  tasks,
+  messages,
+  familyMembers,
+  kulEvents,
+  myRole,
+  editingName,
+  newKulName,
+  setNewKulName,
+  setEditingName,
+  saveKulName,
+  savingName,
+}: {
+  kul: KulData;
+  members: MemberRow[];
+  tasks: TaskRow[];
+  messages: MessageRow[];
+  familyMembers: FamilyMember[];
+  kulEvents: KulEvent[];
+  myRole: 'guardian' | 'sadhak';
+  editingName: boolean;
+  newKulName: string;
+  setNewKulName: (value: string) => void;
+  setEditingName: (value: boolean) => void;
+  saveKulName: () => void;
+  savingName: boolean;
+}) {
+  const completedTasks = tasks.filter((task) => task.completed).length;
+  const openTasks = tasks.length - completedTasks;
+  const totalStreak = members.reduce((sum, member) => sum + (member.profiles?.shloka_streak ?? 0), 0);
+  const upcomingEvents = kulEvents
+    .map((event) => ({ ...event, daysUntil: daysUntilNextOccurrence(event.event_date) }))
+    .filter((event) => event.daysUntil <= 90)
+    .sort((a, b) => a.daysUntil - b.daysUntil);
+
+  return (
+    <div className="space-y-4">
+      <div className="clay-card rounded-[2rem] p-5 sm:p-6">
+        <div className="flex items-start gap-4">
+          <div className="w-16 h-16 rounded-[1.4rem] flex items-center justify-center text-3xl flex-shrink-0"
+            style={{ background: 'linear-gradient(135deg, rgba(31, 107, 114, 0.16), rgba(195, 135, 47, 0.18))' }}>
+            {kul.avatar_emoji}
+          </div>
+          <div className="flex-1 min-w-0">
+            {editingName && myRole === 'guardian' ? (
+              <div className="flex items-center gap-2">
+                <input
+                  autoFocus
+                  value={newKulName}
+                  onChange={(e) => setNewKulName(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') saveKulName(); if (e.key === 'Escape') setEditingName(false); }}
+                  maxLength={40}
+                  className="flex-1 font-display font-bold text-gray-900 text-xl leading-tight border-b-2 outline-none bg-transparent"
+                  style={{ borderColor: 'var(--brand-primary)' }}
+                />
+                <button
+                  onClick={saveKulName}
+                  disabled={savingName}
+                  className="w-8 h-8 rounded-xl flex items-center justify-center text-white disabled:opacity-50"
+                  style={{ background: 'var(--brand-primary)' }}>
+                  {savingName ? <span className="text-[10px]">…</span> : <Check size={14} />}
+                </button>
+                <button onClick={() => setEditingName(false)}
+                  className="w-8 h-8 rounded-xl flex items-center justify-center bg-white/75 border border-white/70">
+                  <X size={14} className="text-gray-500" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <h1 className="font-display font-bold text-gray-900 text-2xl leading-tight truncate">{kul.name}</h1>
+                {myRole === 'guardian' && (
+                  <button
+                    onClick={() => { setNewKulName(kul.name); setEditingName(true); }}
+                    className="w-7 h-7 rounded-lg flex items-center justify-center bg-white/75 border border-white/70 hover:bg-white transition flex-shrink-0"
+                    title="Rename Kul">
+                    <Pencil size={12} className="text-gray-500" />
+                  </button>
+                )}
+              </div>
+            )}
+            <p className="text-[11px] uppercase tracking-[0.18em] font-semibold mt-1" style={{ color: 'rgba(22, 77, 84, 0.72)' }}>
+              Kul Home
+            </p>
+            <p className="text-sm text-gray-600 mt-2 leading-relaxed max-w-xl">
+              This is now the overview hub for your family space. Each area opens into a full page so the experience feels calmer, clearer, and easier to grow.
+            </p>
+          </div>
+          <div className="px-3 py-2 rounded-2xl border text-xs font-bold tracking-widest hidden sm:block"
+            style={{ borderColor: 'rgba(31, 107, 114, 0.24)', color: 'var(--brand-primary)' }}>
+            {kul.invite_code}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
+          {[
+            { label: 'Members', value: members.length, hint: 'Family circle' },
+            { label: 'Open Tasks', value: openTasks, hint: 'Shared practices' },
+            { label: 'Kul Streak', value: totalStreak, hint: 'Daily rhythm' },
+            { label: 'Dates Ahead', value: upcomingEvents.length, hint: 'Next 90 days' },
+          ].map((item) => (
+            <div key={item.label} className="glass-panel rounded-[1.35rem] p-3">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-gray-400 font-semibold">{item.label}</p>
+              <p className="font-display font-bold text-2xl mt-2" style={{ color: 'var(--brand-primary-strong)' }}>{item.value}</p>
+              <p className="text-xs text-gray-500 mt-1">{item.hint}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-3">Open a family space</p>
+        <KulSectionTiles
+          currentView="hub"
+          members={members}
+          tasks={tasks}
+          messages={messages}
+          familyMembers={familyMembers}
+          kulEvents={kulEvents}
+          large
+        />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="glass-panel rounded-[1.7rem] p-4">
+          <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400">Today&apos;s pulse</p>
+          <div className="space-y-3 mt-3">
+            <Link href="/kul/board" className="flex items-center justify-between gap-3 rounded-2xl bg-white/70 px-4 py-3 border border-white/70">
+              <div>
+                <p className="text-sm font-semibold text-gray-900">See the family board</p>
+                <p className="text-xs text-gray-500 mt-1">Streaks, invites, and daily family momentum</p>
+              </div>
+              <ChevronRight size={18} className="text-gray-400" />
+            </Link>
+            <Link href="/kul/tasks" className="flex items-center justify-between gap-3 rounded-2xl bg-white/70 px-4 py-3 border border-white/70">
+              <div>
+                <p className="text-sm font-semibold text-gray-900">{openTasks > 0 ? `${openTasks} task${openTasks === 1 ? '' : 's'} need attention` : 'No open tasks right now'}</p>
+                <p className="text-xs text-gray-500 mt-1">Move straight into the task view without squeezing through tabs</p>
+              </div>
+              <ChevronRight size={18} className="text-gray-400" />
+            </Link>
+          </div>
+        </div>
+
+        <div className="glass-panel rounded-[1.7rem] p-4">
+          <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400">Family rhythm</p>
+          <div className="space-y-3 mt-3">
+            {upcomingEvents.length > 0 ? (
+              upcomingEvents.slice(0, 2).map((event) => (
+                <Link
+                  key={event.id}
+                  href="/kul/events"
+                  className="flex items-center justify-between gap-3 rounded-2xl bg-white/70 px-4 py-3 border border-white/70">
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">{event.title}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      In {event.daysUntil} day{event.daysUntil === 1 ? '' : 's'} · {EVENT_EMOJI[event.event_type] ?? '📅'} {event.event_type.replace('_', ' ')}
+                    </p>
+                  </div>
+                  <ChevronRight size={18} className="text-gray-400" />
+                </Link>
+              ))
+            ) : (
+              <Link href="/kul/events" className="flex items-center justify-between gap-3 rounded-2xl bg-white/70 px-4 py-3 border border-white/70">
+                <div>
+                  <p className="text-sm font-semibold text-gray-900">Start your family dates</p>
+                  <p className="text-xs text-gray-500 mt-1">Birthdays, anniversaries, pujas, and remembrance days live here</p>
+                </div>
+                <ChevronRight size={18} className="text-gray-400" />
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function KulSectionShell({
+  view,
+  kul,
+  members,
+  tasks,
+  messages,
+  familyMembers,
+  kulEvents,
+  children,
+}: {
+  view: KulSectionView;
+  kul: KulData;
+  members: MemberRow[];
+  tasks: TaskRow[];
+  messages: MessageRow[];
+  familyMembers: FamilyMember[];
+  kulEvents: KulEvent[];
+  children: ReactNode;
+}) {
+  const meta = KUL_SECTION_META[view];
+
+  return (
+    <div className="space-y-4">
+      <Link
+        href="/kul"
+        className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium glass-button-secondary"
+        style={{ color: 'var(--brand-primary-strong)' }}>
+        <ChevronRight size={14} className="rotate-180" />
+        Back to Kul Home
+      </Link>
+
+      <div className="clay-card rounded-[1.9rem] p-5">
+        <div className="flex items-start gap-4">
+          <div className="clay-icon-well text-xl flex-shrink-0">{meta.emoji}</div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold" style={{ color: 'rgba(22, 77, 84, 0.72)' }}>
+              {kul.name} · {meta.eyebrow}
+            </p>
+            <h1 className="font-display font-bold text-2xl text-gray-900 mt-1">{meta.label}</h1>
+            <p className="text-sm text-gray-600 mt-2 leading-relaxed max-w-xl">{meta.description}</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-3">Switch section</p>
+        <KulSectionTiles
+          currentView={view}
+          members={members}
+          tasks={tasks}
+          messages={messages}
+          familyMembers={familyMembers}
+          kulEvents={kulEvents}
+        />
+      </div>
+
+      {children}
+    </div>
+  );
+}
+
+function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, userId, myRole, forcedView }: {
+  familyMembers: FamilyMember[]; kulEvents: KulEvent[]; kulId: string; userId: string; myRole: 'guardian' | 'sadhak'; forcedView?: 'tree' | 'events';
 }) {
   const supabase = createClient();
   const router   = useRouter();
@@ -759,7 +1125,7 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
 
   const [members,     setMembers]     = useState(initial);
   const [events,      setEvents]      = useState(initialEvents);
-  const [activeView,  setActiveView]  = useState<'tree' | 'events'>('tree');
+  const [activeView,  setActiveView]  = useState<'tree' | 'events'>(forcedView ?? 'tree');
   const [showAdd,     setShowAdd]     = useState(false);
   const [showAddEvent,setShowAddEvent]= useState(false);
   const [editMember,  setEditMember]  = useState<FamilyMember | null>(null);
@@ -776,6 +1142,10 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
   const [eForm, setEForm] = useState({
     title: '', event_type: 'custom', event_date: '', description: '', member_id: '', recurring: true,
   });
+
+  useEffect(() => {
+    if (forcedView) setActiveView(forcedView);
+  }, [forcedView]);
 
   function resetForm() {
     setForm({ name:'',role:'',gender:'',birth_year:'',birth_date:'',death_year:'',death_date:'',marriage_date:'',parent_id:'',spouse_id:'',generation:'4',notes:'',is_alive:true });
@@ -900,17 +1270,27 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
     <div className="space-y-4">
       {/* View toggle + add buttons */}
       <div className="flex items-center gap-2">
-        <div className="flex bg-gray-100 rounded-xl p-1 gap-1 flex-1">
-          {(['tree', 'events'] as const).map(v => (
-            <button key={v} onClick={() => setActiveView(v)}
-              className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition ${activeView === v ? 'bg-white shadow-sm font-semibold' : 'text-gray-500'}`}
-              style={activeView === v ? { color: 'var(--brand-primary)' } : undefined}>
-              {v === 'tree' ? '🫶 Vansh' : `📅 Events (${upcomingEvents.length})`}
-            </button>
-          ))}
-        </div>
+        {!forcedView && (
+          <div className="flex bg-gray-100 rounded-xl p-1 gap-1 flex-1">
+            {(['tree', 'events'] as const).map(v => (
+              <button key={v} onClick={() => setActiveView(v)}
+                className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition ${activeView === v ? 'bg-white shadow-sm font-semibold' : 'text-gray-500'}`}
+                style={activeView === v ? { color: 'var(--brand-primary)' } : undefined}>
+                {v === 'tree' ? '🫶 Vansh' : `📅 Events (${upcomingEvents.length})`}
+              </button>
+            ))}
+          </div>
+        )}
         {canManageVansh ? (
-          <button onClick={() => { resetForm(); setEditMember(null); setShowAdd(true); }}
+          <button onClick={() => {
+            if (activeView === 'events') {
+              setShowAddEvent((prev) => !prev);
+              return;
+            }
+            resetForm();
+            setEditMember(null);
+            setShowAdd(true);
+          }}
             className="w-9 h-9 rounded-xl flex items-center justify-center text-white flex-shrink-0"
             style={{ background: 'var(--brand-primary)' }}>
             <Plus size={16} />
@@ -1187,10 +1567,9 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
 }
 
 // ── Main Component ────────────────────────────────────────────────────────────
-export default function KulClient({ userId, userName, userProfile, kul, members, tasks, messages, familyMembers, kulEvents, myRole }: Props) {
+export default function KulClient({ userId, userName, userProfile, kul, members, tasks, messages, familyMembers, kulEvents, myRole, view = 'hub' }: Props) {
   const supabase  = createClient();
   const router    = useRouter();
-  const [activeTab,    setActiveTab]    = useState<'board' | 'members' | 'tasks' | 'sabha' | 'vansh'>('board');
   const [editingName,  setEditingName]  = useState(false);
   const [newKulName,   setNewKulName]   = useState(kul?.name ?? '');
   const [savingName,   setSavingName]   = useState(false);
@@ -1215,95 +1594,116 @@ export default function KulClient({ userId, userName, userProfile, kul, members,
     router.refresh();
   }
 
-  const pendingTasks = tasks.filter(t => !t.completed && (t.assigned_to === userId || myRole === 'guardian')).length;
-  const unreadMsgs   = 0; // Future: track last-read timestamp
-
-  const tabs: Array<{ key: typeof activeTab; label: string; icon: React.ReactNode; badge?: number }> = [
-    { key: 'board',   label: 'Board',   icon: <Star size={14} /> },
-    { key: 'members', label: 'Members', icon: <Users size={14} />, badge: members.length },
-    { key: 'tasks',   label: 'Tasks',   icon: <CheckSquare size={14} />, badge: pendingTasks || undefined },
-    { key: 'sabha',   label: 'Sabha',   icon: <MessageSquare size={14} /> },
-    { key: 'vansh',   label: 'Vansh',   icon: <span className="text-xs">🫶</span> },
-  ];
+  const renderSection = () => {
+    switch (view) {
+      case 'hub':
+        return (
+          <KulHubView
+            kul={kul}
+            members={members}
+            tasks={tasks}
+            messages={messages}
+            familyMembers={familyMembers}
+            kulEvents={kulEvents}
+            myRole={myRole}
+            editingName={editingName}
+            newKulName={newKulName}
+            setNewKulName={setNewKulName}
+            setEditingName={setEditingName}
+            saveKulName={saveKulName}
+            savingName={savingName}
+          />
+        );
+      case 'board':
+        return (
+          <KulSectionShell
+            view={view}
+            kul={kul}
+            members={members}
+            tasks={tasks}
+            messages={messages}
+            familyMembers={familyMembers}
+            kulEvents={kulEvents}
+          >
+            <BoardTab kul={kul} members={members} tasks={tasks} userId={userId} myRole={myRole} />
+          </KulSectionShell>
+        );
+      case 'members':
+        return (
+          <KulSectionShell
+            view={view}
+            kul={kul}
+            members={members}
+            tasks={tasks}
+            messages={messages}
+            familyMembers={familyMembers}
+            kulEvents={kulEvents}
+          >
+            <MembersTab members={members} userId={userId} myRole={myRole} kul={kul} />
+          </KulSectionShell>
+        );
+      case 'tasks':
+        return (
+          <KulSectionShell
+            view={view}
+            kul={kul}
+            members={members}
+            tasks={tasks}
+            messages={messages}
+            familyMembers={familyMembers}
+            kulEvents={kulEvents}
+          >
+            <TasksTab tasks={tasks} members={members} userId={userId} myRole={myRole} kulId={kul.id} />
+          </KulSectionShell>
+        );
+      case 'sabha':
+        return (
+          <KulSectionShell
+            view={view}
+            kul={kul}
+            members={members}
+            tasks={tasks}
+            messages={messages}
+            familyMembers={familyMembers}
+            kulEvents={kulEvents}
+          >
+            <SabhaTab messages={messages} userId={userId} kulId={kul.id} userName={userName} />
+          </KulSectionShell>
+        );
+      case 'vansh':
+        return (
+          <KulSectionShell
+            view={view}
+            kul={kul}
+            members={members}
+            tasks={tasks}
+            messages={messages}
+            familyMembers={familyMembers}
+            kulEvents={kulEvents}
+          >
+            <VanshTab familyMembers={familyMembers} kulEvents={kulEvents} kulId={kul.id} userId={userId} myRole={myRole} forcedView="tree" />
+          </KulSectionShell>
+        );
+      case 'events':
+        return (
+          <KulSectionShell
+            view={view}
+            kul={kul}
+            members={members}
+            tasks={tasks}
+            messages={messages}
+            familyMembers={familyMembers}
+            kulEvents={kulEvents}
+          >
+            <VanshTab familyMembers={familyMembers} kulEvents={kulEvents} kulId={kul.id} userId={userId} myRole={myRole} forcedView="events" />
+          </KulSectionShell>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="space-y-4 pb-2 fade-in">
-      {/* Header */}
-      <div className="flex items-center gap-3 pt-1">
-        <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg, #7B1A1A15, #b4530915)' }}>
-          {kul.avatar_emoji}
-        </div>
-        <div className="flex-1 min-w-0">
-          {editingName && myRole === 'guardian' ? (
-            <div className="flex items-center gap-2">
-              <input
-                autoFocus
-                value={newKulName}
-                onChange={e => setNewKulName(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter') saveKulName(); if (e.key === 'Escape') setEditingName(false); }}
-                maxLength={40}
-                className="flex-1 font-display font-bold text-gray-900 text-xl leading-tight border-b-2 border-[#7B1A1A] outline-none bg-transparent"
-              />
-              <button onClick={saveKulName} disabled={savingName}
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-white disabled:opacity-50"
-                style={{ background: '#7B1A1A' }}>
-                {savingName ? <span className="text-[10px]">…</span> : <Check size={13} />}
-              </button>
-              <button onClick={() => setEditingName(false)}
-                className="w-7 h-7 rounded-lg flex items-center justify-center bg-gray-100">
-                <X size={13} className="text-gray-500" />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <h1 className="font-display font-bold text-gray-900 text-xl leading-tight truncate">{kul.name}</h1>
-              {myRole === 'guardian' && (
-                <button
-                  onClick={() => { setNewKulName(kul.name); setEditingName(true); }}
-                  className="w-6 h-6 rounded-lg flex items-center justify-center bg-gray-100 hover:bg-orange-50 transition flex-shrink-0"
-                  title="Rename Kul">
-                  <Pencil size={11} className="text-gray-400" />
-                </button>
-              )}
-            </div>
-          )}
-          <p className="text-xs text-gray-400 mt-0.5">
-            {myRole === 'guardian' ? '👑 Guardian' : '🙏 Sadhak'} · {members.length} member{members.length !== 1 ? 's' : ''}
-          </p>
-        </div>
-        <div className="px-3 py-1.5 rounded-xl text-xs font-bold tracking-widest border"
-          style={{ borderColor: '#7B1A1A30', color: '#7B1A1A' }}>
-          {kul.invite_code}
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex bg-gray-100 rounded-2xl p-1 gap-0.5">
-        {tabs.map(({ key, label, icon, badge }) => (
-          <button key={key} onClick={() => setActiveTab(key)}
-            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-1 relative ${
-              activeTab === key ? 'bg-white text-[#7B1A1A] shadow-sm font-semibold' : 'text-gray-500 hover:text-gray-700'
-            }`}>
-            {icon}
-            <span className="hidden sm:inline">{label}</span>
-            <span className="sm:hidden">{label}</span>
-            {badge != null && badge > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full text-[9px] font-bold text-white flex items-center justify-center"
-                style={{ background: '#7B1A1A' }}>
-                {badge > 9 ? '9+' : badge}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* Tab content */}
-      {activeTab === 'board'   && <BoardTab   kul={kul} members={members} tasks={tasks} userId={userId} myRole={myRole} />}
-      {activeTab === 'members' && <MembersTab members={members} userId={userId} myRole={myRole} kul={kul} />}
-      {activeTab === 'tasks'   && <TasksTab   tasks={tasks} members={members} userId={userId} myRole={myRole} kulId={kul.id} />}
-      {activeTab === 'sabha'   && <SabhaTab   messages={messages} userId={userId} kulId={kul.id} userName={userName} />}
-      {activeTab === 'vansh'  && <VanshTab  familyMembers={familyMembers} kulEvents={kulEvents} kulId={kul.id} userId={userId} myRole={myRole} />}
-    </div>
+    <div className="space-y-4 pb-2 fade-in">{renderSection()}</div>
   );
 }

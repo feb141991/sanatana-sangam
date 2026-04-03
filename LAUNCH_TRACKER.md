@@ -42,6 +42,7 @@ Last updated: 2026-04-03
 - [x] Persist guided-path progress so home cards can be dismissed, completed, and restored
 - [ ] Turn current personalized home cards into fuller first-week onboarding logic
 - [ ] Replace rough `Kul / Vansh` clay figurines with polished keepsake memory cards
+- [ ] Expand the new `Kul` hub + full-page section pattern into other major app areas where it improves clarity
 - [ ] Add Mandali comments and replies
 - [ ] Add Mandali event RSVP flow
 - [ ] Add analytics, funnel tracking, and error monitoring

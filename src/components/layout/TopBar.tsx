@@ -23,6 +23,7 @@ const titles: Record<string, string> = {
   '/tirtha-map':    'Tirtha Map',
   '/bhakti':        'Sahaj Bhakti',
   '/library':       'Parampara Library',
+  '/kul':           'Kul',
   '/profile':       'My Profile',
 };
 

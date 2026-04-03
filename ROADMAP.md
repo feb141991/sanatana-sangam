@@ -495,6 +495,7 @@ Current slice:
 
 - the first clay-inspired `Vansh` portrait cards are now live while preserving the lineage structure
 - the rough figurine-style avatar treatment is being removed in favor of calmer keepsake medallions
+- `Kul` is now moving from cramped in-page tabs toward a hub + full-page section architecture
 - this is a visual and emotional groundwork slice, not the full family memory vault yet
 
 ## Cross-Cutting Design Track — Sacred Clay
