@@ -1,3 +1,6 @@
+'use client';
+
+import { motion, useReducedMotion } from 'framer-motion';
 import type { StoryCharacterAgeState, StoryLanguage, StorySceneCard } from '@/lib/story/kanu-story';
 import { KanuGuideAvatar } from '@/components/story/KanuGuideAvatar';
 
@@ -8,6 +11,7 @@ interface StorySceneStageProps {
 }
 
 export function StorySceneStage({ scene, language, characterStates }: StorySceneStageProps) {
+  const prefersReducedMotion = useReducedMotion();
   const leadState = characterStates.find((state) => state.characterId === 'kanu') ?? characterStates[0];
   const supportingStates = leadState
     ? characterStates.filter((state) => state.id !== leadState.id)
@@ -22,43 +26,69 @@ export function StorySceneStage({ scene, language, characterStates }: StoryScene
 
       <div className="story-particles" aria-hidden="true">
         {Array.from({ length: 8 }, (_, index) => (
-          <span key={`particle-${index}`} className={`story-particle particle-${(index % 4) + 1}`} />
+          <motion.span
+            key={`particle-${index}`}
+            className={`story-particle particle-${(index % 4) + 1}`}
+            animate={prefersReducedMotion ? undefined : { y: [0, -10, 0], opacity: [0.4, 1, 0.45] }}
+            transition={{ duration: 4.8 + index * 0.3, repeat: Infinity, ease: 'easeInOut', delay: index * 0.15 }}
+          />
         ))}
       </div>
 
       <div className="story-stage-content">
-        <div className="story-stage-copy">
+        <motion.div
+          key={`${scene.id}-${language}-copy`}
+          className="story-stage-copy"
+          initial={prefersReducedMotion ? undefined : { opacity: 0, y: 18 }}
+          animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.38, ease: 'easeOut' }}
+        >
           <div className="flex flex-wrap gap-2">
             <span className="story-chip">{scene.eyebrow[language]}</span>
             <span className="story-chip story-chip-secondary">{scene.ambientAudio}</span>
           </div>
           <h2 className="font-display text-2xl font-bold text-white mt-4">{scene.title[language]}</h2>
           <p className="text-sm text-white/80 leading-relaxed mt-3 max-w-xl">{scene.caption[language]}</p>
-        </div>
+        </motion.div>
 
         {leadState && (
-          <div className="story-stage-portrait">
-            <KanuGuideAvatar state={leadState} size="lg" />
+          <motion.div
+            key={`${scene.id}-${leadState.id}`}
+            className="story-stage-portrait"
+            initial={prefersReducedMotion ? undefined : { opacity: 0, x: 18, scale: 0.96 }}
+            animate={prefersReducedMotion ? undefined : { opacity: 1, x: 0, scale: 1 }}
+            transition={{ duration: 0.42, ease: 'easeOut' }}
+          >
+            <KanuGuideAvatar state={leadState} size="lg" emphasis="lead" />
             <div className="story-stage-label">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-accent-soft)]">
                 {leadState.displayName}
               </p>
               <p className="text-sm text-white/85 mt-1">{leadState.ageStage}</p>
+              <p className="text-xs text-white/70 leading-relaxed mt-2 max-w-[16rem]">
+                {leadState.descriptor[language]}
+              </p>
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
 
       {supportingStates.length > 0 && (
         <div className="story-supporting-cast">
-          {supportingStates.map((state) => (
-            <div key={state.id} className="story-supporting-card">
+          {supportingStates.map((state, index) => (
+            <motion.div
+              key={state.id}
+              className="story-supporting-card"
+              initial={prefersReducedMotion ? undefined : { opacity: 0, y: 12 }}
+              animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.12 + index * 0.08, ease: 'easeOut' }}
+            >
               <KanuGuideAvatar state={state} size="sm" />
               <div>
                 <p className="text-sm font-semibold text-white">{state.displayName}</p>
                 <p className="text-xs text-white/75">{state.ageStage}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       )}

@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import { KanuCharacterGallery } from '@/components/story/KanuCharacterGallery';
 import {
+  KANU_CHARACTER_STATES,
   KANU_STORY_ARCS,
   KANU_STORY_PLEDGE,
   getKanuStoryChapterEpisodes,
@@ -15,6 +17,7 @@ interface StoryHomeProps {
 export function StoryHome({ standalone = false }: StoryHomeProps) {
   const featuredEpisodes = getKanuStoryFeaturedEpisodes();
   const chapterEpisodes = getKanuStoryChapterEpisodes();
+  const kanuStates = KANU_CHARACTER_STATES.filter((state) => state.characterId === 'kanu');
 
   return (
     <div className={`space-y-4 pb-8 fade-in ${standalone ? 'story-standalone-shell' : ''}`}>
@@ -64,6 +67,8 @@ export function StoryHome({ standalone = false }: StoryHomeProps) {
           </div>
         </div>
       </section>
+
+      <KanuCharacterGallery states={kanuStates} />
 
       <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
         {KANU_STORY_ARCS.map((arc) => {
