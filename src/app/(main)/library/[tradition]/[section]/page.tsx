@@ -6,6 +6,9 @@ import {
   getCanonicalReadingPlansForSection,
   getOfficialGitaAudioUrl,
   getOfficialGitaChapterUrl,
+  getOfficialRamayanaStudyUrl,
+  getOfficialRamayanaTextUrl,
+  getRamayanaKandasForSection,
 } from '@/lib/pathshala-canonical';
 import {
   getEntriesBySection,
@@ -44,12 +47,15 @@ export default async function PathshalaSectionPage({
   const detail = getPathshalaSectionDetail(section);
   const entries = getEntriesBySection(section);
   const canonicalChapters = getCanonicalChaptersForSection(section);
+  const ramayanaKandas = getRamayanaKandasForSection(section);
   const readingPlans = getCanonicalReadingPlansForSection(section);
   const featuredEntries = canonicalChapters.length > 0
     ? entries.filter((entry) => (
         ['gita-2-47', 'gita-2-20', 'gita-4-7', 'gita-6-5', 'gita-9-22', 'gita-18-66'].includes(entry.id)
       ))
-    : entries;
+    : ramayanaKandas.length > 0
+      ? entries.filter((entry) => ['ram-bal-1', 'ram-sundara-1', 'ram-yuddha-1', 'ram-uttara-1'].includes(entry.id))
+      : entries;
 
   return (
     <div className="space-y-4 pb-6 fade-in">
@@ -123,40 +129,67 @@ export default async function PathshalaSectionPage({
         )}
       </div>
 
-      {canonicalChapters.length > 0 && (
+      {(canonicalChapters.length > 0 || ramayanaKandas.length > 0) && (
         <section className="space-y-3">
           <div className="clay-card rounded-[1.6rem] px-4 py-4 space-y-3">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Complete study path</p>
                 <p className="text-sm text-gray-700 leading-relaxed mt-2">
-                  The full chapter-and-verse Gita is now live inside Pathshala. Use the chapter map below for structured study, and open the companion source when you want audio or extra commentary layers.
+                  {canonicalChapters.length > 0
+                    ? 'The full chapter-and-verse Gita is now live inside Pathshala. Use the chapter map below for structured study, and open the companion source when you want audio or extra commentary layers.'
+                    : 'The Valmiki Ramayana now opens as a Kanda-first study path. Use the Kanda map below for narrative continuity, then open the companion sources when you want the wider public-domain text or sarga-level study index.'}
                 </p>
               </div>
               <div className="flex flex-col gap-2 sm:items-end">
-                <a
-                  href={getOfficialGitaChapterUrl(1)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold"
-                  style={{ color: 'var(--brand-primary)' }}
-                >
-                  Companion source
-                </a>
-                <a
-                  href={getOfficialGitaAudioUrl(1)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold"
-                  style={{ color: 'var(--brand-primary)' }}
-                >
-                  Official audio
-                </a>
+                {canonicalChapters.length > 0 ? (
+                  <>
+                    <a
+                      href={getOfficialGitaChapterUrl(1)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold"
+                      style={{ color: 'var(--brand-primary)' }}
+                    >
+                      Companion source
+                    </a>
+                    <a
+                      href={getOfficialGitaAudioUrl(1)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold"
+                      style={{ color: 'var(--brand-primary)' }}
+                    >
+                      Official audio
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <a
+                      href={getOfficialRamayanaTextUrl()}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold"
+                      style={{ color: 'var(--brand-primary)' }}
+                    >
+                      Public-domain text
+                    </a>
+                    <a
+                      href={getOfficialRamayanaStudyUrl()}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold"
+                      style={{ color: 'var(--brand-primary)' }}
+                    >
+                      Study index
+                    </a>
+                  </>
+                )}
               </div>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {canonicalChapters.map((chapter) => (
+              {(canonicalChapters.length > 0 ? canonicalChapters : ramayanaKandas).map((chapter) => (
                 <Link
                   key={chapter.id}
                   href={getPathshalaChapterHref(tradition, section, chapter.id)}
@@ -165,13 +198,13 @@ export default async function PathshalaSectionPage({
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">
-                        Chapter {chapter.chapterNumber}
+                        {'chapterNumber' in chapter ? `Chapter ${chapter.chapterNumber}` : `Kanda ${chapter.kandaNumber}`}
                       </p>
                       <p className="font-semibold text-gray-900 mt-2">{chapter.englishTitle}</p>
                       <p className="text-xs text-gray-500 mt-1">{chapter.transliterationTitle}</p>
                     </div>
                     <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">
-                      {chapter.verseCount} verses
+                      {'verseCount' in chapter ? `${chapter.verseCount} verses` : `${chapter.cantoCount} cantos`}
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 leading-relaxed mt-3">{chapter.summary}</p>
@@ -188,7 +221,9 @@ export default async function PathshalaSectionPage({
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Reading plans</p>
               <p className="text-sm text-gray-700 leading-relaxed mt-2">
-                Start with a guided rhythm instead of browsing at random. These plans point into the same canonical Gita chapter map above.
+                {section === 'gita'
+                  ? 'Start with a guided rhythm instead of browsing at random. These plans point into the same canonical Gita chapter map above.'
+                  : 'Start with a guided narrative rhythm instead of browsing disconnected passages. These plans point into the Kanda map above.'}
               </p>
             </div>
 
@@ -211,10 +246,10 @@ export default async function PathshalaSectionPage({
                     {plan.chapters.map((chapterNumber) => (
                       <Link
                         key={`${plan.id}-${chapterNumber}`}
-                        href={getPathshalaChapterHref(tradition, section, `chapter-${chapterNumber}`)}
+                        href={getPathshalaChapterHref(tradition, section, section === 'gita' ? `chapter-${chapterNumber}` : `kanda-${chapterNumber}`)}
                         className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-700 hover:text-[color:var(--brand-primary)] transition"
                       >
-                        Ch {chapterNumber}
+                        {section === 'gita' ? `Ch ${chapterNumber}` : `K ${chapterNumber}`}
                       </Link>
                     ))}
                   </div>
@@ -229,11 +264,13 @@ export default async function PathshalaSectionPage({
         <div className="flex items-end justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
-              {canonicalChapters.length > 0 ? 'Featured entry points' : 'Texts and lessons'}
+              {(canonicalChapters.length > 0 || ramayanaKandas.length > 0) ? 'Featured entry points' : 'Texts and lessons'}
             </p>
             <p className="text-sm text-gray-600 mt-1">
-              {canonicalChapters.length > 0
-                ? 'The full verse corpus now lives inside the chapter pages above. These featured openings are good places to begin.'
+              {(canonicalChapters.length > 0 || ramayanaKandas.length > 0)
+                ? section === 'gita'
+                  ? 'The full verse corpus now lives inside the chapter pages above. These featured openings are good places to begin.'
+                  : 'The Kanda flow now holds the narrative structure. These local passages are strong first openings inside the broader Ramayana path.'
                 : 'Open a text to read the passage, source note, and related material.'}
             </p>
           </div>

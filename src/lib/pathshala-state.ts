@@ -3,7 +3,7 @@ import {
   getLibrarySectionById,
   type LibraryTradition,
 } from '@/lib/library-content';
-import { getCanonicalChapter } from '@/lib/pathshala-canonical';
+import { getCanonicalChapter, getRamayanaKanda } from '@/lib/pathshala-canonical';
 import { getPathshalaEntryHref } from '@/lib/pathshala-links';
 
 export interface PathshalaUserStateRow {
@@ -29,6 +29,7 @@ export interface PathshalaStudySummary {
 function resolveStateRow(row: PathshalaUserStateRow): PathshalaStudySummary | null {
   const section = getLibrarySectionById(row.section_id);
   const canonicalChapter = getCanonicalChapter(row.section_id, row.entry_id);
+  const canonicalKanda = getRamayanaKanda(row.section_id, row.entry_id);
   const entry = getLibraryEntryById(row.entry_id);
 
   if (!section || section.tradition !== row.tradition) {
@@ -40,6 +41,20 @@ function resolveStateRow(row: PathshalaUserStateRow): PathshalaStudySummary | nu
       entryId: row.entry_id,
       title: `Chapter ${canonicalChapter.chapterNumber} · ${canonicalChapter.englishTitle}`,
       source: `Bhagavad Gita ${canonicalChapter.chapterNumber}`,
+      tradition: row.tradition,
+      sectionId: row.section_id,
+      sectionTitle: section.title,
+      href: getPathshalaEntryHref(row.tradition, row.section_id, row.entry_id),
+      lastOpenedAt: row.last_opened_at,
+      bookmarkedAt: row.bookmarked_at,
+    };
+  }
+
+  if (canonicalKanda) {
+    return {
+      entryId: row.entry_id,
+      title: `Kanda ${canonicalKanda.kandaNumber} · ${canonicalKanda.englishTitle}`,
+      source: `Valmiki Ramayana ${canonicalKanda.transliterationTitle}`,
       tradition: row.tradition,
       sectionId: row.section_id,
       sectionTitle: section.title,

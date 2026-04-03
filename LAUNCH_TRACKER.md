@@ -26,6 +26,7 @@ Last updated: 2026-04-03
 - [x] Start Pathshala phase 2: add section-level corpus metadata, source-governance cues, and fuller scripture-track detail
 - [x] Start Pathshala return loops: bookmarks, continue-learning state, and first reading-plan foundations
 - [x] Build Bhagavad Gita as the first complete chapter-structured Pathshala pilot with full local verse coverage and source attribution
+- [x] Start the Valmiki Ramayana Kanda-first Pathshala flow with canonical Kanda pages, reading plans, and companion-source links
 - [x] Replace the current green / teal brand bias with a warmer dharmic palette that fits the Sanatan product identity better
 - [ ] Define Jyotish / Rashiphal strategy under the trust core before shipping any horoscope-style feature
 - [ ] Stage Pathshala AI-assisted reading and recitation support: explain, quiz, flashcards, and later pronunciation / scoring

@@ -7,6 +7,10 @@ import {
   getGitaEntriesForChapter,
   getOfficialGitaAudioUrl,
   getOfficialGitaChapterUrl,
+  getOfficialRamayanaStudyUrl,
+  getOfficialRamayanaTextUrl,
+  getRamayanaEntriesForKanda,
+  getRamayanaKanda,
 } from '@/lib/pathshala-canonical';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import {
@@ -39,6 +43,7 @@ export default async function PathshalaEntryPage({
   const traditionMeta = getPathshalaTraditionMeta(tradition);
   const sectionMeta = getLibrarySectionById(section);
   const canonicalChapter = getCanonicalChapter(section, entryId);
+  const canonicalKanda = getRamayanaKanda(section, entryId);
   const entry = getLibraryEntryById(entryId);
   const entrySection = entry ? getSectionForEntry(entry) : undefined;
   const supabase = await createServerSupabaseClient();
@@ -277,6 +282,164 @@ export default async function PathshalaEntryPage({
               ))}
             </div>
           )}
+        </section>
+      </div>
+    );
+  }
+
+  if (canonicalKanda) {
+    const kandaEntries = getRamayanaEntriesForKanda(canonicalKanda.kandaNumber);
+    const studyContext = `Valmiki Ramayana ${canonicalKanda.transliterationTitle} — ${canonicalKanda.englishTitle}`;
+    const studyPrompts = [
+      {
+        title: 'Explain with AI',
+        description: 'Ask for a source-aware explanation of this Kanda’s narrative and dharmic themes.',
+        href: getAIChatHref(
+          `Explain Valmiki Ramayana ${canonicalKanda.transliterationTitle} (${canonicalKanda.englishTitle}) in simple but source-aware terms. Focus on the main events and dharmic lessons.`,
+          studyContext,
+        ),
+      },
+      {
+        title: 'Character arcs',
+        description: 'Trace the main people, loyalties, and turning points inside this Kanda.',
+        href: getAIChatHref(
+          `Map the main character arcs and turning points in Valmiki Ramayana ${canonicalKanda.transliterationTitle} (${canonicalKanda.englishTitle}).`,
+          studyContext,
+        ),
+      },
+      {
+        title: 'Quiz me',
+        description: 'Turn the Kanda into quick recall questions to strengthen retention.',
+        href: getAIChatHref(
+          `Quiz me on Valmiki Ramayana ${canonicalKanda.transliterationTitle} (${canonicalKanda.englishTitle}) with 5 short questions and then give the answers after I try.`,
+          studyContext,
+        ),
+      },
+    ];
+
+    return (
+      <div className="space-y-4 pb-6 fade-in">
+        <div className="glass-panel rounded-[1.8rem] px-5 py-5 space-y-4">
+          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
+            <Link href="/library" className="text-[color:var(--brand-primary)]">Pathshala</Link>
+            <span>•</span>
+            <Link href={getPathshalaTraditionHref(tradition)} className="text-[color:var(--brand-primary)]">{traditionMeta.label}</Link>
+            <span>•</span>
+            <Link href={getPathshalaSectionHref(tradition, sectionMeta.id)} className="text-[color:var(--brand-primary)]">{sectionMeta.title}</Link>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">
+                {sectionMeta.emoji} Kanda {canonicalKanda.kandaNumber}
+              </span>
+              <span className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-600">
+                {canonicalKanda.cantoCount} cantos
+              </span>
+            </div>
+            <div>
+              <h1 className="font-display text-2xl font-bold text-gray-900">{canonicalKanda.englishTitle}</h1>
+              <p className="text-sm text-gray-500 mt-1">{canonicalKanda.sanskritTitle} · {canonicalKanda.transliterationTitle}</p>
+            </div>
+            <p className="text-sm text-gray-700 leading-relaxed">{canonicalKanda.summary}</p>
+          </div>
+        </div>
+
+        <div className="clay-card rounded-[1.7rem] px-5 py-5 space-y-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Companion sources</p>
+              <p className="text-sm text-gray-700 leading-relaxed mt-2">
+                The Ramayana path is now organized Kanda first inside Pathshala. Use the public-domain Griffith text and the sarga-level study index alongside these guided pages while we expand local narrative coverage further.
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 sm:items-end">
+              <a
+                href={getOfficialRamayanaTextUrl()}
+                target="_blank"
+                rel="noreferrer"
+                className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold"
+                style={{ color: 'var(--brand-primary)' }}
+              >
+                Public-domain text
+              </a>
+              <a
+                href={getOfficialRamayanaStudyUrl()}
+                target="_blank"
+                rel="noreferrer"
+                className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold"
+                style={{ color: 'var(--brand-primary)' }}
+              >
+                Sarga study index
+              </a>
+            </div>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-3">
+            {studyPrompts.map((prompt) => (
+              <Link
+                key={prompt.title}
+                href={prompt.href}
+                className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">{prompt.title}</p>
+                <p className="text-sm text-gray-700 leading-relaxed mt-2">{prompt.description}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {user && (
+          <PathshalaActionBar
+            userId={user.id}
+            tradition={tradition}
+            sectionId={sectionMeta.id}
+            entryId={canonicalKanda.id}
+            initiallyBookmarked={isBookmarked}
+          />
+        )}
+
+        <section className="space-y-3">
+          <div className="glass-panel rounded-[1.6rem] px-4 py-4 space-y-3">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Local Pathshala passages</p>
+                <p className="text-sm text-gray-700 leading-relaxed mt-2">
+                  These passages are already live inside this Kanda path. They are the best local openings while the fuller Ramayana corpus is expanded.
+                </p>
+              </div>
+              <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">
+                {kandaEntries.length} live passages
+              </span>
+            </div>
+
+            {kandaEntries.length === 0 ? (
+              <div className="glass-panel rounded-[1.35rem] px-4 py-4 border border-white/60">
+                <p className="text-sm font-semibold text-gray-900">This Kanda structure is live, but no local passages have been mapped into it yet.</p>
+                <p className="text-sm text-gray-600 mt-2">
+                  Use the companion sources above for the full text while we continue local narrative ingestion.
+                </p>
+              </div>
+            ) : (
+              <div className="grid gap-3">
+                {kandaEntries.map((kandaEntry) => (
+                  <Link
+                    key={kandaEntry.id}
+                    href={getPathshalaEntryHrefFromSection(sectionMeta, kandaEntry)}
+                    className="glass-panel rounded-[1.45rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-semibold text-gray-900">{kandaEntry.title}</p>
+                        <p className="text-sm text-gray-600 leading-relaxed mt-2">{kandaEntry.meaning}</p>
+                      </div>
+                      <span className="text-xs font-semibold text-[color:var(--brand-primary)]">Open →</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </section>
       </div>
     );

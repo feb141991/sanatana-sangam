@@ -282,6 +282,10 @@ Current slice:
   - first reading plans now point into the complete chapter map so users can study in a defined rhythm instead of browsing randomly
   - return loops now work at the chapter layer too, so users can bookmark and resume canonical Gita chapters rather than only the smaller excerpt entries
   - this is the model text family for future Ramayana and broader canon work
+- the next canon lane is now active for Valmiki Ramayana:
+  - Ramayana now opens as a Kanda-first study path instead of a flat excerpt list
+  - Kanda pages carry summaries, reading plans, AI study prompts, and companion-source links
+  - the live Ramayana passages are now grouped back into their wider narrative home rather than feeling like disconnected quotations
 - AI-assisted reading and recitation are staged behind that corpus work:
   - first: source-aware explain, quiz, flashcards, and guided reading
   - first live bridge is now in place:

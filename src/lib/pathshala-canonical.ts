@@ -1,4 +1,4 @@
-import { GITA_ENTRIES, type LibraryEntry } from '@/lib/library-content';
+import { GITA_ENTRIES, RAMAYANA_ENTRIES, type LibraryEntry } from '@/lib/library-content';
 
 export interface CanonicalChapter {
   id: string;
@@ -22,11 +22,23 @@ export interface CanonicalVerseLink {
 
 export interface CanonicalReadingPlan {
   id: string;
-  sectionId: 'gita';
+  sectionId: 'gita' | 'ramayana';
   title: string;
   subtitle: string;
   cadence: string;
   chapters: number[];
+}
+
+export interface CanonicalRamayanaKanda {
+  id: string;
+  sectionId: 'ramayana';
+  tradition: 'hindu';
+  kandaNumber: number;
+  cantoCount: number;
+  sanskritTitle: string;
+  transliterationTitle: string;
+  englishTitle: string;
+  summary: string;
 }
 
 export const GITA_CHAPTERS: CanonicalChapter[] = [
@@ -257,6 +269,113 @@ export const GITA_READING_PLANS: CanonicalReadingPlan[] = [
   },
 ];
 
+export const RAMAYANA_KANDAS: CanonicalRamayanaKanda[] = [
+  {
+    id: 'kanda-1',
+    sectionId: 'ramayana',
+    tradition: 'hindu',
+    kandaNumber: 1,
+    cantoCount: 77,
+    sanskritTitle: 'बालकाण्ड',
+    transliterationTitle: 'Bala Kanda',
+    englishTitle: 'The Book of Childhood',
+    summary: 'Rama’s birth, youth, marriage to Sita, and the sacred beginnings of the dharmic story.',
+  },
+  {
+    id: 'kanda-2',
+    sectionId: 'ramayana',
+    tradition: 'hindu',
+    kandaNumber: 2,
+    cantoCount: 119,
+    sanskritTitle: 'अयोध्याकाण्ड',
+    transliterationTitle: 'Ayodhya Kanda',
+    englishTitle: 'The Book of Ayodhya',
+    summary: 'Court intrigue, exile, filial duty, and the moral gravity of Rama leaving Ayodhya.',
+  },
+  {
+    id: 'kanda-3',
+    sectionId: 'ramayana',
+    tradition: 'hindu',
+    kandaNumber: 3,
+    cantoCount: 75,
+    sanskritTitle: 'अरण्यकाण्ड',
+    transliterationTitle: 'Aranya Kanda',
+    englishTitle: 'The Book of the Forest',
+    summary: 'Forest life, the testing of endurance, the encounter with Surpanakha, and Sita’s abduction.',
+  },
+  {
+    id: 'kanda-4',
+    sectionId: 'ramayana',
+    tradition: 'hindu',
+    kandaNumber: 4,
+    cantoCount: 67,
+    sanskritTitle: 'किष्किन्धाकाण्ड',
+    transliterationTitle: 'Kishkindha Kanda',
+    englishTitle: 'The Book of Kishkindha',
+    summary: 'Alliance, friendship, Sugriva’s restoration, and the gathering of strength for the search.',
+  },
+  {
+    id: 'kanda-5',
+    sectionId: 'ramayana',
+    tradition: 'hindu',
+    kandaNumber: 5,
+    cantoCount: 68,
+    sanskritTitle: 'सुन्दरकाण्ड',
+    transliterationTitle: 'Sundara Kanda',
+    englishTitle: 'The Book of Beauty',
+    summary: 'Hanuman’s leap, the discovery of Sita, and one of the most beloved devotional arcs in the epic.',
+  },
+  {
+    id: 'kanda-6',
+    sectionId: 'ramayana',
+    tradition: 'hindu',
+    kandaNumber: 6,
+    cantoCount: 128,
+    sanskritTitle: 'युद्धकाण्ड',
+    transliterationTitle: 'Yuddha Kanda',
+    englishTitle: 'The Book of War',
+    summary: 'The Lanka campaign, Ravana’s fall, reunion, and the culminating battle for justice.',
+  },
+  {
+    id: 'kanda-7',
+    sectionId: 'ramayana',
+    tradition: 'hindu',
+    kandaNumber: 7,
+    cantoCount: 111,
+    sanskritTitle: 'उत्तरकाण्ड',
+    transliterationTitle: 'Uttara Kanda',
+    englishTitle: 'The Book of Afterward',
+    summary: 'Rama’s reign, the testing aftermath of kingship, and the later moral legacy of the epic.',
+  },
+];
+
+export const RAMAYANA_READING_PLANS: CanonicalReadingPlan[] = [
+  {
+    id: 'ramayana-7-kanda-journey',
+    sectionId: 'ramayana',
+    title: '7-kanda journey',
+    subtitle: 'Move through the whole Valmiki Ramayana one kanda at a time, in narrative order.',
+    cadence: '7 sessions',
+    chapters: [1, 2, 3, 4, 5, 6, 7],
+  },
+  {
+    id: 'ramayana-rama-dharma-arc',
+    sectionId: 'ramayana',
+    title: 'Rama dharma arc',
+    subtitle: 'Follow the moral shape of Rama through exile, testing, battle, and rule.',
+    cadence: '5 sessions',
+    chapters: [1, 2, 3, 6, 7],
+  },
+  {
+    id: 'ramayana-hanuman-focus',
+    sectionId: 'ramayana',
+    title: 'Hanuman focus',
+    subtitle: 'Begin with the alliance and move into the devotional force of Sundara Kanda.',
+    cadence: '3 sessions',
+    chapters: [4, 5, 6],
+  },
+];
+
 function getOfficialGitaBaseParams(chapterNumber: number, verseNumber = 1) {
   return `field_chapter_value=${chapterNumber}&field_nsutra_value=${verseNumber}&language=dv&setgb=1`;
 }
@@ -273,6 +392,14 @@ export function getOfficialGitaVerseUrl(chapterNumber: number, verseNumber: numb
   return getOfficialGitaChapterUrl(chapterNumber, verseNumber);
 }
 
+export function getOfficialRamayanaTextUrl() {
+  return 'https://en.wikisource.org/wiki/File:Valmiki_-_Ramayana,_Griffith,_1895.djvu';
+}
+
+export function getOfficialRamayanaStudyUrl() {
+  return 'https://www.valmikiramayan.net/';
+}
+
 export function getCanonicalChaptersForSection(sectionId: string) {
   if (sectionId === 'gita') return GITA_CHAPTERS;
   return [];
@@ -280,6 +407,15 @@ export function getCanonicalChaptersForSection(sectionId: string) {
 
 export function getCanonicalChapter(sectionId: string, chapterId: string) {
   return getCanonicalChaptersForSection(sectionId).find((chapter) => chapter.id === chapterId);
+}
+
+export function getRamayanaKandasForSection(sectionId: string) {
+  if (sectionId === 'ramayana') return RAMAYANA_KANDAS;
+  return [];
+}
+
+export function getRamayanaKanda(sectionId: string, kandaId: string) {
+  return getRamayanaKandasForSection(sectionId).find((kanda) => kanda.id === kandaId);
 }
 
 export function getGitaChapterForEntry(entry: LibraryEntry) {
@@ -300,6 +436,36 @@ export function getGitaEntriesForChapter(chapterNumber: number) {
       const rightCoverage = getGitaVerseCoverage(right);
       return (leftCoverage?.startVerse ?? 0) - (rightCoverage?.startVerse ?? 0);
     });
+}
+
+const RAMAYANA_KANDA_MATCHERS = [
+  { number: 1, patterns: [/bal kanda/i, /bala kanda/i, /^ram-bal-/i] },
+  { number: 2, patterns: [/ayodhya kanda/i, /^ram-ayodhya-/i] },
+  { number: 3, patterns: [/aranya kanda/i, /^ram-aranya-/i] },
+  { number: 4, patterns: [/kishkindha kanda/i, /^ram-kishkindha-/i] },
+  { number: 5, patterns: [/sundara kanda/i, /^ram-sundara-/i] },
+  { number: 6, patterns: [/yuddha kanda/i, /^ram-yuddha-/i] },
+  { number: 7, patterns: [/uttara kanda/i, /^ram-uttara-/i] },
+];
+
+export function getRamayanaKandaForEntry(entry: LibraryEntry) {
+  if (entry.category !== 'ramayana') return null;
+
+  const matcher = RAMAYANA_KANDA_MATCHERS.find(({ patterns }) =>
+    patterns.some((pattern) => pattern.test(entry.source) || pattern.test(entry.id))
+  );
+
+  if (!matcher) return null;
+  return RAMAYANA_KANDAS.find((kanda) => kanda.kandaNumber === matcher.number) ?? null;
+}
+
+export function getRamayanaEntriesForKanda(kandaNumber: number) {
+  const matcher = RAMAYANA_KANDA_MATCHERS.find((item) => item.number === kandaNumber);
+  if (!matcher) return [];
+
+  return RAMAYANA_ENTRIES.filter((entry) =>
+    matcher.patterns.some((pattern) => pattern.test(entry.source) || pattern.test(entry.id))
+  );
 }
 
 function getGitaVerseCoverage(entry: LibraryEntry) {
