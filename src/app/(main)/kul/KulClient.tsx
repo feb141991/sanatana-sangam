@@ -767,42 +767,49 @@ const KUL_SECTION_META: Record<KulSectionView, {
   eyebrow: string;
   emoji: string;
   description: string;
+  group: 'today' | 'family' | 'lineage';
 }> = {
   board: {
-    label: 'Family Board',
-    eyebrow: 'Daily pulse',
+    label: 'Overview',
+    eyebrow: 'Start here',
     emoji: '✨',
-    description: 'See the overall state of your Kul, streaks, task momentum, and invite activity.',
+    description: 'A calmer overview of what needs attention before you move into a dedicated family space.',
+    group: 'today',
   },
   members: {
     label: 'Members',
     eyebrow: 'Care circle',
     emoji: '👨‍👩‍👧‍👦',
     description: 'Manage roles, view who is participating, and keep the family circle clear.',
+    group: 'family',
   },
   tasks: {
     label: 'Tasks',
-    eyebrow: 'Shared sadhana',
+    eyebrow: 'Do together',
     emoji: '📋',
-    description: 'Assign and complete family practices without squeezing them into a tiny tab.',
+    description: 'Assign and complete shared practices, readings, and small family commitments.',
+    group: 'today',
   },
   sabha: {
     label: 'Kul Sabha',
     eyebrow: 'Family conversation',
     emoji: '💬',
     description: 'Keep your Kul chat in a dedicated, full-page conversation space.',
+    group: 'family',
   },
   vansh: {
     label: 'Vansh',
     eyebrow: 'Lineage',
     emoji: '🫶',
     description: 'Read your family tree as a warm keepsake wall with room to breathe.',
+    group: 'lineage',
   },
   events: {
     label: 'Family Dates',
     eyebrow: 'Ritual calendar',
     emoji: '📅',
     description: 'Birthdays, anniversaries, pujas, and remembrance dates in one dedicated page.',
+    group: 'lineage',
   },
 };
 
@@ -834,51 +841,78 @@ function KulSectionTiles({
 
   const tiles: Array<{ key: KulSectionView; badge?: number }> = [
     { key: 'board' },
-    { key: 'members', badge: members.length || undefined },
     { key: 'tasks', badge: pendingTasks || undefined },
+    { key: 'members', badge: members.length || undefined },
     { key: 'sabha', badge: messages.length || undefined },
     { key: 'vansh', badge: familyMembers.length || undefined },
     { key: 'events', badge: upcomingEvents || undefined },
   ];
+  const groupedTiles: Array<{ title: string; subtitle: string; keys: Array<{ key: KulSectionView; badge?: number }> }> = [
+    {
+      title: 'Start here today',
+      subtitle: 'The places most people need first when they open Kul.',
+      keys: tiles.filter((tile) => KUL_SECTION_META[tile.key].group === 'today'),
+    },
+    {
+      title: 'Family spaces',
+      subtitle: 'People and conversation in dedicated full pages.',
+      keys: tiles.filter((tile) => KUL_SECTION_META[tile.key].group === 'family'),
+    },
+    {
+      title: 'Lineage and dates',
+      subtitle: 'Your keepsake wall and the family rhythm around it.',
+      keys: tiles.filter((tile) => KUL_SECTION_META[tile.key].group === 'lineage'),
+    },
+  ];
 
   return (
-    <div className={`grid gap-3 ${large ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2 sm:grid-cols-3'}`}>
-      {tiles.map(({ key, badge }) => {
-        const meta = KUL_SECTION_META[key];
-        const active = currentView === key;
-        return (
-          <Link
-            key={key}
-            href={getKulSectionHref(key)}
-            className={`group rounded-[1.6rem] p-4 transition-all ${active ? 'clay-card' : 'glass-panel'}`}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-3 min-w-0">
-                <div className="clay-icon-well text-lg flex-shrink-0">{meta.emoji}</div>
-                <div className="min-w-0">
-                  <p className="text-[10px] uppercase tracking-[0.18em] font-semibold" style={{ color: 'rgba(22, 77, 84, 0.68)' }}>
-                    {meta.eyebrow}
+    <div className="space-y-4">
+      {groupedTiles.map((group) => (
+        <div key={group.title} className="space-y-3">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">{group.title}</p>
+            <p className="text-sm text-gray-500 mt-1">{group.subtitle}</p>
+          </div>
+          <div className={`grid gap-3 ${large ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2 sm:grid-cols-3'}`}>
+            {group.keys.map(({ key, badge }) => {
+              const meta = KUL_SECTION_META[key];
+              const active = currentView === key;
+              return (
+                <Link
+                  key={key}
+                  href={getKulSectionHref(key)}
+                  className={`group rounded-[1.6rem] p-4 transition-all ${active ? 'clay-card' : 'glass-panel'}`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3 min-w-0">
+                      <div className="clay-icon-well text-lg flex-shrink-0">{meta.emoji}</div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] uppercase tracking-[0.18em] font-semibold" style={{ color: 'rgba(22, 77, 84, 0.68)' }}>
+                          {meta.eyebrow}
+                        </p>
+                        <h3 className={`font-display font-bold leading-tight mt-1 ${large ? 'text-base' : 'text-sm'}`} style={{ color: 'var(--brand-primary-strong)' }}>
+                          {meta.label}
+                        </h3>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                      {badge != null && badge > 0 && (
+                        <span className="px-2 py-1 rounded-full text-[10px] font-bold text-white" style={{ background: 'var(--brand-primary)' }}>
+                          {badge > 99 ? '99+' : badge}
+                        </span>
+                      )}
+                      <ChevronRight size={16} className="text-gray-400 group-hover:translate-x-0.5 transition-transform" />
+                    </div>
+                  </div>
+                  <p className={`text-gray-500 mt-3 leading-relaxed ${large ? 'text-sm' : 'text-xs'}`}>
+                    {meta.description}
                   </p>
-                  <h3 className={`font-display font-bold leading-tight mt-1 ${large ? 'text-base' : 'text-sm'}`} style={{ color: 'var(--brand-primary-strong)' }}>
-                    {meta.label}
-                  </h3>
-                </div>
-              </div>
-              <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                {badge != null && badge > 0 && (
-                  <span className="px-2 py-1 rounded-full text-[10px] font-bold text-white" style={{ background: 'var(--brand-primary)' }}>
-                    {badge > 99 ? '99+' : badge}
-                  </span>
-                )}
-                <ChevronRight size={16} className="text-gray-400 group-hover:translate-x-0.5 transition-transform" />
-              </div>
-            </div>
-            <p className={`text-gray-500 mt-3 leading-relaxed ${large ? 'text-sm' : 'text-xs'}`}>
-              {meta.description}
-            </p>
-          </Link>
-        );
-      })}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -969,7 +1003,7 @@ function KulHubView({
               Kul Home
             </p>
             <p className="text-sm text-gray-600 mt-2 leading-relaxed max-w-xl">
-              This is now the overview hub for your family space. Each area opens into a full page so the experience feels calmer, clearer, and easier to grow.
+              Open the one family space you need right now. Kul is organized as dedicated full pages, so tasks, conversation, lineage, and dates no longer compete on one crowded screen.
             </p>
           </div>
           <div className="px-3 py-2 rounded-2xl border text-xs font-bold tracking-widest hidden sm:block"
@@ -995,7 +1029,6 @@ function KulHubView({
       </div>
 
       <div>
-        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-3">Open a family space</p>
         <KulSectionTiles
           currentView="hub"
           members={members}
@@ -1009,12 +1042,12 @@ function KulHubView({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="glass-panel rounded-[1.7rem] p-4">
-          <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400">Today&apos;s pulse</p>
+          <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400">Most likely next</p>
           <div className="space-y-3 mt-3">
             <Link href="/kul/board" className="flex items-center justify-between gap-3 rounded-2xl bg-white/70 px-4 py-3 border border-white/70">
               <div>
-                <p className="text-sm font-semibold text-gray-900">See the family board</p>
-                <p className="text-xs text-gray-500 mt-1">Streaks, invites, and daily family momentum</p>
+                <p className="text-sm font-semibold text-gray-900">Start at the overview</p>
+                <p className="text-xs text-gray-500 mt-1">See the family pulse before you jump into a dedicated page</p>
               </div>
               <ChevronRight size={18} className="text-gray-400" />
             </Link>
@@ -1029,7 +1062,7 @@ function KulHubView({
         </div>
 
         <div className="glass-panel rounded-[1.7rem] p-4">
-          <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400">Family rhythm</p>
+          <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400">Lineage and rhythm</p>
           <div className="space-y-3 mt-3">
             {upcomingEvents.length > 0 ? (
               upcomingEvents.slice(0, 2).map((event) => (
@@ -1107,7 +1140,7 @@ function KulSectionShell({
       </div>
 
       <div>
-        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-3">Switch section</p>
+        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-3">Move to another family space</p>
         <KulSectionTiles
           currentView={view}
           members={members}
