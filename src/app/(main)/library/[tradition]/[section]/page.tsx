@@ -27,6 +27,7 @@ import {
   getPathshalaEntryHrefFromSection,
   getPathshalaTraditionHref,
 } from '@/lib/pathshala-links';
+import { MotionFade, MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
 
 export default async function PathshalaSectionPage({
   params,
@@ -62,7 +63,7 @@ export default async function PathshalaSectionPage({
   const upanishadLayerCounts = section === 'upanishad' ? getUpanishadLayerCounts() : null;
 
   return (
-    <div className="space-y-4 pb-6 fade-in">
+    <MotionFade className="space-y-4 pb-6 fade-in">
       <div className="glass-panel rounded-[1.8rem] px-5 py-5 space-y-4">
         <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
           <Link href="/library" className="text-[color:var(--brand-primary)]">Pathshala</Link>
@@ -172,7 +173,7 @@ export default async function PathshalaSectionPage({
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Current source-backed layers</p>
                 <p className="text-sm text-gray-700 leading-relaxed mt-2">
-                  Pathshala now carries the 13 principal Upanishads as full translated study texts. The original Sanskrit layer is live where the official Vedic Heritage source is text-accessible, and stays companion-linked for the larger texts that are still exposed there as flipbooks or summary pages.
+                  Pathshala now carries the 13 principal Upanishads as full translated study texts. The original Sanskrit layer is live where the official Vedic Heritage source is text-accessible, including the full Taittiriya Upanishad across Shiksha, Brahmananda, and Bhrigu Vallis, and stays companion-linked for the larger texts that are still exposed there as flipbooks or summary pages.
                 </p>
               </div>
               <a
@@ -266,8 +267,9 @@ export default async function PathshalaSectionPage({
               </div>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <MotionStagger className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" delay={0.05}>
               {(canonicalChapters.length > 0 ? canonicalChapters : ramayanaKandas).map((chapter) => (
+                <MotionItem key={chapter.id}>
                 <Link
                   key={chapter.id}
                   href={getPathshalaChapterHref(tradition, section, chapter.id)}
@@ -287,8 +289,9 @@ export default async function PathshalaSectionPage({
                   </div>
                   <p className="text-sm text-gray-600 leading-relaxed mt-3">{chapter.summary}</p>
                 </Link>
+                </MotionItem>
               ))}
-            </div>
+            </MotionStagger>
           </div>
         </section>
       )}
@@ -305,9 +308,10 @@ export default async function PathshalaSectionPage({
               </p>
             </div>
 
-            <div className="grid gap-3 lg:grid-cols-3">
+            <MotionStagger className="grid gap-3 lg:grid-cols-3" delay={0.06}>
               {readingPlans.map((plan) => (
-                <div key={plan.id} className="clay-card rounded-[1.4rem] px-4 py-4 space-y-3">
+                <MotionItem key={plan.id}>
+                <div className="clay-card rounded-[1.4rem] px-4 py-4 space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-semibold text-gray-900">{plan.title}</p>
@@ -332,8 +336,9 @@ export default async function PathshalaSectionPage({
                     ))}
                   </div>
                 </div>
+                </MotionItem>
               ))}
-            </div>
+            </MotionStagger>
           </div>
         </section>
       )}
@@ -356,7 +361,7 @@ export default async function PathshalaSectionPage({
           </div>
         </div>
 
-        <div className="grid gap-3">
+        <MotionStagger className="grid gap-3" delay={0.08}>
           {featuredEntries.map((entry) => {
             const sourceMeta = getLibrarySourceMeta(entry);
             const entrySection = getSectionForEntry(entry) ?? sectionMeta;
@@ -373,6 +378,7 @@ export default async function PathshalaSectionPage({
               : null;
 
             return (
+              <MotionItem key={entry.id}>
               <Link
                 key={entry.id}
                 href={getPathshalaEntryHrefFromSection(entrySection, entry)}
@@ -412,10 +418,11 @@ export default async function PathshalaSectionPage({
                     : entry.meaning}
                 </p>
               </Link>
+              </MotionItem>
             );
           })}
-        </div>
+        </MotionStagger>
       </section>
-    </div>
+    </MotionFade>
   );
 }
