@@ -7,6 +7,8 @@ const OFFLINE_URL = '/offline';
 const PRECACHE_ASSETS = [
   '/',
   '/home',
+  '/gita-story',
+  '/library/hindu/gita/story',
   '/vichaar-sabha',
   '/manifest.json',
 ];

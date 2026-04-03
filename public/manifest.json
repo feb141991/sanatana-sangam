@@ -17,6 +17,11 @@
   "screenshots": [],
   "shortcuts": [
     {
+      "name": "Kanu Story",
+      "url": "/gita-story",
+      "description": "Open the Krishna-inspired Bhagavad Gita story journey"
+    },
+    {
       "name": "Home",
       "url": "/home",
       "description": "Open your dharmic home dashboard"

@@ -24,6 +24,7 @@ import {
 import { getUpanishadStudyMeta } from '@/lib/upanishad-study';
 import {
   getAIChatHref,
+  getGitaStoryEpisodeHref,
   getPathshalaEntryHrefFromSection,
   getPathshalaSectionHref,
   getPathshalaTraditionHref,
@@ -157,10 +158,19 @@ export default async function PathshalaEntryPage({
             </div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            {studyPrompts.map((prompt) => (
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
               <Link
-                key={prompt.title}
+                href={getGitaStoryEpisodeHref(`gita-chapter-${canonicalChapter.chapterNumber}`)}
+                className="story-hero-shell rounded-[1.4rem] px-4 py-4 border border-white/15 hover:-translate-y-0.5 transition"
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-accent-soft)]">Open story mode</p>
+                <p className="text-sm text-white/85 leading-relaxed mt-2">
+                  Step into Kanu’s chapter companion, switch between story and deeper meaning, and return here whenever you want the verse flow.
+                </p>
+              </Link>
+              {studyPrompts.map((prompt) => (
+                <Link
+                  key={prompt.title}
                 href={prompt.href}
                 className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
               >

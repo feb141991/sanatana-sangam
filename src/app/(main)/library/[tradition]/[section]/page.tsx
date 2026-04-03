@@ -21,6 +21,8 @@ import {
 } from '@/lib/library-content';
 import { getUpanishadLayerCounts } from '@/lib/upanishad-study';
 import {
+  getGitaStoryEpisodeHref,
+  getGitaStoryHref,
   getPathshalaChapterHref,
   getPathshalaEntryHrefFromSection,
   getPathshalaTraditionHref,
@@ -130,6 +132,38 @@ export default async function PathshalaSectionPage({
           </div>
         )}
       </div>
+
+      {section === 'gita' && (
+        <section className="space-y-3">
+          <div className="story-hero-shell rounded-[1.8rem] px-5 py-5">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-accent-soft)]">
+                  New immersive mode
+                </p>
+                <h2 className="font-display text-2xl font-bold text-white mt-2">Kanu story mode</h2>
+                <p className="text-sm text-white/85 leading-relaxed mt-3">
+                  Walk from Gokul to Kurukshetra with a Krishna-inspired guide, then return to the chapter-and-verse Gita flow whenever you want the formal source layer.
+                </p>
+                <div className="flex flex-wrap gap-2 mt-4">
+                  <span className="story-chip">English + Hindi</span>
+                  <span className="story-chip">Story + deeper meaning</span>
+                  <span className="story-chip">Verse anchors</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2 sm:items-end">
+                <Link href={getGitaStoryHref()} className="story-primary-cta">
+                  Open story map
+                </Link>
+                <Link href={getGitaStoryEpisodeHref('kurukshetra-dawn-of-counsel')} className="story-secondary-cta">
+                  Start near the Gita
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {section === 'upanishad' && upanishadLayerCounts && (
         <section className="space-y-3">

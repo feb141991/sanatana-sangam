@@ -20,6 +20,14 @@ export function getPathshalaChapterHref(tradition: LibraryTradition, sectionId: 
   return getPathshalaEntryHref(tradition, sectionId, chapterId);
 }
 
+export function getGitaStoryHref(standalone = false) {
+  return standalone ? '/gita-story' : '/library/hindu/gita/story';
+}
+
+export function getGitaStoryEpisodeHref(episodeId: string, standalone = false) {
+  return `${getGitaStoryHref(standalone)}/${episodeId}`;
+}
+
 export function getAIChatHref(prompt: string, context?: string) {
   const params = new URLSearchParams({ prefill: prompt });
   if (context) params.set('context', context);
