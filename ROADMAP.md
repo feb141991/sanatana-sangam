@@ -286,11 +286,23 @@ Current slice:
   - Ramayana now opens as a Kanda-first study path instead of a flat excerpt list
   - Kanda pages carry summaries, reading plans, AI study prompts, and companion-source links
   - the live Ramayana passages are now grouped back into their wider narrative home rather than feeling like disconnected quotations
+- the Upanishad lane is now materially deeper too:
+  - the 13 principal Upanishads are now live locally as full translated study texts
+  - the live source path is Robert Ernest Hume's 1921 public-domain translation via the Internet Archive OCR corpus
+  - this is intentionally honest about what is live now: full translated study text, not yet a complete original-script plus transliteration corpus
+  - the next source-governance step is to add rights-safe Sanskrit and recitation layers instead of pretending that source problem is already solved
+- the next Upanishad iteration is now underway:
+  - official Vedic Heritage companion pages are mapped for the principal Upanishads
+  - where those pages expose the Sanskrit directly, the original layer is now being brought into Pathshala itself
+  - the first import cleaner now strips scrape junk like embedded English `Part / Canto` headings and broken glyph artifacts before those texts are treated as live in app
+  - where the official source is still summary-plus-flipbook, Pathshala now keeps that honestly in `companion` state instead of pretending full original-text ingestion is complete
+  - this creates a visible study-layer model: translated text live, original Sanskrit live where source-accessible, recitation still companion-first
 - AI-assisted reading and recitation are staged behind that corpus work:
   - first: source-aware explain, quiz, flashcards, and guided reading
   - first live bridge is now in place:
     - Gita chapter pages open Pathshala-aware prompts inside Dharma Mitra
     - the AI surface receives the chapter context so users can start with a prefilled study question instead of restating the source
+    - principal Upanishad pages now carry the same first-wave study actions so long-form texts can open into explanation, recall, and revision flows instead of dead-ending as static reading pages
   - later: authoritative audio support, pronunciation help, and only then recitation scoring
 
 ### A1.7 Sacred time and Jyotish strategy

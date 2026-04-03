@@ -19,6 +19,7 @@ import {
   getSectionForEntry,
   isLibraryTradition,
 } from '@/lib/library-content';
+import { getUpanishadLayerCounts } from '@/lib/upanishad-study';
 import {
   getPathshalaChapterHref,
   getPathshalaEntryHrefFromSection,
@@ -56,6 +57,7 @@ export default async function PathshalaSectionPage({
     : ramayanaKandas.length > 0
       ? entries.filter((entry) => ['ram-bal-1', 'ram-sundara-1', 'ram-yuddha-1', 'ram-uttara-1'].includes(entry.id))
       : entries;
+  const upanishadLayerCounts = section === 'upanishad' ? getUpanishadLayerCounts() : null;
 
   return (
     <div className="space-y-4 pb-6 fade-in">
@@ -128,6 +130,48 @@ export default async function PathshalaSectionPage({
           </div>
         )}
       </div>
+
+      {section === 'upanishad' && upanishadLayerCounts && (
+        <section className="space-y-3">
+          <div className="glass-panel rounded-[1.6rem] px-4 py-4 space-y-3">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Current source-backed layers</p>
+                <p className="text-sm text-gray-700 leading-relaxed mt-2">
+                  Pathshala now carries the 13 principal Upanishads as full translated study texts. The original Sanskrit layer is live where the official Vedic Heritage source is text-accessible, and stays companion-linked for the larger texts that are still exposed there as flipbooks or summary pages.
+                </p>
+              </div>
+              <a
+                href="https://vedicheritage.gov.in/vedicaudit-2023/upanishads/"
+                target="_blank"
+                rel="noreferrer"
+                className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold shrink-0"
+                style={{ color: 'var(--brand-primary)' }}
+              >
+                Source overview
+              </a>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-3">
+              <div className="clay-card rounded-[1.2rem] px-4 py-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Translated study texts</p>
+                <p className="font-display text-2xl font-bold text-gray-900 mt-2">{upanishadLayerCounts.total}</p>
+                <p className="text-sm text-gray-600 mt-1">principal Upanishads live inside Pathshala</p>
+              </div>
+              <div className="glass-panel rounded-[1.2rem] px-4 py-4 border border-white/60">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Original Sanskrit live</p>
+                <p className="font-display text-2xl font-bold text-gray-900 mt-2">{upanishadLayerCounts.originalLive}</p>
+                <p className="text-sm text-gray-600 mt-1">texts currently available with official-source Sanskrit in app</p>
+              </div>
+              <div className="glass-panel rounded-[1.2rem] px-4 py-4 border border-white/60">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Official companion needed</p>
+                <p className="font-display text-2xl font-bold text-gray-900 mt-2">{upanishadLayerCounts.originalCompanion}</p>
+                <p className="text-sm text-gray-600 mt-1">texts still relying on official companion sources for the original layer</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {(canonicalChapters.length > 0 || ramayanaKandas.length > 0) && (
         <section className="space-y-3">
@@ -271,7 +315,9 @@ export default async function PathshalaSectionPage({
                 ? section === 'gita'
                   ? 'The full verse corpus now lives inside the chapter pages above. These featured openings are good places to begin.'
                   : 'The Kanda flow now holds the narrative structure. These local passages are strong first openings inside the broader Ramayana path.'
-                : 'Open a text to read the passage, source note, and related material.'}
+                : section === 'upanishad'
+                  ? 'Open a principal Upanishad to read the full translated study text, see the original-text layer, and jump to official companions where needed.'
+                  : 'Open a text to read the passage, source note, and related material.'}
             </p>
           </div>
         </div>
@@ -280,6 +326,17 @@ export default async function PathshalaSectionPage({
           {featuredEntries.map((entry) => {
             const sourceMeta = getLibrarySourceMeta(entry);
             const entrySection = getSectionForEntry(entry) ?? sectionMeta;
+            const isUpanishad = section === 'upanishad';
+            const originalStatusLabel = isUpanishad
+              ? entry.original.trim().length > 0
+                ? 'Original live'
+                : 'Original companion'
+              : null;
+            const recitationStatusLabel = isUpanishad
+              ? entry.companionSourceUrl
+                ? 'Recitation companion'
+                : 'Recitation planned'
+              : null;
 
             return (
               <Link
@@ -293,13 +350,33 @@ export default async function PathshalaSectionPage({
                       <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">
                         {sourceMeta.label}
                       </span>
+                      {originalStatusLabel && (
+                        <span className={`rounded-full px-3 py-1.5 text-[11px] font-medium ${
+                          entry.original.trim().length > 0
+                            ? 'clay-pill text-[color:var(--brand-primary)]'
+                            : 'glass-chip text-gray-600'
+                        }`}>
+                          {originalStatusLabel}
+                        </span>
+                      )}
+                      {recitationStatusLabel && (
+                        <span className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-600">
+                          {recitationStatusLabel}
+                        </span>
+                      )}
                       <span className="text-[11px] text-gray-500">{entry.source}</span>
                     </div>
                     <h2 className="font-display text-lg font-bold text-gray-900 mt-2">{entry.title}</h2>
                   </div>
                   <span className="text-xs font-semibold text-[color:var(--brand-primary)]">Open →</span>
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed mt-2 line-clamp-2">{entry.meaning}</p>
+                <p className="text-sm text-gray-600 leading-relaxed mt-2 line-clamp-2">
+                  {isUpanishad
+                    ? entry.original.trim().length > 0
+                      ? 'Full translated study text with official-source Sanskrit now available directly inside Pathshala.'
+                      : 'Full translated study text is live in Pathshala, with the official source linked for the original Sanskrit layer.'
+                    : entry.meaning}
+                </p>
               </Link>
             );
           })}

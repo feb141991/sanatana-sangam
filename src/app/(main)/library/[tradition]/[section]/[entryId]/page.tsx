@@ -21,6 +21,7 @@ import {
   getSectionForEntry,
   isLibraryTradition,
 } from '@/lib/library-content';
+import { getUpanishadStudyMeta } from '@/lib/upanishad-study';
 import {
   getAIChatHref,
   getPathshalaEntryHrefFromSection,
@@ -451,6 +452,35 @@ export default async function PathshalaEntryPage({
 
   const sourceMeta = getLibrarySourceMeta(entry);
   const relatedEntries = getRelatedEntries(entry, 4);
+  const upanishadStudyMeta = sectionMeta.id === 'upanishad' ? getUpanishadStudyMeta(entry.id) : undefined;
+  const upanishadStudyPrompts = sectionMeta.id === 'upanishad'
+    ? [
+        {
+          title: 'Explain with AI',
+          description: 'Ask for a source-aware explanation of the Upanishad’s main teaching in simple language.',
+          href: getAIChatHref(
+            `Explain ${entry.title} in simple but source-aware language. Focus on the central teaching, key Sanskrit ideas, and practical reflection.`,
+            `${entry.title} — ${entry.source}`,
+          ),
+        },
+        {
+          title: 'Quiz me',
+          description: 'Turn the text into short recall questions so the main teachings stay with you.',
+          href: getAIChatHref(
+            `Quiz me on ${entry.title} with 5 short recall questions, then show the answers after I try.`,
+            `${entry.title} — ${entry.source}`,
+          ),
+        },
+        {
+          title: 'Make flashcards',
+          description: 'Create revision cards for the core ideas, verses, and philosophical vocabulary.',
+          href: getAIChatHref(
+            `Make 6 study flashcards for ${entry.title}. Keep them source-aware and focused on the main teaching.`,
+            `${entry.title} — ${entry.source}`,
+          ),
+        },
+      ]
+    : [];
 
   return (
     <div className="space-y-4 pb-6 fade-in">
@@ -479,36 +509,169 @@ export default async function PathshalaEntryPage({
         </div>
       </div>
 
+      {upanishadStudyMeta && (
+        <div className="clay-card rounded-[1.7rem] px-5 py-5 space-y-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Study with Pathshala</p>
+              <p className="text-sm text-gray-700 leading-relaxed mt-2">
+                Use the full translated reading here, the Sanskrit layer when it is live in app, and the AI study prompts below for revision and reflection. Recitation stays companion-linked until the authoritative audio layer is added.
+              </p>
+            </div>
+            {entry.companionSourceUrl && (
+              <a
+                href={entry.companionSourceUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold shrink-0"
+                style={{ color: 'var(--brand-primary)' }}
+              >
+                {entry.original.trim().length > 0 ? 'Official companion' : 'Open original source'}
+              </a>
+            )}
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {upanishadStudyPrompts.map((prompt) => (
+              <Link
+                key={prompt.title}
+                href={prompt.href}
+                className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">{prompt.title}</p>
+                <p className="text-sm text-gray-700 leading-relaxed mt-2">{prompt.description}</p>
+              </Link>
+            ))}
+
+            <div className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">Recitation layer</p>
+              <p className="text-sm text-gray-700 leading-relaxed mt-2">
+                {upanishadStudyMeta.recitationLayerStatus === 'companion'
+                  ? 'Use the official source as the recitation companion for now. Audio and guided recite-along come after the source-backed text layer.'
+                  : 'Recitation support will be layered in after the source-backed text foundation is complete.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <article className="clay-card rounded-[1.8rem] px-5 py-5 space-y-5">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Original text</p>
-          <p
-            className={`mt-3 whitespace-pre-line leading-relaxed ${
-              entry.tradition === 'sikh'
-                ? 'text-base'
-                : entry.tradition === 'buddhist' || entry.tradition === 'jain'
-                  ? 'font-mono text-sm'
-                  : 'font-devanagari text-lg'
-            } text-gray-900`}
-            style={{ fontFamily: entry.tradition === 'hindu' ? 'var(--font-devanagari, serif)' : 'inherit' }}
-          >
-            {entry.original}
-          </p>
-        </div>
+        {upanishadStudyMeta && (
+          <div className="glass-panel rounded-[1.45rem] px-4 py-4 space-y-4">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">Study layers</p>
+              <p className="mt-2 text-sm text-gray-700 leading-relaxed">
+                This Upanishad now lives in Pathshala as a full translated study text. The original Sanskrit layer is surfaced where the official source is text-accessible, and otherwise stays linked as a companion source instead of being faked locally.
+              </p>
+            </div>
 
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Transliteration</p>
-          <p className="mt-2 text-sm text-gray-600 italic leading-relaxed whitespace-pre-line">{entry.transliteration}</p>
-        </div>
+            <div className="grid gap-3 md:grid-cols-3">
+              <div className="clay-card rounded-[1.2rem] px-4 py-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Translation study text</p>
+                <p className="font-semibold text-gray-900 mt-2">Live in app</p>
+                <p className="text-sm text-gray-600 mt-1">Full translated reading is available directly in Pathshala.</p>
+              </div>
+              <div className="glass-panel rounded-[1.2rem] px-4 py-4 border border-white/60">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Original Sanskrit</p>
+                <p className="font-semibold text-gray-900 mt-2">
+                  {upanishadStudyMeta.originalLayerStatus === 'live' ? 'Live in app' : 'Official companion'}
+                </p>
+                <p className="text-sm text-gray-600 mt-1">
+                  {upanishadStudyMeta.originalLayerStatus === 'live'
+                    ? 'The official Sanskrit text is available directly on this page.'
+                    : 'Use the companion source while we continue local original-text ingestion.'}
+                </p>
+              </div>
+              <div className="glass-panel rounded-[1.2rem] px-4 py-4 border border-white/60">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Recitation / audio</p>
+                <p className="font-semibold text-gray-900 mt-2">
+                  {upanishadStudyMeta.recitationLayerStatus === 'live' ? 'Live in app' : upanishadStudyMeta.recitationLayerStatus === 'companion' ? 'Official companion' : 'Planned'}
+                </p>
+                <p className="text-sm text-gray-600 mt-1">
+                  {upanishadStudyMeta.recitationLayerStatus === 'companion'
+                    ? 'Use the official companion source for the next recitation step in this iteration.'
+                    : 'Audio and recitation support will be layered in after the source-backed text foundation.'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Meaning</p>
-          <p className="mt-2 text-sm text-gray-700 leading-relaxed whitespace-pre-line">{entry.meaning}</p>
-        </div>
+        {entry.original.trim().length > 0 && (
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Original text</p>
+            <p
+              className={`mt-3 whitespace-pre-line leading-relaxed ${
+                entry.tradition === 'sikh'
+                  ? 'text-base'
+                  : entry.tradition === 'buddhist' || entry.tradition === 'jain'
+                    ? 'font-mono text-sm'
+                    : 'font-devanagari text-lg'
+              } text-gray-900`}
+              style={{ fontFamily: entry.tradition === 'hindu' ? 'var(--font-devanagari, serif)' : 'inherit' }}
+            >
+              {entry.original}
+            </p>
+          </div>
+        )}
+
+        {entry.transliteration.trim().length > 0 && (
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Transliteration</p>
+            <p className="mt-2 text-sm text-gray-600 italic leading-relaxed whitespace-pre-line">{entry.transliteration}</p>
+          </div>
+        )}
+
+        {entry.fullText ? (
+          <>
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Overview</p>
+              <p className="mt-2 text-sm text-gray-700 leading-relaxed whitespace-pre-line">{entry.meaning}</p>
+            </div>
+
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Complete study text</p>
+              <p className="mt-3 text-sm text-gray-800 leading-relaxed whitespace-pre-line">{entry.fullText}</p>
+            </div>
+          </>
+        ) : (
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Meaning</p>
+            <p className="mt-2 text-sm text-gray-700 leading-relaxed whitespace-pre-line">{entry.meaning}</p>
+          </div>
+        )}
 
         <div className="glass-panel rounded-[1.35rem] px-4 py-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Source note</p>
-          <p className="mt-2 text-sm text-gray-700 leading-relaxed">{sourceMeta.note}</p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Source note</p>
+              <p className="mt-2 text-sm text-gray-700 leading-relaxed">{sourceMeta.note}</p>
+            </div>
+            <div className="flex flex-col gap-2 sm:items-end">
+              {entry.sourceUrl && (
+                <a
+                  href={entry.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold shrink-0"
+                  style={{ color: 'var(--brand-primary)' }}
+                >
+                  {entry.companionSourceUrl ? 'Translation source' : 'Open source'}
+                </a>
+              )}
+              {entry.companionSourceUrl && (
+                <a
+                  href={entry.companionSourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold shrink-0"
+                  style={{ color: 'var(--brand-primary)' }}
+                >
+                  {entry.companionSourceLabel ?? 'Original source'}
+                </a>
+              )}
+            </div>
+          </div>
         </div>
 
         {entry.tags.length > 0 && (

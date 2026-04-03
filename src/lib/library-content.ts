@@ -3,6 +3,8 @@
 // Each entry: id, title, source, original, transliteration, meaning, tradition, category
 
 import { GITA_FULL_DATA } from '@/lib/gita-full-data';
+import { UPANISHADS_FULL_DATA } from '@/lib/upanishads-full-data';
+import { UPANISHAD_STUDY_META } from '@/lib/upanishad-study';
 
 export type LibraryTradition = 'hindu' | 'sikh' | 'buddhist' | 'jain';
 
@@ -26,6 +28,10 @@ export interface LibraryEntry {
   category:         LibraryCategory;
   tags:             string[];
   attribution?:     string;
+  fullText?:        string;
+  sourceUrl?:       string;
+  companionSourceUrl?: string;
+  companionSourceLabel?: string;
 }
 
 // ─── BHAGAVAD GITA ────────────────────────────────────────────────────────────
@@ -79,38 +85,21 @@ export const RAMAYANA_ENTRIES: LibraryEntry[] = [
 ];
 
 // ─── UPANISHADS ───────────────────────────────────────────────────────────────
-export const UPANISHAD_ENTRIES: LibraryEntry[] = [
-  {
-    id: 'upa-briha-1',
-    title: 'From the Unreal to the Real',
-    source: 'Brihadaranyaka Upanishad 1.3.28',
-    original: 'असतो मा सद्गमय । तमसो मा ज्योतिर्गमय ।\nमृत्योर्मा अमृतं गमय ॥',
-    transliteration: 'asato mā sadgamaya\ntamaso mā jyotir gamaya\nmṛtyor māmṛtaṁ gamaya',
-    meaning: 'Lead me from the unreal to the real. Lead me from darkness to light. Lead me from death to immortality.',
-    tradition: 'hindu', category: 'upanishad',
-    tags: ['prayer', 'truth', 'light', 'immortality'],
-  },
-  {
-    id: 'upa-mandu-1',
-    title: 'OM — The Eternal Sound',
-    source: 'Mandukya Upanishad 1',
-    original: 'ओमित्येतदक्षरमिदं सर्वं तस्योपव्याख्यानं भूतं भवद्भविष्यदिति सर्वमोंकार एव ।',
-    transliteration: 'om ity etad akṣaram idaṁ sarvaṁ tasyopavyākhyānaṁ bhūtaṁ bhavad bhaviṣyaditi sarvam oṁkāra eva',
-    meaning: 'OM — this syllable is all this. A further explanation of it: All that is past, present, and future is indeed OM. And whatever transcends these three divisions of time, that too is OM.',
-    tradition: 'hindu', category: 'upanishad',
-    tags: ['om', 'brahman', 'consciousness', 'mandukya'],
-  },
-  {
-    id: 'upa-chanda-1',
-    title: 'Tat Tvam Asi — That Thou Art',
-    source: 'Chandogya Upanishad 6.8.7',
-    original: 'तत् त्वम् असि श्वेतकेतो ।',
-    transliteration: 'tat tvam asi śvetaketo',
-    meaning: '"That thou art, O Shvetaketu." — The individual self (Atman) is identical with the universal Self (Brahman). One of the four Mahavakyas of the Upanishads.',
-    tradition: 'hindu', category: 'upanishad',
-    tags: ['mahavakya', 'atman', 'brahman', 'advaita'],
-  },
-];
+const upanishadOriginalById = new Map(
+  UPANISHAD_STUDY_META.map((entry) => [entry.id, entry]),
+);
+
+export const UPANISHAD_ENTRIES: LibraryEntry[] = UPANISHADS_FULL_DATA.map((entry) => {
+  const originalLayer = upanishadOriginalById.get(entry.id);
+
+  return {
+    ...entry,
+    original: originalLayer?.original || entry.original,
+    companionSourceUrl: originalLayer?.companionSourceUrl,
+    companionSourceLabel: originalLayer?.companionSourceLabel,
+    tags: [...entry.tags],
+  };
+});
 
 // ─── STOTRAS ──────────────────────────────────────────────────────────────────
 export const STOTRA_ENTRIES: LibraryEntry[] = [
@@ -1032,11 +1021,11 @@ export const PATHSHALA_SECTION_DETAILS: PathshalaSectionDetail[] = [
   {
     sectionId: 'upanishad',
     pathType: 'Canonical study',
-    corpusState: 'Catalog-first expansion',
-    liveScope: 'Major mahavakya and foundational passages are live now.',
-    completeTextGoal: 'Expand into text-by-text Upanishad study with source-tracked translations and commentary context.',
-    sourceTargets: ['Vedic Heritage Portal', 'rights-cleared Upanishad editions', 'GRETIL with permission review'],
-    studyModes: ['Mahavakya study', 'concept cards', 'teacher-guided reading later'],
+    corpusState: 'Complete local text live',
+    liveScope: 'The 13 principal Upanishads are live locally as full translated study texts, with text-by-text entry pages.',
+    completeTextGoal: 'Add original-script, transliteration, commentary, and wider Upanishad expansion beyond the principal thirteen.',
+    sourceTargets: ['Robert Ernest Hume public-domain translation via Internet Archive', 'Vedic Heritage Portal', 'rights-cleared Sanskrit sources for original-text layers'],
+    studyModes: ['Text-by-text study', 'mahavakya study', 'concept cards', 'teacher-guided reading later'],
   },
   {
     sectionId: 'veda',

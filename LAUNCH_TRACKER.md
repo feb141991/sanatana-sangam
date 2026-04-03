@@ -27,6 +27,10 @@ Last updated: 2026-04-03
 - [x] Start Pathshala return loops: bookmarks, continue-learning state, and first reading-plan foundations
 - [x] Build Bhagavad Gita as the first complete chapter-structured Pathshala pilot with full local verse coverage and source attribution
 - [x] Start the Valmiki Ramayana Kanda-first Pathshala flow with canonical Kanda pages, reading plans, and companion-source links
+- [x] Ingest the 13 principal Upanishads as full local translated study texts with source attribution instead of leaving Upanishad study at excerpt-only depth
+- [x] Start the Upanishad source-layer iteration: show which principal texts have live Sanskrit in Pathshala and which still open official companion sources
+- [x] Clean the first Upanishad original-text import so live Sanskrit pages do not carry scrape junk like English section headings or broken glyphs
+- [x] Add the first Upanishad study actions so principal texts can open explain / quiz / flashcard flows instead of behaving like static longform pages
 - [x] Replace the current green / teal brand bias with a warmer dharmic palette that fits the Sanatan product identity better
 - [ ] Define Jyotish / Rashiphal strategy under the trust core before shipping any horoscope-style feature
 - [ ] Stage Pathshala AI-assisted reading and recitation support: explain, quiz, flashcards, and later pronunciation / scoring
@@ -70,7 +74,9 @@ Last updated: 2026-04-03
 - [x] Add first chapter-level AI study entry points in Pathshala with prefilled source-aware prompts
 - [x] Reuse the existing daily-shloka Gita corpus inside Pathshala so chapter coverage expands locally without waiting on a separate import pipeline
 - [x] Replace the partial Gita pilot with a full local public-domain corpus so chapter study no longer depends on external full-text fallback
+- [x] Replace the partial Upanishad pilot with a principal-Upanishad corpus so the Pathshala track opens into full study texts instead of only a few Mahavakya excerpts
 - [ ] Add recitation mode with authoritative-source audio first, then later pronunciation guidance
+- [ ] Continue the Upanishad original-text iteration until the larger texts that still sit behind official flipbooks can be ingested locally
 - [ ] Explore opt-in Jyotish / Rashi guidance after Panchang and sacred-time trust work is credible
 - [ ] Add Pathshala quizzes, cards, and mastery checkpoints after the corpus source layer is trustworthy
 - [ ] Define religious language support: script toggles first, then launch-language UI packs
