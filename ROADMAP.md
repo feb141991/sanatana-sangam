@@ -271,7 +271,7 @@ Exit criteria:
 
 ### A2.3 Engineering hardening
 
-Status: `Planned`
+Status: `In Build`
 
 Outcome:
 
@@ -289,6 +289,13 @@ Exit criteria:
 - clean install path exists
 - CI protects core build quality
 - types and schema drift are reduced
+
+Current slice:
+
+- `package-lock.json` is now committed so installs can become deterministic
+- ESLint now runs non-interactively from a committed config
+- CI now runs lint and build on pushes and pull requests
+- this still needs the remaining warning cleanup and continued schema/type alignment work
 
 ## Phase B1 — Personalized Belonging
 
@@ -333,7 +340,8 @@ Current slice:
 - Home now renders personalized path cards from `seeking`
 - early guided paths for `New to dharma` and `New to the city` are live
 - the home greeting editor now uses tradition-based presets with a reliable custom override flow
-- next step is to deepen these into first-week stateful onboarding rather than static guidance only
+- guided path progress is now persisted so cards can be dismissed, completed, and restored
+- next step is to add deeper first-week checkpoints and route-specific completion signals
 
 ### B1.2 `New to the city` and `new to dharma` guided paths
 

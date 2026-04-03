@@ -5,6 +5,7 @@ import { getTodayShloka } from '@/lib/shlokas';
 import { getNextFestival, daysUntil, getTodayPanchang } from '@/lib/festivals';
 import { getDailySacredText, getDayOfYear } from '@/lib/sacred-texts';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import type { GuidedPathProgressRow } from '@/lib/guided-paths';
 
 export default async function HomePage() {
   const supabase = await createServerSupabaseClient();
@@ -17,6 +18,11 @@ export default async function HomePage() {
     .select('full_name, username, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, tradition, spiritual_level, seeking, custom_greeting')
     .eq('id', user.id)
     .single();
+
+  const { data: guidedPathProgress } = await supabase
+    .from('guided_path_progress')
+    .select('path_id, status, completed_at, updated_at')
+    .eq('user_id', user.id);
 
   const tradition = profile?.tradition ?? null;
   const dayIndex  = getDayOfYear();
@@ -63,6 +69,7 @@ export default async function HomePage() {
       spiritualLevel={profile?.spiritual_level ?? null}
       seeking={profile?.seeking ?? []}
       customGreeting={(profile as any)?.custom_greeting ?? null}
+      guidedPathProgress={(guidedPathProgress as GuidedPathProgressRow[]) ?? []}
     />
   );
 }

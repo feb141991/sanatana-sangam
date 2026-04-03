@@ -227,7 +227,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
         {/* Quick tip */}
         <div className="bg-orange-50 rounded-xl px-4 py-3 border border-orange-100">
           <p className="text-xs text-orange-700 leading-relaxed">
-            <span className="font-semibold">Today's guidance:</span>{' '}
+            <span className="font-semibold">Today&apos;s guidance:</span>{' '}
             {p.paksha === 'Shukla'
               ? 'Shukla Paksha is auspicious for new beginnings, prayers, and satsang.'
               : 'Krishna Paksha is ideal for introspection, fasting, and ancestral prayers (Pitru Tarpan).'}

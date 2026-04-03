@@ -205,7 +205,7 @@ export default function LibraryClient({ defaultSection = 'all' }: { defaultSecti
       {/* ── Results ── */}
       {searchQuery && (
         <p className="text-xs text-gray-400">
-          {entries.length} result{entries.length !== 1 ? 's' : ''} for "{searchQuery}"
+          {entries.length} result{entries.length !== 1 ? 's' : ''} for &ldquo;{searchQuery}&rdquo;
         </p>
       )}
 

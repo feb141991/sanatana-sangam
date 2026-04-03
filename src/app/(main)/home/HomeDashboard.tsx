@@ -18,6 +18,8 @@ import { FESTIVALS_2026 } from '@/lib/festivals';
 import { calculatePanchang } from '@/lib/panchang';
 import { getGreeting, GREETING_POOLS } from '@/lib/traditions';
 import { buildPersonalizedPaths } from '@/lib/seeking-paths';
+import type { GuidedPathProgressRow, GuidedPathStatus } from '@/lib/guided-paths';
+import { buildGuidedPathStatusMap } from '@/lib/guided-paths';
 import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
 import { APP } from '@/lib/config';
@@ -59,6 +61,7 @@ interface Props {
   spiritualLevel:    string | null;
   seeking:           string[];
   customGreeting:    string | null;
+  guidedPathProgress: GuidedPathProgressRow[];
 }
 
 const quickAccessItems = [
@@ -547,6 +550,7 @@ export default function HomeDashboard({
   spiritualLevel,
   seeking,
   customGreeting,
+  guidedPathProgress,
 }: Props) {
   const supabase = createClient();
   const router   = useRouter();
@@ -561,6 +565,10 @@ export default function HomeDashboard({
   const [greetingSheetOpen, setGreetingSheetOpen] = useState(false);
   const [inviteOpen,        setInviteOpen]        = useState(false);
   const [localGreeting,     setLocalGreeting]     = useState<string | null>(customGreeting);
+  const [guidedPathStatusMap, setGuidedPathStatusMap] = useState<Record<string, GuidedPathStatus>>(
+    () => buildGuidedPathStatusMap(guidedPathProgress)
+  );
+  const [guidedPathBusyId, setGuidedPathBusyId] = useState<string | null>(null);
   const [streak,           setStreak]           = useState(initialStreak);
   const [selectedDate,     setSelectedDate]     = useState<Date>(new Date());
   const [readToday,        setReadToday]        = useState(() => {
@@ -623,6 +631,11 @@ export default function HomeDashboard({
     spiritualLevel,
     city: displayCity || null,
   });
+  const visiblePersonalizedPaths = personalizedPaths.filter((path) => {
+    const status = guidedPathStatusMap[path.id];
+    return status !== 'dismissed' && status !== 'completed';
+  });
+  const hiddenPersonalizedCount = personalizedPaths.length - visiblePersonalizedPaths.length;
 
   // Welcome back: user hasn't been active in 2+ days
   const isWelcomeBack = (() => {
@@ -651,6 +664,62 @@ export default function HomeDashboard({
       return;
     }
     toast.success(newGreeting ? 'Greeting updated 🙏' : 'Greeting reset to auto');
+  }
+
+  async function updateGuidedPath(pathId: string, status: GuidedPathStatus) {
+    const previousState = { ...guidedPathStatusMap };
+    const now = new Date().toISOString();
+
+    setGuidedPathBusyId(pathId);
+    setGuidedPathStatusMap((current) => ({ ...current, [pathId]: status }));
+
+    const { error } = await supabase
+      .from('guided_path_progress')
+      .upsert({
+        user_id: userId,
+        path_id: pathId,
+        status,
+        updated_at: now,
+        last_interacted_at: now,
+        completed_at: status === 'completed' ? now : null,
+      }, {
+        onConflict: 'user_id,path_id',
+      });
+
+    setGuidedPathBusyId(null);
+
+    if (error) {
+      setGuidedPathStatusMap(previousState);
+      toast.error(error.message);
+      return;
+    }
+
+    toast.success(status === 'completed' ? 'Path marked complete.' : 'Path hidden for now.');
+  }
+
+  async function resetGuidedPaths() {
+    const pathIds = personalizedPaths.map((path) => path.id);
+    if (pathIds.length === 0) return;
+
+    setGuidedPathBusyId('reset-all');
+    const previousState = { ...guidedPathStatusMap };
+    setGuidedPathStatusMap({});
+
+    const { error } = await supabase
+      .from('guided_path_progress')
+      .delete()
+      .eq('user_id', userId)
+      .in('path_id', pathIds);
+
+    setGuidedPathBusyId(null);
+
+    if (error) {
+      setGuidedPathStatusMap(previousState);
+      toast.error(error.message);
+      return;
+    }
+
+    toast.success('Guided paths restored.');
   }
 
   // ── Shloka streak ──────────────────────────────────────────────────────────
@@ -752,8 +821,9 @@ export default function HomeDashboard({
             </p>
           </div>
 
-          <div className="grid gap-3">
-            {personalizedPaths.map((path) => (
+          {visiblePersonalizedPaths.length > 0 ? (
+            <div className="grid gap-3">
+              {visiblePersonalizedPaths.map((path) => (
               <div key={path.id} className={`clay-card ${path.accentClass} rounded-[1.8rem] p-4`}>
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -785,9 +855,52 @@ export default function HomeDashboard({
                     </Link>
                   ))}
                 </div>
+
+                <div className="flex items-center justify-between gap-3 mt-4 pt-3 border-t border-white/55">
+                  <p className="text-xs text-gray-500">
+                    Keep this visible until you complete it, or hide it for later.
+                  </p>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => updateGuidedPath(path.id, 'dismissed')}
+                      disabled={guidedPathBusyId === path.id}
+                      className="px-3 py-1.5 rounded-full text-xs font-medium text-gray-600 border border-white/70 bg-white/55 hover:bg-white transition disabled:opacity-50"
+                    >
+                      Later
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => updateGuidedPath(path.id, 'completed')}
+                      disabled={guidedPathBusyId === path.id}
+                      className="px-3 py-1.5 rounded-full text-xs font-semibold text-white glass-button-primary disabled:opacity-50"
+                    >
+                      Done
+                    </button>
+                  </div>
+                </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="glass-panel rounded-[1.75rem] px-4 py-4 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-gray-900">Your guided paths are tucked away</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {hiddenPersonalizedCount} path{hiddenPersonalizedCount === 1 ? '' : 's'} completed or dismissed. Bring them back anytime.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={resetGuidedPaths}
+                disabled={guidedPathBusyId === 'reset-all'}
+                className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold disabled:opacity-50"
+                style={{ color: 'var(--brand-primary)' }}
+              >
+                Show again
+              </button>
+            </div>
+          )}
         </section>
       )}
 

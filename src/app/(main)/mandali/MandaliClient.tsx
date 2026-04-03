@@ -327,7 +327,7 @@ function CityPicker({ value, onChange }: {
             >
               <span className="text-base">🌍</span>
               <div>
-                <p className="text-sm font-medium text-[#7B1A1A]">Use "{query}"</p>
+                <p className="text-sm font-medium text-[#7B1A1A]">Use &ldquo;{query}&rdquo;</p>
                 <p className="text-xs text-gray-400">Custom city</p>
               </div>
             </button>
@@ -426,7 +426,7 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
       <div>
         <h2 className="font-display font-bold text-2xl text-gray-900 mb-2">Find Your Mandali</h2>
         <p className="text-gray-500 max-w-sm text-sm">
-          We'll place you in your city's Sanatani Mandali — Wembley, Brampton, Andheri, or wherever you are. We'll create one if it doesn't exist yet.
+          We&rsquo;ll place you in your city&rsquo;s Sanatani Mandali — Wembley, Brampton, Andheri, or wherever you are. We&rsquo;ll create one if it doesn&rsquo;t exist yet.
         </p>
       </div>
 

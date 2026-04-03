@@ -29,16 +29,17 @@ Last updated: 2026-04-03
 - [ ] Notification jobs are segmented, deduplicated, and timezone-aware
 - [ ] `schema.sql`, migrations, and app types are aligned
 - [ ] `package.json` and installed dependency versions are aligned
-- [ ] Lockfile is committed
-- [ ] ESLint runs non-interactively
-- [ ] CI is added for build and lint checks
+- [x] Lockfile is committed
+- [x] ESLint runs non-interactively
+- [x] CI is added for build and lint checks
 - [ ] PWA assets and registration are complete, or incomplete claims are removed
 - [ ] Kul lineage destructive permissions are enforced in the database, not just the UI
 
 ## P1 Beta Work
 
 - [ ] Personalize onboarding and home experience from `seeking`
-- [ ] Turn current personalized home cards into stateful first-week onboarding
+- [x] Persist guided-path progress so home cards can be dismissed, completed, and restored
+- [ ] Turn current personalized home cards into fuller first-week onboarding logic
 - [ ] Add Mandali comments and replies
 - [ ] Add Mandali event RSVP flow
 - [ ] Add analytics, funnel tracking, and error monitoring

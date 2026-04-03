@@ -30,7 +30,7 @@ export default function PanchangWidget({ lat = 51.5074, lon = -0.1278 }: Props) 
         <div className="flex items-center justify-between">
           <div>
             <div className="text-white font-display font-semibold text-sm">आज का पंचांग</div>
-            <div className="text-white/80 text-xs mt-0.5">Today's Panchang</div>
+            <div className="text-white/80 text-xs mt-0.5">Today&apos;s Panchang</div>
           </div>
           <span className="text-2xl">🪔</span>
         </div>

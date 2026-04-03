@@ -1,4 +1,5 @@
 export type SeekingKey = 'community' | 'knowledge' | 'events' | 'mentorship' | 'youth';
+export type PersonalizedPathId = 'new-to-dharma' | 'city-anchor' | `seeking-${SeekingKey}`;
 
 export interface PersonalizedPathAction {
   label: string;
@@ -7,7 +8,7 @@ export interface PersonalizedPathAction {
 }
 
 export interface PersonalizedPath {
-  id: string;
+  id: PersonalizedPathId;
   eyebrow: string;
   title: string;
   description: string;

@@ -177,6 +177,23 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['notifications']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['notifications']['Insert']>;
       };
+      guided_path_progress: {
+        Row: {
+          id: string;
+          user_id: string;
+          path_id: string;
+          status: 'active' | 'dismissed' | 'completed';
+          created_at: string;
+          updated_at: string;
+          last_interacted_at: string;
+          completed_at: string | null;
+        };
+        Insert: Omit<Database['public']['Tables']['guided_path_progress']['Row'], 'id' | 'created_at' | 'updated_at' | 'last_interacted_at' | 'completed_at'> & {
+          last_interacted_at?: string;
+          completed_at?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['guided_path_progress']['Insert']>;
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
