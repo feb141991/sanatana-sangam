@@ -1,10 +1,11 @@
 import Link from 'next/link';
+import { Badge, Card, SectionHeading } from '@/components/ui';
 import { DEVOTIONAL_STARTER_TRACKS } from '@/lib/devotional-audio';
 
 export default function BhaktiPage() {
   return (
     <div className="fade-in space-y-5">
-      <section className="glass-panel rounded-[2rem] px-5 py-6 md:px-7 md:py-7 overflow-hidden relative">
+      <Card className="rounded-[2rem] px-5 py-6 md:px-7 md:py-7 overflow-hidden relative">
         <div
           className="absolute inset-0 opacity-80 pointer-events-none"
           style={{
@@ -44,13 +45,15 @@ export default function BhaktiPage() {
             </div>
           </div>
         </div>
-      </section>
+      </Card>
 
       <section className="grid gap-4 md:grid-cols-[1.2fr_0.8fr]">
-        <div className="glass-panel rounded-[1.8rem] px-5 py-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">
-            Coming first
-          </p>
+        <Card>
+          <SectionHeading
+            eyebrow="Coming first"
+            title="The devotional shape we are building"
+            description="These are the first Bhakti promises we can make well before turning this into a larger streaming or live-room surface."
+          />
           <div className="mt-4 space-y-3">
             {[
               'A simple devotional home with chant, read, and return paths',
@@ -64,12 +67,10 @@ export default function BhaktiPage() {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
 
-        <div className="glass-panel rounded-[1.8rem] px-5 py-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">
-            Practice now
-          </p>
+        <Card>
+          <SectionHeading eyebrow="Practice now" title="Enter a calmer practice mode" />
           <div className="mt-4 space-y-3">
             <Link href="/bhakti/zen" className="block rounded-[1.4rem] border border-[color:var(--brand-primary-soft)] bg-white/80 px-4 py-4 transition hover:bg-white">
               <p className="text-sm font-semibold text-gray-900">Zen mode</p>
@@ -93,24 +94,16 @@ export default function BhaktiPage() {
           <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-[color:var(--brand-primary-soft)] bg-white/70 px-4 py-2 text-sm font-medium text-[color:var(--brand-primary-strong)]">
             Coming in a deeper devotional release
           </div>
-        </div>
+        </Card>
       </section>
 
-      <section className="glass-panel rounded-[1.8rem] px-5 py-5">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">
-              Audio starter pack
-            </p>
-            <h2 className="font-display text-xl font-bold text-gray-900 mt-2">Rights-safe chant catalog</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">
-              We are starting with clearly sourced devotional audio references first. In-app playback comes after the shared audio layer and attribution flow are ready.
-            </p>
-          </div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--brand-primary-soft)] bg-white/75 px-4 py-2 text-sm font-medium text-[color:var(--brand-primary-strong)]">
-            Source-first audio
-          </div>
-        </div>
+      <Card>
+        <SectionHeading
+          eyebrow="Audio starter pack"
+          title="Rights-safe chant catalog"
+          description="We are starting with clearly sourced devotional audio references first. In-app playback comes after the shared audio layer and attribution flow are ready."
+          actions={<Badge tone="accent" className="px-4 py-2 text-sm">Source-first audio</Badge>}
+        />
 
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           {DEVOTIONAL_STARTER_TRACKS.map((track) => (
@@ -140,7 +133,7 @@ export default function BhaktiPage() {
             </a>
           ))}
         </div>
-      </section>
+      </Card>
     </div>
   );
 }

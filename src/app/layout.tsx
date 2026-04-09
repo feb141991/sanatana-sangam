@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
+import AppProviders from '@/components/providers/AppProviders';
 
 export const metadata: Metadata = {
   title:       'Sanatana Sangam — The Global Home for Sanatani',
@@ -33,19 +34,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        {children}
+        <AppProviders>
+          {children}
 
-        <Toaster
-          position="top-center"
-          toastOptions={{
-            style: {
-              background: '#1a1a1a',
-              color:      '#fdf6e3',
-              fontFamily: 'Source Sans 3, sans-serif',
-            },
-            success: { iconTheme: { primary: '#C87F92', secondary: '#fdf6e3' } },
-          }}
-        />
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              style: {
+                background: '#1a1a1a',
+                color:      '#fdf6e3',
+                fontFamily: 'Source Sans 3, sans-serif',
+              },
+              success: { iconTheme: { primary: '#C87F92', secondary: '#fdf6e3' } },
+            }}
+          />
+        </AppProviders>
 
         {/* ── OneSignal Push Notifications (SDK URL managed in src/lib/config.ts) ── */}
         {oneSignalAppId && (

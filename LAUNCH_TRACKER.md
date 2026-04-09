@@ -101,6 +101,7 @@ Last updated: 2026-04-09
 - [ ] Curate a rights-safe devotional audio starter pack for launch: mantra/chant clips first, then selective bhajan/kirtan where reuse terms are clear
 - [x] Start the Bhakti audio foundation with a rights-safe devotional starter pack surface and explicit source-first links
 - [x] Start the first language-support implementation with app language, scripture view, transliteration, and meaning preferences
+- [x] Start the shared app-foundation pass with reusable UI primitives, stronger design tokens, reduced-motion defaults, and a TanStack Query provider for future client data work
 - [x] Add first Kul family-profile viewing inside the family space so members can open each other’s Kul-safe details
 - [ ] Continue the Upanishad original-text iteration until the larger texts that still sit behind official flipbooks can be ingested locally
 - [ ] Explore opt-in Jyotish / Rashi guidance after Panchang and sacred-time trust work is credible
@@ -139,6 +140,7 @@ Last updated: 2026-04-09
 - The first auth/front-door experience pass is now active too: login, signup, join, guest, and recovery flows are being shaped to feel warmer and less transactional.
 - The first AI chat experience pass is now active too: Dharma Mitra is being shaped into a calmer study-and-reflection companion instead of a generic assistant box.
 - The first Bhakti experience pass is now active too: the placeholder is being turned into a meaningful devotional preview surface instead of a dead-end coming-soon card.
+- The shared app foundation now has a first reusable UI layer (`Button`, `Card`, `Badge`, `Input`, `SectionHeading`, async states) plus a TanStack Query provider and stable query-key map for future Mandali/Kul/Profile client data work.
 - The notification system now has a first real preference layer: sacred-time reminder toggles, quiet hours, and cron filtering, but it still needs live production verification and richer destination targeting.
 - Vercel Hobby only allows daily cron schedules, so sacred-time delivery is currently less precise than the ideal hourly model; re-evaluate hosting or background job infrastructure later if we want finer reminder timing.
 - `PANCHANG_SOURCE_STRATEGY.md` now tracks how launch copy, future provider strategy, and sacred-time claims should stay aligned.
