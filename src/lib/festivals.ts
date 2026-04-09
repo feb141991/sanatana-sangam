@@ -22,6 +22,21 @@ export interface Festival {
   tradition:   'hindu' | 'sikh' | 'buddhist' | 'jain' | 'all';
 }
 
+export type FestivalSourceKind = 'curated' | 'official' | 'partner' | 'community_reviewed';
+export type FestivalReviewStatus = 'needs_review' | 'reviewed';
+
+export interface FestivalSourceRow {
+  name: string;
+  date: string;
+  emoji: string | null;
+  description: string;
+  type: Festival['type'];
+  tradition?: Festival['tradition'] | null;
+  source_name?: string | null;
+  source_kind?: FestivalSourceKind | null;
+  review_status?: FestivalReviewStatus | null;
+}
+
 export interface FestivalCalendarMeta {
   label: string;
   coverage: string;
@@ -99,7 +114,7 @@ export const FESTIVAL_CALENDAR_FALLBACK_META: FestivalCalendarMeta = {
 
 export function buildFestivalCalendarMeta(
   source: 'database' | 'fallback',
-  festivals: Pick<Festival, 'date'>[],
+  festivals: Array<Pick<Festival, 'date'> & Partial<Pick<FestivalSourceRow, 'source_name' | 'source_kind' | 'review_status'>>>,
 ): FestivalCalendarMeta {
   if (source === 'fallback') return FESTIVAL_CALENDAR_FALLBACK_META;
 
@@ -107,23 +122,36 @@ export function buildFestivalCalendarMeta(
   const coverage = years.length > 0
     ? `Shared festival calendar covering ${years.join(', ')}`
     : 'Shared festival calendar';
+  const reviewedCount = festivals.filter((festival) => festival.review_status === 'reviewed').length;
+  const allReviewed = festivals.length > 0 && reviewedCount === festivals.length;
+  const sourceNames = Array.from(new Set(festivals.map((festival) => festival.source_name).filter(Boolean)));
+  const sourceLabel = sourceNames.length > 0 ? sourceNames.join(', ') : 'the shared festival table';
 
   return {
-    label: 'Shared festival calendar',
+    label: allReviewed ? 'Reviewed shared festival calendar' : 'Shared festival calendar',
     coverage,
-    sourceNote: 'Home and reminder notifications are reading from the same Supabase festival table, so the countdown and cron reminders stay aligned.',
+    sourceNote: allReviewed
+      ? `Home and reminder notifications are reading from ${sourceLabel}, and the current entries are marked as reviewed in the shared festival table.`
+      : `Home and reminder notifications are reading from ${sourceLabel}. This keeps countdowns and cron reminders aligned while editorial review is still being completed.`,
     isFallback: false,
   };
 }
 
-export function attachFestivalTradition(festival: Omit<Festival, 'tradition'>): Festival {
+export function attachFestivalTrust(row: FestivalSourceRow): Festival & Pick<FestivalSourceRow, 'source_name' | 'source_kind' | 'review_status'> {
   const staticMatch = FESTIVALS_2026.find(
-    (entry) => entry.name === festival.name && entry.date === festival.date
+    (entry) => entry.name === row.name && entry.date === row.date
   );
 
   return {
-    ...festival,
-    tradition: staticMatch?.tradition ?? 'all',
+    name: row.name,
+    date: row.date,
+    emoji: row.emoji ?? '🪔',
+    description: row.description,
+    type: row.type,
+    tradition: row.tradition ?? staticMatch?.tradition ?? 'all',
+    source_name: row.source_name ?? null,
+    source_kind: row.source_kind ?? null,
+    review_status: row.review_status ?? null,
   };
 }
 

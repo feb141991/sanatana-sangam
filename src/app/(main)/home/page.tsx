@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import HomeDashboard from './HomeDashboard';
 import { getTodayShloka } from '@/lib/shlokas';
 import {
-  attachFestivalTradition,
+  attachFestivalTrust,
   buildFestivalCalendarMeta,
   daysUntil,
   FESTIVALS_2026,
@@ -38,7 +38,7 @@ export default async function HomePage() {
 
   const { data: calendarRows } = await supabase
     .from('festivals')
-    .select('name, date, emoji, description, type, year')
+    .select('name, date, emoji, description, type, tradition, source_name, source_kind, review_status')
     .order('date', { ascending: true })
     .limit(160);
 
@@ -47,14 +47,8 @@ export default async function HomePage() {
   const shloka     = getTodayShloka();
   const sacredText = getDailySacredText(tradition, dayIndex); // null for Hindu
 
-  const calendarFromDb: Festival[] = ((calendarRows ?? []) as Pick<Database['public']['Tables']['festivals']['Row'], 'name' | 'date' | 'emoji' | 'description' | 'type'>[])
-    .map((row) => attachFestivalTradition({
-      name: row.name,
-      date: row.date,
-      emoji: row.emoji ?? '🪔',
-      description: row.description,
-      type: row.type,
-    }));
+  const calendarFromDb = ((calendarRows ?? []) as Pick<Database['public']['Tables']['festivals']['Row'], 'name' | 'date' | 'emoji' | 'description' | 'type' | 'tradition' | 'source_name' | 'source_kind' | 'review_status'>[])
+    .map((row) => attachFestivalTrust(row));
 
   const festivalCalendar = calendarFromDb.length > 0 ? calendarFromDb : FESTIVALS_2026;
   const festivalCalendarMeta: FestivalCalendarMeta = buildFestivalCalendarMeta(

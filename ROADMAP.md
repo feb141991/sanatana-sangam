@@ -88,6 +88,7 @@ At any given time:
 - `Sacred Clay` system for selected `Phase B` surfaces
 - palette unification around the new warm maroon + saffron + ivory system
 - reusable editor-sheet pattern based on the home greeting flow
+- a future `Panchang experience` layer with sky-led atmosphere, gentle motion, strong readability, and optional haptics where devices support them
 
 ### Next eligible low-risk `Phase B` implementation
 
@@ -133,6 +134,7 @@ Current slice:
 - Home festival browsing now reads from the shared Supabase `festivals` table when available
 - the curated `2026` in-app list is now explicitly labeled as a fallback edition instead of pretending to be the only truth source
 - calendar and countdown surfaces now show coverage/source notes so users understand whether they are seeing shared DB-backed data or fallback data
+- `migration-v17-sacred-time-trust.sql` now adds tradition, source, and review metadata to the festival table so Home and reminder jobs can stop depending on static name matching once the DB is updated
 
 ### A1.2 Panchang accuracy strategy
 
@@ -161,6 +163,41 @@ Current slice:
 - Home and full Panchang screens now explicitly label the current Panchang as a location-based estimate
 - the UI now tells users it is suitable for daily guidance while temple- or guru-specific observance timing may still need verification
 - the next slice is improving the engine/source strategy itself instead of leaving silent approximation in place
+- `PANCHANG_SOURCE_STRATEGY.md` now defines the launch posture and the next trusted-source decision boundary for sacred-time features
+- the current engine now uses sidereal longitudes for nakshatra, yoga, and masa plus a stronger sunrise/sunset estimate, so the in-app Panchang is less approximate than the first beta implementation
+- `migration-v18-sacred-time-delivery.sql` now adds user timezone and notification dedupe fields so hourly sacred-time reminders can respect local time instead of one global send window
+
+### A1.7 Sacred-time delivery and Jyotish definition
+
+Status: `In Build`
+
+Outcome:
+
+- sacred-time notifications behave per user locale instead of one server-centric clock
+- Jyotish scope is defined before any Rashi feature ships
+
+Work:
+
+- store a user timezone on profile
+- move sacred-time reminder jobs to hourly windows with dedupe keys
+- define Jyotish as reflective, opt-in guidance instead of entertainment-style prediction
+
+Exit criteria:
+
+- reminder jobs are segmented, deduplicated, and timezone-aware
+- Jyotish scope is documented before product claims expand
+
+Current slice:
+
+- `JYOTISH_STRATEGY.md` now defines the trust-first product posture
+- shloka and festival reminder routes now target local-hour windows and dedupe per user/day key
+- the remaining rollout step is running `migration-v18-sacred-time-delivery.sql` and letting Vercel pick up the hourly cron schedule
+- once the trust core is live, Panchang can move into a dedicated experience pass:
+  - time-of-day sky background
+  - calmer transitions between days
+  - sacred-time ribbon for sunrise / sunset / Rahu Kaal / Abhijit
+  - large high-contrast cards that remain elder-friendly
+  - optional light haptics on meaningful actions only
 
 ### A1.3 Library provenance
 
@@ -329,36 +366,6 @@ Current slice:
     - bring authoritative Gita audio into the app itself after source-rights and hosting strategy are confirmed
     - keep chapter-to-audio mapping, return-to-study flow, and playback state inside Pathshala
     - do not rush this by embedding uncertain sources or unlabeled third-party audio
-
-### A1.7 Sacred time and Jyotish strategy
-
-Status: `Planned`
-
-Outcome:
-
-- any future Rashi guidance feels spiritually credible rather than like a generic horoscope widget
-
-Work:
-
-- define what `Rashiphal` means in-product:
-  - transit-based rashi guidance
-  - janma-rashi guidance
-  - or a broader Jyotish surface
-- define the calculation and data model:
-  - date
-  - time
-  - place
-  - timezone
-  - school / tradition assumptions
-- align product language toward guidance, humility, and opt-in use rather than prediction certainty
-- connect the feature to Panchang and sacred-time trust work instead of building it as a separate entertainment layer
-
-Exit criteria:
-
-- the feature scope is explicitly defined
-- privacy and birth-data handling are documented
-- disclaimers and trust language are ready before UI promises expand
-- no horoscope-like product claims ship before the calculation model is agreed
 
 ## Phase A2 — Social Safety And Platform Hardening
 

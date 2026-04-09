@@ -60,6 +60,9 @@ const MASA_NAMES = [
 // Rahu Kaal duration is 1.5 hours; position varies by day of week
 const RAHU_KAAL_ORDER = [8, 2, 7, 5, 6, 4, 3]; // index into 8 day-parts (Sun=0)
 
+const DEG = Math.PI / 180;
+const RAD = 180 / Math.PI;
+
 function toJulian(date: Date): number {
   const y = date.getUTCFullYear();
   const m = date.getUTCMonth() + 1;
@@ -70,19 +73,28 @@ function toJulian(date: Date): number {
     + d + 1721013.5;
 }
 
+function normalizeAngle(angle: number): number {
+  return ((angle % 360) + 360) % 360;
+}
+
+function lahiriAyanamsha(jd: number): number {
+  const t = (jd - 2451545.0) / 36525;
+  return 23.85675 + (0.01396875 * t);
+}
+
 function sunPosition(jd: number): number {
   const n  = jd - 2451545.0;
-  const L  = (280.46 + 0.9856474 * n) % 360;
-  const g  = ((357.528 + 0.9856003 * n) % 360) * (Math.PI / 180);
-  return (L + 1.915 * Math.sin(g) + 0.02 * Math.sin(2 * g) + 360) % 360;
+  const L  = normalizeAngle(280.46 + 0.9856474 * n);
+  const g  = normalizeAngle(357.528 + 0.9856003 * n) * DEG;
+  return normalizeAngle(L + 1.915 * Math.sin(g) + 0.02 * Math.sin(2 * g));
 }
 
 function moonPosition(jd: number): number {
   const n  = jd - 2451545.0;
-  const L  = (218.316 + 13.176396 * n) % 360;
-  const M  = ((134.963 + 13.064993 * n) % 360) * (Math.PI / 180);
-  const F  = ((93.272  + 13.229350 * n) % 360) * (Math.PI / 180);
-  return (L + 6.289 * Math.sin(M) - 1.274 * Math.sin(2 * F - M) + 0.658 * Math.sin(2 * F) + 360) % 360;
+  const L  = normalizeAngle(218.316 + 13.176396 * n);
+  const M  = normalizeAngle(134.963 + 13.064993 * n) * DEG;
+  const F  = normalizeAngle(93.272  + 13.229350 * n) * DEG;
+  return normalizeAngle(L + 6.289 * Math.sin(M) - 1.274 * Math.sin(2 * F - M) + 0.658 * Math.sin(2 * F));
 }
 
 function formatTime(hour: number, minuteOffset = 0): string {
@@ -96,18 +108,27 @@ function formatTime(hour: number, minuteOffset = 0): string {
   return `${String(h12).padStart(2,'0')}:${mm} ${ampm}`;
 }
 
+function equationOfTime(dayOfYear: number): number {
+  const b = DEG * ((360 / 365) * (dayOfYear - 81));
+  return 9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.5 * Math.sin(b);
+}
+
 function getSunriseSunset(lat: number, lon: number, date: Date): { sunrise: number; sunset: number } {
-  const dayOfYear = Math.floor(
-    (date.getTime() - new Date(date.getFullYear(), 0, 0).getTime()) / 86400000
+  const dayOfYear = Math.floor((date.getTime() - new Date(date.getFullYear(), 0, 0).getTime()) / 86400000);
+  const latRad = lat * DEG;
+  const declination = 23.45 * Math.sin(DEG * ((360 / 365) * (284 + dayOfYear)));
+  const decRad = declination * DEG;
+
+  // 90.833 accounts for the sun's apparent radius and atmospheric refraction.
+  const cosH = (
+    Math.cos(90.833 * DEG) / (Math.cos(latRad) * Math.cos(decRad)) -
+    Math.tan(latRad) * Math.tan(decRad)
   );
-  const latRad = lat * (Math.PI / 180);
-  const D = 23.45 * Math.sin((Math.PI / 180) * (360 / 365) * (dayOfYear - 81));
-  const dRad = D * (Math.PI / 180);
-  const cosH = -Math.tan(latRad) * Math.tan(dRad);
-  const H = (Math.acos(Math.max(-1, Math.min(1, cosH)))) * (180 / Math.PI);
+  const H = Math.acos(Math.max(-1, Math.min(1, cosH))) * RAD;
   const timezone = -(date.getTimezoneOffset() / 60);
-  const sunrise  = 12 - H / 15 - lon / 15 + timezone;
-  const sunset   = 12 + H / 15 - lon / 15 + timezone;
+  const solarNoon = 12 + timezone - (lon / 15) - (equationOfTime(dayOfYear) / 60);
+  const sunrise  = solarNoon - H / 15;
+  const sunset   = solarNoon + H / 15;
   return { sunrise, sunset };
 }
 
@@ -117,22 +138,25 @@ export function calculatePanchang(
   lon = -0.1278
 ): PanchangData {
   const jd    = toJulian(date);
-  const sunLon  = sunPosition(jd);
-  const moonLon = moonPosition(jd);
+  const tropicalSunLon  = sunPosition(jd);
+  const tropicalMoonLon = moonPosition(jd);
+  const ayanamsha = lahiriAyanamsha(jd);
+  const sunLon = normalizeAngle(tropicalSunLon - ayanamsha);
+  const moonLon = normalizeAngle(tropicalMoonLon - ayanamsha);
 
   // Tithi: each tithi = 12° difference between moon and sun
-  const elongation = (moonLon - sunLon + 360) % 360;
+  const elongation = normalizeAngle(tropicalMoonLon - tropicalSunLon);
   const tithiIndex = Math.floor(elongation / 12) + 1;  // 1-30
   const paksha: 'Shukla' | 'Krishna' = tithiIndex <= 15 ? 'Shukla' : 'Krishna';
   const tithiName = TITHIS[(tithiIndex - 1) % 15];
   const tithi     = `${paksha} ${tithiName} (${tithiIndex})`;
 
   // Nakshatra: 27 divisions of 360° = 13.33° each
-  const nakshatraIndex = Math.floor((moonLon / (360 / 27))) % 27;
+  const nakshatraIndex = Math.floor(normalizeAngle(moonLon) / (360 / 27)) % 27;
   const nakshatra      = NAKSHATRAS[nakshatraIndex];
 
-  // Yoga: (sun + moon) / (360/27)
-  const yogaIndex = Math.floor(((sunLon + moonLon) % 360) / (360 / 27)) % 27;
+  // Yoga: sidereal sun + sidereal moon
+  const yogaIndex = Math.floor(normalizeAngle(sunLon + moonLon) / (360 / 27)) % 27;
   const yoga      = YOGAS[yogaIndex];
 
   // Vara (weekday)
@@ -140,7 +164,7 @@ export function calculatePanchang(
   const vara = VARAS[dow];
 
   // Masa (Hindu month — approximate)
-  const masaIndex = Math.floor((sunLon / 30)) % 12;
+  const masaIndex = Math.floor(normalizeAngle(sunLon) / 30) % 12;
   const masaName  = MASA_NAMES[masaIndex];
 
   // Sunrise / Sunset

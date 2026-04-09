@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { getLocalDateIso, isLocalHour, isoDateDiff, resolveTimeZone } from '@/lib/sacred-time';
 
 // ─── Festival Reminder Cron ───────────────────────────────────────────────────
-// Schedule: 0 2 * * * (2 AM UTC daily = ~7:30 AM IST)
-// Checks if any festival is exactly 7 days or 1 day away.
-// If yes, inserts a notification row for EVERY user in the DB.
+// Schedule: 0 * * * * (hourly — sends near the user's local morning)
+// Checks if any festival is exactly 7 days or 1 day away in the user's local date.
+// Sends only tradition-relevant or shared festivals.
 // The bell dropdown in TopBar.tsx reads from this notifications table.
 
 export async function GET(request: Request) {
@@ -31,19 +32,13 @@ export async function GET(request: Request) {
     const baseUrl = new URL(request.url).origin;
     const actionPath = '/home?focus=festivals';
     const actionUrl = new URL(actionPath, baseUrl).toString();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const now = new Date();
+    const targetLocalHour = 9;
 
-    const in1day  = new Date(today); in1day.setDate(in1day.getDate() + 1);
-    const in7days = new Date(today); in7days.setDate(in7days.getDate() + 7);
-
-    const fmt = (d: Date) => d.toISOString().split('T')[0];
-
-    // Fetch festivals that are 1 or 7 days away
     const { data: festivals, error: festivalsError } = await supabase
       .from('festivals')
       .select('*')
-      .in('date', [fmt(in1day), fmt(in7days)]);
+      .order('date', { ascending: true });
 
     if (festivalsError) {
       console.error('Festival cron festivals query failed:', festivalsError);
@@ -60,7 +55,7 @@ export async function GET(request: Request) {
     // Fetch all user IDs
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id');
+      .select('id, tradition, timezone');
 
     if (usersError) {
       console.error('Festival cron users query failed:', usersError);
@@ -74,56 +69,116 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'No users', sent: 0 });
     }
 
+    const eligibleUsers = users.filter((user) => isLocalHour(now, resolveTimeZone((user as any).timezone), targetLocalHour));
+
+    if (eligibleUsers.length === 0) {
+      return NextResponse.json({ message: 'No users in the local reminder window', sent: 0 });
+    }
+
+    const notifications: Array<{
+      user_id: string;
+      title: string;
+      body: string;
+      emoji: string;
+      type: 'festival';
+      action_url: string;
+      notification_key: string;
+      local_date: string;
+      sent_timezone: string;
+      festival_id: string;
+    }> = [];
+
+    for (const user of eligibleUsers) {
+      const timeZone = resolveTimeZone((user as any).timezone);
+      const localDate = getLocalDateIso(now, timeZone);
+      const userTradition = (user as any).tradition ?? null;
+
+      for (const festival of festivals) {
+        const festivalTradition = (festival as any).tradition ?? null;
+        const isRelevantTradition = !userTradition
+          || !festivalTradition
+          || festivalTradition === 'all'
+          || festivalTradition === userTradition;
+        if (!isRelevantTradition) continue;
+
+        const daysAway = isoDateDiff(festival.date, localDate);
+        if (daysAway !== 1 && daysAway !== 7) continue;
+
+        notifications.push({
+          user_id: user.id,
+          title: daysAway === 1
+            ? `${festival.emoji} ${festival.name} — Tomorrow!`
+            : `${festival.emoji} ${festival.name} — In 7 days`,
+          body: daysAway === 1
+            ? `${festival.description}. Prepare your puja and celebrations.`
+            : `${festival.name} is coming up on ${new Date(festival.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' })}. Plan ahead.`,
+          emoji: festival.emoji,
+          type: 'festival',
+          action_url: actionPath,
+          notification_key: `festival:${festival.id}:${daysAway}:${localDate}`,
+          local_date: localDate,
+          sent_timezone: timeZone,
+          festival_id: String(festival.id ?? ''),
+        });
+      }
+    }
+
+    if (notifications.length === 0) {
+      return NextResponse.json({ message: 'No festivals due in local reminder windows', sent: 0 });
+    }
+
     let totalInserted = 0;
     let totalPushTargets = 0;
 
-    for (const festival of festivals) {
-      const daysAway = Math.round((new Date(festival.date).getTime() - today.getTime()) / 86400000);
-      const title = daysAway === 1
-        ? `${festival.emoji} ${festival.name} — Tomorrow!`
-        : `${festival.emoji} ${festival.name} — In 7 days`;
-      const body  = daysAway === 1
-        ? `${festival.description}. Prepare your puja and celebrations.`
-        : `${festival.name} is coming up on ${new Date(festival.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' })}. Plan ahead.`;
+    for (let i = 0; i < notifications.length; i += 100) {
+      const batch = notifications.slice(i, i + 100);
+      const { data: insertedRows, error: insertError } = await supabase
+        .from('notifications')
+        .upsert(batch.map(({ festival_id: _festivalId, ...notification }) => notification), {
+          onConflict: 'user_id,notification_key',
+          ignoreDuplicates: true,
+        })
+        .select('user_id, title, body, notification_key');
 
-      const notifications = users.map((u) => ({
-        user_id:    u.id,
-        title,
-        body,
-        emoji:      festival.emoji,
-        type:       'festival',
-        action_url: actionPath,
-      }));
-
-      // Insert in batches of 100
-      for (let i = 0; i < notifications.length; i += 100) {
-        const batch = notifications.slice(i, i + 100);
-        const { error: insertError } = await supabase
-          .from('notifications')
-          .insert(batch);
-
-        if (insertError) {
-          console.error('Festival cron notification insert failed:', insertError);
-          return NextResponse.json(
-            { error: `Notification insert failed: ${insertError.message}` },
-            { status: 500 }
-          );
-        }
-
-        totalInserted += batch.length;
+      if (insertError) {
+        console.error('Festival cron notification insert failed:', insertError);
+        return NextResponse.json(
+          { error: `Notification insert failed: ${insertError.message}` },
+          { status: 500 }
+        );
       }
 
-      const pushResult = await sendOneSignalPush({
-        userIds: users.map((user) => user.id),
-        title,
-        body,
-        url: actionUrl,
-        data: {
-          type: 'festival',
-          festival_id: String(festival.id ?? ''),
-        },
-      });
-      totalPushTargets += pushResult.sent;
+      totalInserted += insertedRows?.length ?? 0;
+
+      const pushBatches = new Map<string, { title: string; body: string; userIds: string[]; festivalId: string }>();
+      for (const row of insertedRows ?? []) {
+        const source = batch.find((notification) => notification.notification_key === row.notification_key && notification.user_id === row.user_id);
+        if (!source) continue;
+        const key = `${source.title}::${source.body}::${source.festival_id}`;
+        if (!pushBatches.has(key)) {
+          pushBatches.set(key, {
+            title: source.title,
+            body: source.body,
+            userIds: [],
+            festivalId: source.festival_id,
+          });
+        }
+        pushBatches.get(key)!.userIds.push(row.user_id);
+      }
+
+      for (const pushBatch of pushBatches.values()) {
+        const pushResult = await sendOneSignalPush({
+          userIds: pushBatch.userIds,
+          title: pushBatch.title,
+          body: pushBatch.body,
+          url: actionUrl,
+          data: {
+            type: 'festival',
+            festival_id: pushBatch.festivalId,
+          },
+        });
+        totalPushTargets += pushResult.sent;
+      }
     }
 
     return NextResponse.json({

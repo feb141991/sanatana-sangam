@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { getLocalDateIso, isLocalHour, resolveTimeZone } from '@/lib/sacred-time';
 
 // ─── Shloka Streak Reminder Cron ─────────────────────────────────────────────
-// Schedule: 0 13 * * * (1 PM UTC = ~6:30 PM IST — evening nudge)
-// Finds users who have NOT read today's shloka (last_shloka_date !== today).
+// Schedule: 0 * * * * (hourly — sends near the user's local evening)
+// Finds users who have NOT read today's shloka in their local date window.
 // Inserts a gentle reminder notification for each of them.
 
 export async function GET(request: Request) {
@@ -29,13 +30,12 @@ export async function GET(request: Request) {
     const baseUrl = new URL(request.url).origin;
     const actionPath = '/home?focus=shloka';
     const actionUrl = new URL(actionPath, baseUrl).toString();
-    const today = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const targetLocalHour = 19;
 
-    // Find users who haven't read today — last_shloka_date is null or not today
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, shloka_streak, full_name')
-      .or(`last_shloka_date.is.null,last_shloka_date.neq.${today}`);
+      .select('id, shloka_streak, full_name, timezone, last_shloka_date');
 
     if (usersError) {
       console.error('Shloka cron users query failed:', usersError);
@@ -49,7 +49,20 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'All users have read today\'s shloka', sent: 0 });
     }
 
-    const notifications = users.map((u) => {
+    const eligibleUsers = users.filter((user) => {
+      const timeZone = resolveTimeZone((user as any).timezone);
+      if (!isLocalHour(now, timeZone, targetLocalHour)) return false;
+      const localDate = getLocalDateIso(now, timeZone);
+      return !user.last_shloka_date || user.last_shloka_date !== localDate;
+    });
+
+    if (eligibleUsers.length === 0) {
+      return NextResponse.json({ message: 'No users in the local reminder window', sent: 0 });
+    }
+
+    const notifications = eligibleUsers.map((u) => {
+      const timeZone = resolveTimeZone((u as any).timezone);
+      const localDate = getLocalDateIso(now, timeZone);
       const streak = u.shloka_streak ?? 0;
       const streakMsg = streak > 0
         ? `Don't break your ${streak}-day streak! 🔥`
@@ -61,14 +74,20 @@ export async function GET(request: Request) {
         emoji:      '🕉️',
         type:       'streak',
         action_url: actionPath,
+        notification_key: `streak:${localDate}`,
+        local_date: localDate,
+        sent_timezone: timeZone,
       };
     });
 
-    // Insert in batches of 100
     let totalInserted = 0;
+    const insertedUserIds: string[] = [];
     for (let i = 0; i < notifications.length; i += 100) {
       const batch = notifications.slice(i, i + 100);
-      const { error: insertError } = await supabase.from('notifications').insert(batch);
+      const { data: insertedRows, error: insertError } = await supabase
+        .from('notifications')
+        .upsert(batch, { onConflict: 'user_id,notification_key', ignoreDuplicates: true })
+        .select('user_id');
 
       if (insertError) {
         console.error('Shloka cron notification insert failed:', insertError);
@@ -78,11 +97,12 @@ export async function GET(request: Request) {
         );
       }
 
-      totalInserted += batch.length;
+      totalInserted += insertedRows?.length ?? 0;
+      insertedUserIds.push(...((insertedRows ?? []).map((row: { user_id: string }) => row.user_id)));
     }
 
     const pushResult = await sendOneSignalPush({
-      userIds: users.map((user) => user.id),
+      userIds: insertedUserIds,
       title: 'Aaj Ka Shloka awaits',
       body: 'Take a quiet moment for today\'s sacred text and keep your practice flowing.',
       url: actionUrl,

@@ -176,6 +176,7 @@ export default function ProfileClient({
   const sevaScore = profile?.seva_score ?? 0;
   const streak    = (profile as any)?.shloka_streak ?? 0;
   const profileCountryCode = (profile as any)?.country_code ?? null;
+  const profileTimezone = (profile as any)?.timezone ?? null;
   const onesignalPlayerId = (profile as any)?.onesignal_player_id ?? null;
 
   // Silently save coords + city + country + country_code when location resolves
@@ -206,6 +207,13 @@ export default function ProfileClient({
       if (id) supabase.from('profiles').update({ onesignal_player_id: id }).eq('id', userId);
     });
   }, [onesignalPlayerId, supabase, userId]);
+
+  useEffect(() => {
+    if (!userId || typeof window === 'undefined') return;
+    const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (!browserTimeZone || browserTimeZone === profileTimezone) return;
+    supabase.from('profiles').update({ timezone: browserTimeZone }).eq('id', userId);
+  }, [profileTimezone, supabase, userId]);
 
   async function uploadAvatar(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -364,6 +372,7 @@ export default function ProfileClient({
     { label: 'Gotra',        value: profile?.gotra,                                  emoji: '📿' },
     { label: 'Kul Devata',   value: (profile as any)?.kul_devata,                   emoji: '🪔' },
     { label: 'Home Town',    value: (profile as any)?.home_town,                    emoji: '🏡' },
+    { label: 'Time Zone',    value: profileTimezone,                                emoji: '🕰️' },
   ].filter((r) => r.value);
 
   return (

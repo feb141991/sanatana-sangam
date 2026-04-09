@@ -40,7 +40,12 @@ Last updated: 2026-04-09
 - [x] Add the first Framer Motion polish pass across the shell, Home overlays, and Pathshala cards so the app feels calmer and less abrupt
 - [x] Start the festival truth pass by aligning Home festival browsing with the shared Supabase festival table and adding explicit fallback coverage labels
 - [x] Start the Panchang trust pass by labeling the in-app Panchang as location-based guidance instead of silent ritual precision
-- [ ] Define Jyotish / Rashiphal strategy under the trust core before shipping any horoscope-style feature
+- [x] Add festival trust metadata rollout planning and DB migration for tradition/source/review fields
+- [x] Document the launch Panchang source posture in `PANCHANG_SOURCE_STRATEGY.md`
+- [x] Upgrade the in-app Panchang engine to use sidereal longitudes and a better sunrise/sunset estimate while keeping precision claims modest
+- [x] Start timezone-aware sacred-time delivery with hourly cron windows, user timezones, and notification dedupe keys
+- [x] Define the first trust-first Jyotish scope in `JYOTISH_STRATEGY.md`
+- [x] Define Jyotish / Rashiphal strategy under the trust core before shipping any horoscope-style feature
 - [ ] Stage Pathshala AI-assisted reading and recitation support: explain, quiz, flashcards, and later pronunciation / scoring
 
 ## P0 Launch Blockers
@@ -52,7 +57,7 @@ Last updated: 2026-04-09
 - [ ] Panchang accuracy strategy is finalized and reflected in product copy
 - [ ] Jyotish / Rashiphal scope, calculation model, and disclaimer strategy are finalized before launch claims expand
 - [ ] Push notifications are either fully implemented or removed from product claims
-- [ ] Notification jobs are segmented, deduplicated, and timezone-aware
+- [ ] Notification jobs are segmented, deduplicated, and timezone-aware in production after `migration-v18-sacred-time-delivery.sql` and the hourly cron rollout
 - [ ] Scripture corpus source legitimacy, permissions, and provenance policy are finalized for production
 - [ ] Full-text launch scope is explicit: what is fully in-app vs what still routes to official source partners
 - [ ] `schema.sql`, migrations, and app types are aligned
@@ -95,6 +100,7 @@ Last updated: 2026-04-09
 - [ ] Add Pathshala quizzes, cards, and mastery checkpoints after the corpus source layer is trustworthy
 - [ ] Define religious language support: script toggles first, then launch-language UI packs
 - [ ] Activate referral attribution from invite codes
+- [ ] Shape Panchang into an atmospheric sacred-time experience: living sky background, calmer motion, large readable cards, and optional light haptics that still work well for elders
 
 ## Notes
 
@@ -106,6 +112,8 @@ Last updated: 2026-04-09
 - Gita recitation currently keeps authoritative audio on the companion source; bringing that audio fully in-app is now a tracked later milestone, not an unplanned stretch goal.
 - `Zen mode` and `Mala mode` are now explicitly planned as launch-level contemplation features, but audio inside them must stay rights-safe and clearly labeled.
 - `AUDIO_ARCHITECTURE_PLAN.md` now tracks the shared player model, source classes, and Gita-first rollout for in-app audio.
+- Panchang should evolve into a sacred-time experience with atmosphere, readability, and restraint: sky-led background, time-of-day theming, light haptics where supported, and no low-contrast mystical gimmicks.
+- `PANCHANG_SOURCE_STRATEGY.md` now tracks how launch copy, future provider strategy, and sacred-time claims should stay aligned.
 - `ROADMAP.md` is now the main sequencing document for `Phase A` vs `Phase B`.
 - `COLOR_STRATEGY.md` now tracks the palette research, token direction, and rollout rules.
 - `PARAMPARA_PATHSHALA_PLAN.md` now defines the source strategy and learning-product direction for turning Library into Pathshala.

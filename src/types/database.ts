@@ -31,6 +31,7 @@ export interface Database {
           mandali_id: string | null;
           onesignal_player_id: string | null;
           country_code: string | null;
+          timezone: string | null;
           tradition: string | null;
           custom_greeting: string | null;
         };
@@ -173,6 +174,9 @@ export interface Database {
           type: 'festival' | 'mandali' | 'streak' | 'seva' | 'general';
           read: boolean;
           action_url: string | null;
+          notification_key: string | null;
+          local_date: string | null;
+          sent_timezone: string | null;
         };
         Insert: Omit<Database['public']['Tables']['notifications']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['notifications']['Insert']>;
@@ -187,6 +191,13 @@ export interface Database {
           description: string;
           type: 'major' | 'vrat' | 'regional';
           year: number;
+          tradition: 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'all' | null;
+          is_shared: boolean;
+          source_name: string | null;
+          source_kind: 'curated' | 'official' | 'partner' | 'community_reviewed' | null;
+          review_status: 'needs_review' | 'reviewed' | null;
+          reviewed_at: string | null;
+          review_notes: string | null;
         };
         Insert: Omit<Database['public']['Tables']['festivals']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['festivals']['Insert']>;
