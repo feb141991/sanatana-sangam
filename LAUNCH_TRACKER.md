@@ -57,7 +57,7 @@ Last updated: 2026-04-09
 - [ ] Panchang accuracy strategy is finalized and reflected in product copy
 - [ ] Jyotish / Rashiphal scope, calculation model, and disclaimer strategy are finalized before launch claims expand
 - [ ] Push notifications are either fully implemented or removed from product claims
-- [ ] Notification jobs are segmented, deduplicated, and timezone-aware in production after `migration-v18-sacred-time-delivery.sql` and the hourly cron rollout
+- [ ] Notification jobs are segmented, deduplicated, and timezone-aware in production after `migration-v18-sacred-time-delivery.sql`, `migration-v19-notification-preferences.sql`, and the hourly cron rollout
 - [ ] Scripture corpus source legitimacy, permissions, and provenance policy are finalized for production
 - [ ] Full-text launch scope is explicit: what is fully in-app vs what still routes to official source partners
 - [ ] `schema.sql`, migrations, and app types are aligned
@@ -82,6 +82,9 @@ Last updated: 2026-04-09
 - [ ] Add Mandali event RSVP flow
 - [ ] Add analytics, funnel tracking, and error monitoring
 - [ ] Replace browser `confirm`, `alert`, and `window.prompt` flows with app-native UI
+- [x] Add profile-level notification preferences for sacred-time delivery and quiet hours
+- [x] Filter shloka and festival cron jobs through reminder preferences and local quiet hours
+- [x] Remove Hindu-default festival reminder phrasing so sacred-time copy stays more tradition-aware
 - [x] Add scripture bookmarks and the first Pathshala reading-plan layer
 - [x] Extend Pathshala return loops to chapter-level Gita study so users can resume and bookmark full chapter paths, not just excerpts
 - [x] Add first chapter-level AI study entry points in Pathshala with prefilled source-aware prompts
@@ -131,6 +134,7 @@ Last updated: 2026-04-09
 - The first auth/front-door experience pass is now active too: login, signup, join, guest, and recovery flows are being shaped to feel warmer and less transactional.
 - The first AI chat experience pass is now active too: Dharma Mitra is being shaped into a calmer study-and-reflection companion instead of a generic assistant box.
 - The first Bhakti experience pass is now active too: the placeholder is being turned into a meaningful devotional preview surface instead of a dead-end coming-soon card.
+- The notification system now has a first real preference layer: sacred-time reminder toggles, quiet hours, and cron filtering, but it still needs live production verification and richer destination targeting.
 - `PANCHANG_SOURCE_STRATEGY.md` now tracks how launch copy, future provider strategy, and sacred-time claims should stay aligned.
 - `UX_SWEEP_PLAN.md` now tracks the next experience improvements by surface, with Panchang, Kul, and Mandali as the highest-leverage sweeps.
 - `ROADMAP.md` is now the main sequencing document for `Phase A` vs `Phase B`.

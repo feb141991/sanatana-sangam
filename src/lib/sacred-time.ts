@@ -48,6 +48,39 @@ export function isLocalHour(date: Date, timeZone: string, targetHour: number): b
   return getLocalHour(date, timeZone) === targetHour;
 }
 
+export function isHourInQuietWindow(
+  localHour: number,
+  quietStart: number | null | undefined,
+  quietEnd: number | null | undefined
+): boolean {
+  if (
+    quietStart === null || quietStart === undefined
+    || quietEnd === null || quietEnd === undefined
+    || Number.isNaN(quietStart)
+    || Number.isNaN(quietEnd)
+    || quietStart === quietEnd
+  ) {
+    return false;
+  }
+
+  if (quietStart < quietEnd) {
+    return localHour >= quietStart && localHour < quietEnd;
+  }
+
+  return localHour >= quietStart || localHour < quietEnd;
+}
+
+export function canSendInLocalWindow(
+  date: Date,
+  timeZone: string,
+  targetHour: number,
+  quietStart: number | null | undefined,
+  quietEnd: number | null | undefined
+): boolean {
+  const localHour = getLocalHour(date, resolveTimeZone(timeZone));
+  return localHour === targetHour && !isHourInQuietWindow(localHour, quietStart, quietEnd);
+}
+
 export function isoDateDiff(targetDateIso: string, baseDateIso: string): number {
   const target = new Date(`${targetDateIso}T00:00:00Z`);
   const base = new Date(`${baseDateIso}T00:00:00Z`);

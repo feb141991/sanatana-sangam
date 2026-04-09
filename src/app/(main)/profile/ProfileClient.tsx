@@ -163,6 +163,7 @@ export default function ProfileClient({
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
   const [sendingTestNotification, setSendingTestNotification] = useState(false);
+  const [savingNotificationPrefs, setSavingNotificationPrefs] = useState(false);
   const [safetyBusyKey, setSafetyBusyKey] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>((profile as any)?.avatar_url ?? null);
   const [showAvatarPreview, setShowAvatarPreview] = useState(false);
@@ -201,6 +202,14 @@ export default function ProfileClient({
   const profileCountryCode = (profile as any)?.country_code ?? null;
   const profileTimezone = (profile as any)?.timezone ?? null;
   const onesignalPlayerId = (profile as any)?.onesignal_player_id ?? null;
+  const [notificationPrefs, setNotificationPrefs] = useState({
+    wants_festival_reminders: (profile as any)?.wants_festival_reminders ?? true,
+    wants_shloka_reminders: (profile as any)?.wants_shloka_reminders ?? true,
+    wants_community_notifications: (profile as any)?.wants_community_notifications ?? true,
+    wants_family_notifications: (profile as any)?.wants_family_notifications ?? true,
+    notification_quiet_hours_start: (profile as any)?.notification_quiet_hours_start ?? 22,
+    notification_quiet_hours_end: (profile as any)?.notification_quiet_hours_end ?? 7,
+  });
 
   // Silently save coords + city + country + country_code when location resolves
   useEffect(() => {
@@ -327,6 +336,24 @@ export default function ProfileClient({
     } finally {
       setSendingTestNotification(false);
     }
+  }
+
+  async function saveNotificationPreferences() {
+    setSavingNotificationPrefs(true);
+    const { error } = await supabase
+      .from('profiles')
+      .update(notificationPrefs)
+      .eq('id', userId);
+
+    setSavingNotificationPrefs(false);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    toast.success('Notification preferences updated.');
+    router.refresh();
   }
 
   async function unblockProfile(profileId: string) {
@@ -541,6 +568,102 @@ export default function ProfileClient({
           </ProfileSectionCard>
         )}
       </div>
+
+      <ProfileSectionCard
+        eyebrow="Notifications"
+        title="What should reach you"
+        description="Control sacred-time reminders now, with community and family delivery ready for the next notification lanes."
+      >
+        <div className="space-y-4">
+          {[
+            {
+              key: 'wants_shloka_reminders',
+              title: 'Daily shloka reminders',
+              description: 'A gentle evening nudge when you have not opened the day’s reading yet.',
+            },
+            {
+              key: 'wants_festival_reminders',
+              title: 'Festival reminders',
+              description: 'Morning reminders for shared or tradition-relevant observances.',
+            },
+            {
+              key: 'wants_community_notifications',
+              title: 'Community updates',
+              description: 'Keep this ready for Mandali replies, RSVPs, and nearby activity.',
+            },
+            {
+              key: 'wants_family_notifications',
+              title: 'Family updates',
+              description: 'Keep this ready for Kul reminders, dates, and shared family activity.',
+            },
+          ].map((item) => {
+            const checked = notificationPrefs[item.key as keyof typeof notificationPrefs] as boolean;
+            return (
+              <label key={item.key} className="flex items-start justify-between gap-4 rounded-2xl border border-gray-100 px-4 py-3 cursor-pointer">
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{item.title}</p>
+                  <p className="text-xs text-gray-500 mt-1 leading-relaxed">{item.description}</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={(e) => setNotificationPrefs((current) => ({ ...current, [item.key]: e.target.checked }))}
+                  className="mt-1 h-4 w-4 rounded border-gray-300 text-[#7B1A1A] focus:ring-[#7B1A1A]"
+                />
+              </label>
+            );
+          })}
+
+          <div className="rounded-2xl border border-gray-100 px-4 py-4 space-y-3">
+            <div>
+              <p className="text-sm font-medium text-gray-900">Quiet hours</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Sacred-time reminders will skip this local window on your device.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">Start</label>
+                <select
+                  value={notificationPrefs.notification_quiet_hours_start}
+                  onChange={(e) => setNotificationPrefs((current) => ({ ...current, notification_quiet_hours_start: Number(e.target.value) }))}
+                  className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm bg-white"
+                >
+                  {Array.from({ length: 24 }).map((_, hour) => (
+                    <option key={`start-${hour}`} value={hour}>{String(hour).padStart(2, '0')}:00</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">End</label>
+                <select
+                  value={notificationPrefs.notification_quiet_hours_end}
+                  onChange={(e) => setNotificationPrefs((current) => ({ ...current, notification_quiet_hours_end: Number(e.target.value) }))}
+                  className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm bg-white"
+                >
+                  {Array.from({ length: 24 }).map((_, hour) => (
+                    <option key={`end-${hour}`} value={hour}>{String(hour).padStart(2, '0')}:00</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={saveNotificationPreferences}
+              disabled={savingNotificationPrefs}
+              className="glass-button-primary inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-white font-semibold disabled:opacity-60"
+            >
+              <span>🔔</span>
+              <span>{savingNotificationPrefs ? 'Saving…' : 'Save notification preferences'}</span>
+            </button>
+            <p className="text-xs text-gray-400">
+              Local time zone: {profileTimezone ?? 'UTC fallback until your browser reports a timezone'}
+            </p>
+          </div>
+        </div>
+      </ProfileSectionCard>
 
       <ProfileSectionCard
         eyebrow="Safety"

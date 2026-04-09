@@ -1,7 +1,23 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
-import { getLocalDateIso, isLocalHour, isoDateDiff, resolveTimeZone } from '@/lib/sacred-time';
+import { canSendInLocalWindow, getLocalDateIso, isoDateDiff, resolveTimeZone } from '@/lib/sacred-time';
+
+function buildFestivalReminderBody(tradition: string | null | undefined, festivalName: string, festivalDescription: string, festivalDate: string, daysAway: number) {
+  const tomorrowTailByTradition: Record<string, string> = {
+    hindu: 'Prepare your darshan, observance, and family rhythm.',
+    sikh: 'Plan your gurudwara visit, seva, or family remembrance.',
+    buddhist: 'Plan your reflection, prayer, or community observance.',
+    jain: 'Plan your darshan, pratikraman, or family observance.',
+    all: 'Set aside a little time to remember and prepare well.',
+  };
+
+  if (daysAway === 1) {
+    return `${festivalDescription}. ${tomorrowTailByTradition[tradition ?? 'all'] ?? tomorrowTailByTradition.all}`;
+  }
+
+  return `${festivalName} is coming up on ${new Date(festivalDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' })}. Set aside a little time to prepare well.`;
+}
 
 // ─── Festival Reminder Cron ───────────────────────────────────────────────────
 // Schedule: 0 * * * * (hourly — sends near the user's local morning)
@@ -55,7 +71,7 @@ export async function GET(request: Request) {
     // Fetch all user IDs
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, tradition, timezone');
+      .select('id, tradition, timezone, wants_festival_reminders, notification_quiet_hours_start, notification_quiet_hours_end');
 
     if (usersError) {
       console.error('Festival cron users query failed:', usersError);
@@ -69,7 +85,17 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'No users', sent: 0 });
     }
 
-    const eligibleUsers = users.filter((user) => isLocalHour(now, resolveTimeZone((user as any).timezone), targetLocalHour));
+    const eligibleUsers = users.filter((user) => {
+      const timeZone = resolveTimeZone((user as any).timezone);
+      if ((user as any).wants_festival_reminders === false) return false;
+      return canSendInLocalWindow(
+        now,
+        timeZone,
+        targetLocalHour,
+        (user as any).notification_quiet_hours_start ?? null,
+        (user as any).notification_quiet_hours_end ?? null
+      );
+    });
 
     if (eligibleUsers.length === 0) {
       return NextResponse.json({ message: 'No users in the local reminder window', sent: 0 });
@@ -109,9 +135,7 @@ export async function GET(request: Request) {
           title: daysAway === 1
             ? `${festival.emoji} ${festival.name} — Tomorrow!`
             : `${festival.emoji} ${festival.name} — In 7 days`,
-          body: daysAway === 1
-            ? `${festival.description}. Prepare your puja and celebrations.`
-            : `${festival.name} is coming up on ${new Date(festival.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' })}. Plan ahead.`,
+          body: buildFestivalReminderBody(festivalTradition, festival.name, festival.description, festival.date, daysAway),
           emoji: festival.emoji,
           type: 'festival',
           action_url: actionPath,

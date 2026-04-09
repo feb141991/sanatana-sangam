@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
-import { getLocalDateIso, isLocalHour, resolveTimeZone } from '@/lib/sacred-time';
+import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 
 // ─── Shloka Streak Reminder Cron ─────────────────────────────────────────────
 // Schedule: 0 * * * * (hourly — sends near the user's local evening)
@@ -35,7 +35,7 @@ export async function GET(request: Request) {
 
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, shloka_streak, full_name, timezone, last_shloka_date');
+      .select('id, shloka_streak, full_name, timezone, last_shloka_date, wants_shloka_reminders, notification_quiet_hours_start, notification_quiet_hours_end');
 
     if (usersError) {
       console.error('Shloka cron users query failed:', usersError);
@@ -51,7 +51,14 @@ export async function GET(request: Request) {
 
     const eligibleUsers = users.filter((user) => {
       const timeZone = resolveTimeZone((user as any).timezone);
-      if (!isLocalHour(now, timeZone, targetLocalHour)) return false;
+      if ((user as any).wants_shloka_reminders === false) return false;
+      if (!canSendInLocalWindow(
+        now,
+        timeZone,
+        targetLocalHour,
+        (user as any).notification_quiet_hours_start ?? null,
+        (user as any).notification_quiet_hours_end ?? null
+      )) return false;
       const localDate = getLocalDateIso(now, timeZone);
       return !user.last_shloka_date || user.last_shloka_date !== localDate;
     });

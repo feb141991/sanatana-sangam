@@ -102,6 +102,7 @@ At any given time:
 - devotional music discovery should begin as a curated catalog + ranking layer with open-out links, not a hosted streaming surface
 - the first AI chat UX sweep is now in build so Dharma Mitra feels like a calmer reflection companion instead of a blank utility surface
 - the first Bhakti UX sweep is now in build so the devotional area offers a meaningful preview path before the larger audio/social feature set arrives
+- the next notification lane is now concrete: profile-level reminder preferences, quiet hours, cron filtering, and then production verification of real sends
 
 ### Next eligible low-risk `Phase B` implementation
 

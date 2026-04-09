@@ -34,6 +34,12 @@ export interface Database {
           timezone: string | null;
           tradition: string | null;
           custom_greeting: string | null;
+          wants_festival_reminders: boolean;
+          wants_shloka_reminders: boolean;
+          wants_community_notifications: boolean;
+          wants_family_notifications: boolean;
+          notification_quiet_hours_start: number | null;
+          notification_quiet_hours_end: number | null;
         };
         Insert: Omit<Database['public']['Tables']['profiles']['Row'], 'created_at' | 'updated_at' | 'seva_score'>;
         Update: Partial<Database['public']['Tables']['profiles']['Insert']>;

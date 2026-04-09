@@ -3,7 +3,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { canSendOneSignalPush, sendOneSignalPush } from '@/lib/onesignal-server';
 
-export async function POST() {
+export async function POST(request: Request) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -16,6 +16,8 @@ export async function POST() {
     const createdAt = new Date();
     const title = 'Test notification from Sanatana Sangam';
     const body = 'If you can see this in the bell or as a browser push, notifications are wired correctly.';
+    const actionPath = '/profile';
+    const actionUrl = new URL(actionPath, new URL(request.url).origin).toString();
 
     const { error: insertError } = await serviceSupabase
       .from('notifications')
@@ -25,7 +27,7 @@ export async function POST() {
         body,
         emoji: '🔔',
         type: 'general',
-        action_url: '/profile',
+        action_url: actionPath,
       });
 
     if (insertError) {
@@ -41,7 +43,7 @@ export async function POST() {
       userIds: [user.id],
       title,
       body,
-      url: '/profile',
+      url: actionUrl,
       data: {
         type: 'test',
         created_at: createdAt.toISOString(),
