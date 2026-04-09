@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import KulClient from '../KulClient';
 import { getKulPageData } from '../kul-data';
 import { isKulSectionView } from '../sections';
@@ -9,6 +9,10 @@ export default async function KulSectionPage({
   params: Promise<{ section: string }>;
 }) {
   const { section } = await params;
+
+  if (section === 'board') {
+    redirect('/kul');
+  }
 
   if (!isKulSectionView(section)) {
     notFound();

@@ -1087,13 +1087,6 @@ const KUL_SECTION_META: Record<KulSectionView, {
   description: string;
   group: 'today' | 'family' | 'lineage';
 }> = {
-  board: {
-    label: 'Overview',
-    eyebrow: 'Start here',
-    emoji: '✨',
-    description: 'A calmer overview of what needs attention before you move into a dedicated family space.',
-    group: 'today',
-  },
   members: {
     label: 'Members',
     eyebrow: 'Care circle',
@@ -1158,7 +1151,6 @@ function KulSectionTiles({
     .filter((event) => event.daysUntil <= 90).length;
 
   const tiles: Array<{ key: KulSectionView; badge?: number }> = [
-    { key: 'board' },
     { key: 'tasks', badge: pendingTasks || undefined },
     { key: 'members', badge: members.length || undefined },
     { key: 'sabha', badge: messages.length || undefined },
@@ -1271,7 +1263,7 @@ function KulHubView({
     .map((event) => ({ ...event, daysUntil: daysUntilNextOccurrence(event.event_date) }))
     .filter((event) => event.daysUntil <= 90)
     .sort((a, b) => a.daysUntil - b.daysUntil);
-  const primaryActions: KulSectionView[] = openTasks > 0 ? ['tasks', 'board'] : ['board', 'events'];
+  const primaryActions: KulSectionView[] = openTasks > 0 ? ['tasks', 'members'] : ['events', 'members'];
   const familyActions: KulSectionView[] = ['members', 'sabha'];
   const lineageActions: KulSectionView[] = ['vansh', 'events'];
 
@@ -1455,17 +1447,17 @@ function KulHubView({
         <div className="glass-panel rounded-[1.7rem] p-4">
           <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400">Most likely next</p>
           <div className="space-y-3 mt-3">
-            <Link href="/kul/board" className="flex items-center justify-between gap-3 rounded-2xl bg-white/70 px-4 py-3 border border-white/70">
+            <Link href="/kul/tasks" className="flex items-center justify-between gap-3 rounded-2xl bg-white/70 px-4 py-3 border border-white/70">
               <div>
-                <p className="text-sm font-semibold text-gray-900">Start at the overview</p>
-                <p className="text-xs text-gray-500 mt-1">See the family pulse before you jump into a dedicated page</p>
+                <p className="text-sm font-semibold text-gray-900">{openTasks > 0 ? `${openTasks} task${openTasks === 1 ? '' : 's'} need attention` : 'Open tasks and shared practices'}</p>
+                <p className="text-xs text-gray-500 mt-1">Move straight into what the family needs to do together</p>
               </div>
               <ChevronRight size={18} className="text-gray-400" />
             </Link>
-            <Link href="/kul/tasks" className="flex items-center justify-between gap-3 rounded-2xl bg-white/70 px-4 py-3 border border-white/70">
+            <Link href="/kul/members" className="flex items-center justify-between gap-3 rounded-2xl bg-white/70 px-4 py-3 border border-white/70">
               <div>
-                <p className="text-sm font-semibold text-gray-900">{openTasks > 0 ? `${openTasks} task${openTasks === 1 ? '' : 's'} need attention` : 'No open tasks right now'}</p>
-                <p className="text-xs text-gray-500 mt-1">Move straight into the task view without squeezing through tabs</p>
+                <p className="text-sm font-semibold text-gray-900">Open the family circle</p>
+                <p className="text-xs text-gray-500 mt-1">See roles, people, and profiles without going through a second overview</p>
               </div>
               <ChevronRight size={18} className="text-gray-400" />
             </Link>
@@ -2095,20 +2087,6 @@ export default function KulClient({ userId, userName, userProfile, kul, members,
             saveKulName={saveKulName}
             savingName={savingName}
           />
-        );
-      case 'board':
-        return (
-          <KulSectionShell
-            view={view}
-            kul={kul}
-            members={members}
-            tasks={tasks}
-            messages={messages}
-            familyMembers={familyMembers}
-            kulEvents={kulEvents}
-          >
-            <BoardTab kul={kul} members={members} tasks={tasks} userId={userId} myRole={myRole} />
-          </KulSectionShell>
         );
       case 'members':
         return (
