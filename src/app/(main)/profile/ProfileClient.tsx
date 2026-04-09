@@ -114,6 +114,29 @@ function CompletionBar({ profile, onEdit }: { profile: Profile | null; onEdit: (
   );
 }
 
+function ProfileSectionCard({
+  eyebrow,
+  title,
+  description,
+  children,
+}: {
+  eyebrow: string;
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-4">
+      <div>
+        <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">{eyebrow}</p>
+        <h2 className="font-display font-bold text-gray-900 text-lg mt-1">{title}</h2>
+        {description ? <p className="text-sm text-gray-600 mt-1 leading-relaxed">{description}</p> : null}
+      </div>
+      {children}
+    </div>
+  );
+}
+
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function ProfileClient({
   profile,
@@ -374,6 +397,13 @@ export default function ProfileClient({
     { label: 'Home Town',    value: (profile as any)?.home_town,                    emoji: '🏡' },
     { label: 'Time Zone',    value: profileTimezone,                                emoji: '🕰️' },
   ].filter((r) => r.value);
+  const pathRows = identityRows.filter((row) => ['Tradition', 'Gotra', 'Kul Devata'].includes(row.label));
+  const practiceRows = identityRows.filter((row) => ['Sampradaya', 'Ishta Devata'].includes(row.label));
+  const placeRows = [
+    { label: 'Current place', value: [profile?.city, profile?.country].filter(Boolean).join(', '), emoji: '📍' },
+    { label: 'Home Town', value: (profile as any)?.home_town, emoji: '🏡' },
+    { label: 'Time Zone', value: profileTimezone, emoji: '🕰️' },
+  ].filter((row) => row.value);
 
   return (
     <div className="space-y-4 fade-in">
@@ -451,36 +481,72 @@ export default function ProfileClient({
       {/* ── Seva Score ── */}
       <SevaScoreBar score={sevaScore} />
 
-      {/* ── Identity Rows ── */}
-      {identityRows.length > 0 && (
-        <div className="bg-white rounded-2xl border border-gray-100 p-4">
-          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-3">Dharmic Identity</p>
-          <div className="divide-y divide-gray-50">
-            {identityRows.map(({ label, value, emoji }) => (
-              <div key={label} className="flex items-center justify-between py-2.5">
-                <span className="text-sm text-gray-500">{emoji ? `${emoji} ` : ''}{label}</span>
-                <span className="text-sm font-medium text-gray-800">{value}</span>
+      <div className="grid gap-4">
+        {(profile?.bio || pathRows.length > 0) && (
+          <ProfileSectionCard
+            eyebrow="My Path"
+            title="Identity and belonging"
+            description="The dharmic details that shape how the app greets and guides you."
+          >
+            {profile?.bio ? (
+              <div className="rounded-[1.35rem] bg-[var(--brand-primary-soft)] px-4 py-3">
+                <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400 mb-2">About</p>
+                <p className="text-sm text-gray-700 leading-relaxed">{profile.bio}</p>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+            ) : null}
+            {pathRows.length > 0 ? (
+              <div className="divide-y divide-gray-50">
+                {pathRows.map(({ label, value, emoji }) => (
+                  <div key={label} className="flex items-center justify-between py-2.5 gap-4">
+                    <span className="text-sm text-gray-500">{emoji ? `${emoji} ` : ''}{label}</span>
+                    <span className="text-sm font-medium text-gray-800 text-right">{value}</span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </ProfileSectionCard>
+        )}
 
-      {/* ── Bio ── */}
-      {profile?.bio && (
-        <div className="bg-white rounded-2xl border border-gray-100 p-4">
-          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">About</p>
-          <p className="text-sm text-gray-700 leading-relaxed">{profile.bio}</p>
-        </div>
-      )}
+        {practiceRows.length > 0 && (
+          <ProfileSectionCard
+            eyebrow="My Practice"
+            title="How you walk the path"
+            description="The practice details that influence study, greetings, and your in-app spiritual rhythm."
+          >
+            <div className="divide-y divide-gray-50">
+              {practiceRows.map(({ label, value, emoji }) => (
+                <div key={label} className="flex items-center justify-between py-2.5 gap-4">
+                  <span className="text-sm text-gray-500">{emoji ? `${emoji} ` : ''}{label}</span>
+                  <span className="text-sm font-medium text-gray-800 text-right">{value}</span>
+                </div>
+              ))}
+            </div>
+          </ProfileSectionCard>
+        )}
 
-      <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-4">
-        <div>
-          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Safety & Visibility</p>
-          <p className="text-sm text-gray-600 mt-1">
-            Manage the people and posts you have hidden, muted, or blocked.
-          </p>
-        </div>
+        {placeRows.length > 0 && (
+          <ProfileSectionCard
+            eyebrow="My Place"
+            title="Where sacred time follows you"
+            description="These details help Panchang, Mandali, and reminders stay relevant to your day."
+          >
+            <div className="divide-y divide-gray-50">
+              {placeRows.map(({ label, value, emoji }) => (
+                <div key={label} className="flex items-center justify-between py-2.5 gap-4">
+                  <span className="text-sm text-gray-500">{emoji ? `${emoji} ` : ''}{label}</span>
+                  <span className="text-sm font-medium text-gray-800 text-right">{value}</span>
+                </div>
+              ))}
+            </div>
+          </ProfileSectionCard>
+        )}
+      </div>
+
+      <ProfileSectionCard
+        eyebrow="Safety"
+        title="Visibility and boundaries"
+        description="Manage the people and posts you have hidden, muted, or blocked."
+      >
 
         {blockedProfiles.length === 0 && mutedProfiles.length === 0 && hiddenItems.length === 0 ? (
           <p className="text-sm text-gray-500">
@@ -561,7 +627,7 @@ export default function ProfileClient({
             )}
           </div>
         )}
-      </div>
+      </ProfileSectionCard>
 
       {/* ── Edit Form ── */}
       {editing && (
@@ -592,43 +658,44 @@ export default function ProfileClient({
             })()}
           </div>
 
-          {/* ── Basic info ── */}
-          {[
-            { label: 'Full Name',  key: 'full_name',  placeholder: 'Your full name'    },
-            { label: 'City',       key: 'city',       placeholder: 'Current city'      },
-            { label: 'Country',    key: 'country',    placeholder: 'Country'           },
-            { label: 'Home Town',  key: 'home_town',  placeholder: 'Where you are from'},
-          ].map(({ label, key, placeholder }) => (
-            <div key={key}>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
-              <input type="text" placeholder={placeholder}
-                value={(form as Record<string, string>)[key]}
-                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm"
-              />
-            </div>
-          ))}
-
-          {/* ── Sampradaya (adapts by tradition) ── */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">{sampradayaLabel}</label>
-            <select value={form.sampradaya}
-              onChange={(e) => setForm({ ...form, sampradaya: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm bg-white">
-              <option value="">Select {sampradayaLabel.toLowerCase()}</option>
-              {sampradayaOptions.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-            </select>
+          <div className="space-y-3">
+            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">My path</p>
+            {[
+              { label: 'Full Name', key: 'full_name', placeholder: 'Your full name' },
+              { label: 'Home Town', key: 'home_town', placeholder: 'Where you are from' },
+            ].map(({ label, key, placeholder }) => (
+              <div key={key}>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
+                <input type="text" placeholder={placeholder}
+                  value={(form as Record<string, string>)[key]}
+                  onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm"
+                />
+              </div>
+            ))}
           </div>
 
-          {/* ── Ishta Devata (adapts by tradition) ── */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">{ishtaDevataLabel}</label>
-            <select value={form.ishta_devata}
-              onChange={(e) => setForm({ ...form, ishta_devata: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm bg-white">
-              <option value="">Select {ishtaDevataLabel.toLowerCase()}</option>
-              {ishtaDevataOptions.map((d) => <option key={d.value} value={d.value}>{d.emoji} {d.label}</option>)}
-            </select>
+          <div className="space-y-3">
+            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">My practice</p>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">{sampradayaLabel}</label>
+              <select value={form.sampradaya}
+                onChange={(e) => setForm({ ...form, sampradaya: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm bg-white">
+                <option value="">Select {sampradayaLabel.toLowerCase()}</option>
+                {sampradayaOptions.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">{ishtaDevataLabel}</label>
+              <select value={form.ishta_devata}
+                onChange={(e) => setForm({ ...form, ishta_devata: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm bg-white">
+                <option value="">Select {ishtaDevataLabel.toLowerCase()}</option>
+                {ishtaDevataOptions.map((d) => <option key={d.value} value={d.value}>{d.emoji} {d.label}</option>)}
+              </select>
+            </div>
           </div>
 
           {/* ── Hindu-specific fields ── */}
@@ -651,25 +718,44 @@ export default function ProfileClient({
             </>
           )}
 
-          {/* ── Custom greeting ── */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Custom Greeting (optional)</label>
-            <input type="text" placeholder="e.g. Waheguru Ji Ka Khalsa, Namo Buddhaya…"
-              value={form.custom_greeting}
-              onChange={(e) => setForm({ ...form, custom_greeting: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm"
-            />
-            <p className="text-xs text-gray-400 mt-1">Overrides the auto greeting on your home screen</p>
+          <div className="space-y-3">
+            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">My place</p>
+            {[
+              { label: 'City', key: 'city', placeholder: 'Current city' },
+              { label: 'Country', key: 'country', placeholder: 'Country' },
+            ].map(({ label, key, placeholder }) => (
+              <div key={key}>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
+                <input type="text" placeholder={placeholder}
+                  value={(form as Record<string, string>)[key]}
+                  onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm"
+                />
+              </div>
+            ))}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Bio</label>
-            <textarea placeholder="Share a little about your spiritual journey…"
-              value={form.bio}
-              onChange={(e) => setForm({ ...form, bio: e.target.value })}
-              rows={3}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none resize-none text-sm"
-            />
+          <div className="space-y-3">
+            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">My voice</p>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Custom Greeting (optional)</label>
+              <input type="text" placeholder="e.g. Waheguru Ji Ka Khalsa, Namo Buddhaya…"
+                value={form.custom_greeting}
+                onChange={(e) => setForm({ ...form, custom_greeting: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm"
+              />
+              <p className="text-xs text-gray-400 mt-1">Overrides the auto greeting on your home screen</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Bio</label>
+              <textarea placeholder="Share a little about your spiritual journey…"
+                value={form.bio}
+                onChange={(e) => setForm({ ...form, bio: e.target.value })}
+                rows={3}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none resize-none text-sm"
+              />
+            </div>
           </div>
 
           <div className="flex gap-3">

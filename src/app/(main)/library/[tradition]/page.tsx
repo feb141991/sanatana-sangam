@@ -45,6 +45,32 @@ export default async function PathshalaTraditionPage({
           </div>
         </div>
         <p className="text-sm text-gray-600 leading-relaxed mt-4">{meta.studyPrompt}</p>
+
+        <div className="grid gap-3 sm:grid-cols-3 mt-4">
+          {[
+            {
+              eyebrow: 'Start',
+              title: 'Choose a scripture family',
+              description: 'Begin with the category that matches your current intention, not the whole tradition at once.',
+            },
+            {
+              eyebrow: 'Study',
+              title: 'Stay in one track',
+              description: 'Each track is designed to feel complete on its own, so you can go deep without losing your place.',
+            },
+            {
+              eyebrow: 'Trust',
+              title: 'Read with clear source posture',
+              description: 'Pathshala keeps translation, original-text, and companion-source boundaries visible as you move deeper.',
+            },
+          ].map((item) => (
+            <div key={item.title} className="clay-card rounded-[1.35rem] px-4 py-4">
+              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{item.eyebrow}</p>
+              <p className="font-semibold text-gray-900 mt-2">{item.title}</p>
+              <p className="text-sm text-gray-600 mt-2 leading-relaxed">{item.description}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       <section className="space-y-3">

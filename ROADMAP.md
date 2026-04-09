@@ -92,6 +92,10 @@ At any given time:
 - a structured section-by-section product polish lane tracked in `UX_SWEEP_PLAN.md`
 - the first Panchang UX sweep is now in build across the full Panchang page and the home widget so sacred-time feels like one coherent surface
 - the first Kul UX sweep is now in build so the family hub reads as “what should I do next?” instead of six equal destinations competing at once
+- the first Home UX sweep is now in build so the user lands on one calm daily ritual lane before utilities, discovery, and secondary actions
+- the first Profile UX sweep is now in build so identity, practice, place, and safety read as distinct areas instead of one long administrative sheet
+- the first Pathshala UX sweep is now in build so reading, recitation, and trust enter through calmer sanctuary-style lanes instead of dense stacked information
+- the first Vichaar UX sweep is now in build so threads and replies feel like a guided wisdom space instead of a generic forum
 
 ### Next eligible low-risk `Phase B` implementation
 

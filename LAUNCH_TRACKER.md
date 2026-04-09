@@ -117,6 +117,10 @@ Last updated: 2026-04-09
 - Panchang should evolve into a sacred-time experience with atmosphere, readability, and restraint: sky-led background, time-of-day theming, light haptics where supported, and no low-contrast mystical gimmicks.
 - The first Panchang experience pass is now active: the full page and home widget both use time-of-day atmosphere, a sacred-time ribbon, and calmer visual hierarchy.
 - The first Kul experience pass is now active too: the hub favors two primary actions and calmer secondary lanes instead of six equally loud destinations.
+- The first Home experience pass is now active too: the top of Home now prioritizes one daily ritual lane before utilities and secondary modules.
+- The first Profile experience pass is now active too: profile details are being regrouped into path, practice, place, and safety instead of one long settings flow.
+- The first Pathshala experience pass is now active too: root, tradition, track, and chapter surfaces are being reshaped into calmer study-entry lanes rather than dense knowledge stacks.
+- The first Vichaar Sabha experience pass is now active too: the forum is being reshaped to feel like a guided wisdom space instead of a generic thread board.
 - `PANCHANG_SOURCE_STRATEGY.md` now tracks how launch copy, future provider strategy, and sacred-time claims should stay aligned.
 - `UX_SWEEP_PLAN.md` now tracks the next experience improvements by surface, with Panchang, Kul, and Mandali as the highest-leverage sweeps.
 - `ROADMAP.md` is now the main sequencing document for `Phase A` vs `Phase B`.

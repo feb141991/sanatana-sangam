@@ -123,6 +123,32 @@ export default function ThreadDetailClient({
         </div>
       </div>
 
+      <div className="grid gap-3 sm:grid-cols-3">
+        {[
+          {
+            eyebrow: 'Read',
+            title: 'Stay with the question first',
+            description: 'Read the thread fully before replying so your answer serves the actual question, not just the category.',
+          },
+          {
+            eyebrow: 'Reply',
+            title: 'Add one useful perspective',
+            description: 'A concise, grounded reply is more helpful here than a broad or hurried sermon.',
+          },
+          {
+            eyebrow: 'Respect',
+            title: 'Keep wisdom and safety together',
+            description: 'If a thread feels unhelpful, use safety controls quietly instead of escalating the tone.',
+          },
+        ].map((item) => (
+          <div key={item.title} className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/70">
+            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{item.eyebrow}</p>
+            <p className="text-sm font-semibold text-gray-900 mt-2">{item.title}</p>
+            <p className="text-sm text-gray-600 mt-2 leading-relaxed">{item.description}</p>
+          </div>
+        ))}
+      </div>
+
       {/* Replies */}
       <div className="space-y-3">
         <h2 className="font-semibold text-gray-800 text-sm px-1">

@@ -74,6 +74,42 @@ const quickAccessItems = [
   { label: 'Pathshala', icon: '📖', href: '/library', desc: 'Tradition-first study tracks', bg: 'bg-yellow-50', border: 'border-yellow-100', iconBg: 'bg-yellow-100' },
 ];
 
+function FocusActionCard({
+  href,
+  icon,
+  eyebrow,
+  title,
+  description,
+  tone = 'primary',
+}: {
+  href: string;
+  icon: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  tone?: 'primary' | 'soft';
+}) {
+  const primary = tone === 'primary';
+
+  return (
+    <Link
+      href={href}
+      className={`rounded-[1.7rem] p-4 transition-all hover:-translate-y-0.5 ${primary ? 'clay-card' : 'glass-panel'}`}
+    >
+      <div className="flex items-start gap-3">
+        <div className="clay-icon-well text-lg flex-shrink-0">{icon}</div>
+        <div className="min-w-0">
+          <p className="text-[10px] uppercase tracking-[0.18em] font-semibold" style={{ color: 'rgba(140, 77, 45, 0.65)' }}>
+            {eyebrow}
+          </p>
+          <h3 className="font-display text-base font-bold text-gray-900 mt-1 leading-tight">{title}</h3>
+          <p className="text-sm text-gray-600 mt-2 leading-relaxed">{description}</p>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
 // ── Invite code — deterministic from userId (no DB needed) ─────────────────
 function generateInviteCode(userId: string): string {
   return userId.replace(/-/g, '').slice(-6).toUpperCase();
@@ -710,6 +746,12 @@ export default function HomeDashboard({
     return status !== 'dismissed' && status !== 'completed';
   });
   const hiddenPersonalizedCount = personalizedPaths.length - visiblePersonalizedPaths.length;
+  const firstVisiblePath = visiblePersonalizedPaths[0] ?? null;
+  const primaryHomeAction = firstVisiblePath?.actions[0] ?? {
+    label: 'Continue in Pathshala',
+    href: '/library',
+    icon: '📖',
+  };
 
   // Welcome back: user hasn't been active in 2+ days
   const isWelcomeBack = (() => {
@@ -885,6 +927,53 @@ export default function HomeDashboard({
           )}
         </div>
       </div>
+
+      <section className="space-y-2">
+        <div>
+          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Today in Sangam</p>
+          <p className="text-sm text-gray-600 mt-0.5">
+            Begin with one meaningful step, then move deeper if you want to.
+          </p>
+        </div>
+
+        <div className="grid gap-3">
+          <FocusActionCard
+            href={primaryHomeAction.href}
+            icon={primaryHomeAction.icon}
+            eyebrow={readToday ? 'Continue gently' : 'Begin with practice'}
+            title={readToday ? primaryHomeAction.label : `Read ${sacredText ? sacredTextMeta.label : 'today’s shloka'}`}
+            description={
+              readToday
+                ? 'Your first recommended step is ready based on your current path.'
+                : 'Start the day with a sacred reading before moving into calendars, family, or community.'
+            }
+            tone="primary"
+          />
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <FocusActionCard
+              href="/panchang"
+              icon="🪔"
+              eyebrow="Sacred time"
+              title="Check today’s rhythm"
+              description="Sunrise, Rahu Kaal, and the day’s sacred markers in one calmer view."
+              tone="soft"
+            />
+            <FocusActionCard
+              href={displayCity ? '/mandali' : '/kul'}
+              icon={displayCity ? '🏡' : '❤️'}
+              eyebrow={displayCity ? 'Local belonging' : 'Family space'}
+              title={displayCity ? 'See your Mandali pulse' : 'Visit your Kul'}
+              description={
+                displayCity
+                  ? 'Local members, events, and today’s conversation are waiting in one place.'
+                  : 'Family rhythm, lineage, and shared practice stay together here.'
+              }
+              tone="soft"
+            />
+          </div>
+        </div>
+      </section>
 
       {personalizedPaths.length > 0 && (
         <section className="space-y-2">

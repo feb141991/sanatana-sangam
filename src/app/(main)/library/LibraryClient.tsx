@@ -23,14 +23,42 @@ export default function LibraryClient({
 
   return (
     <MotionFade className="space-y-4 pb-6 fade-in">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--brand-primary)]">
-          Tradition-first study
-        </p>
-        <h1 className="font-display font-bold text-xl text-gray-900 mt-1">Parampara Pathshala</h1>
-        <p className="text-sm text-gray-500 mt-0.5">
-          Choose your tradition here. Scripture categories, study tracks, and texts now open on the next page for a calmer learning flow.
-        </p>
+      <div className="glass-panel rounded-[1.8rem] px-5 py-5 space-y-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--brand-primary)]">
+            Tradition-first study
+          </p>
+          <h1 className="font-display font-bold text-xl text-gray-900 mt-1">Parampara Pathshala</h1>
+          <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+            Enter gently: choose your tradition, then move into scripture families, study tracks, and texts without everything competing on one screen.
+          </p>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-3">
+          {[
+            {
+              eyebrow: 'Read',
+              title: 'Study quietly',
+              description: 'Open a tradition and move into full texts, chapters, and trusted study tracks.',
+            },
+            {
+              eyebrow: 'Return',
+              title: 'Resume where you left off',
+              description: 'Bookmarks and continue-learning loops keep your reading rhythm calm and easy to resume.',
+            },
+            {
+              eyebrow: 'Recite',
+              title: 'Keep audio trustworthy',
+              description: 'Pathshala holds recitation clearly: live in app where ready, companion-linked where authority still matters.',
+            },
+          ].map((item) => (
+            <div key={item.title} className="clay-card rounded-[1.45rem] px-4 py-4">
+              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{item.eyebrow}</p>
+              <p className="font-semibold text-gray-900 mt-2">{item.title}</p>
+              <p className="text-sm text-gray-600 mt-2 leading-relaxed">{item.description}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="clay-card rounded-[1.6rem] px-4 py-4 space-y-2">

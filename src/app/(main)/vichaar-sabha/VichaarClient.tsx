@@ -135,6 +135,32 @@ export default function VichaarClient({
   }, [form.title, threads]);
 
   const visibleUnansweredCount = visibleThreads.filter((thread) => thread.reply_count === 0).length;
+  const primaryVichaarAction =
+    visibleUnansweredCount > 0
+      ? {
+          eyebrow: 'Open questions',
+          title: 'Answer something still waiting',
+          description: `${visibleUnansweredCount} thread${visibleUnansweredCount === 1 ? '' : 's'} in your current view still need a response.`,
+          onClick: () => setFeedFilter('unanswered'),
+          icon: <CheckCircle size={16} className="text-gray-500" />,
+        }
+      : visibleThreads.length > 0
+        ? {
+            eyebrow: 'Active wisdom',
+            title: 'Read the most active thread',
+            description: 'Begin with the conversation already carrying momentum, then add your reflection when it helps.',
+            onClick: () => setFeedFilter('active'),
+            icon: <MessageSquare size={16} className="text-gray-500" />,
+          }
+        : {
+            eyebrow: 'Begin gently',
+            title: isGuest ? 'Browse before joining' : 'Start a thoughtful thread',
+            description: isGuest
+              ? 'Read a little first, see how questions are framed, and join when you’re ready to contribute.'
+              : 'Ask one clear question or share one focused reflection instead of posting too broadly.',
+            onClick: () => (isGuest ? null : setShowCompose(true)),
+            icon: isGuest ? <Search size={16} className="text-gray-500" /> : <Plus size={16} className="text-gray-500" />,
+          };
 
   async function submitThread() {
     if (!form.title.trim() || !form.body.trim()) {
@@ -199,27 +225,68 @@ export default function VichaarClient({
     <div className="space-y-4 fade-in">
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display font-bold text-xl text-gray-900">Vichaar Sabha</h1>
-          <p className="text-sm text-gray-500">Ask, share, and explore dharma together</p>
+      <div className="glass-panel rounded-[1.8rem] px-5 py-5 space-y-4">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--brand-primary)]">
+              Wisdom space
+            </p>
+            <h1 className="font-display font-bold text-xl text-gray-900 mt-1">Vichaar Sabha</h1>
+            <p className="text-sm text-gray-600 mt-2 leading-relaxed max-w-2xl">
+              Ask, reflect, and explore dharma together. The goal here is thoughtful clarity, not fast feed posting.
+            </p>
+          </div>
+          {isGuest ? (
+            <Link
+              href="/signup"
+              className="flex items-center gap-1.5 px-4 py-2 bg-gradient-sacred text-white text-sm font-semibold rounded-full shadow-sacred hover:opacity-90 transition flex-shrink-0"
+            >
+              Join to Post
+            </Link>
+          ) : (
+            <button
+              onClick={() => setShowCompose(true)}
+              className="flex items-center gap-1.5 px-4 py-2 bg-gradient-sacred text-white text-sm font-semibold rounded-full shadow-sacred hover:opacity-90 transition flex-shrink-0"
+            >
+              <Plus size={15} />
+              <span>New Thread</span>
+            </button>
+          )}
         </div>
-        {isGuest ? (
-          <Link
-            href="/signup"
-            className="flex items-center gap-1.5 px-4 py-2 bg-gradient-sacred text-white text-sm font-semibold rounded-full shadow-sacred hover:opacity-90 transition"
-          >
-            Join to Post
-          </Link>
-        ) : (
+
+        <div className="grid gap-3 sm:grid-cols-[1.25fr_0.95fr]">
           <button
-            onClick={() => setShowCompose(true)}
-            className="flex items-center gap-1.5 px-4 py-2 bg-gradient-sacred text-white text-sm font-semibold rounded-full shadow-sacred hover:opacity-90 transition"
+            type="button"
+            onClick={primaryVichaarAction.onClick}
+            disabled={isGuest && visibleThreads.length === 0}
+            className="clay-card rounded-[1.6rem] p-4 text-left disabled:opacity-80"
           >
-            <Plus size={15} />
-            <span>New Thread</span>
+            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{primaryVichaarAction.eyebrow}</p>
+            <div className="flex items-start justify-between gap-3 mt-3">
+              <div>
+                <p className="text-sm font-semibold text-gray-900">{primaryVichaarAction.title}</p>
+                <p className="text-sm text-gray-600 mt-2 leading-relaxed">{primaryVichaarAction.description}</p>
+              </div>
+              <div className="clay-icon-well flex-shrink-0">{primaryVichaarAction.icon}</div>
+            </div>
           </button>
-        )}
+
+          <div className="glass-panel rounded-[1.6rem] p-4">
+            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">Sabha pulse</p>
+            <div className="grid grid-cols-3 gap-2 mt-3">
+              {[
+                { label: 'Visible', value: visibleThreads.length },
+                { label: 'Unanswered', value: visibleUnansweredCount },
+                { label: 'Search', value: deferredSearch.trim() ? 1 : 0 },
+              ].map((item) => (
+                <div key={item.label} className="rounded-[1.05rem] bg-white/72 border border-white/80 px-3 py-3 text-center">
+                  <p className="font-display font-bold text-xl" style={{ color: 'var(--brand-primary-strong)' }}>{item.value}</p>
+                  <p className="text-[10px] uppercase tracking-[0.16em] text-gray-400 font-semibold mt-1">{item.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
       {isGuest && (

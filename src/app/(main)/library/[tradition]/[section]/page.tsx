@@ -144,6 +144,36 @@ export default async function PathshalaSectionPage({
             </div>
           </div>
         )}
+
+        <div className="grid gap-3 sm:grid-cols-3">
+          {[
+            {
+              eyebrow: 'Enter',
+              title: canonicalChapters.length > 0 ? 'Follow the chapter path' : ramayanaKandas.length > 0 ? 'Follow the Kanda path' : 'Choose a text to begin',
+              description: canonicalChapters.length > 0
+                ? 'The complete Gita flow now works best chapter by chapter, with verses, trust cues, and study prompts staying together.'
+                : ramayanaKandas.length > 0
+                  ? 'The Ramayana flow is strongest when read Kanda by Kanda, so the narrative rhythm stays intact.'
+                  : 'Choose a text and stay with it long enough for the study surface to feel settled, not scattered.',
+            },
+            {
+              eyebrow: 'Study',
+              title: 'Use one mode at a time',
+              description: 'Read, ask for explanation, or recite with companion support, but keep the surface calm by choosing one intent first.',
+            },
+            {
+              eyebrow: 'Trust',
+              title: 'Keep source boundaries visible',
+              description: 'This track keeps live text, companion sources, and future layers explicit so study never pretends to be more complete than it is.',
+            },
+          ].map((item) => (
+            <div key={item.title} className="glass-panel rounded-[1.35rem] px-4 py-4 border border-white/60">
+              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{item.eyebrow}</p>
+              <p className="font-semibold text-gray-900 mt-2">{item.title}</p>
+              <p className="text-sm text-gray-600 mt-2 leading-relaxed">{item.description}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       {section === 'upanishad' && upanishadLayerCounts && (

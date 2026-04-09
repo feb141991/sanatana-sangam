@@ -249,6 +249,34 @@ export default async function PathshalaEntryPage({
             </MotionStagger>
         </div>
 
+        <section className="space-y-3">
+          <div className="grid gap-3 md:grid-cols-3">
+            {[
+              {
+                eyebrow: 'Read',
+                title: 'Stay verse by verse',
+                description: 'Use the local chapter flow when you want continuity, bookmarks, and a calm in-app reading rhythm.',
+              },
+              {
+                eyebrow: 'Recite',
+                title: 'Lean on authoritative audio',
+                description: 'Companion audio is still the trusted recitation layer while in-app authoritative playback is being prepared carefully.',
+              },
+              {
+                eyebrow: 'Reflect',
+                title: 'Study with one question',
+                description: 'Ask for explanation, quiz, or flashcards one at a time so the chapter remains understandable instead of over-processed.',
+              },
+            ].map((item) => (
+              <div key={item.title} className="glass-panel rounded-[1.35rem] px-4 py-4 border border-white/60">
+                <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{item.eyebrow}</p>
+                <p className="font-semibold text-gray-900 mt-2">{item.title}</p>
+                <p className="text-sm text-gray-600 mt-2 leading-relaxed">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {user && (
           <PathshalaActionBar
             userId={user.id}
