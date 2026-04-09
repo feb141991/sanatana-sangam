@@ -17,27 +17,26 @@ export default function BhaktiPage() {
           <div className="space-y-2">
             <h1 className="font-display text-3xl font-bold text-gray-900">Sahaj Bhakti</h1>
             <p className="max-w-2xl text-sm leading-relaxed text-gray-600">
-              This will become the quieter devotional side of Sangam: chant, listen, join aarti, return to remembrance,
-              and hold rhythm gently across the week.
+              A quieter devotional space for chant, listening, and remembrance.
             </p>
           </div>
           <div className="grid gap-3 md:grid-cols-3">
             <div className="clay-card rounded-[1.5rem] px-4 py-4 text-left">
               <p className="text-sm font-semibold text-gray-900">Daily remembrance</p>
               <p className="text-xs leading-relaxed text-gray-600 mt-2">
-                Short chant starts, soft entry rituals, and calm devotional moments for people who want to begin simply.
+                Short chant starts and calm devotional moments.
               </p>
             </div>
             <div className="clay-card rounded-[1.5rem] px-4 py-4 text-left">
               <p className="text-sm font-semibold text-gray-900">Live and shared later</p>
               <p className="text-xs leading-relaxed text-gray-600 mt-2">
-                Bhajan baithaks, aarti, and devotional circles can come here once the rights-safe audio path is fully ready.
+                Bhajan baithaks and aarti can come here once audio is ready.
               </p>
             </div>
             <div className="clay-card rounded-[1.5rem] px-4 py-4 text-left">
               <p className="text-sm font-semibold text-gray-900">Built for calm</p>
               <p className="text-xs leading-relaxed text-gray-600 mt-2">
-                It should feel lighter than a feed and gentler than a player dashboard, especially for elders and families.
+                Kept simple, gentle, and elder-friendly.
               </p>
             </div>
           </div>
@@ -47,7 +46,7 @@ export default function BhaktiPage() {
       <section className="grid gap-4 md:grid-cols-[1.2fr_0.8fr]">
         <div className="glass-panel rounded-[1.8rem] px-5 py-5">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">
-            What arrives first
+            Coming first
           </p>
           <div className="mt-4 space-y-3">
             {[
@@ -65,13 +64,10 @@ export default function BhaktiPage() {
         </div>
 
         <div className="glass-panel rounded-[1.8rem] px-5 py-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">
-            Until then
-          </p>
           <div className="mt-4 space-y-3 text-sm text-gray-700">
-            <p>Use Pathshala for source-grounded study and recitation guidance.</p>
-            <p>Use Panchang for sacred-time rhythm and reminders.</p>
-            <p>Use Kul for family devotion and shared remembrance later.</p>
+            <p>Pathshala for study.</p>
+            <p>Panchang for sacred time.</p>
+            <p>Kul for family devotion later.</p>
           </div>
           <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-[color:var(--brand-primary-soft)] bg-white/70 px-4 py-2 text-sm font-medium text-[color:var(--brand-primary-strong)]">
             Coming in a deeper devotional release

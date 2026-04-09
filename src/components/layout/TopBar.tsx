@@ -14,6 +14,7 @@ import {
   getPermissionState,
   isOneSignalConfigured,
   loginToOneSignal,
+  syncOneSignalContext,
 } from '@/lib/onesignal';
 import type { Notification } from '@/types/database';
 
@@ -29,16 +30,33 @@ const titles: Record<string, string> = {
   '/profile':       'My Profile',
 };
 
+const PUSH_PROMPT_DISMISS_KEY = 'sanatana-push-prompt-dismissed-until';
+const PUSH_PROMPT_COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000;
+
 export default function TopBar({
   userId,
   isGuest = false,
   avatarUrl = null,
   userInitials = 'SS',
+  tradition = null,
+  city = null,
+  countryCode = null,
+  wantsFestivalReminders = true,
+  wantsShlokaReminders = true,
+  wantsCommunityNotifications = true,
+  wantsFamilyNotifications = true,
 }: {
   userId:   string;
   isGuest?: boolean;
   avatarUrl?: string | null;
   userInitials?: string;
+  tradition?: string | null;
+  city?: string | null;
+  countryCode?: string | null;
+  wantsFestivalReminders?: boolean;
+  wantsShlokaReminders?: boolean;
+  wantsCommunityNotifications?: boolean;
+  wantsFamilyNotifications?: boolean;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -49,22 +67,55 @@ export default function TopBar({
   const prefersReducedMotion = useReducedMotion();
   const pushConfigured = isOneSignalConfigured();
   const homeHref = isGuest ? '/guest' : '/home';
+  const wantsAnyNotifications = Boolean(
+    wantsFestivalReminders
+    || wantsShlokaReminders
+    || wantsCommunityNotifications
+    || wantsFamilyNotifications
+  );
 
   const [open,       setOpen]       = useState(false);
   const [notifs,     setNotifs]     = useState<Notification[]>([]);
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [isHidden, setIsHidden] = useState(false);
+  const [pushPromptDismissedUntil, setPushPromptDismissedUntil] = useState<number | null>(null);
   const lastScrollYRef = useRef(0);
 
   // Load initial permission state
   useEffect(() => {
     setPermission(getPermissionState());
+    if (typeof window === 'undefined') return;
+    const stored = window.localStorage.getItem(PUSH_PROMPT_DISMISS_KEY);
+    setPushPromptDismissedUntil(stored ? Number(stored) : null);
   }, []);
 
   useEffect(() => {
     if (!pushConfigured || !userId) return;
     loginToOneSignal(userId);
   }, [pushConfigured, userId]);
+
+  useEffect(() => {
+    if (!pushConfigured || !userId) return;
+    syncOneSignalContext({
+      tradition,
+      city,
+      countryCode,
+      wantsFestivalReminders,
+      wantsShlokaReminders,
+      wantsCommunityNotifications,
+      wantsFamilyNotifications,
+    });
+  }, [
+    city,
+    countryCode,
+    pushConfigured,
+    tradition,
+    userId,
+    wantsCommunityNotifications,
+    wantsFamilyNotifications,
+    wantsFestivalReminders,
+    wantsShlokaReminders,
+  ]);
 
   // Fetch real notifications from DB
   const fetchNotifs = useCallback(async () => {
@@ -107,29 +158,26 @@ export default function TopBar({
   }, [open]);
 
   const unreadCount = notifs.filter((n) => !n.read).length;
+  const shouldSuppressPrompt = Boolean(
+    pushPromptDismissedUntil
+    && Number.isFinite(pushPromptDismissedUntil)
+    && pushPromptDismissedUntil > Date.now()
+  );
+  const shouldShowPushPrompt =
+    pushConfigured
+    && permission !== 'granted'
+    && (permission === 'denied' || (wantsAnyNotifications && !shouldSuppressPrompt));
 
   async function handleBellClick() {
     setOpen((prev) => !prev);
     setIsHidden(false);
+  }
 
-    // First-time permission request
-    if (pushConfigured && permission === 'default') {
-      const granted = await requestNotificationPermission();
-      const newState = getPermissionState();
-      setPermission(newState);
-
-      if (granted) {
-        toast.success('Notifications enabled 🙏');
-        // Save player ID to profile for targeted pushes later
-        const playerId = await getPlayerId();
-        if (playerId && userId) {
-          await supabase
-            .from('profiles')
-            .update({ onesignal_player_id: playerId })
-            .eq('id', userId);
-        }
-      }
-    }
+  function dismissPushPromptForNow() {
+    if (typeof window === 'undefined') return;
+    const nextAllowedAt = Date.now() + PUSH_PROMPT_COOLDOWN_MS;
+    window.localStorage.setItem(PUSH_PROMPT_DISMISS_KEY, String(nextAllowedAt));
+    setPushPromptDismissedUntil(nextAllowedAt);
   }
 
   async function markAllRead() {
@@ -217,7 +265,7 @@ export default function TopBar({
                     </div>
 
                     {/* Permission prompt — shown when not yet granted */}
-                    {pushConfigured && permission !== 'granted' && (
+                    {shouldShowPushPrompt && (
                       <div className="glass-panel mx-3 mt-3 px-3 py-2.5 rounded-xl flex items-start gap-2.5">
                         <span className="text-lg mt-0.5">🔔</span>
                         <div className="flex-1 min-w-0">
@@ -228,26 +276,47 @@ export default function TopBar({
                           </p>
                           <p className="text-xs text-gray-500 mt-0.5 leading-snug">
                             {permission === 'denied'
-                              ? 'Allow notifications in your browser settings to receive festival reminders and Mandali updates.'
-                              : 'Get festival reminders, Mandali activity, and daily shloka alerts.'}
+                              ? 'Allow notifications in your browser settings to receive the reminder types you have enabled.'
+                              : wantsAnyNotifications
+                                ? 'Get the reminder types you have enabled, in your local time and outside quiet hours.'
+                                : 'Choose reminder types in Profile first, then enable browser push here.'}
                           </p>
-                          {permission !== 'denied' && (
-                            <button
-                              onClick={async () => {
-                                const granted = await requestNotificationPermission();
-                                setPermission(getPermissionState());
-                                if (granted) {
-                                  toast.success('Notifications enabled 🙏');
-                                  const playerId = await getPlayerId();
-                                  if (playerId && userId) {
-                                    await supabase.from('profiles').update({ onesignal_player_id: playerId }).eq('id', userId);
+                          {permission !== 'denied' && wantsAnyNotifications && (
+                            <div className="flex items-center gap-3 mt-1.5">
+                              <button
+                                onClick={async () => {
+                                  const granted = await requestNotificationPermission();
+                                  setPermission(getPermissionState());
+                                  if (granted) {
+                                    toast.success('Notifications enabled 🙏');
+                                    const playerId = await getPlayerId();
+                                    if (playerId && userId) {
+                                      await supabase.from('profiles').update({ onesignal_player_id: playerId }).eq('id', userId);
+                                    }
                                   }
-                                }
-                              }}
-                              className="glass-button-primary mt-1.5 text-xs font-semibold px-3 py-1 rounded-full text-white transition"
+                                }}
+                                className="glass-button-primary text-xs font-semibold px-3 py-1 rounded-full text-white transition"
+                              >
+                                Enable
+                              </button>
+                              {permission === 'default' && (
+                                <button
+                                  onClick={dismissPushPromptForNow}
+                                  className="text-xs font-semibold text-gray-500 hover:text-gray-700 transition"
+                                >
+                                  Later
+                                </button>
+                              )}
+                            </div>
+                          )}
+                          {permission !== 'denied' && !wantsAnyNotifications && (
+                            <Link
+                              href="/profile"
+                              className="inline-flex mt-1.5 text-xs font-semibold hover:underline"
+                              style={{ color: 'var(--brand-primary-strong)' }}
                             >
-                              Enable
-                            </button>
+                              Open notification preferences
+                            </Link>
                           )}
                         </div>
                       </div>
@@ -274,11 +343,8 @@ export default function TopBar({
                           <div>
                             <p className="text-sm font-medium text-gray-700">All quiet for now</p>
                             <p className="text-xs text-gray-400 mt-1">
-                              Festival reminders, Pathshala nudges, and Mandali updates will gather here gently.
+                              Reminders and updates will appear here.
                             </p>
-                          </div>
-                          <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--brand-primary-soft)] bg-white/70 px-3 py-1.5 text-[11px] font-medium text-[color:var(--brand-primary-strong)]">
-                            Check back in the evening for sacred-time reminders
                           </div>
                         </div>
                       ) : (

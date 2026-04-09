@@ -79,6 +79,41 @@ export async function loginToOneSignal(externalId: string) {
   });
 }
 
+type OneSignalContext = {
+  tradition?: string | null;
+  city?: string | null;
+  countryCode?: string | null;
+  wantsFestivalReminders?: boolean;
+  wantsShlokaReminders?: boolean;
+  wantsCommunityNotifications?: boolean;
+  wantsFamilyNotifications?: boolean;
+};
+
+export async function syncOneSignalContext(context: OneSignalContext) {
+  await withOneSignal(async (OneSignal) => {
+    const tags = {
+      tradition: context.tradition || '',
+      city: context.city || '',
+      country_code: context.countryCode || '',
+      wants_festival_reminders: context.wantsFestivalReminders ? '1' : '0',
+      wants_shloka_reminders: context.wantsShlokaReminders ? '1' : '0',
+      wants_community_notifications: context.wantsCommunityNotifications ? '1' : '0',
+      wants_family_notifications: context.wantsFamilyNotifications ? '1' : '0',
+    };
+
+    if (typeof OneSignal.User?.addTags === 'function') {
+      await OneSignal.User.addTags(tags);
+      return;
+    }
+
+    if (typeof OneSignal.User?.addTag === 'function') {
+      await Promise.all(
+        Object.entries(tags).map(([key, value]) => OneSignal.User.addTag(key, value))
+      );
+    }
+  });
+}
+
 export async function logoutFromOneSignal() {
   await withOneSignal(async (OneSignal) => {
     await OneSignal.logout();

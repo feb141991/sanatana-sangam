@@ -64,8 +64,7 @@ export default async function GuestPage() {
             Explore Sanatana Sangam before you join
           </h1>
           <p className="text-sm sm:text-base text-gray-600 leading-relaxed max-w-xl">
-            Start with the two strongest guest experiences: community wisdom in Vichaar Sabha and nearby sacred places in Tirtha Map.
-            Join free whenever you want to post, reply, build your Kul, or receive reminders.
+            Start with Vichaar Sabha and Tirtha Map. Join when you want to post, reply, build your Kul, or get reminders.
           </p>
         </div>
 
@@ -86,17 +85,17 @@ export default async function GuestPage() {
             {
               eyebrow: 'Browse',
               title: 'Read before committing',
-              description: 'Guest mode lets you absorb the tone and quality of the app before giving anything back.',
+              description: 'Read first and get a feel for the app.',
             },
             {
               eyebrow: 'Discover',
               title: 'Find sacred places nearby',
-              description: 'Tirtha discovery stays open so the app can help immediately, even before signup.',
+              description: 'Use Tirtha discovery before signup.',
             },
             {
               eyebrow: 'Join later',
               title: 'Keep the next step simple',
-              description: 'When you’re ready, join to post, reply, build your Kul, and turn on reminders.',
+              description: 'Join later for posting, Kul, and reminders.',
             },
           ].map((item) => (
             <div key={item.title} className="clay-card rounded-[1.4rem] px-4 py-4">
@@ -145,9 +144,6 @@ export default async function GuestPage() {
             Sign in
           </Link>
         </div>
-        <p className="text-xs text-gray-400">
-          Guest mode stays intentionally calm: read and discover first, then join when you want to participate.
-        </p>
       </section>
 
       <section className="grid gap-3 sm:grid-cols-2">

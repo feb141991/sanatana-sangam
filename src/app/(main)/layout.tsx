@@ -23,11 +23,16 @@ export default async function MainLayout({
   let libraryLabel:     string        = 'Pathshala';
   let avatarUrl:        string | null = null;
   let userInitials:     string        = 'SS';
+  let tradition:        string | null = null;
+  let wantsFestivalReminders          = true;
+  let wantsShlokaReminders            = true;
+  let wantsCommunityNotifications     = true;
+  let wantsFamilyNotifications        = true;
 
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('latitude, longitude, city, country, country_code, tradition, avatar_url, full_name, username')
+      .select('latitude, longitude, city, country, country_code, tradition, avatar_url, full_name, username, wants_festival_reminders, wants_shloka_reminders, wants_community_notifications, wants_family_notifications')
       .eq('id', user.id)
       .single();
 
@@ -39,11 +44,28 @@ export default async function MainLayout({
     libraryLabel     = getTraditionMeta(profile?.tradition).navLibraryLabel;
     avatarUrl        = profile?.avatar_url ?? null;
     userInitials     = getInitials(profile?.full_name ?? profile?.username ?? 'Sanatana');
+    tradition        = profile?.tradition ?? null;
+    wantsFestivalReminders = profile?.wants_festival_reminders ?? true;
+    wantsShlokaReminders = profile?.wants_shloka_reminders ?? true;
+    wantsCommunityNotifications = profile?.wants_community_notifications ?? true;
+    wantsFamilyNotifications = profile?.wants_family_notifications ?? true;
   }
 
   return (
     <div className="min-h-screen flex flex-col">
-      <TopBar userId={userId} isGuest={!user} avatarUrl={avatarUrl} userInitials={userInitials} />
+      <TopBar
+        userId={userId}
+        isGuest={!user}
+        avatarUrl={avatarUrl}
+        userInitials={userInitials}
+        tradition={tradition}
+        city={savedCity}
+        countryCode={savedCountryCode}
+        wantsFestivalReminders={wantsFestivalReminders}
+        wantsShlokaReminders={wantsShlokaReminders}
+        wantsCommunityNotifications={wantsCommunityNotifications}
+        wantsFamilyNotifications={wantsFamilyNotifications}
+      />
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 pt-4 pb-28">
         <LocationProvider
           savedLat={savedLat}

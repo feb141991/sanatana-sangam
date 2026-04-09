@@ -167,6 +167,8 @@ export default function ProfileClient({
   const [safetyBusyKey, setSafetyBusyKey] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>((profile as any)?.avatar_url ?? null);
   const [showAvatarPreview, setShowAvatarPreview] = useState(false);
+  const [browserPermission, setBrowserPermission] = useState<NotificationPermission>('default');
+  const [browserPushSubscriptionId, setBrowserPushSubscriptionId] = useState<string | null>(null);
   const [blockedProfiles, setBlockedProfiles] = useState(initialBlockedProfiles);
   const [mutedProfiles, setMutedProfiles] = useState(initialMutedProfiles);
   const [hiddenItems, setHiddenItems] = useState(initialHiddenItems);
@@ -246,6 +248,11 @@ export default function ProfileClient({
     if (!browserTimeZone || browserTimeZone === profileTimezone) return;
     supabase.from('profiles').update({ timezone: browserTimeZone }).eq('id', userId);
   }, [profileTimezone, supabase, userId]);
+
+  useEffect(() => {
+    setBrowserPermission(getPermissionState());
+    getPlayerId().then((id) => setBrowserPushSubscriptionId(id));
+  }, []);
 
   async function uploadAvatar(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -513,7 +520,7 @@ export default function ProfileClient({
           <ProfileSectionCard
             eyebrow="My Path"
             title="Identity and belonging"
-            description="The dharmic details that shape how the app greets and guides you."
+            description="Your dharmic profile."
           >
             {profile?.bio ? (
               <div className="rounded-[1.35rem] bg-[var(--brand-primary-soft)] px-4 py-3">
@@ -538,7 +545,7 @@ export default function ProfileClient({
           <ProfileSectionCard
             eyebrow="My Practice"
             title="How you walk the path"
-            description="The practice details that influence study, greetings, and your in-app spiritual rhythm."
+            description="Your practice details."
           >
             <div className="divide-y divide-gray-50">
               {practiceRows.map(({ label, value, emoji }) => (
@@ -555,7 +562,7 @@ export default function ProfileClient({
           <ProfileSectionCard
             eyebrow="My Place"
             title="Where sacred time follows you"
-            description="These details help Panchang, Mandali, and reminders stay relevant to your day."
+            description="Your place and time details."
           >
             <div className="divide-y divide-gray-50">
               {placeRows.map(({ label, value, emoji }) => (
@@ -572,29 +579,29 @@ export default function ProfileClient({
       <ProfileSectionCard
         eyebrow="Notifications"
         title="What should reach you"
-        description="Control sacred-time reminders now, with community and family delivery ready for the next notification lanes."
+        description="Control reminders and quiet hours."
       >
         <div className="space-y-4">
           {[
             {
               key: 'wants_shloka_reminders',
               title: 'Daily shloka reminders',
-              description: 'A gentle evening nudge when you have not opened the day’s reading yet.',
+              description: 'Evening reminders for the day’s reading.',
             },
             {
               key: 'wants_festival_reminders',
               title: 'Festival reminders',
-              description: 'Morning reminders for shared or tradition-relevant observances.',
+              description: 'Morning reminders for observances.',
             },
             {
               key: 'wants_community_notifications',
               title: 'Community updates',
-              description: 'Keep this ready for Mandali replies, RSVPs, and nearby activity.',
+              description: 'Mandali replies, RSVPs, and nearby activity.',
             },
             {
               key: 'wants_family_notifications',
               title: 'Family updates',
-              description: 'Keep this ready for Kul reminders, dates, and shared family activity.',
+              description: 'Kul reminders, dates, and family activity.',
             },
           ].map((item) => {
             const checked = notificationPrefs[item.key as keyof typeof notificationPrefs] as boolean;
@@ -618,7 +625,7 @@ export default function ProfileClient({
             <div>
               <p className="text-sm font-medium text-gray-900">Quiet hours</p>
               <p className="text-xs text-gray-500 mt-1">
-                Sacred-time reminders will skip this local window on your device.
+                Reminders will skip this local window.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -662,18 +669,42 @@ export default function ProfileClient({
               Local time zone: {profileTimezone ?? 'UTC fallback until your browser reports a timezone'}
             </p>
           </div>
+
+          <div className="rounded-2xl border border-gray-100 px-4 py-4 space-y-3">
+            <div>
+              <p className="text-sm font-medium text-gray-900">Notification diagnostics</p>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {[
+                { label: 'Browser permission', value: browserPermission },
+                { label: 'Push linked on this device', value: browserPushSubscriptionId ? 'Yes' : 'No' },
+                { label: 'Festival reminders', value: notificationPrefs.wants_festival_reminders ? 'On' : 'Off' },
+                { label: 'Shloka reminders', value: notificationPrefs.wants_shloka_reminders ? 'On' : 'Off' },
+                { label: 'Community updates', value: notificationPrefs.wants_community_notifications ? 'On' : 'Off' },
+                { label: 'Family updates', value: notificationPrefs.wants_family_notifications ? 'On' : 'Off' },
+              ].map((item) => (
+                <div key={item.label} className="rounded-xl bg-gray-50 px-3 py-3">
+                  <p className="text-[10px] uppercase tracking-[0.16em] text-gray-400 font-semibold">{item.label}</p>
+                  <p className="text-sm font-medium text-gray-800 mt-1">{item.value}</p>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-gray-500">
+              Target windows: <span className="font-medium text-gray-700">09:00</span> for festivals and <span className="font-medium text-gray-700">19:00</span> for shloka reminders.
+            </p>
+          </div>
         </div>
       </ProfileSectionCard>
 
       <ProfileSectionCard
         eyebrow="Safety"
         title="Visibility and boundaries"
-        description="Manage the people and posts you have hidden, muted, or blocked."
+        description="Manage hidden, muted, and blocked activity."
       >
 
         {blockedProfiles.length === 0 && mutedProfiles.length === 0 && hiddenItems.length === 0 ? (
           <p className="text-sm text-gray-500">
-            Nothing is hidden right now. Safety actions from Mandali and Vichaar will appear here when you use them.
+            Nothing hidden right now.
           </p>
         ) : (
           <div className="space-y-4">

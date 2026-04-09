@@ -146,15 +146,15 @@ function TypingIndicator() {
 const PRACTICE_LANES = [
   {
     title: 'Reflect on a verse',
-    body: 'Bring a shloka, pauri, sutra, or personal question and ask for a grounded explanation.',
+    body: 'Bring a verse or question for a grounded explanation.',
   },
   {
     title: 'Prepare for study',
-    body: 'Ask for a chapter summary, a beginner-friendly meaning, or a few reflection questions.',
+    body: 'Ask for a summary, meaning, or reflection prompts.',
   },
   {
     title: 'Work through life gently',
-    body: 'Use Dharma Mitra for calm, source-aware guidance when life feels confusing or heavy.',
+    body: 'Use it for calm, source-aware guidance.',
   },
 ];
 
@@ -277,7 +277,7 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
             </div>
             <div>
               <h1 className="font-display font-bold text-gray-900 text-lg leading-tight">Dharma Mitra</h1>
-              <p className="text-xs text-gray-500">A calmer place to ask, reflect, study, and return to trusted sources.</p>
+              <p className="text-xs text-gray-500">Ask, reflect, and study with trust cues.</p>
             </div>
           </div>
           {!isEmpty && (
@@ -294,7 +294,7 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
             {trustLabel}
           </span>
           <span className="clay-pill text-[11px] text-gray-700">
-            Best for study, reflection, and gentle next steps
+            Study, reflection, and next steps
           </span>
           {initialPrompt && (
             <span className="clay-pill text-[11px] text-gray-700">
@@ -318,10 +318,7 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
                 {greeting}, {userName}
               </h2>
               <p className="text-sm text-gray-500 max-w-xs">
-                Begin with one question, one verse, or one burden. This space should feel more like guidance than search.
-              </p>
-              <p className="text-xs text-gray-400 max-w-sm">
-                When relevant, Dharma Mitra surfaces internal scripture references and trust cues so the conversation stays easier to verify.
+                Begin with a question, a verse, or a concern.
               </p>
             </div>
 
@@ -343,7 +340,7 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
                         {contextLabel ?? 'Pathshala study prompt'}
                       </p>
                       <p className="text-sm text-gray-700 leading-relaxed mt-2">
-                        A study prompt was brought in from Pathshala. You can send it as-is or edit it before asking.
+                        Brought in from Pathshala. Send it as-is or edit first.
                       </p>
                     </div>
                     <Sparkles size={18} className="text-[color:var(--brand-primary)] flex-shrink-0 mt-0.5" />
@@ -376,7 +373,7 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
             {/* Suggestions */}
             {showSuggestions && (
               <div className="w-full max-w-sm space-y-2">
-                <p className="text-xs text-gray-400 font-medium">Good first questions</p>
+                <p className="text-xs text-gray-400 font-medium">Try one</p>
                 <div className="flex flex-col gap-2">
                   {suggestions.slice(0, 4).map(s => (
                     <button key={s} onClick={() => sendMessage(s)}
@@ -438,7 +435,7 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
           </button>
         </div>
         <p className="text-[10px] text-gray-400 text-center mt-2">
-          Dharma Mitra is a study and reflection companion. Verify spiritually sensitive guidance with trusted teachers and sources.
+          Verify spiritually sensitive guidance with trusted teachers and sources.
         </p>
       </div>
     </div>

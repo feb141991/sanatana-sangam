@@ -229,7 +229,7 @@ export default function TirthaMapPage() {
           </p>
           <h1 className="font-display text-2xl font-bold text-gray-900 mt-1">Tirtha Map</h1>
           <p className="text-sm text-gray-600 mt-2 leading-relaxed max-w-2xl">
-            Search for sacred places with a calmer flow: begin with your area, narrow by tradition, then open one place that helps you feel grounded today.
+            Search nearby sacred places, then narrow by tradition.
           </p>
         </div>
 
@@ -238,17 +238,17 @@ export default function TirthaMapPage() {
             {
               eyebrow: 'Begin nearby',
               title: `Search around ${activeCityLabel}`,
-              description: 'Use your current area first, then widen outward only if you need a bigger radius.',
+              description: 'Start nearby, then widen if needed.',
             },
             {
               eyebrow: 'Filter gently',
               title: 'Tradition before detail',
-              description: 'Choose a tradition first, then refine with sampradaya only when it actually helps.',
+              description: 'Choose a tradition, then refine if needed.',
             },
             {
               eyebrow: 'Visit with context',
               title: `Open ${placeLabel}`,
-              description: 'Use opening info, directions, and contact details to decide which place is right for this moment.',
+              description: 'Check opening info, directions, and contact details.',
             },
           ].map((item) => (
             <div key={item.title} className="clay-card rounded-[1.4rem] px-4 py-4">
