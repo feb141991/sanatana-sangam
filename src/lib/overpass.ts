@@ -36,6 +36,10 @@ const TRADITION_DEFAULT_NAMES: Record<Temple['tradition'], string> = {
 
 function inferTradition(tags: Record<string, string | undefined>): Temple['tradition'] {
   const religion = tags?.religion?.toLowerCase() ?? '';
+  if (religion.includes('sikh')) return 'sikh';
+  if (religion.includes('buddh')) return 'buddhist';
+  if (religion.includes('jain')) return 'jain';
+  if (religion.includes('hindu')) return 'hindu';
   if (religion && TRADITION_RELIGION_MAP[religion]) {
     return TRADITION_RELIGION_MAP[religion];
   }
@@ -53,7 +57,16 @@ function inferTradition(tags: Record<string, string | undefined>): Temple['tradi
     .join(' ')
     .toLowerCase();
 
-  if (combined.includes('gurudwara') || combined.includes('gurdwara') || combined.includes('darbar sahib') || combined.includes('gurudwara sahib')) {
+  if (
+    combined.includes('gurudwara')
+    || combined.includes('gurdwara')
+    || combined.includes('gurudvara')
+    || combined.includes('darbar sahib')
+    || combined.includes('gurudwara sahib')
+    || combined.includes('guru nanak')
+    || combined.includes('singh sabha')
+    || combined.includes('khalsa')
+  ) {
     return 'sikh';
   }
   if (combined.includes('vihara') || combined.includes('buddh') || combined.includes('stupa')) {
