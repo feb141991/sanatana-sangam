@@ -33,7 +33,7 @@ const typeIcon: Record<string, React.ReactNode> = {
   update:       <Heart size={13} className="text-rose-500" />,
   event:        <Calendar size={13} className="text-blue-500" />,
   question:     <HelpCircle size={13} className="text-purple-500" />,
-  announcement: <Megaphone size={13} className="text-amber-500" />,
+  announcement: <Megaphone size={13} style={{ color: 'var(--brand-primary)' }} />,
 };
 
 // ─── Find Sanatani Search Modal ──────────────────────────────────
@@ -89,11 +89,12 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
               <input type="text" placeholder="Search name or @username…"
                 value={query} onChange={e => setQuery(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && doSearch()}
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm" />
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm"
+                style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }} />
             </div>
             <button onClick={doSearch} disabled={loading || !query.trim()}
               className="px-4 py-2.5 text-white text-sm font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
-              style={{ background: '#7B1A1A' }}>
+              style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
               Search
             </button>
           </div>
@@ -119,7 +120,7 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
             <div key={user.id}
               className="bg-white border border-gray-100 rounded-2xl p-3 flex items-center gap-3">
               <div className="relative w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 overflow-hidden"
-                style={{ background: 'linear-gradient(135deg, #ff7722, #d4a017)' }}>
+                style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))' }}>
                 {user.avatar_url
                   ? <Image src={user.avatar_url} alt="" fill sizes="40px" className="object-cover" />
                   : getInitials(user.full_name || user.username || '?')}
@@ -139,7 +140,8 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
               </div>
               <button
                 onClick={() => { toast.success('Satsang Connect coming soon 🙏'); }}
-                className="flex-shrink-0 px-3 py-1.5 text-xs font-semibold rounded-full border border-[#7B1A1A]/30 text-[#7B1A1A] hover:bg-[#7B1A1A]/5 transition">
+                className="flex-shrink-0 px-3 py-1.5 text-xs font-semibold rounded-full transition"
+                style={{ border: '1px solid rgba(200, 127, 146, 0.3)', color: 'var(--brand-primary-strong)', background: 'rgba(247, 230, 235, 0.45)' }}>
                 Connect
               </button>
             </div>
@@ -296,7 +298,8 @@ function CityPicker({ value, onChange }: {
           value={query}
           onChange={e => { setQuery(e.target.value); setOpen(true); }}
           onFocus={() => setOpen(true)}
-          className="w-full pl-9 pr-8 py-3 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm"
+          className="w-full pl-9 pr-8 py-3 rounded-xl border border-gray-200 outline-none text-sm"
+          style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }}
         />
         <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
       </div>
@@ -307,7 +310,7 @@ function CityPicker({ value, onChange }: {
             <button
               key={`${c.city}-${c.country}`}
               onMouseDown={() => select(c)}
-              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[rgba(123,26,26,0.05)] text-left transition"
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition hover:bg-[var(--brand-primary-soft)]"
             >
               <span className="text-base flex-shrink-0">{c.flag}</span>
               <div className="flex-1 min-w-0">
@@ -324,11 +327,11 @@ function CityPicker({ value, onChange }: {
                 onChange({ city: parts[0].trim(), country: parts[1]?.trim() || '' });
                 setOpen(false);
               }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[rgba(123,26,26,0.05)] text-left border-t border-gray-100 transition"
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-left border-t border-gray-100 transition hover:bg-[var(--brand-primary-soft)]"
             >
               <span className="text-base">🌍</span>
               <div>
-                <p className="text-sm font-medium text-[#7B1A1A]">Use &ldquo;{query}&rdquo;</p>
+                <p className="text-sm font-medium" style={{ color: 'var(--brand-primary-strong)' }}>Use &ldquo;{query}&rdquo;</p>
                 <p className="text-xs text-gray-400">Custom city</p>
               </div>
             </button>
@@ -423,7 +426,7 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
 
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center space-y-6 fade-in">
-      <div className="w-20 h-20 rounded-full flex items-center justify-center text-4xl" style={{ background: '#7B1A1A15' }}>🏡</div>
+      <div className="w-20 h-20 rounded-full flex items-center justify-center text-4xl" style={{ background: 'var(--brand-primary-soft)' }}>🏡</div>
       <div>
         <h2 className="font-display font-bold text-2xl text-gray-900 mb-2">Find Your Mandali</h2>
         <p className="text-gray-500 max-w-sm text-sm">
@@ -435,11 +438,11 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
 
         {/* Detected city display */}
         {detected ? (
-          <div className="flex items-center gap-2 px-3 py-3 rounded-xl border" style={{ background: 'var(--brand-primary-soft)', borderColor: 'rgba(123, 26, 26, 0.12)' }}>
+          <div className="flex items-center gap-2 px-3 py-3 rounded-xl border" style={{ background: 'var(--brand-primary-soft)', borderColor: 'rgba(200, 127, 146, 0.18)' }}>
             <MapPin size={14} className="flex-shrink-0" style={{ color: 'var(--brand-primary)' }} />
             <div className="flex-1 text-left">
               <p className="text-sm font-semibold" style={{ color: 'var(--brand-primary-strong)' }}>{detected.city}</p>
-              {detected.country && <p className="text-xs" style={{ color: 'rgba(123, 26, 26, 0.72)' }}>{detected.country}</p>}
+              {detected.country && <p className="text-xs" style={{ color: 'var(--brand-muted)' }}>{detected.country}</p>}
             </div>
             <button onClick={() => setDetected(null)}
               className="text-xs text-gray-400 hover:text-gray-600">
@@ -450,11 +453,12 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
           <button
             onClick={detectLocation}
             disabled={locating}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-[#7B1A1A]/30 text-[#7B1A1A] font-medium text-sm hover:border-[#7B1A1A]/60 hover:bg-[rgba(123,26,26,0.05)] transition disabled:opacity-60"
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed font-medium text-sm transition disabled:opacity-60 hover:bg-[var(--brand-primary-soft)]"
+            style={{ borderColor: 'rgba(200, 127, 146, 0.3)', color: 'var(--brand-primary-strong)' }}
           >
             {locating ? (
               <>
-                <span className="w-4 h-4 border-2 border-[#7B1A1A] border-t-transparent rounded-full animate-spin" />
+                <span className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--brand-primary-strong)', borderTopColor: 'transparent' }} />
                 Detecting location…
               </>
             ) : (
@@ -470,7 +474,7 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
 
         <button onClick={joinMandali} disabled={saving || !detected}
           className="w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
-          style={{ background: '#7B1A1A' }}>
+          style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
           {saving ? 'Finding your Mandali…' : 'Join My Mandali 🙏'}
         </button>
       </div>
@@ -501,14 +505,15 @@ function MembersTab({ members, userId }: { members: MemberRow[]; userId: string 
         const isMe = m.id === userId;
         return (
           <div key={m.id}
-            className={`bg-white rounded-2xl border p-3 flex items-center gap-3 ${isMe ? 'border-[#7B1A1A]/30' : 'border-gray-100'}`}>
+            className="bg-white rounded-2xl border p-3 flex items-center gap-3"
+            style={{ borderColor: isMe ? 'rgba(200, 127, 146, 0.32)' : '#f1f0f2' }}>
             {/* Rank */}
             <div className="w-5 text-center text-xs font-bold text-gray-300">
               {idx + 1}
             </div>
             {/* Avatar */}
             <div className="relative w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 overflow-hidden"
-              style={{ background: isMe ? '#7B1A1A' : 'linear-gradient(135deg, #ff7722, #d4a017)' }}>
+              style={{ background: isMe ? 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' : 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))' }}>
               {m.avatar_url
                 ? <Image src={m.avatar_url} alt="" fill sizes="40px" className="object-cover" />
                 : getInitials(m.full_name || m.username || '?')
@@ -519,7 +524,7 @@ function MembersTab({ members, userId }: { members: MemberRow[]; userId: string 
               <div className="flex items-center gap-1.5">
                 <p className="font-semibold text-gray-900 text-sm truncate">
                   {m.full_name || m.username}
-                  {isMe && <span className="ml-1 text-[10px] text-[#7B1A1A] font-medium">(you)</span>}
+                  {isMe && <span className="ml-1 text-[10px] font-medium" style={{ color: 'var(--brand-primary-strong)' }}>(you)</span>}
                 </p>
               </div>
               <p className="text-xs text-gray-500 truncate">
@@ -528,7 +533,7 @@ function MembersTab({ members, userId }: { members: MemberRow[]; userId: string 
             </div>
             {/* Seva Score */}
             <div className="text-right">
-              <div className="font-bold text-sm" style={{ color: '#7B1A1A' }}>{m.seva_score ?? 0}</div>
+              <div className="font-bold text-sm" style={{ color: 'var(--brand-primary-strong)' }}>{m.seva_score ?? 0}</div>
               <div className="text-[10px] text-gray-400">seva</div>
             </div>
           </div>
@@ -628,10 +633,11 @@ function VichaarTab({ posts, userId, onToggleUpvote, upvoted, onCompose, showCom
       {allowCompose && (
         <button
           onClick={() => setShowCompose(!showCompose)}
-          className="w-full bg-white border border-dashed border-[#7B1A1A]/30 rounded-2xl p-3 flex items-center gap-3 text-gray-400 hover:border-[#7B1A1A]/50 hover:text-[#7B1A1A] transition"
+          className="w-full bg-white border border-dashed rounded-2xl p-3 flex items-center gap-3 text-gray-400 transition"
+          style={{ borderColor: 'rgba(200, 127, 146, 0.3)' }}
         >
-          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: '#7B1A1A15' }}>
-            <Plus size={15} style={{ color: '#7B1A1A' }} />
+          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--brand-primary-soft)' }}>
+            <Plus size={15} style={{ color: 'var(--brand-primary-strong)' }} />
           </div>
           <span className="text-sm">Share with your Mandali…</span>
         </button>
@@ -680,29 +686,33 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
           <button key={t.value} onClick={() => setPostType(t.value)}
             className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
               postType === t.value
-                ? 'bg-[#7B1A1A]/10 text-[#7B1A1A] border border-[#7B1A1A]/30'
+                ? ''
                 : 'bg-gray-50 text-gray-500 border border-gray-200'
-            }`}>
+            }`}
+            style={postType === t.value ? { background: 'var(--brand-primary-soft)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(200, 127, 146, 0.3)' } : undefined}>
             {t.icon} {t.label}
           </button>
         ))}
       </div>
       <textarea placeholder={postType === 'event' ? 'Describe your event…' : 'Share with your Mandali…'}
         value={content} onChange={(e) => setContent(e.target.value)} rows={3}
-        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none resize-none text-sm" />
+        className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none resize-none text-sm"
+        style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }} />
       {postType === 'event' && (
         <div className="grid grid-cols-2 gap-3">
           <input type="datetime-local" value={eventDate} onChange={(e) => setEventDate(e.target.value)}
-            className="px-3 py-2 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm" />
+            className="px-3 py-2 rounded-xl border border-gray-200 outline-none text-sm"
+            style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }} />
           <input type="text" placeholder="Location" value={eventLoc} onChange={(e) => setEventLoc(e.target.value)}
-            className="px-3 py-2 rounded-xl border border-gray-200 outline-none text-sm" />
+            className="px-3 py-2 rounded-xl border border-gray-200 outline-none text-sm"
+            style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }} />
         </div>
       )}
       <div className="flex justify-end gap-2">
         <button onClick={onClose} className="px-4 py-2 text-sm text-gray-500">Cancel</button>
         <button onClick={onPost} disabled={submitting || !content.trim()}
           className="px-5 py-2 text-white text-sm font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
-          style={{ background: '#7B1A1A' }}>
+          style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
           {submitting ? 'Posting…' : 'Post 🙏'}
         </button>
       </div>
@@ -724,7 +734,7 @@ function PostCard({ post, userId, upvoted, onUpvote, onHideContent, onHideAuthor
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-4">
       <div className="flex items-start gap-3">
-        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#7B1A1A] to-[#c3872f] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+        <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
           {getInitials((author?.full_name || author?.username) ?? '?')}
         </div>
         <div className="flex-1 min-w-0">
@@ -862,7 +872,7 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
     <div className="space-y-4 fade-in">
 
       {/* ── Mandali Header ── */}
-      <div className="rounded-2xl p-5 text-white" style={{ background: '#7B1A1A' }}>
+      <div className="rounded-2xl p-5 text-white" style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -917,8 +927,8 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
                     await supabase.from('profiles').update({ mandali_id: null }).eq('id', userId);
                     router.refresh();
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-[rgba(123,26,26,0.05)] transition text-left border-b border-gray-50">
-                  <MapPin size={14} className="text-[#7B1A1A]" />
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 transition text-left border-b border-gray-50 hover:bg-[var(--brand-primary-soft)]">
+                  <MapPin size={14} style={{ color: 'var(--brand-primary-strong)' }} />
                   Change my Mandali
                 </button>
                 <button
@@ -944,13 +954,14 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
             onClick={() => setActiveTab(key)}
             className={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${
               activeTab === key
-                ? 'bg-white text-[#7B1A1A] shadow-sm font-semibold'
+                ? 'bg-white shadow-sm font-semibold'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
+            style={activeTab === key ? { color: 'var(--brand-primary-strong)' } : undefined}
           >
             {label}
             {count > 0 && (
-              <span className={`ml-1 text-xs ${activeTab === key ? 'text-[#7B1A1A]/60' : 'text-gray-400'}`}>
+              <span className="ml-1 text-xs" style={activeTab === key ? { color: 'rgba(168, 94, 113, 0.7)' } : undefined}>
                 ({count})
               </span>
             )}
@@ -982,11 +993,11 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
           {widerPosts.length > 0 && (
             <div className="space-y-3 mt-2">
               <div className="flex items-center gap-2">
-                <div className="flex-1 h-px" style={{ background: 'rgba(123, 26, 26, 0.12)' }} />
+                <div className="flex-1 h-px" style={{ background: 'rgba(200, 127, 146, 0.18)' }} />
                 <span className="text-xs text-gray-400 font-medium px-2">
                   🌸 Wisdom from the wider Sangam
                 </span>
-                <div className="flex-1 h-px" style={{ background: 'rgba(123, 26, 26, 0.12)' }} />
+                <div className="flex-1 h-px" style={{ background: 'rgba(200, 127, 146, 0.18)' }} />
               </div>
               <p className="text-[11px] text-gray-400 text-center -mt-1">
                 Your Mandali is growing — here are voices from our broader community

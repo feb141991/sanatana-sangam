@@ -16,7 +16,7 @@ import type { KulSectionView } from './sections';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 type KulData   = { id: string; name: string; invite_code: string; avatar_emoji: string; created_by: string; created_at: string };
-type MemberRow = { id: string; role: 'guardian' | 'sadhak'; joined_at: string; user_id: string; profiles: { id: string; full_name: string | null; username: string | null; avatar_url: string | null; tradition: string | null; sampradaya: string | null; shloka_streak: number | null; spiritual_level: string | null } };
+type MemberRow = { id: string; role: 'guardian' | 'sadhak'; joined_at: string; user_id: string; profiles: { id: string; full_name: string | null; username: string | null; avatar_url: string | null; tradition: string | null; sampradaya: string | null; shloka_streak: number | null; spiritual_level: string | null; bio?: string | null; city?: string | null; country?: string | null; home_town?: string | null; gotra?: string | null; kul_devata?: string | null } };
 type TaskRow   = { id: string; title: string; description: string | null; task_type: string; content_ref: string | null; due_date: string | null; completed: boolean; completed_at: string | null; score: number | null; guardian_note: string | null; assigned_by: string; assigned_to: string; created_at: string; assigned_to_profile: { full_name: string | null; username: string | null; avatar_url: string | null } | null; assigned_by_profile: { full_name: string | null; username: string | null } | null };
 type MessageRow= { id: string; content: string; created_at: string; sender_id: string; reaction: string | null; profiles: { full_name: string | null; username: string | null; avatar_url: string | null } };
 
@@ -111,6 +111,96 @@ function SectionIntro({
       {helper ? (
         <p className="text-xs text-gray-500 leading-relaxed">{helper}</p>
       ) : null}
+    </div>
+  );
+}
+
+function FamilyProfileSheet({
+  member,
+  onClose,
+}: {
+  member: MemberRow;
+  onClose: () => void;
+}) {
+  const profile = member.profiles;
+  const name = profile?.full_name || profile?.username || 'Family member';
+  const location = [profile?.city, profile?.country].filter(Boolean).join(', ');
+  const detailRows = [
+    profile?.tradition ? { label: 'Tradition', value: `${TRADITION_EMOJI[profile.tradition] ?? '🙏'} ${profile.tradition}` } : null,
+    profile?.sampradaya ? { label: 'Sampradaya', value: profile.sampradaya } : null,
+    profile?.spiritual_level ? { label: 'Level', value: profile.spiritual_level } : null,
+    profile?.home_town ? { label: 'Home Town', value: profile.home_town } : null,
+    profile?.gotra ? { label: 'Gotra', value: profile.gotra } : null,
+    profile?.kul_devata ? { label: 'Kul Devata', value: profile.kul_devata } : null,
+  ].filter(Boolean) as Array<{ label: string; value: string }>;
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/45 backdrop-blur-sm px-4 py-6 flex items-end sm:items-center justify-center" onClick={onClose}>
+      <div className="w-full max-w-md clay-card rounded-[2rem] p-5 space-y-4" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <Avatar
+              name={name}
+              url={profile?.avatar_url}
+              size={16}
+              gradient={member.role === 'guardian'
+                ? 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))'
+                : 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))'}
+            />
+            <div className="min-w-0">
+              <h2 className="text-lg font-bold text-gray-900 truncate">{name}</h2>
+              <p className="text-sm text-gray-500">
+                {member.role === 'guardian' ? 'Kul Guardian' : 'Kul Member'}
+                {profile?.username ? ` · @${profile.username}` : ''}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-9 h-9 rounded-full bg-white/85 border border-white/80 flex items-center justify-center text-gray-500"
+            aria-label="Close family profile"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        <div className="glass-panel rounded-[1.5rem] p-4 space-y-3">
+          {location ? (
+            <div className="flex items-center gap-2 text-sm text-gray-700">
+              <span className="text-base">📍</span>
+              <span>{location}</span>
+            </div>
+          ) : null}
+          <div className="flex items-center gap-2 text-sm text-gray-700">
+            <span className="text-base">🔥</span>
+            <span>{profile?.shloka_streak ?? 0} day shloka streak</span>
+          </div>
+          {profile?.bio ? (
+            <p className="text-sm text-gray-700 leading-relaxed">{profile.bio}</p>
+          ) : (
+            <p className="text-sm text-gray-500">This family member has not added a short introduction yet.</p>
+          )}
+        </div>
+
+        {detailRows.length > 0 && (
+          <div className="bg-white rounded-[1.5rem] border border-white/80 p-4">
+            <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400 mb-3">Family profile</p>
+            <div className="space-y-2">
+              {detailRows.map((row) => (
+                <div key={row.label} className="flex items-center justify-between gap-4 py-2 border-b border-gray-100 last:border-b-0">
+                  <span className="text-sm text-gray-500">{row.label}</span>
+                  <span className="text-sm font-medium text-gray-800 text-right">{row.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <p className="text-xs text-gray-400 leading-relaxed">
+          Family profiles show only Kul-safe details so the space stays warm, useful, and private.
+        </p>
+      </div>
     </div>
   );
 }
@@ -275,6 +365,7 @@ function NoKulPrompt({ userId, userName }: { userId: string; userName: string })
 function BoardTab({ kul, members, tasks, userId, myRole }: {
   kul: KulData; members: MemberRow[]; tasks: TaskRow[]; userId: string; myRole: string;
 }) {
+  const [selectedMember, setSelectedMember] = useState<MemberRow | null>(null);
   const totalTasks     = tasks.length;
   const completedTasks = tasks.filter(t => t.completed).length;
   const pendingTasks   = totalTasks - completedTasks;
@@ -294,6 +385,9 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
 
   return (
     <div className="space-y-4">
+      {selectedMember ? (
+        <FamilyProfileSheet member={selectedMember} onClose={() => setSelectedMember(null)} />
+      ) : null}
       <SectionIntro
         title="Overview keeps the whole family space readable"
         description="Check the pulse here, then move into one dedicated page for people, tasks, chat, lineage, or dates."
@@ -351,7 +445,12 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
             const p = m.profiles;
             const streak = p?.shloka_streak ?? 0;
             return (
-              <div key={m.id} className="bg-white rounded-2xl border border-gray-100 p-3 flex items-center gap-3">
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => setSelectedMember(m)}
+                className="w-full text-left bg-white rounded-2xl border border-gray-100 p-3 flex items-center gap-3 transition hover:border-[color:var(--brand-primary-soft)]"
+              >
                 <Avatar name={p?.full_name || p?.username || '?'} url={p?.avatar_url} size={10}
                   gradient={m.user_id === userId ? 'var(--brand-primary)' : 'linear-gradient(135deg, var(--brand-accent), #d6b06a)'} />
                 <div className="flex-1 min-w-0">
@@ -369,7 +468,7 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
                   </div>
                   <div className="text-[10px] text-gray-400">streak</div>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
@@ -410,6 +509,7 @@ function MembersTab({ members, userId, myRole, kul }: {
 }) {
   const supabase = createClient();
   const router   = useRouter();
+  const [selectedMember, setSelectedMember] = useState<MemberRow | null>(null);
 
   async function promote(memberId: string, kulId: string) {
     await supabase.from('kul_members').update({ role: 'guardian' }).eq('id', memberId);
@@ -426,6 +526,9 @@ function MembersTab({ members, userId, myRole, kul }: {
 
   return (
     <div className="space-y-4">
+      {selectedMember ? (
+        <FamilyProfileSheet member={selectedMember} onClose={() => setSelectedMember(null)} />
+      ) : null}
       <SectionIntro
         title="See who is in the family circle"
         description="This page is for membership clarity: who is here, who is a guardian, and who may need a role change."
@@ -441,8 +544,13 @@ function MembersTab({ members, userId, myRole, kul }: {
         const name  = p?.full_name || p?.username || 'Member';
         return (
           <div key={m.id} className={`bg-white rounded-2xl border p-3 flex items-center gap-3 ${isMe ? 'border-[#7B1A1A]/30' : 'border-gray-100'}`}>
+            <button
+              type="button"
+              onClick={() => setSelectedMember(m)}
+              className="flex flex-1 items-center gap-3 min-w-0 text-left"
+            >
             <Avatar name={name} url={p?.avatar_url} size={11}
-              gradient={isMe ? '#7B1A1A' : 'linear-gradient(135deg, #ff7722, #d4a017)'} />
+              gradient={isMe ? 'var(--brand-primary-strong)' : 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))'} />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
                 <p className="text-sm font-semibold text-gray-900 truncate">{name}</p>
@@ -455,6 +563,7 @@ function MembersTab({ members, userId, myRole, kul }: {
                 {p?.shloka_streak ? ` · 🔥 ${p.shloka_streak}` : ''}
               </p>
             </div>
+            </button>
             {/* Guardian actions */}
             {myRole === 'guardian' && !isMe && (
               <div className="flex items-center gap-1">

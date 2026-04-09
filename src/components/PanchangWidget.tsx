@@ -24,7 +24,7 @@ export default function PanchangWidget({ lat = 51.5074, lon = -0.1278 }: Props) 
   ];
 
   return (
-    <div className="bg-white rounded-2xl border border-orange-100 shadow-card overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-card overflow-hidden" style={{ border: '1px solid rgba(200, 127, 146, 0.16)' }}>
       {/* Header */}
       <div className="bg-gradient-sacred px-4 py-3">
         <div className="flex items-center justify-between">
@@ -38,9 +38,9 @@ export default function PanchangWidget({ lat = 51.5074, lon = -0.1278 }: Props) 
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-3 divide-x divide-y divide-orange-50">
+      <div className="grid grid-cols-3 divide-x divide-y" style={{ borderColor: 'rgba(200, 127, 146, 0.08)' }}>
         {items.map((item) => (
-          <div key={item.label} className="px-3 py-2.5">
+          <div key={item.label} className="px-3 py-2.5" style={{ borderColor: 'rgba(200, 127, 146, 0.08)' }}>
             <div className="flex items-center gap-1 mb-0.5">
               <span className="text-xs">{item.emoji}</span>
               <span className="text-[10px] text-gray-400 uppercase tracking-wide font-medium">
@@ -55,11 +55,11 @@ export default function PanchangWidget({ lat = 51.5074, lon = -0.1278 }: Props) 
       </div>
 
       {/* Rahu Kaal warning */}
-      <div className="px-4 py-2.5 bg-red-50 border-t border-red-100 flex items-center gap-2">
+      <div className="px-4 py-2.5 border-t flex items-center gap-2" style={{ background: 'var(--brand-primary-soft)', borderColor: 'rgba(200, 127, 146, 0.18)' }}>
         <span className="text-sm">⚠️</span>
         <div>
-          <span className="text-xs font-semibold text-red-700">Rahu Kaal — avoid auspicious work: </span>
-          <span className="text-xs text-red-600">{p.rahuKaal}</span>
+          <span className="text-xs font-semibold" style={{ color: 'var(--brand-primary-strong)' }}>Rahu Kaal — avoid auspicious work: </span>
+          <span className="text-xs" style={{ color: 'var(--brand-muted)' }}>{p.rahuKaal}</span>
         </div>
       </div>
     </div>

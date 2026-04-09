@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan } from 'lucide-react';
+import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import type { HiddenContentSummary, SafetyProfileSummary } from '@/lib/user-safety';
 import { getInitials, ISHTA_DEVATAS, SAMPRADAYAS, SPIRITUAL_LEVELS, TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getIshtaDevataLabel, getSampradayaLabel } from '@/lib/utils';
@@ -142,6 +142,7 @@ export default function ProfileClient({
   const [sendingTestNotification, setSendingTestNotification] = useState(false);
   const [safetyBusyKey, setSafetyBusyKey] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>((profile as any)?.avatar_url ?? null);
+  const [showAvatarPreview, setShowAvatarPreview] = useState(false);
   const [blockedProfiles, setBlockedProfiles] = useState(initialBlockedProfiles);
   const [mutedProfiles, setMutedProfiles] = useState(initialMutedProfiles);
   const [hiddenItems, setHiddenItems] = useState(initialHiddenItems);
@@ -368,6 +369,14 @@ export default function ProfileClient({
   return (
     <div className="space-y-4 fade-in">
 
+      {showAvatarPreview && avatarUrl && (
+        <AvatarPreviewModal
+          avatarUrl={avatarUrl}
+          fullName={profile?.full_name ?? profile?.username ?? 'Profile photo'}
+          onClose={() => setShowAvatarPreview(false)}
+        />
+      )}
+
       {/* ── Profile Completion Bar ── */}
       <CompletionBar profile={profile} onEdit={() => setEditing(true)} />
 
@@ -377,11 +386,17 @@ export default function ProfileClient({
           <div className="flex items-center gap-3">
             {/* Avatar with upload — label approach works on iOS Safari */}
             <div className="relative">
-              <div className="relative w-16 h-16 rounded-full bg-white/20 border-2 border-white/40 flex items-center justify-center text-white text-xl font-bold overflow-hidden">
+              <button
+                type="button"
+                onClick={() => avatarUrl && setShowAvatarPreview(true)}
+                disabled={!avatarUrl}
+                className={`relative w-16 h-16 rounded-full bg-white/20 border-2 border-white/40 flex items-center justify-center text-white text-xl font-bold overflow-hidden ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
+                title={avatarUrl ? 'View profile photo' : 'No profile photo yet'}
+              >
                 {avatarUrl
                   ? <Image src={avatarUrl} alt="avatar" fill sizes="64px" className="object-cover" />
                   : initials}
-              </div>
+              </button>
               <label
                 htmlFor="avatar-upload"
                 className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-md border border-gray-100 ${uploading ? 'opacity-60' : 'cursor-pointer'}`}
@@ -728,6 +743,49 @@ function SafetyProfileRow({
       >
         {actionLabel}
       </button>
+    </div>
+  );
+}
+
+function AvatarPreviewModal({
+  avatarUrl,
+  fullName,
+  onClose,
+}: {
+  avatarUrl: string;
+  fullName: string;
+  onClose: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm px-4 py-6 flex items-center justify-center"
+      onClick={onClose}
+    >
+      <div className="relative w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute -top-2 right-0 z-10 w-10 h-10 rounded-full bg-white/90 text-gray-700 flex items-center justify-center shadow-lg"
+          aria-label="Close profile photo"
+        >
+          <X size={18} />
+        </button>
+        <div className="glass-panel rounded-[2rem] p-3">
+          <div className="relative aspect-square w-full overflow-hidden rounded-[1.6rem] bg-white/20">
+            <Image
+              src={avatarUrl}
+              alt={`${fullName} profile photo`}
+              fill
+              sizes="(max-width: 768px) 92vw, 420px"
+              className="object-cover"
+              priority
+            />
+          </div>
+          <p className="text-center text-sm font-medium text-gray-700 mt-3">
+            {fullName}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

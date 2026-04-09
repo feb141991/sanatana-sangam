@@ -81,9 +81,13 @@ Last updated: 2026-04-03
 - [x] Reuse the existing daily-shloka Gita corpus inside Pathshala so chapter coverage expands locally without waiting on a separate import pipeline
 - [x] Replace the partial Gita pilot with a full local public-domain corpus so chapter study no longer depends on external full-text fallback
 - [x] Replace the partial Upanishad pilot with a principal-Upanishad corpus so the Pathshala track opens into full study texts instead of only a few Mahavakya excerpts
-- [ ] Add recitation mode with authoritative-source audio first, then later pronunciation guidance
+- [ ] Add in-app authoritative Gita audio after source-rights confirmation, then later pronunciation guidance and recite-along support
 - [ ] Keep non-Gita scripture expansion on hold while the Gita study + recitation flow is completed end to end
 - [ ] Add a focused Howler-backed Pathshala audio layer later for recitation and guided reading, not generic app-wide UI sounds
+- [ ] Define `Zen mode` as a distraction-light reading and recitation surface for launch-facing Pathshala use
+- [ ] Define `Mala mode` as an elder-friendly japa tracker with large controls, session history, shareable progress, and optional rights-safe chant support
+- [ ] Curate a rights-safe devotional audio starter pack for launch: mantra/chant clips first, then selective bhajan/kirtan where reuse terms are clear
+- [x] Add first Kul family-profile viewing inside the family space so members can open each other’s Kul-safe details
 - [ ] Continue the Upanishad original-text iteration until the larger texts that still sit behind official flipbooks can be ingested locally
 - [ ] Explore opt-in Jyotish / Rashi guidance after Panchang and sacred-time trust work is credible
 - [ ] Add Pathshala quizzes, cards, and mastery checkpoints after the corpus source layer is trustworthy
@@ -97,6 +101,9 @@ Last updated: 2026-04-03
 - Active polish pass: palette unification across high-traffic screens plus reuse of the greeting-sheet editor pattern in other key flows.
 - Motion is now active as a light polish layer. Keep it strongest on shell, cards, drawers, and overlays; avoid heavy animation on long-form reading surfaces.
 - `Howler` is intentionally deferred to the Pathshala recitation/audio layer so sound stays authoritative, optional, and non-intrusive.
+- Gita recitation currently keeps authoritative audio on the companion source; bringing that audio fully in-app is now a tracked later milestone, not an unplanned stretch goal.
+- `Zen mode` and `Mala mode` are now explicitly planned as launch-level contemplation features, but audio inside them must stay rights-safe and clearly labeled.
+- `AUDIO_ARCHITECTURE_PLAN.md` now tracks the shared player model, source classes, and Gita-first rollout for in-app audio.
 - `ROADMAP.md` is now the main sequencing document for `Phase A` vs `Phase B`.
 - `COLOR_STRATEGY.md` now tracks the palette research, token direction, and rollout rules.
 - `PARAMPARA_PATHSHALA_PLAN.md` now defines the source strategy and learning-product direction for turning Library into Pathshala.

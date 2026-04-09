@@ -15,10 +15,10 @@ interface Props {
 
 // ─── Tradition calendar metadata ──────────────────────────────────────────────
 const TRADITION_CALENDAR: Record<string, { badge: string; note: string; colour: string }> = {
-  hindu:    { badge: '🕉️ Vedic',        note: 'Vikram Samvat calendar',           colour: '#7B1A1A' },
-  sikh:     { badge: '☬ Nanakshahi',    note: 'Nanakshahi Sikh calendar month',   colour: '#1a4d7b' },
-  buddhist: { badge: '☸️ Buddhist',      note: 'Buddhist lunar calendar',          colour: '#5c6b1a' },
-  jain:     { badge: '🤲 Jain',          note: 'Jain Vira Samvat calendar',        colour: '#7b5a1a' },
+  hindu:    { badge: '🕉️ Vedic',        note: 'Vikram Samvat calendar',           colour: 'var(--brand-primary-strong)' },
+  sikh:     { badge: '☬ Nanakshahi',    note: 'Nanakshahi Sikh calendar month',   colour: 'var(--brand-primary)' },
+  buddhist: { badge: '☸️ Buddhist',      note: 'Buddhist lunar calendar',          colour: 'var(--brand-secondary)' },
+  jain:     { badge: '🤲 Jain',          note: 'Jain Vira Samvat calendar',        colour: 'var(--brand-earth)' },
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -37,11 +37,14 @@ function Row({ emoji, label, value, highlight = false }: {
   emoji: string; label: string; value: string; highlight?: boolean;
 }) {
   return (
-    <div className={`flex items-center gap-3 px-4 py-3 rounded-xl ${highlight ? 'bg-amber-50 border border-amber-100' : 'bg-white border border-gray-100'}`}>
+    <div
+      className={`flex items-center gap-3 px-4 py-3 rounded-xl ${highlight ? '' : 'bg-white border border-gray-100'}`}
+      style={highlight ? { background: 'var(--brand-primary-soft)', border: '1px solid rgba(200, 127, 146, 0.2)' } : undefined}
+    >
       <span className="text-xl w-7 text-center flex-shrink-0">{emoji}</span>
       <div className="flex-1 min-w-0">
         <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{label}</p>
-        <p className={`font-semibold text-sm mt-0.5 ${highlight ? 'text-amber-700' : 'text-gray-800'}`}>{value}</p>
+        <p className={`font-semibold text-sm mt-0.5 ${highlight ? '' : 'text-gray-800'}`} style={highlight ? { color: 'var(--brand-primary-strong)' } : undefined}>{value}</p>
       </div>
     </div>
   );
@@ -111,7 +114,8 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
       {/* ── Header ─────────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 mb-3">
         <Link href="/home"
-          className="w-8 h-8 rounded-xl bg-white border border-gray-200 flex items-center justify-center hover:border-orange-300 transition">
+          className="w-8 h-8 rounded-xl bg-white border border-gray-200 flex items-center justify-center transition"
+          style={{ borderColor: 'rgba(200, 127, 146, 0.16)' }}>
           <ArrowLeft size={15} className="text-gray-500" />
         </Link>
         <div className="flex-1">
@@ -125,13 +129,14 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
           {city && <p className="text-xs text-gray-400 mt-0.5">📍 {city}</p>}
         </div>
         <button onClick={share}
-          className="w-8 h-8 rounded-xl bg-white border border-gray-200 flex items-center justify-center hover:border-orange-300 transition">
+          className="w-8 h-8 rounded-xl bg-white border border-gray-200 flex items-center justify-center transition"
+          style={{ borderColor: 'rgba(200, 127, 146, 0.16)' }}>
           <Share2 size={15} className="text-gray-500" />
         </button>
       </div>
 
       {/* ── Calendar ───────────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-orange-100 shadow-sm overflow-hidden mb-3">
+      <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-3" style={{ border: '1px solid rgba(200, 127, 146, 0.16)' }}>
         {/* Month navigation */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
           <button onClick={prevMonth}
@@ -172,10 +177,16 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                   isSelected
                     ? 'text-white'
                     : isCurrentDay
-                    ? 'border border-orange-300 text-[#7B1A1A]'
-                    : 'hover:bg-orange-50 text-gray-700'
+                    ? 'border text-gray-700'
+                    : 'text-gray-700'
                 }`}
-                style={isSelected ? { background: '#7B1A1A' } : undefined}>
+                style={
+                  isSelected
+                    ? { background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }
+                    : isCurrentDay
+                      ? { borderColor: 'rgba(200, 127, 146, 0.4)', color: 'var(--brand-primary-strong)', background: 'var(--brand-primary-soft)' }
+                      : undefined
+                }>
                 <span className="text-xs font-semibold leading-none">{date.getDate()}</span>
                 <span className={`text-[8px] leading-none mt-0.5 ${isSelected ? 'text-white/70' : 'text-gray-400'}`}>
                   {tithiShort}
@@ -188,7 +199,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
 
       {/* ── Selected date label ─────────────────────────────────────── */}
       <div className="flex items-center gap-2 mb-2 px-1">
-        <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: '#7B1A1A' }} />
+        <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: 'var(--brand-primary)' }} />
         <p className="text-xs font-semibold text-gray-600">{isToday ? 'Today — ' : ''}{dateLabel}</p>
       </div>
 
@@ -196,7 +207,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
       <div className="space-y-2">
         {/* Paksha + Masa banner */}
         <div className="rounded-xl px-4 py-2.5 flex items-center gap-3"
-          style={{ background: '#7B1A1A' }}>
+          style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
           <span className="text-xl">🪔</span>
           <div>
             <p className="text-white font-semibold text-sm">
@@ -225,8 +236,8 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
         <Row emoji="✨" label="Abhijit Muhurat (most auspicious)" value={p.abhijitMuhurat} />
 
         {/* Quick tip */}
-        <div className="bg-orange-50 rounded-xl px-4 py-3 border border-orange-100">
-          <p className="text-xs text-orange-700 leading-relaxed">
+        <div className="rounded-xl px-4 py-3" style={{ background: 'var(--brand-accent-soft)', border: '1px solid rgba(200, 127, 146, 0.14)' }}>
+          <p className="text-xs leading-relaxed" style={{ color: 'var(--brand-primary-strong)' }}>
             <span className="font-semibold">Today&apos;s guidance:</span>{' '}
             {p.paksha === 'Shukla'
               ? 'Shukla Paksha is auspicious for new beginnings, prayers, and satsang.'

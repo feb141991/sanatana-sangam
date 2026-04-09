@@ -313,6 +313,10 @@ Current slice:
   - first UX polish layer is now live with Framer Motion on shell, Home overlays, and Pathshala transitions so the app feels calmer without over-animating long reading surfaces
   - first recitation implementation is now Gita-specific: a dedicated Gita recitation mode that keeps authoritative audio on the IIT companion source instead of faking local chanting
   - later: Pathshala audio controls, pronunciation help, and only then recitation scoring
+  - next deferred Gita milestone:
+    - bring authoritative Gita audio into the app itself after source-rights and hosting strategy are confirmed
+    - keep chapter-to-audio mapping, return-to-study flow, and playback state inside Pathshala
+    - do not rush this by embedding uncertain sources or unlabeled third-party audio
 
 ### A1.7 Sacred time and Jyotish strategy
 
@@ -601,6 +605,7 @@ Plan:
 - add recitation mode in two stages:
   - authoritative audio / recite-along where source rights allow
   - pronunciation / recitation feedback only after the trust and audio layer are credible
+- prioritize Gita for the first in-app authoritative audio rollout; keep other scripture audio expansions behind that proven implementation
 - use `Howler` only at that audio stage:
   - Pathshala recitation playback
   - guided reading audio
@@ -620,6 +625,63 @@ Exit criteria:
 
 - users can learn, revise, and demonstrate mastery inside Pathshala
 - the learning loop is grounded in source-aware content rather than random excerpts
+
+### B2.4 Contemplation modes: Zen mode and Mala mode
+
+Status: `Planned`
+
+Depends on:
+
+- `A1.6 Parampara Pathshala corpus and source governance`
+- `B2.3 Pathshala learning engine`
+
+Outcome:
+
+- the app supports quiet practice, repetition, and devotional continuity instead of only study and browsing
+
+Plan:
+
+- add `Zen mode` as a distraction-light Pathshala surface:
+  - larger text
+  - calmer spacing
+  - fewer chrome elements
+  - optional verse-by-verse or chapter reading focus
+- add `Mala mode` as a first-class japa practice surface:
+  - large bead counter and progress ring
+  - elder-friendly controls and contrast
+  - session notes, sankalpa, mantra selection, and completion history
+  - weekly / monthly statistics and streaks
+  - shareable summary cards only when the user opts in
+- add audio in two stages:
+  - stage 1: rights-safe chant / mantra clips and authoritative recitation where source terms are clear
+  - stage 2: richer bhajan / kirtan library after license and attribution rules are verified
+
+Build slices:
+
+- data:
+  - mala sessions
+  - mantra presets
+  - completion counts
+  - optional sankalpa and notes
+  - privacy and sharing preferences
+- UI:
+  - low-distraction reading mode
+  - one-handed large-target japa controls
+  - elder-friendly stats and history views
+  - share cards and revisit loops
+- audio:
+  - a vetted source registry
+  - playback state
+  - optional offline-safe caching later
+- trust:
+  - source / rights metadata on every audio asset
+  - no ambiguous devotional audio bundled into the app
+
+Exit criteria:
+
+- users can complete a quiet reading or japa session inside the app without friction
+- elder users can understand and operate the core Mala flow without hidden gestures or tiny controls
+- devotional audio in-product is explicitly rights-safe and attributable
 
 ## Phase B3 — Family Memory Moat
 
@@ -663,6 +725,7 @@ Current slice:
 - the first clay-inspired `Vansh` portrait cards are now live while preserving the lineage structure
 - the rough figurine-style avatar treatment is being removed in favor of calmer keepsake medallions
 - `Kul` is now moving from cramped in-page tabs toward a hub + full-page section architecture
+- `Kul` now starts a family-profile layer too, where members can open one another’s Kul-safe details without leaving the family space
 - this is a visual and emotional groundwork slice, not the full family memory vault yet
 
 ## Cross-Cutting Design Track — Sacred Clay
@@ -753,5 +816,12 @@ Current shaping lane should be:
 Current parallel implementation lane can be:
 
 - build low-risk UI and state foundations for `B1.1` while `Phase A1` is underway
+
+## Supporting Architecture Files
+
+- `PARAMPARA_PATHSHALA_PLAN.md`
+  Pathshala structure, source model, and learning direction
+- `AUDIO_ARCHITECTURE_PLAN.md`
+  Shared player model, source classes, and Gita-first audio rollout
 
 That keeps us moving on the moat without building on weak trust foundations.
