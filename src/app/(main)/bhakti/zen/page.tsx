@@ -38,6 +38,7 @@ export default function ZenModePage() {
   const [chantMantra, setChantMantra] = useState<string>(BHAKTI_MANTRAS[0].value);
   const [remaining, setRemaining] = useState(duration * 60);
   const [running, setRunning] = useState(false);
+  const [focusMode, setFocusMode] = useState(false);
   const intervalRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -164,6 +165,15 @@ export default function ZenModePage() {
           </button>
           <button
             onClick={() => {
+              setFocusMode(true);
+              setRunning(true);
+            }}
+            className="glass-button-primary rounded-full px-5 py-3 text-sm font-semibold text-white"
+          >
+            Enter full focus
+          </button>
+          <button
+            onClick={() => {
               setRunning(false);
               setRemaining(duration * 60);
             }}
@@ -174,6 +184,64 @@ export default function ZenModePage() {
           </button>
         </div>
       </section>
+
+      {focusMode ? (
+        <div className="fixed inset-0 z-[80] bg-[radial-gradient(circle_at_top,rgba(236,192,200,0.35),rgba(255,255,255,0.96)_45%,rgba(255,255,255,0.99))] backdrop-blur-md px-4 py-6">
+          <div className="mx-auto flex h-full w-full max-w-lg flex-col justify-between rounded-[2.2rem] border border-white/80 bg-white/78 px-6 py-6 shadow-sacred text-center">
+            <div className="flex items-center justify-between gap-3 text-left">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">Full focus</p>
+                <p className="mt-1 text-sm text-gray-600">{activeMode.title}{mode === 'chant' ? ` • ${chantMantra}` : ''}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setFocusMode(false);
+                  setRunning(false);
+                }}
+                className="glass-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
+                style={{ color: 'var(--brand-primary-strong)' }}
+              >
+                Close
+              </button>
+            </div>
+            <div className="space-y-6">
+              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">
+                {activeMode.title}
+              </p>
+              <p className="font-display text-6xl font-bold text-gray-900">{formatClock(remaining)}</p>
+              <p className="text-base text-gray-600">{mode === 'chant' ? chantMantra : activeMode.mantra}</p>
+              <div className="h-2 overflow-hidden rounded-full bg-[var(--brand-primary-soft)]">
+                <div
+                  className="h-full rounded-full transition-all"
+                  style={{ width: `${progress}%`, background: 'linear-gradient(90deg, var(--brand-primary-strong), var(--brand-primary))' }}
+                />
+              </div>
+            </div>
+            <div className="flex flex-wrap justify-center gap-3">
+              <button
+                onClick={() => {
+                  setRunning((current) => !current);
+                  navigator.vibrate?.(12);
+                }}
+                className="glass-button-primary rounded-full px-5 py-4 text-sm font-semibold text-white"
+              >
+                {running ? 'Pause' : 'Begin'}
+              </button>
+              <button
+                onClick={() => {
+                  setRunning(false);
+                  setRemaining(duration * 60);
+                }}
+                className="glass-button-secondary rounded-full px-5 py-4 text-sm font-semibold"
+                style={{ color: 'var(--brand-primary-strong)' }}
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

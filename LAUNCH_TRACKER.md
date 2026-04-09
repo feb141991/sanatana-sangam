@@ -43,7 +43,7 @@ Last updated: 2026-04-09
 - [x] Add festival trust metadata rollout planning and DB migration for tradition/source/review fields
 - [x] Document the launch Panchang source posture in `PANCHANG_SOURCE_STRATEGY.md`
 - [x] Upgrade the in-app Panchang engine to use sidereal longitudes and a better sunrise/sunset estimate while keeping precision claims modest
-- [x] Start timezone-aware sacred-time delivery with hourly cron windows, user timezones, and notification dedupe keys
+- [x] Start timezone-aware sacred-time delivery with per-user timezone logic, user timezones, and notification dedupe keys
 - [x] Define the first trust-first Jyotish scope in `JYOTISH_STRATEGY.md`
 - [x] Define Jyotish / Rashiphal strategy under the trust core before shipping any horoscope-style feature
 - [ ] Stage Pathshala AI-assisted reading and recitation support: explain, quiz, flashcards, and later pronunciation / scoring
@@ -57,7 +57,7 @@ Last updated: 2026-04-09
 - [ ] Panchang accuracy strategy is finalized and reflected in product copy
 - [ ] Jyotish / Rashiphal scope, calculation model, and disclaimer strategy are finalized before launch claims expand
 - [ ] Push notifications are either fully implemented or removed from product claims
-- [ ] Notification jobs are segmented, deduplicated, and timezone-aware in production after `migration-v18-sacred-time-delivery.sql`, `migration-v19-notification-preferences.sql`, and the hourly cron rollout
+- [ ] Notification jobs are segmented, deduplicated, and timezone-aware in production after `migration-v18-sacred-time-delivery.sql`, `migration-v19-notification-preferences.sql`, and the current daily-cron rollout
 - [ ] Scripture corpus source legitimacy, permissions, and provenance policy are finalized for production
 - [ ] Full-text launch scope is explicit: what is fully in-app vs what still routes to official source partners
 - [ ] `schema.sql`, migrations, and app types are aligned
@@ -138,6 +138,7 @@ Last updated: 2026-04-09
 - The first AI chat experience pass is now active too: Dharma Mitra is being shaped into a calmer study-and-reflection companion instead of a generic assistant box.
 - The first Bhakti experience pass is now active too: the placeholder is being turned into a meaningful devotional preview surface instead of a dead-end coming-soon card.
 - The notification system now has a first real preference layer: sacred-time reminder toggles, quiet hours, and cron filtering, but it still needs live production verification and richer destination targeting.
+- Vercel Hobby only allows daily cron schedules, so sacred-time delivery is currently less precise than the ideal hourly model; re-evaluate hosting or background job infrastructure later if we want finer reminder timing.
 - `PANCHANG_SOURCE_STRATEGY.md` now tracks how launch copy, future provider strategy, and sacred-time claims should stay aligned.
 - `UX_SWEEP_PLAN.md` now tracks the next experience improvements by surface, with Panchang, Kul, and Mandali as the highest-leverage sweeps.
 - `ROADMAP.md` is now the main sequencing document for `Phase A` vs `Phase B`.

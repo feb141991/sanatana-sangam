@@ -179,7 +179,7 @@ Current slice:
 - the next slice is improving the engine/source strategy itself instead of leaving silent approximation in place
 - `PANCHANG_SOURCE_STRATEGY.md` now defines the launch posture and the next trusted-source decision boundary for sacred-time features
 - the current engine now uses sidereal longitudes for nakshatra, yoga, and masa plus a stronger sunrise/sunset estimate, so the in-app Panchang is less approximate than the first beta implementation
-- `migration-v18-sacred-time-delivery.sql` now adds user timezone and notification dedupe fields so hourly sacred-time reminders can respect local time instead of one global send window
+- `migration-v18-sacred-time-delivery.sql` now adds user timezone and notification dedupe fields so sacred-time reminders can respect local time instead of one global send window
 
 ### A1.7 Sacred-time delivery and Jyotish definition
 
@@ -205,7 +205,8 @@ Current slice:
 
 - `JYOTISH_STRATEGY.md` now defines the trust-first product posture
 - shloka and festival reminder routes now target local-hour windows and dedupe per user/day key
-- the remaining rollout step is running `migration-v18-sacred-time-delivery.sql` and letting Vercel pick up the hourly cron schedule
+- the remaining rollout step is running `migration-v18-sacred-time-delivery.sql` and letting Vercel pick up the current daily cron schedule on Hobby
+- if sacred-time timing needs to become more precise again, move reminder execution to a more flexible hosting/background-job setup than Vercel Hobby cron
 - once the trust core is live, Panchang can move into a dedicated experience pass:
   - time-of-day sky background
   - calmer transitions between days

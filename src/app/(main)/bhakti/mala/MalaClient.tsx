@@ -39,11 +39,8 @@ function calculateStreak(sessions: MalaSession[]) {
   for (let i = 1; i < sortedDays.length; i += 1) {
     const expected = new Date(sortedDays[i - 1]);
     expected.setDate(expected.getDate() - 1);
-    if (sameLocalDay(sortedDays[i], expected)) {
-      streak += 1;
-    } else {
-      break;
-    }
+    if (sameLocalDay(sortedDays[i], expected)) streak += 1;
+    else break;
   }
 
   return streak;
@@ -67,6 +64,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
   const [sessions, setSessions] = useState(initialSessions);
   const [historyMantra, setHistoryMantra] = useState<'all' | string>('all');
   const [historyRange, setHistoryRange] = useState<'7d' | '30d' | 'all'>('7d');
+  const [focusMode, setFocusMode] = useState(false);
 
   const progress = Math.min(100, Math.round((count / target) * 100));
   const streak = useMemo(() => calculateStreak(sessions), [sessions]);
@@ -96,6 +94,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
     [filteredSessions]
   );
   const suggestedMantra = lastSession?.mantra ?? BHAKTI_MANTRAS[0].value;
+  const activeMantraSource = BHAKTI_MANTRAS.find((item) => item.value === mantra)?.source ?? 'Traditional mantra';
 
   function tapBead() {
     if (!startedAt) setStartedAt(Date.now());
@@ -111,13 +110,12 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
 
     setSaving(true);
     const durationSeconds = startedAt ? Math.round((Date.now() - startedAt) / 1000) : 0;
-    const selectedSource = BHAKTI_MANTRAS.find((item) => item.value === mantra)?.source ?? null;
     const { data, error } = await supabase
       .from('mala_sessions')
       .insert({
         user_id: userId,
         mantra,
-        chant_source: selectedSource,
+        chant_source: activeMantraSource,
         count,
         target_count: target,
         duration_seconds: durationSeconds,
@@ -138,6 +136,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
     setCount(0);
     setNotes('');
     setStartedAt(null);
+    setFocusMode(false);
     toast.success('Mala saved');
   }
 
@@ -151,65 +150,74 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
     }
   }
 
+  const counterPanel = (
+    <div className="space-y-4 rounded-[1.8rem] bg-[var(--brand-primary-soft)]/55 px-5 py-5 text-center">
+      <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{mantra}</p>
+      <p className="font-display text-6xl font-bold text-[color:var(--brand-primary-strong)]">{count}</p>
+      <div className="h-2 overflow-hidden rounded-full bg-white/80">
+        <div
+          className="h-full rounded-full transition-all"
+          style={{ width: `${progress}%`, background: 'linear-gradient(90deg, var(--brand-primary-strong), var(--brand-primary))' }}
+        />
+      </div>
+      <p className="text-sm text-gray-600">Target {target} • {activeMantraSource}</p>
+      <button
+        onClick={tapBead}
+        className="mx-auto flex h-48 w-48 items-center justify-center rounded-full text-xl font-semibold text-white shadow-sacred"
+        style={{ background: 'radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--brand-primary) 84%, white), var(--brand-primary-strong))' }}
+      >
+        Tap bead
+      </button>
+      <div className="flex justify-center gap-3">
+        <button
+          onClick={() => setCount((current) => Math.max(0, current - 1))}
+          className="glass-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
+          style={{ color: 'var(--brand-primary-strong)' }}
+        >
+          Undo
+        </button>
+        <button
+          onClick={() => {
+            setCount(0);
+            setStartedAt(null);
+          }}
+          className="glass-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
+          style={{ color: 'var(--brand-primary-strong)' }}
+        >
+          Reset
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="fade-in space-y-5">
       <section className="glass-panel rounded-[2rem] px-5 py-6 md:px-7">
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div className="clay-pill inline-flex text-xs text-gray-700">Mala mode</div>
           <div>
-            <h1 className="font-display text-3xl font-bold text-gray-900">Japa with space to breathe</h1>
+            <h1 className="font-display text-3xl font-bold text-gray-900">Japa with less distraction</h1>
             <p className="mt-2 max-w-2xl text-sm text-gray-600">
-              Large controls, session history, and simple sharing for daily practice.
+              Start with the counter. Everything else stays below when you need it.
             </p>
           </div>
-          <div className="grid gap-3 md:grid-cols-3">
-            <div className="clay-card rounded-[1.5rem] px-4 py-4">
-              <p className="text-sm font-semibold text-gray-900">Today</p>
-              <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{count}</p>
-            </div>
-            <div className="clay-card rounded-[1.5rem] px-4 py-4">
-              <p className="text-sm font-semibold text-gray-900">Target</p>
-              <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{target}</p>
-            </div>
-            <div className="clay-card rounded-[1.5rem] px-4 py-4">
-              <p className="text-sm font-semibold text-gray-900">This week</p>
-              <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{totalThisWeek}</p>
-            </div>
-          </div>
-          <div className="grid gap-3 md:grid-cols-3">
-            <div className="rounded-[1.5rem] border border-[rgba(200,127,146,0.18)] bg-white/80 px-4 py-4">
-              <p className="text-sm font-semibold text-gray-900">Streak</p>
-              <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{streak}</p>
-            </div>
-            <div className="rounded-[1.5rem] border border-[rgba(200,127,146,0.18)] bg-white/80 px-4 py-4">
-              <p className="text-sm font-semibold text-gray-900">Saved sessions</p>
-              <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{totalSessions}</p>
-            </div>
-            <div className="rounded-[1.5rem] border border-[rgba(200,127,146,0.18)] bg-white/80 px-4 py-4">
-              <p className="text-sm font-semibold text-gray-900">Last session</p>
-              <p className="mt-2 text-sm font-medium text-gray-700">
-                {lastSession
-                  ? new Date(lastSession.completed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-                  : 'Not yet'}
-              </p>
-            </div>
-          </div>
-          <div className="grid gap-3 md:grid-cols-[1fr_auto]">
-            <div className="rounded-[1.5rem] border border-[rgba(200,127,146,0.18)] bg-white/75 px-4 py-4">
-              <p className="text-sm font-semibold text-gray-900">Practice abundance</p>
-              <p className="mt-2 text-sm text-gray-600">
-                {totalSessions > 0
-                  ? `${Math.round(totalMalas * 10) / 10} malas saved across ${totalSessions} sessions.`
-                  : 'Your first saved mala becomes the start of your return rhythm.'}
-              </p>
-            </div>
+
+          {counterPanel}
+
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => setFocusMode(true)}
+              className="glass-button-primary rounded-full px-5 py-3 text-sm font-semibold text-white"
+            >
+              Begin focused mala
+            </button>
             <button
               onClick={() => {
                 setMantra(suggestedMantra);
                 setTarget(lastSession?.target_count ?? 108);
                 setNotes(lastSession?.notes ?? '');
               }}
-              className="glass-button-secondary rounded-[1.5rem] px-5 py-4 text-sm font-semibold"
+              className="glass-button-secondary rounded-full px-5 py-3 text-sm font-semibold"
               style={{ color: 'var(--brand-primary-strong)' }}
             >
               Continue with {suggestedMantra}
@@ -230,6 +238,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
               <option key={item.value} value={item.value}>{item.value}</option>
             ))}
           </select>
+          <p className="mt-2 text-xs text-gray-500">{activeMantraSource}</p>
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -245,39 +254,18 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
           ))}
         </div>
 
-        <div className="space-y-4 rounded-[1.8rem] bg-[var(--brand-primary-soft)]/55 px-5 py-5 text-center">
-          <p className="font-display text-6xl font-bold text-[color:var(--brand-primary-strong)]">{count}</p>
-          <div className="h-2 overflow-hidden rounded-full bg-white/80">
-            <div
-              className="h-full rounded-full transition-all"
-              style={{ width: `${progress}%`, background: 'linear-gradient(90deg, var(--brand-primary-strong), var(--brand-primary))' }}
-            />
+        <div className="grid gap-3 md:grid-cols-3">
+          <div className="clay-card rounded-[1.5rem] px-4 py-4">
+            <p className="text-sm font-semibold text-gray-900">This week</p>
+            <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{totalThisWeek}</p>
           </div>
-          <button
-            onClick={tapBead}
-            className="mx-auto flex h-48 w-48 items-center justify-center rounded-full text-xl font-semibold text-white shadow-sacred"
-            style={{ background: 'radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--brand-primary) 84%, white), var(--brand-primary-strong))' }}
-          >
-            Tap bead
-          </button>
-          <div className="flex justify-center gap-3">
-            <button
-              onClick={() => setCount((current) => Math.max(0, current - 1))}
-              className="glass-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
-              style={{ color: 'var(--brand-primary-strong)' }}
-            >
-              Undo
-            </button>
-            <button
-              onClick={() => {
-                setCount(0);
-                setStartedAt(null);
-              }}
-              className="glass-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
-              style={{ color: 'var(--brand-primary-strong)' }}
-            >
-              Reset
-            </button>
+          <div className="clay-card rounded-[1.5rem] px-4 py-4">
+            <p className="text-sm font-semibold text-gray-900">Streak</p>
+            <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{streak}</p>
+          </div>
+          <div className="clay-card rounded-[1.5rem] px-4 py-4">
+            <p className="text-sm font-semibold text-gray-900">Saved sessions</p>
+            <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{totalSessions}</p>
           </div>
         </div>
 
@@ -375,9 +363,11 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
             <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{filteredSessions.length}</p>
           </div>
           <div className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/75 px-4 py-4">
-            <p className="text-sm font-semibold text-gray-900">Return note</p>
+            <p className="text-sm font-semibold text-gray-900">Practice abundance</p>
             <p className="mt-2 text-sm text-gray-600">
-              {historyRange === '7d' ? 'Use this view to keep a weekly rhythm.' : historyRange === '30d' ? 'This window shows your broader devotional consistency.' : 'A fuller archive of your saved practice.'}
+              {totalSessions > 0
+                ? `${Math.round(totalMalas * 10) / 10} malas saved overall.`
+                : 'Your first saved mala becomes the start of your return rhythm.'}
             </p>
           </div>
         </div>
@@ -395,9 +385,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
                       {session.duration_seconds > 0 ? ` · ${Math.max(1, Math.round(session.duration_seconds / 60))} min` : ''}
                     </p>
                   </div>
-                  <p className="font-display text-2xl font-bold text-[color:var(--brand-primary-strong)]">
-                    {session.count}
-                  </p>
+                  <p className="font-display text-2xl font-bold text-[color:var(--brand-primary-strong)]">{session.count}</p>
                 </div>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   <span className="rounded-full bg-[var(--brand-primary-soft)] px-3 py-1 text-[11px] font-semibold text-[color:var(--brand-primary-strong)]">
@@ -414,26 +402,47 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
         </div>
       </section>
 
-      <section className="glass-panel rounded-[2rem] px-5 py-5">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="font-display text-xl font-bold text-gray-900">Practice rhythm</h2>
-          <p className="text-xs text-gray-500">A simple return loop</p>
+      {focusMode ? (
+        <div className="fixed inset-0 z-[80] bg-[radial-gradient(circle_at_top,rgba(236,192,200,0.35),rgba(255,255,255,0.96)_45%,rgba(255,255,255,0.99))] backdrop-blur-md px-4 py-6">
+          <div className="mx-auto flex h-full w-full max-w-lg flex-col justify-between rounded-[2.2rem] border border-white/80 bg-white/78 px-6 py-6 shadow-sacred">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">Focused mala</p>
+                <p className="mt-1 text-sm text-gray-600">{mantra}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setFocusMode(false)}
+                className="glass-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
+                style={{ color: 'var(--brand-primary-strong)' }}
+              >
+                Close
+              </button>
+            </div>
+            <div className="space-y-6">
+              {counterPanel}
+              <div className="grid gap-3 sm:grid-cols-2">
+                <button
+                  onClick={saveSession}
+                  disabled={saving}
+                  className="glass-button-primary rounded-full px-5 py-4 text-sm font-semibold text-white disabled:opacity-60"
+                >
+                  {saving ? 'Saving…' : 'Save session'}
+                </button>
+                <button
+                  onClick={shareSummary}
+                  disabled={count === 0}
+                  className="glass-button-secondary rounded-full px-5 py-4 text-sm font-semibold disabled:opacity-60"
+                  style={{ color: 'var(--brand-primary-strong)' }}
+                >
+                  Share progress
+                </button>
+              </div>
+            </div>
+            <p className="text-center text-sm text-gray-500">No extra cards. No feed. Just mantra, count, and return.</p>
+          </div>
         </div>
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
-          <div className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/80 px-4 py-4">
-            <p className="text-sm font-semibold text-gray-900">Begin</p>
-            <p className="mt-2 text-sm text-gray-600">Choose one mantra and one target.</p>
-          </div>
-          <div className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/80 px-4 py-4">
-            <p className="text-sm font-semibold text-gray-900">Save</p>
-            <p className="mt-2 text-sm text-gray-600">Keep the count, note, and duration.</p>
-          </div>
-          <div className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/80 px-4 py-4">
-            <p className="text-sm font-semibold text-gray-900">Return</p>
-            <p className="mt-2 text-sm text-gray-600">Build a gentle streak over the week.</p>
-          </div>
-        </div>
-      </section>
+      ) : null}
     </div>
   );
 }
