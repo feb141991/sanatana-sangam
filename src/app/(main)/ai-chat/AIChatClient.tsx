@@ -143,6 +143,21 @@ function TypingIndicator() {
   );
 }
 
+const PRACTICE_LANES = [
+  {
+    title: 'Reflect on a verse',
+    body: 'Bring a shloka, pauri, sutra, or personal question and ask for a grounded explanation.',
+  },
+  {
+    title: 'Prepare for study',
+    body: 'Ask for a chapter summary, a beginner-friendly meaning, or a few reflection questions.',
+  },
+  {
+    title: 'Work through life gently',
+    body: 'Use Dharma Mitra for calm, source-aware guidance when life feels confusing or heavy.',
+  },
+];
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function AIChatClient({ userId, userName, tradition, initialPrompt, contextLabel }: Props) {
   const [messages,   setMessages]   = useState<Message[]>([]);
@@ -162,6 +177,9 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
     jain:     'Jai Jinendra 🤲',
   };
   const greeting = greetingMap[tradition ?? 'hindu'] ?? 'Namaste 🙏';
+  const trustLabel = tradition
+    ? `Rooted in ${tradition.charAt(0).toUpperCase()}${tradition.slice(1)} guidance when sources are available`
+    : 'Rooted in dharmic guidance when sources are available';
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -250,24 +268,40 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
     <div className="flex flex-col h-[calc(100vh-8.5rem)] fade-in">
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div className="glass-panel rounded-[1.75rem] px-4 py-3 flex items-center justify-between mb-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl"
-            style={{ background: 'linear-gradient(135deg, #ff770220, #d4a01720)' }}>
+      <div className="glass-panel rounded-[1.75rem] px-4 py-4 mb-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl"
+              style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--brand-primary) 18%, white), color-mix(in srgb, var(--brand-secondary) 26%, white))' }}>
             ✨
+            </div>
+            <div>
+              <h1 className="font-display font-bold text-gray-900 text-lg leading-tight">Dharma Mitra</h1>
+              <p className="text-xs text-gray-500">A calmer place to ask, reflect, study, and return to trusted sources.</p>
+            </div>
           </div>
-          <div>
-            <h1 className="font-display font-bold text-gray-900 text-lg leading-tight">Dharma Mitra</h1>
-            <p className="text-xs text-gray-400">AI guide for life, spirituality, and source-aware reflection</p>
-          </div>
+          {!isEmpty && (
+            <button onClick={clearChat}
+              className="glass-button-secondary flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs text-gray-500 transition"
+              style={{ color: 'var(--brand-primary-strong)' }}>
+              <RotateCcw size={12} />
+              New chat
+            </button>
+          )}
         </div>
-        {!isEmpty && (
-          <button onClick={clearChat}
-            className="glass-button-secondary flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs text-gray-500 hover:text-[#7B1A1A] transition">
-            <RotateCcw size={12} />
-            New chat
-          </button>
-        )}
+        <div className="flex flex-wrap gap-2 mt-3">
+          <span className="clay-pill text-[11px] text-gray-700">
+            {trustLabel}
+          </span>
+          <span className="clay-pill text-[11px] text-gray-700">
+            Best for study, reflection, and gentle next steps
+          </span>
+          {initialPrompt && (
+            <span className="clay-pill text-[11px] text-gray-700">
+              Opened from {contextLabel ?? 'Pathshala'}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* ── Messages area ──────────────────────────────────────────────────── */}
@@ -275,20 +309,29 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
         {isEmpty && (
           <div className="flex flex-col items-center justify-center h-full text-center px-4 space-y-6">
             {/* Welcome */}
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-4xl"
-                style={{ background: 'linear-gradient(135deg, #ff770218, #d4a01718)' }}>
+                style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--brand-primary) 14%, white), color-mix(in srgb, var(--brand-secondary) 20%, white))' }}>
                 🙏
               </div>
               <h2 className="font-display font-bold text-xl text-gray-900">
                 {greeting}, {userName}
               </h2>
               <p className="text-sm text-gray-500 max-w-xs">
-                Ask me anything — life questions, spiritual wisdom, dharmic perspectives, or just a thoughtful conversation.
+                Begin with one question, one verse, or one burden. This space should feel more like guidance than search.
               </p>
               <p className="text-xs text-gray-400 max-w-sm">
-                When relevant, I now surface internal scripture references so the conversation feels more grounded and easier to verify.
+                When relevant, Dharma Mitra surfaces internal scripture references and trust cues so the conversation stays easier to verify.
               </p>
+            </div>
+
+            <div className="w-full max-w-2xl grid gap-3 sm:grid-cols-3">
+              {PRACTICE_LANES.map((lane) => (
+                <div key={lane.title} className="clay-card rounded-[1.5rem] px-4 py-4 text-left">
+                  <p className="text-sm font-semibold text-gray-900">{lane.title}</p>
+                  <p className="text-xs leading-relaxed text-gray-600 mt-2">{lane.body}</p>
+                </div>
+              ))}
             </div>
 
             {initialPrompt && (
@@ -333,11 +376,12 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
             {/* Suggestions */}
             {showSuggestions && (
               <div className="w-full max-w-sm space-y-2">
-                <p className="text-xs text-gray-400 font-medium">Try asking…</p>
+                <p className="text-xs text-gray-400 font-medium">Good first questions</p>
                 <div className="flex flex-col gap-2">
                   {suggestions.slice(0, 4).map(s => (
                     <button key={s} onClick={() => sendMessage(s)}
-                      className="glass-panel text-left px-4 py-2.5 rounded-xl text-sm text-gray-700 hover:text-[#7B1A1A] transition shadow-sm">
+                      className="glass-panel text-left px-4 py-2.5 rounded-xl text-sm text-gray-700 transition shadow-sm"
+                      style={{ ['--tw-ring-color' as never]: 'transparent' }}>
                       {s}
                     </button>
                   ))}
@@ -359,7 +403,7 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {suggestions.slice(4).map(s => (
               <button key={s} onClick={() => sendMessage(s)}
-                className="glass-chip flex-shrink-0 px-3 py-1.5 rounded-full text-xs text-gray-600 hover:text-[#7B1A1A] transition whitespace-nowrap">
+                className="glass-chip flex-shrink-0 px-3 py-1.5 rounded-full text-xs text-gray-600 transition whitespace-nowrap">
                 {s}
               </button>
             ))}
@@ -373,7 +417,7 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask anything… Shift+Enter for new line"
+              placeholder="Ask a verse, question, or life situation... Shift+Enter for a new line"
               rows={1}
               disabled={loading}
               style={{ resize: 'none', maxHeight: '120px' }}
@@ -394,7 +438,7 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
           </button>
         </div>
         <p className="text-[10px] text-gray-400 text-center mt-2">
-          Dharma Mitra can make mistakes. Verify important information.
+          Dharma Mitra is a study and reflection companion. Verify spiritually sensitive guidance with trusted teachers and sources.
         </p>
       </div>
     </div>

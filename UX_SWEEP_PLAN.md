@@ -41,6 +41,16 @@ Make the app feel calmer, clearer, and more emotionally coherent without forcing
 - Show fewer competing calls to action.
 - Let guidance evolve from onboarding cards into one strong next-step suggestion.
 
+## AI Chat
+- Frame Dharma Mitra as guided reflection and study, not an unbounded chatbot.
+- Use trust cues and entry lanes so people know what kinds of questions fit well here.
+- Keep source-aware guidance visible without making the surface feel clinical.
+
+## Bhakti
+- Replace placeholder energy with a devotional preview that still feels alive.
+- Make future scope legible: chant, remembrance, live gatherings later.
+- Keep it calm and elder-friendly, not entertainment-first.
+
 ## Tracking
 - Deliver the sweep section by section.
 - Batch small visual consistency fixes with each major experience pass.

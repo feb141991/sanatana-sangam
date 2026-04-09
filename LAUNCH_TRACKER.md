@@ -103,6 +103,7 @@ Last updated: 2026-04-09
 - [ ] Shape Panchang into an atmospheric sacred-time experience: living sky background, calmer motion, large readable cards, and optional light haptics that still work well for elders
 - [x] Create a dedicated experience roadmap in `UX_SWEEP_PLAN.md` for Panchang, Kul, Mandali, Pathshala, Home, Profile, and Notifications
 - [ ] Run the first UX sweep pass section by section instead of only adding net-new features
+- [x] Extend the first UX sweep through Tirtha Map, front-door flows, AI chat, and the Bhakti placeholder so fewer screens feel like unfinished utilities
 
 ## Notes
 
@@ -123,6 +124,8 @@ Last updated: 2026-04-09
 - The first Vichaar Sabha experience pass is now active too: the forum is being reshaped to feel like a guided wisdom space instead of a generic thread board.
 - The first Tirtha Map experience pass is now active too: discovery is being framed as calmer sacred-place guidance instead of only a search utility.
 - The first auth/front-door experience pass is now active too: login, signup, join, guest, and recovery flows are being shaped to feel warmer and less transactional.
+- The first AI chat experience pass is now active too: Dharma Mitra is being shaped into a calmer study-and-reflection companion instead of a generic assistant box.
+- The first Bhakti experience pass is now active too: the placeholder is being turned into a meaningful devotional preview surface instead of a dead-end coming-soon card.
 - `PANCHANG_SOURCE_STRATEGY.md` now tracks how launch copy, future provider strategy, and sacred-time claims should stay aligned.
 - `UX_SWEEP_PLAN.md` now tracks the next experience improvements by surface, with Panchang, Kul, and Mandali as the highest-leverage sweeps.
 - `ROADMAP.md` is now the main sequencing document for `Phase A` vs `Phase B`.
