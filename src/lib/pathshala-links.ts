@@ -25,15 +25,6 @@ export function getGitaRecitationHref(chapterId?: string) {
   if (!chapterId) return base;
   return `${base}?chapter=${encodeURIComponent(chapterId)}`;
 }
-
-export function getGitaStoryHref() {
-  return '/gita-story';
-}
-
-export function getPathshalaGitaStoryHref() {
-  return '/library/hindu/gita/story';
-}
-
 export function getAIChatHref(prompt: string, context?: string) {
   const params = new URLSearchParams({ prefill: prompt });
   if (context) params.set('context', context);
