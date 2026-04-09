@@ -7,21 +7,21 @@
 :root {
   --font-inter:    'Inter', system-ui, sans-serif;
   --font-poppins:  'Poppins', system-ui, sans-serif;
-  --saffron:       #c3872f;
-  --sacred-gold:   #d6b06a;
-  --sacred-cream:  #f7f3eb;
-  --brand-primary: #7b1a1a;
-  --brand-primary-strong: #5a1416;
-  --brand-primary-soft: #f7e8e1;
-  --brand-secondary: #b07a62;
-  --brand-accent: #c3872f;
-  --brand-accent-soft: #f5e4c3;
-  --brand-earth: #5f5248;
-  --maroon:        #7b1a1a;
-  --maroon-dark:   #5a1416;
-  --maroon-light:  #b07a62;
-  --cream:         #f2eee6;
-  --orange-accent: #c3872f;
+  --saffron:       #df9cab;
+  --sacred-gold:   #ecc0c8;
+  --sacred-cream:  #fdf6f8;
+  --brand-primary: #df9cab;
+  --brand-primary-strong: #b77486;
+  --brand-primary-soft: #f9e8ec;
+  --brand-secondary: #d7a2ae;
+  --brand-accent: #ecc0c8;
+  --brand-accent-soft: #f8e8ec;
+  --brand-earth: #8f6a73;
+  --maroon:        #df9cab;
+  --maroon-dark:   #b77486;
+  --maroon-light:  #ecc0c8;
+  --cream:         #fbf2f5;
+  --orange-accent: #ecc0c8;
 }
 
 * { box-sizing: border-box; }
@@ -33,10 +33,10 @@ body {
   position: relative;
   min-height: 100vh;
   background:
-    radial-gradient(circle at top left, rgba(123, 26, 26, 0.14), transparent 26%),
-    radial-gradient(circle at top right, rgba(195, 135, 47, 0.16), transparent 24%),
-    radial-gradient(circle at 50% 100%, rgba(176, 122, 98, 0.14), transparent 30%),
-    linear-gradient(180deg, #fcf8f1 0%, #f5efe5 50%, #efe7dc 100%);
+    radial-gradient(circle at top left, rgba(223, 156, 171, 0.18), transparent 26%),
+    radial-gradient(circle at top right, rgba(236, 192, 200, 0.18), transparent 24%),
+    radial-gradient(circle at 50% 100%, rgba(183, 116, 134, 0.12), transparent 30%),
+    linear-gradient(180deg, #fffafb 0%, #fdf4f6 52%, #f8ecef 100%);
   color: #1a1a1a;
   -webkit-font-smoothing: antialiased;
 }
@@ -57,7 +57,7 @@ body::before {
   top: 7%;
   left: -4rem;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(123, 26, 26, 0.2) 0%, rgba(123, 26, 26, 0) 72%);
+  background: radial-gradient(circle, rgba(223, 156, 171, 0.24) 0%, rgba(223, 156, 171, 0) 72%);
 }
 
 body::after {
@@ -66,7 +66,7 @@ body::after {
   right: -6rem;
   bottom: -6rem;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(195, 135, 47, 0.16) 0%, rgba(195, 135, 47, 0) 74%);
+  background: radial-gradient(circle, rgba(236, 192, 200, 0.2) 0%, rgba(236, 192, 200, 0) 74%);
 }
 
 /* Sacred gradient text */
@@ -94,7 +94,7 @@ body::after {
 }
 .card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 36px rgba(90, 20, 22, 0.14);
+  box-shadow: 0 18px 36px rgba(183, 116, 134, 0.18);
 }
 
 /* Brand mark animation */
@@ -120,63 +120,63 @@ body::after {
   backdrop-filter: blur(20px) saturate(165%);
   -webkit-backdrop-filter: blur(20px) saturate(165%);
   box-shadow:
-    0 18px 42px rgba(90, 20, 22, 0.11),
+    0 18px 42px rgba(183, 116, 134, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.56);
 }
 
 .glass-panel {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(252, 247, 241, 0.54));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(252, 243, 246, 0.62));
 }
 
 .glass-panel-strong {
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(252, 247, 241, 0.62)),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(252, 243, 246, 0.66)),
     linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
 }
 
 .glass-nav {
   background:
-    linear-gradient(135deg, rgba(90, 20, 22, 0.95), rgba(123, 26, 26, 0.86)),
+    linear-gradient(135deg, rgba(183, 116, 134, 0.96), rgba(223, 156, 171, 0.9)),
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0));
   border-color: rgba(255, 255, 255, 0.18);
   box-shadow:
-    0 20px 44px rgba(90, 20, 22, 0.24),
+    0 20px 44px rgba(183, 116, 134, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .glass-chip {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.76), rgba(251, 246, 239, 0.5));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(250, 241, 244, 0.58));
 }
 
 .glass-input {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.84), rgba(251, 246, 239, 0.6));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(250, 241, 244, 0.64));
 }
 
 .glass-button-primary {
-  background: linear-gradient(135deg, rgba(90, 20, 22, 0.96), rgba(195, 135, 47, 0.9));
+  background: linear-gradient(135deg, rgba(183, 116, 134, 0.98), rgba(223, 156, 171, 0.94));
   box-shadow:
-    0 18px 28px rgba(90, 20, 22, 0.24),
+    0 18px 28px rgba(183, 116, 134, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
 .glass-button-secondary {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.84), rgba(251, 246, 239, 0.5));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(250, 241, 244, 0.58));
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow:
-    0 16px 30px rgba(90, 20, 22, 0.08),
+    0 16px 30px rgba(183, 116, 134, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.62);
 }
 
 .clay-card {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(155deg, rgba(249, 244, 237, 0.98), rgba(247, 234, 225, 0.98));
+  background: linear-gradient(155deg, rgba(255, 247, 249, 0.98), rgba(250, 236, 240, 0.98));
   border: 1px solid rgba(255, 255, 255, 0.72);
   box-shadow:
-    18px 18px 34px rgba(96, 58, 46, 0.12),
+    18px 18px 34px rgba(183, 116, 134, 0.14),
     -10px -10px 22px rgba(255, 255, 255, 0.72),
     inset 1px 1px 0 rgba(255, 255, 255, 0.6),
-    inset -6px -6px 16px rgba(140, 90, 62, 0.08);
+    inset -6px -6px 16px rgba(206, 160, 172, 0.1);
 }
 
 .clay-card::after {
@@ -186,7 +186,7 @@ body::after {
   pointer-events: none;
   background:
     radial-gradient(circle at top left, rgba(255, 255, 255, 0.34), transparent 35%),
-    radial-gradient(circle at bottom right, rgba(123, 26, 26, 0.08), transparent 42%);
+    radial-gradient(circle at bottom right, rgba(223, 156, 171, 0.1), transparent 42%);
 }
 
 .clay-pill {
@@ -195,18 +195,18 @@ body::after {
   gap: 0.35rem;
   padding: 0.35rem 0.7rem;
   border-radius: 9999px;
-  background: linear-gradient(145deg, rgba(249, 244, 237, 0.95), rgba(247, 235, 227, 0.95));
+  background: linear-gradient(145deg, rgba(255, 247, 249, 0.95), rgba(248, 236, 240, 0.95));
   box-shadow:
-    6px 6px 14px rgba(90, 20, 22, 0.08),
+    6px 6px 14px rgba(183, 116, 134, 0.1),
     -5px -5px 10px rgba(255, 255, 255, 0.5);
 }
 
 .clay-action {
   position: relative;
-  background: linear-gradient(150deg, rgba(250, 246, 240, 0.98), rgba(247, 237, 228, 0.98));
+  background: linear-gradient(150deg, rgba(255, 248, 250, 0.98), rgba(248, 237, 241, 0.98));
   border: 1px solid rgba(255, 255, 255, 0.7);
   box-shadow:
-    12px 12px 24px rgba(90, 20, 22, 0.08),
+    12px 12px 24px rgba(183, 116, 134, 0.1),
     -7px -7px 14px rgba(255, 255, 255, 0.58),
     inset 1px 1px 0 rgba(255, 255, 255, 0.56);
 }
@@ -218,10 +218,10 @@ body::after {
   width: 2.2rem;
   height: 2.2rem;
   border-radius: 1rem;
-  background: linear-gradient(145deg, rgba(247, 234, 225, 0.96), rgba(249, 244, 237, 0.96));
+  background: linear-gradient(145deg, rgba(250, 236, 240, 0.96), rgba(255, 247, 249, 0.96));
   box-shadow:
     inset 2px 2px 6px rgba(255, 255, 255, 0.5),
-    inset -3px -3px 8px rgba(140, 90, 62, 0.12);
+    inset -3px -3px 8px rgba(206, 160, 172, 0.14);
 }
 
 .clay-card-guided { background: linear-gradient(145deg, rgba(249, 244, 237, 0.98), rgba(247, 232, 225, 0.98)); }
@@ -429,22 +429,6 @@ body::after {
 }
 
 /* Kanu story mode */
-@keyframes storyFloat {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-}
-
-@keyframes storyGlow {
-  0%, 100% { opacity: 0.72; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.04); }
-}
-
-@keyframes storyOrbit {
-  0% { transform: rotate(0deg) translateX(0px); }
-  50% { transform: rotate(1.5deg) translateX(6px); }
-  100% { transform: rotate(0deg) translateX(0px); }
-}
-
 .story-standalone-shell {
   max-width: 72rem;
   margin-inline: auto;
@@ -475,6 +459,117 @@ body::after {
   pointer-events: none;
 }
 
+.story-hero-layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1.4rem;
+  align-items: stretch;
+}
+
+.story-hero-copy-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.story-hero-portrait-panel {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.story-hero-portrait-stage {
+  position: relative;
+  overflow: hidden;
+  min-height: 23rem;
+  border-radius: 1.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background:
+    radial-gradient(circle at 50% 16%, rgba(255, 236, 182, 0.24), transparent 18%),
+    radial-gradient(circle at 82% 22%, rgba(126, 184, 255, 0.18), transparent 20%),
+    linear-gradient(180deg, rgba(17, 25, 53, 0.9), rgba(23, 31, 68, 0.72) 54%, rgba(10, 14, 32, 0.92));
+  box-shadow:
+    0 24px 40px rgba(12, 15, 31, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.story-hero-portrait-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.08), transparent 30%),
+    radial-gradient(circle at 18% 82%, rgba(255, 187, 92, 0.12), transparent 24%);
+  pointer-events: none;
+}
+
+.story-hero-lead {
+  position: absolute;
+  left: 50%;
+  bottom: -0.2rem;
+  transform: translateX(-50%);
+}
+
+.story-hero-future {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(12, 16, 34, 0.44);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.story-hero-future-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.story-hero-quote {
+  padding: 1rem 1.05rem;
+  border-radius: 1.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.story-hero-manifest {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.story-hero-trust {
+  max-width: 38rem;
+  padding: 1rem 1.05rem;
+  border-radius: 1.45rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.story-hero-stat-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 232, 191, 0.74);
+}
+
+.story-hero-stat-value {
+  margin-top: 0.38rem;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: white;
+}
+
 .story-hero-card,
 .story-toolbar-card,
 .story-nav-card,
@@ -503,22 +598,75 @@ body::after {
     linear-gradient(145deg, rgba(250, 245, 239, 0.98), rgba(246, 233, 224, 0.94));
   border: 1px solid rgba(255, 255, 255, 0.74);
   box-shadow:
-    14px 16px 28px rgba(88, 42, 45, 0.08),
-    -8px -8px 16px rgba(255, 255, 255, 0.7);
+    12px 14px 24px rgba(88, 42, 45, 0.07),
+    -6px -6px 14px rgba(255, 255, 255, 0.66);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  min-height: 100%;
+}
+
+.story-character-card:hover {
+  border-color: rgba(255, 255, 255, 0.84);
+  box-shadow:
+    14px 16px 28px rgba(88, 42, 45, 0.1),
+    -6px -6px 14px rgba(255, 255, 255, 0.7);
 }
 
 .story-character-stage {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 10.5rem;
+  min-height: 12.4rem;
   border-radius: 1.4rem;
   background:
-    radial-gradient(circle at 50% 18%, rgba(255, 221, 154, 0.36), transparent 24%),
-    linear-gradient(180deg, rgba(28, 34, 72, 0.96), rgba(43, 22, 58, 0.95));
+    radial-gradient(circle at 50% 16%, rgba(255, 221, 154, 0.28), transparent 23%),
+    radial-gradient(circle at 50% 62%, rgba(73, 134, 187, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(22, 28, 58, 0.98), rgba(31, 24, 53, 0.96));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    0 18px 34px rgba(38, 22, 49, 0.18);
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 14px 28px rgba(38, 22, 49, 0.16);
+}
+
+.story-character-layout {
+  display: grid;
+  gap: 1rem;
+}
+
+.story-character-feature {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 1.8rem;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.5), transparent 28%),
+    linear-gradient(135deg, rgba(250, 245, 238, 0.98), rgba(244, 232, 218, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow:
+    18px 20px 34px rgba(88, 42, 45, 0.1),
+    -8px -8px 18px rgba(255, 255, 255, 0.72);
+}
+
+.story-character-feature-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 21rem;
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 221, 154, 0.28), transparent 21%),
+    radial-gradient(circle at 84% 22%, rgba(106, 168, 247, 0.18), transparent 22%),
+    linear-gradient(180deg, rgba(22, 28, 58, 0.97), rgba(25, 30, 68, 0.92) 56%, rgba(17, 18, 37, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 18px 32px rgba(38, 22, 49, 0.16);
+}
+
+.story-character-feature-copy {
+  max-width: 32rem;
+}
+
+.story-character-rail {
+  display: grid;
+  gap: 0.9rem;
 }
 
 .story-arc-card {
@@ -533,6 +681,42 @@ body::after {
     16px 18px 32px rgba(88, 42, 45, 0.1),
     -8px -8px 18px rgba(255, 255, 255, 0.68);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+  min-height: 16rem;
+}
+
+.story-arc-grid {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.story-arc-card-inner {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.story-arc-card-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.story-arc-atmosphere {
+  display: inline-flex;
+  max-width: 12rem;
+  border-radius: 9999px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(73, 42, 16, 0.84);
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.78);
 }
 
 .story-arc-card:hover,
@@ -542,6 +726,64 @@ body::after {
   box-shadow:
     20px 20px 36px rgba(88, 42, 45, 0.14),
     -8px -8px 18px rgba(255, 255, 255, 0.72);
+}
+
+.story-arc-card[data-arc-id='gokul'] {
+  background:
+    radial-gradient(circle at 76% 20%, rgba(255, 245, 194, 0.56), transparent 20%),
+    linear-gradient(145deg, rgba(244, 240, 255, 0.98), rgba(232, 238, 255, 0.96) 42%, rgba(245, 232, 224, 0.94));
+}
+
+.story-arc-card[data-arc-id='vrindavan'] {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(249, 221, 147, 0.4), transparent 22%),
+    linear-gradient(145deg, rgba(232, 247, 239, 0.98), rgba(224, 243, 233, 0.98) 44%, rgba(244, 235, 222, 0.94));
+}
+
+.story-arc-card[data-arc-id='mathura'] {
+  background:
+    radial-gradient(circle at 84% 18%, rgba(255, 190, 115, 0.34), transparent 22%),
+    linear-gradient(145deg, rgba(250, 235, 228, 0.98), rgba(247, 224, 206, 0.98) 46%, rgba(235, 222, 226, 0.94));
+}
+
+.story-arc-card[data-arc-id='dwaraka'] {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(116, 201, 230, 0.26), transparent 20%),
+    linear-gradient(145deg, rgba(231, 243, 246, 0.98), rgba(220, 234, 242, 0.98) 44%, rgba(241, 232, 217, 0.95));
+}
+
+.story-arc-card[data-arc-id='kurukshetra'] {
+  background:
+    radial-gradient(circle at 82% 18%, rgba(245, 178, 111, 0.34), transparent 20%),
+    linear-gradient(145deg, rgba(242, 232, 236, 0.98), rgba(232, 224, 238, 0.98) 44%, rgba(245, 231, 214, 0.95));
+}
+
+.story-character-card[data-arc-id='vrindavan'] .story-character-stage {
+  background:
+    radial-gradient(circle at 50% 16%, rgba(255, 223, 156, 0.28), transparent 22%),
+    radial-gradient(circle at 20% 28%, rgba(66, 187, 149, 0.18), transparent 24%),
+    linear-gradient(180deg, rgba(18, 48, 55, 0.98), rgba(27, 35, 59, 0.95));
+}
+
+.story-character-card[data-arc-id='mathura'] .story-character-stage {
+  background:
+    radial-gradient(circle at 52% 18%, rgba(255, 212, 145, 0.24), transparent 21%),
+    radial-gradient(circle at 82% 24%, rgba(230, 114, 74, 0.18), transparent 22%),
+    linear-gradient(180deg, rgba(63, 28, 44, 0.96), rgba(35, 28, 54, 0.96));
+}
+
+.story-character-card[data-arc-id='dwaraka'] .story-character-stage {
+  background:
+    radial-gradient(circle at 52% 18%, rgba(255, 218, 150, 0.24), transparent 21%),
+    radial-gradient(circle at 18% 22%, rgba(85, 183, 219, 0.2), transparent 22%),
+    linear-gradient(180deg, rgba(14, 56, 78, 0.96), rgba(24, 34, 62, 0.96));
+}
+
+.story-character-card[data-arc-id='kurukshetra'] .story-character-stage {
+  background:
+    radial-gradient(circle at 50% 16%, rgba(255, 214, 146, 0.24), transparent 20%),
+    radial-gradient(circle at 82% 20%, rgba(164, 123, 255, 0.16), transparent 22%),
+    linear-gradient(180deg, rgba(41, 24, 57, 0.96), rgba(35, 20, 36, 0.97));
 }
 
 .story-chip {
@@ -604,16 +846,19 @@ body::after {
   min-height: 28rem;
   border-radius: 2rem;
   padding: 1.2rem;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: linear-gradient(135deg, rgba(16, 22, 44, 0.98), rgba(58, 25, 74, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: linear-gradient(160deg, rgba(14, 18, 39, 0.99), rgba(27, 24, 56, 0.97));
   box-shadow:
-    0 28px 50px rgba(24, 18, 48, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    0 28px 50px rgba(24, 18, 48, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  isolation: isolate;
 }
 
 .story-stage-backdrop,
 .story-stage-grid,
 .story-stage-aura,
+.story-stage-wash,
+.story-stage-vignette,
 .story-stage-horizon {
   position: absolute;
   inset: 0;
@@ -622,40 +867,57 @@ body::after {
 
 .story-stage-backdrop {
   background:
-    radial-gradient(circle at 50% 24%, rgba(255, 228, 153, 0.22), transparent 16%),
-    radial-gradient(circle at 18% 18%, rgba(89, 154, 255, 0.24), transparent 26%),
-    radial-gradient(circle at 82% 24%, rgba(255, 133, 92, 0.2), transparent 22%),
-    linear-gradient(180deg, rgba(18, 30, 65, 0.84), rgba(34, 20, 55, 0.96));
+    radial-gradient(circle at 50% 24%, rgba(255, 228, 153, 0.16), transparent 15%),
+    radial-gradient(circle at 18% 18%, rgba(89, 154, 255, 0.18), transparent 25%),
+    radial-gradient(circle at 82% 24%, rgba(255, 133, 92, 0.14), transparent 22%),
+    linear-gradient(180deg, rgba(18, 30, 65, 0.86), rgba(34, 20, 55, 0.97));
+  transform: scale(1.04);
 }
 
 .story-stage-grid {
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 2.6rem 2.6rem;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.2), black 24%, transparent 88%);
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 3.4rem 3.4rem;
+  opacity: 0.56;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.12), black 24%, transparent 88%);
 }
 
 .story-stage-aura {
   background:
-    radial-gradient(circle at 52% 28%, rgba(255, 220, 143, 0.34), transparent 24%),
-    radial-gradient(circle at 50% 70%, rgba(0, 128, 255, 0.18), transparent 28%);
-  animation: storyGlow 5.8s ease-in-out infinite;
+    radial-gradient(circle at 54% 28%, rgba(255, 220, 143, 0.24), transparent 24%),
+    radial-gradient(circle at 50% 66%, rgba(63, 135, 220, 0.1), transparent 30%);
+  opacity: 0.86;
+  filter: blur(4px);
+}
+
+.story-stage-wash {
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 28%, rgba(10, 14, 31, 0.14) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.55;
+}
+
+.story-stage-vignette {
+  background:
+    radial-gradient(circle at 50% 36%, rgba(0, 0, 0, 0) 18%, rgba(5, 8, 20, 0.12) 70%, rgba(5, 8, 20, 0.42) 100%),
+    linear-gradient(180deg, rgba(8, 10, 24, 0.1), rgba(8, 10, 24, 0.16));
 }
 
 .story-stage-horizon {
   inset: auto 0 0;
-  height: 8rem;
+  height: 9rem;
   background:
-    radial-gradient(circle at 18% 0%, rgba(255, 224, 159, 0.24), transparent 22%),
-    linear-gradient(180deg, rgba(20, 22, 46, 0), rgba(20, 22, 46, 0.82) 50%, rgba(18, 22, 42, 0.96));
+    radial-gradient(circle at 18% 0%, rgba(255, 224, 159, 0.16), transparent 22%),
+    linear-gradient(180deg, rgba(20, 22, 46, 0), rgba(20, 22, 46, 0.82) 52%, rgba(18, 22, 42, 0.98));
 }
 
 .story-stage[data-artwork-key*='moon'] .story-stage-backdrop,
 .story-stage[data-artwork-key*='threshold'] .story-stage-backdrop {
   background:
-    radial-gradient(circle at 52% 22%, rgba(255, 245, 184, 0.3), transparent 15%),
-    radial-gradient(circle at 25% 22%, rgba(111, 160, 255, 0.22), transparent 24%),
+    radial-gradient(circle at 52% 22%, rgba(255, 245, 184, 0.22), transparent 15%),
+    radial-gradient(circle at 25% 22%, rgba(111, 160, 255, 0.18), transparent 24%),
     linear-gradient(180deg, rgba(24, 30, 74, 0.95), rgba(36, 26, 62, 0.98));
 }
 
@@ -663,16 +925,16 @@ body::after {
 .story-stage[data-artwork-key*='peacock'] .story-stage-backdrop,
 .story-stage[data-artwork-key*='govardhan'] .story-stage-backdrop {
   background:
-    radial-gradient(circle at 50% 18%, rgba(255, 213, 116, 0.24), transparent 15%),
-    radial-gradient(circle at 30% 22%, rgba(30, 175, 146, 0.26), transparent 28%),
+    radial-gradient(circle at 50% 18%, rgba(255, 213, 116, 0.18), transparent 15%),
+    radial-gradient(circle at 30% 22%, rgba(30, 175, 146, 0.18), transparent 28%),
     linear-gradient(180deg, rgba(17, 54, 63, 0.94), rgba(25, 39, 64, 0.98));
 }
 
 .story-stage[data-artwork-key*='city'] .story-stage-backdrop,
 .story-stage[data-artwork-key*='council'] .story-stage-backdrop {
   background:
-    radial-gradient(circle at 55% 16%, rgba(255, 197, 113, 0.28), transparent 16%),
-    radial-gradient(circle at 14% 26%, rgba(255, 127, 80, 0.16), transparent 20%),
+    radial-gradient(circle at 55% 16%, rgba(255, 197, 113, 0.2), transparent 16%),
+    radial-gradient(circle at 14% 26%, rgba(255, 127, 80, 0.12), transparent 20%),
     linear-gradient(180deg, rgba(52, 26, 49, 0.94), rgba(31, 31, 56, 0.98));
 }
 
@@ -680,8 +942,8 @@ body::after {
 .story-stage[data-artwork-key*='harbor'] .story-stage-backdrop,
 .story-stage[data-artwork-key*='ocean'] .story-stage-backdrop {
   background:
-    radial-gradient(circle at 62% 16%, rgba(255, 219, 130, 0.24), transparent 18%),
-    radial-gradient(circle at 20% 20%, rgba(77, 177, 223, 0.24), transparent 28%),
+    radial-gradient(circle at 62% 16%, rgba(255, 219, 130, 0.18), transparent 18%),
+    radial-gradient(circle at 20% 20%, rgba(77, 177, 223, 0.18), transparent 28%),
     linear-gradient(180deg, rgba(13, 52, 76, 0.95), rgba(21, 28, 60, 0.98));
 }
 
@@ -690,9 +952,9 @@ body::after {
 .story-stage[data-artwork-key*='world-tree'] .story-stage-backdrop,
 .story-stage[data-artwork-key*='field'] .story-stage-backdrop {
   background:
-    radial-gradient(circle at 50% 18%, rgba(255, 226, 168, 0.22), transparent 16%),
-    radial-gradient(circle at 18% 16%, rgba(162, 116, 255, 0.24), transparent 24%),
-    radial-gradient(circle at 82% 18%, rgba(60, 194, 255, 0.2), transparent 22%),
+    radial-gradient(circle at 50% 18%, rgba(255, 226, 168, 0.18), transparent 16%),
+    radial-gradient(circle at 18% 16%, rgba(162, 116, 255, 0.16), transparent 24%),
+    radial-gradient(circle at 82% 18%, rgba(60, 194, 255, 0.14), transparent 22%),
     linear-gradient(180deg, rgba(19, 20, 60, 0.96), rgba(41, 20, 66, 0.98));
 }
 
@@ -700,83 +962,64 @@ body::after {
 .story-stage[data-artwork-key*='chariot'] .story-stage-backdrop,
 .story-stage[data-artwork-key*='liberation'] .story-stage-backdrop {
   background:
-    radial-gradient(circle at 50% 18%, rgba(255, 211, 136, 0.26), transparent 16%),
-    radial-gradient(circle at 18% 18%, rgba(109, 143, 233, 0.18), transparent 24%),
-    radial-gradient(circle at 86% 22%, rgba(255, 109, 61, 0.2), transparent 24%),
+    radial-gradient(circle at 50% 18%, rgba(255, 211, 136, 0.2), transparent 16%),
+    radial-gradient(circle at 18% 18%, rgba(109, 143, 233, 0.14), transparent 24%),
+    radial-gradient(circle at 86% 22%, rgba(255, 109, 61, 0.14), transparent 24%),
     linear-gradient(180deg, rgba(42, 27, 61, 0.95), rgba(42, 20, 36, 0.98));
 }
-
-.story-stage-river-drift .story-stage-aura,
-.story-stage-flute-breeze .story-stage-aura,
-.story-stage-lotus-rise .story-stage-aura {
-  animation: storyFloat 5.4s ease-in-out infinite;
-}
-
-.story-stage-battle-breeze .story-stage-grid,
-.story-stage-city-spark .story-stage-grid,
-.story-stage-ocean-lantern .story-stage-grid,
-.story-stage-cosmic-pulse .story-stage-grid {
-  animation: storyOrbit 7.5s ease-in-out infinite;
-}
-
-.story-particles {
-  position: absolute;
-  inset: 0;
-}
-
-.story-particle {
-  position: absolute;
-  width: 0.65rem;
-  height: 0.65rem;
-  border-radius: 9999px;
-  background: rgba(255, 232, 178, 0.58);
-  filter: blur(1px);
-  animation: storyFloat 6.4s ease-in-out infinite;
-}
-
-.particle-1 { top: 18%; left: 13%; animation-delay: 0.1s; }
-.particle-2 { top: 26%; right: 18%; animation-delay: 0.7s; }
-.particle-3 { bottom: 24%; left: 22%; animation-delay: 1.3s; }
-.particle-4 { bottom: 16%; right: 24%; animation-delay: 1.9s; }
 
 .story-stage-content {
   position: relative;
   z-index: 1;
   display: flex;
-  gap: 1.2rem;
+  gap: 1.6rem;
   min-height: 25rem;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
 }
 
 .story-stage-copy {
   max-width: 31rem;
-  padding: 0.35rem;
+  padding: 0.5rem 0.35rem 0.35rem;
+  align-self: flex-start;
 }
 
 .story-stage-portrait {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.8rem;
-  max-width: 18rem;
+  gap: 0.95rem;
+  max-width: 19.25rem;
+  padding: 0.85rem 0.95rem 0.65rem;
+  border-radius: 1.8rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.04)),
+    radial-gradient(circle at top center, rgba(255, 229, 168, 0.12), transparent 32%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 18px 32px rgba(8, 12, 30, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .story-stage-label {
   text-align: center;
-  padding: 0.75rem 0.95rem;
+  width: 100%;
+  padding: 0.8rem 0.95rem;
   border-radius: 1.2rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.08));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .story-supporting-cast {
   position: absolute;
   left: 1.2rem;
   right: 1.2rem;
-  bottom: 1.2rem;
+  bottom: 1rem;
   z-index: 1;
   display: flex;
   flex-wrap: wrap;
@@ -787,10 +1030,13 @@ body::after {
   display: inline-flex;
   align-items: center;
   gap: 0.7rem;
-  padding: 0.55rem 0.8rem;
+  padding: 0.58rem 0.82rem;
   border-radius: 1.2rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.08));
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 10px 18px rgba(8, 12, 30, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -847,51 +1093,68 @@ body::after {
   padding: 0.95rem 1rem;
 }
 
+.story-stage-copy,
+.story-stage-portrait,
+.story-supporting-cast {
+  will-change: transform;
+}
+
 .kanu-avatar-shell {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 9999px;
+  overflow: hidden;
+  border-radius: 2rem;
   background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.34), transparent 40%),
-    linear-gradient(145deg, rgba(250, 245, 239, 0.3), rgba(255, 255, 255, 0.1));
-  border: 1px solid rgba(255, 255, 255, 0.22);
+    radial-gradient(circle at 50% 12%, rgba(255, 241, 204, 0.18), transparent 28%),
+    linear-gradient(180deg, rgba(15, 20, 40, 0.4), rgba(255, 255, 255, 0.08));
+  border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow:
-    0 24px 40px rgba(24, 18, 48, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+    0 20px 34px rgba(11, 14, 31, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .kanu-avatar-shell::after {
   content: '';
   position: absolute;
-  inset: 0.35rem;
+  inset: 0.5rem;
   border-radius: inherit;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   pointer-events: none;
+}
+
+.kanu-avatar-figure {
+  background:
+    radial-gradient(circle at 50% 14%, rgba(255, 236, 194, 0.18), transparent 26%),
+    linear-gradient(180deg, rgba(12, 18, 36, 0.56), rgba(23, 28, 56, 0.22) 52%, rgba(255, 255, 255, 0.06));
+}
+
+.kanu-avatar-warrior {
+  border-radius: 1.7rem;
 }
 
 .kanu-avatar-lead {
   box-shadow:
-    0 30px 48px rgba(24, 18, 48, 0.34),
-    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+    0 24px 40px rgba(11, 14, 31, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
 }
 
 .kanu-avatar-sm {
-  width: 4.2rem;
-  height: 4.2rem;
+  width: 4.8rem;
+  height: 5.8rem;
 }
 
 .kanu-avatar-md {
-  width: 7.2rem;
-  height: 7.2rem;
+  width: 8.25rem;
+  height: 10rem;
 }
 
 .kanu-avatar-lg {
-  width: 13.5rem;
-  height: 13.5rem;
+  width: 15rem;
+  height: 18rem;
 }
 
 .kanu-avatar-svg {
@@ -921,5 +1184,49 @@ body::after {
     inset: auto;
     margin-top: 1rem;
     padding-bottom: 0.2rem;
+  }
+
+  .story-hero-portrait-stage {
+    min-height: 18rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .story-hero-layout {
+    grid-template-columns: minmax(0, 1.18fr) minmax(20rem, 0.82fr);
+    gap: 1.6rem;
+  }
+
+  .story-character-layout {
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 1.32fr);
+    align-items: stretch;
+  }
+
+  .story-character-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .story-arc-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .story-arc-card[data-arc-id='gokul'] {
+    grid-column: span 5;
+  }
+
+  .story-arc-card[data-arc-id='vrindavan'] {
+    grid-column: span 7;
+  }
+
+  .story-arc-card[data-arc-id='mathura'] {
+    grid-column: span 4;
+  }
+
+  .story-arc-card[data-arc-id='dwaraka'] {
+    grid-column: span 4;
+  }
+
+  .story-arc-card[data-arc-id='kurukshetra'] {
+    grid-column: span 4;
   }
 }
