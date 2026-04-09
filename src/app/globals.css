@@ -7,21 +7,21 @@
 :root {
   --font-inter:    'Inter', system-ui, sans-serif;
   --font-poppins:  'Poppins', system-ui, sans-serif;
-  --saffron:       #c3872f;
-  --sacred-gold:   #d6b06a;
-  --sacred-cream:  #f7f3eb;
-  --brand-primary: #7b1a1a;
-  --brand-primary-strong: #5a1416;
-  --brand-primary-soft: #f7e8e1;
-  --brand-secondary: #b07a62;
-  --brand-accent: #c3872f;
-  --brand-accent-soft: #f5e4c3;
-  --brand-earth: #5f5248;
-  --maroon:        #7b1a1a;
-  --maroon-dark:   #5a1416;
-  --maroon-light:  #b07a62;
-  --cream:         #f2eee6;
-  --orange-accent: #c3872f;
+  --saffron:       #df9cab;
+  --sacred-gold:   #ecc0c8;
+  --sacred-cream:  #fdf6f8;
+  --brand-primary: #df9cab;
+  --brand-primary-strong: #b77486;
+  --brand-primary-soft: #f9e8ec;
+  --brand-secondary: #d7a2ae;
+  --brand-accent: #ecc0c8;
+  --brand-accent-soft: #f8e8ec;
+  --brand-earth: #8f6a73;
+  --maroon:        #df9cab;
+  --maroon-dark:   #b77486;
+  --maroon-light:  #ecc0c8;
+  --cream:         #fbf2f5;
+  --orange-accent: #ecc0c8;
 }
 
 * { box-sizing: border-box; }
@@ -33,10 +33,10 @@ body {
   position: relative;
   min-height: 100vh;
   background:
-    radial-gradient(circle at top left, rgba(123, 26, 26, 0.14), transparent 26%),
-    radial-gradient(circle at top right, rgba(195, 135, 47, 0.16), transparent 24%),
-    radial-gradient(circle at 50% 100%, rgba(176, 122, 98, 0.14), transparent 30%),
-    linear-gradient(180deg, #fcf8f1 0%, #f5efe5 50%, #efe7dc 100%);
+    radial-gradient(circle at top left, rgba(223, 156, 171, 0.18), transparent 26%),
+    radial-gradient(circle at top right, rgba(236, 192, 200, 0.18), transparent 24%),
+    radial-gradient(circle at 50% 100%, rgba(183, 116, 134, 0.12), transparent 30%),
+    linear-gradient(180deg, #fffafb 0%, #fdf4f6 52%, #f8ecef 100%);
   color: #1a1a1a;
   -webkit-font-smoothing: antialiased;
 }
@@ -57,7 +57,7 @@ body::before {
   top: 7%;
   left: -4rem;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(123, 26, 26, 0.2) 0%, rgba(123, 26, 26, 0) 72%);
+  background: radial-gradient(circle, rgba(223, 156, 171, 0.24) 0%, rgba(223, 156, 171, 0) 72%);
 }
 
 body::after {
@@ -66,7 +66,7 @@ body::after {
   right: -6rem;
   bottom: -6rem;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(195, 135, 47, 0.16) 0%, rgba(195, 135, 47, 0) 74%);
+  background: radial-gradient(circle, rgba(236, 192, 200, 0.2) 0%, rgba(236, 192, 200, 0) 74%);
 }
 
 /* Sacred gradient text */
@@ -94,7 +94,7 @@ body::after {
 }
 .card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 36px rgba(90, 20, 22, 0.14);
+  box-shadow: 0 18px 36px rgba(183, 116, 134, 0.18);
 }
 
 /* Brand mark animation */
@@ -120,63 +120,63 @@ body::after {
   backdrop-filter: blur(20px) saturate(165%);
   -webkit-backdrop-filter: blur(20px) saturate(165%);
   box-shadow:
-    0 18px 42px rgba(90, 20, 22, 0.11),
+    0 18px 42px rgba(183, 116, 134, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.56);
 }
 
 .glass-panel {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(252, 247, 241, 0.54));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(252, 243, 246, 0.62));
 }
 
 .glass-panel-strong {
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(252, 247, 241, 0.62)),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(252, 243, 246, 0.66)),
     linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
 }
 
 .glass-nav {
   background:
-    linear-gradient(135deg, rgba(90, 20, 22, 0.95), rgba(123, 26, 26, 0.86)),
+    linear-gradient(135deg, rgba(183, 116, 134, 0.96), rgba(223, 156, 171, 0.9)),
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0));
   border-color: rgba(255, 255, 255, 0.18);
   box-shadow:
-    0 20px 44px rgba(90, 20, 22, 0.24),
+    0 20px 44px rgba(183, 116, 134, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .glass-chip {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.76), rgba(251, 246, 239, 0.5));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(250, 241, 244, 0.58));
 }
 
 .glass-input {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.84), rgba(251, 246, 239, 0.6));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(250, 241, 244, 0.64));
 }
 
 .glass-button-primary {
-  background: linear-gradient(135deg, rgba(90, 20, 22, 0.96), rgba(195, 135, 47, 0.9));
+  background: linear-gradient(135deg, rgba(183, 116, 134, 0.98), rgba(223, 156, 171, 0.94));
   box-shadow:
-    0 18px 28px rgba(90, 20, 22, 0.24),
+    0 18px 28px rgba(183, 116, 134, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
 .glass-button-secondary {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.84), rgba(251, 246, 239, 0.5));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(250, 241, 244, 0.58));
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow:
-    0 16px 30px rgba(90, 20, 22, 0.08),
+    0 16px 30px rgba(183, 116, 134, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.62);
 }
 
 .clay-card {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(155deg, rgba(249, 244, 237, 0.98), rgba(247, 234, 225, 0.98));
+  background: linear-gradient(155deg, rgba(255, 247, 249, 0.98), rgba(250, 236, 240, 0.98));
   border: 1px solid rgba(255, 255, 255, 0.72);
   box-shadow:
-    18px 18px 34px rgba(96, 58, 46, 0.12),
+    18px 18px 34px rgba(183, 116, 134, 0.14),
     -10px -10px 22px rgba(255, 255, 255, 0.72),
     inset 1px 1px 0 rgba(255, 255, 255, 0.6),
-    inset -6px -6px 16px rgba(140, 90, 62, 0.08);
+    inset -6px -6px 16px rgba(206, 160, 172, 0.1);
 }
 
 .clay-card::after {
@@ -186,7 +186,7 @@ body::after {
   pointer-events: none;
   background:
     radial-gradient(circle at top left, rgba(255, 255, 255, 0.34), transparent 35%),
-    radial-gradient(circle at bottom right, rgba(123, 26, 26, 0.08), transparent 42%);
+    radial-gradient(circle at bottom right, rgba(223, 156, 171, 0.1), transparent 42%);
 }
 
 .clay-pill {
@@ -195,18 +195,18 @@ body::after {
   gap: 0.35rem;
   padding: 0.35rem 0.7rem;
   border-radius: 9999px;
-  background: linear-gradient(145deg, rgba(249, 244, 237, 0.95), rgba(247, 235, 227, 0.95));
+  background: linear-gradient(145deg, rgba(255, 247, 249, 0.95), rgba(248, 236, 240, 0.95));
   box-shadow:
-    6px 6px 14px rgba(90, 20, 22, 0.08),
+    6px 6px 14px rgba(183, 116, 134, 0.1),
     -5px -5px 10px rgba(255, 255, 255, 0.5);
 }
 
 .clay-action {
   position: relative;
-  background: linear-gradient(150deg, rgba(250, 246, 240, 0.98), rgba(247, 237, 228, 0.98));
+  background: linear-gradient(150deg, rgba(255, 248, 250, 0.98), rgba(248, 237, 241, 0.98));
   border: 1px solid rgba(255, 255, 255, 0.7);
   box-shadow:
-    12px 12px 24px rgba(90, 20, 22, 0.08),
+    12px 12px 24px rgba(183, 116, 134, 0.1),
     -7px -7px 14px rgba(255, 255, 255, 0.58),
     inset 1px 1px 0 rgba(255, 255, 255, 0.56);
 }
@@ -218,10 +218,10 @@ body::after {
   width: 2.2rem;
   height: 2.2rem;
   border-radius: 1rem;
-  background: linear-gradient(145deg, rgba(247, 234, 225, 0.96), rgba(249, 244, 237, 0.96));
+  background: linear-gradient(145deg, rgba(250, 236, 240, 0.96), rgba(255, 247, 249, 0.96));
   box-shadow:
     inset 2px 2px 6px rgba(255, 255, 255, 0.5),
-    inset -3px -3px 8px rgba(140, 90, 62, 0.12);
+    inset -3px -3px 8px rgba(206, 160, 172, 0.14);
 }
 
 .clay-card-guided { background: linear-gradient(145deg, rgba(249, 244, 237, 0.98), rgba(247, 232, 225, 0.98)); }

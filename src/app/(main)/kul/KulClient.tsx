@@ -88,6 +88,33 @@ function TaskBadge({ type }: { type: string }) {
   );
 }
 
+function SectionIntro({
+  title,
+  description,
+  helper,
+  action,
+}: {
+  title: string;
+  description: string;
+  helper?: string;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="glass-panel rounded-[1.55rem] p-4 space-y-3">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold text-gray-900">{title}</p>
+          <p className="text-sm text-gray-600 mt-1 leading-relaxed">{description}</p>
+        </div>
+        {action ? <div className="flex-shrink-0">{action}</div> : null}
+      </div>
+      {helper ? (
+        <p className="text-xs text-gray-500 leading-relaxed">{helper}</p>
+      ) : null}
+    </div>
+  );
+}
+
 function FamilyKeepsakeStage({ member }: { member: FamilyMember }) {
   const initials = getInitials(member.name || '?');
   const medallionRing = member.is_alive
@@ -267,6 +294,17 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
 
   return (
     <div className="space-y-4">
+      <SectionIntro
+        title="Overview keeps the whole family space readable"
+        description="Check the pulse here, then move into one dedicated page for people, tasks, chat, lineage, or dates."
+        helper="This page is for orientation, not for doing everything in one place."
+        action={
+          <button onClick={shareKul} className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold" style={{ color: 'var(--brand-primary)' }}>
+            Share Kul
+          </button>
+        }
+      />
+
       {/* Kul header card */}
       <div className="rounded-2xl p-5 text-white" style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
         <div className="flex items-center gap-3 mb-4">
@@ -387,7 +425,16 @@ function MembersTab({ members, userId, myRole, kul }: {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
+      <SectionIntro
+        title="See who is in the family circle"
+        description="This page is for membership clarity: who is here, who is a guardian, and who may need a role change."
+        helper={myRole === 'guardian'
+          ? 'Guardians can promote or remove members here.'
+          : 'Only guardians can change roles or remove people from the Kul.'}
+      />
+
+      <div className="space-y-2">
       {members.map(m => {
         const p     = m.profiles;
         const isMe  = m.user_id === userId;
@@ -426,6 +473,7 @@ function MembersTab({ members, userId, myRole, kul }: {
           </div>
         );
       })}
+      </div>
     </div>
   );
 }
@@ -474,6 +522,16 @@ function TasksTab({ tasks, members, userId, myRole, kulId }: {
 
   return (
     <div className="space-y-4">
+      <SectionIntro
+        title={myRole === 'guardian' ? 'Shared family practice lives here' : 'Your family practice tasks live here'}
+        description={myRole === 'guardian'
+          ? 'Assign small, clear practices and keep everyone’s shared rhythm visible.'
+          : 'See what has been assigned to you first, then look at the wider family task flow if needed.'}
+        helper={myRole === 'guardian'
+          ? 'Try short, specific tasks instead of long instructions so the page stays usable.'
+          : 'Mark tasks done here instead of treating the overview as your working space.'}
+      />
+
       {/* Assign button for guardians */}
       {myRole === 'guardian' && (
         <button onClick={() => setShowCompose(!showCompose)}
@@ -663,6 +721,14 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
 
   return (
     <div className="flex flex-col" style={{ height: 'calc(100vh - 300px)', minHeight: '400px' }}>
+      <div className="mb-4">
+        <SectionIntro
+          title="Kul Sabha is for quick family conversation"
+          description="Use this space for updates, coordination, and small encouragements. Keep deeper family structure in Vansh and practical assignments in Tasks."
+          helper="Messages appear in real time. Reactions are for light acknowledgment so the chat stays clean."
+        />
+      </div>
+
       {/* Messages */}
       <div className="flex-1 overflow-y-auto space-y-3 pb-2">
         {msgs.length === 0 && (
@@ -1137,18 +1203,6 @@ function KulSectionShell({
             <p className="text-sm text-gray-600 mt-2 leading-relaxed max-w-xl">{meta.description}</p>
           </div>
         </div>
-      </div>
-
-      <div>
-        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-3">Move to another family space</p>
-        <KulSectionTiles
-          currentView={view}
-          members={members}
-          tasks={tasks}
-          messages={messages}
-          familyMembers={familyMembers}
-          kulEvents={kulEvents}
-        />
       </div>
 
       {children}
