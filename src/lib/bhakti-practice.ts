@@ -1,8 +1,28 @@
 export const BHAKTI_MANTRAS = [
-  { value: 'Om Namah Shivaya', source: 'Public-domain mantra tradition' },
-  { value: 'Hare Krishna Maha Mantra', source: 'Public-domain mantra tradition' },
-  { value: 'Sri Ram Jai Ram Jai Jai Ram', source: 'Public-domain mantra tradition' },
-  { value: 'Gayatri Mantra', source: 'Traditional chant source required for audio later' },
+  {
+    value: 'Om Namah Shivaya',
+    source: 'Public-domain mantra tradition',
+    audioState: 'focus_only',
+    sourceUrl: null,
+  },
+  {
+    value: 'Hare Krishna Maha Mantra',
+    source: 'Public-domain mantra tradition',
+    audioState: 'focus_only',
+    sourceUrl: null,
+  },
+  {
+    value: 'Sri Ram Jai Ram Jai Jai Ram',
+    source: 'Public-domain mantra tradition',
+    audioState: 'focus_only',
+    sourceUrl: null,
+  },
+  {
+    value: 'Gayatri Mantra',
+    source: 'Wikimedia Commons source available',
+    audioState: 'source_link',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Gayatri_Mantra_as_it_is.ogg',
+  },
 ] as const;
 
 export const MALA_TARGETS = [27, 54, 108] as const;

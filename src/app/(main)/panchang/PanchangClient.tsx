@@ -66,6 +66,20 @@ function getSkyTheme(hour: number) {
   return SKY_THEMES.night;
 }
 
+function triggerPanchangHaptic(pattern: number | number[]) {
+  if (typeof window === 'undefined') return;
+  window.navigator.vibrate?.(pattern);
+}
+
+function parseClockToMinutes(value: string): number | null {
+  const match = value.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!match) return null;
+  let hour = Number(match[1]) % 12;
+  const minute = Number(match[2]);
+  if (match[3].toUpperCase() === 'PM') hour += 12;
+  return hour * 60 + minute;
+}
+
 // ─── Panchang detail row ──────────────────────────────────────────────────────
 function Row({ emoji, label, value, highlight = false }: {
   emoji: string; label: string; value: string; highlight?: boolean;
@@ -112,10 +126,12 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
   }, [viewYear, viewMonth]);
 
   function prevMonth() {
+    triggerPanchangHaptic(12);
     if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1); }
     else setViewMonth(m => m - 1);
   }
   function nextMonth() {
+    triggerPanchangHaptic(12);
     if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y + 1); }
     else setViewMonth(m => m + 1);
   }
@@ -125,6 +141,29 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   });
   const skyTheme = getSkyTheme(isToday ? new Date().getHours() : 7);
+  const sunriseMinutes = parseClockToMinutes(p.sunrise);
+  const sunsetMinutes = parseClockToMinutes(p.sunset);
+  const selectedClockMinutes = isToday
+    ? new Date().getHours() * 60 + new Date().getMinutes()
+    : sunriseMinutes !== null && sunsetMinutes !== null
+      ? Math.round((sunriseMinutes + sunsetMinutes) / 2)
+      : null;
+  const daylightProgress = sunriseMinutes !== null && sunsetMinutes !== null && selectedClockMinutes !== null
+    ? Math.max(0, Math.min(1, (selectedClockMinutes - sunriseMinutes) / Math.max(1, sunsetMinutes - sunriseMinutes)))
+    : 0.5;
+  const sacredWindowLabel = isToday
+    ? selectedClockMinutes !== null && sunriseMinutes !== null && sunsetMinutes !== null
+      ? selectedClockMinutes < sunriseMinutes
+        ? 'The day has not opened yet. Keep the morning quiet until sunrise.'
+        : selectedClockMinutes > sunsetMinutes
+          ? 'The visible day has closed. This is a good hour for recollection and gratitude.'
+          : selectedClockMinutes < sunriseMinutes + 120
+            ? 'You are in the fresh morning window, ideal for sankalpa, recitation, and starting with clarity.'
+            : selectedClockMinutes > sunsetMinutes - 120
+              ? 'Dusk is near. This is a gentle window for prayer, remembrance, and closing the day well.'
+              : 'The day is in motion. Use the sacred-time ribbon below to stay aware of auspicious and avoidable windows.'
+      : 'Use the sacred-time ribbon below to orient your day.'
+    : 'This is a calm planning view for a different day, so you can prepare ahead.';
 
   async function share() {
     const text = `🪔 Panchang — ${dateLabel}\n\n` +
@@ -140,7 +179,15 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
       try { await navigator.share({ title: 'Panchang', text }); return; } catch {}
     }
     await navigator.clipboard.writeText(text);
+    triggerPanchangHaptic([12, 30, 12]);
     alert('Panchang copied to clipboard!');
+  }
+
+  function goToToday() {
+    triggerPanchangHaptic(18);
+    setSelected(today);
+    setViewYear(today.getFullYear());
+    setViewMonth(today.getMonth());
   }
 
   return (
@@ -168,6 +215,40 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/75 text-gray-700 border border-white/80">
               {city || 'Location-aware'}
             </span>
+            {!isToday && (
+              <button
+                type="button"
+                onClick={goToToday}
+                className="px-3 py-1 rounded-full text-xs font-semibold bg-white/80 text-gray-700 border border-white/80 transition hover:bg-white"
+              >
+                Return to today
+              </button>
+            )}
+          </div>
+          <div className="mt-4 rounded-2xl border border-white/70 bg-white/55 px-3 py-3 backdrop-blur-[2px]">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-500">Day arc</p>
+                <p className="text-sm font-semibold text-gray-800 mt-1">{p.sunrise} to {p.sunset}</p>
+              </div>
+              <p className="text-[11px] text-gray-500 max-w-[10rem] text-right leading-relaxed">{sacredWindowLabel}</p>
+            </div>
+            <div className="mt-3">
+              <div className="relative h-2 rounded-full bg-white/70 overflow-hidden">
+                <div
+                  className="absolute inset-y-0 left-0 rounded-full"
+                  style={{
+                    width: `${Math.round(daylightProgress * 100)}%`,
+                    background: 'linear-gradient(90deg, rgba(255, 190, 132, 0.95), rgba(223, 156, 171, 0.95))',
+                  }}
+                />
+              </div>
+              <div className="mt-2 flex items-center justify-between text-[11px] text-gray-500">
+                <span>Sunrise</span>
+                <span>{isToday ? 'Current day flow' : 'Planned day flow'}</span>
+                <span>Sunset</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -233,7 +314,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
             const dayP = calculatePanchang(date, lat, lon);
             const tithiShort = dayP.tithiIndex;
             return (
-              <button key={date.toISOString()} onClick={() => setSelected(date)}
+              <button key={date.toISOString()} onClick={() => { triggerPanchangHaptic(10); setSelected(date); }}
                 className={`relative flex flex-col items-center justify-center rounded-xl py-1.5 transition-all ${
                   isSelected
                     ? 'text-white'
@@ -278,6 +359,12 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
               <p className="text-sm font-semibold mt-1" style={{ color: 'var(--brand-primary-strong)' }}>{item.value}</p>
             </div>
           ))}
+        </div>
+        <div className="mt-3 rounded-xl border border-white/80 bg-white/70 px-3 py-2.5">
+          <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400">Today&apos;s posture</p>
+          <p className="text-sm mt-1 leading-relaxed" style={{ color: 'var(--brand-primary-strong)' }}>
+            {sacredWindowLabel}
+          </p>
         </div>
       </div>
 

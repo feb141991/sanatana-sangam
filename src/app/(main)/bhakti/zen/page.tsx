@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BHAKTI_MANTRAS } from '@/lib/bhakti-practice';
+import { playBeadTapFeedback } from '@/lib/practice-feedback';
 
 const DURATIONS = [12, 24, 48];
 
@@ -70,6 +71,7 @@ export default function ZenModePage() {
   }, [running]);
 
   const activeMode = useMemo(() => MODES.find((item) => item.id === mode) ?? MODES[0], [mode]);
+  const activeChant = useMemo(() => BHAKTI_MANTRAS.find((item) => item.value === chantMantra) ?? BHAKTI_MANTRAS[0], [chantMantra]);
   const progress = ((duration * 60 - remaining) / (duration * 60)) * 100;
 
   return (
@@ -150,6 +152,22 @@ export default function ZenModePage() {
             <p className="mt-3 text-sm leading-relaxed text-gray-600">
               Stay with one mantra, one breath, and one pace. Rights-safe chant audio comes after the shared Bhakti audio layer is ready.
             </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {activeChant.audioState === 'source_link' && activeChant.sourceUrl ? (
+                <a
+                  href={activeChant.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-full border border-[color:var(--brand-primary-soft)] px-4 py-2 text-sm font-semibold text-[color:var(--brand-primary-strong)]"
+                >
+                  Open chant source
+                </a>
+              ) : (
+                <span className="rounded-full border border-[color:var(--brand-primary-soft)] px-4 py-2 text-sm font-semibold text-gray-500">
+                  Focus-only chant for now
+                </span>
+              )}
+            </div>
           </div>
         ) : null}
 
@@ -157,7 +175,7 @@ export default function ZenModePage() {
           <button
             onClick={() => {
               setRunning((current) => !current);
-              navigator.vibrate?.(12);
+              playBeadTapFeedback();
             }}
             className="glass-button-primary rounded-full px-5 py-3 text-sm font-semibold text-white"
           >
@@ -222,7 +240,7 @@ export default function ZenModePage() {
               <button
                 onClick={() => {
                   setRunning((current) => !current);
-                  navigator.vibrate?.(12);
+                  playBeadTapFeedback();
                 }}
                 className="glass-button-primary rounded-full px-5 py-4 text-sm font-semibold text-white"
               >

@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import clsx from 'clsx';
 import { createClient } from '@/lib/supabase';
 import { BHAKTI_MANTRAS, buildMalaShareText, MALA_TARGETS } from '@/lib/bhakti-practice';
+import { playBeadTapFeedback } from '@/lib/practice-feedback';
 import type { MalaSession } from '@/types/database';
 
 function sameLocalDay(a: Date, b: Date) {
@@ -94,12 +95,13 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
     [filteredSessions]
   );
   const suggestedMantra = lastSession?.mantra ?? BHAKTI_MANTRAS[0].value;
-  const activeMantraSource = BHAKTI_MANTRAS.find((item) => item.value === mantra)?.source ?? 'Traditional mantra';
+  const activeMantra = BHAKTI_MANTRAS.find((item) => item.value === mantra) ?? BHAKTI_MANTRAS[0];
+  const activeMantraSource = activeMantra.source;
 
   function tapBead() {
     if (!startedAt) setStartedAt(Date.now());
     setCount((current) => current + 1);
-    navigator.vibrate?.(8);
+    playBeadTapFeedback();
   }
 
   async function saveSession() {
@@ -238,7 +240,23 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
               <option key={item.value} value={item.value}>{item.value}</option>
             ))}
           </select>
-          <p className="mt-2 text-xs text-gray-500">{activeMantraSource}</p>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <p className="text-xs text-gray-500">{activeMantraSource}</p>
+            {activeMantra.audioState === 'source_link' && activeMantra.sourceUrl ? (
+              <a
+                href={activeMantra.sourceUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full border border-[color:var(--brand-primary-soft)] px-3 py-1 text-[11px] font-semibold text-[color:var(--brand-primary-strong)]"
+              >
+                Open chant source
+              </a>
+            ) : (
+              <span className="rounded-full border border-[color:var(--brand-primary-soft)] px-3 py-1 text-[11px] font-semibold text-gray-500">
+                Focus only for now
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -362,15 +380,15 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
             <p className="text-sm font-semibold text-gray-900">Sessions</p>
             <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{filteredSessions.length}</p>
           </div>
-          <div className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/75 px-4 py-4">
-            <p className="text-sm font-semibold text-gray-900">Practice abundance</p>
-            <p className="mt-2 text-sm text-gray-600">
-              {totalSessions > 0
-                ? `${Math.round(totalMalas * 10) / 10} malas saved overall.`
-                : 'Your first saved mala becomes the start of your return rhythm.'}
-            </p>
+            <div className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/75 px-4 py-4">
+              <p className="text-sm font-semibold text-gray-900">Practice abundance</p>
+              <p className="mt-2 text-sm text-gray-600">
+                {totalSessions > 0
+                  ? `${Math.round(totalMalas * 10) / 10} malas saved overall.`
+                  : 'Your first saved mala becomes the start of your return rhythm.'}
+              </p>
+            </div>
           </div>
-        </div>
         <div className="mt-4 space-y-3">
           {filteredSessions.length === 0 ? (
             <p className="text-sm text-gray-500">Your saved mala sessions will appear here.</p>
@@ -421,6 +439,22 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
             </div>
             <div className="space-y-6">
               {counterPanel}
+              <div className="flex flex-wrap items-center justify-center gap-2 text-center">
+                {activeMantra.audioState === 'source_link' && activeMantra.sourceUrl ? (
+                  <a
+                    href={activeMantra.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-full border border-[color:var(--brand-primary-soft)] bg-white/80 px-4 py-2 text-sm font-semibold text-[color:var(--brand-primary-strong)]"
+                  >
+                    Open chant source
+                  </a>
+                ) : (
+                  <span className="rounded-full border border-[color:var(--brand-primary-soft)] bg-white/80 px-4 py-2 text-sm font-semibold text-gray-500">
+                    Chant audio is not in-app yet for this mantra
+                  </span>
+                )}
+              </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <button
                   onClick={saveSession}
