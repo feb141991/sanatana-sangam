@@ -93,6 +93,7 @@ Last updated: 2026-04-09
 - [x] Replace the partial Gita pilot with a full local public-domain corpus so chapter study no longer depends on external full-text fallback
 - [x] Replace the partial Upanishad pilot with a principal-Upanishad corpus so the Pathshala track opens into full study texts instead of only a few Mahavakya excerpts
 - [ ] Add in-app authoritative Gita audio after source-rights confirmation, then later pronunciation guidance and recite-along support
+- [x] Build the first Gita audio foundation as a companion-first in-app layer with chapter audio registry, saved listening progress, focused recitation mode, and return-to-study flow
 - [ ] Keep non-Gita scripture expansion on hold while the Gita study + recitation flow is completed end to end
 - [ ] Add a focused Howler-backed Pathshala audio layer later for recitation and guided reading, not generic app-wide UI sounds
 - [x] Define `Zen mode` as a distraction-light reading and recitation surface for launch-facing Pathshala use
@@ -143,6 +144,7 @@ Last updated: 2026-04-09
 - The first Bhakti experience pass is now active too: the placeholder is being turned into a meaningful devotional preview surface instead of a dead-end coming-soon card.
 - The shared app foundation now has a first reusable UI layer (`Button`, `Card`, `Badge`, `Input`, `SectionHeading`, async states) plus a TanStack Query provider and stable query-key map for future Mandali/Kul/Profile client data work.
 - `PATHSHALA_SOURCE_POLICY.md` now centralizes the trust rules for what Pathshala may store locally, what must remain companion-only, what should stay catalog-first, and what launch may honestly claim.
+- Gita recitation now has a real in-app audio foundation even before hosted playback: chapter metadata, saved listening state on device, focused recitation mode, and a cleaner handoff into the authoritative companion source.
 - The notification system now has a first real preference layer: sacred-time reminder toggles, quiet hours, and cron filtering, but it still needs live production verification and richer destination targeting.
 - Vercel Hobby only allows daily cron schedules, so sacred-time delivery is currently less precise than the ideal hourly model; re-evaluate hosting or background job infrastructure later if we want finer reminder timing.
 - `PANCHANG_SOURCE_STRATEGY.md` now tracks how launch copy, future provider strategy, and sacred-time claims should stay aligned.

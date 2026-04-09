@@ -428,6 +428,10 @@ Current slice:
     - principal Upanishad pages now carry the same first-wave study actions so long-form texts can open into explanation, recall, and revision flows instead of dead-ending as static reading pages
   - first UX polish layer is now live with Framer Motion on shell, Home overlays, and Pathshala transitions so the app feels calmer without over-animating long reading surfaces
   - first recitation implementation is now Gita-specific: a dedicated Gita recitation mode that keeps authoritative audio on the IIT companion source instead of faking local chanting
+  - the first audio foundation layer is now active for Gita:
+    - chapter-by-chapter recitation tracks are structured in-app
+    - users can enter a focused recitation mode, open the authoritative companion audio, keep local listening progress, and return straight to the study chapter
+    - this creates the player-state and chapter-registry shape needed before hosted playback is introduced
   - later: Pathshala audio controls, pronunciation help, and only then recitation scoring
   - next deferred Gita milestone:
     - bring authoritative Gita audio into the app itself after source-rights and hosting strategy are confirmed
