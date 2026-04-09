@@ -4,7 +4,7 @@ import { sendOneSignalPush } from '@/lib/onesignal-server';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 
 // ─── Shloka Streak Reminder Cron ─────────────────────────────────────────────
-// Schedule: 0 * * * * (hourly — sends near the user's local evening)
+// Schedule: 0 18 * * * (daily on Vercel Hobby — route still filters by user local evening)
 // Finds users who have NOT read today's shloka in their local date window.
 // Inserts a gentle reminder notification for each of them.
 

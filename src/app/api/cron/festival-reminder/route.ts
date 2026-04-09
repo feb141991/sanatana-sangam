@@ -20,7 +20,7 @@ function buildFestivalReminderBody(tradition: string | null | undefined, festiva
 }
 
 // ─── Festival Reminder Cron ───────────────────────────────────────────────────
-// Schedule: 0 * * * * (hourly — sends near the user's local morning)
+// Schedule: 0 7 * * * (daily on Vercel Hobby — route still filters by user local morning)
 // Checks if any festival is exactly 7 days or 1 day away in the user's local date.
 // Sends only tradition-relevant or shared festivals.
 // The bell dropdown in TopBar.tsx reads from this notifications table.
