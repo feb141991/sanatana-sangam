@@ -22,6 +22,7 @@ Last updated: 2026-04-09
 - [ ] Reuse the greeting-sheet editing pattern for other key edit flows instead of leaving it isolated to Home
 - [x] Define `Parampara Pathshala` as a tradition-first scripture product instead of a flat Library
 - [ ] Finalize the Pathshala source-and-rights strategy before promising full scripture corpora in production
+- [x] Create `PATHSHALA_SOURCE_POLICY.md` so Pathshala has one explicit rule set for in-app, companion-only, catalog-only, and rights-cleared corpus states
 - [x] Finish the first live Pathshala UI slice: rename the Library surface, make it tradition-first, and map the current corpus into scripture-category tracks
 - [x] Start Pathshala phase 2: add section-level corpus metadata, source-governance cues, and fuller scripture-track detail
 - [x] Start Pathshala return loops: bookmarks, continue-learning state, and first reading-plan foundations
@@ -141,6 +142,7 @@ Last updated: 2026-04-09
 - The first AI chat experience pass is now active too: Dharma Mitra is being shaped into a calmer study-and-reflection companion instead of a generic assistant box.
 - The first Bhakti experience pass is now active too: the placeholder is being turned into a meaningful devotional preview surface instead of a dead-end coming-soon card.
 - The shared app foundation now has a first reusable UI layer (`Button`, `Card`, `Badge`, `Input`, `SectionHeading`, async states) plus a TanStack Query provider and stable query-key map for future Mandali/Kul/Profile client data work.
+- `PATHSHALA_SOURCE_POLICY.md` now centralizes the trust rules for what Pathshala may store locally, what must remain companion-only, what should stay catalog-first, and what launch may honestly claim.
 - The notification system now has a first real preference layer: sacred-time reminder toggles, quiet hours, and cron filtering, but it still needs live production verification and richer destination targeting.
 - Vercel Hobby only allows daily cron schedules, so sacred-time delivery is currently less precise than the ideal hourly model; re-evaluate hosting or background job infrastructure later if we want finer reminder timing.
 - `PANCHANG_SOURCE_STRATEGY.md` now tracks how launch copy, future provider strategy, and sacred-time claims should stay aligned.

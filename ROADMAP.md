@@ -371,6 +371,7 @@ Exit criteria:
 Current slice:
 
 - `PARAMPARA_PATHSHALA_PLAN.md` now defines the recommended structure and source strategy
+- `PATHSHALA_SOURCE_POLICY.md` now defines the operational rule set for `live_public_domain`, `live_rights_cleared`, `companion_only`, and `catalog_only` text families so launch claims can match corpus reality
 - this work belongs in `Phase A` because corpus legitimacy is a trust issue, not just a content issue
 - the first Pathshala UI slice is now shipped:
  - text-level trust checks now show source class, translation readiness, original-text status, and recitation readiness directly on Pathshala reading pages, so source truth is visible where people actually study
@@ -432,6 +433,7 @@ Current slice:
     - bring authoritative Gita audio into the app itself after source-rights and hosting strategy are confirmed
     - keep chapter-to-audio mapping, return-to-study flow, and playback state inside Pathshala
     - do not rush this by embedding uncertain sources or unlabeled third-party audio
+  - the next source-governance step after policy definition is to make rights state more machine-readable in corpus metadata instead of only visible through copy
 
 ## Phase A2 — Social Safety And Platform Hardening
 
