@@ -896,6 +896,7 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
   const [msgs,    setMsgs]    = useState(initialMessages);
   const [content, setContent] = useState('');
   const [sending, setSending] = useState(false);
+  const [reactionTrayFor, setReactionTrayFor] = useState<string | null>(null);
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -932,10 +933,12 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
   }
 
   const REACTION_EMOJIS = ['🙏', '🔥', '❤️', '✨', '🛕'];
+  const COMPOSER_EMOJIS = ['🙏', '🪔', '🌸', '✨', '❤️'];
 
   async function addReaction(msgId: string, emoji: string) {
     await supabase.from('kul_messages').update({ reaction: emoji }).eq('id', msgId);
     setMsgs(prev => prev.map(m => m.id === msgId ? { ...m, reaction: emoji } : m));
+    setReactionTrayFor(null);
   }
 
   function formatTime(ts: string) {
@@ -983,7 +986,12 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
                 </div>
                 <div className={`flex items-center gap-1 mt-1.5 px-1 ${isMe ? 'justify-end' : ''}`}>
                   <p className="text-[10px] text-gray-300">{formatTime(msg.created_at)}</p>
-                  {/* Quick reactions (show on hover) */}
+                  <button
+                    onClick={() => setReactionTrayFor(current => current === msg.id ? null : msg.id)}
+                    className="ml-1 rounded-full px-2 py-0.5 text-[10px] font-medium text-gray-400 transition hover:bg-white/70 hover:text-gray-600"
+                  >
+                    React
+                  </button>
                   <div className="hidden group-hover:flex gap-0.5">
                     {REACTION_EMOJIS.map(e => (
                       <button key={e} onClick={() => addReaction(msg.id, e)}
@@ -993,6 +1001,16 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
                     ))}
                   </div>
                 </div>
+                {reactionTrayFor === msg.id && (
+                  <div className={`mt-1.5 flex gap-1 px-1 ${isMe ? 'justify-end' : ''}`}>
+                    {REACTION_EMOJIS.map(e => (
+                      <button key={e} onClick={() => addReaction(msg.id, e)}
+                        className="rounded-full bg-white px-2 py-1 text-sm shadow-sm transition hover:scale-110">
+                        {e}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           );
@@ -1002,6 +1020,17 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
 
       {/* Input */}
       <div className="pt-3 border-t border-gray-100">
+        <div className="mb-2 flex flex-wrap gap-1.5">
+          {COMPOSER_EMOJIS.map((emoji) => (
+            <button
+              key={emoji}
+              onClick={() => setContent((current) => `${current}${current ? ' ' : ''}${emoji}`)}
+              className="rounded-full bg-white px-3 py-1.5 text-sm shadow-sm transition hover:scale-105"
+            >
+              {emoji}
+            </button>
+          ))}
+        </div>
         <div className="flex items-end gap-2">
           <div className="flex-1">
             <textarea

@@ -14,6 +14,48 @@ const MANTRAS = [
 
 const TARGETS = [27, 54, 108];
 
+function sameLocalDay(a: Date, b: Date) {
+  return a.getFullYear() === b.getFullYear()
+    && a.getMonth() === b.getMonth()
+    && a.getDate() === b.getDate();
+}
+
+function buildDayKey(date: Date) {
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+}
+
+function calculateStreak(sessions: MalaSession[]) {
+  if (sessions.length === 0) return 0;
+  const uniqueDays = Array.from(new Set(sessions.map((session) => buildDayKey(new Date(session.completed_at)))));
+  const sortedDays = uniqueDays
+    .map((value) => {
+      const [year, month, day] = value.split('-').map(Number);
+      return new Date(year, month, day);
+    })
+    .sort((a, b) => b.getTime() - a.getTime());
+
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+  const startsToday = sameLocalDay(sortedDays[0], today);
+  const startsYesterday = sameLocalDay(sortedDays[0], yesterday);
+
+  if (!startsToday && !startsYesterday) return 0;
+
+  let streak = 1;
+  for (let i = 1; i < sortedDays.length; i += 1) {
+    const expected = new Date(sortedDays[i - 1]);
+    expected.setDate(expected.getDate() - 1);
+    if (sameLocalDay(sortedDays[i], expected)) {
+      streak += 1;
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}
+
 export default function MalaClient({ userId, initialSessions }: { userId: string; initialSessions: MalaSession[]; }) {
   const supabase = createClient();
   const [mantra, setMantra] = useState(MANTRAS[0].value);
@@ -26,12 +68,15 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
   const [sessions, setSessions] = useState(initialSessions);
 
   const progress = Math.min(100, Math.round((count / target) * 100));
+  const streak = useMemo(() => calculateStreak(sessions), [sessions]);
   const totalThisWeek = useMemo(
     () => sessions
       .filter((session) => Date.now() - new Date(session.completed_at).getTime() < 7 * 24 * 60 * 60 * 1000)
       .reduce((sum, session) => sum + session.count, 0),
     [sessions]
   );
+  const totalSessions = sessions.length;
+  const lastSession = sessions[0] ?? null;
 
   function tapBead() {
     if (!startedAt) setStartedAt(Date.now());
@@ -110,6 +155,24 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
             <div className="clay-card rounded-[1.5rem] px-4 py-4">
               <p className="text-sm font-semibold text-gray-900">This week</p>
               <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{totalThisWeek}</p>
+            </div>
+          </div>
+          <div className="grid gap-3 md:grid-cols-3">
+            <div className="rounded-[1.5rem] border border-[rgba(200,127,146,0.18)] bg-white/80 px-4 py-4">
+              <p className="text-sm font-semibold text-gray-900">Streak</p>
+              <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{streak}</p>
+            </div>
+            <div className="rounded-[1.5rem] border border-[rgba(200,127,146,0.18)] bg-white/80 px-4 py-4">
+              <p className="text-sm font-semibold text-gray-900">Saved sessions</p>
+              <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{totalSessions}</p>
+            </div>
+            <div className="rounded-[1.5rem] border border-[rgba(200,127,146,0.18)] bg-white/80 px-4 py-4">
+              <p className="text-sm font-semibold text-gray-900">Last session</p>
+              <p className="mt-2 text-sm font-medium text-gray-700">
+                {lastSession
+                  ? new Date(lastSession.completed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+                  : 'Not yet'}
+              </p>
             </div>
           </div>
         </div>
@@ -246,6 +309,27 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
               </div>
             ))
           )}
+        </div>
+      </section>
+
+      <section className="glass-panel rounded-[2rem] px-5 py-5">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="font-display text-xl font-bold text-gray-900">Practice rhythm</h2>
+          <p className="text-xs text-gray-500">A simple return loop</p>
+        </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <div className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/80 px-4 py-4">
+            <p className="text-sm font-semibold text-gray-900">Begin</p>
+            <p className="mt-2 text-sm text-gray-600">Choose one mantra and one target.</p>
+          </div>
+          <div className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/80 px-4 py-4">
+            <p className="text-sm font-semibold text-gray-900">Save</p>
+            <p className="mt-2 text-sm text-gray-600">Keep the count, note, and duration.</p>
+          </div>
+          <div className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/80 px-4 py-4">
+            <p className="text-sm font-semibold text-gray-900">Return</p>
+            <p className="mt-2 text-sm text-gray-600">Build a gentle streak over the week.</p>
+          </div>
         </div>
       </section>
     </div>
