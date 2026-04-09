@@ -98,6 +98,8 @@ At any given time:
 - the first Vichaar UX sweep is now in build so threads and replies feel like a guided wisdom space instead of a generic forum
 - the first Tirtha Map UX sweep is now in build so sacred-place discovery feels calmer and more guided than a raw map utility
 - the first auth/front-door UX sweep is now in build so signup, login, guest access, invites, and recovery feel like one welcoming entry system
+- language support should be built in layers: sacred content script/transliteration first, then app UI localization, then deeper per-user preference control
+- devotional music discovery should begin as a curated catalog + ranking layer with open-out links, not a hosted streaming surface
 - the first AI chat UX sweep is now in build so Dharma Mitra feels like a calmer reflection companion instead of a blank utility surface
 - the first Bhakti UX sweep is now in build so the devotional area offers a meaningful preview path before the larger audio/social feature set arrives
 

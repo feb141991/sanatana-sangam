@@ -25,6 +25,14 @@ const TRADITION_LABEL: Record<string, string> = {
   buddhist: 'Buddhist Vihara', jain: 'Jain Temple', other: 'Sacred Place',
 };
 
+const TRADITION_VISIT_HINT: Record<string, string> = {
+  hindu: 'Darshan and temple visit',
+  sikh: 'Darbar Sahib and langar',
+  buddhist: 'Meditation and prayer',
+  jain: 'Darshan and temple visit',
+  other: 'Visit details',
+};
+
 function makeMarkerHtml(tradition: string) {
   const { emoji, gradient, shadow } = TRADITION_MARKER[tradition] ?? TRADITION_MARKER.other;
   return `<div style="
@@ -99,6 +107,7 @@ export default function TirthaMapComponent({ temples, center, loading }: Props) 
         <div style="font-family:Inter,sans-serif;min-width:180px">
           <div style="font-weight:700;font-size:14px;color:#1a1a1a;margin-bottom:4px">${emoji} ${t.name}</div>
           <div style="font-size:11px;color:#888;margin-bottom:4px;font-style:italic">${tradLabel}</div>
+          <div style="font-size:11px;color:#9f5d74;margin-bottom:4px">${TRADITION_VISIT_HINT[trad] ?? TRADITION_VISIT_HINT.other}</div>
           ${t.deity    ? `<div style="font-size:12px;color:#666;margin-bottom:2px">🙏 ${t.deity}</div>` : ''}
           ${t.sampradaya ? `<div style="font-size:12px;color:#666;margin-bottom:2px">🏛️ ${t.sampradaya}</div>` : ''}
           ${t.address  ? `<div style="font-size:12px;color:#666;margin-bottom:2px">📍 ${t.address}</div>` : ''}

@@ -99,6 +99,9 @@ Last updated: 2026-04-09
 - [ ] Explore opt-in Jyotish / Rashi guidance after Panchang and sacred-time trust work is credible
 - [ ] Add Pathshala quizzes, cards, and mastery checkpoints after the corpus source layer is trustworthy
 - [ ] Define religious language support: script toggles first, then launch-language UI packs
+- [x] Create `LANGUAGE_SUPPORT_PLAN.md` to separate sacred content script support, UI localization, and user preference modeling
+- [ ] Implement sacred-content language support first: original script, transliteration, and meaning-language preferences before broad shell localization
+- [ ] Later shape a bhajan discovery MVP as a catalog + ranking + open-out experience, not a heavy streaming product
 - [ ] Activate referral attribution from invite codes
 - [ ] Shape Panchang into an atmospheric sacred-time experience: living sky background, calmer motion, large readable cards, and optional light haptics that still work well for elders
 - [x] Create a dedicated experience roadmap in `UX_SWEEP_PLAN.md` for Panchang, Kul, Mandali, Pathshala, Home, Profile, and Notifications
@@ -112,6 +115,8 @@ Last updated: 2026-04-09
 - Active polish pass: palette unification across high-traffic screens plus reuse of the greeting-sheet editor pattern in other key flows.
 - Motion is now active as a light polish layer. Keep it strongest on shell, cards, drawers, and overlays; avoid heavy animation on long-form reading surfaces.
 - `Howler` is intentionally deferred to the Pathshala recitation/audio layer so sound stays authoritative, optional, and non-intrusive.
+- `LANGUAGE_SUPPORT_PLAN.md` now defines the recommended order: sacred content support first, then app UI localization, then broader personalization.
+- `BHAJAN_DISCOVERY_MVP.md` now defines the later devotional-music MVP as curated catalog + ranking metadata + open-out links, which keeps maintenance and licensing risk lower than in-app streaming.
 - Gita recitation currently keeps authoritative audio on the companion source; bringing that audio fully in-app is now a tracked later milestone, not an unplanned stretch goal.
 - `Zen mode` and `Mala mode` are now explicitly planned as launch-level contemplation features, but audio inside them must stay rights-safe and clearly labeled.
 - `AUDIO_ARCHITECTURE_PLAN.md` now tracks the shared player model, source classes, and Gita-first rollout for in-app audio.

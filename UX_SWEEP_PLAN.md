@@ -41,6 +41,11 @@ Make the app feel calmer, clearer, and more emotionally coherent without forcing
 - Show fewer competing calls to action.
 - Let guidance evolve from onboarding cards into one strong next-step suggestion.
 
+## Tirtha Map
+- Avoid Hindu-default labels on Sikh, Buddhist, or Jain places.
+- Make place cards tradition-aware in both wording and visit cues.
+- Surface the nearest few places as calm “start here” options before the larger result list.
+
 ## AI Chat
 - Frame Dharma Mitra as guided reflection and study, not an unbounded chatbot.
 - Use trust cues and entry lanes so people know what kinds of questions fit well here.

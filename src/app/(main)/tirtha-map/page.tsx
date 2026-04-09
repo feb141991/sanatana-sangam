@@ -50,6 +50,37 @@ const RADIUS_OPTIONS = [
 // Aarti times — configured in @/lib/config.ts → MANDIR.DEFAULT_AARTI_TIMES
 const AARTI_TIMES = MANDIR.DEFAULT_AARTI_TIMES;
 
+const TRADITION_BADGE_LABEL: Record<Temple['tradition'], string> = {
+  hindu: 'Mandir',
+  sikh: 'Gurudwara',
+  buddhist: 'Vihara',
+  jain: 'Jain derasar',
+  other: 'Sacred place',
+};
+
+const VISIT_CUES: Record<Temple['tradition'], { label: string; items: string[] }> = {
+  hindu: {
+    label: 'Visit rhythm',
+    items: ['Darshan', 'Aarti', 'Temple hours'],
+  },
+  sikh: {
+    label: 'What to look for',
+    items: ['Darbar Sahib', 'Langar', 'Diwan schedule'],
+  },
+  buddhist: {
+    label: 'What to look for',
+    items: ['Meditation hall', 'Prayer times', 'Teaching schedule'],
+  },
+  jain: {
+    label: 'What to look for',
+    items: ['Darshan', 'Pratikraman', 'Temple hours'],
+  },
+  other: {
+    label: 'Visit rhythm',
+    items: ['Opening hours', 'Contact', 'Directions'],
+  },
+};
+
 function kmToMiles(km: number) {
   return (km * 0.621371).toFixed(1);
 }
@@ -81,6 +112,15 @@ function getSampradaya(temple: Temple): string {
   if (name.includes('shiva') || name.includes('siva') || name.includes('shiv') || name.includes('mahadev') || name.includes('rudra') || name.includes('nataraj')) return 'shaiva';
   if (name.includes('durga') || name.includes('kali') || name.includes('devi') || name.includes('shakti') || name.includes('amman') || name.includes('amba')) return 'shakta';
   return 'all';
+}
+
+function getDistanceLabel(center: [number, number], temple: Temple) {
+  return kmToMiles(distanceKm(center[0], center[1], temple.lat, temple.lon));
+}
+
+function getTraditionSummary(temple: Temple) {
+  const tradition = temple.tradition ?? 'other';
+  return VISIT_CUES[tradition] ?? VISIT_CUES.other;
 }
 
 export default function TirthaMapPage() {
@@ -174,6 +214,10 @@ export default function TirthaMapPage() {
 
   const placeLabel = TRADITION_PLACE_LABEL[tradFilter] ?? 'sacred places';
   const activeCityLabel = cityInput.trim() || liveCity || 'your area';
+  const nearestThree = filtered
+    .slice()
+    .sort((a, b) => distanceKm(center[0], center[1], a.lat, a.lon) - distanceKm(center[0], center[1], b.lat, b.lon))
+    .slice(0, 3);
 
   return (
     <div className="space-y-3 fade-in">
@@ -292,7 +336,7 @@ export default function TirthaMapPage() {
         </div>
       </div>
 
-      <div className="glass-panel rounded-[1.5rem] px-4 py-4">
+      <div className="glass-panel rounded-[1.5rem] px-4 py-4 space-y-4">
         <div className="grid grid-cols-3 gap-2">
           {[
             { label: 'Visible', value: filtered.length },
@@ -305,6 +349,23 @@ export default function TirthaMapPage() {
             </div>
           ))}
         </div>
+        {nearestThree.length > 0 && (
+          <div className="grid gap-2 sm:grid-cols-3">
+            {nearestThree.map((temple) => (
+              <button
+                key={`near-${temple.id}`}
+                onClick={() => setSelected(temple)}
+                className="text-left rounded-[1.1rem] border border-white/80 bg-white/70 px-3 py-3 transition hover:border-[color:var(--brand-primary-soft)]"
+              >
+                <p className="text-[10px] uppercase tracking-[0.16em] text-gray-400 font-semibold">Nearest now</p>
+                <p className="mt-1 text-sm font-semibold text-gray-900 line-clamp-2">{temple.name}</p>
+                <p className="mt-1 text-xs text-gray-500">
+                  {TRADITION_BADGE_LABEL[temple.tradition ?? 'other']} · {getDistanceLabel(center, temple)} mi
+                </p>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {geoError && (
@@ -337,23 +398,24 @@ export default function TirthaMapPage() {
         </div>
       )}
 
-      {/* ── Temple cards ── */}
+      {/* ── Place cards ── */}
       {filtered.length > 0 && (
         <div className="space-y-2 pb-4">
           {filtered.slice(0, API.OVERPASS.MAX_RESULTS).map((temple) => {
-            const distKm   = distanceKm(center[0], center[1], temple.lat, temple.lon);
-            const distMi   = kmToMiles(distKm);
+            const distMi   = getDistanceLabel(center, temple);
             const open     = isOpen(temple);
             const samp     = getSampradaya(temple);
             const sampInfo = SAMPRADAYA_FILTERS.find((f) => f.value === samp);
             const isExpanded = selected?.id === temple.id;
+            const traditionSummary = getTraditionSummary(temple);
+            const traditionBadge = TRADITION_BADGE_LABEL[temple.tradition ?? 'other'];
 
             return (
               <div
                 key={temple.id}
                 onClick={() => setSelected(isExpanded ? null : temple)}
-                className={`bg-white rounded-2xl border cursor-pointer transition-all ${
-                  isExpanded ? 'border-[#7B1A1A]/30 shadow-sm' : 'border-gray-100 hover:border-[#7B1A1A]/20'
+                className={`glass-panel rounded-[1.6rem] border cursor-pointer transition-all ${
+                  isExpanded ? 'border-[color:var(--brand-primary-soft)] shadow-sm' : 'border-white/80 hover:border-[color:var(--brand-primary-soft)]'
                 }`}
               >
                 <div className="p-4">
@@ -369,7 +431,17 @@ export default function TirthaMapPage() {
                     {/* Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <h3 className="font-semibold text-sm text-gray-900 leading-tight">{temple.name}</h3>
+                        <div className="space-y-1">
+                          <div className="inline-flex items-center gap-2 flex-wrap">
+                            <span className="rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary-strong)] border border-white/80">
+                              {traditionBadge}
+                            </span>
+                            {samp !== 'all' && sampInfo && (
+                              <span className="text-xs text-gray-500">{sampInfo.emoji} {sampInfo.label}</span>
+                            )}
+                          </div>
+                          <h3 className="font-semibold text-sm text-gray-900 leading-tight">{temple.name}</h3>
+                        </div>
                         {/* Open/Closed badge */}
                         {open !== null && (
                           <span className={`flex-shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full ${
@@ -383,11 +455,6 @@ export default function TirthaMapPage() {
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
                         {/* Distance */}
                         <span className="text-xs text-gray-400">{distMi} mi</span>
-
-                        {/* Sampradaya */}
-                        {samp !== 'all' && sampInfo && (
-                          <span className="text-xs text-gray-500">{sampInfo.emoji} {sampInfo.label}</span>
-                        )}
 
                         {/* Deity */}
                         {temple.deity && (
@@ -404,16 +471,23 @@ export default function TirthaMapPage() {
                   {/* Expanded details */}
                   {isExpanded && (
                     <div className="mt-3 pt-3 border-t border-gray-50 space-y-2 fade-in">
-                      {/* Aarti times */}
-                      <div className="flex items-center gap-2">
-                        <Clock size={12} className="text-[#7B1A1A]" />
-                        <span className="text-xs text-gray-500 font-medium">Aarti:</span>
-                        <div className="flex gap-1.5 flex-wrap">
-                          {AARTI_TIMES.map((t) => (
-                            <span key={t} className="text-xs bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full border border-orange-100">
-                              {t}
+                      <div className="rounded-[1.15rem] bg-white/72 border border-white/80 px-3 py-3">
+                        <div className="flex items-center gap-2">
+                          <Clock size={12} className="text-[color:var(--brand-primary-strong)]" />
+                          <span className="text-xs text-gray-600 font-medium">{traditionSummary.label}</span>
+                        </div>
+                        <div className="flex gap-1.5 flex-wrap mt-2">
+                          {traditionSummary.items.map((item) => (
+                            <span key={item} className="text-xs rounded-full border border-[color:var(--brand-primary-soft)] bg-white/80 px-2 py-0.5 text-[color:var(--brand-primary-strong)]">
+                              {item}
                             </span>
                           ))}
+                          {temple.tradition === 'hindu' && !temple.opening &&
+                            AARTI_TIMES.map((t) => (
+                              <span key={t} className="text-xs bg-rose-50 text-rose-700 px-2 py-0.5 rounded-full border border-rose-100">
+                                {t}
+                              </span>
+                            ))}
                         </div>
                       </div>
 
