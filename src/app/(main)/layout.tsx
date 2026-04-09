@@ -21,6 +21,7 @@ export default async function MainLayout({
   let savedCountry:     string        = '';
   let savedCountryCode: string        = '';
   let libraryLabel:     string        = 'Pathshala';
+  let libraryMobileLabel: string      = 'Study';
   let avatarUrl:        string | null = null;
   let userInitials:     string        = 'SS';
   let tradition:        string | null = null;
@@ -42,6 +43,7 @@ export default async function MainLayout({
     savedCountry     = profile?.country      ?? '';
     savedCountryCode = profile?.country_code ?? '';
     libraryLabel     = getTraditionMeta(profile?.tradition).navLibraryLabel;
+    libraryMobileLabel = 'Study';
     avatarUrl        = profile?.avatar_url ?? null;
     userInitials     = getInitials(profile?.full_name ?? profile?.username ?? 'Sanatana');
     tradition        = profile?.tradition ?? null;
@@ -77,7 +79,7 @@ export default async function MainLayout({
           {children}
         </LocationProvider>
       </main>
-      <BottomNav libraryLabel={libraryLabel} isGuest={!user} />
+      <BottomNav libraryLabel={libraryLabel} libraryMobileLabel={libraryMobileLabel} isGuest={!user} />
     </div>
   );
 }

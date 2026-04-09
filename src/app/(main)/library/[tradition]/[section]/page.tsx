@@ -76,8 +76,8 @@ export default async function PathshalaSectionPage({
 
   return (
     <MotionFade className="space-y-4 pb-6 fade-in">
-      <div className="glass-panel rounded-[1.8rem] px-5 py-5 space-y-4">
-        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
+      <div className="glass-panel rounded-[1.6rem] px-4 py-4 sm:rounded-[1.8rem] sm:px-5 sm:py-5 space-y-4">
+        <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <Link href="/library" className="text-[color:var(--brand-primary)]">Pathshala</Link>
           <span>•</span>
           <Link href={getPathshalaTraditionHref(tradition)} className="text-[color:var(--brand-primary)]">{traditionMeta.label}</Link>
@@ -89,13 +89,13 @@ export default async function PathshalaSectionPage({
           )}
         </div>
 
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-3xl">{sectionMeta.emoji}</p>
             <h1 className="font-display text-2xl font-bold text-gray-900 mt-2">{sectionMeta.title}</h1>
             <p className="text-sm text-gray-600 leading-relaxed mt-2 max-w-2xl">{sectionMeta.desc}</p>
           </div>
-          <div className="clay-card rounded-[1.35rem] px-4 py-3 min-w-[10rem]">
+          <div className="clay-card rounded-[1.35rem] px-4 py-3 sm:min-w-[10rem]">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Study track</p>
             <p className="font-display text-2xl font-bold text-gray-900 mt-2">{entries.length}</p>
             <p className="text-xs text-gray-500 mt-1">texts live in this track</p>
@@ -103,7 +103,7 @@ export default async function PathshalaSectionPage({
         </div>
 
         {detail && (
-          <div className="clay-card rounded-[1.6rem] px-4 py-4 space-y-4">
+          <div className="clay-card rounded-[1.45rem] px-4 py-4 space-y-4">
             <div className="flex flex-wrap gap-2">
               <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">{detail.pathType}</span>
               <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">{detail.corpusState}</span>
@@ -120,7 +120,7 @@ export default async function PathshalaSectionPage({
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="hidden sm:grid gap-4 md:grid-cols-2">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500 mb-2">Source targets</p>
                 <div className="flex flex-wrap gap-2">
@@ -145,7 +145,7 @@ export default async function PathshalaSectionPage({
           </div>
         )}
 
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="hidden sm:grid gap-3 sm:grid-cols-3">
           {[
             {
               eyebrow: 'Enter',

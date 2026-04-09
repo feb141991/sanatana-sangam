@@ -9,33 +9,34 @@ import { cn } from '@/lib/utils';
 interface Props {
   /** Pathshala tab label, kept short for bottom-nav space */
   libraryLabel?: string;
+  libraryMobileLabel?: string;
   isGuest?: boolean;
 }
 
-export default function BottomNav({ libraryLabel = 'Pathshala', isGuest = false }: Props) {
+export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLabel = 'Study', isGuest = false }: Props) {
   const pathname = usePathname();
   const prefersReducedMotion = useReducedMotion();
 
   const memberNavItems = [
     { href: '/home',       label: 'Home',        icon: Home     },
-    { href: '/library',    label: libraryLabel,   icon: BookOpen },
+    { href: '/library',    label: libraryLabel, mobileLabel: libraryMobileLabel, icon: BookOpen },
     { href: '/bhakti',     label: 'Bhakti',      icon: Sparkles },
     { href: '/kul',        label: 'Kul',          icon: Heart    },
     { href: '/mandali',    label: 'Mandali',      icon: Users    },
     { href: '/tirtha-map', label: 'Tirtha',       icon: MapPin   },
   ];
   const guestNavItems = [
-    { href: '/guest',         label: 'Explore', icon: Compass       },
-    { href: '/vichaar-sabha', label: 'Vichaar', icon: MessageSquare },
-    { href: '/tirtha-map',    label: 'Tirtha',  icon: MapPin        },
-    { href: '/signup',        label: 'Join',    icon: Sparkles      },
+    { href: '/guest',         label: 'Explore', mobileLabel: 'Explore', icon: Compass       },
+    { href: '/vichaar-sabha', label: 'Vichaar', mobileLabel: 'Vichaar', icon: MessageSquare },
+    { href: '/tirtha-map',    label: 'Tirtha',  mobileLabel: 'Tirtha',  icon: MapPin        },
+    { href: '/signup',        label: 'Join',    mobileLabel: 'Join',    icon: Sparkles      },
   ];
   const navItems = isGuest ? guestNavItems : memberNavItems;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 px-3 pb-3 safe-area-pb">
       <div className="glass-nav max-w-2xl mx-auto flex items-center justify-around h-16 rounded-[1.75rem]">
-        {navItems.map(({ href, label, icon: Icon }) => {
+        {navItems.map(({ href, label, mobileLabel, icon: Icon }) => {
           const active = pathname === href || (href !== '/home' && pathname.startsWith(href));
           return (
             <Link
@@ -72,7 +73,8 @@ export default function BottomNav({ libraryLabel = 'Pathshala', isGuest = false 
                 'relative z-10 text-[10px] font-medium leading-none',
                 active && 'font-semibold text-white'
               )}>
-                {label}
+                <span className="sm:hidden">{mobileLabel ?? label}</span>
+                <span className="hidden sm:inline">{label}</span>
               </span>
             </Link>
           );

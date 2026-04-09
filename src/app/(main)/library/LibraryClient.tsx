@@ -23,14 +23,14 @@ export default function LibraryClient({
 
   return (
     <MotionFade className="space-y-4 pb-6 fade-in">
-      <div className="glass-panel rounded-[1.8rem] px-5 py-5 space-y-4">
+      <div className="glass-panel rounded-[1.6rem] px-4 py-4 sm:rounded-[1.8rem] sm:px-5 sm:py-5 space-y-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--brand-primary)]">
-            Tradition-first study
+            Study quietly
           </p>
           <h1 className="font-display font-bold text-xl text-gray-900 mt-1">Parampara Pathshala</h1>
           <p className="text-sm text-gray-600 mt-1 leading-relaxed">
-            Enter gently: choose your tradition, then move into scripture families, study tracks, and texts without everything competing on one screen.
+            Choose a tradition, then move into one track at a time.
           </p>
         </div>
 
@@ -52,23 +52,18 @@ export default function LibraryClient({
               description: 'Pathshala holds recitation clearly: live in app where ready, companion-linked where authority still matters.',
             },
           ].map((item) => (
-            <div key={item.title} className="clay-card rounded-[1.45rem] px-4 py-4">
+            <div key={item.title} className="hidden sm:block clay-card rounded-[1.45rem] px-4 py-4">
               <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{item.eyebrow}</p>
               <p className="font-semibold text-gray-900 mt-2">{item.title}</p>
               <p className="text-sm text-gray-600 mt-2 leading-relaxed">{item.description}</p>
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="clay-card rounded-[1.6rem] px-4 py-4 space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Pathshala gateway</p>
-        <p className="text-sm text-gray-700 leading-relaxed">
-          This first screen is now intentionally simple: choose a tradition, then move into scripture families, track pages, and text study without excerpt clutter on the same surface.
-        </p>
-        <p className="text-xs text-gray-500 leading-relaxed">
-          Pathshala translations are for study and orientation. For formal recitation, lineage practice, or doctrinal certainty, always defer to the cited source tradition.
-        </p>
+        <div className="sm:hidden rounded-[1.25rem] bg-[color:var(--brand-primary-soft)]/80 px-3 py-3">
+          <p className="text-sm leading-relaxed text-[color:var(--brand-earth)]">
+            Read, resume, or recite. Keep one intent at a time.
+          </p>
+        </div>
       </div>
 
       {(continueLearning || bookmarkedEntries.length > 0) && (
@@ -116,7 +111,7 @@ export default function LibraryClient({
       <section className="space-y-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Choose tradition</p>
-          <p className="text-sm text-gray-500 mt-1">Each tradition opens into its own scripture categories and study tracks on the next page.</p>
+          <p className="text-sm text-gray-500 mt-1">Open one tradition and stay with it.</p>
         </div>
 
         <MotionStagger className="grid gap-3 sm:grid-cols-2" delay={0.06}>
@@ -192,7 +187,7 @@ function TraditionGatewayCard({
 
       <p className="text-sm leading-relaxed mt-3 text-gray-600">{description}</p>
 
-      <div className="flex flex-wrap gap-2 mt-4">
+      <div className="hidden sm:flex flex-wrap gap-2 mt-4">
         {sections.slice(0, 4).map((section) => (
           <span key={section} className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-600">
             {section}
