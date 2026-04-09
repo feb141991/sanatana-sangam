@@ -135,8 +135,8 @@ function FamilyProfileSheet({
   ].filter(Boolean) as Array<{ label: string; value: string }>;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/45 backdrop-blur-sm px-4 py-6 flex items-end sm:items-center justify-center" onClick={onClose}>
-      <div className="w-full max-w-md clay-card rounded-[2rem] p-5 space-y-4" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[70] bg-black/45 backdrop-blur-sm px-4 pb-6 pt-24 sm:py-6 flex items-end sm:items-center justify-center" onClick={onClose}>
+      <div className="w-full max-w-md max-h-[calc(100vh-7rem)] sm:max-h-[85vh] overflow-y-auto clay-card rounded-[2rem] p-5 space-y-4" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <Avatar
@@ -274,8 +274,8 @@ function FamilyLineageSheet({
     : `${member.birth_year ?? '—'} – ${member.death_year ?? (member.death_date ? new Date(member.death_date).getFullYear() : '—')}`;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/45 backdrop-blur-sm px-4 py-6 flex items-end sm:items-center justify-center" onClick={onClose}>
-      <div className="w-full max-w-lg clay-card rounded-[2rem] p-5 space-y-4 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[70] bg-black/45 backdrop-blur-sm px-4 pb-6 pt-24 sm:py-6 flex items-end sm:items-center justify-center" onClick={onClose}>
+      <div className="w-full max-w-lg clay-card rounded-[2rem] p-5 space-y-4 max-h-[calc(100vh-7rem)] sm:max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-20 flex-shrink-0">
