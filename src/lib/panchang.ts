@@ -17,6 +17,18 @@ export interface PanchangData {
   masaName:    string;        // Hindu month name
 }
 
+export interface PanchangTrustMeta {
+  methodLabel: string;
+  precisionLabel: string;
+  guidanceNote: string;
+}
+
+export const PANCHANG_TRUST_META: PanchangTrustMeta = {
+  methodLabel: 'Location-based Panchang estimate',
+  precisionLabel: 'Best for daily guidance, not priestly precision',
+  guidanceNote: 'This Panchang is calculated in-app from date and location. Use it for daily orientation, and verify temple- or guru-specific observances when exact ritual timing matters.',
+};
+
 const TITHIS = [
   'Pratipada','Dwitiya','Tritiya','Chaturthi','Panchami',
   'Shashthi','Saptami','Ashtami','Navami','Dashami',

@@ -13,10 +13,9 @@ import {
   isToday as isDayToday, addMonths, subMonths,
 } from 'date-fns';
 import type { Shloka } from '@/lib/shlokas';
-import type { Festival } from '@/lib/festivals';
+import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { DailySacredText } from '@/lib/sacred-texts';
-import { FESTIVALS_2026 } from '@/lib/festivals';
-import { calculatePanchang } from '@/lib/panchang';
+import { calculatePanchang, PANCHANG_TRUST_META } from '@/lib/panchang';
 import { getGreeting, GREETING_POOLS } from '@/lib/traditions';
 import { buildPersonalizedPaths } from '@/lib/seeking-paths';
 import type { GuidedPathProgressRow, GuidedPathStatus } from '@/lib/guided-paths';
@@ -54,6 +53,8 @@ interface Props {
   sacredText:        DailySacredText | null;
   sacredTextMeta:    SacredTextMeta;
   festival:          Festival | null;
+  festivalCalendar:  Festival[];
+  festivalCalendarMeta: FestivalCalendarMeta;
   daysUntilFestival: number | null;
   initialPanchang:   Panchang;
   shlokaStreak:      number;
@@ -496,11 +497,21 @@ function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onC
 }
 
 // ── Calendar Modal ────────────────────────────────────────────────────────────
-function CalendarModal({ onClose, onDateSelect }: { onClose: () => void; onDateSelect?: (date: Date) => void }) {
+function CalendarModal({
+  festivals,
+  calendarMeta,
+  onClose,
+  onDateSelect,
+}: {
+  festivals: Festival[];
+  calendarMeta: FestivalCalendarMeta;
+  onClose: () => void;
+  onDateSelect?: (date: Date) => void;
+}) {
   const prefersReducedMotion = useReducedMotion();
   const todayStr = new Date().toISOString().split('T')[0];
-  const upcoming = FESTIVALS_2026.filter(f => f.date >= todayStr);
-  const past     = FESTIVALS_2026.filter(f => f.date <  todayStr);
+  const upcoming = festivals.filter(f => f.date >= todayStr);
+  const past     = festivals.filter(f => f.date <  todayStr);
 
   return (
     <motion.div
@@ -522,7 +533,10 @@ function CalendarModal({ onClose, onDateSelect }: { onClose: () => void; onDateS
         <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-gray-100">
           <div className="flex items-center gap-2">
             <CalendarDays size={18} style={{ color: 'var(--brand-primary)' }} />
-            <h2 className="font-display font-bold text-gray-900 text-base">Parva Calendar 2026</h2>
+            <div>
+              <h2 className="font-display font-bold text-gray-900 text-base">Parva Calendar</h2>
+              <p className="text-[10px] text-gray-500 mt-0.5">{calendarMeta.label} · {calendarMeta.coverage}</p>
+            </div>
             {onDateSelect && <span className="text-xs ml-1" style={{ color: 'var(--brand-primary)' }}>tap date → view Panchang</span>}
           </div>
           <button onClick={onClose}
@@ -532,6 +546,9 @@ function CalendarModal({ onClose, onDateSelect }: { onClose: () => void; onDateS
         </div>
 
         <div className="overflow-y-auto flex-1 px-4 py-3 space-y-2 pb-8">
+          <div className="rounded-2xl border px-3 py-2.5 text-xs leading-relaxed text-gray-600" style={{ background: 'rgba(223, 156, 171, 0.09)', borderColor: 'rgba(223, 156, 171, 0.2)' }}>
+            <span className="font-semibold text-gray-800">Calendar note:</span> {calendarMeta.sourceNote}
+          </div>
           {upcoming.length > 0 && (
             <>
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 mt-1">Upcoming</p>
@@ -595,6 +612,8 @@ export default function HomeDashboard({
   sacredText,
   sacredTextMeta,
   festival,
+  festivalCalendar,
+  festivalCalendarMeta,
   daysUntilFestival,
   initialPanchang,
   shlokaStreak:   initialStreak,
@@ -1030,6 +1049,9 @@ export default function HomeDashboard({
             <Share2 size={13} color="white" />
           </button>
         </div>
+        <div className="px-4 pb-3 text-[11px] text-white/78 leading-relaxed">
+          {PANCHANG_TRUST_META.precisionLabel}. {PANCHANG_TRUST_META.guidanceNote}
+        </div>
       </div>
 
       {/* ── Daily Sacred Text — tradition-aware ── */}
@@ -1150,6 +1172,9 @@ export default function HomeDashboard({
             Tap <span className="font-semibold" style={{ color: 'var(--brand-primary)' }}>All Festivals</span> to browse the Parva calendar 🙏
           </div>
         )}
+        <div className="px-4 pb-3 text-[11px] text-gray-500 leading-relaxed">
+          {festivalCalendarMeta.sourceNote}
+        </div>
       </div>
 
       {/* ── Quick Access ── */}
@@ -1195,6 +1220,8 @@ export default function HomeDashboard({
       <AnimatePresence>
         {calendarOpen && (
           <CalendarModal
+            festivals={festivalCalendar}
+            calendarMeta={festivalCalendarMeta}
             onClose={() => setCalendarOpen(false)}
             onDateSelect={(date) => { setSelectedDate(date); setCalendarOpen(false); }}
           />

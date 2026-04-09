@@ -248,6 +248,120 @@ function FamilyKeepsakeStage({ member }: { member: FamilyMember }) {
   );
 }
 
+function FamilyLineageSheet({
+  member,
+  parent,
+  spouse,
+  relatedEvents,
+  canManage,
+  onClose,
+  onOpenEvents,
+  onEdit,
+}: {
+  member: FamilyMember;
+  parent: FamilyMember | null;
+  spouse: FamilyMember | null;
+  relatedEvents: Array<KulEvent & { daysUntil: number }>;
+  canManage: boolean;
+  onClose: () => void;
+  onOpenEvents: () => void;
+  onEdit?: () => void;
+}) {
+  const lifeLabel = member.is_alive
+    ? member.birth_year || member.birth_date
+      ? `Born ${member.birth_year ?? new Date(member.birth_date!).getFullYear()}`
+      : 'Living family member'
+    : `${member.birth_year ?? '—'} – ${member.death_year ?? (member.death_date ? new Date(member.death_date).getFullYear() : '—')}`;
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/45 backdrop-blur-sm px-4 py-6 flex items-end sm:items-center justify-center" onClick={onClose}>
+      <div className="w-full max-w-lg clay-card rounded-[2rem] p-5 space-y-4 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-20 flex-shrink-0">
+              <FamilyKeepsakeStage member={member} />
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-lg font-bold text-gray-900 leading-tight">{member.name}</h2>
+              <p className="text-sm text-gray-500 mt-1">
+                {member.role || 'Family member'}
+                {member.generation ? ` · Generation ${member.generation}` : ''}
+              </p>
+              <p className="text-xs text-gray-400 mt-1">{lifeLabel}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-9 h-9 rounded-full bg-white/85 border border-white/80 flex items-center justify-center text-gray-500"
+            aria-label="Close lineage profile"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        <div className="glass-panel rounded-[1.5rem] p-4 space-y-3">
+          <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400">Lineage snapshot</p>
+          <div className="space-y-2 text-sm text-gray-700">
+            {parent ? <p><span className="font-semibold text-gray-900">Parent:</span> {parent.name}</p> : null}
+            {spouse ? <p><span className="font-semibold text-gray-900">Spouse:</span> {spouse.name}</p> : null}
+            {member.birth_date ? <p><span className="font-semibold text-gray-900">Birth date:</span> {new Date(member.birth_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p> : null}
+            {member.marriage_date ? <p><span className="font-semibold text-gray-900">Marriage:</span> {new Date(member.marriage_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p> : null}
+            {member.death_date ? <p><span className="font-semibold text-gray-900">In remembrance:</span> {new Date(member.death_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p> : null}
+          </div>
+          <p className="text-sm text-gray-600 leading-relaxed">
+            {member.notes?.trim() || 'No family note has been added yet. This is a good place later for stories, values, and memories that make the Vansh feel alive.'}
+          </p>
+        </div>
+
+        <div className="bg-white rounded-[1.5rem] border border-white/80 p-4">
+          <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400 mb-3">Family dates</p>
+          {relatedEvents.length > 0 ? (
+            <div className="space-y-2">
+              {relatedEvents.slice(0, 3).map((event) => (
+                <div key={event.id} className="flex items-center justify-between gap-3 rounded-2xl border border-gray-100 px-3 py-2">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{event.title}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {EVENT_EMOJI[event.event_type] ?? '📅'} {event.event_type.replace('_', ' ')}
+                    </p>
+                  </div>
+                  <span className="text-xs font-semibold" style={{ color: 'var(--brand-primary)' }}>
+                    {event.daysUntil === 0 ? 'Today' : `In ${event.daysUntil}d`}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">No linked family dates yet. Add birthdays, anniversaries, or remembrance days to make this branch feel lived in.</p>
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={onOpenEvents}
+            className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold"
+            style={{ color: 'var(--brand-primary-strong)' }}
+          >
+            Open family dates
+          </button>
+          {canManage && onEdit ? (
+            <button
+              type="button"
+              onClick={onEdit}
+              className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold"
+              style={{ color: 'var(--brand-primary-strong)' }}
+            >
+              Edit member
+            </button>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── No-Kul Prompt (Create / Join) ────────────────────────────────────────────
 function NoKulPrompt({ userId, userName }: { userId: string; userName: string }) {
   const supabase = createClient();
@@ -1332,6 +1446,7 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
   const [showAdd,     setShowAdd]     = useState(false);
   const [showAddEvent,setShowAddEvent]= useState(false);
   const [editMember,  setEditMember]  = useState<FamilyMember | null>(null);
+  const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
 
   // Form state — add/edit member
   const [form, setForm] = useState({
@@ -1366,6 +1481,10 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
       notes: m.notes ?? '', is_alive: m.is_alive,
     });
     setShowAdd(true);
+  }
+
+  function openMemberDetails(member: FamilyMember) {
+    setSelectedMember(member);
   }
 
   async function saveMember() {
@@ -1469,8 +1588,32 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
     .filter(e => e.daysUntil <= 90)
     .sort((a, b) => a.daysUntil - b.daysUntil);
 
+  const selectedParent = selectedMember?.parent_id ? members.find((member) => member.id === selectedMember.parent_id) ?? null : null;
+  const selectedSpouse = selectedMember?.spouse_id ? members.find((member) => member.id === selectedMember.spouse_id) ?? null : null;
+  const selectedEvents = selectedMember
+    ? upcomingEvents.filter((event) => event.member_id === selectedMember.id)
+    : [];
+
   return (
     <div className="space-y-4">
+      {selectedMember ? (
+        <FamilyLineageSheet
+          member={selectedMember}
+          parent={selectedParent}
+          spouse={selectedSpouse}
+          relatedEvents={selectedEvents}
+          canManage={canManageVansh}
+          onClose={() => setSelectedMember(null)}
+          onOpenEvents={() => {
+            setSelectedMember(null);
+            setActiveView('events');
+          }}
+          onEdit={canManageVansh ? () => {
+            setSelectedMember(null);
+            openEdit(selectedMember);
+          } : undefined}
+        />
+      ) : null}
       {/* View toggle + add buttons */}
       <div className="flex items-center gap-2">
         {!forcedView && (
@@ -1647,8 +1790,19 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
                     ? Math.floor((Date.now() - new Date(m.birth_date).getTime()) / (365.25 * 86400000))
                     : m.birth_year ? new Date().getFullYear() - m.birth_year : null;
                   return (
-                    <div key={m.id}
-                      className="clay-portrait-card flex-shrink-0 w-40 rounded-[1.7rem] p-3 text-center relative">
+                    <div
+                      key={m.id}
+                      onClick={() => openMemberDetails(m)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          openMemberDetails(m);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      className="clay-portrait-card flex-shrink-0 w-40 rounded-[1.7rem] p-3 text-center relative transition hover:-translate-y-0.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
+                    >
                       <FamilyKeepsakeStage member={m} />
                       <p className="text-xs font-bold text-gray-900 leading-tight mt-3">{m.name}</p>
                       {m.role && <p className="text-[10px] mt-0.5" style={{ color: 'var(--brand-primary)' }}>{m.role}</p>}
@@ -1657,15 +1811,18 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
                         {spouse && <p>💍 {spouse.name}</p>}
                         {parent && <p>↑ {parent.name}</p>}
                       </div>
+                      <p className="text-[10px] mt-2 font-semibold" style={{ color: 'var(--brand-primary-strong)' }}>
+                        Open lineage
+                      </p>
                       {/* Edit button */}
                       {canManageVansh && (
                         <div className="flex gap-1 mt-2 justify-center">
-                          <button onClick={() => openEdit(m)}
+                          <button type="button" onClick={(e) => { e.stopPropagation(); openEdit(m); }}
                             className="px-2 py-1 rounded-lg text-[10px] border border-gray-200 text-gray-500 transition"
                             style={{ boxShadow: '0 4px 10px rgba(90, 61, 43, 0.06)' }}>
                             Edit
                           </button>
-                          <button onClick={() => deleteMember(m.id, m.name)}
+                          <button type="button" onClick={(e) => { e.stopPropagation(); deleteMember(m.id, m.name); }}
                             className="px-2 py-1 rounded-lg text-[10px] border border-gray-200 text-gray-500 hover:border-red-300 hover:text-red-500 transition">
                             ✕
                           </button>

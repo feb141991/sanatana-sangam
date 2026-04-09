@@ -177,6 +177,20 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['notifications']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['notifications']['Insert']>;
       };
+      festivals: {
+        Row: {
+          id: string;
+          created_at: string;
+          name: string;
+          date: string;
+          emoji: string | null;
+          description: string;
+          type: 'major' | 'vrat' | 'regional';
+          year: number;
+        };
+        Insert: Omit<Database['public']['Tables']['festivals']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['festivals']['Insert']>;
+      };
       guided_path_progress: {
         Row: {
           id: string;

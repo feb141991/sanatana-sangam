@@ -1,6 +1,6 @@
 # Sanatana Sangam Roadmap
 
-Last updated: 2026-04-03
+Last updated: 2026-04-09
 
 ## Purpose
 
@@ -108,7 +108,7 @@ Make the app spiritually and operationally trustworthy.
 
 ### A1.1 Festival truth layer
 
-Status: `Planned`
+Status: `In Build`
 
 Outcome:
 
@@ -128,9 +128,15 @@ Exit criteria:
 - reminder jobs use the same trusted festival source
 - product copy no longer overstates certainty where data is approximate
 
+Current slice:
+
+- Home festival browsing now reads from the shared Supabase `festivals` table when available
+- the curated `2026` in-app list is now explicitly labeled as a fallback edition instead of pretending to be the only truth source
+- calendar and countdown surfaces now show coverage/source notes so users understand whether they are seeing shared DB-backed data or fallback data
+
 ### A1.2 Panchang accuracy strategy
 
-Status: `Planned`
+Status: `In Build`
 
 Outcome:
 
@@ -149,6 +155,12 @@ Exit criteria:
 - panchang logic and product copy are aligned
 - reminder timing is timezone-aware
 - user trust is protected through clear labeling
+
+Current slice:
+
+- Home and full Panchang screens now explicitly label the current Panchang as a location-based estimate
+- the UI now tells users it is suitable for daily guidance while temple- or guru-specific observance timing may still need verification
+- the next slice is improving the engine/source strategy itself instead of leaving silent approximation in place
 
 ### A1.3 Library provenance
 

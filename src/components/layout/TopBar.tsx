@@ -53,6 +53,8 @@ export default function TopBar({
   const [open,       setOpen]       = useState(false);
   const [notifs,     setNotifs]     = useState<Notification[]>([]);
   const [permission, setPermission] = useState<NotificationPermission>('default');
+  const [isHidden, setIsHidden] = useState(false);
+  const lastScrollYRef = useRef(0);
 
   // Load initial permission state
   useEffect(() => {
@@ -80,10 +82,35 @@ export default function TopBar({
     fetchNotifs();
   }, [fetchNotifs]);
 
+  useEffect(() => {
+    function handleScroll() {
+      const currentY = window.scrollY;
+      const previousY = lastScrollYRef.current;
+      const delta = currentY - previousY;
+
+      if (open) {
+        setIsHidden(false);
+      } else if (currentY <= 24) {
+        setIsHidden(false);
+      } else if (delta > 10) {
+        setIsHidden(true);
+      } else if (delta < -6) {
+        setIsHidden(false);
+      }
+
+      lastScrollYRef.current = currentY;
+    }
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [open]);
+
   const unreadCount = notifs.filter((n) => !n.read).length;
 
   async function handleBellClick() {
     setOpen((prev) => !prev);
+    setIsHidden(false);
 
     // First-time permission request
     if (pushConfigured && permission === 'default') {
@@ -116,7 +143,7 @@ export default function TopBar({
   }
 
   return (
-    <header className="sticky top-0 z-40 px-3 pt-3">
+    <header className={`sticky top-0 z-40 px-3 pt-3 transition-transform duration-300 ${isHidden ? '-translate-y-[120%]' : 'translate-y-0'}`}>
       <div className="glass-nav max-w-2xl mx-auto px-4 h-14 rounded-[1.65rem] flex items-center justify-between">
 
         {/* Left — logo + page title */}

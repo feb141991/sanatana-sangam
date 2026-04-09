@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, ArrowLeft, Share2 } from 'lucide-react';
-import { calculatePanchang } from '@/lib/panchang';
+import { calculatePanchang, PANCHANG_TRUST_META } from '@/lib/panchang';
 import type { PanchangData } from '@/lib/panchang';
 
 interface Props {
@@ -243,6 +243,12 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
               ? 'Shukla Paksha is auspicious for new beginnings, prayers, and satsang.'
               : 'Krishna Paksha is ideal for introspection, fasting, and ancestral prayers (Pitru Tarpan).'}
           </p>
+        </div>
+
+        <div className="rounded-xl px-4 py-3 border border-[rgba(223,156,171,0.18)] bg-white/80">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">{PANCHANG_TRUST_META.methodLabel}</p>
+          <p className="text-sm mt-1" style={{ color: 'var(--brand-primary-strong)' }}>{PANCHANG_TRUST_META.precisionLabel}</p>
+          <p className="text-xs text-gray-500 leading-relaxed mt-1">{PANCHANG_TRUST_META.guidanceNote}</p>
         </div>
       </div>
     </div>

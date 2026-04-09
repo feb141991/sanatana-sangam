@@ -22,6 +22,13 @@ export interface Festival {
   tradition:   'hindu' | 'sikh' | 'buddhist' | 'jain' | 'all';
 }
 
+export interface FestivalCalendarMeta {
+  label: string;
+  coverage: string;
+  sourceNote: string;
+  isFallback: boolean;
+}
+
 export const FESTIVALS_2026: Festival[] = [
 
   // ── Hindu ──────────────────────────────────────────────────────────────────
@@ -83,16 +90,54 @@ export const FESTIVALS_2026: Festival[] = [
 
 ];
 
+export const FESTIVAL_CALENDAR_FALLBACK_META: FestivalCalendarMeta = {
+  label: 'Curated 2026 festival edition',
+  coverage: 'In-app fallback calendar with 2026 coverage only',
+  sourceNote: 'Used when the shared festival database is unavailable, so reminders and browsing still work with an explicit coverage boundary.',
+  isFallback: true,
+};
+
+export function buildFestivalCalendarMeta(
+  source: 'database' | 'fallback',
+  festivals: Pick<Festival, 'date'>[],
+): FestivalCalendarMeta {
+  if (source === 'fallback') return FESTIVAL_CALENDAR_FALLBACK_META;
+
+  const years = Array.from(new Set(festivals.map((festival) => new Date(festival.date).getFullYear()))).sort();
+  const coverage = years.length > 0
+    ? `Shared festival calendar covering ${years.join(', ')}`
+    : 'Shared festival calendar';
+
+  return {
+    label: 'Shared festival calendar',
+    coverage,
+    sourceNote: 'Home and reminder notifications are reading from the same Supabase festival table, so the countdown and cron reminders stay aligned.',
+    isFallback: false,
+  };
+}
+
+export function attachFestivalTradition(festival: Omit<Festival, 'tradition'>): Festival {
+  const staticMatch = FESTIVALS_2026.find(
+    (entry) => entry.name === festival.name && entry.date === festival.date
+  );
+
+  return {
+    ...festival,
+    tradition: staticMatch?.tradition ?? 'all',
+  };
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 /** Get the next upcoming festival, prioritising the user's tradition */
 export function getNextFestival(
+  festivals: Festival[] = FESTIVALS_2026,
   today: Date = new Date(),
   tradition?: string | null,
 ): Festival | null {
   const todayStr = today.toISOString().split('T')[0];
-  const upcoming = FESTIVALS_2026.filter(f => f.date >= todayStr);
-  if (upcoming.length === 0) return FESTIVALS_2026[FESTIVALS_2026.length - 1] ?? null;
+  const upcoming = festivals.filter(f => f.date >= todayStr);
+  if (upcoming.length === 0) return festivals[festivals.length - 1] ?? null;
 
   // If tradition is provided, prefer tradition-matching or 'all' festivals
   if (tradition && tradition !== 'other') {

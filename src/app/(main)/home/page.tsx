@@ -2,10 +2,19 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import HomeDashboard from './HomeDashboard';
 import { getTodayShloka } from '@/lib/shlokas';
-import { getNextFestival, daysUntil, getTodayPanchang } from '@/lib/festivals';
+import {
+  attachFestivalTradition,
+  buildFestivalCalendarMeta,
+  daysUntil,
+  FESTIVALS_2026,
+  getNextFestival,
+  getTodayPanchang,
+} from '@/lib/festivals';
 import { getDailySacredText, getDayOfYear } from '@/lib/sacred-texts';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import type { GuidedPathProgressRow } from '@/lib/guided-paths';
+import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
+import type { Database } from '@/types/database';
 
 export default async function HomePage() {
   const supabase = await createServerSupabaseClient();
@@ -27,13 +36,34 @@ export default async function HomePage() {
   const tradition = profile?.tradition ?? null;
   const dayIndex  = getDayOfYear();
 
+  const { data: calendarRows } = await supabase
+    .from('festivals')
+    .select('name, date, emoji, description, type, year')
+    .order('date', { ascending: true })
+    .limit(160);
+
   // Tradition-aware daily sacred text
   // Hindu + other use shlokas.ts; other traditions use sacred-texts.ts
   const shloka     = getTodayShloka();
   const sacredText = getDailySacredText(tradition, dayIndex); // null for Hindu
 
+  const calendarFromDb: Festival[] = ((calendarRows ?? []) as Pick<Database['public']['Tables']['festivals']['Row'], 'name' | 'date' | 'emoji' | 'description' | 'type'>[])
+    .map((row) => attachFestivalTradition({
+      name: row.name,
+      date: row.date,
+      emoji: row.emoji ?? '🪔',
+      description: row.description,
+      type: row.type,
+    }));
+
+  const festivalCalendar = calendarFromDb.length > 0 ? calendarFromDb : FESTIVALS_2026;
+  const festivalCalendarMeta: FestivalCalendarMeta = buildFestivalCalendarMeta(
+    calendarFromDb.length > 0 ? 'database' : 'fallback',
+    festivalCalendar,
+  );
+
   // Tradition-aware festival: shows their tradition's next festival first
-  const festival = getNextFestival(new Date(), tradition);
+  const festival = getNextFestival(festivalCalendar, new Date(), tradition);
   const daysLeft = festival ? daysUntil(festival.date) : null;
 
   const panchang = getTodayPanchang(
@@ -60,6 +90,8 @@ export default async function HomePage() {
         accentLight: meta.accentLight,
       }}
       festival={festival}
+      festivalCalendar={festivalCalendar}
+      festivalCalendarMeta={festivalCalendarMeta}
       daysUntilFestival={daysLeft}
       initialPanchang={panchang}
       shlokaStreak={profile?.shloka_streak ?? 0}

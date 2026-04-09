@@ -1,6 +1,6 @@
 # Launch Tracker
 
-Last updated: 2026-04-03
+Last updated: 2026-04-09
 
 ## Current Focus
 
@@ -38,6 +38,8 @@ Last updated: 2026-04-03
 - [x] Start a Gita-first recitation mode that keeps local study inside Pathshala and routes authoritative audio to the IIT companion source
 - [x] Replace the current green / teal brand bias with a warmer dharmic palette that fits the Sanatan product identity better
 - [x] Add the first Framer Motion polish pass across the shell, Home overlays, and Pathshala cards so the app feels calmer and less abrupt
+- [x] Start the festival truth pass by aligning Home festival browsing with the shared Supabase festival table and adding explicit fallback coverage labels
+- [x] Start the Panchang trust pass by labeling the in-app Panchang as location-based guidance instead of silent ritual precision
 - [ ] Define Jyotish / Rashiphal strategy under the trust core before shipping any horoscope-style feature
 - [ ] Stage Pathshala AI-assisted reading and recitation support: explain, quiz, flashcards, and later pronunciation / scoring
 
