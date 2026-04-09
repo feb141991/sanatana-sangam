@@ -8,6 +8,7 @@ import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X } fr
 import { createClient } from '@/lib/supabase';
 import type { HiddenContentSummary, SafetyProfileSummary } from '@/lib/user-safety';
 import { getInitials, ISHTA_DEVATAS, SAMPRADAYAS, SPIRITUAL_LEVELS, TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getIshtaDevataLabel, getSampradayaLabel } from '@/lib/utils';
+import { APP_LANGUAGES, MEANING_LANGUAGE_OPTIONS, SCRIPTURE_SCRIPT_OPTIONS, getLanguageLabel } from '@/lib/language-preferences';
 import type { TraditionKey } from '@/lib/traditions';
 import { useLocation } from '@/lib/LocationContext';
 import { getPlayerId, getPermissionState, logoutFromOneSignal } from '@/lib/onesignal';
@@ -186,6 +187,10 @@ export default function ProfileClient({
     kul_devata:       (profile as any)?.kul_devata       ?? '',
     home_town:        (profile as any)?.home_town        ?? '',
     custom_greeting:  (profile as any)?.custom_greeting  ?? '',
+    app_language:     (profile as any)?.app_language     ?? 'en',
+    scripture_script: (profile as any)?.scripture_script ?? 'original',
+    show_transliteration: (profile as any)?.show_transliteration ?? true,
+    meaning_language: (profile as any)?.meaning_language ?? 'en',
   });
 
   const activeTradition = (form.tradition || 'hindu') as TraditionKey;
@@ -438,6 +443,12 @@ export default function ProfileClient({
     { label: 'Home Town', value: (profile as any)?.home_town, emoji: '🏡' },
     { label: 'Time Zone', value: profileTimezone, emoji: '🕰️' },
   ].filter((row) => row.value);
+  const languageRows = [
+    { label: 'App language', value: getLanguageLabel(APP_LANGUAGES, (profile as any)?.app_language), emoji: '🌐' },
+    { label: 'Scripture view', value: getLanguageLabel(SCRIPTURE_SCRIPT_OPTIONS, (profile as any)?.scripture_script), emoji: '📜' },
+    { label: 'Transliteration', value: (profile as any)?.show_transliteration ? 'Shown' : 'Hidden', emoji: '🔤' },
+    { label: 'Meaning language', value: getLanguageLabel(MEANING_LANGUAGE_OPTIONS, (profile as any)?.meaning_language), emoji: '🈯' },
+  ];
 
   return (
     <div className="space-y-4 fade-in">
@@ -783,6 +794,21 @@ export default function ProfileClient({
         )}
       </ProfileSectionCard>
 
+      <ProfileSectionCard
+        eyebrow="Language"
+        title="How sacred text should read"
+        description="Keep app language, script view, and meaning preferences separate."
+      >
+        <div className="divide-y divide-gray-50">
+          {languageRows.map(({ label, value, emoji }) => (
+            <div key={label} className="flex items-center justify-between py-2.5 gap-4">
+              <span className="text-sm text-gray-500">{emoji ? `${emoji} ` : ''}{label}</span>
+              <span className="text-sm font-medium text-gray-800 text-right">{value}</span>
+            </div>
+          ))}
+        </div>
+      </ProfileSectionCard>
+
       {/* ── Edit Form ── */}
       {editing && (
         <div className="bg-white rounded-2xl border border-orange-100 p-5 space-y-4 fade-in">
@@ -909,6 +935,54 @@ export default function ProfileClient({
                 rows={3}
                 className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none resize-none text-sm"
               />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">Language and script</p>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">App language</label>
+              <select
+                value={form.app_language}
+                onChange={(e) => setForm({ ...form, app_language: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm bg-white"
+              >
+                {APP_LANGUAGES.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Scripture view</label>
+              <select
+                value={form.scripture_script}
+                onChange={(e) => setForm({ ...form, scripture_script: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm bg-white"
+              >
+                {SCRIPTURE_SCRIPT_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="flex items-start justify-between gap-4 rounded-2xl border border-gray-100 px-4 py-3 cursor-pointer">
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Show transliteration</p>
+                  <p className="text-xs text-gray-500 mt-1 leading-relaxed">Keep Roman transliteration visible when available.</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={Boolean(form.show_transliteration)}
+                  onChange={(e) => setForm({ ...form, show_transliteration: e.target.checked })}
+                  className="mt-1 h-4 w-4 rounded border-gray-300 text-[#7B1A1A] focus:ring-[#7B1A1A]"
+                />
+              </label>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Meaning language</label>
+              <select
+                value={form.meaning_language}
+                onChange={(e) => setForm({ ...form, meaning_language: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm bg-white"
+              >
+                {MEANING_LANGUAGE_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+              </select>
             </div>
           </div>
 

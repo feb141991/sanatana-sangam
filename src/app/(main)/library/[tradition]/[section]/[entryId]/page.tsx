@@ -107,6 +107,9 @@ export default async function PathshalaEntryPage({
   const { data: { user } } = await supabase.auth.getUser();
 
   let isBookmarked = false;
+  let scriptureScriptPreference = 'original';
+  let showTransliterationPreference = true;
+  let meaningLanguagePreference = 'en';
 
   if (user) {
     const { data: stateRow } = await supabase
@@ -117,6 +120,16 @@ export default async function PathshalaEntryPage({
       .maybeSingle();
 
     isBookmarked = !!stateRow?.bookmarked_at;
+
+    const { data: profileRow } = await supabase
+      .from('profiles')
+      .select('scripture_script, show_transliteration, meaning_language')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    scriptureScriptPreference = (profileRow as any)?.scripture_script ?? 'original';
+    showTransliterationPreference = (profileRow as any)?.show_transliteration ?? true;
+    meaningLanguagePreference = (profileRow as any)?.meaning_language ?? 'en';
   }
 
   if (!sectionMeta || sectionMeta.tradition !== tradition) {
@@ -553,6 +566,14 @@ export default async function PathshalaEntryPage({
 
   const sourceMeta = getLibrarySourceMeta(entry);
   const relatedEntries = getRelatedEntries(entry, 4);
+  const showOriginalScript = scriptureScriptPreference !== 'transliteration';
+  const showTransliteration = showTransliterationPreference && entry.transliteration.trim().length > 0;
+  const transliterationIsPrimary = scriptureScriptPreference === 'transliteration';
+  const meaningHeading = meaningLanguagePreference === 'hi'
+    ? 'Meaning (Hindi later)'
+    : meaningLanguagePreference === 'pa'
+      ? 'Meaning (Punjabi later)'
+      : 'Meaning';
   const upanishadStudyMeta = sectionMeta.id === 'upanishad' ? getUpanishadStudyMeta(entry.id) : undefined;
   const trustLayers = getEntryTrustLayers({
     sectionId: sectionMeta.id,
@@ -708,9 +729,11 @@ export default async function PathshalaEntryPage({
           </div>
         )}
 
-        {entry.original.trim().length > 0 && (
+        {entry.original.trim().length > 0 && showOriginalScript && (
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Original text</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">
+              {scriptureScriptPreference === 'both' ? 'Original text' : 'Scripture text'}
+            </p>
             <p
               className={`mt-3 whitespace-pre-line leading-relaxed ${
                 entry.tradition === 'sikh'
@@ -726,10 +749,14 @@ export default async function PathshalaEntryPage({
           </div>
         )}
 
-        {entry.transliteration.trim().length > 0 && (
+        {showTransliteration && (
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Transliteration</p>
-            <p className="mt-2 text-sm text-gray-600 italic leading-relaxed whitespace-pre-line">{entry.transliteration}</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">
+              {transliterationIsPrimary ? 'Reading text' : 'Transliteration'}
+            </p>
+            <p className={`mt-2 leading-relaxed whitespace-pre-line ${transliterationIsPrimary ? 'text-base text-gray-800' : 'text-sm text-gray-600 italic'}`}>
+              {entry.transliteration}
+            </p>
           </div>
         )}
 
@@ -747,7 +774,7 @@ export default async function PathshalaEntryPage({
           </>
         ) : (
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Meaning</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">{meaningHeading}</p>
             <p className="mt-2 text-sm text-gray-700 leading-relaxed whitespace-pre-line">{entry.meaning}</p>
           </div>
         )}

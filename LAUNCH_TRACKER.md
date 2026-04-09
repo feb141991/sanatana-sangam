@@ -99,6 +99,8 @@ Last updated: 2026-04-09
 - [x] Deepen `Mala mode` with session filters, share-card copy, and a clearer return rhythm so Bhakti feels usable day to day
 - [x] Ship the first live Bhakti practice slice with dedicated `Zen` and `Mala` routes instead of leaving both modes as planning-only ideas
 - [ ] Curate a rights-safe devotional audio starter pack for launch: mantra/chant clips first, then selective bhajan/kirtan where reuse terms are clear
+- [x] Start the Bhakti audio foundation with a rights-safe devotional starter pack surface and explicit source-first links
+- [x] Start the first language-support implementation with app language, scripture view, transliteration, and meaning preferences
 - [x] Add first Kul family-profile viewing inside the family space so members can open each other’s Kul-safe details
 - [ ] Continue the Upanishad original-text iteration until the larger texts that still sit behind official flipbooks can be ingested locally
 - [ ] Explore opt-in Jyotish / Rashi guidance after Panchang and sacred-time trust work is credible

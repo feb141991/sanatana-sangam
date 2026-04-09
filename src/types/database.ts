@@ -34,6 +34,10 @@ export interface Database {
           timezone: string | null;
           tradition: string | null;
           custom_greeting: string | null;
+          app_language: string;
+          scripture_script: string;
+          show_transliteration: boolean;
+          meaning_language: string;
           wants_festival_reminders: boolean;
           wants_shloka_reminders: boolean;
           wants_community_notifications: boolean;

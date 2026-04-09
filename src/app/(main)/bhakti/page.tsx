@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { DEVOTIONAL_STARTER_TRACKS } from '@/lib/devotional-audio';
 
 export default function BhaktiPage() {
   return (
@@ -92,6 +93,52 @@ export default function BhaktiPage() {
           <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-[color:var(--brand-primary-soft)] bg-white/70 px-4 py-2 text-sm font-medium text-[color:var(--brand-primary-strong)]">
             Coming in a deeper devotional release
           </div>
+        </div>
+      </section>
+
+      <section className="glass-panel rounded-[1.8rem] px-5 py-5">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">
+              Audio starter pack
+            </p>
+            <h2 className="font-display text-xl font-bold text-gray-900 mt-2">Rights-safe chant catalog</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">
+              We are starting with clearly sourced devotional audio references first. In-app playback comes after the shared audio layer and attribution flow are ready.
+            </p>
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--brand-primary-soft)] bg-white/75 px-4 py-2 text-sm font-medium text-[color:var(--brand-primary-strong)]">
+            Source-first audio
+          </div>
+        </div>
+
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          {DEVOTIONAL_STARTER_TRACKS.map((track) => (
+            <a
+              key={track.id}
+              href={track.sourceUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="block rounded-[1.4rem] border border-[color:var(--brand-primary-soft)] bg-white/80 px-4 py-4 transition hover:bg-white"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-semibold text-gray-900">{track.title}</p>
+                <span className="rounded-full bg-[var(--brand-primary-soft)] px-3 py-1 text-[11px] font-semibold text-[color:var(--brand-primary-strong)]">
+                  {track.type}
+                </span>
+              </div>
+              <p className="mt-2 text-sm text-gray-600">{track.note}</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className="rounded-full border border-[color:var(--brand-primary-soft)] px-3 py-1 text-[11px] font-medium text-gray-600">
+                  {track.sourceName}
+                </span>
+                <span className="rounded-full border border-[color:var(--brand-primary-soft)] px-3 py-1 text-[11px] font-medium text-gray-600">
+                  {track.licenseLabel}
+                </span>
+              </div>
+              <p className="mt-3 text-xs font-semibold text-[color:var(--brand-primary)]">Open source page →</p>
+            </a>
+          ))}
         </div>
       </section>
     </div>

@@ -297,6 +297,7 @@ Work:
 - launch first live `Zen` route
 - launch first live `Mala` route
 - keep audio and chant expansion rights-safe
+- the first Bhakti audio foundation is now live as a source-first starter pack surface, with in-app playback still deferred until attribution and player state are stronger
 
 Exit criteria:
 
@@ -593,6 +594,7 @@ Build slices:
 
 - content: normalize original-script, transliteration, and meaning fields across Library, Home, and AI references
 - platform: add locale dictionaries and route-safe UI copy switching
+- the first language preference layer now persists app language, scripture view, transliteration visibility, and meaning-language intent through profile settings and Pathshala reading surfaces
 - trust: mark whether a translation is canonical, curated, or reflective
 - UX: remember per-user language and script preferences
 
