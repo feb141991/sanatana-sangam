@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getLibrarySourceMeta } from '@/lib/library-provenance';
 import {
@@ -25,6 +26,7 @@ import { getUpanishadStudyMeta } from '@/lib/upanishad-study';
 import {
   getAIChatHref,
   getGitaRecitationHref,
+  getPathshalaGitaStoryHref,
   getPathshalaEntryHrefFromSection,
   getPathshalaSectionHref,
   getPathshalaTraditionHref,
@@ -261,6 +263,38 @@ export default async function PathshalaEntryPage({
               </MotionItem>
             </MotionStagger>
         </div>
+
+        <section className="kanu-inline-panel rounded-[1.8rem] p-5 md:p-6">
+          <div className="kanu-inline-grid">
+            <div className="space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">Character development</p>
+              <h2 className="kanu-heading text-2xl text-white">Kanu is now being rebuilt around a real Bal Krishna face</h2>
+              <p className="text-sm leading-relaxed text-white/82">
+                The story surface now tracks the current concept winners so we can refine the guide character with the
+                same care as the scripture interface. Review the portrait anchor, expression sheet, and full-body pass
+                before we move into the next concept batch.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Link href={getPathshalaGitaStoryHref()} className="kanu-primary-cta">
+                  Open story direction
+                </Link>
+                <Link href={getGitaRecitationHref(canonicalChapter.id)} className="kanu-secondary-cta">
+                  Stay in recitation mode
+                </Link>
+              </div>
+            </div>
+
+            <div className="kanu-inline-image-wrap">
+              <Image
+                src="/kanu/bal-krishna-portrait-softness.png"
+                alt="Soft Bal Krishna portrait concept showing the gentler Kanu direction"
+                className="kanu-inline-image"
+                fill
+                sizes="(max-width: 960px) 100vw, 28vw"
+              />
+            </div>
+          </div>
+        </section>
 
         <section className="space-y-3">
           <div className="grid gap-3 md:grid-cols-3">

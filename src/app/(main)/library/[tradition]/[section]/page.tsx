@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getLibrarySourceMeta } from '@/lib/library-provenance';
 import {
@@ -22,6 +23,7 @@ import {
 import { getUpanishadLayerCounts, getUpanishadStudyMeta } from '@/lib/upanishad-study';
 import {
   getGitaRecitationHref,
+  getPathshalaGitaStoryHref,
   getPathshalaChapterHref,
   getPathshalaEntryHrefFromSection,
   getPathshalaTraditionHref,
@@ -175,6 +177,40 @@ export default async function PathshalaSectionPage({
           ))}
         </div>
       </div>
+
+      {section === 'gita' && (
+        <section className="kanu-inline-panel rounded-[1.8rem] p-5 md:p-6">
+          <div className="kanu-inline-grid">
+            <div className="space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">Bal Krishna review board</p>
+              <h2 className="kanu-heading text-2xl text-white">See the new Kanu direction taking shape</h2>
+              <p className="text-sm leading-relaxed text-white/82">
+                The Bhagavad Gita track now has an image-led Bal Krishna reboot surface. It shows the strongest
+                face, body, and expression references from the current concept batch so we can refine the character
+                inside the product, not in isolation.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Link href={getPathshalaGitaStoryHref()} className="kanu-primary-cta">
+                  Open story direction
+                </Link>
+                <Link href={getGitaRecitationHref()} className="kanu-secondary-cta">
+                  Guided recitation mode
+                </Link>
+              </div>
+            </div>
+
+            <div className="kanu-inline-image-wrap">
+              <Image
+                src="/kanu/bal-krishna-portrait-anchor.png"
+                alt="Bal Krishna portrait anchor for Kanu story direction"
+                className="kanu-inline-image"
+                fill
+                sizes="(max-width: 960px) 100vw, 28vw"
+              />
+            </div>
+          </div>
+        </section>
+      )}
 
       {section === 'upanishad' && upanishadLayerCounts && (
         <section className="space-y-3">
