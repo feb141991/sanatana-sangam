@@ -34,6 +34,41 @@ const TRADITION_DEFAULT_NAMES: Record<Temple['tradition'], string> = {
   other:    'Place of Worship',
 };
 
+function inferTradition(tags: Record<string, string | undefined>): Temple['tradition'] {
+  const religion = tags?.religion?.toLowerCase() ?? '';
+  if (religion && TRADITION_RELIGION_MAP[religion]) {
+    return TRADITION_RELIGION_MAP[religion];
+  }
+
+  const combined = [
+    tags?.name,
+    tags?.['name:en'],
+    tags?.['name:hi'],
+    tags?.['name:pa'],
+    tags?.denomination,
+    tags?.deity,
+    tags?.['hindu:deity'],
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
+  if (combined.includes('gurudwara') || combined.includes('gurdwara') || combined.includes('darbar sahib') || combined.includes('gurudwara sahib')) {
+    return 'sikh';
+  }
+  if (combined.includes('vihara') || combined.includes('buddh') || combined.includes('stupa')) {
+    return 'buddhist';
+  }
+  if (combined.includes('jain') || combined.includes('derasar') || combined.includes('jin')) {
+    return 'jain';
+  }
+  if (combined.includes('mandir') || combined.includes('temple') || combined.includes('shiv') || combined.includes('krishna') || combined.includes('ram')) {
+    return 'hindu';
+  }
+
+  return 'other';
+}
+
 async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -86,8 +121,7 @@ export async function fetchNearbyTemples(
       const json = await res.json();
 
       return (json.elements as any[]).map((el) => {
-        const religion = el.tags?.religion?.toLowerCase() ?? 'other';
-        const tradition: Temple['tradition'] = TRADITION_RELIGION_MAP[religion] ?? 'other';
+        const tradition = inferTradition(el.tags ?? {});
         const defaultName = TRADITION_DEFAULT_NAMES[tradition];
 
         return {

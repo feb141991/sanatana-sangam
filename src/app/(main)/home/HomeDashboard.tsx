@@ -971,6 +971,14 @@ export default function HomeDashboard({
               }
               tone="soft"
             />
+            <FocusActionCard
+              href="/bhakti/mala"
+              icon="📿"
+              eyebrow="Daily practice"
+              title="Open Mala mode"
+              description="Count japa, save a session, and return gently through the week."
+              tone="soft"
+            />
           </div>
         </div>
       </section>
