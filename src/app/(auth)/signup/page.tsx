@@ -194,6 +194,32 @@ export default function SignupPage() {
           </div>
         )}
 
+        <div className="grid gap-3 mb-5 sm:grid-cols-3">
+          {[
+            {
+              eyebrow: 'Step 1',
+              title: 'Create your account',
+              description: 'Just enough to open your Sangam safely and personally.',
+            },
+            {
+              eyebrow: 'Step 2',
+              title: 'Share your path',
+              description: 'Tradition, place, and practice help the app greet you more truthfully.',
+            },
+            {
+              eyebrow: 'Step 3',
+              title: 'Name what you seek',
+              description: 'Your first Home guidance starts from what you actually came here for.',
+            },
+          ].map((item) => (
+            <div key={item.title} className="glass-panel rounded-[1.35rem] px-4 py-4">
+              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{item.eyebrow}</p>
+              <p className="font-semibold text-gray-900 mt-2">{item.title}</p>
+              <p className="text-sm text-gray-600 mt-2 leading-relaxed">{item.description}</p>
+            </div>
+          ))}
+        </div>
+
         {/* Progress */}
         <div className="mb-6">
           <div className="flex justify-between text-xs text-gray-400 mb-2">

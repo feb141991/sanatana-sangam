@@ -96,6 +96,8 @@ At any given time:
 - the first Profile UX sweep is now in build so identity, practice, place, and safety read as distinct areas instead of one long administrative sheet
 - the first Pathshala UX sweep is now in build so reading, recitation, and trust enter through calmer sanctuary-style lanes instead of dense stacked information
 - the first Vichaar UX sweep is now in build so threads and replies feel like a guided wisdom space instead of a generic forum
+- the first Tirtha Map UX sweep is now in build so sacred-place discovery feels calmer and more guided than a raw map utility
+- the first auth/front-door UX sweep is now in build so signup, login, guest access, invites, and recovery feel like one welcoming entry system
 
 ### Next eligible low-risk `Phase B` implementation
 

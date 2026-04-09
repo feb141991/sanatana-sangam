@@ -70,6 +70,14 @@ function ConfirmEmailForm() {
           <p className="text-gray-500 text-sm mt-1">Use this if your signup email never arrived or the original link expired.</p>
         </div>
 
+        <div className="glass-panel rounded-[1.45rem] px-4 py-4 mb-4">
+          <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">Confirmation</p>
+          <p className="font-semibold text-gray-900 mt-2">Keep account setup moving</p>
+          <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+            This page is here so signup never feels stuck. Resend the link, then return straight to sign-in when your email is ready.
+          </p>
+        </div>
+
         <form onSubmit={handleSubmit} className="glass-panel-strong rounded-[2rem] shadow-card p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>

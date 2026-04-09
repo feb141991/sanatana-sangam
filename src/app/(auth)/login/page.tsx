@@ -89,6 +89,27 @@ function LoginForm() {
           <p className="text-gray-500 text-sm mt-1">Sign in to your Sangam</p>
         </div>
 
+        <div className="grid gap-3 mb-4 sm:grid-cols-2">
+          {[
+            {
+              eyebrow: 'Return',
+              title: 'Pick up where you left off',
+              description: 'Home, Pathshala, and your sacred-time rhythm will be waiting as you left them.',
+            },
+            {
+              eyebrow: 'Need help?',
+              title: 'Recovery stays close',
+              description: 'Password reset and confirmation resend remain nearby so the front door never feels blocking.',
+            },
+          ].map((item) => (
+            <div key={item.title} className="glass-panel rounded-[1.45rem] px-4 py-4">
+              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{item.eyebrow}</p>
+              <p className="font-semibold text-gray-900 mt-2">{item.title}</p>
+              <p className="text-sm text-gray-600 mt-2 leading-relaxed">{item.description}</p>
+            </div>
+          ))}
+        </div>
+
         <form onSubmit={handleLogin} className="glass-panel-strong rounded-[2rem] shadow-card p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>

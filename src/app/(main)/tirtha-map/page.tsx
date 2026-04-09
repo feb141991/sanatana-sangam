@@ -173,9 +173,48 @@ export default function TirthaMapPage() {
     : byTradition;
 
   const placeLabel = TRADITION_PLACE_LABEL[tradFilter] ?? 'sacred places';
+  const activeCityLabel = cityInput.trim() || liveCity || 'your area';
 
   return (
     <div className="space-y-3 fade-in">
+
+      <div className="glass-panel rounded-[1.9rem] px-5 py-5 space-y-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--brand-primary)]">
+            Sacred discovery
+          </p>
+          <h1 className="font-display text-2xl font-bold text-gray-900 mt-1">Tirtha Map</h1>
+          <p className="text-sm text-gray-600 mt-2 leading-relaxed max-w-2xl">
+            Search for sacred places with a calmer flow: begin with your area, narrow by tradition, then open one place that helps you feel grounded today.
+          </p>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-3">
+          {[
+            {
+              eyebrow: 'Begin nearby',
+              title: `Search around ${activeCityLabel}`,
+              description: 'Use your current area first, then widen outward only if you need a bigger radius.',
+            },
+            {
+              eyebrow: 'Filter gently',
+              title: 'Tradition before detail',
+              description: 'Choose a tradition first, then refine with sampradaya only when it actually helps.',
+            },
+            {
+              eyebrow: 'Visit with context',
+              title: `Open ${placeLabel}`,
+              description: 'Use opening info, directions, and contact details to decide which place is right for this moment.',
+            },
+          ].map((item) => (
+            <div key={item.title} className="clay-card rounded-[1.4rem] px-4 py-4">
+              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{item.eyebrow}</p>
+              <p className="font-semibold text-gray-900 mt-2">{item.title}</p>
+              <p className="text-sm text-gray-600 mt-2 leading-relaxed">{item.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* ── Search bar ── */}
       <div className="flex gap-2">
@@ -249,6 +288,21 @@ export default function TirthaMapPage() {
               style={radius === opt.value ? { background: '#7B1A1A' } : {}}>
               {opt.label}
             </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="glass-panel rounded-[1.5rem] px-4 py-4">
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { label: 'Visible', value: filtered.length },
+            { label: 'Tradition', value: tradFilter === 'all' ? 'All' : tradFilter.slice(0, 1).toUpperCase() + tradFilter.slice(1) },
+            { label: 'Radius', value: RADIUS_OPTIONS.find((option) => option.value === radius)?.label ?? '15 mi' },
+          ].map((item) => (
+            <div key={item.label} className="rounded-[1.05rem] bg-white/72 border border-white/80 px-3 py-3 text-center">
+              <p className="font-display font-bold text-lg" style={{ color: 'var(--brand-primary-strong)' }}>{item.value}</p>
+              <p className="text-[10px] uppercase tracking-[0.16em] text-gray-400 font-semibold mt-1">{item.label}</p>
+            </div>
           ))}
         </div>
       </div>

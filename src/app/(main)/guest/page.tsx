@@ -69,6 +69,32 @@ export default async function GuestPage() {
           </p>
         </div>
 
+        <div className="grid gap-3 sm:grid-cols-3">
+          {[
+            {
+              eyebrow: 'Browse',
+              title: 'Read before committing',
+              description: 'Guest mode lets you absorb the tone and quality of the app before giving anything back.',
+            },
+            {
+              eyebrow: 'Discover',
+              title: 'Find sacred places nearby',
+              description: 'Tirtha discovery stays open so the app can help immediately, even before signup.',
+            },
+            {
+              eyebrow: 'Join later',
+              title: 'Keep the next step simple',
+              description: 'When you’re ready, join to post, reply, build your Kul, and turn on reminders.',
+            },
+          ].map((item) => (
+            <div key={item.title} className="clay-card rounded-[1.4rem] px-4 py-4">
+              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{item.eyebrow}</p>
+              <p className="font-semibold text-gray-900 mt-2">{item.title}</p>
+              <p className="text-sm text-gray-600 mt-2 leading-relaxed">{item.description}</p>
+            </div>
+          ))}
+        </div>
+
         <div className="grid gap-3">
           {guestPaths.map(({ href, title, description, icon: Icon, badge }) => (
             <Link

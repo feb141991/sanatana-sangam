@@ -70,6 +70,14 @@ function ForgotPasswordForm() {
           <p className="text-gray-500 text-sm mt-1">We&apos;ll email you a secure link to set a new password.</p>
         </div>
 
+        <div className="glass-panel rounded-[1.45rem] px-4 py-4 mb-4">
+          <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">Recovery</p>
+          <p className="font-semibold text-gray-900 mt-2">Keep the front door gentle</p>
+          <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+            If the link expires or your confirmation email is still missing, the next step stays on this same path instead of making you start over.
+          </p>
+        </div>
+
         <form onSubmit={handleSubmit} className="glass-panel-strong rounded-[2rem] shadow-card p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
