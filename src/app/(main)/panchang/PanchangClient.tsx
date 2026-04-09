@@ -26,10 +26,44 @@ const MONTHS = ['January','February','March','April','May','June',
                 'July','August','September','October','November','December'];
 const DAY_LABELS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 
+const SKY_THEMES = {
+  dawn: {
+    shell: 'linear-gradient(180deg, rgba(255, 246, 239, 0.98) 0%, rgba(255, 234, 229, 0.94) 42%, rgba(245, 220, 226, 0.92) 100%)',
+    glow: 'radial-gradient(circle at top, rgba(255, 214, 167, 0.55), transparent 55%)',
+    orb: 'rgba(255, 198, 126, 0.9)',
+    label: 'Dawn sky',
+  },
+  day: {
+    shell: 'linear-gradient(180deg, rgba(250, 244, 239, 0.98) 0%, rgba(241, 232, 239, 0.95) 48%, rgba(231, 213, 224, 0.92) 100%)',
+    glow: 'radial-gradient(circle at top, rgba(255, 231, 176, 0.45), transparent 52%)',
+    orb: 'rgba(255, 221, 137, 0.88)',
+    label: 'Day sky',
+  },
+  dusk: {
+    shell: 'linear-gradient(180deg, rgba(245, 232, 233, 0.98) 0%, rgba(233, 206, 221, 0.95) 45%, rgba(206, 171, 198, 0.94) 100%)',
+    glow: 'radial-gradient(circle at top, rgba(255, 185, 145, 0.46), transparent 55%)',
+    orb: 'rgba(255, 170, 129, 0.82)',
+    label: 'Dusk sky',
+  },
+  night: {
+    shell: 'linear-gradient(180deg, rgba(38, 32, 58, 0.98) 0%, rgba(58, 42, 77, 0.96) 42%, rgba(103, 74, 104, 0.94) 100%)',
+    glow: 'radial-gradient(circle at top, rgba(162, 145, 214, 0.34), transparent 58%)',
+    orb: 'rgba(238, 228, 255, 0.78)',
+    label: 'Night sky',
+  },
+} as const;
+
 function isSameDay(a: Date, b: Date) {
   return a.getFullYear() === b.getFullYear() &&
          a.getMonth()    === b.getMonth()    &&
          a.getDate()     === b.getDate();
+}
+
+function getSkyTheme(hour: number) {
+  if (hour >= 5 && hour < 8) return SKY_THEMES.dawn;
+  if (hour >= 8 && hour < 17) return SKY_THEMES.day;
+  if (hour >= 17 && hour < 20) return SKY_THEMES.dusk;
+  return SKY_THEMES.night;
 }
 
 // ─── Panchang detail row ──────────────────────────────────────────────────────
@@ -90,6 +124,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
   const dateLabel = selected.toLocaleDateString('en-IN', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   });
+  const skyTheme = getSkyTheme(isToday ? new Date().getHours() : 7);
 
   async function share() {
     const text = `🪔 Panchang — ${dateLabel}\n\n` +
@@ -110,6 +145,32 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
 
   return (
     <div className="flex flex-col gap-0 fade-in pb-2">
+
+      <div
+        className="relative overflow-hidden rounded-[2rem] p-4 sm:p-5 mb-3 border"
+        style={{ background: skyTheme.shell, borderColor: 'rgba(223, 156, 171, 0.24)' }}
+      >
+        <div className="absolute inset-0 pointer-events-none" style={{ background: skyTheme.glow }} />
+        <div
+          className="absolute top-4 right-6 w-16 h-16 rounded-full blur-md opacity-80"
+          style={{ background: skyTheme.orb }}
+        />
+        <div className="relative">
+          <p className="text-[10px] uppercase tracking-[0.22em] font-semibold text-gray-500">Sacred Time</p>
+          <h1 className="font-display font-bold text-gray-900 text-xl mt-1">Panchang for the day</h1>
+          <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+            A calmer view of the day’s rhythm: sunrise, sacred windows, and the lunar markers that shape your practice.
+          </p>
+          <div className="flex flex-wrap items-center gap-2 mt-3">
+            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/75 text-gray-700 border border-white/80">
+              {skyTheme.label}
+            </span>
+            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/75 text-gray-700 border border-white/80">
+              {city || 'Location-aware'}
+            </span>
+          </div>
+        </div>
+      </div>
 
       {/* ── Header ─────────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 mb-3">
@@ -201,6 +262,23 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
       <div className="flex items-center gap-2 mb-2 px-1">
         <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: 'var(--brand-primary)' }} />
         <p className="text-xs font-semibold text-gray-600">{isToday ? 'Today — ' : ''}{dateLabel}</p>
+      </div>
+
+      <div className="rounded-2xl border p-3 mb-3" style={{ background: 'rgba(255,255,255,0.82)', borderColor: 'rgba(223, 156, 171, 0.18)' }}>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400 mb-2">Sacred time ribbon</p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {[
+            { label: 'Sunrise', value: p.sunrise, emoji: '🌅' },
+            { label: 'Sunset', value: p.sunset, emoji: '🌇' },
+            { label: 'Rahu Kaal', value: p.rahuKaal, emoji: '⚠️' },
+            { label: 'Abhijit', value: p.abhijitMuhurat, emoji: '✨' },
+          ].map((item) => (
+            <div key={item.label} className="rounded-xl px-3 py-2 bg-white/80 border border-white/80">
+              <p className="text-[10px] uppercase tracking-[0.14em] text-gray-400 font-semibold">{item.emoji} {item.label}</p>
+              <p className="text-sm font-semibold mt-1" style={{ color: 'var(--brand-primary-strong)' }}>{item.value}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* ── Panchang details ────────────────────────────────────────── */}

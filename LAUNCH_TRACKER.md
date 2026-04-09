@@ -101,6 +101,8 @@ Last updated: 2026-04-09
 - [ ] Define religious language support: script toggles first, then launch-language UI packs
 - [ ] Activate referral attribution from invite codes
 - [ ] Shape Panchang into an atmospheric sacred-time experience: living sky background, calmer motion, large readable cards, and optional light haptics that still work well for elders
+- [x] Create a dedicated experience roadmap in `UX_SWEEP_PLAN.md` for Panchang, Kul, Mandali, Pathshala, Home, Profile, and Notifications
+- [ ] Run the first UX sweep pass section by section instead of only adding net-new features
 
 ## Notes
 
@@ -113,7 +115,9 @@ Last updated: 2026-04-09
 - `Zen mode` and `Mala mode` are now explicitly planned as launch-level contemplation features, but audio inside them must stay rights-safe and clearly labeled.
 - `AUDIO_ARCHITECTURE_PLAN.md` now tracks the shared player model, source classes, and Gita-first rollout for in-app audio.
 - Panchang should evolve into a sacred-time experience with atmosphere, readability, and restraint: sky-led background, time-of-day theming, light haptics where supported, and no low-contrast mystical gimmicks.
+- The first Panchang experience pass is now active: the full page and home widget both use time-of-day atmosphere, a sacred-time ribbon, and calmer visual hierarchy.
 - `PANCHANG_SOURCE_STRATEGY.md` now tracks how launch copy, future provider strategy, and sacred-time claims should stay aligned.
+- `UX_SWEEP_PLAN.md` now tracks the next experience improvements by surface, with Panchang, Kul, and Mandali as the highest-leverage sweeps.
 - `ROADMAP.md` is now the main sequencing document for `Phase A` vs `Phase B`.
 - `COLOR_STRATEGY.md` now tracks the palette research, token direction, and rollout rules.
 - `PARAMPARA_PATHSHALA_PLAN.md` now defines the source strategy and learning-product direction for turning Library into Pathshala.

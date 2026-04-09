@@ -89,6 +89,8 @@ At any given time:
 - palette unification around the new warm maroon + saffron + ivory system
 - reusable editor-sheet pattern based on the home greeting flow
 - a future `Panchang experience` layer with sky-led atmosphere, gentle motion, strong readability, and optional haptics where devices support them
+- a structured section-by-section product polish lane tracked in `UX_SWEEP_PLAN.md`
+- the first Panchang UX sweep is now in build across the full Panchang page and the home widget so sacred-time feels like one coherent surface
 
 ### Next eligible low-risk `Phase B` implementation
 
