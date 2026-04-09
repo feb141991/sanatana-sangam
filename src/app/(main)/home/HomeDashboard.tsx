@@ -915,8 +915,11 @@ export default function HomeDashboard({
             </h1>
             <Pencil size={13} className="text-gray-300 group-hover:text-[color:var(--brand-primary)] transition flex-shrink-0 mt-1" />
           </button>
-          <p className="text-xs mt-1 font-medium" style={{ color: 'rgba(140, 77, 45, 0.78)' }}>
+          <p className="hidden sm:block text-xs mt-1 font-medium" style={{ color: 'rgba(140, 77, 45, 0.78)' }}>
             {greetingMode}
+          </p>
+          <p className="sm:hidden text-xs mt-1 font-medium" style={{ color: 'rgba(140, 77, 45, 0.78)' }}>
+            Today&rsquo;s rhythm is ready.
           </p>
           {displayCity && (
             <p className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
@@ -931,7 +934,7 @@ export default function HomeDashboard({
       <section className="space-y-2">
         <div>
           <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Today in Sangam</p>
-          <p className="text-sm text-gray-600 mt-0.5">
+          <p className="hidden sm:block text-sm text-gray-600 mt-0.5">
             Begin with one meaningful step, then move deeper if you want to.
           </p>
         </div>
@@ -1303,7 +1306,7 @@ export default function HomeDashboard({
               </div>
               <div>
                 <p className="font-semibold text-gray-800 text-sm leading-tight">{item.label}</p>
-                <p className="text-xs text-gray-500 mt-0.5 leading-tight">{item.desc}</p>
+                <p className="hidden sm:block text-xs text-gray-500 mt-0.5 leading-tight">{item.desc}</p>
               </div>
             </Link>
             </MotionItem>

@@ -5,7 +5,7 @@ import { DEVOTIONAL_STARTER_TRACKS } from '@/lib/devotional-audio';
 export default function BhaktiPage() {
   return (
     <div className="fade-in space-y-5">
-      <Card className="rounded-[2rem] px-5 py-6 md:px-7 md:py-7 overflow-hidden relative">
+      <Card className="rounded-[1.7rem] px-4 py-5 md:rounded-[2rem] md:px-7 md:py-7 overflow-hidden relative">
         <div
           className="absolute inset-0 opacity-80 pointer-events-none"
           style={{
@@ -14,7 +14,7 @@ export default function BhaktiPage() {
           }}
         />
         <div className="relative space-y-4">
-          <div className="inline-flex items-center gap-2 clay-pill text-xs text-gray-700">
+          <div className="hidden sm:inline-flex items-center gap-2 clay-pill text-xs text-gray-700">
             <span>Bhakti preview</span>
             <span className="text-[color:var(--brand-primary)] font-semibold">Phase 3 shape</span>
           </div>
@@ -24,7 +24,7 @@ export default function BhaktiPage() {
               A quieter devotional space for chant, listening, and remembrance.
             </p>
           </div>
-          <div className="grid gap-3 md:grid-cols-3">
+          <div className="hidden md:grid gap-3 md:grid-cols-3">
             <div className="clay-card rounded-[1.5rem] px-4 py-4 text-left">
               <p className="text-sm font-semibold text-gray-900">Daily remembrance</p>
               <p className="text-xs leading-relaxed text-gray-600 mt-2">

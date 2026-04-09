@@ -1181,7 +1181,7 @@ function KulSectionTiles({
         <div key={group.title} className="space-y-3">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">{group.title}</p>
-            <p className="text-sm text-gray-500 mt-1">{group.subtitle}</p>
+            <p className="hidden sm:block text-sm text-gray-500 mt-1">{group.subtitle}</p>
           </div>
           <div className={`grid gap-3 ${large ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2 sm:grid-cols-3'}`}>
             {group.keys.map(({ key, badge }) => {
@@ -1315,8 +1315,11 @@ function KulHubView({
             <p className="text-[11px] uppercase tracking-[0.18em] font-semibold mt-1" style={{ color: 'rgba(22, 77, 84, 0.72)' }}>
               Kul Home
             </p>
-            <p className="text-sm text-gray-600 mt-2 leading-relaxed max-w-xl">
+            <p className="hidden sm:block text-sm text-gray-600 mt-2 leading-relaxed max-w-xl">
               Open the one family space you need right now. Kul is organized as dedicated full pages, so tasks, conversation, lineage, and dates no longer compete on one crowded screen.
+            </p>
+            <p className="sm:hidden text-sm text-gray-600 mt-2 leading-relaxed">
+              Open one family space at a time.
             </p>
           </div>
           <div className="px-3 py-2 rounded-2xl border text-xs font-bold tracking-widest hidden sm:block"
@@ -1388,7 +1391,7 @@ function KulHubView({
           </div>
         </div>
 
-        <div className="glass-panel rounded-[1.8rem] p-4 sm:p-5">
+        <div className="hidden sm:block glass-panel rounded-[1.8rem] p-4 sm:p-5">
           <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">Then move deeper</p>
           <div className="space-y-3 mt-3">
             {[

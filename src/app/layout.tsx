@@ -13,6 +13,11 @@ export const metadata: Metadata = {
     icon:  '/icons/icon-192.png',
     apple: '/icons/icon-192.png',
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Sangam',
+  },
   openGraph: {
     title:       'Sanatana Sangam',
     description: 'The Global Home for Sanatani — community, knowledge, and bhakti in one place.',
@@ -26,6 +31,7 @@ export const viewport: Viewport = {
   width:        'device-width',
   initialScale: 1,
   maximumScale: 1,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

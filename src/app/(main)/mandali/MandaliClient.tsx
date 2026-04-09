@@ -1167,8 +1167,11 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
               <MapPin size={12} />
               <span>{placeLabel}</span>
             </div>
-            <p className="text-white/75 text-sm mt-3 max-w-xl leading-relaxed">
+            <p className="hidden sm:block text-white/75 text-sm mt-3 max-w-xl leading-relaxed">
               Your local Sangam should feel like a warm room, not a feed. Start with the one thing that matters right now, then move deeper.
+            </p>
+            <p className="sm:hidden text-white/80 text-sm mt-3 leading-relaxed">
+              Start with one local step.
             </p>
           </div>
           <div className="text-right">
@@ -1236,7 +1239,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
           </div>
         </button>
 
-        <div className="glass-panel rounded-[1.7rem] p-4">
+        <div className="hidden sm:block glass-panel rounded-[1.7rem] p-4">
           <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">Local pulse</p>
           <div className="grid grid-cols-3 gap-2 mt-3">
             {[

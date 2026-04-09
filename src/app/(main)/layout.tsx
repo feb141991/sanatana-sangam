@@ -68,7 +68,7 @@ export default async function MainLayout({
         wantsCommunityNotifications={wantsCommunityNotifications}
         wantsFamilyNotifications={wantsFamilyNotifications}
       />
-      <main className="flex-1 max-w-2xl mx-auto w-full px-4 pt-4 pb-28">
+      <main className="flex-1 max-w-2xl mx-auto w-full px-3 pt-3 pb-28 sm:px-4 sm:pt-4">
         <LocationProvider
           savedLat={savedLat}
           savedLon={savedLon}

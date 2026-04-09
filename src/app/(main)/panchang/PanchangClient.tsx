@@ -205,8 +205,11 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
         <div className="relative">
           <p className="text-[10px] uppercase tracking-[0.22em] font-semibold text-gray-500">Sacred Time</p>
           <h1 className="font-display font-bold text-gray-900 text-xl mt-1">Panchang for the day</h1>
-          <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+          <p className="hidden sm:block text-sm text-gray-600 mt-2 leading-relaxed">
             A calmer view of the day’s rhythm: sunrise, sacred windows, and the lunar markers that shape your practice.
+          </p>
+          <p className="sm:hidden text-sm text-gray-600 mt-2 leading-relaxed">
+            Sunrise, sacred windows, and the day&rsquo;s rhythm.
           </p>
           <div className="flex flex-wrap items-center gap-2 mt-3">
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/75 text-gray-700 border border-white/80">
