@@ -25,6 +25,8 @@ export default async function MandaliPage() {
 
   // Fetch mandali posts
   let posts: any[] = [];
+  let comments: any[] = [];
+  let rsvps: any[] = [];
   if (mandaliId) {
     const { data } = await supabase
       .from('posts')
@@ -33,6 +35,24 @@ export default async function MandaliPage() {
       .order('created_at', { ascending: false })
       .limit(30);
     posts = filterAuthoredItems(data ?? [], 'mandali_post', safetyState);
+
+    const postIds = posts.map((post) => post.id);
+    if (postIds.length > 0) {
+      const [{ data: commentData }, { data: rsvpData }] = await Promise.all([
+        supabase
+          .from('post_comments')
+          .select('*, profiles!post_comments_author_id_fkey(full_name, username, avatar_url)')
+          .in('post_id', postIds)
+          .order('created_at', { ascending: true }),
+        supabase
+          .from('event_rsvps')
+          .select('*')
+          .in('post_id', postIds),
+      ]);
+
+      comments = commentData ?? [];
+      rsvps = rsvpData ?? [];
+    }
   }
 
   // Fetch real mandali members
@@ -63,6 +83,8 @@ export default async function MandaliPage() {
     <MandaliClient
       profile={profile}
       posts={posts}
+      comments={comments}
+      rsvps={rsvps}
       members={members}
       userId={user.id}
       blendedPosts={blendedPosts}

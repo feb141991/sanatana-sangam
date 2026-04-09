@@ -78,6 +78,49 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['posts']['Row'], 'created_at' | 'updated_at' | 'upvotes' | 'comment_count'>;
         Update: Partial<Database['public']['Tables']['posts']['Insert']>;
       };
+      post_comments: {
+        Row: {
+          id: string;
+          post_id: string;
+          author_id: string;
+          body: string;
+          parent_id: string | null;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['post_comments']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['post_comments']['Insert']>;
+      };
+      event_rsvps: {
+        Row: {
+          id: string;
+          post_id: string;
+          user_id: string;
+          status: 'going' | 'interested' | 'not_going';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['event_rsvps']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['event_rsvps']['Insert']>;
+      };
+      mala_sessions: {
+        Row: {
+          id: string;
+          user_id: string;
+          mantra: string;
+          chant_source: string | null;
+          count: number;
+          target_count: number | null;
+          duration_seconds: number;
+          notes: string | null;
+          share_scope: 'private' | 'kul' | 'public';
+          completed_at: string;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['mala_sessions']['Row'], 'id' | 'created_at' | 'completed_at'> & {
+          completed_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['mala_sessions']['Insert']>;
+      };
       forum_threads: {
         Row: {
           id: string;
@@ -260,5 +303,9 @@ export type ForumReply     = Database['public']['Tables']['forum_replies']['Row'
 export type Notification    = Database['public']['Tables']['notifications']['Row'];
 export type ContentReport   = Database['public']['Tables']['content_reports']['Row'];
 export type PathshalaUserState = Database['public']['Tables']['pathshala_user_state']['Row'];
+export type PostComment = Database['public']['Tables']['post_comments']['Row'];
+export type EventRsvp = Database['public']['Tables']['event_rsvps']['Row'];
+export type MalaSession = Database['public']['Tables']['mala_sessions']['Row'];
 export type PostWithAuthor = Post & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'spiritual_level'> };
 export type ThreadWithAuthor = ForumThread & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya'> };
+export type PostCommentWithAuthor = PostComment & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url'> };

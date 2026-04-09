@@ -78,8 +78,8 @@ Last updated: 2026-04-09
 - [x] Make `/library` a clean tradition gateway so scripture browsing starts on the next page instead of mixing excerpts into the first screen
 - [ ] Replace rough `Kul / Vansh` clay figurines with polished keepsake memory cards
 - [ ] Expand the new `Kul` hub + full-page section pattern into other major app areas where it improves clarity
-- [ ] Add Mandali comments and replies
-- [ ] Add Mandali event RSVP flow
+- [x] Add Mandali comments and replies
+- [x] Add Mandali event RSVP flow
 - [ ] Add analytics, funnel tracking, and error monitoring
 - [ ] Replace browser `confirm`, `alert`, and `window.prompt` flows with app-native UI
 - [x] Add profile-level notification preferences for sacred-time delivery and quiet hours
@@ -94,8 +94,9 @@ Last updated: 2026-04-09
 - [ ] Add in-app authoritative Gita audio after source-rights confirmation, then later pronunciation guidance and recite-along support
 - [ ] Keep non-Gita scripture expansion on hold while the Gita study + recitation flow is completed end to end
 - [ ] Add a focused Howler-backed Pathshala audio layer later for recitation and guided reading, not generic app-wide UI sounds
-- [ ] Define `Zen mode` as a distraction-light reading and recitation surface for launch-facing Pathshala use
-- [ ] Define `Mala mode` as an elder-friendly japa tracker with large controls, session history, shareable progress, and optional rights-safe chant support
+- [x] Define `Zen mode` as a distraction-light reading and recitation surface for launch-facing Pathshala use
+- [x] Define `Mala mode` as an elder-friendly japa tracker with large controls, session history, shareable progress, and optional rights-safe chant support
+- [x] Ship the first live Bhakti practice slice with dedicated `Zen` and `Mala` routes instead of leaving both modes as planning-only ideas
 - [ ] Curate a rights-safe devotional audio starter pack for launch: mantra/chant clips first, then selective bhajan/kirtan where reuse terms are clear
 - [x] Add first Kul family-profile viewing inside the family space so members can open each other’s Kul-safe details
 - [ ] Continue the Upanishad original-text iteration until the larger texts that still sit behind official flipbooks can be ingested locally
@@ -122,6 +123,7 @@ Last updated: 2026-04-09
 - `BHAJAN_DISCOVERY_MVP.md` now defines the later devotional-music MVP as curated catalog + ranking metadata + open-out links, which keeps maintenance and licensing risk lower than in-app streaming.
 - Gita recitation currently keeps authoritative audio on the companion source; bringing that audio fully in-app is now a tracked later milestone, not an unplanned stretch goal.
 - `Zen mode` and `Mala mode` are now explicitly planned as launch-level contemplation features, but audio inside them must stay rights-safe and clearly labeled.
+- `Zen mode` and `Mala mode` now have first live entry routes inside Bhakti; the next layer is trusted audio, richer session sharing, and later Kul integration.
 - `AUDIO_ARCHITECTURE_PLAN.md` now tracks the shared player model, source classes, and Gita-first rollout for in-app audio.
 - Panchang should evolve into a sacred-time experience with atmosphere, readability, and restraint: sky-led background, time-of-day theming, light haptics where supported, and no low-contrast mystical gimmicks.
 - The first Panchang experience pass is now active: the full page and home widget both use time-of-day atmosphere, a sacred-time ribbon, and calmer visual hierarchy.

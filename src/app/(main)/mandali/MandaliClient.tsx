@@ -4,23 +4,27 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown } from 'lucide-react';
+import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown, CornerDownRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
 import { formatRelativeTime, getInitials, ISHTA_DEVATAS } from '@/lib/utils';
 import { useLocation } from '@/lib/LocationContext';
-import type { Profile, PostWithAuthor } from '@/types/database';
+import type { Profile, PostWithAuthor, PostCommentWithAuthor, EventRsvp } from '@/types/database';
 
 type MemberRow = Pick<Profile, 'id' | 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'ishta_devata' | 'spiritual_level' | 'city' | 'seva_score'>;
 
 type Props = {
   profile:      (Profile & { mandalis?: { name: string; city: string; country: string; member_count: number } | null }) | null;
   posts:        PostWithAuthor[];
+  comments:     PostCommentWithAuthor[];
+  rsvps:        EventRsvp[];
   members:      MemberRow[];
   userId:       string;
   /** Posts from other Mandalis shown when local Mandali has < 5 members */
   blendedPosts?: PostWithAuthor[];
 };
+
+type RsvpStatus = 'going' | 'interested' | 'not_going';
 
 const POST_TYPES = [
   { value: 'update',       label: 'Update',       icon: '💬' },
@@ -544,7 +548,52 @@ function MembersTab({ members, userId }: { members: MemberRow[]; userId: string 
 }
 
 // ─── Events Tab ─────────────────────────────────────────────────
-function EventsTab({ posts }: { posts: PostWithAuthor[] }) {
+function EventRsvpBar({
+  postId,
+  rsvps,
+  userId,
+  onRsvp,
+}: {
+  postId: string;
+  rsvps: EventRsvp[];
+  userId: string;
+  onRsvp: (postId: string, status: RsvpStatus) => void;
+}) {
+  const counts = {
+    going: rsvps.filter((item) => item.status === 'going').length,
+    interested: rsvps.filter((item) => item.status === 'interested').length,
+    not_going: rsvps.filter((item) => item.status === 'not_going').length,
+  };
+  const myStatus = rsvps.find((item) => item.user_id === userId)?.status ?? null;
+
+  return (
+    <div className="mt-3 space-y-2">
+      <div className="flex flex-wrap gap-2">
+        {[
+          { value: 'going', label: 'Going', count: counts.going },
+          { value: 'interested', label: 'Interested', count: counts.interested },
+          { value: 'not_going', label: 'Can’t make it', count: counts.not_going },
+        ].map((item) => (
+          <button
+            key={item.value}
+            onClick={() => onRsvp(postId, item.value as RsvpStatus)}
+            className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
+              myStatus === item.value
+                ? 'text-white'
+                : 'border border-[rgba(200,127,146,0.25)] bg-white text-gray-600'
+            }`}
+            style={myStatus === item.value ? { background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' } : undefined}
+          >
+            {item.label}
+            {item.count > 0 ? ` · ${item.count}` : ''}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function EventsTab({ posts, rsvps, userId, onRsvp }: { posts: PostWithAuthor[]; rsvps: EventRsvp[]; userId: string; onRsvp: (postId: string, status: RsvpStatus) => void; }) {
   const events = posts.filter((p) => p.type === 'event');
   if (events.length === 0) {
     return (
@@ -575,6 +624,12 @@ function EventsTab({ posts }: { posts: PostWithAuthor[] }) {
               <p className="text-xs text-gray-400 mt-1">
                 {post.profiles?.full_name ?? post.profiles?.username} · {formatRelativeTime(post.created_at)}
               </p>
+              <EventRsvpBar
+                postId={post.id}
+                rsvps={rsvps.filter((item) => item.post_id === post.id)}
+                userId={userId}
+                onRsvp={onRsvp}
+              />
             </div>
           </div>
         </div>
@@ -584,9 +639,11 @@ function EventsTab({ posts }: { posts: PostWithAuthor[] }) {
 }
 
 // ─── Vichaar Tab (Posts Feed) ────────────────────────────────────
-function VichaarTab({ posts, userId, onToggleUpvote, upvoted, onCompose, showCompose, setShowCompose, onHideContent, onHideAuthor, allowCompose = true }: {
+function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upvoted, onCompose, showCompose, setShowCompose, onHideContent, onHideAuthor, allowCompose = true }: {
   posts: PostWithAuthor[];
   userId: string;
+  comments: PostCommentWithAuthor[];
+  onAddComment: (postId: string, body: string, parentId?: string | null) => Promise<void>;
   onToggleUpvote: (id: string) => void;
   upvoted: Set<string>;
   onCompose: (payload: {
@@ -668,6 +725,8 @@ function VichaarTab({ posts, userId, onToggleUpvote, upvoted, onCompose, showCom
           key={post.id}
           post={post}
           userId={userId}
+          comments={comments.filter((comment) => comment.post_id === post.id)}
+          onAddComment={onAddComment}
           upvoted={upvoted}
           onUpvote={onToggleUpvote}
           onHideContent={onHideContent}
@@ -720,9 +779,11 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
   );
 }
 
-function PostCard({ post, userId, upvoted, onUpvote, onHideContent, onHideAuthor }: {
+function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onHideContent, onHideAuthor }: {
   post: PostWithAuthor;
   userId: string;
+  comments: PostCommentWithAuthor[];
+  onAddComment: (postId: string, body: string, parentId?: string | null) => Promise<void>;
   upvoted: Set<string>;
   onUpvote: (id: string) => void;
   onHideContent: (contentId: string) => void;
@@ -730,6 +791,29 @@ function PostCard({ post, userId, upvoted, onUpvote, onHideContent, onHideAuthor
 }) {
   const author = post.profiles;
   const isUpvoted = upvoted.has(post.id);
+  const [showComments, setShowComments] = useState(false);
+  const [commentBody, setCommentBody] = useState('');
+  const [replyTo, setReplyTo] = useState<string | null>(null);
+  const [replyBody, setReplyBody] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const rootComments = comments.filter((comment) => !comment.parent_id);
+  const replyMap = comments.reduce<Record<string, PostCommentWithAuthor[]>>((acc, comment) => {
+    if (comment.parent_id) {
+      acc[comment.parent_id] = [...(acc[comment.parent_id] ?? []), comment];
+    }
+    return acc;
+  }, {});
+
+  async function submitComment(body: string, parentId?: string | null) {
+    if (!body.trim()) return;
+    setSubmitting(true);
+    await onAddComment(post.id, body, parentId ?? null);
+    setSubmitting(false);
+    setCommentBody('');
+    setReplyBody('');
+    setReplyTo(null);
+    setShowComments(true);
+  }
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-4">
@@ -769,7 +853,112 @@ function PostCard({ post, userId, upvoted, onUpvote, onHideContent, onHideAuthor
               <Heart size={13} fill={isUpvoted ? 'currentColor' : 'none'} />
               {post.upvotes > 0 && <span>{post.upvotes}</span>}
             </button>
+            <button
+              onClick={() => setShowComments((current) => !current)}
+              className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition"
+            >
+              <MessageSquare size={13} />
+              <span>{post.comment_count > 0 ? post.comment_count : 'Comment'}</span>
+            </button>
           </div>
+
+          {showComments && (
+            <div className="mt-3 space-y-3 rounded-2xl bg-[var(--brand-primary-soft)]/60 px-3 py-3">
+              <div className="space-y-2">
+                {rootComments.length === 0 ? (
+                  <p className="text-xs text-gray-500">No comments yet.</p>
+                ) : (
+                  rootComments.map((comment) => (
+                    <div key={comment.id} className="space-y-2 rounded-2xl bg-white/80 px-3 py-3">
+                      <div className="flex items-start gap-2">
+                        <div className="w-7 h-7 rounded-full bg-[var(--brand-primary)] text-white text-[10px] font-bold flex items-center justify-center overflow-hidden flex-shrink-0">
+                          {comment.profiles?.avatar_url ? (
+                            <Image src={comment.profiles.avatar_url} alt="" width={28} height={28} className="h-7 w-7 object-cover" />
+                          ) : (
+                            getInitials(comment.profiles?.full_name || comment.profiles?.username || '?')
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 text-xs text-gray-400">
+                            <span className="font-medium text-gray-800">{comment.profiles?.full_name ?? comment.profiles?.username}</span>
+                            <span>{formatRelativeTime(comment.created_at)}</span>
+                          </div>
+                          <p className="text-sm text-gray-700 mt-1 leading-relaxed">{comment.body}</p>
+                          <button
+                            onClick={() => {
+                              setReplyTo((current) => current === comment.id ? null : comment.id);
+                              setReplyBody('');
+                            }}
+                            className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-[color:var(--brand-primary-strong)]"
+                          >
+                            <CornerDownRight size={11} />
+                            Reply
+                          </button>
+                        </div>
+                      </div>
+
+                      {(replyMap[comment.id] ?? []).length > 0 && (
+                        <div className="space-y-2 pl-9">
+                          {(replyMap[comment.id] ?? []).map((reply) => (
+                            <div key={reply.id} className="rounded-xl bg-[var(--brand-primary-soft)]/55 px-3 py-2.5">
+                              <div className="flex items-center gap-2 text-[11px] text-gray-400">
+                                <span className="font-medium text-gray-800">{reply.profiles?.full_name ?? reply.profiles?.username}</span>
+                                <span>{formatRelativeTime(reply.created_at)}</span>
+                              </div>
+                              <p className="text-sm text-gray-700 mt-1 leading-relaxed">{reply.body}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {replyTo === comment.id && (
+                        <div className="pl-9 space-y-2">
+                          <textarea
+                            value={replyBody}
+                            onChange={(event) => setReplyBody(event.target.value)}
+                            rows={2}
+                            placeholder="Reply gently…"
+                            className="w-full rounded-xl border border-[rgba(200,127,146,0.2)] bg-white px-3 py-2 text-sm outline-none"
+                          />
+                          <div className="flex justify-end gap-2">
+                            <button onClick={() => setReplyTo(null)} className="text-xs text-gray-500">Cancel</button>
+                            <button
+                              onClick={() => submitComment(replyBody, comment.id)}
+                              disabled={submitting || !replyBody.trim()}
+                              className="rounded-full px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+                              style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}
+                            >
+                              Reply
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <textarea
+                  value={commentBody}
+                  onChange={(event) => setCommentBody(event.target.value)}
+                  rows={2}
+                  placeholder="Add a comment…"
+                  className="w-full rounded-xl border border-[rgba(200,127,146,0.2)] bg-white px-3 py-2 text-sm outline-none"
+                />
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => submitComment(commentBody)}
+                    disabled={submitting || !commentBody.trim()}
+                    className="rounded-full px-4 py-2 text-xs font-semibold text-white disabled:opacity-50"
+                    style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}
+                  >
+                    Comment
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -777,7 +966,7 @@ function PostCard({ post, userId, upvoted, onUpvote, onHideContent, onHideAuthor
 }
 
 // ─── Main Component ──────────────────────────────────────────────
-export default function MandaliClient({ profile, posts: initialPosts, members, userId, blendedPosts = [] }: Props) {
+export default function MandaliClient({ profile, posts: initialPosts, comments: initialComments, rsvps: initialRsvps, members, userId, blendedPosts = [] }: Props) {
   const router   = useRouter();
   const supabase = createClient();
   const initialEventCount = initialPosts.filter((post) => post.type === 'event').length;
@@ -787,6 +976,8 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
     initialVichaarCount > 0 ? 'vichaar' : initialEventCount > 0 ? 'events' : 'members'
   );
   const [posts,           setPosts]           = useState(initialPosts);
+  const [comments,        setComments]        = useState(initialComments);
+  const [rsvps,           setRsvps]           = useState(initialRsvps);
   const [widerPosts,      setWiderPosts]      = useState(blendedPosts);
   const [visibleMembers,  setVisibleMembers]  = useState(members);
   const [showSearch,      setShowSearch]      = useState(false);
@@ -835,12 +1026,16 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
   function hideContentFromView(contentId: string) {
     setPosts((current) => current.filter((post) => post.id !== contentId));
     setWiderPosts((current) => current.filter((post) => post.id !== contentId));
+    setComments((current) => current.filter((comment) => comment.post_id !== contentId));
+    setRsvps((current) => current.filter((item) => item.post_id !== contentId));
   }
 
   function hideAuthorFromView(authorId: string) {
     setPosts((current) => current.filter((post) => post.author_id !== authorId));
     setWiderPosts((current) => current.filter((post) => post.author_id !== authorId));
     setVisibleMembers((current) => current.filter((member) => member.id !== authorId));
+    setComments((current) => current.filter((comment) => comment.author_id !== authorId));
+    setRsvps((current) => current.filter((item) => item.user_id !== authorId));
   }
 
   async function submitPost(payload: {
@@ -894,6 +1089,59 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
       setPosts((p) => p.map((post) => post.id === postId ? { ...post, upvotes: post.upvotes + 1 } : post));
       setWiderPosts((p) => p.map((post) => post.id === postId ? { ...post, upvotes: post.upvotes + 1 } : post));
     }
+  }
+
+  async function addComment(postId: string, body: string, parentId?: string | null) {
+    const content = body.trim();
+    if (!content) {
+      toast.error('Write something first');
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('post_comments')
+      .insert({
+        post_id: postId,
+        author_id: userId,
+        body: content,
+        parent_id: parentId ?? null,
+      })
+      .select('*, profiles!post_comments_author_id_fkey(full_name, username, avatar_url)')
+      .single();
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    setComments((current) => [...current, data as PostCommentWithAuthor]);
+    setPosts((current) => current.map((post) => (
+      post.id === postId ? { ...post, comment_count: post.comment_count + 1 } : post
+    )));
+    toast.success(parentId ? 'Reply posted' : 'Comment posted');
+  }
+
+  async function updateRsvp(postId: string, status: RsvpStatus) {
+    const { data, error } = await supabase
+      .from('event_rsvps')
+      .upsert({
+        post_id: postId,
+        user_id: userId,
+        status,
+      }, { onConflict: 'post_id,user_id' })
+      .select('*')
+      .single();
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    setRsvps((current) => {
+      const withoutMine = current.filter((item) => !(item.post_id === postId && item.user_id === userId));
+      return [...withoutMine, data as EventRsvp];
+    });
+    toast.success(status === 'going' ? 'You are in' : status === 'interested' ? 'Marked interested' : 'RSVP updated');
   }
 
   const tabs = [
@@ -1035,13 +1283,15 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
         <MembersTab members={visibleMembers} userId={userId} />
       )}
       {activeTab === 'events' && (
-        <EventsTab posts={posts} />
+        <EventsTab posts={posts} rsvps={rsvps} userId={userId} onRsvp={updateRsvp} />
       )}
       {activeTab === 'vichaar' && (
         <>
           <VichaarTab
             posts={posts}
             userId={userId}
+            comments={comments}
+            onAddComment={addComment}
             onToggleUpvote={toggleUpvote}
             upvoted={upvoted}
             onCompose={submitPost}
@@ -1066,6 +1316,8 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
               <VichaarTab
                 posts={widerPosts}
                 userId={userId}
+                comments={comments}
+                onAddComment={addComment}
                 onToggleUpvote={toggleUpvote}
                 upvoted={upvoted}
                 onCompose={submitPost}

@@ -259,6 +259,54 @@ Exit criteria:
 
 Current slice:
 
+### A2.2 Mandali depth
+
+Status: `In Build`
+
+Outcome:
+
+- Mandali feels like a living local community instead of a static post list
+
+Work:
+
+- add comments and replies on Mandali posts
+- add RSVP state on Mandali events
+- keep local conversation warmer and more action-led
+
+Exit criteria:
+
+- members can respond to posts without leaving the feed
+- event posts carry real participation state instead of passive details only
+
+Current slice:
+
+- Mandali now has post comments, inline replies, and event RSVP state in the app layer
+- `migration-v20-mandali-bhakti-depth.sql` adds the data model for comments, RSVP, and Bhakti practice history
+
+### B2.4 Bhakti practice modes
+
+Status: `In Build`
+
+Outcome:
+
+- Bhakti stops being a placeholder and becomes a practical devotional entry point
+
+Work:
+
+- launch first live `Zen` route
+- launch first live `Mala` route
+- keep audio and chant expansion rights-safe
+
+Exit criteria:
+
+- users can open a calmer focus surface today
+- users can track and save mala sessions today
+
+Current slice:
+
+- `/bhakti/zen` now provides a calmer focus timer for reading, breath, and chant sessions
+- `/bhakti/mala` now provides a large-tap japa tracker with saveable session history and basic sharing
+
 - AI now receives an internal reference pack from Library matches
 - the UI now shows whether a reply is `Source-guided` or `Reflective guidance`
 - this still needs stronger grounding policy and broader source coverage
