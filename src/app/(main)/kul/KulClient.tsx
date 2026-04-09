@@ -1242,6 +1242,9 @@ function KulHubView({
     .map((event) => ({ ...event, daysUntil: daysUntilNextOccurrence(event.event_date) }))
     .filter((event) => event.daysUntil <= 90)
     .sort((a, b) => a.daysUntil - b.daysUntil);
+  const primaryActions: KulSectionView[] = openTasks > 0 ? ['tasks', 'board'] : ['board', 'events'];
+  const familyActions: KulSectionView[] = ['members', 'sabha'];
+  const lineageActions: KulSectionView[] = ['vansh', 'events'];
 
   return (
     <div className="space-y-4">
@@ -1317,16 +1320,106 @@ function KulHubView({
         </div>
       </div>
 
-      <div>
-        <KulSectionTiles
-          currentView="hub"
-          members={members}
-          tasks={tasks}
-          messages={messages}
-          familyMembers={familyMembers}
-          kulEvents={kulEvents}
-          large
-        />
+      <div className="grid gap-4 lg:grid-cols-[1.35fr_0.95fr]">
+        <div className="glass-panel rounded-[1.8rem] p-4 sm:p-5">
+          <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">Start here</p>
+          <div className="grid gap-3 sm:grid-cols-2 mt-3">
+            {primaryActions.map((key) => {
+              const meta = KUL_SECTION_META[key];
+              const badge =
+                key === 'tasks'
+                  ? openTasks || undefined
+                  : key === 'events'
+                    ? upcomingEvents.length || undefined
+                    : undefined;
+
+              return (
+                <Link
+                  key={key}
+                  href={getKulSectionHref(key)}
+                  className="group clay-card rounded-[1.6rem] p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3 min-w-0">
+                      <div className="clay-icon-well text-lg flex-shrink-0">{meta.emoji}</div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] uppercase tracking-[0.18em] font-semibold" style={{ color: 'rgba(22, 77, 84, 0.68)' }}>
+                          {meta.eyebrow}
+                        </p>
+                        <h3 className="font-display font-bold leading-tight mt-1 text-base" style={{ color: 'var(--brand-primary-strong)' }}>
+                          {meta.label}
+                        </h3>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                      {badge != null && badge > 0 ? (
+                        <span className="px-2 py-1 rounded-full text-[10px] font-bold text-white" style={{ background: 'var(--brand-primary)' }}>
+                          {badge > 99 ? '99+' : badge}
+                        </span>
+                      ) : null}
+                      <ChevronRight size={16} className="text-gray-400 group-hover:translate-x-0.5 transition-transform" />
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-500 mt-3 leading-relaxed">{meta.description}</p>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="glass-panel rounded-[1.8rem] p-4 sm:p-5">
+          <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">Then move deeper</p>
+          <div className="space-y-3 mt-3">
+            {[
+              { title: 'Family spaces', subtitle: 'People, roles, and conversation', keys: familyActions },
+              { title: 'Lineage and dates', subtitle: 'Keepsakes, memory, and rhythm', keys: lineageActions },
+            ].map((group) => (
+              <div key={group.title} className="rounded-[1.35rem] bg-white/72 border border-white/80 p-3">
+                <p className="text-sm font-semibold text-gray-900">{group.title}</p>
+                <p className="text-xs text-gray-500 mt-1">{group.subtitle}</p>
+                <div className="space-y-2 mt-3">
+                  {group.keys.map((key) => {
+                    const meta = KUL_SECTION_META[key];
+                    const badge =
+                      key === 'members'
+                        ? members.length || undefined
+                        : key === 'sabha'
+                          ? messages.length || undefined
+                          : key === 'vansh'
+                            ? familyMembers.length || undefined
+                            : key === 'events'
+                              ? upcomingEvents.length || undefined
+                              : undefined;
+
+                    return (
+                      <Link
+                        key={key}
+                        href={getKulSectionHref(key)}
+                        className="flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 hover:bg-white/70 transition"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="clay-icon-well text-base flex-shrink-0">{meta.emoji}</div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-gray-900">{meta.label}</p>
+                            <p className="text-xs text-gray-500 truncate">{meta.eyebrow}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          {badge != null && badge > 0 ? (
+                            <span className="px-2 py-1 rounded-full text-[10px] font-bold text-white" style={{ background: 'var(--brand-primary)' }}>
+                              {badge > 99 ? '99+' : badge}
+                            </span>
+                          ) : null}
+                          <ChevronRight size={16} className="text-gray-400" />
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

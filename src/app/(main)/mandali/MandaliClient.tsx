@@ -780,8 +780,12 @@ function PostCard({ post, userId, upvoted, onUpvote, onHideContent, onHideAuthor
 export default function MandaliClient({ profile, posts: initialPosts, members, userId, blendedPosts = [] }: Props) {
   const router   = useRouter();
   const supabase = createClient();
+  const initialEventCount = initialPosts.filter((post) => post.type === 'event').length;
+  const initialVichaarCount = initialPosts.filter((post) => post.type !== 'event').length;
 
-  const [activeTab,       setActiveTab]       = useState<'members' | 'events' | 'vichaar'>('members');
+  const [activeTab,       setActiveTab]       = useState<'members' | 'events' | 'vichaar'>(
+    initialVichaarCount > 0 ? 'vichaar' : initialEventCount > 0 ? 'events' : 'members'
+  );
   const [posts,           setPosts]           = useState(initialPosts);
   const [widerPosts,      setWiderPosts]      = useState(blendedPosts);
   const [visibleMembers,  setVisibleMembers]  = useState(members);
@@ -797,6 +801,36 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
 
   const mandali    = profile?.mandalis;
   const eventCount = posts.filter((p) => p.type === 'event').length;
+  const vichaarCount = posts.filter((p) => p.type !== 'event').length;
+  const neighbourhoodLabel = (profile as any)?.neighbourhood
+    ? `${(profile as any).neighbourhood} Mandali`
+    : mandali?.name ?? 'Your Mandali';
+  const placeLabel = (profile as any)?.neighbourhood
+    ? `${(profile as any).neighbourhood}, ${mandali?.city ?? profile?.city ?? ''}`
+    : mandali
+      ? `${mandali.city}, ${mandali.country}`
+      : profile?.city ?? '';
+  const primaryMandaliAction =
+    eventCount > 0
+      ? {
+          label: 'See upcoming events',
+          hint: `${eventCount} local event${eventCount === 1 ? '' : 's'} waiting`,
+          onClick: () => setActiveTab('events' as const),
+          icon: <Calendar size={16} className="text-gray-500" />,
+        }
+      : vichaarCount > 0
+        ? {
+            label: 'Join today’s Vichaar',
+            hint: `${vichaarCount} local conversation${vichaarCount === 1 ? '' : 's'}`,
+            onClick: () => setActiveTab('vichaar' as const),
+            icon: <MessageSquare size={16} className="text-gray-500" />,
+          }
+        : {
+            label: 'Meet your Mandali',
+            hint: `${visibleMembers.length} member${visibleMembers.length === 1 ? '' : 's'} nearby`,
+            onClick: () => setActiveTab('members' as const),
+            icon: <Users size={16} className="text-gray-500" />,
+          };
 
   function hideContentFromView(contentId: string) {
     setPosts((current) => current.filter((post) => post.id !== contentId));
@@ -878,22 +912,16 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
             <div className="flex items-center gap-2 mb-1">
               <Users size={16} className="text-white/80" />
               <span className="font-display font-bold text-lg">
-                {/* Show neighbourhood-level name if available */}
-                {(profile as any)?.neighbourhood
-                  ? `${(profile as any).neighbourhood} Mandali`
-                  : mandali?.name ?? 'Your Mandali'}
+                {neighbourhoodLabel}
               </span>
             </div>
             <div className="flex items-center gap-1 text-white/70 text-sm">
               <MapPin size={12} />
-              <span>
-                {(profile as any)?.neighbourhood
-                  ? `${(profile as any).neighbourhood}, ${mandali?.city ?? profile?.city ?? ''}`
-                  : mandali
-                  ? `${mandali.city}, ${mandali.country}`
-                  : profile?.city ?? ''}
-              </span>
+              <span>{placeLabel}</span>
             </div>
+            <p className="text-white/75 text-sm mt-3 max-w-xl leading-relaxed">
+              Your local Sangam should feel like a warm room, not a feed. Start with the one thing that matters right now, then move deeper.
+            </p>
           </div>
           <div className="text-right">
             <div className="font-bold text-2xl">{visibleMembers.length}</div>
@@ -940,6 +968,39 @@ export default function MandaliClient({ profile, posts: initialPosts, members, u
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-[1.25fr_0.95fr]">
+        <button
+          type="button"
+          onClick={primaryMandaliAction.onClick}
+          className="glass-panel rounded-[1.7rem] p-4 text-left transition hover:bg-white/85"
+        >
+          <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">Start here</p>
+          <div className="flex items-start justify-between gap-3 mt-3">
+            <div>
+              <p className="text-sm font-semibold text-gray-900">{primaryMandaliAction.label}</p>
+              <p className="text-sm text-gray-500 mt-1 leading-relaxed">{primaryMandaliAction.hint}</p>
+            </div>
+            <div className="clay-icon-well flex-shrink-0">{primaryMandaliAction.icon}</div>
+          </div>
+        </button>
+
+        <div className="glass-panel rounded-[1.7rem] p-4">
+          <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">Local pulse</p>
+          <div className="grid grid-cols-3 gap-2 mt-3">
+            {[
+              { label: 'Members', value: visibleMembers.length },
+              { label: 'Events', value: eventCount },
+              { label: 'Vichaar', value: vichaarCount },
+            ].map((item) => (
+              <div key={item.label} className="rounded-[1.1rem] bg-white/72 border border-white/80 px-3 py-3 text-center">
+                <p className="font-display font-bold text-xl" style={{ color: 'var(--brand-primary-strong)' }}>{item.value}</p>
+                <p className="text-[10px] uppercase tracking-[0.16em] text-gray-400 font-semibold mt-1">{item.label}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
