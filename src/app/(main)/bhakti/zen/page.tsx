@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { BHAKTI_MANTRAS } from '@/lib/bhakti-practice';
 
 const DURATIONS = [12, 24, 48];
 
@@ -34,6 +35,7 @@ function formatClock(seconds: number) {
 export default function ZenModePage() {
   const [mode, setMode] = useState<(typeof MODES)[number]['id']>('reading');
   const [duration, setDuration] = useState(24);
+  const [chantMantra, setChantMantra] = useState<string>(BHAKTI_MANTRAS[0].value);
   const [remaining, setRemaining] = useState(duration * 60);
   const [running, setRunning] = useState(false);
   const intervalRef = useRef<number | null>(null);
@@ -131,6 +133,24 @@ export default function ZenModePage() {
             </button>
           ))}
         </div>
+
+        {mode === 'chant' ? (
+          <div className="mt-5 rounded-[1.5rem] border border-[rgba(200,127,146,0.18)] bg-white/80 px-4 py-4 text-left">
+            <p className="text-sm font-semibold text-gray-900">Chant focus</p>
+            <select
+              value={chantMantra}
+              onChange={(event) => setChantMantra(event.target.value)}
+              className="mt-3 w-full rounded-xl border border-[rgba(200,127,146,0.18)] bg-white px-4 py-3 text-sm outline-none"
+            >
+              {BHAKTI_MANTRAS.map((item) => (
+                <option key={item.value} value={item.value}>{item.value}</option>
+              ))}
+            </select>
+            <p className="mt-3 text-sm leading-relaxed text-gray-600">
+              Stay with one mantra, one breath, and one pace. Rights-safe chant audio comes after the shared Bhakti audio layer is ready.
+            </p>
+          </div>
+        ) : null}
 
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <button

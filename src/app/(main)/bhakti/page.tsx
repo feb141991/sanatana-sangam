@@ -72,17 +72,22 @@ export default function BhaktiPage() {
           <div className="mt-4 space-y-3">
             <Link href="/bhakti/zen" className="block rounded-[1.4rem] border border-[color:var(--brand-primary-soft)] bg-white/80 px-4 py-4 transition hover:bg-white">
               <p className="text-sm font-semibold text-gray-900">Zen mode</p>
-              <p className="mt-1 text-sm text-gray-600">A calmer reading and focus surface.</p>
+              <p className="mt-1 text-sm text-gray-600">A calmer reading, breath, and chant surface.</p>
             </Link>
             <Link href="/bhakti/mala" className="block rounded-[1.4rem] border border-[color:var(--brand-primary-soft)] bg-white/80 px-4 py-4 transition hover:bg-white">
               <p className="text-sm font-semibold text-gray-900">Mala mode</p>
-              <p className="mt-1 text-sm text-gray-600">Count, save, and revisit your japa sessions.</p>
+              <p className="mt-1 text-sm text-gray-600">Count, save, filter, and revisit your japa sessions.</p>
             </Link>
           </div>
-          <div className="mt-4 space-y-3 text-sm text-gray-700">
-            <p>Pathshala for study.</p>
-            <p>Panchang for sacred time.</p>
-            <p>Kul for family devotion later.</p>
+          <div className="mt-4 grid gap-3">
+            <div className="rounded-[1.2rem] border border-[color:var(--brand-primary-soft)] bg-white/75 px-4 py-4">
+              <p className="text-sm font-semibold text-gray-900">Return loop</p>
+              <p className="mt-1 text-sm text-gray-600">Read in Pathshala, sit in Zen, count in Mala, and come back gently tomorrow.</p>
+            </div>
+            <div className="rounded-[1.2rem] border border-[color:var(--brand-primary-soft)] bg-white/75 px-4 py-4">
+              <p className="text-sm font-semibold text-gray-900">Audio direction</p>
+              <p className="mt-1 text-sm text-gray-600">Rights-safe chant support comes first here, while authoritative Gita audio remains a separate trust-first lane.</p>
+            </div>
           </div>
           <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-[color:var(--brand-primary-soft)] bg-white/70 px-4 py-2 text-sm font-medium text-[color:var(--brand-primary-strong)]">
             Coming in a deeper devotional release

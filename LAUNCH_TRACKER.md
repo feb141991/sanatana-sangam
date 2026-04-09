@@ -96,6 +96,7 @@ Last updated: 2026-04-09
 - [ ] Add a focused Howler-backed Pathshala audio layer later for recitation and guided reading, not generic app-wide UI sounds
 - [x] Define `Zen mode` as a distraction-light reading and recitation surface for launch-facing Pathshala use
 - [x] Define `Mala mode` as an elder-friendly japa tracker with large controls, session history, shareable progress, and optional rights-safe chant support
+- [x] Deepen `Mala mode` with session filters, share-card copy, and a clearer return rhythm so Bhakti feels usable day to day
 - [x] Ship the first live Bhakti practice slice with dedicated `Zen` and `Mala` routes instead of leaving both modes as planning-only ideas
 - [ ] Curate a rights-safe devotional audio starter pack for launch: mantra/chant clips first, then selective bhajan/kirtan where reuse terms are clear
 - [x] Add first Kul family-profile viewing inside the family space so members can open each other’s Kul-safe details

@@ -306,6 +306,7 @@ Current slice:
 
 - `/bhakti/zen` now provides a calmer focus timer for reading, breath, and chant sessions
 - `/bhakti/mala` now provides a large-tap japa tracker with saveable session history and basic sharing
+- the next Bhakti depth pass now adds a clearer return loop: filtered Mala history, stronger share text, mantra continuity, and a more intentional chant posture inside Zen
 
 - AI now receives an internal reference pack from Library matches
 - the UI now shows whether a reply is `Source-guided` or `Reflective guidance`

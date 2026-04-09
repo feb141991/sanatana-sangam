@@ -2,17 +2,10 @@
 
 import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
+import clsx from 'clsx';
 import { createClient } from '@/lib/supabase';
+import { BHAKTI_MANTRAS, buildMalaShareText, MALA_TARGETS } from '@/lib/bhakti-practice';
 import type { MalaSession } from '@/types/database';
-
-const MANTRAS = [
-  { value: 'Om Namah Shivaya', source: 'Public-domain mantra tradition' },
-  { value: 'Hare Krishna Maha Mantra', source: 'Public-domain mantra tradition' },
-  { value: 'Sri Ram Jai Ram Jai Jai Ram', source: 'Public-domain mantra tradition' },
-  { value: 'Gayatri Mantra', source: 'Traditional chant source required for audio later' },
-];
-
-const TARGETS = [27, 54, 108];
 
 function sameLocalDay(a: Date, b: Date) {
   return a.getFullYear() === b.getFullYear()
@@ -56,9 +49,15 @@ function calculateStreak(sessions: MalaSession[]) {
   return streak;
 }
 
+function formatShareScope(scope: MalaSession['share_scope']) {
+  if (scope === 'kul') return 'Kul later';
+  if (scope === 'public') return 'Profile later';
+  return 'Private';
+}
+
 export default function MalaClient({ userId, initialSessions }: { userId: string; initialSessions: MalaSession[]; }) {
   const supabase = createClient();
-  const [mantra, setMantra] = useState(MANTRAS[0].value);
+  const [mantra, setMantra] = useState<string>(BHAKTI_MANTRAS[0].value);
   const [target, setTarget] = useState(108);
   const [count, setCount] = useState(0);
   const [notes, setNotes] = useState('');
@@ -66,6 +65,8 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [sessions, setSessions] = useState(initialSessions);
+  const [historyMantra, setHistoryMantra] = useState<'all' | string>('all');
+  const [historyRange, setHistoryRange] = useState<'7d' | '30d' | 'all'>('7d');
 
   const progress = Math.min(100, Math.round((count / target) * 100));
   const streak = useMemo(() => calculateStreak(sessions), [sessions]);
@@ -77,6 +78,24 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
   );
   const totalSessions = sessions.length;
   const lastSession = sessions[0] ?? null;
+  const totalMalas = useMemo(
+    () => sessions.reduce((sum, session) => sum + (session.target_count ? session.count / session.target_count : 0), 0),
+    [sessions]
+  );
+  const filteredSessions = useMemo(() => {
+    return sessions.filter((session) => {
+      const byMantra = historyMantra === 'all' || session.mantra === historyMantra;
+      if (!byMantra) return false;
+      if (historyRange === 'all') return true;
+      const windowMs = historyRange === '7d' ? 7 * 24 * 60 * 60 * 1000 : 30 * 24 * 60 * 60 * 1000;
+      return Date.now() - new Date(session.completed_at).getTime() < windowMs;
+    });
+  }, [historyMantra, historyRange, sessions]);
+  const filteredCountTotal = useMemo(
+    () => filteredSessions.reduce((sum, session) => sum + session.count, 0),
+    [filteredSessions]
+  );
+  const suggestedMantra = lastSession?.mantra ?? BHAKTI_MANTRAS[0].value;
 
   function tapBead() {
     if (!startedAt) setStartedAt(Date.now());
@@ -92,7 +111,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
 
     setSaving(true);
     const durationSeconds = startedAt ? Math.round((Date.now() - startedAt) / 1000) : 0;
-    const selectedSource = MANTRAS.find((item) => item.value === mantra)?.source ?? null;
+    const selectedSource = BHAKTI_MANTRAS.find((item) => item.value === mantra)?.source ?? null;
     const { data, error } = await supabase
       .from('mala_sessions')
       .insert({
@@ -123,7 +142,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
   }
 
   async function shareSummary() {
-    const text = `I completed ${count}/${target} japa on ${mantra} in Sanatana Sangam.`;
+    const text = buildMalaShareText({ mantra, count, target, streak });
     if (navigator.share) {
       await navigator.share({ text });
     } else {
@@ -175,6 +194,27 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
               </p>
             </div>
           </div>
+          <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+            <div className="rounded-[1.5rem] border border-[rgba(200,127,146,0.18)] bg-white/75 px-4 py-4">
+              <p className="text-sm font-semibold text-gray-900">Practice abundance</p>
+              <p className="mt-2 text-sm text-gray-600">
+                {totalSessions > 0
+                  ? `${Math.round(totalMalas * 10) / 10} malas saved across ${totalSessions} sessions.`
+                  : 'Your first saved mala becomes the start of your return rhythm.'}
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setMantra(suggestedMantra);
+                setTarget(lastSession?.target_count ?? 108);
+                setNotes(lastSession?.notes ?? '');
+              }}
+              className="glass-button-secondary rounded-[1.5rem] px-5 py-4 text-sm font-semibold"
+              style={{ color: 'var(--brand-primary-strong)' }}
+            >
+              Continue with {suggestedMantra}
+            </button>
+          </div>
         </div>
       </section>
 
@@ -186,14 +226,14 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
             onChange={(event) => setMantra(event.target.value)}
             className="w-full rounded-xl border border-[rgba(200,127,146,0.18)] bg-white px-4 py-3 text-sm outline-none"
           >
-            {MANTRAS.map((item) => (
+            {BHAKTI_MANTRAS.map((item) => (
               <option key={item.value} value={item.value}>{item.value}</option>
             ))}
           </select>
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {TARGETS.map((value) => (
+          {MALA_TARGETS.map((value) => (
             <button
               key={value}
               onClick={() => setTarget(value)}
@@ -285,13 +325,67 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
       <section className="glass-panel rounded-[2rem] px-5 py-5">
         <div className="flex items-center justify-between gap-3">
           <h2 className="font-display text-xl font-bold text-gray-900">Recent sessions</h2>
-          <p className="text-xs text-gray-500">{sessions.length} saved</p>
+          <p className="text-xs text-gray-500">{filteredSessions.length} shown</p>
+        </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-[1fr_180px_180px]">
+          <div className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/80 px-4 py-4">
+            <p className="text-sm font-semibold text-gray-900">Share card preview</p>
+            <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              {buildMalaShareText({
+                mantra,
+                count: count || lastSession?.count || 0,
+                target,
+                streak,
+              })}
+            </p>
+          </div>
+          <select
+            value={historyMantra}
+            onChange={(event) => setHistoryMantra(event.target.value)}
+            className="rounded-xl border border-[rgba(200,127,146,0.18)] bg-white px-4 py-3 text-sm outline-none"
+          >
+            <option value="all">All mantras</option>
+            {BHAKTI_MANTRAS.map((item) => (
+              <option key={item.value} value={item.value}>{item.value}</option>
+            ))}
+          </select>
+          <div className="flex rounded-xl border border-[rgba(200,127,146,0.18)] bg-white p-1">
+            {(['7d', '30d', 'all'] as const).map((value) => (
+              <button
+                key={value}
+                onClick={() => setHistoryRange(value)}
+                className={clsx(
+                  'flex-1 rounded-lg px-3 py-2 text-sm font-medium transition',
+                  historyRange === value ? 'text-white' : 'text-gray-600'
+                )}
+                style={historyRange === value ? { background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' } : undefined}
+              >
+                {value === '7d' ? '7 days' : value === '30d' ? '30 days' : 'All'}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <div className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/75 px-4 py-4">
+            <p className="text-sm font-semibold text-gray-900">Filtered count</p>
+            <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{filteredCountTotal}</p>
+          </div>
+          <div className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/75 px-4 py-4">
+            <p className="text-sm font-semibold text-gray-900">Sessions</p>
+            <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{filteredSessions.length}</p>
+          </div>
+          <div className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/75 px-4 py-4">
+            <p className="text-sm font-semibold text-gray-900">Return note</p>
+            <p className="mt-2 text-sm text-gray-600">
+              {historyRange === '7d' ? 'Use this view to keep a weekly rhythm.' : historyRange === '30d' ? 'This window shows your broader devotional consistency.' : 'A fuller archive of your saved practice.'}
+            </p>
+          </div>
         </div>
         <div className="mt-4 space-y-3">
-          {sessions.length === 0 ? (
+          {filteredSessions.length === 0 ? (
             <p className="text-sm text-gray-500">Your saved mala sessions will appear here.</p>
           ) : (
-            sessions.map((session) => (
+            filteredSessions.map((session) => (
               <div key={session.id} className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/80 px-4 py-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -304,6 +398,14 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
                   <p className="font-display text-2xl font-bold text-[color:var(--brand-primary-strong)]">
                     {session.count}
                   </p>
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-[var(--brand-primary-soft)] px-3 py-1 text-[11px] font-semibold text-[color:var(--brand-primary-strong)]">
+                    {session.target_count ? `${session.count}/${session.target_count}` : `${session.count}`}
+                  </span>
+                  <span className="rounded-full border border-[rgba(200,127,146,0.18)] bg-white px-3 py-1 text-[11px] font-semibold text-gray-600">
+                    {formatShareScope(session.share_scope)}
+                  </span>
                 </div>
                 {session.notes ? <p className="mt-2 text-sm text-gray-600">{session.notes}</p> : null}
               </div>
