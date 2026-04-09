@@ -71,6 +71,18 @@ export default async function GuestPage() {
 
         <div className="grid gap-3 sm:grid-cols-3">
           {[
+            'Read real questions before making an account.',
+            'Find mandirs and sacred places right away.',
+            'Join only when you want family space, reminders, and participation.',
+          ].map((item) => (
+            <div key={item} className="rounded-full bg-white/70 px-4 py-2 text-sm text-gray-700 border border-white/70">
+              {item}
+            </div>
+          ))}
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-3">
+          {[
             {
               eyebrow: 'Browse',
               title: 'Read before committing',
@@ -133,6 +145,9 @@ export default async function GuestPage() {
             Sign in
           </Link>
         </div>
+        <p className="text-xs text-gray-400">
+          Guest mode stays intentionally calm: read and discover first, then join when you want to participate.
+        </p>
       </section>
 
       <section className="grid gap-3 sm:grid-cols-2">

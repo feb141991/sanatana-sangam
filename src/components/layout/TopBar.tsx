@@ -269,10 +269,17 @@ export default function TopBar({
                       }}
                     >
                       {notifs.length === 0 ? (
-                        <div className="px-4 py-8 text-center">
-                          <p className="text-3xl mb-2">🪔</p>
-                          <p className="text-sm font-medium text-gray-700">All quiet for now</p>
-                          <p className="text-xs text-gray-400 mt-1">Festival reminders and Mandali updates will appear here</p>
+                        <div className="px-4 py-8 text-center space-y-3">
+                          <p className="text-3xl">🪔</p>
+                          <div>
+                            <p className="text-sm font-medium text-gray-700">All quiet for now</p>
+                            <p className="text-xs text-gray-400 mt-1">
+                              Festival reminders, Pathshala nudges, and Mandali updates will gather here gently.
+                            </p>
+                          </div>
+                          <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--brand-primary-soft)] bg-white/70 px-3 py-1.5 text-[11px] font-medium text-[color:var(--brand-primary-strong)]">
+                            Check back in the evening for sacred-time reminders
+                          </div>
                         </div>
                       ) : (
                         notifs.map((n) => (

@@ -24,6 +24,17 @@ export default async function JoinPage({
           A friend has invited you to explore community, scriptures, bhakti, and local sangam.
         </p>
 
+        <div className="flex flex-wrap justify-center gap-2 mb-6">
+          {['Invitation-led', 'Guest access available', 'Join free'].map((item) => (
+            <span
+              key={item}
+              className="rounded-full border border-white/70 bg-white/70 px-3 py-1 text-xs font-medium text-gray-700"
+            >
+              {item}
+            </span>
+          ))}
+        </div>
+
         <div className="grid gap-3 mb-6">
           {[
             {
