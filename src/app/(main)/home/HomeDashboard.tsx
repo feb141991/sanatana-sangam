@@ -979,6 +979,22 @@ export default function HomeDashboard({
               description="Count japa, save a session, and return gently through the week."
               tone="soft"
             />
+            <FocusActionCard
+              href="/bhakti/zen"
+              icon="🪷"
+              eyebrow="Quiet focus"
+              title="Enter Zen mode"
+              description="A calmer space for reading, breath, and simple chant sessions."
+              tone="soft"
+            />
+            <FocusActionCard
+              href="/bhakti"
+              icon="🎶"
+              eyebrow="Devotional space"
+              title="Open Bhakti"
+              description="Keep Mala, Zen, and the next devotional return paths together in one place."
+              tone="soft"
+            />
           </div>
         </div>
       </section>

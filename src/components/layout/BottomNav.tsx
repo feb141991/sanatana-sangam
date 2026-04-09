@@ -19,9 +19,9 @@ export default function BottomNav({ libraryLabel = 'Pathshala', isGuest = false 
   const memberNavItems = [
     { href: '/home',       label: 'Home',        icon: Home     },
     { href: '/library',    label: libraryLabel,   icon: BookOpen },
+    { href: '/bhakti',     label: 'Bhakti',      icon: Sparkles },
     { href: '/kul',        label: 'Kul',          icon: Heart    },
     { href: '/mandali',    label: 'Mandali',      icon: Users    },
-    { href: '/ai-chat',    label: 'AI',           icon: Sparkles },
     { href: '/tirtha-map', label: 'Tirtha',       icon: MapPin   },
   ];
   const guestNavItems = [
