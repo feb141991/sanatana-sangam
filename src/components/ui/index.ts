@@ -1,13 +1,8 @@
 export * from './Badge';
 export * from './Button';
-export { default as Card } from './Card';
-export { default as Chip } from './Chip';
+export * from './Card';
 export * from './EmptyState';
-export { default as IconSquare } from './IconSquare';
 export * from './Input';
-export { default as MetricCard } from './MetricCard';
-export { default as PillNav } from './PillNav';
-export { default as ProgressRing } from './ProgressRing';
 export * from './SectionHeading';
 export * from './Skeleton';
 export * from './Spinner';

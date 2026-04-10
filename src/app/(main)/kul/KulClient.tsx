@@ -11,7 +11,6 @@ import {
   Check, ClipboardList, Share2,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
-import MvpHero from '@/components/layout/MvpHero';
 import { getInitials } from '@/lib/utils';
 import type { KulSectionView } from './sections';
 
@@ -1263,47 +1262,59 @@ function KulHubView({
 
   return (
     <div className="space-y-4">
-      <div className="space-y-3">
-        <MvpHero
-          theme="kul"
-          title={kul.name}
-          description="Family practice, tasks, dates, and shared memory in one calmer home."
-          chips={['Kul Home', kul.invite_code]}
-          actions={
-            myRole === 'guardian' ? (
-              <button
-                onClick={() => { setNewKulName(kul.name); setEditingName(true); }}
-                className="inline-flex items-center gap-1 rounded-full border border-black/5 bg-white/92 px-3 py-1.5 text-xs font-semibold text-[color:var(--brand-primary-strong)]"
-              >
-                Edit name <Pencil size={12} />
-              </button>
-            ) : undefined
-          }
-        />
-        {editingName && myRole === 'guardian' ? (
-          <div className="glass-panel rounded-[1.4rem] p-3 flex items-center gap-2">
-            <input
-              autoFocus
-              value={newKulName}
-              onChange={(e) => setNewKulName(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') saveKulName(); if (e.key === 'Escape') setEditingName(false); }}
-              maxLength={40}
-              className="flex-1 font-display font-bold text-gray-900 text-lg leading-tight border-b-2 outline-none bg-transparent"
-              style={{ borderColor: 'var(--brand-primary)' }}
-            />
-            <button
-              onClick={saveKulName}
-              disabled={savingName}
-              className="w-8 h-8 rounded-xl flex items-center justify-center text-white disabled:opacity-50"
-              style={{ background: 'var(--brand-primary)' }}>
-              {savingName ? <span className="text-[10px]">…</span> : <Check size={14} />}
-            </button>
-            <button onClick={() => setEditingName(false)}
-              className="w-8 h-8 rounded-xl flex items-center justify-center bg-white/75 border border-white/70">
-              <X size={14} className="text-gray-500" />
-            </button>
+      <div className="clay-card rounded-[2rem] p-5 sm:p-6">
+        <div className="flex items-start gap-4">
+          <div className="w-16 h-16 rounded-[1.4rem] flex items-center justify-center text-3xl flex-shrink-0"
+            style={{ background: 'linear-gradient(135deg, rgba(31, 107, 114, 0.16), rgba(195, 135, 47, 0.18))' }}>
+            {kul.avatar_emoji}
           </div>
-        ) : null}
+          <div className="flex-1 min-w-0">
+            {editingName && myRole === 'guardian' ? (
+              <div className="flex items-center gap-2">
+                <input
+                  autoFocus
+                  value={newKulName}
+                  onChange={(e) => setNewKulName(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') saveKulName(); if (e.key === 'Escape') setEditingName(false); }}
+                  maxLength={40}
+                  className="flex-1 font-display font-bold text-gray-900 text-xl leading-tight border-b-2 outline-none bg-transparent"
+                  style={{ borderColor: 'var(--brand-primary)' }}
+                />
+                <button
+                  onClick={saveKulName}
+                  disabled={savingName}
+                  className="w-8 h-8 rounded-xl flex items-center justify-center text-white disabled:opacity-50"
+                  style={{ background: 'var(--brand-primary)' }}>
+                  {savingName ? <span className="text-[10px]">…</span> : <Check size={14} />}
+                </button>
+                <button onClick={() => setEditingName(false)}
+                  className="w-8 h-8 rounded-xl flex items-center justify-center bg-white/75 border border-white/70">
+                  <X size={14} className="text-gray-500" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <h1 className="font-display font-bold text-gray-900 text-2xl leading-tight truncate">{kul.name}</h1>
+                {myRole === 'guardian' && (
+                  <button
+                    onClick={() => { setNewKulName(kul.name); setEditingName(true); }}
+                    className="w-7 h-7 rounded-lg flex items-center justify-center bg-white/75 border border-white/70 hover:bg-white transition flex-shrink-0"
+                    title="Rename Kul">
+                    <Pencil size={12} className="text-gray-500" />
+                  </button>
+                )}
+              </div>
+            )}
+            <p className="text-[11px] uppercase tracking-[0.18em] font-semibold mt-1" style={{ color: 'rgba(22, 77, 84, 0.72)' }}>
+              Kul Home
+            </p>
+          </div>
+          <div className="px-3 py-2 rounded-2xl border text-xs font-bold tracking-widest hidden sm:block"
+            style={{ borderColor: 'rgba(31, 107, 114, 0.24)', color: 'var(--brand-primary)' }}>
+            {kul.invite_code}
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
           {[
             { label: 'Members', value: members.length, hint: 'Open', href: '/kul/members' },

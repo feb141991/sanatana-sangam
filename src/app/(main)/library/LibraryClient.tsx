@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Search, BookOpen } from 'lucide-react';
 import {
   PATHSHALA_TRADITIONS,
   getEntriesByTradition,
@@ -10,9 +9,6 @@ import {
 import { getPathshalaTraditionHref } from '@/lib/pathshala-links';
 import type { PathshalaStudySummary } from '@/lib/pathshala-state';
 import { MotionFade, MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
-import Chip from '@/components/ui/Chip';
-import IconSquare from '@/components/ui/IconSquare';
-import PillNav from '@/components/ui/PillNav';
 
 export default function LibraryClient({
   defaultSection = 'gita',
@@ -24,50 +20,30 @@ export default function LibraryClient({
   bookmarkedEntries?: PathshalaStudySummary[];
 }) {
   const preferredTradition = getLibrarySectionById(defaultSection)?.tradition ?? 'hindu';
-  const topNavValue: 'gita' | 'upanishad' | 'stotram' =
-    preferredTradition === 'hindu' ? 'gita' : preferredTradition === 'sikh' ? 'stotram' : 'upanishad';
 
   return (
     <MotionFade className="space-y-3 pb-6 fade-in">
-      <div className="flex items-center justify-between px-1 pb-3">
-        <p className="text-xl font-medium">Shastra</p>
-        <Search size={16} className="text-gray-400" />
+      <div className="glass-panel rounded-[1.6rem] px-4 py-4 sm:rounded-[1.8rem] sm:px-5 sm:py-5">
+        <div>
+          <h1 className="font-display font-bold text-xl text-gray-900 mt-1">Parampara Pathshala</h1>
+          <p className="hidden sm:block text-sm text-gray-600 mt-1 leading-relaxed">Choose a tradition and enter one track at a time.</p>
+        </div>
       </div>
-
-      <PillNav
-        value={topNavValue}
-        onChange={() => {}}
-        items={[
-          { value: 'gita', label: 'Gita' },
-          { value: 'upanishad', label: 'Upanishad' },
-          { value: 'stotram', label: 'Stotram' },
-        ]}
-      />
 
       {(continueLearning || bookmarkedEntries.length > 0) && (
         <section className="space-y-3">
-          <p className="text-[13px] font-medium text-gray-500 mb-2">Continue reading</p>
 
           {continueLearning && (
-            <Link href={continueLearning.href} className="surface-panel block px-4 py-4 hover:-translate-y-0.5 transition active:scale-[0.97]">
-              <div className="flex items-start gap-3.5">
-                <IconSquare className="h-16 w-[52px] rounded-[8px]">
-                  <BookOpen size={18} />
-                </IconSquare>
+            <Link href={continueLearning.href} className="glass-panel rounded-[1.6rem] px-4 py-4 border border-white/70 block hover:-translate-y-0.5 transition">
+              <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-[15px] font-medium text-gray-900">{continueLearning.title}</p>
-                  <p className="text-[11px] text-gray-400 mt-0.5">{continueLearning.sectionTitle} · {continueLearning.source}</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <div className="flex-1 h-[3px] rounded-full bg-black/10 min-w-[120px]">
-                      <div className="h-full rounded-full bg-[color:var(--saffron-200)]" style={{ width: '65%' }} />
-                    </div>
-                    <span className="text-[11px] text-[color:var(--saffron-400)]">47/72</span>
-                  </div>
-                  <div className="mt-3 flex gap-2">
-                    <Chip>Resume chapter 2</Chip>
-                    <Chip variant="outline">All chapters</Chip>
-                  </div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">Continue learning</p>
+                  <h2 className="font-display text-lg font-bold text-gray-900 mt-2">{continueLearning.title}</h2>
+                  <p className="text-sm text-gray-600 mt-1">{continueLearning.sectionTitle} · {continueLearning.source}</p>
                 </div>
+                <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">
+                  Resume →
+                </span>
               </div>
             </Link>
           )}
@@ -79,11 +55,11 @@ export default function LibraryClient({
                 <Link
                   key={entry.entryId}
                   href={entry.href}
-                  className="surface-card block px-4 py-4 hover:-translate-y-0.5 transition active:scale-[0.97]"
+                  className="clay-card rounded-[1.45rem] px-4 py-4 block hover:-translate-y-0.5 transition"
                 >
-                  <p className="text-[11px] text-[color:var(--text-tertiary)]">Bookmarked</p>
-                  <p className="font-medium text-gray-900 mt-2">{entry.title}</p>
-                  <p className="text-[14px] text-gray-600 mt-1">{entry.sectionTitle}</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">Bookmarked</p>
+                  <p className="font-semibold text-gray-900 mt-2">{entry.title}</p>
+                  <p className="text-sm text-gray-600 mt-1">{entry.sectionTitle}</p>
                 </Link>
                 </MotionItem>
               ))}
@@ -93,7 +69,6 @@ export default function LibraryClient({
       )}
 
       <section className="space-y-3">
-        <p className="text-[13px] font-medium text-gray-500 mb-2">Explore</p>
         <MotionStagger className="grid gap-3 sm:grid-cols-2" delay={0.06}>
           {PATHSHALA_TRADITIONS.map((tradition) => {
             const sections = getSectionsByTradition(tradition.id);
@@ -106,6 +81,7 @@ export default function LibraryClient({
                 key={tradition.id}
                 tradition={tradition.id}
                 label={tradition.label}
+                emoji={tradition.emoji}
                 description={tradition.description}
                 sections={sections.map((section) => section.title)}
                 entryCount={entryCount}
@@ -124,6 +100,7 @@ export default function LibraryClient({
 function TraditionGatewayCard({
   tradition,
   label,
+  emoji,
   description,
   sections,
   entryCount,
@@ -132,6 +109,7 @@ function TraditionGatewayCard({
 }: {
   tradition: LibraryTradition;
   label: string;
+  emoji: string;
   description: string;
   sections: string[];
   entryCount: number;
@@ -141,43 +119,40 @@ function TraditionGatewayCard({
   return (
     <Link
       href={getPathshalaTraditionHref(tradition)}
-      className={`text-left rounded-[16px] p-4 border transition block active:scale-[0.97] ${
-        isPreferred ? 'bg-[color:var(--saffron-50)] border-[color:var(--saffron-100)]' : 'bg-white hover:-translate-y-0.5'
+      className={`text-left rounded-[1.45rem] sm:rounded-[1.7rem] p-3.5 sm:p-4 border transition block ${
+        isPreferred ? 'clay-card border-[color:var(--brand-primary)]/20' : 'glass-panel hover:-translate-y-0.5'
       }`}
-      style={!isPreferred ? { borderColor: 'rgba(0,0,0,0.15)' } : undefined}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--saffron-50)] text-[color:var(--saffron-800)] text-sm font-medium">
-            {trackCount}
-          </div>
-          <h2 className="text-[16px] font-medium mt-2 text-gray-900">{label}</h2>
+          <p className="text-2xl">{emoji}</p>
+          <h2 className="font-display font-bold text-[15px] sm:text-base mt-2 text-gray-900">{label}</h2>
         </div>
         <div className="flex flex-col items-end gap-2">
           {isPreferred && (
-            <span className="glass-chip rounded-[24px] px-3 py-1 text-[12px] font-medium">
+            <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">
               Your path
             </span>
           )}
-          <span className="glass-chip px-3 py-1.5 rounded-[24px] text-[12px] font-medium">
+          <span className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-600">
             {trackCount} tracks
           </span>
         </div>
       </div>
 
-      <p className="hidden sm:block text-[14px] leading-relaxed mt-3 text-gray-600">{description}</p>
+      <p className="hidden sm:block text-sm leading-relaxed mt-3 text-gray-600">{description}</p>
 
       <div className="hidden sm:flex flex-wrap gap-2 mt-4">
         {sections.slice(0, 4).map((section) => (
-          <span key={section} className="glass-chip px-3 py-1.5 rounded-[24px] text-[12px] font-medium">
+          <span key={section} className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-600">
             {section}
           </span>
         ))}
       </div>
 
       <div className="flex items-center justify-between gap-3 mt-3 sm:mt-4">
-        <p className="text-[12px] text-gray-500">{entryCount} passages</p>
-        <p className="text-[12px] font-medium text-[color:var(--saffron-800)]">Open Pathshala</p>
+        <p className="text-xs text-gray-500">{entryCount} passages</p>
+        <p className="text-xs font-semibold text-[color:var(--brand-primary)]">Open Pathshala →</p>
       </div>
     </Link>
   );

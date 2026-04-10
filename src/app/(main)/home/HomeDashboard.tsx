@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { MapPin, ChevronDown, ChevronUp, Share2, CalendarDays, X, ChevronLeft, ChevronRight, Pencil, BookOpen, CircleDot, Headphones, LocateFixed } from 'lucide-react';
+import { MapPin, ChevronDown, ChevronUp, Share2, CalendarDays, X, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
 import {
@@ -24,7 +24,6 @@ import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
 import { APP } from '@/lib/config';
 import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
-import ProgressRing from '@/components/ui/ProgressRing';
 
 interface Panchang {
   tithi:     string;
@@ -41,6 +40,14 @@ interface SacredTextMeta {
   shareLabel:   string;   // used in share sheet title
   accentColour: string;   // hex
   accentLight:  string;   // light tint hex
+}
+
+interface FeatureTheme {
+  surface: string;
+  border: string;
+  iconWell: string;
+  accent: string;
+  accentStrong: string;
 }
 
 interface Props {
@@ -68,6 +75,58 @@ interface Props {
   guidedPathProgress: GuidedPathProgressRow[];
   showFirstTimeGuidance: boolean;
 }
+
+const quickAccessItems = [
+  { label: 'Tirtha', icon: '🛕', href: '/tirtha-map', desc: 'Find sacred places near you', theme: 'tirtha' },
+  { label: 'Mandali', icon: '🏡', href: '/mandali', desc: 'Your local sangam', theme: 'mandali' },
+  { label: 'Kul', icon: '❤️', href: '/kul', desc: 'Family sadhana together', theme: 'kul' },
+  { label: 'Pathshala', icon: '📖', href: '/library', desc: 'Tradition-first study tracks', theme: 'pathshala' },
+];
+
+const HOME_THEMES: Record<string, FeatureTheme> = {
+  panchang: {
+    surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
+    border: 'rgba(212, 166, 70, 0.18)',
+    iconWell: 'rgba(212, 166, 70, 0.12)',
+    accent: 'var(--brand-primary)',
+    accentStrong: 'var(--brand-primary-strong)',
+  },
+  pathshala: {
+    surface: 'linear-gradient(135deg, rgba(54, 54, 50, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
+    border: 'rgba(212, 166, 70, 0.16)',
+    iconWell: 'rgba(212, 166, 70, 0.1)',
+    accent: 'var(--brand-primary)',
+    accentStrong: 'var(--brand-primary-strong)',
+  },
+  bhakti: {
+    surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
+    border: 'rgba(212, 166, 70, 0.16)',
+    iconWell: 'rgba(212, 166, 70, 0.1)',
+    accent: 'var(--brand-primary)',
+    accentStrong: 'var(--brand-primary-strong)',
+  },
+  kul: {
+    surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
+    border: 'rgba(138, 129, 82, 0.2)',
+    iconWell: 'rgba(138, 129, 82, 0.12)',
+    accent: 'var(--brand-secondary)',
+    accentStrong: 'var(--brand-primary-strong)',
+  },
+  mandali: {
+    surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
+    border: 'rgba(157, 133, 80, 0.18)',
+    iconWell: 'rgba(157, 133, 80, 0.12)',
+    accent: 'var(--brand-earth)',
+    accentStrong: 'var(--brand-primary-strong)',
+  },
+  tirtha: {
+    surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
+    border: 'rgba(212, 166, 70, 0.16)',
+    iconWell: 'rgba(212, 166, 70, 0.1)',
+    accent: 'var(--brand-primary)',
+    accentStrong: 'var(--brand-primary-strong)',
+  },
+};
 
 // ── Invite code — deterministic from userId (no DB needed) ─────────────────
 function generateInviteCode(userId: string): string {
@@ -110,22 +169,28 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
       exit={prefersReducedMotion ? undefined : { opacity: 0 }}
     >
       <motion.div
-        className="w-full bg-white rounded-t-3xl shadow-2xl p-6 space-y-5"
+        className="w-full rounded-t-3xl p-6 space-y-5"
         onClick={e => e.stopPropagation()}
+        style={{
+          background: 'linear-gradient(180deg, rgba(51, 51, 48, 0.98), rgba(43, 43, 40, 0.98))',
+          borderTop: '1px solid rgba(212, 166, 70, 0.18)',
+          boxShadow: '0 -18px 44px rgba(0, 0, 0, 0.32)',
+        }}
         initial={prefersReducedMotion ? undefined : { y: 28, opacity: 0.96 }}
         animate={prefersReducedMotion ? undefined : { y: 0, opacity: 1 }}
         exit={prefersReducedMotion ? undefined : { y: 18, opacity: 0.98 }}
         transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="flex items-center justify-between">
-          <h3 className="font-display font-bold text-gray-900">Invite Friends & Family</h3>
+          <h3 className="font-display font-bold text-[color:var(--brand-ink)]">Invite Friends & Family</h3>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-            <X size={16} className="text-gray-500" />
+            className="w-8 h-8 rounded-full flex items-center justify-center"
+            style={{ background: 'rgba(212, 166, 70, 0.08)' }}>
+            <X size={16} className="text-[color:var(--brand-muted)]" />
           </button>
         </div>
 
-        <p className="text-sm text-gray-500 leading-relaxed">
+        <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">
           Share Sanatana Sangam with your family and friends. They can use your invite code while joining.
         </p>
 
@@ -133,19 +198,19 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
         <div
           className="rounded-2xl p-5 text-center border"
           style={{
-            background: 'linear-gradient(135deg, rgba(243, 231, 226, 0.72), rgba(255, 255, 255, 0.96))',
-            borderColor: 'rgba(124, 58, 45, 0.12)',
+            background: 'linear-gradient(135deg, rgba(212, 166, 70, 0.12), rgba(51, 51, 48, 0.96))',
+            borderColor: 'rgba(212, 166, 70, 0.16)',
           }}
         >
-          <p className="text-xs text-gray-400 mb-2 font-medium uppercase tracking-wider">Your Invite Code</p>
+          <p className="text-xs text-[color:var(--brand-muted)] mb-2 font-medium uppercase tracking-wider">Your Invite Code</p>
           <p className="font-display font-bold text-3xl tracking-widest" style={{ color: 'var(--brand-primary-strong)' }}>{code}</p>
-          <p className="text-xs text-gray-400 mt-2">{link}</p>
+          <p className="text-xs text-[color:var(--brand-muted)] mt-2">{link}</p>
         </div>
 
         {/* Actions */}
         <div className="grid grid-cols-2 gap-3">
           <button onClick={share}
-            className="py-3 text-white font-semibold rounded-xl hover:opacity-90 transition text-sm"
+            className="py-3 font-semibold rounded-xl hover:opacity-90 transition text-sm text-[#1c1c1a]"
             style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}>
             Share 🙏
           </button>
@@ -156,14 +221,14 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
             className="py-3 font-semibold rounded-xl border transition text-sm"
             style={{
               color: 'var(--brand-primary)',
-              borderColor: 'rgba(124, 58, 45, 0.18)',
-              background: 'rgba(255,255,255,0.88)',
+              borderColor: 'rgba(212, 166, 70, 0.18)',
+              background: 'rgba(51, 51, 48, 0.88)',
             }}>
             Copy Code
           </button>
         </div>
 
-        <p className="text-xs text-center text-gray-400">
+        <p className="text-xs text-center text-[color:var(--brand-muted)]">
           🙏 Spread the light of dharma
         </p>
       </motion.div>
@@ -859,168 +924,57 @@ export default function HomeDashboard({
     }
   }
 
-  const readingHref = tradition === 'hindu' ? '/library/hindu/gita/recite' : '/library';
-  const tirthaLabel = displayCity ? `Sacred places near ${displayCity}` : 'Find sacred places near you';
+  const homeHeroTheme = HOME_THEMES.pathshala;
+  const panchangTheme = HOME_THEMES.panchang;
+  const sacredTextTheme = tradition === 'hindu' ? HOME_THEMES.pathshala : HOME_THEMES.bhakti;
 
   return (
-    <div className="space-y-5 pb-2 fade-in">
-      <section className="surface-panel px-5 py-5">
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <p className="text-[12px] text-[color:var(--text-tertiary)]">Welcome back</p>
-            <h1 className="mt-1 text-[22px] font-medium text-[color:var(--brand-ink)]">{greeting}, {userName.split(' ')[0]}</h1>
-            <p className="mt-2 text-[14px] text-[color:var(--text-secondary)]">
-              {displayCity ? `Practising from ${displayCity}.` : 'Return softly to sacred time and practice.'}
-            </p>
-          </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--saffron-50)] text-[color:var(--saffron-800)]">
-            {userName.slice(0, 1).toUpperCase()}
-          </div>
-        </div>
-      </section>
+    <div className="space-y-4 pb-2 fade-in">
 
-      <section className="surface-panel px-5 py-5">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-[12px] text-[color:var(--text-tertiary)]">Practice streak</p>
-            <p className="mt-1 text-[22px] font-medium text-[color:var(--saffron-800)]">{streak} day{streak === 1 ? '' : 's'}</p>
-            <p className="mt-2 text-[14px] text-[color:var(--text-secondary)]">
-              {readToday ? 'Today is already marked.' : 'Read today to keep the rhythm steady.'}
-            </p>
-          </div>
-          <ProgressRing
-            value={Math.min(streak, 21)}
-            max={21}
-            size={108}
-            center={<span className="text-[24px] font-medium text-[color:var(--saffron-800)]">{streak}</span>}
-            label="streak"
-          />
-        </div>
-      </section>
-
-      <section
-        ref={shlokaRef}
-        className="surface-panel px-5 py-5"
+      {/* ── Greeting ── */}
+      <div
+        className="surface-outline rounded-[1.9rem] px-4 py-4 sm:px-5 sm:py-5"
+        style={{ background: homeHeroTheme.surface, borderColor: homeHeroTheme.border }}
       >
-        <div className="flex items-center justify-between gap-3">
-          <span className="glass-chip rounded-[24px] px-3 py-1.5 text-[12px] font-medium">
-            {sacredTextMeta.label}
-          </span>
-          <div className="flex items-center gap-2">
-            <Link
-              href={readingHref}
-              className="inline-flex items-center gap-2 rounded-[24px] border border-[rgba(0,0,0,0.15)] px-3 py-1.5 text-[12px] font-medium text-[color:var(--saffron-800)] active:scale-[0.97]"
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <p
+              className="text-[10px] uppercase tracking-[0.22em] font-semibold"
+              style={{ color: homeHeroTheme.accent }}
             >
-              <Headphones size={14} />
-              Listen
-            </Link>
+              Home
+            </p>
             <button
-              onClick={shareShloka}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[color:var(--saffron-50)] text-[color:var(--saffron-800)] active:scale-[0.97]"
-              title={`Share ${sacredTextMeta.shareLabel}`}
+              onClick={() => setGreetingSheetOpen(true)}
+              className="group mt-1 -ml-1 rounded-2xl px-1 py-1 flex items-center gap-1.5 text-left transition"
             >
-              <Share2 size={14} />
+              <h1 className="font-display text-[1.45rem] sm:text-[1.65rem] font-bold text-gray-900 leading-tight">
+                {greeting}, {userName.split(' ')[0]}!
+              </h1>
+              <Pencil size={13} className="text-gray-300 group-hover:text-[color:var(--brand-primary)] transition flex-shrink-0 mt-1" />
             </button>
-          </div>
-        </div>
-
-        <p className="mt-4 font-devanagari text-[20px] leading-[1.7] text-[color:var(--saffron-900)] whitespace-pre-line">
-          {sacredText ? sacredText.original : shloka.sanskrit}
-        </p>
-        <p className="mt-3 text-[14px] italic leading-[1.7] text-[color:var(--text-secondary)] whitespace-pre-line">
-          {sacredText ? sacredText.transliteration : shloka.transliteration}
-        </p>
-
-        <div className="mt-4 flex items-center justify-between gap-3">
-          <button
-            onClick={() => setShlokaExpanded(!shlokaExpanded)}
-            className="inline-flex items-center gap-1 text-[13px] font-medium text-[color:var(--saffron-800)]"
-          >
-            {shlokaExpanded ? 'Hide meaning' : 'Show meaning'}
-            {shlokaExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          </button>
-          <button
-            onClick={markShlokaRead}
-            disabled={readToday}
-            className="rounded-[24px] px-4 py-2 text-[13px] font-medium active:scale-[0.97] disabled:opacity-60"
-            style={readToday ? { background: 'var(--saffron-50)', color: 'var(--saffron-800)' } : { background: 'var(--saffron-800)', color: '#fff' }}
-          >
-            {readToday ? 'Read today' : 'Mark as read'}
-          </button>
-        </div>
-
-        <AnimatePresence initial={false}>
-          {shlokaExpanded && (
-            <motion.div
-              className="mt-4 border-t pt-4"
-              style={{ borderColor: 'rgba(0, 0, 0, 0.15)' }}
-              initial={prefersReducedMotion ? undefined : { opacity: 0, y: 20 }}
-              animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-              exit={prefersReducedMotion ? undefined : { opacity: 0, y: 12 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <p className="text-[15px] leading-[1.65] text-[color:var(--brand-ink)]">
-                {sacredText ? sacredText.meaning : shloka.meaning}
+            <p className="text-xs mt-1.5 font-medium text-gray-500">
+              {showFirstTimeGuidance ? greetingMode : 'A quieter sacred day, ready when you are.'}
+            </p>
+            {displayCity && (
+              <p className="text-sm text-gray-500 flex items-center gap-1 mt-2">
+                <MapPin size={12} style={{ color: homeHeroTheme.accent }} />
+                {displayCity}
+                {coords && <span className="text-[10px] text-gray-400 ml-1">live</span>}
               </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </section>
-
-      <section className="grid gap-4 md:grid-cols-2">
-        <Link href="/bhakti/mala" className="surface-panel block px-5 py-5 active:scale-[0.97]">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-[12px] text-[color:var(--text-tertiary)]">Japa</p>
-              <p className="mt-1 text-[22px] font-medium text-[color:var(--saffron-800)]">Begin mala</p>
-              <p className="mt-2 text-[14px] text-[color:var(--text-secondary)]">Start a round and return to your mantra with less distraction.</p>
-            </div>
-            <ProgressRing
-              value={0}
-              max={108}
-              size={96}
-              center={<CircleDot size={18} className="text-[color:var(--saffron-800)]" />}
-              label="108"
-            />
+            )}
           </div>
-        </Link>
-
-        <div className="surface-panel px-5 py-5">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-[12px] text-[color:var(--text-tertiary)]">{isToday ? 'Aaj ka panchang' : 'Panchang'}</p>
-              <p className="mt-1 text-[22px] font-medium text-[color:var(--saffron-800)]">{panchang.tithi}</p>
-              <p className="mt-2 text-[14px] text-[color:var(--text-secondary)]">{panchang.nakshatra} · {panchang.yoga}</p>
-            </div>
-            <Link href="/panchang" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--saffron-50)] text-[color:var(--saffron-800)] active:scale-[0.97]">
-              <CalendarDays size={16} />
-            </Link>
-          </div>
-          <div className="mt-4 grid gap-2">
-            <div className="flex items-center justify-between rounded-[8px] bg-[color:var(--saffron-50)] px-3 py-2">
-              <span className="text-[12px] text-[color:var(--saffron-800)]">Sunrise</span>
-              <span className="text-[14px] font-medium text-[color:var(--saffron-900)]">{panchang.sunrise}</span>
-            </div>
-            <div className="flex items-center justify-between rounded-[8px] border px-3 py-2" style={{ borderColor: 'rgba(0,0,0,0.15)' }}>
-              <span className="text-[12px] text-[color:var(--text-secondary)]">Sunset</span>
-              <span className="text-[14px] font-medium text-[color:var(--brand-ink)]">{panchang.sunset}</span>
-            </div>
+          <div
+            className="hidden sm:flex items-center justify-center rounded-[1.35rem] px-3 py-2 text-xs font-semibold"
+            style={{
+              background: homeHeroTheme.iconWell,
+              color: homeHeroTheme.accentStrong,
+            }}
+          >
+            Today
           </div>
         </div>
-      </section>
-
-      <Link href="/tirtha-map" className="surface-panel flex items-center justify-between gap-4 px-5 py-4 active:scale-[0.97]">
-        <div className="flex items-center gap-3 min-w-0">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--saffron-50)] text-[color:var(--saffron-800)]">
-            <LocateFixed size={16} />
-          </span>
-          <div className="min-w-0">
-            <p className="text-[12px] text-[color:var(--text-tertiary)]">Tirtha nearby</p>
-            <p className="mt-1 text-[15px] font-medium text-[color:var(--brand-ink)]">{tirthaLabel}</p>
-          </div>
-        </div>
-        <MapPin size={16} className="text-[color:var(--saffron-800)]" />
-      </Link>
+      </div>
 
       {showFirstTimeGuidance && personalizedPaths.length > 0 && (
         <section className="space-y-2">
@@ -1034,64 +988,64 @@ export default function HomeDashboard({
           {visiblePersonalizedPaths.length > 0 ? (
             <MotionStagger className="grid gap-3" delay={0.04}>
               {visiblePersonalizedPaths.map((path) => (
-                <MotionItem key={path.id}>
-                  <div className={`clay-card ${path.accentClass} rounded-[1.8rem] p-4`}>
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: 'var(--brand-primary)' }}>
-                          {path.eyebrow}
-                        </p>
-                        <h2 className="font-display text-lg font-bold text-gray-900 mt-1">{path.title}</h2>
-                      </div>
-                      <div className="flex flex-wrap justify-end gap-2">
-                        {path.badges.map((badge) => (
-                          <span key={badge} className="clay-pill text-[11px] font-medium" style={{ color: 'var(--brand-primary)' }}>
-                            {badge}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <p className="text-sm text-gray-600 leading-relaxed mt-2">{path.description}</p>
-
-                    <div className="grid gap-2 sm:grid-cols-2 mt-4">
-                      {path.actions.map((action) => (
-                        <Link
-                          key={`${path.id}-${action.href}`}
-                          href={action.href}
-                          className="clay-action rounded-2xl px-4 py-3 flex items-center gap-3 transition hover:-translate-y-0.5"
-                        >
-                          <span className="clay-icon-well text-base">{action.icon}</span>
-                          <span className="text-sm font-semibold text-gray-800">{action.label}</span>
-                        </Link>
-                      ))}
-                    </div>
-
-                    <div className="flex items-center justify-between gap-3 mt-4 pt-3 border-t border-white/55">
-                      <p className="text-xs text-gray-500">
-                        Keep this visible until you complete it, or hide it for later.
-                      </p>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <button
-                          type="button"
-                          onClick={() => updateGuidedPath(path.id, 'dismissed')}
-                          disabled={guidedPathBusyId === path.id}
-                          className="px-3 py-1.5 rounded-full text-xs font-medium text-gray-600 border border-white/70 bg-white/55 hover:bg-white transition disabled:opacity-50"
-                        >
-                          Later
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => updateGuidedPath(path.id, 'completed')}
-                          disabled={guidedPathBusyId === path.id}
-                          className="px-3 py-1.5 rounded-full text-xs font-semibold text-white glass-button-primary disabled:opacity-50"
-                        >
-                          Done
-                        </button>
-                      </div>
-                    </div>
+              <MotionItem key={path.id}>
+              <div className={`clay-card ${path.accentClass} rounded-[1.8rem] p-4`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: 'var(--brand-primary)' }}>
+                      {path.eyebrow}
+                    </p>
+                    <h2 className="font-display text-lg font-bold text-gray-900 mt-1">{path.title}</h2>
                   </div>
-                </MotionItem>
+                  <div className="flex flex-wrap justify-end gap-2">
+                    {path.badges.map((badge) => (
+                      <span key={badge} className="clay-pill text-[11px] font-medium" style={{ color: 'var(--brand-primary)' }}>
+                        {badge}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <p className="text-sm text-gray-600 leading-relaxed mt-2">{path.description}</p>
+
+                <div className="grid gap-2 sm:grid-cols-2 mt-4">
+                  {path.actions.map((action) => (
+                    <Link
+                      key={`${path.id}-${action.href}`}
+                      href={action.href}
+                      className="clay-action rounded-2xl px-4 py-3 flex items-center gap-3 transition hover:-translate-y-0.5"
+                    >
+                      <span className="clay-icon-well text-base">{action.icon}</span>
+                      <span className="text-sm font-semibold text-gray-800">{action.label}</span>
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between gap-3 mt-4 pt-3 border-t border-white/55">
+                  <p className="text-xs text-gray-500">
+                    Keep this visible until you complete it, or hide it for later.
+                  </p>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => updateGuidedPath(path.id, 'dismissed')}
+                      disabled={guidedPathBusyId === path.id}
+                      className="px-3 py-1.5 rounded-full text-xs font-medium text-gray-600 border border-white/70 bg-white/55 hover:bg-white transition disabled:opacity-50"
+                    >
+                      Later
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => updateGuidedPath(path.id, 'completed')}
+                      disabled={guidedPathBusyId === path.id}
+                      className="px-3 py-1.5 rounded-full text-xs font-semibold text-white glass-button-primary disabled:opacity-50"
+                    >
+                      Done
+                    </button>
+                  </div>
+                </div>
+              </div>
+              </MotionItem>
               ))}
             </MotionStagger>
           ) : (
@@ -1116,25 +1070,261 @@ export default function HomeDashboard({
         </section>
       )}
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Link href="/vichaar-sabha"
-          className="surface-card block p-4 transition-colors active:scale-[0.97]">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--saffron-50)] text-[color:var(--saffron-800)]">
-            <BookOpen size={16} />
+      {/* ── Panchang Widget ── */}
+      <div
+        className="rounded-[1.95rem] overflow-hidden border shadow-sm"
+        style={{ background: panchangTheme.surface, borderColor: panchangTheme.border, boxShadow: '0 16px 34px rgba(28, 26, 23, 0.06)' }}
+      >
+        <div className="px-4 pt-4 pb-2 flex items-center gap-2">
+          <span className="text-base">🪔</span>
+          <span className="text-[11px] font-medium tracking-[0.16em] uppercase" style={{ color: panchangTheme.accent }}>
+            {isToday ? 'Aaj Ka Panchang' : 'Panchang'}
           </span>
-          <p className="font-medium text-[15px] mt-3" style={{ color: 'var(--brand-primary)' }}>Join the Vichaar Sabha</p>
-          <p className="text-[12px] text-gray-500 mt-1">Discuss dharma, share wisdom, ask questions.</p>
-        </Link>
+          {/* Day navigation */}
+          <div className="ml-auto flex items-center gap-1">
+            <button onClick={() => navigateDay(-1)}
+              className="w-6 h-6 rounded-full flex items-center justify-center transition"
+              style={{ background: panchangTheme.iconWell }}>
+              <ChevronLeft size={13} color={panchangTheme.accentStrong} />
+            </button>
+            {/* Tap date label to open full date picker */}
+            <button onClick={() => setDatePickerOpen(true)}
+              className="text-xs min-w-[80px] text-center font-medium transition underline-offset-2 hover:underline"
+              style={{ color: panchangTheme.accentStrong }}>
+              {isToday ? 'Today' : selectedDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+            </button>
+            <button onClick={() => navigateDay(1)}
+              className="w-6 h-6 rounded-full flex items-center justify-center transition"
+              style={{ background: panchangTheme.iconWell }}>
+              <ChevronRight size={13} color={panchangTheme.accentStrong} />
+            </button>
+            {!isToday && (
+              <button onClick={() => setSelectedDate(new Date())}
+                className="text-[10px] px-2 py-0.5 rounded-full font-medium ml-1"
+                style={{ background: panchangTheme.iconWell, color: panchangTheme.accentStrong }}>
+                Today
+              </button>
+            )}
+          </div>
+        </div>
 
-        <button onClick={() => setInviteOpen(true)}
-          className="surface-card w-full p-4 text-left transition-colors active:scale-[0.97]">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--saffron-50)] text-[color:var(--saffron-800)]">
-            <Share2 size={16} />
-          </span>
-          <p className="font-medium text-[15px] mt-3" style={{ color: 'var(--brand-primary)' }}>Invite friends and family</p>
-          <p className="text-[12px] text-gray-500 mt-1">Share Sanatana Sangam without leaving the app shell.</p>
-        </button>
+        {/* 3-column grid: Tithi, Nakshatra, Yoga, Sunrise, Sunset */}
+        <div className="grid grid-cols-3 gap-0 px-4 py-2">
+          <PanchangItem label="Tithi"     value={panchang.tithi}     />
+          <PanchangItem label="Nakshatra" value={panchang.nakshatra} />
+          <PanchangItem label="Yoga"      value={panchang.yoga}      />
+          <PanchangItem label="Sunrise"   value={panchang.sunrise}   />
+          <PanchangItem label="Sunset"    value={panchang.sunset}    />
+        </div>
+
+        {/* Rahu Kaal + action buttons */}
+        <div className="mx-4 mb-3 rounded-xl px-3 py-2 flex items-center gap-2"
+          style={{ background: 'rgba(255,255,255,0.65)', border: `1px solid ${panchangTheme.border}` }}>
+          <span className="text-sm">⚠️</span>
+          <div className="flex-1">
+            <span className="text-gray-500 text-xs">Rahu Kaal: </span>
+            <span className="text-xs font-semibold" style={{ color: panchangTheme.accentStrong }}>{panchang.rahuKaal}</span>
+          </div>
+          {/* Full Panchang page link */}
+          <Link
+            href="/panchang"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition"
+            style={{ background: panchangTheme.iconWell, color: panchangTheme.accentStrong }}
+          >
+            <CalendarDays size={12} /> Full Panchang
+          </Link>
+          {/* Share button */}
+          <button
+            onClick={sharePanchang}
+            className="w-7 h-7 rounded-full flex items-center justify-center transition"
+            style={{ background: panchangTheme.iconWell }}
+            title="Share Panchang"
+          >
+            <Share2 size={13} color={panchangTheme.accentStrong} />
+          </button>
+        </div>
+        <div className="px-4 pb-4 text-[11px] text-gray-500 leading-relaxed">
+          {PANCHANG_TRUST_META.precisionLabel}. {PANCHANG_TRUST_META.guidanceNote}
+        </div>
       </div>
+
+      {/* ── Daily Sacred Text — tradition-aware ── */}
+      <div
+        ref={shlokaRef}
+        className="rounded-[1.85rem] shadow-sm p-4"
+        style={{
+          borderWidth: 1,
+          borderStyle: 'solid',
+          borderColor: sacredTextTheme.border,
+          background: sacredTextTheme.surface,
+          boxShadow: '0 16px 32px rgba(28, 26, 23, 0.05)',
+        }}>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">{sacredTextMeta.icon}</span>
+            <span className="font-display font-semibold text-gray-800 text-sm">{sacredTextMeta.label}</span>
+            {streak > 0 && (
+              <span className="text-xs font-bold px-2 py-0.5 rounded-full border" style={{ color: 'var(--brand-primary)', background: 'var(--brand-primary-soft)', borderColor: 'rgba(124, 58, 45, 0.12)' }}>
+                🔥 {streak}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full">
+              {sacredText ? sacredText.source : shloka.source}
+            </span>
+            <button onClick={shareShloka}
+              className="w-7 h-7 rounded-full border flex items-center justify-center hover:opacity-80 transition"
+              style={{ background: sacredTextMeta.accentLight, borderColor: sacredTextMeta.accentLight }}
+              title={`Share ${sacredTextMeta.shareLabel}`}>
+              <Share2 size={13} style={{ color: sacredTextMeta.accentColour }} />
+            </button>
+          </div>
+        </div>
+
+        {/* Original script */}
+        <p className="font-devanagari leading-relaxed text-base mb-2 whitespace-pre-line"
+          style={{ color: sacredTextMeta.accentColour }}>
+          {sacredText ? sacredText.original : shloka.sanskrit}
+        </p>
+
+        {/* Transliteration */}
+        <p className="text-sm text-gray-500 italic leading-relaxed mb-3 whitespace-pre-line">
+          {sacredText ? sacredText.transliteration : shloka.transliteration}
+        </p>
+
+        <div className="flex items-center justify-between">
+          <button onClick={() => setShlokaExpanded(!shlokaExpanded)}
+            className="flex items-center gap-1 text-xs font-medium"
+            style={{ color: sacredTextMeta.accentColour }}>
+            {shlokaExpanded ? 'Hide meaning' : 'Show meaning'}
+            {shlokaExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+          </button>
+
+          <button onClick={markShlokaRead} disabled={readToday}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition ${
+              readToday
+                ? 'cursor-default'
+                : 'text-white hover:opacity-90'
+            }`}
+            style={readToday
+              ? { background: 'var(--brand-primary-soft)', color: 'var(--brand-primary)', border: '1px solid rgba(124, 58, 45, 0.14)' }
+              : { background: sacredTextMeta.accentColour }}>
+            {readToday
+              ? '✓ Read today'
+              : `${sacredTextMeta.icon} Mark as read`}
+          </button>
+        </div>
+
+        <AnimatePresence initial={false}>
+        {shlokaExpanded && (
+          <motion.div
+            className="mt-3 pt-3 border-t"
+            style={{ borderColor: sacredTextMeta.accentLight }}
+            initial={prefersReducedMotion ? undefined : { opacity: 0, height: 0, y: -6 }}
+            animate={prefersReducedMotion ? undefined : { opacity: 1, height: 'auto', y: 0 }}
+            exit={prefersReducedMotion ? undefined : { opacity: 0, height: 0, y: -6 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <p className="text-sm text-gray-700 leading-relaxed">
+              {sacredText ? sacredText.meaning : shloka.meaning}
+            </p>
+          </motion.div>
+        )}
+        </AnimatePresence>
+      </div>
+
+      {/* ── Coming Up ── */}
+      <div
+        ref={festivalsRef}
+        className="rounded-[1.85rem] border overflow-hidden shadow-sm"
+        style={{ background: HOME_THEMES.tirtha.surface, borderColor: HOME_THEMES.tirtha.border, boxShadow: '0 16px 32px rgba(28, 26, 23, 0.05)' }}>
+        <div className="px-4 pt-3 pb-1 flex items-center justify-between">
+          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Coming Up</p>
+          <button
+            onClick={() => setCalendarOpen(true)}
+            className="text-xs font-semibold flex items-center gap-1 hover:underline"
+            style={{ color: 'var(--brand-primary)' }}>
+            <CalendarDays size={11} /> All Festivals →
+          </button>
+        </div>
+        {festival && daysUntilFestival !== null ? (
+          <div className="px-4 pb-3 flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+              style={{ background: HOME_THEMES.tirtha.iconWell }}>
+              {festival.emoji}
+            </div>
+            <div className="flex-1">
+              <p className="font-display font-bold text-gray-900 text-base">{festival.name}</p>
+              <p className="text-xs text-gray-500 mt-0.5">{festival.description}</p>
+            </div>
+            <div className="text-center">
+              <div className="font-display font-bold text-2xl" style={{ color: 'var(--brand-primary)' }}>
+                {daysUntilFestival === 0 ? '🎉' : daysUntilFestival}
+              </div>
+              <div className="text-xs text-gray-400">
+                {daysUntilFestival === 0 ? 'Today!' : daysUntilFestival === 1 ? 'Tomorrow' : 'days'}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="px-4 pb-3 text-sm text-gray-500">
+            Tap <span className="font-semibold" style={{ color: 'var(--brand-primary)' }}>All Festivals</span> to browse the Parva calendar 🙏
+          </div>
+        )}
+        <div className="px-4 pb-3 text-[11px] text-gray-500 leading-relaxed">
+          {festivalCalendarMeta.sourceNote}
+        </div>
+      </div>
+
+      {/* ── Quick Access ── */}
+      <div>
+        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">Explore</p>
+        <MotionStagger className="grid grid-cols-2 gap-3" delay={0.08}>
+          {quickAccessItems.map((item) => (
+            <MotionItem key={item.href}>
+            <Link
+              href={item.href}
+              className="border rounded-[1.55rem] p-4 flex items-start gap-3 active:scale-[0.99] transition-all"
+              style={{
+                background: HOME_THEMES[item.theme].surface,
+                borderColor: HOME_THEMES[item.theme].border,
+                boxShadow: '0 12px 26px rgba(28, 26, 23, 0.05)',
+              }}
+            >
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                style={{ background: HOME_THEMES[item.theme].iconWell }}
+              >
+                {item.icon}
+              </div>
+              <div>
+                <p className="font-semibold text-sm leading-tight" style={{ color: HOME_THEMES[item.theme].accentStrong }}>{item.label}</p>
+                <p className="hidden sm:block text-xs text-gray-500 mt-0.5 leading-tight">{item.desc}</p>
+              </div>
+            </Link>
+            </MotionItem>
+          ))}
+        </MotionStagger>
+      </div>
+
+      {/* ── Vichaar Sabha CTA ── */}
+      <Link href="/vichaar-sabha"
+        className="block w-full rounded-[1.7rem] border p-4 text-center transition-colors"
+        style={{ borderColor: HOME_THEMES.pathshala.border, background: HOME_THEMES.pathshala.surface }}>
+        <span className="text-lg">💬</span>
+        <p className="font-semibold text-sm mt-1" style={{ color: 'var(--brand-primary)' }}>Join the Vichaar Sabha</p>
+        <p className="text-xs text-gray-500 mt-0.5">Discuss dharma, share wisdom, ask questions</p>
+      </Link>
+
+      {/* ── Invite Friends ── */}
+      <button onClick={() => setInviteOpen(true)}
+        className="w-full rounded-[1.7rem] border p-4 text-center transition-colors"
+        style={{ borderColor: HOME_THEMES.kul.border, background: HOME_THEMES.kul.surface }}>
+        <span className="text-lg">🙏</span>
+        <p className="font-semibold text-sm mt-1" style={{ color: 'var(--brand-primary)' }}>Invite Friends & Family</p>
+        <p className="text-xs text-gray-400 mt-0.5">Share Sanatana Sangam — spread the light of dharma</p>
+      </button>
 
       {/* ── Parva / Festivals modal ── */}
       <AnimatePresence>
@@ -1179,6 +1369,15 @@ export default function HomeDashboard({
         )}
       </AnimatePresence>
 
+    </div>
+  );
+}
+
+function PanchangItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="py-1.5 pr-2">
+      <p className="text-white/60 text-[10px] uppercase tracking-wider">{label}</p>
+      <p className="text-white font-semibold text-sm leading-snug">{value}</p>
     </div>
   );
 }

@@ -2,10 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import { Search, Navigation, Info, Clock, MapPin, Phone, Globe } from 'lucide-react';
-import Card from '@/components/ui/Card';
-import Chip from '@/components/ui/Chip';
-import IconSquare from '@/components/ui/IconSquare';
+import { Search, Navigation, Info, Clock } from 'lucide-react';
 import { fetchNearbyTemples, geocodeCity, type Temple } from '@/lib/overpass';
 import { useLocation } from '@/lib/LocationContext';
 import { API, MAP, MANDIR } from '@/lib/config';
@@ -16,29 +13,29 @@ const TirthaMapComponent = dynamic(
   { ssr: false, loading: () => (
     <div
       className="w-full h-full flex items-center justify-center rounded-2xl"
-      style={{ background: 'var(--saffron-50)' }}
+      style={{ background: 'linear-gradient(135deg, var(--brand-primary-soft), rgba(255,255,255,0.95))' }}
     >
-      <MapPin size={28} className="text-[color:var(--saffron-800)]" />
+      <span className="text-3xl animate-pulse">🛕</span>
     </div>
   )}
 );
 
 // Tradition-level filters (top row)
 const TRADITION_FILTERS = [
-  { label: 'All', value: 'all' },
-  { label: 'Hindu', value: 'hindu' },
-  { label: 'Sikh', value: 'sikh' },
-  { label: 'Buddhist', value: 'buddhist' },
-  { label: 'Jain', value: 'jain' },
+  { label: 'All',      value: 'all',      emoji: '🙏'  },
+  { label: 'Hindu',    value: 'hindu',    emoji: '🕉️'  },
+  { label: 'Sikh',     value: 'sikh',     emoji: '☬'   },
+  { label: 'Buddhist', value: 'buddhist', emoji: '☸️'  },
+  { label: 'Jain',     value: 'jain',     emoji: '🤲'  },
 ];
 
 // Sampradaya sub-filters (shown only for Hindu / All)
 const SAMPRADAYA_FILTERS = [
-  { label: 'All', value: 'all' },
-  { label: 'Vaishnava', value: 'vaishnava' },
-  { label: 'Shaiva', value: 'shaiva' },
-  { label: 'Shakta', value: 'shakta' },
-  { label: 'Smarta', value: 'smarta' },
+  { label: 'All',      value: 'all',       emoji: '🛕' },
+  { label: 'Vaishnava',value: 'vaishnava', emoji: '🦚' },
+  { label: 'Shaiva',   value: 'shaiva',    emoji: '🔱' },
+  { label: 'Shakta',   value: 'shakta',    emoji: '⚔️' },
+  { label: 'Smarta',   value: 'smarta',    emoji: '🕉️' },
 ];
 
 const TRADITION_PLACE_LABEL: Record<string, string> = {
@@ -222,14 +219,13 @@ export default function TirthaMapPage() {
   const activeCityLabel = cityInput.trim() || liveCity || 'your area';
   return (
     <div className="space-y-3 fade-in">
-      <div className="flex items-center justify-between px-1 pb-3">
-        <p className="text-xl font-medium">Tirtha</p>
-        <Chip>{activeCityLabel}</Chip>
+      <div className="glass-panel rounded-[1.7rem] px-4 py-4 sm:rounded-[1.9rem] sm:px-5 sm:py-5 space-y-2">
+        <h1 className="font-display text-2xl font-bold text-gray-900">Tirtha Map</h1>
+        <p className="hidden sm:block text-sm text-gray-600 leading-relaxed">Search sacred places, filter by tradition, and open the result that feels right.</p>
       </div>
 
       {/* ── Search bar ── */}
-      <div className="flex items-center gap-2 rounded-[24px] border bg-white px-3.5 py-2 text-[13px] text-gray-400" style={{ borderColor: 'rgba(0,0,0,0.15)' }}>
-        <Search size={14} className="text-gray-400" />
+      <div className="flex gap-2">
         <div className="relative flex-1">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
@@ -238,12 +234,17 @@ export default function TirthaMapPage() {
             value={cityInput}
             onChange={(e) => setCityInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && searchCity()}
-            className="w-full bg-transparent pl-5 pr-2 py-0 outline-none text-[13px]"
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-[color:var(--brand-primary)] outline-none text-sm"
           />
         </div>
-        <button onClick={searchCity} disabled={loading} className="text-[13px] font-medium text-[color:var(--saffron-800)]">Go</button>
-        <button onClick={useMyLocation} title="Use my location" className="inline-flex h-7 w-7 items-center justify-center rounded-full border" style={{ borderColor: 'rgba(0,0,0,0.15)' }}>
-          <Navigation size={14} className="text-[color:var(--saffron-800)]" />
+        <button onClick={searchCity} disabled={loading}
+          className="px-4 py-2.5 text-white text-sm font-semibold rounded-xl hover:opacity-90 disabled:opacity-60 transition"
+          style={{ background: 'var(--brand-primary)' }}>
+          Search
+        </button>
+        <button onClick={useMyLocation} title="Use my location"
+          className="px-3 py-2.5 bg-white border border-gray-200 rounded-xl hover:border-[color:var(--brand-primary)]/30 transition">
+          <Navigation size={15} style={{ color: 'var(--brand-primary)' }} />
         </button>
       </div>
 
@@ -254,11 +255,11 @@ export default function TirthaMapPage() {
             onClick={() => { setTradFilter(f.value); setSampFilter('all'); }}
             className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
               tradFilter === f.value
-                ? 'bg-[color:var(--saffron-50)] text-[color:var(--saffron-800)]'
-                : 'bg-white text-gray-500 border border-gray-200'
+                ? 'text-white'
+                : 'bg-white text-gray-500 border border-gray-200 hover:border-[color:var(--brand-primary)]/30'
             }`}
-            style={tradFilter === f.value ? { borderColor: 'var(--saffron-100)' } : {}}>
-            {f.label}
+            style={tradFilter === f.value ? { background: 'var(--brand-primary)' } : {}}>
+            {f.emoji} {f.label}
           </button>
         ))}
       </div>
@@ -270,11 +271,11 @@ export default function TirthaMapPage() {
             <button key={f.value} onClick={() => setSampFilter(f.value)}
               className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
                 sampFilter === f.value
-                  ? 'bg-[color:var(--saffron-50)] text-[color:var(--saffron-800)]'
-                  : 'bg-white text-gray-500 border border-gray-200'
+                  ? 'text-white'
+                  : 'bg-white text-gray-500 border border-gray-200 hover:border-[color:var(--brand-primary-soft)]'
               }`}
-              style={sampFilter === f.value ? { borderColor: 'var(--saffron-100)' } : {}}>
-              {f.label}
+              style={sampFilter === f.value ? { background: 'var(--brand-secondary)' } : {}}>
+              {f.emoji} {f.label}
             </button>
           ))}
         </div>
@@ -299,20 +300,20 @@ export default function TirthaMapPage() {
         </div>
       </div>
 
-      <Card className="space-y-4">
+      <div className="glass-panel rounded-[1.5rem] px-4 py-4 space-y-4">
         <div className="grid grid-cols-3 gap-2">
           {[
             { label: 'Visible', value: filtered.length },
             { label: 'Tradition', value: tradFilter === 'all' ? 'All' : tradFilter.slice(0, 1).toUpperCase() + tradFilter.slice(1) },
             { label: 'Radius', value: RADIUS_OPTIONS.find((option) => option.value === radius)?.label ?? '15 mi' },
           ].map((item) => (
-            <div key={item.label} className="rounded-[8px] border px-3 py-3 text-center" style={{ borderColor: 'rgba(0,0,0,0.15)' }}>
-              <p className="text-lg font-medium text-[color:var(--saffron-800)]">{item.value}</p>
-              <p className="mt-1 text-[11px] text-gray-500">{item.label}</p>
+            <div key={item.label} className="rounded-[1.05rem] bg-white/72 border border-white/80 px-3 py-3 text-center">
+              <p className="font-display font-bold text-lg" style={{ color: 'var(--brand-primary-strong)' }}>{item.value}</p>
+              <p className="text-[10px] uppercase tracking-[0.16em] text-gray-400 font-semibold mt-1">{item.label}</p>
             </div>
           ))}
         </div>
-      </Card>
+      </div>
 
       {geoError && (
         <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-2.5 flex items-center gap-2">
@@ -321,7 +322,7 @@ export default function TirthaMapPage() {
       )}
 
       {/* ── Map ── */}
-      <div className="w-full h-[200px] rounded-[16px] overflow-hidden border" style={{ borderColor: 'rgba(0,0,0,0.15)' }}>
+      <div className="w-full h-[300px] rounded-2xl overflow-hidden border border-[color:var(--brand-primary-soft)] shadow-card">
         <TirthaMapComponent temples={filtered} center={center} loading={loading} />
       </div>
 
@@ -329,6 +330,7 @@ export default function TirthaMapPage() {
       {searched && (
         <div className="flex items-center justify-between text-sm text-gray-600">
           <div className="flex items-center gap-1.5">
+            <span>{TRADITION_FILTERS.find(f => f.value === tradFilter)?.emoji ?? '🙏'}</span>
             <span>
               {loading ? 'Searching…' : (
                 filtered.length > 0
@@ -356,33 +358,44 @@ export default function TirthaMapPage() {
             const traditionBadge = TRADITION_BADGE_LABEL[temple.tradition ?? 'other'];
 
             return (
-              <Card
+              <div
                 key={temple.id}
                 onClick={() => setSelected(isExpanded ? null : temple)}
-                className={`cursor-pointer transition-all ${isExpanded ? 'border-[color:var(--saffron-100)]' : ''}`}
+                className={`glass-panel rounded-[1.6rem] border cursor-pointer transition-all ${
+                  isExpanded ? 'border-[color:var(--brand-primary-soft)] shadow-sm' : 'border-white/80 hover:border-[color:var(--brand-primary-soft)]'
+                }`}
               >
+                <div className="p-4">
                   <div className="flex items-start gap-3">
-                    <IconSquare className="flex-shrink-0">
-                      <MapPin size={16} />
-                    </IconSquare>
+                    {/* Icon — tradition-aware */}
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                      style={{ background: 'var(--brand-primary-soft)' }}>
+                      {temple.tradition === 'sikh' ? '☬' :
+                       temple.tradition === 'buddhist' ? '☸️' :
+                       temple.tradition === 'jain' ? '🤲' : '🛕'}
+                    </div>
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div className="space-y-1">
                           <div className="inline-flex items-center gap-2 flex-wrap">
-                            <Chip className="text-[10px]">
+                            <span className="rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary-strong)] border border-white/80">
                               {traditionBadge}
-                            </Chip>
+                            </span>
                             {samp !== 'all' && sampInfo && (
-                              <span className="text-xs text-gray-500">{sampInfo.label}</span>
+                              <span className="text-xs text-gray-500">{sampInfo.emoji} {sampInfo.label}</span>
                             )}
                           </div>
-                          <h3 className="font-medium text-[13px] text-gray-900 leading-tight">{temple.name}</h3>
+                          <h3 className="font-semibold text-sm text-gray-900 leading-tight">{temple.name}</h3>
                         </div>
                         {/* Open/Closed badge */}
                         {open !== null && (
-                          <Chip variant={open ? 'saffron' : 'outline'} className="flex-shrink-0 text-[10px]">{open ? 'Open' : 'Closed'}</Chip>
+                          <span className={`flex-shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                            open ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'
+                          }`}>
+                            {open ? '● Open' : '● Closed'}
+                          </span>
                         )}
                       </div>
 
@@ -392,7 +405,7 @@ export default function TirthaMapPage() {
 
                         {/* Deity */}
                         {temple.deity && (
-                          <span className="text-xs text-[color:var(--saffron-800)]">{temple.deity}</span>
+                          <span className="text-xs text-[color:var(--brand-primary)]">🙏 {temple.deity}</span>
                         )}
                       </div>
 
@@ -405,20 +418,20 @@ export default function TirthaMapPage() {
                   {/* Expanded details */}
                   {isExpanded && (
                     <div className="mt-3 pt-3 border-t border-gray-50 space-y-2 fade-in">
-                      <div className="rounded-[8px] border px-3 py-3" style={{ borderColor: 'rgba(0,0,0,0.15)' }}>
+                      <div className="rounded-[1.15rem] bg-white/72 border border-white/80 px-3 py-3">
                         <div className="flex items-center gap-2">
-                          <Clock size={12} className="text-[color:var(--saffron-800)]" />
+                          <Clock size={12} className="text-[color:var(--brand-primary-strong)]" />
                           <span className="text-xs text-gray-600 font-medium">{traditionSummary.label}</span>
                         </div>
                         <div className="flex gap-1.5 flex-wrap mt-2">
                           {traditionSummary.items.map((item) => (
-                            <span key={item} className="rounded-full bg-[color:var(--saffron-50)] px-2 py-0.5 text-xs text-[color:var(--saffron-800)]">
+                            <span key={item} className="text-xs rounded-full border border-[color:var(--brand-primary-soft)] bg-white/80 px-2 py-0.5 text-[color:var(--brand-primary-strong)]">
                               {item}
                             </span>
                           ))}
                           {temple.tradition === 'hindu' && !temple.opening &&
                             AARTI_TIMES.map((t) => (
-                              <span key={t} className="rounded-full bg-[color:var(--saffron-50)] px-2 py-0.5 text-xs text-[color:var(--saffron-800)]">
+                              <span key={t} className="text-xs bg-[color:var(--brand-primary-soft)] text-[color:var(--brand-primary)] px-2 py-0.5 rounded-full border border-[color:var(--brand-primary-soft)]">
                                 {t}
                               </span>
                             ))}
@@ -427,30 +440,31 @@ export default function TirthaMapPage() {
 
                       {temple.opening && (
                         <p className="text-xs text-gray-600 flex items-center gap-1.5">
-                          <Clock size={12} className="text-[color:var(--saffron-800)]" /> <span>{temple.opening}</span>
+                          🕐 <span>{temple.opening}</span>
                         </p>
                       )}
                       {temple.phone && (
                         <p className="text-xs text-gray-600 flex items-center gap-1.5">
-                          <Phone size={12} className="text-[color:var(--saffron-800)]" /> <a href={`tel:${temple.phone}`} className="text-[color:var(--saffron-800)] hover:underline">{temple.phone}</a>
+                          📞 <a href={`tel:${temple.phone}`} className="text-[color:var(--brand-primary)] hover:underline">{temple.phone}</a>
                         </p>
                       )}
                       {temple.website && (
                         <p className="text-xs text-gray-600 flex items-center gap-1.5">
-                          <Globe size={12} className="text-[color:var(--saffron-800)]" /> <a href={temple.website} target="_blank" rel="noreferrer" className="truncate text-[color:var(--saffron-800)] hover:underline">{temple.website}</a>
+                          🌐 <a href={temple.website} target="_blank" rel="noreferrer" className="text-[color:var(--brand-primary)] hover:underline truncate">{temple.website}</a>
                         </p>
                       )}
                       <a
                         href={`https://maps.google.com/?q=${temple.lat},${temple.lon}`}
                         target="_blank" rel="noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="mt-1 inline-flex items-center gap-1.5 rounded-full border bg-[color:var(--saffron-50)] px-3 py-1.5 text-xs text-[color:var(--saffron-800)] transition"
-                        style={{ borderColor: 'var(--saffron-100)' }}>
+                        className="inline-flex items-center gap-1.5 mt-1 text-xs px-3 py-1.5 rounded-full border transition"
+                        style={{ background: 'var(--brand-primary)', color: 'white', borderColor: 'var(--brand-primary)' }}>
                         <Navigation size={11} /> Get Directions
                       </a>
                     </div>
                   )}
-              </Card>
+                </div>
+              </div>
             );
           })}
         </div>
