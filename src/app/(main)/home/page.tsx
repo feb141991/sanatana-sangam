@@ -66,6 +66,11 @@ export default async function HomePage() {
   );
 
   const meta = getTraditionMeta(tradition);
+  const showFirstTimeGuidance = (
+    (profile?.shloka_streak ?? 0) === 0
+    && !profile?.last_shloka_date
+    && ((guidedPathProgress?.length ?? 0) === 0)
+  );
 
   return (
     <HomeDashboard
@@ -96,6 +101,7 @@ export default async function HomePage() {
       seeking={profile?.seeking ?? []}
       customGreeting={(profile as any)?.custom_greeting ?? null}
       guidedPathProgress={(guidedPathProgress as GuidedPathProgressRow[]) ?? []}
+      showFirstTimeGuidance={showFirstTimeGuidance}
     />
   );
 }

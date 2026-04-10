@@ -65,6 +65,7 @@ interface Props {
   seeking:           string[];
   customGreeting:    string | null;
   guidedPathProgress: GuidedPathProgressRow[];
+  showFirstTimeGuidance: boolean;
 }
 
 const quickAccessItems = [
@@ -73,42 +74,6 @@ const quickAccessItems = [
   { label: 'My Kul', icon: '❤️', href: '/kul', desc: 'Family sadhana together', bg: 'bg-stone-50', border: 'border-stone-200', iconBg: 'bg-stone-200' },
   { label: 'Pathshala', icon: '📖', href: '/library', desc: 'Tradition-first study tracks', bg: 'bg-yellow-50', border: 'border-yellow-100', iconBg: 'bg-yellow-100' },
 ];
-
-function FocusActionCard({
-  href,
-  icon,
-  eyebrow,
-  title,
-  description,
-  tone = 'primary',
-}: {
-  href: string;
-  icon: string;
-  eyebrow: string;
-  title: string;
-  description: string;
-  tone?: 'primary' | 'soft';
-}) {
-  const primary = tone === 'primary';
-
-  return (
-    <Link
-      href={href}
-      className={`rounded-[1.7rem] p-4 transition-all hover:-translate-y-0.5 ${primary ? 'clay-card' : 'glass-panel'}`}
-    >
-      <div className="flex items-start gap-3">
-        <div className="clay-icon-well text-lg flex-shrink-0">{icon}</div>
-        <div className="min-w-0">
-          <p className="text-[10px] uppercase tracking-[0.18em] font-semibold" style={{ color: 'rgba(140, 77, 45, 0.65)' }}>
-            {eyebrow}
-          </p>
-          <h3 className="font-display text-base font-bold text-gray-900 mt-1 leading-tight">{title}</h3>
-          <p className="text-sm text-gray-600 mt-2 leading-relaxed">{description}</p>
-        </div>
-      </div>
-    </Link>
-  );
-}
 
 // ── Invite code — deterministic from userId (no DB needed) ─────────────────
 function generateInviteCode(userId: string): string {
@@ -660,6 +625,7 @@ export default function HomeDashboard({
   seeking,
   customGreeting,
   guidedPathProgress,
+  showFirstTimeGuidance,
 }: Props) {
   const supabase = createClient();
   const router   = useRouter();
@@ -746,13 +712,6 @@ export default function HomeDashboard({
     return status !== 'dismissed' && status !== 'completed';
   });
   const hiddenPersonalizedCount = personalizedPaths.length - visiblePersonalizedPaths.length;
-  const firstVisiblePath = visiblePersonalizedPaths[0] ?? null;
-  const primaryHomeAction = firstVisiblePath?.actions[0] ?? {
-    label: 'Continue in Pathshala',
-    href: '/library',
-    icon: '📖',
-  };
-
   // Welcome back: user hasn't been active in 2+ days
   const isWelcomeBack = (() => {
     if (!lastShlokaDate) return false;
@@ -931,55 +890,12 @@ export default function HomeDashboard({
         </div>
       </div>
 
-      <section className="space-y-3">
-        <Link
-          href={primaryHomeAction.href}
-          className="clay-card block rounded-[1.7rem] p-4 transition hover:-translate-y-0.5"
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold" style={{ color: 'rgba(140, 77, 45, 0.65)' }}>
-                {readToday ? 'Continue gently' : 'Begin with practice'}
-              </p>
-              <h2 className="font-display text-lg font-bold text-gray-900 mt-1 leading-tight">
-                {readToday ? primaryHomeAction.label : `Read ${sacredText ? sacredTextMeta.label : 'today’s shloka'}`}
-              </h2>
-              <p className="text-sm text-gray-600 mt-2 leading-relaxed">
-                {readToday
-                  ? 'Your next step is ready.'
-                  : 'Start the day with one sacred reading.'}
-              </p>
-            </div>
-            <div className="clay-icon-well text-lg flex-shrink-0">{primaryHomeAction.icon}</div>
-          </div>
-        </Link>
-
-        <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {[
-            { href: '/panchang', icon: '🪔', label: 'Panchang' },
-            { href: displayCity ? '/mandali' : '/kul', icon: displayCity ? '🏡' : '❤️', label: displayCity ? 'Mandali' : 'Kul' },
-            { href: '/bhakti/mala', icon: '📿', label: 'Mala' },
-            { href: '/bhakti/zen', icon: '🪷', label: 'Zen' },
-            { href: '/bhakti', icon: '🎶', label: 'Bhakti' },
-          ].map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="glass-chip flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-gray-700 whitespace-nowrap"
-            >
-              <span>{item.icon}</span>
-              <span>{item.label}</span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {personalizedPaths.length > 0 && (
+      {showFirstTimeGuidance && personalizedPaths.length > 0 && (
         <section className="space-y-2">
           <div>
-            <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Your path this week</p>
+            <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Start here</p>
             <p className="text-sm text-gray-600 mt-0.5">
-              Personalized from your signup choices, spiritual level, and city. You can refine this later in Profile.
+              These first steps are based on what you chose during signup. Once you settle in, Home stays lighter and the rest can come through reminders.
             </p>
           </div>
 
