@@ -931,74 +931,46 @@ export default function HomeDashboard({
         </div>
       </div>
 
-      <section className="space-y-2">
-        <div>
-          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Today in Sangam</p>
-          <p className="hidden sm:block text-sm text-gray-600 mt-0.5">
-            Begin with one meaningful step, then move deeper if you want to.
-          </p>
-        </div>
-
-        <div className="grid gap-3">
-          <FocusActionCard
-            href={primaryHomeAction.href}
-            icon={primaryHomeAction.icon}
-            eyebrow={readToday ? 'Continue gently' : 'Begin with practice'}
-            title={readToday ? primaryHomeAction.label : `Read ${sacredText ? sacredTextMeta.label : 'today’s shloka'}`}
-            description={
-              readToday
-                ? 'Your first recommended step is ready based on your current path.'
-                : 'Start the day with a sacred reading before moving into calendars, family, or community.'
-            }
-            tone="primary"
-          />
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <FocusActionCard
-              href="/panchang"
-              icon="🪔"
-              eyebrow="Sacred time"
-              title="Check today’s rhythm"
-              description="Sunrise, Rahu Kaal, and the day’s sacred markers in one calmer view."
-              tone="soft"
-            />
-            <FocusActionCard
-              href={displayCity ? '/mandali' : '/kul'}
-              icon={displayCity ? '🏡' : '❤️'}
-              eyebrow={displayCity ? 'Local belonging' : 'Family space'}
-              title={displayCity ? 'See your Mandali pulse' : 'Visit your Kul'}
-              description={
-                displayCity
-                  ? 'Local members, events, and today’s conversation are waiting in one place.'
-                  : 'Family rhythm, lineage, and shared practice stay together here.'
-              }
-              tone="soft"
-            />
-            <FocusActionCard
-              href="/bhakti/mala"
-              icon="📿"
-              eyebrow="Daily practice"
-              title="Open Mala mode"
-              description="Count japa, save a session, and return gently through the week."
-              tone="soft"
-            />
-            <FocusActionCard
-              href="/bhakti/zen"
-              icon="🪷"
-              eyebrow="Quiet focus"
-              title="Enter Zen mode"
-              description="A calmer space for reading, breath, and simple chant sessions."
-              tone="soft"
-            />
-            <FocusActionCard
-              href="/bhakti"
-              icon="🎶"
-              eyebrow="Devotional space"
-              title="Open Bhakti"
-              description="Keep Mala, Zen, and the next devotional return paths together in one place."
-              tone="soft"
-            />
+      <section className="space-y-3">
+        <Link
+          href={primaryHomeAction.href}
+          className="clay-card block rounded-[1.7rem] p-4 transition hover:-translate-y-0.5"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold" style={{ color: 'rgba(140, 77, 45, 0.65)' }}>
+                {readToday ? 'Continue gently' : 'Begin with practice'}
+              </p>
+              <h2 className="font-display text-lg font-bold text-gray-900 mt-1 leading-tight">
+                {readToday ? primaryHomeAction.label : `Read ${sacredText ? sacredTextMeta.label : 'today’s shloka'}`}
+              </h2>
+              <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+                {readToday
+                  ? 'Your next step is ready.'
+                  : 'Start the day with one sacred reading.'}
+              </p>
+            </div>
+            <div className="clay-icon-well text-lg flex-shrink-0">{primaryHomeAction.icon}</div>
           </div>
+        </Link>
+
+        <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {[
+            { href: '/panchang', icon: '🪔', label: 'Panchang' },
+            { href: displayCity ? '/mandali' : '/kul', icon: displayCity ? '🏡' : '❤️', label: displayCity ? 'Mandali' : 'Kul' },
+            { href: '/bhakti/mala', icon: '📿', label: 'Mala' },
+            { href: '/bhakti/zen', icon: '🪷', label: 'Zen' },
+            { href: '/bhakti', icon: '🎶', label: 'Bhakti' },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="glass-chip flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-gray-700 whitespace-nowrap"
+            >
+              <span>{item.icon}</span>
+              <span>{item.label}</span>
+            </Link>
+          ))}
         </div>
       </section>
 

@@ -117,6 +117,7 @@ Last updated: 2026-04-09
 - [x] Create a dedicated experience roadmap in `UX_SWEEP_PLAN.md` for Panchang, Kul, Mandali, Pathshala, Home, Profile, and Notifications
 - [ ] Run the first UX sweep pass section by section instead of only adding net-new features
 - [x] Extend the first UX sweep through Tirtha Map, front-door flows, AI chat, and the Bhakti placeholder so fewer screens feel like unfinished utilities
+- [ ] Move the heavy `Today in Sangam` home guidance lane into a lighter notification / reminder model so Home keeps only one primary next step and compact quick actions
 
 ## Notes
 
@@ -146,6 +147,7 @@ Last updated: 2026-04-09
 - `PATHSHALA_SOURCE_POLICY.md` now centralizes the trust rules for what Pathshala may store locally, what must remain companion-only, what should stay catalog-first, and what launch may honestly claim.
 - Gita recitation now has a real in-app audio foundation even before hosted playback: chapter metadata, saved listening state on device, focused recitation mode, and a cleaner handoff into the authoritative companion source.
 - The notification system now has a first real preference layer: sacred-time reminder toggles, quiet hours, and cron filtering, but it still needs live production verification and richer destination targeting.
+- Home should not carry a large “what next” module long term; that guidance is better as notification-driven nudges plus one compact primary action on the dashboard.
 - Vercel Hobby only allows daily cron schedules, so sacred-time delivery is currently less precise than the ideal hourly model; re-evaluate hosting or background job infrastructure later if we want finer reminder timing.
 - `PANCHANG_SOURCE_STRATEGY.md` now tracks how launch copy, future provider strategy, and sacred-time claims should stay aligned.
 - `UX_SWEEP_PLAN.md` now tracks the next experience improvements by surface, with Panchang, Kul, and Mandali as the highest-leverage sweeps.
