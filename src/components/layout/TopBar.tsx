@@ -230,7 +230,7 @@ export default function TopBar({
           <Link href={homeHref} className="inline-flex">
             <BrandMark size="sm" />
           </Link>
-          <span className="font-display font-semibold text-[color:var(--brand-ink)] text-sm sm:text-base">{title}</span>
+          <span className="font-medium text-[color:var(--brand-ink)] text-sm sm:text-base">{title}</span>
         </div>
 
         {/* Right */}
@@ -246,7 +246,7 @@ export default function TopBar({
               </Link>
               <Link
                 href="/signup"
-                className="glass-button-secondary px-4 py-1.5 text-sm font-semibold rounded-full hover:opacity-90 transition"
+                className="glass-button-secondary px-4 py-1.5 text-sm font-medium rounded-full hover:opacity-90 transition"
                 style={{ color: 'var(--brand-primary-strong)' }}
               >
                 Join Free
@@ -275,7 +275,7 @@ export default function TopBar({
                       className="glass-panel-strong absolute left-0 top-11 w-72 rounded-[16px] overflow-hidden z-50 origin-top-left bg-white"
                     >
                       <div className="px-4 py-3 border-b border-black/5 flex items-center justify-between">
-                        <span className="font-semibold text-sm text-[color:var(--brand-ink)]">Sanatana Sangam</span>
+                        <span className="font-medium text-sm text-[color:var(--brand-ink)]">Sanatana Sangam</span>
                         <button
                           onClick={() => setMenuOpen(false)}
                           className="w-8 h-8 rounded-full transition flex items-center justify-center text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary-strong)]"
@@ -395,7 +395,7 @@ export default function TopBar({
                           <CalendarDays size={16} />
                         </span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-gray-800">
+                          <p className="text-xs font-medium text-gray-800">
                             {permission === 'denied'
                               ? 'Notifications blocked'
                               : 'Enable push notifications'}
@@ -421,14 +421,14 @@ export default function TopBar({
                                     }
                                   }
                                 }}
-                                className="glass-button-primary text-xs font-semibold px-3 py-1 rounded-full text-white transition"
+                                className="glass-button-primary text-xs font-medium px-3 py-1 rounded-full text-white transition"
                               >
                                 Enable
                               </button>
                               {permission === 'default' && (
                                 <button
                                   onClick={dismissPushPromptForNow}
-                                  className="text-xs font-semibold text-gray-500 hover:text-gray-700 transition"
+                                  className="text-xs font-medium text-gray-500 hover:text-gray-700 transition"
                                 >
                                   Later
                                 </button>

@@ -6,7 +6,9 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown, CornerDownRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
-import MvpHero from '@/components/layout/MvpHero';
+import Card from '@/components/ui/Card';
+import Chip from '@/components/ui/Chip';
+import PillNav from '@/components/ui/PillNav';
 import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
 import { formatRelativeTime, getInitials, ISHTA_DEVATAS } from '@/lib/utils';
 import { useLocation } from '@/lib/LocationContext';
@@ -1002,28 +1004,6 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
     : mandali
       ? `${mandali.city}, ${mandali.country}`
       : profile?.city ?? '';
-  const primaryMandaliAction =
-    eventCount > 0
-      ? {
-          label: 'See upcoming events',
-          hint: `${eventCount} local event${eventCount === 1 ? '' : 's'} waiting`,
-          onClick: () => setActiveTab('events' as const),
-          icon: <Calendar size={16} className="text-gray-500" />,
-        }
-      : vichaarCount > 0
-        ? {
-            label: 'Join today’s Vichaar',
-            hint: `${vichaarCount} local conversation${vichaarCount === 1 ? '' : 's'}`,
-            onClick: () => setActiveTab('vichaar' as const),
-            icon: <MessageSquare size={16} className="text-gray-500" />,
-          }
-        : {
-            label: 'Meet your Mandali',
-            hint: `${visibleMembers.length} member${visibleMembers.length === 1 ? '' : 's'} nearby`,
-            onClick: () => setActiveTab('members' as const),
-            icon: <Users size={16} className="text-gray-500" />,
-          };
-
   function hideContentFromView(contentId: string) {
     setPosts((current) => current.filter((post) => post.id !== contentId));
     setWiderPosts((current) => current.filter((post) => post.id !== contentId));
@@ -1153,109 +1133,56 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
 
   return (
     <div className="space-y-4 fade-in">
-      <MvpHero
-        theme="mandali"
-        title={neighbourhoodLabel}
-        description={`A local Sangam for ${placeLabel.toLowerCase()}, with one clear next step instead of a noisy feed.`}
-        chips={[placeLabel, `${visibleMembers.length} members`]}
-        actions={
-          <div className="flex items-center gap-2">
-            <button onClick={() => setShowSearch(true)}
-              className="inline-flex items-center gap-2 rounded-full border border-black/5 bg-white/92 px-4 py-2 text-sm font-semibold text-[color:var(--brand-primary-strong)] transition hover:bg-white">
-              <Search size={13} /> Find Sanatani
-            </button>
-
-            <div className="relative">
-              <button
-                onClick={() => setShowMandaliMenu(m => !m)}
-                className="flex items-center justify-center w-9 h-9 rounded-full border border-black/5 bg-white/92 text-[color:var(--brand-primary-strong)] transition hover:bg-white"
-                title="Mandali options"
-              >
-                ⋯
-              </button>
-              {showMandaliMenu && (
-                <div className="absolute right-0 top-11 z-50 bg-white rounded-2xl shadow-xl border border-gray-100 w-52 overflow-hidden"
-                  onClick={() => setShowMandaliMenu(false)}>
-                  <button
-                    onClick={async () => {
-                      await supabase.from('profiles').update({ mandali_id: null }).eq('id', userId);
-                      router.refresh();
-                    }}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 transition text-left border-b border-gray-50 hover:bg-[var(--brand-primary-soft)]">
-                    <MapPin size={14} style={{ color: 'var(--brand-primary-strong)' }} />
-                    Change my Mandali
-                  </button>
-                  <button
-                    onClick={leaveMandali}
-                    disabled={leavingMandali}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition text-left disabled:opacity-50">
-                    <X size={14} />
-                    {leavingMandali ? 'Leaving…' : 'Leave this Mandali'}
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        }
-      />
+      <div className="flex items-center justify-between px-1 pb-3">
+        <p className="text-xl font-medium">Mandali</p>
+        <Chip>{placeLabel}</Chip>
+      </div>
 
       <div className="grid gap-3 sm:grid-cols-[1.25fr_0.95fr]">
-        <button
-          type="button"
-          onClick={primaryMandaliAction.onClick}
-          className="glass-panel rounded-[1.7rem] p-4 text-left transition hover:bg-white/85"
-        >
-          <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">Start here</p>
-          <div className="flex items-start justify-between gap-3 mt-3">
+        <Card className="p-4">
+          <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-gray-900">{primaryMandaliAction.label}</p>
-              <p className="text-sm text-gray-500 mt-1 leading-relaxed">{primaryMandaliAction.hint}</p>
+              <p className="text-sm font-medium text-gray-900">{neighbourhoodLabel}</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">{visibleMembers.length} members</p>
             </div>
-            <div className="clay-icon-well flex-shrink-0">{primaryMandaliAction.icon}</div>
+            <Chip className="text-[10px]">Joined</Chip>
           </div>
-        </button>
+          <div className="mt-3 flex -space-x-2">
+            {visibleMembers.slice(0, 4).map((member) => (
+              <div key={member.id} className="flex h-9 w-9 items-center justify-center rounded-full border bg-[color:var(--saffron-50)] text-[11px] font-medium text-[color:var(--saffron-800)]" style={{ borderColor: 'rgba(0,0,0,0.15)' }}>
+                {getInitials(member.full_name ?? member.username ?? 'S')}
+              </div>
+            ))}
+            {visibleMembers.length > 4 ? (
+              <div className="flex h-9 w-9 items-center justify-center rounded-full border bg-[color:var(--surface-base)] text-[11px] font-medium text-gray-500" style={{ borderColor: 'rgba(0,0,0,0.15)' }}>
+                +{visibleMembers.length - 4}
+              </div>
+            ) : null}
+          </div>
+          <p className="mt-3 text-xs text-gray-500 leading-relaxed">A community of Sanatanis for satsang, festivals, and shared practice.</p>
+        </Card>
 
-        <div className="hidden sm:block glass-panel rounded-[1.7rem] p-4">
-          <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">Local pulse</p>
+        <Card className="hidden sm:block p-4">
+          <p className="text-[13px] font-medium text-gray-500">Local pulse</p>
           <div className="grid grid-cols-3 gap-2 mt-3">
             {[
               { label: 'Members', value: visibleMembers.length },
               { label: 'Events', value: eventCount },
               { label: 'Vichaar', value: vichaarCount },
             ].map((item) => (
-              <div key={item.label} className="rounded-[1.1rem] bg-white/72 border border-white/80 px-3 py-3 text-center">
-                <p className="font-display font-bold text-xl" style={{ color: 'var(--brand-primary-strong)' }}>{item.value}</p>
-                <p className="text-[10px] uppercase tracking-[0.16em] text-gray-400 font-semibold mt-1">{item.label}</p>
+              <div key={item.label} className="rounded-[16px] border px-3 py-3 text-center" style={{ borderColor: 'rgba(0,0,0,0.15)' }}>
+                <p className="text-xl font-medium text-[color:var(--saffron-800)]">{item.value}</p>
+                <p className="text-[11px] text-gray-400 mt-1">{item.label}</p>
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       </div>
 
       {showSearch && <FindSanataniModal userId={userId} onClose={() => setShowSearch(false)} />}
 
       {/* ── Tabs ── */}
-      <div className="flex bg-gray-100 rounded-2xl p-1">
-        {tabs.map(({ key, label, count }) => (
-          <button
-            key={key}
-            onClick={() => setActiveTab(key)}
-            className={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${
-              activeTab === key
-                ? 'bg-white shadow-sm font-semibold'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-            style={activeTab === key ? { color: 'var(--brand-primary-strong)' } : undefined}
-          >
-            {label}
-            {count > 0 && (
-              <span className="ml-1 text-xs" style={activeTab === key ? { color: 'rgba(168, 94, 113, 0.7)' } : undefined}>
-                ({count})
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
+      <PillNav value={activeTab} onChange={setActiveTab} items={tabs.map(({ key, label }) => ({ value: key, label }))} />
 
       {/* ── Tab Content ── */}
       {activeTab === 'members' && (

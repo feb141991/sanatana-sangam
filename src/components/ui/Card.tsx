@@ -1,27 +1,24 @@
-import type { HTMLAttributes } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
-type CardTone = 'panel' | 'strong' | 'soft';
-
-const TONES: Record<CardTone, string> = {
-  panel: 'glass-panel',
-  strong: 'glass-panel-strong',
-  soft: 'bg-white/80 border border-[color:var(--brand-primary-soft)]',
-};
-
-export function Card({
+export default function Card({
+  children,
   className,
-  tone = 'panel',
+  style,
   ...props
-}: HTMLAttributes<HTMLDivElement> & { tone?: CardTone }) {
+}: HTMLAttributes<HTMLDivElement> & {
+  children: ReactNode;
+}) {
   return (
     <div
+      {...props}
       className={cn(
-        'rounded-[1.8rem] px-5 py-5 shadow-card',
-        TONES[tone],
+        'rounded-[16px] border bg-white px-4 py-4 transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
         className
       )}
-      {...props}
-    />
+      style={{ borderColor: 'rgba(0,0,0,0.15)', ...style }}
+    >
+      {children}
+    </div>
   );
 }

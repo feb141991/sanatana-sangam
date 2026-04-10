@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Search, BookOpen } from 'lucide-react';
 import {
   PATHSHALA_TRADITIONS,
   getEntriesByTradition,
@@ -6,10 +7,12 @@ import {
   getSectionsByTradition,
   type LibraryTradition,
 } from '@/lib/library-content';
-import MvpHero from '@/components/layout/MvpHero';
 import { getPathshalaTraditionHref } from '@/lib/pathshala-links';
 import type { PathshalaStudySummary } from '@/lib/pathshala-state';
 import { MotionFade, MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
+import Chip from '@/components/ui/Chip';
+import IconSquare from '@/components/ui/IconSquare';
+import PillNav from '@/components/ui/PillNav';
 
 export default function LibraryClient({
   defaultSection = 'gita',
@@ -21,30 +24,50 @@ export default function LibraryClient({
   bookmarkedEntries?: PathshalaStudySummary[];
 }) {
   const preferredTradition = getLibrarySectionById(defaultSection)?.tradition ?? 'hindu';
+  const topNavValue: 'gita' | 'upanishad' | 'stotram' =
+    preferredTradition === 'hindu' ? 'gita' : preferredTradition === 'sikh' ? 'stotram' : 'upanishad';
 
   return (
     <MotionFade className="space-y-3 pb-6 fade-in">
-      <MvpHero
-        theme="pathshala"
-        title="Parampara Pathshala"
-        description="Choose one tradition, then move through one clear study track at a time."
-        chips={['Scripture', 'Recite', 'Return loops']}
+      <div className="flex items-center justify-between px-1 pb-3">
+        <p className="text-xl font-medium">Shastra</p>
+        <Search size={16} className="text-gray-400" />
+      </div>
+
+      <PillNav
+        value={topNavValue}
+        onChange={() => {}}
+        items={[
+          { value: 'gita', label: 'Gita' },
+          { value: 'upanishad', label: 'Upanishad' },
+          { value: 'stotram', label: 'Stotram' },
+        ]}
       />
 
       {(continueLearning || bookmarkedEntries.length > 0) && (
         <section className="space-y-3">
+          <p className="text-[13px] font-medium text-gray-500 mb-2">Continue reading</p>
 
           {continueLearning && (
             <Link href={continueLearning.href} className="surface-panel block px-4 py-4 hover:-translate-y-0.5 transition active:scale-[0.97]">
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3.5">
+                <IconSquare className="h-16 w-[52px] rounded-[8px]">
+                  <BookOpen size={18} />
+                </IconSquare>
                 <div>
-                  <p className="text-[11px] text-[color:var(--text-tertiary)]">Continue learning</p>
-                  <h2 className="text-[22px] font-medium text-gray-900 mt-2">{continueLearning.title}</h2>
-                  <p className="text-[14px] text-gray-600 mt-1">{continueLearning.sectionTitle} · {continueLearning.source}</p>
+                  <p className="text-[15px] font-medium text-gray-900">{continueLearning.title}</p>
+                  <p className="text-[11px] text-gray-400 mt-0.5">{continueLearning.sectionTitle} · {continueLearning.source}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className="flex-1 h-[3px] rounded-full bg-black/10 min-w-[120px]">
+                      <div className="h-full rounded-full bg-[color:var(--saffron-200)]" style={{ width: '65%' }} />
+                    </div>
+                    <span className="text-[11px] text-[color:var(--saffron-400)]">47/72</span>
+                  </div>
+                  <div className="mt-3 flex gap-2">
+                    <Chip>Resume chapter 2</Chip>
+                    <Chip variant="outline">All chapters</Chip>
+                  </div>
                 </div>
-                <span className="glass-chip rounded-[24px] px-3 py-1 text-[12px] font-medium">
-                  Resume
-                </span>
               </div>
             </Link>
           )}
@@ -70,6 +93,7 @@ export default function LibraryClient({
       )}
 
       <section className="space-y-3">
+        <p className="text-[13px] font-medium text-gray-500 mb-2">Explore</p>
         <MotionStagger className="grid gap-3 sm:grid-cols-2" delay={0.06}>
           {PATHSHALA_TRADITIONS.map((tradition) => {
             const sections = getSectionsByTradition(tradition.id);
