@@ -42,6 +42,14 @@ interface SacredTextMeta {
   accentLight:  string;   // light tint hex
 }
 
+interface FeatureTheme {
+  surface: string;
+  border: string;
+  iconWell: string;
+  accent: string;
+  accentStrong: string;
+}
+
 interface Props {
   userId:            string;
   userName:          string;
@@ -69,11 +77,56 @@ interface Props {
 }
 
 const quickAccessItems = [
-  { label: 'Nearby Tirthas', icon: '🛕', href: '/tirtha-map', desc: 'Find sacred places near you', bg: 'bg-amber-50', border: 'border-amber-100', iconBg: 'bg-amber-100' },
-  { label: 'My Mandali', icon: '🏡', href: '/mandali', desc: 'Your local sangam', bg: 'bg-rose-50', border: 'border-rose-100', iconBg: 'bg-rose-100' },
-  { label: 'My Kul', icon: '❤️', href: '/kul', desc: 'Family sadhana together', bg: 'bg-stone-50', border: 'border-stone-200', iconBg: 'bg-stone-200' },
-  { label: 'Pathshala', icon: '📖', href: '/library', desc: 'Tradition-first study tracks', bg: 'bg-yellow-50', border: 'border-yellow-100', iconBg: 'bg-yellow-100' },
+  { label: 'Tirtha', icon: '🛕', href: '/tirtha-map', desc: 'Find sacred places near you', theme: 'tirtha' },
+  { label: 'Mandali', icon: '🏡', href: '/mandali', desc: 'Your local sangam', theme: 'mandali' },
+  { label: 'Kul', icon: '❤️', href: '/kul', desc: 'Family sadhana together', theme: 'kul' },
+  { label: 'Pathshala', icon: '📖', href: '/library', desc: 'Tradition-first study tracks', theme: 'pathshala' },
 ];
+
+const HOME_THEMES: Record<string, FeatureTheme> = {
+  panchang: {
+    surface: 'linear-gradient(135deg, #f8efe7 0%, #fffdfa 100%)',
+    border: 'rgba(124, 58, 45, 0.16)',
+    iconWell: 'rgba(124, 58, 45, 0.1)',
+    accent: 'var(--brand-primary)',
+    accentStrong: 'var(--brand-primary-strong)',
+  },
+  pathshala: {
+    surface: 'linear-gradient(135deg, #f6f0e7 0%, #fffdfa 100%)',
+    border: 'rgba(138, 106, 47, 0.16)',
+    iconWell: 'rgba(138, 106, 47, 0.1)',
+    accent: '#8a6a2f',
+    accentStrong: '#6f5421',
+  },
+  bhakti: {
+    surface: 'linear-gradient(135deg, #f4ece6 0%, #fffdfb 100%)',
+    border: 'rgba(124, 58, 45, 0.14)',
+    iconWell: 'rgba(124, 58, 45, 0.08)',
+    accent: 'var(--brand-primary)',
+    accentStrong: 'var(--brand-primary-strong)',
+  },
+  kul: {
+    surface: 'linear-gradient(135deg, #eef2ef 0%, #ffffff 100%)',
+    border: 'rgba(107, 138, 122, 0.18)',
+    iconWell: 'rgba(107, 138, 122, 0.1)',
+    accent: 'var(--brand-secondary)',
+    accentStrong: '#557060',
+  },
+  mandali: {
+    surface: 'linear-gradient(135deg, #f3efea 0%, #ffffff 100%)',
+    border: 'rgba(107, 90, 77, 0.16)',
+    iconWell: 'rgba(107, 90, 77, 0.1)',
+    accent: 'var(--brand-earth)',
+    accentStrong: '#56493f',
+  },
+  tirtha: {
+    surface: 'linear-gradient(135deg, #f3eee7 0%, #fffdf9 100%)',
+    border: 'rgba(111, 84, 33, 0.16)',
+    iconWell: 'rgba(111, 84, 33, 0.1)',
+    accent: '#7a5e2a',
+    accentStrong: '#604a22',
+  },
+};
 
 // ── Invite code — deterministic from userId (no DB needed) ─────────────────
 function generateInviteCode(userId: string): string {
@@ -139,12 +192,12 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
         <div
           className="rounded-2xl p-5 text-center border"
           style={{
-            background: 'linear-gradient(135deg, rgba(123, 26, 26, 0.06), rgba(195, 135, 47, 0.08))',
-            borderColor: 'rgba(123, 26, 26, 0.1)',
+            background: 'linear-gradient(135deg, rgba(243, 231, 226, 0.72), rgba(255, 255, 255, 0.96))',
+            borderColor: 'rgba(124, 58, 45, 0.12)',
           }}
         >
           <p className="text-xs text-gray-400 mb-2 font-medium uppercase tracking-wider">Your Invite Code</p>
-          <p className="font-display font-bold text-3xl text-[#7B1A1A] tracking-widest">{code}</p>
+          <p className="font-display font-bold text-3xl tracking-widest" style={{ color: 'var(--brand-primary-strong)' }}>{code}</p>
           <p className="text-xs text-gray-400 mt-2">{link}</p>
         </div>
 
@@ -152,14 +205,19 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
         <div className="grid grid-cols-2 gap-3">
           <button onClick={share}
             className="py-3 text-white font-semibold rounded-xl hover:opacity-90 transition text-sm"
-            style={{ background: '#7B1A1A' }}>
+            style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}>
             Share 🙏
           </button>
           <button onClick={async () => {
             await navigator.clipboard.writeText(code);
             toast.success('Code copied!');
           }}
-            className="py-3 text-[#7B1A1A] font-semibold rounded-xl border border-[#7B1A1A]/20 hover:bg-[#7B1A1A]/5 transition text-sm">
+            className="py-3 font-semibold rounded-xl border transition text-sm"
+            style={{
+              color: 'var(--brand-primary)',
+              borderColor: 'rgba(124, 58, 45, 0.18)',
+              background: 'rgba(255,255,255,0.88)',
+            }}>
             Copy Code
           </button>
         </div>
@@ -282,7 +340,7 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
                 onClick={() => { setViewDate(d => new Date(y, d.getMonth(), 1)); setShowYearPicker(false); }}
                 className="py-2 rounded-xl text-xs font-medium transition"
                 style={y === viewDate.getFullYear()
-                  ? { background: '#7B1A1A', color: 'white' }
+                  ? { background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))', color: 'white' }
                   : { background: '#f9fafb', color: '#374151' }}>
                 {y}
               </button>
@@ -307,8 +365,8 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
                     onClick={() => { onSelect(day); onClose(); }}
                     className="h-8 w-8 mx-auto rounded-full text-xs flex items-center justify-center transition active:scale-95"
                     style={
-                      isSelected ? { background: '#7B1A1A', color: 'white', fontWeight: 700 } :
-                      isToday    ? { border: '1.5px solid #7B1A1A', color: '#7B1A1A', fontWeight: 700 } :
+                      isSelected ? { background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))', color: 'white', fontWeight: 700 } :
+                      isToday    ? { border: '1.5px solid var(--brand-primary)', color: 'var(--brand-primary)', fontWeight: 700 } :
                       !inMonth   ? { color: '#d1d5db' } :
                                    { color: '#1f2937' }
                     }>
@@ -320,7 +378,8 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
             {/* Jump to today */}
             <div className="mt-3 flex justify-center">
           <button onClick={() => { onSelect(new Date()); onClose(); }}
-            className="text-xs px-5 py-1.5 rounded-full border border-gray-200 text-gray-500 transition font-medium hover:border-[#8c4d2d] hover:text-[#8c4d2d]">
+            className="text-xs px-5 py-1.5 rounded-full border border-gray-200 text-gray-500 transition font-medium"
+            style={{ borderColor: 'rgba(124, 58, 45, 0.16)', color: 'var(--brand-primary)' }}>
                 Today
               </button>
             </div>
@@ -414,7 +473,7 @@ function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onC
               <div className="clay-card rounded-[1.6rem] p-4">
                 <p
                   className="text-[11px] font-semibold uppercase tracking-[0.18em]"
-                  style={{ color: 'rgba(140, 77, 45, 0.7)' }}
+                  style={{ color: 'var(--brand-primary)' }}
                 >
                   {previewTone}
                 </p>
@@ -558,9 +617,9 @@ function CalendarModal({
                 return (
                   <div key={f.name + f.date}
                     onClick={() => { if (onDateSelect) { onDateSelect(new Date(f.date + 'T00:00:00')); onClose(); } }}
-                    className={`flex items-center gap-3 bg-white border border-gray-100 rounded-2xl p-3 transition ${onDateSelect ? 'hover:border-[#8c4d2d]/40 cursor-pointer active:scale-95' : 'hover:border-[#8c4d2d]/20'}`}>
+                    className="flex items-center gap-3 bg-white border border-gray-100 rounded-2xl p-3 transition cursor-pointer active:scale-95">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-                      style={{ background: 'rgba(140, 77, 45, 0.08)' }}>
+                      style={{ background: 'rgba(124, 58, 45, 0.08)' }}>
                       {f.emoji}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -859,34 +918,55 @@ export default function HomeDashboard({
     }
   }
 
+  const homeHeroTheme = HOME_THEMES.pathshala;
+  const panchangTheme = HOME_THEMES.panchang;
+  const sacredTextTheme = tradition === 'hindu' ? HOME_THEMES.pathshala : HOME_THEMES.bhakti;
+
   return (
     <div className="space-y-4 pb-2 fade-in">
 
       {/* ── Greeting ── */}
-      <div className="pt-2 flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <button
-            onClick={() => setGreetingSheetOpen(true)}
-            className="group -ml-1 rounded-2xl px-1 py-1 flex items-center gap-1.5 text-left hover:bg-white/50 transition"
-          >
-            <h1 className="font-display text-xl font-bold text-gray-900 leading-tight">
-              {greeting}, {userName.split(' ')[0]}!
-            </h1>
-            <Pencil size={13} className="text-gray-300 group-hover:text-[color:var(--brand-primary)] transition flex-shrink-0 mt-1" />
-          </button>
-          <p className="hidden sm:block text-xs mt-1 font-medium" style={{ color: 'rgba(140, 77, 45, 0.78)' }}>
-            {greetingMode}
-          </p>
-          <p className="sm:hidden text-xs mt-1 font-medium" style={{ color: 'rgba(140, 77, 45, 0.78)' }}>
-            Today&rsquo;s rhythm is ready.
-          </p>
-          {displayCity && (
-            <p className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
-              <MapPin size={12} className="text-[color:var(--brand-primary)]" />
-              {displayCity}
-              {coords && <span className="text-[10px] text-gray-400 ml-1">📍 live</span>}
+      <div
+        className="surface-outline rounded-[1.9rem] px-4 py-4 sm:px-5 sm:py-5"
+        style={{ background: homeHeroTheme.surface, borderColor: homeHeroTheme.border }}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <p
+              className="text-[10px] uppercase tracking-[0.22em] font-semibold"
+              style={{ color: homeHeroTheme.accent }}
+            >
+              Home
             </p>
-          )}
+            <button
+              onClick={() => setGreetingSheetOpen(true)}
+              className="group mt-1 -ml-1 rounded-2xl px-1 py-1 flex items-center gap-1.5 text-left transition"
+            >
+              <h1 className="font-display text-[1.45rem] sm:text-[1.65rem] font-bold text-gray-900 leading-tight">
+                {greeting}, {userName.split(' ')[0]}!
+              </h1>
+              <Pencil size={13} className="text-gray-300 group-hover:text-[color:var(--brand-primary)] transition flex-shrink-0 mt-1" />
+            </button>
+            <p className="text-xs mt-1.5 font-medium text-gray-500">
+              {showFirstTimeGuidance ? greetingMode : 'A quieter sacred day, ready when you are.'}
+            </p>
+            {displayCity && (
+              <p className="text-sm text-gray-500 flex items-center gap-1 mt-2">
+                <MapPin size={12} style={{ color: homeHeroTheme.accent }} />
+                {displayCity}
+                {coords && <span className="text-[10px] text-gray-400 ml-1">live</span>}
+              </p>
+            )}
+          </div>
+          <div
+            className="hidden sm:flex items-center justify-center rounded-[1.35rem] px-3 py-2 text-xs font-semibold"
+            style={{
+              background: homeHeroTheme.iconWell,
+              color: homeHeroTheme.accentStrong,
+            }}
+          >
+            Today
+          </div>
         </div>
       </div>
 
@@ -906,7 +986,7 @@ export default function HomeDashboard({
               <div className={`clay-card ${path.accentClass} rounded-[1.8rem] p-4`}>
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: 'rgba(140, 77, 45, 0.65)' }}>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: 'var(--brand-primary)' }}>
                       {path.eyebrow}
                     </p>
                     <h2 className="font-display text-lg font-bold text-gray-900 mt-1">{path.title}</h2>
@@ -985,33 +1065,37 @@ export default function HomeDashboard({
       )}
 
       {/* ── Panchang Widget ── */}
-      <div className="rounded-2xl overflow-hidden shadow-sm" style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
-        <div className="px-4 pt-3 pb-1 flex items-center gap-2">
+      <div
+        className="rounded-[1.95rem] overflow-hidden border shadow-sm"
+        style={{ background: panchangTheme.surface, borderColor: panchangTheme.border, boxShadow: '0 16px 34px rgba(28, 26, 23, 0.06)' }}
+      >
+        <div className="px-4 pt-4 pb-2 flex items-center gap-2">
           <span className="text-base">🪔</span>
-          <span className="text-white/80 text-xs font-medium tracking-wider uppercase">
+          <span className="text-[11px] font-medium tracking-[0.16em] uppercase" style={{ color: panchangTheme.accent }}>
             {isToday ? 'Aaj Ka Panchang' : 'Panchang'}
           </span>
           {/* Day navigation */}
           <div className="ml-auto flex items-center gap-1">
             <button onClick={() => navigateDay(-1)}
               className="w-6 h-6 rounded-full flex items-center justify-center transition"
-              style={{ background: 'rgba(255,255,255,0.15)' }}>
-              <ChevronLeft size={13} color="white" />
+              style={{ background: panchangTheme.iconWell }}>
+              <ChevronLeft size={13} color={panchangTheme.accentStrong} />
             </button>
             {/* Tap date label to open full date picker */}
             <button onClick={() => setDatePickerOpen(true)}
-              className="text-white/90 text-xs min-w-[80px] text-center font-medium hover:text-white transition underline-offset-2 hover:underline">
+              className="text-xs min-w-[80px] text-center font-medium transition underline-offset-2 hover:underline"
+              style={{ color: panchangTheme.accentStrong }}>
               {isToday ? 'Today' : selectedDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
             </button>
             <button onClick={() => navigateDay(1)}
               className="w-6 h-6 rounded-full flex items-center justify-center transition"
-              style={{ background: 'rgba(255,255,255,0.15)' }}>
-              <ChevronRight size={13} color="white" />
+              style={{ background: panchangTheme.iconWell }}>
+              <ChevronRight size={13} color={panchangTheme.accentStrong} />
             </button>
             {!isToday && (
               <button onClick={() => setSelectedDate(new Date())}
                 className="text-[10px] px-2 py-0.5 rounded-full font-medium ml-1"
-                style={{ background: 'rgba(255,255,255,0.2)', color: 'white' }}>
+                style={{ background: panchangTheme.iconWell, color: panchangTheme.accentStrong }}>
                 Today
               </button>
             )}
@@ -1029,17 +1113,17 @@ export default function HomeDashboard({
 
         {/* Rahu Kaal + action buttons */}
         <div className="mx-4 mb-3 rounded-xl px-3 py-2 flex items-center gap-2"
-          style={{ background: 'rgba(255,255,255,0.12)' }}>
+          style={{ background: 'rgba(255,255,255,0.65)', border: `1px solid ${panchangTheme.border}` }}>
           <span className="text-sm">⚠️</span>
           <div className="flex-1">
-            <span className="text-white/70 text-xs">Rahu Kaal: </span>
-            <span className="text-white text-xs font-semibold">{panchang.rahuKaal}</span>
+            <span className="text-gray-500 text-xs">Rahu Kaal: </span>
+            <span className="text-xs font-semibold" style={{ color: panchangTheme.accentStrong }}>{panchang.rahuKaal}</span>
           </div>
           {/* Full Panchang page link */}
           <Link
             href="/panchang"
             className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition"
-            style={{ background: 'rgba(255,255,255,0.18)', color: 'white' }}
+            style={{ background: panchangTheme.iconWell, color: panchangTheme.accentStrong }}
           >
             <CalendarDays size={12} /> Full Panchang
           </Link>
@@ -1047,13 +1131,13 @@ export default function HomeDashboard({
           <button
             onClick={sharePanchang}
             className="w-7 h-7 rounded-full flex items-center justify-center transition"
-            style={{ background: 'rgba(255,255,255,0.18)' }}
+            style={{ background: panchangTheme.iconWell }}
             title="Share Panchang"
           >
-            <Share2 size={13} color="white" />
+            <Share2 size={13} color={panchangTheme.accentStrong} />
           </button>
         </div>
-        <div className="px-4 pb-3 text-[11px] text-white/78 leading-relaxed">
+        <div className="px-4 pb-4 text-[11px] text-gray-500 leading-relaxed">
           {PANCHANG_TRUST_META.precisionLabel}. {PANCHANG_TRUST_META.guidanceNote}
         </div>
       </div>
@@ -1061,14 +1145,20 @@ export default function HomeDashboard({
       {/* ── Daily Sacred Text — tradition-aware ── */}
       <div
         ref={shlokaRef}
-        className="bg-white rounded-2xl shadow-sm p-4"
-        style={{ borderWidth: 1, borderStyle: 'solid', borderColor: sacredTextMeta.accentLight }}>
+        className="rounded-[1.85rem] shadow-sm p-4"
+        style={{
+          borderWidth: 1,
+          borderStyle: 'solid',
+          borderColor: sacredTextTheme.border,
+          background: sacredTextTheme.surface,
+          boxShadow: '0 16px 32px rgba(28, 26, 23, 0.05)',
+        }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <span className="text-lg">{sacredTextMeta.icon}</span>
             <span className="font-display font-semibold text-gray-800 text-sm">{sacredTextMeta.label}</span>
             {streak > 0 && (
-              <span className="text-xs font-bold px-2 py-0.5 rounded-full border" style={{ color: 'var(--brand-primary)', background: 'var(--brand-primary-soft)', borderColor: 'rgba(123, 26, 26, 0.12)' }}>
+              <span className="text-xs font-bold px-2 py-0.5 rounded-full border" style={{ color: 'var(--brand-primary)', background: 'var(--brand-primary-soft)', borderColor: 'rgba(124, 58, 45, 0.12)' }}>
                 🔥 {streak}
               </span>
             )}
@@ -1112,7 +1202,7 @@ export default function HomeDashboard({
                 : 'text-white hover:opacity-90'
             }`}
             style={readToday
-              ? { background: 'var(--brand-primary-soft)', color: 'var(--brand-primary)', border: '1px solid rgba(123, 26, 26, 0.14)' }
+              ? { background: 'var(--brand-primary-soft)', color: 'var(--brand-primary)', border: '1px solid rgba(124, 58, 45, 0.14)' }
               : { background: sacredTextMeta.accentColour }}>
             {readToday
               ? '✓ Read today'
@@ -1141,8 +1231,8 @@ export default function HomeDashboard({
       {/* ── Coming Up ── */}
       <div
         ref={festivalsRef}
-        className="rounded-2xl border overflow-hidden shadow-sm"
-        style={{ background: 'linear-gradient(135deg, #FFF8F0 0%, #FDF6E3 100%)', borderColor: '#f8c88a' }}>
+        className="rounded-[1.85rem] border overflow-hidden shadow-sm"
+        style={{ background: HOME_THEMES.tirtha.surface, borderColor: HOME_THEMES.tirtha.border, boxShadow: '0 16px 32px rgba(28, 26, 23, 0.05)' }}>
         <div className="px-4 pt-3 pb-1 flex items-center justify-between">
           <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Coming Up</p>
           <button
@@ -1155,7 +1245,7 @@ export default function HomeDashboard({
         {festival && daysUntilFestival !== null ? (
           <div className="px-4 pb-3 flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
-              style={{ background: 'rgba(140, 77, 45, 0.12)' }}>
+              style={{ background: HOME_THEMES.tirtha.iconWell }}>
               {festival.emoji}
             </div>
             <div className="flex-1">
@@ -1183,17 +1273,27 @@ export default function HomeDashboard({
 
       {/* ── Quick Access ── */}
       <div>
-        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">Quick Access</p>
+        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">Explore</p>
         <MotionStagger className="grid grid-cols-2 gap-3" delay={0.08}>
           {quickAccessItems.map((item) => (
             <MotionItem key={item.href}>
-            <Link href={item.href}
-              className={`${item.bg} ${item.border} border rounded-2xl p-4 flex items-start gap-3 hover:shadow-sm active:scale-95 transition-all`}>
-              <div className={`${item.iconBg} w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0`}>
+            <Link
+              href={item.href}
+              className="border rounded-[1.55rem] p-4 flex items-start gap-3 active:scale-[0.99] transition-all"
+              style={{
+                background: HOME_THEMES[item.theme].surface,
+                borderColor: HOME_THEMES[item.theme].border,
+                boxShadow: '0 12px 26px rgba(28, 26, 23, 0.05)',
+              }}
+            >
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                style={{ background: HOME_THEMES[item.theme].iconWell }}
+              >
                 {item.icon}
               </div>
               <div>
-                <p className="font-semibold text-gray-800 text-sm leading-tight">{item.label}</p>
+                <p className="font-semibold text-sm leading-tight" style={{ color: HOME_THEMES[item.theme].accentStrong }}>{item.label}</p>
                 <p className="hidden sm:block text-xs text-gray-500 mt-0.5 leading-tight">{item.desc}</p>
               </div>
             </Link>
@@ -1204,8 +1304,8 @@ export default function HomeDashboard({
 
       {/* ── Vichaar Sabha CTA ── */}
       <Link href="/vichaar-sabha"
-        className="block w-full rounded-2xl border border-dashed p-4 text-center transition-colors hover:bg-[#8c4d2d]/5"
-        style={{ borderColor: 'rgba(140, 77, 45, 0.3)' }}>
+        className="block w-full rounded-[1.7rem] border p-4 text-center transition-colors"
+        style={{ borderColor: HOME_THEMES.pathshala.border, background: HOME_THEMES.pathshala.surface }}>
         <span className="text-lg">💬</span>
         <p className="font-semibold text-sm mt-1" style={{ color: 'var(--brand-primary)' }}>Join the Vichaar Sabha</p>
         <p className="text-xs text-gray-500 mt-0.5">Discuss dharma, share wisdom, ask questions</p>
@@ -1213,8 +1313,8 @@ export default function HomeDashboard({
 
       {/* ── Invite Friends ── */}
       <button onClick={() => setInviteOpen(true)}
-        className="w-full rounded-2xl border border-dashed p-4 text-center transition-colors"
-        style={{ borderColor: 'rgba(123, 26, 26, 0.18)', background: 'rgba(123, 26, 26, 0.02)' }}>
+        className="w-full rounded-[1.7rem] border p-4 text-center transition-colors"
+        style={{ borderColor: HOME_THEMES.kul.border, background: HOME_THEMES.kul.surface }}>
         <span className="text-lg">🙏</span>
         <p className="font-semibold text-sm mt-1" style={{ color: 'var(--brand-primary)' }}>Invite Friends & Family</p>
         <p className="text-xs text-gray-400 mt-0.5">Share Sanatana Sangam — spread the light of dharma</p>
