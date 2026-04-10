@@ -212,7 +212,7 @@ export default function TopBar({
           <Link href={homeHref} className="inline-flex">
             <BrandMark size="sm" />
           </Link>
-          <span className="font-display font-semibold text-white text-sm sm:text-base">{title}</span>
+          <span className="font-display font-semibold text-gray-900 text-sm sm:text-base">{title}</span>
         </div>
 
         {/* Right */}
@@ -222,7 +222,7 @@ export default function TopBar({
             <div className="flex items-center gap-2">
               <Link
                 href="/login"
-                className="text-xs font-medium text-white/75 hover:text-white transition"
+                className="text-xs font-medium text-gray-500 hover:text-gray-900 transition"
               >
                 Sign in
               </Link>
@@ -241,11 +241,11 @@ export default function TopBar({
                 <button
                   onClick={handleBellClick}
                   aria-label="Notifications"
-                  className="w-9 h-9 rounded-full hover:bg-white/12 transition flex items-center justify-center relative"
+                    className="w-9 h-9 rounded-full hover:bg-black/5 transition flex items-center justify-center relative"
                 >
-                  <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" stroke="white"/>
-                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" stroke="white"/>
+                  <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
                   </svg>
                   {unreadCount > 0 && (
                     <span

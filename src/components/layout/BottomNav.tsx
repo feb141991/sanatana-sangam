@@ -44,13 +44,13 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
               href={href}
               className={cn(
                 'relative flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all',
-                active ? 'text-white' : 'text-white/60 hover:text-white'
+                active ? 'text-white' : 'text-gray-500 hover:text-gray-900'
               )}
             >
               {active && (
                 <motion.span
                   layoutId="bottom-nav-active-shell"
-                  className="absolute inset-x-1 inset-y-0 rounded-[1.1rem] bg-white/10"
+                  className="absolute inset-x-1 inset-y-0 rounded-[1.1rem] bg-[color:var(--brand-primary)]"
                   transition={
                     prefersReducedMotion
                       ? { duration: 0 }

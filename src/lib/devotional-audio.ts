@@ -81,3 +81,7 @@ export const DEVOTIONAL_STARTER_TRACKS: DevotionalTrack[] = [
     note: 'A Buddhist chant option for broader Bhakti and Zen support.',
   },
 ];
+
+export const APPROVED_DEVOTIONAL_TRACKS = DEVOTIONAL_STARTER_TRACKS.filter(
+  (track) => track.approvalStatus === 'approved',
+);

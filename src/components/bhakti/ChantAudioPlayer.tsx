@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pause, Play, Volume2 } from 'lucide-react';
-import { DEVOTIONAL_STARTER_TRACKS, type DevotionalTrack } from '@/lib/devotional-audio';
+import { APPROVED_DEVOTIONAL_TRACKS, DEVOTIONAL_STARTER_TRACKS } from '@/lib/devotional-audio';
 import { playBeadTapFeedback } from '@/lib/practice-feedback';
 
 type Props = {
@@ -21,7 +21,7 @@ export default function ChantAudioPlayer({
   const tracks = useMemo(() => {
     const source = trackIds?.length
       ? DEVOTIONAL_STARTER_TRACKS.filter((track) => trackIds.includes(track.id))
-      : DEVOTIONAL_STARTER_TRACKS;
+      : APPROVED_DEVOTIONAL_TRACKS;
     return source.filter((track) => !!track.audioUrl);
   }, [trackIds]);
 
@@ -67,13 +67,13 @@ export default function ChantAudioPlayer({
   if (!activeTrack) return null;
 
   return (
-    <div className={`rounded-[1.45rem] border border-[color:var(--brand-primary-soft)] bg-white/80 ${compact ? 'px-3 py-3' : 'px-4 py-4'}`}>
+    <div className={`rounded-[1.45rem] border border-[color:var(--brand-primary-soft)] bg-white/90 ${compact ? 'px-3 py-3' : 'px-4 py-4'}`}>
       <audio ref={audioRef} preload="none" />
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-[color:var(--brand-primary)]">{title}</p>
           <p className="mt-1 text-sm font-semibold text-gray-900">{activeTrack.title}</p>
-          <p className="mt-1 text-xs text-gray-500">{activeTrack.sourceName}</p>
+          <p className="mt-1 text-xs text-gray-500">{activeTrack.creator} · {activeTrack.durationLabel}</p>
         </div>
         <button
           type="button"
@@ -105,7 +105,7 @@ export default function ChantAudioPlayer({
       <div className="mt-3 flex items-center justify-between gap-3">
         <div className="inline-flex items-center gap-2 text-xs text-gray-500">
           <Volume2 size={13} />
-          <span>{activeTrack.licenseLabel}</span>
+          <span>{activeTrack.sourceName}</span>
         </div>
         <a
           href={activeTrack.sourceUrl}
@@ -113,7 +113,7 @@ export default function ChantAudioPlayer({
           rel="noreferrer"
           className="text-xs font-semibold text-[color:var(--brand-primary-strong)]"
         >
-          Source →
+          Source
         </a>
       </div>
     </div>

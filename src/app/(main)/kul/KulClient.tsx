@@ -556,7 +556,10 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
 
       {/* Member streaks */}
       <div>
-        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">Sadhana Streaks</p>
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Sadhana Streaks</p>
+          <Link href="/kul/members" className="text-xs font-semibold text-[color:var(--brand-primary)]">Members</Link>
+        </div>
         <div className="space-y-2">
           {[...members].sort((a, b) => (b.profiles?.shloka_streak ?? 0) - (a.profiles?.shloka_streak ?? 0)).map(m => {
             const p = m.profiles;
@@ -594,10 +597,13 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
       {/* Pending tasks summary */}
       {pendingTasks > 0 && (
         <div>
-          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">Pending Tasks</p>
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Pending Tasks</p>
+            <Link href="/kul/tasks" className="text-xs font-semibold text-[color:var(--brand-primary)]">Tasks</Link>
+          </div>
           <div className="space-y-2">
             {tasks.filter(t => !t.completed).slice(0, 3).map(task => (
-              <div key={task.id} className="bg-white rounded-2xl border border-orange-100 p-3 flex items-center gap-3">
+              <Link key={task.id} href="/kul/tasks" className="bg-white rounded-2xl border border-orange-100 p-3 flex items-center gap-3 transition hover:border-[color:var(--brand-primary-soft)]">
                 <div className="w-8 h-8 rounded-xl bg-orange-50 flex items-center justify-center text-base flex-shrink-0">
                   {TASK_TYPES[task.task_type]?.emoji ?? '📌'}
                 </div>
@@ -608,10 +614,10 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
                     {task.due_date && ` · due ${new Date(task.due_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`}
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
             {pendingTasks > 3 && (
-              <p className="text-xs text-center text-gray-400">+{pendingTasks - 3} more tasks in the Tasks tab</p>
+              <Link href="/kul/tasks" className="block text-xs text-center text-[color:var(--brand-primary)]">+{pendingTasks - 3} more tasks</Link>
             )}
           </div>
         </div>

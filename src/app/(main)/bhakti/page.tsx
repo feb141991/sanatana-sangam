@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Card, SectionHeading } from '@/components/ui';
 import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
-import { DEVOTIONAL_STARTER_TRACKS } from '@/lib/devotional-audio';
+import { APPROVED_DEVOTIONAL_TRACKS } from '@/lib/devotional-audio';
 
 export default function BhaktiPage() {
   return (
@@ -66,7 +66,7 @@ export default function BhaktiPage() {
         <div className="mt-4 grid gap-3 lg:grid-cols-[0.9fr_1.1fr]">
           <ChantAudioPlayer title="Bhakti chant shelf" />
           <div className="grid gap-3 md:grid-cols-2">
-          {DEVOTIONAL_STARTER_TRACKS.map((track) => (
+          {APPROVED_DEVOTIONAL_TRACKS.map((track) => (
             <a
               key={track.id}
               href={track.sourceUrl}
@@ -83,13 +83,13 @@ export default function BhaktiPage() {
               <p className="mt-2 text-sm text-gray-600">{track.note}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <span className="rounded-full border border-[color:var(--brand-primary-soft)] px-3 py-1 text-[11px] font-medium text-gray-600">
-                  {track.sourceName}
+                  {track.creator}
                 </span>
                 <span className="rounded-full border border-[color:var(--brand-primary-soft)] px-3 py-1 text-[11px] font-medium text-gray-600">
-                  {track.licenseLabel}
+                  {track.durationLabel}
                 </span>
               </div>
-              <p className="mt-3 text-xs font-semibold text-[color:var(--brand-primary)]">Open details →</p>
+              <p className="mt-3 text-xs font-semibold text-[color:var(--brand-primary)]">Open source</p>
             </a>
           ))}
           </div>
