@@ -214,50 +214,11 @@ export default function TirthaMapPage() {
 
   const placeLabel = TRADITION_PLACE_LABEL[tradFilter] ?? 'sacred places';
   const activeCityLabel = cityInput.trim() || liveCity || 'your area';
-  const nearestThree = filtered
-    .slice()
-    .sort((a, b) => distanceKm(center[0], center[1], a.lat, a.lon) - distanceKm(center[0], center[1], b.lat, b.lon))
-    .slice(0, 3);
-
   return (
     <div className="space-y-3 fade-in">
-
-      <div className="glass-panel rounded-[1.9rem] px-5 py-5 space-y-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--brand-primary)]">
-            Sacred discovery
-          </p>
-          <h1 className="font-display text-2xl font-bold text-gray-900 mt-1">Tirtha Map</h1>
-          <p className="text-sm text-gray-600 mt-2 leading-relaxed max-w-2xl">
-            Search nearby sacred places, then narrow by tradition.
-          </p>
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-3">
-          {[
-            {
-              eyebrow: 'Begin nearby',
-              title: `Search around ${activeCityLabel}`,
-              description: 'Start nearby, then widen if needed.',
-            },
-            {
-              eyebrow: 'Filter gently',
-              title: 'Tradition before detail',
-              description: 'Choose a tradition, then refine if needed.',
-            },
-            {
-              eyebrow: 'Visit with context',
-              title: `Open ${placeLabel}`,
-              description: 'Check opening info, directions, and contact details.',
-            },
-          ].map((item) => (
-            <div key={item.title} className="clay-card rounded-[1.4rem] px-4 py-4">
-              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{item.eyebrow}</p>
-              <p className="font-semibold text-gray-900 mt-2">{item.title}</p>
-              <p className="text-sm text-gray-600 mt-2 leading-relaxed">{item.description}</p>
-            </div>
-          ))}
-        </div>
+      <div className="glass-panel rounded-[1.9rem] px-5 py-5 space-y-3">
+        <h1 className="font-display text-2xl font-bold text-gray-900">Tirtha Map</h1>
+        <p className="text-sm text-gray-600 leading-relaxed">Search sacred places, filter by tradition, and open the result that feels right.</p>
       </div>
 
       {/* ── Search bar ── */}
@@ -349,23 +310,6 @@ export default function TirthaMapPage() {
             </div>
           ))}
         </div>
-        {nearestThree.length > 0 && (
-          <div className="grid gap-2 sm:grid-cols-3">
-            {nearestThree.map((temple) => (
-              <button
-                key={`near-${temple.id}`}
-                onClick={() => setSelected(temple)}
-                className="text-left rounded-[1.1rem] border border-white/80 bg-white/70 px-3 py-3 transition hover:border-[color:var(--brand-primary-soft)]"
-              >
-                <p className="text-[10px] uppercase tracking-[0.16em] text-gray-400 font-semibold">Nearest now</p>
-                <p className="mt-1 text-sm font-semibold text-gray-900 line-clamp-2">{temple.name}</p>
-                <p className="mt-1 text-xs text-gray-500">
-                  {TRADITION_BADGE_LABEL[temple.tradition ?? 'other']} · {getDistanceLabel(center, temple)} mi
-                </p>
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
       {geoError && (

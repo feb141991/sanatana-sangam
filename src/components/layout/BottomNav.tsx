@@ -13,7 +13,7 @@ interface Props {
   isGuest?: boolean;
 }
 
-export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLabel = 'Study', isGuest = false }: Props) {
+export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLabel = 'Pathshala', isGuest = false }: Props) {
   const pathname = usePathname();
   const prefersReducedMotion = useReducedMotion();
 

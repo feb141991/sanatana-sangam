@@ -5,7 +5,7 @@ import { DEVOTIONAL_STARTER_TRACKS } from '@/lib/devotional-audio';
 export default function BhaktiPage() {
   return (
     <div className="fade-in space-y-5">
-      <Card className="rounded-[1.7rem] px-4 py-5 md:rounded-[2rem] md:px-7 md:py-7 overflow-hidden relative">
+      <Card className="rounded-[1.9rem] px-4 py-5 md:rounded-[2rem] md:px-7 md:py-7 overflow-hidden relative">
         <div
           className="absolute inset-0 opacity-80 pointer-events-none"
           style={{
@@ -13,32 +13,23 @@ export default function BhaktiPage() {
               'radial-gradient(circle at top, color-mix(in srgb, var(--brand-secondary) 22%, white), transparent 55%), linear-gradient(180deg, color-mix(in srgb, var(--brand-primary) 10%, white), transparent 70%)',
           }}
         />
-        <div className="relative space-y-4">
+        <div className="relative space-y-5">
           <div className="space-y-2">
             <h1 className="font-display text-3xl font-bold text-gray-900">Sahaj Bhakti</h1>
             <p className="max-w-2xl text-sm leading-relaxed text-gray-600">
               A quieter devotional space for chant, listening, and remembrance.
             </p>
           </div>
-          <div className="hidden md:grid gap-3 md:grid-cols-3">
-            <div className="clay-card rounded-[1.5rem] px-4 py-4 text-left">
-              <p className="text-sm font-semibold text-gray-900">Daily remembrance</p>
-              <p className="text-xs leading-relaxed text-gray-600 mt-2">
-                Short chant starts and calm devotional moments.
-              </p>
-            </div>
-            <div className="clay-card rounded-[1.5rem] px-4 py-4 text-left">
-              <p className="text-sm font-semibold text-gray-900">Live and shared later</p>
-              <p className="text-xs leading-relaxed text-gray-600 mt-2">
-                Bhajan baithaks and aarti can come here once audio is ready.
-              </p>
-            </div>
-            <div className="clay-card rounded-[1.5rem] px-4 py-4 text-left">
-              <p className="text-sm font-semibold text-gray-900">Built for calm</p>
-              <p className="text-xs leading-relaxed text-gray-600 mt-2">
-                Kept simple, gentle, and elder-friendly.
-              </p>
-            </div>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/bhakti/mala" className="rounded-full border border-[color:var(--brand-primary-soft)] bg-white/85 px-4 py-2 text-sm font-semibold text-[color:var(--brand-primary-strong)] transition hover:bg-white">
+              Mala
+            </Link>
+            <Link href="/bhakti/zen" className="rounded-full border border-[color:var(--brand-primary-soft)] bg-white/85 px-4 py-2 text-sm font-semibold text-[color:var(--brand-primary-strong)] transition hover:bg-white">
+              Zen
+            </Link>
+            <span className="rounded-full border border-[color:var(--brand-primary-soft)] bg-white/70 px-4 py-2 text-sm font-medium text-gray-600">
+              Chant catalog
+            </span>
           </div>
         </div>
       </Card>
@@ -46,49 +37,33 @@ export default function BhaktiPage() {
       <section className="grid gap-4 md:grid-cols-[1.2fr_0.8fr]">
         <Card>
           <SectionHeading
-            eyebrow="Coming first"
-            title="The devotional shape we are building"
-            description="These are the first Bhakti promises we can make well before turning this into a larger streaming or live-room surface."
+            eyebrow="Practice now"
+            title="Move into one devotional mode"
+            description="Keep the surface light, then drop into a focused practice mode."
           />
-          <div className="mt-4 space-y-3">
-            {[
-              'A simple devotional home with chant, read, and return paths',
-              'Rights-safe mantra and chant starter pack before any larger bhajan library',
-              'Mala mode and Zen mode as calmer practice entry points',
-              'Later, live bhakti rooms only after audio trust, moderation, and rights are in place',
-            ].map((item) => (
-              <div key={item} className="flex items-start gap-3">
-                <div className="mt-1 h-2.5 w-2.5 rounded-full bg-[color:var(--brand-primary)]" />
-                <p className="text-sm leading-relaxed text-gray-700">{item}</p>
-              </div>
-            ))}
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <Link href="/bhakti/mala" className="block rounded-[1.4rem] border border-[color:var(--brand-primary-soft)] bg-white/80 px-4 py-4 transition hover:bg-white">
+              <p className="text-sm font-semibold text-gray-900">Mala mode</p>
+              <p className="mt-1 text-sm text-gray-600">Counter-first japa with focus, history, and return loops.</p>
+            </Link>
+            <Link href="/bhakti/zen" className="block rounded-[1.4rem] border border-[color:var(--brand-primary-soft)] bg-white/80 px-4 py-4 transition hover:bg-white">
+              <p className="text-sm font-semibold text-gray-900">Zen mode</p>
+              <p className="mt-1 text-sm text-gray-600">A full-focus breath and chant space with fewer distractions.</p>
+            </Link>
           </div>
         </Card>
 
         <Card>
-          <SectionHeading eyebrow="Practice now" title="Enter a calmer practice mode" />
+          <SectionHeading eyebrow="Return loop" title="Keep Bhakti simple" />
           <div className="mt-4 space-y-3">
-            <Link href="/bhakti/zen" className="block rounded-[1.4rem] border border-[color:var(--brand-primary-soft)] bg-white/80 px-4 py-4 transition hover:bg-white">
-              <p className="text-sm font-semibold text-gray-900">Zen mode</p>
-              <p className="mt-1 text-sm text-gray-600">A calmer reading, breath, and chant surface.</p>
-            </Link>
-            <Link href="/bhakti/mala" className="block rounded-[1.4rem] border border-[color:var(--brand-primary-soft)] bg-white/80 px-4 py-4 transition hover:bg-white">
-              <p className="text-sm font-semibold text-gray-900">Mala mode</p>
-              <p className="mt-1 text-sm text-gray-600">Count, save, filter, and revisit your japa sessions.</p>
-            </Link>
-          </div>
-          <div className="mt-4 grid gap-3">
             <div className="rounded-[1.2rem] border border-[color:var(--brand-primary-soft)] bg-white/75 px-4 py-4">
-              <p className="text-sm font-semibold text-gray-900">Return loop</p>
-              <p className="mt-1 text-sm text-gray-600">Read in Pathshala, sit in Zen, count in Mala, and come back gently tomorrow.</p>
+              <p className="text-sm font-semibold text-gray-900">Read, sit, return</p>
+              <p className="mt-1 text-sm text-gray-600">Move from Pathshala into Zen or Mala, then come back the next day without friction.</p>
             </div>
             <div className="rounded-[1.2rem] border border-[color:var(--brand-primary-soft)] bg-white/75 px-4 py-4">
-              <p className="text-sm font-semibold text-gray-900">Audio direction</p>
-              <p className="mt-1 text-sm text-gray-600">Rights-safe chant support comes first here, while authoritative Gita audio remains a separate trust-first lane.</p>
+              <p className="text-sm font-semibold text-gray-900">Audio comes carefully</p>
+              <p className="mt-1 text-sm text-gray-600">Rights-safe chant support belongs here. Trust-first scripture audio stays separate.</p>
             </div>
-          </div>
-          <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-[color:var(--brand-primary-soft)] bg-white/70 px-4 py-2 text-sm font-medium text-[color:var(--brand-primary-strong)]">
-            Coming in a deeper devotional release
           </div>
         </Card>
       </section>

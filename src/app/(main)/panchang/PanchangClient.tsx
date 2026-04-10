@@ -213,8 +213,20 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
   }
 
   return (
-    <div className="flex flex-col gap-0 fade-in pb-2">
-
+    <div
+      className="relative isolate overflow-hidden rounded-[2.2rem] fade-in pb-2 px-2 pt-2"
+      style={{ background: skyTheme.shell }}
+    >
+      <div className="absolute inset-0 pointer-events-none opacity-90" style={{ background: skyTheme.glow }} />
+      <div
+        className="absolute -top-10 right-6 w-40 h-40 rounded-full blur-3xl opacity-60 animate-pulse pointer-events-none"
+        style={{ background: skyTheme.orb }}
+      />
+      <div
+        className="absolute bottom-10 -left-10 w-48 h-48 rounded-full blur-3xl opacity-40 animate-pulse pointer-events-none"
+        style={{ background: 'rgba(255,255,255,0.5)', animationDelay: '1.2s' }}
+      />
+      <div className="relative flex flex-col gap-0">
       <div
         className="relative overflow-hidden rounded-[2rem] p-4 sm:p-5 mb-3 border"
         style={{ background: skyTheme.shell, borderColor: 'rgba(223, 156, 171, 0.24)' }}
@@ -468,6 +480,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
           <p className="text-sm mt-1" style={{ color: 'var(--brand-primary-strong)' }}>{PANCHANG_TRUST_META.precisionLabel}</p>
           <p className="text-xs text-gray-500 leading-relaxed mt-1">{PANCHANG_TRUST_META.guidanceNote}</p>
         </div>
+      </div>
       </div>
     </div>
   );
