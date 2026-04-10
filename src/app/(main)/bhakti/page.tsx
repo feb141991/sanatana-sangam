@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Badge, Card, SectionHeading } from '@/components/ui';
+import { Card, SectionHeading } from '@/components/ui';
 import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
 import { DEVOTIONAL_STARTER_TRACKS } from '@/lib/devotional-audio';
 
@@ -35,7 +35,7 @@ export default function BhaktiPage() {
         </div>
       </Card>
 
-      <section className="grid gap-4 md:grid-cols-[1.2fr_0.8fr]">
+      <section className="grid gap-4">
         <Card>
           <SectionHeading
             eyebrow="Practice now"
@@ -54,19 +54,6 @@ export default function BhaktiPage() {
           </div>
         </Card>
 
-        <Card>
-          <SectionHeading eyebrow="Return loop" title="Keep Bhakti simple" />
-          <div className="mt-4 space-y-3">
-            <div className="rounded-[1.2rem] border border-[color:var(--brand-primary-soft)] bg-white/75 px-4 py-4">
-              <p className="text-sm font-semibold text-gray-900">Read, sit, return</p>
-              <p className="mt-1 text-sm text-gray-600">Move from Pathshala into Zen or Mala, then come back the next day without friction.</p>
-            </div>
-            <div className="rounded-[1.2rem] border border-[color:var(--brand-primary-soft)] bg-white/75 px-4 py-4">
-              <p className="text-sm font-semibold text-gray-900">Listen while you sit</p>
-              <p className="mt-1 text-sm text-gray-600">Short chants now work here, and bigger devotional listening can grow around them later.</p>
-            </div>
-          </div>
-        </Card>
       </section>
 
       <Card>
@@ -74,7 +61,6 @@ export default function BhaktiPage() {
           eyebrow="Chants"
           title="Play a chant now"
           description="Keep one chant running while you move into Zen or Mala."
-          actions={<Badge tone="accent" className="px-4 py-2 text-sm">Temple feel</Badge>}
         />
 
         <div className="mt-4 grid gap-3 lg:grid-cols-[0.9fr_1.1fr]">

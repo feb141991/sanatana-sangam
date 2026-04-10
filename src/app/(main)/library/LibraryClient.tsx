@@ -22,20 +22,16 @@ export default function LibraryClient({
   const preferredTradition = getLibrarySectionById(defaultSection)?.tradition ?? 'hindu';
 
   return (
-    <MotionFade className="space-y-4 pb-6 fade-in">
+    <MotionFade className="space-y-3 pb-6 fade-in">
       <div className="glass-panel rounded-[1.6rem] px-4 py-4 sm:rounded-[1.8rem] sm:px-5 sm:py-5">
         <div>
           <h1 className="font-display font-bold text-xl text-gray-900 mt-1">Parampara Pathshala</h1>
-          <p className="text-sm text-gray-600 mt-1 leading-relaxed">Choose a tradition and enter one track at a time.</p>
+          <p className="hidden sm:block text-sm text-gray-600 mt-1 leading-relaxed">Choose a tradition and enter one track at a time.</p>
         </div>
       </div>
 
       {(continueLearning || bookmarkedEntries.length > 0) && (
         <section className="space-y-3">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Return loop</p>
-            <p className="text-sm text-gray-600 mt-1">Jump back to your latest study page, or reopen something you intentionally saved.</p>
-          </div>
 
           {continueLearning && (
             <Link href={continueLearning.href} className="glass-panel rounded-[1.6rem] px-4 py-4 border border-white/70 block hover:-translate-y-0.5 transition">
@@ -73,11 +69,6 @@ export default function LibraryClient({
       )}
 
       <section className="space-y-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Choose tradition</p>
-          <p className="text-sm text-gray-500 mt-1">Open one tradition and stay with it.</p>
-        </div>
-
         <MotionStagger className="grid gap-3 sm:grid-cols-2" delay={0.06}>
           {PATHSHALA_TRADITIONS.map((tradition) => {
             const sections = getSectionsByTradition(tradition.id);
@@ -128,14 +119,14 @@ function TraditionGatewayCard({
   return (
     <Link
       href={getPathshalaTraditionHref(tradition)}
-      className={`text-left rounded-[1.7rem] p-4 border transition block ${
+      className={`text-left rounded-[1.45rem] sm:rounded-[1.7rem] p-3.5 sm:p-4 border transition block ${
         isPreferred ? 'clay-card border-[color:var(--brand-primary)]/20' : 'glass-panel hover:-translate-y-0.5'
       }`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-2xl">{emoji}</p>
-          <h2 className="font-display font-bold text-base mt-2 text-gray-900">{label}</h2>
+          <h2 className="font-display font-bold text-[15px] sm:text-base mt-2 text-gray-900">{label}</h2>
         </div>
         <div className="flex flex-col items-end gap-2">
           {isPreferred && (
@@ -149,7 +140,7 @@ function TraditionGatewayCard({
         </div>
       </div>
 
-      <p className="text-sm leading-relaxed mt-3 text-gray-600">{description}</p>
+      <p className="hidden sm:block text-sm leading-relaxed mt-3 text-gray-600">{description}</p>
 
       <div className="hidden sm:flex flex-wrap gap-2 mt-4">
         {sections.slice(0, 4).map((section) => (
@@ -159,8 +150,8 @@ function TraditionGatewayCard({
         ))}
       </div>
 
-      <div className="flex items-center justify-between gap-3 mt-4">
-        <p className="text-xs text-gray-500">{entryCount} live passages</p>
+      <div className="flex items-center justify-between gap-3 mt-3 sm:mt-4">
+        <p className="text-xs text-gray-500">{entryCount} passages</p>
         <p className="text-xs font-semibold text-[color:var(--brand-primary)]">Open Pathshala →</p>
       </div>
     </Link>

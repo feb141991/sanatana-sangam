@@ -63,7 +63,7 @@ export default async function PathshalaSectionPage({
     : featuredEntries;
 
   return (
-    <MotionFade className="space-y-4 pb-6 fade-in">
+    <MotionFade className="space-y-3 pb-6 fade-in">
       <div className="glass-panel rounded-[1.6rem] px-4 py-4 sm:rounded-[1.8rem] sm:px-5 sm:py-5 space-y-4">
         <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <Link href="/library" className="text-[color:var(--brand-primary)]">Pathshala</Link>
@@ -77,13 +77,13 @@ export default async function PathshalaSectionPage({
           )}
         </div>
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-3xl">{sectionMeta.emoji}</p>
             <h1 className="font-display text-2xl font-bold text-gray-900 mt-2">{sectionMeta.title}</h1>
-            <p className="text-sm text-gray-600 leading-relaxed mt-2 max-w-2xl">{sectionMeta.desc}</p>
+            <p className="hidden sm:block text-sm text-gray-600 leading-relaxed mt-2 max-w-2xl">{sectionMeta.desc}</p>
           </div>
-          <div className="clay-card rounded-[1.35rem] px-4 py-3 sm:min-w-[10rem]">
+          <div className="clay-card rounded-[1.25rem] px-3 py-2.5 sm:rounded-[1.35rem] sm:px-4 sm:py-3 sm:min-w-[10rem]">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Study track</p>
             <p className="font-display text-2xl font-bold text-gray-900 mt-2">{entries.length}</p>
             <p className="text-xs text-gray-500 mt-1">texts live in this track</p>
@@ -100,16 +100,8 @@ export default async function PathshalaSectionPage({
 
       {(canonicalChapters.length > 0 || ramayanaKandas.length > 0) && (
         <section className="space-y-3">
-          <div className="clay-card rounded-[1.6rem] px-4 py-4 space-y-3">
+          <div className="clay-card rounded-[1.45rem] sm:rounded-[1.6rem] px-3.5 py-3.5 sm:px-4 sm:py-4 space-y-3">
             <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Complete study path</p>
-                <p className="text-sm text-gray-700 leading-relaxed mt-2">
-                  {canonicalChapters.length > 0
-                    ? 'The full chapter-and-verse Gita is now live inside Pathshala. Use the chapter map below for structured study, and open the companion source when you want audio or extra commentary layers.'
-                    : 'The Valmiki Ramayana now opens as a Kanda-first study path. Use the Kanda map below for narrative continuity, then open the companion sources when you want the wider public-domain text or sarga-level study index.'}
-                </p>
-              </div>
               <div className="flex flex-col gap-2 sm:items-end">
                 {canonicalChapters.length > 0 ? (
                   <>
@@ -120,7 +112,7 @@ export default async function PathshalaSectionPage({
                       className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold"
                       style={{ color: 'var(--brand-primary)' }}
                     >
-                      Companion source
+                      Companion
                     </a>
                     <a
                       href={getOfficialGitaAudioUrl(1)}
@@ -129,14 +121,14 @@ export default async function PathshalaSectionPage({
                       className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold"
                       style={{ color: 'var(--brand-primary)' }}
                     >
-                      Official audio
+                      Audio
                     </a>
                     <Link
                       href={getGitaRecitationHref()}
                       className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold text-center"
                       style={{ color: 'var(--brand-primary)' }}
                     >
-                      Recitation mode
+                      Recite
                     </Link>
                   </>
                 ) : (
@@ -148,7 +140,7 @@ export default async function PathshalaSectionPage({
                       className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold"
                       style={{ color: 'var(--brand-primary)' }}
                     >
-                      Public-domain text
+                      Text
                     </a>
                     <a
                       href={getOfficialRamayanaStudyUrl()}
@@ -157,7 +149,7 @@ export default async function PathshalaSectionPage({
                       className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold"
                       style={{ color: 'var(--brand-primary)' }}
                     >
-                      Study index
+                      Index
                     </a>
                   </>
                 )}
@@ -170,7 +162,7 @@ export default async function PathshalaSectionPage({
                 <Link
                   key={chapter.id}
                   href={getPathshalaChapterHref(tradition, section, chapter.id)}
-                  className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
+                  className="glass-panel rounded-[1.25rem] sm:rounded-[1.4rem] px-3.5 py-3.5 sm:px-4 sm:py-4 border border-white/60 hover:-translate-y-0.5 transition"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -184,7 +176,7 @@ export default async function PathshalaSectionPage({
                       {'verseCount' in chapter ? `${chapter.verseCount} verses` : `${chapter.cantoCount} cantos`}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 leading-relaxed mt-3">{chapter.summary}</p>
+                  <p className="hidden sm:block text-sm text-gray-600 leading-relaxed mt-3">{chapter.summary}</p>
                 </Link>
                 </MotionItem>
               ))}
@@ -195,20 +187,11 @@ export default async function PathshalaSectionPage({
 
       {readingPlans.length > 0 && (
         <section className="space-y-3">
-          <div className="glass-panel rounded-[1.6rem] px-4 py-4 space-y-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Reading plans</p>
-              <p className="text-sm text-gray-700 leading-relaxed mt-2">
-                {section === 'gita'
-                  ? 'Start with a guided rhythm instead of browsing at random. These plans point into the same canonical Gita chapter map above.'
-                  : 'Start with a guided narrative rhythm instead of browsing disconnected passages. These plans point into the Kanda map above.'}
-              </p>
-            </div>
-
+          <div className="glass-panel rounded-[1.45rem] sm:rounded-[1.6rem] px-3.5 py-3.5 sm:px-4 sm:py-4 space-y-3">
             <MotionStagger className="grid gap-3 lg:grid-cols-3" delay={0.06}>
               {readingPlans.map((plan) => (
                 <MotionItem key={plan.id}>
-                <div className="clay-card rounded-[1.4rem] px-4 py-4 space-y-3">
+                <div className="clay-card rounded-[1.25rem] sm:rounded-[1.4rem] px-3.5 py-3.5 sm:px-4 sm:py-4 space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-semibold text-gray-900">{plan.title}</p>
@@ -241,23 +224,6 @@ export default async function PathshalaSectionPage({
       )}
 
       <section className="space-y-3">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
-              {(canonicalChapters.length > 0 || ramayanaKandas.length > 0) ? 'Featured entry points' : 'Texts and lessons'}
-            </p>
-            <p className="text-sm text-gray-600 mt-1">
-              {(canonicalChapters.length > 0 || ramayanaKandas.length > 0)
-                ? section === 'gita'
-                  ? 'The full verse corpus now lives inside the chapter pages above. These featured openings are good places to begin.'
-                  : 'The Kanda flow now holds the narrative structure. These local passages are strong first openings inside the broader Ramayana path.'
-                : section === 'upanishad'
-                  ? 'Open a principal Upanishad to read the full translated study text. Texts with live original Sanskrit are surfaced first, and the companion-linked texts remain visible so the source boundary stays honest.'
-                  : 'Open a text to read the passage, source note, and related material.'}
-            </p>
-          </div>
-        </div>
-
         <MotionStagger className="grid gap-3" delay={0.08}>
           {displayedFeaturedEntries.map((entry) => {
             const sourceMeta = getLibrarySourceMeta(entry);

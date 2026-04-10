@@ -216,9 +216,9 @@ export default function TirthaMapPage() {
   const activeCityLabel = cityInput.trim() || liveCity || 'your area';
   return (
     <div className="space-y-3 fade-in">
-      <div className="glass-panel rounded-[1.9rem] px-5 py-5 space-y-3">
+      <div className="glass-panel rounded-[1.7rem] px-4 py-4 sm:rounded-[1.9rem] sm:px-5 sm:py-5 space-y-2">
         <h1 className="font-display text-2xl font-bold text-gray-900">Tirtha Map</h1>
-        <p className="text-sm text-gray-600 leading-relaxed">Search sacred places, filter by tradition, and open the result that feels right.</p>
+        <p className="hidden sm:block text-sm text-gray-600 leading-relaxed">Search sacred places, filter by tradition, and open the result that feels right.</p>
       </div>
 
       {/* ── Search bar ── */}

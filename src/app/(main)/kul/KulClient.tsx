@@ -88,31 +88,39 @@ function TaskBadge({ type }: { type: string }) {
   );
 }
 
-function SectionIntro({
-  title,
-  description,
-  helper,
-  action,
-}: {
-  title: string;
-  description: string;
-  helper?: string;
-  action?: ReactNode;
-}) {
-  return (
-    <div className="glass-panel rounded-[1.55rem] p-4 space-y-3">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-semibold text-gray-900">{title}</p>
-          <p className="text-sm text-gray-600 mt-1 leading-relaxed">{description}</p>
-        </div>
-        {action ? <div className="flex-shrink-0">{action}</div> : null}
-      </div>
-      {helper ? (
-        <p className="text-xs text-gray-500 leading-relaxed">{helper}</p>
-      ) : null}
-    </div>
-  );
+function getUnreadSignature(
+  view: KulSectionView,
+  data: {
+    members: MemberRow[];
+    tasks: TaskRow[];
+    messages: MessageRow[];
+    familyMembers: FamilyMember[];
+    kulEvents: KulEvent[];
+  },
+) {
+  switch (view) {
+    case 'tasks':
+      return data.tasks
+        .filter((task) => !task.completed)
+        .map((task) => `${task.id}:${task.created_at}`)
+        .join('|');
+    case 'members':
+      return data.members
+        .map((member) => `${member.id}:${member.joined_at}`)
+        .join('|');
+    case 'sabha':
+      return data.messages
+        .map((message) => `${message.id}:${message.created_at}`)
+        .join('|');
+    case 'vansh':
+      return data.familyMembers
+        .map((member) => `${member.id}:${member.display_order ?? 0}:${member.birth_date ?? ''}:${member.death_date ?? ''}`)
+        .join('|');
+    case 'events':
+      return data.kulEvents
+        .map((event) => `${event.id}:${event.event_date}`)
+        .join('|');
+  }
 }
 
 function FamilyProfileSheet({
@@ -502,15 +510,11 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
       {selectedMember ? (
         <FamilyProfileSheet member={selectedMember} onClose={() => setSelectedMember(null)} />
       ) : null}
-      <SectionIntro
-        title="Kul overview"
-        description="Open one family space at a time."
-        action={
-          <button onClick={shareKul} className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold" style={{ color: 'var(--brand-primary)' }}>
-            Share Kul
-          </button>
-        }
-      />
+      <div className="flex justify-end">
+        <button onClick={shareKul} className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold" style={{ color: 'var(--brand-primary)' }}>
+          Share Kul
+        </button>
+      </div>
 
       {/* Kul header card */}
       <div className="rounded-2xl p-5 text-white" style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
@@ -642,11 +646,6 @@ function MembersTab({ members, userId, myRole, kul }: {
       {selectedMember ? (
         <FamilyProfileSheet member={selectedMember} onClose={() => setSelectedMember(null)} />
       ) : null}
-      <SectionIntro
-        title="Members"
-        description={myRole === 'guardian' ? 'Manage roles and family profiles.' : 'Open family profiles and see who is here.'}
-      />
-
       <div className="space-y-2">
       {members.map(m => {
         const p     = m.profiles;
@@ -1127,52 +1126,52 @@ function KulSectionTiles({
   const upcomingEvents = kulEvents
     .map((event) => ({ ...event, daysUntil: daysUntilNextOccurrence(event.event_date) }))
     .filter((event) => event.daysUntil <= 90).length;
-  const [seenCounts, setSeenCounts] = useState<Record<string, number>>({});
+  const [seenSignatures, setSeenSignatures] = useState<Record<string, string>>({});
 
-  const liveCounts: Record<KulSectionView, number> = {
-    tasks: pendingTasks,
-    members: members.length,
-    sabha: messages.length,
-    vansh: familyMembers.length,
-    events: upcomingEvents,
+  const liveSignatures: Record<KulSectionView, string> = {
+    tasks: getUnreadSignature('tasks', { members, tasks, messages, familyMembers, kulEvents }),
+    members: getUnreadSignature('members', { members, tasks, messages, familyMembers, kulEvents }),
+    sabha: getUnreadSignature('sabha', { members, tasks, messages, familyMembers, kulEvents }),
+    vansh: getUnreadSignature('vansh', { members, tasks, messages, familyMembers, kulEvents }),
+    events: getUnreadSignature('events', { members, tasks, messages, familyMembers, kulEvents }),
   };
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
     try {
-      const raw = window.localStorage.getItem('kul-section-seen-counts');
-      if (raw) setSeenCounts(JSON.parse(raw) as Record<string, number>);
+      const raw = window.localStorage.getItem('kul-section-seen-signatures');
+      if (raw) setSeenSignatures(JSON.parse(raw) as Record<string, string>);
     } catch {}
   }, []);
 
   useEffect(() => {
     if (!currentView || currentView === 'hub' || typeof window === 'undefined') return;
-    const nextCounts = { ...seenCounts, [currentView]: liveCounts[currentView] };
-    setSeenCounts(nextCounts);
-    window.localStorage.setItem('kul-section-seen-counts', JSON.stringify(nextCounts));
+    const nextSignatures = { ...seenSignatures, [currentView]: liveSignatures[currentView] };
+    setSeenSignatures(nextSignatures);
+    window.localStorage.setItem('kul-section-seen-signatures', JSON.stringify(nextSignatures));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentView, pendingTasks, members.length, messages.length, familyMembers.length, upcomingEvents]);
+  }, [currentView, liveSignatures.tasks, liveSignatures.members, liveSignatures.sabha, liveSignatures.vansh, liveSignatures.events]);
 
   const tiles: Array<{ key: KulSectionView; badge?: number }> = [
     {
       key: 'tasks',
-      badge: Math.max(0, pendingTasks - (seenCounts.tasks ?? 0)) || undefined,
+      badge: liveSignatures.tasks && seenSignatures.tasks !== liveSignatures.tasks ? 1 : undefined,
     },
     {
       key: 'members',
-      badge: Math.max(0, members.length - (seenCounts.members ?? 0)) || undefined,
+      badge: liveSignatures.members && seenSignatures.members !== liveSignatures.members ? 1 : undefined,
     },
     {
       key: 'sabha',
-      badge: Math.max(0, messages.length - (seenCounts.sabha ?? 0)) || undefined,
+      badge: liveSignatures.sabha && seenSignatures.sabha !== liveSignatures.sabha ? 1 : undefined,
     },
     {
       key: 'vansh',
-      badge: Math.max(0, familyMembers.length - (seenCounts.vansh ?? 0)) || undefined,
+      badge: liveSignatures.vansh && seenSignatures.vansh !== liveSignatures.vansh ? 1 : undefined,
     },
     {
       key: 'events',
-      badge: Math.max(0, upcomingEvents - (seenCounts.events ?? 0)) || undefined,
+      badge: liveSignatures.events && seenSignatures.events !== liveSignatures.events ? 1 : undefined,
     },
   ];
 
@@ -1303,7 +1302,6 @@ function KulHubView({
             <p className="text-[11px] uppercase tracking-[0.18em] font-semibold mt-1" style={{ color: 'rgba(22, 77, 84, 0.72)' }}>
               Kul Home
             </p>
-            <p className="text-sm text-gray-600 mt-2 leading-relaxed">Open one family space at a time.</p>
           </div>
           <div className="px-3 py-2 rounded-2xl border text-xs font-bold tracking-widest hidden sm:block"
             style={{ borderColor: 'rgba(31, 107, 114, 0.24)', color: 'var(--brand-primary)' }}>
@@ -1313,10 +1311,10 @@ function KulHubView({
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
           {[
-            { label: 'Members', value: members.length, hint: 'Family circle', href: '/kul/members' },
-            { label: 'Open Tasks', value: openTasks, hint: 'Shared practices', href: '/kul/tasks' },
-            { label: 'Kul Streak', value: totalStreak, hint: 'Daily rhythm', href: '/kul/sabha' },
-            { label: 'Dates Ahead', value: upcomingEvents.length, hint: 'Next 90 days', href: '/kul/events' },
+            { label: 'Members', value: members.length, hint: 'Open', href: '/kul/members' },
+            { label: 'Open Tasks', value: openTasks, hint: 'Open', href: '/kul/tasks' },
+            { label: 'Kul Streak', value: totalStreak, hint: 'Sabha', href: '/kul/sabha' },
+            { label: 'Dates Ahead', value: upcomingEvents.length, hint: 'Open', href: '/kul/events' },
           ].map((item) => (
             <Link key={item.label} href={item.href} className="glass-panel rounded-[1.35rem] p-3 transition hover:-translate-y-0.5">
               <p className="text-[10px] uppercase tracking-[0.16em] text-gray-400 font-semibold">{item.label}</p>
