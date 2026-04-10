@@ -102,6 +102,8 @@ Last updated: 2026-04-09
 - [x] Ship the first live Bhakti practice slice with dedicated `Zen` and `Mala` routes instead of leaving both modes as planning-only ideas
 - [ ] Curate a rights-safe devotional audio starter pack for launch: mantra/chant clips first, then selective bhajan/kirtan where reuse terms are clear
 - [x] Start the Bhakti audio foundation with a rights-safe devotional starter pack surface and explicit source-first links
+- [x] Define the first approved devotional launch pack in `APPROVED_AUDIO_PACK.md`
+- [x] Define the media scaling model in `MEDIA_REGISTRY_PLAN.md` so launch audio can later move into owned storage without losing license auditability
 - [x] Start the first language-support implementation with app language, scripture view, transliteration, and meaning preferences
 - [x] Start the shared app-foundation pass with reusable UI primitives, stronger design tokens, reduced-motion defaults, and a TanStack Query provider for future client data work
 - [x] Add first Kul family-profile viewing inside the family space so members can open each other’s Kul-safe details
@@ -128,6 +130,8 @@ Last updated: 2026-04-09
 - `Howler` is intentionally deferred to the Pathshala recitation/audio layer so sound stays authoritative, optional, and non-intrusive.
 - `LANGUAGE_SUPPORT_PLAN.md` now defines the recommended order: sacred content support first, then app UI localization, then broader personalization.
 - `BHAJAN_DISCOVERY_MVP.md` now defines the later devotional-music MVP as curated catalog + ranking metadata + open-out links, which keeps maintenance and licensing risk lower than in-app streaming.
+- `APPROVED_AUDIO_PACK.md` now defines the first launch-safe chant shortlist with attribution-ready entries.
+- `MEDIA_REGISTRY_PLAN.md` now defines how chants, scripture audio, and future focus-environment media should be stored and reviewed.
 - Gita recitation currently keeps authoritative audio on the companion source; bringing that audio fully in-app is now a tracked later milestone, not an unplanned stretch goal.
 - `Zen mode` and `Mala mode` are now explicitly planned as launch-level contemplation features, but audio inside them must stay rights-safe and clearly labeled.
 - `Zen mode` and `Mala mode` now have first live entry routes inside Bhakti; the next layer is trusted audio, richer session sharing, and later Kul integration.

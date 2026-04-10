@@ -100,6 +100,7 @@ At any given time:
 - the first auth/front-door UX sweep is now in build so signup, login, guest access, invites, and recovery feel like one welcoming entry system
 - language support should be built in layers: sacred content script/transliteration first, then app UI localization, then deeper per-user preference control
 - devotional music discovery should begin as a curated catalog + ranking layer with open-out links, not a hosted streaming surface
+- the first approved devotional launch pack is now tracked in `APPROVED_AUDIO_PACK.md`, and the storage/scale model is tracked in `MEDIA_REGISTRY_PLAN.md`
 - the first AI chat UX sweep is now in build so Dharma Mitra feels like a calmer reflection companion instead of a blank utility surface
 - the first Bhakti UX sweep is now in build so the devotional area offers a meaningful preview path before the larger audio/social feature set arrives
 - the next notification lane is now concrete: profile-level reminder preferences, quiet hours, cron filtering, and then production verification of real sends
