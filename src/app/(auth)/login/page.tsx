@@ -89,7 +89,7 @@ function LoginForm() {
           <p className="text-gray-500 text-sm mt-1">Sign in to your Sangam</p>
         </div>
 
-        <div className="grid gap-3 mb-4 sm:grid-cols-2">
+        <div className="hidden sm:grid gap-3 mb-4 sm:grid-cols-2">
           {[
             {
               eyebrow: 'Return',
@@ -189,7 +189,7 @@ function LoginForm() {
             <span>👁️</span>
             <span>Explore as Guest</span>
           </Link>
-          <p className="text-xs text-gray-400 mt-2">Read discussions and discover nearby sacred places without creating an account</p>
+          <p className="hidden sm:block text-xs text-gray-400 mt-2">Read discussions and discover nearby sacred places without creating an account</p>
         </div>
       </div>
     </div>

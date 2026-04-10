@@ -68,7 +68,7 @@ export default async function GuestPage() {
           </p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="hidden sm:grid gap-3 sm:grid-cols-3">
           {[
             'Read real questions before making an account.',
             'Find mandirs and sacred places right away.',
@@ -80,7 +80,7 @@ export default async function GuestPage() {
           ))}
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="hidden sm:grid gap-3 sm:grid-cols-3">
           {[
             {
               eyebrow: 'Browse',

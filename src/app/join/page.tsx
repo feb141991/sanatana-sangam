@@ -24,7 +24,7 @@ export default async function JoinPage({
           A friend has invited you to explore community, scriptures, bhakti, and local sangam.
         </p>
 
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
+        <div className="hidden sm:flex flex-wrap justify-center gap-2 mb-6">
           {['Invitation-led', 'Guest access available', 'Join free'].map((item) => (
             <span
               key={item}
@@ -35,7 +35,7 @@ export default async function JoinPage({
           ))}
         </div>
 
-        <div className="grid gap-3 mb-6">
+        <div className="hidden sm:grid gap-3 mb-6">
           {[
             {
               eyebrow: 'Join',

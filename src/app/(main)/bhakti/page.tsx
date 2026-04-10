@@ -14,10 +14,6 @@ export default function BhaktiPage() {
           }}
         />
         <div className="relative space-y-4">
-          <div className="hidden sm:inline-flex items-center gap-2 clay-pill text-xs text-gray-700">
-            <span>Bhakti preview</span>
-            <span className="text-[color:var(--brand-primary)] font-semibold">Phase 3 shape</span>
-          </div>
           <div className="space-y-2">
             <h1 className="font-display text-3xl font-bold text-gray-900">Sahaj Bhakti</h1>
             <p className="max-w-2xl text-sm leading-relaxed text-gray-600">

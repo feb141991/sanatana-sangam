@@ -194,7 +194,7 @@ export default function SignupPage() {
           </div>
         )}
 
-        <div className="grid gap-3 mb-5 sm:grid-cols-3">
+        <div className="hidden sm:grid gap-3 mb-5 sm:grid-cols-3">
           {[
             {
               eyebrow: 'Step 1',
