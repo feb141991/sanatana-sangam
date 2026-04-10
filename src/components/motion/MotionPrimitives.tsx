@@ -27,9 +27,9 @@ export function MotionFade({
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 18, scale: 0.992 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1], delay }}
+      transition={{ duration: 0.46, ease: [0.22, 1, 0.36, 1], delay }}
     >
       {children}
     </motion.div>
@@ -61,7 +61,7 @@ export function MotionStagger({
         show: {
           transition: {
             delayChildren: delay,
-            staggerChildren: 0.06,
+            staggerChildren: 0.075,
           },
         },
       }}
@@ -89,12 +89,12 @@ export function MotionItem({
     <motion.div
       className={className}
       variants={{
-        hidden: { opacity: 0, y: 14, scale: 0.985 },
+        hidden: { opacity: 0, y: 16, scale: 0.988 },
         show: {
           opacity: 1,
           y: 0,
           scale: 1,
-          transition: { duration: 0.36, ease: [0.22, 1, 0.36, 1] },
+          transition: { duration: 0.42, ease: [0.22, 1, 0.36, 1] },
         },
       }}
     >

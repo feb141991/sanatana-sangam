@@ -11,7 +11,10 @@ import { API, MAP, MANDIR } from '@/lib/config';
 const TirthaMapComponent = dynamic(
   () => import('@/components/TirthaMapComponent'),
   { ssr: false, loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-orange-50 rounded-2xl">
+    <div
+      className="w-full h-full flex items-center justify-center rounded-2xl"
+      style={{ background: 'linear-gradient(135deg, var(--brand-primary-soft), rgba(255,255,255,0.95))' }}
+    >
       <span className="text-3xl animate-pulse">🛕</span>
     </div>
   )}
@@ -231,17 +234,17 @@ export default function TirthaMapPage() {
             value={cityInput}
             onChange={(e) => setCityInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && searchCity()}
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm"
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-[color:var(--brand-primary)] outline-none text-sm"
           />
         </div>
         <button onClick={searchCity} disabled={loading}
           className="px-4 py-2.5 text-white text-sm font-semibold rounded-xl hover:opacity-90 disabled:opacity-60 transition"
-          style={{ background: '#7B1A1A' }}>
+          style={{ background: 'var(--brand-primary)' }}>
           Search
         </button>
         <button onClick={useMyLocation} title="Use my location"
-          className="px-3 py-2.5 bg-white border border-gray-200 rounded-xl hover:border-[#7B1A1A]/40 transition">
-          <Navigation size={15} style={{ color: '#7B1A1A' }} />
+          className="px-3 py-2.5 bg-white border border-gray-200 rounded-xl hover:border-[color:var(--brand-primary)]/30 transition">
+          <Navigation size={15} style={{ color: 'var(--brand-primary)' }} />
         </button>
       </div>
 
@@ -253,9 +256,9 @@ export default function TirthaMapPage() {
             className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
               tradFilter === f.value
                 ? 'text-white'
-                : 'bg-white text-gray-500 border border-gray-200 hover:border-[#7B1A1A]/30'
+                : 'bg-white text-gray-500 border border-gray-200 hover:border-[color:var(--brand-primary)]/30'
             }`}
-            style={tradFilter === f.value ? { background: '#7B1A1A' } : {}}>
+            style={tradFilter === f.value ? { background: 'var(--brand-primary)' } : {}}>
             {f.emoji} {f.label}
           </button>
         ))}
@@ -269,9 +272,9 @@ export default function TirthaMapPage() {
               className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
                 sampFilter === f.value
                   ? 'text-white'
-                  : 'bg-white text-gray-400 border border-gray-100 hover:border-orange-200'
+                  : 'bg-white text-gray-500 border border-gray-200 hover:border-[color:var(--brand-primary-soft)]'
               }`}
-              style={sampFilter === f.value ? { background: '#b45309' } : {}}>
+              style={sampFilter === f.value ? { background: 'var(--brand-secondary)' } : {}}>
               {f.emoji} {f.label}
             </button>
           ))}
@@ -290,7 +293,7 @@ export default function TirthaMapPage() {
                   ? 'text-white'
                   : 'bg-white text-gray-500 border border-gray-200'
               }`}
-              style={radius === opt.value ? { background: '#7B1A1A' } : {}}>
+              style={radius === opt.value ? { background: 'var(--brand-primary)' } : {}}>
               {opt.label}
             </button>
           ))}
@@ -319,7 +322,7 @@ export default function TirthaMapPage() {
       )}
 
       {/* ── Map ── */}
-      <div className="w-full h-[300px] rounded-2xl overflow-hidden border border-orange-100 shadow-card">
+      <div className="w-full h-[300px] rounded-2xl overflow-hidden border border-[color:var(--brand-primary-soft)] shadow-card">
         <TirthaMapComponent temples={filtered} center={center} loading={loading} />
       </div>
 
@@ -366,7 +369,7 @@ export default function TirthaMapPage() {
                   <div className="flex items-start gap-3">
                     {/* Icon — tradition-aware */}
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-                      style={{ background: '#7B1A1A15' }}>
+                      style={{ background: 'var(--brand-primary-soft)' }}>
                       {temple.tradition === 'sikh' ? '☬' :
                        temple.tradition === 'buddhist' ? '☸️' :
                        temple.tradition === 'jain' ? '🤲' : '🛕'}
@@ -402,7 +405,7 @@ export default function TirthaMapPage() {
 
                         {/* Deity */}
                         {temple.deity && (
-                          <span className="text-xs text-[#7B1A1A]">🙏 {temple.deity}</span>
+                          <span className="text-xs text-[color:var(--brand-primary)]">🙏 {temple.deity}</span>
                         )}
                       </div>
 
@@ -428,7 +431,7 @@ export default function TirthaMapPage() {
                           ))}
                           {temple.tradition === 'hindu' && !temple.opening &&
                             AARTI_TIMES.map((t) => (
-                              <span key={t} className="text-xs bg-rose-50 text-rose-700 px-2 py-0.5 rounded-full border border-rose-100">
+                              <span key={t} className="text-xs bg-[color:var(--brand-primary-soft)] text-[color:var(--brand-primary)] px-2 py-0.5 rounded-full border border-[color:var(--brand-primary-soft)]">
                                 {t}
                               </span>
                             ))}
@@ -442,12 +445,12 @@ export default function TirthaMapPage() {
                       )}
                       {temple.phone && (
                         <p className="text-xs text-gray-600 flex items-center gap-1.5">
-                          📞 <a href={`tel:${temple.phone}`} className="text-[#7B1A1A] hover:underline">{temple.phone}</a>
+                          📞 <a href={`tel:${temple.phone}`} className="text-[color:var(--brand-primary)] hover:underline">{temple.phone}</a>
                         </p>
                       )}
                       {temple.website && (
                         <p className="text-xs text-gray-600 flex items-center gap-1.5">
-                          🌐 <a href={temple.website} target="_blank" rel="noreferrer" className="text-[#7B1A1A] hover:underline truncate">{temple.website}</a>
+                          🌐 <a href={temple.website} target="_blank" rel="noreferrer" className="text-[color:var(--brand-primary)] hover:underline truncate">{temple.website}</a>
                         </p>
                       )}
                       <a
@@ -455,7 +458,7 @@ export default function TirthaMapPage() {
                         target="_blank" rel="noreferrer"
                         onClick={(e) => e.stopPropagation()}
                         className="inline-flex items-center gap-1.5 mt-1 text-xs px-3 py-1.5 rounded-full border transition"
-                        style={{ background: '#7B1A1A', color: 'white', borderColor: '#7B1A1A' }}>
+                        style={{ background: 'var(--brand-primary)', color: 'white', borderColor: 'var(--brand-primary)' }}>
                         <Navigation size={11} /> Get Directions
                       </a>
                     </div>

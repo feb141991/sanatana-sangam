@@ -67,13 +67,13 @@ function SevaScoreBar({ score }: { score: number }) {
           </div>
         </div>
         <div className="text-right">
-          <p className="font-bold text-2xl" style={{ color: '#7B1A1A' }}>{score}</p>
+          <p className="font-bold text-2xl" style={{ color: 'var(--brand-primary-strong)' }}>{score}</p>
           <p className="text-xs text-gray-400">seva points</p>
         </div>
       </div>
       <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
         <div className="h-full rounded-full transition-all"
-          style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #7B1A1A, #E8640A)' }} />
+          style={{ width: `${pct}%`, background: 'linear-gradient(90deg, var(--brand-primary), var(--brand-secondary))' }} />
       </div>
       {nextLevel && (
         <p className="text-[11px] text-gray-400 mt-1.5 text-right">
@@ -90,7 +90,7 @@ function CompletionBar({ profile, onEdit }: { profile: Profile | null; onEdit: (
   if (pct === 100) return null;
 
   return (
-    <div className="bg-white rounded-2xl border border-blue-100 p-4">
+    <div className="bg-white rounded-2xl border border-[color:var(--brand-primary-soft)] p-4">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-base">✨</span>
@@ -98,13 +98,13 @@ function CompletionBar({ profile, onEdit }: { profile: Profile | null; onEdit: (
         </div>
         <button onClick={onEdit}
           className="text-xs font-semibold px-3 py-1 rounded-full text-white transition"
-          style={{ background: '#7B1A1A' }}>
+          style={{ background: 'var(--brand-primary)' }}>
           Complete
         </button>
       </div>
       <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
         <div className="h-full rounded-full transition-all"
-          style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #3b82f6, #7B1A1A)' }} />
+          style={{ width: `${pct}%`, background: 'linear-gradient(90deg, var(--brand-secondary), var(--brand-primary))' }} />
       </div>
       {missing.length > 0 && (
         <p className="text-xs text-gray-400 mt-1.5">
@@ -465,7 +465,7 @@ export default function ProfileClient({
       <CompletionBar profile={profile} onEdit={() => setEditing(true)} />
 
       {/* ── Hero Card ── */}
-      <div className="rounded-2xl text-white p-5" style={{ background: '#7B1A1A' }}>
+      <div className="rounded-2xl p-5 border border-[color:var(--brand-primary-soft)] bg-white shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             {/* Avatar with upload — label approach works on iOS Safari */}
@@ -474,7 +474,7 @@ export default function ProfileClient({
                 type="button"
                 onClick={() => avatarUrl && setShowAvatarPreview(true)}
                 disabled={!avatarUrl}
-                className={`relative w-16 h-16 rounded-full bg-white/20 border-2 border-white/40 flex items-center justify-center text-white text-xl font-bold overflow-hidden ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
+                className={`relative w-16 h-16 rounded-full bg-[color:var(--brand-primary-soft)] border-2 border-white flex items-center justify-center text-[color:var(--brand-primary-strong)] text-xl font-bold overflow-hidden ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
                 title={avatarUrl ? 'View profile photo' : 'No profile photo yet'}
               >
                 {avatarUrl
@@ -483,12 +483,12 @@ export default function ProfileClient({
               </button>
               <label
                 htmlFor="avatar-upload"
-                className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-md border border-gray-100 ${uploading ? 'opacity-60' : 'cursor-pointer'}`}
+                className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-md border border-gray-200 ${uploading ? 'opacity-60' : 'cursor-pointer'}`}
                 title="Change photo"
               >
                 {uploading
-                  ? <span className="w-3 h-3 border-2 border-[#7B1A1A] border-t-transparent rounded-full animate-spin" />
-                  : <Camera size={12} className="text-[#7B1A1A]" />}
+                  ? <span className="w-3 h-3 border-2 border-[color:var(--brand-primary)] border-t-transparent rounded-full animate-spin" />
+                  : <Camera size={12} className="text-[color:var(--brand-primary)]" />}
               </label>
               <input
                 id="avatar-upload"
@@ -500,10 +500,10 @@ export default function ProfileClient({
               />
             </div>
             <div>
-              <h1 className="font-display font-bold text-xl text-white">{profile?.full_name}</h1>
-              <p className="text-white/70 text-sm">@{profile?.username}</p>
+              <h1 className="font-display font-bold text-xl text-gray-900">{profile?.full_name}</h1>
+              <p className="text-gray-500 text-sm">@{profile?.username}</p>
               {(profile?.city || profile?.country) && (
-                <p className="text-white/60 text-xs flex items-center gap-1 mt-0.5">
+                <p className="text-gray-500 text-xs flex items-center gap-1 mt-0.5">
                   <MapPin size={10} />
                   {[profile?.city, profile?.country].filter(Boolean).join(', ')}
                 </p>
@@ -511,7 +511,7 @@ export default function ProfileClient({
             </div>
           </div>
           <button onClick={() => setEditing(!editing)}
-            className="p-2 rounded-xl bg-white/20 hover:bg-white/30 transition text-white">
+            className="p-2 rounded-xl bg-[color:var(--brand-primary-soft)] hover:bg-[color:var(--brand-accent-soft)] transition text-[color:var(--brand-primary-strong)]">
             <Edit3 size={16} />
           </button>
         </div>
@@ -626,7 +626,8 @@ export default function ProfileClient({
                   type="checkbox"
                   checked={checked}
                   onChange={(e) => setNotificationPrefs((current) => ({ ...current, [item.key]: e.target.checked }))}
-                  className="mt-1 h-4 w-4 rounded border-gray-300 text-[#7B1A1A] focus:ring-[#7B1A1A]"
+                  className="mt-1 h-4 w-4 rounded border-gray-300"
+                  style={{ accentColor: 'var(--brand-primary)' }}
                 />
               </label>
             );
@@ -645,7 +646,8 @@ export default function ProfileClient({
                 <select
                   value={notificationPrefs.notification_quiet_hours_start}
                   onChange={(e) => setNotificationPrefs((current) => ({ ...current, notification_quiet_hours_start: Number(e.target.value) }))}
-                  className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm bg-white"
+                  className="w-full px-3 py-2.5 rounded-xl border border-gray-200 outline-none text-sm bg-white"
+                  style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
                 >
                   {Array.from({ length: 24 }).map((_, hour) => (
                     <option key={`start-${hour}`} value={hour}>{String(hour).padStart(2, '0')}:00</option>
@@ -657,7 +659,8 @@ export default function ProfileClient({
                 <select
                   value={notificationPrefs.notification_quiet_hours_end}
                   onChange={(e) => setNotificationPrefs((current) => ({ ...current, notification_quiet_hours_end: Number(e.target.value) }))}
-                  className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm bg-white"
+                  className="w-full px-3 py-2.5 rounded-xl border border-gray-200 outline-none text-sm bg-white"
+                  style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
                 >
                   {Array.from({ length: 24 }).map((_, hour) => (
                     <option key={`end-${hour}`} value={hour}>{String(hour).padStart(2, '0')}:00</option>
@@ -743,7 +746,7 @@ export default function ProfileClient({
             {mutedProfiles.length > 0 && (
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm font-semibold text-gray-800">
-                  <BellOff size={15} className="text-[#7B1A1A]" />
+                  <BellOff size={15} className="text-[color:var(--brand-primary)]" />
                   Muted people
                 </div>
                 {mutedProfiles.map((item) => {
@@ -764,14 +767,17 @@ export default function ProfileClient({
             {hiddenItems.length > 0 && (
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm font-semibold text-gray-800">
-                  <EyeOff size={15} className="text-[#7B1A1A]" />
+                  <EyeOff size={15} className="text-[color:var(--brand-primary)]" />
                   Hidden content
                 </div>
                 {hiddenItems.map((item) => {
                   const busy = safetyBusyKey === `hide:${item.content_type}:${item.content_id}`;
                   return (
                     <div key={`${item.content_type}:${item.content_id}`} className="rounded-2xl border border-gray-100 px-3 py-3 flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-2xl bg-[#7B1A1A]/8 text-[#7B1A1A] flex items-center justify-center flex-shrink-0">
+                      <div
+                        className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
+                        style={{ background: 'rgba(124, 58, 45, 0.08)', color: 'var(--brand-primary)' }}
+                      >
                         <EyeOff size={16} />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -781,7 +787,12 @@ export default function ProfileClient({
                       <button
                         onClick={() => unhideContent(item.content_type, item.content_id)}
                         disabled={busy}
-                        className="px-3 py-1.5 rounded-full border border-[#7B1A1A]/20 text-[#7B1A1A] text-xs font-semibold hover:bg-[#7B1A1A]/5 transition disabled:opacity-60"
+                        className="px-3 py-1.5 rounded-full text-xs font-semibold transition disabled:opacity-60"
+                        style={{
+                          border: '1px solid rgba(124, 58, 45, 0.18)',
+                          color: 'var(--brand-primary)',
+                          background: 'rgba(255,255,255,0.85)',
+                        }}
                       >
                         {busy ? 'Updating…' : 'Unhide'}
                       </button>
@@ -811,7 +822,10 @@ export default function ProfileClient({
 
       {/* ── Edit Form ── */}
       {editing && (
-        <div className="bg-white rounded-2xl border border-orange-100 p-5 space-y-4 fade-in">
+        <div
+          className="bg-white rounded-2xl p-5 space-y-4 fade-in"
+          style={{ border: '1px solid rgba(124, 58, 45, 0.12)', boxShadow: '0 16px 34px rgba(28, 26, 23, 0.06)' }}
+        >
           <h2 className="font-display font-semibold text-lg text-gray-900">Edit Profile</h2>
 
           {/* ── Tradition — locked at signup, not editable ── */}
@@ -849,7 +863,8 @@ export default function ProfileClient({
                 <input type="text" placeholder={placeholder}
                   value={(form as Record<string, string>)[key]}
                   onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm"
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm"
+                  style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
                 />
               </div>
             ))}
@@ -861,7 +876,8 @@ export default function ProfileClient({
               <label className="block text-sm font-medium text-gray-700 mb-1.5">{sampradayaLabel}</label>
               <select value={form.sampradaya}
                 onChange={(e) => setForm({ ...form, sampradaya: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm bg-white">
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm bg-white"
+                style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}>
                 <option value="">Select {sampradayaLabel.toLowerCase()}</option>
                 {sampradayaOptions.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
               </select>
@@ -871,7 +887,8 @@ export default function ProfileClient({
               <label className="block text-sm font-medium text-gray-700 mb-1.5">{ishtaDevataLabel}</label>
               <select value={form.ishta_devata}
                 onChange={(e) => setForm({ ...form, ishta_devata: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm bg-white">
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm bg-white"
+                style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}>
                 <option value="">Select {ishtaDevataLabel.toLowerCase()}</option>
                 {ishtaDevataOptions.map((d) => <option key={d.value} value={d.value}>{d.emoji} {d.label}</option>)}
               </select>
@@ -891,7 +908,8 @@ export default function ProfileClient({
                   <input type="text" placeholder={placeholder}
                     value={(form as Record<string, string>)[key]}
                     onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm"
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm"
+                    style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
                   />
                 </div>
               ))}
@@ -909,7 +927,8 @@ export default function ProfileClient({
                 <input type="text" placeholder={placeholder}
                   value={(form as Record<string, string>)[key]}
                   onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm"
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm"
+                  style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
                 />
               </div>
             ))}
@@ -922,7 +941,8 @@ export default function ProfileClient({
               <input type="text" placeholder="e.g. Waheguru Ji Ka Khalsa, Namo Buddhaya…"
                 value={form.custom_greeting}
                 onChange={(e) => setForm({ ...form, custom_greeting: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm"
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm"
+                style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
               />
               <p className="text-xs text-gray-400 mt-1">Overrides the auto greeting on your home screen</p>
             </div>
@@ -933,7 +953,8 @@ export default function ProfileClient({
                 value={form.bio}
                 onChange={(e) => setForm({ ...form, bio: e.target.value })}
                 rows={3}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none resize-none text-sm"
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none resize-none text-sm"
+                style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
               />
             </div>
           </div>
@@ -945,7 +966,8 @@ export default function ProfileClient({
               <select
                 value={form.app_language}
                 onChange={(e) => setForm({ ...form, app_language: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm bg-white"
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm bg-white"
+                style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
               >
                 {APP_LANGUAGES.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
               </select>
@@ -955,7 +977,8 @@ export default function ProfileClient({
               <select
                 value={form.scripture_script}
                 onChange={(e) => setForm({ ...form, scripture_script: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm bg-white"
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm bg-white"
+                style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
               >
                 {SCRIPTURE_SCRIPT_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
               </select>
@@ -970,7 +993,8 @@ export default function ProfileClient({
                   type="checkbox"
                   checked={Boolean(form.show_transliteration)}
                   onChange={(e) => setForm({ ...form, show_transliteration: e.target.checked })}
-                  className="mt-1 h-4 w-4 rounded border-gray-300 text-[#7B1A1A] focus:ring-[#7B1A1A]"
+                  className="mt-1 h-4 w-4 rounded border-gray-300"
+                  style={{ accentColor: 'var(--brand-primary)' }}
                 />
               </label>
             </div>
@@ -979,7 +1003,8 @@ export default function ProfileClient({
               <select
                 value={form.meaning_language}
                 onChange={(e) => setForm({ ...form, meaning_language: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm bg-white"
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm bg-white"
+                style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
               >
                 {MEANING_LANGUAGE_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
               </select>
@@ -993,7 +1018,7 @@ export default function ProfileClient({
             </button>
             <button onClick={saveProfile} disabled={saving}
               className="flex-1 py-3 text-white font-semibold rounded-xl text-sm hover:opacity-90 disabled:opacity-50"
-              style={{ background: '#7B1A1A' }}>
+              style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}>
               {saving ? 'Saving…' : 'Save Changes'}
             </button>
           </div>
@@ -1008,7 +1033,8 @@ export default function ProfileClient({
         <button
           onClick={sendTestNotification}
           disabled={sendingTestNotification}
-          className="glass-button-secondary inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-[#7B1A1A] font-medium disabled:opacity-60"
+          className="glass-button-secondary inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium disabled:opacity-60"
+          style={{ color: 'var(--brand-primary)' }}
         >
           <span>🔔</span>
           <span>{sendingTestNotification ? 'Sending test notification…' : 'Send test notification'}</span>
@@ -1062,7 +1088,12 @@ function SafetyProfileRow({
       <button
         onClick={onAction}
         disabled={disabled}
-        className="px-3 py-1.5 rounded-full border border-[#7B1A1A]/20 text-[#7B1A1A] text-xs font-semibold hover:bg-[#7B1A1A]/5 transition disabled:opacity-60"
+        className="px-3 py-1.5 rounded-full text-xs font-semibold transition disabled:opacity-60"
+        style={{
+          border: '1px solid rgba(124, 58, 45, 0.18)',
+          color: 'var(--brand-primary)',
+          background: 'rgba(255,255,255,0.85)',
+        }}
       >
         {actionLabel}
       </button>

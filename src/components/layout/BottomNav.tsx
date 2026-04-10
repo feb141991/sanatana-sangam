@@ -44,13 +44,17 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
               href={href}
               className={cn(
                 'relative flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all',
-                active ? 'text-white' : 'text-gray-500 hover:text-gray-900'
+                active ? 'text-white' : 'text-gray-500 hover:text-[color:var(--brand-primary-strong)]'
               )}
             >
               {active && (
                 <motion.span
                   layoutId="bottom-nav-active-shell"
-                  className="absolute inset-x-1 inset-y-0 rounded-[1.1rem] bg-[color:var(--brand-primary)]"
+                  className="absolute inset-x-1 inset-y-0 rounded-[1.1rem]"
+                  style={{
+                    background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))',
+                    boxShadow: '0 12px 24px rgba(124, 58, 45, 0.2)',
+                  }}
                   transition={
                     prefersReducedMotion
                       ? { duration: 0 }

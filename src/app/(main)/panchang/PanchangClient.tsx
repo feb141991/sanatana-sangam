@@ -28,27 +28,27 @@ const DAY_LABELS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 
 const SKY_THEMES = {
   dawn: {
-    shell: 'linear-gradient(180deg, rgba(255, 246, 239, 0.98) 0%, rgba(255, 234, 229, 0.94) 42%, rgba(245, 220, 226, 0.92) 100%)',
-    glow: 'radial-gradient(circle at top, rgba(255, 214, 167, 0.55), transparent 55%)',
-    orb: 'rgba(255, 198, 126, 0.9)',
+    shell: 'linear-gradient(180deg, rgba(255, 250, 245, 0.98) 0%, rgba(249, 240, 233, 0.95) 42%, rgba(242, 233, 225, 0.92) 100%)',
+    glow: 'radial-gradient(circle at top, rgba(222, 190, 160, 0.42), transparent 55%)',
+    orb: 'rgba(210, 177, 149, 0.76)',
     label: 'Dawn sky',
   },
   day: {
-    shell: 'linear-gradient(180deg, rgba(250, 244, 239, 0.98) 0%, rgba(241, 232, 239, 0.95) 48%, rgba(231, 213, 224, 0.92) 100%)',
-    glow: 'radial-gradient(circle at top, rgba(255, 231, 176, 0.45), transparent 52%)',
-    orb: 'rgba(255, 221, 137, 0.88)',
+    shell: 'linear-gradient(180deg, rgba(255, 252, 248, 0.98) 0%, rgba(245, 239, 233, 0.95) 48%, rgba(236, 232, 227, 0.92) 100%)',
+    glow: 'radial-gradient(circle at top, rgba(213, 194, 173, 0.36), transparent 52%)',
+    orb: 'rgba(194, 178, 160, 0.7)',
     label: 'Day sky',
   },
   dusk: {
-    shell: 'linear-gradient(180deg, rgba(245, 232, 233, 0.98) 0%, rgba(233, 206, 221, 0.95) 45%, rgba(206, 171, 198, 0.94) 100%)',
-    glow: 'radial-gradient(circle at top, rgba(255, 185, 145, 0.46), transparent 55%)',
-    orb: 'rgba(255, 170, 129, 0.82)',
+    shell: 'linear-gradient(180deg, rgba(248, 239, 233, 0.98) 0%, rgba(233, 219, 210, 0.95) 45%, rgba(220, 210, 203, 0.94) 100%)',
+    glow: 'radial-gradient(circle at top, rgba(189, 146, 120, 0.28), transparent 55%)',
+    orb: 'rgba(168, 126, 101, 0.58)',
     label: 'Dusk sky',
   },
   night: {
-    shell: 'linear-gradient(180deg, rgba(38, 32, 58, 0.98) 0%, rgba(58, 42, 77, 0.96) 42%, rgba(103, 74, 104, 0.94) 100%)',
-    glow: 'radial-gradient(circle at top, rgba(162, 145, 214, 0.34), transparent 58%)',
-    orb: 'rgba(238, 228, 255, 0.78)',
+    shell: 'linear-gradient(180deg, rgba(245, 239, 233, 0.98) 0%, rgba(228, 220, 213, 0.96) 42%, rgba(210, 200, 192, 0.94) 100%)',
+    glow: 'radial-gradient(circle at top, rgba(182, 157, 132, 0.18), transparent 58%)',
+    orb: 'rgba(233, 220, 205, 0.46)',
     label: 'Night sky',
   },
 } as const;
@@ -90,14 +90,14 @@ function Row({ emoji, label, value, highlight = false }: {
       style={
         highlight
           ? {
-              background: 'linear-gradient(135deg, rgba(245, 224, 231, 0.92), rgba(255, 244, 247, 0.86))',
-              borderColor: 'rgba(200, 127, 146, 0.28)',
-              boxShadow: '0 14px 28px rgba(183, 116, 134, 0.12)',
+              background: 'linear-gradient(135deg, rgba(243, 231, 226, 0.96), rgba(255, 251, 249, 0.9))',
+              borderColor: 'rgba(124, 58, 45, 0.18)',
+              boxShadow: '0 14px 28px rgba(124, 58, 45, 0.08)',
             }
           : {
-              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(249, 237, 242, 0.64))',
-              borderColor: 'rgba(255, 255, 255, 0.72)',
-              boxShadow: '0 12px 24px rgba(183, 116, 134, 0.08)',
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(249, 246, 242, 0.82))',
+              borderColor: 'rgba(17, 24, 39, 0.06)',
+              boxShadow: '0 12px 24px rgba(28, 26, 23, 0.05)',
             }
       }
     >
@@ -177,14 +177,14 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
       : 'Use the sacred-time ribbon below to orient your day.'
     : 'This is a calm planning view for a different day, so you can prepare ahead.';
   const shellPanelStyle = {
-    background: 'linear-gradient(135deg, rgba(255,255,255,0.68), rgba(246,229,236,0.58))',
-    borderColor: 'rgba(255,255,255,0.62)',
-    boxShadow: '0 18px 42px rgba(183, 116, 134, 0.12), inset 0 1px 0 rgba(255,255,255,0.5)',
+    background: 'linear-gradient(135deg, rgba(255,255,255,0.8), rgba(247,243,238,0.74))',
+    borderColor: 'rgba(17,24,39,0.06)',
+    boxShadow: '0 18px 42px rgba(28,26,23,0.06), inset 0 1px 0 rgba(255,255,255,0.7)',
   } as const;
   const softPanelStyle = {
-    background: 'linear-gradient(135deg, rgba(255,255,255,0.62), rgba(247,234,239,0.52))',
-    borderColor: 'rgba(255,255,255,0.58)',
-    boxShadow: '0 14px 30px rgba(183, 116, 134, 0.1)',
+    background: 'linear-gradient(135deg, rgba(255,255,255,0.78), rgba(248,243,238,0.68))',
+    borderColor: 'rgba(17,24,39,0.05)',
+    boxShadow: '0 14px 30px rgba(28,26,23,0.05)',
   } as const;
 
   async function share() {
@@ -229,7 +229,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
       <div className="relative flex flex-col gap-0">
       <div
         className="relative overflow-hidden rounded-[2rem] p-4 sm:p-5 mb-3 border"
-        style={{ background: skyTheme.shell, borderColor: 'rgba(223, 156, 171, 0.24)' }}
+        style={{ background: skyTheme.shell, borderColor: 'rgba(17, 24, 39, 0.08)' }}
       >
         <div className="absolute inset-0 pointer-events-none" style={{ background: skyTheme.glow }} />
         <div
@@ -294,7 +294,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
       <div className="flex items-center gap-3 mb-3 rounded-[1.7rem] border px-3 py-3" style={shellPanelStyle}>
         <Link href="/home"
           className="w-8 h-8 rounded-xl bg-white/80 border flex items-center justify-center transition"
-          style={{ borderColor: 'rgba(200, 127, 146, 0.16)' }}>
+          style={{ borderColor: 'rgba(124, 58, 45, 0.12)' }}>
           <ArrowLeft size={15} className="text-gray-500" />
         </Link>
         <div className="flex-1">
@@ -309,7 +309,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
         </div>
         <button onClick={share}
           className="w-8 h-8 rounded-xl bg-white/80 border flex items-center justify-center transition"
-          style={{ borderColor: 'rgba(200, 127, 146, 0.16)' }}>
+          style={{ borderColor: 'rgba(124, 58, 45, 0.12)' }}>
           <Share2 size={15} className="text-gray-500" />
         </button>
       </div>
@@ -319,15 +319,15 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
         className="rounded-[2rem] overflow-hidden mb-3 border"
         style={{
           background: `linear-gradient(180deg, rgba(255,255,255,0.38), rgba(255,255,255,0.16)), ${skyTheme.shell}`,
-          borderColor: 'rgba(255,255,255,0.55)',
-          boxShadow: '0 22px 44px rgba(183, 116, 134, 0.14)',
+          borderColor: 'rgba(124, 58, 45, 0.1)',
+          boxShadow: '0 22px 44px rgba(28, 26, 23, 0.08)',
         }}
       >
         {/* Month navigation */}
-        <div className="flex items-center justify-between px-4 py-4 border-b" style={{ borderColor: 'rgba(255,255,255,0.35)' }}>
+        <div className="flex items-center justify-between px-4 py-4 border-b" style={{ borderColor: 'rgba(124, 58, 45, 0.08)' }}>
           <button onClick={prevMonth}
             className="w-9 h-9 rounded-xl flex items-center justify-center transition"
-            style={{ background: 'rgba(255,255,255,0.42)', border: '1px solid rgba(255,255,255,0.38)' }}>
+            style={{ background: 'rgba(255,255,255,0.56)', border: '1px solid rgba(124, 58, 45, 0.08)' }}>
             <ChevronLeft size={16} className="text-gray-600" />
           </button>
           <div className="text-center">
@@ -338,13 +338,13 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
           </div>
           <button onClick={nextMonth}
             className="w-9 h-9 rounded-xl flex items-center justify-center transition"
-            style={{ background: 'rgba(255,255,255,0.42)', border: '1px solid rgba(255,255,255,0.38)' }}>
+            style={{ background: 'rgba(255,255,255,0.56)', border: '1px solid rgba(124, 58, 45, 0.08)' }}>
             <ChevronRight size={16} className="text-gray-600" />
           </button>
         </div>
 
         {/* Day labels */}
-        <div className="grid grid-cols-7 border-b" style={{ borderColor: 'rgba(255,255,255,0.3)' }}>
+        <div className="grid grid-cols-7 border-b" style={{ borderColor: 'rgba(124, 58, 45, 0.08)' }}>
           {DAY_LABELS.map(d => (
             <div key={d} className="py-2 text-center text-[10px] font-medium text-gray-500">{d}</div>
           ))}
@@ -372,18 +372,18 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                   isSelected
                     ? {
                         background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))',
-                        boxShadow: '0 14px 28px rgba(183, 116, 134, 0.24)',
+                        boxShadow: '0 14px 28px rgba(124, 58, 45, 0.22)',
                       }
                     : isCurrentDay
                       ? {
-                          borderColor: 'rgba(200, 127, 146, 0.4)',
+                          borderColor: 'rgba(124, 58, 45, 0.24)',
                           color: 'var(--brand-primary-strong)',
-                          background: 'linear-gradient(135deg, rgba(255,255,255,0.74), rgba(247,232,238,0.74))',
-                          boxShadow: '0 10px 18px rgba(183, 116, 134, 0.08)',
+                          background: 'linear-gradient(135deg, rgba(255,255,255,0.82), rgba(243,231,226,0.72))',
+                          boxShadow: '0 10px 18px rgba(124, 58, 45, 0.08)',
                         }
                       : {
-                          background: 'rgba(255,255,255,0.36)',
-                          border: '1px solid rgba(255,255,255,0.28)',
+                          background: 'rgba(255,255,255,0.5)',
+                          border: '1px solid rgba(124, 58, 45, 0.08)',
                         }
                 }
                 aria-pressed={isSelected}
@@ -437,7 +437,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
       <div className="space-y-2.5 rounded-[1.8rem] border p-3.5" style={shellPanelStyle}>
         {/* Paksha + Masa banner */}
         <div className="rounded-[1.2rem] px-4 py-3 flex items-center gap-3"
-          style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))', boxShadow: '0 18px 34px rgba(183, 116, 134, 0.18)' }}>
+          style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))', boxShadow: '0 18px 34px rgba(124, 58, 45, 0.18)' }}>
           <span className="text-xl">🪔</span>
           <div>
             <p className="text-white font-semibold text-sm">

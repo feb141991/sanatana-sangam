@@ -8,6 +8,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import BrandMark from '@/components/BrandMark';
+import { LayoutGrid, X as CloseIcon } from 'lucide-react';
 import {
   requestNotificationPermission,
   getPlayerId,
@@ -32,6 +33,16 @@ const titles: Record<string, string> = {
 
 const PUSH_PROMPT_DISMISS_KEY = 'sanatana-push-prompt-dismissed-until';
 const PUSH_PROMPT_COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000;
+const MVP_MENU_ITEMS = [
+  { href: '/home', label: 'Home', emoji: '🏠' },
+  { href: '/panchang', label: 'Panchang', emoji: '🪔' },
+  { href: '/library', label: 'Pathshala', emoji: '📚' },
+  { href: '/bhakti', label: 'Bhakti', emoji: '✨' },
+  { href: '/kul', label: 'Kul', emoji: '🫶' },
+  { href: '/mandali', label: 'Mandali', emoji: '👥' },
+  { href: '/tirtha-map', label: 'Tirtha', emoji: '🛕' },
+  { href: '/profile', label: 'Profile', emoji: '👤' },
+] as const;
 
 export default function TopBar({
   userId,
@@ -75,6 +86,7 @@ export default function TopBar({
   );
 
   const [open,       setOpen]       = useState(false);
+  const [menuOpen,   setMenuOpen]   = useState(false);
   const [notifs,     setNotifs]     = useState<Notification[]>([]);
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [isHidden, setIsHidden] = useState(false);
@@ -141,7 +153,7 @@ export default function TopBar({
       const delta = currentY - previousY;
       const absDelta = Math.abs(delta);
 
-      if (open) {
+      if (open || menuOpen) {
         setIsHidden(false);
         scrollAccumulatorRef.current = 0;
       } else if (currentY <= 32) {
@@ -168,7 +180,7 @@ export default function TopBar({
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [open]);
+  }, [menuOpen, open]);
 
   const unreadCount = notifs.filter((n) => !n.read).length;
   const shouldSuppressPrompt = Boolean(
@@ -182,7 +194,14 @@ export default function TopBar({
     && (permission === 'denied' || (wantsAnyNotifications && !shouldSuppressPrompt));
 
   async function handleBellClick() {
+    setMenuOpen(false);
     setOpen((prev) => !prev);
+    setIsHidden(false);
+  }
+
+  function handleMenuToggle() {
+    setOpen(false);
+    setMenuOpen((prev) => !prev);
     setIsHidden(false);
   }
 
@@ -212,7 +231,7 @@ export default function TopBar({
           <Link href={homeHref} className="inline-flex">
             <BrandMark size="sm" />
           </Link>
-          <span className="font-display font-semibold text-gray-900 text-sm sm:text-base">{title}</span>
+          <span className="font-display font-semibold text-[color:var(--brand-ink)] text-sm sm:text-base">{title}</span>
         </div>
 
         {/* Right */}
@@ -236,12 +255,104 @@ export default function TopBar({
             </div>
           ) : (
             <>
+              <div className="relative">
+                <button
+                  onClick={handleMenuToggle}
+                  aria-label="Open app menu"
+                className="h-9 rounded-full px-3 border transition flex items-center gap-2 text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary-strong)]"
+                style={{
+                  borderColor: 'rgba(124, 58, 45, 0.1)',
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.96), rgba(250,248,245,0.92))',
+                }}
+              >
+                  <LayoutGrid size={15} />
+                  <span className="text-xs font-semibold hidden sm:inline">Menu</span>
+                </button>
+
+                <AnimatePresence>
+                  {menuOpen && (
+                    <motion.div
+                      initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10, scale: 0.985 }}
+                      animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
+                      exit={prefersReducedMotion ? undefined : { opacity: 0, y: 6, scale: 0.985 }}
+                      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                      className="glass-panel-strong absolute left-0 top-11 w-72 rounded-3xl overflow-hidden z-50 origin-top-left"
+                    >
+                      <div className="px-4 py-3 border-b border-black/5 flex items-center justify-between">
+                        <span className="font-semibold text-sm text-[color:var(--brand-ink)]">Sanatana Sangam</span>
+                        <button
+                          onClick={() => setMenuOpen(false)}
+                          className="w-8 h-8 rounded-full transition flex items-center justify-center text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary-strong)]"
+                          style={{ background: 'rgba(124, 58, 45, 0.04)' }}
+                          aria-label="Close menu"
+                        >
+                          <CloseIcon size={15} />
+                        </button>
+                      </div>
+                      <motion.div
+                        className="grid grid-cols-2 gap-2 p-3"
+                        initial="hidden"
+                        animate="show"
+                        variants={{
+                          hidden: {},
+                          show: {
+                            transition: {
+                              staggerChildren: prefersReducedMotion ? 0 : 0.04,
+                              delayChildren: prefersReducedMotion ? 0 : 0.03,
+                            },
+                          },
+                        }}
+                      >
+                        {MVP_MENU_ITEMS.map((item) => {
+                          const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                          return (
+                          <motion.div
+                            key={item.href}
+                            variants={{
+                              hidden: { opacity: 0, y: 8 },
+                              show: { opacity: 1, y: 0, transition: { duration: 0.22 } },
+                            }}
+                          >
+                            <Link
+                              href={item.href}
+                              onClick={() => setMenuOpen(false)}
+                              className="block rounded-[1.15rem] border px-3 py-3 transition"
+                              style={
+                                active
+                                  ? {
+                                      borderColor: 'rgba(124, 58, 45, 0.16)',
+                                      background: 'linear-gradient(135deg, rgba(243,231,226,0.92), rgba(255,255,255,0.94))',
+                                      boxShadow: '0 12px 26px rgba(124, 58, 45, 0.08)',
+                                    }
+                                  : {
+                                      borderColor: 'rgba(17, 24, 39, 0.06)',
+                                      background: 'rgba(255,255,255,0.82)',
+                                    }
+                              }
+                            >
+                              <p className="text-base">{item.emoji}</p>
+                              <p
+                                className="mt-2 text-sm font-semibold"
+                                style={{ color: active ? 'var(--brand-primary-strong)' : 'var(--brand-ink)' }}
+                              >
+                                {item.label}
+                              </p>
+                            </Link>
+                          </motion.div>
+                        )})}
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               {/* Bell */}
               <div className="relative">
                 <button
                   onClick={handleBellClick}
                   aria-label="Notifications"
-                    className="w-9 h-9 rounded-full hover:bg-black/5 transition flex items-center justify-center relative"
+                    className="w-9 h-9 rounded-full transition flex items-center justify-center relative text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary-strong)]"
+                    style={{ background: 'rgba(124, 58, 45, 0.03)' }}
                 >
                   <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
@@ -250,7 +361,7 @@ export default function TopBar({
                   {unreadCount > 0 && (
                     <span
                       className="absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] text-white font-bold"
-                      style={{ background: 'var(--orange-accent)' }}
+                      style={{ background: 'var(--brand-primary)' }}
                     >
                       {unreadCount}
                     </span>
@@ -268,8 +379,8 @@ export default function TopBar({
                   >
 
                     {/* Header */}
-                    <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-                      <span className="font-semibold text-sm text-gray-900">Notifications</span>
+                    <div className="px-4 py-3 border-b border-black/5 flex items-center justify-between">
+                      <span className="font-semibold text-sm text-[color:var(--brand-ink)]">Notifications</span>
                       {unreadCount > 0 && (
                         <button onClick={markAllRead} className="text-xs hover:underline" style={{ color: 'var(--brand-primary)' }}>
                           Mark all read
@@ -369,13 +480,14 @@ export default function TopBar({
                               show: { opacity: 1, y: 0, transition: { duration: 0.18 } },
                             }}
                             className={`px-4 py-3 flex items-start gap-3 transition cursor-pointer ${
-                              !n.read ? 'bg-orange-50/20 hover:bg-orange-50/30' : 'hover:bg-white/40'
+                              !n.read ? 'bg-[color:var(--brand-primary-soft)]/70 hover:bg-[color:var(--brand-primary-soft)]' : 'hover:bg-black/[0.02]'
                             }`}
                             onClick={() => {
                               if (!n.read) {
                                 supabase.from('notifications').update({ read: true }).eq('id', n.id);
                                 setNotifs((prev) => prev.map((x) => x.id === n.id ? { ...x, read: true } : x));
                               }
+                              setMenuOpen(false);
                               if (!n.action_url) return;
                               if (/^https?:\/\//.test(n.action_url)) {
                                 window.location.href = n.action_url;
@@ -396,7 +508,7 @@ export default function TopBar({
                               </p>
                             </div>
                             {!n.read && (
-                              <span className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ background: 'var(--orange-accent)' }} />
+                              <span className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ background: 'var(--brand-primary)' }} />
                             )}
                           </motion.div>
                         ))
@@ -410,7 +522,11 @@ export default function TopBar({
               {/* Avatar */}
               <Link
                 href="/profile"
-                className="relative w-8 h-8 rounded-full bg-white/12 border border-white/30 flex items-center justify-center text-white text-[11px] font-bold overflow-hidden"
+                className="relative w-8 h-8 rounded-full flex items-center justify-center text-[color:var(--brand-primary-strong)] text-[11px] font-bold overflow-hidden shadow-sm"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.98), rgba(250,248,245,0.94))',
+                  border: '1px solid rgba(124, 58, 45, 0.1)',
+                }}
               >
                 {avatarUrl ? (
                   <Image src={avatarUrl} alt="Profile" fill sizes="32px" className="object-cover" />
@@ -424,10 +540,13 @@ export default function TopBar({
       </div>
 
       <AnimatePresence>
-        {open && (
+        {(open || menuOpen) && (
           <motion.div
             className="fixed inset-0 z-30"
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false);
+              setMenuOpen(false);
+            }}
             initial={prefersReducedMotion ? undefined : { opacity: 0 }}
             animate={prefersReducedMotion ? undefined : { opacity: 1 }}
             exit={prefersReducedMotion ? undefined : { opacity: 0 }}
