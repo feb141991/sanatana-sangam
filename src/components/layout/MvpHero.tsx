@@ -23,11 +23,11 @@ export default function MvpHero({
 
   return (
     <div
-      className="relative overflow-hidden rounded-[2rem] border px-4 py-5 sm:px-5 sm:py-6"
+      className="relative overflow-hidden rounded-[16px] border px-4 py-5 sm:px-5 sm:py-6"
       style={{
-        background: `linear-gradient(160deg, rgba(255,255,255,0.99) 0%, rgba(252,250,247,0.97) 52%, rgba(255,255,255,0.99) 100%), ${config.surface}`,
-        borderColor: config.border,
-        boxShadow: '0 28px 60px rgba(28, 26, 23, 0.08)',
+        background: '#FFFFFF',
+        borderColor: 'rgba(0, 0, 0, 0.15)',
+        boxShadow: 'none',
       }}
     >
       <motion.div
@@ -36,7 +36,7 @@ export default function MvpHero({
         initial={prefersReducedMotion ? undefined : { opacity: 0.6, scale: 1.04 }}
         animate={prefersReducedMotion ? undefined : { opacity: [0.52, 0.8, 0.52], scale: [1.03, 1.1, 1.03], x: [0, 10, 0] }}
         transition={prefersReducedMotion ? undefined : { duration: 11, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ background: config.aura }}
+        style={{ background: 'var(--saffron-50)' }}
       />
       <motion.div
         aria-hidden
@@ -44,17 +44,17 @@ export default function MvpHero({
         initial={prefersReducedMotion ? undefined : { opacity: 0.22, y: 0 }}
         animate={prefersReducedMotion ? undefined : { opacity: [0.14, 0.28, 0.14], y: [0, 16, 0], x: [0, -10, 0] }}
         transition={prefersReducedMotion ? undefined : { duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ background: config.iconWell }}
+        style={{ background: 'var(--saffron-50)' }}
       />
 
       <div className="relative">
-        <p className="text-[10px] uppercase tracking-[0.22em] font-semibold" style={{ color: config.accent }}>
+        <p className="text-[12px] font-medium" style={{ color: 'var(--saffron-800)' }}>
           {config.eyebrow}
         </p>
-        <h1 className="mt-1 font-display text-[1.62rem] sm:text-[1.9rem] font-bold text-gray-900 leading-[1.04]">
+        <h1 className="mt-1 text-[22px] sm:text-[22px] font-medium text-gray-900 leading-[1.2]">
           {title}
         </h1>
-        <p className="mt-2 max-w-[42rem] text-sm text-gray-600 leading-relaxed">
+        <p className="mt-2 max-w-[42rem] text-[14px] text-gray-600 leading-relaxed">
           {description}
         </p>
 
@@ -63,7 +63,8 @@ export default function MvpHero({
             {chips.map((chip) => (
               <span
                 key={chip}
-                className="inline-flex items-center rounded-full px-3 py-1.5 text-xs font-medium bg-white/92 text-gray-600 border border-black/5"
+                className="inline-flex items-center rounded-[24px] px-3 py-1.5 text-[12px] font-medium"
+                style={{ background: 'var(--saffron-50)', color: 'var(--saffron-800)' }}
               >
                 {chip}
               </span>

@@ -8,7 +8,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import BrandMark from '@/components/BrandMark';
-import { LayoutGrid, X as CloseIcon } from 'lucide-react';
+import { LayoutGrid, X as CloseIcon, Home, CalendarDays, BookOpen, CircleDot, Users, MapPin, User } from 'lucide-react';
 import {
   requestNotificationPermission,
   getPlayerId,
@@ -34,14 +34,13 @@ const titles: Record<string, string> = {
 const PUSH_PROMPT_DISMISS_KEY = 'sanatana-push-prompt-dismissed-until';
 const PUSH_PROMPT_COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000;
 const MVP_MENU_ITEMS = [
-  { href: '/home', label: 'Home', emoji: '🏠' },
-  { href: '/panchang', label: 'Panchang', emoji: '🪔' },
-  { href: '/library', label: 'Pathshala', emoji: '📚' },
-  { href: '/bhakti', label: 'Bhakti', emoji: '✨' },
-  { href: '/kul', label: 'Kul', emoji: '🫶' },
-  { href: '/mandali', label: 'Mandali', emoji: '👥' },
-  { href: '/tirtha-map', label: 'Tirtha', emoji: '🛕' },
-  { href: '/profile', label: 'Profile', emoji: '👤' },
+  { href: '/home', label: 'Home', icon: Home },
+  { href: '/panchang', label: 'Panchang', icon: CalendarDays },
+  { href: '/library', label: 'Pathshala', icon: BookOpen },
+  { href: '/bhakti/mala', label: 'Mala', icon: CircleDot },
+  { href: '/mandali', label: 'Mandali', icon: Users },
+  { href: '/tirtha-map', label: 'Tirtha', icon: MapPin },
+  { href: '/profile', label: 'Profile', icon: User },
 ] as const;
 
 export default function TopBar({
@@ -224,7 +223,7 @@ export default function TopBar({
 
   return (
     <header className={`sticky top-0 z-40 px-3 pt-3 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isHidden ? '-translate-y-[120%]' : 'translate-y-0'}`}>
-      <div className="glass-nav max-w-2xl mx-auto px-4 h-14 rounded-[1.65rem] flex items-center justify-between">
+      <div className="glass-nav max-w-2xl mx-auto px-4 h-14 rounded-[16px] flex items-center justify-between bg-white">
 
         {/* Left — logo + page title */}
         <div className="flex items-center gap-2">
@@ -260,10 +259,7 @@ export default function TopBar({
                   onClick={handleMenuToggle}
                   aria-label="Open app menu"
                 className="h-9 rounded-full px-3 border transition flex items-center gap-2 text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary-strong)]"
-                style={{
-                  borderColor: 'rgba(124, 58, 45, 0.1)',
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.96), rgba(250,248,245,0.92))',
-                }}
+                style={{ borderColor: 'rgba(0,0,0,0.15)', background: '#fff' }}
               >
                   <LayoutGrid size={15} />
                   <span className="text-xs font-semibold hidden sm:inline">Menu</span>
@@ -276,14 +272,14 @@ export default function TopBar({
                       animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
                       exit={prefersReducedMotion ? undefined : { opacity: 0, y: 6, scale: 0.985 }}
                       transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                      className="glass-panel-strong absolute left-0 top-11 w-72 rounded-3xl overflow-hidden z-50 origin-top-left"
+                      className="glass-panel-strong absolute left-0 top-11 w-72 rounded-[16px] overflow-hidden z-50 origin-top-left bg-white"
                     >
                       <div className="px-4 py-3 border-b border-black/5 flex items-center justify-between">
                         <span className="font-semibold text-sm text-[color:var(--brand-ink)]">Sanatana Sangam</span>
                         <button
                           onClick={() => setMenuOpen(false)}
                           className="w-8 h-8 rounded-full transition flex items-center justify-center text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary-strong)]"
-                          style={{ background: 'rgba(124, 58, 45, 0.04)' }}
+                          style={{ background: 'var(--saffron-50)' }}
                           aria-label="Close menu"
                         >
                           <CloseIcon size={15} />
@@ -305,6 +301,7 @@ export default function TopBar({
                       >
                         {MVP_MENU_ITEMS.map((item) => {
                           const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                          const Icon = item.icon;
                           return (
                           <motion.div
                             key={item.href}
@@ -316,27 +313,30 @@ export default function TopBar({
                             <Link
                               href={item.href}
                               onClick={() => setMenuOpen(false)}
-                              className="block rounded-[1.15rem] border px-3 py-3 transition"
+                              className="block rounded-[8px] border px-3 py-3 transition active:scale-[0.97]"
                               style={
                                 active
                                   ? {
-                                      borderColor: 'rgba(124, 58, 45, 0.16)',
-                                      background: 'linear-gradient(135deg, rgba(243,231,226,0.92), rgba(255,255,255,0.94))',
-                                      boxShadow: '0 12px 26px rgba(124, 58, 45, 0.08)',
+                                      borderColor: 'var(--saffron-100)',
+                                      background: 'var(--saffron-50)',
                                     }
                                   : {
-                                      borderColor: 'rgba(17, 24, 39, 0.06)',
-                                      background: 'rgba(255,255,255,0.82)',
+                                      borderColor: 'rgba(0,0,0,0.15)',
+                                      background: '#fff',
                                     }
                               }
                             >
-                              <p className="text-base">{item.emoji}</p>
-                              <p
-                                className="mt-2 text-sm font-semibold"
-                                style={{ color: active ? 'var(--brand-primary-strong)' : 'var(--brand-ink)' }}
-                              >
-                                {item.label}
-                              </p>
+                              <div className="flex items-center gap-2">
+                                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[color:var(--saffron-50)] text-[color:var(--saffron-800)]">
+                                  <Icon size={16} />
+                                </span>
+                                <p
+                                  className="text-sm font-medium"
+                                  style={{ color: active ? 'var(--saffron-800)' : 'var(--brand-ink)' }}
+                                >
+                                  {item.label}
+                                </p>
+                              </div>
                             </Link>
                           </motion.div>
                         )})}
@@ -352,7 +352,7 @@ export default function TopBar({
                   onClick={handleBellClick}
                   aria-label="Notifications"
                     className="w-9 h-9 rounded-full transition flex items-center justify-center relative text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary-strong)]"
-                    style={{ background: 'rgba(124, 58, 45, 0.03)' }}
+                    style={{ background: 'var(--saffron-50)' }}
                 >
                   <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
@@ -360,8 +360,8 @@ export default function TopBar({
                   </svg>
                   {unreadCount > 0 && (
                     <span
-                      className="absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] text-white font-bold"
-                      style={{ background: 'var(--brand-primary)' }}
+                      className="absolute top-1 right-1 min-w-[16px] h-4 rounded-full flex items-center justify-center text-[9px] text-[color:var(--saffron-900)] font-medium px-1"
+                      style={{ background: 'var(--saffron-100)' }}
                     >
                       {unreadCount}
                     </span>
@@ -375,7 +375,7 @@ export default function TopBar({
                     animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
                     exit={prefersReducedMotion ? undefined : { opacity: 0, y: 6, scale: 0.985 }}
                     transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                    className="glass-panel-strong absolute right-0 top-11 w-80 rounded-3xl overflow-hidden z-50 origin-top-right"
+                    className="glass-panel-strong absolute right-0 top-11 w-80 rounded-[16px] overflow-hidden z-50 origin-top-right bg-white"
                   >
 
                     {/* Header */}
@@ -390,8 +390,10 @@ export default function TopBar({
 
                     {/* Permission prompt — shown when not yet granted */}
                     {shouldShowPushPrompt && (
-                      <div className="glass-panel mx-3 mt-3 px-3 py-2.5 rounded-xl flex items-start gap-2.5">
-                        <span className="text-lg mt-0.5">🔔</span>
+                      <div className="glass-panel mx-3 mt-3 px-3 py-2.5 rounded-[8px] flex items-start gap-2.5 bg-white">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[color:var(--saffron-50)] text-[color:var(--saffron-800)] mt-0.5">
+                          <CalendarDays size={16} />
+                        </span>
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-semibold text-gray-800">
                             {permission === 'denied'
@@ -463,7 +465,6 @@ export default function TopBar({
                     >
                       {notifs.length === 0 ? (
                         <div className="px-4 py-8 text-center space-y-3">
-                          <p className="text-3xl">🪔</p>
                           <div>
                             <p className="text-sm font-medium text-gray-700">All quiet for now</p>
                             <p className="text-xs text-gray-400 mt-1">
@@ -497,7 +498,9 @@ export default function TopBar({
                               router.push(n.action_url);
                             }}
                           >
-                            <span className="text-lg mt-0.5 flex-shrink-0">{n.emoji}</span>
+                            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[color:var(--saffron-50)] text-[color:var(--saffron-800)] flex-shrink-0">
+                              <CalendarDays size={16} />
+                            </span>
                             <div className="flex-1 min-w-0">
                               <p className={`text-sm leading-snug ${!n.read ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>
                                 {n.title}
