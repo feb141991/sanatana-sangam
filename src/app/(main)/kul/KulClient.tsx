@@ -741,16 +741,6 @@ function TasksTab({ tasks, members, userId, myRole, kulId }: {
 
   return (
     <div className="space-y-4">
-      <SectionIntro
-        title={myRole === 'guardian' ? 'Shared family practice lives here' : 'Your family practice tasks live here'}
-        description={myRole === 'guardian'
-          ? 'Assign small, clear practices and keep everyone’s shared rhythm visible.'
-          : 'See what has been assigned to you first, then look at the wider family task flow if needed.'}
-        helper={myRole === 'guardian'
-          ? 'Try short, specific tasks instead of long instructions so the page stays usable.'
-          : 'Mark tasks done here instead of treating the overview as your working space.'}
-      />
-
       {/* Assign button for guardians */}
       {myRole === 'guardian' && (
         <button onClick={() => setShowCompose(!showCompose)}
@@ -943,14 +933,6 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
 
   return (
     <div className="flex flex-col" style={{ height: 'calc(100vh - 300px)', minHeight: '400px' }}>
-      <div className="mb-4">
-        <SectionIntro
-          title="Kul Sabha is for quick family conversation"
-          description="Use this space for updates, coordination, and small encouragements. Keep deeper family structure in Vansh and practical assignments in Tasks."
-          helper="Messages appear in real time. Reactions are for light acknowledgment so the chat stays clean."
-        />
-      </div>
-
       {/* Messages */}
       <div className="flex-1 overflow-y-auto space-y-3 pb-2">
         {msgs.length === 0 && (
@@ -1145,13 +1127,53 @@ function KulSectionTiles({
   const upcomingEvents = kulEvents
     .map((event) => ({ ...event, daysUntil: daysUntilNextOccurrence(event.event_date) }))
     .filter((event) => event.daysUntil <= 90).length;
+  const [seenCounts, setSeenCounts] = useState<Record<string, number>>({});
+
+  const liveCounts: Record<KulSectionView, number> = {
+    tasks: pendingTasks,
+    members: members.length,
+    sabha: messages.length,
+    vansh: familyMembers.length,
+    events: upcomingEvents,
+  };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const raw = window.localStorage.getItem('kul-section-seen-counts');
+      if (raw) setSeenCounts(JSON.parse(raw) as Record<string, number>);
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (!currentView || currentView === 'hub' || typeof window === 'undefined') return;
+    const nextCounts = { ...seenCounts, [currentView]: liveCounts[currentView] };
+    setSeenCounts(nextCounts);
+    window.localStorage.setItem('kul-section-seen-counts', JSON.stringify(nextCounts));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentView, pendingTasks, members.length, messages.length, familyMembers.length, upcomingEvents]);
 
   const tiles: Array<{ key: KulSectionView; badge?: number }> = [
-    { key: 'tasks', badge: pendingTasks || undefined },
-    { key: 'members', badge: members.length || undefined },
-    { key: 'sabha', badge: messages.length || undefined },
-    { key: 'vansh', badge: familyMembers.length || undefined },
-    { key: 'events', badge: upcomingEvents || undefined },
+    {
+      key: 'tasks',
+      badge: Math.max(0, pendingTasks - (seenCounts.tasks ?? 0)) || undefined,
+    },
+    {
+      key: 'members',
+      badge: Math.max(0, members.length - (seenCounts.members ?? 0)) || undefined,
+    },
+    {
+      key: 'sabha',
+      badge: Math.max(0, messages.length - (seenCounts.sabha ?? 0)) || undefined,
+    },
+    {
+      key: 'vansh',
+      badge: Math.max(0, familyMembers.length - (seenCounts.vansh ?? 0)) || undefined,
+    },
+    {
+      key: 'events',
+      badge: Math.max(0, upcomingEvents - (seenCounts.events ?? 0)) || undefined,
+    },
   ];
 
   return (

@@ -32,60 +32,6 @@ import {
 import PathshalaActionBar from '@/app/(main)/library/PathshalaActionBar';
 import { MotionFade, MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
 
-type TrustLayerStatus = 'live' | 'companion' | 'planned';
-
-function getTrustLayerCopy(status: TrustLayerStatus) {
-  if (status === 'live') {
-    return 'Live in app';
-  }
-
-  if (status === 'companion') {
-    return 'Official companion';
-  }
-
-  return 'Planned';
-}
-
-function getEntryTrustLayers({
-  sectionId,
-  entry,
-  hasFullText,
-  upanishadStudyMeta,
-}: {
-  sectionId: string;
-  entry: {
-    original: string;
-    sourceUrl?: string;
-    companionSourceUrl?: string;
-  };
-  hasFullText: boolean;
-  upanishadStudyMeta?: ReturnType<typeof getUpanishadStudyMeta>;
-}) {
-  const translationLayer: TrustLayerStatus = hasFullText ? 'live' : 'companion';
-
-  const originalLayer: TrustLayerStatus = upanishadStudyMeta
-    ? upanishadStudyMeta.originalLayerStatus
-    : entry.original.trim().length > 0
-      ? 'live'
-      : entry.companionSourceUrl
-        ? 'companion'
-        : 'planned';
-
-  const recitationLayer: TrustLayerStatus = upanishadStudyMeta
-    ? upanishadStudyMeta.recitationLayerStatus
-    : sectionId === 'gita' || sectionId === 'ramayana'
-      ? 'companion'
-      : entry.companionSourceUrl || entry.sourceUrl
-        ? 'companion'
-        : 'planned';
-
-  return {
-    translationLayer,
-    originalLayer,
-    recitationLayer,
-  };
-}
-
 export default async function PathshalaEntryPage({
   params,
 }: {
@@ -575,12 +521,6 @@ export default async function PathshalaEntryPage({
       ? 'Meaning (Punjabi later)'
       : 'Meaning';
   const upanishadStudyMeta = sectionMeta.id === 'upanishad' ? getUpanishadStudyMeta(entry.id) : undefined;
-  const trustLayers = getEntryTrustLayers({
-    sectionId: sectionMeta.id,
-    entry,
-    hasFullText: !!entry.fullText,
-    upanishadStudyMeta,
-  });
   const upanishadStudyPrompts = sectionMeta.id === 'upanishad'
     ? [
         {
@@ -779,79 +719,32 @@ export default async function PathshalaEntryPage({
           </div>
         )}
 
-        <div className="glass-panel rounded-[1.35rem] px-4 py-4">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Trust check</p>
-              <p className="mt-2 text-sm text-gray-700 leading-relaxed">
-                Know what is fully study-ready on this page and what still leans on a trusted companion source before you go deeper.
-              </p>
-            </div>
-            <div className="flex flex-col gap-2 sm:items-end">
-              {entry.sourceUrl && (
-                <a
-                  href={entry.sourceUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold shrink-0"
-                  style={{ color: 'var(--brand-primary)' }}
-                >
-                  {entry.companionSourceUrl ? 'Translation source' : 'Open source'}
-                </a>
-              )}
-              {entry.companionSourceUrl && (
-                <a
-                  href={entry.companionSourceUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold shrink-0"
-                  style={{ color: 'var(--brand-primary)' }}
-                >
-                  {entry.companionSourceLabel ?? 'Original source'}
-                </a>
-              )}
-            </div>
+        {(entry.sourceUrl || entry.companionSourceUrl) && (
+          <div className="flex flex-wrap gap-2">
+            {entry.sourceUrl && (
+              <a
+                href={entry.sourceUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold shrink-0"
+                style={{ color: 'var(--brand-primary)' }}
+              >
+                {entry.companionSourceUrl ? 'Translation source' : 'Open source'}
+              </a>
+            )}
+            {entry.companionSourceUrl && (
+              <a
+                href={entry.companionSourceUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold shrink-0"
+                style={{ color: 'var(--brand-primary)' }}
+              >
+                {entry.companionSourceLabel ?? 'Original source'}
+              </a>
+            )}
           </div>
-
-          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            <div className="clay-card rounded-[1.2rem] px-4 py-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Source class</p>
-              <p className="font-semibold text-gray-900 mt-2">{sourceMeta.label}</p>
-              <p className="text-sm text-gray-600 mt-1">{sourceMeta.note}</p>
-            </div>
-            <div className="glass-panel rounded-[1.2rem] px-4 py-4 border border-white/60">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Translation layer</p>
-              <p className="font-semibold text-gray-900 mt-2">{getTrustLayerCopy(trustLayers.translationLayer)}</p>
-              <p className="text-sm text-gray-600 mt-1">
-                {trustLayers.translationLayer === 'live'
-                  ? 'This page includes a readable Pathshala study text directly in app.'
-                  : 'Use the translation source link for the fuller reading while local study text expands.'}
-              </p>
-            </div>
-            <div className="glass-panel rounded-[1.2rem] px-4 py-4 border border-white/60">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Original text layer</p>
-              <p className="font-semibold text-gray-900 mt-2">{getTrustLayerCopy(trustLayers.originalLayer)}</p>
-              <p className="text-sm text-gray-600 mt-1">
-                {trustLayers.originalLayer === 'live'
-                  ? 'The original script is already available directly on this page.'
-                  : trustLayers.originalLayer === 'companion'
-                    ? 'Use the official companion source for the original script while local ingestion continues.'
-                    : 'Original-script support is still being prepared for this reading path.'}
-              </p>
-            </div>
-            <div className="glass-panel rounded-[1.2rem] px-4 py-4 border border-white/60">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Recitation / audio</p>
-              <p className="font-semibold text-gray-900 mt-2">{getTrustLayerCopy(trustLayers.recitationLayer)}</p>
-              <p className="text-sm text-gray-600 mt-1">
-                {trustLayers.recitationLayer === 'live'
-                  ? 'Authoritative recitation is available directly in Pathshala.'
-                  : trustLayers.recitationLayer === 'companion'
-                    ? 'Stay with the trusted companion source for audio and recitation in this iteration.'
-                    : 'Recitation support comes after the source-backed reading layer is complete.'}
-              </p>
-            </div>
-          </div>
-        </div>
+        )}
 
         {entry.tags.length > 0 && (
           <div className="flex flex-wrap gap-2">

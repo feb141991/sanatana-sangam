@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
 import { BHAKTI_MANTRAS } from '@/lib/bhakti-practice';
 import { playBeadTapFeedback } from '@/lib/practice-feedback';
 
@@ -40,6 +41,7 @@ export default function ZenModePage() {
   const [remaining, setRemaining] = useState(duration * 60);
   const [running, setRunning] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
+  const [focusEnvironment, setFocusEnvironment] = useState<'mountains' | 'temple' | 'forest'>('temple');
   const intervalRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -73,6 +75,7 @@ export default function ZenModePage() {
   const activeMode = useMemo(() => MODES.find((item) => item.id === mode) ?? MODES[0], [mode]);
   const activeChant = useMemo(() => BHAKTI_MANTRAS.find((item) => item.value === chantMantra) ?? BHAKTI_MANTRAS[0], [chantMantra]);
   const progress = ((duration * 60 - remaining) / (duration * 60)) * 100;
+  const chantTrackIds = activeChant.audioTrackId ? [activeChant.audioTrackId] : ['gayatri-mantra-as-it-is', 'guru-stotram', 'kirtana-in-hindi'];
 
   return (
     <div className="fade-in space-y-5">
@@ -150,23 +153,15 @@ export default function ZenModePage() {
               ))}
             </select>
             <p className="mt-3 text-sm leading-relaxed text-gray-600">
-              Stay with one mantra, one breath, and one pace. Rights-safe chant audio comes after the shared Bhakti audio layer is ready.
+              Stay with one mantra, one breath, and one pace.
             </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {activeChant.audioState === 'source_link' && activeChant.sourceUrl ? (
-                <a
-                  href={activeChant.sourceUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-full border border-[color:var(--brand-primary-soft)] px-4 py-2 text-sm font-semibold text-[color:var(--brand-primary-strong)]"
-                >
-                  Open chant source
-                </a>
-              ) : (
-                <span className="rounded-full border border-[color:var(--brand-primary-soft)] px-4 py-2 text-sm font-semibold text-gray-500">
-                  Focus-only chant for now
-                </span>
-              )}
+            <div className="mt-3">
+              <ChantAudioPlayer
+                title="Chant companion"
+                trackIds={chantTrackIds}
+                initialTrackId={activeChant.audioTrackId ?? undefined}
+                compact
+              />
             </div>
           </div>
         ) : null}
@@ -204,8 +199,17 @@ export default function ZenModePage() {
       </section>
 
       {focusMode ? (
-        <div className="fixed inset-0 z-[80] bg-[radial-gradient(circle_at_top,rgba(236,192,200,0.35),rgba(255,255,255,0.96)_45%,rgba(255,255,255,0.99))] backdrop-blur-md px-4 py-6">
-          <div className="mx-auto flex h-full w-full max-w-lg flex-col justify-between rounded-[2.2rem] border border-white/80 bg-white/78 px-6 py-6 shadow-sacred text-center">
+        <div className="fixed inset-0 z-[80] backdrop-blur-md px-4 py-6" style={{ background: getFocusEnvironmentStyle(focusEnvironment) }}>
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            {focusEnvironment === 'mountains' && Array.from({ length: 12 }).map((_, i) => (
+              <span
+                key={`zen-snow-${i}`}
+                className="absolute h-2 w-2 rounded-full bg-white/80"
+                style={{ left: `${10 + i * 6}%`, top: `${-4 + (i % 5) * 11}%`, animation: `snowDrift ${7 + (i % 3)}s linear infinite`, opacity: 0.5 + (i % 3) * 0.12 }}
+              />
+            ))}
+          </div>
+          <div className="mx-auto flex h-full w-full max-w-lg flex-col justify-between rounded-[2.2rem] border border-white/80 bg-white/72 px-6 py-6 shadow-sacred text-center">
             <div className="flex items-center justify-between gap-3 text-left">
               <div>
                 <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">Full focus</p>
@@ -224,6 +228,23 @@ export default function ZenModePage() {
               </button>
             </div>
             <div className="space-y-6">
+              <div className="flex flex-wrap justify-center gap-2">
+                {[
+                  { id: 'mountains', label: 'Snow peaks' },
+                  { id: 'temple', label: 'Temple dawn' },
+                  { id: 'forest', label: 'Forest quiet' },
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setFocusEnvironment(item.id as 'mountains' | 'temple' | 'forest')}
+                    className={`rounded-full px-3 py-1.5 text-xs font-semibold ${focusEnvironment === item.id ? 'text-white' : 'bg-white/70 text-gray-700'}`}
+                    style={focusEnvironment === item.id ? { background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' } : undefined}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
               <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">
                 {activeMode.title}
               </p>
@@ -235,6 +256,14 @@ export default function ZenModePage() {
                   style={{ width: `${progress}%`, background: 'linear-gradient(90deg, var(--brand-primary-strong), var(--brand-primary))' }}
                 />
               </div>
+              {mode === 'chant' ? (
+                <ChantAudioPlayer
+                  title="Focus chant"
+                  trackIds={chantTrackIds}
+                  initialTrackId={activeChant.audioTrackId ?? undefined}
+                  compact
+                />
+              ) : null}
             </div>
             <div className="flex flex-wrap justify-center gap-3">
               <button
@@ -262,4 +291,14 @@ export default function ZenModePage() {
       ) : null}
     </div>
   );
+}
+
+function getFocusEnvironmentStyle(environment: 'mountains' | 'temple' | 'forest') {
+  if (environment === 'mountains') {
+    return 'linear-gradient(180deg, rgba(214,229,244,0.96) 0%, rgba(244,247,252,0.98) 35%, rgba(203,220,238,0.95) 100%)';
+  }
+  if (environment === 'forest') {
+    return 'linear-gradient(180deg, rgba(217,231,220,0.96) 0%, rgba(241,246,239,0.98) 38%, rgba(189,212,198,0.95) 100%)';
+  }
+  return 'linear-gradient(180deg, rgba(249,231,214,0.96) 0%, rgba(255,246,236,0.98) 40%, rgba(227,201,179,0.95) 100%)';
 }

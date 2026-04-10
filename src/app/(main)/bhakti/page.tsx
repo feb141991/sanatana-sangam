@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Badge, Card, SectionHeading } from '@/components/ui';
+import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
 import { DEVOTIONAL_STARTER_TRACKS } from '@/lib/devotional-audio';
 
 export default function BhaktiPage() {
@@ -61,8 +62,8 @@ export default function BhaktiPage() {
               <p className="mt-1 text-sm text-gray-600">Move from Pathshala into Zen or Mala, then come back the next day without friction.</p>
             </div>
             <div className="rounded-[1.2rem] border border-[color:var(--brand-primary-soft)] bg-white/75 px-4 py-4">
-              <p className="text-sm font-semibold text-gray-900">Audio comes carefully</p>
-              <p className="mt-1 text-sm text-gray-600">Rights-safe chant support belongs here. Trust-first scripture audio stays separate.</p>
+              <p className="text-sm font-semibold text-gray-900">Listen while you sit</p>
+              <p className="mt-1 text-sm text-gray-600">Short chants now work here, and bigger devotional listening can grow around them later.</p>
             </div>
           </div>
         </Card>
@@ -70,13 +71,15 @@ export default function BhaktiPage() {
 
       <Card>
         <SectionHeading
-          eyebrow="Audio starter pack"
-          title="Rights-safe chant catalog"
-          description="We are starting with clearly sourced devotional audio references first. In-app playback comes after the shared audio layer and attribution flow are ready."
-          actions={<Badge tone="accent" className="px-4 py-2 text-sm">Source-first audio</Badge>}
+          eyebrow="Chants"
+          title="Play a chant now"
+          description="Keep one chant running while you move into Zen or Mala."
+          actions={<Badge tone="accent" className="px-4 py-2 text-sm">Temple feel</Badge>}
         />
 
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <div className="mt-4 grid gap-3 lg:grid-cols-[0.9fr_1.1fr]">
+          <ChantAudioPlayer title="Bhakti chant shelf" />
+          <div className="grid gap-3 md:grid-cols-2">
           {DEVOTIONAL_STARTER_TRACKS.map((track) => (
             <a
               key={track.id}
@@ -100,9 +103,10 @@ export default function BhaktiPage() {
                   {track.licenseLabel}
                 </span>
               </div>
-              <p className="mt-3 text-xs font-semibold text-[color:var(--brand-primary)]">Open source page →</p>
+              <p className="mt-3 text-xs font-semibold text-[color:var(--brand-primary)]">Open details →</p>
             </a>
           ))}
+          </div>
         </div>
       </Card>
     </div>

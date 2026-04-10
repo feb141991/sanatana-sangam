@@ -5,8 +5,9 @@ export type DevotionalTrack = {
   tradition: 'hindu' | 'sikh' | 'all';
   sourceName: string;
   sourceUrl: string;
+  audioUrl: string;
   licenseLabel: string;
-  inAppPlayback: false;
+  inAppPlayback: boolean;
   note: string;
 };
 
@@ -18,9 +19,10 @@ export const DEVOTIONAL_STARTER_TRACKS: DevotionalTrack[] = [
     tradition: 'hindu',
     sourceName: 'Wikimedia Commons',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Gayatri_Mantra_as_it_is.ogg',
-    licenseLabel: 'Free licensed source',
-    inAppPlayback: false,
-    note: 'A short rights-safe chant source to start the Bhakti audio catalog.',
+    audioUrl: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Gayatri_Mantra_as_it_is.ogg',
+    licenseLabel: 'Free Art License source',
+    inAppPlayback: true,
+    note: 'A playable Gayatri chant for Bhakti, Zen, and Mala.',
   },
   {
     id: 'guru-stotram',
@@ -29,9 +31,10 @@ export const DEVOTIONAL_STARTER_TRACKS: DevotionalTrack[] = [
     tradition: 'hindu',
     sourceName: 'Wikimedia Commons',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Sanskrit_Chanting_Guru_Stotram.ogg',
-    licenseLabel: 'Free licensed source',
-    inAppPlayback: false,
-    note: 'Use the source page for now while the in-app player layer is prepared.',
+    audioUrl: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Sanskrit_Chanting_Guru_Stotram.ogg',
+    licenseLabel: 'Public-domain source',
+    inAppPlayback: true,
+    note: 'A playable stotram layer for quieter devotional sessions.',
   },
   {
     id: 'kirtana-in-hindi',
@@ -40,8 +43,9 @@ export const DEVOTIONAL_STARTER_TRACKS: DevotionalTrack[] = [
     tradition: 'all',
     sourceName: 'Wikimedia Commons',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Kirtana_in_Hindi.ogg',
-    licenseLabel: 'Free licensed source',
-    inAppPlayback: false,
-    note: 'A starter devotional listening link while we keep rights and attribution explicit.',
+    audioUrl: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Kirtana_in_Hindi.ogg',
+    licenseLabel: 'Creative Commons source',
+    inAppPlayback: true,
+    note: 'A playable kirtan starter track for a warmer Bhakti feel.',
   },
 ];

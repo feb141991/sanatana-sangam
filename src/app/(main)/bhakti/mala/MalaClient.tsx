@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import { createClient } from '@/lib/supabase';
 import { BHAKTI_MANTRAS, buildMalaShareText, MALA_TARGETS } from '@/lib/bhakti-practice';
 import { playBeadTapFeedback } from '@/lib/practice-feedback';
+import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
 import type { MalaSession } from '@/types/database';
 
 function sameLocalDay(a: Date, b: Date) {
@@ -66,6 +67,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
   const [historyMantra, setHistoryMantra] = useState<'all' | string>('all');
   const [historyRange, setHistoryRange] = useState<'7d' | '30d' | 'all'>('7d');
   const [focusMode, setFocusMode] = useState(false);
+  const [focusEnvironment, setFocusEnvironment] = useState<'mountains' | 'temple' | 'forest'>('mountains');
 
   const progress = Math.min(100, Math.round((count / target) * 100));
   const streak = useMemo(() => calculateStreak(sessions), [sessions]);
@@ -97,6 +99,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
   const suggestedMantra = lastSession?.mantra ?? BHAKTI_MANTRAS[0].value;
   const activeMantra = BHAKTI_MANTRAS.find((item) => item.value === mantra) ?? BHAKTI_MANTRAS[0];
   const activeMantraSource = activeMantra.source;
+  const chantTrackIds = activeMantra.audioTrackId ? [activeMantra.audioTrackId] : ['gayatri-mantra-as-it-is', 'guru-stotram', 'kirtana-in-hindi'];
 
   function tapBead() {
     if (!startedAt) setStartedAt(Date.now());
@@ -242,22 +245,18 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
           </select>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <p className="text-xs text-gray-500">{activeMantraSource}</p>
-            {activeMantra.audioState === 'source_link' && activeMantra.sourceUrl ? (
-              <a
-                href={activeMantra.sourceUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-full border border-[color:var(--brand-primary-soft)] px-3 py-1 text-[11px] font-semibold text-[color:var(--brand-primary-strong)]"
-              >
-                Open chant source
-              </a>
-            ) : (
-              <span className="rounded-full border border-[color:var(--brand-primary-soft)] px-3 py-1 text-[11px] font-semibold text-gray-500">
-                Focus only for now
-              </span>
-            )}
+            <span className="rounded-full border border-[color:var(--brand-primary-soft)] px-3 py-1 text-[11px] font-semibold text-[color:var(--brand-primary-strong)]">
+              Chant ready
+            </span>
           </div>
         </div>
+
+        <ChantAudioPlayer
+          title="Chant accompaniment"
+          trackIds={chantTrackIds}
+          initialTrackId={activeMantra.audioTrackId ?? undefined}
+          compact
+        />
 
         <div className="flex flex-wrap gap-2">
           {MALA_TARGETS.map((value) => (
@@ -421,8 +420,17 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
       </section>
 
       {focusMode ? (
-        <div className="fixed inset-0 z-[80] bg-[radial-gradient(circle_at_top,rgba(236,192,200,0.35),rgba(255,255,255,0.96)_45%,rgba(255,255,255,0.99))] backdrop-blur-md px-4 py-6">
-          <div className="mx-auto flex h-full w-full max-w-lg flex-col justify-between rounded-[2.2rem] border border-white/80 bg-white/78 px-6 py-6 shadow-sacred">
+        <div className="fixed inset-0 z-[80] backdrop-blur-md px-4 py-6" style={{ background: getFocusEnvironmentStyle(focusEnvironment) }}>
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            {focusEnvironment === 'mountains' && Array.from({ length: 14 }).map((_, i) => (
+              <span
+                key={`snow-${i}`}
+                className="absolute h-2 w-2 rounded-full bg-white/80"
+                style={{ left: `${8 + i * 6}%`, top: `${-4 + (i % 5) * 12}%`, animation: `snowDrift ${7 + (i % 4)}s linear infinite`, opacity: 0.5 + (i % 3) * 0.15 }}
+              />
+            ))}
+          </div>
+          <div className="mx-auto flex h-full w-full max-w-lg flex-col justify-between rounded-[2.2rem] border border-white/80 bg-white/72 px-6 py-6 shadow-sacred">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">Focused mala</p>
@@ -438,23 +446,30 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
               </button>
             </div>
             <div className="space-y-6">
-              {counterPanel}
-              <div className="flex flex-wrap items-center justify-center gap-2 text-center">
-                {activeMantra.audioState === 'source_link' && activeMantra.sourceUrl ? (
-                  <a
-                    href={activeMantra.sourceUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="rounded-full border border-[color:var(--brand-primary-soft)] bg-white/80 px-4 py-2 text-sm font-semibold text-[color:var(--brand-primary-strong)]"
+              <div className="flex flex-wrap justify-center gap-2">
+                {[
+                  { id: 'mountains', label: 'Snow peaks' },
+                  { id: 'temple', label: 'Temple dawn' },
+                  { id: 'forest', label: 'Forest quiet' },
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setFocusEnvironment(item.id as 'mountains' | 'temple' | 'forest')}
+                    className={`rounded-full px-3 py-1.5 text-xs font-semibold ${focusEnvironment === item.id ? 'text-white' : 'bg-white/70 text-gray-700'}`}
+                    style={focusEnvironment === item.id ? { background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' } : undefined}
                   >
-                    Open chant source
-                  </a>
-                ) : (
-                  <span className="rounded-full border border-[color:var(--brand-primary-soft)] bg-white/80 px-4 py-2 text-sm font-semibold text-gray-500">
-                    Chant audio is not in-app yet for this mantra
-                  </span>
-                )}
+                    {item.label}
+                  </button>
+                ))}
               </div>
+              {counterPanel}
+              <ChantAudioPlayer
+                title="Focus chant"
+                trackIds={chantTrackIds}
+                initialTrackId={activeMantra.audioTrackId ?? undefined}
+                compact
+              />
               <div className="grid gap-3 sm:grid-cols-2">
                 <button
                   onClick={saveSession}
@@ -473,10 +488,20 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
                 </button>
               </div>
             </div>
-            <p className="text-center text-sm text-gray-500">No extra cards. No feed. Just mantra, count, and return.</p>
+            <p className="text-center text-sm text-gray-500">Just mantra, count, and return.</p>
           </div>
         </div>
       ) : null}
     </div>
   );
+}
+
+function getFocusEnvironmentStyle(environment: 'mountains' | 'temple' | 'forest') {
+  if (environment === 'mountains') {
+    return 'linear-gradient(180deg, rgba(218,231,243,0.96) 0%, rgba(242,246,252,0.98) 32%, rgba(204,220,236,0.95) 100%)';
+  }
+  if (environment === 'forest') {
+    return 'linear-gradient(180deg, rgba(223,235,224,0.96) 0%, rgba(240,245,236,0.98) 38%, rgba(193,214,200,0.95) 100%)';
+  }
+  return 'linear-gradient(180deg, rgba(247,231,220,0.96) 0%, rgba(255,247,239,0.98) 40%, rgba(228,201,187,0.95) 100%)';
 }
