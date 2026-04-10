@@ -359,20 +359,17 @@ body::after {
   gap: 0.35rem;
   padding: 0.35rem 0.7rem;
   border-radius: 9999px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(249, 246, 242, 0.96));
-  box-shadow:
-    6px 6px 14px rgba(28, 26, 23, 0.06),
-    -5px -5px 10px rgba(255, 255, 255, 0.5);
+  background: var(--chip-fill);
+  color: var(--chip-text);
+  border: 1px solid rgba(212, 166, 70, 0.16);
+  box-shadow: none;
 }
 
 .clay-action {
   position: relative;
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.98), rgba(250, 248, 245, 0.98));
-  border: 1px solid rgba(17, 24, 39, 0.08);
-  box-shadow:
-    12px 12px 24px rgba(28, 26, 23, 0.06),
-    -7px -7px 14px rgba(255, 255, 255, 0.58),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.56);
+  background: rgba(51, 51, 48, 0.9);
+  border: 1px solid rgba(212, 166, 70, 0.14);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
 }
 
 .clay-icon-well {
@@ -382,10 +379,9 @@ body::after {
   width: 2.2rem;
   height: 2.2rem;
   border-radius: 1rem;
-  background: linear-gradient(145deg, rgba(245, 239, 232, 0.96), rgba(255, 255, 255, 0.96));
-  box-shadow:
-    inset 2px 2px 6px rgba(255, 255, 255, 0.5),
-    inset -3px -3px 8px rgba(198, 188, 178, 0.12);
+  background: rgba(212, 166, 70, 0.14);
+  color: var(--text-saffron-soft);
+  box-shadow: none;
 }
 
 .clay-card-guided { background: linear-gradient(145deg, rgba(249, 244, 237, 0.98), rgba(247, 232, 225, 0.98)); }

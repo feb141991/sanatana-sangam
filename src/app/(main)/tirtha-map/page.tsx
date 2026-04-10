@@ -220,8 +220,8 @@ export default function TirthaMapPage() {
   return (
     <div className="space-y-3 fade-in">
       <div className="glass-panel rounded-[1.7rem] px-4 py-4 sm:rounded-[1.9rem] sm:px-5 sm:py-5 space-y-2">
-        <h1 className="font-display text-2xl font-bold text-gray-900">Tirtha Map</h1>
-        <p className="hidden sm:block text-sm text-gray-600 leading-relaxed">Search sacred places, filter by tradition, and open the result that feels right.</p>
+        <h1 className="type-screen-title">Tirtha Map</h1>
+        <p className="type-body hidden sm:block">Search sacred places, filter by tradition, and open the result that feels right.</p>
       </div>
 
       {/* ── Search bar ── */}
@@ -238,7 +238,7 @@ export default function TirthaMapPage() {
           />
         </div>
         <button onClick={searchCity} disabled={loading}
-          className="px-4 py-2.5 text-white text-sm font-semibold rounded-xl hover:opacity-90 disabled:opacity-60 transition"
+          className="rounded-xl px-4 py-2.5 type-chip text-[#1c1c1a] hover:opacity-90 disabled:opacity-60 transition"
           style={{ background: 'var(--brand-primary)' }}>
           Search
         </button>
@@ -256,7 +256,7 @@ export default function TirthaMapPage() {
             className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
               tradFilter === f.value
                 ? 'text-white'
-                : 'bg-white text-gray-500 border border-gray-200 hover:border-[color:var(--brand-primary)]/30'
+                : 'bg-[color:var(--brand-accent)] text-[color:var(--text-dim)] border border-[rgba(212,166,70,0.14)]'
             }`}
             style={tradFilter === f.value ? { background: 'var(--brand-primary)' } : {}}>
             {f.emoji} {f.label}
@@ -271,8 +271,8 @@ export default function TirthaMapPage() {
             <button key={f.value} onClick={() => setSampFilter(f.value)}
               className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
                 sampFilter === f.value
-                  ? 'text-white'
-                  : 'bg-white text-gray-500 border border-gray-200 hover:border-[color:var(--brand-primary-soft)]'
+                  ? 'text-[#1c1c1a]'
+                  : 'bg-[color:var(--brand-accent)] text-[color:var(--text-dim)] border border-[rgba(212,166,70,0.14)]'
               }`}
               style={sampFilter === f.value ? { background: 'var(--brand-secondary)' } : {}}>
               {f.emoji} {f.label}
@@ -283,15 +283,15 @@ export default function TirthaMapPage() {
 
       {/* ── Radius filter ── */}
       <div className="flex items-center gap-2">
-        <span className="text-xs text-gray-400">Radius:</span>
+        <span className="type-card-label">Radius:</span>
         <div className="flex gap-1.5">
           {RADIUS_OPTIONS.map((opt) => (
             <button key={opt.value}
               onClick={() => { setRadius(opt.value); loadTemples(center[0], center[1], opt.value); }}
               className={`px-2.5 py-1 rounded-full text-xs font-medium transition ${
                 radius === opt.value
-                  ? 'text-white'
-                  : 'bg-white text-gray-500 border border-gray-200'
+                  ? 'text-[#1c1c1a]'
+                  : 'bg-[color:var(--brand-accent)] text-[color:var(--text-dim)] border border-[rgba(212,166,70,0.14)]'
               }`}
               style={radius === opt.value ? { background: 'var(--brand-primary)' } : {}}>
               {opt.label}
@@ -307,9 +307,9 @@ export default function TirthaMapPage() {
             { label: 'Tradition', value: tradFilter === 'all' ? 'All' : tradFilter.slice(0, 1).toUpperCase() + tradFilter.slice(1) },
             { label: 'Radius', value: RADIUS_OPTIONS.find((option) => option.value === radius)?.label ?? '15 mi' },
           ].map((item) => (
-            <div key={item.label} className="rounded-[1.05rem] bg-white/72 border border-white/80 px-3 py-3 text-center">
-              <p className="font-display font-bold text-lg" style={{ color: 'var(--brand-primary-strong)' }}>{item.value}</p>
-              <p className="text-[10px] uppercase tracking-[0.16em] text-gray-400 font-semibold mt-1">{item.label}</p>
+            <div key={item.label} className="rounded-[1.05rem] border px-3 py-3 text-center" style={{ background: 'rgba(51,51,48,0.72)', borderColor: 'rgba(212,166,70,0.14)' }}>
+              <p className="type-metric">{item.value}</p>
+              <p className="type-card-label mt-1">{item.label}</p>
             </div>
           ))}
         </div>
@@ -328,7 +328,7 @@ export default function TirthaMapPage() {
 
       {/* ── Results count ── */}
       {searched && (
-        <div className="flex items-center justify-between text-sm text-gray-600">
+        <div className="type-body flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <span>{TRADITION_FILTERS.find(f => f.value === tradFilter)?.emoji ?? '🙏'}</span>
             <span>
@@ -340,7 +340,7 @@ export default function TirthaMapPage() {
             </span>
           </div>
           {filtered.length > 0 && (
-            <span className="text-xs text-gray-400">{kmToMiles(radius / 1000)} mi radius</span>
+            <span className="type-micro">{kmToMiles(radius / 1000)} mi radius</span>
           )}
         </div>
       )}
@@ -380,14 +380,14 @@ export default function TirthaMapPage() {
                       <div className="flex items-start justify-between gap-2">
                         <div className="space-y-1">
                           <div className="inline-flex items-center gap-2 flex-wrap">
-                            <span className="rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary-strong)] border border-white/80">
+                            <span className="type-chip rounded-full border px-2.5 py-1" style={{ background: 'var(--chip-fill)', color: 'var(--chip-text)', borderColor: 'rgba(212,166,70,0.16)' }}>
                               {traditionBadge}
                             </span>
                             {samp !== 'all' && sampInfo && (
-                              <span className="text-xs text-gray-500">{sampInfo.emoji} {sampInfo.label}</span>
+                              <span className="type-micro">{sampInfo.emoji} {sampInfo.label}</span>
                             )}
                           </div>
-                          <h3 className="font-semibold text-sm text-gray-900 leading-tight">{temple.name}</h3>
+                          <h3 className="type-card-heading leading-tight">{temple.name}</h3>
                         </div>
                         {/* Open/Closed badge */}
                         {open !== null && (
@@ -401,16 +401,16 @@ export default function TirthaMapPage() {
 
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
                         {/* Distance */}
-                        <span className="text-xs text-gray-400">{distMi} mi</span>
+                        <span className="type-micro">{distMi} mi</span>
 
                         {/* Deity */}
                         {temple.deity && (
-                          <span className="text-xs text-[color:var(--brand-primary)]">🙏 {temple.deity}</span>
+                          <span className="type-micro" style={{ color: 'var(--text-saffron-soft)' }}>🙏 {temple.deity}</span>
                         )}
                       </div>
 
                       {temple.address && (
-                        <p className="text-xs text-gray-400 mt-1 truncate">{temple.address}</p>
+                        <p className="type-micro mt-1 truncate">{temple.address}</p>
                       )}
                     </div>
                   </div>

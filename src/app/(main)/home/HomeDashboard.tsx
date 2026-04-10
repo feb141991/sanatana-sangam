@@ -938,34 +938,31 @@ export default function HomeDashboard({
       >
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
-            <p
-              className="text-[10px] uppercase tracking-[0.22em] font-semibold"
-              style={{ color: homeHeroTheme.accent }}
-            >
+            <p className="type-card-label">
               Home
             </p>
             <button
               onClick={() => setGreetingSheetOpen(true)}
               className="group mt-1 -ml-1 rounded-2xl px-1 py-1 flex items-center gap-1.5 text-left transition"
             >
-              <h1 className="font-display text-[1.45rem] sm:text-[1.65rem] font-bold text-gray-900 leading-tight">
+              <h1 className="type-screen-title">
                 {greeting}, {userName.split(' ')[0]}!
               </h1>
               <Pencil size={13} className="text-gray-300 group-hover:text-[color:var(--brand-primary)] transition flex-shrink-0 mt-1" />
             </button>
-            <p className="text-xs mt-1.5 font-medium text-gray-500">
+            <p className="type-body mt-1.5">
               {showFirstTimeGuidance ? greetingMode : 'A quieter sacred day, ready when you are.'}
             </p>
             {displayCity && (
-              <p className="text-sm text-gray-500 flex items-center gap-1 mt-2">
+              <p className="type-body mt-2 flex items-center gap-1">
                 <MapPin size={12} style={{ color: homeHeroTheme.accent }} />
                 {displayCity}
-                {coords && <span className="text-[10px] text-gray-400 ml-1">live</span>}
+                {coords && <span className="type-tab ml-1">live</span>}
               </p>
             )}
           </div>
           <div
-            className="hidden sm:flex items-center justify-center rounded-[1.35rem] px-3 py-2 text-xs font-semibold"
+            className="hidden sm:flex items-center justify-center rounded-[1.35rem] px-3 py-2 type-chip"
             style={{
               background: homeHeroTheme.iconWell,
               color: homeHeroTheme.accentStrong,
@@ -979,8 +976,8 @@ export default function HomeDashboard({
       {showFirstTimeGuidance && personalizedPaths.length > 0 && (
         <section className="space-y-2">
           <div>
-            <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Start here</p>
-            <p className="text-sm text-gray-600 mt-0.5">
+            <p className="type-card-label">Start here</p>
+            <p className="type-body mt-0.5">
               These first steps are based on what you chose during signup. Once you settle in, Home stays lighter and the rest can come through reminders.
             </p>
           </div>
@@ -992,21 +989,21 @@ export default function HomeDashboard({
               <div className={`clay-card ${path.accentClass} rounded-[1.8rem] p-4`}>
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: 'var(--brand-primary)' }}>
+                    <p className="type-card-label">
                       {path.eyebrow}
                     </p>
-                    <h2 className="font-display text-lg font-bold text-gray-900 mt-1">{path.title}</h2>
+                    <h2 className="type-card-heading mt-1">{path.title}</h2>
                   </div>
                   <div className="flex flex-wrap justify-end gap-2">
                     {path.badges.map((badge) => (
-                      <span key={badge} className="clay-pill text-[11px] font-medium" style={{ color: 'var(--brand-primary)' }}>
+                      <span key={badge} className="clay-pill type-chip">
                         {badge}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <p className="text-sm text-gray-600 leading-relaxed mt-2">{path.description}</p>
+                <p className="type-body mt-2">{path.description}</p>
 
                 <div className="grid gap-2 sm:grid-cols-2 mt-4">
                   {path.actions.map((action) => (
@@ -1016,13 +1013,13 @@ export default function HomeDashboard({
                       className="clay-action rounded-2xl px-4 py-3 flex items-center gap-3 transition hover:-translate-y-0.5"
                     >
                       <span className="clay-icon-well text-base">{action.icon}</span>
-                      <span className="text-sm font-semibold text-gray-800">{action.label}</span>
+                      <span className="type-card-heading">{action.label}</span>
                     </Link>
                   ))}
                 </div>
 
                 <div className="flex items-center justify-between gap-3 mt-4 pt-3 border-t border-white/55">
-                  <p className="text-xs text-gray-500">
+                  <p className="type-micro">
                     Keep this visible until you complete it, or hide it for later.
                   </p>
                   <div className="flex items-center gap-2 flex-shrink-0">
@@ -1030,7 +1027,7 @@ export default function HomeDashboard({
                       type="button"
                       onClick={() => updateGuidedPath(path.id, 'dismissed')}
                       disabled={guidedPathBusyId === path.id}
-                      className="px-3 py-1.5 rounded-full text-xs font-medium text-gray-600 border border-white/70 bg-white/55 hover:bg-white transition disabled:opacity-50"
+                      className="px-3 py-1.5 rounded-full type-chip border border-[rgba(212,166,70,0.14)] bg-[color:var(--brand-accent)] transition disabled:opacity-50"
                     >
                       Later
                     </button>
@@ -1038,7 +1035,7 @@ export default function HomeDashboard({
                       type="button"
                       onClick={() => updateGuidedPath(path.id, 'completed')}
                       disabled={guidedPathBusyId === path.id}
-                      className="px-3 py-1.5 rounded-full text-xs font-semibold text-white glass-button-primary disabled:opacity-50"
+                      className="px-3 py-1.5 rounded-full type-chip text-[#1c1c1a] glass-button-primary disabled:opacity-50"
                     >
                       Done
                     </button>
@@ -1051,8 +1048,8 @@ export default function HomeDashboard({
           ) : (
             <div className="glass-panel rounded-[1.75rem] px-4 py-4 flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold text-gray-900">Your guided paths are tucked away</p>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="type-card-heading">Your guided paths are tucked away</p>
+                <p className="type-micro mt-1">
                   {hiddenPersonalizedCount} path{hiddenPersonalizedCount === 1 ? '' : 's'} completed or dismissed. Bring them back anytime.
                 </p>
               </div>
@@ -1060,7 +1057,7 @@ export default function HomeDashboard({
                 type="button"
                 onClick={resetGuidedPaths}
                 disabled={guidedPathBusyId === 'reset-all'}
-                className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold disabled:opacity-50"
+                className="glass-button-secondary px-4 py-2 rounded-full type-chip disabled:opacity-50"
                 style={{ color: 'var(--brand-primary)' }}
               >
                 Show again
@@ -1077,7 +1074,7 @@ export default function HomeDashboard({
       >
         <div className="px-4 pt-4 pb-2 flex items-center gap-2">
           <span className="text-base">🪔</span>
-          <span className="text-[11px] font-medium tracking-[0.16em] uppercase" style={{ color: panchangTheme.accent }}>
+          <span className="type-card-label">
             {isToday ? 'Aaj Ka Panchang' : 'Panchang'}
           </span>
           {/* Day navigation */}
@@ -1089,7 +1086,7 @@ export default function HomeDashboard({
             </button>
             {/* Tap date label to open full date picker */}
             <button onClick={() => setDatePickerOpen(true)}
-              className="text-xs min-w-[80px] text-center font-medium transition underline-offset-2 hover:underline"
+              className="type-micro min-w-[80px] text-center transition underline-offset-2 hover:underline"
               style={{ color: panchangTheme.accentStrong }}>
               {isToday ? 'Today' : selectedDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
             </button>
@@ -1100,7 +1097,7 @@ export default function HomeDashboard({
             </button>
             {!isToday && (
               <button onClick={() => setSelectedDate(new Date())}
-                className="text-[10px] px-2 py-0.5 rounded-full font-medium ml-1"
+                className="type-tab ml-1 rounded-full px-2 py-0.5"
                 style={{ background: panchangTheme.iconWell, color: panchangTheme.accentStrong }}>
                 Today
               </button>
@@ -1122,13 +1119,13 @@ export default function HomeDashboard({
           style={{ background: 'rgba(255,255,255,0.65)', border: `1px solid ${panchangTheme.border}` }}>
           <span className="text-sm">⚠️</span>
           <div className="flex-1">
-            <span className="text-gray-500 text-xs">Rahu Kaal: </span>
-            <span className="text-xs font-semibold" style={{ color: panchangTheme.accentStrong }}>{panchang.rahuKaal}</span>
+            <span className="type-card-label">Rahu Kaal: </span>
+            <span className="type-micro" style={{ color: 'var(--text-saffron-soft)' }}>{panchang.rahuKaal}</span>
           </div>
           {/* Full Panchang page link */}
           <Link
             href="/panchang"
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition"
+            className="flex items-center gap-1 rounded-full px-2.5 py-1 type-chip transition"
             style={{ background: panchangTheme.iconWell, color: panchangTheme.accentStrong }}
           >
             <CalendarDays size={12} /> Full Panchang
@@ -1143,7 +1140,7 @@ export default function HomeDashboard({
             <Share2 size={13} color={panchangTheme.accentStrong} />
           </button>
         </div>
-        <div className="px-4 pb-4 text-[11px] text-gray-500 leading-relaxed">
+        <div className="type-micro px-4 pb-4">
           {PANCHANG_TRUST_META.precisionLabel}. {PANCHANG_TRUST_META.guidanceNote}
         </div>
       </div>
@@ -1162,15 +1159,15 @@ export default function HomeDashboard({
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <span className="text-lg">{sacredTextMeta.icon}</span>
-            <span className="font-display font-semibold text-gray-800 text-sm">{sacredTextMeta.label}</span>
+            <span className="type-card-heading">{sacredTextMeta.label}</span>
             {streak > 0 && (
-              <span className="text-xs font-bold px-2 py-0.5 rounded-full border" style={{ color: 'var(--brand-primary)', background: 'var(--brand-primary-soft)', borderColor: 'rgba(124, 58, 45, 0.12)' }}>
+              <span className="type-chip rounded-full border px-2 py-0.5" style={{ color: 'var(--chip-text)', background: 'var(--chip-fill)', borderColor: 'rgba(212, 166, 70, 0.16)' }}>
                 🔥 {streak}
               </span>
             )}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full">
+            <span className="type-chip rounded-full bg-[color:var(--chip-fill)] px-2 py-0.5 text-[color:var(--chip-text)]">
               {sacredText ? sacredText.source : shloka.source}
             </span>
             <button onClick={shareShloka}
@@ -1183,32 +1180,31 @@ export default function HomeDashboard({
         </div>
 
         {/* Original script */}
-        <p className="font-devanagari leading-relaxed text-base mb-2 whitespace-pre-line"
-          style={{ color: sacredTextMeta.accentColour }}>
+        <p className="type-sanskrit mb-2 whitespace-pre-line">
           {sacredText ? sacredText.original : shloka.sanskrit}
         </p>
 
         {/* Transliteration */}
-        <p className="text-sm text-gray-500 italic leading-relaxed mb-3 whitespace-pre-line">
+        <p className="type-body mb-3 whitespace-pre-line italic">
           {sacredText ? sacredText.transliteration : shloka.transliteration}
         </p>
 
         <div className="flex items-center justify-between">
           <button onClick={() => setShlokaExpanded(!shlokaExpanded)}
-            className="flex items-center gap-1 text-xs font-medium"
+            className="type-micro flex items-center gap-1"
             style={{ color: sacredTextMeta.accentColour }}>
             {shlokaExpanded ? 'Hide meaning' : 'Show meaning'}
             {shlokaExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
           </button>
 
           <button onClick={markShlokaRead} disabled={readToday}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition ${
+            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 type-chip transition ${
               readToday
                 ? 'cursor-default'
-                : 'text-white hover:opacity-90'
+                : 'text-[#1c1c1a] hover:opacity-90'
             }`}
             style={readToday
-              ? { background: 'var(--brand-primary-soft)', color: 'var(--brand-primary)', border: '1px solid rgba(124, 58, 45, 0.14)' }
+              ? { background: 'var(--chip-fill)', color: 'var(--chip-text)', border: '1px solid rgba(212, 166, 70, 0.16)' }
               : { background: sacredTextMeta.accentColour }}>
             {readToday
               ? '✓ Read today'
@@ -1226,7 +1222,7 @@ export default function HomeDashboard({
             exit={prefersReducedMotion ? undefined : { opacity: 0, height: 0, y: -6 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
           >
-            <p className="text-sm text-gray-700 leading-relaxed">
+            <p className="type-body">
               {sacredText ? sacredText.meaning : shloka.meaning}
             </p>
           </motion.div>
@@ -1240,10 +1236,10 @@ export default function HomeDashboard({
         className="rounded-[1.85rem] border overflow-hidden shadow-sm"
         style={{ background: HOME_THEMES.tirtha.surface, borderColor: HOME_THEMES.tirtha.border, boxShadow: '0 16px 32px rgba(28, 26, 23, 0.05)' }}>
         <div className="px-4 pt-3 pb-1 flex items-center justify-between">
-          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Coming Up</p>
+          <p className="type-card-label">Coming up</p>
           <button
             onClick={() => setCalendarOpen(true)}
-            className="text-xs font-semibold flex items-center gap-1 hover:underline"
+            className="type-micro flex items-center gap-1 hover:underline"
             style={{ color: 'var(--brand-primary)' }}>
             <CalendarDays size={11} /> All Festivals →
           </button>
@@ -1255,31 +1251,31 @@ export default function HomeDashboard({
               {festival.emoji}
             </div>
             <div className="flex-1">
-              <p className="font-display font-bold text-gray-900 text-base">{festival.name}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{festival.description}</p>
+              <p className="type-card-heading">{festival.name}</p>
+              <p className="type-body mt-0.5">{festival.description}</p>
             </div>
             <div className="text-center">
-              <div className="font-display font-bold text-2xl" style={{ color: 'var(--brand-primary)' }}>
+              <div className="type-metric">
                 {daysUntilFestival === 0 ? '🎉' : daysUntilFestival}
               </div>
-              <div className="text-xs text-gray-400">
+              <div className="type-micro">
                 {daysUntilFestival === 0 ? 'Today!' : daysUntilFestival === 1 ? 'Tomorrow' : 'days'}
               </div>
             </div>
           </div>
         ) : (
-          <div className="px-4 pb-3 text-sm text-gray-500">
-            Tap <span className="font-semibold" style={{ color: 'var(--brand-primary)' }}>All Festivals</span> to browse the Parva calendar 🙏
+          <div className="type-body px-4 pb-3">
+            Tap <span className="type-chip" style={{ color: 'var(--chip-text)' }}>All Festivals</span> to browse the Parva calendar 🙏
           </div>
         )}
-        <div className="px-4 pb-3 text-[11px] text-gray-500 leading-relaxed">
+        <div className="type-micro px-4 pb-3">
           {festivalCalendarMeta.sourceNote}
         </div>
       </div>
 
       {/* ── Quick Access ── */}
       <div>
-        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">Explore</p>
+        <p className="type-section-label mb-2">Explore</p>
         <MotionStagger className="grid grid-cols-2 gap-3" delay={0.08}>
           {quickAccessItems.map((item) => (
             <MotionItem key={item.href}>
@@ -1299,8 +1295,8 @@ export default function HomeDashboard({
                 {item.icon}
               </div>
               <div>
-                <p className="font-semibold text-sm leading-tight" style={{ color: HOME_THEMES[item.theme].accentStrong }}>{item.label}</p>
-                <p className="hidden sm:block text-xs text-gray-500 mt-0.5 leading-tight">{item.desc}</p>
+                <p className="type-card-heading" style={{ color: 'var(--text-cream)' }}>{item.label}</p>
+                <p className="hidden sm:block type-micro mt-0.5 leading-tight">{item.desc}</p>
               </div>
             </Link>
             </MotionItem>
@@ -1313,8 +1309,8 @@ export default function HomeDashboard({
         className="block w-full rounded-[1.7rem] border p-4 text-center transition-colors"
         style={{ borderColor: HOME_THEMES.pathshala.border, background: HOME_THEMES.pathshala.surface }}>
         <span className="text-lg">💬</span>
-        <p className="font-semibold text-sm mt-1" style={{ color: 'var(--brand-primary)' }}>Join the Vichaar Sabha</p>
-        <p className="text-xs text-gray-500 mt-0.5">Discuss dharma, share wisdom, ask questions</p>
+        <p className="type-card-heading mt-1" style={{ color: 'var(--text-cream)' }}>Join the Vichaar Sabha</p>
+        <p className="type-micro mt-0.5">Discuss dharma, share wisdom, ask questions</p>
       </Link>
 
       {/* ── Invite Friends ── */}
@@ -1322,8 +1318,8 @@ export default function HomeDashboard({
         className="w-full rounded-[1.7rem] border p-4 text-center transition-colors"
         style={{ borderColor: HOME_THEMES.kul.border, background: HOME_THEMES.kul.surface }}>
         <span className="text-lg">🙏</span>
-        <p className="font-semibold text-sm mt-1" style={{ color: 'var(--brand-primary)' }}>Invite Friends & Family</p>
-        <p className="text-xs text-gray-400 mt-0.5">Share Sanatana Sangam — spread the light of dharma</p>
+        <p className="type-card-heading mt-1" style={{ color: 'var(--text-cream)' }}>Invite Friends & Family</p>
+        <p className="type-micro mt-0.5">Share Sanatana Sangam — spread the light of dharma</p>
       </button>
 
       {/* ── Parva / Festivals modal ── */}
@@ -1376,8 +1372,8 @@ export default function HomeDashboard({
 function PanchangItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="py-1.5 pr-2">
-      <p className="text-white/60 text-[10px] uppercase tracking-wider">{label}</p>
-      <p className="text-white font-semibold text-sm leading-snug">{value}</p>
+      <p className="type-card-label">{label}</p>
+      <p className="type-card-heading">{value}</p>
     </div>
   );
 }

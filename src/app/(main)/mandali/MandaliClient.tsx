@@ -1157,26 +1157,26 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
       <div className="rounded-2xl p-5 text-white" style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
         <div className="flex items-start justify-between">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Users size={16} className="text-white/80" />
-              <span className="font-display font-bold text-lg">
+            <div className="mb-1 flex items-center gap-2">
+              <Users size={16} className="text-[color:var(--text-cream)]" />
+              <span className="type-card-heading">
                 {neighbourhoodLabel}
               </span>
             </div>
-            <div className="flex items-center gap-1 text-white/70 text-sm">
+            <div className="type-body flex items-center gap-1">
               <MapPin size={12} />
               <span>{placeLabel}</span>
             </div>
-            <p className="hidden sm:block text-white/75 text-sm mt-3 max-w-xl leading-relaxed">
+            <p className="type-body mt-3 hidden max-w-xl sm:block">
               Your local Sangam should feel like a warm room, not a feed. Start with the one thing that matters right now, then move deeper.
             </p>
-            <p className="sm:hidden text-white/80 text-sm mt-3 leading-relaxed">
+            <p className="type-body mt-3 sm:hidden">
               Start with one local step.
             </p>
           </div>
           <div className="text-right">
-            <div className="font-bold text-2xl">{visibleMembers.length}</div>
-            <div className="text-white/60 text-xs">members</div>
+            <div className="type-metric">{visibleMembers.length}</div>
+            <div className="type-card-label">members</div>
           </div>
         </div>
         {/* Action row */}
@@ -1229,18 +1229,18 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
           onClick={primaryMandaliAction.onClick}
           className="glass-panel rounded-[1.7rem] p-4 text-left transition hover:bg-white/85"
         >
-          <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">Start here</p>
+          <p className="type-card-label">Start here</p>
           <div className="flex items-start justify-between gap-3 mt-3">
             <div>
-              <p className="text-sm font-semibold text-gray-900">{primaryMandaliAction.label}</p>
-              <p className="text-sm text-gray-500 mt-1 leading-relaxed">{primaryMandaliAction.hint}</p>
+              <p className="type-card-heading">{primaryMandaliAction.label}</p>
+              <p className="type-body mt-1">{primaryMandaliAction.hint}</p>
             </div>
             <div className="clay-icon-well flex-shrink-0">{primaryMandaliAction.icon}</div>
           </div>
         </button>
 
         <div className="hidden sm:block glass-panel rounded-[1.7rem] p-4">
-          <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">Local pulse</p>
+          <p className="type-card-label">Local pulse</p>
           <div className="grid grid-cols-3 gap-2 mt-3">
             {[
               { label: 'Members', value: visibleMembers.length },
@@ -1248,8 +1248,8 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
               { label: 'Vichaar', value: vichaarCount },
             ].map((item) => (
               <div key={item.label} className="rounded-[1.1rem] bg-white/72 border border-white/80 px-3 py-3 text-center">
-                <p className="font-display font-bold text-xl" style={{ color: 'var(--brand-primary-strong)' }}>{item.value}</p>
-                <p className="text-[10px] uppercase tracking-[0.16em] text-gray-400 font-semibold mt-1">{item.label}</p>
+                <p className="type-metric">{item.value}</p>
+                <p className="type-card-label mt-1">{item.label}</p>
               </div>
             ))}
           </div>
@@ -1264,10 +1264,10 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
           <button
             key={key}
             onClick={() => setActiveTab(key)}
-            className={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${
+            className={`flex-1 rounded-xl py-2 type-body transition-all ${
               activeTab === key
-                ? 'bg-white shadow-sm font-semibold'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-white shadow-sm'
+                : 'text-[color:var(--text-dim)] hover:text-[color:var(--text-muted-warm)]'
             }`}
             style={activeTab === key ? { color: 'var(--brand-primary-strong)' } : undefined}
           >

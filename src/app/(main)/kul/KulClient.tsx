@@ -511,20 +511,20 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
         <FamilyProfileSheet member={selectedMember} onClose={() => setSelectedMember(null)} />
       ) : null}
       <div className="flex justify-end">
-        <button onClick={shareKul} className="glass-button-secondary px-4 py-2 rounded-full text-sm font-semibold" style={{ color: 'var(--brand-primary)' }}>
+        <button onClick={shareKul} className="glass-button-secondary px-4 py-2 rounded-full type-chip" style={{ color: 'var(--chip-text)' }}>
           Share Kul
         </button>
       </div>
 
       {/* Kul header card */}
-      <div className="rounded-2xl p-5 text-white" style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
+      <div className="rounded-2xl p-5 text-[color:var(--text-cream)]" style={{ background: 'linear-gradient(135deg, rgba(51,51,48,0.98), rgba(43,43,40,0.96))', border: '1px solid rgba(212,166,70,0.16)' }}>
         <div className="flex items-center gap-3 mb-4">
           <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl bg-white/10">
             {kul.avatar_emoji}
           </div>
           <div className="flex-1">
-            <h2 className="font-display font-bold text-xl">{kul.name}</h2>
-            <p className="text-white/60 text-xs mt-0.5">{members.length} member{members.length !== 1 ? 's' : ''} · {myRole === 'guardian' ? '👑 Guardian' : '🙏 Sadhak'}</p>
+            <h2 className="type-card-heading">{kul.name}</h2>
+            <p className="type-micro mt-0.5">{members.length} member{members.length !== 1 ? 's' : ''} · {myRole === 'guardian' ? 'Guardian' : 'Sadhak'}</p>
           </div>
         </div>
 
@@ -537,8 +537,8 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
           ].map(({ label, value, emoji }) => (
             <div key={label} className="rounded-xl px-3 py-2 text-center" style={{ background: 'rgba(255,255,255,0.12)' }}>
               <div className="text-lg">{emoji}</div>
-              <div className="font-bold text-lg">{value}</div>
-              <div className="text-white/60 text-[10px]">{label}</div>
+              <div className="type-metric">{value}</div>
+              <div className="type-card-label">{label}</div>
             </div>
           ))}
         </div>
@@ -546,8 +546,8 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
         {/* Invite row */}
         <div className="mt-3 flex items-center gap-2">
           <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.12)' }}>
-            <span className="text-xs text-white/70">Code:</span>
-            <span className="font-bold tracking-widest text-white text-sm">{kul.invite_code}</span>
+            <span className="type-micro">Code:</span>
+            <span className="type-card-heading tracking-widest">{kul.invite_code}</span>
           </div>
           <button onClick={copyCode}  className="w-9 h-9 rounded-xl flex items-center justify-center transition" style={{ background: 'rgba(255,255,255,0.18)' }}><Copy size={14} color="white" /></button>
           <button onClick={shareKul} className="w-9 h-9 rounded-xl flex items-center justify-center transition" style={{ background: 'rgba(255,255,255,0.18)' }}><Share2 size={14} color="white" /></button>
@@ -557,8 +557,8 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
       {/* Member streaks */}
       <div>
         <div className="mb-2 flex items-center justify-between gap-3">
-          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Sadhana Streaks</p>
-          <Link href="/kul/members" className="text-xs font-semibold text-[color:var(--brand-primary)]">Members</Link>
+          <p className="type-card-label">Sadhana streaks</p>
+          <Link href="/kul/members" className="type-micro text-[color:var(--text-saffron-soft)]">Members</Link>
         </div>
         <div className="space-y-2">
           {[...members].sort((a, b) => (b.profiles?.shloka_streak ?? 0) - (a.profiles?.shloka_streak ?? 0)).map(m => {
@@ -569,24 +569,24 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
                 key={m.id}
                 type="button"
                 onClick={() => setSelectedMember(m)}
-                className="w-full text-left bg-white rounded-2xl border border-gray-100 p-3 flex items-center gap-3 transition hover:border-[color:var(--brand-primary-soft)]"
+                className="w-full rounded-2xl border border-[rgba(212,166,70,0.14)] bg-[color:var(--brand-accent)] p-3 text-left flex items-center gap-3 transition hover:border-[color:var(--brand-primary-soft)]"
               >
                 <Avatar name={p?.full_name || p?.username || '?'} url={p?.avatar_url} size={10}
                   gradient={m.user_id === userId ? 'var(--brand-primary)' : 'linear-gradient(135deg, var(--brand-accent), #d6b06a)'} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <p className="text-sm font-semibold text-gray-900 truncate">{p?.full_name || p?.username}</p>
+                    <p className="type-card-heading truncate">{p?.full_name || p?.username}</p>
                     {m.role === 'guardian' && <Crown size={11} className="text-amber-500 flex-shrink-0" />}
-                    {m.user_id === userId && <span className="text-[10px]" style={{ color: 'var(--brand-primary)' }}>(you)</span>}
+                    {m.user_id === userId && <span className="type-tab" style={{ color: 'var(--text-saffron-soft)' }}>(you)</span>}
                   </div>
-                  <p className="text-xs text-gray-400">{p?.spiritual_level ?? 'Seeker'} · {TRADITION_EMOJI[p?.tradition ?? ''] ?? '🙏'}</p>
+                  <p className="type-micro">{p?.spiritual_level ?? 'Seeker'} · {TRADITION_EMOJI[p?.tradition ?? ''] ?? '🙏'}</p>
                 </div>
                 <div className="text-right">
-                  <div className="font-bold text-sm flex items-center gap-1">
+                  <div className="type-card-heading flex items-center gap-1">
                     <Flame size={13} className="text-orange-500" />
                     <span style={{ color: streak > 0 ? '#ea580c' : '#9ca3af' }}>{streak}</span>
                   </div>
-                  <div className="text-[10px] text-gray-400">streak</div>
+                  <div className="type-tab">streak</div>
                 </div>
               </button>
             );
@@ -1196,24 +1196,24 @@ function KulSectionTiles({
               <div className="flex items-start gap-3 min-w-0">
                 <div className="clay-icon-well text-lg flex-shrink-0">{meta.emoji}</div>
                 <div className="min-w-0">
-                  <p className="text-[10px] uppercase tracking-[0.18em] font-semibold" style={{ color: 'rgba(22, 77, 84, 0.68)' }}>
+          <p className="type-card-label">
                     {meta.eyebrow}
                   </p>
-                  <h3 className={`font-display font-bold leading-tight mt-1 ${large ? 'text-base' : 'text-sm'}`} style={{ color: 'var(--brand-primary-strong)' }}>
+                  <h3 className="type-card-heading mt-1 leading-tight">
                     {meta.label}
                   </h3>
                 </div>
               </div>
               <div className="flex flex-col items-end gap-2 flex-shrink-0">
                 {badge != null && badge > 0 && (
-                  <span className="px-2 py-1 rounded-full text-[10px] font-bold text-white" style={{ background: 'var(--brand-primary)' }}>
+                  <span className="type-chip rounded-full px-2 py-1 text-[#1c1c1a]" style={{ background: 'var(--brand-primary)' }}>
                     {badge > 99 ? '99+' : badge}
                   </span>
                 )}
                 <ChevronRight size={16} className="text-gray-400 group-hover:translate-x-0.5 transition-transform" />
               </div>
             </div>
-            <p className={`text-gray-500 mt-3 leading-relaxed ${large ? 'text-sm' : 'text-xs'}`}>
+            <p className="type-body mt-3">
               {meta.description}
             </p>
           </Link>
@@ -1277,7 +1277,7 @@ function KulHubView({
                   onChange={(e) => setNewKulName(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') saveKulName(); if (e.key === 'Escape') setEditingName(false); }}
                   maxLength={40}
-                  className="flex-1 font-display font-bold text-gray-900 text-xl leading-tight border-b-2 outline-none bg-transparent"
+                  className="type-screen-title flex-1 border-b-2 bg-transparent outline-none"
                   style={{ borderColor: 'var(--brand-primary)' }}
                 />
                 <button
@@ -1294,7 +1294,7 @@ function KulHubView({
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <h1 className="font-display font-bold text-gray-900 text-2xl leading-tight truncate">{kul.name}</h1>
+                <h1 className="type-screen-title truncate">{kul.name}</h1>
                 {myRole === 'guardian' && (
                   <button
                     onClick={() => { setNewKulName(kul.name); setEditingName(true); }}
@@ -1305,11 +1305,11 @@ function KulHubView({
                 )}
               </div>
             )}
-            <p className="text-[11px] uppercase tracking-[0.18em] font-semibold mt-1" style={{ color: 'rgba(22, 77, 84, 0.72)' }}>
+            <p className="type-card-label mt-1">
               Kul Home
             </p>
           </div>
-          <div className="px-3 py-2 rounded-2xl border text-xs font-bold tracking-widest hidden sm:block"
+          <div className="type-chip hidden rounded-2xl border px-3 py-2 tracking-widest sm:block"
             style={{ borderColor: 'rgba(31, 107, 114, 0.24)', color: 'var(--brand-primary)' }}>
             {kul.invite_code}
           </div>
@@ -1323,9 +1323,9 @@ function KulHubView({
             { label: 'Dates Ahead', value: upcomingEvents.length, hint: 'Open', href: '/kul/events' },
           ].map((item) => (
             <Link key={item.label} href={item.href} className="glass-panel rounded-[1.35rem] p-3 transition hover:-translate-y-0.5">
-              <p className="text-[10px] uppercase tracking-[0.16em] text-gray-400 font-semibold">{item.label}</p>
-              <p className="font-display font-bold text-2xl mt-2" style={{ color: 'var(--brand-primary-strong)' }}>{item.value}</p>
-              <p className="text-xs text-gray-500 mt-1">{item.hint}</p>
+              <p className="type-card-label">{item.label}</p>
+              <p className="type-metric mt-2">{item.value}</p>
+              <p className="type-micro mt-1">{item.hint}</p>
             </Link>
           ))}
         </div>
@@ -1333,7 +1333,7 @@ function KulHubView({
 
       <div className="glass-panel rounded-[1.8rem] p-4 sm:p-5 space-y-3">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">Open a section</p>
+          <p className="type-card-label">Open a section</p>
           {upcomingEvents[0] ? (
             <Link href="/kul/events" className="text-xs font-semibold text-[color:var(--brand-primary-strong)]">
               Next date in {upcomingEvents[0].daysUntil}d
