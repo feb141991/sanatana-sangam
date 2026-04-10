@@ -24,6 +24,8 @@ import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
 import { APP } from '@/lib/config';
 import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
+import MvpHero from '@/components/layout/MvpHero';
+import { MVP_THEMES, type MvpThemeKey } from '@/lib/mvp-themes';
 
 interface Panchang {
   tithi:     string;
@@ -42,21 +44,13 @@ interface SacredTextMeta {
   accentLight:  string;   // light tint hex
 }
 
-interface FeatureTheme {
-  surface: string;
-  border: string;
-  iconWell: string;
-  accent: string;
-  accentStrong: string;
-}
-
 interface HomeFeatureItem {
   label: string;
   icon: string;
   href: string;
   desc: string;
   eyebrow: string;
-  theme: keyof typeof HOME_THEMES;
+  theme: MvpThemeKey;
 }
 
 interface Props {
@@ -92,51 +86,6 @@ const quickAccessItems: HomeFeatureItem[] = [
   { label: 'Pathshala', icon: '📖', href: '/library', desc: 'Tradition-first study tracks', eyebrow: 'Study', theme: 'pathshala' },
   { label: 'Bhakti', icon: '✨', href: '/bhakti', desc: 'Enter Zen or Mala with fewer distractions', eyebrow: 'Practice', theme: 'bhakti' },
 ];
-
-const HOME_THEMES: Record<string, FeatureTheme> = {
-  panchang: {
-    surface: 'linear-gradient(135deg, #f8efe7 0%, #fffdfa 100%)',
-    border: 'rgba(124, 58, 45, 0.16)',
-    iconWell: 'rgba(124, 58, 45, 0.1)',
-    accent: 'var(--brand-primary)',
-    accentStrong: 'var(--brand-primary-strong)',
-  },
-  pathshala: {
-    surface: 'linear-gradient(135deg, #f6f0e7 0%, #fffdfa 100%)',
-    border: 'rgba(138, 106, 47, 0.16)',
-    iconWell: 'rgba(138, 106, 47, 0.1)',
-    accent: '#8a6a2f',
-    accentStrong: '#6f5421',
-  },
-  bhakti: {
-    surface: 'linear-gradient(135deg, #f4ece6 0%, #fffdfb 100%)',
-    border: 'rgba(124, 58, 45, 0.14)',
-    iconWell: 'rgba(124, 58, 45, 0.08)',
-    accent: 'var(--brand-primary)',
-    accentStrong: 'var(--brand-primary-strong)',
-  },
-  kul: {
-    surface: 'linear-gradient(135deg, #eef2ef 0%, #ffffff 100%)',
-    border: 'rgba(107, 138, 122, 0.18)',
-    iconWell: 'rgba(107, 138, 122, 0.1)',
-    accent: 'var(--brand-secondary)',
-    accentStrong: '#557060',
-  },
-  mandali: {
-    surface: 'linear-gradient(135deg, #f3efea 0%, #ffffff 100%)',
-    border: 'rgba(107, 90, 77, 0.16)',
-    iconWell: 'rgba(107, 90, 77, 0.1)',
-    accent: 'var(--brand-earth)',
-    accentStrong: '#56493f',
-  },
-  tirtha: {
-    surface: 'linear-gradient(135deg, #f3eee7 0%, #fffdf9 100%)',
-    border: 'rgba(111, 84, 33, 0.16)',
-    iconWell: 'rgba(111, 84, 33, 0.1)',
-    accent: '#7a5e2a',
-    accentStrong: '#604a22',
-  },
-};
 
 // ── Invite code — deterministic from userId (no DB needed) ─────────────────
 function generateInviteCode(userId: string): string {
@@ -928,110 +877,148 @@ export default function HomeDashboard({
     }
   }
 
-  const homeHeroTheme = HOME_THEMES.pathshala;
-  const panchangTheme = HOME_THEMES.panchang;
-  const sacredTextTheme = tradition === 'hindu' ? HOME_THEMES.pathshala : HOME_THEMES.bhakti;
+  const homeHeroTheme = MVP_THEMES.pathshala;
+  const panchangTheme = MVP_THEMES.panchang;
+  const sacredTextTheme = tradition === 'hindu' ? MVP_THEMES.pathshala : MVP_THEMES.bhakti;
   const heroPrimaryCards = quickAccessItems.slice(0, 3);
   const heroSecondaryCards = quickAccessItems.slice(3);
 
   return (
     <div className="space-y-5 pb-2 fade-in">
-      <div
-        className="relative overflow-hidden rounded-[2rem] border px-4 py-5 sm:px-5 sm:py-6"
-        style={{
-          background: 'linear-gradient(145deg, rgba(255,255,255,0.98), rgba(246,240,231,0.95) 48%, rgba(255,255,255,0.98) 100%)',
-          borderColor: homeHeroTheme.border,
-          boxShadow: '0 22px 46px rgba(28, 26, 23, 0.08)',
-        }}
-      >
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-28"
-          initial={prefersReducedMotion ? undefined : { opacity: 0.64, scale: 1.04 }}
-          animate={prefersReducedMotion ? undefined : { opacity: [0.62, 0.78, 0.62], scale: [1.04, 1.08, 1.04] }}
-          transition={prefersReducedMotion ? undefined : { duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-          style={{
-            background: 'radial-gradient(circle at 24% 10%, rgba(138, 106, 47, 0.14), transparent 34%), radial-gradient(circle at 78% 14%, rgba(124, 58, 45, 0.12), transparent 32%)',
-          }}
-        />
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute -right-10 top-4 h-36 w-36 rounded-full blur-3xl"
-          initial={prefersReducedMotion ? undefined : { opacity: 0.24, y: 0 }}
-          animate={prefersReducedMotion ? undefined : { opacity: [0.18, 0.32, 0.18], y: [0, 8, 0] }}
-          transition={prefersReducedMotion ? undefined : { duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-          style={{ background: 'rgba(124, 58, 45, 0.16)' }}
-        />
-
-        <div className="relative">
-          <p className="text-[10px] uppercase tracking-[0.24em] font-semibold" style={{ color: homeHeroTheme.accent }}>
-            Sanatana Sangam
-          </p>
+      <MvpHero
+        theme="pathshala"
+        title={`${greeting}, ${userName.split(' ')[0]}!`}
+        description="Open the day through sacred time, study, practice, family, and community with a cleaner luxury shell."
+        chips={[
+          'Today',
+          ...(displayCity ? [coords ? `${displayCity} · live` : displayCity] : []),
+          showFirstTimeGuidance ? greetingMode : 'Calm return loop',
+        ]}
+        actions={
           <button
             onClick={() => setGreetingSheetOpen(true)}
-            className="group mt-1 -ml-1 rounded-2xl px-1 py-1 flex items-center gap-1.5 text-left transition"
+            className="inline-flex items-center gap-1 rounded-full bg-white/92 border border-black/5 px-3 py-1.5 text-xs font-semibold text-[color:var(--brand-primary-strong)]"
           >
-            <h1 className="font-display text-[1.68rem] sm:text-[1.98rem] font-bold text-gray-900 leading-[1.02]">
-              {greeting}, {userName.split(' ')[0]}!
-            </h1>
-            <Pencil size={13} className="text-gray-300 group-hover:text-[color:var(--brand-primary)] transition flex-shrink-0 mt-1" />
+            Edit greeting <Pencil size={12} />
           </button>
-          <p className="mt-2 max-w-[38rem] text-sm text-gray-600 leading-relaxed">
-            Open the day through sacred time, study, practice, family, and community without the dashboard clutter.
-          </p>
+        }
+      />
 
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <span
-              className="inline-flex items-center rounded-full px-3 py-1.5 text-xs font-semibold"
-              style={{ background: homeHeroTheme.iconWell, color: homeHeroTheme.accentStrong }}
-            >
-              Today
-            </span>
-            {displayCity && (
-              <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium bg-white/90 text-gray-600 border border-black/5">
-                <MapPin size={12} style={{ color: homeHeroTheme.accent }} />
-                {displayCity}
-                {coords && <span className="text-[10px] text-gray-400">live</span>}
-              </span>
-            )}
-            <span className="inline-flex items-center rounded-full px-3 py-1.5 text-xs font-medium bg-white/90 text-gray-500 border border-black/5">
-              {showFirstTimeGuidance ? greetingMode : 'Calm return loop'}
-            </span>
+      <motion.div
+        className="relative overflow-hidden rounded-[1.95rem] border p-4 sm:p-5"
+        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 14 }}
+        animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1], delay: 0.04 }}
+        style={{
+          background: 'linear-gradient(145deg, rgba(255,255,255,0.98), rgba(247,244,239,0.96) 48%, rgba(255,255,255,0.99) 100%)',
+          borderColor: 'rgba(17, 24, 39, 0.08)',
+          boxShadow: '0 20px 40px rgba(28, 26, 23, 0.08)',
+        }}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.2em] font-semibold text-gray-400">MVP Launcher</p>
+            <h2 className="mt-1 font-display text-lg sm:text-xl font-bold text-gray-900">Move into the app from one place</h2>
+            <p className="mt-1.5 max-w-xl text-sm text-gray-600 leading-relaxed">
+              One composed entry tile for the main journeys instead of three disconnected cards.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-4 grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+          <div
+            className="relative min-h-[16.2rem] rounded-[1.7rem] border p-4 overflow-hidden"
+            style={{
+              background: MVP_THEMES[heroPrimaryCards[0].theme].surface,
+              borderColor: MVP_THEMES[heroPrimaryCards[0].theme].border,
+              boxShadow: '0 20px 42px rgba(28, 26, 23, 0.07)',
+            }}
+          >
+            {heroPrimaryCards.slice().reverse().map((item, index) => {
+              const theme = MVP_THEMES[item.theme];
+              const offset = index * 16;
+              const scale = 1 - index * 0.04;
+              return (
+                <motion.div
+                  key={item.href}
+                  className="absolute left-4 right-4 rounded-[1.45rem] border px-4 py-3"
+                  initial={prefersReducedMotion ? undefined : { opacity: 0, y: 24 + index * 8, rotate: index === 0 ? 0 : -1.5 + index }}
+                  animate={prefersReducedMotion ? undefined : { opacity: 1, y: offset, rotate: index === 0 ? 0 : -1.5 + index }}
+                  transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1], delay: 0.05 + index * 0.08 }}
+                  style={{
+                    top: `${1 + index * 3.2}rem`,
+                    background: theme.surface,
+                    borderColor: theme.border,
+                    transformOrigin: 'top center',
+                    scale,
+                    boxShadow: index === 0 ? '0 16px 28px rgba(28, 26, 23, 0.08)' : '0 10px 18px rgba(28, 26, 23, 0.05)',
+                    zIndex: 5 - index,
+                  }}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-[10px] uppercase tracking-[0.16em] font-semibold" style={{ color: theme.accent }}>
+                        {item.eyebrow}
+                      </p>
+                      <p className="mt-1 text-sm font-semibold" style={{ color: theme.accentStrong }}>
+                        {item.label}
+                      </p>
+                      <p className="mt-1 text-xs text-gray-500 leading-relaxed">{item.desc}</p>
+                    </div>
+                    <span className="flex h-10 w-10 items-center justify-center rounded-[1rem] text-lg" style={{ background: theme.iconWell }}>
+                      {item.icon}
+                    </span>
+                  </div>
+                </motion.div>
+              );
+            })}
+            <div className="absolute inset-x-4 bottom-4 space-y-2 rounded-[1.2rem] border px-3 py-3 bg-white/94" style={{ borderColor: 'rgba(17, 24, 39, 0.06)' }}>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs font-medium text-gray-500">Core journeys</span>
+                <span className="text-xs font-semibold text-[color:var(--brand-primary)]">Open directly</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {heroPrimaryCards.map((item) => {
+                  const theme = MVP_THEMES[item.theme];
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition hover:bg-white"
+                      style={{ borderColor: theme.border, color: theme.accentStrong, background: 'rgba(255,255,255,0.9)' }}
+                    >
+                      <span>{item.icon}</span>
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
-          <MotionStagger className="mt-5 grid gap-3 sm:grid-cols-3" delay={0.05}>
-            {heroPrimaryCards.map((item) => {
-              const theme = HOME_THEMES[item.theme];
+          <MotionStagger className="grid gap-3" delay={0.06}>
+            {heroSecondaryCards.map((item) => {
+              const theme = MVP_THEMES[item.theme];
               return (
                 <MotionItem key={item.href}>
                   <Link
                     href={item.href}
-                    className="group relative overflow-hidden rounded-[1.45rem] border px-4 py-4 transition"
+                    className="group flex items-center gap-3 rounded-[1.45rem] border px-4 py-4 transition"
                     style={{
                       background: theme.surface,
                       borderColor: theme.border,
-                      boxShadow: '0 14px 28px rgba(28, 26, 23, 0.06)',
+                      boxShadow: '0 14px 26px rgba(28, 26, 23, 0.06)',
                     }}
                   >
-                    <div
-                      className="absolute inset-x-0 top-0 h-14 opacity-80"
-                      style={{ background: `linear-gradient(180deg, ${theme.iconWell}, transparent)` }}
-                    />
-                    <div className="relative">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[10px] uppercase tracking-[0.18em] font-semibold" style={{ color: theme.accent }}>
-                          {item.eyebrow}
-                        </span>
-                        <span className="flex h-10 w-10 items-center justify-center rounded-[1rem] text-lg" style={{ background: theme.iconWell }}>
-                          {item.icon}
-                        </span>
-                      </div>
-                      <p className="mt-5 text-base font-semibold leading-tight" style={{ color: theme.accentStrong }}>
-                        {item.label}
+                    <span className="flex h-11 w-11 items-center justify-center rounded-[1rem] text-xl" style={{ background: theme.iconWell }}>
+                      {item.icon}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-[10px] uppercase tracking-[0.16em] font-semibold" style={{ color: theme.accent }}>
+                        {item.eyebrow}
                       </p>
-                      <p className="mt-1.5 text-xs leading-relaxed text-gray-500">
-                        {item.desc}
-                      </p>
+                      <p className="mt-1 text-sm font-semibold leading-tight" style={{ color: theme.accentStrong }}>{item.label}</p>
+                      <p className="mt-1 text-xs text-gray-500 leading-relaxed">{item.desc}</p>
                     </div>
                   </Link>
                 </MotionItem>
@@ -1039,7 +1026,7 @@ export default function HomeDashboard({
             })}
           </MotionStagger>
         </div>
-      </div>
+      </motion.div>
 
       <div className="grid gap-5 xl:grid-cols-[1.18fr_0.82fr]">
         <div className="space-y-5">
@@ -1183,22 +1170,22 @@ export default function HomeDashboard({
           <div
             ref={festivalsRef}
             className="rounded-[1.9rem] border overflow-hidden"
-            style={{ background: HOME_THEMES.tirtha.surface, borderColor: HOME_THEMES.tirtha.border, boxShadow: '0 18px 34px rgba(28, 26, 23, 0.05)' }}
+            style={{ background: MVP_THEMES.tirtha.surface, borderColor: MVP_THEMES.tirtha.border, boxShadow: '0 18px 34px rgba(28, 26, 23, 0.05)' }}
           >
             <div className="px-4 pt-4 pb-2 flex items-center justify-between">
               <div>
-                <p className="text-[10px] uppercase tracking-[0.16em] font-semibold" style={{ color: HOME_THEMES.tirtha.accent }}>
+                <p className="text-[10px] uppercase tracking-[0.16em] font-semibold" style={{ color: MVP_THEMES.tirtha.accent }}>
                   Festival Window
                 </p>
                 <p className="mt-1 text-base font-semibold text-gray-900">Coming up</p>
               </div>
-              <button onClick={() => setCalendarOpen(true)} className="text-xs font-semibold flex items-center gap-1 hover:underline" style={{ color: HOME_THEMES.tirtha.accentStrong }}>
+              <button onClick={() => setCalendarOpen(true)} className="text-xs font-semibold flex items-center gap-1 hover:underline" style={{ color: MVP_THEMES.tirtha.accentStrong }}>
                 <CalendarDays size={11} /> All Festivals
               </button>
             </div>
             {festival && daysUntilFestival !== null ? (
               <div className="px-4 pb-4 flex items-center gap-3">
-                <div className="w-12 h-12 rounded-[1rem] flex items-center justify-center text-2xl" style={{ background: HOME_THEMES.tirtha.iconWell }}>
+                <div className="w-12 h-12 rounded-[1rem] flex items-center justify-center text-2xl" style={{ background: MVP_THEMES.tirtha.iconWell }}>
                   {festival.emoji}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -1206,7 +1193,7 @@ export default function HomeDashboard({
                   <p className="text-xs text-gray-500 mt-1 leading-relaxed">{festival.description}</p>
                 </div>
                 <div className="text-right">
-                  <div className="font-display font-bold text-2xl" style={{ color: HOME_THEMES.tirtha.accentStrong }}>
+                  <div className="font-display font-bold text-2xl" style={{ color: MVP_THEMES.tirtha.accentStrong }}>
                     {daysUntilFestival === 0 ? '🎉' : daysUntilFestival}
                   </div>
                   <div className="text-[11px] text-gray-400">
@@ -1222,39 +1209,6 @@ export default function HomeDashboard({
             <div className="px-4 pb-4 text-[11px] text-gray-500 leading-relaxed">
               {festivalCalendarMeta.sourceNote}
             </div>
-          </div>
-
-          <div className="rounded-[1.9rem] border p-4" style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f7f4ef 100%)', borderColor: 'rgba(17, 24, 39, 0.08)', boxShadow: '0 18px 34px rgba(28, 26, 23, 0.05)' }}>
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400">MVPs</p>
-                <p className="mt-1 text-base font-semibold text-gray-900">Go deeper</p>
-              </div>
-            </div>
-
-            <MotionStagger className="grid gap-3" delay={0.06}>
-              {heroSecondaryCards.map((item) => {
-                const theme = HOME_THEMES[item.theme];
-                return (
-                  <MotionItem key={item.href}>
-                    <Link
-                      href={item.href}
-                      className="group flex items-center gap-3 rounded-[1.35rem] border px-3.5 py-3.5 transition"
-                      style={{ background: theme.surface, borderColor: theme.border }}
-                    >
-                      <span className="flex h-11 w-11 items-center justify-center rounded-[1rem] text-xl" style={{ background: theme.iconWell }}>
-                        {item.icon}
-                      </span>
-                      <div className="min-w-0">
-                        <p className="text-[10px] uppercase tracking-[0.14em] font-semibold" style={{ color: theme.accent }}>{item.eyebrow}</p>
-                        <p className="mt-1 text-sm font-semibold leading-tight" style={{ color: theme.accentStrong }}>{item.label}</p>
-                        <p className="mt-1 text-xs text-gray-500 leading-relaxed">{item.desc}</p>
-                      </div>
-                    </Link>
-                  </MotionItem>
-                );
-              })}
-            </MotionStagger>
           </div>
         </div>
       </div>
@@ -1356,7 +1310,7 @@ export default function HomeDashboard({
       <div className="grid gap-3 sm:grid-cols-2">
         <Link href="/vichaar-sabha"
           className="block rounded-[1.7rem] border p-4 transition-colors"
-          style={{ borderColor: HOME_THEMES.pathshala.border, background: HOME_THEMES.pathshala.surface }}>
+          style={{ borderColor: MVP_THEMES.pathshala.border, background: MVP_THEMES.pathshala.surface }}>
           <span className="text-lg">💬</span>
           <p className="font-semibold text-sm mt-1" style={{ color: 'var(--brand-primary)' }}>Join the Vichaar Sabha</p>
           <p className="text-xs text-gray-500 mt-0.5">Discuss dharma, share wisdom, ask questions</p>
@@ -1364,7 +1318,7 @@ export default function HomeDashboard({
 
         <button onClick={() => setInviteOpen(true)}
           className="w-full rounded-[1.7rem] border p-4 text-left transition-colors"
-          style={{ borderColor: HOME_THEMES.kul.border, background: HOME_THEMES.kul.surface }}>
+          style={{ borderColor: MVP_THEMES.kul.border, background: MVP_THEMES.kul.surface }}>
           <span className="text-lg">🙏</span>
           <p className="font-semibold text-sm mt-1" style={{ color: 'var(--brand-primary)' }}>Invite Friends & Family</p>
           <p className="text-xs text-gray-500 mt-0.5">Share Sanatana Sangam without leaving the app shell.</p>

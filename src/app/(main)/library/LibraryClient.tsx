@@ -6,6 +6,7 @@ import {
   getSectionsByTradition,
   type LibraryTradition,
 } from '@/lib/library-content';
+import MvpHero from '@/components/layout/MvpHero';
 import { getPathshalaTraditionHref } from '@/lib/pathshala-links';
 import type { PathshalaStudySummary } from '@/lib/pathshala-state';
 import { MotionFade, MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
@@ -23,12 +24,12 @@ export default function LibraryClient({
 
   return (
     <MotionFade className="space-y-3 pb-6 fade-in">
-      <div className="glass-panel rounded-[1.6rem] px-4 py-4 sm:rounded-[1.8rem] sm:px-5 sm:py-5">
-        <div>
-          <h1 className="font-display font-bold text-xl text-gray-900 mt-1">Parampara Pathshala</h1>
-          <p className="hidden sm:block text-sm text-gray-600 mt-1 leading-relaxed">Choose a tradition and enter one track at a time.</p>
-        </div>
-      </div>
+      <MvpHero
+        theme="pathshala"
+        title="Parampara Pathshala"
+        description="Choose one tradition, then move through one clear study track at a time."
+        chips={['Scripture', 'Recite', 'Return loops']}
+      />
 
       {(continueLearning || bookmarkedEntries.length > 0) && (
         <section className="space-y-3">

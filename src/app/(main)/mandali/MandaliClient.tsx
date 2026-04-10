@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown, CornerDownRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
+import MvpHero from '@/components/layout/MvpHero';
 import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
 import { formatRelativeTime, getInitials, ISHTA_DEVATAS } from '@/lib/utils';
 import { useLocation } from '@/lib/LocationContext';
@@ -1152,76 +1153,51 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
 
   return (
     <div className="space-y-4 fade-in">
-
-      {/* ── Mandali Header ── */}
-      <div className="rounded-2xl p-5 text-white" style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
-        <div className="flex items-start justify-between">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Users size={16} className="text-white/80" />
-              <span className="font-display font-bold text-lg">
-                {neighbourhoodLabel}
-              </span>
-            </div>
-            <div className="flex items-center gap-1 text-white/70 text-sm">
-              <MapPin size={12} />
-              <span>{placeLabel}</span>
-            </div>
-            <p className="hidden sm:block text-white/75 text-sm mt-3 max-w-xl leading-relaxed">
-              Your local Sangam should feel like a warm room, not a feed. Start with the one thing that matters right now, then move deeper.
-            </p>
-            <p className="sm:hidden text-white/80 text-sm mt-3 leading-relaxed">
-              Start with one local step.
-            </p>
-          </div>
-          <div className="text-right">
-            <div className="font-bold text-2xl">{visibleMembers.length}</div>
-            <div className="text-white/60 text-xs">members</div>
-          </div>
-        </div>
-        {/* Action row */}
-        <div className="mt-3 flex items-center gap-2">
-          <button onClick={() => setShowSearch(true)}
-            className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition justify-center"
-            style={{ background: 'rgba(255,255,255,0.15)', color: 'white' }}>
-            <Search size={13} /> Find Sanatani
-          </button>
-
-          {/* Mandali options menu */}
-          <div className="relative">
-            <button
-              onClick={() => setShowMandaliMenu(m => !m)}
-              className="flex items-center justify-center w-8 h-8 rounded-xl text-white transition"
-              style={{ background: 'rgba(255,255,255,0.15)' }}
-              title="Mandali options"
-            >
-              ⋯
+      <MvpHero
+        theme="mandali"
+        title={neighbourhoodLabel}
+        description={`A local Sangam for ${placeLabel.toLowerCase()}, with one clear next step instead of a noisy feed.`}
+        chips={[placeLabel, `${visibleMembers.length} members`]}
+        actions={
+          <div className="flex items-center gap-2">
+            <button onClick={() => setShowSearch(true)}
+              className="inline-flex items-center gap-2 rounded-full border border-black/5 bg-white/92 px-4 py-2 text-sm font-semibold text-[color:var(--brand-primary-strong)] transition hover:bg-white">
+              <Search size={13} /> Find Sanatani
             </button>
-            {showMandaliMenu && (
-              <div className="absolute right-0 top-10 z-50 bg-white rounded-2xl shadow-xl border border-gray-100 w-52 overflow-hidden"
-                onClick={() => setShowMandaliMenu(false)}>
-                <button
-                  onClick={async () => {
-                    // Clear mandali_id → redirect to join flow
-                    await supabase.from('profiles').update({ mandali_id: null }).eq('id', userId);
-                    router.refresh();
-                  }}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 transition text-left border-b border-gray-50 hover:bg-[var(--brand-primary-soft)]">
-                  <MapPin size={14} style={{ color: 'var(--brand-primary-strong)' }} />
-                  Change my Mandali
-                </button>
-                <button
-                  onClick={leaveMandali}
-                  disabled={leavingMandali}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition text-left disabled:opacity-50">
-                  <X size={14} />
-                  {leavingMandali ? 'Leaving…' : 'Leave this Mandali'}
-                </button>
-              </div>
-            )}
+
+            <div className="relative">
+              <button
+                onClick={() => setShowMandaliMenu(m => !m)}
+                className="flex items-center justify-center w-9 h-9 rounded-full border border-black/5 bg-white/92 text-[color:var(--brand-primary-strong)] transition hover:bg-white"
+                title="Mandali options"
+              >
+                ⋯
+              </button>
+              {showMandaliMenu && (
+                <div className="absolute right-0 top-11 z-50 bg-white rounded-2xl shadow-xl border border-gray-100 w-52 overflow-hidden"
+                  onClick={() => setShowMandaliMenu(false)}>
+                  <button
+                    onClick={async () => {
+                      await supabase.from('profiles').update({ mandali_id: null }).eq('id', userId);
+                      router.refresh();
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 transition text-left border-b border-gray-50 hover:bg-[var(--brand-primary-soft)]">
+                    <MapPin size={14} style={{ color: 'var(--brand-primary-strong)' }} />
+                    Change my Mandali
+                  </button>
+                  <button
+                    onClick={leaveMandali}
+                    disabled={leavingMandali}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition text-left disabled:opacity-50">
+                    <X size={14} />
+                    {leavingMandali ? 'Leaving…' : 'Leave this Mandali'}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       <div className="grid gap-3 sm:grid-cols-[1.25fr_0.95fr]">
         <button

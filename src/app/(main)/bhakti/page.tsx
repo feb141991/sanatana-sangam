@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import MvpHero from '@/components/layout/MvpHero';
 import { Card, SectionHeading } from '@/components/ui';
 import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
 import { APPROVED_DEVOTIONAL_TRACKS } from '@/lib/devotional-audio';
@@ -6,34 +7,22 @@ import { APPROVED_DEVOTIONAL_TRACKS } from '@/lib/devotional-audio';
 export default function BhaktiPage() {
   return (
     <div className="fade-in space-y-5">
-      <Card className="rounded-[1.9rem] px-4 py-5 md:rounded-[2rem] md:px-7 md:py-7 overflow-hidden relative">
-        <div
-          className="absolute inset-0 opacity-80 pointer-events-none"
-          style={{
-            background:
-              'radial-gradient(circle at top, color-mix(in srgb, var(--brand-secondary) 22%, white), transparent 55%), linear-gradient(180deg, color-mix(in srgb, var(--brand-primary) 10%, white), transparent 70%)',
-          }}
-        />
-        <div className="relative space-y-5">
-          <div className="space-y-2">
-            <h1 className="font-display text-3xl font-bold text-gray-900">Sahaj Bhakti</h1>
-            <p className="max-w-2xl text-sm leading-relaxed text-gray-600">
-              A quieter devotional space for chant, listening, and remembrance.
-            </p>
-          </div>
+      <MvpHero
+        theme="bhakti"
+        title="Sahaj Bhakti"
+        description="A quieter devotional shell for chant, listening, remembrance, and full-focus practice."
+        chips={['Mala', 'Zen', 'Chant shelf']}
+        actions={
           <div className="flex flex-wrap gap-2">
-            <Link href="/bhakti/mala" className="rounded-full border border-[color:var(--brand-primary-soft)] bg-white/85 px-4 py-2 text-sm font-semibold text-[color:var(--brand-primary-strong)] transition hover:bg-white">
+            <Link href="/bhakti/mala" className="rounded-full border border-black/5 bg-white/92 px-4 py-2 text-sm font-semibold text-[color:var(--brand-primary-strong)] transition hover:bg-white">
               Mala
             </Link>
-            <Link href="/bhakti/zen" className="rounded-full border border-[color:var(--brand-primary-soft)] bg-white/85 px-4 py-2 text-sm font-semibold text-[color:var(--brand-primary-strong)] transition hover:bg-white">
+            <Link href="/bhakti/zen" className="rounded-full border border-black/5 bg-white/92 px-4 py-2 text-sm font-semibold text-[color:var(--brand-primary-strong)] transition hover:bg-white">
               Zen
             </Link>
-            <span className="rounded-full border border-[color:var(--brand-primary-soft)] bg-white/70 px-4 py-2 text-sm font-medium text-gray-600">
-              Chant catalog
-            </span>
           </div>
-        </div>
-      </Card>
+        }
+      />
 
       <section className="grid gap-4">
         <Card>

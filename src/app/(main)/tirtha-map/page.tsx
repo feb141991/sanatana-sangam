@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { Search, Navigation, Info, Clock } from 'lucide-react';
+import MvpHero from '@/components/layout/MvpHero';
 import { fetchNearbyTemples, geocodeCity, type Temple } from '@/lib/overpass';
 import { useLocation } from '@/lib/LocationContext';
 import { API, MAP, MANDIR } from '@/lib/config';
@@ -219,10 +220,12 @@ export default function TirthaMapPage() {
   const activeCityLabel = cityInput.trim() || liveCity || 'your area';
   return (
     <div className="space-y-3 fade-in">
-      <div className="glass-panel rounded-[1.7rem] px-4 py-4 sm:rounded-[1.9rem] sm:px-5 sm:py-5 space-y-2">
-        <h1 className="font-display text-2xl font-bold text-gray-900">Tirtha Map</h1>
-        <p className="hidden sm:block text-sm text-gray-600 leading-relaxed">Search sacred places, filter by tradition, and open the result that feels right.</p>
-      </div>
+      <MvpHero
+        theme="tirtha"
+        title="Tirtha Map"
+        description="Search sacred places, filter by tradition, and open the place that fits the moment."
+        chips={[placeLabel, activeCityLabel]}
+      />
 
       {/* ── Search bar ── */}
       <div className="flex gap-2">
