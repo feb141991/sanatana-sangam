@@ -236,7 +236,7 @@ export default function TopBar({
           <Link href={homeHref} className="inline-flex">
             <BrandMark size="sm" />
           </Link>
-          <span className="font-display font-semibold text-[color:var(--brand-ink)] text-sm sm:text-base">{title}</span>
+          <span className="type-card-heading">{title}</span>
         </div>
 
         {/* Right */}
@@ -246,13 +246,13 @@ export default function TopBar({
             <div className="flex items-center gap-2">
               <Link
                 href="/login"
-                className="text-xs font-medium text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition"
+                className="type-micro hover:text-[color:var(--brand-ink)] transition"
               >
                 Sign in
               </Link>
               <Link
                 href="/signup"
-                className="glass-button-secondary px-4 py-1.5 text-sm font-semibold rounded-full hover:opacity-90 transition"
+                className="glass-button-secondary px-4 py-1.5 rounded-full hover:opacity-90 transition type-body"
                 style={{ color: 'var(--brand-primary-strong)' }}
               >
                 Join Free
@@ -271,7 +271,7 @@ export default function TopBar({
                 }}
               >
                   <LayoutGrid size={15} />
-                  <span className="text-xs font-semibold hidden sm:inline">Menu</span>
+                  <span className="type-micro hidden sm:inline">Menu</span>
                 </button>
 
                 <AnimatePresence>

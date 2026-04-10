@@ -17,13 +17,13 @@ export function SectionHeading({
     <div className={cn('flex items-start justify-between gap-4', className)}>
       <div>
         {eyebrow ? (
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">
+          <p className="type-card-label">
             {eyebrow}
           </p>
         ) : null}
-        <h2 className="font-display text-xl font-bold text-gray-900 mt-2">{title}</h2>
+        <h2 className="type-card-heading mt-2">{title}</h2>
         {description ? (
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">{description}</p>
+          <p className="type-body mt-2 max-w-2xl">{description}</p>
         ) : null}
       </div>
       {actions}

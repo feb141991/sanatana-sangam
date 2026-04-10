@@ -42,6 +42,23 @@
   --surface-base: #1c1c1a;
   --surface-soft: #262623;
   --surface-raised: rgba(51, 51, 48, 0.94);
+  --type-screen-title: 22px;
+  --type-card-heading: 16px;
+  --type-sanskrit: 18px;
+  --type-metric: 24px;
+  --type-body: 13px;
+  --type-section-label: 14px;
+  --type-card-label: 12px;
+  --type-chip: 11px;
+  --type-tab: 10px;
+  --type-micro: 11px;
+  --text-cream: #f0ede6;
+  --text-dim: #807b72;
+  --text-muted-warm: #b5b0a5;
+  --text-saffron-soft: #fac775;
+  --text-saffron-strong: #ef9f27;
+  --chip-fill: #faeeda;
+  --chip-text: #854f0b;
 }
 
 * { box-sizing: border-box; }
@@ -55,7 +72,7 @@ body {
 
 body {
   font-family: var(--font-inter);
-  font-size: 18px;
+  font-size: var(--type-body);
   line-height: 1.6;
   letter-spacing: 0.005em;
   position: relative;
@@ -63,6 +80,81 @@ body {
   background: var(--surface-base);
   color: var(--brand-ink);
   -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+.type-screen-title {
+  font-size: var(--type-screen-title);
+  line-height: 1.2;
+  font-weight: 500;
+  color: var(--text-saffron-soft);
+}
+
+.type-card-heading {
+  font-size: var(--type-card-heading);
+  line-height: 1.2;
+  font-weight: 500;
+  color: var(--text-cream);
+}
+
+.type-body {
+  font-size: var(--type-body);
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--text-muted-warm);
+}
+
+.type-sanskrit {
+  font-family: Georgia, 'Noto Serif Devanagari', serif;
+  font-size: var(--type-sanskrit);
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--text-cream);
+}
+
+.type-metric {
+  font-size: var(--type-metric);
+  line-height: 1.2;
+  font-weight: 500;
+  color: var(--text-saffron-strong);
+}
+
+.type-section-label {
+  font-size: var(--type-section-label);
+  line-height: 1.2;
+  font-weight: 400;
+  color: var(--text-dim);
+}
+
+.type-card-label {
+  font-size: var(--type-card-label);
+  line-height: 1.2;
+  font-weight: 400;
+  color: var(--text-dim);
+}
+
+.type-chip {
+  font-size: var(--type-chip);
+  line-height: 1.2;
+  font-weight: 500;
+  color: var(--chip-text);
+}
+
+.type-tab {
+  font-size: var(--type-tab);
+  line-height: 1.2;
+  font-weight: 400;
+}
+
+.type-micro {
+  font-size: var(--type-micro);
+  line-height: 1.2;
+  font-weight: 400;
+  color: var(--text-dim);
 }
 
 body::before,

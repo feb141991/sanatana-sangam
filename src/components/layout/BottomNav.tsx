@@ -74,8 +74,8 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
                 </motion.div>
               </div>
               <span className={cn(
-                'relative z-10 text-[10px] font-medium leading-none',
-                active && 'font-semibold text-[#1c1c1a]'
+                'type-tab relative z-10',
+                active ? 'text-[color:var(--text-saffron-soft)]' : 'text-[color:var(--text-dim)]'
               )}>
                 <span className="sm:hidden">{mobileLabel ?? label}</span>
                 <span className="hidden sm:inline">{label}</span>

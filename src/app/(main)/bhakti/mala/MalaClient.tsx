@@ -157,15 +157,15 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
 
   const counterPanel = (
     <div className="space-y-4 rounded-[1.8rem] bg-[var(--brand-primary-soft)]/55 px-5 py-5 text-center">
-      <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{mantra}</p>
-      <p className="font-display text-6xl font-bold text-[color:var(--brand-primary-strong)]">{count}</p>
+      <p className="type-micro text-[color:var(--brand-primary)]">{mantra}</p>
+      <p className="type-metric">{count}</p>
       <div className="h-2 overflow-hidden rounded-full bg-white/80">
         <div
           className="h-full rounded-full transition-all"
           style={{ width: `${progress}%`, background: 'linear-gradient(90deg, var(--brand-primary-strong), var(--brand-primary))' }}
         />
       </div>
-      <p className="text-sm text-gray-600">Target {target} • {activeMantraSource}</p>
+      <p className="type-body">Target {target} • {activeMantraSource}</p>
       <button
         onClick={tapBead}
         className="mx-auto flex h-48 w-48 items-center justify-center rounded-full text-xl font-semibold text-white shadow-sacred"
@@ -199,10 +199,10 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
     <div className="fade-in space-y-5">
       <section className="glass-panel rounded-[2rem] px-5 py-6 md:px-7">
         <div className="space-y-4">
-          <div className="clay-pill inline-flex text-xs text-gray-700">Mala mode</div>
+          <div className="clay-pill inline-flex type-chip text-[color:var(--text-dim)]">Mala mode</div>
           <div>
-            <h1 className="font-display text-3xl font-bold text-gray-900">Japa with less distraction</h1>
-            <p className="mt-2 max-w-2xl text-sm text-gray-600">
+            <h1 className="type-screen-title">Japa with less distraction</h1>
+            <p className="type-body mt-2 max-w-2xl">
               Start with the counter. Everything else stays below when you need it.
             </p>
           </div>
@@ -233,19 +233,19 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
 
       <section className="glass-panel rounded-[2rem] px-5 py-6 space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Mantra</label>
+          <label className="type-section-label mb-2 block">Mantra</label>
           <select
             value={mantra}
             onChange={(event) => setMantra(event.target.value)}
-            className="w-full rounded-xl border border-[rgba(200,127,146,0.18)] bg-white px-4 py-3 text-sm outline-none"
+            className="type-body w-full rounded-xl border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-3 outline-none"
           >
             {BHAKTI_MANTRAS.map((item) => (
               <option key={item.value} value={item.value}>{item.value}</option>
             ))}
           </select>
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <p className="text-xs text-gray-500">{activeMantraSource}</p>
-            <span className="rounded-full border border-[color:var(--brand-primary-soft)] px-3 py-1 text-[11px] font-semibold text-[color:var(--brand-primary-strong)]">
+            <p className="type-micro">{activeMantraSource}</p>
+            <span className="rounded-full border border-[color:var(--brand-primary-soft)] px-3 py-1 type-chip text-[color:var(--brand-primary-strong)]">
               Chant ready
             </span>
           </div>
@@ -263,7 +263,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
             <button
               key={value}
               onClick={() => setTarget(value)}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition ${target === value ? 'text-white' : 'bg-white text-gray-700 border border-[rgba(200,127,146,0.18)]'}`}
+              className={`rounded-full px-4 py-2 type-chip transition ${target === value ? 'text-[#1c1c1a]' : 'bg-[color:var(--brand-accent)] text-[color:var(--text-dim)] border border-[rgba(212,166,70,0.18)]'}`}
               style={target === value ? { background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' } : undefined}
             >
               {value}
@@ -273,16 +273,16 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
 
         <div className="grid gap-3 md:grid-cols-3">
           <div className="clay-card rounded-[1.5rem] px-4 py-4">
-            <p className="text-sm font-semibold text-gray-900">This week</p>
-            <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{totalThisWeek}</p>
+            <p className="type-card-label">This week</p>
+            <p className="type-metric mt-2">{totalThisWeek}</p>
           </div>
           <div className="clay-card rounded-[1.5rem] px-4 py-4">
-            <p className="text-sm font-semibold text-gray-900">Streak</p>
-            <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{streak}</p>
+            <p className="type-card-label">Streak</p>
+            <p className="type-metric mt-2">{streak}</p>
           </div>
           <div className="clay-card rounded-[1.5rem] px-4 py-4">
-            <p className="text-sm font-semibold text-gray-900">Saved sessions</p>
-            <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{totalSessions}</p>
+            <p className="type-card-label">Saved sessions</p>
+            <p className="type-metric mt-2">{totalSessions}</p>
           </div>
         </div>
 

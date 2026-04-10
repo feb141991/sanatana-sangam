@@ -16,19 +16,19 @@ export default function BhaktiPage() {
         />
         <div className="relative space-y-5">
           <div className="space-y-2">
-            <h1 className="font-display text-3xl font-bold text-[color:var(--brand-ink)]">Sahaj Bhakti</h1>
-            <p className="max-w-2xl text-sm leading-relaxed text-[color:var(--brand-muted)]">
+            <h1 className="type-screen-title">Sahaj Bhakti</h1>
+            <p className="type-body max-w-2xl">
               A quieter devotional space for chant, listening, and remembrance.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Link href="/bhakti/mala" className="rounded-full border border-[color:var(--brand-primary-soft)] bg-[color:var(--brand-accent)] px-4 py-2 text-sm font-semibold text-[color:var(--brand-primary-strong)] transition hover:bg-[color:var(--surface-soft)]">
+            <Link href="/bhakti/mala" className="rounded-full border border-[color:var(--brand-primary-soft)] bg-[color:var(--brand-accent)] px-4 py-2 type-chip text-[color:var(--brand-primary-strong)] transition hover:bg-[color:var(--surface-soft)]">
               Mala
             </Link>
-            <Link href="/bhakti/zen" className="rounded-full border border-[color:var(--brand-primary-soft)] bg-[color:var(--brand-accent)] px-4 py-2 text-sm font-semibold text-[color:var(--brand-primary-strong)] transition hover:bg-[color:var(--surface-soft)]">
+            <Link href="/bhakti/zen" className="rounded-full border border-[color:var(--brand-primary-soft)] bg-[color:var(--brand-accent)] px-4 py-2 type-chip text-[color:var(--brand-primary-strong)] transition hover:bg-[color:var(--surface-soft)]">
               Zen
             </Link>
-            <span className="rounded-full border border-[color:var(--brand-primary-soft)] bg-[color:var(--brand-accent)] px-4 py-2 text-sm font-medium text-[color:var(--brand-muted)]">
+            <span className="rounded-full border border-[color:var(--brand-primary-soft)] bg-[color:var(--brand-accent)] px-4 py-2 type-chip text-[color:var(--brand-muted)]">
               Chant catalog
             </span>
           </div>
@@ -44,12 +44,12 @@ export default function BhaktiPage() {
           />
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <Link href="/bhakti/mala" className="block rounded-[1.4rem] border border-[color:var(--brand-primary-soft)] bg-[color:var(--brand-accent)] px-4 py-4 transition hover:bg-[color:var(--surface-soft)]">
-              <p className="text-sm font-semibold text-[color:var(--brand-ink)]">Mala mode</p>
-              <p className="mt-1 text-sm text-[color:var(--brand-muted)]">Counter-first japa with focus, history, and return loops.</p>
+              <p className="type-card-heading">Mala mode</p>
+              <p className="type-body mt-1">Counter-first japa with focus, history, and return loops.</p>
             </Link>
             <Link href="/bhakti/zen" className="block rounded-[1.4rem] border border-[color:var(--brand-primary-soft)] bg-[color:var(--brand-accent)] px-4 py-4 transition hover:bg-[color:var(--surface-soft)]">
-              <p className="text-sm font-semibold text-[color:var(--brand-ink)]">Zen mode</p>
-              <p className="mt-1 text-sm text-[color:var(--brand-muted)]">A full-focus breath and chant space with fewer distractions.</p>
+              <p className="type-card-heading">Zen mode</p>
+              <p className="type-body mt-1">A full-focus breath and chant space with fewer distractions.</p>
             </Link>
           </div>
         </Card>
@@ -75,21 +75,21 @@ export default function BhaktiPage() {
               className="block rounded-[1.4rem] border border-[color:var(--brand-primary-soft)] bg-[color:var(--brand-accent)] px-4 py-4 transition hover:bg-[color:var(--surface-soft)]"
             >
               <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-semibold text-[color:var(--brand-ink)]">{track.title}</p>
-                <span className="rounded-full bg-[var(--brand-primary-soft)] px-3 py-1 text-[11px] font-semibold text-[color:var(--brand-primary-strong)]">
+                <p className="type-card-heading">{track.title}</p>
+                <span className="rounded-full bg-[var(--brand-primary-soft)] px-3 py-1 type-chip text-[color:var(--brand-primary-strong)]">
                   {track.type}
                 </span>
               </div>
-              <p className="mt-2 text-sm text-[color:var(--brand-muted)]">{track.note}</p>
+              <p className="type-body mt-2">{track.note}</p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <span className="rounded-full border border-[color:var(--brand-primary-soft)] px-3 py-1 text-[11px] font-medium text-[color:var(--brand-muted)]">
+                <span className="rounded-full border border-[color:var(--brand-primary-soft)] px-3 py-1 type-chip text-[color:var(--brand-muted)]">
                   {track.creator}
                 </span>
-                <span className="rounded-full border border-[color:var(--brand-primary-soft)] px-3 py-1 text-[11px] font-medium text-[color:var(--brand-muted)]">
+                <span className="rounded-full border border-[color:var(--brand-primary-soft)] px-3 py-1 type-chip text-[color:var(--brand-muted)]">
                   {track.durationLabel}
                 </span>
               </div>
-              <p className="mt-3 text-xs font-semibold text-[color:var(--brand-primary)]">Open source</p>
+              <p className="type-micro mt-3 text-[color:var(--brand-primary)]">Open source</p>
             </a>
           ))}
           </div>
