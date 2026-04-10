@@ -86,8 +86,20 @@ function Row({ emoji, label, value, highlight = false }: {
 }) {
   return (
     <div
-      className={`flex items-center gap-3 px-4 py-3 rounded-xl ${highlight ? '' : 'bg-white border border-gray-100'}`}
-      style={highlight ? { background: 'var(--brand-primary-soft)', border: '1px solid rgba(200, 127, 146, 0.2)' } : undefined}
+      className="flex items-center gap-3 px-4 py-3 rounded-[1.2rem] border"
+      style={
+        highlight
+          ? {
+              background: 'linear-gradient(135deg, rgba(245, 224, 231, 0.92), rgba(255, 244, 247, 0.86))',
+              borderColor: 'rgba(200, 127, 146, 0.28)',
+              boxShadow: '0 14px 28px rgba(183, 116, 134, 0.12)',
+            }
+          : {
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(249, 237, 242, 0.64))',
+              borderColor: 'rgba(255, 255, 255, 0.72)',
+              boxShadow: '0 12px 24px rgba(183, 116, 134, 0.08)',
+            }
+      }
     >
       <span className="text-xl w-7 text-center flex-shrink-0">{emoji}</span>
       <div className="flex-1 min-w-0">
@@ -164,6 +176,16 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
               : 'The day is in motion. Use the sacred-time ribbon below to stay aware of auspicious and avoidable windows.'
       : 'Use the sacred-time ribbon below to orient your day.'
     : 'This is a calm planning view for a different day, so you can prepare ahead.';
+  const shellPanelStyle = {
+    background: 'linear-gradient(135deg, rgba(255,255,255,0.68), rgba(246,229,236,0.58))',
+    borderColor: 'rgba(255,255,255,0.62)',
+    boxShadow: '0 18px 42px rgba(183, 116, 134, 0.12), inset 0 1px 0 rgba(255,255,255,0.5)',
+  } as const;
+  const softPanelStyle = {
+    background: 'linear-gradient(135deg, rgba(255,255,255,0.62), rgba(247,234,239,0.52))',
+    borderColor: 'rgba(255,255,255,0.58)',
+    boxShadow: '0 14px 30px rgba(183, 116, 134, 0.1)',
+  } as const;
 
   async function share() {
     const text = `🪔 Panchang — ${dateLabel}\n\n` +
@@ -257,9 +279,9 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
       </div>
 
       {/* ── Header ─────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-3 mb-3">
+      <div className="flex items-center gap-3 mb-3 rounded-[1.7rem] border px-3 py-3" style={shellPanelStyle}>
         <Link href="/home"
-          className="w-8 h-8 rounded-xl bg-white border border-gray-200 flex items-center justify-center transition"
+          className="w-8 h-8 rounded-xl bg-white/80 border flex items-center justify-center transition"
           style={{ borderColor: 'rgba(200, 127, 146, 0.16)' }}>
           <ArrowLeft size={15} className="text-gray-500" />
         </Link>
@@ -274,18 +296,26 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
           {city && <p className="text-xs text-gray-400 mt-0.5">📍 {city}</p>}
         </div>
         <button onClick={share}
-          className="w-8 h-8 rounded-xl bg-white border border-gray-200 flex items-center justify-center transition"
+          className="w-8 h-8 rounded-xl bg-white/80 border flex items-center justify-center transition"
           style={{ borderColor: 'rgba(200, 127, 146, 0.16)' }}>
           <Share2 size={15} className="text-gray-500" />
         </button>
       </div>
 
       {/* ── Calendar ───────────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-3" style={{ border: '1px solid rgba(200, 127, 146, 0.16)' }}>
+      <div
+        className="rounded-[2rem] overflow-hidden mb-3 border"
+        style={{
+          background: `linear-gradient(180deg, rgba(255,255,255,0.38), rgba(255,255,255,0.16)), ${skyTheme.shell}`,
+          borderColor: 'rgba(255,255,255,0.55)',
+          boxShadow: '0 22px 44px rgba(183, 116, 134, 0.14)',
+        }}
+      >
         {/* Month navigation */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+        <div className="flex items-center justify-between px-4 py-4 border-b" style={{ borderColor: 'rgba(255,255,255,0.35)' }}>
           <button onClick={prevMonth}
-            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition">
+            className="w-9 h-9 rounded-xl flex items-center justify-center transition"
+            style={{ background: 'rgba(255,255,255,0.42)', border: '1px solid rgba(255,255,255,0.38)' }}>
             <ChevronLeft size={16} className="text-gray-600" />
           </button>
           <div className="text-center">
@@ -295,20 +325,21 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
             </p>
           </div>
           <button onClick={nextMonth}
-            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition">
+            className="w-9 h-9 rounded-xl flex items-center justify-center transition"
+            style={{ background: 'rgba(255,255,255,0.42)', border: '1px solid rgba(255,255,255,0.38)' }}>
             <ChevronRight size={16} className="text-gray-600" />
           </button>
         </div>
 
         {/* Day labels */}
-        <div className="grid grid-cols-7 border-b border-gray-50">
+        <div className="grid grid-cols-7 border-b" style={{ borderColor: 'rgba(255,255,255,0.3)' }}>
           {DAY_LABELS.map(d => (
-            <div key={d} className="py-2 text-center text-[10px] font-medium text-gray-400">{d}</div>
+            <div key={d} className="py-2 text-center text-[10px] font-medium text-gray-500">{d}</div>
           ))}
         </div>
 
         {/* Day cells */}
-        <div className="grid grid-cols-7 p-2 gap-1">
+        <div className="grid grid-cols-7 p-2 gap-1.5">
           {calendarDays.map((date, i) => {
             if (!date) return <div key={`empty-${i}`} />;
             const isSelected = isSameDay(date, selected);
@@ -318,7 +349,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
             const tithiShort = dayP.tithiIndex;
             return (
               <button key={date.toISOString()} onClick={() => { triggerPanchangHaptic(10); setSelected(date); }}
-                className={`relative flex flex-col items-center justify-center rounded-xl py-1.5 transition-all ${
+                className={`relative flex flex-col items-center justify-center rounded-[1rem] py-2 transition-all ${
                   isSelected
                     ? 'text-white'
                     : isCurrentDay
@@ -327,13 +358,29 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                 }`}
                 style={
                   isSelected
-                    ? { background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }
+                    ? {
+                        background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))',
+                        boxShadow: '0 14px 28px rgba(183, 116, 134, 0.24)',
+                      }
                     : isCurrentDay
-                      ? { borderColor: 'rgba(200, 127, 146, 0.4)', color: 'var(--brand-primary-strong)', background: 'var(--brand-primary-soft)' }
-                      : undefined
-                }>
+                      ? {
+                          borderColor: 'rgba(200, 127, 146, 0.4)',
+                          color: 'var(--brand-primary-strong)',
+                          background: 'linear-gradient(135deg, rgba(255,255,255,0.74), rgba(247,232,238,0.74))',
+                          boxShadow: '0 10px 18px rgba(183, 116, 134, 0.08)',
+                        }
+                      : {
+                          background: 'rgba(255,255,255,0.36)',
+                          border: '1px solid rgba(255,255,255,0.28)',
+                        }
+                }
+                aria-pressed={isSelected}
+              >
+                {isSelected && (
+                  <span className="absolute inset-x-2 top-1 h-px rounded-full bg-white/60" />
+                )}
                 <span className="text-xs font-semibold leading-none">{date.getDate()}</span>
-                <span className={`text-[8px] leading-none mt-0.5 ${isSelected ? 'text-white/70' : 'text-gray-400'}`}>
+                <span className={`text-[8px] leading-none mt-0.5 ${isSelected ? 'text-white/75' : 'text-gray-400'}`}>
                   {tithiShort}
                 </span>
               </button>
@@ -343,13 +390,16 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
       </div>
 
       {/* ── Selected date label ─────────────────────────────────────── */}
-      <div className="flex items-center gap-2 mb-2 px-1">
-        <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: 'var(--brand-primary)' }} />
-        <p className="text-xs font-semibold text-gray-600">{isToday ? 'Today — ' : ''}{dateLabel}</p>
+      <div
+        className="flex items-center gap-2 mb-3 rounded-[1.25rem] border px-3 py-2.5"
+        style={softPanelStyle}
+      >
+        <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: 'var(--brand-primary)' }} />
+        <p className="text-sm font-semibold text-gray-700">{isToday ? 'Today' : 'Selected day'} · {dateLabel}</p>
       </div>
 
-      <div className="rounded-2xl border p-3 mb-3" style={{ background: 'rgba(255,255,255,0.82)', borderColor: 'rgba(223, 156, 171, 0.18)' }}>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400 mb-2">Sacred time ribbon</p>
+      <div className="rounded-[1.8rem] border p-3.5 mb-3" style={shellPanelStyle}>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400 mb-2.5">Sacred time ribbon</p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {[
             { label: 'Sunrise', value: p.sunrise, emoji: '🌅' },
@@ -357,13 +407,13 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
             { label: 'Rahu Kaal', value: p.rahuKaal, emoji: '⚠️' },
             { label: 'Abhijit', value: p.abhijitMuhurat, emoji: '✨' },
           ].map((item) => (
-            <div key={item.label} className="rounded-xl px-3 py-2 bg-white/80 border border-white/80">
+            <div key={item.label} className="rounded-[1.1rem] px-3 py-2.5 border" style={softPanelStyle}>
               <p className="text-[10px] uppercase tracking-[0.14em] text-gray-400 font-semibold">{item.emoji} {item.label}</p>
               <p className="text-sm font-semibold mt-1" style={{ color: 'var(--brand-primary-strong)' }}>{item.value}</p>
             </div>
           ))}
         </div>
-        <div className="mt-3 rounded-xl border border-white/80 bg-white/70 px-3 py-2.5">
+        <div className="mt-3 rounded-[1.2rem] border px-3 py-3" style={softPanelStyle}>
           <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400">Today&apos;s posture</p>
           <p className="text-sm mt-1 leading-relaxed" style={{ color: 'var(--brand-primary-strong)' }}>
             {sacredWindowLabel}
@@ -372,16 +422,16 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
       </div>
 
       {/* ── Panchang details ────────────────────────────────────────── */}
-      <div className="space-y-2">
+      <div className="space-y-2.5 rounded-[1.8rem] border p-3.5" style={shellPanelStyle}>
         {/* Paksha + Masa banner */}
-        <div className="rounded-xl px-4 py-2.5 flex items-center gap-3"
-          style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
+        <div className="rounded-[1.2rem] px-4 py-3 flex items-center gap-3"
+          style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))', boxShadow: '0 18px 34px rgba(183, 116, 134, 0.18)' }}>
           <span className="text-xl">🪔</span>
           <div>
             <p className="text-white font-semibold text-sm">
               {p.paksha} Paksha · {p.masaName} Masa
             </p>
-            <p className="text-white/60 text-[10px]">{p.vara} · Hindu Panchanga</p>
+            <p className="text-white/70 text-[10px]">{p.vara} · Hindu Panchanga</p>
           </div>
         </div>
 
@@ -404,7 +454,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
         <Row emoji="✨" label="Abhijit Muhurat (most auspicious)" value={p.abhijitMuhurat} />
 
         {/* Quick tip */}
-        <div className="rounded-xl px-4 py-3" style={{ background: 'var(--brand-accent-soft)', border: '1px solid rgba(200, 127, 146, 0.14)' }}>
+        <div className="rounded-[1.2rem] px-4 py-3 border" style={softPanelStyle}>
           <p className="text-xs leading-relaxed" style={{ color: 'var(--brand-primary-strong)' }}>
             <span className="font-semibold">Today&apos;s guidance:</span>{' '}
             {p.paksha === 'Shukla'
@@ -413,7 +463,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
           </p>
         </div>
 
-        <div className="rounded-xl px-4 py-3 border border-[rgba(223,156,171,0.18)] bg-white/80">
+        <div className="rounded-[1.2rem] px-4 py-3 border" style={softPanelStyle}>
           <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">{PANCHANG_TRUST_META.methodLabel}</p>
           <p className="text-sm mt-1" style={{ color: 'var(--brand-primary-strong)' }}>{PANCHANG_TRUST_META.precisionLabel}</p>
           <p className="text-xs text-gray-500 leading-relaxed mt-1">{PANCHANG_TRUST_META.guidanceNote}</p>
