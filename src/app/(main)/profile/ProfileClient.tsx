@@ -57,18 +57,18 @@ function SevaScoreBar({ score }: { score: number }) {
     : 100;
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-4">
+    <div className="glass-panel rounded-2xl p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-2xl">{badge.emoji}</span>
           <div>
-            <p className="font-display font-bold text-gray-900 text-base">{badge.label}</p>
-            <p className="text-xs text-gray-500">Seva Level</p>
+            <p className="type-card-heading">{badge.label}</p>
+            <p className="type-card-label">Seva level</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="font-bold text-2xl" style={{ color: 'var(--brand-primary-strong)' }}>{score}</p>
-          <p className="text-xs text-gray-400">seva points</p>
+          <p className="type-metric">{score}</p>
+          <p className="type-micro">seva points</p>
         </div>
       </div>
       <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
@@ -76,7 +76,7 @@ function SevaScoreBar({ score }: { score: number }) {
           style={{ width: `${pct}%`, background: 'linear-gradient(90deg, var(--brand-primary), var(--brand-secondary))' }} />
       </div>
       {nextLevel && (
-        <p className="text-[11px] text-gray-400 mt-1.5 text-right">
+        <p className="type-micro mt-1.5 text-right">
           {nextLevel.min - score} pts to {nextLevel.label}
         </p>
       )}
@@ -90,14 +90,14 @@ function CompletionBar({ profile, onEdit }: { profile: Profile | null; onEdit: (
   if (pct === 100) return null;
 
   return (
-    <div className="bg-white rounded-2xl border border-[color:var(--brand-primary-soft)] p-4">
+    <div className="glass-panel rounded-2xl p-4">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-base">✨</span>
-          <p className="text-sm font-semibold text-gray-800">Profile {pct}% complete</p>
+          <p className="type-card-heading">Profile {pct}% complete</p>
         </div>
         <button onClick={onEdit}
-          className="text-xs font-semibold px-3 py-1 rounded-full text-white transition"
+          className="type-chip rounded-full px-3 py-1 text-[#1c1c1a] transition"
           style={{ background: 'var(--brand-primary)' }}>
           Complete
         </button>
@@ -107,7 +107,7 @@ function CompletionBar({ profile, onEdit }: { profile: Profile | null; onEdit: (
           style={{ width: `${pct}%`, background: 'linear-gradient(90deg, var(--brand-secondary), var(--brand-primary))' }} />
       </div>
       {missing.length > 0 && (
-        <p className="text-xs text-gray-400 mt-1.5">
+        <p className="type-micro mt-1.5">
           Add: {missing.slice(0, 3).join(', ')}{missing.length > 3 ? ` +${missing.length - 3} more` : ''}
         </p>
       )}
@@ -127,11 +127,11 @@ function ProfileSectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-4">
+    <div className="glass-panel rounded-2xl p-4 space-y-4">
       <div>
-        <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">{eyebrow}</p>
-        <h2 className="font-display font-bold text-gray-900 text-lg mt-1">{title}</h2>
-        {description ? <p className="text-sm text-gray-600 mt-1 leading-relaxed">{description}</p> : null}
+        <p className="type-card-label">{eyebrow}</p>
+        <h2 className="type-card-heading mt-1">{title}</h2>
+        {description ? <p className="type-body mt-1">{description}</p> : null}
       </div>
       {children}
     </div>
@@ -465,7 +465,7 @@ export default function ProfileClient({
       <CompletionBar profile={profile} onEdit={() => setEditing(true)} />
 
       {/* ── Hero Card ── */}
-      <div className="rounded-2xl p-5 border border-[color:var(--brand-primary-soft)] bg-white shadow-sm">
+      <div className="glass-panel rounded-2xl p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             {/* Avatar with upload — label approach works on iOS Safari */}
@@ -474,7 +474,7 @@ export default function ProfileClient({
                 type="button"
                 onClick={() => avatarUrl && setShowAvatarPreview(true)}
                 disabled={!avatarUrl}
-                className={`relative w-16 h-16 rounded-full bg-[color:var(--brand-primary-soft)] border-2 border-white flex items-center justify-center text-[color:var(--brand-primary-strong)] text-xl font-bold overflow-hidden ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
+                className={`relative w-16 h-16 rounded-full bg-[color:var(--brand-primary-soft)] border border-[rgba(212,166,70,0.16)] flex items-center justify-center text-[color:var(--brand-primary-strong)] text-xl font-medium overflow-hidden ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
                 title={avatarUrl ? 'View profile photo' : 'No profile photo yet'}
               >
                 {avatarUrl
@@ -483,7 +483,7 @@ export default function ProfileClient({
               </button>
               <label
                 htmlFor="avatar-upload"
-                className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-md border border-gray-200 ${uploading ? 'opacity-60' : 'cursor-pointer'}`}
+                className={`absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border border-[rgba(212,166,70,0.16)] bg-[color:var(--surface-soft)] shadow-md ${uploading ? 'opacity-60' : 'cursor-pointer'}`}
                 title="Change photo"
               >
                 {uploading
@@ -500,10 +500,10 @@ export default function ProfileClient({
               />
             </div>
             <div>
-              <h1 className="font-display font-bold text-xl text-gray-900">{profile?.full_name}</h1>
-              <p className="text-gray-500 text-sm">@{profile?.username}</p>
+              <h1 className="type-screen-title">{profile?.full_name}</h1>
+              <p className="type-body">@{profile?.username}</p>
               {(profile?.city || profile?.country) && (
-                <p className="text-gray-500 text-xs flex items-center gap-1 mt-0.5">
+                <p className="type-micro mt-0.5 flex items-center gap-1">
                   <MapPin size={10} />
                   {[profile?.city, profile?.country].filter(Boolean).join(', ')}
                 </p>
@@ -511,7 +511,7 @@ export default function ProfileClient({
             </div>
           </div>
           <button onClick={() => setEditing(!editing)}
-            className="p-2 rounded-xl bg-[color:var(--brand-primary-soft)] hover:bg-[color:var(--brand-accent-soft)] transition text-[color:var(--brand-primary-strong)]">
+            className="rounded-xl bg-[color:var(--brand-primary-soft)] p-2 text-[color:var(--brand-primary-strong)] transition hover:bg-[color:var(--brand-accent-soft)]">
             <Edit3 size={16} />
           </button>
         </div>

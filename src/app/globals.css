@@ -254,6 +254,44 @@ body::after {
     inset 0 1px 0 rgba(244, 236, 216, 0.04);
 }
 
+.glass-panel,
+.glass-panel-strong,
+.surface-panel,
+.surface-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-panel::before,
+.glass-panel-strong::before,
+.surface-panel::before,
+.surface-card::before {
+  content: '';
+  position: absolute;
+  top: -2rem;
+  right: -1.25rem;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(212, 166, 70, 0.08) 0%, rgba(212, 166, 70, 0) 72%);
+  pointer-events: none;
+}
+
+.glass-panel::after,
+.glass-panel-strong::after,
+.surface-panel::after,
+.surface-card::after {
+  content: '';
+  position: absolute;
+  bottom: -2.5rem;
+  left: -1.5rem;
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(212, 166, 70, 0.08);
+  pointer-events: none;
+}
+
 .glass-panel {
   background: linear-gradient(135deg, rgba(51, 51, 48, 0.95), rgba(43, 43, 40, 0.94));
 }

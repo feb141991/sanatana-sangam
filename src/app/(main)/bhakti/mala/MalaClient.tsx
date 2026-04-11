@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
 import { createClient } from '@/lib/supabase';
@@ -157,7 +158,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
 
   const counterPanel = (
     <div className="space-y-4 rounded-[1.8rem] bg-[var(--brand-primary-soft)]/55 px-5 py-5 text-center">
-      <p className="type-micro text-[color:var(--brand-primary)]">{mantra}</p>
+      <p className="type-micro">{mantra}</p>
       <p className="type-metric">{count}</p>
       <div className="h-2 overflow-hidden rounded-full bg-white/80">
         <div
@@ -168,15 +169,15 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
       <p className="type-body">Target {target} • {activeMantraSource}</p>
       <button
         onClick={tapBead}
-        className="mx-auto flex h-48 w-48 items-center justify-center rounded-full text-xl font-semibold text-white shadow-sacred"
-        style={{ background: 'radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--brand-primary) 84%, white), var(--brand-primary-strong))' }}
+        className="mx-auto flex h-48 w-48 items-center justify-center rounded-full border border-[rgba(212,166,70,0.18)] text-xl font-medium text-[color:var(--text-cream)] shadow-sacred"
+        style={{ background: 'radial-gradient(circle at 30% 30%, rgba(240,200,109,0.22), rgba(28,28,26,0.82))' }}
       >
         Tap bead
       </button>
       <div className="flex justify-center gap-3">
         <button
           onClick={() => setCount((current) => Math.max(0, current - 1))}
-          className="glass-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
+          className="glass-button-secondary rounded-full px-4 py-2 type-chip"
           style={{ color: 'var(--brand-primary-strong)' }}
         >
           Undo
@@ -186,7 +187,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
             setCount(0);
             setStartedAt(null);
           }}
-          className="glass-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
+          className="glass-button-secondary rounded-full px-4 py-2 type-chip"
           style={{ color: 'var(--brand-primary-strong)' }}
         >
           Reset
@@ -212,7 +213,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setFocusMode(true)}
-              className="glass-button-primary rounded-full px-5 py-3 text-sm font-semibold text-white"
+              className="glass-button-primary rounded-full px-5 py-3 type-chip text-[#1c1c1a]"
             >
               Begin focused mala
             </button>
@@ -222,7 +223,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
                 setTarget(lastSession?.target_count ?? 108);
                 setNotes(lastSession?.notes ?? '');
               }}
-              className="glass-button-secondary rounded-full px-5 py-3 text-sm font-semibold"
+              className="glass-button-secondary rounded-full px-5 py-3 type-chip"
               style={{ color: 'var(--brand-primary-strong)' }}
             >
               Continue with {suggestedMantra}
@@ -292,14 +293,14 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
             onChange={(event) => setNotes(event.target.value)}
             rows={3}
             placeholder="Sankalpa or notes..."
-            className="w-full rounded-xl border border-[rgba(200,127,146,0.18)] bg-white px-4 py-3 text-sm outline-none"
+            className="type-body w-full rounded-xl border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-3 outline-none"
           />
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Share</label>
+            <label className="type-section-label block">Share</label>
             <select
               value={shareScope}
               onChange={(event) => setShareScope(event.target.value as 'private' | 'kul' | 'public')}
-              className="w-full rounded-xl border border-[rgba(200,127,146,0.18)] bg-white px-4 py-3 text-sm outline-none"
+              className="type-body w-full rounded-xl border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-3 outline-none"
             >
               <option value="private">Private</option>
               <option value="kul">Kul later</option>
@@ -312,14 +313,14 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
           <button
             onClick={saveSession}
             disabled={saving}
-            className="glass-button-primary rounded-full px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
+            className="glass-button-primary rounded-full px-5 py-3 type-chip text-[#1c1c1a] disabled:opacity-60"
           >
             {saving ? 'Saving…' : 'Save session'}
           </button>
           <button
             onClick={shareSummary}
             disabled={count === 0}
-            className="glass-button-secondary rounded-full px-5 py-3 text-sm font-semibold disabled:opacity-60"
+            className="glass-button-secondary rounded-full px-5 py-3 type-chip disabled:opacity-60"
             style={{ color: 'var(--brand-primary-strong)' }}
           >
             Share progress
@@ -329,13 +330,13 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
 
       <section className="glass-panel rounded-[2rem] px-5 py-5">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="font-display text-xl font-bold text-gray-900">Recent sessions</h2>
-          <p className="text-xs text-gray-500">{filteredSessions.length} shown</p>
+          <h2 className="type-card-heading">Recent sessions</h2>
+          <p className="type-micro">{filteredSessions.length} shown</p>
         </div>
         <div className="mt-4 grid gap-3 md:grid-cols-[1fr_180px_180px]">
-          <div className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/80 px-4 py-4">
-            <p className="text-sm font-semibold text-gray-900">Share card preview</p>
-            <p className="mt-2 text-sm leading-relaxed text-gray-600">
+          <div className="rounded-[1.4rem] border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-4">
+            <p className="type-card-heading">Share card preview</p>
+            <p className="type-body mt-2">
               {buildMalaShareText({
                 mantra,
                 count: count || lastSession?.count || 0,
@@ -347,7 +348,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
           <select
             value={historyMantra}
             onChange={(event) => setHistoryMantra(event.target.value)}
-            className="rounded-xl border border-[rgba(200,127,146,0.18)] bg-white px-4 py-3 text-sm outline-none"
+            className="type-body rounded-xl border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-3 outline-none"
           >
             <option value="all">All mantras</option>
             {BHAKTI_MANTRAS.map((item) => (
@@ -360,8 +361,8 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
                 key={value}
                 onClick={() => setHistoryRange(value)}
                 className={clsx(
-                  'flex-1 rounded-lg px-3 py-2 text-sm font-medium transition',
-                  historyRange === value ? 'text-white' : 'text-gray-600'
+                  'type-chip flex-1 rounded-lg px-3 py-2 transition',
+                  historyRange === value ? 'text-[#1c1c1a]' : 'text-[color:var(--text-dim)]'
                 )}
                 style={historyRange === value ? { background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' } : undefined}
               >
@@ -371,17 +372,17 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
           </div>
         </div>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
-          <div className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/75 px-4 py-4">
-            <p className="text-sm font-semibold text-gray-900">Filtered count</p>
-            <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{filteredCountTotal}</p>
+          <div className="rounded-[1.4rem] border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-4">
+            <p className="type-card-label">Filtered count</p>
+            <p className="type-metric mt-2">{filteredCountTotal}</p>
           </div>
-          <div className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/75 px-4 py-4">
-            <p className="text-sm font-semibold text-gray-900">Sessions</p>
-            <p className="mt-2 font-display text-3xl font-bold text-[color:var(--brand-primary-strong)]">{filteredSessions.length}</p>
+          <div className="rounded-[1.4rem] border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-4">
+            <p className="type-card-label">Sessions</p>
+            <p className="type-metric mt-2">{filteredSessions.length}</p>
           </div>
-            <div className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/75 px-4 py-4">
-              <p className="text-sm font-semibold text-gray-900">Practice abundance</p>
-              <p className="mt-2 text-sm text-gray-600">
+            <div className="rounded-[1.4rem] border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-4">
+              <p className="type-card-label">Practice abundance</p>
+              <p className="type-body mt-2">
                 {totalSessions > 0
                   ? `${Math.round(totalMalas * 10) / 10} malas saved overall.`
                   : 'Your first saved mala becomes the start of your return rhythm.'}
@@ -390,29 +391,29 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
           </div>
         <div className="mt-4 space-y-3">
           {filteredSessions.length === 0 ? (
-            <p className="text-sm text-gray-500">Your saved mala sessions will appear here.</p>
+            <p className="type-body">Your saved mala sessions will appear here.</p>
           ) : (
             filteredSessions.map((session) => (
-              <div key={session.id} className="rounded-[1.4rem] border border-[rgba(200,127,146,0.18)] bg-white/80 px-4 py-4">
+              <div key={session.id} className="rounded-[1.4rem] border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">{session.mantra}</p>
-                    <p className="mt-1 text-xs text-gray-500">
+                    <p className="type-card-heading">{session.mantra}</p>
+                    <p className="type-micro mt-1">
                       {new Date(session.completed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                       {session.duration_seconds > 0 ? ` · ${Math.max(1, Math.round(session.duration_seconds / 60))} min` : ''}
                     </p>
                   </div>
-                  <p className="font-display text-2xl font-bold text-[color:var(--brand-primary-strong)]">{session.count}</p>
+                  <p className="type-metric">{session.count}</p>
                 </div>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-[var(--brand-primary-soft)] px-3 py-1 text-[11px] font-semibold text-[color:var(--brand-primary-strong)]">
+                  <span className="rounded-full bg-[var(--chip-fill)] px-3 py-1 type-chip text-[color:var(--chip-text)]">
                     {session.target_count ? `${session.count}/${session.target_count}` : `${session.count}`}
                   </span>
-                  <span className="rounded-full border border-[rgba(200,127,146,0.18)] bg-white px-3 py-1 text-[11px] font-semibold text-gray-600">
+                  <span className="rounded-full border border-[rgba(212,166,70,0.18)] bg-[color:var(--surface-soft)] px-3 py-1 type-chip text-[color:var(--text-dim)]">
                     {formatShareScope(session.share_scope)}
                   </span>
                 </div>
-                {session.notes ? <p className="mt-2 text-sm text-gray-600">{session.notes}</p> : null}
+                {session.notes ? <p className="type-body mt-2">{session.notes}</p> : null}
               </div>
             ))
           )}
@@ -420,32 +421,41 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
       </section>
 
       {focusMode ? (
-        <div className="fixed inset-0 z-[80] backdrop-blur-md px-4 py-6" style={{ background: getFocusEnvironmentStyle(focusEnvironment) }}>
+        <div className="fixed inset-0 z-[80] overflow-hidden px-3 py-3 md:px-5 md:py-5" style={{ background: getFocusEnvironmentStyle(focusEnvironment) }}>
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             {focusEnvironment === 'mountains' && Array.from({ length: 14 }).map((_, i) => (
-              <span
+              <motion.span
                 key={`snow-${i}`}
                 className="absolute h-2 w-2 rounded-full bg-white/80"
-                style={{ left: `${8 + i * 6}%`, top: `${-4 + (i % 5) * 12}%`, animation: `snowDrift ${7 + (i % 4)}s linear infinite`, opacity: 0.5 + (i % 3) * 0.15 }}
+                initial={{ y: '-8vh', x: 0, opacity: 0 }}
+                animate={{ y: '108vh', x: i % 2 === 0 ? 22 : -16, opacity: [0, 0.9, 0] }}
+                transition={{ duration: 7 + (i % 4), repeat: Infinity, ease: 'linear', delay: i * 0.18 }}
+                style={{ left: `${8 + i * 6}%`, top: `${-4 + (i % 5) * 12}%`, opacity: 0.5 + (i % 3) * 0.15 }}
               />
             ))}
+            <motion.div
+              className="absolute left-1/2 top-1/2 h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full"
+              animate={{ scale: [1, 1.1, 1], opacity: [0.18, 0.3, 0.18] }}
+              transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ background: 'radial-gradient(circle, rgba(240,200,109,0.16), rgba(240,200,109,0) 68%)' }}
+            />
           </div>
-          <div className="mx-auto flex h-full w-full max-w-lg flex-col justify-between rounded-[2.2rem] border border-white/80 bg-white/72 px-6 py-6 shadow-sacred">
+          <div className="mx-auto grid h-full w-full max-w-3xl grid-rows-[auto_1fr_auto] rounded-[2.2rem] border border-[rgba(212,166,70,0.18)] bg-[rgba(28,28,26,0.56)] px-5 py-5 shadow-sacred backdrop-blur-xl md:px-8 md:py-8">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">Focused mala</p>
-                <p className="mt-1 text-sm text-gray-600">{mantra}</p>
+                <p className="type-card-label">Focused mala</p>
+                <p className="type-body mt-1">{mantra}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setFocusMode(false)}
-                className="glass-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
+                className="glass-button-secondary rounded-full px-4 py-2 type-chip"
                 style={{ color: 'var(--brand-primary-strong)' }}
               >
                 Close
               </button>
             </div>
-            <div className="space-y-6">
+            <div className="flex min-h-0 flex-col items-center justify-center gap-6">
               <div className="flex flex-wrap justify-center gap-2">
                 {[
                   { id: 'mountains', label: 'Snow peaks' },
@@ -456,14 +466,20 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
                     key={item.id}
                     type="button"
                     onClick={() => setFocusEnvironment(item.id as 'mountains' | 'temple' | 'forest')}
-                    className={`rounded-full px-3 py-1.5 text-xs font-semibold ${focusEnvironment === item.id ? 'text-white' : 'bg-white/70 text-gray-700'}`}
+                    className={`rounded-full px-3 py-1.5 type-chip ${focusEnvironment === item.id ? 'text-[#1c1c1a]' : 'bg-[rgba(28,28,26,0.45)] text-[color:var(--text-dim)]'}`}
                     style={focusEnvironment === item.id ? { background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' } : undefined}
                   >
                     {item.label}
                   </button>
                 ))}
               </div>
-              {counterPanel}
+              <motion.div
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
+                className="w-full max-w-md"
+              >
+                {counterPanel}
+              </motion.div>
               <ChantAudioPlayer
                 title="Focus chant"
                 trackIds={chantTrackIds}
@@ -474,21 +490,21 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
                 <button
                   onClick={saveSession}
                   disabled={saving}
-                  className="glass-button-primary rounded-full px-5 py-4 text-sm font-semibold text-white disabled:opacity-60"
+                  className="glass-button-primary rounded-full px-5 py-4 type-chip text-[#1c1c1a] disabled:opacity-60"
                 >
                   {saving ? 'Saving…' : 'Save session'}
                 </button>
                 <button
                   onClick={shareSummary}
                   disabled={count === 0}
-                  className="glass-button-secondary rounded-full px-5 py-4 text-sm font-semibold disabled:opacity-60"
+                  className="glass-button-secondary rounded-full px-5 py-4 type-chip disabled:opacity-60"
                   style={{ color: 'var(--brand-primary-strong)' }}
                 >
                   Share progress
                 </button>
               </div>
             </div>
-            <p className="text-center text-sm text-gray-500">Just mantra, count, and return.</p>
+            <p className="type-body text-center">Just mantra, count, and return.</p>
           </div>
         </div>
       ) : null}
@@ -498,10 +514,10 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
 
 function getFocusEnvironmentStyle(environment: 'mountains' | 'temple' | 'forest') {
   if (environment === 'mountains') {
-    return 'linear-gradient(180deg, rgba(218,231,243,0.96) 0%, rgba(242,246,252,0.98) 32%, rgba(204,220,236,0.95) 100%)';
+    return 'linear-gradient(180deg, #14191f 0%, #202a36 32%, #2d3741 100%)';
   }
   if (environment === 'forest') {
-    return 'linear-gradient(180deg, rgba(223,235,224,0.96) 0%, rgba(240,245,236,0.98) 38%, rgba(193,214,200,0.95) 100%)';
+    return 'linear-gradient(180deg, #121c16 0%, #1d2c22 38%, #29392e 100%)';
   }
-  return 'linear-gradient(180deg, rgba(247,231,220,0.96) 0%, rgba(255,247,239,0.98) 40%, rgba(228,201,187,0.95) 100%)';
+  return 'linear-gradient(180deg, #1f1511 0%, #34231d 40%, #4a3026 100%)';
 }
