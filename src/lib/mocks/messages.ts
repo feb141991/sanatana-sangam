@@ -1,0 +1,111 @@
+import type { MessageThread, ThreadMessage } from '@/lib/contracts/messages';
+
+const now = Date.now();
+
+export const mockMessageThreads: MessageThread[] = [
+  {
+    id: 'kul-family-circle',
+    title: 'Family circle',
+    subtitle: 'Planning dates, seva, and keepsakes',
+    kind: 'kul',
+    contextLabel: 'Kul',
+    participantCount: 6,
+    unreadCount: 2,
+    lastMessagePreview: 'Let us lock the April satsang timing tonight.',
+    lastMessageAt: new Date(now - 1000 * 60 * 8).toISOString(),
+    avatarFallback: 'KC',
+  },
+  {
+    id: 'mandali-local-sangam',
+    title: 'Local Mandali',
+    subtitle: 'Neighbourhood updates and shared events',
+    kind: 'mandali',
+    contextLabel: 'Mandali',
+    participantCount: 18,
+    unreadCount: 0,
+    lastMessagePreview: 'Three people are in for Sunday aarti and langar seva.',
+    lastMessageAt: new Date(now - 1000 * 60 * 42).toISOString(),
+    avatarFallback: 'MS',
+  },
+  {
+    id: 'direct-anuj',
+    title: 'Anuj Sharma',
+    subtitle: 'Direct message',
+    kind: 'direct',
+    contextLabel: 'Direct',
+    participantCount: 2,
+    unreadCount: 1,
+    lastMessagePreview: 'I found a cleaner bhajan recording for the chant pack.',
+    lastMessageAt: new Date(now - 1000 * 60 * 95).toISOString(),
+    avatarFallback: 'AS',
+  },
+];
+
+export const mockThreadMessages: Record<string, ThreadMessage[]> = {
+  'kul-family-circle': [
+    {
+      id: 'kul-1',
+      threadId: 'kul-family-circle',
+      senderId: 'priest-1',
+      senderName: 'Kaka ji',
+      body: 'The family havan list is ready. Add anyone missing before evening.',
+      createdAt: new Date(now - 1000 * 60 * 55).toISOString(),
+      deliveryState: 'read',
+      isCurrentUser: false,
+    },
+    {
+      id: 'kul-2',
+      threadId: 'kul-family-circle',
+      senderId: 'viewer',
+      senderName: 'You',
+      body: 'I will add the Delhi side names and update the keepsake note.',
+      createdAt: new Date(now - 1000 * 60 * 41).toISOString(),
+      deliveryState: 'read',
+      isCurrentUser: true,
+    },
+    {
+      id: 'kul-3',
+      threadId: 'kul-family-circle',
+      senderId: 'priest-2',
+      senderName: 'Bua ji',
+      body: 'Let us lock the April satsang timing tonight.',
+      createdAt: new Date(now - 1000 * 60 * 8).toISOString(),
+      deliveryState: 'delivered',
+      isCurrentUser: false,
+    },
+  ],
+  'mandali-local-sangam': [
+    {
+      id: 'mandali-1',
+      threadId: 'mandali-local-sangam',
+      senderId: 'host-1',
+      senderName: 'Meera',
+      body: 'Temple hall is confirmed for Sunday. Bring one extra mat if you can.',
+      createdAt: new Date(now - 1000 * 60 * 75).toISOString(),
+      deliveryState: 'read',
+      isCurrentUser: false,
+    },
+    {
+      id: 'mandali-2',
+      threadId: 'mandali-local-sangam',
+      senderId: 'host-2',
+      senderName: 'Raghav',
+      body: 'Three people are in for Sunday aarti and langar seva.',
+      createdAt: new Date(now - 1000 * 60 * 42).toISOString(),
+      deliveryState: 'delivered',
+      isCurrentUser: false,
+    },
+  ],
+  'direct-anuj': [
+    {
+      id: 'direct-1',
+      threadId: 'direct-anuj',
+      senderId: 'anuj',
+      senderName: 'Anuj Sharma',
+      body: 'I found a cleaner bhajan recording for the chant pack.',
+      createdAt: new Date(now - 1000 * 60 * 95).toISOString(),
+      deliveryState: 'delivered',
+      isCurrentUser: false,
+    },
+  ],
+};

@@ -22,4 +22,8 @@ export const queryKeys = {
     continue: (userId: string) => ['pathshala', userId, 'continue'] as const,
     bookmarks: (userId: string) => ['pathshala', userId, 'bookmarks'] as const,
   },
+  messages: {
+    threads: (userId: string) => ['messages', 'threads', userId] as const,
+    thread: (userId: string, threadId: string) => ['messages', 'thread', userId, threadId] as const,
+  },
 } as const;
