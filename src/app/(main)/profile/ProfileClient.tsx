@@ -148,6 +148,7 @@ export default function ProfileClient({
   const [uploading, setUploading] = useState(false);
   const [sendingTestNotification, setSendingTestNotification] = useState(false);
   const [savingNotificationPrefs, setSavingNotificationPrefs] = useState(false);
+  const [showNotificationAdvanced, setShowNotificationAdvanced] = useState(false);
   const [showNotificationDiagnostics, setShowNotificationDiagnostics] = useState(false);
   const [safetyBusyKey, setSafetyBusyKey] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>((profile as any)?.avatar_url ?? null);
@@ -626,41 +627,6 @@ export default function ProfileClient({
             );
           })}
 
-          <div className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 space-y-3">
-            <div>
-              <p className="text-sm font-medium theme-ink">Quiet hours</p>
-              <p className="text-xs theme-dim mt-1">
-                Reminders will skip this local window.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-medium theme-dim mb-1.5">Start</label>
-                <select
-                  value={notificationPrefs.notification_quiet_hours_start}
-                  onChange={(e) => setNotificationPrefs((current) => ({ ...current, notification_quiet_hours_start: Number(e.target.value) }))}
-                  className="surface-select px-3 py-2.5 outline-none text-sm"
-                >
-                  {Array.from({ length: 24 }).map((_, hour) => (
-                    <option key={`start-${hour}`} value={hour}>{String(hour).padStart(2, '0')}:00</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-medium theme-dim mb-1.5">End</label>
-                <select
-                  value={notificationPrefs.notification_quiet_hours_end}
-                  onChange={(e) => setNotificationPrefs((current) => ({ ...current, notification_quiet_hours_end: Number(e.target.value) }))}
-                  className="surface-select px-3 py-2.5 outline-none text-sm"
-                >
-                  {Array.from({ length: 24 }).map((_, hour) => (
-                    <option key={`end-${hour}`} value={hour}>{String(hour).padStart(2, '0')}:00</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={saveNotificationPreferences}
@@ -671,44 +637,116 @@ export default function ProfileClient({
               <span>{savingNotificationPrefs ? 'Saving…' : 'Save notification preferences'}</span>
             </button>
             <p className="text-xs theme-dim">
-              Local time zone: {profileTimezone ?? 'UTC fallback until your browser reports a timezone'}
+              Save the reminder choices above.
             </p>
           </div>
 
           <div className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 space-y-3">
             <button
               type="button"
-              onClick={() => setShowNotificationDiagnostics((current) => !current)}
+              onClick={() => setShowNotificationAdvanced((current) => !current)}
               className="flex w-full items-center justify-between gap-3 text-left"
             >
               <div>
-                <p className="text-sm font-medium theme-ink">Notification diagnostics</p>
-                <p className="text-xs theme-dim mt-1">Permission, push link status, and reminder targeting.</p>
+                <p className="text-sm font-medium theme-ink">Advanced notification controls</p>
+                <p className="text-xs theme-dim mt-1">Quiet hours, device status, and a delivery check.</p>
               </div>
               <span className="type-chip rounded-full border border-white/8 px-3 py-1 text-[color:var(--text-cream)]">
-                {showNotificationDiagnostics ? 'Hide' : 'Show'}
+                {showNotificationAdvanced ? 'Hide' : 'Show'}
               </span>
             </button>
-            {showNotificationDiagnostics ? (
+            {showNotificationAdvanced ? (
               <>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {[
-                    { label: 'Browser permission', value: browserPermission },
-                    { label: 'Push linked on this device', value: browserPushSubscriptionId ? 'Yes' : 'No' },
-                    { label: 'Festival reminders', value: notificationPrefs.wants_festival_reminders ? 'On' : 'Off' },
-                    { label: 'Shloka reminders', value: notificationPrefs.wants_shloka_reminders ? 'On' : 'Off' },
-                    { label: 'Community updates', value: notificationPrefs.wants_community_notifications ? 'On' : 'Off' },
-                    { label: 'Family updates', value: notificationPrefs.wants_family_notifications ? 'On' : 'Off' },
-                  ].map((item) => (
-                    <div key={item.label} className="rounded-xl bg-white/[0.04] px-3 py-3 border border-white/6">
-                      <p className="text-[10px] uppercase tracking-[0.16em] theme-dim font-semibold">{item.label}</p>
-                      <p className="text-sm font-medium theme-ink mt-1">{item.value}</p>
+                <div className="rounded-2xl border border-white/6 bg-white/[0.03] px-4 py-4 space-y-3">
+                  <div>
+                    <p className="text-sm font-medium theme-ink">Quiet hours</p>
+                    <p className="text-xs theme-dim mt-1">
+                      Reminders skip this local window.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-medium theme-dim mb-1.5">Start</label>
+                      <select
+                        value={notificationPrefs.notification_quiet_hours_start}
+                        onChange={(e) => setNotificationPrefs((current) => ({ ...current, notification_quiet_hours_start: Number(e.target.value) }))}
+                        className="surface-select px-3 py-2.5 outline-none text-sm"
+                      >
+                        {Array.from({ length: 24 }).map((_, hour) => (
+                          <option key={`start-${hour}`} value={hour}>{String(hour).padStart(2, '0')}:00</option>
+                        ))}
+                      </select>
                     </div>
-                  ))}
+                    <div>
+                      <label className="block text-xs font-medium theme-dim mb-1.5">End</label>
+                      <select
+                        value={notificationPrefs.notification_quiet_hours_end}
+                        onChange={(e) => setNotificationPrefs((current) => ({ ...current, notification_quiet_hours_end: Number(e.target.value) }))}
+                        className="surface-select px-3 py-2.5 outline-none text-sm"
+                      >
+                        {Array.from({ length: 24 }).map((_, hour) => (
+                          <option key={`end-${hour}`} value={hour}>{String(hour).padStart(2, '0')}:00</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <p className="text-xs theme-dim">
+                    Local time zone: {profileTimezone ?? 'UTC fallback until your browser reports a timezone'}
+                  </p>
                 </div>
-                <p className="text-xs theme-dim">
-                  Target windows: <span className="font-medium theme-ink">09:00</span> for festivals and <span className="font-medium theme-ink">19:00</span> for shloka reminders.
-                </p>
+
+                <div className="rounded-2xl border border-white/6 bg-white/[0.03] px-4 py-4 space-y-3">
+                  <button
+                    onClick={sendTestNotification}
+                    disabled={sendingTestNotification}
+                    className="glass-button-secondary inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium disabled:opacity-60"
+                    style={{ color: 'var(--text-cream)' }}
+                  >
+                    <span>🔔</span>
+                    <span>{sendingTestNotification ? 'Sending test notification…' : 'Send test notification'}</span>
+                  </button>
+                  <p className="text-xs theme-dim">
+                    Use this only to verify the bell feed and browser push on this device.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-white/6 bg-white/[0.03] px-4 py-4 space-y-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowNotificationDiagnostics((current) => !current)}
+                    className="flex w-full items-center justify-between gap-3 text-left"
+                  >
+                    <div>
+                      <p className="text-sm font-medium theme-ink">Notification diagnostics</p>
+                      <p className="text-xs theme-dim mt-1">Permission, push link status, and reminder targeting.</p>
+                    </div>
+                    <span className="type-chip rounded-full border border-white/8 px-3 py-1 text-[color:var(--text-cream)]">
+                      {showNotificationDiagnostics ? 'Hide' : 'Show'}
+                    </span>
+                  </button>
+                  {showNotificationDiagnostics ? (
+                    <>
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        {[
+                          { label: 'Browser permission', value: browserPermission },
+                          { label: 'Push linked on this device', value: browserPushSubscriptionId ? 'Yes' : 'No' },
+                          { label: 'Festival reminders', value: notificationPrefs.wants_festival_reminders ? 'On' : 'Off' },
+                          { label: 'Shloka reminders', value: notificationPrefs.wants_shloka_reminders ? 'On' : 'Off' },
+                          { label: 'Community updates', value: notificationPrefs.wants_community_notifications ? 'On' : 'Off' },
+                          { label: 'Family updates', value: notificationPrefs.wants_family_notifications ? 'On' : 'Off' },
+                        ].map((item) => (
+                          <div key={item.label} className="rounded-xl bg-white/[0.04] px-3 py-3 border border-white/6">
+                            <p className="text-[10px] uppercase tracking-[0.16em] theme-dim font-semibold">{item.label}</p>
+                            <p className="text-sm font-medium theme-ink mt-1">{item.value}</p>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-xs theme-dim">
+                        Target windows: <span className="font-medium theme-ink">09:00</span> for festivals and <span className="font-medium theme-ink">19:00</span> for shloka reminders.
+                      </p>
+                    </>
+                  ) : null}
+                </div>
               </>
             ) : null}
           </div>
@@ -1033,18 +1071,6 @@ export default function ProfileClient({
         <div className="text-sm text-gray-500">
           Signed in as <span className="font-medium text-gray-700">{userEmail}</span>
         </div>
-        <button
-          onClick={sendTestNotification}
-          disabled={sendingTestNotification}
-          className="glass-button-secondary inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium disabled:opacity-60"
-          style={{ color: 'var(--brand-primary)' }}
-        >
-          <span>🔔</span>
-          <span>{sendingTestNotification ? 'Sending test notification…' : 'Send test notification'}</span>
-        </button>
-        <p className="text-xs text-gray-400">
-          Use this to verify both the bell feed and browser push on your current device.
-        </p>
         <button onClick={signOut}
           className="flex items-center gap-2 text-sm text-red-500 hover:text-red-700 transition font-medium">
           <LogOut size={15} /> Sign out

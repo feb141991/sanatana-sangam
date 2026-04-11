@@ -1141,17 +1141,17 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
     <div className="space-y-4 fade-in">
 
       {/* ── Mandali Header ── */}
-      <div className="rounded-2xl p-5 text-white" style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
+      <div className="surface-soft-card decorative-orbit rounded-[1.8rem] p-5">
         <div className="flex items-start justify-between">
           <div>
             <div className="mb-1 flex items-center gap-2">
-              <Users size={16} className="text-[color:var(--text-cream)]" />
+              <Users size={16} className="theme-muted" />
               <span className="type-card-heading">
                 {neighbourhoodLabel}
               </span>
             </div>
             <div className="type-body flex items-center gap-1">
-              <MapPin size={12} />
+              <MapPin size={12} className="theme-dim" />
               <span>{placeLabel}</span>
             </div>
             <p className="type-body mt-3 hidden max-w-xl sm:block">
@@ -1169,8 +1169,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
         {/* Action row */}
         <div className="mt-3 flex items-center gap-2">
           <button onClick={() => setShowSearch(true)}
-            className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition justify-center"
-            style={{ background: 'rgba(255,255,255,0.15)', color: 'white' }}>
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-white/8 bg-white/[0.04] px-3 py-2 text-xs font-medium theme-ink transition hover:bg-white/[0.06]">
             <Search size={13} /> Find Sanatani
           </button>
 
@@ -1178,28 +1177,27 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
           <div className="relative">
             <button
               onClick={() => setShowMandaliMenu(m => !m)}
-              className="flex items-center justify-center w-8 h-8 rounded-xl text-white transition"
-              style={{ background: 'rgba(255,255,255,0.15)' }}
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/8 bg-white/[0.04] theme-ink transition hover:bg-white/[0.06]"
               title="Mandali options"
             >
               ⋯
             </button>
             {showMandaliMenu && (
-              <div className="absolute right-0 top-10 z-50 bg-white rounded-2xl shadow-xl border border-gray-100 w-52 overflow-hidden"
+              <div className="absolute right-0 top-10 z-50 w-52 overflow-hidden rounded-2xl border border-white/8 bg-[color:var(--surface-raised)] shadow-xl"
                 onClick={() => setShowMandaliMenu(false)}>
                 <button
                   onClick={async () => {
                     // Clear mandali_id → redirect to join flow
                     await mandaliMutations.leaveMandali.mutateAsync();
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 transition text-left border-b border-gray-50 hover:bg-[var(--brand-primary-soft)]">
-                  <MapPin size={14} style={{ color: 'var(--brand-primary-strong)' }} />
+                  className="w-full border-b border-white/6 px-4 py-3 text-left text-sm theme-ink transition hover:bg-white/[0.04] flex items-center gap-3">
+                  <MapPin size={14} className="theme-dim" />
                   Change my Mandali
                 </button>
                 <button
                   onClick={leaveMandali}
                   disabled={mandaliMutations.leaveMandali.isPending}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition text-left disabled:opacity-50">
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-red-400 transition hover:bg-red-500/10 disabled:opacity-50">
                   <X size={14} />
                   {mandaliMutations.leaveMandali.isPending ? 'Leaving…' : 'Leave this Mandali'}
                 </button>
@@ -1259,7 +1257,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
           >
             {label}
             {count > 0 && (
-              <span className="ml-1 text-xs" style={activeTab === key ? { color: 'rgba(168, 94, 113, 0.7)' } : undefined}>
+              <span className="ml-1 text-xs" style={activeTab === key ? { color: 'var(--text-dim)' } : undefined}>
                 ({count})
               </span>
             )}
