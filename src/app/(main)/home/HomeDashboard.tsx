@@ -47,7 +47,6 @@ interface FeatureTheme {
   border: string;
   iconWell: string;
   accent: string;
-  accentStrong: string;
 }
 
 interface Props {
@@ -89,42 +88,36 @@ const HOME_THEMES: Record<string, FeatureTheme> = {
     border: 'rgba(212, 166, 70, 0.18)',
     iconWell: 'rgba(212, 166, 70, 0.12)',
     accent: 'var(--brand-primary)',
-    accentStrong: 'var(--brand-primary-strong)',
   },
   pathshala: {
     surface: 'linear-gradient(135deg, rgba(54, 54, 50, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
     border: 'rgba(212, 166, 70, 0.16)',
     iconWell: 'rgba(212, 166, 70, 0.1)',
     accent: 'var(--brand-primary)',
-    accentStrong: 'var(--brand-primary-strong)',
   },
   bhakti: {
     surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
     border: 'rgba(212, 166, 70, 0.16)',
     iconWell: 'rgba(212, 166, 70, 0.1)',
     accent: 'var(--brand-primary)',
-    accentStrong: 'var(--brand-primary-strong)',
   },
   kul: {
     surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
     border: 'rgba(138, 129, 82, 0.2)',
     iconWell: 'rgba(138, 129, 82, 0.12)',
     accent: 'var(--brand-secondary)',
-    accentStrong: 'var(--brand-primary-strong)',
   },
   mandali: {
     surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
     border: 'rgba(157, 133, 80, 0.18)',
     iconWell: 'rgba(157, 133, 80, 0.12)',
     accent: 'var(--brand-earth)',
-    accentStrong: 'var(--brand-primary-strong)',
   },
   tirtha: {
     surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
     border: 'rgba(212, 166, 70, 0.16)',
     iconWell: 'rgba(212, 166, 70, 0.1)',
     accent: 'var(--brand-primary)',
-    accentStrong: 'var(--brand-primary-strong)',
   },
 };
 
@@ -948,7 +941,7 @@ export default function HomeDashboard({
               <h1 className="type-screen-title">
                 {greeting}, {userName.split(' ')[0]}!
               </h1>
-              <Pencil size={13} className="text-gray-300 group-hover:text-[color:var(--brand-primary)] transition flex-shrink-0 mt-1" />
+              <Pencil size={13} className="theme-dim group-hover:text-[color:var(--brand-primary)] transition flex-shrink-0 mt-1" />
             </button>
             <p className="type-body mt-1.5">
               {showFirstTimeGuidance ? greetingMode : 'A quieter sacred day, ready when you are.'}
@@ -965,7 +958,7 @@ export default function HomeDashboard({
             className="hidden sm:flex items-center justify-center rounded-[1.35rem] px-3 py-2 type-chip"
             style={{
               background: homeHeroTheme.iconWell,
-              color: homeHeroTheme.accentStrong,
+              color: 'var(--text-cream)',
             }}
           >
             Today
@@ -1069,7 +1062,7 @@ export default function HomeDashboard({
 
       {/* ── Panchang Widget ── */}
       <div
-        className="rounded-[1.95rem] overflow-hidden border shadow-sm"
+        className="rounded-[1.95rem] overflow-hidden border shadow-sm decorative-orbit"
         style={{ background: panchangTheme.surface, borderColor: panchangTheme.border, boxShadow: '0 16px 34px rgba(28, 26, 23, 0.06)' }}
       >
         <div className="px-4 pt-4 pb-2 flex items-center gap-2">
@@ -1082,23 +1075,23 @@ export default function HomeDashboard({
             <button onClick={() => navigateDay(-1)}
               className="w-6 h-6 rounded-full flex items-center justify-center transition"
               style={{ background: panchangTheme.iconWell }}>
-              <ChevronLeft size={13} color={panchangTheme.accentStrong} />
+              <ChevronLeft size={13} color="var(--text-cream)" />
             </button>
             {/* Tap date label to open full date picker */}
             <button onClick={() => setDatePickerOpen(true)}
               className="type-micro min-w-[80px] text-center transition underline-offset-2 hover:underline"
-              style={{ color: panchangTheme.accentStrong }}>
+              style={{ color: 'var(--text-cream)' }}>
               {isToday ? 'Today' : selectedDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
             </button>
             <button onClick={() => navigateDay(1)}
               className="w-6 h-6 rounded-full flex items-center justify-center transition"
               style={{ background: panchangTheme.iconWell }}>
-              <ChevronRight size={13} color={panchangTheme.accentStrong} />
+              <ChevronRight size={13} color="var(--text-cream)" />
             </button>
             {!isToday && (
               <button onClick={() => setSelectedDate(new Date())}
                 className="type-tab ml-1 rounded-full px-2 py-0.5"
-                style={{ background: panchangTheme.iconWell, color: panchangTheme.accentStrong }}>
+                style={{ background: panchangTheme.iconWell, color: 'var(--text-cream)' }}>
                 Today
               </button>
             )}
@@ -1116,17 +1109,17 @@ export default function HomeDashboard({
 
         {/* Rahu Kaal + action buttons */}
         <div className="mx-4 mb-3 rounded-xl px-3 py-2 flex items-center gap-2"
-          style={{ background: 'rgba(255,255,255,0.65)', border: `1px solid ${panchangTheme.border}` }}>
+          style={{ background: 'rgba(40, 40, 37, 0.92)', border: `1px solid ${panchangTheme.border}` }}>
           <span className="text-sm">⚠️</span>
           <div className="flex-1">
             <span className="type-card-label">Rahu Kaal: </span>
-            <span className="type-micro" style={{ color: 'var(--text-saffron-soft)' }}>{panchang.rahuKaal}</span>
+            <span className="type-micro">{panchang.rahuKaal}</span>
           </div>
           {/* Full Panchang page link */}
           <Link
             href="/panchang"
             className="flex items-center gap-1 rounded-full px-2.5 py-1 type-chip transition"
-            style={{ background: panchangTheme.iconWell, color: panchangTheme.accentStrong }}
+            style={{ background: panchangTheme.iconWell, color: 'var(--text-cream)' }}
           >
             <CalendarDays size={12} /> Full Panchang
           </Link>
@@ -1137,7 +1130,7 @@ export default function HomeDashboard({
             style={{ background: panchangTheme.iconWell }}
             title="Share Panchang"
           >
-            <Share2 size={13} color={panchangTheme.accentStrong} />
+            <Share2 size={13} color="var(--text-cream)" />
           </button>
         </div>
         <div className="type-micro px-4 pb-4">
@@ -1233,14 +1226,13 @@ export default function HomeDashboard({
       {/* ── Coming Up ── */}
       <div
         ref={festivalsRef}
-        className="rounded-[1.85rem] border overflow-hidden shadow-sm"
+        className="rounded-[1.85rem] border overflow-hidden shadow-sm decorative-orbit"
         style={{ background: HOME_THEMES.tirtha.surface, borderColor: HOME_THEMES.tirtha.border, boxShadow: '0 16px 32px rgba(28, 26, 23, 0.05)' }}>
         <div className="px-4 pt-3 pb-1 flex items-center justify-between">
           <p className="type-card-label">Coming up</p>
           <button
             onClick={() => setCalendarOpen(true)}
-            className="type-micro flex items-center gap-1 hover:underline"
-            style={{ color: 'var(--brand-primary)' }}>
+            className="type-micro flex items-center gap-1 hover:underline theme-ink">
             <CalendarDays size={11} /> All Festivals →
           </button>
         </div>
@@ -1281,7 +1273,7 @@ export default function HomeDashboard({
             <MotionItem key={item.href}>
             <Link
               href={item.href}
-              className="border rounded-[1.55rem] p-4 flex items-start gap-3 active:scale-[0.99] transition-all"
+              className="border rounded-[1.55rem] p-4 flex items-start gap-3 active:scale-[0.99] transition-all decorative-orbit"
               style={{
                 background: HOME_THEMES[item.theme].surface,
                 borderColor: HOME_THEMES[item.theme].border,

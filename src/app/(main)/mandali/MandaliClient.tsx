@@ -34,10 +34,10 @@ const POST_TYPES = [
 ];
 
 const typeIcon: Record<string, React.ReactNode> = {
-  update:       <Heart size={13} className="text-rose-500" />,
-  event:        <Calendar size={13} className="text-blue-500" />,
-  question:     <HelpCircle size={13} className="text-purple-500" />,
-  announcement: <Megaphone size={13} style={{ color: 'var(--brand-primary)' }} />,
+  update:       <Heart size={13} className="theme-muted" />,
+  event:        <Calendar size={13} className="theme-muted" />,
+  question:     <HelpCircle size={13} className="theme-muted" />,
+  announcement: <Megaphone size={13} className="theme-muted" />,
 };
 
 // ─── Find Sanatani Search Modal ──────────────────────────────────
@@ -70,31 +70,30 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
 
   return (
     <div className="fixed inset-0 z-50 flex items-end" onClick={onClose}>
-      <div className="w-full bg-white rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
+      <div className="w-full surface-sheet rounded-t-3xl max-h-[85vh] flex flex-col"
         onClick={e => e.stopPropagation()}>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-gray-100">
+        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-white/8">
           <div>
-            <h2 className="font-display font-bold text-gray-900">Find Sanatani</h2>
-            <p className="text-xs text-gray-400 mt-0.5">Search by name or username</p>
+            <h2 className="font-display font-bold theme-ink">Find Sanatani</h2>
+            <p className="text-xs theme-dim mt-0.5">Search by name or username</p>
           </div>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-            <X size={16} className="text-gray-500" />
+            className="w-8 h-8 rounded-full bg-white/[0.06] flex items-center justify-center">
+            <X size={16} className="theme-dim" />
           </button>
         </div>
 
         {/* Search input */}
-        <div className="px-5 py-3 border-b border-gray-100">
+        <div className="px-5 py-3 border-b border-white/8">
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 theme-dim" />
               <input type="text" placeholder="Search name or @username…"
                 value={query} onChange={e => setQuery(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && doSearch()}
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm"
-                style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }} />
+                className="surface-input pl-9 pr-4 py-2.5 outline-none text-sm" />
             </div>
             <button onClick={doSearch} disabled={loading || !query.trim()}
               className="px-4 py-2.5 text-white text-sm font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
@@ -107,22 +106,22 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
         {/* Results */}
         <div className="overflow-y-auto flex-1 px-4 py-3 space-y-2 pb-8">
           {loading && (
-            <div className="text-center py-8 text-gray-400 text-sm">Searching…</div>
+            <div className="text-center py-8 theme-dim text-sm">Searching…</div>
           )}
           {!loading && searched && results.length === 0 && (
-            <div className="text-center py-8 text-gray-400">
+            <div className="text-center py-8 theme-dim">
               <UserPlus size={32} className="mx-auto mb-2 opacity-30" />
               <p className="text-sm">No one found — try a different name</p>
             </div>
           )}
           {!loading && !searched && (
-            <div className="text-center py-8 text-gray-300 text-sm">
+            <div className="text-center py-8 theme-dim text-sm">
               Type a name above to find fellow Sanatani 🙏
             </div>
           )}
           {results.map(user => (
             <div key={user.id}
-              className="bg-white border border-gray-100 rounded-2xl p-3 flex items-center gap-3">
+              className="surface-soft-card rounded-2xl p-3 flex items-center gap-3">
               <div className="relative w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 overflow-hidden"
                 style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))' }}>
                 {user.avatar_url
@@ -130,13 +129,13 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
                   : getInitials(user.full_name || user.username || '?')}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm text-gray-900 truncate">
+                <p className="font-semibold text-sm theme-ink truncate">
                   {user.full_name || user.username}
                   {user.tradition && (
                     <span className="ml-1.5 text-xs">{TRADITION_EMOJI[user.tradition] ?? '🙏'}</span>
                   )}
                 </p>
-                <p className="text-xs text-gray-400 truncate">
+                <p className="text-xs theme-dim truncate">
                   {user.username && `@${user.username}`}
                   {user.city && ` · ${user.city}`}
                   {user.spiritual_level && ` · ${user.spiritual_level}`}
@@ -145,7 +144,7 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
               <button
                 onClick={() => { toast('Wider Sangam connections open after launch polish.', { icon: '🙏' }); }}
                 className="flex-shrink-0 px-3 py-1.5 text-xs font-semibold rounded-full transition"
-                style={{ border: '1px solid rgba(200, 127, 146, 0.3)', color: 'var(--brand-primary-strong)', background: 'rgba(247, 230, 235, 0.45)' }}>
+                style={{ border: '1px solid rgba(212, 166, 70, 0.18)', color: 'var(--text-cream)', background: 'rgba(40, 40, 37, 0.92)' }}>
                 Connect
               </button>
             </div>
@@ -1227,7 +1226,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
         <button
           type="button"
           onClick={primaryMandaliAction.onClick}
-          className="glass-panel rounded-[1.7rem] p-4 text-left transition hover:bg-white/85"
+          className="glass-panel rounded-[1.7rem] p-4 text-left transition hover:bg-white/[0.06] decorative-orbit"
         >
           <p className="type-card-label">Start here</p>
           <div className="flex items-start justify-between gap-3 mt-3">
@@ -1247,7 +1246,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
               { label: 'Events', value: eventCount },
               { label: 'Vichaar', value: vichaarCount },
             ].map((item) => (
-              <div key={item.label} className="rounded-[1.1rem] bg-white/72 border border-white/80 px-3 py-3 text-center">
+              <div key={item.label} className="rounded-[1.1rem] bg-white/[0.04] border border-white/8 px-3 py-3 text-center">
                 <p className="type-metric">{item.value}</p>
                 <p className="type-card-label mt-1">{item.label}</p>
               </div>
@@ -1259,17 +1258,17 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
       {showSearch && <FindSanataniModal userId={userId} onClose={() => setShowSearch(false)} />}
 
       {/* ── Tabs ── */}
-      <div className="flex bg-gray-100 rounded-2xl p-1">
+      <div className="surface-tabbar flex rounded-2xl p-1">
         {tabs.map(({ key, label, count }) => (
           <button
             key={key}
             onClick={() => setActiveTab(key)}
             className={`flex-1 rounded-xl py-2 type-body transition-all ${
               activeTab === key
-                ? 'bg-white shadow-sm'
+                ? 'surface-tab-active'
                 : 'text-[color:var(--text-dim)] hover:text-[color:var(--text-muted-warm)]'
             }`}
-            style={activeTab === key ? { color: 'var(--brand-primary-strong)' } : undefined}
+            style={activeTab === key ? { color: 'var(--text-cream)' } : undefined}
           >
             {label}
             {count > 0 && (
@@ -1308,12 +1307,12 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
             <div className="space-y-3 mt-2">
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-px" style={{ background: 'rgba(200, 127, 146, 0.18)' }} />
-                <span className="text-xs text-gray-400 font-medium px-2">
+                <span className="text-xs theme-dim font-medium px-2">
                   🌸 Wisdom from the wider Sangam
                 </span>
                 <div className="flex-1 h-px" style={{ background: 'rgba(200, 127, 146, 0.18)' }} />
               </div>
-              <p className="text-[11px] text-gray-400 text-center -mt-1">
+              <p className="text-[11px] theme-dim text-center -mt-1">
                 Your Mandali is growing — here are voices from our broader community
               </p>
               <VichaarTab

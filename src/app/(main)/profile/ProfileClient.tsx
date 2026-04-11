@@ -74,7 +74,7 @@ function SevaScoreBar({ score }: { score: number }) {
           <p className="type-micro">seva points</p>
         </div>
       </div>
-      <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+      <div className="h-2.5 rounded-full overflow-hidden bg-white/10">
         <div className="h-full rounded-full transition-all"
           style={{ width: `${pct}%`, background: 'linear-gradient(90deg, var(--brand-primary), var(--brand-secondary))' }} />
       </div>
@@ -105,7 +105,7 @@ function CompletionBar({ profile, onEdit }: { profile: Profile | null; onEdit: (
           Complete
         </button>
       </div>
-      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+      <div className="h-2 rounded-full overflow-hidden bg-white/10">
         <div className="h-full rounded-full transition-all"
           style={{ width: `${pct}%`, background: 'linear-gradient(90deg, var(--brand-secondary), var(--brand-primary))' }} />
       </div>
@@ -527,16 +527,16 @@ export default function ProfileClient({
           >
             {liveProfile?.bio ? (
               <div className="rounded-[1.35rem] bg-[var(--brand-primary-soft)] px-4 py-3">
-                <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400 mb-2">About</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{liveProfile.bio}</p>
+                <p className="text-[10px] uppercase tracking-[0.16em] font-semibold theme-dim mb-2">About</p>
+                <p className="text-sm theme-ink leading-relaxed">{liveProfile.bio}</p>
               </div>
             ) : null}
             {pathRows.length > 0 ? (
-              <div className="divide-y divide-gray-50">
+              <div className="divide-y divide-white/5">
                 {pathRows.map(({ label, value, emoji }) => (
                   <div key={label} className="flex items-center justify-between py-2.5 gap-4">
-                    <span className="text-sm text-gray-500">{emoji ? `${emoji} ` : ''}{label}</span>
-                    <span className="text-sm font-medium text-gray-800 text-right">{value}</span>
+                    <span className="text-sm theme-dim">{emoji ? `${emoji} ` : ''}{label}</span>
+                    <span className="text-sm font-medium theme-ink text-right">{value}</span>
                   </div>
                 ))}
               </div>
@@ -550,11 +550,11 @@ export default function ProfileClient({
             title="How you walk the path"
             description="Your practice details."
           >
-            <div className="divide-y divide-gray-50">
+            <div className="divide-y divide-white/5">
               {practiceRows.map(({ label, value, emoji }) => (
                 <div key={label} className="flex items-center justify-between py-2.5 gap-4">
-                  <span className="text-sm text-gray-500">{emoji ? `${emoji} ` : ''}{label}</span>
-                  <span className="text-sm font-medium text-gray-800 text-right">{value}</span>
+                  <span className="text-sm theme-dim">{emoji ? `${emoji} ` : ''}{label}</span>
+                  <span className="text-sm font-medium theme-ink text-right">{value}</span>
                 </div>
               ))}
             </div>
@@ -567,11 +567,11 @@ export default function ProfileClient({
             title="Where sacred time follows you"
             description="Your place and time details."
           >
-            <div className="divide-y divide-gray-50">
+            <div className="divide-y divide-white/5">
               {placeRows.map(({ label, value, emoji }) => (
                 <div key={label} className="flex items-center justify-between py-2.5 gap-4">
-                  <span className="text-sm text-gray-500">{emoji ? `${emoji} ` : ''}{label}</span>
-                  <span className="text-sm font-medium text-gray-800 text-right">{value}</span>
+                  <span className="text-sm theme-dim">{emoji ? `${emoji} ` : ''}{label}</span>
+                  <span className="text-sm font-medium theme-ink text-right">{value}</span>
                 </div>
               ))}
             </div>
@@ -609,10 +609,10 @@ export default function ProfileClient({
           ].map((item) => {
             const checked = notificationPrefs[item.key as keyof typeof notificationPrefs] as boolean;
             return (
-              <label key={item.key} className="flex items-start justify-between gap-4 rounded-2xl border border-gray-100 px-4 py-3 cursor-pointer">
+              <label key={item.key} className="flex items-start justify-between gap-4 rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 cursor-pointer">
                 <div>
-                  <p className="text-sm font-medium text-gray-900">{item.title}</p>
-                  <p className="text-xs text-gray-500 mt-1 leading-relaxed">{item.description}</p>
+                  <p className="text-sm font-medium theme-ink">{item.title}</p>
+                  <p className="text-xs theme-dim mt-1 leading-relaxed">{item.description}</p>
                 </div>
                 <input
                   type="checkbox"
@@ -625,21 +625,20 @@ export default function ProfileClient({
             );
           })}
 
-          <div className="rounded-2xl border border-gray-100 px-4 py-4 space-y-3">
+          <div className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 space-y-3">
             <div>
-              <p className="text-sm font-medium text-gray-900">Quiet hours</p>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-sm font-medium theme-ink">Quiet hours</p>
+              <p className="text-xs theme-dim mt-1">
                 Reminders will skip this local window.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">Start</label>
+                <label className="block text-xs font-medium theme-dim mb-1.5">Start</label>
                 <select
                   value={notificationPrefs.notification_quiet_hours_start}
                   onChange={(e) => setNotificationPrefs((current) => ({ ...current, notification_quiet_hours_start: Number(e.target.value) }))}
-                  className="w-full px-3 py-2.5 rounded-xl border border-gray-200 outline-none text-sm bg-white"
-                  style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
+                  className="surface-select px-3 py-2.5 outline-none text-sm"
                 >
                   {Array.from({ length: 24 }).map((_, hour) => (
                     <option key={`start-${hour}`} value={hour}>{String(hour).padStart(2, '0')}:00</option>
@@ -647,12 +646,11 @@ export default function ProfileClient({
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">End</label>
+                <label className="block text-xs font-medium theme-dim mb-1.5">End</label>
                 <select
                   value={notificationPrefs.notification_quiet_hours_end}
                   onChange={(e) => setNotificationPrefs((current) => ({ ...current, notification_quiet_hours_end: Number(e.target.value) }))}
-                  className="w-full px-3 py-2.5 rounded-xl border border-gray-200 outline-none text-sm bg-white"
-                  style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
+                  className="surface-select px-3 py-2.5 outline-none text-sm"
                 >
                   {Array.from({ length: 24 }).map((_, hour) => (
                     <option key={`end-${hour}`} value={hour}>{String(hour).padStart(2, '0')}:00</option>
@@ -671,14 +669,14 @@ export default function ProfileClient({
               <span>🔔</span>
               <span>{savingNotificationPrefs ? 'Saving…' : 'Save notification preferences'}</span>
             </button>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs theme-dim">
               Local time zone: {profileTimezone ?? 'UTC fallback until your browser reports a timezone'}
             </p>
           </div>
 
-          <div className="rounded-2xl border border-gray-100 px-4 py-4 space-y-3">
+          <div className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 space-y-3">
             <div>
-              <p className="text-sm font-medium text-gray-900">Notification diagnostics</p>
+              <p className="text-sm font-medium theme-ink">Notification diagnostics</p>
             </div>
             <div className="grid gap-2 sm:grid-cols-2">
               {[
@@ -689,14 +687,14 @@ export default function ProfileClient({
                 { label: 'Community updates', value: notificationPrefs.wants_community_notifications ? 'On' : 'Off' },
                 { label: 'Family updates', value: notificationPrefs.wants_family_notifications ? 'On' : 'Off' },
               ].map((item) => (
-                <div key={item.label} className="rounded-xl bg-gray-50 px-3 py-3">
-                  <p className="text-[10px] uppercase tracking-[0.16em] text-gray-400 font-semibold">{item.label}</p>
-                  <p className="text-sm font-medium text-gray-800 mt-1">{item.value}</p>
+                <div key={item.label} className="rounded-xl bg-white/[0.04] px-3 py-3 border border-white/6">
+                  <p className="text-[10px] uppercase tracking-[0.16em] theme-dim font-semibold">{item.label}</p>
+                  <p className="text-sm font-medium theme-ink mt-1">{item.value}</p>
                 </div>
               ))}
             </div>
-            <p className="text-xs text-gray-500">
-              Target windows: <span className="font-medium text-gray-700">09:00</span> for festivals and <span className="font-medium text-gray-700">19:00</span> for shloka reminders.
+            <p className="text-xs theme-dim">
+              Target windows: <span className="font-medium theme-ink">09:00</span> for festivals and <span className="font-medium theme-ink">19:00</span> for shloka reminders.
             </p>
           </div>
         </div>
@@ -709,14 +707,14 @@ export default function ProfileClient({
       >
 
         {blockedProfiles.length === 0 && mutedProfiles.length === 0 && hiddenItems.length === 0 ? (
-          <p className="text-sm text-gray-500">
+          <p className="text-sm theme-dim">
             Nothing hidden right now.
           </p>
         ) : (
           <div className="space-y-4">
             {blockedProfiles.length > 0 && (
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+                <div className="flex items-center gap-2 text-sm font-semibold theme-ink">
                   <ShieldBan size={15} className="text-red-500" />
                   Blocked people
                 </div>
@@ -737,7 +735,7 @@ export default function ProfileClient({
 
             {mutedProfiles.length > 0 && (
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+                <div className="flex items-center gap-2 text-sm font-semibold theme-ink">
                   <BellOff size={15} className="text-[color:var(--brand-primary)]" />
                   Muted people
                 </div>
@@ -758,14 +756,14 @@ export default function ProfileClient({
 
             {hiddenItems.length > 0 && (
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+                <div className="flex items-center gap-2 text-sm font-semibold theme-ink">
                   <EyeOff size={15} className="text-[color:var(--brand-primary)]" />
                   Hidden content
                 </div>
                 {hiddenItems.map((item) => {
                   const busy = safetyBusyKey === `hide:${item.content_type}:${item.content_id}`;
                   return (
-                    <div key={`${item.content_type}:${item.content_id}`} className="rounded-2xl border border-gray-100 px-3 py-3 flex items-center gap-3">
+                    <div key={`${item.content_type}:${item.content_id}`} className="rounded-2xl border border-white/8 bg-white/[0.03] px-3 py-3 flex items-center gap-3">
                       <div
                         className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
                         style={{ background: 'rgba(124, 58, 45, 0.08)', color: 'var(--brand-primary)' }}
@@ -773,8 +771,8 @@ export default function ProfileClient({
                         <EyeOff size={16} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{item.title}</p>
-                        <p className="text-xs text-gray-500">{item.subtitle}</p>
+                        <p className="text-sm font-medium theme-ink truncate">{item.title}</p>
+                        <p className="text-xs theme-dim">{item.subtitle}</p>
                       </div>
                       <button
                         onClick={() => unhideContent(item.content_type, item.content_id)}
@@ -783,7 +781,7 @@ export default function ProfileClient({
                         style={{
                           border: '1px solid rgba(124, 58, 45, 0.18)',
                           color: 'var(--brand-primary)',
-                          background: 'rgba(255,255,255,0.85)',
+                          background: 'rgba(40,40,37,0.92)',
                         }}
                       >
                         {busy ? 'Updating…' : 'Unhide'}
@@ -802,11 +800,11 @@ export default function ProfileClient({
         title="How sacred text should read"
         description="Keep app language, script view, and meaning preferences separate."
       >
-        <div className="divide-y divide-gray-50">
+        <div className="divide-y divide-white/5">
           {languageRows.map(({ label, value, emoji }) => (
             <div key={label} className="flex items-center justify-between py-2.5 gap-4">
-              <span className="text-sm text-gray-500">{emoji ? `${emoji} ` : ''}{label}</span>
-              <span className="text-sm font-medium text-gray-800 text-right">{value}</span>
+              <span className="text-sm theme-dim">{emoji ? `${emoji} ` : ''}{label}</span>
+              <span className="text-sm font-medium theme-ink text-right">{value}</span>
             </div>
           ))}
         </div>
@@ -815,15 +813,14 @@ export default function ProfileClient({
       {/* ── Edit Form ── */}
       {editing && (
         <div
-          className="bg-white rounded-2xl p-5 space-y-4 fade-in"
-          style={{ border: '1px solid rgba(124, 58, 45, 0.12)', boxShadow: '0 16px 34px rgba(28, 26, 23, 0.06)' }}
+          className="surface-sheet rounded-2xl p-5 space-y-4 fade-in"
         >
-          <h2 className="font-display font-semibold text-lg text-gray-900">Edit Profile</h2>
+          <h2 className="font-display font-semibold text-lg theme-ink">Edit Profile</h2>
 
           {/* ── Tradition — locked at signup, not editable ── */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-gray-700">Tradition</label>
+              <label className="text-sm font-medium theme-muted">Tradition</label>
               <span className="flex items-center gap-1 text-[10px] text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
                 <Lock size={9} /> Set at signup
               </span>
@@ -831,32 +828,31 @@ export default function ProfileClient({
             {(() => {
               const t = TRADITIONS.find(t => t.value === form.tradition);
               return t ? (
-                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 border border-gray-200">
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.04] border border-white/8">
                   <span className="text-2xl">{t.emoji}</span>
                   <div>
-                    <p className="font-semibold text-sm text-gray-800">{t.label}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{t.desc}</p>
+                    <p className="font-semibold text-sm theme-ink">{t.label}</p>
+                    <p className="text-xs theme-dim mt-0.5">{t.desc}</p>
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-gray-400 italic">No tradition set — contact support to update.</p>
+                <p className="text-sm theme-dim italic">No tradition set — contact support to update.</p>
               );
             })()}
           </div>
 
           <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">My path</p>
+            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My path</p>
             {[
               { label: 'Full Name', key: 'full_name', placeholder: 'Your full name' },
               { label: 'Home Town', key: 'home_town', placeholder: 'Where you are from' },
             ].map(({ label, key, placeholder }) => (
               <div key={key}>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
+                <label className="block text-sm font-medium theme-muted mb-1.5">{label}</label>
                 <input type="text" placeholder={placeholder}
                   value={(form as Record<string, string>)[key]}
                   onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm"
-                  style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
+                  className="surface-input px-4 py-2.5 outline-none text-sm"
                 />
               </div>
             ))}

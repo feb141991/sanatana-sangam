@@ -82,7 +82,7 @@ function Avatar({ name, url, size = 10, gradient = 'linear-gradient(135deg, var(
 function TaskBadge({ type }: { type: string }) {
   const t = TASK_TYPES[type] ?? { label: type, emoji: '📌' };
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-orange-50 text-orange-700 border border-orange-100">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border border-[rgba(212,166,70,0.16)] bg-[rgba(40,40,37,0.92)] theme-ink">
       {t.emoji} {t.label}
     </span>
   );
@@ -1210,7 +1210,7 @@ function KulSectionTiles({
                     {badge > 99 ? '99+' : badge}
                   </span>
                 )}
-                <ChevronRight size={16} className="text-gray-400 group-hover:translate-x-0.5 transition-transform" />
+                <ChevronRight size={16} className="theme-dim group-hover:translate-x-0.5 transition-transform" />
               </div>
             </div>
             <p className="type-body mt-3">
@@ -1288,8 +1288,8 @@ function KulHubView({
                   {savingName ? <span className="text-[10px]">…</span> : <Check size={14} />}
                 </button>
                 <button onClick={() => setEditingName(false)}
-                  className="w-8 h-8 rounded-xl flex items-center justify-center bg-white/75 border border-white/70">
-                  <X size={14} className="text-gray-500" />
+                  className="w-8 h-8 rounded-xl flex items-center justify-center bg-white/[0.06] border border-white/8">
+                  <X size={14} className="theme-dim" />
                 </button>
               </div>
             ) : (
@@ -1298,9 +1298,9 @@ function KulHubView({
                 {myRole === 'guardian' && (
                   <button
                     onClick={() => { setNewKulName(kul.name); setEditingName(true); }}
-                    className="w-7 h-7 rounded-lg flex items-center justify-center bg-white/75 border border-white/70 hover:bg-white transition flex-shrink-0"
+                    className="w-7 h-7 rounded-lg flex items-center justify-center bg-white/[0.06] border border-white/8 hover:bg-white/[0.09] transition flex-shrink-0"
                     title="Rename Kul">
-                    <Pencil size={12} className="text-gray-500" />
+                    <Pencil size={12} className="theme-dim" />
                   </button>
                 )}
               </div>
@@ -1335,7 +1335,7 @@ function KulHubView({
         <div className="flex items-center justify-between gap-3">
           <p className="type-card-label">Open a section</p>
           {upcomingEvents[0] ? (
-            <Link href="/kul/events" className="text-xs font-semibold text-[color:var(--brand-primary-strong)]">
+            <Link href="/kul/events" className="text-xs font-semibold theme-ink">
               Next date in {upcomingEvents[0].daysUntil}d
             </Link>
           ) : null}
@@ -1392,8 +1392,8 @@ function KulSectionShell({
             <p className="text-[10px] uppercase tracking-[0.18em] font-semibold" style={{ color: 'rgba(22, 77, 84, 0.72)' }}>
               {kul.name} · {meta.eyebrow}
             </p>
-            <h1 className="font-display font-bold text-2xl text-gray-900 mt-1">{meta.label}</h1>
-            <p className="text-sm text-gray-600 mt-2 leading-relaxed max-w-xl">{meta.description}</p>
+            <h1 className="font-display font-bold text-2xl theme-ink mt-1">{meta.label}</h1>
+            <p className="text-sm theme-muted mt-2 leading-relaxed max-w-xl">{meta.description}</p>
           </div>
         </div>
       </div>
@@ -1587,11 +1587,11 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
       {/* View toggle + add buttons */}
       <div className="flex items-center gap-2">
         {!forcedView && (
-          <div className="flex bg-gray-100 rounded-xl p-1 gap-1 flex-1">
+          <div className="surface-tabbar flex rounded-xl p-1 gap-1 flex-1">
             {(['tree', 'events'] as const).map(v => (
               <button key={v} onClick={() => setActiveView(v)}
-                className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition ${activeView === v ? 'bg-white shadow-sm font-semibold' : 'text-gray-500'}`}
-                style={activeView === v ? { color: 'var(--brand-primary)' } : undefined}>
+                className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition ${activeView === v ? 'surface-tab-active font-semibold' : 'theme-dim'}`}
+                style={activeView === v ? { color: 'var(--text-cream)' } : undefined}>
                 {v === 'tree' ? '🫶 Vansh' : `📅 Events (${upcomingEvents.length})`}
               </button>
             ))}
@@ -1619,9 +1619,9 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
       </div>
 
       {!canManageVansh && (
-        <div className="bg-white rounded-2xl border border-amber-200 p-4">
-          <p className="text-sm font-semibold text-gray-800">Vansh editing is guardian-only</p>
-          <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+        <div className="surface-soft-card rounded-2xl p-4">
+          <p className="text-sm font-semibold theme-ink">Vansh editing is guardian-only</p>
+          <p className="text-xs theme-dim mt-1 leading-relaxed">
             Kul guardians can add, update, and remove lineage members and family events. Other members can still view the family tree and upcoming dates.
           </p>
         </div>
@@ -1708,12 +1708,12 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
       {/* ── Tree View ── */}
       {activeView === 'tree' && (
         <div className="space-y-6">
-          <div className="clay-card rounded-[1.8rem] p-4">
+        <div className="clay-card rounded-[1.8rem] p-4 decorative-orbit">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(22, 77, 84, 0.72)' }}>
               Family keepsakes
             </p>
-            <h3 className="font-display text-lg font-bold text-gray-900 mt-1">Hold your Vansh like a keepsake wall, not just a tree</h3>
-            <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+            <h3 className="font-display text-lg font-bold theme-ink mt-1">Hold your Vansh like a keepsake wall, not just a tree</h3>
+            <p className="text-sm theme-muted mt-2 leading-relaxed">
               Each lineage card keeps the structure readable, but now feels calmer and more polished. This is the visual base for the future family memory vault.
             </p>
           </div>
@@ -1743,13 +1743,13 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
                   </div>
                 </div>
               </div>
-              <p className="text-sm font-medium text-gray-500">Start your Vansh tree</p>
+              <p className="text-sm font-medium theme-muted">Start your Vansh tree</p>
               <p className="text-xs mt-1">Add family members to preserve your lineage</p>
             </div>
           )}
           {generations.map(gen => (
             <div key={gen} className="clay-lineage-rail">
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-3 px-1">
+              <p className="text-[10px] font-semibold theme-dim uppercase tracking-wider mb-3 px-1">
                 {GENERATION_LABELS[gen] ?? `Generation ${gen}`}
               </p>
               <div className="flex gap-3 overflow-x-auto pb-2">
@@ -1774,9 +1774,9 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
                       className="clay-portrait-card flex-shrink-0 w-40 rounded-[1.7rem] p-3 text-center relative transition hover:-translate-y-0.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                     >
                       <FamilyKeepsakeStage member={m} />
-                      <p className="text-xs font-bold text-gray-900 leading-tight mt-3">{m.name}</p>
+                      <p className="text-xs font-bold theme-ink leading-tight mt-3">{m.name}</p>
                       {m.role && <p className="text-[10px] mt-0.5" style={{ color: 'var(--brand-primary)' }}>{m.role}</p>}
-                      <div className="text-[10px] text-gray-500 mt-1.5 space-y-0.5 leading-relaxed">
+                      <div className="text-[10px] theme-dim mt-1.5 space-y-0.5 leading-relaxed">
                         {age !== null && <p>{m.is_alive ? `Age ${age}` : `${m.birth_year ?? new Date(m.birth_date!).getFullYear()} – ${m.death_year ?? new Date(m.death_date!).getFullYear()}`}</p>}
                         {spouse && <p>💍 {spouse.name}</p>}
                         {parent && <p>↑ {parent.name}</p>}
@@ -1788,7 +1788,7 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
                       {canManageVansh && (
                         <div className="flex gap-1 mt-2 justify-center">
                           <button type="button" onClick={(e) => { e.stopPropagation(); openEdit(m); }}
-                            className="px-2 py-1 rounded-lg text-[10px] border border-gray-200 text-gray-500 transition"
+                            className="px-2 py-1 rounded-lg text-[10px] border border-white/10 theme-dim transition"
                             style={{ boxShadow: '0 4px 10px rgba(90, 61, 43, 0.06)' }}>
                             Edit
                           </button>

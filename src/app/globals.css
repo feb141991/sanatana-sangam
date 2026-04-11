@@ -26,14 +26,14 @@
   --sacred-gold:   #d4a646;
   --sacred-cream:  #f4ecd8;
   --brand-primary: #d4a646;
-  --brand-primary-strong: #f0c86d;
+  --brand-primary-strong: #ef9f27;
   --brand-primary-soft: rgba(212, 166, 70, 0.16);
   --brand-secondary: #8a8152;
   --brand-accent: #333330;
   --brand-accent-soft: rgba(138, 129, 82, 0.18);
   --brand-earth: #9d8550;
   --brand-ink: #f4ecd8;
-  --brand-muted: #c7baa0;
+  --brand-muted: #b5b0a5;
   --maroon:        #d4a646;
   --maroon-dark:   #f0c86d;
   --maroon-light:  rgba(212, 166, 70, 0.16);
@@ -55,7 +55,7 @@
   --text-cream: #f0ede6;
   --text-dim: #807b72;
   --text-muted-warm: #b5b0a5;
-  --text-saffron-soft: #fac775;
+  --text-saffron-soft: #f0ede6;
   --text-saffron-strong: #ef9f27;
   --chip-fill: #faeeda;
   --chip-text: #854f0b;
@@ -91,7 +91,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: var(--type-screen-title);
   line-height: 1.2;
   font-weight: 500;
-  color: var(--text-saffron-soft);
+  color: var(--text-cream);
 }
 
 .type-card-heading {
@@ -154,6 +154,18 @@ h1, h2, h3, h4, h5, h6 {
   font-size: var(--type-micro);
   line-height: 1.2;
   font-weight: 400;
+  color: var(--text-dim);
+}
+
+.theme-ink {
+  color: var(--text-cream);
+}
+
+.theme-muted {
+  color: var(--text-muted-warm);
+}
+
+.theme-dim {
   color: var(--text-dim);
 }
 
@@ -334,6 +346,74 @@ body::after {
   border: 1px solid rgba(212, 166, 70, 0.14);
   background: rgba(51, 51, 48, 0.86);
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+}
+
+.surface-soft-card {
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(212, 166, 70, 0.12);
+  background: rgba(40, 40, 37, 0.9);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.16);
+}
+
+.surface-sheet {
+  border: 1px solid rgba(212, 166, 70, 0.16);
+  background: linear-gradient(180deg, rgba(51, 51, 48, 0.985), rgba(43, 43, 40, 0.97));
+  box-shadow: 0 22px 42px rgba(0, 0, 0, 0.34);
+}
+
+.surface-input,
+.surface-select,
+.surface-textarea {
+  width: 100%;
+  border-radius: 0.95rem;
+  border: 1px solid rgba(212, 166, 70, 0.16);
+  background: rgba(40, 40, 37, 0.92);
+  color: var(--text-cream);
+}
+
+.surface-input::placeholder,
+.surface-textarea::placeholder {
+  color: var(--text-dim);
+}
+
+.surface-tabbar {
+  background: rgba(40, 40, 37, 0.96);
+  border: 1px solid rgba(212, 166, 70, 0.14);
+  box-shadow: inset 0 1px 0 rgba(244, 236, 216, 0.03);
+}
+
+.surface-tab-active {
+  background: rgba(51, 51, 48, 0.98);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+}
+
+.decorative-orbit {
+  position: relative;
+  overflow: hidden;
+}
+
+.decorative-orbit::before {
+  content: '';
+  position: absolute;
+  top: -1.4rem;
+  right: -1rem;
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(212, 166, 70, 0.12);
+  pointer-events: none;
+}
+
+.decorative-orbit::after {
+  content: '';
+  position: absolute;
+  bottom: -1.8rem;
+  left: -1.4rem;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(212, 166, 70, 0.08) 0%, rgba(212, 166, 70, 0) 72%);
+  pointer-events: none;
 }
 
 .text-reading {
