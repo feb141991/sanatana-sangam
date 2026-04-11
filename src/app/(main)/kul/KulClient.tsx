@@ -13,10 +13,12 @@ import {
 import { createClient } from '@/lib/supabase';
 import { getInitials } from '@/lib/utils';
 import type { KulSectionView } from './sections';
+import { AsyncStateCard, EmptyState } from '@/components/ui';
+import { useKulMutations, useKulQuery } from '@/hooks/useKul';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 type KulData   = { id: string; name: string; invite_code: string; avatar_emoji: string; created_by: string; created_at: string };
-type MemberRow = { id: string; role: 'guardian' | 'sadhak'; joined_at: string; user_id: string; profiles: { id: string; full_name: string | null; username: string | null; avatar_url: string | null; tradition: string | null; sampradaya: string | null; shloka_streak: number | null; spiritual_level: string | null; bio?: string | null; city?: string | null; country?: string | null; home_town?: string | null; gotra?: string | null; kul_devata?: string | null } };
+type MemberRow = { id: string; role: 'guardian' | 'sadhak'; joined_at: string; user_id: string; profiles: { id: string; full_name: string | null; username: string | null; avatar_url: string | null; tradition: string | null; sampradaya: string | null; shloka_streak: number | null; spiritual_level: string | null; bio?: string | null; city?: string | null; country?: string | null; home_town?: string | null; gotra?: string | null; kul_devata?: string | null } | null };
 type TaskRow   = { id: string; title: string; description: string | null; task_type: string; content_ref: string | null; due_date: string | null; completed: boolean; completed_at: string | null; score: number | null; guardian_note: string | null; assigned_by: string; assigned_to: string; created_at: string; assigned_to_profile: { full_name: string | null; username: string | null; avatar_url: string | null } | null; assigned_by_profile: { full_name: string | null; username: string | null } | null };
 type MessageRow= { id: string; content: string; created_at: string; sender_id: string; reaction: string | null; profiles: { full_name: string | null; username: string | null; avatar_url: string | null } };
 
@@ -372,43 +374,32 @@ function FamilyLineageSheet({
 
 // ── No-Kul Prompt (Create / Join) ────────────────────────────────────────────
 function NoKulPrompt({ userId, userName }: { userId: string; userName: string }) {
-  const supabase = createClient();
-  const router   = useRouter();
+  const kulMutations = useKulMutations(userId);
 
   const [tab,       setTab]       = useState<'create' | 'join'>('create');
   const [kulName,   setKulName]   = useState('');
   const [emoji,     setEmoji]     = useState('🏡');
   const [joinCode,  setJoinCode]  = useState('');
-  const [saving,    setSaving]    = useState(false);
 
   async function createKul() {
     if (!kulName.trim()) { toast.error('Give your Kul a name 🙏'); return; }
-    setSaving(true);
-    // Single atomic RPC — creates kul + adds guardian member + updates profile.kul_id
-    // Avoids the RLS ordering bug where .select() after insert fails because
-    // auth_kul_id() still returns null before the profile is updated.
-    const { data, error } = await supabase.rpc('create_kul', {
-      p_name:        kulName.trim(),
-      p_emoji:       emoji,
-      p_invite_code: generateInviteCode(),
-    });
-    if (error) { toast.error(error.message); setSaving(false); return; }
-    toast.success(`${emoji} ${kulName} created! Welcome, Guardian 🙏`);
-    router.refresh();
+    try {
+      await kulMutations.createKul.mutateAsync({ name: kulName.trim(), emoji });
+      toast.success(`${emoji} ${kulName} created! Welcome, Guardian 🙏`);
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not create the Kul right now.');
+    }
   }
 
   async function joinKul() {
     const code = joinCode.trim().toUpperCase();
     if (code.length < 4) { toast.error('Enter the 6-character invite code'); return; }
-    setSaving(true);
-    // Single atomic RPC — looks up kul by invite code + adds sadhak + updates profile.kul_id
-    // The previous approach couldn't look up the kul because SELECT RLS blocks
-    // users who aren't yet in any kul (auth_kul_id() returns null for them).
-    const { data, error } = await supabase.rpc('join_kul', { p_invite_code: code });
-    if (error) { toast.error(error.message); setSaving(false); return; }
-    const kul = data as { avatar_emoji: string; name: string } | null;
-    toast.success(`${kul?.avatar_emoji ?? '🏡'} Joined ${kul?.name ?? 'Kul'}! Jai Ho 🙏`);
-    router.refresh();
+    try {
+      const kul = await kulMutations.joinKul.mutateAsync(code);
+      toast.success(`${kul?.avatar_emoji ?? '🏡'} Joined ${kul?.name ?? 'Kul'}! Jai Ho 🙏`);
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not join that Kul right now.');
+    }
   }
 
   return (
@@ -455,10 +446,10 @@ function NoKulPrompt({ userId, userName }: { userId: string; userName: string })
             value={kulName} onChange={e => setKulName(e.target.value)}
             maxLength={40}
             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[color:var(--brand-primary)] outline-none text-sm" />
-          <button onClick={createKul} disabled={saving || !kulName.trim()}
+          <button onClick={createKul} disabled={kulMutations.createKul.isPending || !kulName.trim()}
             className="w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
             style={{ background: 'var(--brand-primary)' }}>
-            {saving ? 'Creating…' : `Create ${emoji} ${kulName || 'My Kul'} 🙏`}
+            {kulMutations.createKul.isPending ? 'Creating…' : `Create ${emoji} ${kulName || 'My Kul'} 🙏`}
           </button>
         </div>
       ) : (
@@ -468,10 +459,10 @@ function NoKulPrompt({ userId, userName }: { userId: string; userName: string })
             value={joinCode} onChange={e => setJoinCode(e.target.value.toUpperCase())}
             maxLength={6}
             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[color:var(--brand-primary)] outline-none text-sm tracking-widest font-bold text-center text-2xl uppercase" />
-          <button onClick={joinKul} disabled={saving || joinCode.length < 4}
+          <button onClick={joinKul} disabled={kulMutations.joinKul.isPending || joinCode.length < 4}
             className="w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
             style={{ background: 'var(--brand-primary)' }}>
-            {saving ? 'Joining…' : 'Join Kul 🙏'}
+            {kulMutations.joinKul.isPending ? 'Joining…' : 'Join Kul 🙏'}
           </button>
         </div>
       )}
@@ -630,21 +621,26 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
 function MembersTab({ members, userId, myRole, kul }: {
   members: MemberRow[]; userId: string; myRole: string; kul: KulData;
 }) {
-  const supabase = createClient();
-  const router   = useRouter();
+  const kulMutations = useKulMutations(userId);
   const [selectedMember, setSelectedMember] = useState<MemberRow | null>(null);
 
   async function promote(memberId: string, kulId: string) {
-    await supabase.from('kul_members').update({ role: 'guardian' }).eq('id', memberId);
-    toast.success('Member promoted to Guardian 👑');
-    router.refresh();
+    try {
+      await kulMutations.promoteMember.mutateAsync(memberId);
+      toast.success('Member promoted to Guardian 👑');
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not promote this member.');
+    }
   }
 
   async function remove(memberId: string, memberName: string) {
     if (!confirm(`Remove ${memberName} from the Kul?`)) return;
-    await supabase.from('kul_members').delete().eq('id', memberId);
-    toast.success(`${memberName} removed`);
-    router.refresh();
+    try {
+      await kulMutations.removeMember.mutateAsync(memberId);
+      toast.success(`${memberName} removed`);
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not remove this member.');
+    }
   }
 
   return (
@@ -706,8 +702,7 @@ function MembersTab({ members, userId, myRole, kul }: {
 function TasksTab({ tasks, members, userId, myRole, kulId }: {
   tasks: TaskRow[]; members: MemberRow[]; userId: string; myRole: string; kulId: string;
 }) {
-  const supabase = createClient();
-  const router   = useRouter();
+  const kulMutations = useKulMutations(userId);
 
   const [showCompose, setShowCompose] = useState(false);
   const [title,       setTitle]       = useState('');
@@ -723,25 +718,32 @@ function TasksTab({ tasks, members, userId, myRole, kulId }: {
   async function assignTask() {
     if (!title.trim() || !assignTo) { toast.error('Fill in title and assignee'); return; }
     setSaving(true);
-    const { error } = await supabase.from('kul_tasks').insert({
-      kul_id: kulId, assigned_by: userId, assigned_to: assignTo,
-      title: title.trim(), description: description.trim() || null,
-      task_type: taskType, due_date: dueDate || null,
-    });
-    if (error) { toast.error(error.message); setSaving(false); return; }
-    toast.success('Task assigned! 📋');
-    setTitle(''); setDescription(''); setAssignTo(''); setDueDate('');
-    setShowCompose(false);
-    router.refresh();
+    try {
+      await kulMutations.assignTask.mutateAsync({
+        kulId,
+        title,
+        description,
+        taskType,
+        assignTo,
+        dueDate,
+      });
+      toast.success('Task assigned! 📋');
+      setTitle(''); setDescription(''); setAssignTo(''); setDueDate('');
+      setShowCompose(false);
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not assign the task.');
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function completeTask(taskId: string) {
-    await supabase.from('kul_tasks').update({ completed: true, completed_at: new Date().toISOString() }).eq('id', taskId);
-    toast.success('Task completed! 🎉 +10 seva');
-    // Award seva points
-    const { data: prof } = await supabase.from('profiles').select('seva_score').eq('id', userId).single();
-    if (prof) await supabase.from('profiles').update({ seva_score: (prof.seva_score ?? 0) + 10 }).eq('id', userId);
-    router.refresh();
+    try {
+      await kulMutations.completeTask.mutateAsync(taskId);
+      toast.success('Task completed! 🎉 +10 seva');
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not complete this task.');
+    }
   }
 
   return (
@@ -825,10 +827,11 @@ function TasksTab({ tasks, members, userId, myRole, kulId }: {
       )}
 
       {tasks.length === 0 && (
-        <div className="text-center py-12 text-gray-400">
-          <ClipboardList size={40} className="mx-auto mb-3 opacity-30" />
-          <p className="text-sm">{myRole === 'guardian' ? 'Assign the first sadhana task' : 'No tasks assigned yet'}</p>
-        </div>
+        <EmptyState
+          icon="📋"
+          title={myRole === 'guardian' ? 'Assign the first sadhana task' : 'No tasks assigned yet'}
+          description="Tasks are where family practice becomes visible, repeatable, and shared."
+        />
       )}
     </div>
   );
@@ -882,7 +885,7 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
   messages: MessageRow[]; userId: string; kulId: string; userName: string;
 }) {
   const supabase    = useRef(createClient()).current;
-  const router      = useRouter();
+  const kulMutations = useKulMutations(userId);
   const bottomRef   = useRef<HTMLDivElement>(null);
   const [msgs,    setMsgs]    = useState(initialMessages);
   const [content, setContent] = useState('');
@@ -893,6 +896,10 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [msgs]);
+
+  useEffect(() => {
+    setMsgs(initialMessages);
+  }, [initialMessages]);
 
   // Real-time subscription
   useEffect(() => {
@@ -919,17 +926,27 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
     setSending(true);
     const msg = content.trim();
     setContent('');
-    await supabase.from('kul_messages').insert({ kul_id: kulId, sender_id: userId, content: msg });
-    setSending(false);
+    try {
+      await kulMutations.sendMessage.mutateAsync({ kulId, content: msg });
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not send the message.');
+      setContent(msg);
+    } finally {
+      setSending(false);
+    }
   }
 
   const REACTION_EMOJIS = ['🙏', '🔥', '❤️', '✨', '🛕'];
   const COMPOSER_EMOJIS = ['🙏', '🪔', '🌸', '✨', '❤️'];
 
   async function addReaction(msgId: string, emoji: string) {
-    await supabase.from('kul_messages').update({ reaction: emoji }).eq('id', msgId);
-    setMsgs(prev => prev.map(m => m.id === msgId ? { ...m, reaction: emoji } : m));
-    setReactionTrayFor(null);
+    try {
+      await kulMutations.reactToMessage.mutateAsync({ messageId: msgId, emoji });
+      setMsgs(prev => prev.map(m => m.id === msgId ? { ...m, reaction: emoji } : m));
+      setReactionTrayFor(null);
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not add that reaction.');
+    }
   }
 
   function formatTime(ts: string) {
@@ -941,10 +958,12 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
       {/* Messages */}
       <div className="flex-1 overflow-y-auto space-y-3 pb-2">
         {msgs.length === 0 && (
-          <div className="text-center py-16 text-gray-400">
-            <MessageSquare size={40} className="mx-auto mb-3 opacity-30" />
-            <p className="text-sm">No messages yet — say Jai Ho! 🙏</p>
-          </div>
+          <EmptyState
+            icon="🙏"
+            title="No messages yet"
+            description="Begin the Sabha with one simple family message and let the room open from there."
+            className="py-16"
+          />
         )}
         {msgs.map(msg => {
           const isMe = msg.sender_id === userId;
@@ -1406,8 +1425,7 @@ function KulSectionShell({
 function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, userId, myRole, forcedView }: {
   familyMembers: FamilyMember[]; kulEvents: KulEvent[]; kulId: string; userId: string; myRole: 'guardian' | 'sadhak'; forcedView?: 'tree' | 'events';
 }) {
-  const supabase = createClient();
-  const router   = useRouter();
+  const kulMutations = useKulMutations(userId);
   const canManageVansh = myRole === 'guardian';
 
   const [members,     setMembers]     = useState(initial);
@@ -1434,6 +1452,14 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
   useEffect(() => {
     if (forcedView) setActiveView(forcedView);
   }, [forcedView]);
+
+  useEffect(() => {
+    setMembers(initial);
+  }, [initial]);
+
+  useEffect(() => {
+    setEvents(initialEvents);
+  }, [initialEvents]);
 
   function resetForm() {
     setForm({ name:'',role:'',gender:'',birth_year:'',birth_date:'',death_year:'',death_date:'',marriage_date:'',parent_id:'',spouse_id:'',generation:'4',notes:'',is_alive:true });
@@ -1463,54 +1489,29 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
       return;
     }
     if (!form.name.trim()) { toast.error('Name is required'); return; }
-    const payload = {
-      kul_id:        kulId,
-      name:          form.name.trim(),
-      role:          form.role.trim() || null,
-      gender:        form.gender || null,
-      birth_year:    form.birth_year ? parseInt(form.birth_year) : null,
-      birth_date:    form.birth_date || null,
-      death_year:    form.death_year ? parseInt(form.death_year) : null,
-      death_date:    form.death_date || null,
-      marriage_date: form.marriage_date || null,
-      parent_id:     form.parent_id || null,
-      spouse_id:     form.spouse_id || null,
-      generation:    parseInt(form.generation) || 4,
-      notes:         form.notes.trim() || null,
-      is_alive:      form.is_alive,
-      created_by:    userId,
-    };
-
-    if (editMember) {
-      const { data, error } = await supabase.from('kul_family_members').update(payload).eq('id', editMember.id).select().single();
-      if (error) { toast.error(error.message); return; }
-      setMembers(prev => prev.map(m => m.id === editMember.id ? data as FamilyMember : m));
-      toast.success('Member updated 🙏');
-    } else {
-      const { data, error } = await supabase.from('kul_family_members').insert(payload).select().single();
-      if (error) { toast.error(error.message); return; }
-      const newMember = data as FamilyMember;
-      setMembers(prev => [...prev, newMember]);
-      // Auto-create birthday event if birth_date set
-      if (form.birth_date) {
-        await supabase.from('kul_events').insert({
-          kul_id: kulId, member_id: newMember.id, created_by: userId,
-          title: `${form.name}'s Birthday`,
-          event_type: 'birthday', event_date: form.birth_date, recurring: true,
-        });
-      }
-      if (form.marriage_date) {
-        await supabase.from('kul_events').insert({
-          kul_id: kulId, member_id: newMember.id, created_by: userId,
-          title: `${form.name}'s Anniversary`,
-          event_type: 'anniversary', event_date: form.marriage_date, recurring: true,
-        });
-      }
-      toast.success('Member added to Vansh 🙏');
+    try {
+      await kulMutations.saveFamilyMember.mutateAsync({
+        kulId,
+        memberId: editMember?.id,
+        name: form.name,
+        role: form.role,
+        gender: form.gender,
+        birth_year: form.birth_year ? parseInt(form.birth_year, 10) : null,
+        birth_date: form.birth_date || null,
+        death_year: form.death_year ? parseInt(form.death_year, 10) : null,
+        death_date: form.death_date || null,
+        marriage_date: form.marriage_date || null,
+        parent_id: form.parent_id || null,
+        spouse_id: form.spouse_id || null,
+        generation: parseInt(form.generation, 10) || 4,
+        notes: form.notes,
+        is_alive: form.is_alive,
+      });
+      toast.success(editMember ? 'Member updated 🙏' : 'Member added to Vansh 🙏');
+      resetForm(); setEditMember(null); setShowAdd(false);
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not save this family member.');
     }
-
-    resetForm(); setEditMember(null); setShowAdd(false);
-    router.refresh();
   }
 
   async function deleteMember(id: string, name: string) {
@@ -1519,9 +1520,13 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
       return;
     }
     if (!confirm(`Remove ${name} from the Vansh?`)) return;
-    await supabase.from('kul_family_members').delete().eq('id', id);
-    setMembers(prev => prev.filter(m => m.id !== id));
-    toast.success(`${name} removed`);
+    try {
+      await kulMutations.deleteFamilyMember.mutateAsync(id);
+      setMembers(prev => prev.filter(m => m.id !== id));
+      toast.success(`${name} removed`);
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not remove this family member.');
+    }
   }
 
   async function saveEvent() {
@@ -1530,17 +1535,22 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
       return;
     }
     if (!eForm.title.trim() || !eForm.event_date) { toast.error('Title and date required'); return; }
-    const { data, error } = await supabase.from('kul_events').insert({
-      kul_id: kulId, created_by: userId,
-      title: eForm.title.trim(), event_type: eForm.event_type,
-      event_date: eForm.event_date, description: eForm.description.trim() || null,
-      member_id: eForm.member_id || null, recurring: eForm.recurring,
-    }).select('*, member:kul_family_members(name, role)').single();
-    if (error) { toast.error(error.message); return; }
-    setEvents(prev => [...prev, data as KulEvent]);
-    setEForm({ title:'', event_type:'custom', event_date:'', description:'', member_id:'', recurring:true });
-    setShowAddEvent(false);
-    toast.success('Event added! 📅');
+    try {
+      await kulMutations.saveEvent.mutateAsync({
+        kulId,
+        title: eForm.title,
+        event_type: eForm.event_type,
+        event_date: eForm.event_date,
+        description: eForm.description,
+        member_id: eForm.member_id || null,
+        recurring: eForm.recurring,
+      });
+      setEForm({ title:'', event_type:'custom', event_date:'', description:'', member_id:'', recurring:true });
+      setShowAddEvent(false);
+      toast.success('Event added! 📅');
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not save this event.');
+    }
   }
 
   // Group members by generation
@@ -1898,30 +1908,79 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
 
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function KulClient({ userId, userName, userProfile, kul, members, tasks, messages, familyMembers, kulEvents, myRole, view = 'hub' }: Props) {
-  const supabase  = createClient();
-  const router    = useRouter();
+  const kulQuery = useKulQuery(userId, {
+    userId,
+    userName,
+    userProfile,
+    kul,
+    members,
+    tasks,
+    messages,
+    familyMembers,
+    kulEvents,
+    myRole,
+  });
+  const kulMutations = useKulMutations(userId);
   const [editingName,  setEditingName]  = useState(false);
   const [newKulName,   setNewKulName]   = useState(kul?.name ?? '');
   const [savingName,   setSavingName]   = useState(false);
+  const data = kulQuery.data ?? {
+    userId,
+    userName,
+    userProfile,
+    kul,
+    members,
+    tasks,
+    messages,
+    familyMembers,
+    kulEvents,
+    myRole,
+  };
 
-  if (!kul) {
+  useEffect(() => {
+    setNewKulName(data.kul?.name ?? '');
+  }, [data.kul?.name]);
+
+  if (kulQuery.isPending && !kulQuery.data) {
+    return (
+      <AsyncStateCard
+        state="loading"
+        title="Loading your Kul"
+        description="Gathering family members, tasks, sabha, and upcoming dates."
+      />
+    );
+  }
+
+  if (kulQuery.isError && !kulQuery.data) {
+    return (
+      <AsyncStateCard
+        state="error"
+        title="Kul could not load"
+        description="Family data did not come through cleanly. Try refreshing in a moment."
+      />
+    );
+  }
+
+  if (!data.kul) {
     return <NoKulPrompt userId={userId} userName={userName} />;
   }
+
+  const liveKul = data.kul;
 
   async function saveKulName() {
     const trimmed = newKulName.trim();
     if (!trimmed) { toast.error('Kul name cannot be empty'); return; }
-    if (trimmed === kul!.name) { setEditingName(false); return; }
+    if (trimmed === liveKul.name) { setEditingName(false); return; }
     setSavingName(true);
-    const { error } = await supabase
-      .from('kuls')
-      .update({ name: trimmed })
-      .eq('id', kul!.id);
-    setSavingName(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success(`Kul renamed to "${trimmed}" 🙏`);
-    setEditingName(false);
-    router.refresh();
+    try {
+      await kulMutations.renameKul.mutateAsync({ kulId: liveKul.id, name: trimmed });
+      toast.success(`Kul renamed to "${trimmed}" 🙏`);
+      setEditingName(false);
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not rename the Kul.');
+    } finally {
+      setSavingName(false);
+    }
   }
 
   const renderSection = () => {
@@ -1929,13 +1988,13 @@ export default function KulClient({ userId, userName, userProfile, kul, members,
       case 'hub':
         return (
           <KulHubView
-            kul={kul}
-            members={members}
-            tasks={tasks}
-            messages={messages}
-            familyMembers={familyMembers}
-            kulEvents={kulEvents}
-            myRole={myRole}
+            kul={liveKul}
+            members={data.members}
+            tasks={data.tasks}
+            messages={data.messages}
+            familyMembers={data.familyMembers}
+            kulEvents={data.kulEvents}
+            myRole={data.myRole}
             editingName={editingName}
             newKulName={newKulName}
             setNewKulName={setNewKulName}
@@ -1948,70 +2007,70 @@ export default function KulClient({ userId, userName, userProfile, kul, members,
         return (
           <KulSectionShell
             view={view}
-            kul={kul}
-            members={members}
-            tasks={tasks}
-            messages={messages}
-            familyMembers={familyMembers}
-            kulEvents={kulEvents}
+            kul={liveKul}
+            members={data.members}
+            tasks={data.tasks}
+            messages={data.messages}
+            familyMembers={data.familyMembers}
+            kulEvents={data.kulEvents}
           >
-            <MembersTab members={members} userId={userId} myRole={myRole} kul={kul} />
+            <MembersTab members={data.members} userId={userId} myRole={data.myRole} kul={liveKul} />
           </KulSectionShell>
         );
       case 'tasks':
         return (
           <KulSectionShell
             view={view}
-            kul={kul}
-            members={members}
-            tasks={tasks}
-            messages={messages}
-            familyMembers={familyMembers}
-            kulEvents={kulEvents}
+            kul={liveKul}
+            members={data.members}
+            tasks={data.tasks}
+            messages={data.messages}
+            familyMembers={data.familyMembers}
+            kulEvents={data.kulEvents}
           >
-            <TasksTab tasks={tasks} members={members} userId={userId} myRole={myRole} kulId={kul.id} />
+            <TasksTab tasks={data.tasks} members={data.members} userId={userId} myRole={data.myRole} kulId={liveKul.id} />
           </KulSectionShell>
         );
       case 'sabha':
         return (
           <KulSectionShell
             view={view}
-            kul={kul}
-            members={members}
-            tasks={tasks}
-            messages={messages}
-            familyMembers={familyMembers}
-            kulEvents={kulEvents}
+            kul={liveKul}
+            members={data.members}
+            tasks={data.tasks}
+            messages={data.messages}
+            familyMembers={data.familyMembers}
+            kulEvents={data.kulEvents}
           >
-            <SabhaTab messages={messages} userId={userId} kulId={kul.id} userName={userName} />
+            <SabhaTab messages={data.messages} userId={userId} kulId={liveKul.id} userName={data.userName} />
           </KulSectionShell>
         );
       case 'vansh':
         return (
           <KulSectionShell
             view={view}
-            kul={kul}
-            members={members}
-            tasks={tasks}
-            messages={messages}
-            familyMembers={familyMembers}
-            kulEvents={kulEvents}
+            kul={liveKul}
+            members={data.members}
+            tasks={data.tasks}
+            messages={data.messages}
+            familyMembers={data.familyMembers}
+            kulEvents={data.kulEvents}
           >
-            <VanshTab familyMembers={familyMembers} kulEvents={kulEvents} kulId={kul.id} userId={userId} myRole={myRole} forcedView="tree" />
+            <VanshTab familyMembers={data.familyMembers} kulEvents={data.kulEvents} kulId={liveKul.id} userId={userId} myRole={data.myRole} forcedView="tree" />
           </KulSectionShell>
         );
       case 'events':
         return (
           <KulSectionShell
             view={view}
-            kul={kul}
-            members={members}
-            tasks={tasks}
-            messages={messages}
-            familyMembers={familyMembers}
-            kulEvents={kulEvents}
+            kul={liveKul}
+            members={data.members}
+            tasks={data.tasks}
+            messages={data.messages}
+            familyMembers={data.familyMembers}
+            kulEvents={data.kulEvents}
           >
-            <VanshTab familyMembers={familyMembers} kulEvents={kulEvents} kulId={kul.id} userId={userId} myRole={myRole} forcedView="events" />
+            <VanshTab familyMembers={data.familyMembers} kulEvents={data.kulEvents} kulId={liveKul.id} userId={userId} myRole={data.myRole} forcedView="events" />
           </KulSectionShell>
         );
       default:

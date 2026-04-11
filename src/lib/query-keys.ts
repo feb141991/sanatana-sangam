@@ -4,11 +4,13 @@ export const queryKeys = {
   panchang: (lat: number | null, lon: number | null, dateKey: string) =>
     ['panchang', lat, lon, dateKey] as const,
   mandali: {
+    byUser: (userId: string) => ['mandali', 'user', userId] as const,
     detail: (mandaliId: string) => ['mandali', mandaliId] as const,
     posts: (mandaliId: string) => ['mandali', mandaliId, 'posts'] as const,
     events: (mandaliId: string) => ['mandali', mandaliId, 'events'] as const,
   },
   kul: {
+    byUser: (userId: string) => ['kul', 'user', userId] as const,
     detail: (kulId: string) => ['kul', kulId] as const,
     members: (kulId: string) => ['kul', kulId, 'members'] as const,
     tasks: (kulId: string) => ['kul', kulId, 'tasks'] as const,

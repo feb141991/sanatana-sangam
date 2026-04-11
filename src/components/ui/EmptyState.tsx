@@ -14,13 +14,13 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        'rounded-[1.6rem] border border-[color:var(--brand-primary-soft)] bg-white/78 px-5 py-6 text-center',
+        'surface-soft-card rounded-[1.6rem] px-5 py-6 text-center',
         className
       )}
     >
       {icon ? <div className="text-2xl">{icon}</div> : null}
-      <h3 className="mt-2 font-display text-lg font-bold text-gray-900">{title}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-gray-600">{description}</p>
+      <h3 className="mt-2 font-display text-lg font-bold theme-ink">{title}</h3>
+      <p className="mt-2 text-sm leading-relaxed theme-muted">{description}</p>
     </div>
   );
 }

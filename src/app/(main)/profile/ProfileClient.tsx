@@ -148,6 +148,7 @@ export default function ProfileClient({
   const [uploading, setUploading] = useState(false);
   const [sendingTestNotification, setSendingTestNotification] = useState(false);
   const [savingNotificationPrefs, setSavingNotificationPrefs] = useState(false);
+  const [showNotificationDiagnostics, setShowNotificationDiagnostics] = useState(false);
   const [safetyBusyKey, setSafetyBusyKey] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>((profile as any)?.avatar_url ?? null);
   const [showAvatarPreview, setShowAvatarPreview] = useState(false);
@@ -675,27 +676,41 @@ export default function ProfileClient({
           </div>
 
           <div className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 space-y-3">
-            <div>
-              <p className="text-sm font-medium theme-ink">Notification diagnostics</p>
-            </div>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {[
-                { label: 'Browser permission', value: browserPermission },
-                { label: 'Push linked on this device', value: browserPushSubscriptionId ? 'Yes' : 'No' },
-                { label: 'Festival reminders', value: notificationPrefs.wants_festival_reminders ? 'On' : 'Off' },
-                { label: 'Shloka reminders', value: notificationPrefs.wants_shloka_reminders ? 'On' : 'Off' },
-                { label: 'Community updates', value: notificationPrefs.wants_community_notifications ? 'On' : 'Off' },
-                { label: 'Family updates', value: notificationPrefs.wants_family_notifications ? 'On' : 'Off' },
-              ].map((item) => (
-                <div key={item.label} className="rounded-xl bg-white/[0.04] px-3 py-3 border border-white/6">
-                  <p className="text-[10px] uppercase tracking-[0.16em] theme-dim font-semibold">{item.label}</p>
-                  <p className="text-sm font-medium theme-ink mt-1">{item.value}</p>
+            <button
+              type="button"
+              onClick={() => setShowNotificationDiagnostics((current) => !current)}
+              className="flex w-full items-center justify-between gap-3 text-left"
+            >
+              <div>
+                <p className="text-sm font-medium theme-ink">Notification diagnostics</p>
+                <p className="text-xs theme-dim mt-1">Permission, push link status, and reminder targeting.</p>
+              </div>
+              <span className="type-chip rounded-full border border-white/8 px-3 py-1 text-[color:var(--text-cream)]">
+                {showNotificationDiagnostics ? 'Hide' : 'Show'}
+              </span>
+            </button>
+            {showNotificationDiagnostics ? (
+              <>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {[
+                    { label: 'Browser permission', value: browserPermission },
+                    { label: 'Push linked on this device', value: browserPushSubscriptionId ? 'Yes' : 'No' },
+                    { label: 'Festival reminders', value: notificationPrefs.wants_festival_reminders ? 'On' : 'Off' },
+                    { label: 'Shloka reminders', value: notificationPrefs.wants_shloka_reminders ? 'On' : 'Off' },
+                    { label: 'Community updates', value: notificationPrefs.wants_community_notifications ? 'On' : 'Off' },
+                    { label: 'Family updates', value: notificationPrefs.wants_family_notifications ? 'On' : 'Off' },
+                  ].map((item) => (
+                    <div key={item.label} className="rounded-xl bg-white/[0.04] px-3 py-3 border border-white/6">
+                      <p className="text-[10px] uppercase tracking-[0.16em] theme-dim font-semibold">{item.label}</p>
+                      <p className="text-sm font-medium theme-ink mt-1">{item.value}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <p className="text-xs theme-dim">
-              Target windows: <span className="font-medium theme-ink">09:00</span> for festivals and <span className="font-medium theme-ink">19:00</span> for shloka reminders.
-            </p>
+                <p className="text-xs theme-dim">
+                  Target windows: <span className="font-medium theme-ink">09:00</span> for festivals and <span className="font-medium theme-ink">19:00</span> for shloka reminders.
+                </p>
+              </>
+            ) : null}
           </div>
         </div>
       </SurfaceSection>

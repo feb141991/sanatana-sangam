@@ -10,6 +10,8 @@ import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
 import { formatRelativeTime, getInitials, ISHTA_DEVATAS } from '@/lib/utils';
 import { useLocation } from '@/lib/LocationContext';
 import type { Profile, PostWithAuthor, PostCommentWithAuthor, EventRsvp } from '@/types/database';
+import { AsyncStateCard, EmptyState } from '@/components/ui';
+import { useMandaliMutations, useMandaliQuery } from '@/hooks/useMandali';
 
 type MemberRow = Pick<Profile, 'id' | 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'ishta_devata' | 'spiritual_level' | 'city' | 'seva_score'>;
 
@@ -347,13 +349,11 @@ function CityPicker({ value, onChange }: {
 
 // ─── No-Mandali Prompt ────────────────────────────────────────────
 function NoMandaliPrompt({ userId }: { userId: string }) {
-  const supabase = createClient();
-  const router   = useRouter();
   const { city: liveCity, country: liveCountry } = useLocation();
+  const mandaliMutations = useMandaliMutations(userId);
 
   const [locating,  setLocating]  = useState(false);
   const [detected,  setDetected]  = useState<{ city: string; country: string } | null>(null);
-  const [saving,    setSaving]    = useState(false);
   const [geoError,  setGeoError]  = useState('');
 
   // If LocationContext already has a city (from saved profile GPS), pre-fill it
@@ -402,29 +402,15 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
       toast.error('Please detect your location first');
       return;
     }
-    setSaving(true);
-
-    // Call find_or_create_mandali directly — don't rely on the DB trigger
-    // (trigger only fires when city changes; user may already have city from GPS auto-save)
-    const { data: mandaliId, error: rpcError } = await supabase.rpc('find_or_create_mandali', {
-      p_city:    detected.city.trim(),
-      p_country: detected.country.trim(),
-    });
-    if (rpcError) { toast.error(rpcError.message); setSaving(false); return; }
-
-    // Save city, country AND mandali_id in one update
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        city:       detected.city.trim(),
-        country:    detected.country.trim(),
-        mandali_id: mandaliId,
-      })
-      .eq('id', userId);
-    if (error) { toast.error(error.message); setSaving(false); return; }
-
-    toast.success('Mandali found! Welcome 🙏');
-    router.refresh();
+    try {
+      await mandaliMutations.joinMandali.mutateAsync({
+        city: detected.city,
+        country: detected.country,
+      });
+      toast.success('Mandali found! Welcome 🙏');
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not join your Mandali right now.');
+    }
   }
 
   return (
@@ -475,10 +461,10 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
 
         {geoError && <p className="text-xs text-red-500 text-center">{geoError}</p>}
 
-        <button onClick={joinMandali} disabled={saving || !detected}
+        <button onClick={joinMandali} disabled={mandaliMutations.joinMandali.isPending || !detected}
           className="w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
           style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
-          {saving ? 'Finding your Mandali…' : 'Join My Mandali 🙏'}
+          {mandaliMutations.joinMandali.isPending ? 'Finding your Mandali…' : 'Join My Mandali 🙏'}
         </button>
       </div>
 
@@ -494,10 +480,11 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
 function MembersTab({ members, userId }: { members: MemberRow[]; userId: string }) {
   if (members.length === 0) {
     return (
-      <div className="text-center py-12 text-gray-400">
-        <Users size={40} className="mx-auto mb-3 opacity-30" />
-        <p className="text-sm">No members found</p>
-      </div>
+      <EmptyState
+        icon="👥"
+        title="No members yet"
+        description="Your local Mandali has not surfaced any members here yet."
+      />
     );
   }
 
@@ -596,11 +583,11 @@ function EventsTab({ posts, rsvps, userId, onRsvp }: { posts: PostWithAuthor[]; 
   const events = posts.filter((p) => p.type === 'event');
   if (events.length === 0) {
     return (
-      <div className="text-center py-12 text-gray-400">
-        <Calendar size={40} className="mx-auto mb-3 opacity-30" />
-        <p className="text-sm">No upcoming events</p>
-        <p className="text-xs mt-1">Post an event to get started!</p>
-      </div>
+      <EmptyState
+        icon="📅"
+        title="No upcoming events"
+        description="Create the first Mandali event to gather people around a real local moment."
+      />
     );
   }
 
@@ -712,11 +699,11 @@ function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upv
       )}
 
       {nonEvents.length === 0 && !showCompose && (
-        <div className="text-center py-12 text-gray-400">
-          <MessageSquare size={40} className="mx-auto mb-3 opacity-30" />
-          <p className="text-sm">No posts yet</p>
-          <p className="text-xs mt-1">Be the first to share!</p>
-        </div>
+        <EmptyState
+          icon="💬"
+          title="No posts yet"
+          description="Start the first conversation in this Mandali and give people a reason to respond."
+        />
       )}
 
       {nonEvents.map((post) => (
@@ -966,40 +953,78 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
 
 // ─── Main Component ──────────────────────────────────────────────
 export default function MandaliClient({ profile, posts: initialPosts, comments: initialComments, rsvps: initialRsvps, members, userId, blendedPosts = [] }: Props) {
-  const router   = useRouter();
-  const supabase = createClient();
+  const mandaliQuery = useMandaliQuery(userId, {
+    profile,
+    posts: initialPosts,
+    comments: initialComments,
+    rsvps: initialRsvps,
+    members,
+    blendedPosts,
+  });
+  const mandaliMutations = useMandaliMutations(userId);
+  const data = mandaliQuery.data ?? {
+    profile,
+    posts: initialPosts,
+    comments: initialComments,
+    rsvps: initialRsvps,
+    members,
+    blendedPosts,
+  };
   const initialEventCount = initialPosts.filter((post) => post.type === 'event').length;
   const initialVichaarCount = initialPosts.filter((post) => post.type !== 'event').length;
 
   const [activeTab,       setActiveTab]       = useState<'members' | 'events' | 'vichaar'>(
     initialVichaarCount > 0 ? 'vichaar' : initialEventCount > 0 ? 'events' : 'members'
   );
-  const [posts,           setPosts]           = useState(initialPosts);
-  const [comments,        setComments]        = useState(initialComments);
-  const [rsvps,           setRsvps]           = useState(initialRsvps);
-  const [widerPosts,      setWiderPosts]      = useState(blendedPosts);
-  const [visibleMembers,  setVisibleMembers]  = useState(members);
   const [showSearch,      setShowSearch]      = useState(false);
   const [showCompose,     setShowCompose]     = useState(false);
   const [showMandaliMenu, setShowMandaliMenu] = useState(false);
-  const [leavingMandali,  setLeavingMandali]  = useState(false);
   const [upvoted,     setUpvoted]     = useState<Set<string>>(new Set());
+  const [hiddenContentIds, setHiddenContentIds] = useState<Set<string>>(new Set());
+  const [hiddenAuthorIds, setHiddenAuthorIds] = useState<Set<string>>(new Set());
 
-  if (!profile?.city || !profile?.mandali_id) {
+  if (mandaliQuery.isPending && !mandaliQuery.data) {
+    return (
+      <AsyncStateCard
+        state="loading"
+        title="Loading your Mandali"
+        description="Pulling your local Sangam, posts, members, and events into one place."
+      />
+    );
+  }
+
+  if (mandaliQuery.isError && !mandaliQuery.data) {
+    return (
+      <AsyncStateCard
+        state="error"
+        title="Mandali could not load"
+        description="The local Sangam feed did not come through. Try refreshing in a moment."
+      />
+    );
+  }
+
+  const liveProfile = data.profile;
+  const posts = data.posts.filter((post) => !hiddenContentIds.has(post.id) && !hiddenAuthorIds.has(post.author_id));
+  const widerPosts = data.blendedPosts.filter((post) => !hiddenContentIds.has(post.id) && !hiddenAuthorIds.has(post.author_id));
+  const comments = data.comments.filter((comment) => !hiddenContentIds.has(comment.post_id) && !hiddenAuthorIds.has(comment.author_id));
+  const rsvps = data.rsvps.filter((item) => !hiddenContentIds.has(item.post_id) && !hiddenAuthorIds.has(item.user_id));
+  const visibleMembers = data.members.filter((member) => !hiddenAuthorIds.has(member.id));
+
+  if (!liveProfile?.city || !liveProfile?.mandali_id) {
     return <NoMandaliPrompt userId={userId} />;
   }
 
-  const mandali    = profile?.mandalis;
+  const mandali    = liveProfile?.mandalis;
   const eventCount = posts.filter((p) => p.type === 'event').length;
   const vichaarCount = posts.filter((p) => p.type !== 'event').length;
-  const neighbourhoodLabel = (profile as any)?.neighbourhood
-    ? `${(profile as any).neighbourhood} Mandali`
+  const neighbourhoodLabel = (liveProfile as any)?.neighbourhood
+    ? `${(liveProfile as any).neighbourhood} Mandali`
     : mandali?.name ?? 'Your Mandali';
-  const placeLabel = (profile as any)?.neighbourhood
-    ? `${(profile as any).neighbourhood}, ${mandali?.city ?? profile?.city ?? ''}`
+  const placeLabel = (liveProfile as any)?.neighbourhood
+    ? `${(liveProfile as any).neighbourhood}, ${mandali?.city ?? liveProfile?.city ?? ''}`
     : mandali
       ? `${mandali.city}, ${mandali.country}`
-      : profile?.city ?? '';
+      : liveProfile?.city ?? '';
   const primaryMandaliAction =
     eventCount > 0
       ? {
@@ -1023,18 +1048,11 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
           };
 
   function hideContentFromView(contentId: string) {
-    setPosts((current) => current.filter((post) => post.id !== contentId));
-    setWiderPosts((current) => current.filter((post) => post.id !== contentId));
-    setComments((current) => current.filter((comment) => comment.post_id !== contentId));
-    setRsvps((current) => current.filter((item) => item.post_id !== contentId));
+    setHiddenContentIds((current) => new Set(current).add(contentId));
   }
 
   function hideAuthorFromView(authorId: string) {
-    setPosts((current) => current.filter((post) => post.author_id !== authorId));
-    setWiderPosts((current) => current.filter((post) => post.author_id !== authorId));
-    setVisibleMembers((current) => current.filter((member) => member.id !== authorId));
-    setComments((current) => current.filter((comment) => comment.author_id !== authorId));
-    setRsvps((current) => current.filter((item) => item.user_id !== authorId));
+    setHiddenAuthorIds((current) => new Set(current).add(authorId));
   }
 
   async function submitPost(payload: {
@@ -1044,49 +1062,48 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
     eventLoc: string;
   }) {
     if (!payload.content.trim()) { toast.error('Write something first'); return false; }
-    if (!profile?.mandali_id) { toast.error('You are not in a Mandali yet'); return false; }
-    const { data, error } = await supabase
-      .from('posts')
-      .insert({
-        author_id:      userId,
-        mandali_id:     profile.mandali_id,
-        content:        payload.content.trim(),
-        type:           payload.postType,
-        event_date:     payload.eventDate || null,
-        event_location: payload.eventLoc  || null,
-      })
-      .select('*, profiles!posts_author_id_fkey(full_name, username, avatar_url, sampradaya, spiritual_level)')
-      .single();
-    if (error) { toast.error(error.message); return false; }
-    setPosts((current) => [data as PostWithAuthor, ...current]);
-    toast.success('Posted! 🙏');
-    router.refresh();
+    if (!liveProfile?.mandali_id) { toast.error('You are not in a Mandali yet'); return false; }
+    try {
+      await mandaliMutations.submitPost.mutateAsync({
+        mandaliId: liveProfile.mandali_id,
+        content: payload.content,
+        postType: payload.postType,
+        eventDate: payload.eventDate,
+        eventLoc: payload.eventLoc,
+      });
+      toast.success('Posted! 🙏');
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not post right now.');
+      return false;
+    }
     return true;
   }
 
   async function leaveMandali() {
     if (!confirm('Leave your current Mandali? You can re-join any time by detecting your location again.')) return;
-    setLeavingMandali(true);
-    const { error } = await supabase
-      .from('profiles')
-      .update({ mandali_id: null })
-      .eq('id', userId);
-    if (error) { toast.error(error.message); setLeavingMandali(false); return; }
-    toast.success('You have left the Mandali');
-    router.refresh();
+    try {
+      await mandaliMutations.leaveMandali.mutateAsync();
+      toast.success('You have left the Mandali');
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not leave the Mandali.');
+    }
   }
 
   async function toggleUpvote(postId: string) {
-    if (upvoted.has(postId)) {
-      await supabase.from('post_upvotes').delete().match({ post_id: postId, user_id: userId });
-      setUpvoted((s) => { const n = new Set(s); n.delete(postId); return n; });
-      setPosts((p) => p.map((post) => post.id === postId ? { ...post, upvotes: post.upvotes - 1 } : post));
-      setWiderPosts((p) => p.map((post) => post.id === postId ? { ...post, upvotes: post.upvotes - 1 } : post));
-    } else {
-      await supabase.from('post_upvotes').insert({ post_id: postId, user_id: userId });
-      setUpvoted((s) => new Set([...s, postId]));
-      setPosts((p) => p.map((post) => post.id === postId ? { ...post, upvotes: post.upvotes + 1 } : post));
-      setWiderPosts((p) => p.map((post) => post.id === postId ? { ...post, upvotes: post.upvotes + 1 } : post));
+    try {
+      const isUpvoted = upvoted.has(postId);
+      const nextState = await mandaliMutations.toggleUpvote.mutateAsync({ postId, isUpvoted });
+      setUpvoted((current) => {
+        const next = new Set(current);
+        if (nextState) {
+          next.add(postId);
+        } else {
+          next.delete(postId);
+        }
+        return next;
+      });
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not update the upvote right now.');
     }
   }
 
@@ -1097,50 +1114,21 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
       return;
     }
 
-    const { data, error } = await supabase
-      .from('post_comments')
-      .insert({
-        post_id: postId,
-        author_id: userId,
-        body: content,
-        parent_id: parentId ?? null,
-      })
-      .select('*, profiles!post_comments_author_id_fkey(full_name, username, avatar_url)')
-      .single();
-
-    if (error) {
-      toast.error(error.message);
-      return;
+    try {
+      await mandaliMutations.addComment.mutateAsync({ postId, body: content, parentId });
+      toast.success(parentId ? 'Reply posted' : 'Comment posted');
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not post the comment.');
     }
-
-    setComments((current) => [...current, data as PostCommentWithAuthor]);
-    setPosts((current) => current.map((post) => (
-      post.id === postId ? { ...post, comment_count: post.comment_count + 1 } : post
-    )));
-    toast.success(parentId ? 'Reply posted' : 'Comment posted');
   }
 
   async function updateRsvp(postId: string, status: RsvpStatus) {
-    const { data, error } = await supabase
-      .from('event_rsvps')
-      .upsert({
-        post_id: postId,
-        user_id: userId,
-        status,
-      }, { onConflict: 'post_id,user_id' })
-      .select('*')
-      .single();
-
-    if (error) {
-      toast.error(error.message);
-      return;
+    try {
+      await mandaliMutations.updateRsvp.mutateAsync({ postId, status });
+      toast.success(status === 'going' ? 'You are in' : status === 'interested' ? 'Marked interested' : 'RSVP updated');
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not update the RSVP.');
     }
-
-    setRsvps((current) => {
-      const withoutMine = current.filter((item) => !(item.post_id === postId && item.user_id === userId));
-      return [...withoutMine, data as EventRsvp];
-    });
-    toast.success(status === 'going' ? 'You are in' : status === 'interested' ? 'Marked interested' : 'RSVP updated');
   }
 
   const tabs = [
@@ -1202,8 +1190,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
                 <button
                   onClick={async () => {
                     // Clear mandali_id → redirect to join flow
-                    await supabase.from('profiles').update({ mandali_id: null }).eq('id', userId);
-                    router.refresh();
+                    await mandaliMutations.leaveMandali.mutateAsync();
                   }}
                   className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 transition text-left border-b border-gray-50 hover:bg-[var(--brand-primary-soft)]">
                   <MapPin size={14} style={{ color: 'var(--brand-primary-strong)' }} />
@@ -1211,10 +1198,10 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
                 </button>
                 <button
                   onClick={leaveMandali}
-                  disabled={leavingMandali}
+                  disabled={mandaliMutations.leaveMandali.isPending}
                   className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition text-left disabled:opacity-50">
                   <X size={14} />
-                  {leavingMandali ? 'Leaving…' : 'Leave this Mandali'}
+                  {mandaliMutations.leaveMandali.isPending ? 'Leaving…' : 'Leave this Mandali'}
                 </button>
               </div>
             )}
