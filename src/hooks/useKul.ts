@@ -18,7 +18,7 @@ import {
   type KulData,
   type SaveKulEventPayload,
   type SaveKulFamilyMemberPayload,
-} from '@/lib/api/kul';
+} from '@/lib/api/kul-runtime';
 import { queryKeys } from '@/lib/query-keys';
 
 export function useKulQuery(userId: string, initialData?: KulData) {
@@ -47,15 +47,15 @@ export function useKulMutations(userId: string) {
       onSuccess: refreshKul,
     }),
     renameKul: useMutation({
-      mutationFn: ({ kulId, name }: { kulId: string; name: string }) => renameKul(kulId, name),
+      mutationFn: ({ kulId, name }: { kulId: string; name: string }) => renameKul(userId, kulId, name),
       onSuccess: refreshKul,
     }),
     promoteMember: useMutation({
-      mutationFn: (memberId: string) => promoteKulMember(memberId),
+      mutationFn: (memberId: string) => promoteKulMember(userId, memberId),
       onSuccess: refreshKul,
     }),
     removeMember: useMutation({
-      mutationFn: (memberId: string) => removeKulMember(memberId),
+      mutationFn: (memberId: string) => removeKulMember(userId, memberId),
       onSuccess: refreshKul,
     }),
     assignTask: useMutation({
@@ -66,19 +66,19 @@ export function useKulMutations(userId: string) {
         taskType: string;
         assignTo: string;
         dueDate?: string | null;
-      }) => assignKulTask({ userId, ...payload }),
+      }) => assignKulTask(userId, payload),
       onSuccess: refreshKul,
     }),
     completeTask: useMutation({
-      mutationFn: (taskId: string) => completeKulTask(taskId, userId),
+      mutationFn: (taskId: string) => completeKulTask(userId, taskId),
       onSuccess: refreshKul,
     }),
     sendMessage: useMutation({
-      mutationFn: ({ kulId, content }: { kulId: string; content: string }) => sendKulMessage(kulId, userId, content),
+      mutationFn: ({ kulId, content }: { kulId: string; content: string }) => sendKulMessage(userId, kulId, content),
       onSuccess: refreshKul,
     }),
     reactToMessage: useMutation({
-      mutationFn: ({ messageId, emoji }: { messageId: string; emoji: string }) => reactToKulMessage(messageId, emoji),
+      mutationFn: ({ messageId, emoji }: { messageId: string; emoji: string }) => reactToKulMessage(userId, messageId, emoji),
       onSuccess: refreshKul,
     }),
     saveFamilyMember: useMutation({
@@ -86,7 +86,7 @@ export function useKulMutations(userId: string) {
       onSuccess: refreshKul,
     }),
     deleteFamilyMember: useMutation({
-      mutationFn: (memberId: string) => deleteKulFamilyMember(memberId),
+      mutationFn: (memberId: string) => deleteKulFamilyMember(userId, memberId),
       onSuccess: refreshKul,
     }),
     saveEvent: useMutation({

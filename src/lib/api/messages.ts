@@ -1,6 +1,7 @@
 import { getAppDataRuntime } from '@/lib/api/runtime';
 import type { MessageThread, MessagesApi, SendThreadMessageInput, ThreadMessage } from '@/lib/contracts/messages';
 import { mockMessageThreads, mockThreadMessages } from '@/lib/mocks/messages';
+import { selectRuntimeAdapter } from '@shared-core/runtime/selectRuntimeAdapter';
 
 const threadStore = new Map<string, MessageThread[]>();
 const messageStore = new Map<string, ThreadMessage[]>();
@@ -99,22 +100,23 @@ const liveMessagesApi: MessagesApi = {
   },
 };
 
-function getMessagesApi(): MessagesApi {
-  return getAppDataRuntime() === 'live' ? liveMessagesApi : mockMessagesApi;
-}
+const messagesApi = selectRuntimeAdapter<MessagesApi>({
+  live: liveMessagesApi,
+  mock: mockMessagesApi,
+});
 
 export async function fetchMessageThreads(userId: string) {
-  return getMessagesApi().listThreads(userId);
+  return messagesApi.listThreads(userId);
 }
 
 export async function fetchThreadMessages(threadId: string, userId: string) {
-  return getMessagesApi().listMessages(threadId, userId);
+  return messagesApi.listMessages(threadId, userId);
 }
 
 export async function sendThreadMessage(input: SendThreadMessageInput) {
-  return getMessagesApi().sendMessage(input);
+  return messagesApi.sendMessage(input);
 }
 
 export async function markThreadRead(threadId: string, userId: string) {
-  return getMessagesApi().markThreadRead(threadId, userId);
+  return messagesApi.markThreadRead(threadId, userId);
 }

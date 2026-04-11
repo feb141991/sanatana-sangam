@@ -1,6 +1,6 @@
 export type AppDataRuntime = 'live' | 'mock';
 
-const DEFAULT_RUNTIME: AppDataRuntime = 'mock';
+const DEFAULT_RUNTIME: AppDataRuntime = 'live';
 
 export function getAppDataRuntime(): AppDataRuntime {
   const configured = process.env.NEXT_PUBLIC_APP_DATA_RUNTIME?.trim().toLowerCase();

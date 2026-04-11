@@ -101,6 +101,7 @@ Last updated: 2026-04-09
 - [x] Deepen `Mala mode` with session filters, share-card copy, and a clearer return rhythm so Bhakti feels usable day to day
 - [x] Ship the first live Bhakti practice slice with dedicated `Zen` and `Mala` routes instead of leaving both modes as planning-only ideas
 - [ ] Curate a rights-safe devotional audio starter pack for launch: mantra/chant clips first, then selective bhajan/kirtan where reuse terms are clear
+- [ ] Keep native mobile dependencies (`react-native-reanimated`, `react-native-gesture-handler`, `@shopify/flash-list`) queued for the Expo app workspace, not this Next.js test shell
 - [x] Start the Bhakti audio foundation with a rights-safe devotional starter pack surface and explicit source-first links
 - [x] Define the first approved devotional launch pack in `APPROVED_AUDIO_PACK.md`
 - [x] Define the media scaling model in `MEDIA_REGISTRY_PLAN.md` so launch audio can later move into owned storage without losing license auditability
@@ -148,6 +149,8 @@ Last updated: 2026-04-09
 - The first AI chat experience pass is now active too: Dharma Mitra is being shaped into a calmer study-and-reflection companion instead of a generic assistant box.
 - The first Bhakti experience pass is now active too: the placeholder is being turned into a meaningful devotional preview surface instead of a dead-end coming-soon card.
 - The shared app foundation now has a first reusable UI layer (`Button`, `Card`, `Badge`, `Input`, `SectionHeading`, async states) plus a TanStack Query provider and stable query-key map for future Mandali/Kul/Profile client data work.
+- A mobile-first carve-out has started: runtime adapters, mock/live seams, realtime transport abstraction, and the first `shared-core` mobile UI primitives now exist without breaking the current Next.js shell.
+- Native mobile-only dependencies are intentionally deferred until the real Expo workspace exists; do not install them into the current web test app.
 - `PATHSHALA_SOURCE_POLICY.md` now centralizes the trust rules for what Pathshala may store locally, what must remain companion-only, what should stay catalog-first, and what launch may honestly claim.
 - Gita recitation now has a real in-app audio foundation even before hosted playback: chapter metadata, saved listening state on device, focused recitation mode, and a cleaner handoff into the authoritative companion source.
 - The notification system now has a first real preference layer: sacred-time reminder toggles, quiet hours, and cron filtering, but it still needs live production verification and richer destination targeting.

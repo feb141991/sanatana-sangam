@@ -106,6 +106,7 @@ At any given time:
 - the next notification lane is now concrete: profile-level reminder preferences, quiet hours, cron filtering, and then production verification of real sends
 - the Home “next step” posture should keep shrinking: one primary action on the dashboard, with broader guidance moved into notifications and reminders instead of large homepage card stacks
 - the first app-foundation pass is now in build so shared UI primitives, stronger design tokens, reduced-motion defaults, and a TanStack Query provider can support future client-heavy surfaces without one-off styling or fetch logic
+- the next app-foundation pass is now defined: move feature data through runtime adapters, add mobile-first screen/list primitives, and carve the repo toward `apps/web + shared-core` before the Expo app is introduced
 
 ### Next eligible low-risk `Phase B` implementation
 

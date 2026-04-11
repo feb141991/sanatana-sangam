@@ -10,7 +10,7 @@ import {
   toggleMandaliPostUpvote,
   updateMandaliRsvp,
   type MandaliData,
-} from '@/lib/api/mandali';
+} from '@/lib/api/mandali-runtime';
 import { queryKeys } from '@/lib/query-keys';
 
 export function useMandaliQuery(userId: string, initialData?: MandaliData) {
