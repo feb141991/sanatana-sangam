@@ -13,6 +13,9 @@ import type { TraditionKey } from '@/lib/traditions';
 import { useLocation } from '@/lib/LocationContext';
 import { getPlayerId, getPermissionState, logoutFromOneSignal } from '@/lib/onesignal';
 import type { Profile } from '@/types/database';
+import { MetricTile, SurfaceSection } from '@/components/ui';
+import { useProfileQuery, useUpdateProfileMutation } from '@/hooks/useProfile';
+import type { ProfileUpdate } from '@/lib/api/profile';
 
 const SEVA_LEVELS = [
   { min: 0,    max: 99,   label: 'Jigyasu',    emoji: '🌱' },
@@ -115,29 +118,6 @@ function CompletionBar({ profile, onEdit }: { profile: Profile | null; onEdit: (
   );
 }
 
-function ProfileSectionCard({
-  eyebrow,
-  title,
-  description,
-  children,
-}: {
-  eyebrow: string;
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="glass-panel rounded-2xl p-4 space-y-4">
-      <div>
-        <p className="type-card-label">{eyebrow}</p>
-        <h2 className="type-card-heading mt-1">{title}</h2>
-        {description ? <p className="type-body mt-1">{description}</p> : null}
-      </div>
-      {children}
-    </div>
-  );
-}
-
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function ProfileClient({
   profile,
@@ -160,6 +140,9 @@ export default function ProfileClient({
 }) {
   const router   = useRouter();
   const supabase = useRef(createClient()).current;
+  const profileQuery = useProfileQuery(userId, profile);
+  const updateProfileMutation = useUpdateProfileMutation(userId);
+  const liveProfile = profileQuery.data ?? profile;
   const [editing,   setEditing]   = useState(false);
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -174,23 +157,23 @@ export default function ProfileClient({
   const [mutedProfiles, setMutedProfiles] = useState(initialMutedProfiles);
   const [hiddenItems, setHiddenItems] = useState(initialHiddenItems);
   const [form, setForm] = useState({
-    full_name:        profile?.full_name        ?? '',
-    bio:              profile?.bio              ?? '',
-    city:             profile?.city             ?? '',
-    country:          profile?.country          ?? '',
-    tradition:        (profile as any)?.tradition        ?? '',
-    sampradaya:       profile?.sampradaya       ?? '',
-    ishta_devata:     profile?.ishta_devata     ?? '',
-    spiritual_level:  profile?.spiritual_level  ?? 'jigyasu',
-    kul:              profile?.kul              ?? '',
-    gotra:            profile?.gotra            ?? '',
-    kul_devata:       (profile as any)?.kul_devata       ?? '',
-    home_town:        (profile as any)?.home_town        ?? '',
-    custom_greeting:  (profile as any)?.custom_greeting  ?? '',
-    app_language:     (profile as any)?.app_language     ?? 'en',
-    scripture_script: (profile as any)?.scripture_script ?? 'original',
-    show_transliteration: (profile as any)?.show_transliteration ?? true,
-    meaning_language: (profile as any)?.meaning_language ?? 'en',
+    full_name:        liveProfile?.full_name        ?? '',
+    bio:              liveProfile?.bio              ?? '',
+    city:             liveProfile?.city             ?? '',
+    country:          liveProfile?.country          ?? '',
+    tradition:        (liveProfile as any)?.tradition        ?? '',
+    sampradaya:       liveProfile?.sampradaya       ?? '',
+    ishta_devata:     liveProfile?.ishta_devata     ?? '',
+    spiritual_level:  liveProfile?.spiritual_level  ?? 'jigyasu',
+    kul:              liveProfile?.kul              ?? '',
+    gotra:            liveProfile?.gotra            ?? '',
+    kul_devata:       (liveProfile as any)?.kul_devata       ?? '',
+    home_town:        (liveProfile as any)?.home_town        ?? '',
+    custom_greeting:  (liveProfile as any)?.custom_greeting  ?? '',
+    app_language:     (liveProfile as any)?.app_language     ?? 'en',
+    scripture_script: (liveProfile as any)?.scripture_script ?? 'original',
+    show_transliteration: (liveProfile as any)?.show_transliteration ?? true,
+    meaning_language: (liveProfile as any)?.meaning_language ?? 'en',
   });
 
   const activeTradition = (form.tradition || 'hindu') as TraditionKey;
@@ -201,41 +184,41 @@ export default function ProfileClient({
 
   const { coords, city: liveCity, country: liveCountry, countryCode: liveCountryCode } = useLocation();
 
-  const devata    = ISHTA_DEVATAS.find((d) => d.value === profile?.ishta_devata);
-  const sampr     = SAMPRADAYAS.find((s)  => s.value  === profile?.sampradaya);
-  const initials  = getInitials(profile?.full_name ?? 'S');
-  const sevaScore = profile?.seva_score ?? 0;
-  const streak    = (profile as any)?.shloka_streak ?? 0;
-  const profileCountryCode = (profile as any)?.country_code ?? null;
-  const profileTimezone = (profile as any)?.timezone ?? null;
-  const onesignalPlayerId = (profile as any)?.onesignal_player_id ?? null;
+  const devata    = ISHTA_DEVATAS.find((d) => d.value === liveProfile?.ishta_devata);
+  const sampr     = SAMPRADAYAS.find((s)  => s.value  === liveProfile?.sampradaya);
+  const initials  = getInitials(liveProfile?.full_name ?? 'S');
+  const sevaScore = liveProfile?.seva_score ?? 0;
+  const streak    = (liveProfile as any)?.shloka_streak ?? 0;
+  const profileCountryCode = (liveProfile as any)?.country_code ?? null;
+  const profileTimezone = (liveProfile as any)?.timezone ?? null;
+  const onesignalPlayerId = (liveProfile as any)?.onesignal_player_id ?? null;
   const [notificationPrefs, setNotificationPrefs] = useState({
-    wants_festival_reminders: (profile as any)?.wants_festival_reminders ?? true,
-    wants_shloka_reminders: (profile as any)?.wants_shloka_reminders ?? true,
-    wants_community_notifications: (profile as any)?.wants_community_notifications ?? true,
-    wants_family_notifications: (profile as any)?.wants_family_notifications ?? true,
-    notification_quiet_hours_start: (profile as any)?.notification_quiet_hours_start ?? 22,
-    notification_quiet_hours_end: (profile as any)?.notification_quiet_hours_end ?? 7,
+    wants_festival_reminders: (liveProfile as any)?.wants_festival_reminders ?? true,
+    wants_shloka_reminders: (liveProfile as any)?.wants_shloka_reminders ?? true,
+    wants_community_notifications: (liveProfile as any)?.wants_community_notifications ?? true,
+    wants_family_notifications: (liveProfile as any)?.wants_family_notifications ?? true,
+    notification_quiet_hours_start: (liveProfile as any)?.notification_quiet_hours_start ?? 22,
+    notification_quiet_hours_end: (liveProfile as any)?.notification_quiet_hours_end ?? 7,
   });
 
   // Silently save coords + city + country + country_code when location resolves
   useEffect(() => {
     if (!coords || !userId) return;
     const isSame =
-      profile?.latitude  && Math.abs(coords.lat - (profile.latitude  ?? 0)) < 0.05 &&
-      profile?.longitude && Math.abs(coords.lon - (profile.longitude ?? 0)) < 0.05;
+      liveProfile?.latitude  && Math.abs(coords.lat - (liveProfile.latitude  ?? 0)) < 0.05 &&
+      liveProfile?.longitude && Math.abs(coords.lon - (liveProfile.longitude ?? 0)) < 0.05;
     if (isSame) return;
 
     const update: Record<string, any> = {
       latitude:  coords.lat,
       longitude: coords.lon,
     };
-    if (liveCity        && !profile?.city)         update.city         = liveCity;
-    if (liveCountry     && !profile?.country)      update.country      = liveCountry;
+    if (liveCity        && !liveProfile?.city)         update.city         = liveCity;
+    if (liveCountry     && !liveProfile?.country)      update.country      = liveCountry;
     if (liveCountryCode && !profileCountryCode)
                                                    update.country_code = liveCountryCode;
     supabase.from('profiles').update(update).eq('id', userId);
-  }, [coords, liveCity, liveCountry, liveCountryCode, profile?.latitude, profile?.longitude, profile?.city, profile?.country, profileCountryCode, supabase, userId]);
+  }, [coords, liveCity, liveCountry, liveCountryCode, liveProfile?.latitude, liveProfile?.longitude, liveProfile?.city, liveProfile?.country, profileCountryCode, supabase, userId]);
 
   // Save OneSignal player ID when permission is granted
   useEffect(() => {
@@ -299,10 +282,28 @@ export default function ProfileClient({
     setSaving(true);
     // tradition is locked at signup — never include it in updates
     const { tradition: _locked, ...formToSave } = form;
-    const { error } = await supabase.from('profiles').update(formToSave).eq('id', userId);
-    if (error) toast.error(error.message);
-    else { toast.success('Profile updated 🙏'); setEditing(false); router.refresh(); }
-    setSaving(false);
+    try {
+      await updateProfileMutation.mutateAsync(formToSave);
+      toast.success('Profile updated 🙏');
+      setEditing(false);
+      router.refresh();
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function patchProfile(payload: ProfileUpdate, successMessage: string) {
+    try {
+      await updateProfileMutation.mutateAsync(payload);
+      toast.success(successMessage);
+      router.refresh();
+      return true;
+    } catch (error: any) {
+      toast.error(error.message);
+      return false;
+    }
   }
 
   async function signOut() {
@@ -352,20 +353,11 @@ export default function ProfileClient({
 
   async function saveNotificationPreferences() {
     setSavingNotificationPrefs(true);
-    const { error } = await supabase
-      .from('profiles')
-      .update(notificationPrefs)
-      .eq('id', userId);
-
-    setSavingNotificationPrefs(false);
-
-    if (error) {
-      toast.error(error.message);
-      return;
+    try {
+      await patchProfile(notificationPrefs, 'Notification preferences updated.');
+    } finally {
+      setSavingNotificationPrefs(false);
     }
-
-    toast.success('Notification preferences updated.');
-    router.refresh();
   }
 
   async function unblockProfile(profileId: string) {
@@ -426,28 +418,28 @@ export default function ProfileClient({
     toast.success('Content restored to your feed.');
   }
 
-  const traditionLabel = TRADITIONS.find(t => t.value === (profile as any)?.tradition);
+  const traditionLabel = TRADITIONS.find(t => t.value === (liveProfile as any)?.tradition);
   const identityRows = [
     { label: 'Tradition',    value: traditionLabel ? `${traditionLabel.emoji} ${traditionLabel.label}` : null, emoji: null },
-    { label: sampr ? getSampradayaLabel((profile as any)?.tradition) : 'Sampradaya', value: sampr?.label, emoji: '🏛️' },
-    { label: devata ? getIshtaDevataLabel((profile as any)?.tradition) : 'Ishta Devata', value: devata ? `${devata.emoji} ${devata.label}` : null, emoji: null },
-    { label: 'Gotra',        value: profile?.gotra,                                  emoji: '📿' },
-    { label: 'Kul Devata',   value: (profile as any)?.kul_devata,                   emoji: '🪔' },
-    { label: 'Home Town',    value: (profile as any)?.home_town,                    emoji: '🏡' },
+    { label: sampr ? getSampradayaLabel((liveProfile as any)?.tradition) : 'Sampradaya', value: sampr?.label, emoji: '🏛️' },
+    { label: devata ? getIshtaDevataLabel((liveProfile as any)?.tradition) : 'Ishta Devata', value: devata ? `${devata.emoji} ${devata.label}` : null, emoji: null },
+    { label: 'Gotra',        value: liveProfile?.gotra,                                  emoji: '📿' },
+    { label: 'Kul Devata',   value: (liveProfile as any)?.kul_devata,                   emoji: '🪔' },
+    { label: 'Home Town',    value: (liveProfile as any)?.home_town,                    emoji: '🏡' },
     { label: 'Time Zone',    value: profileTimezone,                                emoji: '🕰️' },
   ].filter((r) => r.value);
   const pathRows = identityRows.filter((row) => ['Tradition', 'Gotra', 'Kul Devata'].includes(row.label));
   const practiceRows = identityRows.filter((row) => ['Sampradaya', 'Ishta Devata'].includes(row.label));
   const placeRows = [
-    { label: 'Current place', value: [profile?.city, profile?.country].filter(Boolean).join(', '), emoji: '📍' },
-    { label: 'Home Town', value: (profile as any)?.home_town, emoji: '🏡' },
+    { label: 'Current place', value: [liveProfile?.city, liveProfile?.country].filter(Boolean).join(', '), emoji: '📍' },
+    { label: 'Home Town', value: (liveProfile as any)?.home_town, emoji: '🏡' },
     { label: 'Time Zone', value: profileTimezone, emoji: '🕰️' },
   ].filter((row) => row.value);
   const languageRows = [
-    { label: 'App language', value: getLanguageLabel(APP_LANGUAGES, (profile as any)?.app_language), emoji: '🌐' },
-    { label: 'Scripture view', value: getLanguageLabel(SCRIPTURE_SCRIPT_OPTIONS, (profile as any)?.scripture_script), emoji: '📜' },
-    { label: 'Transliteration', value: (profile as any)?.show_transliteration ? 'Shown' : 'Hidden', emoji: '🔤' },
-    { label: 'Meaning language', value: getLanguageLabel(MEANING_LANGUAGE_OPTIONS, (profile as any)?.meaning_language), emoji: '🈯' },
+    { label: 'App language', value: getLanguageLabel(APP_LANGUAGES, (liveProfile as any)?.app_language), emoji: '🌐' },
+    { label: 'Scripture view', value: getLanguageLabel(SCRIPTURE_SCRIPT_OPTIONS, (liveProfile as any)?.scripture_script), emoji: '📜' },
+    { label: 'Transliteration', value: (liveProfile as any)?.show_transliteration ? 'Shown' : 'Hidden', emoji: '🔤' },
+    { label: 'Meaning language', value: getLanguageLabel(MEANING_LANGUAGE_OPTIONS, (liveProfile as any)?.meaning_language), emoji: '🈯' },
   ];
 
   return (
@@ -462,7 +454,7 @@ export default function ProfileClient({
       )}
 
       {/* ── Profile Completion Bar ── */}
-      <CompletionBar profile={profile} onEdit={() => setEditing(true)} />
+      <CompletionBar profile={liveProfile} onEdit={() => setEditing(true)} />
 
       {/* ── Hero Card ── */}
       <div className="glass-panel rounded-2xl p-5">
@@ -500,12 +492,12 @@ export default function ProfileClient({
               />
             </div>
             <div>
-              <h1 className="type-screen-title">{profile?.full_name}</h1>
-              <p className="type-body">@{profile?.username}</p>
-              {(profile?.city || profile?.country) && (
+              <h1 className="type-screen-title">{liveProfile?.full_name}</h1>
+              <p className="type-body">@{liveProfile?.username}</p>
+              {(liveProfile?.city || liveProfile?.country) && (
                 <p className="type-micro mt-0.5 flex items-center gap-1">
                   <MapPin size={10} />
-                  {[profile?.city, profile?.country].filter(Boolean).join(', ')}
+                  {[liveProfile?.city, liveProfile?.country].filter(Boolean).join(', ')}
                 </p>
               )}
             </div>
@@ -517,9 +509,9 @@ export default function ProfileClient({
         </div>
 
         <div className="grid grid-cols-3 gap-2">
-          <StatPill label="Threads" value={threadCount} />
-          <StatPill label="Posts"   value={postCount}   />
-          <StatPill label="Streak"  value={streak} suffix="🔥" />
+          <MetricTile label="Threads" value={threadCount} className="bg-white/8 border-white/10" />
+          <MetricTile label="Posts" value={postCount} className="bg-white/8 border-white/10" />
+          <MetricTile label="Streak" value={`${streak}🔥`} className="bg-white/8 border-white/10" />
         </div>
       </div>
 
@@ -528,15 +520,15 @@ export default function ProfileClient({
 
       <div className="grid gap-4">
         {(profile?.bio || pathRows.length > 0) && (
-          <ProfileSectionCard
+          <SurfaceSection
             eyebrow="My Path"
             title="Identity and belonging"
             description="Your dharmic profile."
           >
-            {profile?.bio ? (
+            {liveProfile?.bio ? (
               <div className="rounded-[1.35rem] bg-[var(--brand-primary-soft)] px-4 py-3">
                 <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400 mb-2">About</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{profile.bio}</p>
+                <p className="text-sm text-gray-700 leading-relaxed">{liveProfile.bio}</p>
               </div>
             ) : null}
             {pathRows.length > 0 ? (
@@ -549,11 +541,11 @@ export default function ProfileClient({
                 ))}
               </div>
             ) : null}
-          </ProfileSectionCard>
+          </SurfaceSection>
         )}
 
         {practiceRows.length > 0 && (
-          <ProfileSectionCard
+          <SurfaceSection
             eyebrow="My Practice"
             title="How you walk the path"
             description="Your practice details."
@@ -566,11 +558,11 @@ export default function ProfileClient({
                 </div>
               ))}
             </div>
-          </ProfileSectionCard>
+          </SurfaceSection>
         )}
 
         {placeRows.length > 0 && (
-          <ProfileSectionCard
+          <SurfaceSection
             eyebrow="My Place"
             title="Where sacred time follows you"
             description="Your place and time details."
@@ -583,11 +575,11 @@ export default function ProfileClient({
                 </div>
               ))}
             </div>
-          </ProfileSectionCard>
+          </SurfaceSection>
         )}
       </div>
 
-      <ProfileSectionCard
+      <SurfaceSection
         eyebrow="Notifications"
         title="What should reach you"
         description="Control reminders and quiet hours."
@@ -708,9 +700,9 @@ export default function ProfileClient({
             </p>
           </div>
         </div>
-      </ProfileSectionCard>
+      </SurfaceSection>
 
-      <ProfileSectionCard
+      <SurfaceSection
         eyebrow="Safety"
         title="Visibility and boundaries"
         description="Manage hidden, muted, and blocked activity."
@@ -803,9 +795,9 @@ export default function ProfileClient({
             )}
           </div>
         )}
-      </ProfileSectionCard>
+      </SurfaceSection>
 
-      <ProfileSectionCard
+      <SurfaceSection
         eyebrow="Language"
         title="How sacred text should read"
         description="Keep app language, script view, and meaning preferences separate."
@@ -818,7 +810,7 @@ export default function ProfileClient({
             </div>
           ))}
         </div>
-      </ProfileSectionCard>
+      </SurfaceSection>
 
       {/* ── Edit Form ── */}
       {editing && (
@@ -1048,15 +1040,6 @@ export default function ProfileClient({
         </button>
       </div>
 
-    </div>
-  );
-}
-
-function StatPill({ label, value, suffix }: { label: string; value: number; suffix?: string }) {
-  return (
-    <div className="bg-white/15 rounded-xl px-3 py-2 text-center">
-      <p className="font-bold text-lg text-white">{value}{suffix}</p>
-      <p className="text-white/60 text-[10px]">{label}</p>
     </div>
   );
 }

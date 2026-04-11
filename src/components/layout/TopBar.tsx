@@ -3,12 +3,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import BrandMark from '@/components/BrandMark';
 import { LayoutGrid, X as CloseIcon } from 'lucide-react';
+import { useMarkAllNotificationsReadMutation, useMarkNotificationReadMutation, useNotificationsQuery } from '@/hooks/useNotifications';
 import {
   requestNotificationPermission,
   getPlayerId,
@@ -17,7 +18,6 @@ import {
   loginToOneSignal,
   syncOneSignalContext,
 } from '@/lib/onesignal';
-import type { Notification } from '@/types/database';
 
 const titles: Record<string, string> = {
   '/guest':         'Explore',
@@ -92,12 +92,15 @@ export default function TopBar({
 
   const [open,       setOpen]       = useState(false);
   const [menuOpen,   setMenuOpen]   = useState(false);
-  const [notifs,     setNotifs]     = useState<Notification[]>([]);
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [isHidden, setIsHidden] = useState(false);
   const [pushPromptDismissedUntil, setPushPromptDismissedUntil] = useState<number | null>(null);
   const lastScrollYRef = useRef(0);
   const scrollAccumulatorRef = useRef(0);
+  const notificationsQuery = useNotificationsQuery(userId);
+  const notifs = notificationsQuery.data ?? [];
+  const markOneReadMutation = useMarkNotificationReadMutation(userId);
+  const markAllReadMutation = useMarkAllNotificationsReadMutation(userId);
 
   // Load initial permission state
   useEffect(() => {
@@ -134,22 +137,6 @@ export default function TopBar({
     wantsFestivalReminders,
     wantsShlokaReminders,
   ]);
-
-  // Fetch real notifications from DB
-  const fetchNotifs = useCallback(async () => {
-    if (!userId) return;
-    const { data } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(20);
-    setNotifs((data as Notification[]) ?? []);
-  }, [supabase, userId]);
-
-  useEffect(() => {
-    fetchNotifs();
-  }, [fetchNotifs]);
 
   useEffect(() => {
     function handleScroll() {
@@ -220,11 +207,7 @@ export default function TopBar({
   async function markAllRead() {
     const unreadIds = notifs.filter((n) => !n.read).map((n) => n.id);
     if (!unreadIds.length) return;
-    await supabase
-      .from('notifications')
-      .update({ read: true })
-      .in('id', unreadIds);
-    setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
+    await markAllReadMutation.mutateAsync(unreadIds);
   }
 
   return (
@@ -487,10 +470,9 @@ export default function TopBar({
                             className={`px-4 py-3 flex items-start gap-3 transition cursor-pointer ${
                               !n.read ? 'bg-[color:var(--brand-primary-soft)]/70 hover:bg-[color:var(--brand-primary-soft)]' : 'hover:bg-white/[0.03]'
                             }`}
-                            onClick={() => {
+                            onClick={async () => {
                               if (!n.read) {
-                                supabase.from('notifications').update({ read: true }).eq('id', n.id);
-                                setNotifs((prev) => prev.map((x) => x.id === n.id ? { ...x, read: true } : x));
+                                await markOneReadMutation.mutateAsync(n.id);
                               }
                               setMenuOpen(false);
                               if (!n.action_url) return;

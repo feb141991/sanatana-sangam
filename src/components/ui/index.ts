@@ -3,6 +3,8 @@ export * from './Button';
 export * from './Card';
 export * from './EmptyState';
 export * from './Input';
+export * from './MetricTile';
 export * from './SectionHeading';
 export * from './Skeleton';
 export * from './Spinner';
+export * from './SurfaceSection';
