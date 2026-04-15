@@ -27,9 +27,13 @@ interface Message {
 }
 
 interface Props {
-  userId:    string;
-  userName:  string;
-  tradition: string | null;
+  userId:         string;
+  userName:       string;
+  tradition:      string | null;
+  /** Pre-filled prompt injected via ?prefill= query param (e.g. from deep links) */
+  initialPrompt?: string;
+  /** Short context label shown in header (e.g. "From Pathshala") */
+  contextLabel?:  string;
 }
 
 // ─── Tradition-aware suggestions ──────────────────────────────────────────────
@@ -166,9 +170,9 @@ function VerseChip({ verse }: { verse: ScriptureRef }) {
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function AIChatClient({ userId, userName, tradition }: Props) {
+export default function AIChatClient({ userId, userName, tradition, initialPrompt, contextLabel }: Props) {
   const [messages,   setMessages]   = useState<Message[]>([]);
-  const [input,      setInput]      = useState('');
+  const [input,      setInput]      = useState(initialPrompt ?? '');
   const [loading,    setLoading]    = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);

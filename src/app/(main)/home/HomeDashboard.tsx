@@ -1,24 +1,29 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { MapPin, ChevronDown, ChevronUp, Share2, CalendarDays, X, ChevronLeft, ChevronRight, Pencil, User } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { MapPin, ChevronDown, ChevronUp, Share2, CalendarDays, X, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { createPortal } from 'react-dom';
 import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek,
   eachDayOfInterval, format as fmtDate, isSameDay, isSameMonth,
   isToday as isDayToday, addMonths, subMonths,
 } from 'date-fns';
 import type { Shloka } from '@/lib/shlokas';
-import type { Festival } from '@/lib/festivals';
+import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { DailySacredText } from '@/lib/sacred-texts';
-import { FESTIVALS_2026 } from '@/lib/festivals';
-import { calculatePanchang } from '@/lib/panchang';
+import { calculatePanchang, PANCHANG_TRUST_META } from '@/lib/panchang';
 import { getGreeting, GREETING_POOLS } from '@/lib/traditions';
+import { buildPersonalizedPaths } from '@/lib/seeking-paths';
+import type { GuidedPathProgressRow, GuidedPathStatus } from '@/lib/guided-paths';
+import { buildGuidedPathStatusMap } from '@/lib/guided-paths';
 import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
 import { APP } from '@/lib/config';
+import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
 
 interface Panchang {
   tithi:     string;
@@ -37,6 +42,13 @@ interface SacredTextMeta {
   accentLight:  string;   // light tint hex
 }
 
+interface FeatureTheme {
+  surface: string;
+  border: string;
+  iconWell: string;
+  accent: string;
+}
+
 interface Props {
   userId:            string;
   userName:          string;
@@ -48,23 +60,66 @@ interface Props {
   sacredText:        DailySacredText | null;
   sacredTextMeta:    SacredTextMeta;
   festival:          Festival | null;
+  festivalCalendar:  Festival[];
+  festivalCalendarMeta: FestivalCalendarMeta;
   daysUntilFestival: number | null;
   initialPanchang:   Panchang;
   shlokaStreak:      number;
   lastShlokaDate:    string | null;
   tradition:         string | null;
   sampradaya:        string | null;
+  spiritualLevel:    string | null;
+  seeking:           string[];
   customGreeting:    string | null;
+  guidedPathProgress: GuidedPathProgressRow[];
+  showFirstTimeGuidance: boolean;
 }
 
 const quickAccessItems = [
-  { label: 'Japa Counter',   icon: '📿', href: '/japa',              desc: 'Mantra mala counter',         bg: 'bg-amber-50',   border: 'border-amber-100',   iconBg: 'bg-amber-100'   },
-  { label: 'Nitya Karma',    icon: '🌅', href: '/nitya-karma',       desc: 'Morning sequence',            bg: 'bg-orange-50',  border: 'border-orange-100',  iconBg: 'bg-orange-100'  },
-  { label: 'Pathshala',      icon: '📖', href: '/pathshala',         desc: 'Scripture learning',          bg: 'bg-emerald-50', border: 'border-emerald-100', iconBg: 'bg-emerald-100' },
-  { label: 'My Kul',         icon: '❤️', href: '/kul',               desc: 'Family sadhana together',     bg: 'bg-pink-50',    border: 'border-pink-100',    iconBg: 'bg-pink-100'    },
-  { label: 'Nearby Tirthas', icon: '🛕', href: '/tirtha-map',        desc: 'Find sacred places near you', bg: 'bg-rose-50',    border: 'border-rose-100',    iconBg: 'bg-rose-100'    },
-  { label: 'My Mandali',     icon: '🏡', href: '/mandali',           desc: 'Your local sangam',           bg: 'bg-blue-50',    border: 'border-blue-100',    iconBg: 'bg-blue-100'    },
+  { label: 'Tirtha', icon: '🛕', href: '/tirtha-map', desc: 'Find sacred places near you', theme: 'tirtha' },
+  { label: 'Mandali', icon: '🏡', href: '/mandali', desc: 'Your local sangam', theme: 'mandali' },
+  { label: 'Kul', icon: '❤️', href: '/kul', desc: 'Family sadhana together', theme: 'kul' },
+  { label: 'Pathshala', icon: '📖', href: '/library', desc: 'Tradition-first study tracks', theme: 'pathshala' },
 ];
+
+const HOME_THEMES: Record<string, FeatureTheme> = {
+  panchang: {
+    surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
+    border: 'rgba(212, 166, 70, 0.18)',
+    iconWell: 'rgba(212, 166, 70, 0.12)',
+    accent: 'var(--brand-primary)',
+  },
+  pathshala: {
+    surface: 'linear-gradient(135deg, rgba(54, 54, 50, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
+    border: 'rgba(212, 166, 70, 0.16)',
+    iconWell: 'rgba(212, 166, 70, 0.1)',
+    accent: 'var(--brand-primary)',
+  },
+  bhakti: {
+    surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
+    border: 'rgba(212, 166, 70, 0.16)',
+    iconWell: 'rgba(212, 166, 70, 0.1)',
+    accent: 'var(--brand-primary)',
+  },
+  kul: {
+    surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
+    border: 'rgba(138, 129, 82, 0.2)',
+    iconWell: 'rgba(138, 129, 82, 0.12)',
+    accent: 'var(--brand-secondary)',
+  },
+  mandali: {
+    surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
+    border: 'rgba(157, 133, 80, 0.18)',
+    iconWell: 'rgba(157, 133, 80, 0.12)',
+    accent: 'var(--brand-earth)',
+  },
+  tirtha: {
+    surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
+    border: 'rgba(212, 166, 70, 0.16)',
+    iconWell: 'rgba(212, 166, 70, 0.1)',
+    accent: 'var(--brand-primary)',
+  },
+};
 
 // ── Invite code — deterministic from userId (no DB needed) ─────────────────
 function generateInviteCode(userId: string): string {
@@ -73,6 +128,7 @@ function generateInviteCode(userId: string): string {
 
 // ── Invite Modal ──────────────────────────────────────────────────────────────
 function InviteModal({ userId, onClose }: { userId: string; onClose: () => void }) {
+  const prefersReducedMotion = useReducedMotion();
   const code    = generateInviteCode(userId);
   // Use actual deployment domain at runtime so share links always point to the right URL
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : APP.BASE_URL;
@@ -98,50 +154,78 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end" onClick={onClose}>
-      <div className="w-full bg-white rounded-t-3xl shadow-2xl p-6 space-y-5"
-        onClick={e => e.stopPropagation()}>
-
+    <motion.div
+      className="fixed inset-0 z-50 flex items-end"
+      onClick={onClose}
+      initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+      animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+      exit={prefersReducedMotion ? undefined : { opacity: 0 }}
+    >
+      <motion.div
+        className="w-full rounded-t-3xl p-6 space-y-5"
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: 'linear-gradient(180deg, rgba(51, 51, 48, 0.98), rgba(43, 43, 40, 0.98))',
+          borderTop: '1px solid rgba(212, 166, 70, 0.18)',
+          boxShadow: '0 -18px 44px rgba(0, 0, 0, 0.32)',
+        }}
+        initial={prefersReducedMotion ? undefined : { y: 28, opacity: 0.96 }}
+        animate={prefersReducedMotion ? undefined : { y: 0, opacity: 1 }}
+        exit={prefersReducedMotion ? undefined : { y: 18, opacity: 0.98 }}
+        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+      >
         <div className="flex items-center justify-between">
-          <h3 className="font-display font-bold text-gray-900">Invite Friends & Family</h3>
+          <h3 className="font-display font-bold text-[color:var(--brand-ink)]">Invite Friends & Family</h3>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-            <X size={16} className="text-gray-500" />
+            className="w-8 h-8 rounded-full flex items-center justify-center"
+            style={{ background: 'rgba(212, 166, 70, 0.08)' }}>
+            <X size={16} className="text-[color:var(--brand-muted)]" />
           </button>
         </div>
 
-        <p className="text-sm text-gray-500 leading-relaxed">
-          Share Sanatana Sangam with your family and friends. When they join with your code, they'll be connected to you.
+        <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">
+          Share Sanatana Sangam with your family and friends. They can use your invite code while joining.
         </p>
 
         {/* Invite code display */}
-        <div className="bg-gradient-to-br from-[#7B1A1A]/5 to-orange-50 rounded-2xl p-5 text-center border border-orange-100">
-          <p className="text-xs text-gray-400 mb-2 font-medium uppercase tracking-wider">Your Invite Code</p>
-          <p className="font-display font-bold text-3xl text-[#7B1A1A] tracking-widest">{code}</p>
-          <p className="text-xs text-gray-400 mt-2">{link}</p>
+        <div
+          className="rounded-2xl p-5 text-center border"
+          style={{
+            background: 'linear-gradient(135deg, rgba(212, 166, 70, 0.12), rgba(51, 51, 48, 0.96))',
+            borderColor: 'rgba(212, 166, 70, 0.16)',
+          }}
+        >
+          <p className="text-xs text-[color:var(--brand-muted)] mb-2 font-medium uppercase tracking-wider">Your Invite Code</p>
+          <p className="font-display font-bold text-3xl tracking-widest" style={{ color: 'var(--brand-primary-strong)' }}>{code}</p>
+          <p className="text-xs text-[color:var(--brand-muted)] mt-2">{link}</p>
         </div>
 
         {/* Actions */}
         <div className="grid grid-cols-2 gap-3">
           <button onClick={share}
-            className="py-3 text-white font-semibold rounded-xl hover:opacity-90 transition text-sm"
-            style={{ background: '#7B1A1A' }}>
+            className="py-3 font-semibold rounded-xl hover:opacity-90 transition text-sm text-[#1c1c1a]"
+            style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}>
             Share 🙏
           </button>
           <button onClick={async () => {
             await navigator.clipboard.writeText(code);
             toast.success('Code copied!');
           }}
-            className="py-3 text-[#7B1A1A] font-semibold rounded-xl border border-[#7B1A1A]/20 hover:bg-[#7B1A1A]/5 transition text-sm">
+            className="py-3 font-semibold rounded-xl border transition text-sm"
+            style={{
+              color: 'var(--brand-primary)',
+              borderColor: 'rgba(212, 166, 70, 0.18)',
+              background: 'rgba(51, 51, 48, 0.88)',
+            }}>
             Copy Code
           </button>
         </div>
 
-        <p className="text-xs text-center text-gray-400">
+        <p className="text-xs text-center text-[color:var(--brand-muted)]">
           🙏 Spread the light of dharma
         </p>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -178,6 +262,19 @@ function getTimeGreeting(hour: number): string | null {
   return null; // afternoon → use tradition greeting
 }
 
+function formatTraditionGreetingLabel(tradition: string | null, sampradaya: string | null) {
+  const label = sampradaya && sampradaya !== 'other'
+    ? sampradaya
+    : tradition && tradition !== 'other'
+      ? tradition
+      : 'your path';
+
+  return label
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
 // ── Date Picker Modal ─────────────────────────────────────────────────────────
 const DAY_LABELS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
@@ -186,6 +283,7 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
   onSelect: (date: Date) => void;
   onClose: () => void;
 }) {
+  const prefersReducedMotion = useReducedMotion();
   const [viewDate,      setViewDate]      = useState(new Date(selectedDate));
   const [showYearPicker, setShowYearPicker] = useState(false);
 
@@ -198,13 +296,23 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4" onClick={onClose}>
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      onClick={onClose}
+      initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+      animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+      exit={prefersReducedMotion ? undefined : { opacity: 0 }}
+    >
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/40" />
 
-      <div
+      <motion.div
         className="relative w-80 bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
         onClick={e => e.stopPropagation()}
+        initial={prefersReducedMotion ? undefined : { y: 16, opacity: 0.98, scale: 0.99 }}
+        animate={prefersReducedMotion ? undefined : { y: 0, opacity: 1, scale: 1 }}
+        exit={prefersReducedMotion ? undefined : { y: 12, opacity: 0.98, scale: 0.99 }}
+        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
       >
         {/* Title row */}
         <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-100 flex-shrink-0">
@@ -231,7 +339,7 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
                 onClick={() => { setViewDate(d => new Date(y, d.getMonth(), 1)); setShowYearPicker(false); }}
                 className="py-2 rounded-xl text-xs font-medium transition"
                 style={y === viewDate.getFullYear()
-                  ? { background: '#7B1A1A', color: 'white' }
+                  ? { background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))', color: 'white' }
                   : { background: '#f9fafb', color: '#374151' }}>
                 {y}
               </button>
@@ -256,8 +364,8 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
                     onClick={() => { onSelect(day); onClose(); }}
                     className="h-8 w-8 mx-auto rounded-full text-xs flex items-center justify-center transition active:scale-95"
                     style={
-                      isSelected ? { background: '#7B1A1A', color: 'white', fontWeight: 700 } :
-                      isToday    ? { border: '1.5px solid #7B1A1A', color: '#7B1A1A', fontWeight: 700 } :
+                      isSelected ? { background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))', color: 'white', fontWeight: 700 } :
+                      isToday    ? { border: '1.5px solid var(--brand-primary)', color: 'var(--brand-primary)', fontWeight: 700 } :
                       !inMonth   ? { color: '#d1d5db' } :
                                    { color: '#1f2937' }
                     }>
@@ -268,15 +376,16 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
             </div>
             {/* Jump to today */}
             <div className="mt-3 flex justify-center">
-              <button onClick={() => { onSelect(new Date()); onClose(); }}
-                className="text-xs px-5 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-[#7B1A1A] hover:text-[#7B1A1A] transition font-medium">
+          <button onClick={() => { onSelect(new Date()); onClose(); }}
+            className="text-xs px-5 py-1.5 rounded-full border border-gray-200 text-gray-500 transition font-medium"
+            style={{ borderColor: 'rgba(124, 58, 45, 0.16)', color: 'var(--brand-primary)' }}>
                 Today
               </button>
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -288,78 +397,206 @@ function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onC
   onSave:          (greeting: string | null) => void;
   onClose:         () => void;
 }) {
+  const prefersReducedMotion = useReducedMotion();
   const key  = tradition && sampradaya ? `${tradition}:${sampradaya}` : 'default';
   const pool = (GREETING_POOLS as Record<string, string[]>)[key]
             ?? (GREETING_POOLS as Record<string, string[]>)[`${tradition}:other`]
             ?? (GREETING_POOLS as Record<string, string[]>)['default'];
 
+  const [mounted, setMounted] = useState(false);
   const [selected, setSelected] = useState<string | null>(currentGreeting);
-  const [custom,   setCustom]   = useState('');
+  const [custom,   setCustom]   = useState(() => (
+    currentGreeting && !pool.includes(currentGreeting) ? currentGreeting : ''
+  ));
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end" onClick={onClose}>
-      <div className="w-full bg-white rounded-t-3xl shadow-2xl p-5 space-y-4"
-        onClick={e => e.stopPropagation()}>
+  const pathLabel = formatTraditionGreetingLabel(tradition, sampradaya);
+  const previewGreeting = selected ?? getGreeting(tradition, sampradaya, new Date().getDate());
+  const previewTone = selected
+    ? pool.includes(selected) ? 'Saved tradition greeting' : 'Saved custom greeting'
+    : 'Auto greeting';
 
-        <div className="flex items-center justify-between">
-          <h3 className="font-display font-bold text-gray-900">Change Greeting</h3>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-            <X size={16} className="text-gray-500" />
-          </button>
-        </div>
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-        <div className="space-y-2 max-h-[40vh] overflow-y-auto">
-          <button onClick={() => setSelected(null)}
-            className={`w-full text-left px-4 py-3 rounded-xl border text-sm transition ${
-              selected === null ? 'border-[#7B1A1A] bg-[#7B1A1A]/5 text-[#7B1A1A] font-medium' : 'border-gray-100 text-gray-500'
-            }`}>
-            ✨ Auto — rotates with your tradition
-          </button>
-          {pool.map(g => (
-            <button key={g} onClick={() => { setSelected(g); setCustom(''); }}
-              className={`w-full text-left px-4 py-3 rounded-xl border text-sm transition ${
-                selected === g ? 'border-[#7B1A1A] bg-[#7B1A1A]/5 font-medium' : 'border-gray-100 text-gray-700 hover:border-gray-200'
-              }`}>
-              {g}
-            </button>
-          ))}
-        </div>
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
 
-        <div>
-          <p className="text-xs text-gray-400 mb-1.5">Or write your own:</p>
-          <input type="text" placeholder="e.g. Jai Mahakal! 🔱"
-            value={custom}
-            onChange={e => { setCustom(e.target.value); setSelected(e.target.value || null); }}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm" />
-        </div>
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
 
-        <button onClick={() => { onSave(selected); onClose(); }}
-          className="w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 transition"
-          style={{ background: '#7B1A1A' }}>
-          Save Greeting 🙏
-        </button>
+    window.addEventListener('keydown', handleEscape);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [onClose]);
+
+  if (!mounted) return null;
+
+  return createPortal(
+    <motion.div
+      className="fixed inset-0 z-[80] bg-black/45 backdrop-blur-[2px] overflow-y-auto"
+      onClick={onClose}
+      initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+      animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+      exit={prefersReducedMotion ? undefined : { opacity: 0 }}
+    >
+      <div className="min-h-full flex items-end justify-center p-3 sm:items-center sm:p-6">
+        <motion.div
+          role="dialog"
+          aria-modal="true"
+          className="glass-panel-strong w-full max-w-lg rounded-[1.85rem] overflow-hidden"
+          onClick={(event) => event.stopPropagation()}
+          initial={prefersReducedMotion ? undefined : { y: 24, opacity: 0.98, scale: 0.99 }}
+          animate={prefersReducedMotion ? undefined : { y: 0, opacity: 1, scale: 1 }}
+          exit={prefersReducedMotion ? undefined : { y: 18, opacity: 0.98, scale: 0.99 }}
+          transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="max-h-[calc(100dvh-1.5rem)] overflow-y-auto">
+            <div className="sticky top-0 z-10 bg-white/88 backdrop-blur px-5 py-4 border-b border-white/60 flex items-center justify-between">
+              <div>
+                <h3 className="font-display font-bold text-gray-900 text-lg">Choose your greeting</h3>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Suggested for {pathLabel}. You can stay on auto or save a personal greeting.
+                </p>
+              </div>
+              <button onClick={onClose} className="w-9 h-9 rounded-full bg-white/70 flex items-center justify-center hover:bg-white transition">
+                <X size={16} className="text-gray-500" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              <div className="clay-card rounded-[1.6rem] p-4">
+                <p
+                  className="text-[11px] font-semibold uppercase tracking-[0.18em]"
+                  style={{ color: 'var(--brand-primary)' }}
+                >
+                  {previewTone}
+                </p>
+                <p className="font-display text-xl font-bold text-gray-900 mt-1">{previewGreeting}</p>
+                <p className="text-xs text-gray-500 mt-1">This is what will appear in your home greeting.</p>
+              </div>
+
+              <div className="space-y-2 max-h-[38vh] overflow-y-auto pr-1">
+                <button
+                  onClick={() => { setSelected(null); setCustom(''); }}
+                  className={`w-full text-left px-4 py-3 rounded-2xl border text-sm transition ${
+                    selected === null
+                      ? 'font-medium'
+                      : 'border-gray-100 text-gray-600 hover:border-[#d0a15a]/40'
+                  }`}
+                  style={selected === null ? {
+                    borderColor: 'var(--brand-primary)',
+                    background: 'var(--brand-primary-soft)',
+                    color: 'var(--brand-primary-strong)',
+                  } : undefined}
+                >
+                  <span className="block font-semibold">✨ Auto</span>
+                  <span className="block text-xs mt-0.5 text-gray-500">Rotate a suggested greeting from your tradition.</span>
+                </button>
+
+                <div className="pt-1">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400 mb-2">
+                    Suggested for {pathLabel}
+                  </p>
+                  <div className="space-y-2">
+                    {pool.map((g) => (
+                      <button
+                        key={g}
+                        onClick={() => { setSelected(g); setCustom(''); }}
+                        className={`w-full text-left px-4 py-3 rounded-2xl border text-sm transition ${
+                          selected === g
+                            ? 'font-medium'
+                            : 'border-gray-100 text-gray-700 hover:border-[#d0a15a]/40'
+                        }`}
+                        style={selected === g ? {
+                          borderColor: 'var(--brand-primary)',
+                          background: 'var(--brand-primary-soft)',
+                          color: 'var(--brand-primary-strong)',
+                        } : undefined}
+                      >
+                        {g}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs text-gray-400 mb-1.5">Or write your own greeting:</p>
+                <input
+                  type="text"
+                  placeholder="e.g. Jai Mahakal! 🔱"
+                  value={custom}
+                  onChange={(event) => {
+                    const nextValue = event.target.value;
+                    setCustom(nextValue);
+                    setSelected(nextValue.trim() || null);
+                  }}
+                  className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-[color:var(--brand-primary)] outline-none text-sm"
+                />
+              </div>
+
+              <button
+                onClick={() => { onSave(selected); onClose(); }}
+                className="glass-button-primary w-full py-3 text-white font-semibold rounded-2xl hover:opacity-90 transition"
+              >
+                Save Greeting 🙏
+              </button>
+            </div>
+          </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>,
+    document.body
   );
 }
 
 // ── Calendar Modal ────────────────────────────────────────────────────────────
-function CalendarModal({ onClose, onDateSelect }: { onClose: () => void; onDateSelect?: (date: Date) => void }) {
+function CalendarModal({
+  festivals,
+  calendarMeta,
+  onClose,
+  onDateSelect,
+}: {
+  festivals: Festival[];
+  calendarMeta: FestivalCalendarMeta;
+  onClose: () => void;
+  onDateSelect?: (date: Date) => void;
+}) {
+  const prefersReducedMotion = useReducedMotion();
   const todayStr = new Date().toISOString().split('T')[0];
-  const upcoming = FESTIVALS_2026.filter(f => f.date >= todayStr);
-  const past     = FESTIVALS_2026.filter(f => f.date <  todayStr);
+  const upcoming = festivals.filter(f => f.date >= todayStr);
+  const past     = festivals.filter(f => f.date <  todayStr);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end" onClick={onClose}>
-      <div className="w-full bg-white rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
-        onClick={e => e.stopPropagation()}>
-
+    <motion.div
+      className="fixed inset-0 z-50 flex items-end"
+      onClick={onClose}
+      initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+      animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+      exit={prefersReducedMotion ? undefined : { opacity: 0 }}
+    >
+      <motion.div
+        className="w-full bg-white rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
+        onClick={e => e.stopPropagation()}
+        initial={prefersReducedMotion ? undefined : { y: 26, opacity: 0.98 }}
+        animate={prefersReducedMotion ? undefined : { y: 0, opacity: 1 }}
+        exit={prefersReducedMotion ? undefined : { y: 18, opacity: 0.98 }}
+        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-gray-100">
           <div className="flex items-center gap-2">
-            <CalendarDays size={18} style={{ color: '#7B1A1A' }} />
-            <h2 className="font-display font-bold text-gray-900 text-base">Parva Calendar 2026</h2>
-            {onDateSelect && <span className="text-xs text-orange-500 ml-1">tap date → view Panchang</span>}
+            <CalendarDays size={18} style={{ color: 'var(--brand-primary)' }} />
+            <div>
+              <h2 className="font-display font-bold text-gray-900 text-base">Parva Calendar</h2>
+              <p className="text-[10px] text-gray-500 mt-0.5">{calendarMeta.label} · {calendarMeta.coverage}</p>
+            </div>
+            {onDateSelect && <span className="text-xs ml-1" style={{ color: 'var(--brand-primary)' }}>tap date → view Panchang</span>}
           </div>
           <button onClick={onClose}
             className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
@@ -368,6 +605,9 @@ function CalendarModal({ onClose, onDateSelect }: { onClose: () => void; onDateS
         </div>
 
         <div className="overflow-y-auto flex-1 px-4 py-3 space-y-2 pb-8">
+          <div className="rounded-2xl border px-3 py-2.5 text-xs leading-relaxed text-gray-600" style={{ background: 'rgba(223, 156, 171, 0.09)', borderColor: 'rgba(223, 156, 171, 0.2)' }}>
+            <span className="font-semibold text-gray-800">Calendar note:</span> {calendarMeta.sourceNote}
+          </div>
           {upcoming.length > 0 && (
             <>
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 mt-1">Upcoming</p>
@@ -376,9 +616,9 @@ function CalendarModal({ onClose, onDateSelect }: { onClose: () => void; onDateS
                 return (
                   <div key={f.name + f.date}
                     onClick={() => { if (onDateSelect) { onDateSelect(new Date(f.date + 'T00:00:00')); onClose(); } }}
-                    className={`flex items-center gap-3 bg-white border border-gray-100 rounded-2xl p-3 transition ${onDateSelect ? 'hover:border-[#7B1A1A]/40 cursor-pointer active:scale-95' : 'hover:border-[#7B1A1A]/20'}`}>
+                    className="flex items-center gap-3 bg-white border border-gray-100 rounded-2xl p-3 transition cursor-pointer active:scale-95">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-                      style={{ background: '#7B1A1A0D' }}>
+                      style={{ background: 'rgba(124, 58, 45, 0.08)' }}>
                       {f.emoji}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -387,9 +627,9 @@ function CalendarModal({ onClose, onDateSelect }: { onClose: () => void; onDateS
                     </div>
                     <div className="text-right flex-shrink-0">
                       {days === 0 ? (
-                        <span className="text-xs font-bold px-2 py-1 rounded-full text-white" style={{ background: '#7B1A1A' }}>Today</span>
+                        <span className="text-xs font-bold px-2 py-1 rounded-full text-white" style={{ background: 'var(--brand-primary)' }}>Today</span>
                       ) : days === 1 ? (
-                        <span className="text-xs font-semibold text-orange-600">Tomorrow</span>
+                        <span className="text-xs font-semibold" style={{ color: 'var(--brand-primary)' }}>Tomorrow</span>
                       ) : (
                         <span className="text-xs text-gray-400">{days}d</span>
                       )}
@@ -415,8 +655,8 @@ function CalendarModal({ onClose, onDateSelect }: { onClose: () => void; onDateS
             </>
           )}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -431,16 +671,26 @@ export default function HomeDashboard({
   sacredText,
   sacredTextMeta,
   festival,
+  festivalCalendar,
+  festivalCalendarMeta,
   daysUntilFestival,
   initialPanchang,
   shlokaStreak:   initialStreak,
   lastShlokaDate,
   tradition,
   sampradaya,
+  spiritualLevel,
+  seeking,
   customGreeting,
+  guidedPathProgress,
+  showFirstTimeGuidance,
 }: Props) {
   const supabase = createClient();
   const router   = useRouter();
+  const prefersReducedMotion = useReducedMotion();
+  const searchParams = useSearchParams();
+  const shlokaRef = useRef<HTMLDivElement | null>(null);
+  const festivalsRef = useRef<HTMLDivElement | null>(null);
 
   const [shlokaExpanded,    setShlokaExpanded]    = useState(false);
   const [panchang,          setPanchang]          = useState<Panchang>(initialPanchang);
@@ -449,6 +699,10 @@ export default function HomeDashboard({
   const [greetingSheetOpen, setGreetingSheetOpen] = useState(false);
   const [inviteOpen,        setInviteOpen]        = useState(false);
   const [localGreeting,     setLocalGreeting]     = useState<string | null>(customGreeting);
+  const [guidedPathStatusMap, setGuidedPathStatusMap] = useState<Record<string, GuidedPathStatus>>(
+    () => buildGuidedPathStatusMap(guidedPathProgress)
+  );
+  const [guidedPathBusyId, setGuidedPathBusyId] = useState<string | null>(null);
   const [streak,           setStreak]           = useState(initialStreak);
   const [selectedDate,     setSelectedDate]     = useState<Date>(new Date());
   const [readToday,        setReadToday]        = useState(() => {
@@ -474,6 +728,25 @@ export default function HomeDashboard({
     });
   }, [selectedDate, lat, lon]);
 
+  useEffect(() => {
+    const focus = searchParams.get('focus');
+    if (!focus) return;
+
+    const timer = window.setTimeout(() => {
+      if (focus === 'shloka') {
+        setShlokaExpanded(true);
+        shlokaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      if (focus === 'festivals') {
+        setCalendarOpen(true);
+        festivalsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 150);
+
+    return () => window.clearTimeout(timer);
+  }, [searchParams]);
+
   const todayStr   = new Date().toISOString().split('T')[0];
   const selDateStr = selectedDate.toISOString().split('T')[0];
   const isToday    = selDateStr === todayStr;
@@ -487,7 +760,16 @@ export default function HomeDashboard({
   }
 
   const displayCity = liveCity || savedCity;
-
+  const personalizedPaths = buildPersonalizedPaths({
+    seeking,
+    spiritualLevel,
+    city: displayCity || null,
+  });
+  const visiblePersonalizedPaths = personalizedPaths.filter((path) => {
+    const status = guidedPathStatusMap[path.id];
+    return status !== 'dismissed' && status !== 'completed';
+  });
+  const hiddenPersonalizedCount = personalizedPaths.length - visiblePersonalizedPaths.length;
   // Welcome back: user hasn't been active in 2+ days
   const isWelcomeBack = (() => {
     if (!lastShlokaDate) return false;
@@ -498,15 +780,79 @@ export default function HomeDashboard({
   // Time-aware greeting
   const hour        = new Date().getHours();
   const timeGreeting = getTimeGreeting(hour);
-  const tradGreeting = localGreeting || getGreeting(tradition, sampradaya, new Date().getDate());
-  const greeting     = isWelcomeBack && !localGreeting
-    ? 'Welcome back! 🙏'
-    : timeGreeting || tradGreeting;
+  const autoGreeting = getGreeting(tradition, sampradaya, new Date().getDate());
+  const greeting     = localGreeting ?? (isWelcomeBack ? 'Welcome back! 🙏' : autoGreeting);
+  const greetingMode = localGreeting
+    ? 'Custom greeting saved'
+    : timeGreeting
+      ? `${timeGreeting} · auto tradition greeting`
+      : 'Auto tradition greeting';
 
   async function saveGreeting(newGreeting: string | null) {
     setLocalGreeting(newGreeting);
-    await supabase.from('profiles').update({ custom_greeting: newGreeting }).eq('id', userId);
+    const { error } = await supabase.from('profiles').update({ custom_greeting: newGreeting }).eq('id', userId);
+    if (error) {
+      setLocalGreeting(customGreeting);
+      toast.error(error.message);
+      return;
+    }
     toast.success(newGreeting ? 'Greeting updated 🙏' : 'Greeting reset to auto');
+  }
+
+  async function updateGuidedPath(pathId: string, status: GuidedPathStatus) {
+    const previousState = { ...guidedPathStatusMap };
+    const now = new Date().toISOString();
+
+    setGuidedPathBusyId(pathId);
+    setGuidedPathStatusMap((current) => ({ ...current, [pathId]: status }));
+
+    const { error } = await supabase
+      .from('guided_path_progress')
+      .upsert({
+        user_id: userId,
+        path_id: pathId,
+        status,
+        updated_at: now,
+        last_interacted_at: now,
+        completed_at: status === 'completed' ? now : null,
+      }, {
+        onConflict: 'user_id,path_id',
+      });
+
+    setGuidedPathBusyId(null);
+
+    if (error) {
+      setGuidedPathStatusMap(previousState);
+      toast.error(error.message);
+      return;
+    }
+
+    toast.success(status === 'completed' ? 'Path marked complete.' : 'Path hidden for now.');
+  }
+
+  async function resetGuidedPaths() {
+    const pathIds = personalizedPaths.map((path) => path.id);
+    if (pathIds.length === 0) return;
+
+    setGuidedPathBusyId('reset-all');
+    const previousState = { ...guidedPathStatusMap };
+    setGuidedPathStatusMap({});
+
+    const { error } = await supabase
+      .from('guided_path_progress')
+      .delete()
+      .eq('user_id', userId)
+      .in('path_id', pathIds);
+
+    setGuidedPathBusyId(null);
+
+    if (error) {
+      setGuidedPathStatusMap(previousState);
+      toast.error(error.message);
+      return;
+    }
+
+    toast.success('Guided paths restored.');
   }
 
   // ── Shloka streak ──────────────────────────────────────────────────────────
@@ -571,66 +917,181 @@ export default function HomeDashboard({
     }
   }
 
+  const homeHeroTheme = HOME_THEMES.pathshala;
+  const panchangTheme = HOME_THEMES.panchang;
+  const sacredTextTheme = tradition === 'hindu' ? HOME_THEMES.pathshala : HOME_THEMES.bhakti;
+
   return (
     <div className="space-y-4 pb-2 fade-in">
 
       {/* ── Greeting ── */}
-      <div className="pt-2 flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <button
-            onClick={() => setGreetingSheetOpen(true)}
-            className="group flex items-center gap-1.5 text-left"
-          >
-            <h1 className="font-display text-xl font-bold text-gray-900 leading-tight">
-              {greeting}, {userName.split(' ')[0]}!
-            </h1>
-            <Pencil size={13} className="text-gray-300 group-hover:text-[#7B1A1A] transition flex-shrink-0 mt-1" />
-          </button>
-          {displayCity && (
-            <p className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
-              <MapPin size={12} className="text-[#7B1A1A]" />
-              {displayCity}
-              {coords && <span className="text-[10px] text-gray-400 ml-1">📍 live</span>}
+      <div
+        className="surface-outline rounded-[1.9rem] px-4 py-4 sm:px-5 sm:py-5"
+        style={{ background: homeHeroTheme.surface, borderColor: homeHeroTheme.border }}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <p className="type-card-label">
+              Home
             </p>
-          )}
-        </div>
-        {/* Profile avatar — replaces Profile from bottom nav */}
-        <Link href="/profile" className="flex-shrink-0">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm"
-            style={{ background: 'linear-gradient(135deg, #7B1A1A, #b45309)' }}>
-            <User size={18} />
+            <button
+              onClick={() => setGreetingSheetOpen(true)}
+              className="group mt-1 -ml-1 rounded-2xl px-1 py-1 flex items-center gap-1.5 text-left transition"
+            >
+              <h1 className="type-screen-title">
+                {greeting}, {userName.split(' ')[0]}!
+              </h1>
+              <Pencil size={13} className="theme-dim group-hover:text-[color:var(--brand-primary)] transition flex-shrink-0 mt-1" />
+            </button>
+            <p className="type-body mt-1.5">
+              {showFirstTimeGuidance ? greetingMode : 'A quieter sacred day, ready when you are.'}
+            </p>
+            {displayCity && (
+              <p className="type-body mt-2 flex items-center gap-1">
+                <MapPin size={12} style={{ color: homeHeroTheme.accent }} />
+                {displayCity}
+                {coords && <span className="type-tab ml-1">live</span>}
+              </p>
+            )}
           </div>
-        </Link>
+          <div
+            className="hidden sm:flex items-center justify-center rounded-[1.35rem] px-3 py-2 type-chip"
+            style={{
+              background: homeHeroTheme.iconWell,
+              color: 'var(--text-cream)',
+            }}
+          >
+            Today
+          </div>
+        </div>
       </div>
 
+      {showFirstTimeGuidance && personalizedPaths.length > 0 && (
+        <section className="space-y-2">
+          <div>
+            <p className="type-card-label">Start here</p>
+            <p className="type-body mt-0.5">
+              These first steps are based on what you chose during signup. Once you settle in, Home stays lighter and the rest can come through reminders.
+            </p>
+          </div>
+
+          {visiblePersonalizedPaths.length > 0 ? (
+            <MotionStagger className="grid gap-3" delay={0.04}>
+              {visiblePersonalizedPaths.map((path) => (
+              <MotionItem key={path.id}>
+              <div className={`clay-card ${path.accentClass} rounded-[1.8rem] p-4`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="type-card-label">
+                      {path.eyebrow}
+                    </p>
+                    <h2 className="type-card-heading mt-1">{path.title}</h2>
+                  </div>
+                  <div className="flex flex-wrap justify-end gap-2">
+                    {path.badges.map((badge) => (
+                      <span key={badge} className="clay-pill type-chip">
+                        {badge}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <p className="type-body mt-2">{path.description}</p>
+
+                <div className="grid gap-2 sm:grid-cols-2 mt-4">
+                  {path.actions.map((action) => (
+                    <Link
+                      key={`${path.id}-${action.href}`}
+                      href={action.href}
+                      className="clay-action rounded-2xl px-4 py-3 flex items-center gap-3 transition hover:-translate-y-0.5"
+                    >
+                      <span className="clay-icon-well text-base">{action.icon}</span>
+                      <span className="type-card-heading">{action.label}</span>
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between gap-3 mt-4 pt-3 border-t border-white/55">
+                  <p className="type-micro">
+                    Keep this visible until you complete it, or hide it for later.
+                  </p>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => updateGuidedPath(path.id, 'dismissed')}
+                      disabled={guidedPathBusyId === path.id}
+                      className="px-3 py-1.5 rounded-full type-chip border border-[rgba(212,166,70,0.14)] bg-[color:var(--brand-accent)] transition disabled:opacity-50"
+                    >
+                      Later
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => updateGuidedPath(path.id, 'completed')}
+                      disabled={guidedPathBusyId === path.id}
+                      className="px-3 py-1.5 rounded-full type-chip text-[#1c1c1a] glass-button-primary disabled:opacity-50"
+                    >
+                      Done
+                    </button>
+                  </div>
+                </div>
+              </div>
+              </MotionItem>
+              ))}
+            </MotionStagger>
+          ) : (
+            <div className="glass-panel rounded-[1.75rem] px-4 py-4 flex items-center justify-between gap-3">
+              <div>
+                <p className="type-card-heading">Your guided paths are tucked away</p>
+                <p className="type-micro mt-1">
+                  {hiddenPersonalizedCount} path{hiddenPersonalizedCount === 1 ? '' : 's'} completed or dismissed. Bring them back anytime.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={resetGuidedPaths}
+                disabled={guidedPathBusyId === 'reset-all'}
+                className="glass-button-secondary px-4 py-2 rounded-full type-chip disabled:opacity-50"
+                style={{ color: 'var(--brand-primary)' }}
+              >
+                Show again
+              </button>
+            </div>
+          )}
+        </section>
+      )}
+
       {/* ── Panchang Widget ── */}
-      <div className="rounded-2xl overflow-hidden shadow-sm" style={{ background: '#7B1A1A' }}>
-        <div className="px-4 pt-3 pb-1 flex items-center gap-2">
+      <div
+        className="rounded-[1.95rem] overflow-hidden border shadow-sm decorative-orbit"
+        style={{ background: panchangTheme.surface, borderColor: panchangTheme.border, boxShadow: '0 16px 34px rgba(28, 26, 23, 0.06)' }}
+      >
+        <div className="px-4 pt-4 pb-2 flex items-center gap-2">
           <span className="text-base">🪔</span>
-          <span className="text-white/80 text-xs font-medium tracking-wider uppercase">
+          <span className="type-card-label">
             {isToday ? 'Aaj Ka Panchang' : 'Panchang'}
           </span>
           {/* Day navigation */}
           <div className="ml-auto flex items-center gap-1">
             <button onClick={() => navigateDay(-1)}
               className="w-6 h-6 rounded-full flex items-center justify-center transition"
-              style={{ background: 'rgba(255,255,255,0.15)' }}>
-              <ChevronLeft size={13} color="white" />
+              style={{ background: panchangTheme.iconWell }}>
+              <ChevronLeft size={13} color="var(--text-cream)" />
             </button>
             {/* Tap date label to open full date picker */}
             <button onClick={() => setDatePickerOpen(true)}
-              className="text-white/90 text-xs min-w-[80px] text-center font-medium hover:text-white transition underline-offset-2 hover:underline">
+              className="type-micro min-w-[80px] text-center transition underline-offset-2 hover:underline"
+              style={{ color: 'var(--text-cream)' }}>
               {isToday ? 'Today' : selectedDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
             </button>
             <button onClick={() => navigateDay(1)}
               className="w-6 h-6 rounded-full flex items-center justify-center transition"
-              style={{ background: 'rgba(255,255,255,0.15)' }}>
-              <ChevronRight size={13} color="white" />
+              style={{ background: panchangTheme.iconWell }}>
+              <ChevronRight size={13} color="var(--text-cream)" />
             </button>
             {!isToday && (
               <button onClick={() => setSelectedDate(new Date())}
-                className="text-[10px] px-2 py-0.5 rounded-full font-medium ml-1"
-                style={{ background: 'rgba(255,255,255,0.2)', color: 'white' }}>
+                className="type-tab ml-1 rounded-full px-2 py-0.5"
+                style={{ background: panchangTheme.iconWell, color: 'var(--text-cream)' }}>
                 Today
               </button>
             )}
@@ -648,17 +1109,17 @@ export default function HomeDashboard({
 
         {/* Rahu Kaal + action buttons */}
         <div className="mx-4 mb-3 rounded-xl px-3 py-2 flex items-center gap-2"
-          style={{ background: 'rgba(255,255,255,0.12)' }}>
+          style={{ background: 'rgba(40, 40, 37, 0.92)', border: `1px solid ${panchangTheme.border}` }}>
           <span className="text-sm">⚠️</span>
           <div className="flex-1">
-            <span className="text-white/70 text-xs">Rahu Kaal: </span>
-            <span className="text-white text-xs font-semibold">{panchang.rahuKaal}</span>
+            <span className="type-card-label">Rahu Kaal: </span>
+            <span className="type-micro">{panchang.rahuKaal}</span>
           </div>
           {/* Full Panchang page link */}
           <Link
             href="/panchang"
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition"
-            style={{ background: 'rgba(255,255,255,0.18)', color: 'white' }}
+            className="flex items-center gap-1 rounded-full px-2.5 py-1 type-chip transition"
+            style={{ background: panchangTheme.iconWell, color: 'var(--text-cream)' }}
           >
             <CalendarDays size={12} /> Full Panchang
           </Link>
@@ -666,29 +1127,40 @@ export default function HomeDashboard({
           <button
             onClick={sharePanchang}
             className="w-7 h-7 rounded-full flex items-center justify-center transition"
-            style={{ background: 'rgba(255,255,255,0.18)' }}
+            style={{ background: panchangTheme.iconWell }}
             title="Share Panchang"
           >
-            <Share2 size={13} color="white" />
+            <Share2 size={13} color="var(--text-cream)" />
           </button>
+        </div>
+        <div className="type-micro px-4 pb-4">
+          {PANCHANG_TRUST_META.precisionLabel}. {PANCHANG_TRUST_META.guidanceNote}
         </div>
       </div>
 
       {/* ── Daily Sacred Text — tradition-aware ── */}
-      <div className="bg-white rounded-2xl shadow-sm p-4"
-        style={{ borderWidth: 1, borderStyle: 'solid', borderColor: sacredTextMeta.accentLight }}>
+      <div
+        ref={shlokaRef}
+        className="rounded-[1.85rem] shadow-sm p-4"
+        style={{
+          borderWidth: 1,
+          borderStyle: 'solid',
+          borderColor: sacredTextTheme.border,
+          background: sacredTextTheme.surface,
+          boxShadow: '0 16px 32px rgba(28, 26, 23, 0.05)',
+        }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <span className="text-lg">{sacredTextMeta.icon}</span>
-            <span className="font-display font-semibold text-gray-800 text-sm">{sacredTextMeta.label}</span>
+            <span className="type-card-heading">{sacredTextMeta.label}</span>
             {streak > 0 && (
-              <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100">
+              <span className="type-chip rounded-full border px-2 py-0.5" style={{ color: 'var(--chip-text)', background: 'var(--chip-fill)', borderColor: 'rgba(212, 166, 70, 0.16)' }}>
                 🔥 {streak}
               </span>
             )}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full">
+            <span className="type-chip rounded-full bg-[color:var(--chip-fill)] px-2 py-0.5 text-[color:var(--chip-text)]">
               {sacredText ? sacredText.source : shloka.source}
             </span>
             <button onClick={shareShloka}
@@ -701,151 +1173,189 @@ export default function HomeDashboard({
         </div>
 
         {/* Original script */}
-        <p className="font-devanagari leading-relaxed text-base mb-2 whitespace-pre-line"
-          style={{ color: sacredTextMeta.accentColour }}>
+        <p className="type-sanskrit mb-2 whitespace-pre-line">
           {sacredText ? sacredText.original : shloka.sanskrit}
         </p>
 
         {/* Transliteration */}
-        <p className="text-sm text-gray-500 italic leading-relaxed mb-3 whitespace-pre-line">
+        <p className="type-body mb-3 whitespace-pre-line italic">
           {sacredText ? sacredText.transliteration : shloka.transliteration}
         </p>
 
         <div className="flex items-center justify-between">
           <button onClick={() => setShlokaExpanded(!shlokaExpanded)}
-            className="flex items-center gap-1 text-xs font-medium"
+            className="type-micro flex items-center gap-1"
             style={{ color: sacredTextMeta.accentColour }}>
             {shlokaExpanded ? 'Hide meaning' : 'Show meaning'}
             {shlokaExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
           </button>
 
           <button onClick={markShlokaRead} disabled={readToday}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition ${
+            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 type-chip transition ${
               readToday
-                ? 'bg-green-50 text-green-700 border border-green-200 cursor-default'
-                : 'text-white hover:opacity-90'
+                ? 'cursor-default'
+                : 'text-[#1c1c1a] hover:opacity-90'
             }`}
-            style={readToday ? {} : { background: sacredTextMeta.accentColour }}>
+            style={readToday
+              ? { background: 'var(--chip-fill)', color: 'var(--chip-text)', border: '1px solid rgba(212, 166, 70, 0.16)' }
+              : { background: sacredTextMeta.accentColour }}>
             {readToday
               ? '✓ Read today'
               : `${sacredTextMeta.icon} Mark as read`}
           </button>
         </div>
 
+        <AnimatePresence initial={false}>
         {shlokaExpanded && (
-          <div className="mt-3 pt-3 border-t" style={{ borderColor: sacredTextMeta.accentLight }}>
-            <p className="text-sm text-gray-700 leading-relaxed">
+          <motion.div
+            className="mt-3 pt-3 border-t"
+            style={{ borderColor: sacredTextMeta.accentLight }}
+            initial={prefersReducedMotion ? undefined : { opacity: 0, height: 0, y: -6 }}
+            animate={prefersReducedMotion ? undefined : { opacity: 1, height: 'auto', y: 0 }}
+            exit={prefersReducedMotion ? undefined : { opacity: 0, height: 0, y: -6 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <p className="type-body">
               {sacredText ? sacredText.meaning : shloka.meaning}
             </p>
-          </div>
+          </motion.div>
         )}
+        </AnimatePresence>
       </div>
 
       {/* ── Coming Up ── */}
-      <div className="rounded-2xl border overflow-hidden shadow-sm"
-        style={{ background: 'linear-gradient(135deg, #FFF8F0 0%, #FDF6E3 100%)', borderColor: '#f8c88a' }}>
+      <div
+        ref={festivalsRef}
+        className="rounded-[1.85rem] border overflow-hidden shadow-sm decorative-orbit"
+        style={{ background: HOME_THEMES.tirtha.surface, borderColor: HOME_THEMES.tirtha.border, boxShadow: '0 16px 32px rgba(28, 26, 23, 0.05)' }}>
         <div className="px-4 pt-3 pb-1 flex items-center justify-between">
-          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Coming Up</p>
+          <p className="type-card-label">Coming up</p>
           <button
             onClick={() => setCalendarOpen(true)}
-            className="text-xs font-semibold flex items-center gap-1 hover:underline"
-            style={{ color: '#7B1A1A' }}>
+            className="type-micro flex items-center gap-1 hover:underline theme-ink">
             <CalendarDays size={11} /> All Festivals →
           </button>
         </div>
         {festival && daysUntilFestival !== null ? (
           <div className="px-4 pb-3 flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
-              style={{ background: '#7B1A1A1A' }}>
+              style={{ background: HOME_THEMES.tirtha.iconWell }}>
               {festival.emoji}
             </div>
             <div className="flex-1">
-              <p className="font-display font-bold text-gray-900 text-base">{festival.name}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{festival.description}</p>
+              <p className="type-card-heading">{festival.name}</p>
+              <p className="type-body mt-0.5">{festival.description}</p>
             </div>
             <div className="text-center">
-              <div className="font-display font-bold text-2xl text-[#7B1A1A]">
+              <div className="type-metric">
                 {daysUntilFestival === 0 ? '🎉' : daysUntilFestival}
               </div>
-              <div className="text-xs text-gray-400">
+              <div className="type-micro">
                 {daysUntilFestival === 0 ? 'Today!' : daysUntilFestival === 1 ? 'Tomorrow' : 'days'}
               </div>
             </div>
           </div>
         ) : (
-          <div className="px-4 pb-3 text-sm text-gray-500">
-            Tap <span className="font-semibold text-[#7B1A1A]">All Festivals</span> to browse the Parva calendar 🙏
+          <div className="type-body px-4 pb-3">
+            Tap <span className="type-chip" style={{ color: 'var(--chip-text)' }}>All Festivals</span> to browse the Parva calendar 🙏
           </div>
         )}
+        <div className="type-micro px-4 pb-3">
+          {festivalCalendarMeta.sourceNote}
+        </div>
       </div>
 
       {/* ── Quick Access ── */}
       <div>
-        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">Quick Access</p>
-        <div className="grid grid-cols-2 gap-3">
+        <p className="type-section-label mb-2">Explore</p>
+        <MotionStagger className="grid grid-cols-2 gap-3" delay={0.08}>
           {quickAccessItems.map((item) => (
-            <Link key={item.href} href={item.href}
-              className={`${item.bg} ${item.border} border rounded-2xl p-4 flex items-start gap-3 hover:shadow-sm active:scale-95 transition-all`}>
-              <div className={`${item.iconBg} w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0`}>
+            <MotionItem key={item.href}>
+            <Link
+              href={item.href}
+              className="border rounded-[1.55rem] p-4 flex items-start gap-3 active:scale-[0.99] transition-all decorative-orbit"
+              style={{
+                background: HOME_THEMES[item.theme].surface,
+                borderColor: HOME_THEMES[item.theme].border,
+                boxShadow: '0 12px 26px rgba(28, 26, 23, 0.05)',
+              }}
+            >
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                style={{ background: HOME_THEMES[item.theme].iconWell }}
+              >
                 {item.icon}
               </div>
               <div>
-                <p className="font-semibold text-gray-800 text-sm leading-tight">{item.label}</p>
-                <p className="text-xs text-gray-500 mt-0.5 leading-tight">{item.desc}</p>
+                <p className="type-card-heading" style={{ color: 'var(--text-cream)' }}>{item.label}</p>
+                <p className="hidden sm:block type-micro mt-0.5 leading-tight">{item.desc}</p>
               </div>
             </Link>
+            </MotionItem>
           ))}
-        </div>
+        </MotionStagger>
       </div>
 
       {/* ── Vichaar Sabha CTA ── */}
       <Link href="/vichaar-sabha"
-        className="block w-full rounded-2xl border border-dashed border-[#7B1A1A]/30 p-4 text-center hover:bg-[#7B1A1A]/5 transition-colors">
+        className="block w-full rounded-[1.7rem] border p-4 text-center transition-colors"
+        style={{ borderColor: HOME_THEMES.pathshala.border, background: HOME_THEMES.pathshala.surface }}>
         <span className="text-lg">💬</span>
-        <p className="font-semibold text-[#7B1A1A] text-sm mt-1">Join the Vichaar Sabha</p>
-        <p className="text-xs text-gray-500 mt-0.5">Discuss dharma, share wisdom, ask questions</p>
+        <p className="type-card-heading mt-1" style={{ color: 'var(--text-cream)' }}>Join the Vichaar Sabha</p>
+        <p className="type-micro mt-0.5">Discuss dharma, share wisdom, ask questions</p>
       </Link>
 
       {/* ── Invite Friends ── */}
       <button onClick={() => setInviteOpen(true)}
-        className="w-full rounded-2xl border border-dashed border-orange-200 p-4 text-center hover:bg-orange-50 transition-colors">
+        className="w-full rounded-[1.7rem] border p-4 text-center transition-colors"
+        style={{ borderColor: HOME_THEMES.kul.border, background: HOME_THEMES.kul.surface }}>
         <span className="text-lg">🙏</span>
-        <p className="font-semibold text-orange-700 text-sm mt-1">Invite Friends & Family</p>
-        <p className="text-xs text-gray-400 mt-0.5">Share Sanatana Sangam — spread the light of dharma</p>
+        <p className="type-card-heading mt-1" style={{ color: 'var(--text-cream)' }}>Invite Friends & Family</p>
+        <p className="type-micro mt-0.5">Share Sanatana Sangam — spread the light of dharma</p>
       </button>
 
       {/* ── Parva / Festivals modal ── */}
-      {calendarOpen && (
-        <CalendarModal
-          onClose={() => setCalendarOpen(false)}
-          onDateSelect={(date) => { setSelectedDate(date); setCalendarOpen(false); }}
-        />
-      )}
+      <AnimatePresence>
+        {calendarOpen && (
+          <CalendarModal
+            festivals={festivalCalendar}
+            calendarMeta={festivalCalendarMeta}
+            onClose={() => setCalendarOpen(false)}
+            onDateSelect={(date) => { setSelectedDate(date); setCalendarOpen(false); }}
+          />
+        )}
+      </AnimatePresence>
 
       {/* ── Full date picker (tap date label in Panchang) ── */}
-      {datePickerOpen && (
-        <DatePickerModal
-          selectedDate={selectedDate}
-          onSelect={(date) => setSelectedDate(date)}
-          onClose={() => setDatePickerOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {datePickerOpen && (
+          <DatePickerModal
+            selectedDate={selectedDate}
+            onSelect={(date) => setSelectedDate(date)}
+            onClose={() => setDatePickerOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* ── Greeting edit sheet (tap greeting text) ── */}
-      {greetingSheetOpen && (
-        <GreetingEditSheet
-          tradition={tradition}
-          sampradaya={sampradaya}
-          currentGreeting={localGreeting}
-          onSave={saveGreeting}
-          onClose={() => setGreetingSheetOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {greetingSheetOpen && (
+          <GreetingEditSheet
+            tradition={tradition}
+            sampradaya={sampradaya}
+            currentGreeting={localGreeting}
+            onSave={saveGreeting}
+            onClose={() => setGreetingSheetOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* ── Invite modal ── */}
-      {inviteOpen && (
-        <InviteModal userId={userId} onClose={() => setInviteOpen(false)} />
-      )}
+      <AnimatePresence>
+        {inviteOpen && (
+          <InviteModal userId={userId} onClose={() => setInviteOpen(false)} />
+        )}
+      </AnimatePresence>
 
     </div>
   );
@@ -854,8 +1364,8 @@ export default function HomeDashboard({
 function PanchangItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="py-1.5 pr-2">
-      <p className="text-white/60 text-[10px] uppercase tracking-wider">{label}</p>
-      <p className="text-white font-semibold text-sm leading-snug">{value}</p>
+      <p className="type-card-label">{label}</p>
+      <p className="type-card-heading">{value}</p>
     </div>
   );
 }
