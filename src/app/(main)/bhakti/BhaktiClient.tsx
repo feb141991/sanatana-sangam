@@ -131,7 +131,7 @@ function AmbientSpecks() {
 /* ─── Practice portal cards ──────────────────────────────────────── */
 const PORTALS = [
   {
-    href: '/bhakti/mala',
+    href: '/japa',
     emoji: '📿',
     title: 'Japa',
     sub: 'Mala & Mantra',
