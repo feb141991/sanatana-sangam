@@ -224,7 +224,7 @@ function ScriptureTab({
       {/* Entries */}
       {entries.length === 0 ? (
         <div className="text-center py-10">
-          <p className="text-sm text-gray-400">No results for "{query}"</p>
+          <p className="text-sm text-gray-400">No results for &ldquo;{query}&rdquo;</p>
         </div>
       ) : (
         entries.map(e => (
@@ -365,7 +365,7 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
           <Link href={`/pathshala/${enrollment.path_id}/lesson`}
             className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-white font-semibold text-sm"
             style={{ background: meta.accentColour }}>
-            <Play size={14} /> Today's Lesson
+            <Play size={14} /> Today&apos;s Lesson
           </Link>
           <Link href={`/pathshala/${enrollment.path_id}/recite`}
             className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl font-semibold text-sm border"
