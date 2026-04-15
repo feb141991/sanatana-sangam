@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import BottomNav from '@/components/layout/BottomNav';
 import TopBar from '@/components/layout/TopBar';
@@ -34,9 +35,14 @@ export default async function MainLayout({
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('latitude, longitude, city, country, country_code, tradition, avatar_url, full_name, username, wants_festival_reminders, wants_shloka_reminders, wants_community_notifications, wants_family_notifications')
+      .select('latitude, longitude, city, country, country_code, tradition, avatar_url, full_name, username, wants_festival_reminders, wants_shloka_reminders, wants_community_notifications, wants_family_notifications, onboarding_completed')
       .eq('id', user.id)
       .single();
+
+    // New users who haven't completed onboarding go there first
+    if (profile && !profile.onboarding_completed) {
+      redirect('/onboarding');
+    }
 
     savedLat         = profile?.latitude     ?? null;
     savedLon         = profile?.longitude    ?? null;
