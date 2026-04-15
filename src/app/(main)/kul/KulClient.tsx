@@ -158,8 +158,8 @@ function FamilyProfileSheet({
                 : 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))'}
             />
             <div className="min-w-0">
-              <h2 className="text-lg font-bold text-gray-900 truncate">{name}</h2>
-              <p className="text-sm text-gray-500">
+              <h2 className="text-lg font-bold text-[color:var(--brand-ink)] truncate">{name}</h2>
+              <p className="text-sm text-[color:var(--brand-muted)]">
                 {member.role === 'guardian' ? 'Kul Guardian' : 'Kul Member'}
                 {profile?.username ? ` · @${profile.username}` : ''}
               </p>
@@ -168,7 +168,7 @@ function FamilyProfileSheet({
           <button
             type="button"
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-white/85 border border-white/80 flex items-center justify-center text-gray-500"
+            className="w-9 h-9 rounded-full glass-panel border border-white/10 flex items-center justify-center text-[color:var(--brand-muted)]"
             aria-label="Close family profile"
           >
             <X size={16} />
@@ -177,37 +177,37 @@ function FamilyProfileSheet({
 
         <div className="glass-panel rounded-[1.5rem] p-4 space-y-3">
           {location ? (
-            <div className="flex items-center gap-2 text-sm text-gray-700">
+            <div className="flex items-center gap-2 text-sm text-[color:var(--brand-ink)]">
               <span className="text-base">📍</span>
               <span>{location}</span>
             </div>
           ) : null}
-          <div className="flex items-center gap-2 text-sm text-gray-700">
+          <div className="flex items-center gap-2 text-sm text-[color:var(--brand-ink)]">
             <span className="text-base">🔥</span>
             <span>{profile?.shloka_streak ?? 0} day shloka streak</span>
           </div>
           {profile?.bio ? (
-            <p className="text-sm text-gray-700 leading-relaxed">{profile.bio}</p>
+            <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed">{profile.bio}</p>
           ) : (
-            <p className="text-sm text-gray-500">This family member has not added a short introduction yet.</p>
+            <p className="text-sm text-[color:var(--brand-muted)]">This family member has not added a short introduction yet.</p>
           )}
         </div>
 
         {detailRows.length > 0 && (
-          <div className="bg-white rounded-[1.5rem] border border-white/80 p-4">
-            <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400 mb-3">Family profile</p>
+          <div className="glass-panel rounded-[1.5rem] border border-white/8 p-4">
+            <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-[color:var(--brand-muted)] mb-3">Family profile</p>
             <div className="space-y-2">
               {detailRows.map((row) => (
-                <div key={row.label} className="flex items-center justify-between gap-4 py-2 border-b border-gray-100 last:border-b-0">
-                  <span className="text-sm text-gray-500">{row.label}</span>
-                  <span className="text-sm font-medium text-gray-800 text-right">{row.value}</span>
+                <div key={row.label} className="flex items-center justify-between gap-4 py-2 border-b border-white/6 last:border-b-0">
+                  <span className="text-sm text-[color:var(--brand-muted)]">{row.label}</span>
+                  <span className="text-sm font-medium text-[color:var(--brand-ink)] text-right">{row.value}</span>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        <p className="text-xs text-gray-400 leading-relaxed">
+        <p className="text-xs text-[color:var(--brand-muted)] leading-relaxed">
           Family profiles show only Kul-safe details so the space stays warm, useful, and private.
         </p>
       </div>
@@ -292,18 +292,18 @@ function FamilyLineageSheet({
               <FamilyKeepsakeStage member={member} />
             </div>
             <div className="min-w-0">
-              <h2 className="text-lg font-bold text-gray-900 leading-tight">{member.name}</h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <h2 className="text-lg font-bold text-[color:var(--brand-ink)] leading-tight">{member.name}</h2>
+              <p className="text-sm text-[color:var(--brand-muted)] mt-1">
                 {member.role || 'Family member'}
                 {member.generation ? ` · Generation ${member.generation}` : ''}
               </p>
-              <p className="text-xs text-gray-400 mt-1">{lifeLabel}</p>
+              <p className="text-xs text-[color:var(--brand-muted)]/70 mt-1">{lifeLabel}</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-white/85 border border-white/80 flex items-center justify-center text-gray-500"
+            className="w-9 h-9 rounded-full glass-panel border border-white/10 flex items-center justify-center text-[color:var(--brand-muted)]"
             aria-label="Close lineage profile"
           >
             <X size={16} />
@@ -311,28 +311,28 @@ function FamilyLineageSheet({
         </div>
 
         <div className="glass-panel rounded-[1.5rem] p-4 space-y-3">
-          <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400">Lineage snapshot</p>
-          <div className="space-y-2 text-sm text-gray-700">
-            {parent ? <p><span className="font-semibold text-gray-900">Parent:</span> {parent.name}</p> : null}
-            {spouse ? <p><span className="font-semibold text-gray-900">Spouse:</span> {spouse.name}</p> : null}
-            {member.birth_date ? <p><span className="font-semibold text-gray-900">Birth date:</span> {new Date(member.birth_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p> : null}
-            {member.marriage_date ? <p><span className="font-semibold text-gray-900">Marriage:</span> {new Date(member.marriage_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p> : null}
-            {member.death_date ? <p><span className="font-semibold text-gray-900">In remembrance:</span> {new Date(member.death_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p> : null}
+          <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-[color:var(--brand-muted)]">Lineage snapshot</p>
+          <div className="space-y-2 text-sm text-[color:var(--brand-ink)]">
+            {parent ? <p><span className="font-semibold text-[color:var(--brand-ink)]">Parent:</span> {parent.name}</p> : null}
+            {spouse ? <p><span className="font-semibold text-[color:var(--brand-ink)]">Spouse:</span> {spouse.name}</p> : null}
+            {member.birth_date ? <p><span className="font-semibold text-[color:var(--brand-ink)]">Birth date:</span> {new Date(member.birth_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p> : null}
+            {member.marriage_date ? <p><span className="font-semibold text-[color:var(--brand-ink)]">Marriage:</span> {new Date(member.marriage_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p> : null}
+            {member.death_date ? <p><span className="font-semibold text-[color:var(--brand-ink)]">In remembrance:</span> {new Date(member.death_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p> : null}
           </div>
-          <p className="text-sm text-gray-600 leading-relaxed">
+          <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">
             {member.notes?.trim() || 'No family note has been added yet. This is a good place later for stories, values, and memories that make the Vansh feel alive.'}
           </p>
         </div>
 
-        <div className="bg-white rounded-[1.5rem] border border-white/80 p-4">
-          <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-gray-400 mb-3">Family dates</p>
+        <div className="glass-panel rounded-[1.5rem] border border-white/8 p-4">
+          <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-[color:var(--brand-muted)] mb-3">Family dates</p>
           {relatedEvents.length > 0 ? (
             <div className="space-y-2">
               {relatedEvents.slice(0, 3).map((event) => (
-                <div key={event.id} className="flex items-center justify-between gap-3 rounded-2xl border border-gray-100 px-3 py-2">
+                <div key={event.id} className="flex items-center justify-between gap-3 rounded-2xl border border-white/8 px-3 py-2">
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{event.title}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p className="text-sm font-medium text-[color:var(--brand-ink)]">{event.title}</p>
+                    <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">
                       {EVENT_EMOJI[event.event_type] ?? '📅'} {event.event_type.replace('_', ' ')}
                     </p>
                   </div>
@@ -343,7 +343,7 @@ function FamilyLineageSheet({
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-500">No linked family dates yet. Add birthdays, anniversaries, or remembrance days to make this branch feel lived in.</p>
+            <p className="text-sm text-[color:var(--brand-muted)]">No linked family dates yet. Add birthdays, anniversaries, or remembrance days to make this branch feel lived in.</p>
           )}
         </div>
 
@@ -409,34 +409,34 @@ function NoKulPrompt({ userId, userName }: { userId: string; userName: string })
         🏡
       </div>
       <div>
-        <h1 className="font-display font-bold text-3xl text-gray-900 mb-2">Kul</h1>
+        <h1 className="font-display font-bold text-3xl text-[color:var(--brand-ink)] mb-2">Kul</h1>
         <p className="font-semibold text-sm mb-3" style={{ color: 'var(--brand-primary)' }}>कुल — Your Family Sangam</p>
-        <p className="text-gray-500 max-w-sm text-sm leading-relaxed">
+        <p className="text-[color:var(--brand-muted)] max-w-sm text-sm leading-relaxed">
           A private space for your family to learn, practice dharma together — tasks, streaks, chat, and more.
         </p>
       </div>
 
       {/* Tab selector */}
-      <div className="flex bg-gray-100 rounded-2xl p-1 w-full max-w-sm">
+      <div className="flex glass-panel rounded-2xl p-1 w-full max-w-sm border border-white/8">
         {(['create', 'join'] as const).map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${tab === t ? 'bg-white shadow-sm font-semibold' : 'text-gray-500'}`}
-            style={tab === t ? { color: 'var(--brand-primary)' } : undefined}>
+            className={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${tab === t ? 'text-[#1c1c1a] shadow-sm font-semibold' : 'text-[color:var(--brand-muted)]'}`}
+            style={tab === t ? { background: 'var(--brand-primary)' } : undefined}>
             {t === 'create' ? '✨ Create Kul' : '🔗 Join Kul'}
           </button>
         ))}
       </div>
 
       {tab === 'create' ? (
-        <div className="bg-white rounded-2xl border border-orange-100 shadow-sm p-5 w-full max-w-sm space-y-4">
+        <div className="glass-panel rounded-2xl border border-white/8 p-5 w-full max-w-sm space-y-4">
           {/* Emoji picker */}
           <div>
-            <p className="text-xs text-gray-400 mb-2 font-medium">Choose your Kul symbol</p>
+            <p className="text-xs text-[color:var(--brand-muted)] mb-2 font-medium">Choose your Kul symbol</p>
             <div className="flex gap-2 flex-wrap justify-center">
               {KUL_EMOJIS.map(e => (
                 <button key={e} onClick={() => setEmoji(e)}
-                  className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center transition ${emoji === e ? 'border-2 border-[color:var(--brand-primary)]' : 'border border-gray-100 hover:border-orange-200'}`}
-                  style={emoji === e ? { background: 'rgba(31, 107, 114, 0.08)' } : undefined}>
+                  className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center transition ${emoji === e ? 'border-2 border-[color:var(--brand-primary)]' : 'border border-white/10 hover:border-white/20'}`}
+                  style={emoji === e ? { background: 'rgba(212,166,70,0.14)' } : undefined}>
                   {e}
                 </button>
               ))}
@@ -445,29 +445,29 @@ function NoKulPrompt({ userId, userName }: { userId: string; userName: string })
           <input type="text" placeholder="Name your Kul (e.g. Sharma Parivar)"
             value={kulName} onChange={e => setKulName(e.target.value)}
             maxLength={40}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[color:var(--brand-primary)] outline-none text-sm" />
+            className="w-full px-4 py-3 rounded-xl border border-white/12 bg-white/6 text-[color:var(--brand-ink)] placeholder:text-[color:var(--brand-muted)] focus:border-white/24 outline-none text-sm" />
           <button onClick={createKul} disabled={kulMutations.createKul.isPending || !kulName.trim()}
-            className="w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
+            className="w-full py-3 text-[#1c1c1a] font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
             style={{ background: 'var(--brand-primary)' }}>
             {kulMutations.createKul.isPending ? 'Creating…' : `Create ${emoji} ${kulName || 'My Kul'} 🙏`}
           </button>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-orange-100 shadow-sm p-5 w-full max-w-sm space-y-4">
-          <p className="text-sm text-gray-500 text-left">Enter the 6-character invite code from your family guardian.</p>
+        <div className="glass-panel rounded-2xl border border-white/8 p-5 w-full max-w-sm space-y-4">
+          <p className="text-sm text-[color:var(--brand-muted)] text-left">Enter the 6-character invite code from your family guardian.</p>
           <input type="text" placeholder="e.g. AB12CD"
             value={joinCode} onChange={e => setJoinCode(e.target.value.toUpperCase())}
             maxLength={6}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[color:var(--brand-primary)] outline-none text-sm tracking-widest font-bold text-center text-2xl uppercase" />
+            className="w-full px-4 py-3 rounded-xl border border-white/12 bg-white/6 text-[color:var(--brand-ink)] placeholder:text-[color:var(--brand-muted)] focus:border-white/24 outline-none text-sm tracking-widest font-bold text-center text-2xl uppercase" />
           <button onClick={joinKul} disabled={kulMutations.joinKul.isPending || joinCode.length < 4}
-            className="w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
+            className="w-full py-3 text-[#1c1c1a] font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
             style={{ background: 'var(--brand-primary)' }}>
             {kulMutations.joinKul.isPending ? 'Joining…' : 'Join Kul 🙏'}
           </button>
         </div>
       )}
 
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-[color:var(--brand-muted)]">
         Want this sooner? Share the app with your family 🙏
       </p>
     </div>
