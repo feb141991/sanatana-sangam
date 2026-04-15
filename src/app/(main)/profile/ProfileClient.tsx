@@ -853,8 +853,36 @@ export default function ProfileClient({
         title="How sacred text should read"
         description="Keep app language, script view, and meaning preferences separate."
       >
+        {/* Quick inline app language switcher */}
+        <div className="mb-4">
+          <p className="text-xs text-[color:var(--brand-muted)] mb-2">🌐 App language</p>
+          <div className="flex gap-2">
+            {APP_LANGUAGES.map((lang) => {
+              const active = ((liveProfile as any)?.app_language ?? 'en') === lang.value;
+              return (
+                <button
+                  key={lang.value}
+                  onClick={() => patchProfile({ app_language: lang.value }, `Language set to ${lang.label} 🙏`)}
+                  className="flex-1 py-2 rounded-xl text-sm font-semibold transition-all border"
+                  style={active ? {
+                    background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))',
+                    color: '#1c1c1a',
+                    borderColor: 'transparent',
+                  } : {
+                    background: 'rgba(212,166,70,0.06)',
+                    color: 'var(--brand-muted)',
+                    borderColor: 'rgba(212,166,70,0.14)',
+                  }}
+                >
+                  {lang.label}
+                </button>
+              );
+            })}
+          </div>
+          <p className="text-[10px] text-[color:var(--brand-muted)]/60 mt-1.5">Changes apply on next page load</p>
+        </div>
         <div className="divide-y divide-white/5">
-          {languageRows.map(({ label, value, emoji }) => (
+          {languageRows.slice(1).map(({ label, value, emoji }) => (
             <div key={label} className="flex items-center justify-between py-2.5 gap-4">
               <span className="text-sm theme-dim">{emoji ? `${emoji} ` : ''}{label}</span>
               <span className="text-sm font-medium theme-ink text-right">{value}</span>
