@@ -59,7 +59,14 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Props)
 
   // ── Load sequence ──────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!isReady || !engine) return;
+    // Safety timeout — always stop spinner after 4 s even if engine never loads
+    const timeout = setTimeout(() => {
+      setSteps((prev) => (prev.length === 0 ? FALLBACK_STEPS : prev));
+      setGreeting((prev) => prev || meta.greeting);
+      setLoading(false);
+    }, 4000);
+
+    if (!isReady || !engine) return () => clearTimeout(timeout);
 
     async function load() {
       try {
@@ -81,11 +88,13 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Props)
           setStreak(str);
         } catch { /* silent */ }
       } finally {
+        clearTimeout(timeout);
         setLoading(false);
       }
     }
 
     load();
+    return () => clearTimeout(timeout);
   }, [isReady, engine, userId, tradition, meta.greeting]);
 
   // ── Mark a step ────────────────────────────────────────────────────────────

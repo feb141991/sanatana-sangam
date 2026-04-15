@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ArrowLeft, Share2 } from 'lucide-react';
 import { calculatePanchang } from '@/lib/panchang';
 import type { PanchangData } from '@/lib/panchang';
@@ -90,10 +90,74 @@ function GlassCard({ children, className = '' }: { children: React.ReactNode; cl
   );
 }
 
+// ─── One-liner info for each panchang element ─────────────────────────────────
+const INFO_TEXT: Record<string, string> = {
+  Tithi:             'Lunar day (1–30). Each tithi has a presiding deity and governs which activities are auspicious.',
+  Nakshatra:         "Moon's mansion in 1 of 27 star-clusters. Your moon nakshatra shapes emotion, instinct, and timing.",
+  Yoga:              'Sun + Moon combined longitude across 27 yogas. Indicates the overall quality and nature of the day.',
+  Vara:              'Vedic day of the week. Each day has a ruling planet and presiding deity who blesses related acts.',
+  Sunrise:           'Calculated for your location. Brahma Muhurta starts 96 minutes before sunrise — the ideal waking time.',
+  Sunset:            'Sandhya kaal — ideal for evening prayers, japa, and quiet reflection as day meets night.',
+  'Rahu Kaal':       'A 90-min daily window ruled by Rahu (shadow planet). Avoid starting new ventures or auspicious acts.',
+  'Abhijit Muhurat': 'The most auspicious ~48-min window around solar noon. Ideal for important new beginnings.',
+};
+
+// ─── Inline tooltip ────────────────────────────────────────────────────────────
+function InfoTooltip({ text }: { text: string }) {
+  const [show, setShow] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!show) return;
+    function handler(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setShow(false);
+    }
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [show]);
+
+  return (
+    <div ref={ref} className="relative flex-shrink-0">
+      <button
+        onClick={(e) => { e.stopPropagation(); setShow((s) => !s); }}
+        className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold transition hover:opacity-80"
+        style={{
+          background: 'rgba(255,255,255,0.1)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          color: 'rgba(255,255,255,0.55)',
+        }}
+        aria-label="More info"
+      >
+        i
+      </button>
+      <AnimatePresence>
+        {show && (
+          <motion.div
+            initial={{ opacity: 0, y: 4, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 2, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            className="absolute bottom-7 right-0 z-50 w-56 rounded-xl px-3 py-2.5 text-left"
+            style={{
+              background: 'rgba(8,6,22,0.97)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(14px)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+            }}
+          >
+            <p className="text-[11px] leading-relaxed text-white/75">{text}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 // ─── Panchang row ─────────────────────────────────────────────────────────────
-function Row({ emoji, label, value, accent, warn = false }: {
-  emoji: string; label: string; value: string; accent: string; warn?: boolean;
+function Row({ emoji, label, value, accent, warn = false, infoKey }: {
+  emoji: string; label: string; value: string; accent: string; warn?: boolean; infoKey?: string;
 }) {
+  const infoText = infoKey ? INFO_TEXT[infoKey] : undefined;
   return (
     <div className="flex items-center gap-3 px-4 py-3 rounded-xl"
       style={{
@@ -105,6 +169,7 @@ function Row({ emoji, label, value, accent, warn = false }: {
         <p className="text-[10px] text-white/40 font-medium uppercase tracking-wider">{label}</p>
         <p className={`font-semibold text-sm mt-0.5 ${warn ? 'text-orange-300' : 'text-white/90'}`}>{value}</p>
       </div>
+      {infoText && <InfoTooltip text={infoText} />}
     </div>
   );
 }
@@ -341,19 +406,19 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
           className="space-y-2">
 
           <div className="grid grid-cols-2 gap-2">
-            <Row emoji="📅" label="Tithi"     value={p.tithi}     accent={tradMeta.accent} />
-            <Row emoji="⭐" label="Nakshatra" value={p.nakshatra} accent={tradMeta.accent} />
-            <Row emoji="🕉️" label="Yoga"      value={p.yoga}      accent={tradMeta.accent} />
-            <Row emoji="📆" label="Vara"      value={p.vara}      accent={tradMeta.accent} />
+            <Row emoji="📅" label="Tithi"     value={p.tithi}     accent={tradMeta.accent} infoKey="Tithi" />
+            <Row emoji="⭐" label="Nakshatra" value={p.nakshatra} accent={tradMeta.accent} infoKey="Nakshatra" />
+            <Row emoji="🕉️" label="Yoga"      value={p.yoga}      accent={tradMeta.accent} infoKey="Yoga" />
+            <Row emoji="📆" label="Vara"      value={p.vara}      accent={tradMeta.accent} infoKey="Vara" />
           </div>
 
           <div className="grid grid-cols-2 gap-2">
-            <Row emoji="🌅" label="Sunrise" value={p.sunrise} accent={tradMeta.accent} />
-            <Row emoji="🌆" label="Sunset"  value={p.sunset}  accent={tradMeta.accent} />
+            <Row emoji="🌅" label="Sunrise" value={p.sunrise} accent={tradMeta.accent} infoKey="Sunrise" />
+            <Row emoji="🌆" label="Sunset"  value={p.sunset}  accent={tradMeta.accent} infoKey="Sunset" />
           </div>
 
-          <Row emoji="⚠️" label="Rahu Kaal — avoid auspicious starts" value={p.rahuKaal}         accent={tradMeta.accent} warn />
-          <Row emoji="✨" label="Abhijit Muhurat — most auspicious"    value={p.abhijitMuhurat}   accent={tradMeta.accent} />
+          <Row emoji="⚠️" label="Rahu Kaal — avoid auspicious starts" value={p.rahuKaal}       accent={tradMeta.accent} warn infoKey="Rahu Kaal" />
+          <Row emoji="✨" label="Abhijit Muhurat — most auspicious"    value={p.abhijitMuhurat} accent={tradMeta.accent} infoKey="Abhijit Muhurat" />
 
           {/* Guidance */}
           <div className="rounded-xl px-4 py-3"

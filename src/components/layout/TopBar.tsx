@@ -8,7 +8,6 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import BrandMark from '@/components/BrandMark';
-import { LayoutGrid, X as CloseIcon } from 'lucide-react';
 import { useMarkAllNotificationsReadMutation, useMarkNotificationReadMutation, useNotificationsQuery } from '@/hooks/useNotifications';
 import {
   requestNotificationPermission,
@@ -33,14 +32,11 @@ const titles: Record<string, string> = {
 
 const PUSH_PROMPT_DISMISS_KEY = 'sanatana-push-prompt-dismissed-until';
 const PUSH_PROMPT_COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000;
-// Menu surfaces pages NOT reachable from the bottom nav
-const MVP_MENU_ITEMS = [
-  { href: '/panchang',   label: 'Panchang',  emoji: '🪔' },
-  { href: '/bhakti',     label: 'Bhakti',    emoji: '✨' },
-  { href: '/ai-chat',    label: 'Ask AI',    emoji: '🤖' },
-  { href: '/japa',       label: 'Japa',      emoji: '📿' },
-  { href: '/nitya-karma',label: 'Nitya',     emoji: '🌅' },
-  { href: '/profile',    label: 'Profile',   emoji: '👤' },
+// Quick-access links shown directly in the top bar (pages not in bottom nav)
+const QUICK_LINKS = [
+  { href: '/panchang',    label: 'Panchang', emoji: '🪔' },
+  { href: '/bhakti',      label: 'Bhakti',   emoji: '✨' },
+  { href: '/nitya-karma', label: 'Nitya',    emoji: '🌅' },
 ] as const;
 
 const shellTint = {
@@ -90,7 +86,6 @@ export default function TopBar({
   );
 
   const [open,       setOpen]       = useState(false);
-  const [menuOpen,   setMenuOpen]   = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [isHidden, setIsHidden] = useState(false);
   const [pushPromptDismissedUntil, setPushPromptDismissedUntil] = useState<number | null>(null);
@@ -144,7 +139,7 @@ export default function TopBar({
       const delta = currentY - previousY;
       const absDelta = Math.abs(delta);
 
-      if (open || menuOpen) {
+      if (open) {
         setIsHidden(false);
         scrollAccumulatorRef.current = 0;
       } else if (currentY <= 32) {
@@ -171,7 +166,7 @@ export default function TopBar({
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [menuOpen, open]);
+  }, [open]);
 
   const unreadCount = notifs.filter((n) => !n.read).length;
   const shouldSuppressPrompt = Boolean(
@@ -185,14 +180,7 @@ export default function TopBar({
     && (permission === 'denied' || (wantsAnyNotifications && !shouldSuppressPrompt));
 
   async function handleBellClick() {
-    setMenuOpen(false);
     setOpen((prev) => !prev);
-    setIsHidden(false);
-  }
-
-  function handleMenuToggle() {
-    setOpen(false);
-    setMenuOpen((prev) => !prev);
     setIsHidden(false);
   }
 
@@ -242,95 +230,28 @@ export default function TopBar({
             </div>
           ) : (
             <>
-              <div className="relative">
-                <button
-                  onClick={handleMenuToggle}
-                  aria-label="Open app menu"
-                className="h-9 rounded-full px-3 border transition flex items-center gap-2 text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary-strong)]"
-                style={{
-                  borderColor: 'rgba(212, 166, 70, 0.18)',
-                  background: 'linear-gradient(135deg, rgba(51, 51, 48, 0.96), rgba(43, 43, 40, 0.92))',
-                }}
-              >
-                  <LayoutGrid size={15} />
-                  <span className="type-micro hidden sm:inline">Menu</span>
-                </button>
-
-                <AnimatePresence>
-                  {menuOpen && (
-                    <motion.div
-                      initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10, scale: 0.985 }}
-                      animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
-                      exit={prefersReducedMotion ? undefined : { opacity: 0, y: 6, scale: 0.985 }}
-                      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                      className="glass-panel-strong absolute left-0 top-11 w-72 rounded-3xl overflow-hidden z-50 origin-top-left"
+              {/* Quick-access links — emoji icon pills for pages not in bottom nav */}
+              <div className="flex items-center gap-1">
+                {QUICK_LINKS.map((item) => {
+                  const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      aria-label={item.label}
+                      title={item.label}
+                      className="flex h-8 w-8 items-center justify-center rounded-full text-base transition"
+                      style={{
+                        background: active
+                          ? 'rgba(212,166,70,0.18)'
+                          : 'rgba(212,166,70,0.07)',
+                        border: `1px solid ${active ? 'rgba(212,166,70,0.32)' : 'rgba(212,166,70,0.12)'}`,
+                      }}
                     >
-                      <div className="px-4 py-3 border-b border-black/5 flex items-center justify-between">
-                        <span className="font-semibold text-sm text-[color:var(--brand-ink)]">Sanatana Sangam</span>
-                        <button
-                          onClick={() => setMenuOpen(false)}
-                          className="w-8 h-8 rounded-full transition flex items-center justify-center text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary-strong)]"
-                          style={{ background: 'rgba(212, 166, 70, 0.08)' }}
-                          aria-label="Close menu"
-                        >
-                          <CloseIcon size={15} />
-                        </button>
-                      </div>
-                      <motion.div
-                        className="grid grid-cols-2 gap-2 p-3"
-                        initial="hidden"
-                        animate="show"
-                        variants={{
-                          hidden: {},
-                          show: {
-                            transition: {
-                              staggerChildren: prefersReducedMotion ? 0 : 0.04,
-                              delayChildren: prefersReducedMotion ? 0 : 0.03,
-                            },
-                          },
-                        }}
-                      >
-                        {MVP_MENU_ITEMS.map((item) => {
-                          const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-                          return (
-                          <motion.div
-                            key={item.href}
-                            variants={{
-                              hidden: { opacity: 0, y: 8 },
-                              show: { opacity: 1, y: 0, transition: { duration: 0.22 } },
-                            }}
-                          >
-                            <Link
-                              href={item.href}
-                              onClick={() => setMenuOpen(false)}
-                              className="block rounded-[1.15rem] border px-3 py-3 transition"
-                              style={
-                                active
-                                  ? {
-                                      borderColor: 'rgba(212, 166, 70, 0.22)',
-                                      background: 'linear-gradient(135deg, rgba(212, 166, 70, 0.16), rgba(51, 51, 48, 0.96))',
-                                      boxShadow: '0 12px 26px rgba(0, 0, 0, 0.2)',
-                                    }
-                                  : {
-                                      borderColor: 'rgba(212, 166, 70, 0.12)',
-                                      background: 'rgba(51, 51, 48, 0.82)',
-                                    }
-                              }
-                            >
-                              <p className="text-base">{item.emoji}</p>
-                              <p
-                                className="mt-2 text-sm font-semibold"
-                                style={{ color: active ? 'var(--brand-primary-strong)' : 'var(--brand-ink)' }}
-                              >
-                                {item.label}
-                              </p>
-                            </Link>
-                          </motion.div>
-                        )})}
-                      </motion.div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      {item.emoji}
+                    </Link>
+                  );
+                })}
               </div>
 
               {/* Bell */}
@@ -473,7 +394,6 @@ export default function TopBar({
                               if (!n.read) {
                                 await markOneReadMutation.mutateAsync(n.id);
                               }
-                              setMenuOpen(false);
                               if (!n.action_url) return;
                               if (/^https?:\/\//.test(n.action_url)) {
                                 window.location.href = n.action_url;
@@ -526,13 +446,10 @@ export default function TopBar({
       </div>
 
       <AnimatePresence>
-        {(open || menuOpen) && (
+        {open && (
           <motion.div
             className="fixed inset-0 z-30"
-            onClick={() => {
-              setOpen(false);
-              setMenuOpen(false);
-            }}
+            onClick={() => setOpen(false)}
             initial={prefersReducedMotion ? undefined : { opacity: 0 }}
             animate={prefersReducedMotion ? undefined : { opacity: 1 }}
             exit={prefersReducedMotion ? undefined : { opacity: 0 }}
