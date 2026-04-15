@@ -235,6 +235,50 @@ function ScriptureTab({
   );
 }
 
+// ── Static seed paths shown while DB is unseeded or engine unavailable ─────────
+const SEED_PATHS = [
+  {
+    id: 'bhagavad-gita-intro',
+    title: 'Bhagavad Gita — Foundations',
+    description: 'The 18 chapters of the Gita distilled into 30 focused lessons. Begin at any chapter.',
+    difficulty: 'beginner',
+    tradition: 'hindu',
+    total_lessons: 30,
+    duration_days: 30,
+    language: 'en',
+  },
+  {
+    id: 'upanishads-core',
+    title: 'Core Upanishads',
+    description: 'Isha, Kena, Katha, Mandukya — the four shortest Upanishads with commentary.',
+    difficulty: 'intermediate',
+    tradition: 'hindu',
+    total_lessons: 20,
+    duration_days: 20,
+    language: 'en',
+  },
+  {
+    id: 'stotra-path',
+    title: 'Daily Stotra Practice',
+    description: 'Learn 7 core stotras by heart — Hanuman Chalisa, Durga Saptashati excerpts, Vishnu Sahasranama.',
+    difficulty: 'beginner',
+    tradition: 'hindu',
+    total_lessons: 14,
+    duration_days: 21,
+    language: 'en',
+  },
+  {
+    id: 'yoga-sutras',
+    title: 'Patanjali Yoga Sutras',
+    description: '196 sutras, 4 chapters — Samadhi, Sadhana, Vibhuti, Kaivalya.',
+    difficulty: 'advanced',
+    tradition: 'hindu',
+    total_lessons: 40,
+    duration_days: 40,
+    language: 'en',
+  },
+];
+
 // ── Props ──────────────────────────────────────────────────────────────────────
 interface Props {
   userId:    string;
@@ -261,7 +305,14 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
 
   // ── Load data ────────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!isReady || !pathshala) return;
+    // Safety net: always stop the spinner after 4s regardless of engine state
+    const timeout = setTimeout(() => {
+      setLoading(false);
+      if (allPaths.length === 0) setAll(SEED_PATHS);
+    }, 4000);
+
+    if (!isReady || !pathshala) return () => clearTimeout(timeout);
+
     async function load() {
       try {
         const [shlokaRes, active, all, earned] = await Promise.allSettled([
@@ -272,15 +323,20 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
         ]);
         if (shlokaRes.status === 'fulfilled') setShloka(shlokaRes.value);
         if (active.status    === 'fulfilled') setActive(active.value);
-        if (all.status       === 'fulfilled') setAll(all.value);
+        // Fall back to seed paths if DB not yet seeded
+        const fetchedPaths = all.status === 'fulfilled' ? all.value : [];
+        setAll(fetchedPaths.length > 0 ? fetchedPaths : SEED_PATHS);
         if (earned.status    === 'fulfilled') setBadges(earned.value);
       } catch (err) {
         console.error('[Pathshala] load error:', err);
+        setAll(SEED_PATHS);
       } finally {
+        clearTimeout(timeout);
         setLoading(false);
       }
     }
     load();
+    return () => clearTimeout(timeout);
   }, [isReady, pathshala, userId]);
 
   // ── Enroll ───────────────────────────────────────────────────────────────────
@@ -519,15 +575,7 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
 
           {/* ── Explore Paths ────────────────────────────────────────────────── */}
           {tab === 'explore' && (
-            allPaths.length === 0 ? (
-              <div className="text-center py-12">
-                <BookOpen size={40} className="mx-auto mb-3 text-gray-200" />
-                <p className="font-semibold text-gray-600">Learning paths coming soon</p>
-                <p className="text-xs text-gray-400 mt-1">Seed pathshala_paths table to show paths here</p>
-              </div>
-            ) : (
-              allPaths.map(p => <BrowsePathCard key={p.id} path={p} />)
-            )
+            allPaths.map(p => <BrowsePathCard key={p.id} path={p} />)
           )}
 
         </div>

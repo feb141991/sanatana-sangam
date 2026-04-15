@@ -33,15 +33,14 @@ const titles: Record<string, string> = {
 
 const PUSH_PROMPT_DISMISS_KEY = 'sanatana-push-prompt-dismissed-until';
 const PUSH_PROMPT_COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000;
+// Menu surfaces pages NOT reachable from the bottom nav
 const MVP_MENU_ITEMS = [
-  { href: '/home', label: 'Home', emoji: '🏠' },
-  { href: '/panchang', label: 'Panchang', emoji: '🪔' },
-  { href: '/library', label: 'Pathshala', emoji: '📚' },
-  { href: '/bhakti', label: 'Bhakti', emoji: '✨' },
-  { href: '/kul', label: 'Kul', emoji: '🫶' },
-  { href: '/mandali', label: 'Mandali', emoji: '👥' },
-  { href: '/tirtha-map', label: 'Tirtha', emoji: '🛕' },
-  { href: '/profile', label: 'Profile', emoji: '👤' },
+  { href: '/panchang',   label: 'Panchang',  emoji: '🪔' },
+  { href: '/bhakti',     label: 'Bhakti',    emoji: '✨' },
+  { href: '/ai-chat',    label: 'Ask AI',    emoji: '🤖' },
+  { href: '/japa',       label: 'Japa',      emoji: '📿' },
+  { href: '/nitya-karma',label: 'Nitya',     emoji: '🌅' },
+  { href: '/profile',    label: 'Profile',   emoji: '👤' },
 ] as const;
 
 const shellTint = {
