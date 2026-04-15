@@ -10,14 +10,26 @@ import { createClient } from '@/lib/supabase';
 import { formatRelativeTime, getInitials, FORUM_CATEGORIES } from '@/lib/utils';
 import type { ThreadWithAuthor } from '@/types/database';
 
-type FeedFilter = 'active' | 'recent' | 'popular' | 'unanswered';
+type FeedFilter = 'active' | 'recent' | 'popular' | 'unanswered' | 'quality';
 
-const FEED_FILTERS: Array<{ value: FeedFilter; label: string }> = [
-  { value: 'active', label: 'Active' },
-  { value: 'recent', label: 'Recent' },
-  { value: 'popular', label: 'Popular' },
-  { value: 'unanswered', label: 'Unanswered' },
+const FEED_FILTERS: Array<{ value: FeedFilter; label: string; desc: string }> = [
+  { value: 'active',    label: 'Active',      desc: 'Recently updated threads' },
+  { value: 'recent',    label: 'Recent',      desc: 'Newest threads first' },
+  { value: 'popular',   label: 'Popular',     desc: 'Most upvoted discussions' },
+  { value: 'quality',   label: '⭐ Quality',   desc: 'Well-developed threads with context and replies' },
+  { value: 'unanswered',label: 'Unanswered',  desc: 'Questions waiting for a response' },
 ];
+
+/** Map tradition → most-relevant default Vichaar category tab */
+const TRADITION_DEFAULT_TAB: Record<string, string> = {
+  hindu:    'sampradaya',
+  sikh:     'sikh_vichar',
+  buddhist: 'bauddh_darshan',
+  jain:     'jain_darshan',
+};
+
+/** Quality threshold — body length + must have at least 1 upvote or 1 reply */
+const QUALITY_MIN_BODY = 120;
 
 function normalizeText(value: string) {
   return value.toLowerCase().trim();
@@ -36,14 +48,24 @@ function getThreadSearchHaystack(thread: ThreadWithAuthor) {
 export default function VichaarClient({
   threads: initialThreads,
   userId,
+  userTradition,
 }: {
   threads: ThreadWithAuthor[];
   userId: string;
+  userTradition?: string | null;
 }) {
   const isGuest = !userId;
   const supabase = useMemo(() => createClient(), []);
   const [threads,     setThreads]     = useState(initialThreads);
-  const [activeTab,   setActiveTab]   = useState('all');
+  // Smart default: if the user has a tradition with a matching category that has threads, use it
+  const defaultTab = useMemo(() => {
+    if (!userTradition) return 'all';
+    const tradTab = TRADITION_DEFAULT_TAB[userTradition];
+    if (!tradTab) return 'all';
+    const hasThreadsInTab = initialThreads.some((t) => t.category === tradTab);
+    return hasThreadsInTab ? tradTab : 'all';
+  }, [userTradition, initialThreads]);
+  const [activeTab,   setActiveTab]   = useState(defaultTab);
   const [feedFilter,  setFeedFilter]  = useState<FeedFilter>('active');
   const [searchQuery, setSearchQuery] = useState('');
   const [showCompose, setShowCompose] = useState(false);
@@ -90,18 +112,31 @@ export default function VichaarClient({
       next = next.filter((thread) => getThreadSearchHaystack(thread).includes(query));
     }
 
+    // Quality filter: threads with a substantive body AND engagement (upvote or reply)
+    if (feedFilter === 'quality') {
+      next = next.filter((thread) =>
+        thread.body.length >= QUALITY_MIN_BODY &&
+        (thread.upvotes > 0 || thread.reply_count > 0)
+      );
+    }
+
+    // Unanswered filter: only zero-reply threads
+    if (feedFilter === 'unanswered') {
+      next = next.filter((thread) => thread.reply_count === 0);
+    }
+
     next.sort((a, b) => {
       if (a.is_pinned !== b.is_pinned) return a.is_pinned ? -1 : 1;
 
-      if (feedFilter === 'popular') {
-        if (b.upvotes !== a.upvotes) return b.upvotes - a.upvotes;
+      if (feedFilter === 'popular' || feedFilter === 'quality') {
+        // Quality: sort by reply_count + upvotes combined engagement
+        const engagementA = a.upvotes + a.reply_count * 2;
+        const engagementB = b.upvotes + b.reply_count * 2;
+        if (engagementB !== engagementA) return engagementB - engagementA;
         return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
       }
 
       if (feedFilter === 'unanswered') {
-        const unansweredA = a.reply_count === 0 ? 1 : 0;
-        const unansweredB = b.reply_count === 0 ? 1 : 0;
-        if (unansweredB !== unansweredA) return unansweredB - unansweredA;
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       }
 
@@ -111,10 +146,6 @@ export default function VichaarClient({
 
       return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
     });
-
-    if (feedFilter === 'unanswered') {
-      next = next.filter((thread) => thread.reply_count === 0);
-    }
 
     return next;
   }, [activeTab, deferredSearch, feedFilter, threads]);
@@ -135,6 +166,11 @@ export default function VichaarClient({
   }, [form.title, threads]);
 
   const visibleUnansweredCount = visibleThreads.filter((thread) => thread.reply_count === 0).length;
+  const qualityCount = threads.filter((thread) =>
+    (activeTab === 'all' || thread.category === activeTab) &&
+    thread.body.length >= QUALITY_MIN_BODY &&
+    (thread.upvotes > 0 || thread.reply_count > 0)
+  ).length;
   const primaryVichaarAction =
     visibleUnansweredCount > 0
       ? {
@@ -276,8 +312,8 @@ export default function VichaarClient({
             <div className="grid grid-cols-3 gap-2 mt-3">
               {[
                 { label: 'Visible', value: visibleThreads.length },
-                { label: 'Unanswered', value: visibleUnansweredCount },
-                { label: 'Search', value: deferredSearch.trim() ? 1 : 0 },
+                { label: 'Quality', value: qualityCount },
+                { label: 'No reply', value: visibleUnansweredCount },
               ].map((item) => (
                 <div key={item.label} className="rounded-[1.05rem] bg-white/72 border border-white/80 px-3 py-3 text-center">
                   <p className="font-display font-bold text-xl" style={{ color: 'var(--brand-primary-strong)' }}>{item.value}</p>
@@ -334,21 +370,38 @@ export default function VichaarClient({
         </div>
 
         <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-          {FEED_FILTERS.map((filter) => (
-            <button
-              key={filter.value}
-              onClick={() => setFeedFilter(filter.value)}
-              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition ${
-                feedFilter === filter.value
-                  ? 'bg-[#7B1A1A] text-white'
-                  : 'bg-white text-gray-500 border border-gray-200 hover:border-[rgba(123,26,26,0.18)]'
-              }`}
-            >
-              {filter.label}
-            </button>
-          ))}
+          {FEED_FILTERS.map((filter) => {
+            const isActive = feedFilter === filter.value;
+            const isQuality = filter.value === 'quality';
+            return (
+              <button
+                key={filter.value}
+                onClick={() => setFeedFilter(filter.value)}
+                title={filter.desc}
+                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition ${
+                  isActive
+                    ? isQuality
+                      ? 'bg-amber-600 text-white'
+                      : 'bg-[#7B1A1A] text-white'
+                    : isQuality
+                      ? 'bg-amber-50 text-amber-700 border border-amber-200 hover:border-amber-300'
+                      : 'bg-white text-gray-500 border border-gray-200 hover:border-[rgba(123,26,26,0.18)]'
+                }`}
+              >
+                {filter.label}
+              </button>
+            );
+          })}
         </div>
       </div>
+
+      {/* Tradition-aware default tab hint */}
+      {defaultTab !== 'all' && activeTab === defaultTab && (
+        <div className="glass-panel rounded-[1.2rem] px-4 py-2 flex items-center gap-2 text-xs text-gray-500">
+          <span>🎯</span>
+          <span>Showing your tradition&apos;s room by default. Tap <strong>All topics</strong> to see everything.</span>
+        </div>
+      )}
 
       {/* Category tabs */}
       <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
