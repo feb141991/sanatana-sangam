@@ -641,7 +641,7 @@ function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upv
   showCompose: boolean;
   setShowCompose: (v: boolean) => void;
   onHideContent: (contentId: string) => void;
-  onHideAuthor: (authorId: string) => void;
+  onHideAuthor: (authorId: string, mode?: 'mute' | 'block') => void;
   allowCompose?: boolean;
 }) {
   const [postType,   setPostType]   = useState<'update' | 'event' | 'question' | 'announcement'>('update');
@@ -773,7 +773,7 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
   upvoted: Set<string>;
   onUpvote: (id: string) => void;
   onHideContent: (contentId: string) => void;
-  onHideAuthor: (authorId: string) => void;
+  onHideAuthor: (authorId: string, mode?: 'mute' | 'block') => void;
 }) {
   const author = post.profiles;
   const isUpvoted = upvoted.has(post.id);

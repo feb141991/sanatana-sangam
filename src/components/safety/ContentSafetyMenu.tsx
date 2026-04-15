@@ -160,7 +160,7 @@ export default function ContentSafetyMenu({
           setOpen((current) => !current);
           setShowReportReasons(false);
         }}
-        className="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition flex items-center justify-center"
+        className="w-8 h-8 rounded-full transition flex items-center justify-center text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] hover:bg-white/10"
         aria-label="Open safety options"
       >
         <MoreHorizontal size={16} />
@@ -168,68 +168,75 @@ export default function ContentSafetyMenu({
 
       {open && (
         <div
-          className="absolute right-0 top-10 z-50 w-64 rounded-2xl border border-gray-100 bg-white/95 backdrop-blur shadow-2xl p-2"
+          className="absolute right-0 top-10 z-[200] w-64 rounded-2xl shadow-2xl p-2"
+          style={{
+            background: 'rgba(36,33,28,0.97)',
+            backdropFilter: 'blur(16px)',
+            border: '1px solid rgba(212,166,70,0.18)',
+          }}
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
           }}
         >
           {!showReportReasons ? (
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               <button
                 onClick={hideContent}
                 disabled={pendingAction !== null}
-                className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-700 hover:bg-orange-50 transition disabled:opacity-60"
+                className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[color:var(--brand-ink)] hover:bg-white/8 transition disabled:opacity-60"
               >
-                <EyeOff size={15} className="text-[#7B1A1A]" />
+                <EyeOff size={15} style={{ color: 'var(--brand-primary)' }} />
                 Hide this {SAFETY_CONTENT_LABELS[contentType].toLowerCase()}
               </button>
               <button
                 onClick={muteAuthor}
                 disabled={pendingAction !== null}
-                className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-700 hover:bg-orange-50 transition disabled:opacity-60"
+                className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[color:var(--brand-ink)] hover:bg-white/8 transition disabled:opacity-60"
               >
-                <BellOff size={15} className="text-[#7B1A1A]" />
+                <BellOff size={15} style={{ color: 'var(--brand-primary)' }} />
                 Mute this person
               </button>
               <button
                 onClick={blockAuthor}
                 disabled={pendingAction !== null}
-                className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-700 hover:bg-orange-50 transition disabled:opacity-60"
+                className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[color:var(--brand-ink)] hover:bg-white/8 transition disabled:opacity-60"
               >
-                <ShieldBan size={15} className="text-red-500" />
+                <ShieldBan size={15} className="text-red-400" />
                 Block this person
               </button>
+              <div className="h-px bg-white/8 mx-2 my-1" />
               <button
                 onClick={() => setShowReportReasons(true)}
                 disabled={pendingAction !== null}
-                className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-700 hover:bg-orange-50 transition disabled:opacity-60"
+                className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[color:var(--brand-muted)] hover:bg-white/8 transition disabled:opacity-60"
               >
-                <Flag size={15} className="text-amber-500" />
+                <Flag size={15} className="text-amber-400" />
                 Report to moderators
               </button>
             </div>
           ) : (
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               <div className="px-3 py-2">
-                <p className="text-xs font-semibold text-gray-700">Why are you reporting this?</p>
-                <p className="text-xs text-gray-400 mt-1">Pick the closest reason. You can still hide or block separately.</p>
+                <p className="text-xs font-semibold text-[color:var(--brand-ink)]">Why are you reporting this?</p>
+                <p className="text-xs text-[color:var(--brand-muted)] mt-1">Pick the closest reason. You can still hide or block separately.</p>
               </div>
               {REPORT_REASON_OPTIONS.map((option) => (
                 <button
                   key={option.value}
                   onClick={() => reportContent(option.value)}
                   disabled={pendingAction !== null}
-                  className="w-full text-left rounded-xl px-3 py-2.5 text-sm text-gray-700 hover:bg-orange-50 transition disabled:opacity-60"
+                  className="w-full text-left rounded-xl px-3 py-2.5 text-sm text-[color:var(--brand-ink)] hover:bg-white/8 transition disabled:opacity-60"
                 >
                   {option.label}
                 </button>
               ))}
+              <div className="h-px bg-white/8 mx-2 my-1" />
               <button
                 onClick={() => setShowReportReasons(false)}
-                className="w-full rounded-xl px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-50 transition"
+                className="w-full rounded-xl px-3 py-2.5 text-sm text-[color:var(--brand-muted)] hover:bg-white/8 transition"
               >
-                Back
+                ← Back
               </button>
             </div>
           )}
