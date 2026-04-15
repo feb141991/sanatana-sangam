@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Home, MapPin, Users, GraduationCap, Heart, Sparkles, Compass, MessageSquare } from 'lucide-react';
+import { Home, Users, GraduationCap, Heart, Compass, MessageSquare, Bot, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
@@ -19,19 +19,18 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
   const prefersReducedMotion = useReducedMotion();
   const { t } = useLanguage();
 
-  // Library is absorbed into Pathshala as a tradition-gated scripture tab
+  // AI Chat is leftmost (primary discovery). Bhakti + Tirtha moved to TopBar quick links.
   const memberNavItems = [
-    { href: '/home',       label: t('navHome'),       mobileLabel: t('navHome'),         icon: Home          },
-    { href: '/pathshala',  label: libraryLabel,        mobileLabel: libraryMobileLabel,   icon: GraduationCap },
-    { href: '/bhakti',     label: t('bhakti'),         mobileLabel: t('bhakti'),          icon: Sparkles      },
-    { href: '/kul',        label: t('navKul'),         mobileLabel: t('navKul'),          icon: Heart         },
-    { href: '/mandali',    label: t('navMandali'),     mobileLabel: t('navMandali'),      icon: Users         },
-    { href: '/tirtha-map', label: t('navTirtha'),      mobileLabel: t('navTirtha'),       icon: MapPin        },
+    { href: '/ai-chat',   label: t('navAI'),       mobileLabel: 'AI',               icon: Bot           },
+    { href: '/home',      label: t('navHome'),     mobileLabel: t('navHome'),        icon: Home          },
+    { href: '/pathshala', label: libraryLabel,      mobileLabel: libraryMobileLabel, icon: GraduationCap },
+    { href: '/kul',       label: t('navKul'),      mobileLabel: t('navKul'),         icon: Heart         },
+    { href: '/mandali',   label: t('navMandali'),  mobileLabel: t('navMandali'),     icon: Users         },
   ];
   const guestNavItems = [
     { href: '/guest',         label: 'Explore', mobileLabel: 'Explore', icon: Compass       },
     { href: '/vichaar-sabha', label: 'Vichaar', mobileLabel: 'Vichaar', icon: MessageSquare },
-    { href: '/tirtha-map',    label: t('navTirtha'),  mobileLabel: t('navTirtha'),  icon: MapPin        },
+    { href: '/ai-chat',       label: 'Ask AI',  mobileLabel: 'AI',      icon: Bot           },
     { href: '/signup',        label: 'Join',    mobileLabel: 'Join',    icon: Sparkles      },
   ];
   const navItems = isGuest ? guestNavItems : memberNavItems;

@@ -32,11 +32,14 @@ const titles: Record<string, string> = {
 
 const PUSH_PROMPT_DISMISS_KEY = 'sanatana-push-prompt-dismissed-until';
 const PUSH_PROMPT_COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000;
-// Quick-access links shown directly in the top bar (pages not in bottom nav)
+// Quick-access links shown in top bar — pages NOT already in bottom nav
+// Bottom nav covers: AI Chat, Home, Pathshala, Kul, Mandali
+// Top bar covers: Bhakti, Panchang, Nitya, Tirtha (secondary destinations)
 const QUICK_LINKS = [
-  { href: '/panchang',    label: 'Panchang', emoji: '🪔' },
   { href: '/bhakti',      label: 'Bhakti',   emoji: '✨' },
+  { href: '/panchang',    label: 'Panchang', emoji: '🪔' },
   { href: '/nitya-karma', label: 'Nitya',    emoji: '🌅' },
+  { href: '/tirtha-map',  label: 'Tirtha',   emoji: '🗺️' },
 ] as const;
 
 const shellTint = {
@@ -201,13 +204,10 @@ export default function TopBar({
     <header className={`sticky top-0 z-40 px-3 pt-3 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isHidden ? '-translate-y-[120%]' : 'translate-y-0'}`}>
       <div className="glass-nav max-w-2xl mx-auto px-4 h-14 rounded-[1.65rem] flex items-center justify-between" style={shellTint}>
 
-        {/* Left — logo + page title */}
-        <div className="flex items-center gap-2">
-          <Link href={homeHref} className="inline-flex">
-            <BrandMark size="sm" />
-          </Link>
-          <span className="type-card-heading">{title}</span>
-        </div>
+        {/* Left — logo only (no redundant title) */}
+        <Link href={homeHref} className="inline-flex">
+          <BrandMark size="sm" />
+        </Link>
 
         {/* Right */}
         <div className="flex items-center gap-2">
