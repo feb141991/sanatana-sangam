@@ -10,10 +10,8 @@
     "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
-    "@capacitor/android": "^8.0.0",
     "@capacitor/core": "^8.0.0",
     "@capacitor/haptics": "^8.0.0",
-    "@capacitor/ios": "^8.0.0",
     "@sangam/pathshala-engine": "*",
     "@sangam/sadhana-engine": "*",
     "@supabase/ssr": "^0.5.1",
@@ -34,7 +32,9 @@
     "tailwind-merge": "^2.4.0"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.0.0",
     "@capacitor/cli": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
     "@types/leaflet": "^1.9.12",
     "@types/node": "^20",
     "@types/react": "^18",
