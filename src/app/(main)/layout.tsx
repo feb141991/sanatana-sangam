@@ -4,6 +4,7 @@ import TopBar from '@/components/layout/TopBar';
 import { LocationProvider } from '@/lib/LocationContext';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { getInitials } from '@/lib/utils';
+import { EngineProvider } from '@/contexts/EngineContext';
 
 export default async function MainLayout({
   children,
@@ -24,7 +25,7 @@ export default async function MainLayout({
   let libraryMobileLabel: string      = 'Pathshala';
   let avatarUrl:        string | null = null;
   let userInitials:     string        = 'SS';
-  let tradition:        string | null = null;
+  let tradition:        string        = 'hindu';
   let wantsFestivalReminders          = true;
   let wantsShlokaReminders            = true;
   let wantsCommunityNotifications     = true;
@@ -46,7 +47,7 @@ export default async function MainLayout({
     libraryMobileLabel = 'Pathshala';
     avatarUrl        = profile?.avatar_url ?? null;
     userInitials     = getInitials(profile?.full_name ?? profile?.username ?? 'Sanatana');
-    tradition        = profile?.tradition ?? null;
+    tradition        = profile?.tradition ?? 'hindu';
     wantsFestivalReminders = profile?.wants_festival_reminders ?? true;
     wantsShlokaReminders = profile?.wants_shloka_reminders ?? true;
     wantsCommunityNotifications = profile?.wants_community_notifications ?? true;
@@ -69,15 +70,17 @@ export default async function MainLayout({
         wantsFamilyNotifications={wantsFamilyNotifications}
       />
       <main className="flex-1 max-w-2xl mx-auto w-full px-3 pt-3 pb-28 sm:px-4 sm:pt-4">
-        <LocationProvider
-          savedLat={savedLat}
-          savedLon={savedLon}
-          savedCity={savedCity}
-          savedCountry={savedCountry}
-          savedCountryCode={savedCountryCode}
-        >
-          {children}
-        </LocationProvider>
+        <EngineProvider userId={userId || null} tradition={tradition}>
+          <LocationProvider
+            savedLat={savedLat}
+            savedLon={savedLon}
+            savedCity={savedCity}
+            savedCountry={savedCountry}
+            savedCountryCode={savedCountryCode}
+          >
+            {children}
+          </LocationProvider>
+        </EngineProvider>
       </main>
       <BottomNav libraryLabel={libraryLabel} libraryMobileLabel={libraryMobileLabel} isGuest={!user} />
     </div>

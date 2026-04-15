@@ -1,0 +1,88 @@
+{
+  "text_id": "gita",
+  "name": "Bhagavad Gita",
+  "sanskrit_name": "श्रीमद्भगवद्गीता",
+  "source": "Public domain translation, adapted for Sangam",
+  "verses": [
+    {
+      "text_id": "gita", "chapter": 2, "verse": 47,
+      "sanskrit": "कर्मण्येवाधिकारस्ते मा फलेषु कदाचन। मा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥",
+      "transliteration": "karmanye vadhikaraste ma phaleshu kadachana, ma karmaphalaheturbhurma te sango stvakarmani",
+      "translation": "You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions. Never consider yourself the cause of the results, and never be attached to inaction.",
+      "commentary": "This is the central teaching of Karma Yoga. Krishna tells Arjuna to act without attachment to results. The focus should be on the quality of action itself, not on what it produces.",
+      "tags": ["karma", "action", "detachment", "duty", "nishkama_karma"]
+    },
+    {
+      "text_id": "gita", "chapter": 2, "verse": 48,
+      "sanskrit": "योगस्थः कुरु कर्माणि सङ्गं त्यक्त्वा धनञ्जय। सिद्ध्यसिद्ध्योः समो भूत्वा समत्वं योग उच्यते॥",
+      "transliteration": "yogasthah kuru karmani sangam tyaktva dhananjaya, siddhyasiddhyoh samo bhutva samatvam yoga uchyate",
+      "translation": "Be steadfast in yoga, O Arjuna. Perform your duty and abandon all attachment to success or failure. Such evenness of mind is called yoga.",
+      "commentary": "Equanimity in success and failure is the essence of yoga. This verse defines yoga not as physical postures but as a mental state of balance while performing action.",
+      "tags": ["yoga", "equanimity", "balance", "karma", "samatva"]
+    },
+    {
+      "text_id": "gita", "chapter": 2, "verse": 14,
+      "sanskrit": "मात्रास्पर्शास्तु कौन्तेय शीतोष्णसुखदुःखदाः। आगमापायिनोऽनित्यास्तांस्तितिक्षस्व भारत॥",
+      "transliteration": "matra-sparshas tu kaunteya shitoshna-sukha-duhkha-dah, agamapayino nityah tams titikshasva bharata",
+      "translation": "O son of Kunti, the contact between the senses and their objects gives rise to fleeting perceptions of happiness and distress. These are non-permanent; learn to tolerate them.",
+      "commentary": "Pleasure and pain are temporary sensory experiences. Like seasons, they come and go. A wise person endures both without being disturbed.",
+      "tags": ["senses", "pleasure", "pain", "impermanence", "tolerance", "titiksha"]
+    },
+    {
+      "text_id": "gita", "chapter": 2, "verse": 20,
+      "sanskrit": "न जायते म्रियते वा कदाचिन्नायं भूत्वा भविता वा न भूयः। अजो नित्यः शाश्वतोऽयं पुराणो न हन्यते हन्यमाने शरीरे॥",
+      "transliteration": "na jayate mriyate va kadachin nayam bhutva bhavita va na bhuyah, ajo nityah shashvato yam purano na hanyate hanyamane sharire",
+      "translation": "The soul is never born, nor does it ever die. It has not come into being, does not come into being, and will not come into being. It is unborn, eternal, ever-existing, and primeval. It is not slain when the body is slain.",
+      "commentary": "The atman is beyond birth and death. This is one of the most important verses establishing the nature of the self as eternal and indestructible.",
+      "tags": ["atman", "soul", "eternal", "death", "immortality", "self"]
+    },
+    {
+      "text_id": "gita", "chapter": 2, "verse": 22,
+      "sanskrit": "वासांसि जीर्णानि यथा विहाय नवानि गृह्णाति नरोऽपराणि। तथा शरीराणि विहाय जीर्णान्यन्यानि संयाति नवानि देही॥",
+      "transliteration": "vasamsi jirnani yatha vihaya navani grihnati naro parani, tatha sharirani vihaya jirnany anyani samyati navani dehi",
+      "translation": "As a person puts on new garments, giving up old ones, the soul similarly accepts new material bodies, giving up the old and useless ones.",
+      "commentary": "The famous garment analogy for reincarnation. Just as we change clothes, the soul changes bodies. Death is merely a transition, not an end.",
+      "tags": ["reincarnation", "body", "soul", "death", "rebirth", "analogy"]
+    },
+    {
+      "text_id": "gita", "chapter": 2, "verse": 62,
+      "sanskrit": "ध्यायतो विषयान्पुंसः सङ्गस्तेषूपजायते। सङ्गात्सञ्जायते कामः कामात्क्रोधोऽभिजायते॥",
+      "transliteration": "dhyayato vishayan pumsah sangas teshupajayate, sangat sanjayate kamah kamat krodho bhijayate",
+      "translation": "While contemplating the objects of the senses, a person develops attachment for them, and from such attachment desire develops, and from desire anger arises.",
+      "commentary": "This verse maps the chain reaction from thought to destruction: contemplation → attachment → desire → anger → delusion → loss of memory → loss of intelligence → complete fall.",
+      "tags": ["desire", "anger", "attachment", "senses", "mind", "chain_reaction"]
+    },
+    {
+      "text_id": "gita", "chapter": 2, "verse": 63,
+      "sanskrit": "क्रोधाद्भवति सम्मोहः सम्मोहात्स्मृतिविभ्रमः। स्मृतिभ्रंशाद् बुद्धिनाशो बुद्धिनाशात्प्रणश्यति॥",
+      "transliteration": "krodhad bhavati sammohah sammohat smriti-vibhramah, smriti-bhramshad buddhi-nasho buddhi-nashat pranashyati",
+      "translation": "From anger comes delusion, from delusion confusion of memory, from confusion of memory the destruction of intelligence, and from the destruction of intelligence one perishes.",
+      "commentary": "Continuing from the previous verse, this completes the chain of downfall. When intelligence is destroyed, a person is as good as lost. The antidote is sense control and equanimity.",
+      "tags": ["anger", "delusion", "intelligence", "destruction", "mind", "chain_reaction"]
+    },
+    {
+      "text_id": "gita", "chapter": 2, "verse": 70,
+      "sanskrit": "आपूर्यमाणमचलप्रतिष्ठं समुद्रमापः प्रविशन्ति यद्वत्। तद्वत्कामा यं प्रविशन्ति सर्वे स शान्तिमाप्नोति न कामकामी॥",
+      "transliteration": "apuryamanam achala-pratishtham samudram apah pravishanti yadvat, tadvat kama yam pravishanti sarve sa shantim apnoti na kama-kami",
+      "translation": "A person who is not disturbed by the incessant flow of desires — that enter like rivers into the ocean, which is ever being filled but is always still — can alone achieve peace, and not the person who strives to satisfy such desires.",
+      "commentary": "The ocean metaphor for the wise person. Just as the ocean remains unmoved despite rivers constantly flowing into it, a person of steady wisdom remains undisturbed by desires.",
+      "tags": ["peace", "desire", "ocean", "equanimity", "wisdom", "analogy", "shanti"]
+    },
+    {
+      "text_id": "gita", "chapter": 1, "verse": 1,
+      "sanskrit": "धृतराष्ट्र उवाच। धर्मक्षेत्रे कुरुक्षेत्रे समवेता युयुत्सवः। मामकाः पाण्डवाश्चैव किमकुर्वत सञ्जय॥",
+      "transliteration": "dhritarashtra uvacha, dharma-kshetre kuru-kshetre samaveta yuyutsavah, mamakah pandavash chaiva kim akurvata sanjaya",
+      "translation": "Dhritarashtra said: O Sanjaya, assembled on the holy field of Kurukshetra, desiring to fight, what did my sons and the sons of Pandu do?",
+      "commentary": "The opening verse. Dhritarashtra's blindness is both physical and spiritual. His question reveals his attachment — he says 'my sons' and 'the sons of Pandu', not treating them equally.",
+      "tags": ["opening", "dharma", "kurukshetra", "dhritarashtra", "attachment"]
+    },
+    {
+      "text_id": "gita", "chapter": 3, "verse": 35,
+      "sanskrit": "श्रेयान्स्वधर्मो विगुणः परधर्मात्स्वनुष्ठितात्। स्वधर्मे निधनं श्रेयः परधर्मो भयावहः॥",
+      "transliteration": "shreyan sva-dharmo vigunah para-dharmat sv-anushthitat, sva-dharme nidhanam shreyah para-dharmo bhayavahah",
+      "translation": "It is far better to perform one's natural prescribed duty, though tinged with faults, than to perform another's prescribed duty, though perfectly. It is better to die in one's duty than to follow another's path, for that is dangerous.",
+      "commentary": "Follow your own dharma, even imperfectly, rather than imitating someone else's path. This verse speaks to authenticity in spiritual practice — each person's path is unique.",
+      "tags": ["svadharma", "duty", "authenticity", "dharma", "path", "courage"]
+    }
+  ]
+}

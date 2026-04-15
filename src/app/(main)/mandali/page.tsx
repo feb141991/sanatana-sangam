@@ -79,6 +79,18 @@ export default async function MandaliPage() {
     blendedPosts = filterAuthoredItems(data ?? [], 'mandali_post', safetyState);
   }
 
+  // "Don't feel alone" — blend in posts from across the Sangam when local Mandali is small
+  let blendedPosts: any[] = [];
+  if (mandaliId && members.length < BLEND_THRESHOLD) {
+    const { data } = await supabase
+      .from('posts')
+      .select('*, profiles(full_name, username, avatar_url, sampradaya, spiritual_level)')
+      .neq('mandali_id', mandaliId)   // other Mandalis only
+      .order('created_at', { ascending: false })
+      .limit(15);
+    blendedPosts = data ?? [];
+  }
+
   return (
     <MandaliClient
       profile={profile}

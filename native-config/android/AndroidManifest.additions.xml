@@ -1,0 +1,52 @@
+<!--
+  ─── Android Permissions for Sanatana Sangam ──────────────────────────────────
+
+  After running `npx cap add android`, paste these <uses-permission> entries
+  into android/app/src/main/AndroidManifest.xml inside the <manifest> tag,
+  BEFORE the <application> tag.
+
+  File location after cap add:
+    android/app/src/main/AndroidManifest.xml
+  ─────────────────────────────────────────────────────────────────────────────
+-->
+
+<!-- ── Audio / Microphone (Recitation Recorder) ── -->
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+<!-- ── Internet (Supabase, Gemini, Groq, OneSignal) ── -->
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+<!-- ── Push Notifications (OneSignal + Capacitor Push) ── -->
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+<uses-permission android:name="android.permission.VIBRATE" />
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+<!-- Android 13+ (API 33) requires POST_NOTIFICATIONS runtime permission -->
+
+<!-- ── Local Notifications (Vrata reminders, Sadhana nudges) ── -->
+<uses-permission android:name="android.permission.WAKE_LOCK" />
+<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+<!-- android:name="android.permission.USE_EXACT_ALARM" required for API 33+ -->
+
+<!-- ── Location (Nearby Tirthas / Mandali discovery) ── -->
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+<!-- ── Storage (Audio recording file write on older Android) ── -->
+<!-- Only needed for Android < 10 (API 29) -->
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    android:maxSdkVersion="28" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    android:maxSdkVersion="32" />
+
+<!--
+  ─── Application block additions ──────────────────────────────────────────────
+  Inside your <application> tag, add these attributes:
+
+    android:usesCleartextTraffic="false"
+    android:networkSecurityConfig="@xml/network_security_config"
+
+  And create: android/app/src/main/res/xml/network_security_config.xml
+  (see network_security_config.xml below)
+  ─────────────────────────────────────────────────────────────────────────────
+-->

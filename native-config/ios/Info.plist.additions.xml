@@ -1,0 +1,84 @@
+<!--
+  ─── iOS Info.plist additions for Sanatana Sangam ────────────────────────────
+
+  After running `npx cap add ios`, paste these keys into:
+    ios/App/App/Info.plist
+  inside the root <dict> tag.
+
+  iOS requires a usage description string for every sensitive permission.
+  The App Store review team reads these strings — make them meaningful.
+  ─────────────────────────────────────────────────────────────────────────────
+-->
+
+<!-- ── Microphone (Recitation Recorder / Shruti scoring) ── -->
+<key>NSMicrophoneUsageDescription</key>
+<string>Sanatana Sangam uses the microphone to record your recitation of shlokas and sacred texts. Your audio is analysed for pronunciation and sent to our AI for scoring.</string>
+
+<!-- ── Location (Nearby Tirthas, Mandali discovery) ── -->
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Sanatana Sangam uses your location to show nearby sacred temples and tirthas, and to connect you with your local Mandali community.</string>
+
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>Sanatana Sangam uses your location in the background to remind you of nearby tirthas during your travels.</string>
+
+<!-- ── Camera (future: QR code for Kul invite, profile photo) ── -->
+<key>NSCameraUsageDescription</key>
+<string>Sanatana Sangam uses the camera to scan Kul invite QR codes and to update your profile photo.</string>
+
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Sanatana Sangam accesses your photo library to let you set a profile picture.</string>
+
+<!-- ── Push Notifications ── -->
+<!-- iOS requests push permission at runtime via UNUserNotificationCenter.
+     The Capacitor PushNotifications plugin handles this automatically
+     when you call PushNotifications.requestPermissions().
+     No Info.plist key needed — it's handled at runtime. -->
+
+<!-- ── Background modes ── -->
+<!-- Needed for background fetch (offline sync, nudge delivery) -->
+<key>UIBackgroundModes</key>
+<array>
+    <string>fetch</string>
+    <string>remote-notification</string>
+</array>
+
+<!-- ── ATS (App Transport Security) ── -->
+<!-- Requires HTTPS for all connections. Supabase and Vercel are HTTPS only.
+     Do NOT set NSAllowsArbitraryLoads to true in production. -->
+<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <false/>
+    <!-- Allow localhost for development live-reload only -->
+    <key>NSExceptionDomains</key>
+    <dict>
+        <key>localhost</key>
+        <dict>
+            <key>NSExceptionAllowsInsecureHTTPLoads</key>
+            <true/>
+            <key>NSIncludesSubdomains</key>
+            <false/>
+        </dict>
+    </dict>
+</dict>
+
+<!-- ── Appearance ── -->
+<key>UIStatusBarStyle</key>
+<string>UIStatusBarStyleLightContent</string>
+
+<key>UIViewControllerBasedStatusBarAppearance</key>
+<false/>
+
+<!-- ── Orientation (portrait primary, allow landscape on iPad) ── -->
+<key>UISupportedInterfaceOrientations</key>
+<array>
+    <string>UIInterfaceOrientationPortrait</string>
+</array>
+
+<key>UISupportedInterfaceOrientations~ipad</key>
+<array>
+    <string>UIInterfaceOrientationPortrait</string>
+    <string>UIInterfaceOrientationPortraitUpsideDown</string>
+    <string>UIInterfaceOrientationLandscapeLeft</string>
+    <string>UIInterfaceOrientationLandscapeRight</string>
+</array>

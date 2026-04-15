@@ -1,32 +1,35 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, RotateCcw, ChevronDown } from 'lucide-react';
+import { Send, Sparkles, RotateCcw, ChevronDown, BookOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useEngine } from '@/contexts/EngineContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-interface MessageReference {
-  id: string;
-  title: string;
-  source: string;
-  tradition: string;
+interface ScriptureRef {
+  text_id:         string;
+  chapter?:        number;
+  verse?:          number;
+  sanskrit?:       string;
+  transliteration?: string;
+  source_label?:   string;
 }
 
 interface Message {
-  id:        string;
-  role:      'user' | 'model';
-  text:      string;
-  timestamp: Date;
-  references?: MessageReference[];
-  trustMode?: 'source-guided' | 'reflective';
+  id:         string;
+  role:       'user' | 'model';
+  text:       string;
+  timestamp:  Date;
+  /** Scripture verses returned by RAG (only on model messages) */
+  verses?:    ScriptureRef[];
+  /** Whether this reply came from scripture RAG vs plain Gemini */
+  fromRag?:   boolean;
 }
 
 interface Props {
-  userId: string;
-  userName: string;
+  userId:    string;
+  userName:  string;
   tradition: string | null;
-  initialPrompt?: string;
-  contextLabel?: string;
 }
 
 // ─── Tradition-aware suggestions ──────────────────────────────────────────────
@@ -89,37 +92,27 @@ function MessageBubble({ msg }: { msg: Message }) {
       <div className={`max-w-[80%] ${isUser ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
         <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
           isUser
-            ? 'glass-button-primary text-white rounded-tr-sm'
-            : 'glass-panel text-gray-800 rounded-tl-sm'
+            ? 'bg-[#7B1A1A] text-white rounded-tr-sm'
+            : 'bg-white text-gray-800 rounded-tl-sm border border-orange-100 shadow-sm'
         }`}>
           {msg.text}
+          {/* ── Scripture sources (RAG only) ── */}
+          {!isUser && msg.verses && msg.verses.length > 0 && (
+            <div className="mt-1">
+              {msg.verses.map((v, i) => <VerseChip key={i} verse={v} />)}
+            </div>
+          )}
         </div>
-        {!isUser && (
-          <div className="space-y-1.5 px-1">
-            <span className={`inline-flex text-[10px] font-semibold px-2 py-1 rounded-full border ${
-              msg.trustMode === 'source-guided'
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                : 'bg-amber-50 text-amber-700 border-amber-200'
-            }`}>
-              {msg.trustMode === 'source-guided' ? 'Source-guided' : 'Reflective guidance'}
+        <div className="flex items-center gap-1.5 px-1">
+          <span className="text-[10px] text-gray-400">
+            {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </span>
+          {msg.fromRag && (
+            <span className="text-[9px] bg-orange-50 text-orange-500 border border-orange-100 rounded-full px-1.5 py-0.5 font-medium">
+              📖 Scripture-grounded
             </span>
-            {msg.references && msg.references.length > 0 && (
-              <div className="clay-card rounded-2xl px-3 py-2.5 max-w-full">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">Suggested sources</p>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {msg.references.map((reference) => (
-                    <span key={reference.id} className="clay-pill text-[11px] text-gray-700">
-                      {reference.source}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-        <span className="text-[10px] text-gray-400 px-1">
-          {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-        </span>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -132,7 +125,7 @@ function TypingIndicator() {
       <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-sm bg-gradient-to-br from-amber-400 to-orange-500 text-white">
         ✨
       </div>
-      <div className="glass-panel rounded-2xl rounded-tl-sm px-4 py-3">
+      <div className="bg-white border border-orange-100 shadow-sm rounded-2xl rounded-tl-sm px-4 py-3">
         <div className="flex gap-1 items-center h-5">
           <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce" style={{ animationDelay: '0ms' }} />
           <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -143,30 +136,44 @@ function TypingIndicator() {
   );
 }
 
-const PRACTICE_LANES = [
-  {
-    title: 'Reflect on a verse',
-    body: 'Bring a verse or question for a grounded explanation.',
-  },
-  {
-    title: 'Prepare for study',
-    body: 'Ask for a summary, meaning, or reflection prompts.',
-  },
-  {
-    title: 'Work through life gently',
-    body: 'Use it for calm, source-aware guidance.',
-  },
-];
+// ─── Scripture Verse Chip ─────────────────────────────────────────────────────
+function VerseChip({ verse }: { verse: ScriptureRef }) {
+  const [open, setOpen] = useState(false);
+  const label = verse.source_label
+    ?? `${verse.text_id?.replace(/_/g, ' ')} ${verse.chapter ? `${verse.chapter}.${verse.verse}` : ''}`.trim();
+  return (
+    <div className="mt-2">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-1.5 text-xs text-orange-600 font-medium bg-orange-50 border border-orange-100 rounded-full px-3 py-1 hover:bg-orange-100 transition-colors"
+      >
+        <BookOpen size={11} />
+        {label}
+        <ChevronDown size={11} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && verse.sanskrit && (
+        <div className="mt-2 bg-orange-50/60 border border-orange-100 rounded-xl p-3 text-xs space-y-1">
+          <p className="font-[family:var(--font-deva)] text-[#7B1A1A] font-medium leading-relaxed">
+            {verse.sanskrit}
+          </p>
+          {verse.transliteration && (
+            <p className="text-gray-500 italic">{verse.transliteration}</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function AIChatClient({ userId, userName, tradition, initialPrompt, contextLabel }: Props) {
+export default function AIChatClient({ userId, userName, tradition }: Props) {
   const [messages,   setMessages]   = useState<Message[]>([]);
   const [input,      setInput]      = useState('');
   const [loading,    setLoading]    = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef       = useRef<HTMLTextAreaElement>(null);
-  const seededPromptRef = useRef(false);
+  const { engine, isReady } = useEngine();
 
   // Tradition-aware content
   const suggestions = SUGGESTIONS_BY_TRADITION[tradition ?? 'hindu'] ?? SUGGESTIONS_BY_TRADITION.hindu;
@@ -177,30 +184,10 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
     jain:     'Jai Jinendra 🤲',
   };
   const greeting = greetingMap[tradition ?? 'hindu'] ?? 'Namaste 🙏';
-  const trustLabel = tradition
-    ? `Rooted in ${tradition.charAt(0).toUpperCase()}${tradition.slice(1)} guidance when sources are available`
-    : 'Rooted in dharmic guidance when sources are available';
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
-
-  useEffect(() => {
-    if (!initialPrompt || seededPromptRef.current) return;
-
-    seededPromptRef.current = true;
-    setInput(initialPrompt);
-    setShowSuggestions(false);
-
-    requestAnimationFrame(() => {
-      const el = inputRef.current;
-      if (!el) return;
-      el.focus();
-      el.style.height = 'auto';
-      el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-      el.setSelectionRange(el.value.length, el.value.length);
-    });
-  }, [initialPrompt]);
 
   function newId() {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -214,13 +201,49 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
     setShowSuggestions(false);
 
     const userMsg: Message = { id: newId(), role: 'user', text: msgText, timestamp: new Date() };
-    const nextMessages = [...messages, userMsg];
-    setMessages(nextMessages);
+    setMessages(prev => [...prev, userMsg]);
     setLoading(true);
 
-    // Build history for the API (exclude the just-added user message — it's the current one)
-    const history = messages.map(m => ({ role: m.role, text: m.text }));
+    // ── Path A: RAG via engine.search.ask() ──────────────────────────────────
+    // Uses pgvector to find relevant scripture chunks, then Gemini explains them.
+    // Falls through to Path B if engine not ready or user has no scripture indexed.
+    if (isReady && engine) {
+      try {
+        const ragResult = await engine.search.ask(msgText, userId, {
+          matchCount:      5,
+          matchThreshold:  0.25,
+          withExplanation: true,
+        });
 
+        if (ragResult.answer) {
+          const modelMsg: Message = {
+            id:        newId(),
+            role:      'model',
+            text:      ragResult.answer,
+            timestamp: new Date(),
+            verses:    (ragResult.verses ?? []).slice(0, 3).map(v => ({
+              text_id:         v.verse?.text_id,
+              chapter:         v.verse?.chapter,
+              verse:           v.verse?.verse,
+              sanskrit:        v.verse?.sanskrit,
+              transliteration: v.verse?.transliteration,
+              source_label:    v.verse?.text_id?.replace(/_/g, ' '),
+            })),
+            fromRag: true,
+          };
+          setMessages(prev => [...prev, modelMsg]);
+          setLoading(false);
+          return;
+        }
+      } catch (ragErr) {
+        console.warn('[AiChat] RAG failed, falling back to direct API:', ragErr);
+        // Fall through to Path B
+      }
+    }
+
+    // ── Path B: Fallback — tradition-aware Gemini via API route ─────────────
+    // Used when: corpus not yet seeded, engine not ready, or RAG returned empty answer.
+    const history = messages.map(m => ({ role: m.role, text: m.text }));
     try {
       const res = await fetch('/api/ai/chat', {
         method:  'POST',
@@ -234,12 +257,11 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
         return;
       }
       const modelMsg: Message = {
-        id: newId(),
-        role: 'model',
-        text: data.reply,
+        id:        newId(),
+        role:      'model',
+        text:      data.reply,
         timestamp: new Date(),
-        references: Array.isArray(data.references) ? data.references : [],
-        trustMode: data.trustMode === 'source-guided' ? 'source-guided' : 'reflective',
+        fromRag:   false,
       };
       setMessages(prev => [...prev, modelMsg]);
     } catch {
@@ -268,40 +290,24 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
     <div className="flex flex-col h-[calc(100vh-8.5rem)] fade-in">
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div className="glass-panel rounded-[1.75rem] px-4 py-4 mb-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl"
-              style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--brand-primary) 18%, white), color-mix(in srgb, var(--brand-secondary) 26%, white))' }}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl"
+            style={{ background: 'linear-gradient(135deg, #ff770220, #d4a01720)' }}>
             ✨
-            </div>
-            <div>
-              <h1 className="font-display font-bold text-gray-900 text-lg leading-tight">Dharma Mitra</h1>
-              <p className="text-xs text-gray-500">Ask, reflect, and study with trust cues.</p>
-            </div>
           </div>
-          {!isEmpty && (
-            <button onClick={clearChat}
-              className="glass-button-secondary flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs text-gray-500 transition"
-              style={{ color: 'var(--brand-primary-strong)' }}>
-              <RotateCcw size={12} />
-              New chat
-            </button>
-          )}
+          <div>
+            <h1 className="font-display font-bold text-gray-900 text-lg leading-tight">Dharma Mitra</h1>
+            <p className="text-xs text-gray-400">AI guide for life & spirituality</p>
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2 mt-3">
-          <span className="clay-pill text-[11px] text-gray-700">
-            {trustLabel}
-          </span>
-          <span className="clay-pill text-[11px] text-gray-700">
-            Study, reflection, and next steps
-          </span>
-          {initialPrompt && (
-            <span className="clay-pill text-[11px] text-gray-700">
-              Opened from {contextLabel ?? 'Pathshala'}
-            </span>
-          )}
-        </div>
+        {!isEmpty && (
+          <button onClick={clearChat}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs text-gray-500 hover:text-[#7B1A1A] border border-gray-200 hover:border-orange-200 transition bg-white">
+            <RotateCcw size={12} />
+            New chat
+          </button>
+        )}
       </div>
 
       {/* ── Messages area ──────────────────────────────────────────────────── */}
@@ -309,76 +315,27 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
         {isEmpty && (
           <div className="flex flex-col items-center justify-center h-full text-center px-4 space-y-6">
             {/* Welcome */}
-            <div className="space-y-3">
+            <div className="space-y-2">
               <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-4xl"
-                style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--brand-primary) 14%, white), color-mix(in srgb, var(--brand-secondary) 20%, white))' }}>
+                style={{ background: 'linear-gradient(135deg, #ff770218, #d4a01718)' }}>
                 🙏
               </div>
               <h2 className="font-display font-bold text-xl text-gray-900">
                 {greeting}, {userName}
               </h2>
               <p className="text-sm text-gray-500 max-w-xs">
-                Begin with a question, a verse, or a concern.
+                Ask me anything — life questions, spiritual wisdom, dharmic perspectives, or just a thoughtful conversation.
               </p>
             </div>
-
-            <div className="w-full max-w-2xl grid gap-3 sm:grid-cols-3">
-              {PRACTICE_LANES.map((lane) => (
-                <div key={lane.title} className="clay-card rounded-[1.5rem] px-4 py-4 text-left">
-                  <p className="text-sm font-semibold text-gray-900">{lane.title}</p>
-                  <p className="text-xs leading-relaxed text-gray-600 mt-2">{lane.body}</p>
-                </div>
-              ))}
-            </div>
-
-            {initialPrompt && (
-              <div className="w-full max-w-xl">
-                <div className="clay-card rounded-[1.6rem] px-4 py-4 text-left space-y-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">
-                        {contextLabel ?? 'Pathshala study prompt'}
-                      </p>
-                      <p className="text-sm text-gray-700 leading-relaxed mt-2">
-                        Brought in from Pathshala. Send it as-is or edit first.
-                      </p>
-                    </div>
-                    <Sparkles size={18} className="text-[color:var(--brand-primary)] flex-shrink-0 mt-0.5" />
-                  </div>
-                  <div className="glass-panel rounded-2xl px-4 py-3 text-sm text-gray-800">
-                    {initialPrompt}
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={() => sendMessage(initialPrompt)}
-                      className="glass-button-primary px-4 py-2 rounded-full text-sm text-white"
-                    >
-                      Ask this now
-                    </button>
-                    <button
-                      onClick={() => {
-                        setInput(initialPrompt);
-                        inputRef.current?.focus();
-                      }}
-                      className="glass-button-secondary px-4 py-2 rounded-full text-sm"
-                      style={{ color: 'var(--brand-primary)' }}
-                    >
-                      Edit first
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Suggestions */}
             {showSuggestions && (
               <div className="w-full max-w-sm space-y-2">
-                <p className="text-xs text-gray-400 font-medium">Try one</p>
+                <p className="text-xs text-gray-400 font-medium">Try asking…</p>
                 <div className="flex flex-col gap-2">
                   {suggestions.slice(0, 4).map(s => (
                     <button key={s} onClick={() => sendMessage(s)}
-                      className="glass-panel text-left px-4 py-2.5 rounded-xl text-sm text-gray-700 transition shadow-sm"
-                      style={{ ['--tw-ring-color' as never]: 'transparent' }}>
+                      className="text-left px-4 py-2.5 rounded-xl bg-white border border-orange-100 text-sm text-gray-700 hover:border-orange-300 hover:text-[#7B1A1A] transition shadow-sm">
                       {s}
                     </button>
                   ))}
@@ -394,13 +351,13 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
       </div>
 
       {/* ── Input area ─────────────────────────────────────────────────────── */}
-      <div className="glass-panel rounded-[1.75rem] px-3 py-3 mt-2">
+      <div className="pt-3 border-t border-orange-100/60 mt-2">
         {/* Quick suggestion chips (after conversation starts) */}
         {!isEmpty && !loading && (
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {suggestions.slice(4).map(s => (
               <button key={s} onClick={() => sendMessage(s)}
-                className="glass-chip flex-shrink-0 px-3 py-1.5 rounded-full text-xs text-gray-600 transition whitespace-nowrap">
+                className="flex-shrink-0 px-3 py-1.5 rounded-full bg-white border border-orange-100 text-xs text-gray-600 hover:border-orange-300 hover:text-[#7B1A1A] transition whitespace-nowrap">
                 {s}
               </button>
             ))}
@@ -408,13 +365,13 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
         )}
 
         <div className="flex items-end gap-2">
-          <div className="glass-input flex-1 rounded-2xl focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100 transition overflow-hidden">
+          <div className="flex-1 bg-white rounded-2xl border border-gray-200 focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100 transition overflow-hidden">
             <textarea
               ref={inputRef}
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask a verse, question, or life situation... Shift+Enter for a new line"
+              placeholder="Ask anything… Shift+Enter for new line"
               rows={1}
               disabled={loading}
               style={{ resize: 'none', maxHeight: '120px' }}
@@ -429,13 +386,13 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
           <button
             onClick={() => sendMessage()}
             disabled={!input.trim() || loading}
-            className="glass-button-primary w-11 h-11 rounded-2xl flex items-center justify-center text-white transition disabled:opacity-40"
-            style={{ flexShrink: 0 }}>
+            className="w-11 h-11 rounded-2xl flex items-center justify-center text-white transition disabled:opacity-40"
+            style={{ background: '#7B1A1A', flexShrink: 0 }}>
             <Send size={16} />
           </button>
         </div>
         <p className="text-[10px] text-gray-400 text-center mt-2">
-          Verify spiritually sensitive guidance with trusted teachers and sources.
+          Dharma Mitra can make mistakes. Verify important information.
         </p>
       </div>
     </div>

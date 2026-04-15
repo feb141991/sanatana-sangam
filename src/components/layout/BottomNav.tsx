@@ -3,11 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Home, MapPin, Users, BookOpen, Heart, Sparkles, Compass, MessageSquare } from 'lucide-react';
+import { Home, MapPin, Users, GraduationCap, Heart, Sparkles, Compass, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Props {
-  /** Pathshala tab label, kept short for bottom-nav space */
+  /** Tradition-aware Pathshala label — 'Shastra' | 'Gurbani' | 'Dhamma' | 'Agam' */
   libraryLabel?: string;
   libraryMobileLabel?: string;
   isGuest?: boolean;
@@ -17,13 +17,14 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
   const pathname = usePathname();
   const prefersReducedMotion = useReducedMotion();
 
+  // Library is absorbed into Pathshala as a tradition-gated scripture tab
   const memberNavItems = [
-    { href: '/home',       label: 'Home',        icon: Home     },
-    { href: '/library',    label: libraryLabel, mobileLabel: libraryMobileLabel, icon: BookOpen },
-    { href: '/bhakti',     label: 'Bhakti',      icon: Sparkles },
-    { href: '/kul',        label: 'Kul',          icon: Heart    },
-    { href: '/mandali',    label: 'Mandali',      icon: Users    },
-    { href: '/tirtha-map', label: 'Tirtha',       icon: MapPin   },
+    { href: '/home',       label: 'Home',         mobileLabel: 'Home',     icon: Home          },
+    { href: '/pathshala',  label: libraryLabel,    mobileLabel: libraryMobileLabel, icon: GraduationCap },
+    { href: '/bhakti',     label: 'Bhakti',        mobileLabel: 'Bhakti',   icon: Sparkles      },
+    { href: '/kul',        label: 'Kul',           mobileLabel: 'Kul',      icon: Heart         },
+    { href: '/mandali',    label: 'Mandali',        mobileLabel: 'Mandali',  icon: Users         },
+    { href: '/tirtha-map', label: 'Tirtha',         mobileLabel: 'Tirtha',   icon: MapPin        },
   ];
   const guestNavItems = [
     { href: '/guest',         label: 'Explore', mobileLabel: 'Explore', icon: Compass       },

@@ -1,127 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { formatDharmaReferencePack, getDharmaReferences } from '@/lib/dharma-sources';
 
 // ─── General AI Chat Route ────────────────────────────────────────────────────
 // POST /api/ai/chat
 // Body: { message: string; tradition?: string | null; history: { role: 'user' | 'model'; text: string }[] }
-// Uses Gemini Flash-Lite / Flash with model fallback for better reliability.
+// Uses Google Gemini Flash — fast, free-tier available, multilingual.
 
-const GEMINI_API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
-const MAX_MESSAGE_LENGTH = 1500;
-const MAX_HISTORY_ITEMS = 12;
-const MAX_HISTORY_MESSAGE_LENGTH = 1200;
-const MAX_HISTORY_TOTAL_CHARS = 8000;
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX_REQUESTS = 8;
-const DEFAULT_GEMINI_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash'] as const;
-
-type ChatHistoryEntry = {
-  role: 'user' | 'model';
-  text: string;
-};
-
-const RATE_LIMIT_STORE_KEY = '__sanatana_sangam_ai_rate_limits__';
-
-function getRateLimitStore() {
-  const globalScope = globalThis as typeof globalThis & {
-    [RATE_LIMIT_STORE_KEY]?: Map<string, number[]>;
-  };
-
-  if (!globalScope[RATE_LIMIT_STORE_KEY]) {
-    globalScope[RATE_LIMIT_STORE_KEY] = new Map<string, number[]>();
-  }
-
-  return globalScope[RATE_LIMIT_STORE_KEY]!;
-}
-
-function checkRateLimit(userId: string) {
-  const now = Date.now();
-  const store = getRateLimitStore();
-  const recentRequests = (store.get(userId) ?? []).filter(
-    (timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS
-  );
-
-  if (recentRequests.length >= RATE_LIMIT_MAX_REQUESTS) {
-    store.set(userId, recentRequests);
-    return false;
-  }
-
-  recentRequests.push(now);
-  store.set(userId, recentRequests);
-  return true;
-}
-
-function parseHistory(value: unknown): ChatHistoryEntry[] | null {
-  if (value == null) return [];
-  if (!Array.isArray(value) || value.length > MAX_HISTORY_ITEMS) return null;
-
-  let totalChars = 0;
-  const parsed: ChatHistoryEntry[] = [];
-
-  for (const item of value) {
-    if (!item || typeof item !== 'object') return null;
-
-    const role = 'role' in item ? item.role : undefined;
-    const text = 'text' in item ? item.text : undefined;
-
-    if ((role !== 'user' && role !== 'model') || typeof text !== 'string') {
-      return null;
-    }
-
-    const trimmedText = text.trim();
-    if (!trimmedText || trimmedText.length > MAX_HISTORY_MESSAGE_LENGTH) {
-      return null;
-    }
-
-    totalChars += trimmedText.length;
-    if (totalChars > MAX_HISTORY_TOTAL_CHARS) {
-      return null;
-    }
-
-    parsed.push({ role, text: trimmedText });
-  }
-
-  return parsed;
-}
-
-function getGeminiModels() {
-  const configuredModels = process.env.GEMINI_MODELS
-    ?.split(',')
-    .map((value) => value.trim())
-    .filter(Boolean);
-
-  if (configuredModels && configuredModels.length > 0) {
-    return configuredModels;
-  }
-
-  return [...DEFAULT_GEMINI_MODELS];
-}
-
-async function callGeminiModel(model: string, apiKey: string, requestBody: unknown) {
-  const response = await fetch(
-    `${GEMINI_API_BASE_URL}/${encodeURIComponent(model)}:generateContent?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody),
-      signal: AbortSignal.timeout(20_000),
-    }
-  );
-
-  if (!response.ok) {
-    return {
-      ok: false as const,
-      status: response.status,
-      errorText: await response.text(),
-    };
-  }
-
-  return {
-    ok: true as const,
-    data: await response.json(),
-  };
-}
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`;
 
 // ─── Tradition-aware system instructions ──────────────────────────────────────
 const BASE_RULES = `
@@ -193,20 +78,8 @@ ${BASE_RULES}
 Begin fresh conversations with a warm "Jai Jinendra 🤲" greeting.`,
 };
 
-function buildSystemInstruction(tradition: string | null, referencePack: string): string {
-  const baseInstruction = SYSTEM_INSTRUCTIONS[tradition ?? 'hindu'] ?? SYSTEM_INSTRUCTIONS.hindu;
-
-  return `${baseInstruction}
-
-Answering standard:
-- If you refer to scripture or a tradition text, cite the source inline in square brackets, for example [Bhagavad Gita 2.47].
-- Prefer the internal reference pack below when it is relevant to the user's question.
-- If the reference pack is weak or not clearly relevant, say that plainly and offer careful general guidance instead of pretending certainty.
-- Do not invent verse numbers, direct quotations, or historical claims you are not confident about.
-- Keep answers warm and useful, but make the boundary between grounded guidance and reflective advice clear.
-
-Internal reference pack:
-${referencePack}`;
+function getSystemInstruction(tradition?: string | null): string {
+  return SYSTEM_INSTRUCTIONS[tradition ?? 'hindu'] ?? SYSTEM_INSTRUCTIONS.hindu;
 }
 
 export async function POST(req: NextRequest) {
@@ -217,45 +90,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorised' }, { status: 401 });
   }
 
-  if (!checkRateLimit(user.id)) {
-    return NextResponse.json(
-      { error: 'Too many messages right now. Please wait a minute and try again.' },
-      { status: 429 }
-    );
-  }
-
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: 'AI service not configured. Add GEMINI_API_KEY to .env.local' }, { status: 503 });
   }
 
-  let body: { message?: unknown; tradition?: unknown; history?: unknown };
+  let body: { message: string; tradition?: string | null; history?: { role: 'user' | 'model'; text: string }[] };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
 
-  const rawMessage = typeof body.message === 'string' ? body.message.trim() : '';
-  if (!rawMessage) {
+  const { message, tradition = null, history = [] } = body;
+  if (!message?.trim()) {
     return NextResponse.json({ error: 'Message is required' }, { status: 400 });
   }
-  if (rawMessage.length > MAX_MESSAGE_LENGTH) {
-    return NextResponse.json(
-      { error: `Message is too long. Please keep it under ${MAX_MESSAGE_LENGTH} characters.` },
-      { status: 400 }
-    );
-  }
-
-  const history = parseHistory(body.history);
-  if (!history) {
-    return NextResponse.json({ error: 'Invalid chat history provided' }, { status: 400 });
-  }
-
-  const tradition = typeof body.tradition === 'string' ? body.tradition : null;
-  const geminiModels = getGeminiModels();
-  const references = getDharmaReferences(rawMessage, tradition);
-  const referencePack = formatDharmaReferencePack(references);
 
   // Build Gemini contents array from history + new message
   const contents = [
@@ -265,13 +115,13 @@ export async function POST(req: NextRequest) {
     })),
     {
       role: 'user' as const,
-      parts: [{ text: rawMessage }],
+      parts: [{ text: message.trim() }],
     },
   ];
 
   const requestBody = {
     system_instruction: {
-      parts: [{ text: buildSystemInstruction(tradition, referencePack) }],
+      parts: [{ text: getSystemInstruction(tradition) }],
     },
     contents,
     generationConfig: {
@@ -289,50 +139,33 @@ export async function POST(req: NextRequest) {
   };
 
   try {
-    let lastError: { model: string; status: number; errorText: string } | null = null;
+    const res = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(requestBody),
+    });
 
-    for (const model of geminiModels) {
-      const result = await callGeminiModel(model, apiKey, requestBody);
-
-      if (result.ok) {
-        const text = result.data?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (!text) {
-          return NextResponse.json({ error: 'No response from AI. Please try again.' }, { status: 502 });
-        }
-
-        return NextResponse.json({
-          reply: text,
-          model,
-          references,
-          trustMode: references.length > 0 ? 'source-guided' : 'reflective',
-        });
-      }
-
-      console.error('Gemini API error:', model, result.status, result.errorText);
-      lastError = { model, status: result.status, errorText: result.errorText };
-
-      if (result.status === 400 || result.status === 403) {
-        break;
-      }
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error('Gemini API error:', res.status, errText);
+      let hint = '';
+      if (res.status === 400) hint = 'Bad request format.';
+      if (res.status === 403) hint = 'Invalid API key — check GEMINI_API_KEY in Vercel env vars.';
+      if (res.status === 404) hint = 'Model not found — check model name.';
+      if (res.status === 429) hint = 'Rate limit hit — try again in a moment.';
+      return NextResponse.json(
+        { error: `AI error (${res.status})${hint ? ': ' + hint : ''}` },
+        { status: 502 }
+      );
     }
 
-    if (!lastError) {
-      return NextResponse.json({ error: 'AI service is unavailable right now.' }, { status: 502 });
+    const data = await res.json();
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) {
+      return NextResponse.json({ error: 'No response from AI. Please try again.' }, { status: 502 });
     }
 
-    let hint = '';
-    if (lastError.status === 400) hint = 'Bad request format.';
-    if (lastError.status === 403) hint = 'Invalid API key or project permissions — check GEMINI_API_KEY in Vercel env vars.';
-    if (lastError.status === 404) hint = 'Configured model is unavailable. Update GEMINI_MODELS.';
-    if (lastError.status === 429) hint = 'Current model quota is exhausted. Add billing or use a model with available quota.';
-
-    return NextResponse.json(
-      {
-        error: `AI error (${lastError.status})${hint ? ': ' + hint : ''}`,
-        model: lastError.model,
-      },
-      { status: 502 }
-    );
+    return NextResponse.json({ reply: text });
   } catch (err) {
     console.error('AI chat error:', err);
     return NextResponse.json({ error: 'Network error. Please try again.' }, { status: 502 });

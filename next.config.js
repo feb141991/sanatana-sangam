@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const path = require('path');
+
 const nextConfig = {
   outputFileTracingRoot: __dirname,
   images: {
@@ -13,6 +15,15 @@ const nextConfig = {
         hostname: 'img.icons8.com',
       },
     ],
+  },
+  webpack: (config) => {
+    // Resolve engine workspace packages via src/index.ts during dev
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@sangam/sadhana-engine': path.resolve(__dirname, 'packages/sadhana-engine/src/index.ts'),
+      '@sangam/pathshala-engine': path.resolve(__dirname, 'packages/pathshala-engine/src/index.ts'),
+    };
+    return config;
   },
 };
 

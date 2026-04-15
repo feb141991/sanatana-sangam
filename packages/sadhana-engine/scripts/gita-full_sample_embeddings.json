@@ -1,0 +1,147 @@
+[
+  {
+    "text_id": "gita",
+    "chapter": 1,
+    "verse": 1,
+    "sanskrit": "",
+    "transliteration": "dh\u1e5btar\u0101\u1e63\u1e6dra uv\u0101ca / dharmak\u1e63etre kuruk\u1e63etre samavet\u0101 yuyutsava\u1e25 / m\u0101mak\u0101\u1e25 p\u0101\u1e47\u1e0dav\u0101\u015b caiva kim akurvata sa\u1e43jaya /",
+    "translation": "Dhritarashtra said: O Sanjaya, what did my sons and the sons of Pandu do when they assembled at Kurukshetra, eager to fight?",
+    "commentary": "",
+    "tags": [
+      "grief",
+      "confusion",
+      "compassion",
+      "war",
+      "family",
+      "duty"
+    ],
+    "embedding": [
+      0.10188108227364708,
+      0.05314987722721698,
+      0.13268235759247077,
+      0.25729325057743385,
+      -0.08176395634091915,
+      0.012907968787633221,
+      -0.01269610725748058,
+      -0.012461885277056233,
+      -0.005514883700460121,
+      0.0015608528250206969
+    ]
+  },
+  {
+    "text_id": "gita",
+    "chapter": 1,
+    "verse": 2,
+    "sanskrit": "",
+    "transliteration": "sa\u1e43jaya uv\u0101ca / d\u1e5b\u1e63\u1e6dv\u0101 tu p\u0101\u1e47\u1e0dav\u0101n\u012bka\u1e43 vy\u016b\u1e0dha\u1e43 duryodhanas tad\u0101 / \u0101c\u0101ryam upasa\u1e43gamya r\u0101j\u0101 vacanam abrav\u012bt /",
+    "translation": "Sanjaya said: Having seen the army of the Pandavas arrayed in battle order, King Duryodhana then approached his teacher Dronacharya and spoke these words.",
+    "commentary": "",
+    "tags": [
+      "grief",
+      "confusion",
+      "compassion",
+      "war",
+      "family",
+      "duty"
+    ],
+    "embedding": [
+      0.09564239176926226,
+      0.040227090614405596,
+      0.10790969409862905,
+      0.2388655624146581,
+      -0.07418331555211737,
+      0.013774896464266204,
+      -0.005381629972084745,
+      -0.012981341273645289,
+      -0.009460551964570102,
+      0.00138948001478764
+    ]
+  },
+  {
+    "text_id": "gita",
+    "chapter": 1,
+    "verse": 3,
+    "sanskrit": "",
+    "transliteration": "pa\u015byait\u0101\u1e43 p\u0101\u1e47\u1e0duputr\u0101\u1e47\u0101m \u0101c\u0101rya mahat\u012b\u1e43 cam\u016bm / vy\u016b\u1e0dh\u0101\u1e43 drupadaputre\u1e47a tava \u015bi\u1e63ye\u1e47a dh\u012bmat\u0101 /",
+    "translation": "In the Arjuna Vishada Yoga (Chapter 1), verse 3: Arjuna sees his kinsmen on the battlefield and is overcome with grief and moral confusion. He lays down his bow, unable to fight. This verse is part of Krishna's teaching on this theme.",
+    "commentary": "",
+    "tags": [
+      "grief",
+      "confusion",
+      "compassion",
+      "war",
+      "family",
+      "duty"
+    ],
+    "embedding": [
+      0.35091137133404027,
+      0.16371346007555285,
+      0.34578299664573264,
+      0.7307840446730817,
+      -0.2006485272802988,
+      0.02711842292741218,
+      -0.021854618886097688,
+      -0.01745474693504616,
+      -0.03744685411499453,
+      -0.003027446775187806
+    ]
+  },
+  {
+    "text_id": "gita",
+    "chapter": 1,
+    "verse": 4,
+    "sanskrit": "",
+    "transliteration": "atra \u015b\u016br\u0101 mahe\u1e63v\u0101s\u0101 bh\u012bm\u0101rjunasam\u0101 yudhi / yuyudh\u0101no vir\u0101\u1e6da\u015b ca drupada\u015b ca mah\u0101ratha\u1e25 /",
+    "translation": "Here are heroic bowmen equal in battle to Bhima and Arjuna \u2014 Yuyudhana, Virata, and Drupada, the great warrior.",
+    "commentary": "",
+    "tags": [
+      "grief",
+      "confusion",
+      "compassion",
+      "war",
+      "family",
+      "duty"
+    ],
+    "embedding": [
+      0.10256802276051859,
+      0.0625515254530245,
+      0.1364109383440392,
+      0.26217015352299755,
+      -0.08145299390473942,
+      0.007094495604966456,
+      -0.016526539036710655,
+      -0.012643668357688364,
+      -0.015406971060151263,
+      -0.0009814482407010413
+    ]
+  },
+  {
+    "text_id": "gita",
+    "chapter": 1,
+    "verse": 5,
+    "sanskrit": "",
+    "transliteration": "dh\u1e5b\u1e63\u1e6daketu\u015b cekit\u0101na\u1e25 k\u0101\u015bir\u0101ja\u015b ca v\u012bryav\u0101n / purujit kuntibhoja\u015b ca \u015baibya\u015b ca narapu\u1e43gava\u1e25 /",
+    "translation": "In the Arjuna Vishada Yoga (Chapter 1), verse 5: Arjuna sees his kinsmen on the battlefield and is overcome with grief and moral confusion. He lays down his bow, unable to fight. This verse is part of Krishna's teaching on this theme.",
+    "commentary": "",
+    "tags": [
+      "grief",
+      "confusion",
+      "compassion",
+      "war",
+      "family",
+      "duty"
+    ],
+    "embedding": [
+      0.3542145902023865,
+      0.1652895993882661,
+      0.34867335947166384,
+      0.7318810099060308,
+      -0.19963989737175786,
+      0.027018718518609475,
+      -0.016527352628351605,
+      -0.038345607831829616,
+      -0.025269293636996832,
+      -0.0025195918326976936
+    ]
+  }
+]

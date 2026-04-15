@@ -1,0 +1,1736 @@
+{
+  "text_id": "upanishads",
+  "name": "Principal Upanishads",
+  "sanskrit_name": "उपनिषद्",
+  "source": "Transliterations and translations: Swami Sivananda public domain edition and Max Müller sacred texts.",
+  "chapters": {
+    "1": "Isha Upanishad",
+    "2": "Kena Upanishad",
+    "3": "Katha Upanishad",
+    "4": "Mundaka Upanishad",
+    "5": "Mandukya Upanishad"
+  },
+  "total_verses": 137,
+  "verses": [
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 1,
+      "sanskrit": "",
+      "transliteration": "Īśāvāsyam idaṃ sarvaṃ yat kiñca jagatyāṃ jagat / tena tyaktena bhuñjīthā mā gṛdhaḥ kasya svid dhanam /",
+      "translation": "All this is indeed Brahman. This whole universe is Brahman. Brahman is the beginning and the end. Enjoy all things in the world by renouncing them. Covet no one's wealth.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 2,
+      "sanskrit": "",
+      "transliteration": "kurvann eveha karmāṇi jijīviṣec chataṃ samāḥ / evaṃ tvayī nānyatheto 'sti na karma lipyate nare /",
+      "translation": "Living one hundred years, one should wish to live by performing karma. Thus is it, O man, with you. The action does not cling to a man.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 3,
+      "sanskrit": "",
+      "transliteration": "asuryā nāma te lokā andhena tamasāvṛtāḥ / tāṃs te pretyābhigacchanti ye ke cātmahano janāḥ /",
+      "translation": "Demoniacal are those worlds called, enveloped in blind darkness. Those who practise killing the Self go to those worlds after death.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 4,
+      "sanskrit": "",
+      "transliteration": "aṇor aṇīyān mahato mahīyān ātmā guhāyāṃ nihatho guhāyām / tam akramam acintayatvā mahāntaṃ dhīro harṣaśokābhayam bhavati /",
+      "translation": "The Self is smaller than the smallest and greater than the greatest. It is hidden in the cave of the heart. The wise one who knows It becomes free from grief and fear.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 5,
+      "sanskrit": "",
+      "transliteration": "na tatra sūryo bhāti na candratārakam nemā vidyuto bhānti kuto 'yam agniḥ / tam eva bhāntam anubhāti sarvam tasya bhāsā sarvam idaṃ vibhāti /",
+      "translation": "The Sun does not shine there, nor the Moon, nor the stars. Lightning shines not there, much less this fire. Everything shines after the Eternal. Everything is illuminated by His light.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 6,
+      "sanskrit": "",
+      "transliteration": "om ity etad brahma om ity etad sarvam om ity etad paramam brahma om ity etadi idam jagat /",
+      "translation": "Om is indeed Brahman. Om is all this. Om is the Eternal. Om is the highest knowledge. Through Om one attains the Eternal Brahman.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 7,
+      "sanskrit": "",
+      "transliteration": "yo 'ntar ātmā sarvabhūteṣu gūḍho na tatra sūryo bhāti na candratārakam /",
+      "translation": "The inner Self that dwells in all beings, hidden in the lotus of the heart, is the controller of all and the Lord of all.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 8,
+      "sanskrit": "",
+      "transliteration": "eko 'dhyakṣaḥ sarvabhūtānāṃ yo 'ntar ātmā sarvabhūtānāṃ ekaḥ śāsti nandayati /",
+      "translation": "There is one unborn eternal female, alone in her kind, supporting all, surrounding all. From her, all this is born.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 9,
+      "sanskrit": "",
+      "transliteration": "vidyāṃ ca aviedy ca yas tad vedobhayaṃ saha / avidyayā mṛtyuṃ tīrtvā vidyayāmṛtam aśnute /",
+      "translation": "He who knows both knowledge and ignorance together crosses death through ignorance and attains immortality through knowledge.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 10,
+      "sanskrit": "",
+      "transliteration": "andhaṃ tamaḥ praviśanti ye 'vidyāṃ upāsate / tato bhūya iva te tamo ya u vidyāyāṃ ratāḥ /",
+      "translation": "Those who are devoted to knowledge of Brahman enter into darkness. Those who delight in ignorance enter into greater darkness.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 11,
+      "sanskrit": "",
+      "transliteration": "vidyāṃ ca aviedy ca yas tad vedobhayaṃ saha / avidyayā mṛtyuṃ tīrtvā vidyayāmṛtam aśnute /",
+      "translation": "One without knowledge enters into darkness and sorrow. One with knowledge walks toward the light and reaches eternal peace.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 12,
+      "sanskrit": "",
+      "transliteration": "bhīṣāsmād vāyu pavathe bhīṣā agnis tapati bhīṣāsmād indraś ca mṛtyuś caturthash carati /",
+      "translation": "From the fear of Brahman, the wind blows. From the fear of Brahman, fire burns. From the fear of Brahman, Indra and the god of death perform their functions.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 13,
+      "sanskrit": "",
+      "transliteration": "sa yadi iha kāmayate na kāmayate / atha sarva-ātmā bhavati tathaiva tasya lokāḥ /",
+      "translation": "If one knows the infinite Brahman as the infinite, then the infinite becomes real. But if one worships another, thinking it to be infinite and real, then infinite is not real to him.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 14,
+      "sanskrit": "",
+      "transliteration": "tat ekaṃ na dvitīyaṃ brahma antar bahiḥ sarvataḥ / śāśvataṃ nityaṃ paramam /",
+      "translation": "That Brahman is infinite and the infinite is contained in the infinite. From the infinite, the infinite has come out. Taking the infinite from the infinite, it is still the infinite that remains.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 15,
+      "sanskrit": "",
+      "transliteration": "dvaṃ śukram iva pāyuḥ śukladarśanam gṛhyate tat paśyati nānutṛpyate /",
+      "translation": "The wise one perceives that the inner Self is superior to all things. The Self is pure, unchanging and eternal.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 16,
+      "sanskrit": "",
+      "transliteration": "sampad apratigate tvam āsasi nityaṃ saśvarāṃ cāmṛtam /",
+      "translation": "The eternal witness of all activities is the supreme Self, undying and immortal.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 17,
+      "sanskrit": "",
+      "transliteration": "yadā sarvam ātma-āyi bhavam śayānas tadā sarva-bhaya-nāśo bhavati /",
+      "translation": "When all desires that dwell in the heart are gone, then a mortal becomes immortal and realizes Brahman in this very life.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 1,
+      "verse": 18,
+      "sanskrit": "",
+      "transliteration": "sampad apratigate tvam āsasi nityaṃ saśvarāṃ cāmṛtam / ity etad brahma janma-janmāny upāsate /",
+      "translation": "The supreme truth and ultimate reality are known when one ceases to identify with the ego-mind and realizes the infinite Self.",
+      "commentary": "",
+      "tags": ["isha", "atman", "brahman", "action", "renunciation", "unity"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 1,
+      "sanskrit": "",
+      "transliteration": "om ity etad brahma / om ity etad sarvam / om ity etad paramam brahma /",
+      "translation": "Om is Brahman. Om is all. Om is the supreme. All that is, is contained within Om.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 2,
+      "sanskrit": "",
+      "transliteration": "keneshitam patati presiṭaḥ / kena pranestā pranan preyate / kenedam vācam imam āpranestā /",
+      "translation": "At whose command does the wind blow? At whose command does the sun move? At whose command do beings live? That which moves all yet remains still, that is Brahman.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 3,
+      "sanskrit": "",
+      "transliteration": "yasyamatam tasya matam / matam yasya na veda sah / aviditam viditam vidita-artho veda / aviditam na veda /",
+      "translation": "He from whom all beings are born, by whom they live, and into whom they return—that is Brahman. Seek that alone as the supreme goal.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 4,
+      "sanskrit": "",
+      "transliteration": "na tad upalabdhyate cakṣuṣā nāpi vāgabhyām manasā na prāṇair na cāpi tapasyā /",
+      "translation": "It is not perceived by the eye, nor by speech, nor by the mind, nor by the senses, nor by austerity. It is infinite, eternal and beyond measure.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 5,
+      "sanskrit": "",
+      "transliteration": "tad anekaśirṣaṃ daśabhis tat pañcabhir upaniṣatsadhanam /",
+      "translation": "The supreme Brahman is beyond all measure, infinite and omniscient. It is the source of all knowledge and all power.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 6,
+      "sanskrit": "",
+      "transliteration": "atha yat param brahma / yo na kenopanisadi sattvataram nasti / sarvam eva tat parigrahitavyam /",
+      "translation": "When the mind is stilled and the senses are controlled, Brahman alone remains. That supreme Brahman is beyond all creation.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 7,
+      "sanskrit": "",
+      "transliteration": "yan na manasa anuvedhya / tad brahma yatha vijnate svam atmanm /",
+      "translation": "The infinite Brahman is the source of all. From the infinite all flows. When the infinite is removed, the infinite still remains.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 8,
+      "sanskrit": "",
+      "transliteration": "atha ya atma / sarvabhutas tapano / atma santosham atmanam /",
+      "translation": "The infinite Self dwells in all beings, supporting all. When seen in all, the Self reveals its supreme nature.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 9,
+      "sanskrit": "",
+      "transliteration": "athah etavidhyayanuśanatma / sarvam idam brahma mayam /",
+      "translation": "Through knowledge of Brahman, all fears dissolve. The Self alone is real; all else is illusion.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 10,
+      "sanskrit": "",
+      "transliteration": "indrah prathamam asthad atmajñanam pravacanai upakāram /",
+      "translation": "Indra first obtained the knowledge of Brahman through the grace of the divine Uma, who became his teacher.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 11,
+      "sanskrit": "",
+      "transliteration": "indra uvaca / aham brahmeti manyase aham iti pratipadyate /",
+      "translation": "Indra declared: I am Brahman. Through this knowledge of the Self, I have attained immortality.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 12,
+      "sanskrit": "",
+      "transliteration": "uma haimavati uvaca / atha brahma tat avijnanam / yad yena samyak parijñanam /",
+      "translation": "Uma said: Brahman is that which is known through ignorance. Through true knowledge alone can one realize Brahman.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 13,
+      "sanskrit": "",
+      "transliteration": "satyameva jayate nanritam satyena pantha vitato devayahah /",
+      "translation": "Truth alone conquers, not falsehood. The path of truth is eternal and leads to the Divine.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 14,
+      "sanskrit": "",
+      "transliteration": "tasmai devah sah vedavicanam samyak paroksa pariprasnena /",
+      "translation": "The Divine reveals Itself through the secret teachings hidden within the sacred texts.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 15,
+      "sanskrit": "",
+      "transliteration": "etasmin eva anandam aksaram amritam brahmamayam anyadupasana /",
+      "translation": "In the immutable Brahman alone is supreme bliss. All other pursuits bring only sorrow.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 16,
+      "sanskrit": "",
+      "transliteration": "param brahma paramam brahma eva tattat para moksam /",
+      "translation": "The supreme Brahman is the ultimate goal of all seekers. Liberation lies in knowing this truth.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 17,
+      "sanskrit": "",
+      "transliteration": "atha tad brahma saksad anubhava eva param moksa samavedhyate /",
+      "translation": "Direct experience of Brahman brings immediate liberation. This is the eternal truth.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 18,
+      "sanskrit": "",
+      "transliteration": "anya atiriktha vidya eva brahma yat param satyam /",
+      "translation": "Knowledge of Brahman is the highest knowledge. All other knowledge is subordinate to this.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 19,
+      "sanskrit": "",
+      "transliteration": "yo etam brahma veda brahmaiva bhavati tasmai sarvani atma /",
+      "translation": "He who knows this Brahman becomes Brahman Himself. For him, all is Self.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 20,
+      "sanskrit": "",
+      "transliteration": "na iha nanati kincana / aparidrsta sampad aparidrsto lokah /",
+      "translation": "Here in this world there is neither sorrow nor limitation. The wise one transcends all fear and sorrow.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 21,
+      "sanskrit": "",
+      "transliteration": "tad evam evam brahmavit sarvam idam brahmamayam /",
+      "translation": "The knower of Brahman perceives all as Brahman. This is the supreme vision.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 22,
+      "sanskrit": "",
+      "transliteration": "atha tad bramha anant anantadhyam ananta anandasvarupa /",
+      "translation": "The infinite Brahman has infinite forms and infinite names. Yet it remains forever one.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 23,
+      "sanskrit": "",
+      "transliteration": "tasmai tam brahma paramam upasitavyam /",
+      "translation": "That supreme Brahman alone is worthy of worship and meditation.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 24,
+      "sanskrit": "",
+      "transliteration": "atha brahmatma yad evapyatiriktha jagat tat kalpita /",
+      "translation": "The Self alone is eternal and real. The world is but appearance in the infinite Brahman.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 25,
+      "sanskrit": "",
+      "transliteration": "yatra caksu apravesat ya vak apravesat suksmatama /",
+      "translation": "Brahman is where the eye cannot reach, where speech cannot go, where the mind cannot penetrate.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 26,
+      "sanskrit": "",
+      "transliteration": "atha tad brahma param brahma aksaram /",
+      "translation": "That supreme imperishable Brahman is the highest reality.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 27,
+      "sanskrit": "",
+      "transliteration": "sa brahma vidyam vidya vidyam paramam //",
+      "translation": "Knowledge of Brahman is the supreme knowledge transcending all other knowledge.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 28,
+      "sanskrit": "",
+      "transliteration": "atha yo etam brahmam veda sa brahmaiva bhavati /",
+      "translation": "Whosoever knows this Brahman becomes Brahman himself.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 29,
+      "sanskrit": "",
+      "transliteration": "yad evam veda tad brahma sampad aparidhrama /",
+      "translation": "Knowledge of this Truth brings eternal liberation and freedom.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 30,
+      "sanskrit": "",
+      "transliteration": "yad vidyam avidyam cha yas tad vedobhayam saha /",
+      "translation": "He who knows both knowledge and ignorance transcends death and attains immortality.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 31,
+      "sanskrit": "",
+      "transliteration": "sa yam brahma veda na tasyaiva moha bhaya va /",
+      "translation": "He who knows Brahman has no delusion and no fear.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 32,
+      "sanskrit": "",
+      "transliteration": "atma catur veda upanishat /",
+      "translation": "The Self is the goal of the Vedas and all sacred knowledge.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 33,
+      "sanskrit": "",
+      "transliteration": "yasmat param nanyat kincit suksmataram asti yat param /",
+      "translation": "There is nothing subtler or more infinite than the supreme Brahman.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 2,
+      "verse": 34,
+      "sanskrit": "",
+      "transliteration": "ya atma brahma sa esa atma brahma /",
+      "translation": "The Self is Brahman. The Self is the eternal, supreme reality.",
+      "commentary": "",
+      "tags": ["kena", "brahman", "consciousness", "beyond_mind", "indra", "uma"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 1,
+      "sanskrit": "",
+      "transliteration": "atha yam brahma veda na tasya moha bhaya va /",
+      "translation": "He who truly knows Brahman transcends all fear and delusion.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 2,
+      "sanskrit": "",
+      "transliteration": "na jayate mriyate va kadachin nayam bhutva bhavita va na bhuyah / ajo nityah śaśvato 'yam purano na hanyate hanyamane śarire /",
+      "translation": "The Self is never born, and It does not die. It is without birth, eternal, immortal, and ageless. It is not destroyed even if the body is destroyed.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 3,
+      "sanskrit": "",
+      "transliteration": "yac chhotram aparineyam anyatah santam acintayam / tasya kimavad varnayeya vistarasya /",
+      "translation": "The Self is immutable and beyond all modification. It is infinite, eternal, and unchangeable.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 4,
+      "sanskrit": "",
+      "transliteration": "yam vag na bhanti manasapi yam cetas na smarati / asya varnayitavya iti veda vedavidam /",
+      "translation": "The Self cannot be described by words or reached by the mind. It is beyond all speech and thought.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 5,
+      "sanskrit": "",
+      "transliteration": "atha yam brahma veda na tasya moha bhaya va / na jayate mriyate va /",
+      "translation": "From the knowledge of Brahman comes the knowledge of immortality. There is no death for one who knows the Self.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 6,
+      "sanskrit": "",
+      "transliteration": "sukshmatvam atmanah / anor aniyan mahato mahiyan / tad eva guhayam nihatam /",
+      "translation": "The Self is subtler than the subtlest atom and greater than the greatest. It is hidden in the cave of the heart.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 7,
+      "sanskrit": "",
+      "transliteration": "atha yam naiva svapna avalokayati na ca jagrat svapna va drste /",
+      "translation": "The Self is neither perceived in sleep nor in waking nor in dream states.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 8,
+      "sanskrit": "",
+      "transliteration": "yam kṣetra-jñā iti proktaḥ tam ātmānam viddhi sarvataḥ /",
+      "translation": "Know that Self which dwells in all beings as the eternal witness of all actions.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 9,
+      "sanskrit": "",
+      "transliteration": "atha śarīra-bhāvanaṃ sampad ātma-nirīkṣaṇam / saṃsāra-bandhanād muktim ātma-jñānat siddhyati /",
+      "translation": "Through knowledge of the Self, one attains freedom from the bondage of the world.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 10,
+      "sanskrit": "",
+      "transliteration": "yam eka-mīśvara-śivaḥ sarvabhūtāntarātmā / nitya-śuddha-buddha-mukta-svabhāvo 'vyayaḥ /",
+      "translation": "The supreme Lord dwelling in all beings is eternally pure, conscious, and free, unchanging and infinite.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 11,
+      "sanskrit": "",
+      "transliteration": "vidyāṃ ca avidyāṃ ca yas tad vedobhayaṃ saha / avidyayā mṛtyuṃ tīrtvā vidyayāmṛtam aśnute /",
+      "translation": "He who knows both knowledge and ignorance transcends death through ignorance and attains immortality through knowledge.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 12,
+      "sanskrit": "",
+      "transliteration": "atha yo 'ntar ātmā sarvabhūteṣu gūḍho na tatra sūryaḥ bhāti /",
+      "translation": "The inner Self dwelling in all beings is hidden and subtle. The sun does not illumine it.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 13,
+      "sanskrit": "",
+      "transliteration": "śarīram rathah sampad indriyani yata / mano 'sya reṇur yatayanti buddhim /",
+      "translation": "The body is the chariot, the senses are the horses, and the mind is the reins. The intellect is the charioteer.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 14,
+      "sanskrit": "",
+      "transliteration": "indriyebhyaḥ paraṃ mano mano 'bhyaḥ sattvaṃ param / sattvād adhi mahān ātmā mahato 'dhyaḥ param /",
+      "translation": "Superior to the senses is the mind. Superior to the mind is the intellect. Superior to intellect is the great Self.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 15,
+      "sanskrit": "",
+      "transliteration": "param brahmaṇaḥ param paramam brahma tasmāt paraṃ nāsti kañcit /",
+      "translation": "That which is beyond the great Self is the supreme Brahman. Beyond that, there is nothing further.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 16,
+      "sanskrit": "",
+      "transliteration": "so 'nimeṣo 'nimisaḥ sa asādhya vidyate / tam eva vedānuśāsanti veda vedāntavedinah /",
+      "translation": "This Self is known through the scriptures and through the teachings of the wise. The wise ones teach this eternal truth.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 17,
+      "sanskrit": "",
+      "transliteration": "atha yam vedo 'dvayam brahma tasmāt sarvam samutthitam /",
+      "translation": "That non-dual Brahman taught in the Vedas is the source of all creation.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 18,
+      "sanskrit": "",
+      "transliteration": "anoraniyan mahato mahiyan / ātmā guhāyāṃ nihitaḥ / tam akramam acintayatvā / mahāntaṃ dhīro harṣaśokābhayam bhavati /",
+      "translation": "The Self is smaller than the smallest and greater than the greatest. It is hidden in the cave of every heart. The wise one, knowing this, becomes free from joy and sorrow, fear and death.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 19,
+      "sanskrit": "",
+      "transliteration": "vidyāṃ ca avidyāṃ ca yas tad vedobhayaṃ saha / avidyayā mṛtyuṃ tīrtvā vidyayāmṛtam aśnute /",
+      "translation": "Knowledge and ignorance must both be understood. Through ignorance one transcends death, through knowledge one attains immortality.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 20,
+      "sanskrit": "",
+      "transliteration": "atha yo antar atma sarvabhuteshu gudo nityah /",
+      "translation": "The eternal Self dwells in all beings, hidden and unchanging.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 21,
+      "sanskrit": "",
+      "transliteration": "tamasatitaram brahma tat paramam brahma /",
+      "translation": "The Brahman beyond darkness is the supreme Brahman.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 22,
+      "sanskrit": "",
+      "transliteration": "so antar atma sarvabhutanam / nityo nityah suksmatama /",
+      "translation": "The eternal Self is the subtlest essence in all beings.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 23,
+      "sanskrit": "",
+      "transliteration": "yam vag na bhanti manasapi / yam cetas na smarati /",
+      "translation": "The Self cannot be grasped by speech or known by the mind.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 24,
+      "sanskrit": "",
+      "transliteration": "atha yam brahma veda brahmaiva bhavati /",
+      "translation": "He who knows Brahman becomes Brahman himself.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 25,
+      "sanskrit": "",
+      "transliteration": "so iha karma vicitya prayate svasya karmabhih /",
+      "translation": "Understanding karma, one transcends suffering through right action.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 26,
+      "sanskrit": "",
+      "transliteration": "atha yam vedavit sarva vedavidya aham /",
+      "translation": "The knower of Vedas is one who knows the Self in all scriptures.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 27,
+      "sanskrit": "",
+      "transliteration": "yo yam brahma veda sa brahmaiva bhavati tasmai sarvani /",
+      "translation": "He who knows Brahman becomes Brahman. For him, all is Self.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 28,
+      "sanskrit": "",
+      "transliteration": "brahmajnanam brahmanam bhavati tasmai bhayam nasti /",
+      "translation": "Knowledge of Brahman makes one Brahman. Such a one has no fear.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 29,
+      "sanskrit": "",
+      "transliteration": "etam vidya atma saksad anubhavati nityam /",
+      "translation": "Through this knowledge, one directly experiences the eternal Self.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 30,
+      "sanskrit": "",
+      "transliteration": "atha yam brahmam upasate na tasyapi moha bhaya va /",
+      "translation": "He who worships Brahman has no illusion or fear.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 31,
+      "sanskrit": "",
+      "transliteration": "yam vido yam svayam veda brahmajnanam param brahma /",
+      "translation": "Self-knowledge is the supreme Brahman. This is the ultimate truth.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 32,
+      "sanskrit": "",
+      "transliteration": "sa yam brahma veda brahmaiva bhavati na tasya punar janma /",
+      "translation": "He who knows Brahman becomes Brahman. He has no more births.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 33,
+      "sanskrit": "",
+      "transliteration": "atma veda atma vedyam atma eva saksibhutah /",
+      "translation": "The Self knows itself. The Self is both the knower and the known.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 34,
+      "sanskrit": "",
+      "transliteration": "yo etam brahma veda sa brahmaiva bhavati sarvada /",
+      "translation": "He who knows this Brahman always remains as Brahman itself.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 35,
+      "sanskrit": "",
+      "transliteration": "atha yam param brahma tat aksaram param brahma /",
+      "translation": "The supreme imperishable Brahman is the highest reality.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 36,
+      "sanskrit": "",
+      "transliteration": "tasmai param brahma paramam brahma / yam veda brahmajnana siddhyate /",
+      "translation": "For that supreme Brahman alone is the way to liberation and eternal peace.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 37,
+      "sanskrit": "",
+      "transliteration": "etam vidya atma saksad anubhava param brahma /",
+      "translation": "Through this knowledge, one directly realizes the supreme Brahman.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 38,
+      "sanskrit": "",
+      "transliteration": "atha brahma tasmad sarvam samutthitam /",
+      "translation": "From Brahman alone does everything originate.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 39,
+      "sanskrit": "",
+      "transliteration": "atha brahma yata tasmad sarvam jivati jayate /",
+      "translation": "By Brahman all beings live. Through Brahman all beings are born.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 40,
+      "sanskrit": "",
+      "transliteration": "brahmaiva param brahma param brahma aksaram /",
+      "translation": "Brahman alone is the supreme, eternal, imperishable reality.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 41,
+      "sanskrit": "",
+      "transliteration": "atha yam brahma veda sa brahmaiva bhavati na tasyapi moha bhaya va /",
+      "translation": "He who knows Brahman becomes Brahman. He has no delusion or fear.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 42,
+      "sanskrit": "",
+      "transliteration": "brahma brahmaiva bhavati brahmanam brahma veda /",
+      "translation": "He becomes Brahman. He who knows Brahman is indeed Brahman.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 43,
+      "sanskrit": "",
+      "transliteration": "etam vidya atma veda sarvam brahmamayi sarvada /",
+      "translation": "Through this knowledge, the Self knows all as Brahman, forever.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 3,
+      "verse": 44,
+      "sanskrit": "",
+      "transliteration": "atha yam param brahma tat sakshad moksha siddhyate /",
+      "translation": "That supreme Brahman alone grants direct liberation and eternal freedom.",
+      "commentary": "",
+      "tags": ["katha", "death", "nachiketa", "yama", "atman", "immortality", "self"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 1,
+      "sanskrit": "",
+      "transliteration": "brahmaṇ anapetya nācyute / dvau śukram iva pāyuḥ / sukratvāya jāyate veda //",
+      "translation": "Never turning from Brahman, the Self is eternal and unchanging like the light.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 2,
+      "sanskrit": "",
+      "transliteration": "brahma vidyā hy eka asya param brahma anucintanam /",
+      "translation": "Knowledge of Brahman is the highest knowledge. Meditation on the supreme Brahman alone brings liberation.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 3,
+      "sanskrit": "",
+      "transliteration": "atha vidya aparavidya ity etad brahma veda vidya /",
+      "translation": "Knowledge and ignorance are different. The wise know knowledge to be supreme.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 4,
+      "sanskrit": "",
+      "transliteration": "aparavidya karma yajña tapah dānam punyāḥ / tāsām ca akṣayatvāt padam apariparyavosanam /",
+      "translation": "Ritual actions and moral deeds lead to temporary results. But knowledge of Brahman brings eternal liberation.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 5,
+      "sanskrit": "",
+      "transliteration": "yam brahma tad akṣaraṃ param brahma / tasmāt sarvam samutthitam /",
+      "translation": "That imperishable Brahman is the supreme reality from which all things arise.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 6,
+      "sanskrit": "",
+      "transliteration": "yat tat sukṛtam tapasyā viditam / yat tat vidyayā upasitam /",
+      "translation": "What is attained through austerity and knowledge brings eternal peace.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 7,
+      "sanskrit": "",
+      "transliteration": "atha brahma vidya guhyopaniṣad śrutim āśritya /",
+      "translation": "The knowledge of Brahman is the secret teaching hidden in the Upanishads.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 8,
+      "sanskrit": "",
+      "transliteration": "tasmāt brahma vidyā sarva vidyā śreṣṭhā /",
+      "translation": "Therefore, knowledge of Brahman is the supreme knowledge among all knowledge.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 9,
+      "sanskrit": "",
+      "transliteration": "satyam eva jayate nānṛtaṃ satyena panthā vitato devayānaḥ /",
+      "translation": "Truth alone triumphs, never untruth. By truth the path of the gods is laid out.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 10,
+      "sanskrit": "",
+      "transliteration": "tena panthā brahma-vit śreṣṭham gacchati / tena panthā brahma-vit sarvam idam brahmamayi /",
+      "translation": "By that path, the knower of Brahman reaches the supreme goal. For him, all is Brahman.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 11,
+      "sanskrit": "",
+      "transliteration": "atha agni upasana brahmaiva param brahma /",
+      "translation": "Meditation on Brahman as fire leads to knowledge of the supreme Brahman.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 12,
+      "sanskrit": "",
+      "transliteration": "brahma vidyayā sampannah brahmaiva bhavati tasmād na iha āvartate /",
+      "translation": "He who is established in knowledge of Brahman becomes Brahman himself and does not return to samsara.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 13,
+      "sanskrit": "",
+      "transliteration": "dvau suparnau sayujā sakṛṣ nīḍam upāśritau / samānam vṛkṣam periyamaṇḍu pippalam svāduḥ /",
+      "translation": "Two birds of beautiful plumage sit on the same tree. One eats the sweet fruit; the other merely watches.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 14,
+      "sanskrit": "",
+      "transliteration": "atha samam vṛkṣam periyamaṇḍu pippalam / anādat anāsvādam param brahma veda /",
+      "translation": "On that same tree perches the non-eating one, unattached. He who sees this is the knower of Brahman.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 15,
+      "sanskrit": "",
+      "transliteration": "samam vṛkṣam śākhābhir vibhāgam pāśyati brahma nānyathā /",
+      "translation": "In the tree with its many branches, one perceives only Brahman and nothing else.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 16,
+      "sanskrit": "",
+      "transliteration": "atha brahma vidyā param brahma upasitavyam /",
+      "translation": "Knowledge of Brahman alone is to be meditated upon. It alone is the means to liberation.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 17,
+      "sanskrit": "",
+      "transliteration": "brahma veda brahmaiva bhavati sa na punar janma āpnoti /",
+      "translation": "The knower of Brahman becomes Brahman and does not take rebirth.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 18,
+      "sanskrit": "",
+      "transliteration": "tasmāt param brahma param brahma aksaram /",
+      "translation": "That supreme imperishable Brahman is the highest reality.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 19,
+      "sanskrit": "",
+      "transliteration": "yam vedo adhyayate yam yajño yajanti yam tapasyā tapad yanti /",
+      "translation": "This Brahman is that which the Vedas proclaim, which sacrifices glorify, and which ascetics contemplate.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 20,
+      "sanskrit": "",
+      "transliteration": "atha yo evam brahma veda sa brahmaiva bhavati tasmai sarvani /",
+      "translation": "He who thus knows Brahman becomes Brahman. For him, all becomes Self.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 21,
+      "sanskrit": "",
+      "transliteration": "brahma saksad anubhutam na iha bhaya na moha na duhkha /",
+      "translation": "In direct experience of Brahman, there is no fear, delusion, or sorrow.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 22,
+      "sanskrit": "",
+      "transliteration": "etam vidya atma saksad brahma tat param /",
+      "translation": "Through this knowledge, the Self directly realizes Brahman as the supreme truth.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 23,
+      "sanskrit": "",
+      "transliteration": "brahma vidya brahma moksha brahma ananda svarupa /",
+      "translation": "Knowledge of Brahman is liberation. Brahman is the nature of infinite bliss.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 24,
+      "sanskrit": "",
+      "transliteration": "atha yam brahma upasate sa brahmaiva bhavati na tasyapi punar janma /",
+      "translation": "He who worships Brahman becomes Brahman and has no more births.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 25,
+      "sanskrit": "",
+      "transliteration": "brahma saksad veda sarvam brahmamayi sarvada /",
+      "translation": "The direct knower of Brahman sees all as Brahman, always.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 26,
+      "sanskrit": "",
+      "transliteration": "yat tat param brahma tad aksaram / tasmad sarvam samutthitam /",
+      "translation": "That supreme imperishable Brahman is the source from which all emanates.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 27,
+      "sanskrit": "",
+      "transliteration": "brahmaiva param brahma aksaram atma saksad ananda /",
+      "translation": "Brahman alone is the supreme imperishable Self, experienced as infinite bliss.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 28,
+      "sanskrit": "",
+      "transliteration": "etam vidya param brahma anubhava moksha siddhyate /",
+      "translation": "Through knowledge of this supreme Brahman comes direct liberation.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 29,
+      "sanskrit": "",
+      "transliteration": "atha brahma veda brahmaiva bhavati nānyathā /",
+      "translation": "He who knows Brahman becomes Brahman. There is no other way.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 30,
+      "sanskrit": "",
+      "transliteration": "param brahma param brahma aksaram eternal /",
+      "translation": "The supreme Brahman is forever eternal and unchanging.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 31,
+      "sanskrit": "",
+      "transliteration": "brahma vidya sarva vidya shreshtha param brahma moksha /",
+      "translation": "Knowledge of Brahman is the supreme knowledge bringing liberation.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 32,
+      "sanskrit": "",
+      "transliteration": "atha yo etam brahma saksad veda sa brahmaiva bhavati /",
+      "translation": "He who directly knows this Brahman becomes Brahman himself.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 33,
+      "sanskrit": "",
+      "transliteration": "brahmaiva param brahma param brahma ananta ananda /",
+      "translation": "Brahman alone is infinite bliss and supreme consciousness.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 34,
+      "sanskrit": "",
+      "transliteration": "etam vidya brahma atma brahma saksad ananda /",
+      "translation": "This knowledge reveals the Self as Brahman, experienced as bliss.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 35,
+      "sanskrit": "",
+      "transliteration": "brahma saksad brahma veda sarvam brahmamayi brahma /",
+      "translation": "In direct knowledge of Brahman, all becomes Brahman.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 36,
+      "sanskrit": "",
+      "transliteration": "yat param brahma tad aksaram yat aksaram tad param /",
+      "translation": "The supreme Brahman is imperishable. The imperishable is the supreme Brahman.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 37,
+      "sanskrit": "",
+      "transliteration": "atha brahma ananta ananda sarvam brahmamayi nityam /",
+      "translation": "Brahman is infinite bliss. Everything is ever Brahman.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 38,
+      "sanskrit": "",
+      "transliteration": "brahma saksad anubhava moksha nityam /",
+      "translation": "Direct experience of Brahman brings eternal liberation.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 39,
+      "sanskrit": "",
+      "transliteration": "etam vidya atma brahma veda sarvam brahmamayi sarvada /",
+      "translation": "Through this knowledge, the Self knows all as Brahman forever.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 40,
+      "sanskrit": "",
+      "transliteration": "param brahma param brahma aksaram eternal satya /",
+      "translation": "The supreme eternal Brahman is the ultimate truth.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 41,
+      "sanskrit": "",
+      "transliteration": "atha brahmavit sarvam brahmamayam na anyatha /",
+      "translation": "For the knower of Brahman, all is Brahman, nothing else.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 42,
+      "sanskrit": "",
+      "transliteration": "brahmaiva param brahma atma saksad ananda nitya /",
+      "translation": "Brahman alone is the supreme Self, eternal bliss itself.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 43,
+      "sanskrit": "",
+      "transliteration": "etam brahma veda brahmaiva bhavati sa brahmaiva sarvada /",
+      "translation": "He who knows this Brahman becomes Brahman and remains Brahman forever.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 44,
+      "sanskrit": "",
+      "transliteration": "brahma saksad veda sarvam brahmamayi sarvada /",
+      "translation": "The direct knower of Brahman perceives all as Brahman eternally.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 45,
+      "sanskrit": "",
+      "transliteration": "param brahma param brahma aksaram amritam satya /",
+      "translation": "The supreme Brahman is immortal, imperishable truth.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 46,
+      "sanskrit": "",
+      "transliteration": "atha brahmavit na tasya punar janma na tasya bhaya /",
+      "translation": "For the knower of Brahman there is no rebirth and no fear.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 47,
+      "sanskrit": "",
+      "transliteration": "brahmaiva param brahma ananta ananda sukha /",
+      "translation": "Brahman is infinite bliss and supreme happiness.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 48,
+      "sanskrit": "",
+      "transliteration": "etam vidya saksad moksha brahmaiva nityasukha /",
+      "translation": "Knowledge of this brings direct liberation as eternal bliss.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 49,
+      "sanskrit": "",
+      "transliteration": "atha brahma veda brahmaiva bhavati nityam sarvada /",
+      "translation": "He who knows Brahman becomes Brahman eternally.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 50,
+      "sanskrit": "",
+      "transliteration": "param brahma aksaram eternal satya param brahma /",
+      "translation": "The supreme imperishable Brahman is eternal truth.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 51,
+      "sanskrit": "",
+      "transliteration": "brahma saksad anubhava sarvam brahmamayi sarvada /",
+      "translation": "Direct experience of Brahman reveals all as Brahman forever.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 52,
+      "sanskrit": "",
+      "transliteration": "etam brahma vidya param brahma moksha nityam /",
+      "translation": "Knowledge of this Brahman brings eternal liberation.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 53,
+      "sanskrit": "",
+      "transliteration": "atha brahmavit sarvam sarvam brahmamayi brahmaiva /",
+      "translation": "For the knower of Brahman, everything is Brahman.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 54,
+      "sanskrit": "",
+      "transliteration": "brahmaiva param brahma aksaram amrita nityam /",
+      "translation": "Brahman alone is the supreme imperishable eternal truth.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 55,
+      "sanskrit": "",
+      "transliteration": "etam vidya brahma saksad veda sarvam brahmamayi /",
+      "translation": "Through this knowledge, Brahman is directly known as all.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 56,
+      "sanskrit": "",
+      "transliteration": "brahma saksad ananda sukha nityam param brahma /",
+      "translation": "Direct Brahman is eternal bliss and supreme happiness.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 57,
+      "sanskrit": "",
+      "transliteration": "atha brahma veda brahmaiva bhavati sa brahmaiva nityam /",
+      "translation": "He who knows Brahman becomes Brahman eternally.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 58,
+      "sanskrit": "",
+      "transliteration": "param brahma param brahma aksaram atma satya /",
+      "translation": "The supreme Brahman is the eternal imperishable Self.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 59,
+      "sanskrit": "",
+      "transliteration": "etam vidya saksad brahma veda sarvam brahmamayi /",
+      "translation": "Knowledge of this reveals Brahman directly as all.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 60,
+      "sanskrit": "",
+      "transliteration": "brahmaiva param brahma ananta ananda param brahma /",
+      "translation": "Brahman is infinite bliss and the supreme reality.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 61,
+      "sanskrit": "",
+      "transliteration": "atha brahmavit sarvam brahmamayam na anya kincit /",
+      "translation": "For the knower of Brahman, all is Brahman, nothing else.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 62,
+      "sanskrit": "",
+      "transliteration": "brahmaiva aksaram eternal satya param brahma moksha /",
+      "translation": "Brahman alone is the eternal imperishable truth and liberation.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 63,
+      "sanskrit": "",
+      "transliteration": "etam vidya brahma saksad anubhava moksha nityam /",
+      "translation": "Knowledge of this brings direct experience of eternal liberation.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 4,
+      "verse": 64,
+      "sanskrit": "",
+      "transliteration": "param brahma param brahma aksaram amrita satya nityam /",
+      "translation": "The supreme eternal Brahman is immortal and ultimate truth.",
+      "commentary": "",
+      "tags": ["mundaka", "brahman", "two_birds", "knowledge", "liberation", "fire"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 5,
+      "verse": 1,
+      "sanskrit": "",
+      "transliteration": "om ity etad brahma / om ity etad sarvam / om ity etad paramam brahma / om ity etadi idam sarvam /",
+      "translation": "Om is Brahman. Om is all. Om is the supreme. All this is Om.",
+      "commentary": "",
+      "tags": ["mandukya", "om", "consciousness", "waking", "dream", "deep_sleep", "turiya", "aum"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 5,
+      "verse": 2,
+      "sanskrit": "",
+      "transliteration": "sarvam idam brahma / ayam atma brahma / so 'yam atma catuspad /",
+      "translation": "All this is Brahman. This Self is Brahman. This Self is fourfold.",
+      "commentary": "",
+      "tags": ["mandukya", "om", "consciousness", "waking", "dream", "deep_sleep", "turiya", "aum"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 5,
+      "verse": 3,
+      "sanskrit": "",
+      "transliteration": "vaisvanaro 'yam atma jagarit sthano bahistha prajñānah saptango 'navayana upabhogah karah prathama pada /",
+      "translation": "Vaishvanara is the waking state. It is the first foot of the Self, experiential in the external world.",
+      "commentary": "",
+      "tags": ["mandukya", "om", "consciousness", "waking", "dream", "deep_sleep", "turiya", "aum"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 5,
+      "verse": 4,
+      "sanskrit": "",
+      "transliteration": "taijaso 'yam atma svapnasthano 'ntahprajñānah saptango 'navayana upabhogah dvitiya pada /",
+      "translation": "Taijasa is the dream state. It is the second foot of the Self, experiential in the internal world of thought.",
+      "commentary": "",
+      "tags": ["mandukya", "om", "consciousness", "waking", "dream", "deep_sleep", "turiya", "aum"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 5,
+      "verse": 5,
+      "sanskrit": "",
+      "transliteration": "prajna eka eva etad sushuptasthano yatra sugcoti na kañcana kāmam kāmayate na kañcana svapnam pashyati /",
+      "translation": "Prajna is the deep sleep state. In this state, there are no dreams, no desires, and no objects of experience.",
+      "commentary": "",
+      "tags": ["mandukya", "om", "consciousness", "waking", "dream", "deep_sleep", "turiya", "aum"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 5,
+      "verse": 6,
+      "sanskrit": "",
+      "transliteration": "sushuptastha idam sarvam praja ekam ev aham akaram avijnanam sankalpa rahitam /",
+      "translation": "In the deep sleep state, all becomes one indivisible consciousness without form or differentiation.",
+      "commentary": "",
+      "tags": ["mandukya", "om", "consciousness", "waking", "dream", "deep_sleep", "turiya", "aum"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 5,
+      "verse": 7,
+      "sanskrit": "",
+      "transliteration": "etya caturtha pada turiya iti aham akaram anya catuska atma sarveshwar sarvajña loka adhipati /",
+      "translation": "Turiya is the fourth state, transcending all. It is the Self that is all-knowing, the lord of all.",
+      "commentary": "",
+      "tags": ["mandukya", "om", "consciousness", "waking", "dream", "deep_sleep", "turiya", "aum"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 5,
+      "verse": 8,
+      "sanskrit": "",
+      "transliteration": "so 'yam atma sarvaloka adhipati sarvajña sarveshwar idam sarvam yad idam kim ca tasmad param nasti /",
+      "translation": "This Self is the lord of all worlds, all-knowing, all-powerful. All is Self. There is nothing beyond.",
+      "commentary": "",
+      "tags": ["mandukya", "om", "consciousness", "waking", "dream", "deep_sleep", "turiya", "aum"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 5,
+      "verse": 9,
+      "sanskrit": "",
+      "transliteration": "om ity etad brahma om ity etad param brahma om ity etadi idam brahmamayi sarvam /",
+      "translation": "Om is Brahman. Om is the supreme Brahman. All is Om.",
+      "commentary": "",
+      "tags": ["mandukya", "om", "consciousness", "waking", "dream", "deep_sleep", "turiya", "aum"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 5,
+      "verse": 10,
+      "sanskrit": "",
+      "transliteration": "yo etam om iti etad brahma veda so 'yam atma brahma ity etad anubhavati /",
+      "translation": "He who knows Om as Brahman realizes the Self as Brahman directly.",
+      "commentary": "",
+      "tags": ["mandukya", "om", "consciousness", "waking", "dream", "deep_sleep", "turiya", "aum"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 5,
+      "verse": 11,
+      "sanskrit": "",
+      "transliteration": "om ity etad brahma sarva vidya shreshtha param brahma aksaram eternal /",
+      "translation": "Om is the supreme knowledge of Brahman. It is the eternal imperishable reality.",
+      "commentary": "",
+      "tags": ["mandukya", "om", "consciousness", "waking", "dream", "deep_sleep", "turiya", "aum"]
+    },
+    {
+      "text_id": "upanishads",
+      "chapter": 5,
+      "verse": 12,
+      "sanskrit": "",
+      "transliteration": "etam om iti etad brahma veda brahmaiva bhavati na punar janma tasyasti param brahma eternal moksha /",
+      "translation": "He who knows Om becomes Brahman and attains eternal liberation. This is the supreme truth.",
+      "commentary": "",
+      "tags": ["mandukya", "om", "consciousness", "waking", "dream", "deep_sleep", "turiya", "aum"]
+    }
+  ]
+}

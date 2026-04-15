@@ -1,0 +1,31 @@
+{
+  "name": "@sangam/sadhana-engine",
+  "version": "0.1.0",
+  "description": "Intelligent sadhana practice engine for Sanatana Sangam",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.103.0",
+    "dexie": "^4.0.0",
+    "dexie-react-hooks": "^1.1.7",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vitest": "^4.1.4"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "license": "UNLICENSED",
+  "private": true
+}
