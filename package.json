@@ -26,7 +26,6 @@
     "leaflet": "^1.9.4",
     "lucide-react": "^0.383.0",
     "next": "15.5.14",
-    "next/font": "*",
     "react": "^18",
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
