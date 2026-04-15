@@ -1368,6 +1368,22 @@ function KulHubView({
           kulEvents={kulEvents}
           large
         />
+
+        {/* Sanskaras — lifecycle rites */}
+        <Link
+          href="/kul/sanskara"
+          className="group flex items-center gap-4 rounded-[1.6rem] px-4 py-4 transition-all glass-panel"
+        >
+          <div className="clay-icon-well text-xl flex-shrink-0">🪬</div>
+          <div className="flex-1 min-w-0">
+            <p className="type-card-label">Lifecycle</p>
+            <h3 className="type-card-heading mt-1">16 Sanskaras</h3>
+            <p className="type-body mt-0.5">
+              Track the sacred rites of passage — from birth to liberation.
+            </p>
+          </div>
+          <ChevronRight size={16} className="theme-dim group-hover:translate-x-0.5 transition-transform flex-shrink-0" />
+        </Link>
       </div>
     </div>
   );
