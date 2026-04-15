@@ -6,6 +6,8 @@ import { LocationProvider } from '@/lib/LocationContext';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { getInitials } from '@/lib/utils';
 import { EngineProvider } from '@/contexts/EngineContext';
+import { LanguageProvider } from '@/lib/i18n/LanguageContext';
+import type { AppLang } from '@/lib/i18n/translations';
 
 export default async function MainLayout({
   children,
@@ -31,11 +33,12 @@ export default async function MainLayout({
   let wantsShlokaReminders            = true;
   let wantsCommunityNotifications     = true;
   let wantsFamilyNotifications        = true;
+  let appLanguage: AppLang            = 'en';
 
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('latitude, longitude, city, country, country_code, tradition, avatar_url, full_name, username, wants_festival_reminders, wants_shloka_reminders, wants_community_notifications, wants_family_notifications, onboarding_completed')
+      .select('latitude, longitude, city, country, country_code, tradition, avatar_url, full_name, username, wants_festival_reminders, wants_shloka_reminders, wants_community_notifications, wants_family_notifications, onboarding_completed, app_language')
       .eq('id', user.id)
       .single();
 
@@ -58,6 +61,10 @@ export default async function MainLayout({
     wantsShlokaReminders = profile?.wants_shloka_reminders ?? true;
     wantsCommunityNotifications = profile?.wants_community_notifications ?? true;
     wantsFamilyNotifications = profile?.wants_family_notifications ?? true;
+    const rawLang = profile?.app_language ?? 'en';
+    appLanguage = (['en', 'hi', 'pa'] as AppLang[]).includes(rawLang as AppLang)
+      ? (rawLang as AppLang)
+      : 'en';
   }
 
   return (
@@ -76,17 +83,19 @@ export default async function MainLayout({
         wantsFamilyNotifications={wantsFamilyNotifications}
       />
       <main className="flex-1 max-w-2xl mx-auto w-full px-3 pt-3 pb-28 sm:px-4 sm:pt-4">
-        <EngineProvider userId={userId || null} tradition={tradition}>
-          <LocationProvider
-            savedLat={savedLat}
-            savedLon={savedLon}
-            savedCity={savedCity}
-            savedCountry={savedCountry}
-            savedCountryCode={savedCountryCode}
-          >
-            {children}
-          </LocationProvider>
-        </EngineProvider>
+        <LanguageProvider lang={appLanguage}>
+          <EngineProvider userId={userId || null} tradition={tradition}>
+            <LocationProvider
+              savedLat={savedLat}
+              savedLon={savedLon}
+              savedCity={savedCity}
+              savedCountry={savedCountry}
+              savedCountryCode={savedCountryCode}
+            >
+              {children}
+            </LocationProvider>
+          </EngineProvider>
+        </LanguageProvider>
       </main>
       <BottomNav libraryLabel={libraryLabel} libraryMobileLabel={libraryMobileLabel} isGuest={!user} />
     </div>

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Home, MapPin, Users, GraduationCap, Heart, Sparkles, Compass, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface Props {
   /** Tradition-aware Pathshala label — 'Shastra' | 'Gurbani' | 'Dhamma' | 'Agam' */
@@ -16,20 +17,21 @@ interface Props {
 export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLabel = 'Pathshala', isGuest = false }: Props) {
   const pathname = usePathname();
   const prefersReducedMotion = useReducedMotion();
+  const { t } = useLanguage();
 
   // Library is absorbed into Pathshala as a tradition-gated scripture tab
   const memberNavItems = [
-    { href: '/home',       label: 'Home',         mobileLabel: 'Home',     icon: Home          },
-    { href: '/pathshala',  label: libraryLabel,    mobileLabel: libraryMobileLabel, icon: GraduationCap },
-    { href: '/bhakti',     label: 'Bhakti',        mobileLabel: 'Bhakti',   icon: Sparkles      },
-    { href: '/kul',        label: 'Kul',           mobileLabel: 'Kul',      icon: Heart         },
-    { href: '/mandali',    label: 'Mandali',        mobileLabel: 'Mandali',  icon: Users         },
-    { href: '/tirtha-map', label: 'Tirtha',         mobileLabel: 'Tirtha',   icon: MapPin        },
+    { href: '/home',       label: t('navHome'),       mobileLabel: t('navHome'),         icon: Home          },
+    { href: '/pathshala',  label: libraryLabel,        mobileLabel: libraryMobileLabel,   icon: GraduationCap },
+    { href: '/bhakti',     label: t('bhakti'),         mobileLabel: t('bhakti'),          icon: Sparkles      },
+    { href: '/kul',        label: t('navKul'),         mobileLabel: t('navKul'),          icon: Heart         },
+    { href: '/mandali',    label: t('navMandali'),     mobileLabel: t('navMandali'),      icon: Users         },
+    { href: '/tirtha-map', label: t('navTirtha'),      mobileLabel: t('navTirtha'),       icon: MapPin        },
   ];
   const guestNavItems = [
     { href: '/guest',         label: 'Explore', mobileLabel: 'Explore', icon: Compass       },
     { href: '/vichaar-sabha', label: 'Vichaar', mobileLabel: 'Vichaar', icon: MessageSquare },
-    { href: '/tirtha-map',    label: 'Tirtha',  mobileLabel: 'Tirtha',  icon: MapPin        },
+    { href: '/tirtha-map',    label: t('navTirtha'),  mobileLabel: t('navTirtha'),  icon: MapPin        },
     { href: '/signup',        label: 'Join',    mobileLabel: 'Join',    icon: Sparkles      },
   ];
   const navItems = isGuest ? guestNavItems : memberNavItems;

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ArrowLeft, Share2 } from 'lucide-react';
 import { calculatePanchang } from '@/lib/panchang';
 import type { PanchangData } from '@/lib/panchang';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface Props {
   lat:       number;
@@ -198,6 +199,7 @@ function Stars({ count = 28 }: { count?: number }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: Props) {
+  const { t } = useLanguage();
   const tradMeta = TRADITION_META[tradition] ?? TRADITION_META.hindu;
   const today    = useMemo(() => new Date(), []);
   const [selected,   setSelected]  = useState<Date>(today);
@@ -406,19 +408,19 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
           className="space-y-2">
 
           <div className="grid grid-cols-2 gap-2">
-            <Row emoji="📅" label="Tithi"     value={p.tithi}     accent={tradMeta.accent} infoKey="Tithi" />
-            <Row emoji="⭐" label="Nakshatra" value={p.nakshatra} accent={tradMeta.accent} infoKey="Nakshatra" />
-            <Row emoji="🕉️" label="Yoga"      value={p.yoga}      accent={tradMeta.accent} infoKey="Yoga" />
-            <Row emoji="📆" label="Vara"      value={p.vara}      accent={tradMeta.accent} infoKey="Vara" />
+            <Row emoji="📅" label={t('tithi')}     value={p.tithi}     accent={tradMeta.accent} infoKey="Tithi" />
+            <Row emoji="⭐" label={t('nakshatra')} value={p.nakshatra} accent={tradMeta.accent} infoKey="Nakshatra" />
+            <Row emoji="🕉️" label={t('yoga')}      value={p.yoga}      accent={tradMeta.accent} infoKey="Yoga" />
+            <Row emoji="📆" label={t('vara')}      value={p.vara}      accent={tradMeta.accent} infoKey="Vara" />
           </div>
 
           <div className="grid grid-cols-2 gap-2">
-            <Row emoji="🌅" label="Sunrise" value={p.sunrise} accent={tradMeta.accent} infoKey="Sunrise" />
-            <Row emoji="🌆" label="Sunset"  value={p.sunset}  accent={tradMeta.accent} infoKey="Sunset" />
+            <Row emoji="🌅" label={t('sunrise')} value={p.sunrise} accent={tradMeta.accent} infoKey="Sunrise" />
+            <Row emoji="🌆" label={t('sunset')}  value={p.sunset}  accent={tradMeta.accent} infoKey="Sunset" />
           </div>
 
-          <Row emoji="⚠️" label="Rahu Kaal — avoid auspicious starts" value={p.rahuKaal}       accent={tradMeta.accent} warn infoKey="Rahu Kaal" />
-          <Row emoji="✨" label="Abhijit Muhurat — most auspicious"    value={p.abhijitMuhurat} accent={tradMeta.accent} infoKey="Abhijit Muhurat" />
+          <Row emoji="⚠️" label={t('rahuKaal')}        value={p.rahuKaal}       accent={tradMeta.accent} warn infoKey="Rahu Kaal" />
+          <Row emoji="✨" label={t('abhijitMuhurat')} value={p.abhijitMuhurat} accent={tradMeta.accent} infoKey="Abhijit Muhurat" />
 
           {/* Guidance */}
           <div className="rounded-xl px-4 py-3"
