@@ -73,6 +73,8 @@ interface Props {
   customGreeting:    string | null;
   guidedPathProgress: GuidedPathProgressRow[];
   showFirstTimeGuidance: boolean;
+  japaStreak?:          number;
+  japaAlreadyDoneToday?: boolean;
 }
 
 const quickAccessItems = [
@@ -684,6 +686,8 @@ export default function HomeDashboard({
   customGreeting,
   guidedPathProgress,
   showFirstTimeGuidance,
+  japaStreak = 0,
+  japaAlreadyDoneToday = false,
 }: Props) {
   const supabase = createClient();
   const router   = useRouter();
@@ -1264,6 +1268,34 @@ export default function HomeDashboard({
           {festivalCalendarMeta.sourceNote}
         </div>
       </div>
+
+      {/* ── Japa Streak Card ── */}
+      <Link href="/japa" className="block glass-panel rounded-[1.7rem] p-4 group transition-all active:scale-[0.99]">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, rgba(123,26,26,0.12), rgba(212,160,23,0.12))' }}>
+              📿
+            </div>
+            <div>
+              <p className="type-section-label" style={{ marginBottom: 2 }}>Daily Japa</p>
+              <p className="font-display font-bold text-gray-900 text-base">
+                {japaAlreadyDoneToday ? 'Completed today 🙏' : 'Start your mala'}
+              </p>
+            </div>
+          </div>
+          <div className="text-right flex-shrink-0">
+            {japaStreak > 0 ? (
+              <div className="flex items-center gap-1 bg-amber-50 border border-amber-100 rounded-xl px-3 py-1.5">
+                <span className="text-amber-500 text-sm">🔥</span>
+                <span className="font-bold text-amber-700 text-sm">{japaStreak}d</span>
+              </div>
+            ) : (
+              <span className="text-[10px] text-gray-400 font-medium">Begin streak →</span>
+            )}
+          </div>
+        </div>
+      </Link>
 
       {/* ── Quick Access ── */}
       <div>

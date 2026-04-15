@@ -22,6 +22,19 @@ export default async function JapaPage() {
     .eq('date', today)
     .single();
 
+  // Pull 30-day history for the chart
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29);
+  const fromDate = thirtyDaysAgo.toISOString().slice(0, 10);
+
+  const { data: history } = await supabase
+    .from('daily_sadhana')
+    .select('date, japa_done, streak_count')
+    .eq('user_id', user.id)
+    .gte('date', fromDate)
+    .lte('date', today)
+    .order('date', { ascending: true });
+
   return (
     <JapaClient
       userId={user.id}
@@ -29,6 +42,7 @@ export default async function JapaPage() {
       tradition={profile?.tradition ?? 'hindu'}
       currentStreak={sadhana?.streak_count ?? 0}
       japaAlreadyDoneToday={sadhana?.japa_done ?? false}
+      history={(history ?? []).map(h => ({ date: h.date, done: h.japa_done }))}
     />
   );
 }

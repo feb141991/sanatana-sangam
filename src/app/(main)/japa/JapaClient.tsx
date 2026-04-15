@@ -29,12 +29,18 @@ const DEFAULT_MANTRA_BY_TRADITION: Record<string, { id: string; name: string; sh
   jain:     { id: 'namokar',      name: 'Namokar Mantra',           short: 'णमो अरिहंताणं...'       },
 };
 
+interface DayRecord {
+  date: string;   // YYYY-MM-DD
+  done: boolean;
+}
+
 interface Props {
   userId:               string;
   userName:             string;
   tradition:            string;
   currentStreak:        number;
   japaAlreadyDoneToday: boolean;
+  history?:             DayRecord[];
 }
 
 // ── Mantra Picker Sheet ────────────────────────────────────────────────────────
@@ -137,9 +143,73 @@ function CompletionSheet({
   );
 }
 
+// ── 30-Day History Chart ──────────────────────────────────────────────────────
+function JapaHistoryChart({ history = [], streak }: { history: DayRecord[]; streak: number }) {
+  // Build a complete 30-day window (today → 29 days back) aligned to dates
+  const today = new Date();
+  const days: { date: string; done: boolean; isToday: boolean }[] = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().slice(0, 10);
+    const record  = history.find(h => h.date === dateStr);
+    days.push({ date: dateStr, done: record?.done ?? false, isToday: i === 0 });
+  }
+
+  const totalDone    = days.filter(d => d.done).length;
+  const completionPct = Math.round((totalDone / 30) * 100);
+
+  return (
+    <div className="mx-4 mb-4 bg-white rounded-2xl border border-orange-100 shadow-sm px-4 py-4 space-y-3">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-semibold text-gray-800">Last 30 days</p>
+        <div className="flex items-center gap-3 text-xs text-gray-400">
+          {streak > 0 && (
+            <span className="flex items-center gap-1 text-amber-600 font-semibold">
+              <Flame size={12} /> {streak}d streak
+            </span>
+          )}
+          <span>{totalDone}/30 days</span>
+        </div>
+      </div>
+
+      {/* Dot grid — 6 rows × 5 cols = 30 days */}
+      <div className="grid gap-[5px]" style={{ gridTemplateColumns: 'repeat(10, 1fr)' }}>
+        {days.map((day) => (
+          <div
+            key={day.date}
+            title={`${day.date}${day.done ? ' ✓' : ''}`}
+            className="aspect-square rounded-md transition-all"
+            style={{
+              background: day.done
+                ? '#7B1A1A'
+                : day.isToday
+                  ? 'rgba(123,26,26,0.12)'
+                  : '#f3f4f6',
+              boxShadow: day.isToday ? 'inset 0 0 0 1.5px rgba(123,26,26,0.35)' : undefined,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Completion bar */}
+      <div className="space-y-1">
+        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div
+            className="h-full rounded-full transition-all"
+            style={{ width: `${completionPct}%`, background: '#7B1A1A' }}
+          />
+        </div>
+        <p className="text-[10px] text-gray-400">{completionPct}% consistency this month</p>
+      </div>
+    </div>
+  );
+}
+
 // ── Main Component ─────────────────────────────────────────────────────────────
 export default function JapaClient({
-  userId, userName, tradition, currentStreak, japaAlreadyDoneToday,
+  userId, userName, tradition, currentStreak, japaAlreadyDoneToday, history = [],
 }: Props) {
   const router  = useRouter();
   const { engine, isReady } = useEngine();
@@ -405,6 +475,11 @@ export default function JapaClient({
           </p>
         )}
       </div>
+
+      {/* 30-day history chart — shown when not in active session */}
+      {!isActive && !showComplete && (
+        <JapaHistoryChart history={history} streak={streak} />
+      )}
 
       {/* Modals */}
       {showPicker && (

@@ -65,6 +65,15 @@ export default async function HomePage() {
     profile?.longitude ?? undefined,
   );
 
+  // Japa streak from today's daily_sadhana record
+  const today = new Date().toISOString().slice(0, 10);
+  const { data: todaySadhana } = await supabase
+    .from('daily_sadhana')
+    .select('streak_count, japa_done')
+    .eq('user_id', user.id)
+    .eq('date', today)
+    .single();
+
   const meta = getTraditionMeta(tradition);
   const showFirstTimeGuidance = (
     (profile?.shloka_streak ?? 0) === 0
@@ -102,6 +111,8 @@ export default async function HomePage() {
       customGreeting={(profile as any)?.custom_greeting ?? null}
       guidedPathProgress={(guidedPathProgress as GuidedPathProgressRow[]) ?? []}
       showFirstTimeGuidance={showFirstTimeGuidance}
+      japaStreak={todaySadhana?.streak_count ?? 0}
+      japaAlreadyDoneToday={todaySadhana?.japa_done ?? false}
     />
   );
 }
