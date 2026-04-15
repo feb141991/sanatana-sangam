@@ -30,6 +30,10 @@ interface Props {
   userId:         string;
   userName:       string;
   tradition:      string | null;
+  sampradaya?:    string | null;
+  city?:          string | null;
+  country?:       string | null;
+  seeking?:       string[];
   /** Pre-filled prompt injected via ?prefill= query param (e.g. from deep links) */
   initialPrompt?: string;
   /** Short context label shown in header (e.g. "From Pathshala") */
@@ -140,11 +144,42 @@ function TypingIndicator() {
   );
 }
 
+/** Format a scripture text_id into a human-readable citation. */
+function formatVerseLabel(v: ScriptureRef): string {
+  if (v.source_label) return v.source_label;
+  // Canonical label map
+  const TEXT_LABELS: Record<string, string> = {
+    bhagavad_gita:          'Bhagavad Gita',
+    gita:                   'Bhagavad Gita',
+    upanishads:             'Upanishad',
+    rigveda:                'Rigveda',
+    rig_veda:               'Rigveda',
+    dhammapada:             'Dhammapada',
+    guru_granth_sahib:      'Guru Granth Sahib',
+    granth:                 'Guru Granth Sahib',
+    tattvarthasutra:        'Tattvārthasūtra',
+    namokar_mantra:         'Namokar Mantra',
+    yoga_sutras:            'Yoga Sūtras',
+    yoga_sutra:             'Yoga Sūtras',
+    ramayana:               'Rāmāyaṇa',
+    mahabharata:            'Mahābhārata',
+  };
+  const textId = v.text_id ?? '';
+  const bookName = TEXT_LABELS[textId.toLowerCase()] ?? textId.replace(/_/g, ' ');
+  // Sikh: use "Ang" instead of chapter.verse
+  if (textId.toLowerCase().includes('granth') || textId.toLowerCase().includes('sikh')) {
+    return `${bookName}${v.chapter ? ` (Ang ${v.chapter})` : ''}`;
+  }
+  // Standard: Book Chapter.Verse
+  if (v.chapter && v.verse) return `${bookName} ${v.chapter}.${v.verse}`;
+  if (v.chapter) return `${bookName} Ch. ${v.chapter}`;
+  return bookName;
+}
+
 // ─── Scripture Verse Chip ─────────────────────────────────────────────────────
 function VerseChip({ verse }: { verse: ScriptureRef }) {
   const [open, setOpen] = useState(false);
-  const label = verse.source_label
-    ?? `${verse.text_id?.replace(/_/g, ' ')} ${verse.chapter ? `${verse.chapter}.${verse.verse}` : ''}`.trim();
+  const label = formatVerseLabel(verse);
   return (
     <div className="mt-2">
       <button
@@ -170,7 +205,7 @@ function VerseChip({ verse }: { verse: ScriptureRef }) {
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function AIChatClient({ userId, userName, tradition, initialPrompt, contextLabel }: Props) {
+export default function AIChatClient({ userId, userName, tradition, sampradaya, city, country, seeking, initialPrompt, contextLabel }: Props) {
   const [messages,   setMessages]   = useState<Message[]>([]);
   const [input,      setInput]      = useState(initialPrompt ?? '');
   const [loading,    setLoading]    = useState(false);
@@ -231,7 +266,7 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
               verse:           v.verse?.verse,
               sanskrit:        v.verse?.sanskrit,
               transliteration: v.verse?.transliteration,
-              source_label:    v.verse?.text_id?.replace(/_/g, ' '),
+              // source_label left undefined so formatVerseLabel() handles it
             })),
             fromRag: true,
           };
@@ -252,7 +287,15 @@ export default function AIChatClient({ userId, userName, tradition, initialPromp
       const res = await fetch('/api/ai/chat', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ message: msgText, history, tradition }),
+        body:    JSON.stringify({
+          message: msgText,
+          history,
+          tradition,
+          sampradaya:  sampradaya  ?? null,
+          city:        city        ?? null,
+          country:     country     ?? null,
+          seeking:     seeking     ?? [],
+        }),
       });
       const data = await res.json();
       if (!res.ok) {

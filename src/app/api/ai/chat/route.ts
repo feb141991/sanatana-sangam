@@ -78,8 +78,34 @@ ${BASE_RULES}
 Begin fresh conversations with a warm "Jai Jinendra 🤲" greeting.`,
 };
 
-function getSystemInstruction(tradition?: string | null): string {
-  return SYSTEM_INSTRUCTIONS[tradition ?? 'hindu'] ?? SYSTEM_INSTRUCTIONS.hindu;
+/** Build a personalised context block to append to the system instruction. */
+function buildUserContext(opts: {
+  sampradaya?: string | null;
+  city?:       string | null;
+  country?:    string | null;
+  seeking?:    string[];
+}): string {
+  const parts: string[] = [];
+  if (opts.sampradaya) {
+    parts.push(`User's sampradaya / tradition lineage: ${opts.sampradaya}`);
+  }
+  if (opts.city || opts.country) {
+    const loc = [opts.city, opts.country].filter(Boolean).join(', ');
+    parts.push(`User's location: ${loc}`);
+  }
+  if (opts.seeking && opts.seeking.length > 0) {
+    parts.push(`User's spiritual interests / seeking: ${opts.seeking.join(', ')}`);
+  }
+  if (parts.length === 0) return '';
+  return `\n\n--- User context (use to personalise answers, but do not repeat back verbatim) ---\n${parts.join('\n')}`;
+}
+
+function getSystemInstruction(
+  tradition?: string | null,
+  ctx?: { sampradaya?: string | null; city?: string | null; country?: string | null; seeking?: string[] }
+): string {
+  const base = SYSTEM_INSTRUCTIONS[tradition ?? 'hindu'] ?? SYSTEM_INSTRUCTIONS.hindu;
+  return base + (ctx ? buildUserContext(ctx) : '');
 }
 
 export async function POST(req: NextRequest) {
@@ -95,14 +121,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'AI service not configured. Add GEMINI_API_KEY to .env.local' }, { status: 503 });
   }
 
-  let body: { message: string; tradition?: string | null; history?: { role: 'user' | 'model'; text: string }[] };
+  let body: {
+    message:    string;
+    tradition?: string | null;
+    sampradaya?: string | null;
+    city?:      string | null;
+    country?:   string | null;
+    seeking?:   string[];
+    history?:   { role: 'user' | 'model'; text: string }[];
+  };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
 
-  const { message, tradition = null, history = [] } = body;
+  const { message, tradition = null, sampradaya, city, country, seeking, history = [] } = body;
   if (!message?.trim()) {
     return NextResponse.json({ error: 'Message is required' }, { status: 400 });
   }
@@ -121,7 +155,7 @@ export async function POST(req: NextRequest) {
 
   const requestBody = {
     system_instruction: {
-      parts: [{ text: getSystemInstruction(tradition) }],
+      parts: [{ text: getSystemInstruction(tradition, { sampradaya, city, country, seeking }) }],
     },
     contents,
     generationConfig: {

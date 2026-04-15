@@ -20,7 +20,7 @@ export default async function AIChatPage({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, avatar_url, tradition, sampradaya')
+    .select('full_name, username, avatar_url, tradition, sampradaya, city, country, seeking')
     .eq('id', user.id)
     .single();
 
@@ -29,6 +29,10 @@ export default async function AIChatPage({
       userId={user.id}
       userName={profile?.full_name ?? profile?.username ?? 'Sanatani'}
       tradition={profile?.tradition ?? null}
+      sampradaya={profile?.sampradaya ?? null}
+      city={profile?.city ?? null}
+      country={profile?.country ?? null}
+      seeking={profile?.seeking ?? []}
       initialPrompt={readSingleParam(resolvedSearchParams.prefill, 600)}
       contextLabel={readSingleParam(resolvedSearchParams.context, 120)}
     />
