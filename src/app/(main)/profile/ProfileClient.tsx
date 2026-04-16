@@ -11,6 +11,8 @@ import { getInitials, ISHTA_DEVATAS, SAMPRADAYAS, SPIRITUAL_LEVELS, TRADITIONS, 
 import { APP_LANGUAGES, MEANING_LANGUAGE_OPTIONS, SCRIPTURE_SCRIPT_OPTIONS, getLanguageLabel } from '@/lib/language-preferences';
 import type { TraditionKey } from '@/lib/traditions';
 import { useLocation } from '@/lib/LocationContext';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import type { AppLang } from '@/lib/i18n/translations';
 import { getPlayerId, getPermissionState, logoutFromOneSignal } from '@/lib/onesignal';
 import type { Profile } from '@/types/database';
 import { MetricTile, SurfaceSection } from '@/components/ui';
@@ -143,6 +145,7 @@ export default function ProfileClient({
   const router      = useRouter();
   const supabase    = useRef(createClient()).current;
   const queryClient = useQueryClient();
+  const { setLang } = useLanguage();
   const profileQuery = useProfileQuery(userId, profile);
   const updateProfileMutation = useUpdateProfileMutation(userId);
   const liveProfile = profileQuery.data ?? profile;
@@ -868,7 +871,12 @@ export default function ProfileClient({
               return (
                 <button
                   key={lang.value}
-                  onClick={() => patchProfile({ app_language: lang.value }, `Language set to ${lang.label} 🙏`)}
+                  onClick={() => {
+                    // Update context immediately for instant UI feedback
+                    setLang(lang.value as AppLang);
+                    // Persist to DB + trigger server re-render
+                    patchProfile({ app_language: lang.value }, `Language set to ${lang.label} 🙏`);
+                  }}
                   className="flex-1 py-2 rounded-xl text-sm font-semibold transition-all border"
                   style={active ? {
                     background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))',
@@ -885,7 +893,7 @@ export default function ProfileClient({
               );
             })}
           </div>
-          <p className="text-[10px] text-[color:var(--brand-muted)]/60 mt-1.5">Changes apply on next page load</p>
+          <p className="text-[10px] text-[color:var(--brand-muted)]/60 mt-1.5">Changes take effect immediately</p>
         </div>
         <div className="divide-y divide-white/5">
           {languageRows.slice(1).map(({ label, value, emoji }) => (

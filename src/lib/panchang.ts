@@ -203,10 +203,14 @@ export function calculatePanchang(
     const ampm = h >= 12 ? 'PM' : 'AM';
     const h12 = h % 12 || 12;
     const today = new Date(); today.setHours(0,0,0,0);
-    const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
     const dDay = new Date(d); dDay.setHours(0,0,0,0);
-    const suffix = dDay.getTime() === tomorrow.getTime() ? ', next day' : '';
-    return `${String(h12).padStart(2,'0')}:${String(m).padStart(2,'0')} ${ampm}${suffix}`;
+    const timePart = `${String(h12).padStart(2,'0')}:${String(m).padStart(2,'0')} ${ampm}`;
+    if (dDay.getTime() === today.getTime()) {
+      return timePart;
+    }
+    // Show abbreviated weekday + date so users know it's a different day
+    const dayLabel = d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' });
+    return `${timePart}, ${dayLabel}`;
   }
   const tithiUpto = fmtDate(tithiUptoDate);
 

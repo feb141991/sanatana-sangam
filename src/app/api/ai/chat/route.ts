@@ -6,7 +6,25 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 // Body: { message: string; tradition?: string | null; history: { role: 'user' | 'model'; text: string }[] }
 // Uses Google Gemini Flash — fast, free-tier available, multilingual.
 
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`;
+// Primary model — Gemini 2.0 Flash (low latency, good free tier)
+// If quota is exhausted (429) we fall back to a graceful message.
+// To use a different model, change this constant and redeploy.
+const GEMINI_MODEL   = 'gemini-2.0-flash';
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+
+// ─── Simple per-user rate limit (in-memory, resets on cold start) ─────────────
+// Prevents a single user from exhausting the shared free quota.
+const USER_TIMESTAMPS = new Map<string, number[]>();
+const RATE_LIMIT_WINDOW_MS  = 60_000; // 1 minute
+const RATE_LIMIT_MAX_CALLS  = 8;      // max 8 requests per user per minute
+
+function isRateLimited(userId: string): boolean {
+  const now  = Date.now();
+  const prev = (USER_TIMESTAMPS.get(userId) ?? []).filter(t => now - t < RATE_LIMIT_WINDOW_MS);
+  if (prev.length >= RATE_LIMIT_MAX_CALLS) return true;
+  USER_TIMESTAMPS.set(userId, [...prev, now]);
+  return false;
+}
 
 // ─── Tradition-aware system instructions ──────────────────────────────────────
 const BASE_RULES = `
@@ -116,6 +134,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorised' }, { status: 401 });
   }
 
+  // Per-user rate limit — 8 requests per minute max
+  if (isRateLimited(user.id)) {
+    return NextResponse.json({
+      reply: '🙏 Please slow down a little — Dharma Mitra can only answer so many questions at once. Take a breath, and try again in a moment.',
+    });
+  }
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: 'AI service not configured. Add GEMINI_API_KEY to .env.local' }, { status: 503 });
@@ -183,9 +208,10 @@ export async function POST(req: NextRequest) {
       const errText = await res.text();
       console.error('Gemini API error:', res.status, errText);
 
-      // 429 — free-tier quota exhausted. Return a user-friendly spiritual message
-      // rather than a raw error. Client can display it as a normal AI reply.
+      // 429 — free-tier quota exhausted (per-minute or per-day RPM/RPD limit).
+      // Log to server so the developer can see which limit is hit.
       if (res.status === 429) {
+        console.warn(`[AI] Gemini 429 for model ${GEMINI_MODEL}:`, errText.slice(0, 300));
         return NextResponse.json({
           reply: '🙏 Dharma Mitra is resting for a moment — the free AI quota has been reached. Please try again in a minute or two. In the meantime, sit quietly and let the question settle. 😊',
         });

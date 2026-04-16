@@ -3,22 +3,24 @@
 // ─── Pathshala Recite Mode ────────────────────────────────────────────────────
 // Focused scripture recitation practice.
 // Free: read-along mode with large text, auto-scroll, timing.
-// Pro (future): mic recording, Shruti Engine voice scoring, streak protection.
+// Shruti: mic recording → Shruti Engine AI voice scoring (no gate — available to all).
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronRight, Mic, MicOff, Play, Pause,
-  Eye, EyeOff, Timer, Sparkles, Lock, BookOpen,
-  CheckCircle2, Volume2,
+  Eye, EyeOff, Timer, Sparkles, BookOpen,
+  CheckCircle2, Volume2, Loader2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { GITA_FULL_DATA } from '@/lib/gita-full-data';
 import { ALL_LIBRARY_ENTRIES } from '@/lib/library-content';
 import { SEED_PATHS } from '@/app/(main)/pathshala/PathshalaClient';
+import { usePathshala } from '@/contexts/EngineContext';
 import type { LibraryEntry } from '@/lib/library-content';
+import type { RecitationResult } from '@sangam/pathshala-engine';
 
 // ─── Pick recite content for a path ────────────────────────────────────────────
 function getReciteVerses(pathId: string, lessonIndex: number): LibraryEntry[] {
@@ -65,6 +67,103 @@ function speakText(text: string) {
   window.speechSynthesis.speak(utterance);
 }
 
+// ─── Score ring colour ────────────────────────────────────────────────────────
+function scoreColor(score: number): string {
+  if (score >= 80) return '#22c55e';
+  if (score >= 60) return '#f59e0b';
+  return '#ef4444';
+}
+
+// ─── ScorePanel ───────────────────────────────────────────────────────────────
+function ScorePanel({ result, accent, onDismiss }: {
+  result: RecitationResult;
+  accent: string;
+  onDismiss: () => void;
+}) {
+  const score  = result.scores?.overall ?? 0;
+  const color  = scoreColor(score);
+  const label  = score >= 80 ? '🌟 Excellent' : score >= 60 ? '👍 Good' : '💪 Keep Practising';
+
+  const subScores = result.scores
+    ? Object.entries(result.scores).filter(([k, v]) => k !== 'overall' && v !== null) as [string, number][]
+    : [];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 8 }}
+      className="glass-panel rounded-2xl border border-white/10 p-4 space-y-3"
+    >
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-bold text-[color:var(--brand-ink)]">Shruti Feedback</p>
+        <button onClick={onDismiss} className="text-xs text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition">Dismiss</button>
+      </div>
+
+      {/* Score ring */}
+      <div className="flex items-center gap-4">
+        <div className="relative w-14 h-14 flex-shrink-0">
+          <svg width="56" height="56" viewBox="0 0 56 56">
+            <circle cx="28" cy="28" r="22" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="6" />
+            <circle
+              cx="28" cy="28" r="22"
+              fill="none" stroke={color} strokeWidth="6"
+              strokeDasharray={`${2 * Math.PI * 22}`}
+              strokeDashoffset={`${2 * Math.PI * 22 * (1 - score / 100)}`}
+              strokeLinecap="round"
+              transform="rotate(-90 28 28)"
+              style={{ transition: 'stroke-dashoffset 0.6s ease' }}
+            />
+          </svg>
+          <span className="absolute inset-0 flex items-center justify-center text-sm font-bold" style={{ color }}>
+            {Math.round(score)}
+          </span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-[color:var(--brand-ink)]">{label}</p>
+          {result.feedback && (
+            <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-snug line-clamp-3">{result.feedback}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Sub-scores */}
+      {subScores.slice(0, 3).map(([key, val]) => (
+        <div key={key} className="flex items-center gap-2">
+          <span className="text-[10px] uppercase tracking-wider text-[color:var(--brand-muted)] w-16 flex-shrink-0 capitalize">{key}</span>
+          <div className="flex-1 h-1.5 rounded-full bg-white/8 overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{ width: `${val}%`, background: scoreColor(val) }}
+            />
+          </div>
+          <span className="text-[10px] font-medium text-[color:var(--brand-muted)] w-6 text-right">{Math.round(val)}</span>
+        </div>
+      ))}
+
+      {/* Corrections */}
+      {result.corrections && result.corrections.length > 0 && (
+        <div className="space-y-1 pt-1">
+          {result.corrections.slice(0, 3).map((c, i) => (
+            <div key={i} className="text-[11px] text-[color:var(--brand-muted)] leading-snug">
+              <span className="text-orange-300 font-medium">{c.word}</span>
+              {c.said ? <> — said &ldquo;{c.said}&rdquo;</> : null}
+              {c.rule ? <span className="opacity-60"> · {c.rule}</span> : null}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Transcript (collapsed by default) */}
+      {result.transcript && (
+        <p className="text-[10px] text-[color:var(--brand-muted)]/50 leading-relaxed border-t border-white/6 pt-2 italic line-clamp-2">
+          Heard: {result.transcript}
+        </p>
+      )}
+    </motion.div>
+  );
+}
+
 // ─── Props ─────────────────────────────────────────────────────────────────────
 interface Props {
   userId: string;
@@ -76,27 +175,36 @@ interface Props {
 
 // ─── Mode types ────────────────────────────────────────────────────────────────
 type ReciteMode = 'read' | 'hidden' | 'timed';
+type RecordState = 'idle' | 'recording' | 'uploading' | 'done' | 'error';
 
 export default function ReciteClient({
-  userId: _userId,
+  userId,
   pathId,
   tradition: _tradition,
   accentColour,
   currentLesson,
 }: Props) {
-  const router = useRouter();
-  const path = SEED_PATHS.find(p => p.id === pathId);
-  const verses = useMemo(() => getReciteVerses(pathId, currentLesson), [pathId, currentLesson]);
+  const router    = useRouter();
+  const pathshala = usePathshala();
+  const path      = SEED_PATHS.find(p => p.id === pathId);
+  const verses    = useMemo(() => getReciteVerses(pathId, currentLesson), [pathId, currentLesson]);
 
-  const [verseIndex, setVerseIndex] = useState(0);
-  const [mode, setMode] = useState<ReciteMode>('read');
+  const [verseIndex,   setVerseIndex]   = useState(0);
+  const [mode,         setMode]         = useState<ReciteMode>('read');
   const [showTranslit, setShowTranslit] = useState(true);
-  const [showMeaning, setShowMeaning] = useState(false);
+  const [showMeaning,  setShowMeaning]  = useState(false);
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
-  const [completed, setCompleted] = useState<number[]>([]);
+  const [completed,    setCompleted]    = useState<number[]>([]);
 
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Shruti recording state
+  const [recordState,  setRecordState]  = useState<RecordState>('idle');
+  const [lastResult,   setLastResult]   = useState<RecitationResult | null>(null);
+  const [micGranted,   setMicGranted]   = useState<boolean | null>(null); // null=unknown
+
+  const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
+  const mediaRecRef = useRef<MediaRecorder | null>(null);
+  const chunksRef   = useRef<Blob[]>([]);
   const verse = verses[verseIndex];
 
   // Timer
@@ -108,6 +216,13 @@ export default function ReciteClient({
     }
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [timerRunning]);
+
+  // Reset score on verse change
+  useEffect(() => {
+    setLastResult(null);
+    setRecordState('idle');
+    chunksRef.current = [];
+  }, [verseIndex]);
 
   function formatTime(s: number) {
     const m = Math.floor(s / 60);
@@ -127,6 +242,88 @@ export default function ReciteClient({
     }
   }
 
+  // ── Shruti recording ─────────────────────────────────────────────────────────
+  const startRecording = useCallback(async () => {
+    if (!verse) return;
+    setLastResult(null);
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setMicGranted(true);
+
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : MediaRecorder.isTypeSupported('audio/webm')
+          ? 'audio/webm'
+          : 'audio/mp4';
+
+      chunksRef.current = [];
+      const mr = new MediaRecorder(stream, { mimeType });
+      mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+      mr.onstop = async () => {
+        // Stop all tracks
+        stream.getTracks().forEach(t => t.stop());
+
+        const blob = new Blob(chunksRef.current, { type: mimeType });
+        if (blob.size < 1000) {
+          toast.error('Recording too short — please recite the verse aloud');
+          setRecordState('idle');
+          return;
+        }
+
+        setRecordState('uploading');
+
+        try {
+          if (!pathshala) {
+            toast.error('Engine not ready — please try again');
+            setRecordState('error');
+            return;
+          }
+
+          const chunkId      = `${pathId}--verse-${verseIndex}`;
+          const expectedText = verse.original || verse.transliteration || verse.title;
+          const language     = 'sa'; // Sanskrit — default; could be inferred from tradition
+
+          const result = await pathshala.shruti.uploadAndScore(userId, {
+            audioBlob: blob,
+            chunkId,
+            expectedText,
+            language,
+          });
+
+          setLastResult(result);
+          setRecordState('done');
+          const score = result.scores?.overall ?? 0;
+          const emoji = score >= 80 ? '🌟' : score >= 60 ? '👍' : '💪';
+          toast.success(`${emoji} Shruti score: ${Math.round(score)}/100`, { duration: 3500 });
+        } catch (err: any) {
+          console.error('[Shruti] uploadAndScore error:', err);
+          toast.error(err?.message?.slice(0, 80) ?? 'Scoring failed — please try again');
+          setRecordState('error');
+        }
+      };
+
+      mr.start(500); // collect chunks every 500ms
+      mediaRecRef.current = mr;
+      setRecordState('recording');
+    } catch (err: any) {
+      setMicGranted(false);
+      if (err?.name === 'NotAllowedError') {
+        toast.error('Microphone access denied. Please allow mic in browser settings.');
+      } else {
+        toast.error('Could not access microphone: ' + (err?.message ?? 'Unknown error'));
+      }
+      setRecordState('idle');
+    }
+  }, [verse, pathId, verseIndex, userId, pathshala]);
+
+  const stopRecording = useCallback(() => {
+    if (mediaRecRef.current && mediaRecRef.current.state !== 'inactive') {
+      mediaRecRef.current.stop();
+    }
+  }, []);
+
+  // ─────────────────────────────────────────────────────────────────────────────
   if (!verse) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4 text-center">
@@ -140,6 +337,9 @@ export default function ReciteClient({
   }
 
   const progressPct = verses.length > 0 ? Math.round((completed.length / verses.length) * 100) : 0;
+  const isRecording  = recordState === 'recording';
+  const isUploading  = recordState === 'uploading';
+  const shrutiReady  = !!pathshala;
 
   return (
     <div className="min-h-screen pb-28 flex flex-col">
@@ -315,17 +515,80 @@ export default function ReciteClient({
           </motion.div>
         </AnimatePresence>
 
-        {/* Pro voice scoring teaser */}
-        <div className="glass-panel rounded-2xl border border-white/6 px-4 py-3 flex items-center gap-3">
-          <Lock size={15} className="text-[color:var(--brand-muted)] shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-[color:var(--brand-ink)]">Voice Recitation Scoring</p>
-            <p className="text-xs text-[color:var(--brand-muted)] leading-snug mt-0.5">
-              Pro: Shruti Engine listens, scores pronunciation, and tracks your recitation streak.
-            </p>
+        {/* ── Shruti Voice Scoring ─────────────────────────────────────────────── */}
+        <div className="glass-panel rounded-2xl border border-white/8 px-4 py-3 space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold text-[color:var(--brand-ink)]">🎤 Voice Recitation</p>
+              <p className="text-[10px] text-[color:var(--brand-muted)] mt-0.5">
+                {shrutiReady
+                  ? 'Record your recitation — Shruti Engine scores pronunciation'
+                  : 'Shruti engine loading…'}
+              </p>
+            </div>
+            {/* Mic button */}
+            <button
+              onClick={isRecording ? stopRecording : startRecording}
+              disabled={isUploading || !shrutiReady}
+              className="w-11 h-11 rounded-full flex items-center justify-center transition-all shadow-lg disabled:opacity-40"
+              style={{
+                background: isRecording
+                  ? 'linear-gradient(135deg, #ef4444, #dc2626)'
+                  : `linear-gradient(135deg, ${accentColour}, ${accentColour}cc)`,
+                boxShadow: isRecording ? '0 0 0 4px rgba(239,68,68,0.25)' : 'none',
+              }}
+              title={isRecording ? 'Stop recording' : 'Start recording'}
+            >
+              {isUploading
+                ? <Loader2 size={18} className="text-white animate-spin" />
+                : isRecording
+                  ? <MicOff size={18} className="text-white" />
+                  : <Mic size={18} className="text-white" />
+              }
+            </button>
           </div>
-          <Mic size={15} style={{ color: accentColour }} className="shrink-0" />
+
+          {/* Recording indicator */}
+          {isRecording && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center gap-2"
+            >
+              <motion.div
+                className="w-2 h-2 rounded-full bg-red-400"
+                animate={{ opacity: [1, 0.2, 1] }}
+                transition={{ duration: 0.9, repeat: Infinity }}
+              />
+              <span className="text-xs text-red-300 font-medium">Recording… tap 🛑 to stop</span>
+            </motion.div>
+          )}
+
+          {isUploading && (
+            <p className="text-xs text-[color:var(--brand-muted)]">Uploading and scoring…</p>
+          )}
+
+          {micGranted === false && (
+            <p className="text-xs text-orange-300">
+              Mic access denied. Allow microphone in your browser settings and reload.
+            </p>
+          )}
+
+          {recordState === 'error' && (
+            <p className="text-xs text-red-300">Scoring failed. Check your internet connection and try again.</p>
+          )}
         </div>
+
+        {/* Score panel */}
+        <AnimatePresence>
+          {lastResult && (
+            <ScorePanel
+              result={lastResult}
+              accent={accentColour}
+              onDismiss={() => setLastResult(null)}
+            />
+          )}
+        </AnimatePresence>
 
         {/* Verse navigation + complete */}
         <div className="flex gap-3">
@@ -363,7 +626,7 @@ export default function ReciteClient({
             {[
               { label: 'Practiced', value: completed.length },
               { label: 'Remaining', value: verses.length - completed.length },
-              { label: 'Session', value: formatTime(timerSeconds) },
+              { label: 'Session',   value: formatTime(timerSeconds) },
             ].map(stat => (
               <div key={stat.label} className="glass-panel rounded-xl border border-white/6 py-2.5 text-center">
                 <p className="text-sm font-bold text-[color:var(--brand-ink)]">{stat.value}</p>

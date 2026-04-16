@@ -96,9 +96,11 @@ const INFO_TEXT: Record<string, string> = {
   Tithi:             'Lunar day (1–30). Each tithi has a presiding deity and governs which activities are auspicious.',
   Nakshatra:         "Moon's mansion in 1 of 27 star-clusters. Your moon nakshatra shapes emotion, instinct, and timing.",
   Yoga:              'Sun + Moon combined longitude across 27 yogas. Indicates the overall quality and nature of the day.',
+  Karana:            'Half of a tithi — the moon moves 6° per karana. There are 11 karanas, 7 movable and 4 fixed. Governs the finer timing within each tithi for rituals and acts.',
   Vara:              'Vedic day of the week. Each day has a ruling planet and presiding deity who blesses related acts.',
   Sunrise:           'Calculated for your location. Brahma Muhurta starts 96 minutes before sunrise — the ideal waking time.',
   Sunset:            'Sandhya kaal — ideal for evening prayers, japa, and quiet reflection as day meets night.',
+  'Brahma Muhurta':  'The sacred pre-dawn window — 96 to 48 minutes before sunrise. The mind is clearest, subtle energies are elevated, and the shastras call this the best time for meditation, japa, and pranayama.',
   'Rahu Kaal':       'A 90-min daily window ruled by Rahu (shadow planet). Avoid starting new ventures or auspicious acts.',
   'Abhijit Muhurat': 'The most auspicious ~48-min window around solar noon. Ideal for important new beginnings.',
 };
@@ -433,7 +435,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
             <Row emoji="🃏" label="Karana"
               value={p.karana}
               upto={p.karanaUpto}
-              accent={tradMeta.accent} />
+              accent={tradMeta.accent} infoKey="Karana" />
             <Row emoji="📆" label={t('vara')}      value={p.vara}      accent={tradMeta.accent} infoKey="Vara" />
           </div>
 
@@ -444,7 +446,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
           </div>
           {/* Brahma Muhurta */}
           {'brahmaMuhurta' in p && (
-            <Row emoji="🌙" label="Brahma Muhurta" value={(p as any).brahmaMuhurta} accent={tradMeta.accent} />
+            <Row emoji="🌙" label="Brahma Muhurta" value={(p as any).brahmaMuhurta} accent={tradMeta.accent} infoKey="Brahma Muhurta" />
           )}
 
           <Row emoji="⚠️" label={t('rahuKaal')}        value={p.rahuKaal}       accent={tradMeta.accent} warn infoKey="Rahu Kaal" />
