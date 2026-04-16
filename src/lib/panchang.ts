@@ -3,18 +3,26 @@
 // for any date and timezone.
 
 export interface PanchangData {
-  tithi:       string;
+  tithi:       string;        // short name e.g. "Chaturdashi"
   tithiIndex:  number;        // 1-30
   paksha:      'Shukla' | 'Krishna';
+  tithiUpto:   string;        // e.g. "03:41 PM"
   nakshatra:   string;
+  nakshatraUpto: string;      // e.g. "09:29 AM"
   yoga:        string;
+  yogaUpto:    string;        // e.g. "06:08 AM"
+  karana:      string;
+  karanaUpto:  string;
   vara:        string;        // day of week in Sanskrit
   rahuKaal:    string;        // e.g. "09:00 – 10:30"
   abhijitMuhurat: string;
   sunrise:     string;
   sunset:      string;
+  brahmaMuhurta: string;      // 96 min before sunrise
   date:        string;
   masaName:    string;        // Hindu month name
+  samvatYear:  number;        // Vikram Samvat
+  samvatName:  string;        // e.g. "Siddharthi"
 }
 
 export interface PanchangTrustMeta {
@@ -132,6 +140,39 @@ function getSunriseSunset(lat: number, lon: number, date: Date): { sunrise: numb
   return { sunrise, sunset };
 }
 
+// ─── Vikram Samvat year names (cycle of 60) ──────────────────────────────────
+const SAMVAT_NAMES = [
+  'Prabhava','Vibhava','Shukla','Pramoda','Prajapati','Angirasa','Shrimukha','Bhava',
+  'Yuva','Dhatri','Ishvara','Bahudhanya','Pramathi','Vikrama','Vrisha','Chitrabhanu',
+  'Subhanu','Tarana','Parthiva','Vyaya','Sarvajit','Sarvadhari','Virodhi','Vikrita',
+  'Khara','Nandana','Vijaya','Jaya','Manmatha','Durmukhi','Hevilambi','Vilambi',
+  'Vikari','Sharvari','Plava','Shubhakrit','Shobhana','Krodhi','Vishvavasu','Parabhava',
+  'Plavanga','Kilaka','Saumya','Sadharana','Virodhikrit','Paridhavi','Pramadi','Ananda',
+  'Rakshasa','Nala','Pingala','Kalayukta','Siddharthi','Raudri','Durmati','Dundubhi',
+  'Rudhirodgari','Raktakshi','Krodhana','Akshaya',
+];
+
+const KARANA_NAMES = [
+  'Bava','Balava','Kaulava','Taitila','Gara','Vanija','Vishti',
+  'Shakuni','Chatushpada','Nagava','Kimstughna',
+];
+
+// Estimate when current unit changes — using moon's approximate velocity
+// Moon moves ~13.176°/day; Sun ~0.9856°/day. Net ~12.2°/day for elongation.
+// Nakshatra: 13.176°/day. Yoga: 12.2°/day.
+function estimateUptoTime(currentIndex: number, totalUnits: number, totalDeg: number, moonDegPerHour: number): string {
+  const degPerUnit = totalDeg / totalUnits;
+  const currentBoundary = (currentIndex + 1) * degPerUnit;
+  // We don't know current position within unit precisely; assume midpoint
+  const hoursToNext = degPerUnit / 2 / moonDegPerHour;
+  const future = new Date(Date.now() + hoursToNext * 3600 * 1000);
+  const h = future.getHours();
+  const m = future.getMinutes();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${String(h12).padStart(2,'0')}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
 export function calculatePanchang(
   date: Date = new Date(),
   lat = 51.5074,
@@ -146,18 +187,57 @@ export function calculatePanchang(
 
   // Tithi: each tithi = 12° difference between moon and sun
   const elongation = normalizeAngle(tropicalMoonLon - tropicalSunLon);
-  const tithiIndex = Math.floor(elongation / 12) + 1;  // 1-30
+  const tithiRaw   = elongation / 12;
+  const tithiIndex = Math.floor(tithiRaw) + 1;  // 1-30
+  const tithiFrac  = tithiRaw - Math.floor(tithiRaw); // position within tithi
   const paksha: 'Shukla' | 'Krishna' = tithiIndex <= 15 ? 'Shukla' : 'Krishna';
   const tithiName = TITHIS[(tithiIndex - 1) % 15];
-  const tithi     = `${paksha} ${tithiName} (${tithiIndex})`;
+  const tithi     = tithiName; // short name only — paksha shown separately
 
-  // Nakshatra: 27 divisions of 360° = 13.33° each
-  const nakshatraIndex = Math.floor(normalizeAngle(moonLon) / (360 / 27)) % 27;
+  // Tithi "upto" time — net moon velocity vs sun ≈ 12.2°/day = 0.5083°/hr
+  const moonNetDegPerHour = 12.2 / 24;
+  const tithiHoursRemaining = (1 - tithiFrac) * 12 / (moonNetDegPerHour);
+  const tithiUptoDate = new Date(date.getTime() + tithiHoursRemaining * 3600 * 1000);
+  function fmtDate(d: Date): string {
+    const h = d.getHours(), m = d.getMinutes();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12 = h % 12 || 12;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+    const dDay = new Date(d); dDay.setHours(0,0,0,0);
+    const suffix = dDay.getTime() === tomorrow.getTime() ? ', next day' : '';
+    return `${String(h12).padStart(2,'0')}:${String(m).padStart(2,'0')} ${ampm}${suffix}`;
+  }
+  const tithiUpto = fmtDate(tithiUptoDate);
+
+  // Nakshatra: 27 divisions of 360° = 13.333° each
+  const nakshatraRaw   = normalizeAngle(moonLon) / (360 / 27);
+  const nakshatraIndex = Math.floor(nakshatraRaw) % 27;
   const nakshatra      = NAKSHATRAS[nakshatraIndex];
+  const nakshatraFrac  = nakshatraRaw - Math.floor(nakshatraRaw);
+  const moonDegPerHour = 13.176 / 24;
+  const nakshatraHoursRem = (1 - nakshatraFrac) * (360 / 27) / (moonDegPerHour);
+  const nakshatraUptoDate = new Date(date.getTime() + nakshatraHoursRem * 3600 * 1000);
+  const nakshatraUpto = fmtDate(nakshatraUptoDate);
 
-  // Yoga: sidereal sun + sidereal moon
-  const yogaIndex = Math.floor(normalizeAngle(sunLon + moonLon) / (360 / 27)) % 27;
-  const yoga      = YOGAS[yogaIndex];
+  // Yoga: sidereal sun + sidereal moon; net speed ≈ 13.2+0.985 ≈ 14.185°/day = 0.591°/hr
+  const yogaRaw    = normalizeAngle(sunLon + moonLon) / (360 / 27);
+  const yogaIndex  = Math.floor(yogaRaw) % 27;
+  const yoga       = YOGAS[yogaIndex];
+  const yogaFrac   = yogaRaw - Math.floor(yogaRaw);
+  const yogaDegPerHour = 14.185 / 24;
+  const yogaHoursRem = (1 - yogaFrac) * (360 / 27) / yogaDegPerHour;
+  const yogaUptoDate = new Date(date.getTime() + yogaHoursRem * 3600 * 1000);
+  const yogaUpto = fmtDate(yogaUptoDate);
+
+  // Karana: half-tithi (60 karanas per month, each = 6° elongation)
+  const karanaRaw   = elongation / 6;
+  const karanaIndex = Math.floor(karanaRaw) % 11;
+  const karana      = KARANA_NAMES[karanaIndex];
+  const karanaFrac  = karanaRaw - Math.floor(karanaRaw);
+  const karanaHoursRem = (1 - karanaFrac) * 6 / moonNetDegPerHour;
+  const karanaUptoDate = new Date(date.getTime() + karanaHoursRem * 3600 * 1000);
+  const karanaUpto = fmtDate(karanaUptoDate);
 
   // Vara (weekday)
   const dow  = date.getDay(); // 0=Sun
@@ -167,10 +247,17 @@ export function calculatePanchang(
   const masaIndex = Math.floor(normalizeAngle(sunLon) / 30) % 12;
   const masaName  = MASA_NAMES[masaIndex];
 
+  // Vikram Samvat: approximately Gregorian year + 57 (before Chaitra = same year)
+  const gregYear = date.getFullYear();
+  const vsYear = gregYear + 57; // rough — fine for display
+  const vsNameIdx = (vsYear - 1) % 60;
+  const samvatName = SAMVAT_NAMES[vsNameIdx] ?? '';
+
   // Sunrise / Sunset
   const { sunrise, sunset } = getSunriseSunset(lat, lon, date);
-  const sunriseFmt = formatTime(sunrise);
-  const sunsetFmt  = formatTime(sunset);
+  const sunriseFmt     = formatTime(sunrise);
+  const sunsetFmt      = formatTime(sunset);
+  const brahmaMuhurta  = `${formatTime(sunrise, -96)} – ${formatTime(sunrise, -48)}`;
 
   // Rahu Kaal
   const dayLength  = sunset - sunrise;
@@ -181,7 +268,7 @@ export function calculatePanchang(
   const rahuKaal   = `${formatTime(rahuStart)} – ${formatTime(rahuEnd)}`;
 
   // Abhijit Muhurat (~midday, auspicious)
-  const midday      = (sunrise + sunset) / 2;
+  const midday         = (sunrise + sunset) / 2;
   const abhijitMuhurat = `${formatTime(midday, -24)} – ${formatTime(midday, 24)}`;
 
   const dateStr = date.toLocaleDateString('en-IN', {
@@ -189,8 +276,16 @@ export function calculatePanchang(
   });
 
   return {
-    tithi, tithiIndex, paksha, nakshatra, yoga, vara,
-    rahuKaal, abhijitMuhurat, sunrise: sunriseFmt, sunset: sunsetFmt,
+    tithi, tithiIndex, paksha, tithiUpto,
+    nakshatra, nakshatraUpto,
+    yoga, yogaUpto,
+    karana, karanaUpto,
+    vara,
+    rahuKaal, abhijitMuhurat,
+    sunrise: sunriseFmt, sunset: sunsetFmt,
+    brahmaMuhurta,
     date: dateStr, masaName,
+    samvatYear: vsYear,
+    samvatName,
   };
 }

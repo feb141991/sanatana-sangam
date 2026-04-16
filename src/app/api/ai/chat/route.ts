@@ -182,11 +182,19 @@ export async function POST(req: NextRequest) {
     if (!res.ok) {
       const errText = await res.text();
       console.error('Gemini API error:', res.status, errText);
+
+      // 429 — free-tier quota exhausted. Return a user-friendly spiritual message
+      // rather than a raw error. Client can display it as a normal AI reply.
+      if (res.status === 429) {
+        return NextResponse.json({
+          reply: '🙏 Dharma Mitra is resting for a moment — the free AI quota has been reached. Please try again in a minute or two. In the meantime, sit quietly and let the question settle. 😊',
+        });
+      }
+
       let hint = '';
       if (res.status === 400) hint = 'Bad request format.';
       if (res.status === 403) hint = 'Invalid API key — check GEMINI_API_KEY in Vercel env vars.';
       if (res.status === 404) hint = 'Model not found — check model name.';
-      if (res.status === 429) hint = 'Rate limit hit — try again in a moment.';
       return NextResponse.json(
         { error: `AI error (${res.status})${hint ? ': ' + hint : ''}` },
         { status: 502 }

@@ -296,21 +296,21 @@ function CityPicker({ value, onChange }: {
   return (
     <div ref={ref} className="relative">
       <div className="relative">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--brand-muted)]" />
         <input
           type="text"
           placeholder="Search your city (e.g. Manchester, London…)"
           value={query}
           onChange={e => { setQuery(e.target.value); setOpen(true); }}
           onFocus={() => setOpen(true)}
-          className="w-full pl-9 pr-8 py-3 rounded-xl border border-gray-200 outline-none text-sm"
+          className="w-full pl-9 pr-8 py-3 rounded-xl border border-white/10 outline-none text-sm"
           style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }}
         />
-        <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[color:var(--brand-muted)]" />
       </div>
 
       {open && filtered.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-white rounded-2xl border border-gray-200 shadow-lg max-h-56 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 rounded-2xl border border-white/10 shadow-lg max-h-56 overflow-y-auto">
           {filtered.map(c => (
             <button
               key={`${c.city}-${c.country}`}
@@ -319,8 +319,8 @@ function CityPicker({ value, onChange }: {
             >
               <span className="text-base flex-shrink-0">{c.flag}</span>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900">{c.city}</p>
-                <p className="text-xs text-gray-400 truncate">{c.region ? `${c.region}, ` : ''}{c.country}</p>
+                <p className="text-sm font-medium text-[color:var(--brand-ink)]">{c.city}</p>
+                <p className="text-xs text-[color:var(--brand-muted)] truncate">{c.region ? `${c.region}, ` : ''}{c.country}</p>
               </div>
             </button>
           ))}
@@ -332,12 +332,12 @@ function CityPicker({ value, onChange }: {
                 onChange({ city: parts[0].trim(), country: parts[1]?.trim() || '' });
                 setOpen(false);
               }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-left border-t border-gray-100 transition hover:bg-[var(--brand-primary-soft)]"
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-left border-t border-white/8 transition hover:bg-[var(--brand-primary-soft)]"
             >
               <span className="text-base">🌍</span>
               <div>
                 <p className="text-sm font-medium" style={{ color: 'var(--brand-primary-strong)' }}>Use &ldquo;{query}&rdquo;</p>
-                <p className="text-xs text-gray-400">Custom city</p>
+                <p className="text-xs text-[color:var(--brand-muted)]">Custom city</p>
               </div>
             </button>
           )}
@@ -417,8 +417,8 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center space-y-6 fade-in">
       <div className="w-20 h-20 rounded-full flex items-center justify-center text-4xl" style={{ background: 'var(--brand-primary-soft)' }}>🏡</div>
       <div>
-        <h2 className="font-display font-bold text-2xl text-gray-900 mb-2">Find Your Mandali</h2>
-        <p className="text-gray-500 max-w-sm text-sm">
+        <h2 className="font-display font-bold text-2xl text-[color:var(--brand-ink)] mb-2">Find Your Mandali</h2>
+        <p className="text-[color:var(--brand-muted)] max-w-sm text-sm">
           We&rsquo;ll place you in your city&rsquo;s Sanatani Mandali — Wembley, Brampton, Andheri, or wherever you are. We&rsquo;ll create one if it doesn&rsquo;t exist yet.
         </p>
       </div>
@@ -434,7 +434,7 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
               {detected.country && <p className="text-xs" style={{ color: 'var(--brand-muted)' }}>{detected.country}</p>}
             </div>
             <button onClick={() => setDetected(null)}
-              className="text-xs text-gray-400 hover:text-gray-600">
+              className="text-xs text-[color:var(--brand-muted)] hover:text-[color:var(--brand-muted)]">
               <X size={14} />
             </button>
           </div>
@@ -468,7 +468,7 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
         </button>
       </div>
 
-      <div className="flex items-center gap-2 text-xs text-gray-400">
+      <div className="flex items-center gap-2 text-xs text-[color:var(--brand-muted)]">
         <Globe size={12} />
         <span>City-level groups only — your exact location is never shared</span>
       </div>
@@ -495,10 +495,10 @@ function MembersTab({ members, userId }: { members: MemberRow[]; userId: string 
         const isMe = m.id === userId;
         return (
           <div key={m.id}
-            className="bg-white rounded-2xl border p-3 flex items-center gap-3"
+            className="glass-panel rounded-2xl border border-white/8 p-3 flex items-center gap-3"
             style={{ borderColor: isMe ? 'rgba(200, 127, 146, 0.32)' : '#f1f0f2' }}>
             {/* Rank */}
-            <div className="w-5 text-center text-xs font-bold text-gray-300">
+            <div className="w-5 text-center text-xs font-bold text-white/25">
               {idx + 1}
             </div>
             {/* Avatar */}
@@ -512,19 +512,19 @@ function MembersTab({ members, userId }: { members: MemberRow[]; userId: string 
             {/* Info */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <p className="font-semibold text-gray-900 text-sm truncate">
+                <p className="font-semibold text-[color:var(--brand-ink)] text-sm truncate">
                   {m.full_name || m.username}
                   {isMe && <span className="ml-1 text-[10px] font-medium" style={{ color: 'var(--brand-primary-strong)' }}>(you)</span>}
                 </p>
               </div>
-              <p className="text-xs text-gray-500 truncate">
+              <p className="text-xs text-[color:var(--brand-muted)] truncate">
                 {devata?.emoji} {devata?.label ?? 'Sanatani'} · {m.spiritual_level ?? 'Seeker'}
               </p>
             </div>
             {/* Seva Score */}
             <div className="text-right">
               <div className="font-bold text-sm" style={{ color: 'var(--brand-primary-strong)' }}>{m.seva_score ?? 0}</div>
-              <div className="text-[10px] text-gray-400">seva</div>
+              <div className="text-[10px] text-[color:var(--brand-muted)]">seva</div>
             </div>
           </div>
         );
@@ -566,7 +566,7 @@ function EventRsvpBar({
             className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
               myStatus === item.value
                 ? 'text-white'
-                : 'border border-[rgba(200,127,146,0.25)] bg-white text-gray-600'
+                : 'border border-[rgba(200,127,146,0.25)] bg-white/6 text-[color:var(--brand-muted)]'
             }`}
             style={myStatus === item.value ? { background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' } : undefined}
           >
@@ -594,20 +594,20 @@ function EventsTab({ posts, rsvps, userId, onRsvp }: { posts: PostWithAuthor[]; 
   return (
     <div className="space-y-3">
       {events.map((post) => (
-        <div key={post.id} className="bg-white rounded-2xl border border-blue-100 p-4">
+        <div key={post.id} className="glass-panel rounded-2xl border border-white/8 p-4">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-xl flex-shrink-0">🎉</div>
+            <div className="w-10 h-10 rounded-xl bg-white/8 flex items-center justify-center text-xl flex-shrink-0">🎉</div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900 leading-snug">{post.content}</p>
+              <p className="text-sm font-medium text-[color:var(--brand-ink)] leading-snug">{post.content}</p>
               {post.event_date && (
-                <p className="text-xs text-blue-600 mt-1 font-medium">
+                <p className="text-xs text-[color:var(--brand-primary-strong)] mt-1 font-medium">
                   📅 {new Date(post.event_date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                 </p>
               )}
               {post.event_location && (
-                <p className="text-xs text-gray-500 mt-0.5">📍 {post.event_location}</p>
+                <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">📍 {post.event_location}</p>
               )}
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-[color:var(--brand-muted)] mt-1">
                 {post.profiles?.full_name ?? post.profiles?.username} · {formatRelativeTime(post.created_at)}
               </p>
               <EventRsvpBar
@@ -676,7 +676,7 @@ function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upv
       {allowCompose && (
         <button
           onClick={() => setShowCompose(!showCompose)}
-          className="w-full bg-white border border-dashed rounded-2xl p-3 flex items-center gap-3 text-gray-400 transition"
+          className="w-full glass-panel border border-dashed rounded-2xl p-3 flex items-center gap-3 text-[color:var(--brand-muted)] transition"
           style={{ borderColor: 'rgba(200, 127, 146, 0.3)' }}
         >
           <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--brand-primary-soft)' }}>
@@ -732,7 +732,7 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
             className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
               postType === t.value
                 ? ''
-                : 'bg-gray-50 text-gray-500 border border-gray-200'
+                : 'bg-white/4 text-[color:var(--brand-muted)] border border-white/10'
             }`}
             style={postType === t.value ? { background: 'var(--brand-primary-soft)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(200, 127, 146, 0.3)' } : undefined}>
             {t.icon} {t.label}
@@ -741,20 +741,20 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
       </div>
       <textarea placeholder={postType === 'event' ? 'Describe your event…' : 'Share with your Mandali…'}
         value={content} onChange={(e) => setContent(e.target.value)} rows={3}
-        className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none resize-none text-sm"
+        className="w-full px-4 py-3 rounded-xl border border-white/10 outline-none resize-none text-sm"
         style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }} />
       {postType === 'event' && (
         <div className="grid grid-cols-2 gap-3">
           <input type="datetime-local" value={eventDate} onChange={(e) => setEventDate(e.target.value)}
-            className="px-3 py-2 rounded-xl border border-gray-200 outline-none text-sm"
+            className="px-3 py-2 rounded-xl border border-white/10 outline-none text-sm"
             style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }} />
           <input type="text" placeholder="Location" value={eventLoc} onChange={(e) => setEventLoc(e.target.value)}
-            className="px-3 py-2 rounded-xl border border-gray-200 outline-none text-sm"
+            className="px-3 py-2 rounded-xl border border-white/10 outline-none text-sm"
             style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }} />
         </div>
       )}
       <div className="flex justify-end gap-2">
-        <button onClick={onClose} className="px-4 py-2 text-sm text-gray-500">Cancel</button>
+        <button onClick={onClose} className="px-4 py-2 text-sm text-[color:var(--brand-muted)]">Cancel</button>
         <button onClick={onPost} disabled={submitting || !content.trim()}
           className="px-5 py-2 text-white text-sm font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
           style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
@@ -802,18 +802,18 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-4">
+    <div className="glass-panel rounded-2xl border border-white/8 p-4">
       <div className="flex items-start gap-3">
         <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
           {getInitials((author?.full_name || author?.username) ?? '?')}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="font-semibold text-sm text-gray-900">
+            <span className="font-semibold text-sm text-[color:var(--brand-ink)]">
               {author?.full_name ?? author?.username}
             </span>
-            <span className="text-gray-300">·</span>
-            <span className="text-xs text-gray-400">{formatRelativeTime(post.created_at)}</span>
+            <span className="text-white/25">·</span>
+            <span className="text-xs text-[color:var(--brand-muted)]">{formatRelativeTime(post.created_at)}</span>
             <div className="ml-auto flex items-center gap-1">
               <span>{typeIcon[post.type]}</span>
               <ContentSafetyMenu
@@ -826,22 +826,22 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
               />
             </div>
           </div>
-          <p className="text-sm text-gray-700 leading-relaxed">{post.content}</p>
+          <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed">{post.content}</p>
           {post.event_date && (
-            <div className="mt-2 px-3 py-2 bg-blue-50 rounded-xl text-xs text-blue-700">
+            <div className="mt-2 px-3 py-2 rounded-xl border border-white/10 bg-white/6 text-xs text-[color:var(--brand-muted)]">
               📅 {new Date(post.event_date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
               {post.event_location && ` · 📍 ${post.event_location}`}
             </div>
           )}
           <div className="flex items-center gap-4 mt-2">
             <button onClick={() => onUpvote(post.id)}
-              className={`flex items-center gap-1 text-xs transition ${isUpvoted ? 'text-rose-500' : 'text-gray-400 hover:text-rose-400'}`}>
+              className={`flex items-center gap-1 text-xs transition ${isUpvoted ? 'text-rose-500' : 'text-[color:var(--brand-muted)] hover:text-rose-400'}`}>
               <Heart size={13} fill={isUpvoted ? 'currentColor' : 'none'} />
               {post.upvotes > 0 && <span>{post.upvotes}</span>}
             </button>
             <button
               onClick={() => setShowComments((current) => !current)}
-              className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition"
+              className="flex items-center gap-1 text-xs text-[color:var(--brand-muted)] hover:text-[color:var(--brand-muted)] transition"
             >
               <MessageSquare size={13} />
               <span>{post.comment_count > 0 ? post.comment_count : 'Comment'}</span>
@@ -852,10 +852,10 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
             <div className="mt-3 space-y-3 rounded-2xl bg-[var(--brand-primary-soft)]/60 px-3 py-3">
               <div className="space-y-2">
                 {rootComments.length === 0 ? (
-                  <p className="text-xs text-gray-500">No comments yet.</p>
+                  <p className="text-xs text-[color:var(--brand-muted)]">No comments yet.</p>
                 ) : (
                   rootComments.map((comment) => (
-                    <div key={comment.id} className="space-y-2 rounded-2xl bg-white/80 px-3 py-3">
+                    <div key={comment.id} className="space-y-2 rounded-2xl bg-white/6 px-3 py-3">
                       <div className="flex items-start gap-2">
                         <div className="w-7 h-7 rounded-full bg-[var(--brand-primary)] text-white text-[10px] font-bold flex items-center justify-center overflow-hidden flex-shrink-0">
                           {comment.profiles?.avatar_url ? (
@@ -865,11 +865,11 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 text-xs text-gray-400">
-                            <span className="font-medium text-gray-800">{comment.profiles?.full_name ?? comment.profiles?.username}</span>
+                          <div className="flex items-center gap-2 text-xs text-[color:var(--brand-muted)]">
+                            <span className="font-medium text-[color:var(--brand-ink)]">{comment.profiles?.full_name ?? comment.profiles?.username}</span>
                             <span>{formatRelativeTime(comment.created_at)}</span>
                           </div>
-                          <p className="text-sm text-gray-700 mt-1 leading-relaxed">{comment.body}</p>
+                          <p className="text-sm text-[color:var(--brand-ink)] mt-1 leading-relaxed">{comment.body}</p>
                           <button
                             onClick={() => {
                               setReplyTo((current) => current === comment.id ? null : comment.id);
@@ -887,11 +887,11 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
                         <div className="space-y-2 pl-9">
                           {(replyMap[comment.id] ?? []).map((reply) => (
                             <div key={reply.id} className="rounded-xl bg-[var(--brand-primary-soft)]/55 px-3 py-2.5">
-                              <div className="flex items-center gap-2 text-[11px] text-gray-400">
-                                <span className="font-medium text-gray-800">{reply.profiles?.full_name ?? reply.profiles?.username}</span>
+                              <div className="flex items-center gap-2 text-[11px] text-[color:var(--brand-muted)]">
+                                <span className="font-medium text-[color:var(--brand-ink)]">{reply.profiles?.full_name ?? reply.profiles?.username}</span>
                                 <span>{formatRelativeTime(reply.created_at)}</span>
                               </div>
-                              <p className="text-sm text-gray-700 mt-1 leading-relaxed">{reply.body}</p>
+                              <p className="text-sm text-[color:var(--brand-ink)] mt-1 leading-relaxed">{reply.body}</p>
                             </div>
                           ))}
                         </div>
@@ -904,10 +904,10 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
                             onChange={(event) => setReplyBody(event.target.value)}
                             rows={2}
                             placeholder="Reply gently…"
-                            className="w-full rounded-xl border border-[rgba(200,127,146,0.2)] bg-white px-3 py-2 text-sm outline-none"
+                            className="w-full rounded-xl border border-[rgba(200,127,146,0.2)] bg-white/6 px-3 py-2 text-sm text-[color:var(--brand-ink)] outline-none placeholder:text-[color:var(--brand-muted)]"
                           />
                           <div className="flex justify-end gap-2">
-                            <button onClick={() => setReplyTo(null)} className="text-xs text-gray-500">Cancel</button>
+                            <button onClick={() => setReplyTo(null)} className="text-xs text-[color:var(--brand-muted)]">Cancel</button>
                             <button
                               onClick={() => submitComment(replyBody, comment.id)}
                               disabled={submitting || !replyBody.trim()}
@@ -930,7 +930,7 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
                   onChange={(event) => setCommentBody(event.target.value)}
                   rows={2}
                   placeholder="Add a comment…"
-                  className="w-full rounded-xl border border-[rgba(200,127,146,0.2)] bg-white px-3 py-2 text-sm outline-none"
+                  className="w-full rounded-xl border border-[rgba(200,127,146,0.2)] bg-white/6 px-3 py-2 text-sm text-[color:var(--brand-ink)] outline-none placeholder:text-[color:var(--brand-muted)]"
                 />
                 <div className="flex justify-end">
                   <button
@@ -1031,20 +1031,20 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
           label: 'See upcoming events',
           hint: `${eventCount} local event${eventCount === 1 ? '' : 's'} waiting`,
           onClick: () => setActiveTab('events' as const),
-          icon: <Calendar size={16} className="text-gray-500" />,
+          icon: <Calendar size={16} className="text-[color:var(--brand-muted)]" />,
         }
       : vichaarCount > 0
         ? {
             label: 'Join today’s Vichaar',
             hint: `${vichaarCount} local conversation${vichaarCount === 1 ? '' : 's'}`,
             onClick: () => setActiveTab('vichaar' as const),
-            icon: <MessageSquare size={16} className="text-gray-500" />,
+            icon: <MessageSquare size={16} className="text-[color:var(--brand-muted)]" />,
           }
         : {
             label: 'Meet your Mandali',
             hint: `${visibleMembers.length} member${visibleMembers.length === 1 ? '' : 's'} nearby`,
             onClick: () => setActiveTab('members' as const),
-            icon: <Users size={16} className="text-gray-500" />,
+            icon: <Users size={16} className="text-[color:var(--brand-muted)]" />,
           };
 
   function hideContentFromView(contentId: string) {

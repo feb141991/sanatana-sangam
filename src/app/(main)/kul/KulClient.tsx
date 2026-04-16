@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import {
   Users, MessageSquare, CheckSquare, Plus, X, Copy,
   Send, Crown, ChevronRight, Flame, Pencil,
-  Check, ClipboardList, Share2,
+  Check, ClipboardList, Share2, Search, UserPlus,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { getInitials } from '@/lib/utils';
@@ -478,7 +478,8 @@ function NoKulPrompt({ userId, userName }: { userId: string; userName: string })
 function BoardTab({ kul, members, tasks, userId, myRole }: {
   kul: KulData; members: MemberRow[]; tasks: TaskRow[]; userId: string; myRole: string;
 }) {
-  const [selectedMember, setSelectedMember] = useState<MemberRow | null>(null);
+  const [selectedMember,    setSelectedMember]    = useState<MemberRow | null>(null);
+  const [showInviteSearch, setShowInviteSearch]   = useState(false);
   const totalTasks     = tasks.length;
   const completedTasks = tasks.filter(t => t.completed).length;
   const pendingTasks   = totalTasks - completedTasks;
@@ -501,6 +502,15 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
       {selectedMember ? (
         <FamilyProfileSheet member={selectedMember} onClose={() => setSelectedMember(null)} />
       ) : null}
+      {showInviteSearch && (
+        <InviteSearchModal
+          kulId={kul.id}
+          kulName={kul.name}
+          inviteCode={kul.invite_code}
+          userId={userId}
+          onClose={() => setShowInviteSearch(false)}
+        />
+      )}
       <div className="flex justify-end">
         <button onClick={shareKul} className="glass-button-secondary px-4 py-2 rounded-full type-chip" style={{ color: 'var(--chip-text)' }}>
           Share Kul
@@ -535,13 +545,22 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
         </div>
 
         {/* Invite row */}
-        <div className="mt-3 flex items-center gap-2">
-          <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.12)' }}>
-            <span className="type-micro">Code:</span>
-            <span className="type-card-heading tracking-widest">{kul.invite_code}</span>
+        <div className="mt-3 space-y-2">
+          <div className="flex items-center gap-2">
+            <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.12)' }}>
+              <span className="type-micro">Code:</span>
+              <span className="type-card-heading tracking-widest">{kul.invite_code}</span>
+            </div>
+            <button onClick={copyCode} className="w-9 h-9 rounded-xl flex items-center justify-center transition" style={{ background: 'rgba(255,255,255,0.18)' }}><Copy size={14} color="white" /></button>
+            <button onClick={shareKul} className="w-9 h-9 rounded-xl flex items-center justify-center transition" style={{ background: 'rgba(255,255,255,0.18)' }}><Share2 size={14} color="white" /></button>
           </div>
-          <button onClick={copyCode}  className="w-9 h-9 rounded-xl flex items-center justify-center transition" style={{ background: 'rgba(255,255,255,0.18)' }}><Copy size={14} color="white" /></button>
-          <button onClick={shareKul} className="w-9 h-9 rounded-xl flex items-center justify-center transition" style={{ background: 'rgba(255,255,255,0.18)' }}><Share2 size={14} color="white" /></button>
+          <button
+            onClick={() => setShowInviteSearch(true)}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition border"
+            style={{ background: 'rgba(212,166,70,0.10)', borderColor: 'rgba(212,166,70,0.25)', color: 'var(--brand-primary-strong)' }}
+          >
+            <UserPlus size={15} /> Invite a Member by Name
+          </button>
         </div>
       </div>
 
@@ -589,18 +608,18 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
       {pendingTasks > 0 && (
         <div>
           <div className="mb-2 flex items-center justify-between gap-3">
-            <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Pending Tasks</p>
+            <p className="text-xs text-[color:var(--brand-muted)] font-medium uppercase tracking-wider">Pending Tasks</p>
             <Link href="/kul/tasks" className="text-xs font-semibold text-[color:var(--brand-primary)]">Tasks</Link>
           </div>
           <div className="space-y-2">
             {tasks.filter(t => !t.completed).slice(0, 3).map(task => (
-              <Link key={task.id} href="/kul/tasks" className="bg-white rounded-2xl border border-orange-100 p-3 flex items-center gap-3 transition hover:border-[color:var(--brand-primary-soft)]">
+              <Link key={task.id} href="/kul/tasks" className="glass-panel rounded-2xl border border-white/8 p-3 flex items-center gap-3 transition hover:border-[color:var(--brand-primary-soft)]">
                 <div className="w-8 h-8 rounded-xl bg-orange-50 flex items-center justify-center text-base flex-shrink-0">
                   {TASK_TYPES[task.task_type]?.emoji ?? '📌'}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{task.title}</p>
-                  <p className="text-xs text-gray-400 truncate">
+                  <p className="text-sm font-medium text-[color:var(--brand-ink)] truncate">{task.title}</p>
+                  <p className="text-xs text-[color:var(--brand-muted)] truncate">
                     → {task.assigned_to_profile?.full_name || task.assigned_to_profile?.username}
                     {task.due_date && ` · due ${new Date(task.due_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`}
                   </p>
@@ -654,7 +673,7 @@ function MembersTab({ members, userId, myRole, kul }: {
         const isMe  = m.user_id === userId;
         const name  = p?.full_name || p?.username || 'Member';
         return (
-          <div key={m.id} className={`bg-white rounded-2xl border p-3 flex items-center gap-3 ${isMe ? 'border-[#7B1A1A]/30' : 'border-gray-100'}`}>
+          <div key={m.id} className={`glass-panel rounded-2xl border border-white/8 p-3 flex items-center gap-3 ${isMe ? 'border-[color:var(--brand-primary)]/30' : 'border-white/8'}`}>
             <button
               type="button"
               onClick={() => setSelectedMember(m)}
@@ -664,11 +683,11 @@ function MembersTab({ members, userId, myRole, kul }: {
               gradient={isMe ? 'var(--brand-primary-strong)' : 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))'} />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <p className="text-sm font-semibold text-gray-900 truncate">{name}</p>
+                <p className="text-sm font-semibold text-[color:var(--brand-ink)] truncate">{name}</p>
                 {m.role === 'guardian' && <Crown size={12} className="text-amber-500 flex-shrink-0" />}
-                {isMe && <span className="text-[10px] text-[#7B1A1A] font-medium">(you)</span>}
+                {isMe && <span className="text-[10px] text-[color:var(--brand-primary-strong)] font-medium">(you)</span>}
               </div>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-[color:var(--brand-muted)]">
                 {m.role === 'guardian' ? '👑 Guardian' : '🙏 Sadhak'}
                 {p?.tradition && ` · ${TRADITION_EMOJI[p.tradition] ?? ''}`}
                 {p?.shloka_streak ? ` · 🔥 ${p.shloka_streak}` : ''}
@@ -685,7 +704,7 @@ function MembersTab({ members, userId, myRole, kul }: {
                   </button>
                 )}
                 <button onClick={() => remove(m.id, name)}
-                  className="w-7 h-7 rounded-lg flex items-center justify-center border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200 transition">
+                  className="w-7 h-7 rounded-lg flex items-center justify-center border border-white/10 text-[color:var(--brand-muted)] hover:text-red-500 hover:border-red-200 transition">
                   <X size={12} />
                 </button>
               </div>
@@ -751,9 +770,9 @@ function TasksTab({ tasks, members, userId, myRole, kulId }: {
       {/* Assign button for guardians */}
       {myRole === 'guardian' && (
         <button onClick={() => setShowCompose(!showCompose)}
-          className="w-full bg-white border border-dashed border-[#7B1A1A]/30 rounded-2xl p-3 flex items-center gap-3 text-gray-400 hover:border-[#7B1A1A]/50 hover:text-[#7B1A1A] transition">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: '#7B1A1A15' }}>
-            <Plus size={15} style={{ color: '#7B1A1A' }} />
+          className="w-full glass-panel border border-dashed border-[color:var(--brand-primary)]/30 rounded-2xl p-3 flex items-center gap-3 text-[color:var(--brand-muted)] hover:border-[color:var(--brand-primary)]/50 hover:text-[color:var(--brand-primary-strong)] transition">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(212,166,70,0.10)' }}>
+            <Plus size={15} style={{ color: 'var(--brand-primary)' }} />
           </div>
           <span className="text-sm">Assign a sadhana task…</span>
         </button>
@@ -761,26 +780,26 @@ function TasksTab({ tasks, members, userId, myRole, kulId }: {
 
       {/* Compose panel */}
       {showCompose && (
-        <div className="bg-white rounded-2xl border border-orange-100 p-4 shadow-sm space-y-3 fade-in">
-          <p className="text-sm font-semibold text-gray-800">Assign New Task</p>
+        <div className="glass-panel rounded-2xl border border-white/8 p-4 space-y-3 fade-in">
+          <p className="text-sm font-semibold text-[color:var(--brand-ink)]">Assign New Task</p>
           {/* Task type */}
           <div className="flex gap-2 flex-wrap">
             {Object.entries(TASK_TYPES).map(([k, v]) => (
               <button key={k} onClick={() => setTaskType(k)}
-                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${taskType === k ? 'bg-[#7B1A1A]/10 text-[#7B1A1A] border border-[#7B1A1A]/30' : 'bg-gray-50 text-gray-500 border border-gray-200'}`}>
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${taskType === k ? 'bg-[#7B1A1A]/10 text-[color:var(--brand-primary-strong)] border border-[color:var(--brand-primary)]/30' : 'bg-white/4 text-[color:var(--brand-muted)] border border-white/10'}`}>
                 {v.emoji} {v.label}
               </button>
             ))}
           </div>
           <input type="text" placeholder="Task title (e.g. Recite Gayatri Mantra 3 times)"
             value={title} onChange={e => setTitle(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm" />
+            className="w-full px-4 py-3 rounded-xl border border-white/10 focus:border-[color:var(--brand-primary)] outline-none text-sm" />
           <textarea placeholder="Optional description / guidance…"
             value={description} onChange={e => setDescription(e.target.value)} rows={2}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none resize-none text-sm" />
+            className="w-full px-4 py-3 rounded-xl border border-white/10 focus:border-[color:var(--brand-primary)] outline-none resize-none text-sm" />
           <div className="grid grid-cols-2 gap-2">
             <select value={assignTo} onChange={e => setAssignTo(e.target.value)}
-              className="px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm">
+              className="px-3 py-2.5 rounded-xl border border-white/10 focus:border-[color:var(--brand-primary)] outline-none text-sm">
               <option value="">Assign to…</option>
               {members.filter(m => m.user_id !== userId).map(m => (
                 <option key={m.user_id} value={m.user_id}>
@@ -789,13 +808,13 @@ function TasksTab({ tasks, members, userId, myRole, kulId }: {
               ))}
             </select>
             <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)}
-              className="px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm" />
+              className="px-3 py-2.5 rounded-xl border border-white/10 focus:border-[color:var(--brand-primary)] outline-none text-sm" />
           </div>
           <div className="flex justify-end gap-2">
-            <button onClick={() => setShowCompose(false)} className="px-4 py-2 text-sm text-gray-500">Cancel</button>
+            <button onClick={() => setShowCompose(false)} className="px-4 py-2 text-sm text-[color:var(--brand-muted)]">Cancel</button>
             <button onClick={assignTask} disabled={saving || !title.trim() || !assignTo}
               className="px-5 py-2 text-white text-sm font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
-              style={{ background: '#7B1A1A' }}>
+              style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}>
               {saving ? 'Assigning…' : 'Assign Task 🙏'}
             </button>
           </div>
@@ -805,7 +824,7 @@ function TasksTab({ tasks, members, userId, myRole, kulId }: {
       {/* My tasks */}
       {myTasks.length > 0 && (
         <div>
-          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">My Tasks</p>
+          <p className="text-xs text-[color:var(--brand-muted)] font-medium uppercase tracking-wider mb-2">My Tasks</p>
           <div className="space-y-2">
             {myTasks.map(task => (
               <TaskCard key={task.id} task={task} isMyTask userId={userId} onComplete={completeTask} />
@@ -817,7 +836,7 @@ function TasksTab({ tasks, members, userId, myRole, kulId }: {
       {/* Others' tasks (guardian view) */}
       {myRole === 'guardian' && otherTasks.length > 0 && (
         <div>
-          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">Assigned Tasks</p>
+          <p className="text-xs text-[color:var(--brand-muted)] font-medium uppercase tracking-wider mb-2">Assigned Tasks</p>
           <div className="space-y-2">
             {otherTasks.map(task => (
               <TaskCard key={task.id} task={task} isMyTask={false} userId={userId} onComplete={completeTask} />
@@ -842,7 +861,7 @@ function TaskCard({ task, isMyTask, userId, onComplete }: {
 }) {
   const assignee = task.assigned_to_profile;
   return (
-    <div className={`bg-white rounded-2xl border p-3 flex items-start gap-3 ${task.completed ? 'border-green-100 opacity-70' : 'border-orange-100'}`}>
+    <div className={`glass-panel rounded-2xl border border-white/8 p-3 flex items-start gap-3 ${task.completed ? 'border-green-100 opacity-70' : 'border-orange-100'}`}>
       <div className="w-8 h-8 rounded-xl flex items-center justify-center text-base flex-shrink-0"
         style={{ background: task.completed ? '#f0fdf4' : '#fff8f0' }}>
         {task.completed ? '✅' : (TASK_TYPES[task.task_type]?.emoji ?? '📌')}
@@ -850,13 +869,13 @@ function TaskCard({ task, isMyTask, userId, onComplete }: {
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <p className={`text-sm font-medium ${task.completed ? 'line-through text-gray-400' : 'text-gray-900'}`}>{task.title}</p>
-            {task.description && <p className="text-xs text-gray-400 mt-0.5 leading-snug">{task.description}</p>}
+            <p className={`text-sm font-medium ${task.completed ? 'line-through text-[color:var(--brand-muted)]' : 'text-[color:var(--brand-ink)]'}`}>{task.title}</p>
+            {task.description && <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-snug">{task.description}</p>}
           </div>
           {isMyTask && !task.completed && (
             <button onClick={() => onComplete(task.id)}
               className="flex-shrink-0 px-3 py-1.5 text-xs font-semibold rounded-full text-white hover:opacity-90 transition"
-              style={{ background: '#7B1A1A' }}>
+              style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}>
               Done ✓
             </button>
           )}
@@ -864,10 +883,10 @@ function TaskCard({ task, isMyTask, userId, onComplete }: {
         <div className="flex items-center gap-2 mt-1.5 flex-wrap">
           <TaskBadge type={task.task_type} />
           {!isMyTask && assignee && (
-            <span className="text-xs text-gray-400">→ {assignee.full_name || assignee.username}</span>
+            <span className="text-xs text-[color:var(--brand-muted)]">→ {assignee.full_name || assignee.username}</span>
           )}
           {task.due_date && (
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-[color:var(--brand-muted)]">
               Due {new Date(task.due_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
             </span>
           )}
@@ -880,73 +899,70 @@ function TaskCard({ task, isMyTask, userId, onComplete }: {
   );
 }
 
-// ── Sabha (Chat) Tab ──────────────────────────────────────────────────────────
+
+// ── Sabha (Kul Chat) Tab — dark themed, emoji-first ───────────────────────────
+const REACTION_EMOJIS = ['🙏', '❤️', '🕉️', '🔥', '😊', '💛', '👏', '💐'];
+const QUICK_EMOJIS    = ['🙏', '🕉️', '🔥', '❤️', '🌅', '💛', '☀️', '🫶'];
+
 function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
   messages: MessageRow[]; userId: string; kulId: string; userName: string;
 }) {
-  const supabase    = useRef(createClient()).current;
+  const supabase     = useRef(createClient()).current;
   const kulMutations = useKulMutations(userId);
-  const bottomRef   = useRef<HTMLDivElement>(null);
-  const [msgs,    setMsgs]    = useState(initialMessages);
-  const [content, setContent] = useState('');
-  const [sending, setSending] = useState(false);
-  const [reactionTrayFor, setReactionTrayFor] = useState<string | null>(null);
+  const bottomRef    = useRef<HTMLDivElement>(null);
+  const inputRef     = useRef<HTMLTextAreaElement>(null);
 
-  // Scroll to bottom on new messages
+  const [msgs,           setMsgs]           = useState(initialMessages);
+  const [content,        setContent]        = useState('');
+  const [sending,        setSending]        = useState(false);
+  const [reactionTrayFor, setReactionTray]  = useState<string | null>(null);
+  const [showEmojiPicker, setShowEmojis]   = useState(false);
+
+  // Scroll to bottom
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [msgs]);
 
-  useEffect(() => {
-    setMsgs(initialMessages);
-  }, [initialMessages]);
-
-  // Real-time subscription
+  // Realtime subscription
   useEffect(() => {
     const channel = supabase
       .channel(`kul_messages_${kulId}`)
       .on('postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'kul_messages', filter: `kul_id=eq.${kulId}` },
-        async (payload) => {
-          // Fetch full row with profile
+        async () => {
           const { data } = await supabase
             .from('kul_messages')
             .select('*, profiles!kul_messages_sender_id_fkey(full_name, username, avatar_url)')
-            .eq('id', payload.new.id)
-            .single();
-          if (data) setMsgs(prev => [...prev, data as MessageRow]);
-        }
-      )
+            .eq('kul_id', kulId)
+            .order('created_at', { ascending: true })
+            .limit(80);
+          if (data) setMsgs(data as MessageRow[]);
+        })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [kulId, supabase]);
 
   async function sendMessage() {
-    if (!content.trim()) return;
+    const text = content.trim();
+    if (!text || sending) return;
     setSending(true);
-    const msg = content.trim();
     setContent('');
     try {
-      await kulMutations.sendMessage.mutateAsync({ kulId, content: msg });
-    } catch (error: any) {
-      toast.error(error.message ?? 'Could not send the message.');
-      setContent(msg);
+      await kulMutations.sendMessage.mutateAsync({ kulId, content: text });
+    } catch {
+      setContent(text);
+      toast.error('Could not send — try again');
     } finally {
       setSending(false);
     }
   }
 
-  const REACTION_EMOJIS = ['🙏', '🔥', '❤️', '✨', '🛕'];
-  const COMPOSER_EMOJIS = ['🙏', '🪔', '🌸', '✨', '❤️'];
-
   async function addReaction(msgId: string, emoji: string) {
+    setReactionTray(null);
     try {
       await kulMutations.reactToMessage.mutateAsync({ messageId: msgId, emoji });
       setMsgs(prev => prev.map(m => m.id === msgId ? { ...m, reaction: emoji } : m));
-      setReactionTrayFor(null);
-    } catch (error: any) {
-      toast.error(error.message ?? 'Could not add that reaction.');
-    }
+    } catch { /* silent */ }
   }
 
   function formatTime(ts: string) {
@@ -954,60 +970,84 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
   }
 
   return (
-    <div className="flex flex-col" style={{ height: 'calc(100vh - 300px)', minHeight: '400px' }}>
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto space-y-3 pb-2">
+    <div className="flex flex-col" style={{ height: 'calc(100svh - 280px)', minHeight: '400px' }}>
+
+      {/* Messages list */}
+      <div className="flex-1 overflow-y-auto space-y-2 py-2 px-1">
         {msgs.length === 0 && (
-          <EmptyState
-            icon="🙏"
-            title="No messages yet"
-            description="Begin the Sabha with one simple family message and let the room open from there."
-            className="py-16"
-          />
+          <div className="flex flex-col items-center justify-center h-full py-12 text-center">
+            <div className="text-5xl mb-3">🙏</div>
+            <p className="font-semibold text-[color:var(--brand-ink)]">Sabha is open</p>
+            <p className="text-sm text-[color:var(--brand-muted)] mt-1 max-w-xs leading-relaxed">
+              Begin with one family message — let the conversation flow from there.
+            </p>
+          </div>
         )}
+
         {msgs.map(msg => {
           const isMe = msg.sender_id === userId;
           const name = msg.profiles?.full_name || msg.profiles?.username || 'Member';
+          const showReactions = reactionTrayFor === msg.id;
+
           return (
             <div key={msg.id} className={`flex items-end gap-2 ${isMe ? 'flex-row-reverse' : ''}`}>
+              {/* Avatar — only for others */}
               {!isMe && (
-                <Avatar name={name} url={msg.profiles?.avatar_url} size={8} />
+                <Avatar name={name} url={msg.profiles?.avatar_url} size={7} />
               )}
-              <div className={`max-w-[75%] group`}>
-                {!isMe && <p className="text-[10px] text-gray-400 mb-1 px-1">{name}</p>}
-                <div className={`px-3 py-2 rounded-2xl text-sm leading-relaxed relative ${
-                  isMe
-                    ? 'text-white rounded-tr-sm'
-                    : 'bg-white border border-gray-100 text-gray-800 rounded-tl-sm'
-                }`}
-                  style={isMe ? { background: '#7B1A1A' } : {}}>
-                  {msg.content}
-                  {msg.reaction && (
-                    <span className="absolute -bottom-2 -right-1 text-base">{msg.reaction}</span>
-                  )}
-                </div>
-                <div className={`flex items-center gap-1 mt-1.5 px-1 ${isMe ? 'justify-end' : ''}`}>
-                  <p className="text-[10px] text-gray-300">{formatTime(msg.created_at)}</p>
-                  <button
-                    onClick={() => setReactionTrayFor(current => current === msg.id ? null : msg.id)}
-                    className="ml-1 rounded-full px-2 py-0.5 text-[10px] font-medium text-gray-400 transition hover:bg-white/70 hover:text-gray-600"
+
+              <div className={`max-w-[78%] flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                {/* Sender name */}
+                {!isMe && (
+                  <p className="text-[10px] text-[color:var(--brand-muted)] mb-1 px-2">{name}</p>
+                )}
+
+                {/* Bubble */}
+                <div className="relative group">
+                  <div
+                    className={`px-3.5 py-2.5 text-sm leading-relaxed relative ${
+                      isMe
+                        ? 'text-[#1c1c1a] rounded-2xl rounded-tr-sm font-medium'
+                        : 'text-[color:var(--brand-ink)] rounded-2xl rounded-tl-sm border border-white/8'
+                    }`}
+                    style={isMe
+                      ? { background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }
+                      : { background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(8px)' }
+                    }
                   >
-                    React
-                  </button>
-                  <div className="hidden group-hover:flex gap-0.5">
-                    {REACTION_EMOJIS.map(e => (
-                      <button key={e} onClick={() => addReaction(msg.id, e)}
-                        className="text-xs hover:scale-125 transition-transform">
-                        {e}
-                      </button>
-                    ))}
+                    {msg.content}
+                    {/* Reaction badge */}
+                    {msg.reaction && (
+                      <span className="absolute -bottom-2.5 -right-1 text-base leading-none bg-black/60 rounded-full px-1.5 py-0.5 border border-white/10">
+                        {msg.reaction}
+                      </span>
+                    )}
                   </div>
+
+                  {/* Hover reaction button */}
+                  <button
+                    onClick={() => setReactionTray(r => r === msg.id ? null : msg.id)}
+                    className={`absolute top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] px-1.5 py-0.5 rounded-full border border-white/12 bg-black/60 text-[color:var(--brand-muted)] ${
+                      isMe ? '-left-8' : '-right-8'
+                    }`}
+                  >
+                    😊
+                  </button>
                 </div>
-                {reactionTrayFor === msg.id && (
-                  <div className={`mt-1.5 flex gap-1 px-1 ${isMe ? 'justify-end' : ''}`}>
+
+                {/* Timestamp */}
+                <p className="text-[9px] text-white/25 mt-1 px-1">{formatTime(msg.created_at)}</p>
+
+                {/* Reaction tray — tap to show */}
+                {showReactions && (
+                  <div className={`mt-1.5 flex gap-1.5 px-1 flex-wrap ${isMe ? 'justify-end' : 'justify-start'}`}>
                     {REACTION_EMOJIS.map(e => (
-                      <button key={e} onClick={() => addReaction(msg.id, e)}
-                        className="rounded-full bg-white px-2 py-1 text-sm shadow-sm transition hover:scale-110">
+                      <button
+                        key={e}
+                        onClick={() => addReaction(msg.id, e)}
+                        className="text-lg hover:scale-125 transition-transform active:scale-110 py-0.5 px-1"
+                        title={e}
+                      >
                         {e}
                       </button>
                     ))}
@@ -1020,36 +1060,58 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
-      <div className="pt-3 border-t border-gray-100">
-        <div className="mb-2 flex flex-wrap gap-1.5">
-          {COMPOSER_EMOJIS.map((emoji) => (
+      {/* Emoji quick-bar */}
+      {showEmojiPicker && (
+        <div className="px-1 pb-2 flex flex-wrap gap-2">
+          {QUICK_EMOJIS.map((em) => (
             <button
-              key={emoji}
-              onClick={() => setContent((current) => `${current}${current ? ' ' : ''}${emoji}`)}
-              className="rounded-full bg-white px-3 py-1.5 text-sm shadow-sm transition hover:scale-105"
+              key={em}
+              onClick={() => { setContent(c => c + em); setShowEmojis(false); inputRef.current?.focus(); }}
+              className="text-2xl active:scale-90 transition-transform"
             >
-              {emoji}
+              {em}
             </button>
           ))}
         </div>
-        <div className="flex items-end gap-2">
-          <div className="flex-1">
-            <textarea
-              placeholder="Message your Kul… 🙏"
-              value={content}
-              onChange={e => setContent(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-              rows={1}
-              className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-[#7B1A1A] outline-none resize-none text-sm"
-            />
-          </div>
-          <button onClick={sendMessage} disabled={sending || !content.trim()}
-            className="w-11 h-11 rounded-2xl flex items-center justify-center text-white hover:opacity-90 disabled:opacity-40 transition flex-shrink-0"
-            style={{ background: '#7B1A1A' }}>
-            <Send size={16} />
-          </button>
+      )}
+
+      {/* Input bar */}
+      <div
+        className="flex items-end gap-2 pt-2 border-t"
+        style={{ borderColor: 'rgba(255,255,255,0.07)' }}
+      >
+        {/* Emoji toggle */}
+        <button
+          onClick={() => setShowEmojis(e => !e)}
+          className="w-9 h-9 rounded-xl flex items-center justify-center text-xl shrink-0 transition"
+          style={{ background: showEmojiPicker ? 'rgba(212,166,70,0.18)' : 'rgba(255,255,255,0.06)' }}
+        >
+          🙏
+        </button>
+
+        {/* Text input */}
+        <div className="flex-1 relative">
+          <textarea
+            ref={inputRef}
+            placeholder="Message the family… 🕉️"
+            value={content}
+            onChange={e => setContent(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+            rows={1}
+            className="w-full px-4 py-2.5 rounded-2xl border border-white/10 outline-none resize-none text-sm leading-relaxed"
+            style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--brand-ink)' }}
+          />
         </div>
+
+        {/* Send button */}
+        <button
+          onClick={sendMessage}
+          disabled={sending || !content.trim()}
+          className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition disabled:opacity-30"
+          style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}
+        >
+          <Send size={15} className="text-[#1c1c1a]" />
+        </button>
       </div>
     </div>
   );
@@ -1238,6 +1300,127 @@ function KulSectionTiles({
           </Link>
         );
       })}
+    </div>
+  );
+}
+
+// ── Invite Member Search Modal ────────────────────────────────────────────────
+function InviteSearchModal({
+  kulId, kulName, inviteCode, userId, onClose,
+}: { kulId: string; kulName: string; inviteCode: string; userId: string; onClose: () => void }) {
+  const supabase = createClient();
+  const [query,   setQuery]   = useState('');
+  const [results, setResults] = useState<{ id: string; full_name: string | null; username: string | null; avatar_url: string | null; tradition: string | null }[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [invited, setInvited] = useState<Set<string>>(new Set());
+
+  async function search() {
+    if (!query.trim()) return;
+    setLoading(true);
+    const { data } = await supabase
+      .from('profiles')
+      .select('id, full_name, username, avatar_url, tradition')
+      .or(`full_name.ilike.%${query.trim()}%,username.ilike.%${query.trim()}%`)
+      .neq('id', userId)
+      .limit(15);
+    setResults(data ?? []);
+    setLoading(false);
+  }
+
+  async function sendInvite(toUserId: string, toName: string) {
+    try {
+      await supabase.from('notifications').insert({
+        user_id:    toUserId,
+        title:      `${kulName} has invited you to their Kul`,
+        body:       `Use code ${inviteCode} to join ${kulName} on Sanatana Sangam.`,
+        emoji:      '🏡',
+        action_url: '/kul',
+        type:       'kul_invite',
+      });
+      setInvited(prev => new Set(prev).add(toUserId));
+      toast.success(`Invite sent to ${toName} 🙏`);
+    } catch {
+      toast.error('Could not send invite');
+    }
+  }
+
+  const TRAD_ICON: Record<string, string> = { hindu: '🕉️', sikh: '☬', buddhist: '☸️', jain: '🤲', other: '✨' };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end" onClick={onClose}>
+      <div
+        className="w-full max-w-lg mx-auto rounded-t-3xl max-h-[85vh] flex flex-col"
+        style={{ background: 'rgba(12,10,28,0.98)', border: '1px solid rgba(255,255,255,0.10)', backdropFilter: 'blur(20px)' }}
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-white/8">
+          <div>
+            <h2 className="font-bold text-[color:var(--brand-ink)]">Invite a Member</h2>
+            <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">Search by name or username</p>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/6 flex items-center justify-center">
+            <X size={16} className="text-[color:var(--brand-muted)]" />
+          </button>
+        </div>
+
+        <div className="px-5 py-3 border-b border-white/8 flex gap-2">
+          <div className="relative flex-1">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--brand-muted)]" />
+            <input
+              autoFocus
+              type="text" placeholder="Search name or @username…"
+              value={query} onChange={e => setQuery(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && search()}
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-white/10 bg-white/6 text-sm text-[color:var(--brand-ink)] placeholder:text-[color:var(--brand-muted)] outline-none focus:border-white/20"
+            />
+          </div>
+          <button
+            onClick={search} disabled={loading || !query.trim()}
+            className="px-4 py-2 rounded-xl text-sm font-semibold disabled:opacity-40 transition"
+            style={{ background: 'var(--brand-primary)', color: '#1c1c1a' }}
+          >
+            {loading ? '…' : 'Search'}
+          </button>
+        </div>
+
+        <div className="overflow-y-auto flex-1 divide-y divide-white/6">
+          {results.length === 0 && query && !loading && (
+            <p className="text-center text-sm text-[color:var(--brand-muted)] py-8">No results for &ldquo;{query}&rdquo;</p>
+          )}
+          {results.map(r => (
+            <div key={r.id} className="flex items-center gap-3 px-5 py-3.5">
+              <Avatar name={r.full_name || r.username || '?'} url={r.avatar_url} size={10} />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-[color:var(--brand-ink)] truncate">{r.full_name || r.username}</p>
+                <p className="text-xs text-[color:var(--brand-muted)] truncate">
+                  {TRAD_ICON[r.tradition ?? ''] ?? '🙏'} {r.username ? `@${r.username}` : ''}
+                </p>
+              </div>
+              <button
+                onClick={() => sendInvite(r.id, r.full_name || r.username || 'them')}
+                disabled={invited.has(r.id)}
+                className="px-4 py-1.5 rounded-xl text-xs font-semibold transition disabled:opacity-50"
+                style={{ background: invited.has(r.id) ? 'rgba(34,197,94,0.14)' : 'rgba(212,166,70,0.14)', color: invited.has(r.id) ? '#4ade80' : 'var(--brand-primary-strong)', border: `1px solid ${invited.has(r.id) ? 'rgba(34,197,94,0.25)' : 'rgba(212,166,70,0.25)'}` }}
+              >
+                {invited.has(r.id) ? '✓ Invited' : 'Invite'}
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Also show the invite code to copy */}
+        <div className="px-5 py-4 border-t border-white/8 flex items-center gap-3">
+          <div className="flex-1 text-xs text-[color:var(--brand-muted)]">
+            Or share code: <span className="font-bold text-[color:var(--brand-ink)] tracking-widest">{inviteCode}</span>
+          </div>
+          <button
+            onClick={async () => { await navigator.clipboard.writeText(inviteCode); toast.success('Code copied!'); }}
+            className="px-3 py-1.5 rounded-xl text-xs font-semibold border border-white/10 text-[color:var(--brand-muted)]"
+          >
+            Copy
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -1655,64 +1838,64 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
 
       {/* ── Add / Edit Member form ── */}
       {showAdd && (
-        <div className="bg-white rounded-2xl border border-orange-100 p-4 shadow-sm space-y-3 fade-in">
+        <div className="glass-panel rounded-2xl border border-white/8 p-4 space-y-3 fade-in">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-gray-800">{editMember ? 'Edit Member' : 'Add Family Member'}</p>
+            <p className="text-sm font-semibold text-[color:var(--brand-ink)]">{editMember ? 'Edit Member' : 'Add Family Member'}</p>
             <button onClick={() => { setShowAdd(false); setEditMember(null); resetForm(); }}
-              className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center"><X size={13} className="text-gray-500" /></button>
+              className="w-7 h-7 rounded-full bg-white/6 flex items-center justify-center"><X size={13} className="text-[color:var(--brand-muted)]" /></button>
           </div>
           <div className="grid grid-cols-2 gap-2">
             <input placeholder="Full name *" value={form.name} onChange={e => setForm(f => ({...f, name: e.target.value}))}
-              className="col-span-2 px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm" />
+              className="col-span-2 px-3 py-2.5 rounded-xl border border-white/10 focus:border-[color:var(--brand-primary)] outline-none text-sm" />
             <input placeholder="Role (e.g. Dada Ji)" value={form.role} onChange={e => setForm(f => ({...f, role: e.target.value}))}
-              className="px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm" />
+              className="px-3 py-2.5 rounded-xl border border-white/10 focus:border-[color:var(--brand-primary)] outline-none text-sm" />
             <select value={form.gender} onChange={e => setForm(f => ({...f, gender: e.target.value}))}
-              className="px-3 py-2.5 rounded-xl border border-gray-200 outline-none text-sm">
+              className="px-3 py-2.5 rounded-xl border border-white/10 outline-none text-sm">
               <option value="">Gender</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="other">Other</option>
             </select>
             <select value={form.generation} onChange={e => setForm(f => ({...f, generation: e.target.value}))}
-              className="col-span-2 px-3 py-2.5 rounded-xl border border-gray-200 outline-none text-sm">
+              className="col-span-2 px-3 py-2.5 rounded-xl border border-white/10 outline-none text-sm">
               {[1,2,3,4,5,6].map(g => <option key={g} value={g}>Generation {g} — {GENERATION_LABELS[g]?.split('—')[0].trim()}</option>)}
             </select>
           </div>
           {/* Dates */}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <p className="text-[10px] text-gray-400 mb-1">Birth Date (exact)</p>
+              <p className="text-[10px] text-[color:var(--brand-muted)] mb-1">Birth Date (exact)</p>
               <input type="date" value={form.birth_date} onChange={e => setForm(f => ({...f, birth_date: e.target.value}))}
-                className="w-full px-3 py-2 rounded-xl border border-gray-200 outline-none text-sm" />
+                className="w-full px-3 py-2 rounded-xl border border-white/10 outline-none text-sm" />
             </div>
             <div>
-              <p className="text-[10px] text-gray-400 mb-1">Birth Year (if date unknown)</p>
+              <p className="text-[10px] text-[color:var(--brand-muted)] mb-1">Birth Year (if date unknown)</p>
               <input type="number" placeholder="e.g. 1942" value={form.birth_year} onChange={e => setForm(f => ({...f, birth_year: e.target.value}))}
-                className="w-full px-3 py-2 rounded-xl border border-gray-200 outline-none text-sm" />
+                className="w-full px-3 py-2 rounded-xl border border-white/10 outline-none text-sm" />
             </div>
             <div>
-              <p className="text-[10px] text-gray-400 mb-1">Marriage Date</p>
+              <p className="text-[10px] text-[color:var(--brand-muted)] mb-1">Marriage Date</p>
               <input type="date" value={form.marriage_date} onChange={e => setForm(f => ({...f, marriage_date: e.target.value}))}
-                className="w-full px-3 py-2 rounded-xl border border-gray-200 outline-none text-sm" />
+                className="w-full px-3 py-2 rounded-xl border border-white/10 outline-none text-sm" />
             </div>
             <div>
-              <p className="text-[10px] text-gray-400 mb-1">Death Date (if applicable)</p>
+              <p className="text-[10px] text-[color:var(--brand-muted)] mb-1">Death Date (if applicable)</p>
               <input type="date" value={form.death_date} onChange={e => setForm(f => ({...f, death_date: e.target.value, is_alive: false}))}
-                className="w-full px-3 py-2 rounded-xl border border-gray-200 outline-none text-sm" />
+                className="w-full px-3 py-2 rounded-xl border border-white/10 outline-none text-sm" />
             </div>
           </div>
           {/* Parent / Spouse links */}
           {members.length > 0 && (
             <div className="grid grid-cols-2 gap-2">
               <select value={form.parent_id} onChange={e => setForm(f => ({...f, parent_id: e.target.value}))}
-                className="px-3 py-2.5 rounded-xl border border-gray-200 outline-none text-sm">
+                className="px-3 py-2.5 rounded-xl border border-white/10 outline-none text-sm">
                 <option value="">Link parent…</option>
                 {members.filter(m => m.id !== editMember?.id).map(m => (
                   <option key={m.id} value={m.id}>{m.name} {m.role ? `(${m.role})` : ''}</option>
                 ))}
               </select>
               <select value={form.spouse_id} onChange={e => setForm(f => ({...f, spouse_id: e.target.value}))}
-                className="px-3 py-2.5 rounded-xl border border-gray-200 outline-none text-sm">
+                className="px-3 py-2.5 rounded-xl border border-white/10 outline-none text-sm">
                 <option value="">Link spouse…</option>
                 {members.filter(m => m.id !== editMember?.id).map(m => (
                   <option key={m.id} value={m.id}>{m.name} {m.role ? `(${m.role})` : ''}</option>
@@ -1722,10 +1905,10 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
           )}
           <textarea placeholder="Notes (origin, stories, memories…)" value={form.notes}
             onChange={e => setForm(f => ({...f, notes: e.target.value}))} rows={2}
-            className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none resize-none text-sm" />
+            className="w-full px-3 py-2 rounded-xl border border-white/10 focus:border-[color:var(--brand-primary)] outline-none resize-none text-sm" />
           <button onClick={saveMember}
             className="w-full py-2.5 text-white font-semibold rounded-xl hover:opacity-90 transition text-sm"
-            style={{ background: '#7B1A1A' }}>
+            style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}>
             {editMember ? 'Save Changes 🙏' : 'Add to Vansh 🙏'}
           </button>
         </div>
@@ -1745,7 +1928,7 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
           </div>
 
           {members.length === 0 && !showAdd && (
-            <div className="clay-card rounded-[1.8rem] text-center py-12 px-6 text-gray-400">
+            <div className="clay-card rounded-[1.8rem] text-center py-12 px-6 text-[color:var(--brand-muted)]">
               <div className="mx-auto max-w-[10rem]">
                 <div className="clay-portrait-stage">
                   <div className="clay-memory-orbit" />
@@ -1819,7 +2002,7 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
                             Edit
                           </button>
                           <button type="button" onClick={(e) => { e.stopPropagation(); deleteMember(m.id, m.name); }}
-                            className="px-2 py-1 rounded-lg text-[10px] border border-gray-200 text-gray-500 hover:border-red-300 hover:text-red-500 transition">
+                            className="px-2 py-1 rounded-lg text-[10px] border border-white/10 text-[color:var(--brand-muted)] hover:border-red-300 hover:text-red-500 transition">
                             ✕
                           </button>
                         </div>
@@ -1838,51 +2021,51 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
         <div className="space-y-3">
           {canManageVansh && (
             <button onClick={() => setShowAddEvent(!showAddEvent)}
-              className="w-full bg-white border border-dashed border-[#7B1A1A]/30 rounded-2xl p-3 flex items-center gap-3 text-gray-400 hover:border-[#7B1A1A]/50 hover:text-[#7B1A1A] transition">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: '#7B1A1A15' }}>
-                <Plus size={14} style={{ color: '#7B1A1A' }} />
+              className="w-full glass-panel border border-dashed border-[color:var(--brand-primary)]/30 rounded-2xl p-3 flex items-center gap-3 text-[color:var(--brand-muted)] hover:border-[color:var(--brand-primary)]/50 hover:text-[color:var(--brand-primary-strong)] transition">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(212,166,70,0.10)' }}>
+                <Plus size={14} style={{ color: 'var(--brand-primary)' }} />
               </div>
               <span className="text-sm">Add event, puja date, anniversary…</span>
             </button>
           )}
 
           {showAddEvent && (
-            <div className="bg-white rounded-2xl border border-orange-100 p-4 space-y-3 fade-in">
+            <div className="glass-panel rounded-2xl border border-white/8 p-4 space-y-3 fade-in">
               <div className="flex gap-2 flex-wrap">
                 {['birthday','anniversary','death_anniversary','puja','custom'].map(t => (
                   <button key={t} onClick={() => setEForm(f => ({...f, event_type: t}))}
-                    className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${eForm.event_type === t ? 'bg-[#7B1A1A]/10 text-[#7B1A1A] border border-[#7B1A1A]/30' : 'bg-gray-50 text-gray-500 border border-gray-200'}`}>
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${eForm.event_type === t ? 'bg-[#7B1A1A]/10 text-[color:var(--brand-primary-strong)] border border-[color:var(--brand-primary)]/30' : 'bg-white/4 text-[color:var(--brand-muted)] border border-white/10'}`}>
                     {EVENT_EMOJI[t]} {t.replace('_', ' ')}
                   </button>
                 ))}
               </div>
               <input placeholder="Event title *" value={eForm.title} onChange={e => setEForm(f => ({...f, title: e.target.value}))}
-                className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none text-sm" />
+                className="w-full px-3 py-2.5 rounded-xl border border-white/10 focus:border-[color:var(--brand-primary)] outline-none text-sm" />
               <div className="grid grid-cols-2 gap-2">
                 <input type="date" value={eForm.event_date} onChange={e => setEForm(f => ({...f, event_date: e.target.value}))}
-                  className="px-3 py-2.5 rounded-xl border border-gray-200 outline-none text-sm" />
+                  className="px-3 py-2.5 rounded-xl border border-white/10 outline-none text-sm" />
                 <select value={eForm.member_id} onChange={e => setEForm(f => ({...f, member_id: e.target.value}))}
-                  className="px-3 py-2.5 rounded-xl border border-gray-200 outline-none text-sm">
+                  className="px-3 py-2.5 rounded-xl border border-white/10 outline-none text-sm">
                   <option value="">Link to member…</option>
                   {members.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
                 </select>
               </div>
-              <label className="flex items-center gap-2 text-sm text-gray-600">
+              <label className="flex items-center gap-2 text-sm text-[color:var(--brand-muted)]">
                 <input type="checkbox" checked={eForm.recurring} onChange={e => setEForm(f => ({...f, recurring: e.target.checked}))} className="rounded" />
                 Repeat every year
               </label>
               <textarea placeholder="Optional notes…" value={eForm.description} onChange={e => setEForm(f => ({...f, description: e.target.value}))} rows={2}
-                className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-[#7B1A1A] outline-none resize-none text-sm" />
+                className="w-full px-3 py-2 rounded-xl border border-white/10 focus:border-[color:var(--brand-primary)] outline-none resize-none text-sm" />
               <button onClick={saveEvent}
                 className="w-full py-2.5 text-white font-semibold rounded-xl hover:opacity-90 transition text-sm"
-                style={{ background: '#7B1A1A' }}>
+                style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}>
                 Save Event 🙏
               </button>
             </div>
           )}
 
           {upcomingEvents.length === 0 && (
-            <div className="text-center py-12 text-gray-400">
+            <div className="text-center py-12 text-[color:var(--brand-muted)]">
               <div className="text-4xl mb-3">📅</div>
               <p className="text-sm">No upcoming events in the next 90 days</p>
               <p className="text-xs mt-1">Add birthdays, anniversaries, and puja dates above</p>
@@ -1890,14 +2073,14 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
           )}
 
           {upcomingEvents.map(ev => (
-            <div key={ev.id} className="bg-white rounded-2xl border border-gray-100 p-3 flex items-center gap-3">
+            <div key={ev.id} className="bg-white rounded-2xl border border-white/8 p-3 flex items-center gap-3">
               <div className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
                 style={{ background: '#7B1A1A0D' }}>
                 {EVENT_EMOJI[ev.event_type] ?? '📅'}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-900">{ev.title}</p>
-                <p className="text-xs text-gray-400 truncate">
+                <p className="text-sm font-semibold text-[color:var(--brand-ink)]">{ev.title}</p>
+                <p className="text-xs text-[color:var(--brand-muted)] truncate">
                   {new Date(ev.event_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' })}
                   {ev.member && ` · ${ev.member.name}`}
                   {ev.recurring && ' · Annual'}
@@ -1905,13 +2088,13 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
               </div>
               <div className="text-right flex-shrink-0">
                 {ev.daysUntil === 0 ? (
-                  <span className="text-xs font-bold px-2 py-1 rounded-full text-white" style={{ background: '#7B1A1A' }}>Today 🎉</span>
+                  <span className="text-xs font-bold px-2 py-1 rounded-full text-white" style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}>Today 🎉</span>
                 ) : ev.daysUntil === 1 ? (
                   <span className="text-xs font-semibold text-orange-600">Tomorrow</span>
                 ) : ev.daysUntil <= 7 ? (
                   <span className="text-xs font-semibold text-amber-600">In {ev.daysUntil}d</span>
                 ) : (
-                  <span className="text-xs text-gray-400">{ev.daysUntil}d</span>
+                  <span className="text-xs text-[color:var(--brand-muted)]">{ev.daysUntil}d</span>
                 )}
               </div>
             </div>

@@ -155,8 +155,8 @@ function InfoTooltip({ text }: { text: string }) {
 }
 
 // ─── Panchang row ─────────────────────────────────────────────────────────────
-function Row({ emoji, label, value, accent, warn = false, infoKey }: {
-  emoji: string; label: string; value: string; accent: string; warn?: boolean; infoKey?: string;
+function Row({ emoji, label, value, upto, accent, warn = false, infoKey }: {
+  emoji: string; label: string; value: string; upto?: string; accent: string; warn?: boolean; infoKey?: string;
 }) {
   const infoText = infoKey ? INFO_TEXT[infoKey] : undefined;
   return (
@@ -165,12 +165,21 @@ function Row({ emoji, label, value, accent, warn = false, infoKey }: {
         background: warn ? 'rgba(200,80,20,0.18)' : 'rgba(255,255,255,0.06)',
         border: `1px solid ${warn ? 'rgba(200,80,20,0.3)' : 'rgba(255,255,255,0.08)'}`,
       }}>
-      <span className="text-xl w-7 text-center flex-shrink-0">{emoji}</span>
+      <span className="text-lg w-6 text-center flex-shrink-0 leading-none">{emoji}</span>
       <div className="flex-1 min-w-0">
         <p className="text-[10px] text-white/40 font-medium uppercase tracking-wider">{label}</p>
-        <p className={`font-semibold text-sm mt-0.5 ${warn ? 'text-orange-300' : 'text-white/90'}`}>{value}</p>
+        <div className="flex items-baseline gap-2 flex-wrap">
+          <p className={`font-semibold text-sm mt-0.5 ${warn ? 'text-orange-300' : 'text-white/90'}`}>{value}</p>
+          {upto && (
+            <p className="text-[10px] text-white/40 mt-0.5">upto {upto}</p>
+          )}
+        </div>
       </div>
-      {infoText && <InfoTooltip text={infoText} />}
+      {infoText && (
+        <div className="relative flex-shrink-0">
+          <InfoTooltip text={infoText} />
+        </div>
+      )}
     </div>
   );
 }
@@ -407,20 +416,50 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
           transition={{ duration: 0.45, delay: 0.1 }}
           className="space-y-2">
 
-          <div className="grid grid-cols-2 gap-2">
-            <Row emoji="📅" label={t('tithi')}     value={p.tithi}     accent={tradMeta.accent} infoKey="Tithi" />
-            <Row emoji="⭐" label={t('nakshatra')} value={p.nakshatra} accent={tradMeta.accent} infoKey="Nakshatra" />
-            <Row emoji="🕉️" label={t('yoga')}      value={p.yoga}      accent={tradMeta.accent} infoKey="Yoga" />
+          {/* Main Panchang elements — single column so long values fit */}
+          <div className="space-y-2">
+            <Row emoji="📅" label={t('tithi')}
+              value={`${p.tithi} · ${p.paksha} Paksha`}
+              upto={p.tithiUpto}
+              accent={tradMeta.accent} infoKey="Tithi" />
+            <Row emoji="⭐" label={t('nakshatra')}
+              value={p.nakshatra}
+              upto={p.nakshatraUpto}
+              accent={tradMeta.accent} infoKey="Nakshatra" />
+            <Row emoji="🕉️" label={t('yoga')}
+              value={p.yoga}
+              upto={p.yogaUpto}
+              accent={tradMeta.accent} infoKey="Yoga" />
+            <Row emoji="🃏" label="Karana"
+              value={p.karana}
+              upto={p.karanaUpto}
+              accent={tradMeta.accent} />
             <Row emoji="📆" label={t('vara')}      value={p.vara}      accent={tradMeta.accent} infoKey="Vara" />
           </div>
 
+          {/* Sun times — 2-col fine since values are short */}
           <div className="grid grid-cols-2 gap-2">
             <Row emoji="🌅" label={t('sunrise')} value={p.sunrise} accent={tradMeta.accent} infoKey="Sunrise" />
             <Row emoji="🌆" label={t('sunset')}  value={p.sunset}  accent={tradMeta.accent} infoKey="Sunset" />
           </div>
+          {/* Brahma Muhurta */}
+          {'brahmaMuhurta' in p && (
+            <Row emoji="🌙" label="Brahma Muhurta" value={(p as any).brahmaMuhurta} accent={tradMeta.accent} />
+          )}
 
           <Row emoji="⚠️" label={t('rahuKaal')}        value={p.rahuKaal}       accent={tradMeta.accent} warn infoKey="Rahu Kaal" />
           <Row emoji="✨" label={t('abhijitMuhurat')} value={p.abhijitMuhurat} accent={tradMeta.accent} infoKey="Abhijit Muhurat" />
+
+          {/* Samvat */}
+          {'samvatYear' in p && (
+            <div className="rounded-xl px-4 py-2.5 flex items-center gap-3"
+              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <span className="text-white/40 text-[10px] font-medium uppercase tracking-wider">Vikram Samvat</span>
+              <span className="text-white/80 text-sm font-semibold ml-auto">
+                {(p as any).samvatYear} {(p as any).samvatName}
+              </span>
+            </div>
+          )}
 
           {/* Guidance */}
           <div className="rounded-xl px-4 py-3"

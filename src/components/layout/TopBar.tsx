@@ -235,27 +235,29 @@ export default function TopBar({
             </div>
           ) : (
             <>
-              {/* Quick-access text links — pages not already in bottom nav */}
-              <div className="flex items-center gap-1">
-                {QUICK_LINKS.map((item) => {
-                  const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className="flex h-7 items-center justify-center rounded-full px-3 text-xs font-semibold transition whitespace-nowrap"
-                      style={{
-                        background: active
-                          ? 'rgba(212,166,70,0.18)'
-                          : 'rgba(212,166,70,0.07)',
-                        border: `1px solid ${active ? 'rgba(212,166,70,0.32)' : 'rgba(212,166,70,0.12)'}`,
-                        color: active ? 'var(--brand-primary-strong)' : 'var(--brand-muted)',
-                      }}
-                    >
-                      {item.label}
-                    </Link>
-                  );
-                })}
+              {/* Quick-access text links — scrollable so bell+avatar are never pushed off */}
+              <div className="overflow-x-auto no-scrollbar" style={{ maxWidth: 'min(200px, 48vw)' }}>
+                <div className="flex items-center gap-1 pr-1" style={{ width: 'max-content' }}>
+                  {QUICK_LINKS.map((item) => {
+                    const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="flex h-7 items-center justify-center rounded-full px-3 text-xs font-semibold transition whitespace-nowrap"
+                        style={{
+                          background: active
+                            ? 'rgba(212,166,70,0.18)'
+                            : 'rgba(212,166,70,0.07)',
+                          border: `1px solid ${active ? 'rgba(212,166,70,0.32)' : 'rgba(212,166,70,0.12)'}`,
+                          color: active ? 'var(--brand-primary-strong)' : 'var(--brand-muted)',
+                        }}
+                      >
+                        {item.label}
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Bell */}
