@@ -75,10 +75,14 @@ export function canSendInLocalWindow(
   timeZone: string,
   targetHour: number,
   quietStart: number | null | undefined,
-  quietEnd: number | null | undefined
+  quietEnd: number | null | undefined,
+  toleranceHours = 2
 ): boolean {
   const localHour = getLocalHour(date, resolveTimeZone(timeZone));
-  return localHour === targetHour && !isHourInQuietWindow(localHour, quietStart, quietEnd);
+  // Use circular distance to handle midnight wrap (e.g. target=23, local=0 → distance=1)
+  const rawDiff  = Math.abs(localHour - targetHour);
+  const distance = Math.min(rawDiff, 24 - rawDiff);
+  return distance <= toleranceHours && !isHourInQuietWindow(localHour, quietStart, quietEnd);
 }
 
 export function isoDateDiff(targetDateIso: string, baseDateIso: string): number {

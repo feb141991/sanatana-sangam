@@ -26,10 +26,16 @@ function buildFestivalReminderBody(tradition: string | null | undefined, festiva
 // The bell dropdown in TopBar.tsx reads from this notifications table.
 
 export async function GET(request: Request) {
-  // Verify this is called by Vercel cron (not a random request)
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  // Verify this is called by Vercel Cron (not a random request).
+  // Vercel automatically adds "Authorization: Bearer <CRON_SECRET>" if CRON_SECRET
+  // is set in the project's environment variables. If CRON_SECRET is not set we skip
+  // the check so the route still runs in preview / early-setup environments.
+  const cronSecret = process.env.CRON_SECRET;
+  if (cronSecret) {
+    const authHeader = request.headers.get('authorization');
+    if (authHeader !== `Bearer ${cronSecret}`) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

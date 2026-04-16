@@ -201,11 +201,21 @@ export default function ReciteClient({
   const [recordState,  setRecordState]  = useState<RecordState>('idle');
   const [lastResult,   setLastResult]   = useState<RecitationResult | null>(null);
   const [micGranted,   setMicGranted]   = useState<boolean | null>(null); // null=unknown
+  // If engine hasn't loaded within ENGINE_TIMEOUT_MS we allow recording but skip AI scoring
+  const [engineTimedOut, setEngineTimedOut] = useState(false);
+  const ENGINE_TIMEOUT_MS = 5000;
 
   const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const mediaRecRef = useRef<MediaRecorder | null>(null);
   const chunksRef   = useRef<Blob[]>([]);
   const verse = verses[verseIndex];
+
+  // Engine timeout — if pathshala isn't ready after ENGINE_TIMEOUT_MS, unlock mic anyway
+  useEffect(() => {
+    if (pathshala) { setEngineTimedOut(false); return; }
+    const t = setTimeout(() => setEngineTimedOut(true), ENGINE_TIMEOUT_MS);
+    return () => clearTimeout(t);
+  }, [pathshala]);
 
   // Timer
   useEffect(() => {
@@ -275,8 +285,13 @@ export default function ReciteClient({
 
         try {
           if (!pathshala) {
-            toast.error('Engine not ready — please try again');
-            setRecordState('error');
+            // Engine still offline — still count the practice, skip AI scoring
+            toast('Practice recorded ✓ (Shruti scoring offline — will retry when engine loads)', {
+              icon: '🎤',
+              duration: 3500,
+              style: { background: '#1c1c1a', color: 'var(--brand-ink)' },
+            });
+            setRecordState('idle');
             return;
           }
 
@@ -336,10 +351,12 @@ export default function ReciteClient({
     );
   }
 
-  const progressPct = verses.length > 0 ? Math.round((completed.length / verses.length) * 100) : 0;
+  const progressPct  = verses.length > 0 ? Math.round((completed.length / verses.length) * 100) : 0;
   const isRecording  = recordState === 'recording';
   const isUploading  = recordState === 'uploading';
   const shrutiReady  = !!pathshala;
+  // Mic is usable when engine is ready, OR after ENGINE_TIMEOUT_MS grace period (offline fallback)
+  const micEnabled   = shrutiReady || engineTimedOut;
 
   return (
     <div className="min-h-screen pb-28 flex flex-col">
@@ -523,13 +540,15 @@ export default function ReciteClient({
               <p className="text-[10px] text-[color:var(--brand-muted)] mt-0.5">
                 {shrutiReady
                   ? 'Record your recitation — Shruti Engine scores pronunciation'
-                  : 'Shruti engine loading…'}
+                  : engineTimedOut
+                    ? 'AI scoring offline — recording still available'
+                    : 'Shruti engine loading…'}
               </p>
             </div>
             {/* Mic button */}
             <button
               onClick={isRecording ? stopRecording : startRecording}
-              disabled={isUploading || !shrutiReady}
+              disabled={isUploading || !micEnabled}
               className="w-11 h-11 rounded-full flex items-center justify-center transition-all shadow-lg disabled:opacity-40"
               style={{
                 background: isRecording

@@ -3,11 +3,27 @@
   "crons": [
     {
       "path": "/api/cron/festival-reminder",
-      "schedule": "0 7 * * *"
+      "schedule": "30 3 * * *"
+    },
+    {
+      "path": "/api/cron/festival-reminder",
+      "schedule": "0 9 * * *"
     },
     {
       "path": "/api/cron/shloka-reminder",
-      "schedule": "0 18 * * *"
+      "schedule": "30 13 * * *"
+    },
+    {
+      "path": "/api/cron/shloka-reminder",
+      "schedule": "0 19 * * *"
+    },
+    {
+      "path": "/api/cron/nitya-reminder",
+      "schedule": "30 22 * * *"
+    },
+    {
+      "path": "/api/cron/nitya-reminder",
+      "schedule": "0 6 * * *"
     }
   ]
 }

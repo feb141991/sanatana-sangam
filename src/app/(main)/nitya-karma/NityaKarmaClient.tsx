@@ -17,7 +17,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   ChevronLeft, Flame, CheckCircle2, Circle, Loader2,
-  Info, Lock, Trophy, Sunrise,
+  Info, Lock, Trophy, Sunrise, Star,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
@@ -133,7 +133,7 @@ function getDefaultSteps(tradition: string): NityaSequenceStep[] {
 }
 
 function todayDateString(): string {
-  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD local
+  return new Date().toISOString().slice(0, 10);
 }
 
 function nextBrahmaMuhurtaText(): string {
@@ -145,13 +145,56 @@ function nextBrahmaMuhurtaText(): string {
   return `Tomorrow at ${h}:30 ${ampm}`;
 }
 
+// ── 30-day heatmap helpers ─────────────────────────────────────────────────────
+interface DayRecord { date: string; count: number; total: number }
+
+function buildDateRange(days: number): string[] {
+  const out: string[] = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    out.push(d.toISOString().slice(0, 10));
+  }
+  return out;
+}
+
+function heatColour(count: number, total: number, accent: string): string {
+  if (total === 0 || count === 0) return 'rgba(255,255,255,0.04)';
+  const ratio = count / total;
+  if (ratio >= 1) return accent;
+  if (ratio >= 0.7) return `${accent}cc`;
+  if (ratio >= 0.4) return `${accent}77`;
+  return `${accent}33`;
+}
+
+// ── Streak card sub-component ──────────────────────────────────────────────────
+function StreakCard({ streak, accent }: { streak: NityaKarmaStreak; accent: string }) {
+  return (
+    <div
+      className="rounded-2xl px-4 py-3 flex items-center gap-3 border border-white/6"
+      style={{ background: `${accent}08` }}
+    >
+      <Trophy size={18} style={{ color: accent }} />
+      <div>
+        <p className="text-sm font-semibold text-[color:var(--brand-ink)]">
+          🔥 {streak.current_streak}-day streak
+        </p>
+        <p className="text-xs text-[color:var(--brand-muted)]">
+          Longest: {streak.longest_streak} days · Keep going — don&apos;t break the chain!
+        </p>
+      </div>
+    </div>
+  );
+}
+
 interface Props {
   userId:    string;
   userName:  string;
   tradition: string;
+  isPro?:    boolean;
 }
 
-export default function NityaKarmaClient({ userId, userName, tradition }: Props) {
+export default function NityaKarmaClient({ userId, userName, tradition, isPro = false }: Props) {
   const router              = useRouter();
   const supabase            = useRef(createClient()).current;
   const { engine, isReady } = useEngine();
@@ -159,14 +202,41 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Props)
   const morning             = TRADITION_MORNING[tradition] ?? TRADITION_MORNING.hindu;
   const accent              = meta.accentColour;
 
-  const [steps,    setSteps]    = useState<NityaSequenceStep[]>([]);
-  const [greeting, setGreeting] = useState('');
-  const [panchang, setPanchang] = useState<any>(null);
-  const [streak,   setStreak]   = useState<NityaKarmaStreak | null>(null);
-  const [loading,  setLoading]  = useState(true);
-  const [busy,     setBusy]     = useState<string | null>(null);
+  const [steps,      setSteps]      = useState<NityaSequenceStep[]>([]);
+  const [greeting,   setGreeting]   = useState('');
+  const [panchang,   setPanchang]   = useState<any>(null);
+  const [streak,     setStreak]     = useState<NityaKarmaStreak | null>(null);
+  const [loading,    setLoading]    = useState(true);
+  // busySteps: Set of step IDs currently being processed — allows independent per-step processing
+  const [busySteps,  setBusySteps]  = useState<Set<string>>(new Set());
   const [justCompleted, setJustCompleted] = useState<string | null>(null);
+  // 30-day history
+  const [dayRecords, setDayRecords] = useState<DayRecord[]>([]);
   const confettiFired = useRef(false);
+  // Ref mirrors latest steps state to fix stale-closure allDone check
+  const stepsRef = useRef<NityaSequenceStep[]>([]);
+  useEffect(() => { stepsRef.current = steps; }, [steps]);
+
+  // ── Load 30-day history ──────────────────────────────────────────────────────
+  useEffect(() => {
+    async function loadHistory() {
+      const dates = buildDateRange(30);
+      const from = dates[0];
+      const { data } = await supabase
+        .from('nitya_karma_log')
+        .select('log_date, step_id')
+        .eq('user_id', userId)
+        .gte('log_date', from);
+
+      const countMap: Record<string, number> = {};
+      for (const row of data ?? []) {
+        if (row.log_date) countMap[row.log_date] = (countMap[row.log_date] ?? 0) + 1;
+      }
+
+      setDayRecords(dates.map(d => ({ date: d, count: countMap[d] ?? 0, total: FALLBACK_STEPS.length })));
+    }
+    loadHistory();
+  }, [userId, supabase]);
 
   // ── Load: merge engine steps with DB-persisted ticks for today ───────────────
   useEffect(() => {
@@ -232,12 +302,14 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Props)
   }, [isReady, engine, userId, tradition, morning.greeting, supabase]);
 
   // ── Mark a step — optimistic update + DB persist ─────────────────────────────
+  // Each step is processed independently; other steps remain clickable during async.
   async function markStep(stepId: string, done: boolean) {
-    if (done || busy) return;
-    setBusy(stepId);
+    if (done || busySteps.has(stepId)) return;
+
+    setBusySteps(prev => new Set([...prev, stepId]));
     await hapticLight();
 
-    // Optimistic update
+    // Optimistic update using functional form (no stale closure)
     setSteps(prev => prev.map(s => s.id === stepId ? { ...s, completed: true } : s));
     setJustCompleted(stepId);
     setTimeout(() => setJustCompleted(null), 3000);
@@ -249,8 +321,12 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Props)
         { user_id: userId, log_date: today, step_id: stepId },
         { onConflict: 'user_id,log_date,step_id', ignoreDuplicates: true }
       );
+      // Update heatmap count for today
+      setDayRecords(prev => prev.map(d =>
+        d.date === today ? { ...d, count: Math.min(d.count + 1, d.total) } : d
+      ));
     } catch {
-      // Non-fatal — state is still updated optimistically
+      // Non-fatal — UI already shows optimistic update
     }
 
     // Engine sync (best-effort)
@@ -258,11 +334,11 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Props)
       try { await engine.nityaKarma.markStep(userId, stepId as any); } catch { /* silent */ }
     }
 
-    // Check all done
-    const updatedSteps = steps.map(s => s.id === stepId ? { ...s, completed: true } : s);
-    const allDone = updatedSteps.every(s => s.completed);
+    // Check all done — use stepsRef to avoid stale closure
+    const currentSteps = stepsRef.current;
+    const allNowDone = currentSteps.every(s => s.id === stepId ? true : s.completed);
 
-    if (allDone && !confettiFired.current) {
+    if (allNowDone && !confettiFired.current) {
       confettiFired.current = true;
       await hapticSuccess();
       toast.success(morning.allDoneMsg, { duration: 5000 });
@@ -277,7 +353,7 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Props)
       });
     }
 
-    setBusy(null);
+    setBusySteps(prev => { const n = new Set(prev); n.delete(stepId); return n; });
   }
 
   const completedCount = steps.filter(s => s.completed).length;
@@ -303,15 +379,23 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Props)
             {meta.symbol} Daily {tradition === 'sikh' ? 'Nitnem' : tradition === 'buddhist' ? 'Morning Practice' : 'Morning Sequence'}
           </p>
         </div>
-        {streak && streak.current_streak > 0 && (
-          <div
-            className="flex items-center gap-1 rounded-xl px-3 py-1.5 border border-white/10"
-            style={{ background: `${accent}14` }}
-          >
-            <Flame size={14} style={{ color: accent }} />
-            <span className="text-xs font-semibold" style={{ color: accent }}>{streak.current_streak}d</span>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {streak && streak.current_streak > 0 && (
+            <div
+              className="flex items-center gap-1 rounded-xl px-3 py-1.5 border border-white/10"
+              style={{ background: `${accent}14` }}
+            >
+              <Flame size={14} style={{ color: accent }} />
+              <span className="text-xs font-semibold" style={{ color: accent }}>{streak.current_streak}d</span>
+            </div>
+          )}
+          {isPro && (
+            <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-amber-400/30 bg-amber-400/10">
+              <Star size={12} className="text-amber-400 fill-amber-400" />
+              <span className="text-[10px] font-bold text-amber-400">PRO</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Hero banner */}
@@ -377,12 +461,13 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Props)
       ) : (
         <div className="px-4 space-y-3">
           {steps.map((step) => {
-            const isJustDone = justCompleted === step.id;
+            const isJustDone  = justCompleted === step.id;
+            const isBusy      = busySteps.has(step.id);
             return (
               <button
                 key={step.id}
                 onClick={() => markStep(step.id, step.completed)}
-                disabled={step.completed || busy !== null}
+                disabled={step.completed || isBusy}
                 className={`w-full text-left rounded-2xl border p-4 transition-all flex items-center gap-4 active:scale-[0.98] ${
                   step.completed
                     ? 'border-white/6'
@@ -395,7 +480,7 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Props)
                   className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shrink-0 transition-all duration-300"
                   style={{ background: step.completed ? `${accent}20` : `${accent}12` }}
                 >
-                  {busy === step.id
+                  {isBusy
                     ? <Loader2 size={18} className="animate-spin" style={{ color: accent }} />
                     : step.completed
                       ? <CheckCircle2 size={22} className="text-green-400" />
@@ -454,7 +539,7 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Props)
                 {/* Right icon */}
                 {step.completed ? (
                   <Lock size={16} className="text-white/20 shrink-0" />
-                ) : busy !== step.id ? (
+                ) : !isBusy ? (
                   <Circle size={20} className="text-white/20 shrink-0" />
                 ) : null}
               </button>
@@ -502,21 +587,93 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Props)
 
           {/* Streak card — shown when some but not all done */}
           {!allDone && streak && streak.current_streak > 0 && (
-            <div
-              className="rounded-2xl px-4 py-3 flex items-center gap-3 border border-white/6"
-              style={{ background: `${accent}08` }}
-            >
-              <Trophy size={18} style={{ color: accent }} />
-              <div>
-                <p className="text-sm font-semibold text-[color:var(--brand-ink)]">
-                  🔥 {streak.current_streak}-day streak
-                </p>
-                <p className="text-xs text-[color:var(--brand-muted)]">
-                  Longest: {streak.longest_streak} days · Keep going — don&apos;t break the chain!
-                </p>
-              </div>
-            </div>
+            <StreakCard streak={streak} accent={accent} />
           )}
+
+          {/* ── 30-Day Practice Graph ──────────────────────────────────────── */}
+          <div className="glass-panel rounded-2xl border border-white/8 overflow-hidden">
+            <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-[color:var(--brand-ink)]">30-Day Sadhana</p>
+                <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">Daily practice completion</p>
+              </div>
+              {!isPro && (
+                <div className="flex items-center gap-1.5 rounded-xl px-2.5 py-1 border border-amber-400/30 bg-amber-400/10">
+                  <Lock size={11} className="text-amber-400" />
+                  <span className="text-[10px] font-semibold text-amber-400">Pro</span>
+                </div>
+              )}
+            </div>
+
+            {isPro ? (
+              /* Pro: full heatmap */
+              <div className="px-4 pb-4">
+                <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(10, 1fr)' }}>
+                  {dayRecords.map((d) => (
+                    <div
+                      key={d.date}
+                      title={`${d.date}: ${d.count}/${d.total} steps`}
+                      className="aspect-square rounded-md transition-colors"
+                      style={{ background: heatColour(d.count, d.total, accent) }}
+                    />
+                  ))}
+                </div>
+                <div className="flex items-center justify-between mt-3">
+                  <span className="text-[10px] text-[color:var(--brand-muted)]">30 days ago</span>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-sm" style={{ background: `${accent}33` }} />
+                    <span className="text-[10px] text-[color:var(--brand-muted)]">Partial</span>
+                    <div className="w-2.5 h-2.5 rounded-sm ml-1" style={{ background: accent }} />
+                    <span className="text-[10px] text-[color:var(--brand-muted)]">Full</span>
+                  </div>
+                  <span className="text-[10px] text-[color:var(--brand-muted)]">Today</span>
+                </div>
+                {streak && (
+                  <div className="mt-3 pt-3 border-t border-white/6 flex items-center justify-around">
+                    <div className="text-center">
+                      <p className="text-lg font-bold" style={{ color: accent }}>{streak.current_streak}</p>
+                      <p className="text-[10px] text-[color:var(--brand-muted)]">Current streak</p>
+                    </div>
+                    <div className="w-px h-8 bg-white/10" />
+                    <div className="text-center">
+                      <p className="text-lg font-bold" style={{ color: accent }}>{streak.longest_streak}</p>
+                      <p className="text-[10px] text-[color:var(--brand-muted)]">Best streak</p>
+                    </div>
+                    <div className="w-px h-8 bg-white/10" />
+                    <div className="text-center">
+                      <p className="text-lg font-bold" style={{ color: accent }}>
+                        {dayRecords.filter(d => d.count > 0).length}
+                      </p>
+                      <p className="text-[10px] text-[color:var(--brand-muted)]">Active days</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Free: blurred preview with upgrade prompt */
+              <div className="relative px-4 pb-4">
+                <div className="grid gap-1 blur-sm pointer-events-none select-none" style={{ gridTemplateColumns: 'repeat(10, 1fr)' }}>
+                  {buildDateRange(30).map((d, i) => (
+                    <div
+                      key={d}
+                      className="aspect-square rounded-md"
+                      style={{ background: i % 3 === 0 ? accent : i % 3 === 1 ? `${accent}55` : `${accent}18` }}
+                    />
+                  ))}
+                </div>
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/40 rounded-b-2xl">
+                  <Lock size={18} className="text-amber-400" />
+                  <p className="text-xs font-semibold text-[color:var(--brand-ink)]">Practice history is a Pro feature</p>
+                  <p className="text-[10px] text-[color:var(--brand-muted)] text-center px-6">
+                    Unlock 30-day graphs, streak analytics, and AI-personalised sequences
+                  </p>
+                  <div className="mt-1 px-4 py-1.5 rounded-xl text-xs font-semibold bg-amber-400/20 text-amber-400 border border-amber-400/30">
+                    Upgrade to Pro →
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Engine note */}
           <div className="glass-panel rounded-2xl border border-white/6 px-4 py-3 flex items-start gap-2.5">

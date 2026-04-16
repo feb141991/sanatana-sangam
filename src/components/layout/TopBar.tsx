@@ -326,11 +326,15 @@ export default function TopBar({
                                   const granted = await requestNotificationPermission();
                                   setPermission(getPermissionState());
                                   if (granted) {
-                                    toast.success('Notifications enabled 🙏');
+                                    // Re-login to OneSignal so the new push subscription
+                                    // is linked to this user's external_id. Without this,
+                                    // the server can't target the user by ID.
+                                    await loginToOneSignal(userId);
                                     const playerId = await getPlayerId();
                                     if (playerId && userId) {
                                       await supabase.from('profiles').update({ onesignal_player_id: playerId }).eq('id', userId);
                                     }
+                                    toast.success('Notifications enabled 🙏');
                                   }
                                 }}
                                 className="glass-button-primary text-xs font-semibold px-3 py-1 rounded-full transition"

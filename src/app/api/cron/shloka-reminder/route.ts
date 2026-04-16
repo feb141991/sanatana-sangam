@@ -9,9 +9,14 @@ import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sa
 // Inserts a gentle reminder notification for each of them.
 
 export async function GET(request: Request) {
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  // Verify this is called by Vercel Cron. If CRON_SECRET is not configured yet
+  // we skip the check so the route still runs in preview / early-setup environments.
+  const cronSecret = process.env.CRON_SECRET;
+  if (cronSecret) {
+    const authHeader = request.headers.get('authorization');
+    if (authHeader !== `Bearer ${cronSecret}`) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
