@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { createClient } from '@/lib/supabase';
 import { fetchNotifications, markNotificationRead, markNotificationsRead } from '@/lib/api/notifications';
 import { queryKeys } from '@/lib/query-keys';
 import type { Notification } from '@/types/database';
@@ -11,7 +13,45 @@ export function useNotificationsQuery(userId: string, initialData?: Notification
     queryFn: () => fetchNotifications(userId),
     enabled: Boolean(userId),
     initialData,
+    staleTime: 30_000,
   });
+}
+
+/**
+ * Subscribe to Supabase Realtime for new notification inserts for the current
+ * user. Automatically invalidates the React Query notifications cache whenever
+ * a new row arrives so the bell badge and list update without a page refresh.
+ */
+export function useNotificationsRealtime(userId: string) {
+  const queryClient = useQueryClient();
+  // Stable client reference — createClient() is cheap but we don't need a new
+  // instance on every render.
+  const supabaseRef = useRef(createClient());
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const supabase = supabaseRef.current;
+    const channel = supabase
+      .channel(`notifications_feed:${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${userId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: queryKeys.notifications(userId) });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, queryClient]);
 }
 
 export function useMarkNotificationReadMutation(userId: string) {

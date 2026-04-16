@@ -15,6 +15,8 @@ import { getPlayerId, getPermissionState, logoutFromOneSignal } from '@/lib/ones
 import type { Profile } from '@/types/database';
 import { MetricTile, SurfaceSection } from '@/components/ui';
 import { useProfileQuery, useUpdateProfileMutation } from '@/hooks/useProfile';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query-keys';
 import type { ProfileUpdate } from '@/lib/api/profile';
 
 const SEVA_LEVELS = [
@@ -138,8 +140,9 @@ export default function ProfileClient({
   mutedProfiles: SafetyProfileSummary[];
   hiddenItems: HiddenContentSummary[];
 }) {
-  const router   = useRouter();
-  const supabase = useRef(createClient()).current;
+  const router      = useRouter();
+  const supabase    = useRef(createClient()).current;
+  const queryClient = useQueryClient();
   const profileQuery = useProfileQuery(userId, profile);
   const updateProfileMutation = useUpdateProfileMutation(userId);
   const liveProfile = profileQuery.data ?? profile;
@@ -345,7 +348,10 @@ export default function ProfileClient({
           ? 'Test notification sent. Check your bell and browser.'
           : 'Test notification created. Check your bell first.'
       );
-      router.refresh();
+      // Invalidate the React Query notifications cache so the bell badge and
+      // list update immediately (Realtime may also catch it, but this is the
+      // direct fallback if the Realtime channel hasn't connected yet).
+      queryClient.invalidateQueries({ queryKey: queryKeys.notifications(userId) });
     } catch {
       toast.error('Could not reach the notification test service.');
     } finally {

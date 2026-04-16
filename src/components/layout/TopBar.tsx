@@ -8,7 +8,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import BrandMark from '@/components/BrandMark';
-import { useMarkAllNotificationsReadMutation, useMarkNotificationReadMutation, useNotificationsQuery } from '@/hooks/useNotifications';
+import { useMarkAllNotificationsReadMutation, useMarkNotificationReadMutation, useNotificationsQuery, useNotificationsRealtime } from '@/hooks/useNotifications';
 import {
   requestNotificationPermission,
   getPlayerId,
@@ -96,6 +96,8 @@ export default function TopBar({
   const scrollAccumulatorRef = useRef(0);
   const notificationsQuery = useNotificationsQuery(userId);
   const notifs = notificationsQuery.data ?? [];
+  // Live push: any INSERT on notifications for this user invalidates the cache.
+  useNotificationsRealtime(userId);
   const markOneReadMutation = useMarkNotificationReadMutation(userId);
   const markAllReadMutation = useMarkAllNotificationsReadMutation(userId);
 
@@ -182,9 +184,12 @@ export default function TopBar({
     && permission !== 'granted'
     && (permission === 'denied' || (wantsAnyNotifications && !shouldSuppressPrompt));
 
-  async function handleBellClick() {
-    setOpen((prev) => !prev);
+  function handleBellClick() {
+    const opening = !open;
+    setOpen(opening);
     setIsHidden(false);
+    // Refetch on open so the list is always fresh even if Realtime missed a push.
+    if (opening) notificationsQuery.refetch();
   }
 
   function dismissPushPromptForNow() {
