@@ -19,11 +19,11 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
   const prefersReducedMotion = useReducedMotion();
   const { t } = useLanguage();
 
-  // AI Chat is leftmost (primary discovery). Bhakti + Tirtha moved to TopBar quick links.
+  // AI Chat leftmost. Home in centre (thumb zone). Pathshala beside home.
   const memberNavItems = [
     { href: '/ai-chat',   label: t('navAI'),       mobileLabel: 'AI',               icon: Bot           },
-    { href: '/home',      label: t('navHome'),     mobileLabel: t('navHome'),        icon: Home          },
     { href: '/pathshala', label: libraryLabel,      mobileLabel: libraryMobileLabel, icon: GraduationCap },
+    { href: '/home',      label: t('navHome'),     mobileLabel: t('navHome'),        icon: Home          },
     { href: '/kul',       label: t('navKul'),      mobileLabel: t('navKul'),         icon: Heart         },
     { href: '/mandali',   label: t('navMandali'),  mobileLabel: t('navMandali'),     icon: Users         },
   ];

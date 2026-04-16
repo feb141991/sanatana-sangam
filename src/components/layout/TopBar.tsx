@@ -235,7 +235,7 @@ export default function TopBar({
             </div>
           ) : (
             <>
-              {/* Quick-access links — emoji icon pills for pages not in bottom nav */}
+              {/* Quick-access text links — pages not already in bottom nav */}
               <div className="flex items-center gap-1">
                 {QUICK_LINKS.map((item) => {
                   const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -243,17 +243,16 @@ export default function TopBar({
                     <Link
                       key={item.href}
                       href={item.href}
-                      aria-label={item.label}
-                      title={item.label}
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-base transition"
+                      className="flex h-7 items-center justify-center rounded-full px-3 text-xs font-semibold transition whitespace-nowrap"
                       style={{
                         background: active
                           ? 'rgba(212,166,70,0.18)'
                           : 'rgba(212,166,70,0.07)',
                         border: `1px solid ${active ? 'rgba(212,166,70,0.32)' : 'rgba(212,166,70,0.12)'}`,
+                        color: active ? 'var(--brand-primary-strong)' : 'var(--brand-muted)',
                       }}
                     >
-                      {item.emoji}
+                      {item.label}
                     </Link>
                   );
                 })}

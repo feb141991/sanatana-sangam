@@ -265,10 +265,14 @@ export interface Database {
           updated_at: string;
           last_interacted_at: string;
           completed_at: string | null;
+          current_lesson: number;
+          completed_lessons: number[];
         };
-        Insert: Omit<Database['public']['Tables']['guided_path_progress']['Row'], 'id' | 'created_at' | 'updated_at' | 'last_interacted_at' | 'completed_at'> & {
+        Insert: Omit<Database['public']['Tables']['guided_path_progress']['Row'], 'id' | 'created_at' | 'updated_at' | 'last_interacted_at' | 'completed_at' | 'current_lesson' | 'completed_lessons'> & {
           last_interacted_at?: string;
           completed_at?: string | null;
+          current_lesson?: number;
+          completed_lessons?: number[];
         };
         Update: Partial<Database['public']['Tables']['guided_path_progress']['Insert']>;
       };

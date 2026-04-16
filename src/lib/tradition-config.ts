@@ -54,8 +54,8 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     symbol:               '🕉️',
     label:                'Hindu / Sanatani',
     shortLabel:           'Hindu',
-    accentColour:         '#7B1A1A',
-    accentLight:          '#f7e8e1',
+    accentColour:         '#D4740F',   // saffron — matches app gold palette
+    accentLight:          '#fff4e6',
     librarySection:       'gita',
     sacredTextLabel:      "Aaj Ka Shloka",
     sacredTextIcon:       '🕉️',
@@ -72,8 +72,8 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     symbol:               '☬',
     label:                'Sikh',
     shortLabel:           'Sikh',
-    accentColour:         '#1a4d7b',
-    accentLight:          '#f0f6ff',
+    accentColour:         '#2E6FA8',   // steel blue — traditional Sikh navy, lightened for readability
+    accentLight:          '#eef5ff',
     librarySection:       'gurbani',
     sacredTextLabel:      "Aaj Ka Shabad",
     sacredTextIcon:       '☬',
@@ -90,8 +90,8 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     symbol:               '☸️',
     label:                'Buddhist',
     shortLabel:           'Buddhist',
-    accentColour:         '#8c5a1f',
-    accentLight:          '#fbf4e8',
+    accentColour:         '#B07D3A',   // Buddhist saffron-amber
+    accentLight:          '#fdf5e8',
     librarySection:       'dhammapada',
     sacredTextLabel:      "Aaj Ka Dhamma Verse",
     sacredTextIcon:       '☸️',
@@ -108,7 +108,7 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     symbol:               '🤲',
     label:                'Jain',
     shortLabel:           'Jain',
-    accentColour:         '#7a5c1a',
+    accentColour:         '#A07830',   // Jain gold-amber
     accentLight:          '#fffbf0',
     librarySection:       'jain',
     sacredTextLabel:      "Aaj Ka Sutra",
@@ -126,8 +126,8 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     symbol:               '✨',
     label:                'Other / Exploring',
     shortLabel:           'Exploring',
-    accentColour:         '#4a1a7b',
-    accentLight:          '#f8f4ff',
+    accentColour:         '#7B5EA7',   // spiritual violet
+    accentLight:          '#f5f0ff',
     librarySection:       'gita',
     sacredTextLabel:      "Today's Wisdom",
     sacredTextIcon:       '✨',
