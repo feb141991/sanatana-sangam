@@ -9,6 +9,7 @@ import {
 import { getPathshalaTraditionHref } from '@/lib/pathshala-links';
 import type { PathshalaStudySummary } from '@/lib/pathshala-state';
 import { MotionFade, MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
+import { MobileCard, MobileScreen, MobileScreenHeader } from '@shared-core/ui/mobile';
 
 export default function LibraryClient({
   defaultSection = 'gita',
@@ -22,13 +23,15 @@ export default function LibraryClient({
   const preferredTradition = getLibrarySectionById(defaultSection)?.tradition ?? 'hindu';
 
   return (
-    <MotionFade className="space-y-3 pb-6 fade-in">
-      <div className="glass-panel rounded-[1.6rem] px-4 py-4 sm:rounded-[1.8rem] sm:px-5 sm:py-5">
-        <div>
-          <h1 className="type-screen-title mt-1">Parampara Pathshala</h1>
-          <p className="type-body mt-1 hidden sm:block">Choose a tradition and enter one track at a time.</p>
-        </div>
-      </div>
+    <MobileScreen className="pb-6">
+      <MotionFade className="space-y-3 fade-in">
+      <MobileCard>
+        <MobileScreenHeader
+          title="Parampara Pathshala"
+          description="Choose a tradition and enter one track at a time."
+          className="px-0"
+        />
+      </MobileCard>
 
       {(continueLearning || bookmarkedEntries.length > 0) && (
         <section className="space-y-3">
@@ -93,7 +96,8 @@ export default function LibraryClient({
           })}
         </MotionStagger>
       </section>
-    </MotionFade>
+      </MotionFade>
+    </MobileScreen>
   );
 }
 

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase';
-import { fetchNotifications, markNotificationRead, markNotificationsRead } from '@/lib/api/notifications';
+import { fetchNotifications, markNotificationRead, markNotificationsRead } from '@/lib/api/notifications-runtime';
 import { queryKeys } from '@/lib/query-keys';
 import type { Notification } from '@/types/database';
 
@@ -58,7 +58,7 @@ export function useMarkNotificationReadMutation(userId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (notificationId: string) => markNotificationRead(notificationId),
+    mutationFn: (notificationId: string) => markNotificationRead(userId, notificationId),
     onMutate: async (notificationId) => {
       await queryClient.cancelQueries({ queryKey: queryKeys.notifications(userId) });
       const previous = queryClient.getQueryData<Notification[]>(queryKeys.notifications(userId));
@@ -77,7 +77,7 @@ export function useMarkAllNotificationsReadMutation(userId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (notificationIds: string[]) => markNotificationsRead(notificationIds),
+    mutationFn: async (notificationIds: string[]) => markNotificationsRead(userId, notificationIds),
     onMutate: async (notificationIds) => {
       await queryClient.cancelQueries({ queryKey: queryKeys.notifications(userId) });
       const previous = queryClient.getQueryData<Notification[]>(queryKeys.notifications(userId));
