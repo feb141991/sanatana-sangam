@@ -86,6 +86,27 @@ describe('PanchangCalculator', () => {
     expect(VALID_NAKSHATRAS).toContain(result.nakshatra);
   });
 
+  it('should return valid karana names including fixed karanas', () => {
+    const VALID_KARANAS = [
+      'Bava', 'Balava', 'Kaulava', 'Taitila', 'Garaja', 'Vanija', 'Vishti',
+      'Kimstughna', 'Shakuni', 'Chatushpada', 'Naga',
+    ];
+
+    const range = panchang.getRange(new Date('2026-04-01'), 45);
+    range.forEach((day) => {
+      expect(VALID_KARANAS).toContain(day.karana);
+    });
+  });
+
+  it('should distinguish Purnima and Amavasya instead of combining them', () => {
+    const range = panchang.getRange(new Date('2026-04-01'), 60);
+    const tithis = range.map((day) => day.tithi);
+
+    expect(tithis.some((tithi) => tithi.includes('Purnima'))).toBe(true);
+    expect(tithis.some((tithi) => tithi.includes('Amavasya'))).toBe(true);
+    expect(tithis.some((tithi) => tithi.includes('Purnima/Amavasya'))).toBe(false);
+  });
+
   it('should return a range of panchang for calendar view', () => {
     const range = panchang.getRange(new Date('2026-04-01'), 7);
 
