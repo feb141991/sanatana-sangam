@@ -184,6 +184,7 @@ Current slice:
 - `PANCHANG_SOURCE_STRATEGY.md` now defines the launch posture and the next trusted-source decision boundary for sacred-time features
 - the current engine now uses sidereal longitudes for nakshatra, yoga, and masa plus a stronger sunrise/sunset estimate, so the in-app Panchang is less approximate than the first beta implementation
 - `migration-v18-sacred-time-delivery.sql` now adds user timezone and notification dedupe fields so sacred-time reminders can respect local time instead of one global send window
+- the serious next lane is now defined too: `PANCHANG_PRECISION_PLAN.md` plus `packages/panchang-engine` as a Swiss Ephemeris-backed service path, with licensing and validation treated as first-class requirements rather than afterthoughts
 
 ### A1.7 Sacred-time delivery and Jyotish definition
 

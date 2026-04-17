@@ -44,10 +44,14 @@ Last updated: 2026-04-09
 - [x] Add festival trust metadata rollout planning and DB migration for tradition/source/review fields
 - [x] Document the launch Panchang source posture in `PANCHANG_SOURCE_STRATEGY.md`
 - [x] Upgrade the in-app Panchang engine to use sidereal longitudes and a better sunrise/sunset estimate while keeping precision claims modest
+- [x] Define the serious precision lane in `PANCHANG_PRECISION_PLAN.md` and scaffold `packages/panchang-engine`
 - [x] Start timezone-aware sacred-time delivery with per-user timezone logic, user timezones, and notification dedupe keys
 - [x] Define the first trust-first Jyotish scope in `JYOTISH_STRATEGY.md`
 - [x] Define Jyotish / Rashiphal strategy under the trust core before shipping any horoscope-style feature
 - [ ] Stage Pathshala AI-assisted reading and recitation support: explain, quiz, flashcards, and later pronunciation / scoring
+- [ ] Choose Swiss Ephemeris license mode (`AGPL` vs `Professional`) before activating the precision Panchang engine in production
+- [ ] Wire `packages/panchang-engine` to a modern Swiss Ephemeris Node binding and exact transition calculations
+- [ ] Build Panchang validation fixtures against trusted references before changing product precision claims
 
 ## P0 Launch Blockers
 
@@ -157,6 +161,7 @@ Last updated: 2026-04-09
 - Home should not carry a large “what next” module long term; that guidance is better as notification-driven nudges plus one compact primary action on the dashboard.
 - Vercel Hobby only allows daily cron schedules, so sacred-time delivery is currently less precise than the ideal hourly model; re-evaluate hosting or background job infrastructure later if we want finer reminder timing.
 - `PANCHANG_SOURCE_STRATEGY.md` now tracks how launch copy, future provider strategy, and sacred-time claims should stay aligned.
+- `PANCHANG_PRECISION_PLAN.md` now tracks the Swiss Ephemeris-backed upgrade path, licensing decision, validation requirements, and the new dedicated `packages/panchang-engine` lane.
 - `UX_SWEEP_PLAN.md` now tracks the next experience improvements by surface, with Panchang, Kul, and Mandali as the highest-leverage sweeps.
 - `ROADMAP.md` is now the main sequencing document for `Phase A` vs `Phase B`.
 - `COLOR_STRATEGY.md` now tracks the palette research, token direction, and rollout rules.
