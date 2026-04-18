@@ -172,13 +172,16 @@ export default function BhaktiClient() {
     >
       <AmbientSpecks />
 
-      <div className="relative space-y-5 px-4 py-5 pb-28">
+      {/* Safe-area notch spacer */}
+      <div style={{ height: 'max(env(safe-area-inset-top, 0px), 16px)' }} />
+
+      <div className="relative space-y-5 px-4 pb-28">
         {/* ── Hero ──────────────────────────────────────── */}
         <motion.section
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="relative overflow-hidden rounded-[2.2rem] px-5 pb-7 pt-8 text-center"
+          className="relative overflow-hidden rounded-[3rem] px-5 pb-8 pt-12 text-center"
           style={{
             background:
               'linear-gradient(180deg, rgba(60,22,10,0.92) 0%, rgba(28,14,8,0.96) 100%)',
