@@ -3,16 +3,16 @@
 // ─── Japa Counter ─────────────────────────────────────────────────────────────
 //
 // Dark devotional theme — authentic dhyana atmosphere.
-//   • Ambient floating specks, pulsing glow ring
-//   • Crimson gradient bead button (no more emoji)
+//   • 4 bead types: Rudraksha, Tulsi, Crystal, Sandalwood
+//   • Crimson gradient bead button with tapFlash spring animation
+//   • Focus Mode: full-screen overlay, back button top-left, safe-area aware
 //   • ChantAudioPlayer shown during active session
-//   • framer-motion entrance + tap-pulse animations
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Check, RotateCcw, ChevronDown, Flame, Music2 } from 'lucide-react';
+import { ChevronLeft, Check, RotateCcw, ChevronDown, Flame, Music2, Maximize2 } from 'lucide-react';
 import { useEngine } from '@/contexts/EngineContext';
 import { hapticLight, hapticSuccess } from '@/lib/platform';
 import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
@@ -23,13 +23,13 @@ const BEADS_PER_MALA = 108;
 
 // ── Tradition-aware mantra defaults ───────────────────────────────────────────
 const DEFAULT_MANTRA_BY_TRADITION: Record<string, { id: string; name: string; short: string }> = {
-  hindu:    { id: 'gayatri',  name: 'Gayatri Mantra',          short: 'ॐ भूर्भुवः स्वः...'   },
-  sikh:     { id: 'waheguru', name: 'Waheguru Naam Simran',     short: 'ਵਾਹਿਗੁਰੂ'               },
-  buddhist: { id: 'om_mani',  name: 'Om Mani Padme Hum',        short: 'ओम् मणि पद्मे हूम्'    },
-  jain:     { id: 'namokar',  name: 'Namokar Mantra',           short: 'णमो अरिहंताणं...'       },
+  hindu:    { id: 'gayatri',  name: 'Gayatri Mantra',       short: 'ॐ भूर्भुवः स्वः...'  },
+  sikh:     { id: 'waheguru', name: 'Waheguru Naam Simran',  short: 'ਵਾਹਿਗੁਰੂ'              },
+  buddhist: { id: 'om_mani',  name: 'Om Mani Padme Hum',    short: 'ओम् मणि पद्मे हूम्'   },
+  jain:     { id: 'namokar',  name: 'Namokar Mantra',       short: 'णमो अरिहंताणं...'      },
 };
 
-// Maps mantra id → audio track IDs available in devotional-audio.ts
+// ── Audio track map ────────────────────────────────────────────────────────────
 const MANTRA_AUDIO_TRACKS: Record<string, string[]> = {
   gayatri:  ['gayatri-mantra-as-it-is'],
   waheguru: ['guru-stotram', 'gayatri-mantra-as-it-is'],
@@ -37,6 +37,59 @@ const MANTRA_AUDIO_TRACKS: Record<string, string[]> = {
   namokar:  ['gayatri-mantra-as-it-is'],
 };
 const DEFAULT_AUDIO_TRACKS = ['gayatri-mantra-as-it-is', 'guru-stotram'];
+
+// ── Bead types ─────────────────────────────────────────────────────────────────
+const BEAD_TYPES = [
+  {
+    id:        'rudraksha',
+    label:     'Rudraksha',
+    emoji:     '🟤',
+    bg:        'radial-gradient(circle at 33% 28%, #a07858 0%, #6B3F1C 48%, #3d1e0a 100%)',
+    tapBg:     'radial-gradient(circle at 33% 28%, #c09878 0%, #8B5A28 48%, #5a2e10 100%)',
+    shadow:    'rgba(100,55,18,0.65)',
+    tapShadow: 'rgba(180,90,30,0.9)',
+    border:    'rgba(180,120,55,0.6)',
+    glow:      'rgba(140,80,30,',
+    textColor: '#fde8c8',
+  },
+  {
+    id:        'tulsi',
+    label:     'Tulsi',
+    emoji:     '🌿',
+    bg:        'radial-gradient(circle at 33% 28%, #7fba60 0%, #3d7a28 48%, #1e4010 100%)',
+    tapBg:     'radial-gradient(circle at 33% 28%, #9fd080 0%, #5a9840 48%, #2e5a18 100%)',
+    shadow:    'rgba(40,90,20,0.65)',
+    tapShadow: 'rgba(60,150,30,0.8)',
+    border:    'rgba(80,160,50,0.5)',
+    glow:      'rgba(60,120,30,',
+    textColor: '#f0fce8',
+  },
+  {
+    id:        'crystal',
+    label:     'Crystal',
+    emoji:     '💎',
+    bg:        'radial-gradient(circle at 30% 25%, rgba(255,255,255,0.95) 0%, rgba(160,200,255,0.88) 38%, rgba(80,130,220,0.85) 72%, rgba(40,80,180,0.9) 100%)',
+    tapBg:     'radial-gradient(circle at 30% 25%, rgba(255,255,255,1) 0%, rgba(190,230,255,0.95) 38%, rgba(110,165,240,0.9) 72%, rgba(60,110,210,0.95) 100%)',
+    shadow:    'rgba(80,120,220,0.55)',
+    tapShadow: 'rgba(130,180,255,0.85)',
+    border:    'rgba(180,210,255,0.75)',
+    glow:      'rgba(100,150,240,',
+    textColor: '#1a2850',
+  },
+  {
+    id:        'sandal',
+    label:     'Sandalwood',
+    emoji:     '🪵',
+    bg:        'radial-gradient(circle at 33% 28%, #e8c87a 0%, #b07820 48%, #6a4408 100%)',
+    tapBg:     'radial-gradient(circle at 33% 28%, #f8e09a 0%, #d09830 48%, #8a5818 100%)',
+    shadow:    'rgba(140,90,15,0.65)',
+    tapShadow: 'rgba(200,140,20,0.85)',
+    border:    'rgba(220,170,50,0.65)',
+    glow:      'rgba(180,130,30,',
+    textColor: '#2a1a00',
+  },
+] as const;
+type BeadTypeId = typeof BEAD_TYPES[number]['id'];
 
 interface DayRecord { date: string; done: boolean; }
 interface Props {
@@ -177,7 +230,7 @@ function JapaHistoryChart({ history = [], streak }: { history: DayRecord[]; stre
     const record = history.find(h => h.date === dateStr);
     days.push({ date: dateStr, done: record?.done ?? false, isToday: i === 0 });
   }
-  const totalDone = days.filter(d => d.done).length;
+  const totalDone    = days.filter(d => d.done).length;
   const completionPct = Math.round((totalDone / 30) * 100);
 
   return (
@@ -199,7 +252,11 @@ function JapaHistoryChart({ history = [], streak }: { history: DayRecord[]; stre
           <div key={day.date} title={`${day.date}${day.done ? ' ✓' : ''}`}
             className="aspect-square rounded-md transition-all"
             style={{
-              background: day.done ? 'linear-gradient(135deg,#d4643a,#7B1A1A)' : day.isToday ? 'rgba(123,26,26,0.22)' : 'rgba(212,140,40,0.06)',
+              background: day.done
+                ? 'linear-gradient(135deg,#d4643a,#7B1A1A)'
+                : day.isToday
+                  ? 'rgba(123,26,26,0.22)'
+                  : 'rgba(212,140,40,0.06)',
               boxShadow: day.isToday ? 'inset 0 0 0 1.5px rgba(212,140,40,0.3)' : undefined,
             }} />
         ))}
@@ -215,6 +272,163 @@ function JapaHistoryChart({ history = [], streak }: { history: DayRecord[]; stre
   );
 }
 
+// ── Japa Focus Overlay ─────────────────────────────────────────────────────────
+function JapaFocusOverlay({
+  activeBead, beadCount, roundsDone, duration, targetRounds,
+  selectedMantra, defaultMantraShort, audioTrackIds, streak, tapFlash,
+  onBead, onComplete, onReset, onClose,
+}: {
+  activeBead: typeof BEAD_TYPES[number];
+  beadCount: number; roundsDone: number; duration: number; targetRounds: number;
+  selectedMantra: Mantra | null; defaultMantraShort: string;
+  audioTrackIds: string[]; streak: number; tapFlash: boolean;
+  onBead: () => void; onComplete: () => void; onReset: () => void; onClose: () => void;
+}) {
+  const formatTime = (s: number) =>
+    `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[90] flex flex-col"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      style={{ background: 'linear-gradient(180deg,#0d0407 0%,#180a08 50%,#0f0905 100%)' }}
+    >
+      {/* Ambient specks */}
+      <JapaAmbient />
+
+      {/* Deep central glow */}
+      <motion.div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{ width: 420, height: 420, background: `radial-gradient(circle, ${activeBead.glow}0.14) 0%, transparent 68%)` }}
+        animate={{ scale: [1, 1.18, 1], opacity: [0.4, 0.9, 0.4] }}
+        transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+      />
+
+      {/* ── Top bar ── */}
+      <div
+        className="relative flex items-center gap-3 px-4 pb-3"
+        style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 18px)' }}
+      >
+        <button
+          onClick={onClose}
+          className="flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium"
+          style={{
+            background: 'rgba(212,140,40,0.1)',
+            border: '1px solid rgba(212,140,40,0.22)',
+            color: '#d4a830',
+          }}
+        >
+          <ChevronLeft size={16} />
+          Back
+        </button>
+        <div className="flex-1 text-center">
+          <p className="text-sm font-semibold" style={{ color: '#f5dfa0' }}>Japa Focus</p>
+        </div>
+        {streak > 0 && (
+          <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5"
+            style={{ background: 'rgba(212,140,40,0.1)', border: '1px solid rgba(212,140,40,0.2)' }}>
+            <Flame size={12} style={{ color: '#d4a830' }} />
+            <span className="text-[10px] font-semibold" style={{ color: '#d4a830' }}>{streak}d</span>
+          </div>
+        )}
+      </div>
+
+      {/* ── Center content ── */}
+      <div className="flex-1 flex flex-col items-center justify-center gap-5 px-6">
+
+        {/* Round + timer row */}
+        <div className="flex items-center gap-8">
+          <div className="text-center">
+            <p className="text-4xl font-bold" style={{ color: '#d4643a' }}>{roundsDone}</p>
+            <p className="text-xs mt-1" style={{ color: 'rgba(245,200,120,0.42)' }}>Rounds</p>
+          </div>
+          <div className="w-px h-10" style={{ background: 'rgba(212,140,40,0.18)' }} />
+          <div className="text-center">
+            <p className="text-4xl font-bold font-mono" style={{ color: '#f5dfa0' }}>{formatTime(duration)}</p>
+            <p className="text-xs mt-1" style={{ color: 'rgba(245,200,120,0.42)' }}>Time</p>
+          </div>
+          <div className="w-px h-10" style={{ background: 'rgba(212,140,40,0.18)' }} />
+          <div className="text-center">
+            <p className="text-4xl font-bold" style={{ color: 'rgba(245,200,120,0.55)' }}>{targetRounds}</p>
+            <p className="text-xs mt-1" style={{ color: 'rgba(245,200,120,0.42)' }}>Target</p>
+          </div>
+        </div>
+
+        {/* ── Bead tap button (large) ── */}
+        <div className="flex flex-col items-center gap-2">
+          <button
+            onPointerDown={onBead}
+            className="relative rounded-full select-none focus:outline-none"
+            style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
+          >
+            <motion.div
+              animate={{ scale: tapFlash ? 0.83 : 1 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+            >
+              <div style={{
+                width: 130, height: 130, borderRadius: '50%',
+                background: tapFlash ? activeBead.tapBg : activeBead.bg,
+                boxShadow: tapFlash
+                  ? `0 0 70px ${activeBead.tapShadow}, 0 0 110px ${activeBead.shadow}, inset 0 4px 14px rgba(255,220,160,0.28)`
+                  : `0 0 32px ${activeBead.shadow}, 0 0 65px rgba(0,0,0,0.35), inset 0 2px 8px rgba(255,200,120,0.12)`,
+                border: `2.5px solid ${activeBead.border}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'box-shadow 0.1s ease',
+              }}>
+                <span className="text-[2.6rem] font-bold leading-none"
+                  style={{ color: activeBead.textColor, textShadow: '0 0 16px rgba(255,210,130,0.4)' }}>
+                  {beadCount}
+                </span>
+              </div>
+            </motion.div>
+          </button>
+          <p className="text-xs" style={{ color: 'rgba(245,200,120,0.45)' }}>
+            of 108 beads · tap to count
+          </p>
+        </div>
+
+        {/* Mantra text */}
+        <motion.p
+          className="text-center px-4 font-bold font-[family:var(--font-deva)] text-base leading-relaxed"
+          style={{ color: '#f5dfa0', textShadow: '0 0 22px rgba(212,140,40,0.28)' }}
+          animate={{ opacity: [0.65, 1, 0.65] }}
+          transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}>
+          {selectedMantra?.sanskrit?.split('\n')[0] ?? defaultMantraShort}
+        </motion.p>
+
+        {/* Audio player */}
+        <div className="w-full max-w-xs rounded-2xl overflow-hidden border"
+          style={{ borderColor: 'rgba(212,140,40,0.18)', background: 'rgba(14,8,4,0.5)' }}>
+          <div className="flex items-center gap-2 px-3 pt-2.5 pb-1">
+            <Music2 size={11} style={{ color: 'rgba(212,140,40,0.5)' }} />
+            <p className="text-[10px] tracking-wide" style={{ color: 'rgba(245,200,120,0.4)' }}>Mantra Audio</p>
+          </div>
+          <ChantAudioPlayer title="Japa focus" trackIds={audioTrackIds} compact />
+        </div>
+      </div>
+
+      {/* ── Bottom actions ── */}
+      <div
+        className="px-4 space-y-2.5"
+        style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 24px)' }}
+      >
+        <button
+          onClick={onComplete}
+          className="w-full py-4 rounded-2xl font-bold text-base"
+          style={{ background: 'linear-gradient(135deg,#d4643a,#7B1A1A)', color: '#f5dfa0', boxShadow: '0 4px 28px rgba(180,60,20,0.32)' }}>
+          Complete Session ✓
+        </button>
+        <button
+          onClick={onReset}
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl border text-sm font-medium"
+          style={{ borderColor: 'rgba(212,140,40,0.15)', color: 'rgba(245,200,120,0.45)' }}>
+          <RotateCcw size={14} /> Reset
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
 // ── Main Component ─────────────────────────────────────────────────────────────
 export default function JapaClient({
   userId, userName, tradition, currentStreak, japaAlreadyDoneToday, history = [],
@@ -222,20 +436,22 @@ export default function JapaClient({
   const router = useRouter();
   const { engine, isReady } = useEngine();
 
-  const [mantras, setMantras] = useState<Mantra[]>([]);
-  const [selectedMantra, setMantra] = useState<Mantra | null>(null);
-  const [showPicker, setShowPicker] = useState(false);
-  const [beadCount, setBeadCount] = useState(0);
-  const [roundsDone, setRounds] = useState(0);
-  const [targetRounds, setTarget] = useState(1);
-  const [isActive, setIsActive] = useState(false);
-  const [showComplete, setComplete] = useState(false);
-  const [duration, setDuration] = useState(0);
-  const [streak, setStreak] = useState(currentStreak);
-  const [tapFlash, setTapFlash] = useState(false);
+  const [mantras,        setMantras]    = useState<Mantra[]>([]);
+  const [selectedMantra, setMantra]     = useState<Mantra | null>(null);
+  const [showPicker,     setShowPicker] = useState(false);
+  const [beadCount,      setBeadCount]  = useState(0);
+  const [roundsDone,     setRounds]     = useState(0);
+  const [targetRounds,   setTarget]     = useState(1);
+  const [isActive,       setIsActive]   = useState(false);
+  const [showComplete,   setComplete]   = useState(false);
+  const [duration,       setDuration]   = useState(0);
+  const [streak,         setStreak]     = useState(currentStreak);
+  const [tapFlash,       setTapFlash]   = useState(false);
+  const [beadTypeId,     setBeadTypeId] = useState<BeadTypeId>('rudraksha');
+  const [isFocusMode,    setFocusMode]  = useState(false);
 
   const startedAt = useRef<string>('');
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timerRef  = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Load mantras
   useEffect(() => {
@@ -303,18 +519,33 @@ export default function JapaClient({
       const streakRecord = await engine.streaks.getTodayRecord(userId);
       setStreak(streakRecord.streak_count);
     } catch (err) { console.error('[Japa] tracking failed:', err); }
+    setFocusMode(false);
     setComplete(true);
   }, [engine, selectedMantra, userId, duration]);
+
+  const handleComplete = useCallback(() => {
+    setIsActive(false);
+    finishSession(roundsDone + (beadCount > 0 ? 1 : 0));
+  }, [roundsDone, beadCount, finishSession]);
+
+  const handleReset = useCallback(() => {
+    setIsActive(false);
+    setBeadCount(0);
+    setRounds(0);
+    setDuration(0);
+  }, []);
 
   const formatTime = (s: number) =>
     `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 
-  const radius = 90;
+  const radius        = 90;
   const circumference = 2 * Math.PI * radius;
-  const progress = beadCount / BEADS_PER_MALA;
-  const strokeOffset = circumference * (1 - progress);
-  const defaultMantra = DEFAULT_MANTRA_BY_TRADITION[tradition] ?? DEFAULT_MANTRA_BY_TRADITION.hindu;
-  const audioTrackIds = MANTRA_AUDIO_TRACKS[selectedMantra?.id ?? defaultMantra.id] ?? DEFAULT_AUDIO_TRACKS;
+  const progress      = beadCount / BEADS_PER_MALA;
+  const strokeOffset  = circumference * (1 - progress);
+
+  const defaultMantra  = DEFAULT_MANTRA_BY_TRADITION[tradition] ?? DEFAULT_MANTRA_BY_TRADITION.hindu;
+  const audioTrackIds  = MANTRA_AUDIO_TRACKS[selectedMantra?.id ?? defaultMantra.id] ?? DEFAULT_AUDIO_TRACKS;
+  const activeBead     = BEAD_TYPES.find(t => t.id === beadTypeId) ?? BEAD_TYPES[0];
 
   return (
     <div className="relative min-h-screen flex flex-col"
@@ -325,7 +556,7 @@ export default function JapaClient({
 
       {/* Central deep glow */}
       <motion.div className="pointer-events-none absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2 rounded-full"
-        style={{ width: 320, height: 320, background: 'radial-gradient(circle, rgba(160,40,10,0.14) 0%, transparent 68%)' }}
+        style={{ width: 320, height: 320, background: `radial-gradient(circle, ${activeBead.glow}0.14) 0%, transparent 68%)` }}
         animate={{ scale: [1, 1.14, 1], opacity: [0.5, 0.85, 0.5] }}
         transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}
       />
@@ -360,12 +591,14 @@ export default function JapaClient({
         </div>
       )}
 
-      {/* Setup panel — mantra + rounds */}
+      {/* Setup panel — mantra + rounds + bead type */}
       <AnimatePresence>
         {!isActive && !showComplete && (
           <motion.div className="relative px-4 mb-3 space-y-2.5"
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.4 }}>
+
+            {/* Mantra picker */}
             <button onClick={() => setShowPicker(true)}
               className="w-full flex items-center justify-between rounded-2xl border px-4 py-3"
               style={{ background: 'rgba(18,10,6,0.85)', borderColor: 'rgba(212,140,40,0.18)' }}>
@@ -378,6 +611,7 @@ export default function JapaClient({
               <ChevronDown size={18} style={{ color: 'rgba(212,140,40,0.45)' }} />
             </button>
 
+            {/* Rounds */}
             <div className="flex items-center justify-between rounded-2xl border px-4 py-3"
               style={{ background: 'rgba(18,10,6,0.85)', borderColor: 'rgba(212,140,40,0.14)' }}>
               <span className="text-sm font-medium" style={{ color: 'rgba(245,200,120,0.6)' }}>Rounds</span>
@@ -393,6 +627,35 @@ export default function JapaClient({
                 ))}
               </div>
             </div>
+
+            {/* Bead type selector */}
+            <div className="rounded-2xl border px-4 py-3"
+              style={{ background: 'rgba(18,10,6,0.85)', borderColor: 'rgba(212,140,40,0.14)' }}>
+              <p className="text-xs font-medium mb-2" style={{ color: 'rgba(245,200,120,0.42)' }}>Bead Type</p>
+              <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-none">
+                {BEAD_TYPES.map(t => (
+                  <motion.button
+                    key={t.id}
+                    onClick={() => setBeadTypeId(t.id)}
+                    whileTap={{ scale: 0.94 }}
+                    className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs whitespace-nowrap flex-shrink-0 font-medium transition-all"
+                    style={beadTypeId === t.id
+                      ? {
+                          background: t.bg,
+                          color: t.textColor,
+                          border: `1.5px solid ${t.border}`,
+                          boxShadow: `0 0 12px ${t.shadow}`,
+                        }
+                      : {
+                          background: 'rgba(28,14,8,0.7)',
+                          color: 'rgba(245,200,120,0.45)',
+                          border: '1px solid rgba(212,140,40,0.12)',
+                        }}>
+                    {t.emoji} {t.label}
+                  </motion.button>
+                ))}
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -402,18 +665,15 @@ export default function JapaClient({
 
         {/* SVG progress ring */}
         <div className="relative" style={{ width: 220, height: 220 }}>
-          {/* Outer pulsing glow ring */}
           <motion.div className="absolute inset-0 rounded-full pointer-events-none"
-            style={{ background: 'radial-gradient(circle, rgba(180,60,20,0.16) 0%, transparent 65%)' }}
+            style={{ background: `radial-gradient(circle, ${activeBead.glow}0.16) 0%, transparent 65%)` }}
             animate={{ scale: isActive ? [1, 1.12, 1] : 1, opacity: isActive ? [0.6, 1, 0.6] : 0.4 }}
             transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut' }}
           />
 
           <svg width="220" height="220" className="rotate-[-90deg]">
-            {/* Track ring */}
             <circle cx="110" cy="110" r={radius}
               fill="none" stroke="rgba(212,140,40,0.1)" strokeWidth="8" />
-            {/* Progress arc with glow gradient */}
             <circle cx="110" cy="110" r={radius}
               fill="none" stroke="url(#japaGrad)" strokeWidth="8"
               strokeLinecap="round"
@@ -443,18 +703,18 @@ export default function JapaClient({
             >
               {isActive ? (
                 <>
-                  {/* The bead — crimson gradient sphere */}
                   <div style={{
                     width: 82, height: 82, borderRadius: '50%',
-                    background: 'radial-gradient(circle at 35% 30%, #e07050 0%, #8B1A1A 52%, #3d0d0d 100%)',
+                    background: tapFlash ? activeBead.tapBg : activeBead.bg,
                     boxShadow: tapFlash
-                      ? '0 0 52px rgba(220,90,30,1), 0 0 90px rgba(200,70,20,0.55), inset 0 3px 8px rgba(255,180,120,0.35)'
-                      : '0 0 26px rgba(180,55,20,0.6), 0 0 52px rgba(160,40,10,0.25), inset 0 2px 6px rgba(255,160,80,0.22)',
-                    border: '2px solid rgba(220,150,60,0.65)',
+                      ? `0 0 52px ${activeBead.tapShadow}, 0 0 90px ${activeBead.shadow}, inset 0 3px 8px rgba(255,200,140,0.35)`
+                      : `0 0 26px ${activeBead.shadow}, 0 0 52px rgba(0,0,0,0.25), inset 0 2px 6px rgba(255,200,120,0.18)`,
+                    border: `2px solid ${activeBead.border}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     transition: 'box-shadow 0.12s ease',
                   }}>
-                    <span className="text-3xl font-bold leading-none" style={{ color: '#fde8c8', textShadow: '0 0 14px rgba(255,200,120,0.5)' }}>
+                    <span className="text-3xl font-bold leading-none"
+                      style={{ color: activeBead.textColor, textShadow: '0 0 14px rgba(255,200,120,0.5)' }}>
                       {beadCount}
                     </span>
                   </div>
@@ -462,15 +722,14 @@ export default function JapaClient({
                 </>
               ) : (
                 <>
-                  {/* Start bead */}
                   <div style={{
                     width: 72, height: 72, borderRadius: '50%',
-                    background: 'radial-gradient(circle at 35% 32%, #cc6040 0%, #7B1A1A 65%)',
-                    boxShadow: '0 0 22px rgba(180,55,20,0.45)',
-                    border: '2px solid rgba(212,140,40,0.4)',
+                    background: activeBead.bg,
+                    boxShadow: `0 0 22px ${activeBead.shadow}`,
+                    border: `2px solid ${activeBead.border}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
-                    <span style={{ fontSize: 28, lineHeight: 1, marginLeft: 3 }}>▶</span>
+                    <span style={{ fontSize: 28, lineHeight: 1, marginLeft: 3, color: activeBead.textColor }}>▶</span>
                   </div>
                   <motion.span className="text-sm font-semibold" style={{ color: '#d4a830' }}
                     animate={{ opacity: [0.6, 1, 0.6] }}
@@ -528,11 +787,7 @@ export default function JapaClient({
                   <Music2 size={11} style={{ color: 'rgba(212,140,40,0.5)' }} />
                   <p className="text-[10px] tracking-wide" style={{ color: 'rgba(245,200,120,0.4)' }}>Mantra Audio</p>
                 </div>
-                <ChantAudioPlayer
-                  title="Japa companion"
-                  trackIds={audioTrackIds}
-                  compact
-                />
+                <ChantAudioPlayer title="Japa companion" trackIds={audioTrackIds} compact />
               </div>
             </motion.div>
           )}
@@ -542,16 +797,25 @@ export default function JapaClient({
       {/* Action buttons */}
       <div className="relative px-4 pb-8 pt-3 space-y-3">
         {isActive && (
-          <button
-            onClick={() => { setIsActive(false); finishSession(roundsDone + (beadCount > 0 ? 1 : 0)); }}
-            className="w-full py-4 rounded-2xl font-bold text-base"
-            style={{ background: 'linear-gradient(135deg,#d4643a,#7B1A1A)', color: '#f5dfa0', boxShadow: '0 4px 26px rgba(180,60,20,0.32)' }}>
-            Complete Session ✓
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleComplete}
+              className="flex-1 py-4 rounded-2xl font-bold text-base"
+              style={{ background: 'linear-gradient(135deg,#d4643a,#7B1A1A)', color: '#f5dfa0', boxShadow: '0 4px 26px rgba(180,60,20,0.32)' }}>
+              Complete ✓
+            </button>
+            <button
+              onClick={() => setFocusMode(true)}
+              className="py-4 px-4 rounded-2xl flex items-center gap-1.5 text-sm font-medium"
+              style={{ background: 'rgba(212,140,40,0.1)', border: '1px solid rgba(212,140,40,0.22)', color: '#d4a830' }}>
+              <Maximize2 size={15} />
+              Focus
+            </button>
+          </div>
         )}
         {isActive && (
           <button
-            onClick={() => { setIsActive(false); setBeadCount(0); setRounds(0); setDuration(0); }}
+            onClick={handleReset}
             className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl border font-medium text-sm"
             style={{ borderColor: 'rgba(212,140,40,0.15)', color: 'rgba(245,200,120,0.45)' }}>
             <RotateCcw size={15} /> Reset
@@ -581,6 +845,28 @@ export default function JapaClient({
           <CompletionSheet rounds={roundsDone} durationSecs={duration}
             mantraName={selectedMantra?.name ?? defaultMantra.name}
             streak={streak} onClose={() => { setComplete(false); router.back(); }} />
+        )}
+      </AnimatePresence>
+
+      {/* Focus Mode Overlay */}
+      <AnimatePresence>
+        {isFocusMode && isActive && (
+          <JapaFocusOverlay
+            activeBead={activeBead}
+            beadCount={beadCount}
+            roundsDone={roundsDone}
+            duration={duration}
+            targetRounds={targetRounds}
+            selectedMantra={selectedMantra}
+            defaultMantraShort={defaultMantra.short}
+            audioTrackIds={audioTrackIds}
+            streak={streak}
+            tapFlash={tapFlash}
+            onBead={countBead}
+            onComplete={handleComplete}
+            onReset={() => { handleReset(); setFocusMode(false); }}
+            onClose={() => setFocusMode(false)}
+          />
         )}
       </AnimatePresence>
     </div>

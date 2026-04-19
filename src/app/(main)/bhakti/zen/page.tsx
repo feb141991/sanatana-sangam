@@ -1,12 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, Settings2 } from 'lucide-react';
 import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
 import { BHAKTI_MANTRAS } from '@/lib/bhakti-practice';
 
 // ─── Timing ──────────────────────────────────────────────────────────────────
-const DURATIONS = [12, 24, 48];
+const PRESET_DURATIONS = [12, 24, 48];
 const BREATH_PHASES = {
   inhale: { duration: 4000, label: 'Inhale', next: 'hold'   },
   hold:   { duration: 2000, label: 'Hold',   next: 'exhale' },
@@ -24,10 +25,10 @@ const PHASE_COLOURS: Record<Phase, { primary: string; glow: string; ring: string
 // ─── Environments ───────────────────────────────────────────────────────────
 type EnvId = 'temple' | 'mountains' | 'forest' | 'river' | 'night';
 const ENVIRONMENTS: Record<EnvId, { label: string; emoji: string; bg: string; glowColor: string; particleColor: string }> = {
-  temple:    { label: 'Temple Dawn',  emoji: '🪔', bg: 'linear-gradient(180deg,#1a0d08 0%,#2e1710 40%,#3e2216 100%)', glowColor: 'rgba(212,120,20,',  particleColor: 'rgba(255,190,60,' },
+  temple:    { label: 'Temple Dawn',  emoji: '🪔', bg: 'linear-gradient(180deg,#1a0d08 0%,#2e1710 40%,#3e2216 100%)', glowColor: 'rgba(212,120,20,',  particleColor: 'rgba(255,190,60,'  },
   mountains: { label: 'Snow Peaks',   emoji: '🏔️', bg: 'linear-gradient(180deg,#10141c 0%,#182030 40%,#1e2c3c 100%)', glowColor: 'rgba(140,180,255,', particleColor: 'rgba(220,235,255,' },
   forest:    { label: 'Forest Still', emoji: '🌿', bg: 'linear-gradient(180deg,#0c1610 0%,#142018 40%,#1c2c1e 100%)', glowColor: 'rgba(60,180,80,',   particleColor: 'rgba(100,220,120,' },
-  river:     { label: 'Sacred River', emoji: '🌊', bg: 'linear-gradient(180deg,#0a1218 0%,#101c2a 40%,#162436 100%)', glowColor: 'rgba(40,140,200,',  particleColor: 'rgba(80,180,220,' },
+  river:     { label: 'Sacred River', emoji: '🌊', bg: 'linear-gradient(180deg,#0a1218 0%,#101c2a 40%,#162436 100%)', glowColor: 'rgba(40,140,200,',  particleColor: 'rgba(80,180,220,'  },
   night:     { label: 'Night Sky',    emoji: '✨', bg: 'linear-gradient(180deg,#04060e 0%,#0a0e1c 40%,#0e1226 100%)', glowColor: 'rgba(160,140,255,', particleColor: 'rgba(220,210,255,' },
 };
 
@@ -38,12 +39,20 @@ const MODES = [
   { id: 'chant',   emoji: '🕉️', title: 'Chant',   description: 'One mantra, one rhythm.'  },
 ] as const;
 
-// ─── Ambient sound generators (WebAudio) ───────────────────────────────────
+// ─── Ambient options ─────────────────────────────────────────────────────────
+const AMBIENT_OPTIONS = [
+  { id: 'off',  label: 'Off',     emoji: '🔇' },
+  { id: 'bowl', label: 'Bowl',    emoji: '🎵' },
+  { id: 'om',   label: 'Om Nada', emoji: '🕉️' },
+] as const;
+type AmbientId = typeof AMBIENT_OPTIONS[number]['id'];
+
+// ─── WebAudio ambient ────────────────────────────────────────────────────────
 let ambientCtx: AudioContext | null = null;
-let ambientNodes: { osc?: OscillatorNode; gain?: GainNode; noise?: ScriptProcessorNode }[] = [];
+let ambientNodes: { osc?: OscillatorNode; gain?: GainNode }[] = [];
 
 function stopAmbient() {
-  ambientNodes.forEach(n => { try { n.osc?.stop(); n.gain?.disconnect(); n.noise?.disconnect(); } catch {} });
+  ambientNodes.forEach(n => { try { n.osc?.stop(); n.gain?.disconnect(); } catch {} });
   ambientNodes = [];
 }
 
@@ -54,11 +63,8 @@ function playBowlAmbient(volume = 0.06) {
     if (!ambientCtx) ambientCtx = new Ctx();
     const ctx = ambientCtx!;
     stopAmbient();
-
-    // Layered singing-bowl tones: 432 Hz + 648 Hz + 216 Hz
     [[432, 1.0], [648, 0.4], [216, 0.3]].forEach(([freq, rel]) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
       osc.connect(gain); gain.connect(ctx.destination);
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, ctx.currentTime);
@@ -77,11 +83,8 @@ function playOmAmbient(volume = 0.07) {
     if (!ambientCtx) ambientCtx = new Ctx();
     const ctx = ambientCtx!;
     stopAmbient();
-
-    const fundamentals = [136.1, 272.2, 408.3]; // Om frequency (136.1 Hz) + harmonics
-    fundamentals.forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
+    [136.1, 272.2, 408.3].forEach((freq, i) => {
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
       osc.connect(gain); gain.connect(ctx.destination);
       osc.type = i === 0 ? 'sine' : 'triangle';
       osc.frequency.setValueAtTime(freq, ctx.currentTime);
@@ -98,21 +101,20 @@ function fadeOutAmbient() {
   const ctx = ambientCtx;
   ambientNodes.forEach(n => {
     if (n.gain) {
-      n.gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.5);
+      try { n.gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.5); } catch {}
       setTimeout(() => { try { n.osc?.stop(); } catch {} }, 1600);
     }
   });
   ambientNodes = [];
 }
 
-// ─── WebAudio bell ──────────────────────────────────────────────────────────
+// ─── Bell ────────────────────────────────────────────────────────────────────
 function playBell(freq: number, durationSecs: number, volume = 0.18) {
   try {
     const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
     if (!Ctx) return;
     const ctx = new Ctx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
+    const osc = ctx.createOscillator(); const gain = ctx.createGain();
     osc.connect(gain); gain.connect(ctx.destination);
     osc.type = 'sine';
     osc.frequency.setValueAtTime(freq, ctx.currentTime);
@@ -122,7 +124,6 @@ function playBell(freq: number, durationSecs: number, volume = 0.18) {
   } catch {}
 }
 
-// ─── Haptic patterns ────────────────────────────────────────────────────────
 function hapticPhase(phase: Phase) {
   if (!navigator.vibrate) return;
   if (phase === 'inhale') navigator.vibrate([20, 30, 15]);
@@ -130,6 +131,12 @@ function hapticPhase(phase: Phase) {
   if (phase === 'exhale') navigator.vibrate([35]);
 }
 function hapticFinish() { navigator.vibrate?.([30, 50, 30, 50, 60]); }
+
+function formatClock(seconds: number) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
 
 // ─── Sacred geometry mandala ────────────────────────────────────────────────
 function SacredMandala({ color, size = 300 }: { color: string; size?: number }) {
@@ -142,11 +149,12 @@ function SacredMandala({ color, size = 300 }: { color: string; size?: number }) 
     const bx2 = r + pw * Math.cos(rad + Math.PI / 2), by2 = r + pw * Math.sin(rad + Math.PI / 2);
     return `M ${r} ${r} C ${bx1} ${by1} ${cx2} ${cy2} ${tx} ${ty} C ${cx2} ${cy2} ${bx2} ${by2} ${r} ${r}`;
   }
-  const innerPetals = Array.from({ length: 8 }, (_, i) => petalPath(i * 45, r * 0.22, r * 0.09));
+  const innerPetals = Array.from({ length: 8 },  (_, i) => petalPath(i * 45,   r * 0.22, r * 0.09));
   const outerPetals = Array.from({ length: 16 }, (_, i) => petalPath(i * 22.5, r * 0.36, r * 0.07));
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ position: 'absolute', pointerEvents: 'none' }}>
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}
+      style={{ position: 'absolute', pointerEvents: 'none' }}>
       <motion.g style={{ transformOrigin: `${r}px ${r}px` }}
         animate={{ rotate: 360 }} transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}>
         {outerPetals.map((d, i) => <path key={`op-${i}`} d={d} fill={color} fillOpacity={0.09} />)}
@@ -175,8 +183,7 @@ function SacredMandala({ color, size = 300 }: { color: string; size?: number }) 
       <motion.circle cx={r} cy={r} r={3} fill={color} fillOpacity={0.7}
         animate={{ scale: [0.8, 1.5, 0.8], opacity: [0.4, 0.9, 0.4] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ transformOrigin: `${r}px ${r}px` }}
-      />
+        style={{ transformOrigin: `${r}px ${r}px` }} />
     </svg>
   );
 }
@@ -186,8 +193,8 @@ function BreathCircle({ running, glowColor, phase, remaining, totalSecs }: {
   running: boolean; glowColor: string; phase: Phase; remaining: number; totalSecs: number;
 }) {
   const colours = PHASE_COLOURS[phase];
-  const scale = phase === 'inhale' ? 1.22 : phase === 'hold' ? 1.22 : 0.82;
-  const dur   = phase === 'inhale' ? 4   : phase === 'hold'  ? 0.3  : 6;
+  const scale   = phase === 'inhale' ? 1.22 : phase === 'hold' ? 1.22 : 0.82;
+  const dur     = phase === 'inhale' ? 4    : phase === 'hold'  ? 0.3  : 6;
   const ringSpring = { type: 'spring' as const, stiffness: 28, damping: 14 };
 
   return (
@@ -333,37 +340,26 @@ function EnvParticles({ env }: { env: EnvId }) {
   return null;
 }
 
-function formatClock(seconds: number) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
-
-// ─── Ambient sound options ─────────────────────────────────────────────────
-const AMBIENT_OPTIONS = [
-  { id: 'off',  label: 'Off',       emoji: '🔇' },
-  { id: 'bowl', label: 'Bowl',      emoji: '🎵' },
-  { id: 'om',   label: 'Om Nada',   emoji: '🕉️' },
-] as const;
-type AmbientId = typeof AMBIENT_OPTIONS[number]['id'];
-
 // ─── Main Page ─────────────────────────────────────────────────────────────
 export default function ZenModePage() {
-  const [mode,            setMode]     = useState<'reading' | 'breath' | 'chant'>('breath');
-  const [duration,        setDuration] = useState(24);
-  const [chantMantra,     setMantra]   = useState<string>(BHAKTI_MANTRAS[0].value);
-  const [remaining,       setRemaining]= useState(24 * 60);
-  const [running,         setRunning]  = useState(false);
-  const [focusMode,       setFocusMode]= useState(false);
-  const [focusEnvironment,setEnv]      = useState<EnvId>('temple');
-  const [phase,           setPhase]    = useState<Phase>('inhale');
-  const [ambientId,       setAmbientId]= useState<AmbientId>('off');
+  const [mode,       setMode]     = useState<'reading' | 'breath' | 'chant'>('breath');
+  const [duration,   setDuration] = useState(24);
+  const [customInput,setCustomInput] = useState('');
+  const [showCustom, setShowCustom]  = useState(false);
+  const [chantMantra,setMantra]   = useState<string>(BHAKTI_MANTRAS[0].value);
+  const [remaining,  setRemaining]= useState(24 * 60);
+  const [running,    setRunning]  = useState(false);
+  const [focusMode,  setFocusMode]= useState(false);
+  const [focusEnv,   setEnv]      = useState<EnvId>('temple');
+  const [phase,      setPhase]    = useState<Phase>('inhale');
+  const [ambientId,  setAmbient]  = useState<AmbientId>('off');
+  const [showFocusSettings, setShowFocusSettings] = useState(false);
 
   const intervalRef  = useRef<ReturnType<typeof setInterval> | null>(null);
   const phaseTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const totalSecs    = duration * 60;
 
-  // Reset timer when duration/mode changes
+  // Reset on duration/mode change
   useEffect(() => {
     setRemaining(duration * 60);
     setRunning(false);
@@ -397,7 +393,7 @@ export default function ZenModePage() {
     return () => { if (phaseTimeout.current) clearTimeout(phaseTimeout.current); };
   }, [running, mode]);
 
-  // Ambient sound control
+  // Ambient
   useEffect(() => {
     if (!running) { fadeOutAmbient(); return; }
     if (ambientId === 'bowl') playBowlAmbient(0.06);
@@ -406,27 +402,31 @@ export default function ZenModePage() {
     return () => { if (!running) fadeOutAmbient(); };
   }, [running, ambientId]);
 
-  // Cleanup ambient on unmount
   useEffect(() => () => fadeOutAmbient(), []);
 
   const activeMode  = MODES.find(m => m.id === mode) ?? MODES[0];
   const activeChant = BHAKTI_MANTRAS.find(m => m.value === chantMantra) ?? BHAKTI_MANTRAS[0];
-  const activeEnv   = ENVIRONMENTS[focusEnvironment];
+  const activeEnv   = ENVIRONMENTS[focusEnv];
   const progress    = ((totalSecs - remaining) / totalSecs) * 100;
   const chantTrackIds = activeChant.audioTrackId ? [activeChant.audioTrackId] : ['gayatri-mantra-as-it-is', 'guru-stotram'];
 
   function toggleRunning() { setRunning(r => !r); navigator.vibrate?.([10]); }
   function reset() { setRunning(false); setRemaining(totalSecs); setPhase('inhale'); }
-  function enterFocus() { setFocusMode(true); setRunning(true); }
+  function enterFocus() { setFocusMode(true); setRunning(true); setShowFocusSettings(false); }
+
+  function applyCustomDuration() {
+    const v = parseInt(customInput, 10);
+    if (v > 0 && v <= 180) { setDuration(v); setShowCustom(false); setCustomInput(''); }
+  }
 
   return (
     <div className="fade-in space-y-3 pb-4">
 
-      {/* ── Compact top card: mode + timer + controls ─────────────────────── */}
+      {/* ── Top card: mode + timer + controls ───────────────────────────── */}
       <section className="relative overflow-hidden rounded-[2rem]"
         style={{ background: 'linear-gradient(160deg,rgba(26,14,8,0.97) 0%,rgba(14,8,4,0.99) 100%)', border: '1px solid rgba(212,166,70,0.16)' }}>
 
-        {/* Background mandala watermark */}
+        {/* Background mandala */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-30">
           <SacredMandala color="rgba(212,166,70,1)" size={320} />
         </div>
@@ -471,7 +471,7 @@ export default function ZenModePage() {
             </div>
           )}
 
-          {/* Chant picker (inline, compact) */}
+          {/* Chant picker */}
           <AnimatePresence>
             {mode === 'chant' && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
@@ -488,19 +488,57 @@ export default function ZenModePage() {
             )}
           </AnimatePresence>
 
-          {/* Duration + progress */}
+          {/* Duration + custom */}
           <div className="space-y-3">
-            <div className="flex justify-center gap-2">
-              {DURATIONS.map(v => (
-                <button key={v} onClick={() => setDuration(v)}
+            <div className="flex justify-center gap-2 flex-wrap">
+              {PRESET_DURATIONS.map(v => (
+                <button key={v} onClick={() => { setDuration(v); setShowCustom(false); }}
                   className="rounded-full px-4 py-1.5 text-xs font-medium transition-all"
-                  style={duration === v
+                  style={duration === v && !showCustom
                     ? { background: 'linear-gradient(135deg,rgba(212,100,20,0.9),rgba(212,166,70,0.85))', color: '#1c1208' }
                     : { background: 'rgba(28,18,10,0.7)', color: 'rgba(245,210,130,0.45)', border: '1px solid rgba(212,166,70,0.12)' }}>
                   {v} min
                 </button>
               ))}
+              <button onClick={() => setShowCustom(v => !v)}
+                className="rounded-full px-4 py-1.5 text-xs font-medium transition-all"
+                style={showCustom
+                  ? { background: 'rgba(212,166,70,0.16)', color: '#f5dfa0', border: '1px solid rgba(212,166,70,0.32)' }
+                  : { background: 'rgba(28,18,10,0.7)', color: 'rgba(245,210,130,0.45)', border: '1px solid rgba(212,166,70,0.12)' }}>
+                Custom
+              </button>
             </div>
+
+            {/* Custom duration input */}
+            <AnimatePresence>
+              {showCustom && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden">
+                  <div className="flex items-center gap-2 rounded-xl border px-3 py-2"
+                    style={{ background: 'rgba(18,12,8,0.9)', borderColor: 'rgba(212,166,70,0.18)' }}>
+                    <input
+                      type="number" min="1" max="180"
+                      value={customInput}
+                      onChange={e => setCustomInput(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && applyCustomDuration()}
+                      placeholder="e.g. 60"
+                      className="flex-1 bg-transparent outline-none text-sm"
+                      style={{ color: '#f5dfa0' }}
+                    />
+                    <span className="text-xs" style={{ color: 'rgba(245,210,130,0.4)' }}>min</span>
+                    <button onClick={applyCustomDuration}
+                      className="rounded-lg px-3 py-1 text-xs font-semibold"
+                      style={{ background: 'rgba(212,100,20,0.8)', color: '#f5dfa0' }}>
+                      Set
+                    </button>
+                  </div>
+                  <p className="text-[10px] mt-1 text-center" style={{ color: 'rgba(245,210,130,0.3)' }}>1–180 minutes</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Progress bar */}
             <div className="h-0.5 overflow-hidden rounded-full" style={{ background: 'rgba(212,166,70,0.1)' }}>
               <motion.div className="h-full rounded-full"
                 style={{ background: 'linear-gradient(90deg,rgba(212,100,20,0.9),rgba(212,166,70,1))' }}
@@ -534,17 +572,15 @@ export default function ZenModePage() {
         </div>
       </section>
 
-      {/* ── Environment + Ambient — compact row ───────────────────────────── */}
+      {/* ── Environment + Ambient ─────────────────────────────────────────── */}
       <section className="rounded-[1.6rem] px-4 py-3"
         style={{ background: 'rgba(12,8,4,0.9)', border: '1px solid rgba(212,166,70,0.09)' }}>
-
-        {/* Sanctuary row */}
         <p className="text-[10px] mb-2" style={{ color: 'rgba(245,210,130,0.35)' }}>Sanctuary</p>
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           {(Object.entries(ENVIRONMENTS) as [EnvId, typeof ENVIRONMENTS[EnvId]][]).map(([id, env]) => (
             <button key={id} onClick={() => setEnv(id)}
               className="rounded-full px-3 py-1.5 text-xs whitespace-nowrap transition-all flex-shrink-0"
-              style={focusEnvironment === id
+              style={focusEnv === id
                 ? { background: 'rgba(212,166,70,0.18)', color: '#f5dfa0', border: '1px solid rgba(212,166,70,0.32)', boxShadow: '0 0 10px rgba(212,166,70,0.1)' }
                 : { background: 'rgba(28,18,10,0.6)', color: 'rgba(245,210,130,0.42)', border: '1px solid rgba(212,166,70,0.08)' }}>
               {env.emoji} {env.label}
@@ -552,11 +588,10 @@ export default function ZenModePage() {
           ))}
         </div>
 
-        {/* Ambient sound row */}
         <p className="text-[10px] mt-3 mb-2" style={{ color: 'rgba(245,210,130,0.35)' }}>Ambient sound</p>
         <div className="flex gap-2">
           {AMBIENT_OPTIONS.map(opt => (
-            <button key={opt.id} onClick={() => setAmbientId(opt.id)}
+            <button key={opt.id} onClick={() => setAmbient(opt.id)}
               className="flex-1 rounded-full py-1.5 text-xs font-medium transition-all"
               style={ambientId === opt.id
                 ? { background: 'rgba(212,166,70,0.16)', color: '#f5dfa0', border: '1px solid rgba(212,166,70,0.3)' }
@@ -577,109 +612,172 @@ export default function ZenModePage() {
         {focusMode && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
-            className="fixed inset-0 z-[80] overflow-hidden"
+            transition={{ duration: 0.7 }}
+            className="fixed inset-0 z-[80] overflow-hidden flex flex-col"
             style={{ background: activeEnv.bg }}>
 
-            {/* Deep ambient glow */}
+            {/* Deep glow */}
             <motion.div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
               style={{ width: 500, height: 500, background: `radial-gradient(circle, ${activeEnv.glowColor}0.11) 0%, transparent 68%)` }}
               animate={{ scale: [1, 1.16, 1], opacity: [0.5, 0.9, 0.5] }}
               transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
             />
+            <EnvParticles env={focusEnv} />
 
-            <EnvParticles env={focusEnvironment} />
+            {/* ── Top bar ── */}
+            <div
+              className="relative flex items-center gap-3 px-4 pb-3 flex-shrink-0"
+              style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 18px)' }}
+            >
+              {/* Back button — TOP LEFT */}
+              <button
+                onClick={() => { setFocusMode(false); setRunning(false); }}
+                className="flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium flex-shrink-0"
+                style={{
+                  background: 'rgba(0,0,0,0.3)',
+                  color: `${activeEnv.glowColor}0.9)`,
+                  border: `1px solid ${activeEnv.glowColor}0.25)`,
+                  backdropFilter: 'blur(8px)',
+                }}>
+                <ChevronLeft size={16} />
+                Back
+              </button>
 
-            <div className="mx-auto grid h-full w-full max-w-lg grid-rows-[auto_1fr_auto] px-4 py-6 text-center">
-
-              {/* Top bar */}
-              <div className="flex items-center justify-between gap-3">
-                <div className="text-left">
-                  <p className="text-sm font-medium" style={{ color: `${activeEnv.glowColor}0.8)`, textShadow: `0 0 8px ${activeEnv.glowColor}0.4)` }}>
-                    {activeEnv.emoji} {activeEnv.label}
-                  </p>
-                  <p className="mt-0.5 text-xs" style={{ color: 'rgba(245,220,150,0.42)' }}>
-                    {activeMode.title}{mode === 'chant' ? ` · ${chantMantra}` : ''}
-                    {ambientId !== 'off' ? ` · ${AMBIENT_OPTIONS.find(a => a.id === ambientId)?.label}` : ''}
-                  </p>
-                </div>
-                <button onClick={() => { setFocusMode(false); setRunning(false); }}
-                  className="rounded-full px-4 py-2 text-xs transition"
-                  style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(245,210,130,0.5)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  Close
-                </button>
+              {/* Title */}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate"
+                  style={{ color: `${activeEnv.glowColor}0.85)`, textShadow: `0 0 8px ${activeEnv.glowColor}0.4)` }}>
+                  {activeEnv.emoji} {activeEnv.label}
+                </p>
+                <p className="text-[10px] mt-0.5 truncate" style={{ color: 'rgba(245,220,150,0.42)' }}>
+                  {activeMode.title}{mode === 'chant' ? ` · ${chantMantra}` : ''}
+                  {ambientId !== 'off' ? ` · ${AMBIENT_OPTIONS.find(a => a.id === ambientId)?.label}` : ''}
+                </p>
               </div>
 
-              {/* Centre */}
-              <div className="flex flex-col items-center justify-center gap-5 min-h-0">
-                {mode === 'breath' ? (
-                  <BreathCircle running={running} glowColor={activeEnv.glowColor}
-                    phase={phase} remaining={remaining} totalSecs={totalSecs} />
-                ) : (
-                  <div className="relative flex items-center justify-center" style={{ width: 280, height: 280 }}>
-                    <div className="absolute inset-0 flex items-center justify-center opacity-65">
-                      <SacredMandala color={activeEnv.glowColor.includes('212,120') ? '#f5dfa0' : '#b4c8ff'} size={280} />
-                    </div>
-                    <motion.div className="absolute rounded-full"
-                      style={{ width: 262, height: 262, border: `1px solid ${activeEnv.glowColor}0.14)` }}
-                      animate={{ scale: running ? [1, 1.04, 1] : 1 }}
-                      transition={{ duration: 4.5, repeat: running ? Infinity : 0 }}
-                    />
-                    <motion.div className="absolute rounded-full"
-                      style={{ width: 218, height: 218, border: `1.5px solid ${activeEnv.glowColor}0.3)`, boxShadow: running ? `0 0 40px ${activeEnv.glowColor}0.2), inset 0 0 30px ${activeEnv.glowColor}0.08)` : 'none' }}
-                      animate={{ scale: running ? [1, 1.03, 1] : 1 }}
-                      transition={{ duration: 4.5, repeat: running ? Infinity : 0 }}
-                    />
-                    <motion.div className="absolute rounded-full"
-                      style={{ width: 158, height: 158, background: `radial-gradient(circle at 38% 38%, ${activeEnv.glowColor}0.3) 0%, ${activeEnv.glowColor}0.1) 60%, transparent 100%)`, boxShadow: running ? `0 0 50px ${activeEnv.glowColor}0.3)` : 'none' }}
-                      animate={{ scale: running ? [1, 1.06, 1] : 1 }}
-                      transition={{ duration: 4.5, repeat: running ? Infinity : 0 }}
-                    />
-                    <div className="relative z-10 text-center">
-                      <p className="font-mono text-4xl font-light"
-                        style={{ color: '#f5dfa0', textShadow: `0 0 20px ${activeEnv.glowColor}0.6)` }}>
-                        {formatClock(remaining)}
-                      </p>
-                      <p className="text-[11px] mt-1.5" style={{ color: `${activeEnv.glowColor}0.5)` }}>
-                        {mode === 'chant' ? chantMantra : activeMode.description}
-                      </p>
-                    </div>
+              {/* Settings toggle */}
+              <button
+                onClick={() => setShowFocusSettings(v => !v)}
+                className="flex items-center justify-center w-9 h-9 rounded-full flex-shrink-0"
+                style={{
+                  background: showFocusSettings ? `${activeEnv.glowColor}0.2)` : 'rgba(0,0,0,0.25)',
+                  border: `1px solid ${activeEnv.glowColor}0.22)`,
+                  color: `${activeEnv.glowColor}0.8)`,
+                  backdropFilter: 'blur(8px)',
+                }}>
+                <Settings2 size={16} />
+              </button>
+            </div>
+
+            {/* ── Settings drawer (ambient + sanctuary) ── */}
+            <AnimatePresence>
+              {showFocusSettings && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                  className="flex-shrink-0 overflow-hidden px-4 pb-3"
+                  style={{ background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(12px)' }}>
+                  {/* Sanctuary */}
+                  <p className="text-[10px] mt-2 mb-1.5" style={{ color: `${activeEnv.glowColor}0.6)` }}>Sanctuary</p>
+                  <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                    {(Object.entries(ENVIRONMENTS) as [EnvId, typeof ENVIRONMENTS[EnvId]][]).map(([id, env]) => (
+                      <button key={id} onClick={() => setEnv(id)}
+                        className="rounded-full px-2.5 py-1 text-[11px] whitespace-nowrap flex-shrink-0 transition-all"
+                        style={focusEnv === id
+                          ? { background: `${activeEnv.glowColor}0.2)`, color: '#f5dfa0', border: `1px solid ${activeEnv.glowColor}0.35)` }
+                          : { background: 'rgba(255,255,255,0.06)', color: 'rgba(245,220,150,0.5)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        {env.emoji} {env.label}
+                      </button>
+                    ))}
                   </div>
-                )}
-
-                {/* Progress line */}
-                <div className="h-0.5 w-44 overflow-hidden rounded-full" style={{ background: `${activeEnv.glowColor}0.1)` }}>
-                  <motion.div className="h-full rounded-full"
-                    style={{ background: `linear-gradient(90deg,${activeEnv.glowColor}0.7),${activeEnv.glowColor}1))` }}
-                    animate={{ width: `${progress}%` }} transition={{ duration: 0.6 }} />
-                </div>
-
-                {mode === 'chant' && (
-                  <div className="w-full max-w-xs">
-                    <ChantAudioPlayer title="Focus chant" trackIds={chantTrackIds}
-                      initialTrackId={activeChant.audioTrackId ?? undefined} compact />
+                  {/* Ambient */}
+                  <p className="text-[10px] mt-2.5 mb-1.5" style={{ color: `${activeEnv.glowColor}0.6)` }}>Ambient sound</p>
+                  <div className="flex gap-2 pb-2">
+                    {AMBIENT_OPTIONS.map(opt => (
+                      <button key={opt.id} onClick={() => setAmbient(opt.id)}
+                        className="flex-1 rounded-full py-1.5 text-[11px] font-medium transition-all"
+                        style={ambientId === opt.id
+                          ? { background: `${activeEnv.glowColor}0.22)`, color: '#f5dfa0', border: `1px solid ${activeEnv.glowColor}0.4)` }
+                          : { background: 'rgba(255,255,255,0.06)', color: 'rgba(245,220,150,0.5)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        {opt.emoji} {opt.label}
+                      </button>
+                    ))}
                   </div>
-                )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* ── Centre ── */}
+            <div className="flex-1 flex flex-col items-center justify-center gap-5 min-h-0 px-4">
+              {mode === 'breath' ? (
+                <BreathCircle running={running} glowColor={activeEnv.glowColor}
+                  phase={phase} remaining={remaining} totalSecs={totalSecs} />
+              ) : (
+                <div className="relative flex items-center justify-center" style={{ width: 280, height: 280 }}>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-65">
+                    <SacredMandala color={activeEnv.glowColor.includes('212,120') ? '#f5dfa0' : '#b4c8ff'} size={280} />
+                  </div>
+                  <motion.div className="absolute rounded-full"
+                    style={{ width: 262, height: 262, border: `1px solid ${activeEnv.glowColor}0.14)` }}
+                    animate={{ scale: running ? [1, 1.04, 1] : 1 }}
+                    transition={{ duration: 4.5, repeat: running ? Infinity : 0 }}
+                  />
+                  <motion.div className="absolute rounded-full"
+                    style={{ width: 218, height: 218, border: `1.5px solid ${activeEnv.glowColor}0.3)`, boxShadow: running ? `0 0 40px ${activeEnv.glowColor}0.2), inset 0 0 30px ${activeEnv.glowColor}0.08)` : 'none' }}
+                    animate={{ scale: running ? [1, 1.03, 1] : 1 }}
+                    transition={{ duration: 4.5, repeat: running ? Infinity : 0 }}
+                  />
+                  <motion.div className="absolute rounded-full"
+                    style={{ width: 158, height: 158, background: `radial-gradient(circle at 38% 38%, ${activeEnv.glowColor}0.3) 0%, ${activeEnv.glowColor}0.1) 60%, transparent 100%)`, boxShadow: running ? `0 0 50px ${activeEnv.glowColor}0.3)` : 'none' }}
+                    animate={{ scale: running ? [1, 1.06, 1] : 1 }}
+                    transition={{ duration: 4.5, repeat: running ? Infinity : 0 }}
+                  />
+                  <div className="relative z-10 text-center">
+                    <p className="font-mono text-4xl font-light"
+                      style={{ color: '#f5dfa0', textShadow: `0 0 20px ${activeEnv.glowColor}0.6)` }}>
+                      {formatClock(remaining)}
+                    </p>
+                    <p className="text-[11px] mt-1.5" style={{ color: `${activeEnv.glowColor}0.5)` }}>
+                      {mode === 'chant' ? chantMantra : activeMode.description}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Progress line */}
+              <div className="h-0.5 w-44 overflow-hidden rounded-full" style={{ background: `${activeEnv.glowColor}0.1)` }}>
+                <motion.div className="h-full rounded-full"
+                  style={{ background: `linear-gradient(90deg,${activeEnv.glowColor}0.7),${activeEnv.glowColor}1))` }}
+                  animate={{ width: `${progress}%` }} transition={{ duration: 0.6 }} />
               </div>
 
-              {/* Controls */}
-              <div className="flex flex-wrap justify-center gap-3">
-                <button onClick={toggleRunning}
-                  className="rounded-full px-8 py-3.5 text-sm font-medium transition-all"
-                  style={{
-                    background: running ? 'rgba(255,255,255,0.06)' : `linear-gradient(135deg,${activeEnv.glowColor}0.85),${activeEnv.glowColor}0.6))`,
-                    color: running ? 'rgba(245,210,130,0.75)' : '#1c1208',
-                    border: `1px solid ${activeEnv.glowColor}0.3)`,
-                    boxShadow: running ? 'none' : `0 4px 24px ${activeEnv.glowColor}0.3)`,
-                  }}>
-                  {running ? 'Pause' : 'Begin'}
-                </button>
-                <button onClick={reset}
-                  className="rounded-full px-6 py-3.5 text-sm transition"
-                  style={{ color: 'rgba(245,210,130,0.42)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  Reset
-                </button>
-              </div>
+              {mode === 'chant' && (
+                <div className="w-full max-w-xs">
+                  <ChantAudioPlayer title="Focus chant" trackIds={chantTrackIds}
+                    initialTrackId={activeChant.audioTrackId ?? undefined} compact />
+                </div>
+              )}
+            </div>
+
+            {/* ── Bottom controls ── */}
+            <div
+              className="flex-shrink-0 flex flex-wrap justify-center gap-3 px-4"
+              style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 24px)' }}
+            >
+              <button onClick={toggleRunning}
+                className="rounded-full px-8 py-3.5 text-sm font-medium transition-all"
+                style={{
+                  background: running ? 'rgba(255,255,255,0.06)' : `linear-gradient(135deg,${activeEnv.glowColor}0.85),${activeEnv.glowColor}0.6))`,
+                  color: running ? 'rgba(245,210,130,0.75)' : '#1c1208',
+                  border: `1px solid ${activeEnv.glowColor}0.3)`,
+                  boxShadow: running ? 'none' : `0 4px 24px ${activeEnv.glowColor}0.3)`,
+                }}>
+                {running ? 'Pause' : 'Begin'}
+              </button>
+              <button onClick={reset}
+                className="rounded-full px-6 py-3.5 text-sm transition"
+                style={{ color: 'rgba(245,210,130,0.42)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                Reset
+              </button>
             </div>
           </motion.div>
         )}

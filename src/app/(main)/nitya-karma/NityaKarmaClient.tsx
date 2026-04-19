@@ -15,9 +15,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, Flame, CheckCircle2, Circle, Loader2,
-  Info, Lock, Trophy, Sunrise, Star,
+  Info, Lock, Trophy, Sunrise, Star, X,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
@@ -90,7 +91,7 @@ const FALLBACK_STEPS: NityaSequenceStep[] = [
   { id: 'aarti_done',          label: 'Aarti / Kirtan',  icon: '🪔', minutes: 5,  description: 'Morning aarti — offer light and song to the divine before beginning your day', completed: false },
 ];
 
-// ── Tradition-aware step labels (canonical NityaStep IDs preserved) ────────────
+// ── Tradition-aware step labels ────────────────────────────────────────────────
 const STEP_LABELS: Record<string, Record<string, { label: string; icon: string; description: string }>> = {
   sikh: {
     woke_brahma_muhurta: { label: 'Amrit Vela',    icon: '🌙', description: 'Rise before dawn — the ambrosial hour for naam simran' },
@@ -102,13 +103,13 @@ const STEP_LABELS: Record<string, Record<string, { label: string; icon: string; 
     aarti_done:          { label: 'Ardas',          icon: '🙏', description: 'Offer Ardas — Sikh supplication for the sangat and the world' },
   },
   buddhist: {
-    woke_brahma_muhurta: { label: 'Early Rising',      icon: '🌙', description: 'Rise early — fresh mind supports deep meditation' },
-    snana_done:          { label: 'Purification',      icon: '🌊', description: 'Wash and purify body — outer cleanliness reflects inner intention' },
+    woke_brahma_muhurta: { label: 'Early Rising',       icon: '🌙', description: 'Rise early — fresh mind supports deep meditation' },
+    snana_done:          { label: 'Purification',       icon: '🌊', description: 'Wash and purify body — outer cleanliness reflects inner intention' },
     tilak_done:          { label: 'Precept Reflection', icon: '☸️', description: 'Reflect on the Five Precepts — renew your commitment to ethical life' },
-    sandhya_done:        { label: 'Metta Bhavana',     icon: '💛', description: 'Loving-kindness meditation — radiate goodwill to all beings' },
-    japa_done:           { label: 'Sitting Practice',  icon: '🧘', description: 'Silent sitting or breath meditation — cultivate samadhi and vipassana' },
-    shloka_done:         { label: 'Dhamma Reading',    icon: '📖', description: 'Study a passage from the Dhammapada or a sutta of your choice' },
-    aarti_done:          { label: 'Dana Intention',    icon: '🤲', description: 'Set an intention of generosity and service for the day ahead' },
+    sandhya_done:        { label: 'Metta Bhavana',      icon: '💛', description: 'Loving-kindness meditation — radiate goodwill to all beings' },
+    japa_done:           { label: 'Sitting Practice',   icon: '🧘', description: 'Silent sitting or breath meditation — cultivate samadhi and vipassana' },
+    shloka_done:         { label: 'Dhamma Reading',     icon: '📖', description: 'Study a passage from the Dhammapada or a sutta of your choice' },
+    aarti_done:          { label: 'Dana Intention',     icon: '🤲', description: 'Set an intention of generosity and service for the day ahead' },
   },
   jain: {
     woke_brahma_muhurta: { label: 'Brahma Muhurta', icon: '🌙', description: 'Rise before dawn — auspicious time for pratikraman and reflection' },
@@ -167,7 +168,7 @@ function heatColour(count: number, total: number, accent: string): string {
   return `${accent}33`;
 }
 
-// ── Streak card sub-component ──────────────────────────────────────────────────
+// ── Streak card ──────────────────────────────────────────────────────────────
 function StreakCard({ streak, accent }: { streak: NityaKarmaStreak; accent: string }) {
   return (
     <div
@@ -187,6 +188,82 @@ function StreakCard({ streak, accent }: { streak: NityaKarmaStreak; accent: stri
   );
 }
 
+// ── Pro Upgrade Sheet ────────────────────────────────────────────────────────
+function ProUpgradeSheet({ onClose, accent }: { onClose: () => void; accent: string }) {
+  const PRO_FEATURES = [
+    '🔥 30-day streak analytics & heatmap',
+    '🤖 AI-personalised morning sequences',
+    '📿 Full Japa history & insights',
+    '🧘 Extended Zen deep-focus sessions',
+    '📅 Panchang-aware vrat reminders',
+    '☬ Tradition-specific step variations',
+  ];
+  return (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-end"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      style={{ background: 'rgba(0,0,0,0.72)' }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+        transition={{ type: 'spring', damping: 30, stiffness: 280 }}
+        className="w-full max-w-2xl mx-auto rounded-t-3xl p-6 space-y-4"
+        style={{
+          background: 'linear-gradient(180deg,#1a1408 0%,#110e04 100%)',
+          border: '1px solid rgba(212,166,70,0.22)',
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Handle + close */}
+        <div className="flex items-center justify-between">
+          <div className="w-10 h-1 rounded-full bg-white/15 mx-auto" />
+          <button onClick={onClose} className="absolute right-5 top-5 w-8 h-8 rounded-full flex items-center justify-center"
+            style={{ background: 'rgba(255,255,255,0.08)' }}>
+            <X size={16} className="text-white/50" />
+          </button>
+        </div>
+
+        {/* Hero */}
+        <div className="text-center space-y-2 pt-2">
+          <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 border border-amber-400/30 bg-amber-400/10 mb-2">
+            <Star size={12} className="text-amber-400 fill-amber-400" />
+            <span className="text-xs font-bold text-amber-400">SANGAM PRO</span>
+          </div>
+          <h2 className="font-bold text-2xl text-[color:var(--brand-ink)]">Unlock Your Full Journey</h2>
+          <p className="text-sm text-[color:var(--brand-muted)]">Everything you need for a deep, sustained sadhana.</p>
+        </div>
+
+        {/* Features */}
+        <div className="space-y-2">
+          {PRO_FEATURES.map(f => (
+            <div key={f} className="flex items-center gap-3 rounded-xl px-3 py-2.5 border border-white/5"
+              style={{ background: `${accent}0a` }}>
+              <span className="text-sm text-[color:var(--brand-ink)]">{f}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <motion.button
+          whileTap={{ scale: 0.97 }}
+          className="w-full py-4 rounded-2xl font-bold text-base"
+          style={{
+            background: `linear-gradient(135deg, ${accent}, ${accent}cc)`,
+            color: '#1c1208',
+            boxShadow: `0 4px 28px ${accent}44`,
+          }}
+        >
+          Upgrade to Sangam Pro →
+        </motion.button>
+        <button onClick={onClose} className="w-full py-2 text-sm text-[color:var(--brand-muted)] text-center">
+          Maybe later
+        </button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 interface Props {
   userId:    string;
   userName:  string;
@@ -202,22 +279,21 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
   const morning             = TRADITION_MORNING[tradition] ?? TRADITION_MORNING.hindu;
   const accent              = meta.accentColour;
 
-  const [steps,      setSteps]      = useState<NityaSequenceStep[]>([]);
-  const [greeting,   setGreeting]   = useState('');
-  const [panchang,   setPanchang]   = useState<any>(null);
-  const [streak,     setStreak]     = useState<NityaKarmaStreak | null>(null);
-  const [loading,    setLoading]    = useState(true);
-  // busySteps: Set of step IDs currently being processed — allows independent per-step processing
-  const [busySteps,  setBusySteps]  = useState<Set<string>>(new Set());
-  const [justCompleted, setJustCompleted] = useState<string | null>(null);
-  // 30-day history
-  const [dayRecords, setDayRecords] = useState<DayRecord[]>([]);
+  const [steps,         setSteps]        = useState<NityaSequenceStep[]>([]);
+  const [greeting,      setGreeting]     = useState('');
+  const [panchang,      setPanchang]     = useState<any>(null);
+  const [streak,        setStreak]       = useState<NityaKarmaStreak | null>(null);
+  const [loading,       setLoading]      = useState(true);
+  const [busySteps,     setBusySteps]    = useState<Set<string>>(new Set());
+  const [justCompleted, setJustCompleted]= useState<string | null>(null);
+  const [dayRecords,    setDayRecords]   = useState<DayRecord[]>([]);
+  const [showProSheet,  setShowProSheet] = useState(false);
+
   const confettiFired = useRef(false);
-  // Ref mirrors latest steps state to fix stale-closure allDone check
-  const stepsRef = useRef<NityaSequenceStep[]>([]);
+  const stepsRef      = useRef<NityaSequenceStep[]>([]);
   useEffect(() => { stepsRef.current = steps; }, [steps]);
 
-  // ── Load 30-day history ──────────────────────────────────────────────────────
+  // ── Load 30-day history ───────────────────────────────────────────────────
   useEffect(() => {
     async function loadHistory() {
       const dates = buildDateRange(30);
@@ -238,7 +314,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
     loadHistory();
   }, [userId, supabase]);
 
-  // ── Load: merge engine steps with DB-persisted ticks for today ───────────────
+  // ── Load + merge engine steps with DB-persisted ticks ─────────────────────
   useEffect(() => {
     let cancelled = false;
 
@@ -256,13 +332,9 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
 
     const fallbackTimer = setTimeout(async () => {
       if (cancelled) return;
-      const base = getDefaultSteps(tradition);
+      const base   = getDefaultSteps(tradition);
       const merged = await loadTodayLog(base);
-      if (!cancelled) {
-        setSteps(merged);
-        setGreeting(morning.greeting);
-        setLoading(false);
-      }
+      if (!cancelled) { setSteps(merged); setGreeting(morning.greeting); setLoading(false); }
     }, 4000);
 
     if (!isReady || !engine) return () => { cancelled = true; clearTimeout(fallbackTimer); };
@@ -281,15 +353,12 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
           setStreak(str);
         }
       } catch {
-        const base = getDefaultSteps(tradition);
+        const base   = getDefaultSteps(tradition);
         const merged = await loadTodayLog(base);
         if (!cancelled) {
           setSteps(merged);
           setGreeting(morning.greeting);
-          try {
-            const str = await engine!.nityaKarma.getStreak(userId);
-            if (!cancelled) setStreak(str);
-          } catch { /* silent */ }
+          try { const str = await engine!.nityaKarma.getStreak(userId); if (!cancelled) setStreak(str); } catch { /* silent */ }
         }
       } finally {
         clearTimeout(fallbackTimer);
@@ -301,59 +370,65 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
     return () => { cancelled = true; clearTimeout(fallbackTimer); };
   }, [isReady, engine, userId, tradition, morning.greeting, supabase]);
 
-  // ── Mark a step — optimistic update + DB persist ─────────────────────────────
-  // Each step is processed independently; other steps remain clickable during async.
+  // ── Mark a step — try-finally ensures busySteps always clears ─────────────
   async function markStep(stepId: string, done: boolean) {
     if (done || busySteps.has(stepId)) return;
-
     setBusySteps(prev => new Set([...prev, stepId]));
-    await hapticLight();
-
-    // Optimistic update using functional form (no stale closure)
-    setSteps(prev => prev.map(s => s.id === stepId ? { ...s, completed: true } : s));
-    setJustCompleted(stepId);
-    setTimeout(() => setJustCompleted(null), 3000);
-
-    // Persist to DB
-    const today = todayDateString();
     try {
-      await supabase.from('nitya_karma_log').upsert(
-        { user_id: userId, log_date: today, step_id: stepId },
-        { onConflict: 'user_id,log_date,step_id', ignoreDuplicates: true }
-      );
-      // Update heatmap count for today
-      setDayRecords(prev => prev.map(d =>
-        d.date === today ? { ...d, count: Math.min(d.count + 1, d.total) } : d
-      ));
-    } catch {
-      // Non-fatal — UI already shows optimistic update
-    }
+      await hapticLight();
 
-    // Engine sync (best-effort)
-    if (engine) {
-      try { await engine.nityaKarma.markStep(userId, stepId as any); } catch { /* silent */ }
-    }
+      // Optimistic UI update
+      setSteps(prev => prev.map(s => s.id === stepId ? { ...s, completed: true } : s));
+      setJustCompleted(stepId);
+      setTimeout(() => setJustCompleted(null), 2500);
 
-    // Check all done — use stepsRef to avoid stale closure
-    const currentSteps = stepsRef.current;
-    const allNowDone = currentSteps.every(s => s.id === stepId ? true : s.completed);
+      // Persist to DB
+      const today = todayDateString();
+      try {
+        await supabase.from('nitya_karma_log').upsert(
+          { user_id: userId, log_date: today, step_id: stepId },
+          { onConflict: 'user_id,log_date,step_id', ignoreDuplicates: true }
+        );
+        setDayRecords(prev => prev.map(d =>
+          d.date === today ? { ...d, count: Math.min(d.count + 1, d.total) } : d
+        ));
+      } catch { /* non-fatal */ }
 
-    if (allNowDone && !confettiFired.current) {
-      confettiFired.current = true;
-      await hapticSuccess();
-      toast.success(morning.allDoneMsg, { duration: 5000 });
+      // Engine sync (best-effort)
       if (engine) {
-        try { const str = await engine.nityaKarma.getStreak(userId); setStreak(str); } catch { /* silent */ }
+        try { await engine.nityaKarma.markStep(userId, stepId as any); } catch { /* silent */ }
       }
-    } else {
-      toast(getStepMessage(stepId), {
-        icon: '🙏',
-        duration: 3500,
-        style: { background: '#1c1c1a', color: 'var(--brand-ink)', border: `1px solid ${accent}40` },
-      });
-    }
 
-    setBusySteps(prev => { const n = new Set(prev); n.delete(stepId); return n; });
+      // Check all done using ref (avoids stale closure)
+      const currentSteps = stepsRef.current;
+      const allNowDone   = currentSteps.every(s => s.id === stepId ? true : s.completed);
+
+      if (allNowDone && !confettiFired.current) {
+        confettiFired.current = true;
+        await hapticSuccess();
+        toast.success(morning.allDoneMsg, { duration: 5000 });
+        if (engine) {
+          try { const str = await engine.nityaKarma.getStreak(userId); setStreak(str); } catch { /* silent */ }
+        }
+      } else {
+        // Use hardcoded colors — CSS variables don't work inside toast portals
+        toast(getStepMessage(stepId), {
+          icon: '🙏',
+          duration: 3500,
+          style: {
+            background: '#1c1c1a',
+            color: '#f0ede4',
+            border: `1px solid ${accent}40`,
+            borderRadius: '14px',
+            fontSize: '13px',
+            maxWidth: '320px',
+          },
+        });
+      }
+    } finally {
+      // Always clear the busy lock — even if something above throws
+      setBusySteps(prev => { const n = new Set(prev); n.delete(stepId); return n; });
+    }
   }
 
   const completedCount = steps.filter(s => s.completed).length;
@@ -389,11 +464,19 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
               <span className="text-xs font-semibold" style={{ color: accent }}>{streak.current_streak}d</span>
             </div>
           )}
-          {isPro && (
+          {isPro ? (
             <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-amber-400/30 bg-amber-400/10">
               <Star size={12} className="text-amber-400 fill-amber-400" />
               <span className="text-[10px] font-bold text-amber-400">PRO</span>
             </div>
+          ) : (
+            <button
+              onClick={() => setShowProSheet(true)}
+              className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-amber-400/20 bg-amber-400/8 transition-all hover:bg-amber-400/14"
+            >
+              <Star size={11} className="text-amber-400/70" />
+              <span className="text-[10px] font-semibold text-amber-400/70">Pro</span>
+            </button>
           )}
         </div>
       </div>
@@ -412,15 +495,15 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
               <span>{Math.round(progressPct)}%</span>
             </div>
             <div className="h-2 rounded-full bg-white/20 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-white transition-all duration-700 ease-out"
-                style={{ width: `${progressPct}%` }}
+              <motion.div
+                className="h-full rounded-full bg-white"
+                animate={{ width: `${progressPct}%` }}
+                transition={{ duration: 0.6, ease: 'easeOut' }}
               />
             </div>
           </div>
         </div>
 
-        {/* Panchang strip */}
         {panchang && (
           <div className="bg-black/20 px-5 py-3 flex flex-wrap gap-x-4 gap-y-1">
             {panchang.tithi && (
@@ -460,25 +543,33 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
         </div>
       ) : (
         <div className="px-4 space-y-3">
-          {steps.map((step) => {
-            const isJustDone  = justCompleted === step.id;
-            const isBusy      = busySteps.has(step.id);
+          {steps.map((step, idx) => {
+            const isJustDone = justCompleted === step.id;
+            const isBusy     = busySteps.has(step.id);
             return (
-              <button
+              <motion.button
                 key={step.id}
                 onClick={() => markStep(step.id, step.completed)}
                 disabled={step.completed || isBusy}
-                className={`w-full text-left rounded-2xl border p-4 transition-all flex items-center gap-4 active:scale-[0.98] ${
-                  step.completed
-                    ? 'border-white/6'
-                    : 'glass-panel border-white/8 hover:border-white/16'
-                } ${isJustDone ? 'scale-[0.98]' : ''}`}
-                style={step.completed ? { background: `${accent}08` } : {}}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.06, duration: 0.4 }}
+                whileTap={!step.completed && !isBusy ? { scale: 0.97 } : {}}
+                className={`w-full text-left rounded-2xl border p-4 flex items-center gap-4 ${
+                  step.completed ? 'border-white/6' : 'glass-panel border-white/8'
+                }`}
+                style={{
+                  ...(step.completed ? { background: `${accent}08` } : {}),
+                  ...(isJustDone ? { boxShadow: `0 0 0 2px ${accent}55` } : {}),
+                  transition: 'box-shadow 0.4s ease',
+                }}
               >
                 {/* Icon */}
-                <div
-                  className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shrink-0 transition-all duration-300"
+                <motion.div
+                  className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shrink-0"
                   style={{ background: step.completed ? `${accent}20` : `${accent}12` }}
+                  animate={isJustDone ? { scale: [1, 1.25, 1] } : { scale: 1 }}
+                  transition={{ duration: 0.35 }}
                 >
                   {isBusy
                     ? <Loader2 size={18} className="animate-spin" style={{ color: accent }} />
@@ -486,7 +577,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
                       ? <CheckCircle2 size={22} className="text-green-400" />
                       : <span>{step.icon}</span>
                   }
-                </div>
+                </motion.div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
@@ -497,10 +588,8 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
                       {step.label}
                     </p>
                     {step.minutes > 0 && (
-                      <span
-                        className="text-[10px] font-medium rounded-full px-2 py-0.5"
-                        style={{ background: `${accent}14`, color: accent }}
-                      >
+                      <span className="text-[10px] font-medium rounded-full px-2 py-0.5"
+                        style={{ background: `${accent}14`, color: accent }}>
                         {step.minutes}m
                       </span>
                     )}
@@ -513,46 +602,41 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
                       {step.description}
                     </p>
                   )}
-                  {/* Deep-links */}
                   {step.id === 'japa_done' && !step.completed && (
-                    <Link
-                      href="/japa"
-                      onClick={e => e.stopPropagation()}
+                    <Link href="/japa" onClick={e => e.stopPropagation()}
                       className="mt-1.5 inline-flex text-xs font-semibold underline underline-offset-2"
-                      style={{ color: accent }}
-                    >
+                      style={{ color: accent }}>
                       Open Japa Counter →
                     </Link>
                   )}
                   {step.id === 'shloka_done' && !step.completed && (
-                    <Link
-                      href="/pathshala"
-                      onClick={e => e.stopPropagation()}
+                    <Link href="/pathshala" onClick={e => e.stopPropagation()}
                       className="mt-1.5 inline-flex text-xs font-semibold underline underline-offset-2"
-                      style={{ color: accent }}
-                    >
+                      style={{ color: accent }}>
                       Open Pathshala →
                     </Link>
                   )}
                 </div>
 
-                {/* Right icon */}
-                {step.completed ? (
-                  <Lock size={16} className="text-white/20 shrink-0" />
-                ) : !isBusy ? (
-                  <Circle size={20} className="text-white/20 shrink-0" />
-                ) : null}
-              </button>
+                {/* Right */}
+                {step.completed
+                  ? <Lock size={16} className="text-white/20 shrink-0" />
+                  : !isBusy
+                    ? <Circle size={20} className="text-white/20 shrink-0" />
+                    : null}
+              </motion.button>
             );
           })}
 
           {/* All done state */}
           {allDone && (
-            <div
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
               className="rounded-3xl p-6 text-center space-y-3 border border-white/10"
               style={{ background: `linear-gradient(135deg, ${accent}20, ${accent}10)` }}
             >
-              <div className="text-5xl">🙏</div>
+              <motion.div className="text-5xl" animate={{ scale: [0.8, 1.15, 1] }} transition={{ duration: 0.5 }}>🙏</motion.div>
               <p className="font-bold text-[color:var(--brand-ink)] text-lg">Full Nitya Karma Complete!</p>
               {streak && (
                 <p className="text-[color:var(--brand-muted)] text-sm">
@@ -571,26 +655,24 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
                 </p>
               </div>
               <div className="flex justify-center gap-3 pt-1">
-                <Link href="/japa"
-                  className="px-4 py-2 rounded-xl text-xs font-semibold"
+                <Link href="/japa" className="px-4 py-2 rounded-xl text-xs font-semibold"
                   style={{ background: `${accent}18`, color: accent }}>
                   Japa Counter
                 </Link>
-                <Link href="/pathshala"
-                  className="px-4 py-2 rounded-xl text-xs font-semibold"
+                <Link href="/pathshala" className="px-4 py-2 rounded-xl text-xs font-semibold"
                   style={{ background: `${accent}18`, color: accent }}>
                   Pathshala
                 </Link>
               </div>
-            </div>
+            </motion.div>
           )}
 
-          {/* Streak card — shown when some but not all done */}
+          {/* Streak card */}
           {!allDone && streak && streak.current_streak > 0 && (
             <StreakCard streak={streak} accent={accent} />
           )}
 
-          {/* ── 30-Day Practice Graph ──────────────────────────────────────── */}
+          {/* 30-Day Practice Graph */}
           <div className="glass-panel rounded-2xl border border-white/8 overflow-hidden">
             <div className="px-4 pt-4 pb-3 flex items-center justify-between">
               <div>
@@ -598,24 +680,23 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
                 <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">Daily practice completion</p>
               </div>
               {!isPro && (
-                <div className="flex items-center gap-1.5 rounded-xl px-2.5 py-1 border border-amber-400/30 bg-amber-400/10">
+                <button
+                  onClick={() => setShowProSheet(true)}
+                  className="flex items-center gap-1.5 rounded-xl px-2.5 py-1 border border-amber-400/30 bg-amber-400/10 transition-all hover:bg-amber-400/18"
+                >
                   <Lock size={11} className="text-amber-400" />
                   <span className="text-[10px] font-semibold text-amber-400">Pro</span>
-                </div>
+                </button>
               )}
             </div>
 
             {isPro ? (
-              /* Pro: full heatmap */
               <div className="px-4 pb-4">
                 <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(10, 1fr)' }}>
-                  {dayRecords.map((d) => (
-                    <div
-                      key={d.date}
-                      title={`${d.date}: ${d.count}/${d.total} steps`}
+                  {dayRecords.map(d => (
+                    <div key={d.date} title={`${d.date}: ${d.count}/${d.total} steps`}
                       className="aspect-square rounded-md transition-colors"
-                      style={{ background: heatColour(d.count, d.total, accent) }}
-                    />
+                      style={{ background: heatColour(d.count, d.total, accent) }} />
                   ))}
                 </div>
                 <div className="flex items-center justify-between mt-3">
@@ -650,15 +731,12 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
                 )}
               </div>
             ) : (
-              /* Free: blurred preview with upgrade prompt */
               <div className="relative px-4 pb-4">
-                <div className="grid gap-1 blur-sm pointer-events-none select-none" style={{ gridTemplateColumns: 'repeat(10, 1fr)' }}>
+                <div className="grid gap-1 blur-sm pointer-events-none select-none"
+                  style={{ gridTemplateColumns: 'repeat(10, 1fr)' }}>
                   {buildDateRange(30).map((d, i) => (
-                    <div
-                      key={d}
-                      className="aspect-square rounded-md"
-                      style={{ background: i % 3 === 0 ? accent : i % 3 === 1 ? `${accent}55` : `${accent}18` }}
-                    />
+                    <div key={d} className="aspect-square rounded-md"
+                      style={{ background: i % 3 === 0 ? accent : i % 3 === 1 ? `${accent}55` : `${accent}18` }} />
                   ))}
                 </div>
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/40 rounded-b-2xl">
@@ -667,9 +745,13 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
                   <p className="text-[10px] text-[color:var(--brand-muted)] text-center px-6">
                     Unlock 30-day graphs, streak analytics, and AI-personalised sequences
                   </p>
-                  <div className="mt-1 px-4 py-1.5 rounded-xl text-xs font-semibold bg-amber-400/20 text-amber-400 border border-amber-400/30">
+                  <motion.button
+                    onClick={() => setShowProSheet(true)}
+                    whileTap={{ scale: 0.96 }}
+                    className="mt-1 px-4 py-1.5 rounded-xl text-xs font-semibold bg-amber-400/20 text-amber-400 border border-amber-400/30"
+                  >
                     Upgrade to Pro →
-                  </div>
+                  </motion.button>
                 </div>
               </div>
             )}
@@ -680,12 +762,24 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
             <Info size={14} className="text-[color:var(--brand-muted)] shrink-0 mt-0.5" />
             <p className="text-xs text-[color:var(--brand-muted)] leading-relaxed">
               Your sequence adapts to today&apos;s tithi, nakshatra, and vrat.{' '}
-              <span className="font-semibold text-[color:var(--brand-ink)]">Sangam Pro</span>
+              <button
+                onClick={() => setShowProSheet(true)}
+                className="font-semibold text-[color:var(--brand-ink)] underline underline-offset-2"
+              >
+                Sangam Pro
+              </button>
               {' '}unlocks AI-personalised sequences based on your practice history and current streak.
             </p>
           </div>
         </div>
       )}
+
+      {/* Pro Upgrade Sheet */}
+      <AnimatePresence>
+        {showProSheet && (
+          <ProUpgradeSheet onClose={() => setShowProSheet(false)} accent={accent} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
