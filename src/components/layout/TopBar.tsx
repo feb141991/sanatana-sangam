@@ -265,8 +265,8 @@ export default function TopBar({
                 <button
                   onClick={handleBellClick}
                   aria-label="Notifications"
-                    className="w-9 h-9 rounded-full transition flex items-center justify-center relative text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary-strong)]"
-                    style={{ background: 'rgba(212, 166, 70, 0.08)' }}
+                  className="w-9 h-9 rounded-full transition flex items-center justify-center relative text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary-strong)]"
+                  style={{ background: 'rgba(212, 166, 70, 0.08)' }}
                 >
                   <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
@@ -281,158 +281,6 @@ export default function TopBar({
                     </span>
                   )}
                 </button>
-
-                <AnimatePresence>
-                {open && (
-                  <motion.div
-                    initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10, scale: 0.985 }}
-                    animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
-                    exit={prefersReducedMotion ? undefined : { opacity: 0, y: 6, scale: 0.985 }}
-                    transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                    className="glass-panel-strong absolute right-0 top-11 w-80 rounded-3xl overflow-hidden z-50 origin-top-right"
-                  >
-
-                    {/* Header */}
-                    <div className="px-4 py-3 border-b border-black/5 flex items-center justify-between">
-                      <span className="font-semibold text-sm text-[color:var(--brand-ink)]">Notifications</span>
-                      {unreadCount > 0 && (
-                        <button onClick={markAllRead} className="text-xs hover:underline" style={{ color: 'var(--brand-primary)' }}>
-                          Mark all read
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Permission prompt — shown when not yet granted */}
-                    {shouldShowPushPrompt && (
-                      <div className="glass-panel mx-3 mt-3 px-3 py-2.5 rounded-xl flex items-start gap-2.5">
-                        <span className="text-lg mt-0.5">🔔</span>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-[color:var(--brand-ink)]">
-                            {permission === 'denied'
-                              ? 'Notifications blocked'
-                              : 'Enable push notifications'}
-                          </p>
-                          <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-snug">
-                            {permission === 'denied'
-                              ? 'Allow notifications in your browser settings to receive the reminder types you have enabled.'
-                              : wantsAnyNotifications
-                                ? 'Get the reminder types you have enabled, in your local time and outside quiet hours.'
-                                : 'Choose reminder types in Profile first, then enable browser push here.'}
-                          </p>
-                          {permission !== 'denied' && wantsAnyNotifications && (
-                            <div className="flex items-center gap-3 mt-1.5">
-                              <button
-                                onClick={async () => {
-                                  const granted = await requestNotificationPermission();
-                                  setPermission(getPermissionState());
-                                  if (granted) {
-                                    // Re-login to OneSignal so the new push subscription
-                                    // is linked to this user's external_id. Without this,
-                                    // the server can't target the user by ID.
-                                    await loginToOneSignal(userId);
-                                    const playerId = await getPlayerId();
-                                    if (playerId && userId) {
-                                      await supabase.from('profiles').update({ onesignal_player_id: playerId }).eq('id', userId);
-                                    }
-                                    toast.success('Notifications enabled 🙏');
-                                  }
-                                }}
-                                className="glass-button-primary text-xs font-semibold px-3 py-1 rounded-full transition"
-                              >
-                                Enable
-                              </button>
-                              {permission === 'default' && (
-                                <button
-                                  onClick={dismissPushPromptForNow}
-                                  className="text-xs font-semibold text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition"
-                                >
-                                  Later
-                                </button>
-                              )}
-                            </div>
-                          )}
-                          {permission !== 'denied' && !wantsAnyNotifications && (
-                            <Link
-                              href="/profile"
-                              className="inline-flex mt-1.5 text-xs font-semibold hover:underline"
-                              style={{ color: 'var(--brand-primary-strong)' }}
-                            >
-                              Open notification preferences
-                            </Link>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Notification list */}
-                    <motion.div
-                      className="divide-y divide-gray-50 max-h-72 overflow-y-auto"
-                      initial="hidden"
-                      animate="show"
-                      variants={{
-                        hidden: {},
-                        show: {
-                          transition: {
-                            staggerChildren: prefersReducedMotion ? 0 : 0.035,
-                            delayChildren: prefersReducedMotion ? 0 : 0.04,
-                          },
-                        },
-                      }}
-                    >
-                      {notifs.length === 0 ? (
-                        <div className="px-4 py-8 text-center space-y-3">
-                          <p className="text-3xl">🪔</p>
-                          <div>
-                            <p className="text-sm font-medium text-[color:var(--brand-ink)]">All quiet for now</p>
-                            <p className="text-xs text-[color:var(--brand-muted)] mt-1">
-                              Reminders and updates will appear here.
-                            </p>
-                          </div>
-                        </div>
-                      ) : (
-                        notifs.map((n) => (
-                          <motion.div
-                            key={n.id}
-                            variants={{
-                              hidden: { opacity: 0, y: 8 },
-                              show: { opacity: 1, y: 0, transition: { duration: 0.18 } },
-                            }}
-                            className={`px-4 py-3 flex items-start gap-3 transition cursor-pointer ${
-                              !n.read ? 'bg-[color:var(--brand-primary-soft)]/70 hover:bg-[color:var(--brand-primary-soft)]' : 'hover:bg-white/[0.03]'
-                            }`}
-                            onClick={async () => {
-                              if (!n.read) {
-                                await markOneReadMutation.mutateAsync(n.id);
-                              }
-                              if (!n.action_url) return;
-                              if (/^https?:\/\//.test(n.action_url)) {
-                                window.location.href = n.action_url;
-                                return;
-                              }
-                              setOpen(false);
-                              router.push(n.action_url);
-                            }}
-                          >
-                            <span className="text-lg mt-0.5 flex-shrink-0">{n.emoji}</span>
-                            <div className="flex-1 min-w-0">
-                              <p className={`text-sm leading-snug ${!n.read ? 'font-semibold text-[color:var(--brand-ink)]' : 'text-[color:var(--brand-muted)]'}`}>
-                                {n.title}
-                              </p>
-                              <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-snug">{n.body}</p>
-                              <p className="text-[10px] text-[color:var(--brand-muted)]/80 mt-0.5">
-                                {new Date(n.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                              </p>
-                            </div>
-                            {!n.read && (
-                              <span className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ background: 'var(--brand-primary)' }} />
-                            )}
-                          </motion.div>
-                        ))
-                      )}
-                    </motion.div>
-                  </motion.div>
-                )}
-                </AnimatePresence>
               </div>
 
               {/* Avatar */}
@@ -455,17 +303,260 @@ export default function TopBar({
         </div>
       </div>
 
+      {/* ── Notification Bottom Sheet ─────────────────────────────────── */}
       <AnimatePresence>
         {open && (
-          <motion.div
-            className="fixed inset-0 z-30"
-            onClick={() => setOpen(false)}
-            initial={prefersReducedMotion ? undefined : { opacity: 0 }}
-            animate={prefersReducedMotion ? undefined : { opacity: 1 }}
-            exit={prefersReducedMotion ? undefined : { opacity: 0 }}
-          />
+          <>
+            {/* Backdrop */}
+            <motion.div
+              className="fixed inset-0 z-40 bg-black/50 backdrop-blur-[2px]"
+              onClick={() => setOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            />
+
+            {/* Sheet */}
+            <motion.div
+              className="fixed inset-x-0 bottom-0 z-50 flex flex-col rounded-t-[2rem] overflow-hidden"
+              style={{
+                background: 'linear-gradient(180deg, rgba(28,26,22,0.99) 0%, rgba(22,20,17,0.99) 100%)',
+                border: '1px solid rgba(212,166,70,0.14)',
+                borderBottom: 'none',
+                maxHeight: '85dvh',
+                paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+              }}
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', stiffness: 340, damping: 38, mass: 0.9 }}
+            >
+              {/* Drag handle */}
+              <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
+                <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(212,166,70,0.25)' }} />
+              </div>
+
+              {/* Header row */}
+              <div className="flex items-center justify-between px-5 py-3 flex-shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                <div>
+                  <p className="font-semibold text-base text-[color:var(--brand-ink)]">Notifications</p>
+                  {notifs.length > 0 && (
+                    <p className="text-[11px] text-[color:var(--brand-muted)] mt-0.5">
+                      {unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center gap-3">
+                  {unreadCount > 0 && (
+                    <button
+                      onClick={markAllRead}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-xl transition"
+                      style={{ background: 'rgba(212,166,70,0.12)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(212,166,70,0.2)' }}
+                    >
+                      Mark all read
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setOpen(false)}
+                    className="w-8 h-8 rounded-full flex items-center justify-center transition text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)]"
+                    style={{ background: 'rgba(255,255,255,0.06)' }}
+                    aria-label="Close"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                      <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Push permission prompt */}
+              {shouldShowPushPrompt && (
+                <div className="mx-4 mt-4 flex-shrink-0 rounded-2xl px-4 py-3.5 flex items-start gap-3"
+                  style={{ background: 'rgba(212,166,70,0.08)', border: '1px solid rgba(212,166,70,0.18)' }}>
+                  <span className="text-xl mt-0.5">🔔</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-[color:var(--brand-ink)]">
+                      {permission === 'denied' ? 'Notifications blocked in browser' : 'Enable push notifications'}
+                    </p>
+                    <p className="text-xs text-[color:var(--brand-muted)] mt-1 leading-relaxed">
+                      {permission === 'denied'
+                        ? 'Open your browser/OS settings and allow notifications for this site to receive reminders.'
+                        : wantsAnyNotifications
+                          ? 'Receive festival alerts, Nitya reminders, and streak nudges on your device.'
+                          : 'Turn on reminder types in Profile settings first, then enable push here.'}
+                    </p>
+                    {permission !== 'denied' && wantsAnyNotifications && (
+                      <div className="flex items-center gap-3 mt-2.5">
+                        <button
+                          onClick={async () => {
+                            const granted = await requestNotificationPermission();
+                            setPermission(getPermissionState());
+                            if (granted) {
+                              await loginToOneSignal(userId);
+                              const playerId = await getPlayerId();
+                              if (playerId && userId) {
+                                await supabase.from('profiles').update({ onesignal_player_id: playerId }).eq('id', userId);
+                              }
+                              toast.success('Push notifications enabled 🙏');
+                            }
+                          }}
+                          className="glass-button-primary text-xs font-semibold px-4 py-1.5 rounded-xl transition"
+                        >
+                          Enable now
+                        </button>
+                        {permission === 'default' && (
+                          <button
+                            onClick={dismissPushPromptForNow}
+                            className="text-xs font-semibold text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition"
+                          >
+                            Remind me later
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    {permission !== 'denied' && !wantsAnyNotifications && (
+                      <Link
+                        href="/profile"
+                        onClick={() => setOpen(false)}
+                        className="inline-flex mt-2 text-xs font-semibold"
+                        style={{ color: 'var(--brand-primary-strong)' }}
+                      >
+                        Open notification settings →
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Notification list — scrollable */}
+              <div className="flex-1 overflow-y-auto overscroll-contain">
+                {notifs.length === 0 ? (
+                  <NotificationsEmptyState userId={userId} onNotificationSent={() => {
+                    notificationsQuery.refetch();
+                  }} />
+                ) : (
+                  <motion.div
+                    className="divide-y"
+                    style={{ borderColor: 'rgba(255,255,255,0.05)' }}
+                    initial="hidden"
+                    animate="show"
+                    variants={{
+                      hidden: {},
+                      show: {
+                        transition: {
+                          staggerChildren: prefersReducedMotion ? 0 : 0.04,
+                          delayChildren: prefersReducedMotion ? 0 : 0.05,
+                        },
+                      },
+                    }}
+                  >
+                    {notifs.map((n) => (
+                      <motion.div
+                        key={n.id}
+                        variants={{
+                          hidden: { opacity: 0, y: 10 },
+                          show: { opacity: 1, y: 0, transition: { duration: 0.2 } },
+                        }}
+                        className="px-5 py-4 flex items-start gap-3.5 cursor-pointer active:opacity-80 transition-opacity"
+                        style={{
+                          background: !n.read ? 'rgba(212,166,70,0.05)' : 'transparent',
+                        }}
+                        onClick={async () => {
+                          if (!n.read) await markOneReadMutation.mutateAsync(n.id);
+                          if (!n.action_url) return;
+                          if (/^https?:\/\//.test(n.action_url)) {
+                            window.location.href = n.action_url;
+                            return;
+                          }
+                          setOpen(false);
+                          router.push(n.action_url);
+                        }}
+                      >
+                        {/* Emoji */}
+                        <div
+                          className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl flex-shrink-0"
+                          style={{ background: 'rgba(212,166,70,0.1)', border: '1px solid rgba(212,166,70,0.15)' }}
+                        >
+                          {n.emoji}
+                        </div>
+                        {/* Text */}
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-sm leading-snug ${!n.read ? 'font-semibold text-[color:var(--brand-ink)]' : 'text-[color:var(--brand-muted)]'}`}>
+                            {n.title}
+                          </p>
+                          <p className="text-xs text-[color:var(--brand-muted)] mt-1 leading-relaxed">{n.body}</p>
+                          <p className="text-[10px] mt-1.5" style={{ color: 'rgba(180,160,100,0.5)' }}>
+                            {new Date(n.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </div>
+                        {/* Unread dot */}
+                        {!n.read && (
+                          <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ background: 'var(--brand-primary)' }} />
+                        )}
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                )}
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </header>
+  );
+}
+
+// ── Empty state with test-notification button ─────────────────────────────────
+function NotificationsEmptyState({ userId, onNotificationSent }: { userId: string; onNotificationSent: () => void }) {
+  const [sending, setSending] = useState(false);
+
+  async function sendTest() {
+    if (!userId || sending) return;
+    setSending(true);
+    try {
+      const res = await fetch('/api/notifications/test', { method: 'POST' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(data.error ?? 'Could not send test notification');
+        return;
+      }
+      toast.success(data.push_targets > 0 ? 'Test sent — check bell and browser 🔔' : 'Test notification added to bell 🔔');
+      onNotificationSent();
+    } catch {
+      toast.error('Could not reach notification service');
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center px-6 py-12 text-center gap-5">
+      <div className="w-16 h-16 rounded-3xl flex items-center justify-center text-3xl"
+        style={{ background: 'rgba(212,166,70,0.08)', border: '1px solid rgba(212,166,70,0.15)' }}>
+        🪔
+      </div>
+      <div>
+        <p className="text-base font-semibold text-[color:var(--brand-ink)]">All quiet for now</p>
+        <p className="text-sm text-[color:var(--brand-muted)] mt-1.5 leading-relaxed max-w-[260px] mx-auto">
+          Festival alerts, morning sadhana reminders, and streak nudges will show up here.
+        </p>
+      </div>
+      <button
+        onClick={sendTest}
+        disabled={sending}
+        className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition disabled:opacity-50"
+        style={{
+          background: 'rgba(212,166,70,0.1)',
+          border: '1px solid rgba(212,166,70,0.22)',
+          color: 'var(--brand-primary-strong)',
+        }}
+      >
+        <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+        </svg>
+        {sending ? 'Sending…' : 'Send a test notification'}
+      </button>
+    </div>
   );
 }
