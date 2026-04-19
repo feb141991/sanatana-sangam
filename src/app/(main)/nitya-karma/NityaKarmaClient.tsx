@@ -137,6 +137,26 @@ function todayDateString(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+// ── Local-first persistence ───────────────────────────────────────────────────
+// Saves completed step IDs in localStorage so they survive page navigation
+// regardless of whether the Supabase write succeeds.
+function localKey(userId: string, date: string) {
+  return `nitya_done_${userId}_${date}`;
+}
+function getLocalDone(userId: string, date: string): Set<string> {
+  try {
+    const raw = localStorage.getItem(localKey(userId, date));
+    return new Set(raw ? (JSON.parse(raw) as string[]) : []);
+  } catch { return new Set(); }
+}
+function saveLocalDone(userId: string, date: string, stepId: string) {
+  try {
+    const existing = getLocalDone(userId, date);
+    existing.add(stepId);
+    localStorage.setItem(localKey(userId, date), JSON.stringify([...existing]));
+  } catch {}
+}
+
 function nextBrahmaMuhurtaText(): string {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -320,13 +340,20 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
 
     async function loadTodayLog(baseSteps: NityaSequenceStep[]): Promise<NityaSequenceStep[]> {
       const today = todayDateString();
-      const { data } = await supabase
-        .from('nitya_karma_log')
-        .select('step_id')
-        .eq('user_id', userId)
-        .eq('log_date', today);
 
-      const doneIds = new Set((data ?? []).map((r: any) => r.step_id as string));
+      // Always start with what we have locally — instant, works offline
+      const doneIds = getLocalDone(userId, today);
+
+      // Merge in whatever Supabase has (may add cross-device completions)
+      try {
+        const { data } = await supabase
+          .from('nitya_karma_log')
+          .select('step_id')
+          .eq('user_id', userId)
+          .eq('log_date', today);
+        (data ?? []).forEach((r: any) => { if (r.step_id) doneIds.add(r.step_id as string); });
+      } catch { /* offline — local data is still used */ }
+
       return baseSteps.map(s => ({ ...s, completed: s.completed || doneIds.has(s.id) }));
     }
 
@@ -382,17 +409,32 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
       setJustCompleted(stepId);
       setTimeout(() => setJustCompleted(null), 2500);
 
-      // Persist to DB
+      // ── Persist step completion ──────────────────────────────────────────
       const today = todayDateString();
+
+      // 1. Write to localStorage immediately — always works, survives navigation
+      saveLocalDone(userId, today, stepId);
+
+      // 2. Try Supabase (best-effort for cross-device sync).
+      //    Use plain insert — upsert with onConflict requires a DB unique constraint
+      //    that may not exist. insert is safe: a 23505 unique-violation just means
+      //    the row is already there, which is fine.
       try {
-        await supabase.from('nitya_karma_log').upsert(
-          { user_id: userId, log_date: today, step_id: stepId },
-          { onConflict: 'user_id,log_date,step_id', ignoreDuplicates: true }
-        );
-        setDayRecords(prev => prev.map(d =>
-          d.date === today ? { ...d, count: Math.min(d.count + 1, d.total) } : d
-        ));
-      } catch { /* non-fatal */ }
+        const { error } = await supabase.from('nitya_karma_log').insert({
+          user_id: userId, log_date: today, step_id: stepId,
+        });
+        if (!error || error.code === '23505') {
+          // Success or row already existed — either way the data is there
+          setDayRecords(prev => prev.map(d =>
+            d.date === today ? { ...d, count: Math.min(d.count + 1, d.total) } : d
+          ));
+        } else {
+          // Log so we can diagnose schema issues without silently losing data
+          console.warn('[Nitya] DB write error:', error.code, error.message);
+        }
+      } catch (err) {
+        console.warn('[Nitya] DB write threw:', err);
+      }
 
       // Engine sync (best-effort)
       if (engine) {
