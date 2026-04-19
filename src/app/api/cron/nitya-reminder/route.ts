@@ -120,7 +120,7 @@ export async function GET(request: Request) {
         title:            nudge.title,
         body:             nudge.body,
         emoji:            '🌅',
-        type:             'seva' as const,   // 'nitya' is not in the DB enum yet — using 'seva' until migration
+        type:             'nitya' as const,
         action_url:       actionPath,
         notification_key: `nitya:morning:${localDate}`,
         local_date:       localDate,

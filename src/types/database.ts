@@ -224,7 +224,7 @@ export interface Database {
           title: string;
           body: string;
           emoji: string;
-          type: 'festival' | 'mandali' | 'streak' | 'seva' | 'general';
+          type: 'festival' | 'mandali' | 'streak' | 'seva' | 'general' | 'nitya';
           read: boolean;
           action_url: string | null;
           notification_key: string | null;
