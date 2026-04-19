@@ -24,6 +24,14 @@
     {
       "path": "/api/cron/nitya-reminder",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/tithi-reminder",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/tithi-reminder",
+      "schedule": "0 8 * * *"
     }
   ]
 }

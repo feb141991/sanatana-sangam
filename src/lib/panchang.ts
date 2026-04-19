@@ -372,3 +372,161 @@ export function calculatePanchang(
     samvatName,
   };
 }
+
+// ─── getPanchangTimes ──────────────────────────────────────────────────────────
+// Returns raw Date objects (not formatted strings) so server-side cron jobs
+// can compare them directly against `new Date()` for smart notification timing.
+// Falls back to Ujjain (traditional meridian of Indian astronomy) when coords
+// are missing.
+
+export interface PanchangTimes {
+  brahmaMuhurtaStart: Date;
+  brahmaMuhurtaEnd: Date;
+  rahuKaalStart: Date;
+  rahuKaalEnd: Date;
+  abhijitStart: Date;
+  abhijitEnd: Date;
+  tithiIndex: number;
+  paksha: 'Shukla' | 'Krishna';
+  tithi: string;
+  nakshatra: string;
+  yoga: string;
+}
+
+const UJJAIN_LAT =  23.1765;
+const UJJAIN_LON =  75.7885;
+
+export function getPanchangTimes(
+  date: Date = new Date(),
+  lat?: number | null,
+  lon?: number | null,
+): PanchangTimes {
+  const safeLat = (lat != null && Number.isFinite(lat)) ? lat : UJJAIN_LAT;
+  const safeLon = (lon != null && Number.isFinite(lon)) ? lon : UJJAIN_LON;
+
+  const astro          = computeAstronomy(date);
+  const tithiIndex     = Math.floor(astro.elongation / 12) + 1;
+  const paksha: 'Shukla' | 'Krishna' = tithiIndex <= 15 ? 'Shukla' : 'Krishna';
+  const tithi          = getTithiName(tithiIndex, paksha);
+  const nakshatraIndex = Math.floor(astro.moonSidereal / (360 / 27)) % 27;
+  const yogaIndex      = Math.floor(normalizeAngle(astro.sunSidereal + astro.moonSidereal) / (360 / 27)) % 27;
+
+  const { sunrise, sunset, noon } = getSunriseSunset(safeLat, safeLon, date);
+  const brahmaMuhurtaStart = subtractMinutes(sunrise, 96);
+  const brahmaMuhurtaEnd   = subtractMinutes(sunrise, 48);
+
+  const dayLengthMs  = Math.max(0, sunset.getTime() - sunrise.getTime());
+  const partLengthMs = dayLengthMs / 8;
+  const dow          = date.getDay();
+  const rahuPartIdx  = RAHU_KAAL_ORDER[dow] - 1;
+  const rahuKaalStart = new Date(sunrise.getTime() + rahuPartIdx * partLengthMs);
+  const rahuKaalEnd   = new Date(rahuKaalStart.getTime() + partLengthMs);
+
+  const abhijitStart = addMinutes(noon, -24);
+  const abhijitEnd   = addMinutes(noon,  24);
+
+  // subtractMinutes / addMinutes return Date | null when their input is null.
+  // getSunriseSunset always returns real Dates, so these are safe — we fall back
+  // to sunrise/sunset themselves only to satisfy the type system.
+  return {
+    brahmaMuhurtaStart: brahmaMuhurtaStart ?? sunrise,
+    brahmaMuhurtaEnd:   brahmaMuhurtaEnd   ?? sunrise,
+    rahuKaalStart,
+    rahuKaalEnd,
+    abhijitStart: abhijitStart ?? noon,
+    abhijitEnd:   abhijitEnd   ?? noon,
+    tithiIndex,
+    paksha,
+    tithi,
+    nakshatra: NAKSHATRAS[nakshatraIndex],
+    yoga:      YOGAS[yogaIndex],
+  };
+}
+
+// ─── isInWindow ───────────────────────────────────────────────────────────────
+// Returns true if `now` falls within [start - toleranceMs, end + toleranceMs].
+export function isInWindow(
+  now: Date,
+  start: Date,
+  end: Date,
+  toleranceMs = 0,
+): boolean {
+  const t = now.getTime();
+  return t >= start.getTime() - toleranceMs && t <= end.getTime() + toleranceMs;
+}
+
+// ─── getTithiReminder ─────────────────────────────────────────────────────────
+// Returns tradition-aware notification copy for the given tithiIndex, or null
+// if the tithi is not a special observance day.
+export type TithiReminder = { title: string; body: string; emoji: string };
+
+export function getTithiReminder(
+  tithiIndex: number,
+  tradition: string | null | undefined,
+): TithiReminder | null {
+  const t = tradition ?? 'hindu';
+
+  // Ekadashi — index 11 (Shukla) or 26 (Krishna)
+  if (tithiIndex === 11 || tithiIndex === 26) {
+    const paksha = tithiIndex === 11 ? 'Shukla' : 'Krishna';
+    return {
+      emoji: '🌿',
+      title: `🌿 Ekadashi Today (${paksha} Paksha)`,
+      body:  t === 'vaishnava' || t === 'hindu'
+        ? 'A sacred day for fasting, chanting, and surrender. Avoid grains and deepen your bhajan practice.'
+        : 'A powerful day for inner renewal — fasting, silence, or extra meditation.',
+    };
+  }
+
+  // Purnima — index 15
+  if (tithiIndex === 15) {
+    return {
+      emoji: '🌕',
+      title: '🌕 Purnima — Full Moon Today',
+      body:  t === 'buddhist'
+        ? 'Uposatha day — the full moon is a time for deeper practice, precepts, and collective refuge.'
+        : t === 'sikh'
+          ? 'Puranmashi — the full moon is a blessed day for kirtan and sangat.'
+          : 'The full moon amplifies every intention. A beautiful day for sadhana, gratitude, and community.',
+    };
+  }
+
+  // Amavasya — index 30
+  if (tithiIndex === 30) {
+    return {
+      emoji: '🌑',
+      title: '🌑 Amavasya — New Moon Today',
+      body:  'A day for ancestor remembrance (Pitru Tarpan), deep stillness, and planting new seeds of intention.',
+    };
+  }
+
+  // Pradosh — Trayodashi: index 13 (Shukla) or 28 (Krishna)
+  if ((tithiIndex === 13 || tithiIndex === 28) && (t === 'hindu' || t === 'shaiva' || t === 'vaishnava')) {
+    return {
+      emoji: '🕉️',
+      title: '🕉️ Pradosh Today',
+      body:  'Trayodashi Pradosh — Shiva and Parvati are near at twilight. A powerful evening for Pradosh Puja and letting go.',
+    };
+  }
+
+  // Chaturthi — Vinayaka (index 4) or Sankashti (index 19)
+  if (tithiIndex === 4 || tithiIndex === 19) {
+    const name = tithiIndex === 4 ? 'Vinayaka Chaturthi' : 'Sankashti Chaturthi';
+    return {
+      emoji: '🐘',
+      title: `🐘 ${name} Today`,
+      body:  'Worship Ganesha today — the remover of obstacles clears the path for your sadhana.',
+    };
+  }
+
+  // Shivaratri — 14th tithi of Krishna paksha (index 29)
+  if (tithiIndex === 29 && (t === 'hindu' || t === 'shaiva')) {
+    return {
+      emoji: '🕉️',
+      title: '🕉️ Masik Shivaratri Today',
+      body:  'Monthly Shivaratri — a powerful night for Shiva worship, night vigil, and Panchabhishek.',
+    };
+  }
+
+  return null;
+}

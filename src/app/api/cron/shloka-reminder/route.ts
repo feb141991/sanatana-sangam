@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
+import { getPanchangTimes, getTithiReminder, isInWindow } from '@/lib/panchang';
 
 // ─── Shloka Streak Reminder Cron ─────────────────────────────────────────────
 // Schedule: 0 18 * * * (daily on Vercel Hobby — route still filters by user local evening)
@@ -40,7 +41,7 @@ export async function GET(request: Request) {
 
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, shloka_streak, full_name, timezone, last_shloka_date, wants_shloka_reminders, notification_quiet_hours_start, notification_quiet_hours_end');
+      .select('id, shloka_streak, full_name, tradition, timezone, latitude, longitude, last_shloka_date, wants_shloka_reminders, notification_quiet_hours_start, notification_quiet_hours_end');
 
     if (usersError) {
       console.error('Shloka cron users query failed:', usersError);
@@ -73,18 +74,37 @@ export async function GET(request: Request) {
     }
 
     const notifications = eligibleUsers.map((u) => {
-      const timeZone = resolveTimeZone((u as any).timezone);
+      const timeZone  = resolveTimeZone((u as any).timezone);
       const localDate = getLocalDateIso(now, timeZone);
-      const streak = u.shloka_streak ?? 0;
+      const streak    = u.shloka_streak ?? 0;
+      const tradition = (u as any).tradition ?? 'hindu';
       const streakMsg = streak > 0
         ? `Don't break your ${streak}-day streak! 🔥`
         : 'Start your shloka journey today 🌱';
+
+      // Engine enrichment — mention special tithi when relevant
+      let tithiSuffix = '';
+      try {
+        const lat   = (u as any).latitude  as number | null;
+        const lon   = (u as any).longitude as number | null;
+        const times = getPanchangTimes(now, lat, lon);
+        const tithiReminder = getTithiReminder(times.tithiIndex, tradition);
+        if (tithiReminder) {
+          // Special tithi — lead with it instead of streak (more meaningful)
+          tithiSuffix = ` Today is ${times.tithi} — ${tithiReminder.emoji} an especially powerful evening for your reading.`;
+        }
+        // Skip the shloka if it's Rahu Kalam right now (rare at 7 PM but possible)
+        if (isInWindow(now, times.rahuKaalStart, times.rahuKaalEnd, 0)) {
+          tithiSuffix += ' (Avoid starting anything new during Rahu Kalam — read after it passes.)';
+        }
+      } catch { /* enrichment is best-effort */ }
+
       return {
         user_id:    u.id,
         title:      '🕉️ Aaj Ka Shloka awaits',
-        body:       `${streakMsg} Take a moment for today's shloka and earn +5 seva points.`,
+        body:       `${streakMsg} Take a moment for today's shloka.${tithiSuffix}`,
         emoji:      '🕉️',
-        type:       'streak',
+        type:       'streak' as const,
         action_url: actionPath,
         notification_key: `streak:${localDate}`,
         local_date: localDate,
