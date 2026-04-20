@@ -16,10 +16,12 @@ import type { AppLang } from '@/lib/i18n/translations';
 import { getPlayerId, getPermissionState, logoutFromOneSignal } from '@/lib/onesignal';
 import type { Profile } from '@/types/database';
 import { MetricTile, SurfaceSection } from '@/components/ui';
+import CircularProgress from '@/components/ui/CircularProgress';
 import { useProfileQuery, useUpdateProfileMutation } from '@/hooks/useProfile';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import type { ProfileUpdate } from '@/lib/api/profile';
+import { usePremium } from '@/hooks/usePremium';
 
 const SEVA_LEVELS = [
   { min: 0,    max: 99,   label: 'Jigyasu',    emoji: '🌱' },
@@ -64,29 +66,33 @@ function SevaScoreBar({ score }: { score: number }) {
     : 100;
 
   return (
-    <div className="glass-panel rounded-2xl p-4">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">{badge.emoji}</span>
+    <div className="glass-panel rounded-2xl p-4 flex items-center gap-4">
+      {/* Circular seva-progress ring */}
+      <CircularProgress
+        pct={pct}
+        accent="var(--brand-primary)"
+        size={64}
+        strokeWidth={5}
+        label={<span className="text-2xl leading-none">{badge.emoji}</span>}
+      />
+      {/* Label + score */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between">
           <div>
             <p className="type-card-heading">{badge.label}</p>
             <p className="type-card-label">Seva level</p>
           </div>
+          <div className="text-right">
+            <p className="type-metric">{score}</p>
+            <p className="type-micro">seva points</p>
+          </div>
         </div>
-        <div className="text-right">
-          <p className="type-metric">{score}</p>
-          <p className="type-micro">seva points</p>
-        </div>
+        {nextLevel && (
+          <p className="type-micro mt-1.5">
+            {nextLevel.min - score} pts to {nextLevel.label}
+          </p>
+        )}
       </div>
-      <div className="h-2.5 rounded-full overflow-hidden bg-white/10">
-        <div className="h-full rounded-full transition-all"
-          style={{ width: `${pct}%`, background: 'linear-gradient(90deg, var(--brand-primary), var(--brand-secondary))' }} />
-      </div>
-      {nextLevel && (
-        <p className="type-micro mt-1.5 text-right">
-          {nextLevel.min - score} pts to {nextLevel.label}
-        </p>
-      )}
     </div>
   );
 }
@@ -97,27 +103,31 @@ function CompletionBar({ profile, onEdit }: { profile: Profile | null; onEdit: (
   if (pct === 100) return null;
 
   return (
-    <div className="glass-panel rounded-2xl p-4">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <span className="text-base">✨</span>
-          <p className="type-card-heading">Profile {pct}% complete</p>
+    <div className="glass-panel rounded-2xl p-4 flex items-center gap-4">
+      {/* Circular completion ring */}
+      <CircularProgress
+        pct={pct}
+        accent="var(--brand-secondary)"
+        size={56}
+        strokeWidth={5}
+        label={<span className="text-xs font-bold" style={{ color: 'var(--brand-ink)' }}>{pct}%</span>}
+      />
+      {/* Label + CTA */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between mb-0.5">
+          <p className="type-card-heading">Profile complete</p>
+          <button onClick={onEdit}
+            className="type-chip rounded-full px-3 py-1 text-[#1c1c1a] transition"
+            style={{ background: 'var(--brand-primary)' }}>
+            Complete
+          </button>
         </div>
-        <button onClick={onEdit}
-          className="type-chip rounded-full px-3 py-1 text-[#1c1c1a] transition"
-          style={{ background: 'var(--brand-primary)' }}>
-          Complete
-        </button>
+        {missing.length > 0 && (
+          <p className="type-micro">
+            Add: {missing.slice(0, 3).join(', ')}{missing.length > 3 ? ` +${missing.length - 3} more` : ''}
+          </p>
+        )}
       </div>
-      <div className="h-2 rounded-full overflow-hidden bg-white/10">
-        <div className="h-full rounded-full transition-all"
-          style={{ width: `${pct}%`, background: 'linear-gradient(90deg, var(--brand-secondary), var(--brand-primary))' }} />
-      </div>
-      {missing.length > 0 && (
-        <p className="type-micro mt-1.5">
-          Add: {missing.slice(0, 3).join(', ')}{missing.length > 3 ? ` +${missing.length - 3} more` : ''}
-        </p>
-      )}
     </div>
   );
 }
@@ -146,6 +156,7 @@ export default function ProfileClient({
   const supabase    = useRef(createClient()).current;
   const queryClient = useQueryClient();
   const { setLang } = useLanguage();
+  const isPro       = usePremium();
   const profileQuery = useProfileQuery(userId, profile);
   const updateProfileMutation = useUpdateProfileMutation(userId);
   const liveProfile = profileQuery.data ?? profile;
@@ -620,7 +631,21 @@ export default function ProfileClient({
               />
             </div>
             <div>
-              <h1 className="type-screen-title">{liveProfile?.full_name}</h1>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="type-screen-title">{liveProfile?.full_name}</h1>
+                {isPro && (
+                  <span
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide flex-shrink-0"
+                    style={{
+                      background: 'linear-gradient(135deg, #d4a818 0%, #c8920a 60%, #b07a08 100%)',
+                      color: '#1c1c1a',
+                      boxShadow: '0 0 8px rgba(212,166,70,0.35)',
+                    }}
+                  >
+                    ✦ SANGAM PRO
+                  </span>
+                )}
+              </div>
               <p className="type-body">@{liveProfile?.username}</p>
               {(liveProfile?.city || liveProfile?.country) && (
                 <p className="type-micro mt-0.5 flex items-center gap-1">
@@ -639,7 +664,15 @@ export default function ProfileClient({
         <div className="grid grid-cols-3 gap-2">
           <MetricTile label="Threads" value={threadCount} className="bg-white/8 border-white/10" />
           <MetricTile label="Posts" value={postCount} className="bg-white/8 border-white/10" />
-          <MetricTile label="Streak" value={`${streak}🔥`} className="bg-white/8 border-white/10" />
+          {isPro ? (
+            <MetricTile label="Streak" value={`${streak}🔥`} className="bg-white/8 border-white/10" />
+          ) : (
+            <MetricTile
+              label="Streak"
+              value="🔒 Pro"
+              className="bg-white/8 border-white/10 opacity-50 cursor-pointer"
+            />
+          )}
         </div>
       </div>
 
@@ -1024,16 +1057,15 @@ export default function ProfileClient({
 
       {/* ── Edit Form ── */}
       {editing && (
-        <div
-          className="surface-sheet rounded-2xl p-5 space-y-4 fade-in"
-        >
+        <div className="surface-sheet rounded-2xl p-5 space-y-4 fade-in">
           <h2 className="font-display font-semibold text-lg theme-ink">Edit Profile</h2>
 
           {/* ── Tradition — locked at signup, not editable ── */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-medium theme-muted">Tradition</label>
-              <span className="flex items-center gap-1 text-[10px] text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+              <span className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full"
+                style={{ background: 'rgba(212,166,70,0.12)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(212,166,70,0.2)' }}>
                 <Lock size={9} /> Set at signup
               </span>
             </div>
@@ -1071,24 +1103,22 @@ export default function ProfileClient({
           </div>
 
           <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">My practice</p>
+            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My practice</p>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">{sampradayaLabel}</label>
+              <label className="block text-sm font-medium theme-muted mb-1.5">{sampradayaLabel}</label>
               <select value={form.sampradaya}
                 onChange={(e) => setForm({ ...form, sampradaya: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm bg-white"
-                style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}>
+                className="surface-select px-4 py-2.5 outline-none text-sm">
                 <option value="">Select {sampradayaLabel.toLowerCase()}</option>
                 {sampradayaOptions.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">{ishtaDevataLabel}</label>
+              <label className="block text-sm font-medium theme-muted mb-1.5">{ishtaDevataLabel}</label>
               <select value={form.ishta_devata}
                 onChange={(e) => setForm({ ...form, ishta_devata: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm bg-white"
-                style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}>
+                className="surface-select px-4 py-2.5 outline-none text-sm">
                 <option value="">Select {ishtaDevataLabel.toLowerCase()}</option>
                 {ishtaDevataOptions.map((d) => <option key={d.value} value={d.value}>{d.emoji} {d.label}</option>)}
               </select>
@@ -1104,12 +1134,11 @@ export default function ProfileClient({
                 { label: 'Kul',        key: 'kul',        placeholder: 'Family lineage'    },
               ].map(({ label, key, placeholder }) => (
                 <div key={key}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
+                  <label className="block text-sm font-medium theme-muted mb-1.5">{label}</label>
                   <input type="text" placeholder={placeholder}
                     value={(form as Record<string, string>)[key]}
                     onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm"
-                    style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
+                    className="surface-input px-4 py-2.5 outline-none text-sm"
                   />
                 </div>
               ))}
@@ -1117,94 +1146,88 @@ export default function ProfileClient({
           )}
 
           <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">My place</p>
+            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My place</p>
             {[
               { label: 'City', key: 'city', placeholder: 'Current city' },
               { label: 'Country', key: 'country', placeholder: 'Country' },
             ].map(({ label, key, placeholder }) => (
               <div key={key}>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
+                <label className="block text-sm font-medium theme-muted mb-1.5">{label}</label>
                 <input type="text" placeholder={placeholder}
                   value={(form as Record<string, string>)[key]}
                   onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm"
-                  style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
+                  className="surface-input px-4 py-2.5 outline-none text-sm"
                 />
               </div>
             ))}
           </div>
 
           <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">My voice</p>
+            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My voice</p>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Custom Greeting (optional)</label>
+              <label className="block text-sm font-medium theme-muted mb-1.5">Custom Greeting (optional)</label>
               <input type="text" placeholder="e.g. Waheguru Ji Ka Khalsa, Namo Buddhaya…"
                 value={form.custom_greeting}
                 onChange={(e) => setForm({ ...form, custom_greeting: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm"
-                style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
+                className="surface-input px-4 py-2.5 outline-none text-sm"
               />
-              <p className="text-xs text-gray-400 mt-1">Overrides the auto greeting on your home screen</p>
+              <p className="text-xs theme-dim mt-1">Overrides the auto greeting on your home screen</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Bio</label>
+              <label className="block text-sm font-medium theme-muted mb-1.5">Bio</label>
               <textarea placeholder="Share a little about your spiritual journey…"
                 value={form.bio}
                 onChange={(e) => setForm({ ...form, bio: e.target.value })}
                 rows={3}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none resize-none text-sm"
-                style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
+                className="surface-input px-4 py-2.5 outline-none resize-none text-sm"
               />
             </div>
           </div>
 
           <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">Language and script</p>
+            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">Language and script</p>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">App language</label>
+              <label className="block text-sm font-medium theme-muted mb-1.5">App language</label>
               <select
                 value={form.app_language}
                 onChange={(e) => setForm({ ...form, app_language: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm bg-white"
-                style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
+                className="surface-select px-4 py-2.5 outline-none text-sm"
               >
                 {APP_LANGUAGES.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Scripture view</label>
+              <label className="block text-sm font-medium theme-muted mb-1.5">Scripture view</label>
               <select
                 value={form.scripture_script}
                 onChange={(e) => setForm({ ...form, scripture_script: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm bg-white"
-                style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
+                className="surface-select px-4 py-2.5 outline-none text-sm"
               >
                 {SCRIPTURE_SCRIPT_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
               </select>
             </div>
             <div>
-              <label className="flex items-start justify-between gap-4 rounded-2xl border border-gray-100 px-4 py-3 cursor-pointer">
+              <label className="flex items-start justify-between gap-4 rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 cursor-pointer">
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Show transliteration</p>
-                  <p className="text-xs text-gray-500 mt-1 leading-relaxed">Keep Roman transliteration visible when available.</p>
+                  <p className="text-sm font-medium theme-ink">Show transliteration</p>
+                  <p className="text-xs theme-dim mt-1 leading-relaxed">Keep Roman transliteration visible when available.</p>
                 </div>
                 <input
                   type="checkbox"
                   checked={Boolean(form.show_transliteration)}
                   onChange={(e) => setForm({ ...form, show_transliteration: e.target.checked })}
-                  className="mt-1 h-4 w-4 rounded border-gray-300"
+                  className="mt-1 h-4 w-4 rounded"
                   style={{ accentColor: 'var(--brand-primary)' }}
                 />
               </label>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Meaning language</label>
+              <label className="block text-sm font-medium theme-muted mb-1.5">Meaning language</label>
               <select
                 value={form.meaning_language}
                 onChange={(e) => setForm({ ...form, meaning_language: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-sm bg-white"
-                style={{ borderColor: 'rgba(17, 24, 39, 0.12)' }}
+                className="surface-select px-4 py-2.5 outline-none text-sm"
               >
                 {MEANING_LANGUAGE_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
               </select>
@@ -1213,11 +1236,11 @@ export default function ProfileClient({
 
           <div className="flex gap-3">
             <button onClick={() => setEditing(false)}
-              className="flex-1 py-3 border border-gray-200 text-gray-600 rounded-xl text-sm">
+              className="flex-1 py-3 rounded-xl text-sm font-medium theme-muted border border-white/10 hover:bg-white/5 transition">
               Cancel
             </button>
             <button onClick={saveProfile} disabled={saving}
-              className="flex-1 py-3 text-white font-semibold rounded-xl text-sm hover:opacity-90 disabled:opacity-50"
+              className="flex-1 py-3 text-[#1c1c1a] font-semibold rounded-xl text-sm hover:opacity-90 disabled:opacity-50"
               style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}>
               {saving ? 'Saving…' : 'Save Changes'}
             </button>

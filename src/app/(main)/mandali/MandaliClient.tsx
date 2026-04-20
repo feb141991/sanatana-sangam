@@ -2,9 +2,10 @@
 
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown, CornerDownRight } from 'lucide-react';
+import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown, CornerDownRight, MoreHorizontal } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
 import { formatRelativeTime, getInitials, ISHTA_DEVATAS } from '@/lib/utils';
@@ -12,6 +13,7 @@ import { useLocation } from '@/lib/LocationContext';
 import type { Profile, PostWithAuthor, PostCommentWithAuthor, EventRsvp } from '@/types/database';
 import { AsyncStateCard, EmptyState } from '@/components/ui';
 import { useMandaliMutations, useMandaliQuery } from '@/hooks/useMandali';
+import { usePremium } from '@/hooks/usePremium';
 
 type MemberRow = Pick<Profile, 'id' | 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'ishta_devata' | 'spiritual_level' | 'city' | 'seva_score'>;
 
@@ -478,6 +480,22 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
 
 // ─── Members Tab ────────────────────────────────────────────────
 function MembersTab({ members, userId }: { members: MemberRow[]; userId: string }) {
+  const supabase = createClient();
+  const [reportingId, setReportingId] = useState<string | null>(null);
+
+  async function reportMember(memberId: string) {
+    setReportingId(memberId);
+    const { error } = await supabase.from('content_reports').insert({
+      reported_by: userId,
+      content_type: 'user_profile',
+      content_id: memberId,
+      reason: 'inappropriate_behaviour',
+    });
+    setReportingId(null);
+    if (error) { toast.error('Could not submit report'); return; }
+    toast.success('Report submitted for review 🙏');
+  }
+
   if (members.length === 0) {
     return (
       <EmptyState
@@ -496,7 +514,7 @@ function MembersTab({ members, userId }: { members: MemberRow[]; userId: string 
         return (
           <div key={m.id}
             className="glass-panel rounded-2xl border border-white/8 p-3 flex items-center gap-3"
-            style={{ borderColor: isMe ? 'rgba(200, 127, 146, 0.32)' : '#f1f0f2' }}>
+            style={{ borderColor: isMe ? 'rgba(200, 127, 146, 0.32)' : 'rgba(255,255,255,0.08)' }}>
             {/* Rank */}
             <div className="w-5 text-center text-xs font-bold text-white/25">
               {idx + 1}
@@ -522,10 +540,24 @@ function MembersTab({ members, userId }: { members: MemberRow[]; userId: string 
               </p>
             </div>
             {/* Seva Score */}
-            <div className="text-right">
+            <div className="text-right mr-1">
               <div className="font-bold text-sm" style={{ color: 'var(--brand-primary-strong)' }}>{m.seva_score ?? 0}</div>
               <div className="text-[10px] text-[color:var(--brand-muted)]">seva</div>
             </div>
+            {/* Report button (not shown for self) */}
+            {!isMe && (
+              <button
+                onClick={() => reportMember(m.id)}
+                disabled={reportingId === m.id}
+                className="w-7 h-7 rounded-full flex items-center justify-center text-[color:var(--brand-muted)] hover:text-red-400 hover:bg-red-500/10 transition disabled:opacity-40"
+                title="Report this member"
+              >
+                {reportingId === m.id
+                  ? <span className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin block" />
+                  : <svg viewBox="0 0 24 24" fill="none" className="w-3.5 h-3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                }
+              </button>
+            )}
           </div>
         );
       })}
@@ -625,7 +657,7 @@ function EventsTab({ posts, rsvps, userId, onRsvp }: { posts: PostWithAuthor[]; 
 }
 
 // ─── Vichaar Tab (Posts Feed) ────────────────────────────────────
-function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upvoted, onCompose, showCompose, setShowCompose, onHideContent, onHideAuthor, allowCompose = true }: {
+function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upvoted, onCompose, showCompose, setShowCompose, onHideContent, onHideAuthor, allowCompose = true, isPro = false }: {
   posts: PostWithAuthor[];
   userId: string;
   comments: PostCommentWithAuthor[];
@@ -643,6 +675,7 @@ function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upv
   onHideContent: (contentId: string) => void;
   onHideAuthor: (authorId: string, mode?: 'mute' | 'block') => void;
   allowCompose?: boolean;
+  isPro?: boolean;
 }) {
   const [postType,   setPostType]   = useState<'update' | 'event' | 'question' | 'announcement'>('update');
   const [content,    setContent]    = useState('');
@@ -695,6 +728,7 @@ function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upv
           submitting={submitting}
           onClose={() => setShowCompose(false)}
           onPost={handleComposePost}
+          isPro={isPro}
         />
       )}
 
@@ -723,21 +757,28 @@ function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upv
   );
 }
 
-function ComposePanel({ postType, setPostType, content, setContent, eventDate, setEventDate, eventLoc, setEventLoc, submitting, onClose, onPost }: any) {
+function ComposePanel({ postType, setPostType, content, setContent, eventDate, setEventDate, eventLoc, setEventLoc, submitting, onClose, onPost, isPro }: any) {
   return (
     <div className="glass-panel rounded-2xl border border-white/70 p-4 shadow-card space-y-3 fade-in">
       <div className="flex gap-2 flex-wrap">
-        {POST_TYPES.map((t) => (
-          <button key={t.value} onClick={() => setPostType(t.value)}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
-              postType === t.value
-                ? ''
-                : 'bg-white/4 text-[color:var(--brand-muted)] border border-white/10'
-            }`}
-            style={postType === t.value ? { background: 'var(--brand-primary-soft)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(200, 127, 146, 0.3)' } : undefined}>
-            {t.icon} {t.label}
-          </button>
-        ))}
+        {POST_TYPES.map((t) => {
+          const isProOnly = t.value === 'announcement';
+          const locked = isProOnly && !isPro;
+          return (
+            <button key={t.value}
+              onClick={() => locked
+                ? toast('Announcement posts are a Sangam Pro feature 🔒', { icon: '✦' })
+                : setPostType(t.value)}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
+                postType === t.value
+                  ? ''
+                  : 'bg-white/4 text-[color:var(--brand-muted)] border border-white/10'
+              } ${locked ? 'opacity-60' : ''}`}
+              style={postType === t.value ? { background: 'var(--brand-primary-soft)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(200, 127, 146, 0.3)' } : undefined}>
+              {t.icon} {t.label}{locked && ' 🔒'}
+            </button>
+          );
+        })}
       </div>
       <textarea placeholder={postType === 'event' ? 'Describe your event…' : 'Share with your Mandali…'}
         value={content} onChange={(e) => setContent(e.target.value)} rows={3}
@@ -953,6 +994,7 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
 
 // ─── Main Component ──────────────────────────────────────────────
 export default function MandaliClient({ profile, posts: initialPosts, comments: initialComments, rsvps: initialRsvps, members, userId, blendedPosts = [] }: Props) {
+  const isPro = usePremium();
   const mandaliQuery = useMandaliQuery(userId, {
     profile,
     posts: initialPosts,
@@ -979,7 +1021,10 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
   const [showSearch,      setShowSearch]      = useState(false);
   const [showCompose,     setShowCompose]     = useState(false);
   const [showMandaliMenu, setShowMandaliMenu] = useState(false);
+  const [portalTarget,    setPortalTarget]    = useState<Element | null>(null);
   const [upvoted,     setUpvoted]     = useState<Set<string>>(new Set());
+
+  useEffect(() => { setPortalTarget(document.body); }, []);
   const [hiddenContentIds, setHiddenContentIds] = useState<Set<string>>(new Set());
   const [hiddenAuthorIds, setHiddenAuthorIds] = useState<Set<string>>(new Set());
 
@@ -1173,37 +1218,14 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
             <Search size={13} /> Find Sanatani
           </button>
 
-          {/* Mandali options menu */}
-          <div className="relative">
-            <button
-              onClick={() => setShowMandaliMenu(m => !m)}
-              className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/8 bg-white/[0.04] theme-ink transition hover:bg-white/[0.06]"
-              title="Mandali options"
-            >
-              ⋯
-            </button>
-            {showMandaliMenu && (
-              <div className="absolute right-0 top-10 z-50 w-52 overflow-hidden rounded-2xl border border-white/8 bg-[color:var(--surface-raised)] shadow-xl"
-                onClick={() => setShowMandaliMenu(false)}>
-                <button
-                  onClick={async () => {
-                    // Clear mandali_id → redirect to join flow
-                    await mandaliMutations.leaveMandali.mutateAsync();
-                  }}
-                  className="w-full border-b border-white/6 px-4 py-3 text-left text-sm theme-ink transition hover:bg-white/[0.04] flex items-center gap-3">
-                  <MapPin size={14} className="theme-dim" />
-                  Change my Mandali
-                </button>
-                <button
-                  onClick={leaveMandali}
-                  disabled={mandaliMutations.leaveMandali.isPending}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-red-400 transition hover:bg-red-500/10 disabled:opacity-50">
-                  <X size={14} />
-                  {mandaliMutations.leaveMandali.isPending ? 'Leaving…' : 'Leave this Mandali'}
-                </button>
-              </div>
-            )}
-          </div>
+          {/* Mandali options menu — opens as a portal bottom sheet to escape overflow:hidden parent */}
+          <button
+            onClick={() => setShowMandaliMenu(true)}
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/8 bg-white/[0.04] theme-ink transition hover:bg-white/[0.06]"
+            title="Mandali options"
+          >
+            <MoreHorizontal size={16} />
+          </button>
         </div>
       </div>
 
@@ -1241,6 +1263,69 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
       </div>
 
       {showSearch && <FindSanataniModal userId={userId} onClose={() => setShowSearch(false)} />}
+
+      {/* Mandali options bottom sheet — portal so it escapes decorative-orbit overflow:hidden */}
+      {showMandaliMenu && portalTarget && createPortal(
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-[2px]"
+            style={{ zIndex: 9990 }}
+            onClick={() => setShowMandaliMenu(false)}
+          />
+          {/* Sheet */}
+          <div
+            className="fixed inset-x-0 bottom-0 rounded-t-[2rem] p-5 space-y-2"
+            style={{
+              zIndex: 9991,
+              background: 'linear-gradient(180deg, rgba(28,26,22,0.99) 0%, rgba(22,20,17,0.99) 100%)',
+              border: '1px solid rgba(212,166,70,0.14)',
+              borderBottom: 'none',
+              paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 20px)',
+            }}
+          >
+            {/* Handle */}
+            <div className="flex justify-center mb-3">
+              <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(212,166,70,0.25)' }} />
+            </div>
+            <p className="text-xs font-semibold theme-dim uppercase tracking-widest px-1 pb-2">Mandali options</p>
+            <button
+              onClick={async () => {
+                setShowMandaliMenu(false);
+                await mandaliMutations.leaveMandali.mutateAsync();
+              }}
+              className="w-full flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm theme-ink transition hover:bg-white/[0.06]"
+              style={{ border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.03)' }}
+            >
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(212,166,70,0.1)' }}>
+                <MapPin size={15} style={{ color: 'var(--brand-primary)' }} />
+              </div>
+              <div className="text-left">
+                <p className="font-medium">Change my Mandali</p>
+                <p className="text-xs theme-dim mt-0.5">Detect a new location</p>
+              </div>
+            </button>
+            <button
+              onClick={async () => {
+                setShowMandaliMenu(false);
+                await leaveMandali();
+              }}
+              disabled={mandaliMutations.leaveMandali.isPending}
+              className="w-full flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm transition disabled:opacity-50 hover:bg-red-500/10"
+              style={{ border: '1px solid rgba(255,80,80,0.15)', background: 'rgba(255,80,80,0.04)', color: '#f87171' }}
+            >
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(255,80,80,0.1)' }}>
+                <X size={15} />
+              </div>
+              <div className="text-left">
+                <p className="font-medium">{mandaliMutations.leaveMandali.isPending ? 'Leaving…' : 'Leave this Mandali'}</p>
+                <p className="text-xs opacity-70 mt-0.5">You can re-join anytime</p>
+              </div>
+            </button>
+          </div>
+        </>,
+        portalTarget
+      )}
 
       {/* ── Tabs ── */}
       <div className="surface-tabbar flex rounded-2xl p-1">
@@ -1286,6 +1371,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
             setShowCompose={setShowCompose}
             onHideContent={hideContentFromView}
             onHideAuthor={hideAuthorFromView}
+            isPro={isPro}
           />
           {/* "Don't feel alone" — blended Sangam posts when local Mandali is small */}
           {widerPosts.length > 0 && (
@@ -1313,6 +1399,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
                 onHideContent={hideContentFromView}
                 onHideAuthor={hideAuthorFromView}
                 allowCompose={false}
+                isPro={isPro}
               />
             </div>
           )}

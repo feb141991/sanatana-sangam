@@ -34,10 +34,8 @@ const titles: Record<string, string> = {
 const PUSH_PROMPT_DISMISS_KEY = 'sanatana-push-prompt-dismissed-until';
 const PUSH_PROMPT_COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000;
 const QUICK_LINKS = [
-  { href: '/bhakti',      label: 'Bhakti',   emoji: '✨' },
-  { href: '/panchang',    label: 'Panchang', emoji: '🪔' },
-  { href: '/japa',        label: 'Japa',     emoji: '📿' },
-  { href: '/tirtha-map',  label: 'Tirtha',   emoji: '🗺️' },
+  { href: '/bhakti',     label: 'Bhakti',  emoji: '✨' },
+  { href: '/tirtha-map', label: 'Tirtha',  emoji: '🗺️' },
 ] as const;
 
 const shellTint = {

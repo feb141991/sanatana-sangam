@@ -71,22 +71,22 @@ export default async function MainLayout({
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <TopBar
-        userId={userId}
-        isGuest={!user}
-        avatarUrl={avatarUrl}
-        userInitials={userInitials}
-        tradition={tradition}
-        city={savedCity}
-        countryCode={savedCountryCode}
-        wantsFestivalReminders={wantsFestivalReminders}
-        wantsShlokaReminders={wantsShlokaReminders}
-        wantsCommunityNotifications={wantsCommunityNotifications}
-        wantsFamilyNotifications={wantsFamilyNotifications}
-      />
-      <main className="flex-1 max-w-2xl mx-auto w-full px-3 pt-3 pb-28 sm:px-4 sm:pt-4">
-        <LanguageProvider lang={appLanguage}>
+    <LanguageProvider lang={appLanguage}>
+      <div className="min-h-screen flex flex-col">
+        <TopBar
+          userId={userId}
+          isGuest={!user}
+          avatarUrl={avatarUrl}
+          userInitials={userInitials}
+          tradition={tradition}
+          city={savedCity}
+          countryCode={savedCountryCode}
+          wantsFestivalReminders={wantsFestivalReminders}
+          wantsShlokaReminders={wantsShlokaReminders}
+          wantsCommunityNotifications={wantsCommunityNotifications}
+          wantsFamilyNotifications={wantsFamilyNotifications}
+        />
+        <main className="flex-1 max-w-2xl mx-auto w-full px-3 pt-3 pb-28 sm:px-4 sm:pt-4">
           <EngineProvider userId={userId || null} tradition={tradition}>
             <LocationProvider
               savedLat={savedLat}
@@ -98,10 +98,10 @@ export default async function MainLayout({
               {children}
             </LocationProvider>
           </EngineProvider>
-        </LanguageProvider>
-      </main>
-      <BottomNav libraryLabel={libraryLabel} libraryMobileLabel={libraryMobileLabel} isGuest={!user} />
-      <AIChatFAB userId={userId} tradition={tradition} userName={userName} isGuest={!user} />
-    </div>
+        </main>
+        <BottomNav libraryLabel={libraryLabel} libraryMobileLabel={libraryMobileLabel} isGuest={!user} />
+        <AIChatFAB userId={userId} tradition={tradition} userName={userName} isGuest={!user} />
+      </div>
+    </LanguageProvider>
   );
 }
