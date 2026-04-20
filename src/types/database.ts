@@ -44,6 +44,7 @@ export interface Database {
           wants_family_notifications: boolean;
           notification_quiet_hours_start: number | null;
           notification_quiet_hours_end: number | null;
+          is_admin: boolean;
         };
         Insert: Omit<Database['public']['Tables']['profiles']['Row'], 'created_at' | 'updated_at' | 'seva_score'>;
         Update: Partial<Database['public']['Tables']['profiles']['Insert']>;

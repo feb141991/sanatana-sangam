@@ -52,6 +52,7 @@ const baseProfile: MandaliProfile = {
   wants_family_notifications: true,
   notification_quiet_hours_start: 22,
   notification_quiet_hours_end: 7,
+  is_admin: false,
   mandalis: {
     name: 'North London Mandali',
     city: 'London',
