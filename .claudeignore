@@ -1,0 +1,35 @@
+# Build & generated output
+.next/
+out/
+dist/
+build/
+
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Graphify cache (large binary-ish JSON, not useful for context)
+graphify-out/cache/
+graphify-out/graph.json
+graphify-out/graph.html
+
+# Package locks (too noisy, no signal)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Supabase local
+supabase/.branches/
+supabase/.temp/
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+*.swp
