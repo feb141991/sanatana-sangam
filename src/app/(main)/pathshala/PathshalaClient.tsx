@@ -17,11 +17,12 @@ import Link from 'next/link';
 import {
   ChevronLeft, BookOpen, Mic, Trophy,
   Loader2, Play, Star, Plus, Search, X,
-  Share2, ChevronDown, ChevronUp, GraduationCap,
+  Share2, ChevronDown, ChevronUp, GraduationCap, Lock, Sparkles,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import { usePremium } from '@/hooks/usePremium';
 import CircularProgress from '@/components/ui/CircularProgress';
 import {
   ALL_LIBRARY_ENTRIES, LIBRARY_SECTIONS,
@@ -304,6 +305,7 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
   const router    = useRouter();
   const supabase  = useRef(createClient()).current;
   const meta      = getTraditionMeta(tradition);
+  const isPro     = usePremium();
 
   const [activePaths, setActive]    = useState<ActiveEnrollment[]>([]);
   const [loading,     setLoading]   = useState(true);
@@ -340,8 +342,20 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
   }, [userId, supabase]);
 
   // ── Enroll — uses guided_path_progress directly ──────────────────────────────
+  const FREE_PATH_LIMIT = 1;
+
   async function enroll(pathId: string) {
     if (enrolling) return;
+
+    // Free tier cap — max 1 active path
+    if (!isPro && activePaths.length >= FREE_PATH_LIMIT) {
+      toast('🔒 Free plan supports 1 active path. Upgrade to Sangam Pro for unlimited.', {
+        duration: 4000,
+        style: { background: '#1c1c1a', color: 'var(--brand-ink)' },
+      });
+      return;
+    }
+
     setEnrolling(pathId);
     try {
       const { error } = await supabase
@@ -386,6 +400,80 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
     } catch (err: any) {
       toast.error(err?.message ?? 'Could not unenroll. Please try again.');
     }
+  }
+
+  // ── Continue Learning hero card ──────────────────────────────────────────────
+  // Shows the most recently enrolled (first in list) active path as a top hero card
+  function ContinueLearningHero() {
+    if (activePaths.length === 0) return null;
+    const enrollment = activePaths[0];
+    const path = allPaths.find(p => p.id === enrollment.path_id);
+    if (!path) return null;
+
+    const doneLessons = (enrollment.completed_lessons ?? []).length;
+    const progressPct = path.total_lessons > 0
+      ? Math.round((doneLessons / path.total_lessons) * 100)
+      : 0;
+    const resumeLesson = enrollment.current_lesson ?? 0;
+    const lessonLabel  = resumeLesson > 0 ? `Lesson ${resumeLesson + 1}` : 'First Lesson';
+
+    return (
+      <div
+        className="rounded-3xl overflow-hidden border border-white/10 mb-1"
+        style={{ background: `linear-gradient(135deg, ${meta.accentColour}18 0%, ${meta.accentColour}08 100%)` }}
+      >
+        <div className="p-5">
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-2"
+            style={{ color: meta.accentColour }}>
+            Continue Learning
+          </p>
+          <div className="flex items-center gap-4">
+            {/* Big progress ring */}
+            <CircularProgress
+              pct={progressPct}
+              accent={meta.accentColour}
+              size={72}
+              strokeWidth={5}
+              label={
+                <div className="text-center">
+                  <div className="text-base font-bold" style={{ color: meta.accentColour }}>{progressPct}%</div>
+                  <div className="text-[8px] text-[color:var(--brand-muted)] leading-none">done</div>
+                </div>
+              }
+            />
+            <div className="flex-1 min-w-0">
+              <h2 className="font-bold text-base text-[color:var(--brand-ink)] leading-snug">{path.title}</h2>
+              <p className="text-xs text-[color:var(--brand-muted)] mt-1">
+                {doneLessons} of {path.total_lessons} lessons · Up next: {lessonLabel}
+              </p>
+              <Link
+                href={`/pathshala/${enrollment.path_id}/lesson`}
+                className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[#1c1c1a] text-sm font-bold shadow-sm"
+                style={{ background: meta.accentColour }}
+              >
+                <Play size={13} /> Resume
+              </Link>
+            </div>
+          </div>
+        </div>
+        {/* Quick actions strip */}
+        <div className="border-t border-white/8 flex divide-x divide-white/8">
+          <Link
+            href={`/pathshala/${enrollment.path_id}/recite`}
+            className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold transition-all hover:bg-white/4"
+            style={{ color: meta.accentColour }}
+          >
+            <Mic size={13} /> Recite
+          </Link>
+          <button
+            onClick={() => unenroll(enrollment.path_id, path.title)}
+            className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition-all hover:bg-white/4"
+          >
+            <X size={13} /> Leave path
+          </button>
+        </div>
+      </div>
+    );
   }
 
   // ── Shloka-of-day placeholder ─────────────────────────────────────────────────
@@ -612,20 +700,52 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
           {/* ── My Learning ─────────────────────────────────────────────────── */}
           {tab === 'learn' && (
             <>
-              <DailyVersePrompt />
               {activePaths.length === 0 ? (
-                <div className="text-center py-12">
-                  <GraduationCap size={44} className="mx-auto mb-3 text-white/20" />
-                  <p className="font-semibold text-[color:var(--brand-ink)]">No active learning paths</p>
-                  <p className="text-sm text-[color:var(--brand-muted)] mt-1">Enroll in a path to begin your journey</p>
-                  <button onClick={() => setTab('explore')}
-                    className="mt-4 px-6 py-2.5 rounded-xl text-[#1c1c1a] font-semibold text-sm"
-                    style={{ background: meta.accentColour }}>
-                    Explore Paths
-                  </button>
-                </div>
+                <>
+                  <DailyVersePrompt />
+                  <div className="text-center py-10">
+                    <GraduationCap size={44} className="mx-auto mb-3 text-white/20" />
+                    <p className="font-semibold text-[color:var(--brand-ink)]">No active learning paths</p>
+                    <p className="text-sm text-[color:var(--brand-muted)] mt-1">Enroll in a path to begin your journey</p>
+                    <button onClick={() => setTab('explore')}
+                      className="mt-4 px-6 py-2.5 rounded-xl text-[#1c1c1a] font-semibold text-sm"
+                      style={{ background: meta.accentColour }}>
+                      Explore Paths
+                    </button>
+                  </div>
+                </>
               ) : (
-                activePaths.map(e => <ActivePathCard key={e.path_id} enrollment={e} />)
+                <>
+                  {/* Hero card for top active path */}
+                  <ContinueLearningHero />
+
+                  {/* Additional active paths (Pro only gets multiple) */}
+                  {activePaths.slice(1).map(e => (
+                    <ActivePathCard key={e.path_id} enrollment={e} />
+                  ))}
+
+                  {/* Daily verse prompt below paths */}
+                  <DailyVersePrompt />
+
+                  {/* Pro upgrade nudge for free users */}
+                  {!isPro && (
+                    <div className="flex items-center gap-3 rounded-2xl border border-white/8 p-4"
+                      style={{ background: `${meta.accentColour}08` }}>
+                      <Lock size={18} style={{ color: meta.accentColour }} className="flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-[color:var(--brand-ink)]">Sangam Pro — unlimited paths</p>
+                        <p className="text-[10px] text-[color:var(--brand-muted)] mt-0.5">
+                          Free plan: 1 active path. Pro unlocks all paths, From Memory &amp; Timed recitation modes, and progress analytics.
+                        </p>
+                      </div>
+                      <Link href="/profile"
+                        className="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-[10px] font-bold text-[#1c1c1a]"
+                        style={{ background: meta.accentColour }}>
+                        <Sparkles size={10} /> Upgrade
+                      </Link>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}
@@ -642,9 +762,17 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
           {/* ── Explore Paths ────────────────────────────────────────────────── */}
           {tab === 'explore' && (
             <>
-              <p className="text-xs text-[color:var(--brand-muted)] pb-1">
-                {allPaths.length} paths available for {meta.label}
-              </p>
+              <div className="flex items-center justify-between pb-1">
+                <p className="text-xs text-[color:var(--brand-muted)]">
+                  {allPaths.length} paths available for {meta.label}
+                </p>
+                {!isPro && (
+                  <span className="text-[10px] font-semibold rounded-full px-2 py-0.5 flex items-center gap-1"
+                    style={{ background: `${meta.accentColour}15`, color: meta.accentColour }}>
+                    <Lock size={9} /> Pro: unlimited
+                  </span>
+                )}
+              </div>
               {allPaths.map(p => <BrowsePathCard key={p.id} path={p} />)}
             </>
           )}

@@ -12,13 +12,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronRight, Mic, MicOff, Play, Pause,
   Eye, EyeOff, Timer, Sparkles, BookOpen,
-  CheckCircle2, Volume2, Loader2,
+  CheckCircle2, Volume2, VolumeX, Loader2, Lock,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { GITA_FULL_DATA } from '@/lib/gita-full-data';
 import { ALL_LIBRARY_ENTRIES } from '@/lib/library-content';
 import { SEED_PATHS } from '@/app/(main)/pathshala/PathshalaClient';
-import { usePathshala } from '@/contexts/EngineContext';
+import { usePathshala, useSadhana } from '@/contexts/EngineContext';
+import { usePremium } from '@/hooks/usePremium';
 import type { LibraryEntry } from '@/lib/library-content';
 import type { RecitationResult } from '@sangam/pathshala-engine';
 import CircularProgress from '@/components/ui/CircularProgress';
@@ -58,15 +59,7 @@ function getReciteVerses(pathId: string, lessonIndex: number): LibraryEntry[] {
   return slice.length > 0 ? slice : pool.slice(0, ENTRIES_PER_LESSON);
 }
 
-// ─── TTS helper — uses browser SpeechSynthesis ────────────────────────────────
-function speakText(text: string) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.rate = 0.75;
-  utterance.pitch = 1;
-  window.speechSynthesis.speak(utterance);
-}
+// ─── TTS is now stateful — managed inside ReciteClient via speakCurrent/stopTTS ─
 
 // ─── Score ring colour ────────────────────────────────────────────────────────
 function scoreColor(score: number): string {
@@ -187,6 +180,8 @@ export default function ReciteClient({
 }: Props) {
   const router    = useRouter();
   const pathshala = usePathshala();
+  const engine    = useSadhana();
+  const isPro     = usePremium();
   const path      = SEED_PATHS.find(p => p.id === pathId);
   const verses    = useMemo(() => getReciteVerses(pathId, currentLesson), [pathId, currentLesson]);
 
@@ -197,6 +192,13 @@ export default function ReciteClient({
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
   const [completed,    setCompleted]    = useState<number[]>([]);
+
+  // TTS state
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [ttsRate,    setTtsRate]    = useState<0.5 | 0.75 | 1 | 1.25>(0.75);
+  const [autoPlay,   setAutoPlay]   = useState(false);
+  const ttsRateRef  = useRef<number>(0.75);
+  const autoPlayRef = useRef(false);
 
   // Shruti recording state
   const [recordState,  setRecordState]  = useState<RecordState>('idle');
@@ -218,6 +220,39 @@ export default function ReciteClient({
     return () => clearTimeout(t);
   }, [pathshala]);
 
+  // Keep refs in sync with state (used in effects that must not re-run on every change)
+  useEffect(() => { ttsRateRef.current = ttsRate; }, [ttsRate]);
+  useEffect(() => { autoPlayRef.current = autoPlay; }, [autoPlay]);
+
+  // ── TTS controller ────────────────────────────────────────────────────────────
+  const stopTTS = useCallback(() => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    setIsSpeaking(false);
+  }, []);
+
+  const speakCurrent = useCallback((textOverride?: string) => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    const text = textOverride || '';
+    if (!text) return;
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.rate  = ttsRateRef.current;
+    utt.pitch = 1;
+    utt.onend   = () => setIsSpeaking(false);
+    utt.onerror = () => setIsSpeaking(false);
+    window.speechSynthesis.speak(utt);
+    setIsSpeaking(true);
+    // Fire-and-forget engine listen tracking
+    if (engine) {
+      engine.tracker.track('shloka_listen', { path_id: pathId, lesson: currentLesson, verse_index: verseIndex }).catch(() => {});
+    }
+  }, [engine, pathId, currentLesson, verseIndex]);
+
+  // Stop TTS on unmount
+  useEffect(() => () => { stopTTS(); }, [stopTTS]);
+
   // Timer
   useEffect(() => {
     if (timerRunning) {
@@ -228,11 +263,24 @@ export default function ReciteClient({
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [timerRunning]);
 
-  // Reset score on verse change
+  // Reset score + stop TTS on verse change; optionally auto-play new verse
   useEffect(() => {
     setLastResult(null);
     setRecordState('idle');
     chunksRef.current = [];
+    // Stop any ongoing speech
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    }
+    // Auto-play the incoming verse after a brief settle delay
+    if (autoPlayRef.current && verse) {
+      const text = verse.transliteration || verse.original;
+      const t = setTimeout(() => speakCurrent(text), 400);
+      return () => clearTimeout(t);
+    }
+    return undefined;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [verseIndex]);
 
   function formatTime(s: number) {
@@ -245,6 +293,11 @@ export default function ReciteClient({
     if (!completed.includes(verseIndex)) {
       setCompleted(c => [...c, verseIndex]);
       toast.success('Verse marked ✓', { duration: 1500 });
+      // Fire-and-forget engine tracking
+      if (engine) {
+        engine.tracker.trackShlokaRead(pathId, currentLesson, verseIndex, timerSeconds).catch(() => {});
+        engine.streaks.markDone(userId, 'shloka').catch(() => {});
+      }
     }
     if (verseIndex < verses.length - 1) {
       setVerseIndex(v => v + 1);
@@ -411,23 +464,38 @@ export default function ReciteClient({
       <div className="px-4 pt-4 pb-2">
         <div className="flex gap-1.5">
           {([
-            { id: 'read'   as ReciteMode, label: 'Read-Along', icon: BookOpen },
-            { id: 'hidden' as ReciteMode, label: 'From Memory', icon: EyeOff  },
-            { id: 'timed'  as ReciteMode, label: 'Timed',       icon: Timer   },
-          ] as { id: ReciteMode; label: string; icon: any }[]).map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              onClick={() => setMode(id)}
-              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-xs font-semibold transition-all"
-              style={{
-                background: mode === id ? accentColour : 'rgba(255,255,255,0.06)',
-                color: mode === id ? '#1c1c1a' : 'var(--brand-muted)',
-              }}
-            >
-              <Icon size={12} />
-              {label}
-            </button>
-          ))}
+            { id: 'read'   as ReciteMode, label: 'Read-Along', icon: BookOpen, pro: false },
+            { id: 'hidden' as ReciteMode, label: 'From Memory', icon: EyeOff,  pro: true  },
+            { id: 'timed'  as ReciteMode, label: 'Timed',       icon: Timer,   pro: true  },
+          ] as { id: ReciteMode; label: string; icon: any; pro: boolean }[]).map(({ id, label, icon: Icon, pro }) => {
+            const locked = pro && !isPro;
+            return (
+              <button
+                key={id}
+                onClick={() => {
+                  if (locked) {
+                    toast('🔒 Upgrade to Sangam Pro to unlock', {
+                      style: { background: '#1c1c1a', color: 'var(--brand-ink)' },
+                    });
+                    return;
+                  }
+                  setMode(id);
+                }}
+                className="flex-1 relative flex items-center justify-center gap-1 py-2 rounded-xl text-xs font-semibold transition-all overflow-hidden"
+                style={{
+                  background: mode === id ? accentColour : 'rgba(255,255,255,0.06)',
+                  color: mode === id ? '#1c1c1a' : locked ? 'rgba(255,255,255,0.3)' : 'var(--brand-muted)',
+                  opacity: locked ? 0.65 : 1,
+                }}
+              >
+                <Icon size={12} />
+                {label}
+                {locked && (
+                  <Lock size={9} className="absolute top-1 right-1.5 opacity-60" />
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -442,19 +510,84 @@ export default function ReciteClient({
             transition={{ duration: 0.2 }}
             className="glass-panel rounded-3xl border border-white/8 p-5 space-y-4"
           >
-            {/* Source */}
-            <div className="flex items-center justify-between">
-              <div>
+            {/* Source + TTS controls */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="min-w-0 flex-1">
                 <p className="text-xs font-semibold text-[color:var(--brand-muted)] uppercase tracking-wider">{verse.source}</p>
                 <p className="text-sm font-bold text-[color:var(--brand-ink)] mt-0.5">{verse.title}</p>
               </div>
+
+              {/* Waveform animation while speaking */}
+              <AnimatePresence>
+                {isSpeaking && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="flex items-end gap-[3px] h-5 flex-shrink-0"
+                  >
+                    {[0, 0.12, 0.24, 0.12, 0].map((delay, i) => (
+                      <motion.div
+                        key={i}
+                        className="w-[3px] rounded-full"
+                        style={{ background: accentColour }}
+                        animate={{ scaleY: [0.25, 1, 0.25] }}
+                        transition={{ duration: 0.65, repeat: Infinity, delay, ease: 'easeInOut' }}
+                      />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Play / Stop TTS button */}
               <button
-                onClick={() => speakText(verse.transliteration || verse.original)}
-                className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center transition-all hover:border-white/20"
-                style={{ color: accentColour, background: `${accentColour}10` }}
-                title="Listen (browser TTS)"
+                onClick={() => {
+                  if (isSpeaking) {
+                    stopTTS();
+                  } else {
+                    speakCurrent(verse.transliteration || verse.original);
+                  }
+                }}
+                className="w-9 h-9 rounded-full border flex items-center justify-center transition-all flex-shrink-0"
+                style={{
+                  color: accentColour,
+                  background: isSpeaking ? `${accentColour}25` : `${accentColour}10`,
+                  borderColor: isSpeaking ? `${accentColour}50` : 'rgba(255,255,255,0.10)',
+                }}
+                title={isSpeaking ? 'Stop reading' : 'Listen (TTS)'}
               >
-                <Volume2 size={15} />
+                {isSpeaking ? <VolumeX size={15} /> : <Volume2 size={15} />}
+              </button>
+            </div>
+
+            {/* Speed selector + auto-play toggle */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] text-[color:var(--brand-muted)] uppercase tracking-wider font-medium">Speed</span>
+                {([0.5, 0.75, 1, 1.25] as const).map(rate => (
+                  <button
+                    key={rate}
+                    onClick={() => setTtsRate(rate)}
+                    className="px-2 py-0.5 rounded-full text-[10px] font-bold transition-all"
+                    style={{
+                      background: ttsRate === rate ? accentColour : 'rgba(255,255,255,0.08)',
+                      color: ttsRate === rate ? '#1c1c1a' : 'var(--brand-muted)',
+                    }}
+                  >
+                    {rate}×
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setAutoPlay(a => !a)}
+                className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold transition-all ml-auto"
+                style={{
+                  background: autoPlay ? `${accentColour}20` : 'rgba(255,255,255,0.06)',
+                  color: autoPlay ? accentColour : 'var(--brand-muted)',
+                  border: autoPlay ? `1px solid ${accentColour}40` : '1px solid rgba(255,255,255,0.08)',
+                }}
+              >
+                <Play size={9} /> Auto
               </button>
             </div>
 

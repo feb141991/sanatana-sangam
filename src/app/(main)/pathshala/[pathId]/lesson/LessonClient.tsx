@@ -20,6 +20,7 @@ import { GITA_FULL_DATA } from '@/lib/gita-full-data';
 import { ALL_LIBRARY_ENTRIES } from '@/lib/library-content';
 import CircularProgress from '@/components/ui/CircularProgress';
 import { SEED_PATHS } from '@/app/(main)/pathshala/PathshalaClient';
+import { useSadhana } from '@/contexts/EngineContext';
 import type { LibraryEntry } from '@/lib/library-content';
 
 // ─── Lesson content builder ────────────────────────────────────────────────────
@@ -235,7 +236,8 @@ export default function LessonClient({
   currentLesson: initialLesson,
   completedLessons: initialCompleted,
 }: Props) {
-  const router = useRouter();
+  const router  = useRouter();
+  const engine  = useSadhana();
   const supabase = useRef(createClient()).current;
 
   const path = SEED_PATHS.find(p => p.id === pathId);
@@ -271,6 +273,12 @@ export default function LessonClient({
 
       setCompleted(newCompleted);
       toast.success(newCompleted.length === totalLessons ? 'Path completed! 🎉 Jai Ho!' : 'Lesson complete 🙏');
+
+      // Fire-and-forget engine tracking (don't block UI)
+      if (engine) {
+        engine.tracker.trackShlokaRead(pathId, lessonIndex, 0, 0).catch(() => {});
+        engine.streaks.markDone(userId, 'shloka').catch(() => {});
+      }
 
       if (newCompleted.length < totalLessons) {
         setLessonIndex(nextLesson);
