@@ -15471,8 +15471,8 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/recite/ReciteClient.tsx",
       "source_location": "L298",
       "weight": 1.0,
-      "_src": "reciteclient_markversecomplete",
-      "_tgt": "tracker_sadhanatracker_trackshlokaread",
+      "_src": "tracker_sadhanatracker_trackshlokaread",
+      "_tgt": "reciteclient_markversecomplete",
       "source": "tracker_sadhanatracker_trackshlokaread",
       "target": "reciteclient_markversecomplete"
     },
@@ -16587,8 +16587,8 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/recite/ReciteClient.tsx",
       "source_location": "L299",
       "weight": 1.0,
-      "_src": "reciteclient_markversecomplete",
-      "_tgt": "streaks_streaktracker_markdone",
+      "_src": "streaks_streaktracker_markdone",
+      "_tgt": "reciteclient_markversecomplete",
       "source": "streaks_streaktracker_markdone",
       "target": "reciteclient_markversecomplete"
     },

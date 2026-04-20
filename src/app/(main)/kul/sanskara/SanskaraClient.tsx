@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, ChevronDown, ChevronUp, Info } from 'lucide-react';
+import { Check, X, ChevronDown, ChevronUp, Info, Lock, Sparkles, User, Users, ChevronRight, Zap } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import CircularProgress from '@/components/ui/CircularProgress';
+import { usePremium } from '@/hooks/usePremium';
 
 // ─── 16 Sanskaras data ───────────────────────────────────────────────────────
 export const SANSKARAS = [
@@ -227,12 +228,46 @@ interface CompletedRecord {
   notes: string | null;
   performed_by: string | null;
   location: string | null;
+  kul_member_id: string | null;
+  expected_date: string | null;
+}
+
+interface FamilyMember {
+  id: string;
+  name: string;
+  role: string | null;
+  gender: string | null;
+  birth_date: string | null;
+  birth_year: number | null;
+  is_alive: boolean;
+  linked_user_id: string | null;
 }
 
 interface Props {
   userId: string;
   completed: CompletedRecord[];
+  familyMembers: FamilyMember[];
+  kulId: string | null;
+  tradition: string | null;
+  userBirthDate: string | null;
 }
+
+// ─── Free-tier gate ────────────────────────────────────────────────────────────
+// Garbhadhana (#1, prenatal) is free for all users.
+// All 15 remaining sanskaras require Sangam Pro.
+const FREE_SANSKAR_IDS = new Set(['garbhadhana']);
+
+// ─── Milestone offsets (months from conception/birth) for notifications ───────
+// These define when to send a push reminder after Garbhadhana is recorded.
+const MILESTONE_OFFSETS: Array<{ id: string; name: string; monthsFromConception: number }> = [
+  { id: 'pumsavana',        name: 'Pumsavana',        monthsFromConception: 2   },
+  { id: 'simantonnayana',   name: 'Simantonnayana',   monthsFromConception: 5   },
+  { id: 'jatakarma',        name: 'Jatakarma',        monthsFromConception: 9   }, // birth
+  { id: 'namakarana',       name: 'Namakarana',       monthsFromConception: 9.4 }, // ~11 days after birth
+  { id: 'nishkramana',      name: 'Nishkramana',      monthsFromConception: 13  }, // 4mo after birth
+  { id: 'annaprashana',     name: 'Annaprashana',     monthsFromConception: 15  }, // 6mo after birth
+  { id: 'chudakarana',      name: 'Chudakarana',      monthsFromConception: 21  }, // ~1yr after birth
+];
 
 // ─── Stage colour map ─────────────────────────────────────────────────────────
 const STAGE_COLORS: Record<string, { bg: string; border: string; text: string }> = {
@@ -249,18 +284,21 @@ const STAGE_COLORS: Record<string, { bg: string; border: string; text: string }>
 // ─── Mark form ────────────────────────────────────────────────────────────────
 function MarkForm({
   sanskaraId,
+  isPrenatal,
   onSave,
   onCancel,
 }: {
   sanskaraId: string;
-  onSave: (data: { date: string; notes: string; performed_by: string; location: string }) => Promise<void>;
+  isPrenatal: boolean;
+  onSave: (data: { date: string; notes: string; performed_by: string; location: string; expected_date: string }) => Promise<void>;
   onCancel: () => void;
 }) {
-  const [date,        setDate]        = useState(new Date().toISOString().slice(0, 10));
-  const [notes,       setNotes]       = useState('');
-  const [performedBy, setPerformedBy] = useState('');
-  const [location,    setLocation]    = useState('');
-  const [saving,      setSaving]      = useState(false);
+  const [date,         setDate]         = useState(new Date().toISOString().slice(0, 10));
+  const [expectedDate, setExpectedDate] = useState('');
+  const [notes,        setNotes]        = useState('');
+  const [performedBy,  setPerformedBy]  = useState('');
+  const [location,     setLocation]     = useState('');
+  const [saving,       setSaving]       = useState(false);
 
   return (
     <motion.div
@@ -274,7 +312,7 @@ function MarkForm({
         <p className="text-xs font-semibold text-amber-200/70">Record this sanskara</p>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-[10px] text-white/40 uppercase tracking-wider">Date</label>
+            <label className="text-[10px] text-white/40 uppercase tracking-wider">Date performed</label>
             <input
               type="date"
               value={date}
@@ -295,6 +333,26 @@ function MarkForm({
             />
           </div>
         </div>
+
+        {/* Expected due date — only for Garbhadhana (prenatal) to enable milestone notifications */}
+        {isPrenatal && sanskaraId === 'garbhadhana' && (
+          <div>
+            <label className="text-[10px] text-white/40 uppercase tracking-wider flex items-center gap-1">
+              <Zap size={9} className="text-amber-400" /> Expected due date (for milestone reminders)
+            </label>
+            <input
+              type="date"
+              value={expectedDate}
+              onChange={e => setExpectedDate(e.target.value)}
+              className="mt-1 w-full rounded-lg px-3 py-2 text-sm outline-none"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(212,166,70,0.25)', color: 'rgba(245,220,150,0.9)' }}
+            />
+            <p className="mt-1 text-[10px]" style={{ color: 'rgba(245,210,130,0.35)' }}>
+              We'll send gentle reminders for upcoming milestone sanskaras 🙏
+            </p>
+          </div>
+        )}
+
         <div>
           <label className="text-[10px] text-white/40 uppercase tracking-wider">Performed by (Pandit / Granthi)</label>
           <input
@@ -321,7 +379,7 @@ function MarkForm({
           <button
             onClick={async () => {
               setSaving(true);
-              await onSave({ date, notes, performed_by: performedBy, location });
+              await onSave({ date, notes, performed_by: performedBy, location, expected_date: expectedDate });
               setSaving(false);
             }}
             disabled={saving}
@@ -347,16 +405,20 @@ function MarkForm({
 function SanskaraCard({
   s,
   record,
+  isPro,
   onMark,
 }: {
   s: typeof SANSKARAS[number];
   record: CompletedRecord | undefined;
-  onMark: (id: string, data: { date: string; notes: string; performed_by: string; location: string }) => Promise<void>;
+  isPro: boolean;
+  onMark: (id: string, data: { date: string; notes: string; performed_by: string; location: string; expected_date: string }) => Promise<void>;
 }) {
   const [expanded,  setExpanded]  = useState(false);
   const [marking,   setMarking]   = useState(false);
-  const done  = Boolean(record);
-  const stage = STAGE_COLORS[s.stage] ?? STAGE_COLORS['Adult'];
+  const done    = Boolean(record);
+  const stage   = STAGE_COLORS[s.stage] ?? STAGE_COLORS['Adult'];
+  const isFree  = FREE_SANSKAR_IDS.has(s.id);
+  const locked  = !isFree && !isPro;
 
   return (
     <motion.div
@@ -364,16 +426,37 @@ function SanskaraCard({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="rounded-2xl overflow-hidden"
+      className="rounded-2xl overflow-hidden relative"
       style={{
-        background: done ? 'rgba(80,200,100,0.06)' : 'rgba(10,8,22,0.6)',
-        border: `1px solid ${done ? 'rgba(80,200,100,0.2)' : 'rgba(255,255,255,0.08)'}`,
+        background: done ? 'rgba(80,200,100,0.06)' : locked ? 'rgba(10,8,20,0.4)' : 'rgba(10,8,22,0.6)',
+        border: `1px solid ${done ? 'rgba(80,200,100,0.2)' : locked ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.08)'}`,
+        opacity: locked ? 0.7 : 1,
       }}
     >
+      {/* Pro lock badge */}
+      {locked && (
+        <div
+          className="absolute top-3 right-3 flex items-center gap-1 rounded-full px-2 py-0.5 z-10"
+          style={{ background: 'rgba(212,166,70,0.12)', border: '1px solid rgba(212,166,70,0.2)' }}
+        >
+          <Lock size={8} style={{ color: 'rgba(212,166,70,0.6)' }} />
+          <span className="text-[9px] font-semibold" style={{ color: 'rgba(212,166,70,0.6)' }}>Pro</span>
+        </div>
+      )}
+
       {/* Card header */}
       <button
         className="w-full flex items-start gap-3 px-4 py-3.5 text-left"
-        onClick={() => setExpanded(e => !e)}
+        onClick={() => {
+          if (locked) {
+            toast('🔒 Upgrade to Sangam Pro to track all 16 Sanskaras', {
+              duration: 3000,
+              style: { background: '#1c1208', color: '#f5dfa0', border: '1px solid rgba(212,166,70,0.3)' },
+            });
+            return;
+          }
+          setExpanded(e => !e);
+        }}
       >
         {/* Number / checkmark */}
         <div
@@ -459,7 +542,7 @@ function SanskaraCard({
               )}
 
               {/* Mark button */}
-              {!done && !marking && (
+              {!done && !marking && !locked && (
                 <button
                   onClick={() => setMarking(true)}
                   className="flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-semibold transition"
@@ -474,6 +557,7 @@ function SanskaraCard({
                 {marking && (
                   <MarkForm
                     sanskaraId={s.id}
+                    isPrenatal={s.stage === 'Prenatal'}
                     onSave={async (data) => {
                       await onMark(s.id, data);
                       setMarking(false);
@@ -490,54 +574,292 @@ function SanskaraCard({
   );
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
-export default function SanskaraClient({ userId, completed: initialCompleted }: Props) {
-  const supabase  = createClient();
-  const [completed, setCompleted] = useState<CompletedRecord[]>(initialCompleted);
+// ─── Member selector ──────────────────────────────────────────────────────────
+function MemberSelector({
+  familyMembers,
+  selectedId,
+  onChange,
+}: {
+  familyMembers: FamilyMember[];
+  selectedId: string | null;
+  onChange: (id: string | null) => void;
+}) {
+  const options = [
+    { id: null, label: 'Me', sub: 'My own lifecycle' },
+    ...familyMembers.map(m => ({
+      id: m.id,
+      label: m.name,
+      sub: m.role ?? (m.birth_year ? `b. ${m.birth_year}` : ''),
+    })),
+  ];
 
-  const completedCount = completed.length;
+  return (
+    <div className="space-y-2">
+      <p className="text-[10px] font-semibold uppercase tracking-widest px-1" style={{ color: 'rgba(245,210,130,0.45)' }}>
+        <Users size={9} className="inline mr-1" />Recording for
+      </p>
+      <div className="flex gap-2 flex-wrap">
+        {options.map(o => {
+          const active = o.id === selectedId;
+          return (
+            <button
+              key={o.id ?? '__me__'}
+              onClick={() => onChange(o.id)}
+              className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs transition"
+              style={{
+                background: active ? 'rgba(212,166,70,0.15)' : 'rgba(255,255,255,0.04)',
+                border: `1px solid ${active ? 'rgba(212,166,70,0.4)' : 'rgba(255,255,255,0.08)'}`,
+                color: active ? 'rgba(245,220,150,0.9)' : 'rgba(245,210,130,0.5)',
+              }}
+            >
+              <User size={11} />
+              <span>{o.label}</span>
+              {o.sub && <span style={{ color: 'rgba(245,210,130,0.3)' }}>· {o.sub}</span>}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── Smart start (mid-cycle onboarding) card ──────────────────────────────────
+function SmartStartCard({
+  completedCount,
+  onDismiss,
+}: {
+  completedCount: number;
+  onDismiss: () => void;
+}) {
+  if (completedCount > 0) return null; // Only show on first open
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ duration: 0.4 }}
+      className="rounded-2xl p-4 relative overflow-hidden"
+      style={{ background: 'linear-gradient(135deg, rgba(80,30,120,0.25), rgba(40,15,80,0.3))', border: '1px solid rgba(160,80,200,0.25)' }}
+    >
+      <button
+        onClick={onDismiss}
+        className="absolute top-3 right-3"
+        style={{ color: 'rgba(200,150,255,0.4)' }}
+      >
+        <X size={14} />
+      </button>
+      <div className="flex items-start gap-3">
+        <div className="text-2xl mt-0.5">🌱</div>
+        <div>
+          <p className="text-sm font-semibold" style={{ color: 'rgba(200,160,255,0.9)' }}>
+            Starting your journey?
+          </p>
+          <p className="text-xs mt-1 leading-relaxed" style={{ color: 'rgba(200,150,255,0.6)' }}>
+            You can start from any point in life — not just at birth. Record whatever you've already observed and track forward from here.
+          </p>
+          <p className="text-[11px] mt-2" style={{ color: 'rgba(200,150,255,0.45)' }}>
+            Begin with <strong style={{ color: 'rgba(220,180,255,0.7)' }}>Garbhadhana</strong> (free) or scroll down to mark the last sanskara you observed.
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Pro nudge card ────────────────────────────────────────────────────────────
+function ProNudgeCard() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="rounded-2xl p-4"
+      style={{ background: 'linear-gradient(135deg, rgba(212,120,20,0.12), rgba(212,166,70,0.08))', border: '1px solid rgba(212,166,70,0.22)' }}
+    >
+      <div className="flex items-center gap-3">
+        <Sparkles size={18} style={{ color: '#d4a030' }} className="flex-shrink-0" />
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-semibold" style={{ color: '#d4a030' }}>Unlock all 16 Sanskaras</p>
+          <p className="text-[11px] mt-0.5" style={{ color: 'rgba(245,210,130,0.5)' }}>
+            Garbhadhana is free. Upgrade to Sangam Pro to track the complete lifecycle — for you and your family.
+          </p>
+        </div>
+        <ChevronRight size={14} style={{ color: 'rgba(212,166,70,0.5)' }} className="flex-shrink-0" />
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── AI nudge card ────────────────────────────────────────────────────────────
+function AiNudgeCard({
+  message,
+  nextName,
+  urgency,
+}: {
+  message: string;
+  nextName: string;
+  urgency: 'now' | 'soon' | 'later';
+}) {
+  const urgencyStyle = {
+    now:   { bg: 'rgba(212,80,60,0.12)',  border: 'rgba(212,80,60,0.25)',  text: '#e0604a', dot: '#e05040' },
+    soon:  { bg: 'rgba(212,166,70,0.1)',  border: 'rgba(212,166,70,0.25)', text: '#d4a030', dot: '#d4a030' },
+    later: { bg: 'rgba(80,180,255,0.08)', border: 'rgba(80,180,255,0.2)',  text: '#60b0e0', dot: '#60b0e0' },
+  }[urgency];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="rounded-2xl p-4"
+      style={{ background: urgencyStyle.bg, border: `1px solid ${urgencyStyle.border}` }}
+    >
+      <div className="flex items-start gap-3">
+        <Sparkles size={16} style={{ color: urgencyStyle.text }} className="flex-shrink-0 mt-0.5" />
+        <div>
+          <div className="flex items-center gap-2">
+            <p className="text-xs font-semibold" style={{ color: urgencyStyle.text }}>
+              Dharma Mitra · {nextName}
+            </p>
+            <span
+              className="text-[9px] px-1.5 py-0.5 rounded-full font-medium uppercase tracking-wider"
+              style={{ background: urgencyStyle.border, color: urgencyStyle.text }}
+            >
+              {urgency}
+            </span>
+          </div>
+          <p className="text-xs mt-1 leading-relaxed" style={{ color: 'rgba(245,210,130,0.65)' }}>
+            {message}
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+export default function SanskaraClient({
+  userId,
+  completed: initialCompleted,
+  familyMembers,
+  kulId,
+  tradition,
+  userBirthDate,
+}: Props) {
+  const supabase       = createClient();
+  const isPro          = usePremium();
+  const [completed,    setCompleted]    = useState<CompletedRecord[]>(initialCompleted);
+  const [selectedMember, setSelectedMember] = useState<string | null>(null); // null = "Me"
+  const [showSmartStart, setShowSmartStart] = useState(true);
+  const [aiNudge, setAiNudge] = useState<{ message: string; nextName: string; urgency: 'now'|'soon'|'later' } | null>(null);
+
+  // Fetch AI nudge on mount (non-blocking, best-effort)
+  useEffect(() => {
+    const myCompleted = initialCompleted.filter(c => !c.kul_member_id).map(c => c.sanskara_id);
+    if (!isPro && myCompleted.length === 0) return; // Don't show AI nudge to free users with 0 progress — would spam
+    if (myCompleted.length === 16) return; // All done
+
+    fetch('/api/sanskar/suggest', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        completed: myCompleted,
+        birth_date: userBirthDate ?? undefined,
+        tradition: tradition ?? 'hindu',
+      }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.message && data.next_sanskara_name) {
+          setAiNudge({ message: data.message, nextName: data.next_sanskara_name, urgency: data.urgency ?? 'soon' });
+        }
+      })
+      .catch(() => {}); // fail silently
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // For family member, show their completed records (filtered by kul_member_id)
+  const visibleCompleted = selectedMember
+    ? completed.filter(c => c.kul_member_id === selectedMember)
+    : completed.filter(c => !c.kul_member_id);
+
+  const completedCount = visibleCompleted.length;
   const pct = Math.round((completedCount / SANSKARAS.length) * 100);
 
-  function getRecord(id: string) {
-    return completed.find(c => c.sanskara_id === id);
+  function getRecord(id: string): CompletedRecord | undefined {
+    return visibleCompleted.find(c => c.sanskara_id === id);
   }
 
   async function handleMark(
     sanskaraId: string,
-    data: { date: string; notes: string; performed_by: string; location: string }
+    data: { date: string; notes: string; performed_by: string; location: string; expected_date: string }
   ) {
-    const { error } = await supabase.from('user_sanskaras').upsert({
+    const row: Record<string, unknown> = {
       user_id:        userId,
       sanskara_id:    sanskaraId,
       completed_date: data.date || null,
       notes:          data.notes || null,
       performed_by:   data.performed_by || null,
       location:       data.location || null,
-    }, { onConflict: 'user_id,sanskara_id' });
-
-    if (error) {
-      toast.error('Could not save — please try again');
-      return;
+      kul_member_id:  selectedMember ?? null,
+    };
+    if (data.expected_date) {
+      row.expected_date = data.expected_date;
     }
 
+    // Try upsert with member-aware conflict key
+    const { error } = await supabase
+      .from('user_sanskaras')
+      .upsert(row, { onConflict: selectedMember ? 'user_id,kul_member_id,sanskara_id' : 'user_id,sanskara_id' });
+
+    if (error) {
+      // Fallback: try a plain insert (handles case where kul_member_id column doesn't exist yet)
+      const { error: err2 } = await supabase.from('user_sanskaras').upsert(
+        { user_id: userId, sanskara_id: sanskaraId, completed_date: data.date || null, notes: data.notes || null, performed_by: data.performed_by || null, location: data.location || null },
+        { onConflict: 'user_id,sanskara_id' }
+      );
+      if (err2) { toast.error('Could not save — please try again'); return; }
+    }
+
+    // Optimistically update local state
     setCompleted(prev => {
-      const filtered = prev.filter(c => c.sanskara_id !== sanskaraId);
+      const filtered = prev.filter(c => !(c.sanskara_id === sanskaraId && (c.kul_member_id ?? null) === selectedMember));
       return [...filtered, {
         sanskara_id:    sanskaraId,
         completed_date: data.date || null,
         notes:          data.notes || null,
         performed_by:   data.performed_by || null,
         location:       data.location || null,
+        kul_member_id:  selectedMember,
+        expected_date:  data.expected_date || null,
       }];
     });
+
     toast.success('Sanskara recorded 🙏', { duration: 2500 });
+
+    // If Garbhadhana + expected_date → schedule milestone notifications (fire and forget)
+    if (sanskaraId === 'garbhadhana' && data.expected_date) {
+      fetch('/api/sanskar/schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id:       userId,
+          kul_member_id: selectedMember,
+          due_date:      data.expected_date,
+        }),
+      }).catch(() => {});
+    }
   }
 
   // Group by stage for section headers
   const stages = [...new Set(SANSKARAS.map(s => s.stage))];
 
+  const selectedMemberName = selectedMember
+    ? familyMembers.find(m => m.id === selectedMember)?.name ?? 'Family member'
+    : 'My';
+
   return (
-    <div className="space-y-5 pb-8">
+    <div className="space-y-4 pb-8">
       {/* Header */}
       <div
         className="rounded-[1.8rem] px-5 py-5"
@@ -559,8 +881,10 @@ export default function SanskaraClient({ userId, completed: initialCompleted }: 
               </div>
             }
           />
-          <div>
-            <h1 className="text-xl font-bold" style={{ color: '#f5dfa0' }}>16 Sanskaras</h1>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl font-bold" style={{ color: '#f5dfa0' }}>
+              {selectedMember ? `${selectedMemberName}'s Sanskaras` : '16 Sanskaras'}
+            </h1>
             <p className="text-sm mt-0.5" style={{ color: 'rgba(245,210,130,0.45)' }}>
               षोडश संस्कार — Sacred rites of passage
             </p>
@@ -570,6 +894,42 @@ export default function SanskaraClient({ userId, completed: initialCompleted }: 
           </div>
         </div>
       </div>
+
+      {/* Family member selector — only if Kul has family members */}
+      {familyMembers.length > 0 && (
+        <div
+          className="rounded-2xl px-4 py-3"
+          style={{ background: 'rgba(10,8,22,0.6)', border: '1px solid rgba(255,255,255,0.07)' }}
+        >
+          <MemberSelector
+            familyMembers={familyMembers}
+            selectedId={selectedMember}
+            onChange={setSelectedMember}
+          />
+        </div>
+      )}
+
+      {/* Smart start onboarding — first-time visitors */}
+      <AnimatePresence>
+        {showSmartStart && completedCount === 0 && (
+          <SmartStartCard
+            completedCount={completedCount}
+            onDismiss={() => setShowSmartStart(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* AI nudge — shown when Gemini has a suggestion */}
+      {aiNudge && !selectedMember && (
+        <AiNudgeCard
+          message={aiNudge.message}
+          nextName={aiNudge.nextName}
+          urgency={aiNudge.urgency}
+        />
+      )}
+
+      {/* Pro nudge — free users who haven't upgraded */}
+      {!isPro && <ProNudgeCard />}
 
       {/* Timeline grouped by life stage */}
       {stages.map((stage) => {
@@ -590,6 +950,7 @@ export default function SanskaraClient({ userId, completed: initialCompleted }: 
                   key={s.id}
                   s={s}
                   record={getRecord(s.id)}
+                  isPro={isPro}
                   onMark={handleMark}
                 />
               ))}
@@ -599,7 +960,9 @@ export default function SanskaraClient({ userId, completed: initialCompleted }: 
       })}
 
       <p className="text-center text-xs pb-2" style={{ color: 'rgba(245,210,130,0.25)' }}>
-        Records are private to your profile. Family sharing coming soon.
+        {kulId
+          ? '🌳 Records linked to your Kul family tree'
+          : 'Records are private to your profile'}
       </p>
     </div>
   );
