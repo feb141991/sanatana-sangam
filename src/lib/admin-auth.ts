@@ -20,7 +20,11 @@ function secret(): Uint8Array {
 }
 
 async function hmacKey(usage: KeyUsage[]): Promise<CryptoKey> {
-  return crypto.subtle.importKey('raw', secret(), { name: 'HMAC', hash: 'SHA-256' }, false, usage);
+  const raw = secret();
+  // Slice to a plain ArrayBuffer so TypeScript's stricter generics are satisfied
+  // across both Edge Runtime and Node.js targets.
+  const buf = raw.buffer.slice(raw.byteOffset, raw.byteOffset + raw.byteLength) as ArrayBuffer;
+  return crypto.subtle.importKey('raw', buf, { name: 'HMAC', hash: 'SHA-256' }, false, usage);
 }
 
 function bufToHex(buf: ArrayBuffer): string {
