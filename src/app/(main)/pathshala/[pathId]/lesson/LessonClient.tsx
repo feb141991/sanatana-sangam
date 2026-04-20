@@ -18,6 +18,7 @@ import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import { GITA_FULL_DATA } from '@/lib/gita-full-data';
 import { ALL_LIBRARY_ENTRIES } from '@/lib/library-content';
+import CircularProgress from '@/components/ui/CircularProgress';
 import { SEED_PATHS } from '@/app/(main)/pathshala/PathshalaClient';
 import type { LibraryEntry } from '@/lib/library-content';
 
@@ -330,17 +331,16 @@ export default function LessonClient({
           </Link>
         </div>
 
-        {/* Progress bar */}
-        <div className="mt-2 max-w-2xl mx-auto">
-          <div className="h-1 rounded-full bg-white/8 overflow-hidden">
-            <motion.div
-              className="h-full rounded-full"
-              style={{ background: accentColour }}
-              animate={{ width: `${progressPct}%` }}
-              transition={{ duration: 0.5 }}
-            />
-          </div>
-          <p className="text-[10px] text-[color:var(--brand-muted)] mt-1">{progressPct}% complete · {completed.length}/{totalLessons} lessons</p>
+        {/* Circular progress */}
+        <div className="mt-2 max-w-2xl mx-auto flex items-center gap-3">
+          <CircularProgress
+            pct={progressPct}
+            accent={accentColour}
+            size={40}
+            strokeWidth={4}
+            label={<span className="text-[9px] font-bold" style={{ color: accentColour }}>{progressPct}%</span>}
+          />
+          <p className="text-[10px] text-[color:var(--brand-muted)]">{completed.length}/{totalLessons} lessons complete</p>
         </div>
       </div>
 

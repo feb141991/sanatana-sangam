@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X } from 'lucide-react';
+import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, BarChart2, Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import type { HiddenContentSummary, SafetyProfileSummary } from '@/lib/user-safety';
 import { getInitials, ISHTA_DEVATAS, SAMPRADAYAS, SPIRITUAL_LEVELS, TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getIshtaDevataLabel, getSampradayaLabel } from '@/lib/utils';
@@ -154,6 +154,7 @@ export default function ProfileClient({
   const [uploading, setUploading] = useState(false);
   const [sendingTestNotification, setSendingTestNotification] = useState(false);
   const [savingNotificationPrefs, setSavingNotificationPrefs] = useState(false);
+  const [reportLoading, setReportLoading] = useState(false);
   const [showNotificationAdvanced, setShowNotificationAdvanced] = useState(false);
   const [showNotificationDiagnostics, setShowNotificationDiagnostics] = useState(false);
   const [safetyBusyKey, setSafetyBusyKey] = useState<string | null>(null);
@@ -311,6 +312,122 @@ export default function ProfileClient({
     } catch (error: any) {
       toast.error(error.message);
       return false;
+    }
+  }
+
+  async function downloadReport() {
+    setReportLoading(true);
+    try {
+      const res  = await fetch('/api/user/report');
+      if (!res.ok) throw new Error('Could not generate report');
+      const data = await res.json();
+
+      const tradition = data.profile?.tradition ?? 'hindu';
+      const TRADITION_EMOJI: Record<string, string> = {
+        hindu: '🕉️', sikh: '☬', buddhist: '☸️', jain: '🤲',
+      };
+      const tEmoji = TRADITION_EMOJI[tradition] ?? '🙏';
+
+      const formatMins = (m: number) =>
+        m >= 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m}m`;
+
+      const heatmapHtml = (data.heatmap ?? []).map((d: any) => {
+        const level = d.nitya >= 7 ? '#d4a030' : d.nitya > 0 ? '#d4a03066' : d.japa ? '#7B1A1A66' : '#e5e7eb';
+        return `<div title="${d.date}" style="width:18px;height:18px;border-radius:4px;background:${level}"></div>`;
+      }).join('');
+
+      const mantrasHtml = (data.japa?.top_mantras ?? []).map(([name, count]: [string, number]) =>
+        `<li>${name} — <strong>${count}</strong> session${count !== 1 ? 's' : ''}</li>`
+      ).join('');
+
+      const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Sadhana Report – ${data.profile?.name}</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f9f5ef; color: #2c2a25; padding: 24px; max-width: 720px; margin: 0 auto; }
+  h1 { font-size: 24px; font-weight: 700; color: #1c1c1a; }
+  h2 { font-size: 15px; font-weight: 700; color: #7B1A1A; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .card { background: #fff; border-radius: 16px; padding: 18px; margin-bottom: 16px; border: 1px solid rgba(0,0,0,0.07); box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+  .meta { font-size: 13px; color: #888; margin-top: 4px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .stat { text-align: center; padding: 12px; background: #fef9ef; border-radius: 12px; border: 1px solid rgba(212,166,70,0.2); }
+  .stat .num { font-size: 28px; font-weight: 800; color: #c8920a; }
+  .stat .label { font-size: 11px; color: #888; margin-top: 3px; }
+  .heatmap { display: flex; flex-wrap: wrap; gap: 3px; }
+  ul { padding-left: 18px; font-size: 14px; line-height: 2; }
+  .badge { display: inline-block; background: rgba(212,166,70,0.15); color: #7B1A1A; border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 600; margin-left: 8px; }
+  .footer { text-align: center; font-size: 11px; color: #aaa; margin-top: 24px; }
+  @media print { body { padding: 0; } }
+</style>
+</head>
+<body>
+<div style="margin-bottom:20px">
+  <h1>${tEmoji} Sadhana Report</h1>
+  <p class="meta">${data.profile?.name} · ${data.period?.from} to ${data.period?.to}</p>
+</div>
+
+<div class="card">
+  <h2>Japa</h2>
+  <div class="grid">
+    <div class="stat"><div class="num">${data.japa?.sessions ?? 0}</div><div class="label">Sessions</div></div>
+    <div class="stat"><div class="num">${data.japa?.total_malas ?? 0}</div><div class="label">Malas (108 beads)</div></div>
+    <div class="stat"><div class="num">${formatMins(data.japa?.duration_minutes ?? 0)}</div><div class="label">Time in Japa</div></div>
+  </div>
+  ${mantrasHtml ? `<ul style="margin-top:12px">${mantrasHtml}</ul>` : ''}
+</div>
+
+<div class="card">
+  <h2>Nitya Karma</h2>
+  <div class="grid">
+    <div class="stat"><div class="num">${data.nitya?.active_days ?? 0}</div><div class="label">Active days</div></div>
+    <div class="stat"><div class="num">${data.nitya?.full_days ?? 0}</div><div class="label">Full sequences</div></div>
+    <div class="stat"><div class="num">${data.nitya?.current_streak ?? 0}</div><div class="label">Current streak</div></div>
+  </div>
+  <p style="font-size:13px;color:#888;margin-top:10px">Longest streak in period: <strong>${data.nitya?.longest_streak ?? 0} days</strong></p>
+</div>
+
+<div class="card">
+  <h2>30-Day Heatmap</h2>
+  <div class="heatmap">${heatmapHtml}</div>
+  <div style="display:flex;gap:16px;margin-top:10px;font-size:11px;color:#888">
+    <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#d4a030;margin-right:4px;vertical-align:middle"></span>Full Nitya</span>
+    <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#d4a03066;margin-right:4px;vertical-align:middle"></span>Partial Nitya</span>
+    <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#7B1A1A66;margin-right:4px;vertical-align:middle"></span>Japa only</span>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Community</h2>
+  <div class="grid">
+    <div class="stat"><div class="num">${data.community?.posts ?? 0}</div><div class="label">Posts</div></div>
+    <div class="stat"><div class="num">${data.community?.threads ?? 0}</div><div class="label">Discussions started</div></div>
+    <div class="stat"><div class="num">${data.profile?.seva_score ?? 0}</div><div class="label">Seva score</div></div>
+  </div>
+</div>
+
+<div class="footer">Generated by Sanatana Sangam · ${new Date().toLocaleDateString()}</div>
+</body>
+</html>`;
+
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const url  = URL.createObjectURL(blob);
+      const a    = Object.assign(document.createElement('a'), {
+        href:     url,
+        download: `sadhana-report-${data.period?.from}-to-${data.period?.to}.html`,
+      });
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success('Report downloaded 📊');
+    } catch {
+      toast.error('Could not generate report. Try again.');
+    } finally {
+      setReportLoading(false);
     }
   }
 
@@ -1107,6 +1224,41 @@ export default function ProfileClient({
           </div>
         </div>
       )}
+
+      {/* ── Sadhana Report ── */}
+      <SurfaceSection
+        eyebrow="My Progress"
+        title="30-day sadhana report"
+        description="Download a summary of your japa, nitya karma, and community activity for the past month."
+      >
+        <div className="flex items-start gap-4">
+          <div
+            className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+            style={{ background: 'rgba(212,166,70,0.12)', color: 'var(--brand-primary-strong)' }}
+          >
+            <BarChart2 size={22} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium theme-ink">Japa sessions, Nitya Karma streaks, and community contribution — all in one file you can save or print.</p>
+            <p className="text-xs theme-dim mt-1">Covers the last 30 days · Downloads as HTML</p>
+          </div>
+        </div>
+        <button
+          onClick={downloadReport}
+          disabled={reportLoading}
+          className="mt-3 w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-sm font-semibold transition disabled:opacity-60"
+          style={{
+            background: reportLoading
+              ? 'rgba(212,166,70,0.12)'
+              : 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))',
+            color: reportLoading ? 'var(--brand-muted)' : '#1c1c1a',
+          }}
+        >
+          {reportLoading
+            ? <><Loader2 size={16} className="animate-spin" /> Generating…</>
+            : <><Download size={16} /> Download Report</>}
+        </button>
+      </SurfaceSection>
 
       {/* ── Account ── */}
       <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-3">

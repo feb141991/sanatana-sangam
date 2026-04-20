@@ -36,7 +36,7 @@ const PUSH_PROMPT_COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000;
 const QUICK_LINKS = [
   { href: '/bhakti',      label: 'Bhakti',   emoji: '✨' },
   { href: '/panchang',    label: 'Panchang', emoji: '🪔' },
-  { href: '/nitya-karma', label: 'Nitya',    emoji: '🌅' },
+  { href: '/japa',        label: 'Japa',     emoji: '📿' },
   { href: '/tirtha-map',  label: 'Tirtha',   emoji: '🗺️' },
 ] as const;
 

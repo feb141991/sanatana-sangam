@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import BottomNav from '@/components/layout/BottomNav';
 import TopBar from '@/components/layout/TopBar';
+import AIChatFAB from '@/components/layout/AIChatFAB';
 import { LocationProvider } from '@/lib/LocationContext';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { getInitials } from '@/lib/utils';
@@ -28,6 +29,7 @@ export default async function MainLayout({
   let libraryMobileLabel: string      = 'Pathshala';
   let avatarUrl:        string | null = null;
   let userInitials:     string        = 'SS';
+  let userName:         string        = 'Sadhak';
   let tradition:        string        = 'hindu';
   let wantsFestivalReminders          = true;
   let wantsShlokaReminders            = true;
@@ -56,6 +58,7 @@ export default async function MainLayout({
     libraryMobileLabel = 'Pathshala';
     avatarUrl        = profile?.avatar_url ?? null;
     userInitials     = getInitials(profile?.full_name ?? profile?.username ?? 'Sanatana');
+    userName         = profile?.full_name ?? profile?.username ?? 'Sadhak';
     tradition        = profile?.tradition ?? 'hindu';
     wantsFestivalReminders = profile?.wants_festival_reminders ?? true;
     wantsShlokaReminders = profile?.wants_shloka_reminders ?? true;
@@ -98,6 +101,7 @@ export default async function MainLayout({
         </LanguageProvider>
       </main>
       <BottomNav libraryLabel={libraryLabel} libraryMobileLabel={libraryMobileLabel} isGuest={!user} />
+      <AIChatFAB userId={userId} tradition={tradition} userName={userName} isGuest={!user} />
     </div>
   );
 }

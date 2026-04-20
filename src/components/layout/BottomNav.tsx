@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Home, Users, GraduationCap, Heart, Compass, MessageSquare, Bot, Sparkles } from 'lucide-react';
+import { Home, Users, GraduationCap, Heart, Compass, MessageSquare, Sparkles, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
@@ -19,18 +19,17 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
   const prefersReducedMotion = useReducedMotion();
   const { t } = useLanguage();
 
-  // AI Chat leftmost. Home in centre (thumb zone). Pathshala beside home.
+  // Nitya Karma leftmost (replaces AI — AI is now a floating FAB).
   const memberNavItems = [
-    { href: '/ai-chat',   label: t('navAI'),       mobileLabel: 'AI',               icon: Bot           },
-    { href: '/pathshala', label: libraryLabel,      mobileLabel: libraryMobileLabel, icon: GraduationCap },
-    { href: '/home',      label: t('navHome'),     mobileLabel: t('navHome'),        icon: Home          },
-    { href: '/kul',       label: t('navKul'),      mobileLabel: t('navKul'),         icon: Heart         },
-    { href: '/mandali',   label: t('navMandali'),  mobileLabel: t('navMandali'),     icon: Users         },
+    { href: '/nitya-karma', label: 'Nitya',          mobileLabel: 'Nitya',            icon: Sun           },
+    { href: '/pathshala',   label: libraryLabel,      mobileLabel: libraryMobileLabel, icon: GraduationCap },
+    { href: '/home',        label: t('navHome'),     mobileLabel: t('navHome'),        icon: Home          },
+    { href: '/kul',         label: t('navKul'),      mobileLabel: t('navKul'),         icon: Heart         },
+    { href: '/mandali',     label: t('navMandali'),  mobileLabel: t('navMandali'),     icon: Users         },
   ];
   const guestNavItems = [
     { href: '/guest',         label: 'Explore', mobileLabel: 'Explore', icon: Compass       },
     { href: '/vichaar-sabha', label: 'Vichaar', mobileLabel: 'Vichaar', icon: MessageSquare },
-    { href: '/ai-chat',       label: 'Ask AI',  mobileLabel: 'AI',      icon: Bot           },
     { href: '/signup',        label: 'Join',    mobileLabel: 'Join',    icon: Sparkles      },
   ];
   const navItems = isGuest ? guestNavItems : memberNavItems;

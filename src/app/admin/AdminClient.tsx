@@ -466,6 +466,7 @@ type CronResult = { ok: boolean; status: number; result: Record<string, unknown>
 type PanchangDebug = Record<string, unknown> | null;
 
 const CRONS = [
+  { path: '/api/cron/brahma-muhurta',    label: 'Brahma Muhurta', emoji: '🌙', desc: 'Sacred wake-up alert sent exactly when each user\'s BM window opens' },
   { path: '/api/cron/nitya-reminder',    label: 'Nitya Karma',    emoji: '🌅', desc: 'Fires for users in Brahma Muhurta who haven\'t started today' },
   { path: '/api/cron/shloka-reminder',   label: 'Shloka Streak',  emoji: '🕉️', desc: 'Fires at 7 PM for users who haven\'t read today\'s shloka' },
   { path: '/api/cron/festival-reminder', label: 'Festival',       emoji: '🪔', desc: 'Fires 7 days and 1 day before tradition-matching festivals' },

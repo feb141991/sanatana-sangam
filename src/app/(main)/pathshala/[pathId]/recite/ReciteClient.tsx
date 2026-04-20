@@ -21,6 +21,7 @@ import { SEED_PATHS } from '@/app/(main)/pathshala/PathshalaClient';
 import { usePathshala } from '@/contexts/EngineContext';
 import type { LibraryEntry } from '@/lib/library-content';
 import type { RecitationResult } from '@sangam/pathshala-engine';
+import CircularProgress from '@/components/ui/CircularProgress';
 
 // ─── Pick recite content for a path ────────────────────────────────────────────
 function getReciteVerses(pathId: string, lessonIndex: number): LibraryEntry[] {
@@ -394,13 +395,15 @@ export default function ReciteClient({
         </div>
 
         {/* Progress */}
-        <div className="mt-2 h-1 rounded-full bg-white/8 overflow-hidden">
-          <motion.div
-            className="h-full rounded-full"
-            style={{ background: accentColour }}
-            animate={{ width: `${progressPct}%` }}
-            transition={{ duration: 0.4 }}
+        <div className="mt-2 flex items-center gap-2.5">
+          <CircularProgress
+            pct={progressPct}
+            accent={accentColour}
+            size={36}
+            strokeWidth={3}
+            label={<span className="text-[8px] font-bold" style={{ color: accentColour }}>{progressPct}%</span>}
           />
+          <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.35)' }}>{completed.length}/{verses.length} verses</p>
         </div>
       </div>
 

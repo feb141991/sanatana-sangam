@@ -10,6 +10,7 @@ const ALLOWED_CRONS = [
   '/api/cron/shloka-reminder',
   '/api/cron/festival-reminder',
   '/api/cron/tithi-reminder',
+  '/api/cron/brahma-muhurta',
 ] as const;
 
 export async function POST(request: Request) {
