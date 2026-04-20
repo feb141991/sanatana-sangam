@@ -292,9 +292,11 @@ interface Props {
 
 // ── Active enrollment record ───────────────────────────────────────────────────
 interface ActiveEnrollment {
-  path_id: string;
-  status: string;
-  completed_at: string | null;
+  path_id:           string;
+  status:            string;
+  completed_at:      string | null;
+  current_lesson:    number;
+  completed_lessons: number[];
 }
 
 // ── Main Component ─────────────────────────────────────────────────────────────
@@ -322,7 +324,7 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
       try {
         const { data, error } = await supabase
           .from('guided_path_progress')
-          .select('path_id, status, completed_at')
+          .select('path_id, status, completed_at, current_lesson, completed_lessons')
           .eq('user_id', userId)
           .eq('status', 'active');
 
@@ -354,7 +356,7 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
       // Refresh active list
       const { data } = await supabase
         .from('guided_path_progress')
-        .select('path_id, status, completed_at')
+        .select('path_id, status, completed_at, current_lesson, completed_lessons')
         .eq('user_id', userId)
         .eq('status', 'active');
 
@@ -366,6 +368,23 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
       toast.error(err?.message ?? 'Could not enroll. Please try again.');
     } finally {
       setEnrolling(null);
+    }
+  }
+
+  // ── Unenroll ─────────────────────────────────────────────────────────────────
+  async function unenroll(pathId: string, pathTitle: string) {
+    if (!confirm(`Leave "${pathTitle}"? Your progress will be saved but you'll be removed from the active list.`)) return;
+    try {
+      const { error } = await supabase
+        .from('guided_path_progress')
+        .update({ status: 'paused' })
+        .eq('user_id', userId)
+        .eq('path_id', pathId);
+      if (error) throw error;
+      setActive(prev => prev.filter(e => e.path_id !== pathId));
+      toast.success('Removed from active paths. You can re-enroll anytime.');
+    } catch (err: any) {
+      toast.error(err?.message ?? 'Could not unenroll. Please try again.');
     }
   }
 
@@ -406,43 +425,70 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
   function ActivePathCard({ enrollment }: { enrollment: ActiveEnrollment }) {
     const path = allPaths.find(p => p.id === enrollment.path_id);
     if (!path) return null;
-    const diff = DIFF_STYLE[path.difficulty] ?? DIFF_STYLE.beginner;
-    const progressPct = 5; // placeholder until progress tracking added
+    const diff        = DIFF_STYLE[path.difficulty] ?? DIFF_STYLE.beginner;
+    const doneLessons = (enrollment.completed_lessons ?? []).length;
+    const progressPct = path.total_lessons > 0
+      ? Math.round((doneLessons / path.total_lessons) * 100)
+      : 0;
+    const resumeLesson = enrollment.current_lesson ?? 0;
+    const lessonLabel  = resumeLesson > 0
+      ? `Resume · L${resumeLesson + 1}`
+      : 'Start';
+
     return (
       <div className="glass-panel rounded-2xl border border-white/8 p-4">
         <div className="flex items-start gap-3">
-          <div className="relative">
+          <div className="relative flex-shrink-0">
             <CircularProgress
               pct={progressPct}
               accent={meta.accentColour}
-              size={48}
+              size={52}
               strokeWidth={4}
               label={<span className="text-xl">{TRAD_ICON[path.tradition] ?? '📖'}</span>}
             />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-bold text-[color:var(--brand-ink)] text-sm">{path.title}</h3>
-              <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${diff.bg} ${diff.text}`}>
-                {diff.label}
-              </span>
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-bold text-[color:var(--brand-ink)] text-sm">{path.title}</h3>
+                  <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${diff.bg} ${diff.text}`}>
+                    {diff.label}
+                  </span>
+                </div>
+                <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 truncate">{path.description}</p>
+              </div>
+              {/* Unenroll */}
+              <button
+                onClick={() => unenroll(enrollment.path_id, path.title)}
+                className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center opacity-40 hover:opacity-80 transition"
+                style={{ background: 'rgba(255,255,255,0.06)' }}
+                title="Leave this path"
+              >
+                <X size={13} className="text-[color:var(--brand-muted)]" />
+              </button>
             </div>
-            <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 truncate">{path.description}</p>
             <div className="mt-1.5 flex items-center gap-2">
-              <span className="text-xs" style={{ color: meta.accentColour }}>{progressPct}%</span>
-              <span className="text-xs text-[color:var(--brand-muted)]">· {path.total_lessons} lessons · {path.duration_days} days</span>
+              <span className="text-xs font-semibold" style={{ color: meta.accentColour }}>{progressPct}%</span>
+              <span className="text-xs text-[color:var(--brand-muted)]">
+                {doneLessons}/{path.total_lessons} lessons · {path.duration_days} days
+              </span>
             </div>
           </div>
         </div>
         <div className="mt-3 flex gap-2">
-          <Link href={`/pathshala/${enrollment.path_id}/lesson`}
+          <Link
+            href={`/pathshala/${enrollment.path_id}/lesson`}
             className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[#1c1c1a] font-semibold text-sm"
-            style={{ background: meta.accentColour }}>
-            <Play size={14} /> Today&apos;s Lesson
+            style={{ background: meta.accentColour }}
+          >
+            <Play size={14} /> {lessonLabel}
           </Link>
-          <Link href={`/pathshala/${enrollment.path_id}/recite`}
+          <Link
+            href={`/pathshala/${enrollment.path_id}/recite`}
             className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl font-semibold text-sm border border-white/12"
-            style={{ color: meta.accentColour }}>
+            style={{ color: meta.accentColour }}
+          >
             <Mic size={14} /> Recite
           </Link>
         </div>

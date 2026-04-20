@@ -28,6 +28,7 @@ import { hapticLight, hapticSuccess } from '@/lib/platform';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { usePremium } from '@/hooks/usePremium';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
+import NityaHeroBanner from '@/components/nitya/NityaHeroBanner';
 import type { NityaSequenceStep, NityaKarmaStreak } from '@sangam/sadhana-engine';
 
 // ── Tradition greetings ─────────────────────────────────────────────────────────
@@ -871,44 +872,18 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Omit<P
         </div>
       </div>
 
-      {/* Hero banner */}
-      <div
-        className="mx-4 mb-4 rounded-3xl overflow-hidden"
-        style={{ background: `linear-gradient(135deg, ${accent} 0%, ${accent}cc 100%)` }}
-      >
-        <div className="p-5">
-          <p className="text-white/80 text-sm font-medium">{greeting || morning.greeting}</p>
-          <p className="text-white font-bold text-xl mt-0.5">{userName}</p>
-          {/* Circular progress ring */}
-          <div className="mt-4 flex items-center gap-4">
-            <CircularProgress pct={progressPct} accent="#ffffff" size={64} />
-            <div>
-              <p className="text-white font-bold text-lg leading-none">{completedCount}/{totalSteps}</p>
-              <p className="text-white/60 text-xs mt-1">steps complete</p>
-              {isPro && streak && streak.current_streak > 0 && (
-                <div className="flex items-center gap-1 mt-1.5">
-                  <Flame size={11} className="text-amber-300" />
-                  <span className="text-[10px] font-semibold text-amber-300">{streak.current_streak}-day streak</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {panchang && (
-          <div className="bg-black/20 px-5 py-3 flex flex-wrap gap-x-4 gap-y-1">
-            {panchang.tithi && (
-              <span className="text-xs text-white/70">🌒 {panchang.tithi}{panchang.paksha ? ` · ${panchang.paksha}` : ''}</span>
-            )}
-            {panchang.vaara && (
-              <span className="text-xs text-white/70">📅 {panchang.vaara}</span>
-            )}
-            {vataDays && (
-              <span className="text-xs text-amber-300 font-semibold">🌟 {vataDays}</span>
-            )}
-          </div>
-        )}
-      </div>
+      {/* Hero banner — time-aware animated sky */}
+      <NityaHeroBanner
+        greeting={greeting || morning.greeting}
+        userName={userName}
+        completedCount={completedCount}
+        totalSteps={totalSteps}
+        progressPct={progressPct}
+        streak={streak}
+        isPro={isPro}
+        panchang={panchang}
+        vataDays={vataDays}
+      />
 
       {/* Vrat alert */}
       {vataDays && (

@@ -375,15 +375,43 @@ export default function TopBar({
   return (
     <>
       <header className={`sticky top-0 z-40 px-3 pt-3 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isHidden ? '-translate-y-[120%]' : 'translate-y-0'}`}>
-        <div className="glass-nav max-w-2xl mx-auto px-4 h-14 rounded-[1.65rem] flex items-center justify-between" style={shellTint}>
+        <div className="glass-nav max-w-2xl mx-auto px-4 h-14 rounded-[1.65rem] flex items-center gap-2" style={shellTint}>
 
-          {/* Left — logo */}
-          <Link href={homeHref} className="inline-flex">
+          {/* Left — logo + quick-links */}
+          <Link href={homeHref} className="inline-flex flex-shrink-0">
             <BrandMark size="sm" />
           </Link>
 
-          {/* Right */}
-          <div className="flex items-center gap-2">
+          {/* Quick-access links — next to logo, not right-side */}
+          {!isGuest && (
+            <div className="overflow-x-auto no-scrollbar flex-shrink-0">
+              <div className="flex items-center gap-1" style={{ width: 'max-content' }}>
+                {QUICK_LINKS.map((item) => {
+                  const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="flex h-7 items-center justify-center rounded-full px-3 text-xs font-semibold transition whitespace-nowrap"
+                      style={{
+                        background: active ? 'rgba(212,166,70,0.18)' : 'rgba(212,166,70,0.07)',
+                        border: `1px solid ${active ? 'rgba(212,166,70,0.32)' : 'rgba(212,166,70,0.12)'}`,
+                        color: active ? 'var(--brand-primary-strong)' : 'var(--brand-muted)',
+                      }}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* Right — bell + avatar */}
+          <div className="flex items-center gap-2 flex-shrink-0">
             {isGuest ? (
               <div className="flex items-center gap-2">
                 <Link href="/login" className="type-micro hover:text-[color:var(--brand-ink)] transition">Sign in</Link>
@@ -397,29 +425,6 @@ export default function TopBar({
               </div>
             ) : (
               <>
-                {/* Quick-access links */}
-                <div className="overflow-x-auto no-scrollbar" style={{ maxWidth: 'min(200px, 48vw)' }}>
-                  <div className="flex items-center gap-1 pr-1" style={{ width: 'max-content' }}>
-                    {QUICK_LINKS.map((item) => {
-                      const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-                      return (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          className="flex h-7 items-center justify-center rounded-full px-3 text-xs font-semibold transition whitespace-nowrap"
-                          style={{
-                            background: active ? 'rgba(212,166,70,0.18)' : 'rgba(212,166,70,0.07)',
-                            border: `1px solid ${active ? 'rgba(212,166,70,0.32)' : 'rgba(212,166,70,0.12)'}`,
-                            color: active ? 'var(--brand-primary-strong)' : 'var(--brand-muted)',
-                          }}
-                        >
-                          {item.label}
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-
                 {/* Bell */}
                 <div className="relative">
                   <button
@@ -443,19 +448,24 @@ export default function TopBar({
                   </button>
                 </div>
 
-                {/* Avatar */}
+                {/* Avatar — 38px, gold ring, photo if uploaded */}
                 <Link
                   href="/profile"
-                  className="relative w-8 h-8 rounded-full flex items-center justify-center text-[color:var(--brand-primary-strong)] text-[11px] font-bold overflow-hidden shadow-sm"
+                  className="relative flex-shrink-0 rounded-full flex items-center justify-center overflow-hidden"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98), rgba(43, 43, 40, 0.94))',
-                    border: '1px solid rgba(212, 166, 70, 0.16)',
+                    width: 38,
+                    height: 38,
+                    background: 'linear-gradient(135deg, rgba(51,51,48,0.98), rgba(43,43,40,0.94))',
+                    border: avatarUrl ? '2px solid rgba(212,166,70,0.55)' : '1.5px solid rgba(212,166,70,0.22)',
+                    boxShadow: avatarUrl ? '0 0 0 1px rgba(212,166,70,0.15)' : 'none',
                   }}
                 >
                   {avatarUrl ? (
-                    <Image src={avatarUrl} alt="Profile" fill sizes="32px" className="object-cover" />
+                    <Image src={avatarUrl} alt="Profile" fill sizes="38px" className="object-cover" />
                   ) : (
-                    userInitials
+                    <span className="text-[11px] font-bold text-[color:var(--brand-primary-strong)]">
+                      {userInitials}
+                    </span>
                   )}
                 </Link>
               </>
