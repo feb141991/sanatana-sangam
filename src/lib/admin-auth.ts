@@ -13,27 +13,38 @@ export const SESSION_DURATION_S = 60 * 60 * 8; // 8 hours
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function secret(): Uint8Array {
+/** TextEncoder().encode() returns Uint8Array<ArrayBufferLike> in TS 5.x.
+ *  Web Crypto APIs require ArrayBuffer (not ArrayBufferLike).
+ *  This helper always returns a plain ArrayBuffer. */
+function toArrayBuffer(u8: Uint8Array): ArrayBuffer {
+  return u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength) as ArrayBuffer;
+}
+
+function encode(s: string): ArrayBuffer {
+  return toArrayBuffer(new TextEncoder().encode(s));
+}
+
+function secretBuf(): ArrayBuffer {
   const s = process.env.ADMIN_SECRET;
   if (!s) throw new Error('[admin-auth] ADMIN_SECRET env var is not configured');
-  return new TextEncoder().encode(s);
+  return encode(s);
 }
 
 async function hmacKey(usage: KeyUsage[]): Promise<CryptoKey> {
-  const raw = secret();
-  // Slice to a plain ArrayBuffer so TypeScript's stricter generics are satisfied
-  // across both Edge Runtime and Node.js targets.
-  const buf = raw.buffer.slice(raw.byteOffset, raw.byteOffset + raw.byteLength) as ArrayBuffer;
-  return crypto.subtle.importKey('raw', buf, { name: 'HMAC', hash: 'SHA-256' }, false, usage);
+  return crypto.subtle.importKey(
+    'raw', secretBuf(), { name: 'HMAC', hash: 'SHA-256' }, false, usage,
+  );
 }
 
 function bufToHex(buf: ArrayBuffer): string {
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  return Array.from(new Uint8Array(buf))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
-function hexToBuf(hex: string): Uint8Array {
+function hexToArrayBuffer(hex: string): ArrayBuffer {
   const pairs = hex.match(/.{1,2}/g) ?? [];
-  return new Uint8Array(pairs.map(b => parseInt(b, 16)));
+  return toArrayBuffer(new Uint8Array(pairs.map(b => parseInt(b, 16))));
 }
 
 // ── Public API ────────────────────────────────────────────────────────────────
@@ -45,7 +56,7 @@ export async function createAdminToken(username: string): Promise<string> {
     exp: Date.now() + SESSION_DURATION_S * 1000,
   }));
   const key = await hmacKey(['sign']);
-  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(payload));
+  const sig = await crypto.subtle.sign('HMAC', key, encode(payload));
   return `${payload}.${bufToHex(sig)}`;
 }
 
@@ -59,7 +70,7 @@ export async function verifyAdminToken(token: string): Promise<{ username: strin
   try {
     const key = await hmacKey(['verify']);
     const valid = await crypto.subtle.verify(
-      'HMAC', key, hexToBuf(hex), new TextEncoder().encode(b64)
+      'HMAC', key, hexToArrayBuffer(hex), encode(b64),
     );
     if (!valid) return null;
 
