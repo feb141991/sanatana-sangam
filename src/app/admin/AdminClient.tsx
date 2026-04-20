@@ -410,21 +410,30 @@ function PostsTab({ posts: initialPosts }: { posts: PostRow[] }) {
 function BroadcastTab({ userCount }: { userCount: number }) {
   const [title,   setTitle]   = useState('');
   const [message, setMessage] = useState('');
-  const [sent,    setSent]    = useState(false);
+  const [sending, setSending] = useState(false);
 
-  function handleSend() {
+  async function handleSend() {
     if (!title.trim() || !message.trim()) { toast.error('Fill in both fields'); return; }
-    // Future: integrate with push notification service
-    toast.success(`📢 Broadcast queued for ${userCount} users`);
-    setTitle(''); setMessage(''); setSent(true);
-    setTimeout(() => setSent(false), 3000);
+    setSending(true);
+    try {
+      const res  = await fetch('/api/admin/broadcast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, body: message }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { toast.error(data.error ?? 'Broadcast failed'); return; }
+      toast.success(`📢 Broadcast sent to ${data.sent ?? userCount} users`);
+      setTitle(''); setMessage('');
+    } catch { toast.error('Broadcast request failed'); }
+    finally { setSending(false); }
   }
 
   return (
     <div className="space-y-4">
       <div className="glass-panel rounded-2xl p-4">
         <p className="text-xs font-semibold text-amber-700">📢 Broadcast to all {userCount} users</p>
-        <p className="text-xs text-amber-600 mt-1">This will send a notification to all registered users. Use sparingly.</p>
+        <p className="text-xs text-amber-600 mt-1">Sends an in-app notification and a push via OneSignal. Use sparingly.</p>
       </div>
       <input type="text" placeholder="Notification title…" value={title}
         onChange={e => setTitle(e.target.value)}
@@ -432,25 +441,184 @@ function BroadcastTab({ userCount }: { userCount: number }) {
       <textarea placeholder="Message body…" value={message}
         onChange={e => setMessage(e.target.value)} rows={4}
         className="glass-input w-full px-4 py-3 rounded-xl focus:border-[#7B1A1A] outline-none resize-none text-sm" />
-      <button onClick={handleSend} disabled={sent}
+      <button onClick={handleSend} disabled={sending}
         className="glass-button-primary w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition flex items-center justify-center gap-2">
-        <Send size={14} /> {sent ? 'Sent!' : 'Send Broadcast 🙏'}
+        <Send size={14} /> {sending ? 'Sending…' : 'Send Broadcast 🙏'}
       </button>
+    </div>
+  );
+}
+
+// ── Notifications Tab ─────────────────────────────────────────────────────────
+type CronResult = { ok: boolean; status: number; result: Record<string, unknown> } | null;
+type PanchangDebug = Record<string, unknown> | null;
+
+const CRONS = [
+  { path: '/api/cron/nitya-reminder',    label: 'Nitya Karma',    emoji: '🌅', desc: 'Fires for users in Brahma Muhurta who haven\'t started today' },
+  { path: '/api/cron/shloka-reminder',   label: 'Shloka Streak',  emoji: '🕉️', desc: 'Fires at 7 PM for users who haven\'t read today\'s shloka' },
+  { path: '/api/cron/festival-reminder', label: 'Festival',       emoji: '🪔', desc: 'Fires 7 days and 1 day before tradition-matching festivals' },
+  { path: '/api/cron/tithi-reminder',    label: 'Tithi',          emoji: '🌕', desc: 'Fires on Ekadashi, Purnima, Amavasya, Pradosh, Chaturthi, Shivaratri' },
+] as const;
+
+function NotificationsTab() {
+  const [cronResults, setCronResults] = useState<Record<string, CronResult>>({});
+  const [runningCron, setRunningCron] = useState<string | null>(null);
+  const [panchang,    setPanchang]    = useState<PanchangDebug>(null);
+  const [loadingPanchang, setLoadingPanchang] = useState(false);
+
+  async function runCron(cronPath: string) {
+    setRunningCron(cronPath);
+    try {
+      const res  = await fetch('/api/admin/run-cron', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cronPath }),
+      });
+      const data = await res.json().catch(() => ({}));
+      setCronResults(prev => ({ ...prev, [cronPath]: { ok: res.ok, status: res.status, result: data.result ?? data } }));
+      if (res.ok && data.result?.inserted > 0) toast.success(`Sent ${data.result.inserted} notification(s)`);
+      else if (res.ok) toast.success(data.result?.message ?? 'Cron ran — no notifications sent this time');
+      else toast.error(data.error ?? 'Cron failed');
+    } catch { toast.error('Could not reach cron runner'); }
+    finally { setRunningCron(null); }
+  }
+
+  async function loadPanchang() {
+    setLoadingPanchang(true);
+    try {
+      const res  = await fetch('/api/admin/panchang-debug');
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { toast.error(data.error ?? 'Panchang debug failed'); return; }
+      setPanchang(data);
+    } catch { toast.error('Could not reach Panchang debug endpoint'); }
+    finally { setLoadingPanchang(false); }
+  }
+
+  function fmtTime(iso: string | undefined) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+  }
+
+  return (
+    <div className="space-y-6">
+
+      {/* ── Panchang Debug ───────────────────────────────────────── */}
+      <div className="glass-panel rounded-2xl p-5 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="font-semibold text-sm text-gray-800">🪐 Live Panchang Engine</p>
+            <p className="text-xs text-gray-400 mt-0.5">Verifies the engine computes correctly for your saved location</p>
+          </div>
+          <button onClick={loadPanchang} disabled={loadingPanchang}
+            className="px-4 py-1.5 rounded-xl text-xs font-semibold border border-[#7B1A1A]/30 text-[#7B1A1A] hover:bg-[#7B1A1A]/5 transition disabled:opacity-50">
+            {loadingPanchang ? 'Computing…' : 'Run now'}
+          </button>
+        </div>
+
+        {panchang && (
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            {[
+              { label: 'Tithi',      value: `${(panchang as any).tithi} (${(panchang as any).paksha} Paksha, #${(panchang as any).tithiIndex})` },
+              { label: 'Nakshatra',  value: (panchang as any).nakshatra },
+              { label: 'Yoga',       value: (panchang as any).yoga },
+              { label: 'Brahma Muhurta', value: `${fmtTime((panchang as any).brahmaMuhurta?.start)} – ${fmtTime((panchang as any).brahmaMuhurta?.end)}` },
+              { label: 'Rahu Kalam', value: `${fmtTime((panchang as any).rahuKaal?.start)} – ${fmtTime((panchang as any).rahuKaal?.end)}` },
+              { label: 'Abhijit Muhurta', value: `${fmtTime((panchang as any).abhijitMuhurta?.start)} – ${fmtTime((panchang as any).abhijitMuhurta?.end)}` },
+            ].map(({ label, value }) => (
+              <div key={label} className="rounded-xl bg-gray-50 px-3 py-2">
+                <p className="text-gray-400">{label}</p>
+                <p className="font-medium text-gray-800 mt-0.5">{value}</p>
+              </div>
+            ))}
+            <div className="col-span-2 rounded-xl px-3 py-2 flex gap-4"
+              style={{ background: (panchang as any).brahmaMuhurta?.active_now ? '#dcfce7' : '#fef9c3' }}>
+              <span className="text-xs font-semibold">
+                {(panchang as any).brahmaMuhurta?.active_now ? '✅ In Brahma Muhurta right now' : '⏳ Outside Brahma Muhurta window'}
+              </span>
+              {(panchang as any).rahuKaal?.active_now && (
+                <span className="text-xs font-semibold text-red-600">⚠️ Rahu Kalam active — crons will skip users</span>
+              )}
+            </div>
+            {(panchang as any).tithi_reminder && (
+              <div className="col-span-2 rounded-xl px-3 py-2 bg-amber-50">
+                <p className="text-gray-400 text-[10px] mb-1">Today's tithi reminder (tithi-reminder cron would send this)</p>
+                <p className="font-semibold text-amber-800">{(panchang as any).tithi_reminder?.title}</p>
+                <p className="text-amber-700 mt-0.5">{(panchang as any).tithi_reminder?.body}</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* ── Cron Runners ─────────────────────────────────────────── */}
+      <div className="space-y-3">
+        <p className="font-semibold text-sm text-gray-800 px-1">⚡ Trigger Crons Manually</p>
+        {CRONS.map(({ path, label, emoji, desc }) => {
+          const result = cronResults[path];
+          const running = runningCron === path;
+          return (
+            <div key={path} className="glass-panel rounded-2xl p-4 space-y-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1">
+                  <p className="font-semibold text-sm text-gray-800">{emoji} {label} Reminder</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
+                </div>
+                <button
+                  onClick={() => runCron(path)}
+                  disabled={running || runningCron !== null}
+                  className="shrink-0 px-4 py-1.5 rounded-xl text-xs font-semibold border border-[#7B1A1A]/30 text-[#7B1A1A] hover:bg-[#7B1A1A]/5 transition disabled:opacity-40"
+                >
+                  {running ? 'Running…' : 'Run now'}
+                </button>
+              </div>
+              {result && (
+                <div className={`rounded-xl px-3 py-2.5 text-xs font-mono space-y-1 ${result.ok ? 'bg-green-50' : 'bg-red-50'}`}>
+                  <p className={`font-semibold ${result.ok ? 'text-green-700' : 'text-red-700'}`}>
+                    {result.ok ? '✅' : '❌'} HTTP {result.status}
+                  </p>
+                  <pre className="text-gray-600 whitespace-pre-wrap break-all text-[10px]">
+                    {JSON.stringify(result.result, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Test notification to self ─────────────────────────────── */}
+      <div className="glass-panel rounded-2xl p-4 flex items-center justify-between gap-4">
+        <div>
+          <p className="font-semibold text-sm text-gray-800">🔔 Test Notification (to yourself)</p>
+          <p className="text-xs text-gray-400 mt-0.5">Inserts a notification into the DB + fires a push to your device</p>
+        </div>
+        <button
+          onClick={async () => {
+            const res  = await fetch('/api/notifications/test', { method: 'POST' });
+            const data = await res.json().catch(() => ({}));
+            res.ok ? toast.success(data.push_targets > 0 ? 'Test sent — check bell + browser 🔔' : 'Added to bell 🔔') : toast.error(data.error ?? 'Failed');
+          }}
+          className="shrink-0 px-4 py-1.5 rounded-xl text-xs font-semibold border border-[#7B1A1A]/30 text-[#7B1A1A] hover:bg-[#7B1A1A]/5 transition"
+        >
+          Send test
+        </button>
+      </div>
     </div>
   );
 }
 
 // ── Main Admin Component ──────────────────────────────────────────────────────
 export default function AdminClient({ adminName, users, reports, posts, kuls, mandalis }: Props) {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'moderation' | 'users' | 'posts' | 'broadcast'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'moderation' | 'users' | 'posts' | 'broadcast' | 'notifications'>('dashboard');
   const pendingReports = reports.filter(r => r.status === 'pending').length;
 
   const tabs: Array<{ key: typeof activeTab; label: string; icon: React.ReactNode; badge?: number }> = [
-    { key: 'dashboard',  label: 'Dashboard',  icon: <BarChart2 size={14} /> },
-    { key: 'moderation', label: 'Moderation', icon: <Flag size={14} />, badge: pendingReports || undefined },
-    { key: 'users',      label: 'Users',      icon: <Users size={14} />, badge: users.length },
-    { key: 'posts',      label: 'Posts',      icon: <MessageSquare size={14} /> },
-    { key: 'broadcast',  label: 'Broadcast',  icon: <Send size={14} /> },
+    { key: 'dashboard',     label: 'Dashboard',      icon: <BarChart2 size={14} /> },
+    { key: 'moderation',    label: 'Moderation',     icon: <Flag size={14} />, badge: pendingReports || undefined },
+    { key: 'users',         label: 'Users',          icon: <Users size={14} />, badge: users.length },
+    { key: 'posts',         label: 'Posts',          icon: <MessageSquare size={14} /> },
+    { key: 'notifications', label: 'Notifications',  icon: <CheckCircle size={14} /> },
+    { key: 'broadcast',     label: 'Broadcast',      icon: <Send size={14} /> },
   ];
 
   return (
@@ -494,11 +662,12 @@ export default function AdminClient({ adminName, users, reports, posts, kuls, ma
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-1 py-6">
-        {activeTab === 'dashboard'  && <DashboardTab  users={users} reports={reports} kuls={kuls} mandalis={mandalis} />}
-        {activeTab === 'moderation' && <ModerationTab reports={reports} />}
-        {activeTab === 'users'      && <UsersTab      users={users} />}
-        {activeTab === 'posts'      && <PostsTab      posts={posts} />}
-        {activeTab === 'broadcast'  && <BroadcastTab  userCount={users.length} />}
+        {activeTab === 'dashboard'     && <DashboardTab     users={users} reports={reports} kuls={kuls} mandalis={mandalis} />}
+        {activeTab === 'moderation'    && <ModerationTab    reports={reports} />}
+        {activeTab === 'users'         && <UsersTab         users={users} />}
+        {activeTab === 'posts'         && <PostsTab         posts={posts} />}
+        {activeTab === 'notifications' && <NotificationsTab />}
+        {activeTab === 'broadcast'     && <BroadcastTab     userCount={users.length} />}
       </div>
     </div>
   );
