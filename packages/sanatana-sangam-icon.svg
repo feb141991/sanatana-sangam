@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <!-- Background gradient -->
+    <radialGradient id="bg" cx="50%" cy="42%" r="62%">
+      <stop offset="0%"   stop-color="#2e2b24"/>
+      <stop offset="100%" stop-color="#1a1813"/>
+    </radialGradient>
+    <!-- Gold gradient for petals / lotus -->
+    <linearGradient id="goldMain" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#f0c040"/>
+      <stop offset="50%"  stop-color="#d4a818"/>
+      <stop offset="100%" stop-color="#a07010"/>
+    </linearGradient>
+    <!-- Soft gold for inner ring -->
+    <linearGradient id="goldSoft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#fce38a" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#d4a818" stop-opacity="0.7"/>
+    </linearGradient>
+    <!-- Deep saffron for Om/accent -->
+    <linearGradient id="saffron" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#c8460a"/>
+    </linearGradient>
+    <!-- Glow filter -->
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- Subtle outer glow -->
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- Clip to circle for icon shape -->
+    <clipPath id="iconClip">
+      <rect x="0" y="0" width="1024" height="1024" rx="230" ry="230"/>
+    </clipPath>
+  </defs>
+
+  <!-- Rounded-rect icon shape -->
+  <g clip-path="url(#iconClip)">
+
+    <!-- Background -->
+    <rect width="1024" height="1024" fill="url(#bg)"/>
+
+    <!-- Subtle dark vignette ring -->
+    <circle cx="512" cy="512" r="510" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="4"/>
+
+    <!-- ── Outer mandala ring (24 small dots) ── -->
+    <g opacity="0.35">
+      <circle cx="512" cy="102" r="7"  fill="#d4a818"/>
+      <circle cx="614" cy="116" r="5"  fill="#d4a818"/>
+      <circle cx="705" cy="158" r="5"  fill="#d4a818"/>
+      <circle cx="776" cy="226" r="5"  fill="#d4a818"/>
+      <circle cx="823" cy="312" r="5"  fill="#d4a818"/>
+      <circle cx="845" cy="410" r="5"  fill="#d4a818"/>
+      <circle cx="840" cy="512" r="7"  fill="#d4a818"/>
+      <circle cx="823" cy="614" r="5"  fill="#d4a818"/>
+      <circle cx="776" cy="705" r="5"  fill="#d4a818"/>
+      <circle cx="706" cy="776" r="5"  fill="#d4a818"/>
+      <circle cx="614" cy="822" r="5"  fill="#d4a818"/>
+      <circle cx="512" cy="840" r="7"  fill="#d4a818"/>
+      <circle cx="410" cy="822" r="5"  fill="#d4a818"/>
+      <circle cx="318" cy="776" r="5"  fill="#d4a818"/>
+      <circle cx="248" cy="706" r="5"  fill="#d4a818"/>
+      <circle cx="201" cy="614" r="5"  fill="#d4a818"/>
+      <circle cx="184" cy="512" r="7"  fill="#d4a818"/>
+      <circle cx="201" cy="410" r="5"  fill="#d4a818"/>
+      <circle cx="248" cy="318" r="5"  fill="#d4a818"/>
+      <circle cx="318" cy="248" r="5"  fill="#d4a818"/>
+      <circle cx="410" cy="202" r="5"  fill="#d4a818"/>
+    </g>
+
+    <!-- ── 8-petal lotus (outer) ── -->
+    <g filter="url(#softGlow)" opacity="0.82">
+      <!-- Petal 1 – Top -->
+      <ellipse cx="512" cy="330" rx="48" ry="110" fill="url(#goldMain)" opacity="0.7" transform="rotate(0 512 512)"/>
+      <!-- Petal 2 – Top-right -->
+      <ellipse cx="512" cy="330" rx="48" ry="110" fill="url(#goldMain)" opacity="0.7" transform="rotate(45 512 512)"/>
+      <!-- Petal 3 – Right -->
+      <ellipse cx="512" cy="330" rx="48" ry="110" fill="url(#goldMain)" opacity="0.7" transform="rotate(90 512 512)"/>
+      <!-- Petal 4 – Bottom-right -->
+      <ellipse cx="512" cy="330" rx="48" ry="110" fill="url(#goldMain)" opacity="0.7" transform="rotate(135 512 512)"/>
+      <!-- Petal 5 – Bottom -->
+      <ellipse cx="512" cy="330" rx="48" ry="110" fill="url(#goldMain)" opacity="0.7" transform="rotate(180 512 512)"/>
+      <!-- Petal 6 – Bottom-left -->
+      <ellipse cx="512" cy="330" rx="48" ry="110" fill="url(#goldMain)" opacity="0.7" transform="rotate(225 512 512)"/>
+      <!-- Petal 7 – Left -->
+      <ellipse cx="512" cy="330" rx="48" ry="110" fill="url(#goldMain)" opacity="0.7" transform="rotate(270 512 512)"/>
+      <!-- Petal 8 – Top-left -->
+      <ellipse cx="512" cy="330" rx="48" ry="110" fill="url(#goldMain)" opacity="0.7" transform="rotate(315 512 512)"/>
+    </g>
+
+    <!-- ── 8-petal lotus (inner, rotated 22.5°) ── -->
+    <g filter="url(#softGlow)" opacity="0.55">
+      <ellipse cx="512" cy="370" rx="34" ry="80" fill="url(#goldSoft)" transform="rotate(22.5  512 512)"/>
+      <ellipse cx="512" cy="370" rx="34" ry="80" fill="url(#goldSoft)" transform="rotate(67.5  512 512)"/>
+      <ellipse cx="512" cy="370" rx="34" ry="80" fill="url(#goldSoft)" transform="rotate(112.5 512 512)"/>
+      <ellipse cx="512" cy="370" rx="34" ry="80" fill="url(#goldSoft)" transform="rotate(157.5 512 512)"/>
+      <ellipse cx="512" cy="370" rx="34" ry="80" fill="url(#goldSoft)" transform="rotate(202.5 512 512)"/>
+      <ellipse cx="512" cy="370" rx="34" ry="80" fill="url(#goldSoft)" transform="rotate(247.5 512 512)"/>
+      <ellipse cx="512" cy="370" rx="34" ry="80" fill="url(#goldSoft)" transform="rotate(292.5 512 512)"/>
+      <ellipse cx="512" cy="370" rx="34" ry="80" fill="url(#goldSoft)" transform="rotate(337.5 512 512)"/>
+    </g>
+
+    <!-- ── Central gold disc ── -->
+    <circle cx="512" cy="512" r="148" fill="url(#bg)"/>
+    <circle cx="512" cy="512" r="148" fill="rgba(212,168,24,0.08)"/>
+    <circle cx="512" cy="512" r="148" stroke="url(#goldMain)" stroke-width="3.5" fill="none"/>
+
+    <!-- ── Inner ring ── -->
+    <circle cx="512" cy="512" r="118" stroke="rgba(212,168,24,0.25)" stroke-width="1.5" fill="none"/>
+
+    <!-- ── OM symbol (𝕺) — hand-crafted SVG path, centred ── -->
+    <!-- Using text as fallback with system font — for production use a webfont or path -->
+    <text
+      x="512" y="558"
+      text-anchor="middle"
+      dominant-baseline="middle"
+      font-family="serif"
+      font-size="168"
+      font-weight="bold"
+      fill="url(#saffron)"
+      filter="url(#glow)"
+      letter-spacing="-2"
+    >ॐ</text>
+
+    <!-- ── Thin gold ring over petals ── -->
+    <circle cx="512" cy="512" r="310" stroke="url(#goldMain)" stroke-width="2.5" fill="none" opacity="0.4"/>
+    <circle cx="512" cy="512" r="315" stroke="rgba(212,168,24,0.12)" stroke-width="8" fill="none"/>
+
+    <!-- ── Bottom wordmark area: "SANATANA SANGAM" ── -->
+    <text
+      x="512" y="748"
+      text-anchor="middle"
+      font-family="'Georgia', 'Times New Roman', serif"
+      font-size="36"
+      font-weight="bold"
+      letter-spacing="5"
+      fill="#d4a818"
+      opacity="0.75"
+    >SANATANA SANGAM</text>
+
+  </g>
+</svg>

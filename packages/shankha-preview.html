@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Shankha BrandMark Preview</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    gap: 48px;
+    font-family: -apple-system, sans-serif;
+    color: #d4a818;
+  }
+  h1 { font-size: 12px; letter-spacing: 4px; text-transform: uppercase; opacity: 0.4; }
+  .row { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; justify-content: center; }
+  .chip { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .label { font-size: 10px; opacity: 0.35; letter-spacing: 1px; }
+
+  /* topbar mock */
+  .topbar {
+    background: rgba(30,20,8,0.88);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 26px;
+    padding: 0 16px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 340px;
+    backdrop-filter: blur(14px);
+  }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(212,168,24,0.2); border: 1px solid rgba(212,168,24,0.3); }
+  .bell { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.06); display:flex;align-items:center;justify-content:center; font-size:14px; }
+
+  /* Mark */
+  .mark {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.45);
+    box-shadow: 0 8px 24px rgba(108,56,36,0.28), inset 0 1px 0 rgba(255,255,255,0.22);
+    background: linear-gradient(145deg, rgba(34,22,8,0.96), rgba(68,40,12,0.92));
+    flex-shrink: 0;
+  }
+  .mark svg { filter: drop-shadow(0 0 3px rgba(212,168,24,0.55)); }
+</style>
+</head>
+<body>
+
+<h1>Shankha · BrandMark</h1>
+
+<!-- Sizes -->
+<div class="row">
+  <div class="chip">
+    <div class="mark" style="width:56px;height:56px;border-radius:22px">
+      <svg viewBox="0 0 24 24" width="35" height="35" fill="none">
+        <path d="M12 3C9.2 3 7 5.0 7 7.5c0 1.4.6 2.7 1.6 3.6L7.5 13H9l.5-1.5c.8.3 1.6.5 2.5.5s1.7-.2 2.5-.5L15 13h1.5l-1.1-1.9C16.4 10.2 17 8.9 17 7.5 17 5.0 14.8 3 12 3z" fill="url(#g1)" opacity="0.95"/>
+        <path d="M12 3 C13.5 3 15 4 15.5 5.2 C14.5 4.5 13.3 4.1 12 4.1 C10.7 4.1 9.5 4.5 8.5 5.2 C9 4 10.5 3 12 3Z" fill="#fff8e1" opacity="0.6"/>
+        <path d="M10.2 13 L10 17 Q10 19 12 19 Q14 19 14 17 L13.8 13" stroke="url(#g1)" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.9"/>
+        <ellipse cx="12" cy="13" rx="2.5" ry="0.8" fill="url(#g1)" opacity="0.7"/>
+        <path d="M9 8.5 Q11 7.5 14.5 9" stroke="#fce38a" stroke-width="0.7" stroke-linecap="round" fill="none" opacity="0.55"/>
+        <path d="M9.5 10 Q11.5 9.2 14 10.5" stroke="#fce38a" stroke-width="0.55" stroke-linecap="round" fill="none" opacity="0.4"/>
+        <circle cx="12" cy="3.4" r="0.7" fill="#fff8e1" opacity="0.7"/>
+        <defs><linearGradient id="g1" x1="7" y1="3" x2="17" y2="19" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#f0c040"/><stop offset="55%" stop-color="#d4a818"/><stop offset="100%" stop-color="#a07010"/></linearGradient></defs>
+      </svg>
+    </div>
+    <span class="label">lg · 56px</span>
+  </div>
+
+  <div class="chip">
+    <div class="mark" style="width:40px;height:40px;border-radius:18px">
+      <svg viewBox="0 0 24 24" width="25" height="25" fill="none">
+        <path d="M12 3C9.2 3 7 5.0 7 7.5c0 1.4.6 2.7 1.6 3.6L7.5 13H9l.5-1.5c.8.3 1.6.5 2.5.5s1.7-.2 2.5-.5L15 13h1.5l-1.1-1.9C16.4 10.2 17 8.9 17 7.5 17 5.0 14.8 3 12 3z" fill="url(#g2)" opacity="0.95"/>
+        <path d="M12 3 C13.5 3 15 4 15.5 5.2 C14.5 4.5 13.3 4.1 12 4.1 C10.7 4.1 9.5 4.5 8.5 5.2 C9 4 10.5 3 12 3Z" fill="#fff8e1" opacity="0.6"/>
+        <path d="M10.2 13 L10 17 Q10 19 12 19 Q14 19 14 17 L13.8 13" stroke="url(#g2)" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.9"/>
+        <ellipse cx="12" cy="13" rx="2.5" ry="0.8" fill="url(#g2)" opacity="0.7"/>
+        <path d="M9 8.5 Q11 7.5 14.5 9" stroke="#fce38a" stroke-width="0.7" stroke-linecap="round" fill="none" opacity="0.55"/>
+        <circle cx="12" cy="3.4" r="0.7" fill="#fff8e1" opacity="0.7"/>
+        <defs><linearGradient id="g2" x1="7" y1="3" x2="17" y2="19" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#f0c040"/><stop offset="55%" stop-color="#d4a818"/><stop offset="100%" stop-color="#a07010"/></linearGradient></defs>
+      </svg>
+    </div>
+    <span class="label">md · 40px</span>
+  </div>
+
+  <div class="chip">
+    <div class="mark" style="width:32px;height:32px;border-radius:14px">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+        <path d="M12 3C9.2 3 7 5.0 7 7.5c0 1.4.6 2.7 1.6 3.6L7.5 13H9l.5-1.5c.8.3 1.6.5 2.5.5s1.7-.2 2.5-.5L15 13h1.5l-1.1-1.9C16.4 10.2 17 8.9 17 7.5 17 5.0 14.8 3 12 3z" fill="url(#g3)" opacity="0.95"/>
+        <path d="M10.2 13 L10 17 Q10 19 12 19 Q14 19 14 17 L13.8 13" stroke="url(#g3)" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.9"/>
+        <ellipse cx="12" cy="13" rx="2.5" ry="0.8" fill="url(#g3)" opacity="0.7"/>
+        <circle cx="12" cy="3.4" r="0.7" fill="#fff8e1" opacity="0.7"/>
+        <defs><linearGradient id="g3" x1="7" y1="3" x2="17" y2="19" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#f0c040"/><stop offset="55%" stop-color="#d4a818"/><stop offset="100%" stop-color="#a07010"/></linearGradient></defs>
+      </svg>
+    </div>
+    <span class="label">sm · 32px</span>
+  </div>
+</div>
+
+<!-- TopBar mockup -->
+<div class="chip">
+  <div class="topbar">
+    <div class="mark" style="width:32px;height:32px;border-radius:14px">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+        <path d="M12 3C9.2 3 7 5.0 7 7.5c0 1.4.6 2.7 1.6 3.6L7.5 13H9l.5-1.5c.8.3 1.6.5 2.5.5s1.7-.2 2.5-.5L15 13h1.5l-1.1-1.9C16.4 10.2 17 8.9 17 7.5 17 5.0 14.8 3 12 3z" fill="url(#g4)" opacity="0.95"/>
+        <path d="M10.2 13 L10 17 Q10 19 12 19 Q14 19 14 17 L13.8 13" stroke="url(#g4)" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.9"/>
+        <ellipse cx="12" cy="13" rx="2.5" ry="0.8" fill="url(#g4)" opacity="0.7"/>
+        <circle cx="12" cy="3.4" r="0.7" fill="#fff8e1" opacity="0.7"/>
+        <defs><linearGradient id="g4" x1="7" y1="3" x2="17" y2="19" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#f0c040"/><stop offset="55%" stop-color="#d4a818"/><stop offset="100%" stop-color="#a07010"/></linearGradient></defs>
+      </svg>
+    </div>
+    <div class="topbar-right">
+      <div class="bell">🔔</div>
+      <div class="avatar"></div>
+    </div>
+  </div>
+  <span class="label">TopBar context</span>
+</div>
+
+<p style="font-size:10px;opacity:0.25;letter-spacing:2px">शंख · Shankha · Open in browser</p>
+</body>
+</html>
