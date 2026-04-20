@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { createServiceRoleSupabaseClient } from '@/lib/admin';
+import { requireAdminAccess } from '@/lib/admin';
 import { getPanchangTimes, getTithiReminder } from '@/lib/panchang';
 
 // ─── GET /api/admin/panchang-debug?lat=XX&lon=YY ─────────────────────────────
@@ -8,28 +7,18 @@ import { getPanchangTimes, getTithiReminder } from '@/lib/panchang';
 // Used by the admin Notifications tab to verify the engine is computing correctly.
 
 export async function GET(request: Request) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-  const adminSupabase = createServiceRoleSupabaseClient();
-  const { data: profile } = await adminSupabase
-    .from('profiles')
-    .select('is_admin, tradition, latitude, longitude')
-    .eq('id', user.id)
-    .single();
-  if (!profile?.is_admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  const admin = await requireAdminAccess();
+  if ('response' in admin) return admin.response;
 
   const url = new URL(request.url);
-  const lat  = parseFloat(url.searchParams.get('lat') ?? '') || (profile as any).latitude  || null;
-  const lon  = parseFloat(url.searchParams.get('lon') ?? '') || (profile as any).longitude || null;
-  const tradition = (profile as any).tradition ?? 'hindu';
+  const lat  = parseFloat(url.searchParams.get('lat') ?? '') || null;
+  const lon  = parseFloat(url.searchParams.get('lon') ?? '') || null;
 
   const now = new Date();
 
   try {
-    const times  = getPanchangTimes(now, lat, lon);
-    const tithi  = getTithiReminder(times.tithiIndex, tradition);
+    const times  = getPanchangTimes(now, lat ?? undefined, lon ?? undefined);
+    const tithi  = getTithiReminder(times.tithiIndex, 'hindu');
     const inBrahma = now >= times.brahmaMuhurtaStart && now <= times.brahmaMuhurtaEnd;
     const inRahu   = now >= times.rahuKaalStart   && now <= times.rahuKaalEnd;
 
@@ -55,8 +44,8 @@ export async function GET(request: Request) {
         start:        times.abhijitStart.toISOString(),
         end:          times.abhijitEnd.toISOString(),
       },
-      tithi_reminder:     tithi ?? null,
-      would_send_nitya:   !inRahu && !inBrahma === false, // sends when in Brahma window and not in Rahu
+      tithi_reminder:   tithi ?? null,
+      would_send_nitya: inBrahma && !inRahu,
     });
   } catch (err) {
     return NextResponse.json(

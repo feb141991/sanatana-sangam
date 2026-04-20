@@ -1,24 +1,12 @@
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { redirect } from 'next/navigation';
+// Middleware already verified the admin session cookie before this page renders.
+import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import AdminClient from './AdminClient';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminPage() {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/');
+  const supabase = createServiceRoleSupabaseClient();
 
-  // Check is_admin flag
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('is_admin, full_name')
-    .eq('id', user.id)
-    .single();
-
-  if (!profile?.is_admin) redirect('/home');
-
-  // ── Fetch dashboard data ──────────────────────────────────────
   const [usersRes, reportsRes, postsRes, kulRes, mandaliRes] = await Promise.all([
     supabase
       .from('profiles')
@@ -42,10 +30,9 @@ export default async function AdminPage() {
       .order('member_count', { ascending: false }),
   ]);
 
-  // Supabase infers joined relations as arrays; cast to the shapes AdminClient expects
   return (
     <AdminClient
-      adminName={profile.full_name ?? 'Admin'}
+      adminName="Admin"
       users={(usersRes.data   ?? []) as any}
       reports={(reportsRes.data ?? []) as any}
       posts={(postsRes.data   ?? []) as any}

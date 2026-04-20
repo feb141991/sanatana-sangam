@@ -1,13 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { cookies } from 'next/headers';
+import { verifyAdminToken, ADMIN_COOKIE } from '@/lib/admin-auth';
 
-type AdminContext =
-  | { response: NextResponse }
-  | {
-      userId: string;
-      supabase: any;
-    };
+// ── Service-role Supabase client (for admin DB operations) ────────────────────
 
 export function createServiceRoleSupabaseClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -25,26 +21,23 @@ export function createServiceRoleSupabaseClient() {
   });
 }
 
+// ── Admin access guard (cookie-based, no Supabase auth) ───────────────────────
+
+type AdminContext =
+  | { response: NextResponse }
+  | { username: string; supabase: ReturnType<typeof createServiceRoleSupabaseClient> };
+
 export async function requireAdminAccess(): Promise<AdminContext> {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const cookieStore = await cookies();
+  const token = cookieStore.get(ADMIN_COOKIE)?.value ?? '';
+  const session = await verifyAdminToken(token);
 
-  if (!user) {
-    return { response: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
-  }
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('is_admin')
-    .eq('id', user.id)
-    .single();
-
-  if (!profile?.is_admin) {
-    return { response: NextResponse.json({ error: 'Admin access required' }, { status: 403 }) };
+  if (!session) {
+    return { response: NextResponse.json({ error: 'Admin authentication required' }, { status: 401 }) };
   }
 
   return {
-    userId: user.id,
+    username: session.username,
     supabase: createServiceRoleSupabaseClient(),
   };
 }

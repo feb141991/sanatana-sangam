@@ -1,24 +1,14 @@
 import { NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { createServiceRoleSupabaseClient } from '@/lib/admin';
+import { requireAdminAccess } from '@/lib/admin';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
 
 // ─── POST /api/admin/broadcast ────────────────────────────────────────────────
 // Sends a broadcast notification to all users — inserts into the notifications
-// table and fires a OneSignal push. Admin-only.
+// table and fires a OneSignal push. Admin-only (cookie-gated by middleware).
 
 export async function POST(request: Request) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-  const adminSupabase = createServiceRoleSupabaseClient();
-  const { data: profile } = await adminSupabase
-    .from('profiles')
-    .select('is_admin')
-    .eq('id', user.id)
-    .single();
-  if (!profile?.is_admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  const admin = await requireAdminAccess();
+  if ('response' in admin) return admin.response;
 
   const body = await request.json().catch(() => ({}));
   const title: string = (body.title ?? '').trim();
@@ -29,7 +19,7 @@ export async function POST(request: Request) {
   }
 
   // Fetch all user IDs
-  const { data: users, error: usersError } = await adminSupabase
+  const { data: users, error: usersError } = await admin.supabase
     .from('profiles')
     .select('id');
 
@@ -51,7 +41,7 @@ export async function POST(request: Request) {
 
   let inserted = 0;
   for (let i = 0; i < notifications.length; i += 200) {
-    const { data: rows, error } = await adminSupabase
+    const { data: rows, error } = await admin.supabase
       .from('notifications')
       .insert(notifications.slice(i, i + 200))
       .select('id');

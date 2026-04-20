@@ -14,9 +14,6 @@ export async function PATCH(
     return NextResponse.json({ error: 'isAdmin must be a boolean' }, { status: 400 });
   }
 
-  if (userId === admin.userId && !body.isAdmin) {
-    return NextResponse.json({ error: 'You cannot remove your own admin access' }, { status: 400 });
-  }
 
   const { data, error } = await admin.supabase
     .from('profiles')
@@ -40,9 +37,6 @@ export async function DELETE(
   if ('response' in admin) return admin.response;
   const { userId } = await params;
 
-  if (userId === admin.userId) {
-    return NextResponse.json({ error: 'You cannot ban your own account' }, { status: 400 });
-  }
 
   const { error } = await admin.supabase.auth.admin.deleteUser(userId);
 

@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import {
   Users, Flag, MessageSquare, Home, BarChart2,
   CheckCircle, XCircle, Shield, AlertTriangle,
-  Trash2, Crown, Send,
+  Trash2, Crown, Send, LogOut,
 } from 'lucide-react';
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -634,9 +634,21 @@ export default function AdminClient({ adminName, users, reports, posts, kuls, ma
             <h1 className="font-display font-bold text-gray-900 text-base">Admin Portal</h1>
             <p className="text-xs text-gray-400">Sanatana Sangam · {adminName}</p>
           </div>
-          <a href="/home" className="ml-auto text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1">
-            <Home size={12} /> App
-          </a>
+          <div className="ml-auto flex items-center gap-2">
+            <a href="/home" className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1">
+              <Home size={12} /> App
+            </a>
+            <button
+              onClick={async () => {
+                await fetch('/api/admin/auth', { method: 'DELETE' });
+                window.location.href = '/admin/login';
+              }}
+              className="text-xs text-gray-400 hover:text-red-500 flex items-center gap-1 transition-colors"
+              title="Sign out"
+            >
+              <LogOut size={12} /> Sign out
+            </button>
+          </div>
         </div>
 
         {/* Tab bar */}
