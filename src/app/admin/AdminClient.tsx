@@ -54,21 +54,28 @@ const STATUS_BADGE: Record<string, string> = {
   dismissed:'bg-gray-100 text-gray-500 border-gray-200',
 };
 
-function StatCard({ label, value, emoji, sub }: { label: string; value: number | string; emoji: string; sub?: string }) {
+function StatCard({ label, value, emoji, sub, onClick }: { label: string; value: number | string; emoji: string; sub?: string; onClick?: () => void }) {
+  const Wrapper = onClick ? 'button' : 'div';
   return (
-    <div className="glass-panel rounded-2xl p-4 flex items-center gap-3">
-      <div className="w-11 h-11 rounded-xl flex items-center justify-center text-xl" style={{ background: '#7B1A1A0D' }}>{emoji}</div>
+    <Wrapper
+      onClick={onClick}
+      className={`glass-panel rounded-2xl p-4 flex items-center gap-3 text-left w-full ${onClick ? 'hover:bg-[#7B1A1A08] active:scale-[0.98] transition-all cursor-pointer' : ''}`}
+    >
+      <div className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style={{ background: '#7B1A1A0D' }}>{emoji}</div>
       <div>
         <p className="text-2xl font-display font-bold text-gray-900">{value}</p>
         <p className="text-xs text-gray-400">{label}</p>
         {sub && <p className="text-[10px] text-gray-300 mt-0.5">{sub}</p>}
       </div>
-    </div>
+      {onClick && <span className="ml-auto text-gray-300 text-sm">›</span>}
+    </Wrapper>
   );
 }
 
 // ── Dashboard Tab ─────────────────────────────────────────────────────────────
-function DashboardTab({ users, reports, kuls, mandalis }: { users: UserRow[]; reports: ReportRow[]; kuls: KulRow[]; mandalis: MandaliRow[] }) {
+type TabKey = 'dashboard' | 'moderation' | 'users' | 'posts' | 'notifications' | 'broadcast';
+
+function DashboardTab({ users, reports, kuls, mandalis, onTabChange }: { users: UserRow[]; reports: ReportRow[]; kuls: KulRow[]; mandalis: MandaliRow[]; onTabChange: (tab: TabKey) => void }) {
   const pendingReports = reports.filter(r => r.status === 'pending').length;
   const totalStreak    = users.reduce((s, u) => s + (u.shloka_streak ?? 0), 0);
   const traditions = Object.entries(
@@ -83,17 +90,22 @@ function DashboardTab({ users, reports, kuls, mandalis }: { users: UserRow[]; re
     <div className="space-y-6">
       {/* Stats grid */}
       <div className="grid grid-cols-2 gap-3">
-        <StatCard label="Total Users"     value={users.length}   emoji="👥" />
-        <StatCard label="Open Reports"    value={pendingReports} emoji="🚩" sub="requires action" />
-        <StatCard label="Active Kuls"     value={kuls.length}    emoji="🏡" />
-        <StatCard label="Total Mandalis"  value={mandalis.length}emoji="🕌" />
+        <StatCard label="Total Users"    value={users.length}    emoji="👥" onClick={() => onTabChange('users')} />
+        <StatCard label="Open Reports"   value={pendingReports}  emoji="🚩" sub="requires action" onClick={() => onTabChange('moderation')} />
+        <StatCard label="Active Kuls"    value={kuls.length}     emoji="🏡" />
+        <StatCard label="Total Mandalis" value={mandalis.length} emoji="🕌" />
       </div>
-      <StatCard label="Combined Shloka Streaks" value={totalStreak} emoji="🔥" sub="community total" />
+      <StatCard label="Combined Shloka Streaks" value={totalStreak} emoji="🔥" sub="community total" onClick={() => onTabChange('users')} />
 
       {/* Tradition breakdown */}
       <div>
-        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-3">User Traditions</p>
+        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-3">
+          User Traditions {users.length === 0 && <span className="normal-case font-normal">(no data yet)</span>}
+        </p>
         <div className="glass-panel rounded-2xl p-4 space-y-3">
+          {traditions.length === 0 && (
+            <p className="text-sm text-gray-400 text-center py-2">No users yet</p>
+          )}
           {traditions.map(([trad, count]) => (
             <div key={trad} className="flex items-center gap-3">
               <span className="text-lg w-6">{TRADITION_EMOJI[trad] ?? '✨'}</span>
@@ -609,10 +621,10 @@ function NotificationsTab() {
 
 // ── Main Admin Component ──────────────────────────────────────────────────────
 export default function AdminClient({ adminName, users, reports, posts, kuls, mandalis }: Props) {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'moderation' | 'users' | 'posts' | 'broadcast' | 'notifications'>('dashboard');
+  const [activeTab, setActiveTab] = useState<TabKey>('dashboard');
   const pendingReports = reports.filter(r => r.status === 'pending').length;
 
-  const tabs: Array<{ key: typeof activeTab; label: string; icon: React.ReactNode; badge?: number }> = [
+  const tabs: Array<{ key: TabKey; label: string; icon: React.ReactNode; badge?: number }> = [
     { key: 'dashboard',     label: 'Dashboard',      icon: <BarChart2 size={14} /> },
     { key: 'moderation',    label: 'Moderation',     icon: <Flag size={14} />, badge: pendingReports || undefined },
     { key: 'users',         label: 'Users',          icon: <Users size={14} />, badge: users.length },
@@ -674,7 +686,7 @@ export default function AdminClient({ adminName, users, reports, posts, kuls, ma
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-1 py-6">
-        {activeTab === 'dashboard'     && <DashboardTab     users={users} reports={reports} kuls={kuls} mandalis={mandalis} />}
+        {activeTab === 'dashboard'     && <DashboardTab     users={users} reports={reports} kuls={kuls} mandalis={mandalis} onTabChange={setActiveTab} />}
         {activeTab === 'moderation'    && <ModerationTab    reports={reports} />}
         {activeTab === 'users'         && <UsersTab         users={users} />}
         {activeTab === 'posts'         && <PostsTab         posts={posts} />}

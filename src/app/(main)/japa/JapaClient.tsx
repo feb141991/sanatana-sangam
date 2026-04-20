@@ -15,6 +15,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Check, RotateCcw, ChevronDown, Flame, Music2, Maximize2 } from 'lucide-react';
 import { useEngine } from '@/contexts/EngineContext';
 import { hapticLight, hapticSuccess } from '@/lib/platform';
+import { createClient } from '@/lib/supabase';
+import { usePremium } from '@/hooks/usePremium';
+import PremiumGate from '@/components/premium/PremiumGate';
+import CircularProgress from '@/components/ui/CircularProgress';
 import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
 import type { Mantra } from '@sangam/sadhana-engine';
 
@@ -166,10 +170,10 @@ function MantraPickerSheet({
 
 // ── Completion Sheet ───────────────────────────────────────────────────────────
 function CompletionSheet({
-  rounds, durationSecs, mantraName, streak, onClose,
+  rounds, durationSecs, mantraName, streak, isPro, onClose,
 }: {
   rounds: number; durationSecs: number; mantraName: string;
-  streak: number; onClose: () => void;
+  streak: number; isPro: boolean; onClose: () => void;
 }) {
   const mins = Math.floor(durationSecs / 60);
   const secs = durationSecs % 60;
@@ -202,7 +206,7 @@ function CompletionSheet({
             </div>
           ))}
         </div>
-        {streak > 0 && (
+        {streak > 0 && isPro && (
           <div className="flex items-center justify-center gap-2 rounded-2xl p-3 border"
             style={{ background: 'rgba(180,100,10,0.1)', borderColor: 'rgba(212,140,40,0.2)' }}>
             <Flame size={20} style={{ color: '#d4a830' }} />
@@ -220,7 +224,7 @@ function CompletionSheet({
 }
 
 // ── 30-Day History Chart ──────────────────────────────────────────────────────
-function JapaHistoryChart({ history = [], streak }: { history: DayRecord[]; streak: number }) {
+function JapaHistoryChart({ history = [], streak, isPro = false }: { history: DayRecord[]; streak: number; isPro?: boolean }) {
   const today = new Date();
   const days: { date: string; done: boolean; isToday: boolean }[] = [];
   for (let i = 29; i >= 0; i--) {
@@ -239,7 +243,7 @@ function JapaHistoryChart({ history = [], streak }: { history: DayRecord[]; stre
       <div className="flex items-center justify-between">
         <p className="text-sm font-semibold" style={{ color: '#f5dfa0' }}>Last 30 days</p>
         <div className="flex items-center gap-3 text-xs">
-          {streak > 0 && (
+          {streak > 0 && isPro && (
             <span className="flex items-center gap-1" style={{ color: '#d4a830' }}>
               <Flame size={12} /> {streak}d streak
             </span>
@@ -261,12 +265,15 @@ function JapaHistoryChart({ history = [], streak }: { history: DayRecord[]; stre
             }} />
         ))}
       </div>
-      <div className="space-y-1">
-        <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(212,140,40,0.1)' }}>
-          <div className="h-full rounded-full transition-all"
-            style={{ width: `${completionPct}%`, background: 'linear-gradient(90deg,#7B1A1A,#d4643a)' }} />
-        </div>
-        <p className="text-[10px]" style={{ color: 'rgba(245,200,120,0.32)' }}>{completionPct}% consistency this month</p>
+      <div className="flex items-center gap-3">
+        <CircularProgress
+          pct={completionPct}
+          accent="#d4643a"
+          size={44}
+          strokeWidth={4}
+          label={<span className="text-[9px] font-bold" style={{ color: '#d4a830' }}>{completionPct}%</span>}
+        />
+        <p className="text-[11px]" style={{ color: 'rgba(245,200,120,0.45)' }}>consistency this month</p>
       </div>
     </div>
   );
@@ -450,6 +457,7 @@ export default function JapaClient({
   const [beadTypeId,     setBeadTypeId] = useState<BeadTypeId>('rudraksha');
   const [isFocusMode,    setFocusMode]  = useState(false);
 
+  const isPro = usePremium();
   const startedAt = useRef<string>('');
   const timerRef  = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -508,20 +516,41 @@ export default function JapaClient({
 
   const finishSession = useCallback(async (rounds: number) => {
     await hapticSuccess();
-    if (!engine || !selectedMantra) return;
+    if (!selectedMantra) return;
+    const completedAt = new Date().toISOString();
+
+    // ── 1. Direct insert into mala_sessions (source of truth) ────────────────
     try {
-      await engine.tracker.trackJapaSession({
-        mantra_id: selectedMantra.id, mantra_name: selectedMantra.name,
-        rounds_completed: rounds, beads_count: rounds * BEADS_PER_MALA,
-        duration_seconds: duration, completed: true,
-        started_at: startedAt.current, completed_at: new Date().toISOString(),
+      const supabase = createClient();
+      await supabase.from('mala_sessions').insert({
+        user_id:          userId,
+        mantra:           selectedMantra.name,
+        chant_source:     selectedMantra.id,
+        count:            rounds * BEADS_PER_MALA,
+        target_count:     targetRounds * BEADS_PER_MALA,
+        duration_seconds: duration,
+        share_scope:      'private' as const,
+        completed_at:     completedAt,
       });
-      const streakRecord = await engine.streaks.getTodayRecord(userId);
-      setStreak(streakRecord.streak_count);
-    } catch (err) { console.error('[Japa] tracking failed:', err); }
+    } catch (err) { console.error('[Japa] mala_sessions insert failed:', err); }
+
+    // ── 2. Also fire the engine tracker (event log + streak) ─────────────────
+    if (engine) {
+      try {
+        await engine.tracker.trackJapaSession({
+          mantra_id: selectedMantra.id, mantra_name: selectedMantra.name,
+          rounds_completed: rounds, beads_count: rounds * BEADS_PER_MALA,
+          duration_seconds: duration, completed: true,
+          started_at: startedAt.current, completed_at: completedAt,
+        });
+        const streakRecord = await engine.streaks.getTodayRecord(userId);
+        setStreak(streakRecord.streak_count);
+      } catch (err) { console.error('[Japa] engine tracking failed:', err); }
+    }
+
     setFocusMode(false);
     setComplete(true);
-  }, [engine, selectedMantra, userId, duration]);
+  }, [engine, selectedMantra, userId, duration, targetRounds]);
 
   const handleComplete = useCallback(() => {
     setIsActive(false);
@@ -573,13 +602,14 @@ export default function JapaClient({
           <h1 className="font-bold text-lg" style={{ color: '#f5dfa0' }}>Japa Counter</h1>
           <p className="text-xs" style={{ color: 'rgba(245,200,120,0.38)' }}>मन, वाक्, कर्म</p>
         </div>
-        {streak > 0 && (
+        {streak > 0 && isPro && (
           <div className="flex items-center gap-1 rounded-xl px-3 py-1.5"
             style={{ background: 'rgba(212,140,40,0.1)', border: '1px solid rgba(212,140,40,0.2)' }}>
             <Flame size={14} style={{ color: '#d4a830' }} />
             <span className="text-xs font-semibold" style={{ color: '#d4a830' }}>{streak}d</span>
           </div>
         )}
+        {!isPro && <PremiumGate compact>{null}</PremiumGate>}
       </motion.div>
 
       {/* Already done today banner */}
@@ -830,7 +860,7 @@ export default function JapaClient({
 
       {/* 30-day history */}
       {!isActive && !showComplete && (
-        <JapaHistoryChart history={history} streak={streak} />
+        <JapaHistoryChart history={history} streak={streak} isPro={isPro} />
       )}
 
       {/* Modals */}
@@ -844,7 +874,7 @@ export default function JapaClient({
         {showComplete && (
           <CompletionSheet rounds={roundsDone} durationSecs={duration}
             mantraName={selectedMantra?.name ?? defaultMantra.name}
-            streak={streak} onClose={() => { setComplete(false); router.back(); }} />
+            streak={streak} isPro={isPro} onClose={() => { setComplete(false); router.back(); }} />
         )}
       </AnimatePresence>
 

@@ -22,6 +22,7 @@ import {
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import CircularProgress from '@/components/ui/CircularProgress';
 import {
   ALL_LIBRARY_ENTRIES, LIBRARY_SECTIONS,
   getEntriesBySection,
@@ -406,12 +407,18 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
     const path = allPaths.find(p => p.id === enrollment.path_id);
     if (!path) return null;
     const diff = DIFF_STYLE[path.difficulty] ?? DIFF_STYLE.beginner;
+    const progressPct = 5; // placeholder until progress tracking added
     return (
       <div className="glass-panel rounded-2xl border border-white/8 p-4">
         <div className="flex items-start gap-3">
-          <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shrink-0"
-            style={{ background: `${meta.accentColour}18` }}>
-            {TRAD_ICON[path.tradition] ?? '📖'}
+          <div className="relative">
+            <CircularProgress
+              pct={progressPct}
+              accent={meta.accentColour}
+              size={48}
+              strokeWidth={4}
+              label={<span className="text-xl">{TRAD_ICON[path.tradition] ?? '📖'}</span>}
+            />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
@@ -421,15 +428,9 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
               </span>
             </div>
             <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 truncate">{path.description}</p>
-            <div className="mt-2">
-              <div className="flex justify-between text-xs text-[color:var(--brand-muted)] mb-1">
-                <span>{path.total_lessons} lessons · {path.duration_days} days</span>
-                <span style={{ color: meta.accentColour }}>Active</span>
-              </div>
-              <div className="h-1.5 rounded-full bg-white/8 overflow-hidden">
-                <div className="h-full rounded-full w-[5%] transition-all"
-                  style={{ background: meta.accentColour }} />
-              </div>
+            <div className="mt-1.5 flex items-center gap-2">
+              <span className="text-xs" style={{ color: meta.accentColour }}>{progressPct}%</span>
+              <span className="text-xs text-[color:var(--brand-muted)]">· {path.total_lessons} lessons · {path.duration_days} days</span>
             </div>
           </div>
         </div>

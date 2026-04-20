@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, X, ChevronDown, ChevronUp, Info } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import toast from 'react-hot-toast';
+import CircularProgress from '@/components/ui/CircularProgress';
 
 // ─── 16 Sanskaras data ───────────────────────────────────────────────────────
 export const SANSKARAS = [
@@ -545,32 +546,29 @@ export default function SanskaraClient({ userId, completed: initialCompleted }: 
           border: '1px solid rgba(212,166,70,0.15)',
         }}
       >
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <CircularProgress
+            pct={pct}
+            accent="#d4a030"
+            size={72}
+            strokeWidth={5}
+            label={
+              <div className="text-center">
+                <p className="text-lg font-bold leading-none" style={{ color: '#d4a030' }}>{completedCount}</p>
+                <p className="text-[9px] mt-0.5" style={{ color: 'rgba(245,210,130,0.45)' }}>of 16</p>
+              </div>
+            }
+          />
           <div>
             <h1 className="text-xl font-bold" style={{ color: '#f5dfa0' }}>16 Sanskaras</h1>
-            <p className="text-sm mt-1" style={{ color: 'rgba(245,210,130,0.45)' }}>
+            <p className="text-sm mt-0.5" style={{ color: 'rgba(245,210,130,0.45)' }}>
               षोडश संस्कार — Sacred rites of passage
             </p>
-          </div>
-          <div className="text-right flex-shrink-0">
-            <p className="text-2xl font-bold" style={{ color: '#d4a030' }}>{completedCount}</p>
-            <p className="text-[10px]" style={{ color: 'rgba(245,210,130,0.35)' }}>of 16</p>
+            <p className="text-[11px] mt-1" style={{ color: 'rgba(245,210,130,0.35)' }}>
+              {pct}% of lifecycle journey recorded
+            </p>
           </div>
         </div>
-
-        {/* Progress bar */}
-        <div className="mt-4 h-1.5 overflow-hidden rounded-full" style={{ background: 'rgba(212,166,70,0.12)' }}>
-          <motion.div
-            className="h-full rounded-full"
-            style={{ background: 'linear-gradient(90deg, rgba(212,100,20,0.9), rgba(212,166,70,0.85))' }}
-            initial={{ width: 0 }}
-            animate={{ width: `${pct}%` }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-          />
-        </div>
-        <p className="mt-1.5 text-[11px]" style={{ color: 'rgba(245,210,130,0.35)' }}>
-          {pct}% of lifecycle journey recorded
-        </p>
       </div>
 
       {/* Timeline grouped by life stage */}

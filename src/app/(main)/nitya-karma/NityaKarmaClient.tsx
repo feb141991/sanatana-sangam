@@ -13,18 +13,21 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, Flame, CheckCircle2, Circle, Loader2,
-  Info, Lock, Trophy, Sunrise, Star, X,
+  Info, Lock, Trophy, Sunrise, Star, X, Settings2, Plus, Bell,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import { useEngine } from '@/contexts/EngineContext';
 import { hapticLight, hapticSuccess } from '@/lib/platform';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import { usePremium } from '@/hooks/usePremium';
+import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import type { NityaSequenceStep, NityaKarmaStreak } from '@sangam/sadhana-engine';
 
 // ── Tradition greetings ─────────────────────────────────────────────────────────
@@ -137,6 +140,15 @@ function todayDateString(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+/** Apply custom labels/descriptions from user preferences to a step array */
+function applyCustomLabels(steps: NityaSequenceStep[], custom: NityaCustom): NityaSequenceStep[] {
+  return steps.map(s => ({
+    ...s,
+    label:       custom.labels[s.id]       || s.label,
+    description: custom.descriptions[s.id] || s.description,
+  }));
+}
+
 // ── Local-first persistence ───────────────────────────────────────────────────
 // Saves completed step IDs in localStorage so they survive page navigation
 // regardless of whether the Supabase write succeeds.
@@ -186,6 +198,314 @@ function heatColour(count: number, total: number, accent: string): string {
   if (ratio >= 0.7) return `${accent}cc`;
   if (ratio >= 0.4) return `${accent}77`;
   return `${accent}33`;
+}
+
+// ── Circular progress ring ────────────────────────────────────────────────────
+function CircularProgress({ pct, accent, size = 56 }: { pct: number; accent: string; size?: number }) {
+  const r   = (size - 8) / 2;
+  const circ = 2 * Math.PI * r;
+  const offset = circ * (1 - Math.min(pct, 100) / 100);
+  return (
+    <svg width={size} height={size} className="flex-shrink-0 -rotate-90">
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={5} />
+      <motion.circle
+        cx={size / 2} cy={size / 2} r={r}
+        fill="none" stroke={accent} strokeWidth={5}
+        strokeLinecap="round"
+        strokeDasharray={circ}
+        initial={{ strokeDashoffset: circ }}
+        animate={{ strokeDashoffset: offset }}
+        transition={{ duration: 0.7, ease: 'easeOut' }}
+      />
+    </svg>
+  );
+}
+
+// ── Nitya customization — localStorage helpers ────────────────────────────────
+interface NityaCustom {
+  /** Overridden step labels keyed by step ID */
+  labels: Record<string, string>;
+  /** Custom step descriptions keyed by step ID */
+  descriptions: Record<string, string>;
+  /** Preferred alert time e.g. "04:30" */
+  alertTime: string;
+  /** Extra user-defined steps (Pro-only) */
+  extraSteps: { id: string; label: string; icon: string; minutes: number }[];
+}
+
+function customKey(userId: string) {
+  return `nitya_custom_${userId}`;
+}
+
+function getCustom(userId: string): NityaCustom {
+  try {
+    const raw = localStorage.getItem(customKey(userId));
+    if (!raw) return { labels: {}, descriptions: {}, alertTime: '04:30', extraSteps: [] };
+    return { labels: {}, descriptions: {}, alertTime: '04:30', extraSteps: [], ...JSON.parse(raw) };
+  } catch {
+    return { labels: {}, descriptions: {}, alertTime: '04:30', extraSteps: [] };
+  }
+}
+
+function saveCustom(userId: string, custom: NityaCustom) {
+  try { localStorage.setItem(customKey(userId), JSON.stringify(custom)); } catch {}
+}
+
+// ── Nitya Customization Sheet ─────────────────────────────────────────────────
+function NityaCustomSheet({
+  userId, steps, custom: initialCustom, accent, isPro,
+  onSave, onClose,
+}: {
+  userId: string;
+  steps: NityaSequenceStep[];
+  custom: NityaCustom;
+  accent: string;
+  isPro: boolean;
+  onSave: (updated: NityaCustom) => void;
+  onClose: () => void;
+}) {
+  const [draft, setDraft] = useState<NityaCustom>(JSON.parse(JSON.stringify(initialCustom)));
+  const [newStepLabel, setNewStepLabel] = useState('');
+  const [newStepIcon, setNewStepIcon]   = useState('🙏');
+  const [newStepMins, setNewStepMins]   = useState(10);
+
+  function updateLabel(stepId: string, val: string) {
+    setDraft(prev => ({ ...prev, labels: { ...prev.labels, [stepId]: val } }));
+  }
+
+  function addExtraStep() {
+    if (!newStepLabel.trim()) return;
+    const extra = {
+      id:      `custom_${Date.now()}`,
+      label:   newStepLabel.trim(),
+      icon:    newStepIcon || '🙏',
+      minutes: newStepMins,
+    };
+    setDraft(prev => ({ ...prev, extraSteps: [...prev.extraSteps, extra] }));
+    setNewStepLabel('');
+    setNewStepIcon('🙏');
+    setNewStepMins(10);
+  }
+
+  function removeExtraStep(id: string) {
+    setDraft(prev => ({ ...prev, extraSteps: prev.extraSteps.filter(s => s.id !== id) }));
+  }
+
+  function handleSave() {
+    saveCustom(userId, draft);
+    onSave(draft);
+    onClose();
+  }
+
+  return createPortal(
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0"
+        style={{ zIndex: 9998, background: 'rgba(0,0,0,0.65)' }}
+        onClick={onClose}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      />
+      <motion.div
+        className="fixed inset-x-0 bottom-0 rounded-t-[2rem] flex flex-col"
+        style={{
+          zIndex: 9999,
+          background: 'linear-gradient(175deg, #1a0d1a 0%, #110808 60%, #130c06 100%)',
+          border: '1px solid rgba(212,166,70,0.18)',
+          borderBottom: 'none',
+          maxHeight: '90dvh',
+          paddingBottom: 'env(safe-area-inset-bottom, 16px)',
+        }}
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={{ type: 'spring', stiffness: 300, damping: 34 }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Handle */}
+        <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
+          <div className="w-10 h-1 rounded-full opacity-30" style={{ background: accent }} />
+        </div>
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 pt-2 pb-4 flex-shrink-0">
+          <div>
+            <h2 className="text-xl font-bold" style={{ color: 'var(--brand-ink)' }}>Customise Your Nitya</h2>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--brand-muted)' }}>Rename steps, set your wake-up time, add practices</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full flex items-center justify-center"
+            style={{ background: 'rgba(255,255,255,0.06)' }}
+          >
+            <X size={15} style={{ color: 'var(--brand-muted)' }} />
+          </button>
+        </div>
+
+        {/* Scrollable body */}
+        <div className="flex-1 overflow-y-auto overscroll-contain px-5 pb-3 space-y-5">
+
+          {/* Alert time */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <Bell size={14} style={{ color: accent }} />
+              <p className="text-sm font-semibold" style={{ color: 'var(--brand-ink)' }}>Morning Alert Time</p>
+            </div>
+            <div
+              className="flex items-center gap-3 rounded-2xl px-4 py-3"
+              style={{ background: 'rgba(212,166,70,0.06)', border: '1px solid rgba(212,166,70,0.12)' }}
+            >
+              <Bell size={16} style={{ color: accent }} />
+              <div className="flex-1">
+                <p className="text-xs" style={{ color: 'var(--brand-muted)' }}>Wake-up reminder</p>
+              </div>
+              <input
+                type="time"
+                value={draft.alertTime}
+                onChange={e => setDraft(prev => ({ ...prev, alertTime: e.target.value }))}
+                className="rounded-xl px-3 py-1.5 text-sm font-semibold border focus:outline-none focus:ring-1"
+                style={{
+                  background: 'rgba(212,166,70,0.12)',
+                  color: accent,
+                  borderColor: 'rgba(212,166,70,0.25)',
+                  colorScheme: 'dark',
+                }}
+              />
+            </div>
+            <p className="text-[10px] mt-1.5 px-1" style={{ color: 'rgba(180,160,100,0.45)' }}>
+              We&apos;ll send your Brahma Muhurta alert at this time each morning
+            </p>
+          </div>
+
+          {/* Step labels */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <Settings2 size={14} style={{ color: accent }} />
+              <p className="text-sm font-semibold" style={{ color: 'var(--brand-ink)' }}>Rename Steps</p>
+            </div>
+            <div className="space-y-2">
+              {steps.map(step => (
+                <div
+                  key={step.id}
+                  className="flex items-center gap-3 rounded-2xl px-4 py-3"
+                  style={{ background: 'rgba(212,166,70,0.05)', border: '1px solid rgba(212,166,70,0.1)' }}
+                >
+                  <span className="text-xl flex-shrink-0">{step.icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] mb-1" style={{ color: 'var(--brand-muted)' }}>Default: {step.label}</p>
+                    <input
+                      type="text"
+                      placeholder={step.label}
+                      value={draft.labels[step.id] ?? ''}
+                      onChange={e => updateLabel(step.id, e.target.value)}
+                      maxLength={40}
+                      className="w-full rounded-lg px-2.5 py-1.5 text-sm border focus:outline-none focus:ring-1 bg-transparent"
+                      style={{
+                        color: 'var(--brand-ink)',
+                        borderColor: 'rgba(212,166,70,0.2)',
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Extra steps (Pro only) */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <Plus size={14} style={{ color: accent }} />
+              <p className="text-sm font-semibold" style={{ color: 'var(--brand-ink)' }}>Custom Practices</p>
+            </div>
+
+            {/* Existing extra steps */}
+            {draft.extraSteps.length > 0 && (
+              <div className="space-y-2 mb-3">
+                {draft.extraSteps.map(es => (
+                  <div
+                    key={es.id}
+                    className="flex items-center gap-3 rounded-xl px-3 py-2.5"
+                    style={{ background: 'rgba(212,166,70,0.06)', border: '1px solid rgba(212,166,70,0.12)' }}
+                  >
+                    <span className="text-lg">{es.icon}</span>
+                    <span className="flex-1 text-sm" style={{ color: 'var(--brand-ink)' }}>{es.label}</span>
+                    <span className="text-xs" style={{ color: 'var(--brand-muted)' }}>{es.minutes}m</span>
+                    <button onClick={() => removeExtraStep(es.id)}>
+                      <X size={14} style={{ color: 'var(--brand-muted)' }} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Add new step form */}
+            <div
+              className="rounded-2xl px-4 py-4 space-y-3"
+              style={{ background: 'rgba(212,166,70,0.05)', border: '1px solid rgba(212,166,70,0.1)' }}
+            >
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Step icon (emoji)"
+                  value={newStepIcon}
+                  onChange={e => setNewStepIcon(e.target.value)}
+                  maxLength={4}
+                  className="w-16 rounded-xl px-2 py-2 text-center text-lg border focus:outline-none bg-transparent"
+                  style={{ borderColor: 'rgba(212,166,70,0.2)', color: 'var(--brand-ink)' }}
+                />
+                <input
+                  type="text"
+                  placeholder="Practice name (e.g. Tratak, Pranayama…)"
+                  value={newStepLabel}
+                  onChange={e => setNewStepLabel(e.target.value)}
+                  maxLength={50}
+                  className="flex-1 rounded-xl px-3 py-2 text-sm border focus:outline-none bg-transparent"
+                  style={{ borderColor: 'rgba(212,166,70,0.2)', color: 'var(--brand-ink)' }}
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs" style={{ color: 'var(--brand-muted)' }}>Duration (min):</span>
+                <input
+                  type="number"
+                  min={1} max={120}
+                  value={newStepMins}
+                  onChange={e => setNewStepMins(Number(e.target.value))}
+                  className="w-16 rounded-xl px-2 py-1.5 text-sm text-center border focus:outline-none bg-transparent"
+                  style={{ borderColor: 'rgba(212,166,70,0.2)', color: 'var(--brand-ink)' }}
+                />
+                <button
+                  onClick={addExtraStep}
+                  disabled={!newStepLabel.trim()}
+                  className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold disabled:opacity-40 transition-opacity"
+                  style={{ background: `${accent}22`, color: accent, border: `1px solid ${accent}33` }}
+                >
+                  <Plus size={12} /> Add step
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Save button */}
+        <div className="flex-shrink-0 px-5 pt-3 pb-2">
+          <motion.button
+            onClick={handleSave}
+            whileTap={{ scale: 0.97 }}
+            className="w-full py-4 rounded-2xl font-bold text-base"
+            style={{
+              background: 'linear-gradient(135deg, #c8920a 0%, #d4a818 50%, #b07a08 100%)',
+              color: '#1c1c1a',
+              boxShadow: '0 4px 24px rgba(212,166,70,0.3)',
+            }}
+          >
+            Save Customisation
+          </motion.button>
+        </div>
+      </motion.div>
+    </AnimatePresence>,
+    document.body
+  );
 }
 
 // ── Streak card ──────────────────────────────────────────────────────────────
@@ -291,13 +611,14 @@ interface Props {
   isPro?:    boolean;
 }
 
-export default function NityaKarmaClient({ userId, userName, tradition, isPro = false }: Props) {
+export default function NityaKarmaClient({ userId, userName, tradition }: Omit<Props, 'isPro'>) {
   const router              = useRouter();
   const supabase            = useRef(createClient()).current;
   const { engine, isReady } = useEngine();
   const meta                = getTraditionMeta(tradition);
   const morning             = TRADITION_MORNING[tradition] ?? TRADITION_MORNING.hindu;
   const accent              = meta.accentColour;
+  const isPro               = usePremium();
 
   const [steps,         setSteps]        = useState<NityaSequenceStep[]>([]);
   const [greeting,      setGreeting]     = useState('');
@@ -308,10 +629,17 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
   const [justCompleted, setJustCompleted]= useState<string | null>(null);
   const [dayRecords,    setDayRecords]   = useState<DayRecord[]>([]);
   const [showProSheet,  setShowProSheet] = useState(false);
+  const [showCustom,    setShowCustom]   = useState(false);
+  const [custom,        setCustom]       = useState<NityaCustom>({ labels: {}, descriptions: {}, alertTime: '04:30', extraSteps: [] });
 
   const confettiFired = useRef(false);
   const stepsRef      = useRef<NityaSequenceStep[]>([]);
   useEffect(() => { stepsRef.current = steps; }, [steps]);
+
+  // ── Load customization from localStorage ──────────────────────────────────
+  useEffect(() => {
+    setCustom(getCustom(userId));
+  }, [userId]);
 
   // ── Load 30-day history ───────────────────────────────────────────────────
   useEffect(() => {
@@ -473,8 +801,17 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
     }
   }
 
-  const completedCount = steps.filter(s => s.completed).length;
-  const totalSteps     = steps.length;
+  // Apply custom labels and merge extra Pro steps
+  const displaySteps: NityaSequenceStep[] = [
+    ...applyCustomLabels(steps, custom),
+    ...(isPro ? custom.extraSteps.map(es => ({
+      id: es.id, label: es.label, icon: es.icon, minutes: es.minutes,
+      description: 'Custom practice', completed: false,
+    } as NityaSequenceStep)) : []),
+  ];
+
+  const completedCount = displaySteps.filter(s => s.completed).length;
+  const totalSteps     = displaySteps.length;
   const progressPct    = totalSteps > 0 ? (completedCount / totalSteps) * 100 : 0;
   const allDone        = completedCount === totalSteps && totalSteps > 0;
   const vataDays       = panchang?.vrata ?? null;
@@ -497,7 +834,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {streak && streak.current_streak > 0 && (
+          {streak && streak.current_streak > 0 && isPro && (
             <div
               className="flex items-center gap-1 rounded-xl px-3 py-1.5 border border-white/10"
               style={{ background: `${accent}14` }}
@@ -506,11 +843,22 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
               <span className="text-xs font-semibold" style={{ color: accent }}>{streak.current_streak}d</span>
             </div>
           )}
+          {/* Customise button — Pro only */}
           {isPro ? (
-            <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-amber-400/30 bg-amber-400/10">
-              <Star size={12} className="text-amber-400 fill-amber-400" />
-              <span className="text-[10px] font-bold text-amber-400">PRO</span>
-            </div>
+            <>
+              <button
+                onClick={() => setShowCustom(true)}
+                className="w-9 h-9 rounded-full flex items-center justify-center border border-white/10"
+                style={{ background: `${accent}14` }}
+                title="Customise your Nitya Karma"
+              >
+                <Settings2 size={15} style={{ color: accent }} />
+              </button>
+              <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-amber-400/30 bg-amber-400/10">
+                <Star size={12} className="text-amber-400 fill-amber-400" />
+                <span className="text-[10px] font-bold text-amber-400">PRO</span>
+              </div>
+            </>
           ) : (
             <button
               onClick={() => setShowProSheet(true)}
@@ -531,17 +879,18 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
         <div className="p-5">
           <p className="text-white/80 text-sm font-medium">{greeting || morning.greeting}</p>
           <p className="text-white font-bold text-xl mt-0.5">{userName}</p>
-          <div className="mt-4">
-            <div className="flex justify-between text-xs text-white/60 mb-1.5">
-              <span>{completedCount}/{totalSteps} steps complete</span>
-              <span>{Math.round(progressPct)}%</span>
-            </div>
-            <div className="h-2 rounded-full bg-white/20 overflow-hidden">
-              <motion.div
-                className="h-full rounded-full bg-white"
-                animate={{ width: `${progressPct}%` }}
-                transition={{ duration: 0.6, ease: 'easeOut' }}
-              />
+          {/* Circular progress ring */}
+          <div className="mt-4 flex items-center gap-4">
+            <CircularProgress pct={progressPct} accent="#ffffff" size={64} />
+            <div>
+              <p className="text-white font-bold text-lg leading-none">{completedCount}/{totalSteps}</p>
+              <p className="text-white/60 text-xs mt-1">steps complete</p>
+              {isPro && streak && streak.current_streak > 0 && (
+                <div className="flex items-center gap-1 mt-1.5">
+                  <Flame size={11} className="text-amber-300" />
+                  <span className="text-[10px] font-semibold text-amber-300">{streak.current_streak}-day streak</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -585,7 +934,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
         </div>
       ) : (
         <div className="px-4 space-y-3">
-          {steps.map((step, idx) => {
+          {displaySteps.map((step, idx) => {
             const isJustDone = justCompleted === step.id;
             const isBusy     = busySteps.has(step.id);
             return (
@@ -816,12 +1165,21 @@ export default function NityaKarmaClient({ userId, userName, tradition, isPro = 
         </div>
       )}
 
-      {/* Pro Upgrade Sheet */}
-      <AnimatePresence>
-        {showProSheet && (
-          <ProUpgradeSheet onClose={() => setShowProSheet(false)} accent={accent} />
-        )}
-      </AnimatePresence>
+      {/* Premium activation modal (replaces old ProUpgradeSheet) */}
+      <PremiumActivateModal open={showProSheet} onClose={() => setShowProSheet(false)} />
+
+      {/* Nitya customization sheet — Pro only */}
+      {showCustom && isPro && (
+        <NityaCustomSheet
+          userId={userId}
+          steps={steps}
+          custom={custom}
+          accent={accent}
+          isPro={isPro}
+          onSave={updated => setCustom(updated)}
+          onClose={() => setShowCustom(false)}
+        />
+      )}
     </div>
   );
 }
