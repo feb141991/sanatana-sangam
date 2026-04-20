@@ -541,7 +541,7 @@ function NotificationsTab() {
             </div>
             {(panchang as any).tithi_reminder && (
               <div className="col-span-2 rounded-xl px-3 py-2 bg-amber-50">
-                <p className="text-gray-400 text-[10px] mb-1">Today's tithi reminder (tithi-reminder cron would send this)</p>
+                <p className="text-gray-400 text-[10px] mb-1">Today&apos;s tithi reminder (tithi-reminder cron would send this)</p>
                 <p className="font-semibold text-amber-800">{(panchang as any).tithi_reminder?.title}</p>
                 <p className="text-amber-700 mt-0.5">{(panchang as any).tithi_reminder?.body}</p>
               </div>
