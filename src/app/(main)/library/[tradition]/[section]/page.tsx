@@ -65,7 +65,7 @@ export default async function PathshalaSectionPage({
   return (
     <MotionFade className="space-y-3 pb-6 fade-in">
       <div className="glass-panel rounded-[1.6rem] px-4 py-4 sm:rounded-[1.8rem] sm:px-5 sm:py-5 space-y-4">
-        <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <Link href="/library" className="text-[color:var(--brand-primary)]">Pathshala</Link>
           <span>•</span>
           <Link href={getPathshalaTraditionHref(tradition)} className="text-[color:var(--brand-primary)]">{traditionMeta.label}</Link>
@@ -80,20 +80,20 @@ export default async function PathshalaSectionPage({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-3xl">{sectionMeta.emoji}</p>
-            <h1 className="font-display text-2xl font-bold text-gray-900 mt-2">{sectionMeta.title}</h1>
-            <p className="hidden sm:block text-sm text-gray-600 leading-relaxed mt-2 max-w-2xl">{sectionMeta.desc}</p>
+            <h1 className="font-display text-2xl font-bold text-[color:var(--text-cream)] mt-2">{sectionMeta.title}</h1>
+            <p className="hidden sm:block text-sm text-[color:var(--brand-muted)] leading-relaxed mt-2 max-w-2xl">{sectionMeta.desc}</p>
           </div>
           <div className="clay-card rounded-[1.25rem] px-3 py-2.5 sm:rounded-[1.35rem] sm:px-4 sm:py-3 sm:min-w-[10rem]">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Study track</p>
-            <p className="font-display text-2xl font-bold text-gray-900 mt-2">{entries.length}</p>
-            <p className="text-xs text-gray-500 mt-1">texts live in this track</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">Study track</p>
+            <p className="font-display text-2xl font-bold text-[color:var(--text-cream)] mt-2">{entries.length}</p>
+            <p className="text-xs text-[color:var(--brand-muted)] mt-1">texts live in this track</p>
           </div>
         </div>
 
         {detail ? (
           <div className="flex flex-wrap gap-2">
             <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">{detail.pathType}</span>
-            <span className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-600">{detail.corpusState}</span>
+            <span className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-[color:var(--brand-muted)]">{detail.corpusState}</span>
           </div>
         ) : null}
       </div>
@@ -162,21 +162,21 @@ export default async function PathshalaSectionPage({
                 <Link
                   key={chapter.id}
                   href={getPathshalaChapterHref(tradition, section, chapter.id)}
-                  className="glass-panel rounded-[1.25rem] sm:rounded-[1.4rem] px-3.5 py-3.5 sm:px-4 sm:py-4 border border-white/60 hover:-translate-y-0.5 transition"
+                  className="glass-panel rounded-[1.25rem] sm:rounded-[1.4rem] px-3.5 py-3.5 sm:px-4 sm:py-4 motion-lift"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">
                         {'chapterNumber' in chapter ? `Chapter ${chapter.chapterNumber}` : `Kanda ${chapter.kandaNumber}`}
                       </p>
-                      <p className="font-semibold text-gray-900 mt-2">{chapter.englishTitle}</p>
-                      <p className="text-xs text-gray-500 mt-1">{chapter.transliterationTitle}</p>
+                      <p className="font-semibold text-[color:var(--text-cream)] mt-2">{chapter.englishTitle}</p>
+                      <p className="text-xs text-[color:var(--brand-muted)] mt-1">{chapter.transliterationTitle}</p>
                     </div>
                     <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">
                       {'verseCount' in chapter ? `${chapter.verseCount} verses` : `${chapter.cantoCount} cantos`}
                     </span>
                   </div>
-                  <p className="hidden sm:block text-sm text-gray-600 leading-relaxed mt-3">{chapter.summary}</p>
+                  <p className="hidden sm:block text-sm text-[color:var(--brand-muted)] leading-relaxed mt-3">{chapter.summary}</p>
                 </Link>
                 </MotionItem>
               ))}
@@ -194,22 +194,22 @@ export default async function PathshalaSectionPage({
                 <div className="clay-card rounded-[1.25rem] sm:rounded-[1.4rem] px-3.5 py-3.5 sm:px-4 sm:py-4 space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="font-semibold text-gray-900">{plan.title}</p>
-                      <p className="text-xs text-gray-500 mt-1">{plan.cadence}</p>
+                      <p className="font-semibold text-[color:var(--text-cream)]">{plan.title}</p>
+                      <p className="text-xs text-[color:var(--brand-muted)] mt-1">{plan.cadence}</p>
                     </div>
                     <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">
                       {plan.chapters.length} chapters
                     </span>
                   </div>
 
-                  <p className="text-sm text-gray-700 leading-relaxed">{plan.subtitle}</p>
+                  <p className="text-sm text-[color:var(--text-muted-warm)] leading-relaxed">{plan.subtitle}</p>
 
                   <div className="flex flex-wrap gap-2">
                     {plan.chapters.map((chapterNumber) => (
                       <Link
                         key={`${plan.id}-${chapterNumber}`}
                         href={getPathshalaChapterHref(tradition, section, section === 'gita' ? `chapter-${chapterNumber}` : `kanda-${chapterNumber}`)}
-                        className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-700 hover:text-[color:var(--brand-primary)] transition"
+                        className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-[color:var(--text-muted-warm)] hover:text-[color:var(--brand-primary)] transition"
                       >
                         {section === 'gita' ? `Ch ${chapterNumber}` : `K ${chapterNumber}`}
                       </Link>
@@ -245,7 +245,7 @@ export default async function PathshalaSectionPage({
               <Link
                 key={entry.id}
                 href={getPathshalaEntryHrefFromSection(entrySection, entry)}
-                className="glass-panel rounded-[1.5rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
+                className="glass-panel rounded-[1.5rem] px-4 py-4 motion-lift"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -257,23 +257,23 @@ export default async function PathshalaSectionPage({
                         <span className={`rounded-full px-3 py-1.5 text-[11px] font-medium ${
                           entry.original.trim().length > 0
                             ? 'clay-pill text-[color:var(--brand-primary)]'
-                            : 'glass-chip text-gray-600'
+                            : 'glass-chip text-[color:var(--brand-muted)]'
                         }`}>
                           {originalStatusLabel}
                         </span>
                       )}
                       {recitationStatusLabel && (
-                        <span className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-600">
+                        <span className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-[color:var(--brand-muted)]">
                           {recitationStatusLabel}
                         </span>
                       )}
-                      <span className="text-[11px] text-gray-500">{entry.source}</span>
+                      <span className="text-[11px] text-[color:var(--brand-muted)]">{entry.source}</span>
                     </div>
-                    <h2 className="font-display text-lg font-bold text-gray-900 mt-2">{entry.title}</h2>
+                    <h2 className="font-display text-lg font-bold text-[color:var(--text-cream)] mt-2">{entry.title}</h2>
                   </div>
                   <span className="text-xs font-semibold text-[color:var(--brand-primary)]">Open →</span>
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed mt-2 line-clamp-2">
+                <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed mt-2 line-clamp-2">
                   {isUpanishad
                     ? entry.original.trim().length > 0
                       ? 'Full translated study text with official-source Sanskrit now available directly inside Pathshala.'

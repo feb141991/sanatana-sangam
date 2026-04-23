@@ -37,7 +37,7 @@ export default function LibraryClient({
         <section className="space-y-3">
 
           {continueLearning && (
-            <Link href={continueLearning.href} className="glass-panel rounded-[1.6rem] px-4 py-4 border border-white/70 block hover:-translate-y-0.5 transition">
+            <Link href={continueLearning.href} className="glass-panel rounded-[1.6rem] px-4 py-4 block hover:-translate-y-0.5 transition">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="type-card-label">Continue learning</p>

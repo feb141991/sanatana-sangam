@@ -117,7 +117,7 @@ export default async function PathshalaEntryPage({
     return (
       <MotionFade className="space-y-4 pb-6 fade-in">
         <div className="glass-panel rounded-[1.8rem] px-5 py-5 space-y-4">
-          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
+          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">
             <Link href="/library" className="text-[color:var(--brand-primary)]">Pathshala</Link>
             <span>•</span>
             <Link href={getPathshalaTraditionHref(tradition)} className="text-[color:var(--brand-primary)]">{traditionMeta.label}</Link>
@@ -130,15 +130,15 @@ export default async function PathshalaEntryPage({
               <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">
                 {sectionMeta.emoji} Chapter {canonicalChapter.chapterNumber}
               </span>
-              <span className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-600">
+              <span className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-[color:var(--brand-muted)]">
                 {canonicalChapter.verseCount} verses
               </span>
             </div>
             <div>
-              <h1 className="font-display text-2xl font-bold text-gray-900">{canonicalChapter.englishTitle}</h1>
-              <p className="text-sm text-gray-500 mt-1">{canonicalChapter.sanskritTitle} · {canonicalChapter.transliterationTitle}</p>
+              <h1 className="font-display text-2xl font-bold text-[color:var(--text-cream)]">{canonicalChapter.englishTitle}</h1>
+              <p className="text-sm text-[color:var(--brand-muted)] mt-1">{canonicalChapter.sanskritTitle} · {canonicalChapter.transliterationTitle}</p>
             </div>
-            <p className="text-sm text-gray-700 leading-relaxed">{canonicalChapter.summary}</p>
+            <p className="text-sm text-[color:var(--text-muted-warm)] leading-relaxed">{canonicalChapter.summary}</p>
           </div>
         </div>
 
@@ -146,7 +146,7 @@ export default async function PathshalaEntryPage({
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Companion source</p>
-              <p className="text-sm text-gray-700 leading-relaxed mt-2">
+              <p className="text-sm text-[color:var(--text-muted-warm)] leading-relaxed mt-2">
                 This full chapter is now available inside Pathshala. Use the IIT Kanpur Gita Supersite alongside it when you want authoritative audio, recitation support, or extra commentary layers.
               </p>
             </div>
@@ -185,10 +185,10 @@ export default async function PathshalaEntryPage({
                 <Link
                   key={prompt.title}
                   href={prompt.href}
-                  className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
+                  className="glass-panel rounded-[1.4rem] px-4 py-4 motion-lift"
                 >
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">{prompt.title}</p>
-                  <p className="text-sm text-gray-700 leading-relaxed mt-2">{prompt.description}</p>
+                  <p className="text-sm text-[color:var(--text-muted-warm)] leading-relaxed mt-2">{prompt.description}</p>
                 </Link>
                 </MotionItem>
               ))}
@@ -197,10 +197,10 @@ export default async function PathshalaEntryPage({
                 href={getOfficialGitaAudioUrl(canonicalChapter.chapterNumber)}
                 target="_blank"
                 rel="noreferrer"
-                className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
+                className="glass-panel rounded-[1.4rem] px-4 py-4 motion-lift"
               >
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">Recitation mode</p>
-                <p className="text-sm text-gray-700 leading-relaxed mt-2">
+                <p className="text-sm text-[color:var(--text-muted-warm)] leading-relaxed mt-2">
                   Start with authoritative audio and recite along verse by verse. Pronunciation guidance comes after the trusted audio layer is in place.
                 </p>
               </a>
@@ -227,10 +227,10 @@ export default async function PathshalaEntryPage({
                 description: 'Ask for explanation, quiz, or flashcards one at a time so the chapter remains understandable instead of over-processed.',
               },
             ].map((item) => (
-              <div key={item.title} className="glass-panel rounded-[1.35rem] px-4 py-4 border border-white/60">
+              <div key={item.title} className="glass-panel rounded-[1.35rem] px-4 py-4">
                 <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{item.eyebrow}</p>
-                <p className="font-semibold text-gray-900 mt-2">{item.title}</p>
-                <p className="text-sm text-gray-600 mt-2 leading-relaxed">{item.description}</p>
+                <p className="font-semibold text-[color:var(--text-cream)] mt-2">{item.title}</p>
+                <p className="text-sm text-[color:var(--brand-muted)] mt-2 leading-relaxed">{item.description}</p>
               </div>
             ))}
           </div>
@@ -251,25 +251,25 @@ export default async function PathshalaEntryPage({
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Verse navigator</p>
-                <p className="text-sm text-gray-700 leading-relaxed mt-2">
+                <p className="text-sm text-[color:var(--text-muted-warm)] leading-relaxed mt-2">
                   Every verse in the chapter is now mapped to a local Pathshala page. Use these chips to move verse by verse inside the app, or jump to the companion source when you want audio and commentary.
                 </p>
               </div>
               <div className="flex flex-wrap justify-end gap-2 text-[11px] font-medium">
                 <span className="clay-pill text-[color:var(--brand-primary)]">Live in app</span>
-                <span className="glass-chip px-3 py-1.5 rounded-full text-gray-600">Companion source</span>
+                <span className="glass-chip px-3 py-1.5 rounded-full text-[color:var(--brand-muted)]">Companion source</span>
               </div>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="clay-card rounded-[1.35rem] px-4 py-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Current in-app coverage</p>
-                <p className="font-display text-2xl font-bold text-gray-900 mt-2">{localVerseCount} / {canonicalChapter.verseCount}</p>
-                <p className="text-sm text-gray-600 mt-1">verses currently supported with local Pathshala entries</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">Current in-app coverage</p>
+                <p className="font-display text-2xl font-bold text-[color:var(--text-cream)] mt-2">{localVerseCount} / {canonicalChapter.verseCount}</p>
+                <p className="text-sm text-[color:var(--brand-muted)] mt-1">verses currently supported with local Pathshala entries</p>
               </div>
-              <div className="glass-panel rounded-[1.35rem] px-4 py-4 border border-white/60">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Best way to study today</p>
-                <p className="text-sm text-gray-700 leading-relaxed mt-2">
+              <div className="glass-panel rounded-[1.35rem] px-4 py-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">Best way to study today</p>
+                <p className="text-sm text-[color:var(--text-muted-warm)] leading-relaxed mt-2">
                   Stay inside Pathshala for the full verse flow, bookmarks, and AI study prompts, then use the companion links above for audio and deeper reference layers.
                 </p>
               </div>
@@ -282,7 +282,7 @@ export default async function PathshalaEntryPage({
                     <Link
                       key={`verse-${verse.verseNumber}`}
                       href={getPathshalaEntryHrefFromSection(sectionMeta, verse.localEntry)}
-                      className="clay-pill text-center text-sm font-semibold text-[color:var(--brand-primary)] py-2 hover:-translate-y-0.5 transition"
+                      className="clay-pill text-center text-sm font-semibold text-[color:var(--brand-primary)] py-2 motion-lift"
                     >
                       {verse.verseNumber}
                     </Link>
@@ -295,7 +295,7 @@ export default async function PathshalaEntryPage({
                     href={verse.officialUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="glass-chip text-center rounded-full px-3 py-2 text-sm font-medium text-gray-700 hover:text-[color:var(--brand-primary)] transition"
+                    className="glass-chip text-center rounded-full px-3 py-2 text-sm font-medium text-[color:var(--text-muted-warm)] hover:text-[color:var(--brand-primary)] transition"
                   >
                     {verse.verseNumber}
                   </a>
@@ -307,14 +307,14 @@ export default async function PathshalaEntryPage({
 
         <section className="space-y-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Chapter verses</p>
-            <p className="text-sm text-gray-600 mt-1">These verses are all live in Pathshala now, in order, as a complete local chapter reading surface.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-muted)]">Chapter verses</p>
+            <p className="text-sm text-[color:var(--brand-muted)] mt-1">These verses are all live in Pathshala now, in order, as a complete local chapter reading surface.</p>
           </div>
 
           {chapterEntries.length === 0 ? (
             <div className="glass-panel rounded-[1.5rem] px-4 py-5">
-              <p className="text-sm font-semibold text-gray-900">This chapter should be fully live, but no local verse entries were found.</p>
-              <p className="text-sm text-gray-600 mt-2">
+              <p className="text-sm font-semibold text-[color:var(--text-cream)]">This chapter should be fully live, but no local verse entries were found.</p>
+              <p className="text-sm text-[color:var(--brand-muted)] mt-2">
                 That means the local corpus and chapter map have drifted out of sync. Use the companion source above for now while we fix the import.
               </p>
             </div>
@@ -325,12 +325,12 @@ export default async function PathshalaEntryPage({
                 <Link
                   key={chapterEntry.id}
                   href={getPathshalaEntryHrefFromSection(sectionMeta, chapterEntry)}
-                  className="glass-panel rounded-[1.45rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
+                  className="glass-panel rounded-[1.45rem] px-4 py-4 motion-lift"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="font-semibold text-gray-900">{chapterEntry.source}</p>
-                      <p className="text-sm text-gray-600 leading-relaxed mt-2">{chapterEntry.meaning}</p>
+                      <p className="font-semibold text-[color:var(--text-cream)]">{chapterEntry.source}</p>
+                      <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed mt-2">{chapterEntry.meaning}</p>
                     </div>
                     <span className="text-xs font-semibold text-[color:var(--brand-primary)]">Open →</span>
                   </div>
@@ -377,7 +377,7 @@ export default async function PathshalaEntryPage({
     return (
       <MotionFade className="space-y-4 pb-6 fade-in">
         <div className="glass-panel rounded-[1.8rem] px-5 py-5 space-y-4">
-          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
+          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">
             <Link href="/library" className="text-[color:var(--brand-primary)]">Pathshala</Link>
             <span>•</span>
             <Link href={getPathshalaTraditionHref(tradition)} className="text-[color:var(--brand-primary)]">{traditionMeta.label}</Link>
@@ -390,15 +390,15 @@ export default async function PathshalaEntryPage({
               <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">
                 {sectionMeta.emoji} Kanda {canonicalKanda.kandaNumber}
               </span>
-              <span className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-600">
+              <span className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-[color:var(--brand-muted)]">
                 {canonicalKanda.cantoCount} cantos
               </span>
             </div>
             <div>
-              <h1 className="font-display text-2xl font-bold text-gray-900">{canonicalKanda.englishTitle}</h1>
-              <p className="text-sm text-gray-500 mt-1">{canonicalKanda.sanskritTitle} · {canonicalKanda.transliterationTitle}</p>
+              <h1 className="font-display text-2xl font-bold text-[color:var(--text-cream)]">{canonicalKanda.englishTitle}</h1>
+              <p className="text-sm text-[color:var(--brand-muted)] mt-1">{canonicalKanda.sanskritTitle} · {canonicalKanda.transliterationTitle}</p>
             </div>
-            <p className="text-sm text-gray-700 leading-relaxed">{canonicalKanda.summary}</p>
+            <p className="text-sm text-[color:var(--text-muted-warm)] leading-relaxed">{canonicalKanda.summary}</p>
           </div>
         </div>
 
@@ -406,7 +406,7 @@ export default async function PathshalaEntryPage({
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Companion sources</p>
-              <p className="text-sm text-gray-700 leading-relaxed mt-2">
+              <p className="text-sm text-[color:var(--text-muted-warm)] leading-relaxed mt-2">
                 The Ramayana path is now organized Kanda first inside Pathshala. Use the public-domain Griffith text and the sarga-level study index alongside these guided pages while we expand local narrative coverage further.
               </p>
             </div>
@@ -438,10 +438,10 @@ export default async function PathshalaEntryPage({
               <Link
                 key={prompt.title}
                 href={prompt.href}
-                className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
+                className="glass-panel rounded-[1.4rem] px-4 py-4 motion-lift"
               >
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">{prompt.title}</p>
-                <p className="text-sm text-gray-700 leading-relaxed mt-2">{prompt.description}</p>
+                <p className="text-sm text-[color:var(--text-muted-warm)] leading-relaxed mt-2">{prompt.description}</p>
               </Link>
               </MotionItem>
             ))}
@@ -463,7 +463,7 @@ export default async function PathshalaEntryPage({
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Local Pathshala passages</p>
-                <p className="text-sm text-gray-700 leading-relaxed mt-2">
+                <p className="text-sm text-[color:var(--text-muted-warm)] leading-relaxed mt-2">
                   These passages are already live inside this Kanda path. They are the best local openings while the fuller Ramayana corpus is expanded.
                 </p>
               </div>
@@ -473,9 +473,9 @@ export default async function PathshalaEntryPage({
             </div>
 
             {kandaEntries.length === 0 ? (
-              <div className="glass-panel rounded-[1.35rem] px-4 py-4 border border-white/60">
-                <p className="text-sm font-semibold text-gray-900">This Kanda structure is live, but no local passages have been mapped into it yet.</p>
-                <p className="text-sm text-gray-600 mt-2">
+              <div className="glass-panel rounded-[1.35rem] px-4 py-4">
+                <p className="text-sm font-semibold text-[color:var(--text-cream)]">This Kanda structure is live, but no local passages have been mapped into it yet.</p>
+                <p className="text-sm text-[color:var(--brand-muted)] mt-2">
                   Use the companion sources above for the full text while we continue local narrative ingestion.
                 </p>
               </div>
@@ -486,12 +486,12 @@ export default async function PathshalaEntryPage({
                   <Link
                     key={kandaEntry.id}
                     href={getPathshalaEntryHrefFromSection(sectionMeta, kandaEntry)}
-                    className="glass-panel rounded-[1.45rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
+                    className="glass-panel rounded-[1.45rem] px-4 py-4 motion-lift"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="font-semibold text-gray-900">{kandaEntry.title}</p>
-                        <p className="text-sm text-gray-600 leading-relaxed mt-2">{kandaEntry.meaning}</p>
+                        <p className="font-semibold text-[color:var(--text-cream)]">{kandaEntry.title}</p>
+                        <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed mt-2">{kandaEntry.meaning}</p>
                       </div>
                       <span className="text-xs font-semibold text-[color:var(--brand-primary)]">Open →</span>
                     </div>
@@ -553,7 +553,7 @@ export default async function PathshalaEntryPage({
   return (
     <MotionFade className="space-y-4 pb-6 fade-in">
       <div className="glass-panel rounded-[1.8rem] px-5 py-5 space-y-4">
-        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
+        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">
           <Link href="/library" className="text-[color:var(--brand-primary)]">Pathshala</Link>
           <span>•</span>
           <Link href={getPathshalaTraditionHref(tradition)} className="text-[color:var(--brand-primary)]">{traditionMeta.label}</Link>
@@ -566,13 +566,13 @@ export default async function PathshalaEntryPage({
             <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">
               {sectionMeta.emoji} {sectionMeta.title}
             </span>
-            <span className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-600">
+            <span className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-[color:var(--brand-muted)]">
               {sourceMeta.label}
             </span>
           </div>
           <div>
-            <h1 className="font-display text-2xl font-bold text-gray-900">{entry.title}</h1>
-            <p className="text-sm text-gray-500 mt-1">{entry.source}</p>
+            <h1 className="font-display text-2xl font-bold text-[color:var(--text-cream)]">{entry.title}</h1>
+            <p className="text-sm text-[color:var(--brand-muted)] mt-1">{entry.source}</p>
           </div>
         </div>
       </div>
@@ -582,7 +582,7 @@ export default async function PathshalaEntryPage({
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">Study with Pathshala</p>
-              <p className="text-sm text-gray-700 leading-relaxed mt-2">
+              <p className="text-sm text-[color:var(--text-muted-warm)] leading-relaxed mt-2">
                 Use the full translated reading here, the Sanskrit layer when it is live in app, and the AI study prompts below for revision and reflection. Recitation stays companion-linked until the authoritative audio layer is added.
               </p>
             </div>
@@ -605,18 +605,18 @@ export default async function PathshalaEntryPage({
               <Link
                 key={prompt.title}
                 href={prompt.href}
-                className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
+                className="glass-panel rounded-[1.4rem] px-4 py-4 motion-lift"
               >
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">{prompt.title}</p>
-                <p className="text-sm text-gray-700 leading-relaxed mt-2">{prompt.description}</p>
+                <p className="text-sm text-[color:var(--text-muted-warm)] leading-relaxed mt-2">{prompt.description}</p>
               </Link>
               </MotionItem>
             ))}
 
             <MotionItem>
-            <div className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60">
+            <div className="glass-panel rounded-[1.4rem] px-4 py-4">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">Recitation layer</p>
-              <p className="text-sm text-gray-700 leading-relaxed mt-2">
+              <p className="text-sm text-[color:var(--text-muted-warm)] leading-relaxed mt-2">
                 {upanishadStudyMeta.recitationLayerStatus === 'companion'
                   ? 'Use the official source as the recitation companion for now. Audio and guided recite-along come after the source-backed text layer.'
                   : 'Recitation support will be layered in after the source-backed text foundation is complete.'}
@@ -632,34 +632,34 @@ export default async function PathshalaEntryPage({
           <div className="glass-panel rounded-[1.45rem] px-4 py-4 space-y-4">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">Study layers</p>
-              <p className="mt-2 text-sm text-gray-700 leading-relaxed">
+              <p className="mt-2 text-sm text-[color:var(--text-muted-warm)] leading-relaxed">
                 This Upanishad now lives in Pathshala as a full translated study text. The original Sanskrit layer is surfaced where the official source is text-accessible, and otherwise stays linked as a companion source instead of being faked locally.
               </p>
             </div>
 
             <div className="grid gap-3 md:grid-cols-3">
               <div className="clay-card rounded-[1.2rem] px-4 py-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Translation study text</p>
-                <p className="font-semibold text-gray-900 mt-2">Live in app</p>
-                <p className="text-sm text-gray-600 mt-1">Full translated reading is available directly in Pathshala.</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">Translation study text</p>
+                <p className="font-semibold text-[color:var(--text-cream)] mt-2">Live in app</p>
+                <p className="text-sm text-[color:var(--brand-muted)] mt-1">Full translated reading is available directly in Pathshala.</p>
               </div>
-              <div className="glass-panel rounded-[1.2rem] px-4 py-4 border border-white/60">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Original Sanskrit</p>
-                <p className="font-semibold text-gray-900 mt-2">
+              <div className="glass-panel rounded-[1.2rem] px-4 py-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">Original Sanskrit</p>
+                <p className="font-semibold text-[color:var(--text-cream)] mt-2">
                   {upanishadStudyMeta.originalLayerStatus === 'live' ? 'Live in app' : 'Official companion'}
                 </p>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-[color:var(--brand-muted)] mt-1">
                   {upanishadStudyMeta.originalLayerStatus === 'live'
                     ? 'The official Sanskrit text is available directly on this page.'
                     : 'Use the companion source while we continue local original-text ingestion.'}
                 </p>
               </div>
-              <div className="glass-panel rounded-[1.2rem] px-4 py-4 border border-white/60">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Recitation / audio</p>
-                <p className="font-semibold text-gray-900 mt-2">
+              <div className="glass-panel rounded-[1.2rem] px-4 py-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">Recitation / audio</p>
+                <p className="font-semibold text-[color:var(--text-cream)] mt-2">
                   {upanishadStudyMeta.recitationLayerStatus === 'live' ? 'Live in app' : upanishadStudyMeta.recitationLayerStatus === 'companion' ? 'Official companion' : 'Planned'}
                 </p>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-[color:var(--brand-muted)] mt-1">
                   {upanishadStudyMeta.recitationLayerStatus === 'companion'
                     ? 'Use the official companion source for the next recitation step in this iteration.'
                     : 'Audio and recitation support will be layered in after the source-backed text foundation.'}
@@ -671,7 +671,7 @@ export default async function PathshalaEntryPage({
 
         {entry.original.trim().length > 0 && showOriginalScript && (
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">
               {scriptureScriptPreference === 'both' ? 'Original text' : 'Scripture text'}
             </p>
             <p
@@ -681,7 +681,7 @@ export default async function PathshalaEntryPage({
                   : entry.tradition === 'buddhist' || entry.tradition === 'jain'
                     ? 'font-mono text-sm'
                     : 'font-devanagari text-lg'
-              } text-gray-900`}
+              } text-[color:var(--text-cream)]`}
               style={{ fontFamily: entry.tradition === 'hindu' ? 'var(--font-devanagari, serif)' : 'inherit' }}
             >
               {entry.original}
@@ -691,10 +691,10 @@ export default async function PathshalaEntryPage({
 
         {showTransliteration && (
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">
               {transliterationIsPrimary ? 'Reading text' : 'Transliteration'}
             </p>
-            <p className={`mt-2 leading-relaxed whitespace-pre-line ${transliterationIsPrimary ? 'text-base text-gray-800' : 'text-sm text-gray-600 italic'}`}>
+            <p className={`mt-2 leading-relaxed whitespace-pre-line ${transliterationIsPrimary ? 'text-base text-[color:var(--text-cream)]' : 'text-sm text-[color:var(--brand-muted)] italic'}`}>
               {entry.transliteration}
             </p>
           </div>
@@ -703,19 +703,19 @@ export default async function PathshalaEntryPage({
         {entry.fullText ? (
           <>
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Overview</p>
-              <p className="mt-2 text-sm text-gray-700 leading-relaxed whitespace-pre-line">{entry.meaning}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">Overview</p>
+              <p className="mt-2 text-sm text-[color:var(--text-muted-warm)] leading-relaxed whitespace-pre-line">{entry.meaning}</p>
             </div>
 
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Complete study text</p>
-              <p className="mt-3 text-sm text-gray-800 leading-relaxed whitespace-pre-line">{entry.fullText}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">Complete study text</p>
+              <p className="mt-3 text-sm text-[color:var(--text-cream)] leading-relaxed whitespace-pre-line">{entry.fullText}</p>
             </div>
           </>
         ) : (
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">{meaningHeading}</p>
-            <p className="mt-2 text-sm text-gray-700 leading-relaxed whitespace-pre-line">{entry.meaning}</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">{meaningHeading}</p>
+            <p className="mt-2 text-sm text-[color:var(--text-muted-warm)] leading-relaxed whitespace-pre-line">{entry.meaning}</p>
           </div>
         )}
 
@@ -749,7 +749,7 @@ export default async function PathshalaEntryPage({
         {entry.tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {entry.tags.map((tag) => (
-              <span key={tag} className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-600">
+              <span key={tag} className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-[color:var(--brand-muted)]">
                 #{tag}
               </span>
             ))}
@@ -770,8 +770,8 @@ export default async function PathshalaEntryPage({
       {relatedEntries.length > 0 && (
         <section className="space-y-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Study next</p>
-            <p className="text-sm text-gray-600 mt-1">Continue inside the same text family without returning to the top-level Pathshala browse.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-muted)]">Study next</p>
+            <p className="text-sm text-[color:var(--brand-muted)] mt-1">Continue inside the same text family without returning to the top-level Pathshala browse.</p>
           </div>
           <MotionStagger className="grid gap-3" delay={0.05}>
             {relatedEntries.map((relatedEntry) => (
@@ -779,12 +779,12 @@ export default async function PathshalaEntryPage({
               <Link
                 key={relatedEntry.id}
                 href={getPathshalaEntryHrefFromSection(sectionMeta, relatedEntry)}
-                className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60 hover:-translate-y-0.5 transition"
+                className="glass-panel rounded-[1.4rem] px-4 py-4 motion-lift"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="font-semibold text-gray-900">{relatedEntry.title}</p>
-                    <p className="text-sm text-gray-600 leading-relaxed mt-1 line-clamp-2">{relatedEntry.meaning}</p>
+                    <p className="font-semibold text-[color:var(--text-cream)]">{relatedEntry.title}</p>
+                    <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed mt-1 line-clamp-2">{relatedEntry.meaning}</p>
                   </div>
                   <span className="text-xs font-semibold text-[color:var(--brand-primary)]">Open →</span>
                 </div>

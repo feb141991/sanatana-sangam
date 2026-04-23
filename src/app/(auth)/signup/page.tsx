@@ -184,12 +184,12 @@ export default function SignupPage() {
           <Link href="/" className="inline-flex">
             <BrandMark />
           </Link>
-          <h1 className="font-display text-2xl font-bold text-gray-900 mt-2">Join Sanatana Sangam</h1>
-          <p className="text-gray-500 text-sm mt-1">Your dharmic home awaits</p>
+          <h1 className="font-display text-2xl font-bold text-[color:var(--text-cream)] mt-2">Join Sanatana Sangam</h1>
+          <p className="text-[color:var(--brand-muted)] text-sm mt-1">Your dharmic home awaits</p>
         </div>
 
         {inviteCode && (
-          <div className="glass-panel mb-5 rounded-2xl px-4 py-3 text-sm text-orange-900">
+          <div className="glass-panel mb-5 rounded-2xl px-4 py-3 text-sm text-[color:var(--text-cream)]">
             Joining with invite code <span className="font-semibold">{inviteCode}</span>
           </div>
         )}
@@ -214,18 +214,18 @@ export default function SignupPage() {
           ].map((item) => (
             <div key={item.title} className="glass-panel rounded-[1.35rem] px-4 py-4">
               <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{item.eyebrow}</p>
-              <p className="font-semibold text-gray-900 mt-2">{item.title}</p>
-              <p className="text-sm text-gray-600 mt-2 leading-relaxed">{item.description}</p>
+              <p className="font-semibold text-[color:var(--text-cream)] mt-2">{item.title}</p>
+              <p className="text-sm text-[color:var(--brand-muted)] mt-2 leading-relaxed">{item.description}</p>
             </div>
           ))}
         </div>
 
         {/* Progress */}
         <div className="mb-6">
-          <div className="flex justify-between text-xs text-gray-400 mb-2">
-            <span className={step >= 1 ? 'text-orange-600 font-medium' : ''}>Account</span>
-            <span className={step >= 2 ? 'text-orange-600 font-medium' : ''}>Identity</span>
-            <span className={step >= 3 ? 'text-orange-600 font-medium' : ''}>Seeking</span>
+          <div className="flex justify-between text-xs text-[color:var(--text-dim)] mb-2">
+            <span className={step >= 1 ? 'text-[color:var(--brand-primary)] font-medium' : ''}>Account</span>
+            <span className={step >= 2 ? 'text-[color:var(--brand-primary)] font-medium' : ''}>Identity</span>
+            <span className={step >= 3 ? 'text-[color:var(--brand-primary)] font-medium' : ''}>Seeking</span>
           </div>
           <div className="glass-panel h-1.5 rounded-full overflow-hidden">
             <div className="h-full bg-gradient-sacred rounded-full transition-all duration-500"
@@ -238,40 +238,40 @@ export default function SignupPage() {
           {/* ── STEP 1: Account ─────────────────────────────────────────────── */}
           {step === 1 && (
             <div className="space-y-4 fade-in">
-              <h2 className="font-display font-semibold text-lg text-gray-900">Create your account</h2>
+              <h2 className="font-display font-semibold text-lg text-[color:var(--text-cream)]">Create your account</h2>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
+                <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Full Name</label>
                 <input type="text" placeholder="Arjun Sharma" value={form.full_name}
                   onChange={e => setForm({ ...form, full_name: e.target.value })}
-                  className="glass-input w-full px-4 py-3 rounded-xl focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm" />
+                  className="glass-input w-full px-4 py-3 rounded-xl focus:border-[color:var(--brand-primary)] focus:ring-2 focus:ring-[rgba(200,146,74,0.12)] outline-none transition text-sm" />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Username</label>
+                <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Username</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">@</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[color:var(--text-dim)] text-sm">@</span>
                   <input type="text" placeholder="arjun_sharma" value={form.username}
                     onChange={e => setForm({ ...form, username: e.target.value })}
-                    className="glass-input w-full pl-8 pr-4 py-3 rounded-xl focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm" />
+                    className="glass-input w-full pl-8 pr-4 py-3 rounded-xl focus:border-[color:var(--brand-primary)] focus:ring-2 focus:ring-[rgba(200,146,74,0.12)] outline-none transition text-sm" />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+                <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Email</label>
                 <input type="email" placeholder="arjun@email.com" value={form.email}
                   onChange={e => setForm({ ...form, email: e.target.value })}
-                  className="glass-input w-full px-4 py-3 rounded-xl focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm" />
+                  className="glass-input w-full px-4 py-3 rounded-xl focus:border-[color:var(--brand-primary)] focus:ring-2 focus:ring-[rgba(200,146,74,0.12)] outline-none transition text-sm" />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+                <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Password</label>
                 <div className="relative">
                   <input type={showPass ? 'text' : 'password'} placeholder="Min. 8 characters" value={form.password}
                     onChange={e => setForm({ ...form, password: e.target.value })}
-                    className="glass-input w-full px-4 py-3 pr-12 rounded-xl focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm" />
+                    className="glass-input w-full px-4 py-3 pr-12 rounded-xl focus:border-[color:var(--brand-primary)] focus:ring-2 focus:ring-[rgba(200,146,74,0.12)] outline-none transition text-sm" />
                   <button type="button" onClick={() => setShowPass(!showPass)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[color:var(--text-dim)] hover:text-[color:var(--brand-muted)]">
                     {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
@@ -293,14 +293,14 @@ export default function SignupPage() {
           {step === 2 && (
             <div className="space-y-5 fade-in">
               <div>
-                <h2 className="font-display font-semibold text-lg text-gray-900">Your Dharmic Identity</h2>
-                <p className="text-sm text-gray-500 mt-0.5">Choose your tradition — this shapes your entire experience.</p>
+                <h2 className="font-display font-semibold text-lg text-[color:var(--text-cream)]">Your Dharmic Identity</h2>
+                <p className="text-sm text-[color:var(--brand-muted)] mt-0.5">Choose your tradition — this shapes your entire experience.</p>
               </div>
 
               {/* ── Tradition tile picker — LOCKED after set ─────────────── */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-semibold text-gray-800">Your Tradition</label>
+                  <label className="text-sm font-semibold text-[color:var(--text-cream)]">Your Tradition</label>
                   <span className="flex items-center gap-1 text-[10px] text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
                     <Lock size={9} /> Set once, cannot be changed
                   </span>
@@ -311,15 +311,15 @@ export default function SignupPage() {
                       onClick={() => setForm({ ...form, tradition: t.value as TraditionKey, sampradaya: '', ishta_devata: '' })}
                       className={`text-left px-4 py-3 rounded-xl border-2 transition flex items-center gap-3 ${
                         form.tradition === t.value
-                          ? 'border-orange-400 bg-orange-50'
-                          : 'border-gray-100 hover:border-orange-200 bg-gray-50/50'
+                          ? 'border-[color:var(--brand-primary)] bg-[rgba(200,146,74,0.12)]'
+                          : 'border-[rgba(200,146,74,0.12)] hover:border-[rgba(200,146,74,0.4)] bg-[rgba(48,46,42,0.6)]'
                       }`}>
                       <span className="text-2xl flex-shrink-0">{t.emoji}</span>
                       <div className="flex-1 min-w-0">
-                        <p className={`font-semibold text-sm leading-tight ${form.tradition === t.value ? 'text-orange-700' : 'text-gray-800'}`}>
+                        <p className={`font-semibold text-sm leading-tight ${form.tradition === t.value ? 'text-[color:var(--brand-primary-strong)]' : 'text-[color:var(--text-cream)]'}`}>
                           {t.label}
                         </p>
-                        <p className="text-xs text-gray-400 mt-0.5 leading-tight">{t.desc}</p>
+                        <p className="text-xs text-[color:var(--text-dim)] mt-0.5 leading-tight">{t.desc}</p>
                       </div>
                       {form.tradition === t.value && (
                         <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
@@ -339,9 +339,9 @@ export default function SignupPage() {
                 <>
                   {/* Location */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Your Location</label>
+                    <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-2">Your Location</label>
                     <button type="button" onClick={detectLocation} disabled={geoLoading}
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-orange-200 text-orange-600 text-sm font-medium hover:border-orange-400 hover:bg-orange-50 transition disabled:opacity-60 mb-2">
+                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-[rgba(200,146,74,0.3)] text-[color:var(--brand-primary)] text-sm font-medium hover:border-[color:var(--brand-primary)] hover:bg-[rgba(200,146,74,0.08)] transition disabled:opacity-60 mb-2">
                       {geoLoading
                         ? <><Loader2 size={15} className="animate-spin" /> Detecting…</>
                         : <><MapPin size={15} /> Detect my location automatically</>}
@@ -354,19 +354,19 @@ export default function SignupPage() {
                     <div className="grid grid-cols-2 gap-2">
                       <input type="text" placeholder="City" value={form.city}
                         onChange={e => setForm({ ...form, city: e.target.value })}
-                        className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-400 outline-none transition text-sm" />
+                        className="w-full px-3 py-2.5 rounded-xl border border-[rgba(200,146,74,0.2)] focus:border-[color:var(--brand-primary)] outline-none transition text-sm" />
                       <input type="text" placeholder="Country" value={form.country}
                         onChange={e => setForm({ ...form, country: e.target.value })}
-                        className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-400 outline-none transition text-sm" />
+                        className="w-full px-3 py-2.5 rounded-xl border border-[rgba(200,146,74,0.2)] focus:border-[color:var(--brand-primary)] outline-none transition text-sm" />
                     </div>
                   </div>
 
                   {/* Sampradaya / Panth / School / Sect — filtered by tradition */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{sampradayaLabel}</label>
+                    <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-2">{sampradayaLabel}</label>
                     <select value={form.sampradaya}
                       onChange={e => setForm({ ...form, sampradaya: e.target.value })}
-                      className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-400 outline-none transition text-sm bg-white">
+                      className="w-full px-3 py-2.5 rounded-xl border border-[rgba(200,146,74,0.2)] focus:border-[color:var(--brand-primary)] outline-none transition text-sm bg-white">
                       <option value="">Select {sampradayaLabel.toLowerCase()} (optional)</option>
                       {sampradayaOptions.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                     </select>
@@ -374,15 +374,15 @@ export default function SignupPage() {
 
                   {/* Ishta Devata / Simran Focus / Bodhisattva / Tirthankar — filtered */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{devataLabel} <span className="text-gray-400 font-normal">(optional)</span></label>
+                    <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-2">{devataLabel} <span className="text-[color:var(--text-dim)] font-normal">(optional)</span></label>
                     <div className="grid grid-cols-2 gap-2">
                       {devataOptions.map(d => (
                         <button key={d.value} type="button"
                           onClick={() => setForm({ ...form, ishta_devata: d.value })}
                           className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-sm transition ${
                             form.ishta_devata === d.value
-                              ? 'border-orange-400 bg-orange-50 text-orange-700 font-medium'
-                              : 'border-gray-200 hover:border-orange-200 text-gray-600'
+                              ? 'border-[color:var(--brand-primary)] bg-[rgba(200,146,74,0.12)] text-[color:var(--brand-primary-strong)] font-medium'
+                              : 'border-[rgba(200,146,74,0.2)] hover:border-[rgba(200,146,74,0.4)] text-[color:var(--brand-muted)]'
                           }`}>
                           <span>{d.emoji}</span>
                           <span className="truncate">{d.label}</span>
@@ -393,18 +393,18 @@ export default function SignupPage() {
 
                   {/* Spiritual Level */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Where are you on the path?</label>
+                    <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-2">Where are you on the path?</label>
                     <div className="space-y-2">
                       {SPIRITUAL_LEVELS.map(l => (
                         <button key={l.value} type="button"
                           onClick={() => setForm({ ...form, spiritual_level: l.value })}
                           className={`w-full text-left px-4 py-3 rounded-xl border transition ${
                             form.spiritual_level === l.value
-                              ? 'border-orange-400 bg-orange-50'
-                              : 'border-gray-200 hover:border-orange-200'
+                              ? 'border-[color:var(--brand-primary)] bg-[rgba(200,146,74,0.12)]'
+                              : 'border-[rgba(200,146,74,0.2)] hover:border-[rgba(200,146,74,0.4)]'
                           }`}>
-                          <div className={`font-medium text-sm ${form.spiritual_level === l.value ? 'text-orange-700' : 'text-gray-800'}`}>{l.label}</div>
-                          <div className="text-xs text-gray-500 mt-0.5">{l.desc}</div>
+                          <div className={`font-medium text-sm ${form.spiritual_level === l.value ? 'text-[color:var(--brand-primary-strong)]' : 'text-[color:var(--text-cream)]'}`}>{l.label}</div>
+                          <div className="text-xs text-[color:var(--brand-muted)] mt-0.5">{l.desc}</div>
                         </button>
                       ))}
                     </div>
@@ -414,18 +414,18 @@ export default function SignupPage() {
                   {form.tradition === 'hindu' && (
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Kul / Vansh <span className="text-gray-400 font-normal">(optional)</span></label>
+                        <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Kul / Vansh <span className="text-[color:var(--text-dim)] font-normal">(optional)</span></label>
                         <input type="text" placeholder="e.g. Kashyap"
                           value={form.kul}
                           onChange={e => setForm({ ...form, kul: e.target.value })}
-                          className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-400 outline-none transition text-sm" />
+                          className="w-full px-3 py-2.5 rounded-xl border border-[rgba(200,146,74,0.2)] focus:border-[color:var(--brand-primary)] outline-none transition text-sm" />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Gotra <span className="text-gray-400 font-normal">(optional)</span></label>
+                        <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Gotra <span className="text-[color:var(--text-dim)] font-normal">(optional)</span></label>
                         <input type="text" placeholder="e.g. Bharadwaj"
                           value={form.gotra}
                           onChange={e => setForm({ ...form, gotra: e.target.value })}
-                          className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-400 outline-none transition text-sm" />
+                          className="w-full px-3 py-2.5 rounded-xl border border-[rgba(200,146,74,0.2)] focus:border-[color:var(--brand-primary)] outline-none transition text-sm" />
                       </div>
                     </div>
                   )}
@@ -434,7 +434,7 @@ export default function SignupPage() {
 
               <div className="flex gap-3 pt-2">
                 <button onClick={() => setStep(1)}
-                  className="flex items-center gap-1 px-4 py-3 text-gray-500 hover:text-gray-800 transition text-sm">
+                  className="flex items-center gap-1 px-4 py-3 text-[color:var(--brand-muted)] hover:text-[color:var(--text-cream)] transition text-sm">
                   <ArrowLeft size={16} /> Back
                 </button>
                 <button onClick={() => {
@@ -451,8 +451,8 @@ export default function SignupPage() {
           {step === 3 && (
             <div className="space-y-5 fade-in">
               <div>
-                <h2 className="font-display font-semibold text-lg text-gray-900">What are you seeking?</h2>
-                <p className="text-sm text-gray-500 mt-0.5">Select all that apply — helps us personalise your Sangam.</p>
+                <h2 className="font-display font-semibold text-lg text-[color:var(--text-cream)]">What are you seeking?</h2>
+                <p className="text-sm text-[color:var(--brand-muted)] mt-0.5">Select all that apply — helps us personalise your Sangam.</p>
               </div>
 
               <div className="space-y-2">
@@ -460,15 +460,15 @@ export default function SignupPage() {
                   <button key={opt.value} type="button" onClick={() => toggleSeeking(opt.value)}
                     className={`w-full text-left px-4 py-3 rounded-xl border transition text-sm font-medium ${
                       form.seeking.includes(opt.value)
-                        ? 'border-orange-400 bg-orange-50 text-orange-700'
-                        : 'border-gray-200 hover:border-orange-200 text-gray-700'
+                        ? 'border-[color:var(--brand-primary)] bg-[rgba(200,146,74,0.12)] text-[color:var(--brand-primary-strong)]'
+                        : 'border-[rgba(200,146,74,0.2)] hover:border-[rgba(200,146,74,0.4)] text-[color:var(--text-muted-warm)]'
                     }`}>
                     {opt.label}
                   </button>
                 ))}
               </div>
 
-              <div className="glass-panel rounded-2xl px-4 py-3 text-sm text-gray-600">
+              <div className="glass-panel rounded-2xl px-4 py-3 text-sm text-[color:var(--brand-muted)]">
                 <div className="flex items-start gap-3">
                 <input
                   id="policy-consent"
@@ -497,7 +497,7 @@ export default function SignupPage() {
 
               <div className="flex gap-3 pt-2">
                 <button onClick={() => setStep(2)}
-                  className="flex items-center gap-1 px-4 py-3 text-gray-500 hover:text-gray-800 transition text-sm">
+                  className="flex items-center gap-1 px-4 py-3 text-[color:var(--brand-muted)] hover:text-[color:var(--text-cream)] transition text-sm">
                   <ArrowLeft size={16} /> Back
                 </button>
                 <button onClick={handleSubmit} disabled={loading || !acceptedPolicies}
@@ -509,23 +509,23 @@ export default function SignupPage() {
           )}
         </div>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-[color:var(--brand-muted)] mt-6">
           Already a member?{' '}
-          <Link href="/login" className="text-orange-600 font-medium hover:underline">Sign in</Link>
+          <Link href="/login" className="text-[color:var(--brand-primary)] font-medium hover:underline">Sign in</Link>
         </p>
 
         <div className="text-center mt-4">
           <div className="flex items-center gap-3 mb-4">
             <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs text-gray-400">or</span>
+            <span className="text-xs text-[color:var(--text-dim)]">or</span>
             <div className="flex-1 h-px bg-gray-200" />
           </div>
           <Link href="/guest"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gray-200 text-sm text-gray-500 hover:border-orange-300 hover:text-orange-600 transition bg-white">
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[rgba(200,146,74,0.2)] text-sm text-[color:var(--brand-muted)] hover:border-[rgba(200,146,74,0.4)] hover:text-[color:var(--brand-primary)] transition bg-white">
             <span>👁️</span>
             <span>Explore as Guest</span>
           </Link>
-          <p className="text-xs text-gray-400 mt-2">Read discussions and discover nearby sacred places without creating an account</p>
+          <p className="text-xs text-[color:var(--text-dim)] mt-2">Read discussions and discover nearby sacred places without creating an account</p>
         </div>
       </div>
     </div>

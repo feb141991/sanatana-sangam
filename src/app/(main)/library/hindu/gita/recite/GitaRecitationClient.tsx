@@ -67,7 +67,7 @@ export default function GitaRecitationClient({
   return (
     <MotionFade className="space-y-4 pb-6 fade-in">
       <div className="glass-panel rounded-[1.8rem] px-5 py-5 space-y-4">
-        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
+        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">
           <Link href="/library" className="text-[color:var(--brand-primary)]">Pathshala</Link>
           <span>•</span>
           <Link href={getPathshalaTraditionHref('hindu')} className="text-[color:var(--brand-primary)]">{traditionLabel}</Link>
@@ -80,11 +80,11 @@ export default function GitaRecitationClient({
         <div className="space-y-3">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">Companion-audio foundation</span>
-            <span className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-gray-600">Gita-first rollout</span>
+            <span className="glass-chip px-3 py-1.5 rounded-full text-[11px] font-medium text-[color:var(--brand-muted)]">Gita-first rollout</span>
           </div>
           <div>
-            <h1 className="font-display text-2xl font-bold text-gray-900">Bhagavad Gita recitation</h1>
-            <p className="text-sm text-gray-700 leading-relaxed mt-2">
+            <h1 className="font-display text-2xl font-bold text-[color:var(--text-cream)]">Bhagavad Gita recitation</h1>
+            <p className="text-sm text-[color:var(--text-muted-warm)] leading-relaxed mt-2">
               This is the first in-app audio foundation for Pathshala: choose a chapter, open the authoritative companion audio, keep your place, and return straight to study. Playback stays companion-first until rights-safe in-app hosting is confirmed.
             </p>
           </div>
@@ -93,36 +93,36 @@ export default function GitaRecitationClient({
 
       <div className="grid gap-3 md:grid-cols-3">
         <div className="clay-card rounded-[1.4rem] px-4 py-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Audio stance</p>
-          <p className="font-semibold text-gray-900 mt-2">Authoritative companion</p>
-          <p className="text-sm text-gray-600 mt-1">We keep the chanting source honest while the in-app player layer is still being built.</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">Audio stance</p>
+          <p className="font-semibold text-[color:var(--text-cream)] mt-2">Authoritative companion</p>
+          <p className="text-sm text-[color:var(--brand-muted)] mt-1">We keep the chanting source honest while the in-app player layer is still being built.</p>
         </div>
-        <div className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Progress</p>
-          <p className="font-semibold text-gray-900 mt-2">{completedCount} of {tracks.length} chapters marked complete</p>
-          <p className="text-sm text-gray-600 mt-1">Your last opened chapter is kept locally on this device for a smoother return loop.</p>
+        <div className="glass-panel rounded-[1.4rem] px-4 py-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">Progress</p>
+          <p className="font-semibold text-[color:var(--text-cream)] mt-2">{completedCount} of {tracks.length} chapters marked complete</p>
+          <p className="text-sm text-[color:var(--brand-muted)] mt-1">Your last opened chapter is kept locally on this device for a smoother return loop.</p>
         </div>
-        <div className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/60">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Next layer later</p>
-          <p className="font-semibold text-gray-900 mt-2">Hosted playback when rights are clear</p>
-          <p className="text-sm text-gray-600 mt-1">This structure is ready for a future in-app player without pretending we already have hosted authoritative chanting.</p>
+        <div className="glass-panel rounded-[1.4rem] px-4 py-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">Next layer later</p>
+          <p className="font-semibold text-[color:var(--text-cream)] mt-2">Hosted playback when rights are clear</p>
+          <p className="text-sm text-[color:var(--brand-muted)] mt-1">This structure is ready for a future in-app player without pretending we already have hosted authoritative chanting.</p>
         </div>
       </div>
 
       {activeTrack ? (
-        <div className="glass-panel rounded-[1.6rem] px-5 py-5 border border-white/60 space-y-4">
+        <div className="glass-panel rounded-[1.6rem] px-5 py-5 space-y-4">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">Focused recitation</p>
-              <p className="font-display text-2xl font-bold text-gray-900 mt-2">
+              <p className="font-display text-2xl font-bold text-[color:var(--text-cream)] mt-2">
                 Chapter {activeTrack.chapterNumber} · {activeTrack.title}
               </p>
-              <p className="text-sm text-gray-600 mt-1">{activeTrack.transliterationTitle} · {activeTrack.verseCount} verses</p>
+              <p className="text-sm text-[color:var(--brand-muted)] mt-1">{activeTrack.transliterationTitle} · {activeTrack.verseCount} verses</p>
             </div>
             <button
               type="button"
               onClick={() => setFocusedChapterId(null)}
-              className="rounded-full border border-[color:var(--brand-primary-soft)] bg-white/80 p-2 text-gray-500"
+              className="rounded-full border border-[color:var(--brand-primary-soft)] bg-white/80 p-2 text-[color:var(--brand-muted)]"
               aria-label="Close focused recitation"
             >
               <X size={16} />
@@ -132,7 +132,7 @@ export default function GitaRecitationClient({
           <div className="rounded-[1.6rem] bg-[var(--brand-primary-soft)]/60 px-5 py-10 text-center space-y-4">
             <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">Stay with one chapter</p>
             <p className="font-display text-4xl font-bold text-[color:var(--brand-primary-strong)]">Chapter {activeTrack.chapterNumber}</p>
-            <p className="max-w-xl mx-auto text-sm leading-relaxed text-gray-700">{activeTrack.summary}</p>
+            <p className="max-w-xl mx-auto text-sm leading-relaxed text-[color:var(--text-muted-warm)]">{activeTrack.summary}</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 type="button"
@@ -182,8 +182,8 @@ export default function GitaRecitationClient({
 
       <section className="space-y-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Chapter audio map</p>
-          <p className="text-sm text-gray-600 mt-1">Choose a chapter, open the companion audio, and keep your progress grounded inside Pathshala.</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-muted)]">Chapter audio map</p>
+          <p className="text-sm text-[color:var(--brand-muted)] mt-1">Choose a chapter, open the companion audio, and keep your progress grounded inside Pathshala.</p>
         </div>
 
         <MotionStagger className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3" delay={0.05}>
@@ -193,17 +193,17 @@ export default function GitaRecitationClient({
 
             return (
               <MotionItem key={track.id}>
-                <div className="glass-panel rounded-[1.45rem] px-4 py-4 border border-white/60 space-y-4">
+                <div className="glass-panel rounded-[1.45rem] px-4 py-4 space-y-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-primary)]">Chapter {track.chapterNumber}</p>
-                      <p className="font-semibold text-gray-900 mt-2">{track.title}</p>
-                      <p className="text-xs text-gray-500 mt-1">{track.transliterationTitle}</p>
+                      <p className="font-semibold text-[color:var(--text-cream)] mt-2">{track.title}</p>
+                      <p className="text-xs text-[color:var(--brand-muted)] mt-1">{track.transliterationTitle}</p>
                     </div>
                     <span className="clay-pill text-[11px] font-medium text-[color:var(--brand-primary)]">{track.verseCount} verses</span>
                   </div>
 
-                  <p className="text-sm text-gray-600 leading-relaxed">{track.summary}</p>
+                  <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">{track.summary}</p>
 
                   <div className="flex flex-wrap gap-2">
                     {isFocused ? (

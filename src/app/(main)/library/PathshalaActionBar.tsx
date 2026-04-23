@@ -74,8 +74,8 @@ export default function PathshalaActionBar({
   return (
     <div className="glass-panel rounded-[1.5rem] px-4 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p className="text-sm font-semibold text-gray-900">Continue learning</p>
-        <p className="text-sm text-gray-600 mt-1">
+        <p className="text-sm font-semibold text-[color:var(--text-cream)]">Continue learning</p>
+        <p className="text-sm text-[color:var(--brand-muted)] mt-1">
           This text is now remembered in your study history so you can return where you left off.
         </p>
       </div>
