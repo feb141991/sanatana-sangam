@@ -6,24 +6,32 @@
 import { API } from '@/lib/config';
 
 export const ONESIGNAL_APP_ID = API.ONESIGNAL.APP_ID;
-const ONESIGNAL_TIMEOUT_MS = 1500;
+
+// ─── IMPORTANT: always push through OneSignalDeferred ────────────────────────
+// window.OneSignal is set when the <script> loads, but OneSignal.init() is async.
+// Calling OneSignal.login() or Notifications.requestPermission() before init()
+// completes silently fails — the user's push token is never linked.
+// OneSignalDeferred callbacks fire only AFTER init() resolves, so always use it.
+const ONESIGNAL_TIMEOUT_MS = 8000; // 8s — generous for slow mobile connections
 
 function withOneSignal<T>(callback: (OneSignal: any) => Promise<T> | T): Promise<T | null> {
   if (typeof window === 'undefined' || !ONESIGNAL_APP_ID) return Promise.resolve(null);
 
-  const existingOneSignal = (window as any).OneSignal;
-  if (existingOneSignal) {
-    return Promise.resolve(callback(existingOneSignal)).catch(() => null);
-  }
-
   return new Promise((resolve) => {
-    const timeout = window.setTimeout(() => resolve(null), ONESIGNAL_TIMEOUT_MS);
+    const timeout = window.setTimeout(() => {
+      console.warn('[OneSignal] Timed out waiting for SDK init');
+      resolve(null);
+    }, ONESIGNAL_TIMEOUT_MS);
+
+    // Always use OneSignalDeferred — never fast-path via window.OneSignal.
+    // The deferred queue only fires callbacks after init() has completed.
     (window as any).OneSignalDeferred = (window as any).OneSignalDeferred || [];
     (window as any).OneSignalDeferred.push(async (OneSignal: any) => {
       try {
         window.clearTimeout(timeout);
         resolve(await callback(OneSignal));
-      } catch {
+      } catch (err) {
+        console.warn('[OneSignal] Callback error:', err);
         window.clearTimeout(timeout);
         resolve(null);
       }
@@ -46,9 +54,12 @@ export function initOneSignal() {
     (window as any).OneSignalDeferred = (window as any).OneSignalDeferred || [];
     (window as any).OneSignalDeferred.push(async (OneSignal: any) => {
       await OneSignal.init({
-        appId:                 ONESIGNAL_APP_ID,
-        notifyButton:          { enable: false },   // we use custom bell
-        allowLocalhostAsSecureOrigin: true,         // for dev
+        appId:                       ONESIGNAL_APP_ID,
+        notifyButton:                { enable: false },  // we use custom bell
+        allowLocalhostAsSecureOrigin: true,              // for dev
+        // Safari on iOS 16.4+ requires an explicit service worker scope.
+        // Without this the SDK silently fails to register its worker on iOS PWAs.
+        serviceWorkerParam:          { scope: '/' },
       });
     });
   };

@@ -82,6 +82,9 @@ export default function TopBar({
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [isHidden,   setIsHidden]   = useState(false);
   const [pushPromptDismissedUntil, setPushPromptDismissedUntil] = useState<number | null>(null);
+  // iOS Safari without "Add to Home Screen" cannot receive web push (iOS 16.4+ PWA only).
+  // Detect this early so we swap the prompt copy and hide the broken "Enable now" button.
+  const [isIosSafariNonPwa, setIsIosSafariNonPwa] = useState(false);
   // Portal target — set client-side only to avoid SSR mismatch.
   // Rendering the sheet into document.body means it's never inside the sticky
   // header element, so the header's CSS transform cannot affect fixed positioning.
@@ -103,6 +106,15 @@ export default function TopBar({
     if (typeof window === 'undefined') return;
     const stored = window.localStorage.getItem(PUSH_PROMPT_DISMISS_KEY);
     setPushPromptDismissedUntil(stored ? Number(stored) : null);
+
+    // Detect iOS Safari running outside a PWA (Add to Home Screen).
+    // On those devices, Notification.requestPermission() and OneSignal both silently fail.
+    // The user must first install the PWA before push will work.
+    const ua = navigator.userAgent;
+    const isIos    = /iPhone|iPad|iPod/.test(ua) && !(window as any).MSStream;
+    const isSafari = /Safari/.test(ua) && !/Chrome|CriOS|FxiOS|EdgiOS/.test(ua);
+    const isPwa    = (window.navigator as any).standalone === true;
+    setIsIosSafariNonPwa(isIos && isSafari && !isPwa);
   }, []);
 
   useEffect(() => {
@@ -260,19 +272,48 @@ export default function TopBar({
             {shouldShowPushPrompt && (
               <div className="mx-4 mt-4 flex-shrink-0 rounded-2xl px-4 py-3.5 flex items-start gap-3"
                 style={{ background: 'rgba(212,166,70,0.08)', border: '1px solid rgba(212,166,70,0.18)' }}>
-                <span className="text-xl mt-0.5">🔔</span>
+                <span className="text-xl mt-0.5">{isIosSafariNonPwa ? '📲' : '🔔'}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-[color:var(--brand-ink)]">
-                    {permission === 'denied' ? 'Notifications blocked in browser' : 'Enable push notifications'}
+                    {isIosSafariNonPwa
+                      ? 'Install the app to get notifications'
+                      : permission === 'denied'
+                        ? 'Notifications blocked in browser'
+                        : 'Enable push notifications'}
                   </p>
                   <p className="text-xs text-[color:var(--brand-muted)] mt-1 leading-relaxed">
-                    {permission === 'denied'
-                      ? 'Open your browser/OS settings and allow notifications for this site to receive reminders.'
-                      : wantsAnyNotifications
-                        ? 'Receive festival alerts, Nitya reminders, and streak nudges on your device.'
-                        : 'Turn on reminder types in Profile settings first, then enable push here.'}
+                    {isIosSafariNonPwa
+                      ? 'iOS only delivers push notifications to installed apps. Tap Share → Add to Home Screen, then open Sangam from your home screen.'
+                      : permission === 'denied'
+                        ? 'Open your browser/OS settings and allow notifications for this site to receive reminders.'
+                        : wantsAnyNotifications
+                          ? 'Receive festival alerts, Nitya reminders, and streak nudges on your device.'
+                          : 'Turn on reminder types in Profile settings first, then enable push here.'}
                   </p>
-                  {permission !== 'denied' && wantsAnyNotifications && (
+
+                  {/* iOS Safari non-PWA: show install steps, no button (requestPermission silently fails) */}
+                  {isIosSafariNonPwa && (
+                    <div className="mt-2.5 flex flex-col gap-1">
+                      <p className="text-[11px] text-[color:var(--brand-muted)]">
+                        1. Tap <span className="font-semibold text-[color:var(--brand-ink)]">Share</span> (□↑) in the Safari toolbar
+                      </p>
+                      <p className="text-[11px] text-[color:var(--brand-muted)]">
+                        2. Tap <span className="font-semibold text-[color:var(--brand-ink)]">Add to Home Screen</span>
+                      </p>
+                      <p className="text-[11px] text-[color:var(--brand-muted)]">
+                        3. Open Sangam from your Home Screen — then enable notifications
+                      </p>
+                      <button
+                        onClick={dismissPushPromptForNow}
+                        className="self-start text-xs font-semibold mt-1 text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition"
+                      >
+                        Remind me later
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Normal browsers: standard permission request */}
+                  {!isIosSafariNonPwa && permission !== 'denied' && wantsAnyNotifications && (
                     <div className="flex items-center gap-3 mt-2.5">
                       <button
                         onClick={async () => {
@@ -301,7 +342,8 @@ export default function TopBar({
                       )}
                     </div>
                   )}
-                  {permission !== 'denied' && !wantsAnyNotifications && (
+
+                  {!isIosSafariNonPwa && permission !== 'denied' && !wantsAnyNotifications && (
                     <Link
                       href="/profile"
                       onClick={() => setOpen(false)}

@@ -100,6 +100,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     appId: "${oneSignalAppId}",
                     notifyButton: { enable: false },
                     allowLocalhostAsSecureOrigin: true,
+                    serviceWorkerParam: { scope: "/" },
                   });
                 });
               `}
