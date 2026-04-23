@@ -16,7 +16,7 @@ export default function PrivacyPage() {
       asideBody="This privacy page is a strong operational starting point, but production launch should still include a legally reviewed final version."
     >
       <section>
-        <h2 className="font-display text-2xl font-semibold text-gray-900 mb-2">Information You Provide</h2>
+        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Information You Provide</h2>
         <p>
           Sanatana Sangam stores account information, profile details, dharmic identity selections,
           family group participation, community activity, and content you choose to post inside the app.
@@ -24,7 +24,7 @@ export default function PrivacyPage() {
       </section>
 
       <section>
-        <h2 className="font-display text-2xl font-semibold text-gray-900 mb-2">Location Data</h2>
+        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Location Data</h2>
         <p>
           The app may request device location to help place you in a nearby Mandali, show nearby sacred
           places, and personalize local experiences. You should only request precise location when the
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
       </section>
 
       <section>
-        <h2 className="font-display text-2xl font-semibold text-gray-900 mb-2">Notifications</h2>
+        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Notifications</h2>
         <p>
           If you enable notifications, the app may store notification subscription identifiers and
           in-app notification history so reminders and alerts can be delivered to your account.
@@ -41,7 +41,7 @@ export default function PrivacyPage() {
       </section>
 
       <section>
-        <h2 className="font-display text-2xl font-semibold text-gray-900 mb-2">Family And Community Data</h2>
+        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Family And Community Data</h2>
         <p>
           Family and lineage features can contain sensitive personal information. Before public launch,
           destructive permissions, privacy settings, and data export expectations should be tightened and
@@ -50,7 +50,7 @@ export default function PrivacyPage() {
       </section>
 
       <section>
-        <h2 className="font-display text-2xl font-semibold text-gray-900 mb-2">Your Choices</h2>
+        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Your Choices</h2>
         <p>
           You should be able to update your profile, leave groups where appropriate, and request support
           for account or data concerns. The production support contact should be published on the contact page.

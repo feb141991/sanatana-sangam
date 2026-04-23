@@ -51,7 +51,7 @@ const STATUS_BADGE: Record<string, string> = {
   pending:  'bg-amber-50 text-amber-700 border-amber-200',
   reviewed: 'bg-blue-50 text-blue-700 border-blue-200',
   actioned: 'bg-green-50 text-green-700 border-green-200',
-  dismissed:'bg-gray-100 text-gray-500 border-gray-200',
+  dismissed:'bg-gray-100 text-[color:var(--brand-muted)] border-gray-200',
 };
 
 function StatCard({ label, value, emoji, sub, onClick }: { label: string; value: number | string; emoji: string; sub?: string; onClick?: () => void }) {
@@ -63,8 +63,8 @@ function StatCard({ label, value, emoji, sub, onClick }: { label: string; value:
     >
       <div className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style={{ background: '#7B1A1A0D' }}>{emoji}</div>
       <div>
-        <p className="text-2xl font-display font-bold text-gray-900">{value}</p>
-        <p className="text-xs text-gray-400">{label}</p>
+        <p className="text-2xl font-display font-bold text-[color:var(--text-cream)]">{value}</p>
+        <p className="text-xs text-[color:var(--text-dim)]">{label}</p>
         {sub && <p className="text-[10px] text-gray-300 mt-0.5">{sub}</p>}
       </div>
       {onClick && <span className="ml-auto text-gray-300 text-sm">›</span>}
@@ -99,22 +99,22 @@ function DashboardTab({ users, reports, kuls, mandalis, onTabChange }: { users: 
 
       {/* Tradition breakdown */}
       <div>
-        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-3">
+        <p className="text-xs text-[color:var(--text-dim)] font-medium uppercase tracking-wider mb-3">
           User Traditions {users.length === 0 && <span className="normal-case font-normal">(no data yet)</span>}
         </p>
         <div className="glass-panel rounded-2xl p-4 space-y-3">
           {traditions.length === 0 && (
-            <p className="text-sm text-gray-400 text-center py-2">No users yet</p>
+            <p className="text-sm text-[color:var(--text-dim)] text-center py-2">No users yet</p>
           )}
           {traditions.map(([trad, count]) => (
             <div key={trad} className="flex items-center gap-3">
               <span className="text-lg w-6">{TRADITION_EMOJI[trad] ?? '✨'}</span>
-              <span className="text-sm text-gray-700 capitalize flex-1">{trad}</span>
+              <span className="text-sm text-[color:var(--text-muted-warm)] capitalize flex-1">{trad}</span>
               <div className="flex items-center gap-2">
                 <div className="h-2 rounded-full bg-orange-100 w-24">
                   <div className="h-2 rounded-full" style={{ background: '#7B1A1A', width: `${Math.round(count / users.length * 100)}%` }} />
                 </div>
-                <span className="text-xs text-gray-400 w-8 text-right">{count}</span>
+                <span className="text-xs text-[color:var(--text-dim)] w-8 text-right">{count}</span>
               </div>
             </div>
           ))}
@@ -123,14 +123,14 @@ function DashboardTab({ users, reports, kuls, mandalis, onTabChange }: { users: 
 
       {/* Top Mandalis */}
       <div>
-        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-3">Top Mandalis by Size</p>
+        <p className="text-xs text-[color:var(--text-dim)] font-medium uppercase tracking-wider mb-3">Top Mandalis by Size</p>
         <div className="space-y-2">
           {mandalis.slice(0, 5).map((m, i) => (
             <div key={m.id} className="glass-panel rounded-2xl p-3 flex items-center gap-3">
               <div className="w-6 text-xs font-bold text-gray-300 text-center">{i + 1}</div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">{m.name}</p>
-                <p className="text-xs text-gray-400">{m.city}, {m.country}</p>
+                <p className="text-sm font-medium text-[color:var(--text-cream)] truncate">{m.name}</p>
+                <p className="text-xs text-[color:var(--text-dim)]">{m.city}, {m.country}</p>
               </div>
               <span className="text-sm font-bold text-[#7B1A1A]">{m.member_count}</span>
             </div>
@@ -204,18 +204,18 @@ function ModerationTab({ reports: initialReports }: { reports: ReportRow[] }) {
       <div className="flex gap-2">
         {(['pending', 'actioned', 'all'] as const).map(f => (
           <button key={f} onClick={() => setFilter(f)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-medium transition capitalize ${filter === f ? 'text-white' : 'bg-gray-100 text-gray-500'}`}
+            className={`px-3 py-1.5 rounded-xl text-xs font-medium transition capitalize ${filter === f ? 'text-white' : 'bg-gray-100 text-[color:var(--brand-muted)]'}`}
             style={filter === f ? { background: '#7B1A1A' } : {}}>
             {f}
           </button>
         ))}
-        <span className="ml-auto text-xs text-gray-400 self-center">
+        <span className="ml-auto text-xs text-[color:var(--text-dim)] self-center">
           {filtered.length} report{filtered.length !== 1 ? 's' : ''}
         </span>
       </div>
 
       {filtered.length === 0 && (
-        <div className="text-center py-12 text-gray-400">
+        <div className="text-center py-12 text-[color:var(--text-dim)]">
           <CheckCircle size={40} className="mx-auto mb-3 opacity-30" />
           <p className="text-sm">No {filter === 'all' ? '' : filter} reports</p>
         </div>
@@ -227,13 +227,13 @@ function ModerationTab({ reports: initialReports }: { reports: ReportRow[] }) {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <AlertTriangle size={13} className="text-amber-500" />
-                <span className="text-sm font-semibold text-gray-900 capitalize">{report.content_type.replace('_', ' ')}</span>
+                <span className="text-sm font-semibold text-[color:var(--text-cream)] capitalize">{report.content_type.replace('_', ' ')}</span>
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium border ${STATUS_BADGE[report.status] ?? STATUS_BADGE.pending}`}>
                   {report.status}
                 </span>
               </div>
-              <p className="text-xs text-gray-400">
-                Reason: <span className="font-medium text-gray-600">{report.reason}</span>
+              <p className="text-xs text-[color:var(--text-dim)]">
+                Reason: <span className="font-medium text-[color:var(--brand-muted)]">{report.reason}</span>
                 {' · '}by {report.reporter?.full_name || report.reporter?.username || 'User'}
               </p>
               <p className="text-xs text-gray-300 mt-0.5">
@@ -242,13 +242,13 @@ function ModerationTab({ reports: initialReports }: { reports: ReportRow[] }) {
             </div>
           </div>
           {report.admin_note && (
-            <p className="text-xs text-gray-500 bg-gray-50 rounded-xl px-3 py-2">Note: {report.admin_note}</p>
+            <p className="text-xs text-[color:var(--brand-muted)] bg-gray-50 rounded-xl px-3 py-2">Note: {report.admin_note}</p>
           )}
           {report.status === 'pending' && (
             <div className="flex gap-2 flex-wrap">
               <button onClick={() => updateStatus(report.id, 'dismissed')}
                 disabled={busyId === report.id}
-                className="flex-1 py-2 rounded-xl text-xs font-medium border border-gray-200 text-gray-500 hover:border-gray-300 transition">
+                className="flex-1 py-2 rounded-xl text-xs font-medium border border-gray-200 text-[color:var(--brand-muted)] hover:border-gray-300 transition">
                 Dismiss
               </button>
               <button onClick={() => updateStatus(report.id, 'reviewed', 'Under review')}
@@ -329,7 +329,7 @@ function UsersTab({ users: initialUsers }: { users: UserRow[] }) {
           ))}
         </select>
       </div>
-      <p className="text-xs text-gray-400">{filtered.length} of {users.length} users</p>
+      <p className="text-xs text-[color:var(--text-dim)]">{filtered.length} of {users.length} users</p>
 
       <div className="space-y-2">
         {filtered.map(u => (
@@ -340,10 +340,10 @@ function UsersTab({ users: initialUsers }: { users: UserRow[] }) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <p className="text-sm font-semibold text-gray-900 truncate">{u.full_name || u.username}</p>
+                <p className="text-sm font-semibold text-[color:var(--text-cream)] truncate">{u.full_name || u.username}</p>
                 {u.is_admin && <Shield size={11} className="text-[#7B1A1A] flex-shrink-0" />}
               </div>
-              <p className="text-xs text-gray-400 truncate">
+              <p className="text-xs text-[color:var(--text-dim)] truncate">
                 {u.username && `@${u.username}`}
                 {u.city && ` · ${u.city}`}
                 {u.tradition && ` · ${TRADITION_EMOJI[u.tradition] ?? ''}`}
@@ -353,13 +353,13 @@ function UsersTab({ users: initialUsers }: { users: UserRow[] }) {
             <div className="flex items-center gap-1">
               <button onClick={() => toggleAdmin(u.id, u.is_admin ?? false)}
                 disabled={busyId === u.id}
-                className="w-7 h-7 rounded-lg flex items-center justify-center border border-gray-200 text-gray-400 hover:text-[#7B1A1A] hover:border-[#7B1A1A]/30 transition"
+                className="w-7 h-7 rounded-lg flex items-center justify-center border border-gray-200 text-[color:var(--text-dim)] hover:text-[#7B1A1A] hover:border-[#7B1A1A]/30 transition"
                 title={u.is_admin ? 'Remove admin' : 'Make admin'}>
                 <Shield size={12} />
               </button>
               <button onClick={() => banUser(u.id, u.full_name || u.username || 'User')}
                 disabled={busyId === u.id}
-                className="w-7 h-7 rounded-lg flex items-center justify-center border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200 transition"
+                className="w-7 h-7 rounded-lg flex items-center justify-center border border-gray-200 text-[color:var(--text-dim)] hover:text-red-500 hover:border-red-200 transition"
                 title="Ban user">
                 <XCircle size={12} />
               </button>
@@ -394,25 +394,25 @@ function PostsTab({ posts: initialPosts }: { posts: PostRow[] }) {
     <div className="space-y-3">
       {posts.map(post => (
         <div key={post.id} className="glass-panel rounded-2xl p-4 flex items-start gap-3">
-          <div className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-xs font-bold text-gray-400 flex-shrink-0">
+          <div className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-xs font-bold text-[color:var(--text-dim)] flex-shrink-0">
             {post.type?.[0]?.toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-gray-400 mb-1">
+            <p className="text-xs text-[color:var(--text-dim)] mb-1">
               {post.profiles?.full_name || post.profiles?.username}
               {' · '}{new Date(post.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
             </p>
-            <p className="text-sm text-gray-800 leading-snug line-clamp-2">{post.content}</p>
+            <p className="text-sm text-[color:var(--text-cream)] leading-snug line-clamp-2">{post.content}</p>
           </div>
           <button onClick={() => deletePost(post.id)}
             disabled={busyId === post.id}
-            className="w-7 h-7 rounded-lg flex items-center justify-center border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200 transition flex-shrink-0">
+            className="w-7 h-7 rounded-lg flex items-center justify-center border border-gray-200 text-[color:var(--text-dim)] hover:text-red-500 hover:border-red-200 transition flex-shrink-0">
             <Trash2 size={12} />
           </button>
         </div>
       ))}
       {posts.length === 0 && (
-        <p className="text-center text-sm text-gray-400 py-12">No posts yet</p>
+        <p className="text-center text-sm text-[color:var(--text-dim)] py-12">No posts yet</p>
       )}
     </div>
   );
@@ -519,8 +519,8 @@ function NotificationsTab() {
       <div className="glass-panel rounded-2xl p-5 space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-semibold text-sm text-gray-800">🪐 Live Panchang Engine</p>
-            <p className="text-xs text-gray-400 mt-0.5">Verifies the engine computes correctly for your saved location</p>
+            <p className="font-semibold text-sm text-[color:var(--text-cream)]">🪐 Live Panchang Engine</p>
+            <p className="text-xs text-[color:var(--text-dim)] mt-0.5">Verifies the engine computes correctly for your saved location</p>
           </div>
           <button onClick={loadPanchang} disabled={loadingPanchang}
             className="px-4 py-1.5 rounded-xl text-xs font-semibold border border-[#7B1A1A]/30 text-[#7B1A1A] hover:bg-[#7B1A1A]/5 transition disabled:opacity-50">
@@ -539,8 +539,8 @@ function NotificationsTab() {
               { label: 'Abhijit Muhurta', value: `${fmtTime((panchang as any).abhijitMuhurta?.start)} – ${fmtTime((panchang as any).abhijitMuhurta?.end)}` },
             ].map(({ label, value }) => (
               <div key={label} className="rounded-xl bg-gray-50 px-3 py-2">
-                <p className="text-gray-400">{label}</p>
-                <p className="font-medium text-gray-800 mt-0.5">{value}</p>
+                <p className="text-[color:var(--text-dim)]">{label}</p>
+                <p className="font-medium text-[color:var(--text-cream)] mt-0.5">{value}</p>
               </div>
             ))}
             <div className="col-span-2 rounded-xl px-3 py-2 flex gap-4"
@@ -554,7 +554,7 @@ function NotificationsTab() {
             </div>
             {(panchang as any).tithi_reminder && (
               <div className="col-span-2 rounded-xl px-3 py-2 bg-amber-50">
-                <p className="text-gray-400 text-[10px] mb-1">Today&apos;s tithi reminder (tithi-reminder cron would send this)</p>
+                <p className="text-[color:var(--text-dim)] text-[10px] mb-1">Today&apos;s tithi reminder (tithi-reminder cron would send this)</p>
                 <p className="font-semibold text-amber-800">{(panchang as any).tithi_reminder?.title}</p>
                 <p className="text-amber-700 mt-0.5">{(panchang as any).tithi_reminder?.body}</p>
               </div>
@@ -565,7 +565,7 @@ function NotificationsTab() {
 
       {/* ── Cron Runners ─────────────────────────────────────────── */}
       <div className="space-y-3">
-        <p className="font-semibold text-sm text-gray-800 px-1">⚡ Trigger Crons Manually</p>
+        <p className="font-semibold text-sm text-[color:var(--text-cream)] px-1">⚡ Trigger Crons Manually</p>
         {CRONS.map(({ path, label, emoji, desc }) => {
           const result = cronResults[path];
           const running = runningCron === path;
@@ -573,8 +573,8 @@ function NotificationsTab() {
             <div key={path} className="glass-panel rounded-2xl p-4 space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
-                  <p className="font-semibold text-sm text-gray-800">{emoji} {label} Reminder</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
+                  <p className="font-semibold text-sm text-[color:var(--text-cream)]">{emoji} {label} Reminder</p>
+                  <p className="text-xs text-[color:var(--text-dim)] mt-0.5">{desc}</p>
                 </div>
                 <button
                   onClick={() => runCron(path)}
@@ -589,7 +589,7 @@ function NotificationsTab() {
                   <p className={`font-semibold ${result.ok ? 'text-green-700' : 'text-red-700'}`}>
                     {result.ok ? '✅' : '❌'} HTTP {result.status}
                   </p>
-                  <pre className="text-gray-600 whitespace-pre-wrap break-all text-[10px]">
+                  <pre className="text-[color:var(--brand-muted)] whitespace-pre-wrap break-all text-[10px]">
                     {JSON.stringify(result.result, null, 2)}
                   </pre>
                 </div>
@@ -602,8 +602,8 @@ function NotificationsTab() {
       {/* ── Test notification to self ─────────────────────────────── */}
       <div className="glass-panel rounded-2xl p-4 flex items-center justify-between gap-4">
         <div>
-          <p className="font-semibold text-sm text-gray-800">🔔 Test Notification (to yourself)</p>
-          <p className="text-xs text-gray-400 mt-0.5">Inserts a notification into the DB + fires a push to your device</p>
+          <p className="font-semibold text-sm text-[color:var(--text-cream)]">🔔 Test Notification (to yourself)</p>
+          <p className="text-xs text-[color:var(--text-dim)] mt-0.5">Inserts a notification into the DB + fires a push to your device</p>
         </div>
         <button
           onClick={async () => {
@@ -644,11 +644,11 @@ export default function AdminClient({ adminName, users, reports, posts, kuls, ma
             <Crown size={14} />
           </div>
           <div>
-            <h1 className="font-display font-bold text-gray-900 text-base">Admin Portal</h1>
-            <p className="text-xs text-gray-400">Sanatana Sangam · {adminName}</p>
+            <h1 className="font-display font-bold text-[color:var(--text-cream)] text-base">Admin Portal</h1>
+            <p className="text-xs text-[color:var(--text-dim)]">Sanatana Sangam · {adminName}</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <a href="/home" className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1">
+            <a href="/home" className="text-xs text-[color:var(--text-dim)] hover:text-[color:var(--brand-muted)] flex items-center gap-1">
               <Home size={12} /> App
             </a>
             <button
@@ -656,7 +656,7 @@ export default function AdminClient({ adminName, users, reports, posts, kuls, ma
                 await fetch('/api/admin/auth', { method: 'DELETE' });
                 window.location.href = '/admin/login';
               }}
-              className="text-xs text-gray-400 hover:text-red-500 flex items-center gap-1 transition-colors"
+              className="text-xs text-[color:var(--text-dim)] hover:text-red-500 flex items-center gap-1 transition-colors"
               title="Sign out"
             >
               <LogOut size={12} /> Sign out
@@ -671,7 +671,7 @@ export default function AdminClient({ adminName, users, reports, posts, kuls, ma
               className={`flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-all whitespace-nowrap relative ${
                 activeTab === key
                   ? 'border-[#7B1A1A] text-[#7B1A1A]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  : 'border-transparent text-[color:var(--brand-muted)] hover:text-[color:var(--text-muted-warm)]'
               }`}>
               {icon}{label}
               {badge != null && badge > 0 && (

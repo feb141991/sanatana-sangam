@@ -27,7 +27,7 @@ export default function ContactPage() {
       }
     >
       <section>
-        <h2 className="font-display text-2xl font-semibold text-gray-900 mb-2">General Support</h2>
+        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">General Support</h2>
         {supportEmail ? (
           <p>
             Reach the team at{' '}
@@ -45,7 +45,7 @@ export default function ContactPage() {
       </section>
 
       <section>
-        <h2 className="font-display text-2xl font-semibold text-gray-900 mb-2">Safety And Moderation</h2>
+        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Safety And Moderation</h2>
         <p>
           Safety concerns, abuse, impersonation, and harmful content should be routed through a dedicated
           support and moderation workflow. This page is the public destination for those requests until
@@ -54,7 +54,7 @@ export default function ContactPage() {
       </section>
 
       <section>
-        <h2 className="font-display text-2xl font-semibold text-gray-900 mb-2">Partnerships</h2>
+        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Partnerships</h2>
         <p>
           Temple organizers, satsang leaders, and community builders should also be able to use this page
           to reach the team for early partnerships and pilot programs.

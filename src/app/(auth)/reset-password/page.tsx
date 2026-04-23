@@ -103,13 +103,13 @@ export default function ResetPasswordPage() {
           <Link href="/" className="inline-flex">
             <BrandMark />
           </Link>
-          <h1 className="font-display text-2xl font-bold text-gray-900 mt-2">Choose a new password</h1>
-          <p className="text-gray-500 text-sm mt-1">Set a strong new password for your account.</p>
+          <h1 className="font-display text-2xl font-bold text-[color:var(--text-cream)] mt-2">Choose a new password</h1>
+          <p className="text-[color:var(--brand-muted)] text-sm mt-1">Set a strong new password for your account.</p>
         </div>
 
         {!hasRecoverySession ? (
           <div className="glass-panel-strong rounded-[2rem] shadow-card p-6 text-center space-y-4">
-            <p className="text-sm text-gray-600 leading-6">
+            <p className="text-sm text-[color:var(--brand-muted)] leading-6">
               This recovery session is missing or has expired. Request a fresh reset link and open it from your email.
             </p>
             <Link href="/forgot-password" className="glass-button-primary inline-flex px-5 py-3 rounded-xl text-sm font-semibold text-white">
@@ -119,7 +119,7 @@ export default function ResetPasswordPage() {
         ) : (
           <form onSubmit={handleSubmit} className="glass-panel-strong rounded-[2rem] shadow-card p-6 space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">New password</label>
+              <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">New password</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -127,12 +127,12 @@ export default function ResetPasswordPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="glass-input w-full px-4 py-3 pr-12 rounded-xl focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm"
+                  className="glass-input w-full px-4 py-3 pr-12 rounded-xl focus:border-[color:var(--brand-primary)] focus:ring-2 focus:ring-[rgba(200,146,74,0.12)] outline-none transition text-sm"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[color:var(--text-dim)] hover:text-[color:var(--brand-muted)]"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -140,14 +140,14 @@ export default function ResetPasswordPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Confirm new password</label>
+              <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Confirm new password</label>
               <input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Repeat your new password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                className="glass-input w-full px-4 py-3 rounded-xl focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm"
+                className="glass-input w-full px-4 py-3 rounded-xl focus:border-[color:var(--brand-primary)] focus:ring-2 focus:ring-[rgba(200,146,74,0.12)] outline-none transition text-sm"
               />
             </div>
 
@@ -161,9 +161,9 @@ export default function ResetPasswordPage() {
           </form>
         )}
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-[color:var(--brand-muted)] mt-6">
           Need to go back?{' '}
-          <Link href="/login" className="text-orange-600 font-medium hover:underline">
+          <Link href="/login" className="text-[color:var(--brand-primary)] font-medium hover:underline">
             Return to sign in
           </Link>
         </p>

@@ -72,8 +72,8 @@ export default function ChantAudioPlayer({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-[color:var(--brand-primary)]">{title}</p>
-          <p className="mt-1 text-sm font-semibold text-gray-900">{activeTrack.title}</p>
-          <p className="mt-1 text-xs text-gray-500">{activeTrack.creator} · {activeTrack.durationLabel}</p>
+          <p className="mt-1 text-sm font-semibold text-[color:var(--text-cream)]">{activeTrack.title}</p>
+          <p className="mt-1 text-xs text-[color:var(--brand-muted)]">{activeTrack.creator} · {activeTrack.durationLabel}</p>
         </div>
         <button
           type="button"
@@ -104,7 +104,7 @@ export default function ChantAudioPlayer({
       )}
 
       <div className="mt-3 flex items-center justify-between gap-3">
-        <div className="inline-flex items-center gap-2 text-xs text-gray-500">
+        <div className="inline-flex items-center gap-2 text-xs text-[color:var(--brand-muted)]">
           <Volume2 size={13} />
           <span>{activeTrack.sourceName}</span>
         </div>

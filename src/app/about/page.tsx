@@ -16,7 +16,7 @@ export default function AboutPage() {
       asideBody="The app is designed around three living needs: finding your local Mandali, preserving your family's continuity, and staying anchored in a daily rhythm of dharma."
     >
       <section>
-        <h2 className="font-display text-2xl font-semibold text-gray-900 mb-2">What We Believe</h2>
+        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">What We Believe</h2>
         <p>
           Spiritual identity is strongest when it is lived, shared, and carried forward. That is why
           Sanatana Sangam focuses on people, family, and practice rather than only passive content.
@@ -24,7 +24,7 @@ export default function AboutPage() {
       </section>
 
       <section>
-        <h2 className="font-display text-2xl font-semibold text-gray-900 mb-2">What The App Includes</h2>
+        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">What The App Includes</h2>
         <p>
           Today the product includes local community discovery, family groups, lineage tracking,
           scripture browsing, discussions, sacred place discovery, and tradition-aware daily spiritual
@@ -33,7 +33,7 @@ export default function AboutPage() {
       </section>
 
       <section>
-        <h2 className="font-display text-2xl font-semibold text-gray-900 mb-2">Who It Is For</h2>
+        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Who It Is For</h2>
         <p>
           The current launch direction is especially focused on diaspora users who want to reconnect
           with dharmic life through nearby people, family continuity, and small daily habits that can

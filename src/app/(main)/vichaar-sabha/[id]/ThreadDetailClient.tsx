@@ -74,7 +74,7 @@ export default function ThreadDetailClient({
       {/* Back */}
       <button
         onClick={() => router.back()}
-        className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition"
+        className="flex items-center gap-1.5 text-sm text-[color:var(--brand-muted)] hover:text-[color:var(--text-cream)] transition"
       >
         <ArrowLeft size={15} /> Vichaar Sabha
       </button>
@@ -113,11 +113,11 @@ export default function ThreadDetailClient({
           </div>
         )}
 
-        <div className="flex items-center gap-2 pt-2 border-t border-gray-50 text-sm text-gray-500">
+        <div className="flex items-center gap-2 pt-2 border-t border-gray-50 text-sm text-[color:var(--brand-muted)]">
           <div className="w-7 h-7 rounded-full bg-gradient-sacred flex items-center justify-center text-white text-xs font-bold">
             {getInitials(author?.full_name ?? 'S')}
           </div>
-          <span className="font-medium text-gray-700">{author?.full_name}</span>
+          <span className="font-medium text-[color:var(--text-muted-warm)]">{author?.full_name}</span>
           <span className="text-gray-300">·</span>
           <span>{formatRelativeTime(threadState.created_at)}</span>
         </div>
@@ -141,17 +141,17 @@ export default function ThreadDetailClient({
             description: 'If a thread feels unhelpful, use safety controls quietly instead of escalating the tone.',
           },
         ].map((item) => (
-          <div key={item.title} className="glass-panel rounded-[1.4rem] px-4 py-4 border border-white/70">
+          <div key={item.title} className="glass-panel rounded-[1.4rem] px-4 py-4 border ">
             <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{item.eyebrow}</p>
-            <p className="text-sm font-semibold text-gray-900 mt-2">{item.title}</p>
-            <p className="text-sm text-gray-600 mt-2 leading-relaxed">{item.description}</p>
+            <p className="text-sm font-semibold text-[color:var(--text-cream)] mt-2">{item.title}</p>
+            <p className="text-sm text-[color:var(--brand-muted)] mt-2 leading-relaxed">{item.description}</p>
           </div>
         ))}
       </div>
 
       {/* Replies */}
       <div className="space-y-3">
-        <h2 className="font-semibold text-gray-800 text-sm px-1">
+        <h2 className="font-semibold text-[color:var(--text-cream)] text-sm px-1">
           {replies.length} {replies.length === 1 ? 'Reply' : 'Replies'}
         </h2>
 
@@ -170,8 +170,8 @@ export default function ThreadDetailClient({
       {isGuest ? (
         <div className="glass-panel rounded-[1.6rem] p-4 sm:p-5 space-y-3 sm:sticky sm:bottom-20">
           <div>
-            <p className="text-sm font-semibold text-gray-900">Join to continue the conversation</p>
-            <p className="text-sm text-gray-600 leading-relaxed mt-1">
+            <p className="text-sm font-semibold text-[color:var(--text-cream)]">Join to continue the conversation</p>
+            <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed mt-1">
               Guests can read threads and replies. Join free to ask follow-up questions, reply, and upvote helpful answers.
             </p>
           </div>
@@ -185,13 +185,13 @@ export default function ThreadDetailClient({
           </div>
         </div>
       ) : (
-        <div className="glass-panel rounded-2xl border border-white/70 p-4 shadow-card space-y-3 sm:sticky sm:bottom-20">
+        <div className="glass-panel rounded-2xl border  p-4 shadow-card space-y-3 sm:sticky sm:bottom-20">
           <textarea
             placeholder="Share your wisdom or perspective… 🙏"
             value={replyBody}
             onChange={(e) => setReplyBody(e.target.value)}
             rows={3}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[color:var(--brand-primary)] outline-none resize-none text-sm"
+            className="w-full px-4 py-3 rounded-xl border border-[rgba(200,146,74,0.2)] focus:border-[color:var(--brand-primary)] outline-none resize-none text-sm"
           />
           <div className="flex justify-end">
             <button
@@ -242,7 +242,7 @@ function ReplyCard({
           <div className="w-6 h-6 rounded-full bg-gradient-sacred flex items-center justify-center text-white text-[10px] font-bold">
             {initials}
           </div>
-          <span className="font-medium text-gray-600 truncate">{author?.full_name}</span>
+          <span className="font-medium text-[color:var(--brand-muted)] truncate">{author?.full_name}</span>
           {level && <span style={{ color: 'var(--brand-primary)' }}>· {level.label}</span>}
           <span className="text-gray-300">·</span>
           <span>{formatRelativeTime(reply.created_at)}</span>

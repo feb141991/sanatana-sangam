@@ -178,7 +178,7 @@ export default function VichaarClient({
           title: 'Answer something still waiting',
           description: `${visibleUnansweredCount} thread${visibleUnansweredCount === 1 ? '' : 's'} in your current view still need a response.`,
           onClick: () => setFeedFilter('unanswered'),
-          icon: <CheckCircle size={16} className="text-gray-500" />,
+          icon: <CheckCircle size={16} className="text-[color:var(--brand-muted)]" />,
         }
       : visibleThreads.length > 0
         ? {
@@ -186,7 +186,7 @@ export default function VichaarClient({
             title: 'Read the most active thread',
             description: 'Begin with the conversation already carrying momentum, then add your reflection when it helps.',
             onClick: () => setFeedFilter('active'),
-            icon: <MessageSquare size={16} className="text-gray-500" />,
+            icon: <MessageSquare size={16} className="text-[color:var(--brand-muted)]" />,
           }
         : {
             eyebrow: 'Begin gently',
@@ -195,7 +195,7 @@ export default function VichaarClient({
               ? 'Read a little first, see how questions are framed, and join when you’re ready to contribute.'
               : 'Ask one clear question or share one focused reflection instead of posting too broadly.',
             onClick: () => (isGuest ? null : setShowCompose(true)),
-            icon: isGuest ? <Search size={16} className="text-gray-500" /> : <Plus size={16} className="text-gray-500" />,
+            icon: isGuest ? <Search size={16} className="text-[color:var(--brand-muted)]" /> : <Plus size={16} className="text-[color:var(--brand-muted)]" />,
           };
 
   async function submitThread() {
@@ -267,8 +267,8 @@ export default function VichaarClient({
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--brand-primary)]">
               Wisdom space
             </p>
-            <h1 className="font-display font-bold text-xl text-gray-900 mt-1">Vichaar Sabha</h1>
-            <p className="text-sm text-gray-600 mt-2 leading-relaxed max-w-2xl">
+            <h1 className="font-display font-bold text-xl text-[color:var(--text-cream)] mt-1">Vichaar Sabha</h1>
+            <p className="text-sm text-[color:var(--brand-muted)] mt-2 leading-relaxed max-w-2xl">
               Ask, reflect, and explore dharma together. The goal here is thoughtful clarity, not fast feed posting.
             </p>
           </div>
@@ -300,15 +300,15 @@ export default function VichaarClient({
             <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{primaryVichaarAction.eyebrow}</p>
             <div className="flex items-start justify-between gap-3 mt-3">
               <div>
-                <p className="text-sm font-semibold text-gray-900">{primaryVichaarAction.title}</p>
-                <p className="text-sm text-gray-600 mt-2 leading-relaxed">{primaryVichaarAction.description}</p>
+                <p className="text-sm font-semibold text-[color:var(--text-cream)]">{primaryVichaarAction.title}</p>
+                <p className="text-sm text-[color:var(--brand-muted)] mt-2 leading-relaxed">{primaryVichaarAction.description}</p>
               </div>
               <div className="clay-icon-well flex-shrink-0">{primaryVichaarAction.icon}</div>
             </div>
           </button>
 
           <div className="glass-panel rounded-[1.6rem] p-4">
-            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400">Sabha pulse</p>
+            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--text-dim)]">Sabha pulse</p>
             <div className="grid grid-cols-3 gap-2 mt-3">
               {[
                 { label: 'Visible', value: visibleThreads.length },
@@ -317,7 +317,7 @@ export default function VichaarClient({
               ].map((item) => (
                 <div key={item.label} className="rounded-[1.05rem] bg-white/72 border border-white/80 px-3 py-3 text-center">
                   <p className="font-display font-bold text-xl" style={{ color: 'var(--brand-primary-strong)' }}>{item.value}</p>
-                  <p className="text-[10px] uppercase tracking-[0.16em] text-gray-400 font-semibold mt-1">{item.label}</p>
+                  <p className="text-[10px] uppercase tracking-[0.16em] text-[color:var(--text-dim)] font-semibold mt-1">{item.label}</p>
                 </div>
               ))}
             </div>
@@ -328,8 +328,8 @@ export default function VichaarClient({
       {isGuest && (
         <div className="glass-panel rounded-[1.6rem] px-4 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
-            <p className="text-sm font-semibold text-gray-900">You&apos;re browsing in guest mode</p>
-            <p className="text-sm text-gray-600 leading-relaxed">
+            <p className="text-sm font-semibold text-[color:var(--text-cream)]">You&apos;re browsing in guest mode</p>
+            <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">
               Read threads and replies freely. Join when you&apos;re ready to post, reply, and upvote.
             </p>
           </div>
@@ -347,19 +347,19 @@ export default function VichaarClient({
       <div className="glass-panel rounded-[1.6rem] px-4 py-4 space-y-3">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-semibold text-gray-900">Structured for discovery, not noise</p>
-            <p className="text-sm text-gray-600 leading-relaxed">
+            <p className="text-sm font-semibold text-[color:var(--text-cream)]">Structured for discovery, not noise</p>
+            <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">
               Browse by category, search existing threads, and surface unanswered questions before starting a new one.
             </p>
           </div>
-          <div className="flex gap-3 text-xs text-gray-500">
+          <div className="flex gap-3 text-xs text-[color:var(--brand-muted)]">
             <span>{visibleThreads.length} visible</span>
             <span>{visibleUnansweredCount} unanswered</span>
           </div>
         </div>
 
         <div className="relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--text-dim)]" />
           <input
             type="search"
             value={searchQuery}
@@ -397,7 +397,7 @@ export default function VichaarClient({
 
       {/* Tradition-aware default tab hint */}
       {defaultTab !== 'all' && activeTab === defaultTab && (
-        <div className="glass-panel rounded-[1.2rem] px-4 py-2 flex items-center gap-2 text-xs text-gray-500">
+        <div className="glass-panel rounded-[1.2rem] px-4 py-2 flex items-center gap-2 text-xs text-[color:var(--brand-muted)]">
           <span>🎯</span>
           <span>Showing your tradition&apos;s room by default. Tap <strong>All topics</strong> to see everything.</span>
         </div>
@@ -448,7 +448,7 @@ export default function VichaarClient({
 
       {/* Threads */}
       {visibleThreads.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-16 text-[color:var(--text-dim)]">
           <div className="text-4xl mb-3">📜</div>
           <p className="font-medium">
             {searchQuery ? 'No matching threads found' : 'No threads yet in this view'}
@@ -542,24 +542,24 @@ function ComposeThreadModal({
           <div className="max-h-[calc(100dvh-1.5rem)] overflow-y-auto">
             <div className="sticky top-0 z-10 bg-white/85 backdrop-blur px-5 py-4 border-b border-white/60 flex items-center justify-between">
               <div>
-                <h2 className="font-display font-semibold text-lg text-gray-900">Start a Thread</h2>
-                <p className="text-xs text-gray-500 mt-0.5">Ask clearly, add context, and help the right people find your question.</p>
+                <h2 className="font-display font-semibold text-lg text-[color:var(--text-cream)]">Start a Thread</h2>
+                <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">Ask clearly, add context, and help the right people find your question.</p>
               </div>
-              <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-700 rounded-full hover:bg-white/70 transition">
+              <button onClick={onClose} className="p-2 text-[color:var(--text-dim)] hover:text-[color:var(--text-muted-warm)] rounded-full hover:bg-[rgba(200,146,74,0.08)] transition">
                 <X size={18} />
               </button>
             </div>
 
             <div className="p-5 space-y-4">
-              <div className="glass-panel rounded-2xl px-4 py-3 text-sm text-gray-600">
-                <p className="font-medium text-gray-800">Before you post</p>
+              <div className="glass-panel rounded-2xl px-4 py-3 text-sm text-[color:var(--brand-muted)]">
+                <p className="font-medium text-[color:var(--text-cream)]">Before you post</p>
                 <p className="mt-1 leading-6">
                   Use a specific title, mention your context, and note what you already know or have tried. If a similar thread exists, continuing it keeps answers easier to find later.
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-2">Category</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {FORUM_CATEGORIES.map((cat) => (
                     <button
@@ -569,26 +569,26 @@ function ComposeThreadModal({
                       className={`text-left px-3 py-3 rounded-xl border text-xs transition ${
                         form.category === cat.value
                           ? 'text-[#7B1A1A] font-medium'
-                          : 'border-gray-200 text-gray-600 hover:border-[rgba(123,26,26,0.18)]'
+                          : 'border-[rgba(200,146,74,0.2)] text-[color:var(--brand-muted)] hover:border-[rgba(123,26,26,0.18)]'
                       }`}
                       style={form.category === cat.value
                         ? { borderColor: 'rgba(123, 26, 26, 0.2)', background: 'var(--brand-primary-soft)' }
                         : undefined}
                     >
                       <span className="font-medium">{cat.emoji} {cat.label}</span>
-                      <span className="block text-gray-400 mt-0.5 leading-tight">{cat.desc}</span>
+                      <span className="block text-[color:var(--text-dim)] mt-0.5 leading-tight">{cat.desc}</span>
                     </button>
                   ))}
                 </div>
                 {selectedCategory && (
-                  <p className="text-xs text-gray-400 mt-2">
-                    Posting in <span className="font-medium text-gray-600">{selectedCategory.label}</span> helps route the thread to the right readers.
+                  <p className="text-xs text-[color:var(--text-dim)] mt-2">
+                    Posting in <span className="font-medium text-[color:var(--brand-muted)]">{selectedCategory.label}</span> helps route the thread to the right readers.
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Title</label>
+                <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Title</label>
                 <input
                   type="text"
                   placeholder="e.g. How should I understand Ekadashi fasting if I am just starting?"
@@ -598,7 +598,7 @@ function ComposeThreadModal({
                 />
                 {suggestedThreads.length > 0 && (
                   <div className="glass-panel rounded-2xl mt-3 px-4 py-3">
-                    <p className="text-xs font-semibold text-gray-700 mb-2">Possible existing threads</p>
+                    <p className="text-xs font-semibold text-[color:var(--text-muted-warm)] mb-2">Possible existing threads</p>
                     <div className="space-y-2">
                       {suggestedThreads.map((thread) => (
                         <Link
@@ -616,7 +616,7 @@ function ComposeThreadModal({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Body</label>
+                <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Body</label>
                 <textarea
                   placeholder="Share the question, a little context, and what kind of guidance you are looking for…"
                   value={form.body}
@@ -627,7 +627,7 @@ function ComposeThreadModal({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Tags (optional, comma separated)</label>
+                <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Tags (optional, comma separated)</label>
                 <input
                   type="text"
                   placeholder="e.g. ekadashi, vrat, beginner"
@@ -635,7 +635,7 @@ function ComposeThreadModal({
                   onChange={(event) => onChange((prev) => ({ ...prev, tags: event.target.value }))}
                   className="glass-input w-full px-4 py-3 rounded-xl outline-none text-sm focus:border-[color:var(--brand-primary)]"
                 />
-                <p className="text-xs text-gray-400 mt-1.5">
+                <p className="text-xs text-[color:var(--text-dim)] mt-1.5">
                   Use tags for specific themes. Categories should stay broad; tags can be more detailed.
                 </p>
               </div>
@@ -644,7 +644,7 @@ function ComposeThreadModal({
             <div className="sticky bottom-0 bg-white/90 backdrop-blur px-5 py-4 border-t border-white/60 flex flex-col-reverse gap-3 sm:flex-row">
               <button
                 onClick={onClose}
-                className="flex-1 py-3 border border-gray-200 text-gray-600 rounded-xl text-sm hover:border-gray-300 transition"
+                className="flex-1 py-3 border border-[rgba(200,146,74,0.2)] text-[color:var(--brand-muted)] rounded-xl text-sm hover:border-gray-300 transition"
               >
                 Cancel
               </button>
@@ -722,16 +722,16 @@ function ThreadCard({
         </div>
 
         {/* Title */}
-        <h3 className="font-semibold text-gray-900 leading-snug">{thread.title}</h3>
+        <h3 className="font-semibold text-[color:var(--text-cream)] leading-snug">{thread.title}</h3>
 
         {/* Preview */}
-        <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">{thread.body}</p>
+        <p className="text-sm text-[color:var(--brand-muted)] line-clamp-2 leading-relaxed">{thread.body}</p>
 
         {/* Tags */}
         {thread.tags.length > 0 && (
           <div className="flex gap-1.5 flex-wrap">
             {thread.tags.slice(0, 4).map((tag) => (
-              <span key={tag} className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
+              <span key={tag} className="text-xs bg-gray-100 text-[color:var(--brand-muted)] px-2 py-0.5 rounded-full">
                 #{tag}
               </span>
             ))}
@@ -744,11 +744,11 @@ function ThreadCard({
             <div className="w-6 h-6 rounded-full bg-gradient-sacred flex items-center justify-center text-white text-[10px] font-bold">
               {initials}
             </div>
-            <span className="text-xs text-gray-500">{author?.full_name}</span>
+            <span className="text-xs text-[color:var(--brand-muted)]">{author?.full_name}</span>
             <span className="text-gray-300">·</span>
-            <span className="text-xs text-gray-400">{formatRelativeTime(activityTime)}</span>
+            <span className="text-xs text-[color:var(--text-dim)]">{formatRelativeTime(activityTime)}</span>
           </div>
-          <div className="flex items-center gap-3 text-xs text-gray-400">
+          <div className="flex items-center gap-3 text-xs text-[color:var(--text-dim)]">
             {isGuest ? (
               <span className="flex items-center gap-1">
                 <ArrowUp size={13} />

@@ -17,10 +17,10 @@ export default async function JoinPage({
       <div className="w-full max-w-md glass-panel-strong rounded-[2rem] p-8 text-center">
         <BrandMark size="lg" className="mx-auto mb-4" />
         <p className="text-xs uppercase tracking-[0.24em] text-[#7B1A1A]/70 mb-3">Invitation</p>
-        <h1 className="font-display text-3xl font-bold text-gray-900 mb-3">
+        <h1 className="font-display text-3xl font-bold text-[color:var(--text-cream)] mb-3">
           Join Sanatana Sangam
         </h1>
-        <p className="text-sm text-gray-600 leading-relaxed mb-6">
+        <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed mb-6">
           A friend has invited you to explore community, scriptures, bhakti, and local sangam.
         </p>
 
@@ -28,7 +28,7 @@ export default async function JoinPage({
           {['Invitation-led', 'Guest access available', 'Join free'].map((item) => (
             <span
               key={item}
-              className="rounded-full border border-white/70 bg-white/70 px-3 py-1 text-xs font-medium text-gray-700"
+              className="rounded-full border  px-3 py-1 text-xs font-medium text-[color:var(--text-muted-warm)]"
             >
               {item}
             </span>
@@ -50,15 +50,15 @@ export default async function JoinPage({
           ].map((item) => (
             <div key={item.title} className="glass-panel rounded-[1.35rem] px-4 py-4 text-left">
               <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[#7B1A1A]">{item.eyebrow}</p>
-              <p className="font-semibold text-gray-900 mt-2">{item.title}</p>
-              <p className="text-sm text-gray-600 mt-2 leading-relaxed">{item.description}</p>
+              <p className="font-semibold text-[color:var(--text-cream)] mt-2">{item.title}</p>
+              <p className="text-sm text-[color:var(--brand-muted)] mt-2 leading-relaxed">{item.description}</p>
             </div>
           ))}
         </div>
 
         {ref && (
           <div className="glass-panel rounded-2xl px-4 py-3 mb-6">
-            <p className="text-xs text-gray-500 mb-1">Invite code</p>
+            <p className="text-xs text-[color:var(--brand-muted)] mb-1">Invite code</p>
             <p className="font-display text-2xl font-bold tracking-[0.22em] text-[#7B1A1A]">{ref}</p>
           </div>
         )}
@@ -78,7 +78,7 @@ export default async function JoinPage({
           </Link>
           <Link
             href="/guest"
-            className="glass-button-secondary block w-full rounded-2xl px-5 py-3 text-sm font-semibold text-gray-600"
+            className="glass-button-secondary block w-full rounded-2xl px-5 py-3 text-sm font-semibold text-[color:var(--brand-muted)]"
           >
             Explore as guest first
           </Link>

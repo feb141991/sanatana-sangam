@@ -66,28 +66,28 @@ function ConfirmEmailForm() {
           <Link href="/" className="inline-flex">
             <BrandMark />
           </Link>
-          <h1 className="font-display text-2xl font-bold text-gray-900 mt-2">Resend confirmation</h1>
-          <p className="text-gray-500 text-sm mt-1">Use this if your signup email never arrived or the original link expired.</p>
+          <h1 className="font-display text-2xl font-bold text-[color:var(--text-cream)] mt-2">Resend confirmation</h1>
+          <p className="text-[color:var(--brand-muted)] text-sm mt-1">Use this if your signup email never arrived or the original link expired.</p>
         </div>
 
         <div className="glass-panel rounded-[1.45rem] px-4 py-4 mb-4">
           <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">Confirmation</p>
-          <p className="font-semibold text-gray-900 mt-2">Keep account setup moving</p>
-          <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+          <p className="font-semibold text-[color:var(--text-cream)] mt-2">Keep account setup moving</p>
+          <p className="text-sm text-[color:var(--brand-muted)] mt-2 leading-relaxed">
             This page is here so signup never feels stuck. Resend the link, then return straight to sign-in when your email is ready.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="glass-panel-strong rounded-[2rem] shadow-card p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+            <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Email</label>
             <input
               type="email"
               placeholder="your@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="glass-input w-full px-4 py-3 rounded-xl focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm"
+              className="glass-input w-full px-4 py-3 rounded-xl focus:border-[color:var(--brand-primary)] focus:ring-2 focus:ring-[rgba(200,146,74,0.12)] outline-none transition text-sm"
             />
           </div>
 
@@ -100,9 +100,9 @@ function ConfirmEmailForm() {
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-[color:var(--brand-muted)] mt-6">
           Already confirmed?{' '}
-          <Link href={presetEmail ? `/login?email=${encodeURIComponent(presetEmail)}` : '/login'} className="text-orange-600 font-medium hover:underline">
+          <Link href={presetEmail ? `/login?email=${encodeURIComponent(presetEmail)}` : '/login'} className="text-[color:var(--brand-primary)] font-medium hover:underline">
             Back to sign in
           </Link>
         </p>

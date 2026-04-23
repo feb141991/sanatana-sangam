@@ -1320,8 +1320,8 @@ function SafetyProfileRow({
           : initials}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900 truncate">{profile.full_name || profile.username}</p>
-        <p className="text-xs text-gray-500 truncate">{profile.username ? `@${profile.username}` : 'Sanatana Sangam member'}</p>
+        <p className="text-sm font-medium text-[color:var(--text-cream)] truncate">{profile.full_name || profile.username}</p>
+        <p className="text-xs text-[color:var(--brand-muted)] truncate">{profile.username ? `@${profile.username}` : 'Sanatana Sangam member'}</p>
       </div>
       <button
         onClick={onAction}
@@ -1357,7 +1357,7 @@ function AvatarPreviewModal({
         <button
           type="button"
           onClick={onClose}
-          className="absolute -top-2 right-0 z-10 w-10 h-10 rounded-full bg-white/90 text-gray-700 flex items-center justify-center shadow-lg"
+          className="absolute -top-2 right-0 z-10 w-10 h-10 rounded-full bg-white/90 text-[color:var(--text-muted-warm)] flex items-center justify-center shadow-lg"
           aria-label="Close profile photo"
         >
           <X size={18} />
@@ -1373,7 +1373,7 @@ function AvatarPreviewModal({
               priority
             />
           </div>
-          <p className="text-center text-sm font-medium text-gray-700 mt-3">
+          <p className="text-center text-sm font-medium text-[color:var(--text-muted-warm)] mt-3">
             {fullName}
           </p>
         </div>

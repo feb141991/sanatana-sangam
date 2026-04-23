@@ -65,7 +65,7 @@ function VerseChip({ verse }: { verse: ScriptureRef }) {
   return (
     <div className="mt-2">
       <button onClick={() => setOpen(o => !o)}
-        className="flex items-center gap-1.5 text-xs text-orange-600 font-medium bg-orange-50 border border-orange-100 rounded-full px-2.5 py-0.5 hover:bg-orange-100 transition-colors">
+        className="flex items-center gap-1.5 text-xs text-[color:var(--brand-primary)] font-medium bg-orange-50 border border-orange-100 rounded-full px-2.5 py-0.5 hover:bg-orange-100 transition-colors">
         <BookOpen size={10} />
         {formatVerseLabel(verse)}
         <ChevronDown size={10} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -73,7 +73,7 @@ function VerseChip({ verse }: { verse: ScriptureRef }) {
       {open && verse.sanskrit && (
         <div className="mt-1.5 bg-orange-50/60 border border-orange-100 rounded-xl p-2.5 text-xs">
           <p className="font-[family:var(--font-deva)] text-[#7B1A1A] font-medium leading-relaxed">{verse.sanskrit}</p>
-          {verse.transliteration && <p className="text-gray-500 italic mt-0.5">{verse.transliteration}</p>}
+          {verse.transliteration && <p className="text-[color:var(--brand-muted)] italic mt-0.5">{verse.transliteration}</p>}
         </div>
       )}
     </div>
@@ -95,7 +95,7 @@ function MessageBubble({ msg }: { msg: Message }) {
             <div className="mt-1">{msg.verses.map((v, i) => <VerseChip key={i} verse={v} />)}</div>
           )}
         </div>
-        <span className="text-[9px] text-gray-400 px-1">
+        <span className="text-[9px] text-[color:var(--text-dim)] px-1">
           {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           {msg.fromRag && <span className="ml-1.5 text-orange-400">📖</span>}
         </span>
@@ -224,8 +224,8 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
                   ✨
                 </div>
                 <div>
-                  <h2 className="font-display font-bold text-gray-900 text-base leading-tight">Dharma Mitra</h2>
-                  <p className="text-[10px] text-gray-400">Your AI spiritual guide</p>
+                  <h2 className="font-display font-bold text-[color:var(--text-cream)] text-base leading-tight">Dharma Mitra</h2>
+                  <p className="text-[10px] text-[color:var(--text-dim)]">Your AI spiritual guide</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -239,7 +239,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
                 <button onClick={() => setOpen(false)}
                   className="w-8 h-8 rounded-full flex items-center justify-center transition"
                   style={{ background: 'rgba(255,255,255,0.08)' }}>
-                  <X size={15} className="text-gray-600" />
+                  <X size={15} className="text-[color:var(--brand-muted)]" />
                 </button>
               </div>
             </div>
@@ -253,8 +253,8 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
                       style={{ background: 'linear-gradient(135deg, #ff770218, #d4a01718)' }}>
                       🙏
                     </div>
-                    <h3 className="font-display font-bold text-lg text-gray-900">{greeting}, {userName}</h3>
-                    <p className="text-xs text-gray-500 max-w-xs leading-relaxed">
+                    <h3 className="font-display font-bold text-lg text-[color:var(--text-cream)]">{greeting}, {userName}</h3>
+                    <p className="text-xs text-[color:var(--brand-muted)] max-w-xs leading-relaxed">
                       Ask me anything — dharmic wisdom, spiritual practice, life questions.
                     </p>
                   </div>
@@ -303,7 +303,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
                   <Send size={16} className="text-[#1c1c1a]" />
                 </motion.button>
               </div>
-              <p className="text-[9px] text-gray-400 text-center mt-1.5">
+              <p className="text-[9px] text-[color:var(--text-dim)] text-center mt-1.5">
                 Dharma Mitra may make mistakes. Use discernment.
               </p>
             </div>

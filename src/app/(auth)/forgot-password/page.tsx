@@ -66,28 +66,28 @@ function ForgotPasswordForm() {
           <Link href="/" className="inline-flex">
             <BrandMark />
           </Link>
-          <h1 className="font-display text-2xl font-bold text-gray-900 mt-2">Reset your password</h1>
-          <p className="text-gray-500 text-sm mt-1">We&apos;ll email you a secure link to set a new password.</p>
+          <h1 className="font-display text-2xl font-bold text-[color:var(--text-cream)] mt-2">Reset your password</h1>
+          <p className="text-[color:var(--brand-muted)] text-sm mt-1">We&apos;ll email you a secure link to set a new password.</p>
         </div>
 
         <div className="glass-panel rounded-[1.45rem] px-4 py-4 mb-4">
           <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">Recovery</p>
-          <p className="font-semibold text-gray-900 mt-2">Keep the front door gentle</p>
-          <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+          <p className="font-semibold text-[color:var(--text-cream)] mt-2">Keep the front door gentle</p>
+          <p className="text-sm text-[color:var(--brand-muted)] mt-2 leading-relaxed">
             If the link expires or your confirmation email is still missing, the next step stays on this same path instead of making you start over.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="glass-panel-strong rounded-[2rem] shadow-card p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+            <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Email</label>
             <input
               type="email"
               placeholder="your@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="glass-input w-full px-4 py-3 rounded-xl focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm"
+              className="glass-input w-full px-4 py-3 rounded-xl focus:border-[color:var(--brand-primary)] focus:ring-2 focus:ring-orange-100 outline-none transition text-sm"
             />
           </div>
 
@@ -100,8 +100,8 @@ function ForgotPasswordForm() {
           </button>
         </form>
 
-        <div className="glass-panel rounded-2xl px-4 py-3 mt-4 text-sm text-gray-600">
-          <p className="font-medium text-gray-800">Still waiting for account confirmation?</p>
+        <div className="glass-panel rounded-2xl px-4 py-3 mt-4 text-sm text-[color:var(--brand-muted)]">
+          <p className="font-medium text-[color:var(--text-cream)]">Still waiting for account confirmation?</p>
           <Link
             href={(email.trim().toLowerCase() || presetEmail) ? `/confirm-email?email=${encodeURIComponent(email.trim().toLowerCase() || presetEmail)}` : '/confirm-email'}
             className="mt-2 inline-flex text-xs font-semibold text-orange-600 hover:underline"
@@ -110,7 +110,7 @@ function ForgotPasswordForm() {
           </Link>
         </div>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-[color:var(--brand-muted)] mt-6">
           Remembered your password?{' '}
           <Link href="/login" className="text-orange-600 font-medium hover:underline">
             Back to sign in

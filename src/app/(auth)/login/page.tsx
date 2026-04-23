@@ -85,8 +85,8 @@ function LoginForm() {
           <Link href="/" className="inline-flex">
             <BrandMark />
           </Link>
-          <h1 className="font-display text-2xl font-bold text-gray-900 mt-2">Welcome back</h1>
-          <p className="text-gray-500 text-sm mt-1">Sign in to your Sangam</p>
+          <h1 className="font-display text-2xl font-bold text-[color:var(--text-cream)] mt-2">Welcome back</h1>
+          <p className="text-[color:var(--brand-muted)] text-sm mt-1">Sign in to your Sangam</p>
         </div>
 
         <div className="hidden sm:grid gap-3 mb-4 sm:grid-cols-2">
@@ -104,29 +104,29 @@ function LoginForm() {
           ].map((item) => (
             <div key={item.title} className="glass-panel rounded-[1.45rem] px-4 py-4">
               <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{item.eyebrow}</p>
-              <p className="font-semibold text-gray-900 mt-2">{item.title}</p>
-              <p className="text-sm text-gray-600 mt-2 leading-relaxed">{item.description}</p>
+              <p className="font-semibold text-[color:var(--text-cream)] mt-2">{item.title}</p>
+              <p className="text-sm text-[color:var(--brand-muted)] mt-2 leading-relaxed">{item.description}</p>
             </div>
           ))}
         </div>
 
         <form onSubmit={handleLogin} className="glass-panel-strong rounded-[2rem] shadow-card p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+            <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Email</label>
             <input
               type="email"
               placeholder="your@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="glass-input w-full px-4 py-3 rounded-xl focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm"
+              className="glass-input w-full px-4 py-3 rounded-xl focus:border-[color:var(--brand-primary)] focus:ring-2 focus:ring-[rgba(200,146,74,0.12)] outline-none transition text-sm"
             />
           </div>
 
           <div>
             <div className="mb-1.5 flex items-center justify-between gap-3">
-              <label className="block text-sm font-medium text-gray-700">Password</label>
-              <Link href={forgotPasswordHref} className="text-xs font-medium text-orange-600 hover:underline">
+              <label className="block text-sm font-medium text-[color:var(--text-muted-warm)]">Password</label>
+              <Link href={forgotPasswordHref} className="text-xs font-medium text-[color:var(--brand-primary)] hover:underline">
                 Forgot password?
               </Link>
             </div>
@@ -137,12 +137,12 @@ function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="glass-input w-full px-4 py-3 pr-12 rounded-xl focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition text-sm"
+                className="glass-input w-full px-4 py-3 pr-12 rounded-xl focus:border-[color:var(--brand-primary)] focus:ring-2 focus:ring-[rgba(200,146,74,0.12)] outline-none transition text-sm"
               />
               <button
                 type="button"
                 onClick={() => setShowPass(!showPass)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[color:var(--text-dim)] hover:text-[color:var(--brand-muted)]"
               >
                 {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -158,19 +158,19 @@ function LoginForm() {
           </button>
         </form>
 
-        <div className="glass-panel rounded-2xl px-4 py-3 mt-4 text-sm text-gray-600">
-          <p className="font-medium text-gray-800">Didn&apos;t get your confirmation email?</p>
-          <p className="mt-1 text-xs leading-5 text-gray-500">
+        <div className="glass-panel rounded-2xl px-4 py-3 mt-4 text-sm text-[color:var(--brand-muted)]">
+          <p className="font-medium text-[color:var(--text-cream)]">Didn&apos;t get your confirmation email?</p>
+          <p className="mt-1 text-xs leading-5 text-[color:var(--brand-muted)]">
             If you already started signup, you can resend the confirmation link here.
           </p>
-          <Link href={confirmEmailHref} className="mt-2 inline-flex text-xs font-semibold text-orange-600 hover:underline">
+          <Link href={confirmEmailHref} className="mt-2 inline-flex text-xs font-semibold text-[color:var(--brand-primary)] hover:underline">
             Resend confirmation email
           </Link>
         </div>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-[color:var(--brand-muted)] mt-6">
           New to Sanatana Sangam?{' '}
-          <Link href="/signup" className="text-orange-600 font-medium hover:underline">
+          <Link href="/signup" className="text-[color:var(--brand-primary)] font-medium hover:underline">
             Join free
           </Link>
         </p>
@@ -179,17 +179,17 @@ function LoginForm() {
         <div className="text-center mt-4">
           <div className="flex items-center gap-3 mb-4">
             <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs text-gray-400">or</span>
+            <span className="text-xs text-[color:var(--text-dim)]">or</span>
             <div className="flex-1 h-px bg-gray-200" />
           </div>
           <Link
             href="/guest"
-            className="glass-button-secondary inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm text-gray-500 hover:text-orange-600 transition"
+            className="glass-button-secondary inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary)] transition"
           >
             <span>👁️</span>
             <span>Explore as Guest</span>
           </Link>
-          <p className="hidden sm:block text-xs text-gray-400 mt-2">Read discussions and discover nearby sacred places without creating an account</p>
+          <p className="hidden sm:block text-xs text-[color:var(--text-dim)] mt-2">Read discussions and discover nearby sacred places without creating an account</p>
         </div>
       </div>
     </div>

@@ -110,7 +110,7 @@ function MessageBubble({ msg }: { msg: Message }) {
           )}
         </div>
         <div className="flex items-center gap-1.5 px-1">
-          <span className="text-[10px] text-gray-400">
+          <span className="text-[10px] text-[color:var(--text-dim)]">
             {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </span>
           {msg.fromRag && (
@@ -194,7 +194,7 @@ function VerseChip({ verse }: { verse: ScriptureRef }) {
             {verse.sanskrit}
           </p>
           {verse.transliteration && (
-            <p className="text-gray-500 italic">{verse.transliteration}</p>
+            <p className="text-[color:var(--brand-muted)] italic">{verse.transliteration}</p>
           )}
         </div>
       )}
@@ -342,8 +342,8 @@ export default function AIChatClient({ userId, userName, tradition, sampradaya, 
             ✨
           </div>
           <div>
-            <h1 className="font-display font-bold text-gray-900 text-lg leading-tight">Dharma Mitra</h1>
-            <p className="text-xs text-gray-400">AI guide for life & spirituality</p>
+            <h1 className="font-display font-bold text-[color:var(--text-cream)] text-lg leading-tight">Dharma Mitra</h1>
+            <p className="text-xs text-[color:var(--text-dim)]">AI guide for life & spirituality</p>
           </div>
         </div>
         {!isEmpty && (
@@ -366,10 +366,10 @@ export default function AIChatClient({ userId, userName, tradition, sampradaya, 
                 style={{ background: 'linear-gradient(135deg, #ff770218, #d4a01718)' }}>
                 🙏
               </div>
-              <h2 className="font-display font-bold text-xl text-gray-900">
+              <h2 className="font-display font-bold text-xl text-[color:var(--text-cream)]">
                 {greeting}, {userName}
               </h2>
-              <p className="text-sm text-gray-500 max-w-xs">
+              <p className="text-sm text-[color:var(--brand-muted)] max-w-xs">
                 Ask me anything — life questions, spiritual wisdom, dharmic perspectives, or just a thoughtful conversation.
               </p>
             </div>
@@ -377,7 +377,7 @@ export default function AIChatClient({ userId, userName, tradition, sampradaya, 
             {/* Suggestions */}
             {showSuggestions && (
               <div className="w-full max-w-sm space-y-2">
-                <p className="text-xs text-gray-400 font-medium">Try asking…</p>
+                <p className="text-xs text-[color:var(--text-dim)] font-medium">Try asking…</p>
                 <div className="flex flex-col gap-2">
                   {suggestions.slice(0, 4).map(s => (
                     <button key={s} onClick={() => sendMessage(s)}
@@ -439,7 +439,7 @@ export default function AIChatClient({ userId, userName, tradition, sampradaya, 
             <Send size={16} />
           </button>
         </div>
-        <p className="text-[10px] text-gray-400 text-center mt-2">
+        <p className="text-[10px] text-[color:var(--text-dim)] text-center mt-2">
           Dharma Mitra can make mistakes. Verify important information.
         </p>
       </div>

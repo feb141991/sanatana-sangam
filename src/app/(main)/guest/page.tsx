@@ -54,16 +54,16 @@ export default async function GuestPage() {
   return (
     <div className="space-y-4 fade-in">
       <section className="glass-panel-strong rounded-[2rem] p-6 sm:p-7 space-y-5">
-        <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-xs font-semibold text-[#7B1A1A] border border-white/70">
+        <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(48,46,42,0.7)] px-3 py-1 text-xs font-semibold text-[#7B1A1A] border ">
           <span>👁️</span>
           <span>Guest mode</span>
         </div>
 
         <div className="space-y-2">
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-gray-900">
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-[color:var(--text-cream)]">
             Explore Sanatana Sangam before you join
           </h1>
-          <p className="text-sm sm:text-base text-gray-600 leading-relaxed max-w-xl">
+          <p className="text-sm sm:text-base text-[color:var(--brand-muted)] leading-relaxed max-w-xl">
             Start with Vichaar Sabha and Tirtha Map. Join when you want to post, reply, build your Kul, or get reminders.
           </p>
         </div>
@@ -74,7 +74,7 @@ export default async function GuestPage() {
             'Find mandirs and sacred places right away.',
             'Join only when you want family space, reminders, and participation.',
           ].map((item) => (
-            <div key={item} className="rounded-full bg-white/70 px-4 py-2 text-sm text-gray-700 border border-white/70">
+            <div key={item} className="rounded-full bg-[rgba(48,46,42,0.7)] px-4 py-2 text-sm text-[color:var(--text-muted-warm)] border ">
               {item}
             </div>
           ))}
@@ -100,8 +100,8 @@ export default async function GuestPage() {
           ].map((item) => (
             <div key={item.title} className="clay-card rounded-[1.4rem] px-4 py-4">
               <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{item.eyebrow}</p>
-              <p className="font-semibold text-gray-900 mt-2">{item.title}</p>
-              <p className="text-sm text-gray-600 mt-2 leading-relaxed">{item.description}</p>
+              <p className="font-semibold text-[color:var(--text-cream)] mt-2">{item.title}</p>
+              <p className="text-sm text-[color:var(--brand-muted)] mt-2 leading-relaxed">{item.description}</p>
             </div>
           ))}
         </div>
@@ -118,12 +118,12 @@ export default async function GuestPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1.5">
-                  <h2 className="font-semibold text-gray-900">{title}</h2>
-                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/70 border border-white/70 text-gray-600">
+                  <h2 className="font-semibold text-[color:var(--text-cream)]">{title}</h2>
+                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-[rgba(48,46,42,0.7)] border  text-[color:var(--brand-muted)]">
                     {badge}
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
+                <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">{description}</p>
               </div>
               <ArrowRight size={18} className="text-[#7B1A1A] mt-1 group-hover:translate-x-0.5 transition" />
             </Link>
@@ -149,11 +149,11 @@ export default async function GuestPage() {
       <section className="grid gap-3 sm:grid-cols-2">
         {memberBenefits.map(({ title, description, icon: Icon }) => (
           <div key={title} className="glass-panel rounded-[1.5rem] p-4 space-y-2">
-            <div className="w-10 h-10 rounded-2xl bg-white/80 border border-white/70 text-[#7B1A1A] flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl bg-white/80 border  text-[#7B1A1A] flex items-center justify-center">
               <Icon size={18} />
             </div>
-            <h2 className="font-semibold text-gray-900">{title}</h2>
-            <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
+            <h2 className="font-semibold text-[color:var(--text-cream)]">{title}</h2>
+            <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">{description}</p>
           </div>
         ))}
       </section>

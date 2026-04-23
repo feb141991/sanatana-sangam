@@ -50,8 +50,8 @@ export default function AdminLoginPage() {
           >
             🕉️
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Portal</h1>
-          <p className="text-sm text-gray-400 mt-1">Sanatana Sangam · Restricted access</p>
+          <h1 className="text-2xl font-bold text-[color:var(--text-cream)]">Admin Portal</h1>
+          <p className="text-sm text-[color:var(--text-dim)] mt-1">Sanatana Sangam · Restricted access</p>
         </div>
 
         {/* Card */}
@@ -61,7 +61,7 @@ export default function AdminLoginPage() {
         >
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-semibold text-[color:var(--brand-muted)] uppercase tracking-wider mb-1.5">
                 Username
               </label>
               <input
@@ -82,7 +82,7 @@ export default function AdminLoginPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-semibold text-[color:var(--brand-muted)] uppercase tracking-wider mb-1.5">
                 Password
               </label>
               <input
