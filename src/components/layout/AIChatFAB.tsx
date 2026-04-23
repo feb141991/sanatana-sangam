@@ -213,7 +213,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
           >
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-0 flex-shrink-0">
-              <div className="w-10 h-1 rounded-full bg-gray-300" />
+              <div className="w-10 h-1 rounded-full opacity-25" style={{ background: '#C8924A' }} />
             </div>
 
             {/* Header */}
@@ -231,12 +231,14 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
               <div className="flex items-center gap-2">
                 {!isEmpty && (
                   <button onClick={clearChat}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs text-gray-500 border border-gray-200 hover:border-orange-200 transition bg-white">
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs border transition"
+                    style={{ background: 'rgba(30,22,12,0.7)', borderColor: 'rgba(200,146,74,0.18)', color: 'rgba(200,146,74,0.6)' }}>
                     <RotateCcw size={11} /> New
                   </button>
                 )}
                 <button onClick={() => setOpen(false)}
-                  className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition">
+                  className="w-8 h-8 rounded-full flex items-center justify-center transition"
+                  style={{ background: 'rgba(255,255,255,0.08)' }}>
                   <X size={15} className="text-gray-600" />
                 </button>
               </div>

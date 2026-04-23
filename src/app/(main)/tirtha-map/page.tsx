@@ -243,7 +243,8 @@ export default function TirthaMapPage() {
           Search
         </button>
         <button onClick={useMyLocation} title="Use my location"
-          className="px-3 py-2.5 bg-white border border-gray-200 rounded-xl hover:border-[color:var(--brand-primary)]/30 transition">
+          className="px-3 py-2.5 rounded-xl border transition"
+          style={{ background: 'rgba(30,22,12,0.85)', borderColor: 'rgba(200,146,74,0.2)' }}>
           <Navigation size={15} style={{ color: 'var(--brand-primary)' }} />
         </button>
       </div>

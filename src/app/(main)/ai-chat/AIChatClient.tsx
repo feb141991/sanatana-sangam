@@ -348,7 +348,8 @@ export default function AIChatClient({ userId, userName, tradition, sampradaya, 
         </div>
         {!isEmpty && (
           <button onClick={clearChat}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs text-gray-500 hover:text-[#7B1A1A] border border-gray-200 hover:border-orange-200 transition bg-white">
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs border transition"
+            style={{ background: 'rgba(30,22,12,0.7)', borderColor: 'rgba(200,146,74,0.18)', color: 'rgba(200,146,74,0.6)' }}>
             <RotateCcw size={12} />
             New chat
           </button>
