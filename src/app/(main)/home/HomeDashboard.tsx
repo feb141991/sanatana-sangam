@@ -24,6 +24,7 @@ import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
 import { APP } from '@/lib/config';
 import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
+import SpiritualMetricsSection from '@/components/home/SpiritualMetricsSection';
 
 interface Panchang {
   tithi:     string;
@@ -1054,6 +1055,15 @@ export default function HomeDashboard({
           </div>
         </div>
       </motion.div>
+
+      {/* ── Spiritual Metrics ── */}
+      <SpiritualMetricsSection
+        japaStreak={japaStreak}
+        shlokaStreak={streak}
+        japaAlreadyDoneToday={japaAlreadyDoneToday}
+        readToday={readToday}
+        tradition={tradition}
+      />
 
       {showFirstTimeGuidance && personalizedPaths.length > 0 && (
         <section className="space-y-2">
