@@ -85,41 +85,47 @@ const quickAccessItems = [
 ];
 
 const HOME_THEMES: Record<string, FeatureTheme> = {
+  // Dawn amber — Panchang, daily ritual
   panchang: {
-    surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
-    border: 'rgba(212, 166, 70, 0.18)',
-    iconWell: 'rgba(212, 166, 70, 0.12)',
+    surface: 'linear-gradient(150deg, rgba(52, 42, 28, 0.98) 0%, rgba(38, 32, 22, 0.96) 100%)',
+    border: 'rgba(200, 146, 74, 0.22)',
+    iconWell: 'rgba(200, 146, 74, 0.14)',
     accent: 'var(--brand-primary)',
   },
+  // Deep ink — sacred text, pathshala
   pathshala: {
-    surface: 'linear-gradient(135deg, rgba(54, 54, 50, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
-    border: 'rgba(212, 166, 70, 0.16)',
-    iconWell: 'rgba(212, 166, 70, 0.1)',
+    surface: 'linear-gradient(150deg, rgba(30, 30, 28, 0.99) 0%, rgba(24, 24, 22, 0.97) 100%)',
+    border: 'rgba(200, 146, 74, 0.18)',
+    iconWell: 'rgba(200, 146, 74, 0.12)',
     accent: 'var(--brand-primary)',
   },
+  // Soft terracotta — bhakti, shloka
   bhakti: {
-    surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
-    border: 'rgba(212, 166, 70, 0.16)',
-    iconWell: 'rgba(212, 166, 70, 0.1)',
-    accent: 'var(--brand-primary)',
+    surface: 'linear-gradient(150deg, rgba(46, 34, 26, 0.98) 0%, rgba(36, 28, 22, 0.96) 100%)',
+    border: 'rgba(212, 120, 74, 0.20)',
+    iconWell: 'rgba(212, 120, 74, 0.13)',
+    accent: 'var(--brand-primary-strong)',
   },
+  // Warm earth — kul, family
   kul: {
-    surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
-    border: 'rgba(138, 129, 82, 0.2)',
-    iconWell: 'rgba(138, 129, 82, 0.12)',
-    accent: 'var(--brand-secondary)',
-  },
-  mandali: {
-    surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
-    border: 'rgba(157, 133, 80, 0.18)',
-    iconWell: 'rgba(157, 133, 80, 0.12)',
+    surface: 'linear-gradient(150deg, rgba(38, 32, 26, 0.98) 0%, rgba(30, 26, 20, 0.96) 100%)',
+    border: 'rgba(157, 120, 74, 0.22)',
+    iconWell: 'rgba(157, 120, 74, 0.14)',
     accent: 'var(--brand-earth)',
   },
+  // Forest-warm — mandali, community
+  mandali: {
+    surface: 'linear-gradient(150deg, rgba(26, 34, 28, 0.98) 0%, rgba(22, 28, 24, 0.96) 100%)',
+    border: 'rgba(100, 140, 100, 0.22)',
+    iconWell: 'rgba(100, 140, 100, 0.14)',
+    accent: '#7aab7a',
+  },
+  // Sacred indigo-amber — tirtha, pilgrimage
   tirtha: {
-    surface: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98) 0%, rgba(43, 43, 40, 0.94) 100%)',
-    border: 'rgba(212, 166, 70, 0.16)',
-    iconWell: 'rgba(212, 166, 70, 0.1)',
-    accent: 'var(--brand-primary)',
+    surface: 'linear-gradient(150deg, rgba(28, 30, 44, 0.98) 0%, rgba(24, 26, 38, 0.96) 100%)',
+    border: 'rgba(140, 140, 220, 0.22)',
+    iconWell: 'rgba(140, 140, 220, 0.12)',
+    accent: '#9898dd',
   },
 };
 
@@ -164,66 +170,71 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
       exit={prefersReducedMotion ? undefined : { opacity: 0 }}
     >
       <motion.div
-        className="w-full rounded-t-3xl p-6 space-y-5"
+        className="w-full rounded-t-[2rem] p-6 space-y-5"
         onClick={e => e.stopPropagation()}
         style={{
-          background: 'linear-gradient(180deg, rgba(51, 51, 48, 0.98), rgba(43, 43, 40, 0.98))',
-          borderTop: '1px solid rgba(212, 166, 70, 0.18)',
-          boxShadow: '0 -18px 44px rgba(0, 0, 0, 0.32)',
+          background: 'linear-gradient(180deg, rgba(44, 38, 28, 0.99), rgba(34, 30, 22, 0.99))',
+          borderTop: '1px solid rgba(200, 146, 74, 0.20)',
+          boxShadow: '0 -20px 48px rgba(0, 0, 0, 0.38)',
         }}
-        initial={prefersReducedMotion ? undefined : { y: 28, opacity: 0.96 }}
+        initial={prefersReducedMotion ? undefined : { y: 32, opacity: 0 }}
         animate={prefersReducedMotion ? undefined : { y: 0, opacity: 1 }}
-        exit={prefersReducedMotion ? undefined : { y: 18, opacity: 0.98 }}
-        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+        exit={prefersReducedMotion ? undefined : { y: 20, opacity: 0 }}
+        transition={{ duration: 0.32, ease: [0.34, 1.26, 0.64, 1] }}
       >
+        {/* Drag handle */}
+        <div className="w-10 h-1 rounded-full mx-auto mb-1" style={{ background: 'rgba(200, 146, 74, 0.28)' }} />
+
         <div className="flex items-center justify-between">
-          <h3 className="font-display font-bold text-[color:var(--brand-ink)]">Invite Friends & Family</h3>
+          <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-cream)' }}>
+            Invite Friends &amp; Family
+          </h3>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center"
-            style={{ background: 'rgba(212, 166, 70, 0.08)' }}>
-            <X size={16} className="text-[color:var(--brand-muted)]" />
+            className="w-8 h-8 rounded-full flex items-center justify-center motion-press"
+            style={{ background: 'rgba(200, 146, 74, 0.10)' }}>
+            <X size={15} style={{ color: 'var(--text-muted-warm)' }} />
           </button>
         </div>
 
-        <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">
+        <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>
           Share Sanatana Sangam with your family and friends. They can use your invite code while joining.
         </p>
 
         {/* Invite code display */}
         <div
-          className="rounded-2xl p-5 text-center border"
+          className="rounded-[1.4rem] p-5 text-center border"
           style={{
-            background: 'linear-gradient(135deg, rgba(212, 166, 70, 0.12), rgba(51, 51, 48, 0.96))',
-            borderColor: 'rgba(212, 166, 70, 0.16)',
+            background: 'linear-gradient(135deg, rgba(200, 146, 74, 0.10), rgba(34, 30, 22, 0.96))',
+            borderColor: 'rgba(200, 146, 74, 0.18)',
           }}
         >
-          <p className="text-xs text-[color:var(--brand-muted)] mb-2 font-medium uppercase tracking-wider">Your Invite Code</p>
-          <p className="font-display font-bold text-3xl tracking-widest" style={{ color: 'var(--brand-primary-strong)' }}>{code}</p>
-          <p className="text-xs text-[color:var(--brand-muted)] mt-2">{link}</p>
+          <p className="text-[10px] mb-2 font-semibold uppercase tracking-[0.16em]" style={{ color: 'var(--text-dim)' }}>Your Invite Code</p>
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', fontWeight: 700, letterSpacing: '0.18em', color: 'var(--brand-primary)' }}>{code}</p>
+          <p className="text-[11px] mt-2" style={{ color: 'var(--text-dim)' }}>{link}</p>
         </div>
 
         {/* Actions */}
         <div className="grid grid-cols-2 gap-3">
           <button onClick={share}
-            className="py-3 font-semibold rounded-xl hover:opacity-90 transition text-sm text-[#1c1c1a]"
-            style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}>
+            className="py-3 font-semibold rounded-2xl text-sm motion-lift"
+            style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))', color: '#1a1610' }}>
             Share 🙏
           </button>
           <button onClick={async () => {
             await navigator.clipboard.writeText(code);
             toast.success('Code copied!');
           }}
-            className="py-3 font-semibold rounded-xl border transition text-sm"
+            className="py-3 font-semibold rounded-2xl border text-sm motion-lift"
             style={{
               color: 'var(--brand-primary)',
-              borderColor: 'rgba(212, 166, 70, 0.18)',
-              background: 'rgba(51, 51, 48, 0.88)',
+              borderColor: 'rgba(200, 146, 74, 0.20)',
+              background: 'rgba(44, 38, 28, 0.88)',
             }}>
             Copy Code
           </button>
         </div>
 
-        <p className="text-xs text-center text-[color:var(--brand-muted)]">
+        <p className="text-xs text-center" style={{ color: 'var(--text-dim)' }}>
           🙏 Spread the light of dharma
         </p>
       </motion.div>
@@ -309,53 +320,58 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
       <div className="absolute inset-0 bg-black/40" />
 
       <motion.div
-        className="relative w-80 bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+        className="relative w-80 rounded-[1.5rem] flex flex-col overflow-hidden"
         onClick={e => e.stopPropagation()}
-        initial={prefersReducedMotion ? undefined : { y: 16, opacity: 0.98, scale: 0.99 }}
+        style={{
+          background: 'linear-gradient(160deg, rgba(40, 36, 28, 0.99), rgba(30, 28, 22, 0.99))',
+          border: '1px solid rgba(200, 146, 74, 0.18)',
+          boxShadow: '0 24px 48px rgba(0, 0, 0, 0.44)',
+        }}
+        initial={prefersReducedMotion ? undefined : { y: 12, opacity: 0, scale: 0.97 }}
         animate={prefersReducedMotion ? undefined : { y: 0, opacity: 1, scale: 1 }}
-        exit={prefersReducedMotion ? undefined : { y: 12, opacity: 0.98, scale: 0.99 }}
-        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+        exit={prefersReducedMotion ? undefined : { y: 8, opacity: 0, scale: 0.97 }}
+        transition={{ duration: 0.28, ease: [0.34, 1.26, 0.64, 1] }}
       >
-        {/* Title row */}
-        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-100 flex-shrink-0">
+        {/* Month nav row */}
+        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b flex-shrink-0" style={{ borderColor: 'rgba(200, 146, 74, 0.14)' }}>
           <button onClick={() => setViewDate(v => subMonths(v, 1))}
-            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-            <ChevronLeft size={16} className="text-gray-600" />
+            className="w-8 h-8 rounded-full flex items-center justify-center motion-press"
+            style={{ background: 'rgba(200, 146, 74, 0.12)' }}>
+            <ChevronLeft size={15} style={{ color: 'var(--text-cream)' }} />
           </button>
           <button onClick={() => setShowYearPicker(v => !v)}
-            className="flex items-center gap-1 font-bold text-gray-900 text-base">
+            className="flex items-center gap-1 font-semibold text-sm motion-press"
+            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-cream)', fontSize: '1rem' }}>
             {fmtDate(viewDate, 'MMMM yyyy')}
-            <ChevronDown size={14} className="text-gray-400" />
+            <ChevronDown size={13} style={{ color: 'var(--text-dim)' }} />
           </button>
           <button onClick={() => setViewDate(v => addMonths(v, 1))}
-            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-            <ChevronRight size={16} className="text-gray-600" />
+            className="w-8 h-8 rounded-full flex items-center justify-center motion-press"
+            style={{ background: 'rgba(200, 146, 74, 0.12)' }}>
+            <ChevronRight size={15} style={{ color: 'var(--text-cream)' }} />
           </button>
         </div>
 
-        {/* Calendar content — naturally sized, no overflow needed */}
         {showYearPicker ? (
           <div className="grid grid-cols-4 gap-2 p-4">
             {years.map(y => (
               <button key={y}
                 onClick={() => { setViewDate(d => new Date(y, d.getMonth(), 1)); setShowYearPicker(false); }}
-                className="py-2 rounded-xl text-xs font-medium transition"
+                className="py-2 rounded-xl text-xs font-medium motion-press"
                 style={y === viewDate.getFullYear()
-                  ? { background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))', color: 'white' }
-                  : { background: '#f9fafb', color: '#374151' }}>
+                  ? { background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))', color: '#1a1610' }
+                  : { background: 'rgba(200, 146, 74, 0.08)', color: 'var(--text-muted-warm)' }}>
                 {y}
               </button>
             ))}
           </div>
         ) : (
           <div className="px-3 pt-2 pb-4">
-            {/* Day labels */}
             <div className="grid grid-cols-7 mb-1">
               {DAY_LABELS.map(d => (
-                <div key={d} className="text-center text-[10px] text-gray-400 font-medium py-1">{d}</div>
+                <div key={d} className="text-center text-[10px] font-semibold py-1" style={{ color: 'var(--text-dim)' }}>{d}</div>
               ))}
             </div>
-            {/* Day grid */}
             <div className="grid grid-cols-7 gap-y-0.5">
               {calDays.map(day => {
                 const inMonth    = isSameMonth(day, viewDate);
@@ -364,23 +380,22 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
                 return (
                   <button key={day.toString()}
                     onClick={() => { onSelect(day); onClose(); }}
-                    className="h-8 w-8 mx-auto rounded-full text-xs flex items-center justify-center transition active:scale-95"
+                    className="h-8 w-8 mx-auto rounded-full text-xs flex items-center justify-center motion-press"
                     style={
-                      isSelected ? { background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))', color: 'white', fontWeight: 700 } :
+                      isSelected ? { background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))', color: '#1a1610', fontWeight: 700 } :
                       isToday    ? { border: '1.5px solid var(--brand-primary)', color: 'var(--brand-primary)', fontWeight: 700 } :
-                      !inMonth   ? { color: '#d1d5db' } :
-                                   { color: '#1f2937' }
+                      !inMonth   ? { color: 'rgba(176, 170, 158, 0.3)' } :
+                                   { color: 'var(--text-muted-warm)' }
                     }>
                     {fmtDate(day, 'd')}
                   </button>
                 );
               })}
             </div>
-            {/* Jump to today */}
             <div className="mt-3 flex justify-center">
-          <button onClick={() => { onSelect(new Date()); onClose(); }}
-            className="text-xs px-5 py-1.5 rounded-full border border-gray-200 text-gray-500 transition font-medium"
-            style={{ borderColor: 'rgba(124, 58, 45, 0.16)', color: 'var(--brand-primary)' }}>
+              <button onClick={() => { onSelect(new Date()); onClose(); }}
+                className="text-xs px-5 py-1.5 rounded-full border font-medium motion-press"
+                style={{ borderColor: 'rgba(200, 146, 74, 0.20)', color: 'var(--brand-primary)', background: 'rgba(200, 146, 74, 0.08)' }}>
                 Today
               </button>
             </div>
@@ -458,50 +473,53 @@ function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onC
           transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
         >
           <div className="max-h-[calc(100dvh-1.5rem)] overflow-y-auto">
-            <div className="sticky top-0 z-10 bg-white/88 backdrop-blur px-5 py-4 border-b border-white/60 flex items-center justify-between">
+            {/* Dark-themed header */}
+            <div className="sticky top-0 z-10 px-5 py-4 border-b flex items-center justify-between"
+              style={{ background: 'rgba(30, 28, 22, 0.97)', borderColor: 'rgba(200, 146, 74, 0.14)', backdropFilter: 'blur(16px)' }}>
               <div>
-                <h3 className="font-display font-bold text-gray-900 text-lg">Choose your greeting</h3>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 600, color: 'var(--text-cream)' }}>
+                  Choose your greeting
+                </h3>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>
                   Suggested for {pathLabel}. You can stay on auto or save a personal greeting.
                 </p>
               </div>
-              <button onClick={onClose} className="w-9 h-9 rounded-full bg-white/70 flex items-center justify-center hover:bg-white transition">
-                <X size={16} className="text-gray-500" />
+              <button onClick={onClose}
+                className="w-9 h-9 rounded-full flex items-center justify-center motion-press"
+                style={{ background: 'rgba(200, 146, 74, 0.10)' }}>
+                <X size={15} style={{ color: 'var(--text-muted-warm)' }} />
               </button>
             </div>
 
             <div className="p-5 space-y-4">
-              <div className="clay-card rounded-[1.6rem] p-4">
-                <p
-                  className="text-[11px] font-semibold uppercase tracking-[0.18em]"
-                  style={{ color: 'var(--brand-primary)' }}
-                >
+              {/* Preview */}
+              <div className="rounded-[1.4rem] p-4 border" style={{ background: 'rgba(200, 146, 74, 0.07)', borderColor: 'rgba(200, 146, 74, 0.16)' }}>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] mb-1" style={{ color: 'var(--brand-primary)' }}>
                   {previewTone}
                 </p>
-                <p className="font-display text-xl font-bold text-gray-900 mt-1">{previewGreeting}</p>
-                <p className="text-xs text-gray-500 mt-1">This is what will appear in your home greeting.</p>
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 600, color: 'var(--text-cream)' }}>{previewGreeting}</p>
+                <p className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>This is what will appear in your home greeting.</p>
               </div>
 
               <div className="space-y-2 max-h-[38vh] overflow-y-auto pr-1">
                 <button
                   onClick={() => { setSelected(null); setCustom(''); }}
-                  className={`w-full text-left px-4 py-3 rounded-2xl border text-sm transition ${
-                    selected === null
-                      ? 'font-medium'
-                      : 'border-gray-100 text-gray-600 hover:border-[#d0a15a]/40'
-                  }`}
+                  className="w-full text-left px-4 py-3 rounded-2xl border text-sm motion-press"
                   style={selected === null ? {
                     borderColor: 'var(--brand-primary)',
-                    background: 'var(--brand-primary-soft)',
-                    color: 'var(--brand-primary-strong)',
-                  } : undefined}
+                    background: 'rgba(200, 146, 74, 0.10)',
+                    color: 'var(--brand-primary)',
+                  } : {
+                    borderColor: 'rgba(200, 146, 74, 0.12)',
+                    color: 'var(--text-muted-warm)',
+                  }}
                 >
                   <span className="block font-semibold">✨ Auto</span>
-                  <span className="block text-xs mt-0.5 text-gray-500">Rotate a suggested greeting from your tradition.</span>
+                  <span className="block text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>Rotate a suggested greeting from your tradition.</span>
                 </button>
 
                 <div className="pt-1">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400 mb-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] mb-2" style={{ color: 'var(--text-dim)' }}>
                     Suggested for {pathLabel}
                   </p>
                   <div className="space-y-2">
@@ -509,16 +527,15 @@ function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onC
                       <button
                         key={g}
                         onClick={() => { setSelected(g); setCustom(''); }}
-                        className={`w-full text-left px-4 py-3 rounded-2xl border text-sm transition ${
-                          selected === g
-                            ? 'font-medium'
-                            : 'border-gray-100 text-gray-700 hover:border-[#d0a15a]/40'
-                        }`}
+                        className="w-full text-left px-4 py-3 rounded-2xl border text-sm motion-press"
                         style={selected === g ? {
                           borderColor: 'var(--brand-primary)',
-                          background: 'var(--brand-primary-soft)',
-                          color: 'var(--brand-primary-strong)',
-                        } : undefined}
+                          background: 'rgba(200, 146, 74, 0.10)',
+                          color: 'var(--brand-primary)',
+                        } : {
+                          borderColor: 'rgba(200, 146, 74, 0.10)',
+                          color: 'var(--text-muted-warm)',
+                        }}
                       >
                         {g}
                       </button>
@@ -528,7 +545,7 @@ function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onC
               </div>
 
               <div>
-                <p className="text-xs text-gray-400 mb-1.5">Or write your own greeting:</p>
+                <p className="text-xs mb-1.5" style={{ color: 'var(--text-dim)' }}>Or write your own greeting:</p>
                 <input
                   type="text"
                   placeholder="e.g. Jai Mahakal! 🔱"
@@ -538,13 +555,15 @@ function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onC
                     setCustom(nextValue);
                     setSelected(nextValue.trim() || null);
                   }}
-                  className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-[color:var(--brand-primary)] outline-none text-sm"
+                  className="surface-input px-4 py-3 text-sm outline-none"
+                  style={{ fontSize: '0.875rem' }}
                 />
               </div>
 
               <button
                 onClick={() => { onSave(selected); onClose(); }}
-                className="glass-button-primary w-full py-3 text-white font-semibold rounded-2xl hover:opacity-90 transition"
+                className="glass-button-primary w-full py-3 font-semibold rounded-2xl text-sm"
+                style={{ color: '#1a1610' }}
               >
                 Save Greeting 🙏
               </button>
@@ -583,57 +602,77 @@ function CalendarModal({
       exit={prefersReducedMotion ? undefined : { opacity: 0 }}
     >
       <motion.div
-        className="w-full bg-white rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
+        className="w-full rounded-t-[2rem] max-h-[85vh] flex flex-col"
         onClick={e => e.stopPropagation()}
-        initial={prefersReducedMotion ? undefined : { y: 26, opacity: 0.98 }}
+        style={{
+          background: 'linear-gradient(180deg, rgba(36, 32, 24, 0.99), rgba(28, 26, 20, 0.99))',
+          borderTop: '1px solid rgba(200, 146, 74, 0.18)',
+          boxShadow: '0 -20px 48px rgba(0, 0, 0, 0.38)',
+        }}
+        initial={prefersReducedMotion ? undefined : { y: 32, opacity: 0 }}
         animate={prefersReducedMotion ? undefined : { y: 0, opacity: 1 }}
-        exit={prefersReducedMotion ? undefined : { y: 18, opacity: 0.98 }}
-        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+        exit={prefersReducedMotion ? undefined : { y: 20, opacity: 0 }}
+        transition={{ duration: 0.32, ease: [0.34, 1.26, 0.64, 1] }}
       >
+        {/* Drag handle */}
+        <div className="w-10 h-1 rounded-full mx-auto mt-3 mb-0" style={{ background: 'rgba(200, 146, 74, 0.28)' }} />
+
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-gray-100">
-          <div className="flex items-center gap-2">
-            <CalendarDays size={18} style={{ color: 'var(--brand-primary)' }} />
-            <div>
-              <h2 className="font-display font-bold text-gray-900 text-base">Parva Calendar</h2>
-              <p className="text-[10px] text-gray-500 mt-0.5">{calendarMeta.label} · {calendarMeta.coverage}</p>
+        <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b" style={{ borderColor: 'rgba(200, 146, 74, 0.14)' }}>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(200, 146, 74, 0.13)' }}>
+              <CalendarDays size={16} style={{ color: 'var(--brand-primary)' }} />
             </div>
-            {onDateSelect && <span className="text-xs ml-1" style={{ color: 'var(--brand-primary)' }}>tap date → view Panchang</span>}
+            <div>
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-cream)' }}>
+                Parva Calendar
+              </h2>
+              <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-dim)' }}>{calendarMeta.label} · {calendarMeta.coverage}</p>
+            </div>
+            {onDateSelect && (
+              <span className="text-[10px] ml-1 font-medium" style={{ color: 'var(--brand-primary)' }}>tap date → Panchang</span>
+            )}
           </div>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-            <X size={16} className="text-gray-500" />
+            className="w-8 h-8 rounded-full flex items-center justify-center motion-press"
+            style={{ background: 'rgba(200, 146, 74, 0.10)' }}>
+            <X size={15} style={{ color: 'var(--text-muted-warm)' }} />
           </button>
         </div>
 
         <div className="overflow-y-auto flex-1 px-4 py-3 space-y-2 pb-8">
-          <div className="rounded-2xl border px-3 py-2.5 text-xs leading-relaxed text-gray-600" style={{ background: 'rgba(223, 156, 171, 0.09)', borderColor: 'rgba(223, 156, 171, 0.2)' }}>
-            <span className="font-semibold text-gray-800">Calendar note:</span> {calendarMeta.sourceNote}
+          {/* Note */}
+          <div className="rounded-xl border px-3 py-2.5 text-xs leading-relaxed"
+            style={{ background: 'rgba(200, 146, 74, 0.07)', borderColor: 'rgba(200, 146, 74, 0.14)', color: 'var(--text-muted-warm)' }}>
+            <span className="font-semibold" style={{ color: 'var(--text-cream)' }}>Calendar note: </span>
+            {calendarMeta.sourceNote}
           </div>
+
           {upcoming.length > 0 && (
             <>
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 mt-1">Upcoming</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] mb-2 mt-1" style={{ color: 'var(--text-dim)' }}>Upcoming</p>
               {upcoming.map(f => {
                 const days = daysFromNow(f.date);
                 return (
                   <div key={f.name + f.date}
                     onClick={() => { if (onDateSelect) { onDateSelect(new Date(f.date + 'T00:00:00')); onClose(); } }}
-                    className="flex items-center gap-3 bg-white border border-gray-100 rounded-2xl p-3 transition cursor-pointer active:scale-95">
+                    className="flex items-center gap-3 rounded-2xl p-3 cursor-pointer motion-lift border"
+                    style={{ background: 'rgba(48, 44, 34, 0.80)', borderColor: 'rgba(200, 146, 74, 0.12)' }}>
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-                      style={{ background: 'rgba(124, 58, 45, 0.08)' }}>
+                      style={{ background: 'rgba(200, 146, 74, 0.12)' }}>
                       {f.emoji}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-sm text-gray-900 leading-tight">{f.name}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{formatFestDate(f.date)}</p>
+                      <p className="font-medium text-sm leading-tight" style={{ color: 'var(--text-cream)' }}>{f.name}</p>
+                      <p className="text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>{formatFestDate(f.date)}</p>
                     </div>
                     <div className="text-right flex-shrink-0">
                       {days === 0 ? (
-                        <span className="text-xs font-bold px-2 py-1 rounded-full text-white" style={{ background: 'var(--brand-primary)' }}>Today</span>
+                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-full" style={{ background: 'var(--brand-primary)', color: '#1a1610' }}>Today</span>
                       ) : days === 1 ? (
                         <span className="text-xs font-semibold" style={{ color: 'var(--brand-primary)' }}>Tomorrow</span>
                       ) : (
-                        <span className="text-xs text-gray-400">{days}d</span>
+                        <span className="text-xs" style={{ color: 'var(--text-dim)' }}>{days}d</span>
                       )}
                     </div>
                   </div>
@@ -643,14 +682,16 @@ function CalendarModal({
           )}
           {past.length > 0 && (
             <>
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 mt-4">Past</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] mb-2 mt-4" style={{ color: 'var(--text-dim)' }}>Past</p>
               {past.map(f => (
                 <div key={f.name + f.date}
-                  className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-2xl p-3 opacity-60">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0 bg-gray-100">{f.emoji}</div>
+                  className="flex items-center gap-3 rounded-2xl p-3 border opacity-50"
+                  style={{ background: 'rgba(36, 34, 26, 0.60)', borderColor: 'rgba(200, 146, 74, 0.08)' }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                    style={{ background: 'rgba(200, 146, 74, 0.07)' }}>{f.emoji}</div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm text-gray-600 leading-tight">{f.name}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{formatFestDate(f.date)}</p>
+                    <p className="font-medium text-sm leading-tight" style={{ color: 'var(--text-muted-warm)' }}>{f.name}</p>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>{formatFestDate(f.date)}</p>
                   </div>
                 </div>
               ))}
@@ -928,47 +969,91 @@ export default function HomeDashboard({
   return (
     <div className="space-y-4 pb-2 fade-in">
 
-      {/* ── Greeting ── */}
-      <div
-        className="surface-outline rounded-[1.9rem] px-4 py-4 sm:px-5 sm:py-5"
-        style={{ background: homeHeroTheme.surface, borderColor: homeHeroTheme.border }}
+      {/* ── Greeting Hero ── */}
+      <motion.div
+        className="rounded-[2rem] px-5 py-5 relative overflow-hidden"
+        style={{
+          background: homeHeroTheme.surface,
+          border: `1px solid ${homeHeroTheme.border}`,
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.28)',
+        }}
+        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 8 }}
+        animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="flex items-start justify-between gap-3">
+        {/* Ambient glow accent */}
+        <div className="absolute top-0 right-0 w-36 h-36 pointer-events-none" style={{
+          background: `radial-gradient(circle at top right, ${homeHeroTheme.iconWell}, transparent 70%)`,
+          borderRadius: '0 2rem 0 0',
+        }} />
+
+        <div className="relative flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
-            <p className="type-card-label">
-              Home
-            </p>
+            <p className="type-card-label tracking-[0.12em] uppercase text-[10px]">Sanatana Sangam</p>
+
+            {/* Greeting — serif, spring-animated, editable */}
             <button
               onClick={() => setGreetingSheetOpen(true)}
-              className="group mt-1 -ml-1 rounded-2xl px-1 py-1 flex items-center gap-1.5 text-left transition"
+              className="group mt-2 -ml-0.5 rounded-2xl flex items-end gap-2 text-left"
+              style={{ transition: `transform 200ms cubic-bezier(0.34, 1.26, 0.64, 1)` }}
             >
-              <h1 className="type-screen-title">
-                {greeting}, {userName.split(' ')[0]}!
+              <h1
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: 'clamp(1.35rem, 5vw, 1.65rem)',
+                  fontWeight: 600,
+                  lineHeight: 1.2,
+                  color: 'var(--text-cream)',
+                  letterSpacing: '-0.01em',
+                }}
+              >
+                {greeting},&nbsp;{userName.split(' ')[0]}
               </h1>
-              <Pencil size={13} className="theme-dim group-hover:text-[color:var(--brand-primary)] transition flex-shrink-0 mt-1" />
+              <Pencil
+                size={13}
+                style={{ color: 'var(--text-dim)', marginBottom: '0.22rem', flexShrink: 0,
+                  transition: 'color 180ms ease', }}
+                className="group-hover:text-[color:var(--brand-primary)]"
+              />
             </button>
-            <p className="type-body mt-1.5">
+
+            {/* Subtitle */}
+            <p className="type-body mt-2 leading-relaxed" style={{ fontSize: '0.82rem' }}>
               {showFirstTimeGuidance ? greetingMode : 'A quieter sacred day, ready when you are.'}
             </p>
+
+            {/* City */}
             {displayCity && (
-              <p className="type-body mt-2 flex items-center gap-1">
-                <MapPin size={12} style={{ color: homeHeroTheme.accent }} />
-                {displayCity}
-                {coords && <span className="type-tab ml-1">live</span>}
+              <p className="mt-2.5 flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-dim)' }}>
+                <MapPin size={11} style={{ color: homeHeroTheme.accent, flexShrink: 0 }} />
+                <span>{displayCity}</span>
+                {coords && (
+                  <span className="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[9px] font-semibold tracking-wider uppercase"
+                    style={{ background: 'rgba(200, 146, 74, 0.12)', color: 'var(--brand-primary)' }}>
+                    live
+                  </span>
+                )}
               </p>
             )}
           </div>
+
+          {/* Date badge */}
           <div
-            className="hidden sm:flex items-center justify-center rounded-[1.35rem] px-3 py-2 type-chip"
-            style={{
-              background: homeHeroTheme.iconWell,
-              color: 'var(--text-cream)',
-            }}
+            className="flex-shrink-0 rounded-[1.1rem] px-3 py-2 text-center"
+            style={{ background: homeHeroTheme.iconWell, minWidth: '3rem' }}
           >
-            Today
+            <p className="text-[9px] font-semibold uppercase tracking-[0.12em]" style={{ color: 'var(--text-dim)' }}>
+              {new Date().toLocaleDateString('en-IN', { weekday: 'short' })}
+            </p>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 600, lineHeight: 1.1, color: 'var(--text-cream)' }}>
+              {new Date().getDate()}
+            </p>
+            <p className="text-[9px] font-medium" style={{ color: 'var(--text-dim)' }}>
+              {new Date().toLocaleDateString('en-IN', { month: 'short' })}
+            </p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {showFirstTimeGuidance && personalizedPaths.length > 0 && (
         <section className="space-y-2">
@@ -1065,264 +1150,346 @@ export default function HomeDashboard({
       )}
 
       {/* ── Panchang Widget ── */}
-      <div
-        className="rounded-[1.95rem] overflow-hidden border shadow-sm decorative-orbit"
-        style={{ background: panchangTheme.surface, borderColor: panchangTheme.border, boxShadow: '0 16px 34px rgba(28, 26, 23, 0.06)' }}
+      <motion.div
+        className="rounded-[1.95rem] overflow-hidden border relative"
+        style={{
+          background: panchangTheme.surface,
+          borderColor: panchangTheme.border,
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.22)',
+        }}
+        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 6 }}
+        animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.38, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="px-4 pt-4 pb-2 flex items-center gap-2">
-          <span className="text-base">🪔</span>
-          <span className="type-card-label">
+        {/* Ambient glow */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          background: `radial-gradient(ellipse at top left, ${panchangTheme.iconWell}, transparent 60%)`,
+        }} />
+
+        {/* Header */}
+        <div className="relative px-4 pt-4 pb-2 flex items-center gap-2">
+          <div className="w-7 h-7 rounded-xl flex items-center justify-center text-sm" style={{ background: panchangTheme.iconWell }}>
+            🪔
+          </div>
+          <span style={{ fontFamily: 'var(--font-serif)', fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-cream)' }}>
             {isToday ? 'Aaj Ka Panchang' : 'Panchang'}
           </span>
+
           {/* Day navigation */}
           <div className="ml-auto flex items-center gap-1">
             <button onClick={() => navigateDay(-1)}
-              className="w-6 h-6 rounded-full flex items-center justify-center transition"
+              className="w-7 h-7 rounded-full flex items-center justify-center motion-press"
               style={{ background: panchangTheme.iconWell }}>
-              <ChevronLeft size={13} color="var(--text-cream)" />
+              <ChevronLeft size={13} style={{ color: 'var(--text-cream)' }} />
             </button>
-            {/* Tap date label to open full date picker */}
             <button onClick={() => setDatePickerOpen(true)}
-              className="type-micro min-w-[80px] text-center transition underline-offset-2 hover:underline"
-              style={{ color: 'var(--text-cream)' }}>
+              className="text-[11px] min-w-[76px] text-center font-medium"
+              style={{ color: 'var(--text-cream)', textDecoration: 'underline', textUnderlineOffset: '2px', textDecorationColor: 'rgba(200,146,74,0.35)' }}>
               {isToday ? 'Today' : selectedDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
             </button>
             <button onClick={() => navigateDay(1)}
-              className="w-6 h-6 rounded-full flex items-center justify-center transition"
+              className="w-7 h-7 rounded-full flex items-center justify-center motion-press"
               style={{ background: panchangTheme.iconWell }}>
-              <ChevronRight size={13} color="var(--text-cream)" />
+              <ChevronRight size={13} style={{ color: 'var(--text-cream)' }} />
             </button>
             {!isToday && (
               <button onClick={() => setSelectedDate(new Date())}
-                className="type-tab ml-1 rounded-full px-2 py-0.5"
-                style={{ background: panchangTheme.iconWell, color: 'var(--text-cream)' }}>
+                className="text-[10px] ml-1 rounded-full px-2 py-1 font-semibold motion-press"
+                style={{ background: panchangTheme.iconWell, color: 'var(--brand-primary)' }}>
                 Today
               </button>
             )}
           </div>
         </div>
 
-        {/* 3-column grid: Tithi, Nakshatra, Yoga, Sunrise, Sunset */}
-        <div className="grid grid-cols-3 gap-0 px-4 py-2">
-          <PanchangItem label="Tithi"     value={panchang.tithi}     />
-          <PanchangItem label="Nakshatra" value={panchang.nakshatra} />
-          <PanchangItem label="Yoga"      value={panchang.yoga}      />
-          <PanchangItem label="Sunrise"   value={panchang.sunrise}   />
-          <PanchangItem label="Sunset"    value={panchang.sunset}    />
+        {/* Panchang grid — 3 columns */}
+        <div className="relative grid grid-cols-3 gap-0 px-4 pt-1 pb-2">
+          <PanchangItem label="Tithi"     value={panchang.tithi}     accent={panchangTheme.accent} />
+          <PanchangItem label="Nakshatra" value={panchang.nakshatra} accent={panchangTheme.accent} />
+          <PanchangItem label="Yoga"      value={panchang.yoga}      accent={panchangTheme.accent} />
+          <PanchangItem label="Sunrise"   value={panchang.sunrise}   accent={panchangTheme.accent} />
+          <PanchangItem label="Sunset"    value={panchang.sunset}    accent={panchangTheme.accent} />
         </div>
 
-        {/* Rahu Kaal + action buttons */}
-        <div className="mx-4 mb-3 rounded-xl px-3 py-2 flex items-center gap-2"
-          style={{ background: 'rgba(40, 40, 37, 0.92)', border: `1px solid ${panchangTheme.border}` }}>
+        {/* Rahu Kaal strip */}
+        <div className="relative mx-4 mb-3 rounded-[1rem] px-3 py-2 flex items-center gap-2"
+          style={{ background: 'rgba(0, 0, 0, 0.28)', border: `1px solid ${panchangTheme.border}` }}>
           <span className="text-sm">⚠️</span>
           <div className="flex-1">
-            <span className="type-card-label">Rahu Kaal: </span>
-            <span className="type-micro">{panchang.rahuKaal}</span>
+            <span className="text-[11px] font-semibold" style={{ color: 'var(--text-muted-warm)' }}>Rahu Kaal: </span>
+            <span className="text-[11px]" style={{ color: 'var(--text-cream)' }}>{panchang.rahuKaal}</span>
           </div>
-          {/* Full Panchang page link */}
-          <Link
-            href="/panchang"
-            className="flex items-center gap-1 rounded-full px-2.5 py-1 type-chip transition"
-            style={{ background: panchangTheme.iconWell, color: 'var(--text-cream)' }}
-          >
-            <CalendarDays size={12} /> Full Panchang
+          <Link href="/panchang"
+            className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold motion-press"
+            style={{ background: panchangTheme.iconWell, color: 'var(--text-cream)' }}>
+            <CalendarDays size={11} /> Full
           </Link>
-          {/* Share button */}
-          <button
-            onClick={sharePanchang}
-            className="w-7 h-7 rounded-full flex items-center justify-center transition"
+          <button onClick={sharePanchang}
+            className="w-7 h-7 rounded-full flex items-center justify-center motion-press"
             style={{ background: panchangTheme.iconWell }}
-            title="Share Panchang"
-          >
-            <Share2 size={13} color="var(--text-cream)" />
+            title="Share Panchang">
+            <Share2 size={12} style={{ color: 'var(--text-cream)' }} />
           </button>
         </div>
-        <div className="type-micro px-4 pb-4">
+
+        <div className="relative px-4 pb-3 text-[10px]" style={{ color: 'var(--text-dim)' }}>
           {PANCHANG_TRUST_META.precisionLabel}. {PANCHANG_TRUST_META.guidanceNote}
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Daily Sacred Text — tradition-aware ── */}
-      <div
+      <motion.div
         ref={shlokaRef}
-        className="rounded-[1.85rem] shadow-sm p-4"
+        className="rounded-[1.85rem] p-5 relative overflow-hidden border"
         style={{
-          borderWidth: 1,
-          borderStyle: 'solid',
           borderColor: sacredTextTheme.border,
           background: sacredTextTheme.surface,
-          boxShadow: '0 16px 32px rgba(28, 26, 23, 0.05)',
-        }}>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">{sacredTextMeta.icon}</span>
-            <span className="type-card-heading">{sacredTextMeta.label}</span>
-            {streak > 0 && (
-              <span className="type-chip rounded-full border px-2 py-0.5" style={{ color: 'var(--chip-text)', background: 'var(--chip-fill)', borderColor: 'rgba(212, 166, 70, 0.16)' }}>
-                🔥 {streak}
-              </span>
-            )}
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.22)',
+        }}
+        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 6 }}
+        animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.38, delay: 0.10, ease: [0.22, 1, 0.36, 1] }}
+      >
+        {/* Ambient glow */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          background: `radial-gradient(ellipse at bottom right, rgba(200,146,74,0.05), transparent 65%)`,
+        }} />
+
+        {/* Header row */}
+        <div className="relative flex items-start justify-between mb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-[0.85rem] flex items-center justify-center text-xl flex-shrink-0"
+              style={{ background: sacredTextTheme.iconWell }}>
+              {sacredTextMeta.icon}
+            </div>
+            <div>
+              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)', lineHeight: 1.2 }}>
+                {sacredTextMeta.label}
+              </p>
+              {streak > 0 && (
+                <p className="flex items-center gap-1 mt-0.5 text-[10px] font-semibold" style={{ color: 'var(--brand-primary)' }}>
+                  🔥 {streak}-day streak
+                </p>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="type-chip rounded-full bg-[color:var(--chip-fill)] px-2 py-0.5 text-[color:var(--chip-text)]">
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
+              style={{ background: 'rgba(200, 146, 74, 0.12)', color: 'var(--brand-primary)' }}>
               {sacredText ? sacredText.source : shloka.source}
             </span>
             <button onClick={shareShloka}
-              className="w-7 h-7 rounded-full border flex items-center justify-center hover:opacity-80 transition"
-              style={{ background: sacredTextMeta.accentLight, borderColor: sacredTextMeta.accentLight }}
+              className="w-7 h-7 rounded-full flex items-center justify-center motion-press"
+              style={{ background: sacredTextTheme.iconWell }}
               title={`Share ${sacredTextMeta.shareLabel}`}>
-              <Share2 size={13} style={{ color: sacredTextMeta.accentColour }} />
+              <Share2 size={12} style={{ color: 'var(--text-muted-warm)' }} />
             </button>
           </div>
         </div>
 
-        {/* Original script */}
-        <p className="type-sanskrit mb-2 whitespace-pre-line">
+        {/* Divider */}
+        <div className="relative h-px mb-4" style={{ background: `linear-gradient(90deg, ${sacredTextTheme.border}, transparent)` }} />
+
+        {/* Original script — serif, elevated */}
+        <p className="relative whitespace-pre-line mb-3 leading-relaxed"
+          style={{
+            fontFamily: 'Georgia, "Noto Serif Devanagari", serif',
+            fontSize: '1.05rem',
+            color: 'var(--text-cream)',
+            lineHeight: 1.7,
+          }}>
           {sacredText ? sacredText.original : shloka.sanskrit}
         </p>
 
         {/* Transliteration */}
-        <p className="type-body mb-3 whitespace-pre-line italic">
+        <p className="relative whitespace-pre-line italic mb-4 text-sm leading-relaxed"
+          style={{ color: 'var(--text-muted-warm)', fontSize: '0.83rem' }}>
           {sacredText ? sacredText.transliteration : shloka.transliteration}
         </p>
 
-        <div className="flex items-center justify-between">
+        {/* Actions row */}
+        <div className="relative flex items-center justify-between gap-2">
           <button onClick={() => setShlokaExpanded(!shlokaExpanded)}
-            className="type-micro flex items-center gap-1"
-            style={{ color: sacredTextMeta.accentColour }}>
+            className="flex items-center gap-1 text-xs font-medium motion-press"
+            style={{ color: 'var(--brand-primary)' }}>
             {shlokaExpanded ? 'Hide meaning' : 'Show meaning'}
-            {shlokaExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+            {shlokaExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
           </button>
 
           <button onClick={markShlokaRead} disabled={readToday}
-            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 type-chip transition ${
-              readToday
-                ? 'cursor-default'
-                : 'text-[#1c1c1a] hover:opacity-90'
-            }`}
+            className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-semibold motion-press"
             style={readToday
-              ? { background: 'var(--chip-fill)', color: 'var(--chip-text)', border: '1px solid rgba(212, 166, 70, 0.16)' }
-              : { background: sacredTextMeta.accentColour }}>
-            {readToday
-              ? '✓ Read today'
-              : `${sacredTextMeta.icon} Mark as read`}
+              ? { background: 'rgba(200, 146, 74, 0.12)', color: 'var(--brand-primary)', border: '1px solid rgba(200, 146, 74, 0.18)' }
+              : { background: 'var(--brand-primary)', color: '#1a1610' }}>
+            {readToday ? '✓ Read today' : `${sacredTextMeta.icon} Mark as read`}
           </button>
         </div>
 
+        {/* Meaning — animated expand */}
         <AnimatePresence initial={false}>
-        {shlokaExpanded && (
-          <motion.div
-            className="mt-3 pt-3 border-t"
-            style={{ borderColor: sacredTextMeta.accentLight }}
-            initial={prefersReducedMotion ? undefined : { opacity: 0, height: 0, y: -6 }}
-            animate={prefersReducedMotion ? undefined : { opacity: 1, height: 'auto', y: 0 }}
-            exit={prefersReducedMotion ? undefined : { opacity: 0, height: 0, y: -6 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <p className="type-body">
+          {shlokaExpanded && (
+            <motion.div
+              className="relative mt-4 pt-4 border-t text-sm leading-relaxed"
+              style={{ borderColor: sacredTextTheme.border, color: 'var(--text-muted-warm)' }}
+              initial={prefersReducedMotion ? undefined : { opacity: 0, height: 0, y: -4 }}
+              animate={prefersReducedMotion ? undefined : { opacity: 1, height: 'auto', y: 0 }}
+              exit={prefersReducedMotion ? undefined : { opacity: 0, height: 0, y: -4 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            >
               {sacredText ? sacredText.meaning : shloka.meaning}
-            </p>
-          </motion.div>
-        )}
+            </motion.div>
+          )}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
       {/* ── Coming Up ── */}
-      <div
+      <motion.div
         ref={festivalsRef}
-        className="rounded-[1.85rem] border overflow-hidden shadow-sm decorative-orbit"
-        style={{ background: HOME_THEMES.tirtha.surface, borderColor: HOME_THEMES.tirtha.border, boxShadow: '0 16px 32px rgba(28, 26, 23, 0.05)' }}>
-        <div className="px-4 pt-3 pb-1 flex items-center justify-between">
-          <p className="type-card-label">Coming up</p>
+        className="rounded-[1.85rem] border overflow-hidden relative"
+        style={{
+          background: HOME_THEMES.tirtha.surface,
+          borderColor: HOME_THEMES.tirtha.border,
+          boxShadow: '0 18px 36px rgba(0, 0, 0, 0.20)',
+        }}
+        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 6 }}
+        animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.38, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}
+      >
+        {/* Header */}
+        <div className="px-4 pt-4 pb-1 flex items-center justify-between">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'var(--text-dim)' }}>
+            Coming Up
+          </p>
           <button
             onClick={() => setCalendarOpen(true)}
-            className="type-micro flex items-center gap-1 hover:underline theme-ink">
+            className="flex items-center gap-1 text-[11px] font-medium motion-press"
+            style={{ color: HOME_THEMES.tirtha.accent }}>
             <CalendarDays size={11} /> All Festivals →
           </button>
         </div>
+
         {festival && daysUntilFestival !== null ? (
-          <div className="px-4 pb-3 flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+          <div className="px-4 pb-4 pt-2 flex items-center gap-3">
+            <div className="w-12 h-12 rounded-[1rem] flex items-center justify-center text-2xl flex-shrink-0"
               style={{ background: HOME_THEMES.tirtha.iconWell }}>
               {festival.emoji}
             </div>
-            <div className="flex-1">
-              <p className="type-card-heading">{festival.name}</p>
-              <p className="type-body mt-0.5">{festival.description}</p>
+            <div className="flex-1 min-w-0">
+              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)', lineHeight: 1.2 }}>
+                {festival.name}
+              </p>
+              <p className="text-xs mt-0.5 leading-snug" style={{ color: 'var(--text-muted-warm)' }}>{festival.description}</p>
             </div>
-            <div className="text-center">
-              <div className="type-metric">
+            {/* Countdown pill */}
+            <div className="flex-shrink-0 rounded-[0.9rem] px-3 py-2 text-center"
+              style={{ background: daysUntilFestival === 0 ? 'var(--brand-primary)' : HOME_THEMES.tirtha.iconWell }}>
+              <p style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: daysUntilFestival === 0 ? '1.2rem' : '1.5rem',
+                fontWeight: 700,
+                lineHeight: 1,
+                color: daysUntilFestival === 0 ? '#1a1610' : 'var(--text-cream)',
+              }}>
                 {daysUntilFestival === 0 ? '🎉' : daysUntilFestival}
-              </div>
-              <div className="type-micro">
+              </p>
+              <p className="text-[9px] font-semibold mt-1" style={{ color: daysUntilFestival === 0 ? '#1a1610' : 'var(--text-dim)' }}>
                 {daysUntilFestival === 0 ? 'Today!' : daysUntilFestival === 1 ? 'Tomorrow' : 'days'}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="type-body px-4 pb-3">
-            Tap <span className="type-chip" style={{ color: 'var(--chip-text)' }}>All Festivals</span> to browse the Parva calendar 🙏
-          </div>
-        )}
-        <div className="type-micro px-4 pb-3">
-          {festivalCalendarMeta.sourceNote}
-        </div>
-      </div>
-
-      {/* ── Japa Streak Card ── */}
-      <Link href="/japa" className="block glass-panel rounded-[1.7rem] p-4 group transition-all active:scale-[0.99]">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
-              style={{ background: 'linear-gradient(135deg, rgba(123,26,26,0.12), rgba(212,160,23,0.12))' }}>
-              📿
-            </div>
-            <div>
-              <p className="type-section-label" style={{ marginBottom: 2 }}>Daily Japa</p>
-              <p className="font-display font-bold text-gray-900 text-base">
-                {japaAlreadyDoneToday ? 'Completed today 🙏' : 'Start your mala'}
               </p>
             </div>
           </div>
-          <div className="text-right flex-shrink-0">
-            {japaStreak > 0 ? (
-              <div className="flex items-center gap-1 bg-amber-50 border border-amber-100 rounded-xl px-3 py-1.5">
-                <span className="text-amber-500 text-sm">🔥</span>
-                <span className="font-bold text-amber-700 text-sm">{japaStreak}d</span>
+        ) : (
+          <p className="px-4 pb-4 pt-2 text-sm" style={{ color: 'var(--text-muted-warm)' }}>
+            Tap <span className="font-semibold" style={{ color: HOME_THEMES.tirtha.accent }}>All Festivals</span> to browse the Parva calendar 🙏
+          </p>
+        )}
+
+        <p className="px-4 pb-3 text-[10px]" style={{ color: 'var(--text-dim)' }}>
+          {festivalCalendarMeta.sourceNote}
+        </p>
+      </motion.div>
+
+      {/* ── Japa Streak Card ── */}
+      <motion.div
+        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 6 }}
+        animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.38, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <Link href="/japa"
+          className="block rounded-[1.7rem] p-4 relative overflow-hidden border motion-lift"
+          style={{
+            background: 'linear-gradient(150deg, rgba(44, 34, 28, 0.98), rgba(34, 26, 20, 0.96))',
+            borderColor: 'rgba(212, 120, 74, 0.20)',
+            boxShadow: '0 16px 32px rgba(0, 0, 0, 0.20)',
+          }}>
+          {/* Ambient glow */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            background: 'radial-gradient(ellipse at top left, rgba(212, 120, 74, 0.08), transparent 60%)',
+          }} />
+
+          <div className="relative flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-[1rem] flex items-center justify-center text-2xl flex-shrink-0"
+                style={{ background: 'rgba(212, 120, 74, 0.14)' }}>
+                📿
               </div>
-            ) : (
-              <span className="text-[10px] text-gray-400 font-medium">Begin streak →</span>
-            )}
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] mb-1" style={{ color: 'var(--text-dim)' }}>
+                  Daily Japa
+                </p>
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)', lineHeight: 1.2 }}>
+                  {japaAlreadyDoneToday ? 'Completed today 🙏' : 'Start your mala'}
+                </p>
+              </div>
+            </div>
+            <div className="text-right flex-shrink-0">
+              {japaStreak > 0 ? (
+                <div className="flex items-center gap-1.5 rounded-xl px-3 py-1.5 border"
+                  style={{ background: 'rgba(200, 146, 74, 0.12)', borderColor: 'rgba(200, 146, 74, 0.20)' }}>
+                  <span className="text-sm">🔥</span>
+                  <span className="font-bold text-sm" style={{ color: 'var(--brand-primary)' }}>{japaStreak}d</span>
+                </div>
+              ) : (
+                <span className="text-[10px] font-medium" style={{ color: 'var(--text-dim)' }}>Begin streak →</span>
+              )}
+            </div>
           </div>
-        </div>
-      </Link>
+        </Link>
+      </motion.div>
 
       {/* ── Quick Access ── */}
       <div>
-        <p className="type-section-label mb-2">Explore</p>
-        <MotionStagger className="grid grid-cols-2 gap-3" delay={0.08}>
-          {quickAccessItems.map((item) => (
+        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] mb-3" style={{ color: 'var(--text-dim)' }}>
+          Explore
+        </p>
+        <MotionStagger className="grid grid-cols-2 gap-3" delay={0.06}>
+          {quickAccessItems.map((item, i) => (
             <MotionItem key={item.href}>
-            <Link
-              href={item.href}
-              className="border rounded-[1.55rem] p-4 flex items-start gap-3 active:scale-[0.99] transition-all decorative-orbit"
-              style={{
-                background: HOME_THEMES[item.theme].surface,
-                borderColor: HOME_THEMES[item.theme].border,
-                boxShadow: '0 12px 26px rgba(28, 26, 23, 0.05)',
-              }}
-            >
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-                style={{ background: HOME_THEMES[item.theme].iconWell }}
+              <Link
+                href={item.href}
+                className="border rounded-[1.6rem] p-4 flex items-start gap-3 relative overflow-hidden motion-lift"
+                style={{
+                  background: HOME_THEMES[item.theme].surface,
+                  borderColor: HOME_THEMES[item.theme].border,
+                  boxShadow: '0 14px 28px rgba(0, 0, 0, 0.18)',
+                  animationDelay: `${i * 60}ms`,
+                }}
               >
-                {item.icon}
-              </div>
-              <div>
-                <p className="type-card-heading" style={{ color: 'var(--text-cream)' }}>{item.label}</p>
-                <p className="hidden sm:block type-micro mt-0.5 leading-tight">{item.desc}</p>
-              </div>
-            </Link>
+                {/* Ambient glow per theme */}
+                <div className="absolute inset-0 pointer-events-none" style={{
+                  background: `radial-gradient(ellipse at top left, ${HOME_THEMES[item.theme].iconWell}, transparent 65%)`,
+                }} />
+                <div
+                  className="relative w-11 h-11 rounded-[0.9rem] flex items-center justify-center text-xl flex-shrink-0"
+                  style={{ background: HOME_THEMES[item.theme].iconWell }}>
+                  {item.icon}
+                </div>
+                <div className="relative">
+                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-cream)', lineHeight: 1.2 }}>
+                    {item.label}
+                  </p>
+                  <p className="text-[11px] mt-1 leading-snug" style={{ color: 'var(--text-dim)' }}>{item.desc}</p>
+                </div>
+              </Link>
             </MotionItem>
           ))}
         </MotionStagger>
@@ -1330,20 +1497,38 @@ export default function HomeDashboard({
 
       {/* ── Vichaar Sabha CTA ── */}
       <Link href="/vichaar-sabha"
-        className="block w-full rounded-[1.7rem] border p-4 text-center transition-colors"
-        style={{ borderColor: HOME_THEMES.pathshala.border, background: HOME_THEMES.pathshala.surface }}>
-        <span className="text-lg">💬</span>
-        <p className="type-card-heading mt-1" style={{ color: 'var(--text-cream)' }}>Join the Vichaar Sabha</p>
-        <p className="type-micro mt-0.5">Discuss dharma, share wisdom, ask questions</p>
+        className="block w-full rounded-[1.7rem] border p-4 text-center relative overflow-hidden motion-lift"
+        style={{
+          borderColor: HOME_THEMES.pathshala.border,
+          background: HOME_THEMES.pathshala.surface,
+          boxShadow: '0 12px 24px rgba(0, 0, 0, 0.16)',
+        }}>
+        <div className="absolute inset-0 pointer-events-none" style={{
+          background: 'radial-gradient(ellipse at center, rgba(200, 146, 74, 0.05), transparent 70%)',
+        }} />
+        <span className="relative text-xl">💬</span>
+        <p className="relative mt-1" style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)' }}>
+          Vichaar Sabha
+        </p>
+        <p className="relative text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>Discuss dharma, share wisdom, ask questions</p>
       </Link>
 
       {/* ── Invite Friends ── */}
       <button onClick={() => setInviteOpen(true)}
-        className="w-full rounded-[1.7rem] border p-4 text-center transition-colors"
-        style={{ borderColor: HOME_THEMES.kul.border, background: HOME_THEMES.kul.surface }}>
-        <span className="text-lg">🙏</span>
-        <p className="type-card-heading mt-1" style={{ color: 'var(--text-cream)' }}>Invite Friends & Family</p>
-        <p className="type-micro mt-0.5">Share Sanatana Sangam — spread the light of dharma</p>
+        className="w-full rounded-[1.7rem] border p-4 text-center relative overflow-hidden motion-lift"
+        style={{
+          borderColor: HOME_THEMES.kul.border,
+          background: HOME_THEMES.kul.surface,
+          boxShadow: '0 12px 24px rgba(0, 0, 0, 0.16)',
+        }}>
+        <div className="absolute inset-0 pointer-events-none" style={{
+          background: 'radial-gradient(ellipse at center, rgba(157, 120, 74, 0.06), transparent 70%)',
+        }} />
+        <span className="relative text-xl">🙏</span>
+        <p className="relative mt-1" style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)' }}>
+          Invite Friends &amp; Family
+        </p>
+        <p className="relative text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>Spread the light of dharma</p>
       </button>
 
       {/* ── Parva / Festivals modal ── */}
@@ -1393,11 +1578,11 @@ export default function HomeDashboard({
   );
 }
 
-function PanchangItem({ label, value }: { label: string; value: string }) {
+function PanchangItem({ label, value, accent }: { label: string; value: string; accent?: string }) {
   return (
     <div className="py-1.5 pr-2">
-      <p className="type-card-label">{label}</p>
-      <p className="type-card-heading">{value}</p>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: 'var(--text-dim)' }}>{label}</p>
+      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.92rem', fontWeight: 600, color: 'var(--text-cream)', lineHeight: 1.3, marginTop: '0.15rem' }}>{value}</p>
     </div>
   );
 }
