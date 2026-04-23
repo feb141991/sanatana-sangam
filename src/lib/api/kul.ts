@@ -131,6 +131,8 @@ export type SaveKulFamilyMemberPayload = {
   generation?: number | null;
   notes?: string | null;
   is_alive: boolean;
+  // Link to an existing Sangam user account (null = person is not on the app)
+  linked_user_id?: string | null;
 };
 
 export type SaveKulEventPayload = {
@@ -316,21 +318,22 @@ export async function saveKulFamilyMember(userId: string, payload: SaveKulFamily
   const supabase = createClient();
 
   const row = {
-    kul_id: payload.kulId,
-    name: payload.name.trim(),
-    role: payload.role?.trim() || null,
-    gender: payload.gender || null,
-    birth_year: payload.birth_year ?? null,
-    birth_date: payload.birth_date || null,
-    death_year: payload.death_year ?? null,
-    death_date: payload.death_date || null,
-    marriage_date: payload.marriage_date || null,
-    parent_id: payload.parent_id || null,
-    spouse_id: payload.spouse_id || null,
-    generation: payload.generation ?? 4,
-    notes: payload.notes?.trim() || null,
-    is_alive: payload.is_alive,
-    created_by: userId,
+    kul_id:         payload.kulId,
+    name:           payload.name.trim(),
+    role:           payload.role?.trim() || null,
+    gender:         payload.gender || null,
+    birth_year:     payload.birth_year ?? null,
+    birth_date:     payload.birth_date || null,
+    death_year:     payload.death_year ?? null,
+    death_date:     payload.death_date || null,
+    marriage_date:  payload.marriage_date || null,
+    parent_id:      payload.parent_id || null,
+    spouse_id:      payload.spouse_id || null,
+    generation:     payload.generation ?? 4,
+    notes:          payload.notes?.trim() || null,
+    is_alive:       payload.is_alive,
+    created_by:     userId,
+    linked_user_id: payload.linked_user_id ?? null,
   };
 
   if (payload.memberId) {

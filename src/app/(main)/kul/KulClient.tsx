@@ -1329,14 +1329,19 @@ function InviteSearchModal({
 
   async function sendInvite(toUserId: string, toName: string) {
     try {
-      await supabase.from('notifications').insert({
-        user_id:    toUserId,
-        title:      `${kulName} has invited you to their Kul`,
-        body:       `Use code ${inviteCode} to join ${kulName} on Sanatana Sangam.`,
-        emoji:      '🏡',
-        action_url: '/kul',
-        type:       'kul_invite',
+      // Must go through API — the notifications table has no client INSERT policy.
+      // Direct supabase.from('notifications').insert({ user_id: toUserId }) is
+      // blocked by RLS because user_id belongs to another user.
+      const res = await fetch('/api/kul/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ toUserId, kulId, kulName, inviteCode }),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        toast.error(data.error ?? 'Could not send invite');
+        return;
+      }
       setInvited(prev => new Set(prev).add(toUserId));
       toast.success(`Invite sent to ${toName} 🙏`);
     } catch {
@@ -1642,6 +1647,11 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
     parent_id: '', spouse_id: '', generation: '4',
     notes: '', is_alive: true,
   });
+  // Linked app user for this family member (null = not on the app)
+  const [linkedUser, setLinkedUser] = useState<{ id: string; name: string; username: string | null } | null>(null);
+  const [linkUserQuery, setLinkUserQuery] = useState('');
+  const [linkUserResults, setLinkUserResults] = useState<{ id: string; full_name: string | null; username: string | null; avatar_url: string | null }[]>([]);
+  const [linkUserSearching, setLinkUserSearching] = useState(false);
 
   // Event form
   const [eForm, setEForm] = useState({
@@ -1662,6 +1672,22 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
 
   function resetForm() {
     setForm({ name:'',role:'',gender:'',birth_year:'',birth_date:'',death_year:'',death_date:'',marriage_date:'',parent_id:'',spouse_id:'',generation:'4',notes:'',is_alive:true });
+    setLinkedUser(null);
+    setLinkUserQuery('');
+    setLinkUserResults([]);
+  }
+
+  async function searchAppUsers() {
+    if (!linkUserQuery.trim()) return;
+    setLinkUserSearching(true);
+    const supabase = createClient();
+    const { data } = await supabase
+      .from('profiles')
+      .select('id, full_name, username, avatar_url')
+      .or(`full_name.ilike.%${linkUserQuery.trim()}%,username.ilike.%${linkUserQuery.trim()}%`)
+      .limit(8);
+    setLinkUserResults(data ?? []);
+    setLinkUserSearching(false);
   }
 
   function openEdit(m: FamilyMember) {
@@ -1675,6 +1701,14 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
       generation: m.generation ? String(m.generation) : '4',
       notes: m.notes ?? '', is_alive: m.is_alive,
     });
+    // Restore linked user display if already linked
+    if (m.linked_user_id) {
+      setLinkedUser({ id: m.linked_user_id, name: m.name, username: null });
+    } else {
+      setLinkedUser(null);
+    }
+    setLinkUserQuery('');
+    setLinkUserResults([]);
     setShowAdd(true);
   }
 
@@ -1705,6 +1739,7 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
         generation: parseInt(form.generation, 10) || 4,
         notes: form.notes,
         is_alive: form.is_alive,
+        linked_user_id: linkedUser?.id ?? null,
       });
       toast.success(editMember ? 'Member updated 🙏' : 'Member added to Vansh 🙏');
       resetForm(); setEditMember(null); setShowAdd(false);
@@ -1903,6 +1938,54 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
               </select>
             </div>
           )}
+          {/* Link to existing app user */}
+          <div className="space-y-1.5">
+            <p className="text-[10px] text-[color:var(--brand-muted)] uppercase tracking-wider">Link to Sangam account (optional)</p>
+            {linkedUser ? (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-white/10 bg-white/4">
+                <span className="text-sm flex-1 text-[color:var(--brand-ink)]">
+                  ✓ {linkedUser.name}{linkedUser.username ? ` (@${linkedUser.username})` : ''}
+                </span>
+                <button onClick={() => { setLinkedUser(null); setLinkUserQuery(''); setLinkUserResults([]); }}
+                  className="text-[10px] text-[color:var(--brand-muted)] hover:text-red-400 transition">Remove</button>
+              </div>
+            ) : (
+              <div className="space-y-1">
+                <div className="flex gap-2">
+                  <input
+                    type="text" placeholder="Search by name or @username…"
+                    value={linkUserQuery} onChange={e => setLinkUserQuery(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && searchAppUsers()}
+                    className="flex-1 px-3 py-2 rounded-xl border border-white/10 focus:border-[color:var(--brand-primary)] outline-none text-sm"
+                  />
+                  <button onClick={searchAppUsers} disabled={linkUserSearching || !linkUserQuery.trim()}
+                    className="px-3 py-2 rounded-xl text-xs font-semibold disabled:opacity-40 transition"
+                    style={{ background: 'rgba(212,166,70,0.14)', color: 'var(--brand-primary-strong)' }}>
+                    {linkUserSearching ? '…' : 'Find'}
+                  </button>
+                </div>
+                {linkUserResults.length > 0 && (
+                  <div className="rounded-xl border border-white/10 divide-y divide-white/6 overflow-hidden">
+                    {linkUserResults.map(u => (
+                      <button key={u.id}
+                        onClick={() => { setLinkedUser({ id: u.id, name: u.full_name || u.username || u.id, username: u.username }); setLinkUserResults([]); setLinkUserQuery(''); }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-white/6 transition">
+                        <Avatar name={u.full_name || u.username || '?'} url={u.avatar_url} size={7} />
+                        <div className="min-w-0">
+                          <p className="text-xs font-semibold text-[color:var(--brand-ink)] truncate">{u.full_name || u.username}</p>
+                          {u.username && <p className="text-[10px] text-[color:var(--brand-muted)]">@{u.username}</p>}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {linkUserResults.length === 0 && linkUserQuery && !linkUserSearching && (
+                  <p className="text-[11px] text-[color:var(--brand-muted)] px-1">Not on Sangam yet — add them and invite later.</p>
+                )}
+              </div>
+            )}
+          </div>
+
           <textarea placeholder="Notes (origin, stories, memories…)" value={form.notes}
             onChange={e => setForm(f => ({...f, notes: e.target.value}))} rows={2}
             className="w-full px-3 py-2 rounded-xl border border-white/10 focus:border-[color:var(--brand-primary)] outline-none resize-none text-sm" />
