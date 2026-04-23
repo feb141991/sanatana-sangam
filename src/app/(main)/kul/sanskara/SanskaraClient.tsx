@@ -348,7 +348,7 @@ function MarkForm({
               style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(212,166,70,0.25)', color: 'rgba(245,220,150,0.9)' }}
             />
             <p className="mt-1 text-[10px]" style={{ color: 'rgba(245,210,130,0.35)' }}>
-              We'll send gentle reminders for upcoming milestone sanskaras 🙏
+              We&apos;ll send gentle reminders for upcoming milestone sanskaras 🙏
             </p>
           </div>
         )}
@@ -656,7 +656,7 @@ function SmartStartCard({
             Starting your journey?
           </p>
           <p className="text-xs mt-1 leading-relaxed" style={{ color: 'rgba(200,150,255,0.6)' }}>
-            You can start from any point in life — not just at birth. Record whatever you've already observed and track forward from here.
+            You can start from any point in life — not just at birth. Record whatever you&apos;ve already observed and track forward from here.
           </p>
           <p className="text-[11px] mt-2" style={{ color: 'rgba(200,150,255,0.45)' }}>
             Begin with <strong style={{ color: 'rgba(220,180,255,0.7)' }}>Garbhadhana</strong> (free) or scroll down to mark the last sanskara you observed.

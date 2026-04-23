@@ -457,9 +457,9 @@ export default function LandingPage() {
               </div>
 
               <p className="mt-5 text-[11px] text-amber-100/30 leading-relaxed">
-                <span className="font-semibold text-amber-100/50">iOS Safari:</span> tap the Share button → "Add to Home Screen"
+                <span className="font-semibold text-amber-100/50">iOS Safari:</span> tap the Share button → &ldquo;Add to Home Screen&rdquo;
                 <br />
-                <span className="font-semibold text-amber-100/50">Android Chrome:</span> tap menu → "Add to Home Screen"
+                <span className="font-semibold text-amber-100/50">Android Chrome:</span> tap menu → &ldquo;Add to Home Screen&rdquo;
                 <br />
                 No App Store needed. Updates automatically.
               </p>
