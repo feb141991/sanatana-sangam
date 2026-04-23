@@ -17,7 +17,7 @@ type Phase = keyof typeof BREATH_PHASES;
 
 // ─── Phase colours ─────────────────────────────────────────────────────────
 const PHASE_COLOURS: Record<Phase, { primary: string; glow: string; ring: string }> = {
-  inhale: { primary: '#f5dfa0', glow: 'rgba(212,166,70,',  ring: 'rgba(212,166,70,0.55)'  },
+  inhale: { primary: '#f5dfa0', glow: 'rgba(200,146,74,',  ring: 'rgba(200,146,74,0.55)'  },
   hold:   { primary: '#ffffff', glow: 'rgba(255,255,255,', ring: 'rgba(255,255,255,0.4)'  },
   exhale: { primary: '#b4c8ff', glow: 'rgba(130,160,255,', ring: 'rgba(120,150,255,0.45)' },
 };
@@ -424,11 +424,11 @@ export default function ZenModePage() {
 
       {/* ── Top card: mode + timer + controls ───────────────────────────── */}
       <section className="relative overflow-hidden rounded-[2rem]"
-        style={{ background: 'linear-gradient(160deg,rgba(26,14,8,0.97) 0%,rgba(14,8,4,0.99) 100%)', border: '1px solid rgba(212,166,70,0.16)' }}>
+        style={{ background: 'linear-gradient(160deg,rgba(26,14,8,0.97) 0%,rgba(14,8,4,0.99) 100%)', border: '1px solid rgba(200,146,74,0.16)' }}>
 
         {/* Background mandala */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-30">
-          <SacredMandala color="rgba(212,166,70,1)" size={320} />
+          <SacredMandala color="rgba(200,146,74,1)" size={320} />
         </div>
 
         <div className="relative px-5 pt-5 pb-6 space-y-4">
@@ -441,8 +441,8 @@ export default function ZenModePage() {
                 className="flex-1 rounded-[1.2rem] py-2.5 text-center transition-all"
                 whileTap={{ scale: 0.96 }}
                 style={{
-                  background: mode === item.id ? 'rgba(212,166,70,0.16)' : 'rgba(28,18,10,0.6)',
-                  border: `1px solid ${mode === item.id ? 'rgba(212,166,70,0.38)' : 'rgba(212,166,70,0.1)'}`,
+                  background: mode === item.id ? 'rgba(200,146,74,0.16)' : 'rgba(28,18,10,0.6)',
+                  border: `1px solid ${mode === item.id ? 'rgba(200,146,74,0.38)' : 'rgba(200,146,74,0.1)'}`,
                 }}>
                 <div className="text-base leading-none">{item.emoji}</div>
                 <p className="text-[11px] mt-1 font-medium"
@@ -462,7 +462,7 @@ export default function ZenModePage() {
           ) : (
             <div className="text-center py-3">
               <motion.p className="font-mono font-light"
-                style={{ color: '#f5dfa0', fontSize: '3.2rem', textShadow: '0 0 28px rgba(212,166,70,0.35)' }}
+                style={{ color: '#f5dfa0', fontSize: '3.2rem', textShadow: '0 0 28px rgba(200,146,74,0.35)' }}
                 animate={{ opacity: running ? [0.85, 1, 0.85] : 1 }}
                 transition={{ duration: 4, repeat: running ? Infinity : 0 }}>
                 {formatClock(remaining)}
@@ -476,10 +476,10 @@ export default function ZenModePage() {
             {mode === 'chant' && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden rounded-[1.3rem] border px-3 py-3"
-                style={{ background: 'rgba(28,18,10,0.8)', borderColor: 'rgba(212,166,70,0.14)' }}>
+                style={{ background: 'rgba(28,18,10,0.8)', borderColor: 'rgba(200,146,74,0.14)' }}>
                 <select value={chantMantra} onChange={e => setMantra(e.target.value)}
                   className="w-full rounded-xl px-3 py-2 text-sm outline-none mb-2"
-                  style={{ background: 'rgba(18,12,8,0.9)', border: '1px solid rgba(212,166,70,0.14)', color: 'rgba(245,220,150,0.8)' }}>
+                  style={{ background: 'rgba(18,12,8,0.9)', border: '1px solid rgba(200,146,74,0.14)', color: 'rgba(245,220,150,0.8)' }}>
                   {BHAKTI_MANTRAS.map(m => <option key={m.value} value={m.value}>{m.value}</option>)}
                 </select>
                 <ChantAudioPlayer title="Chant companion" trackIds={chantTrackIds}
@@ -495,16 +495,16 @@ export default function ZenModePage() {
                 <button key={v} onClick={() => { setDuration(v); setShowCustom(false); }}
                   className="rounded-full px-4 py-1.5 text-xs font-medium transition-all"
                   style={duration === v && !showCustom
-                    ? { background: 'linear-gradient(135deg,rgba(212,100,20,0.9),rgba(212,166,70,0.85))', color: '#1c1208' }
-                    : { background: 'rgba(28,18,10,0.7)', color: 'rgba(245,210,130,0.45)', border: '1px solid rgba(212,166,70,0.12)' }}>
+                    ? { background: 'linear-gradient(135deg,rgba(212,100,20,0.9),rgba(200,146,74,0.85))', color: '#1c1208' }
+                    : { background: 'rgba(28,18,10,0.7)', color: 'rgba(245,210,130,0.45)', border: '1px solid rgba(200,146,74,0.12)' }}>
                   {v} min
                 </button>
               ))}
               <button onClick={() => setShowCustom(v => !v)}
                 className="rounded-full px-4 py-1.5 text-xs font-medium transition-all"
                 style={showCustom
-                  ? { background: 'rgba(212,166,70,0.16)', color: '#f5dfa0', border: '1px solid rgba(212,166,70,0.32)' }
-                  : { background: 'rgba(28,18,10,0.7)', color: 'rgba(245,210,130,0.45)', border: '1px solid rgba(212,166,70,0.12)' }}>
+                  ? { background: 'rgba(200,146,74,0.16)', color: '#f5dfa0', border: '1px solid rgba(200,146,74,0.32)' }
+                  : { background: 'rgba(28,18,10,0.7)', color: 'rgba(245,210,130,0.45)', border: '1px solid rgba(200,146,74,0.12)' }}>
                 Custom
               </button>
             </div>
@@ -516,7 +516,7 @@ export default function ZenModePage() {
                   initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
                   className="overflow-hidden">
                   <div className="flex items-center gap-2 rounded-xl border px-3 py-2"
-                    style={{ background: 'rgba(18,12,8,0.9)', borderColor: 'rgba(212,166,70,0.18)' }}>
+                    style={{ background: 'rgba(18,12,8,0.9)', borderColor: 'rgba(200,146,74,0.18)' }}>
                     <input
                       type="number" min="1" max="180"
                       value={customInput}
@@ -539,9 +539,9 @@ export default function ZenModePage() {
             </AnimatePresence>
 
             {/* Progress bar */}
-            <div className="h-0.5 overflow-hidden rounded-full" style={{ background: 'rgba(212,166,70,0.1)' }}>
+            <div className="h-0.5 overflow-hidden rounded-full" style={{ background: 'rgba(200,146,74,0.1)' }}>
               <motion.div className="h-full rounded-full"
-                style={{ background: 'linear-gradient(90deg,rgba(212,100,20,0.9),rgba(212,166,70,1))' }}
+                style={{ background: 'linear-gradient(90deg,rgba(212,100,20,0.9),rgba(200,146,74,1))' }}
                 animate={{ width: `${progress}%` }} transition={{ duration: 0.6 }} />
             </div>
           </div>
@@ -551,21 +551,21 @@ export default function ZenModePage() {
             <motion.button onClick={toggleRunning} whileTap={{ scale: 0.95 }}
               className="rounded-full px-7 py-3 text-sm font-medium transition-all"
               style={{
-                background: running ? 'rgba(212,166,70,0.14)' : 'linear-gradient(135deg,rgba(212,100,20,0.9),rgba(212,166,70,0.85))',
+                background: running ? 'rgba(200,146,74,0.14)' : 'linear-gradient(135deg,rgba(212,100,20,0.9),rgba(200,146,74,0.85))',
                 color: running ? 'rgba(245,210,130,0.8)' : '#1c1208',
-                border: '1px solid rgba(212,166,70,0.3)',
+                border: '1px solid rgba(200,146,74,0.3)',
                 boxShadow: running ? 'none' : '0 4px 24px rgba(212,120,20,0.3)',
               }}>
               {running ? 'Pause' : 'Begin'}
             </motion.button>
             <button onClick={enterFocus}
               className="rounded-full px-5 py-3 text-sm font-medium transition-all"
-              style={{ background: 'rgba(212,166,70,0.08)', color: 'rgba(212,166,70,0.8)', border: '1px solid rgba(212,166,70,0.22)' }}>
+              style={{ background: 'rgba(200,146,74,0.08)', color: 'rgba(200,146,74,0.8)', border: '1px solid rgba(200,146,74,0.22)' }}>
               ✨ Focus
             </button>
             <button onClick={reset}
               className="rounded-full px-4 py-3 text-sm transition-all"
-              style={{ color: 'rgba(245,210,130,0.38)', border: '1px solid rgba(212,166,70,0.1)' }}>
+              style={{ color: 'rgba(245,210,130,0.38)', border: '1px solid rgba(200,146,74,0.1)' }}>
               ↺
             </button>
           </div>
@@ -574,15 +574,15 @@ export default function ZenModePage() {
 
       {/* ── Environment + Ambient ─────────────────────────────────────────── */}
       <section className="rounded-[1.6rem] px-4 py-3"
-        style={{ background: 'rgba(12,8,4,0.9)', border: '1px solid rgba(212,166,70,0.09)' }}>
+        style={{ background: 'rgba(12,8,4,0.9)', border: '1px solid rgba(200,146,74,0.09)' }}>
         <p className="text-[10px] mb-2" style={{ color: 'rgba(245,210,130,0.35)' }}>Sanctuary</p>
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           {(Object.entries(ENVIRONMENTS) as [EnvId, typeof ENVIRONMENTS[EnvId]][]).map(([id, env]) => (
             <button key={id} onClick={() => setEnv(id)}
               className="rounded-full px-3 py-1.5 text-xs whitespace-nowrap transition-all flex-shrink-0"
               style={focusEnv === id
-                ? { background: 'rgba(212,166,70,0.18)', color: '#f5dfa0', border: '1px solid rgba(212,166,70,0.32)', boxShadow: '0 0 10px rgba(212,166,70,0.1)' }
-                : { background: 'rgba(28,18,10,0.6)', color: 'rgba(245,210,130,0.42)', border: '1px solid rgba(212,166,70,0.08)' }}>
+                ? { background: 'rgba(200,146,74,0.18)', color: '#f5dfa0', border: '1px solid rgba(200,146,74,0.32)', boxShadow: '0 0 10px rgba(200,146,74,0.1)' }
+                : { background: 'rgba(28,18,10,0.6)', color: 'rgba(245,210,130,0.42)', border: '1px solid rgba(200,146,74,0.08)' }}>
               {env.emoji} {env.label}
             </button>
           ))}
@@ -594,8 +594,8 @@ export default function ZenModePage() {
             <button key={opt.id} onClick={() => setAmbient(opt.id)}
               className="flex-1 rounded-full py-1.5 text-xs font-medium transition-all"
               style={ambientId === opt.id
-                ? { background: 'rgba(212,166,70,0.16)', color: '#f5dfa0', border: '1px solid rgba(212,166,70,0.3)' }
-                : { background: 'rgba(18,12,8,0.6)', color: 'rgba(245,210,130,0.4)', border: '1px solid rgba(212,166,70,0.08)' }}>
+                ? { background: 'rgba(200,146,74,0.16)', color: '#f5dfa0', border: '1px solid rgba(200,146,74,0.3)' }
+                : { background: 'rgba(18,12,8,0.6)', color: 'rgba(245,210,130,0.4)', border: '1px solid rgba(200,146,74,0.08)' }}>
               {opt.emoji} {opt.label}
             </button>
           ))}

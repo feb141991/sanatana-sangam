@@ -419,13 +419,13 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center space-y-6 fade-in">
       <div className="w-20 h-20 rounded-full flex items-center justify-center text-4xl" style={{ background: 'var(--brand-primary-soft)' }}>🏡</div>
       <div>
-        <h2 className="font-display font-bold text-2xl text-[color:var(--brand-ink)] mb-2">Find Your Mandali</h2>
+        <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: 600, color: 'var(--text-cream)', letterSpacing: '-0.01em', marginBottom: '0.5rem' }}>Find Your Mandali</h2>
         <p className="text-[color:var(--brand-muted)] max-w-sm text-sm">
           We&rsquo;ll place you in your city&rsquo;s Sanatani Mandali — Wembley, Brampton, Andheri, or wherever you are. We&rsquo;ll create one if it doesn&rsquo;t exist yet.
         </p>
       </div>
 
-      <div className="glass-panel rounded-2xl border border-white/70 shadow-card p-5 w-full max-w-sm space-y-3">
+      <div className="glass-panel rounded-2xl border border-white/10 shadow-card p-5 w-full max-w-sm space-y-3">
 
         {/* Detected city display */}
         {detected ? (
@@ -1279,14 +1279,14 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
             style={{
               zIndex: 9991,
               background: 'linear-gradient(180deg, rgba(28,26,22,0.99) 0%, rgba(22,20,17,0.99) 100%)',
-              border: '1px solid rgba(212,166,70,0.14)',
+              border: '1px solid rgba(200,146,74,0.14)',
               borderBottom: 'none',
               paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 20px)',
             }}
           >
             {/* Handle */}
             <div className="flex justify-center mb-3">
-              <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(212,166,70,0.25)' }} />
+              <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(200,146,74,0.25)' }} />
             </div>
             <p className="text-xs font-semibold theme-dim uppercase tracking-widest px-1 pb-2">Mandali options</p>
             <button
@@ -1297,7 +1297,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
               className="w-full flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm theme-ink transition hover:bg-white/[0.06]"
               style={{ border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.03)' }}
             >
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(212,166,70,0.1)' }}>
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(200,146,74,0.1)' }}>
                 <MapPin size={15} style={{ color: 'var(--brand-primary)' }} />
               </div>
               <div className="text-left">

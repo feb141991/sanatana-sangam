@@ -185,8 +185,8 @@ export default function BhaktiClient() {
           style={{
             background:
               'linear-gradient(180deg, rgba(60,22,10,0.92) 0%, rgba(28,14,8,0.96) 100%)',
-            border: '1px solid rgba(212,166,70,0.18)',
-            boxShadow: '0 0 50px rgba(212,100,20,0.12)',
+            border: '1px solid rgba(200,146,74,0.18)',
+            boxShadow: '0 0 50px rgba(200,100,20,0.12)',
           }}
         >
           <IncenseParticles />
@@ -203,8 +203,14 @@ export default function BhaktiClient() {
               transition={{ delay: 0.5 }}
             >
               <h1
-                className="text-[2rem] font-semibold tracking-wide"
-                style={{ color: '#f5dfa0' }}
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: 'clamp(2rem, 7vw, 2.4rem)',
+                  fontWeight: 600,
+                  letterSpacing: '-0.01em',
+                  color: 'var(--text-cream)',
+                  lineHeight: 1.1,
+                }}
               >
                 Bhakti
               </h1>
@@ -235,7 +241,7 @@ export default function BhaktiClient() {
             >
               <Link
                 href={portal.href}
-                className="group block rounded-[1.8rem] p-5 transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                className="group block rounded-[1.8rem] p-5 motion-lift relative overflow-hidden"
                 style={{
                   background:
                     'linear-gradient(140deg, rgba(28,20,12,0.92), rgba(18,12,8,0.96))',
@@ -243,12 +249,16 @@ export default function BhaktiClient() {
                   boxShadow: `0 4px 32px ${portal.glow}`,
                 }}
               >
+                {/* Ambient corner glow */}
+                <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none" style={{
+                  background: `radial-gradient(circle at top right, ${portal.glow}, transparent 70%)`,
+                }} />
                 <div className="flex items-start gap-4">
                   <motion.div
                     className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full text-2xl"
                     style={{
-                      background: 'rgba(212,166,70,0.1)',
-                      border: '1px solid rgba(212,166,70,0.18)',
+                      background: 'rgba(200,146,74,0.1)',
+                      border: '1px solid rgba(200,146,74,0.18)',
                     }}
                     animate={{
                       boxShadow: [
@@ -309,7 +319,7 @@ export default function BhaktiClient() {
           className="rounded-[1.8rem] p-5"
           style={{
             background: 'rgba(18,12,8,0.9)',
-            border: '1px solid rgba(212,166,70,0.1)',
+            border: '1px solid rgba(200,146,74,0.1)',
           }}
         >
           <div className="flex items-center justify-between gap-3">
@@ -329,10 +339,10 @@ export default function BhaktiClient() {
               className="rounded-full px-4 py-2 text-xs font-medium transition-all"
               style={{
                 background: showPlayer
-                  ? 'rgba(212,166,70,0.18)'
-                  : 'rgba(212,166,70,0.08)',
-                border: '1px solid rgba(212,166,70,0.22)',
-                color: '#d4a830',
+                  ? 'rgba(200,146,74,0.18)'
+                  : 'rgba(200,146,74,0.08)',
+                border: '1px solid rgba(200,146,74,0.22)',
+                color: '#C8924A',
               }}
             >
               {showPlayer ? 'Hide' : 'Play now'}
@@ -366,9 +376,9 @@ export default function BhaktiClient() {
                   key={name}
                   className="rounded-full px-3 py-1 text-xs"
                   style={{
-                    background: 'rgba(212,166,70,0.07)',
+                    background: 'rgba(200,146,74,0.07)',
                     color: 'rgba(245,210,130,0.45)',
-                    border: '1px solid rgba(212,166,70,0.1)',
+                    border: '1px solid rgba(200,146,74,0.1)',
                   }}
                 >
                   {name}
@@ -386,12 +396,12 @@ export default function BhaktiClient() {
           className="rounded-[1.8rem] px-5 py-6 text-center"
           style={{
             background: 'rgba(12,8,4,0.8)',
-            border: '1px solid rgba(212,166,70,0.07)',
+            border: '1px solid rgba(200,146,74,0.07)',
           }}
         >
           <p
             className="text-[10px] uppercase tracking-[0.18em]"
-            style={{ color: 'rgba(212,166,70,0.45)' }}
+            style={{ color: 'rgba(200,146,74,0.45)' }}
           >
             Verse of the day
           </p>
@@ -401,7 +411,13 @@ export default function BhaktiClient() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0 }}
             className="mt-4 text-base leading-relaxed"
-            style={{ color: 'rgba(245,220,150,0.65)', fontStyle: 'italic' }}
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '1.05rem',
+              fontWeight: 500,
+              color: 'rgba(245,220,150,0.75)',
+              fontStyle: 'italic',
+            }}
           >
             &ldquo;{DAILY_SHLOKA.original}&rdquo;
           </motion.p>
@@ -418,7 +434,7 @@ export default function BhaktiClient() {
 
           <p
             className="mt-3 text-xs"
-            style={{ color: 'rgba(212,166,70,0.3)' }}
+            style={{ color: 'rgba(200,146,74,0.3)' }}
           >
             {DAILY_SHLOKA.source}
           </p>

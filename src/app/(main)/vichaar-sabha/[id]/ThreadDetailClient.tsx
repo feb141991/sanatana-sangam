@@ -80,20 +80,20 @@ export default function ThreadDetailClient({
       </button>
 
       {/* Thread */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-5 space-y-4">
+      <div className="rounded-2xl border p-5 space-y-4" style={{ background: 'rgba(26, 22, 16, 0.95)', borderColor: 'rgba(200, 146, 74, 0.14)' }}>
         <div className="flex items-center gap-2">
           <span className="text-xs px-2 py-0.5 rounded-full font-medium border" style={{ background: 'var(--brand-primary-soft)', color: 'var(--brand-primary)', borderColor: 'rgba(123, 26, 26, 0.16)' }}>
             {cat?.emoji} {cat?.label}
           </span>
           {threadState.is_answered && (
-            <span className="text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1 border" style={{ background: '#fbf4e8', color: '#8c5a1f', borderColor: '#ead5ad' }}>
+            <span className="text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1 border" style={{ background: 'rgba(200,146,74,0.12)', color: '#C8924A', borderColor: 'rgba(200,146,74,0.28)' }}>
               <CheckCircle size={10} /> Answered
             </span>
           )}
         </div>
 
         <div className="flex items-start justify-between gap-3">
-          <h1 className="font-display font-bold text-xl text-gray-900">{threadState.title}</h1>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-cream)', lineHeight: 1.25, letterSpacing: '-0.01em' }}>{threadState.title}</h1>
           <ContentSafetyMenu
             userId={userId}
             authorId={threadState.author_id}
@@ -103,12 +103,12 @@ export default function ThreadDetailClient({
             onHideAuthor={leaveThreadView}
           />
         </div>
-        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{threadState.body}</p>
+        <p className="leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{threadState.body}</p>
 
         {threadState.tags.length > 0 && (
           <div className="flex gap-1.5 flex-wrap">
             {threadState.tags.map((tag) => (
-              <span key={tag} className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">#{tag}</span>
+              <span key={tag} className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(200,146,74,0.08)', color: 'rgba(200,146,74,0.65)', border: '1px solid rgba(200,146,74,0.15)' }}>#{tag}</span>
             ))}
           </div>
         )}
@@ -227,16 +227,17 @@ function ReplyCard({
   const level    = SPIRITUAL_LEVELS.find((l) => l.value === author?.spiritual_level);
 
   return (
-    <div className={`bg-white rounded-2xl border shadow-card p-4 space-y-2 ${
-      reply.is_accepted ? 'border-[#ead5ad]' : 'border-gray-100'
-    }`}>
+    <div className="rounded-2xl border p-4 space-y-2" style={{
+      background: reply.is_accepted ? 'rgba(200,146,74,0.06)' : 'rgba(22, 18, 12, 0.92)',
+      borderColor: reply.is_accepted ? 'rgba(200,146,74,0.28)' : 'rgba(255,255,255,0.07)',
+    }}>
       {reply.is_accepted && (
-        <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: '#8c5a1f' }}>
+        <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: '#C8924A' }}>
           <CheckCircle size={13} /> Accepted Answer
         </div>
       )}
-      <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-wrap">{reply.body}</p>
-      <div className="flex items-start justify-between gap-3 pt-1 text-xs text-gray-400">
+      <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--text-muted)' }}>{reply.body}</p>
+      <div className="flex items-start justify-between gap-3 pt-1 text-xs" style={{ color: 'rgba(255,255,255,0.28)' }}>
         <div className="flex items-center gap-2 min-w-0">
           <div className="w-6 h-6 rounded-full bg-gradient-sacred flex items-center justify-center text-white text-[10px] font-bold">
             {initials}

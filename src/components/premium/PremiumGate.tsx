@@ -51,8 +51,8 @@ function UpgradePill({ compact, onClick }: { compact?: boolean; onClick: () => v
         onClick={onClick}
         className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold transition active:scale-95"
         style={{
-          background: 'linear-gradient(135deg, rgba(212,166,70,0.18), rgba(180,120,10,0.18))',
-          border: '1px solid rgba(212,166,70,0.3)',
+          background: 'linear-gradient(135deg, rgba(200,146,74,0.18), rgba(180,120,10,0.18))',
+          border: '1px solid rgba(200,146,74,0.3)',
           color: 'var(--brand-primary-strong)',
         }}
       >
@@ -67,8 +67,8 @@ function UpgradePill({ compact, onClick }: { compact?: boolean; onClick: () => v
       onClick={onClick}
       className="flex items-center gap-2 px-4 py-2.5 rounded-2xl transition active:scale-[0.98]"
       style={{
-        background: 'linear-gradient(135deg, rgba(212,166,70,0.12), rgba(180,120,10,0.10))',
-        border: '1px solid rgba(212,166,70,0.25)',
+        background: 'linear-gradient(135deg, rgba(200,146,74,0.12), rgba(180,120,10,0.10))',
+        border: '1px solid rgba(200,146,74,0.25)',
         color: 'var(--brand-primary-strong)',
       }}
     >

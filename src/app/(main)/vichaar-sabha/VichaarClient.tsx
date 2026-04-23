@@ -384,8 +384,8 @@ export default function VichaarClient({
                       ? 'bg-amber-600 text-white'
                       : 'bg-[#7B1A1A] text-white'
                     : isQuality
-                      ? 'bg-amber-50 text-amber-700 border border-amber-200 hover:border-amber-300'
-                      : 'bg-white text-gray-500 border border-gray-200 hover:border-[rgba(123,26,26,0.18)]'
+                      ? 'bg-[rgba(200,146,74,0.08)] text-[color:var(--brand-primary)] border border-[rgba(200,146,74,0.2)] hover:border-[rgba(200,146,74,0.35)]'
+                      : 'border border-white/10 text-[color:var(--brand-muted)] hover:border-[rgba(200,146,74,0.25)] hover:text-[color:var(--brand-ink)]'
                 }`}
               >
                 {filter.label}
@@ -410,7 +410,7 @@ export default function VichaarClient({
           className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition ${
             activeTab === 'all'
               ? 'text-[#7B1A1A] border'
-              : 'bg-white text-gray-500 border border-gray-200 hover:border-[rgba(123,26,26,0.18)]'
+              : 'border border-white/10 text-[color:var(--brand-muted)] hover:border-[rgba(200,146,74,0.25)] hover:text-[color:var(--brand-ink)]'
           }`}
           style={activeTab === 'all'
             ? { background: 'var(--brand-primary-soft)', borderColor: 'rgba(123, 26, 26, 0.16)' }
@@ -425,7 +425,7 @@ export default function VichaarClient({
             className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition ${
               activeTab === cat.value
                 ? 'text-[#7B1A1A] border'
-                : 'bg-white text-gray-500 border border-gray-200 hover:border-[rgba(123,26,26,0.18)]'
+                : 'border border-white/10 text-[color:var(--brand-muted)] hover:border-[rgba(200,146,74,0.25)] hover:text-[color:var(--brand-ink)]'
             }`}
             style={activeTab === cat.value
               ? { background: 'var(--brand-primary-soft)', borderColor: 'rgba(123, 26, 26, 0.16)' }
@@ -688,7 +688,7 @@ function ThreadCard({
 
   return (
     <Link href={`/vichaar-sabha/${thread.id}`}>
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-4 space-y-3 card-hover cursor-pointer">
+      <div className="rounded-2xl border p-4 space-y-3 card-hover cursor-pointer motion-lift" style={{ background: 'rgba(26, 22, 16, 0.95)', borderColor: 'rgba(200, 146, 74, 0.12)' }}>
         {/* Category + answered badge */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap">

@@ -313,7 +313,7 @@ function NityaCustomSheet({
         style={{
           zIndex: 9999,
           background: 'linear-gradient(175deg, #1a0d1a 0%, #110808 60%, #130c06 100%)',
-          border: '1px solid rgba(212,166,70,0.18)',
+          border: '1px solid rgba(200,146,74,0.18)',
           borderBottom: 'none',
           maxHeight: '90dvh',
           paddingBottom: 'env(safe-area-inset-bottom, 16px)',
@@ -332,7 +332,7 @@ function NityaCustomSheet({
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-2 pb-4 flex-shrink-0">
           <div>
-            <h2 className="text-xl font-bold" style={{ color: 'var(--brand-ink)' }}>Customise Your Nitya</h2>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.35rem', fontWeight: 600, color: 'var(--text-cream)', letterSpacing: '-0.01em' }}>Customise Your Nitya</h2>
             <p className="text-xs mt-0.5" style={{ color: 'var(--brand-muted)' }}>Rename steps, set your wake-up time, add practices</p>
           </div>
           <button
@@ -355,7 +355,7 @@ function NityaCustomSheet({
             </div>
             <div
               className="flex items-center gap-3 rounded-2xl px-4 py-3"
-              style={{ background: 'rgba(212,166,70,0.06)', border: '1px solid rgba(212,166,70,0.12)' }}
+              style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.12)' }}
             >
               <Bell size={16} style={{ color: accent }} />
               <div className="flex-1">
@@ -367,9 +367,9 @@ function NityaCustomSheet({
                 onChange={e => setDraft(prev => ({ ...prev, alertTime: e.target.value }))}
                 className="rounded-xl px-3 py-1.5 text-sm font-semibold border focus:outline-none focus:ring-1"
                 style={{
-                  background: 'rgba(212,166,70,0.12)',
+                  background: 'rgba(200,146,74,0.12)',
                   color: accent,
-                  borderColor: 'rgba(212,166,70,0.25)',
+                  borderColor: 'rgba(200,146,74,0.25)',
                   colorScheme: 'dark',
                 }}
               />
@@ -390,7 +390,7 @@ function NityaCustomSheet({
                 <div
                   key={step.id}
                   className="flex items-center gap-3 rounded-2xl px-4 py-3"
-                  style={{ background: 'rgba(212,166,70,0.05)', border: '1px solid rgba(212,166,70,0.1)' }}
+                  style={{ background: 'rgba(200,146,74,0.05)', border: '1px solid rgba(200,146,74,0.1)' }}
                 >
                   <span className="text-xl flex-shrink-0">{step.icon}</span>
                   <div className="flex-1 min-w-0">
@@ -404,7 +404,7 @@ function NityaCustomSheet({
                       className="w-full rounded-lg px-2.5 py-1.5 text-sm border focus:outline-none focus:ring-1 bg-transparent"
                       style={{
                         color: 'var(--brand-ink)',
-                        borderColor: 'rgba(212,166,70,0.2)',
+                        borderColor: 'rgba(200,146,74,0.2)',
                       }}
                     />
                   </div>
@@ -427,7 +427,7 @@ function NityaCustomSheet({
                   <div
                     key={es.id}
                     className="flex items-center gap-3 rounded-xl px-3 py-2.5"
-                    style={{ background: 'rgba(212,166,70,0.06)', border: '1px solid rgba(212,166,70,0.12)' }}
+                    style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.12)' }}
                   >
                     <span className="text-lg">{es.icon}</span>
                     <span className="flex-1 text-sm" style={{ color: 'var(--brand-ink)' }}>{es.label}</span>
@@ -443,7 +443,7 @@ function NityaCustomSheet({
             {/* Add new step form */}
             <div
               className="rounded-2xl px-4 py-4 space-y-3"
-              style={{ background: 'rgba(212,166,70,0.05)', border: '1px solid rgba(212,166,70,0.1)' }}
+              style={{ background: 'rgba(200,146,74,0.05)', border: '1px solid rgba(200,146,74,0.1)' }}
             >
               <div className="flex gap-2">
                 <input
@@ -453,7 +453,7 @@ function NityaCustomSheet({
                   onChange={e => setNewStepIcon(e.target.value)}
                   maxLength={4}
                   className="w-16 rounded-xl px-2 py-2 text-center text-lg border focus:outline-none bg-transparent"
-                  style={{ borderColor: 'rgba(212,166,70,0.2)', color: 'var(--brand-ink)' }}
+                  style={{ borderColor: 'rgba(200,146,74,0.2)', color: 'var(--brand-ink)' }}
                 />
                 <input
                   type="text"
@@ -462,7 +462,7 @@ function NityaCustomSheet({
                   onChange={e => setNewStepLabel(e.target.value)}
                   maxLength={50}
                   className="flex-1 rounded-xl px-3 py-2 text-sm border focus:outline-none bg-transparent"
-                  style={{ borderColor: 'rgba(212,166,70,0.2)', color: 'var(--brand-ink)' }}
+                  style={{ borderColor: 'rgba(200,146,74,0.2)', color: 'var(--brand-ink)' }}
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -473,7 +473,7 @@ function NityaCustomSheet({
                   value={newStepMins}
                   onChange={e => setNewStepMins(Number(e.target.value))}
                   className="w-16 rounded-xl px-2 py-1.5 text-sm text-center border focus:outline-none bg-transparent"
-                  style={{ borderColor: 'rgba(212,166,70,0.2)', color: 'var(--brand-ink)' }}
+                  style={{ borderColor: 'rgba(200,146,74,0.2)', color: 'var(--brand-ink)' }}
                 />
                 <button
                   onClick={addExtraStep}
@@ -495,9 +495,9 @@ function NityaCustomSheet({
             whileTap={{ scale: 0.97 }}
             className="w-full py-4 rounded-2xl font-bold text-base"
             style={{
-              background: 'linear-gradient(135deg, #c8920a 0%, #d4a818 50%, #b07a08 100%)',
+              background: 'linear-gradient(135deg, #C8924A 0%, #D4784A 50%, #b07040 100%)',
               color: '#1c1c1a',
-              boxShadow: '0 4px 24px rgba(212,166,70,0.3)',
+              boxShadow: '0 4px 24px rgba(200,146,74,0.3)',
             }}
           >
             Save Customisation
@@ -552,7 +552,7 @@ function ProUpgradeSheet({ onClose, accent }: { onClose: () => void; accent: str
         className="w-full max-w-2xl mx-auto rounded-t-3xl p-6 space-y-4"
         style={{
           background: 'linear-gradient(180deg,#1a1408 0%,#110e04 100%)',
-          border: '1px solid rgba(212,166,70,0.22)',
+          border: '1px solid rgba(200,146,74,0.22)',
         }}
         onClick={e => e.stopPropagation()}
       >

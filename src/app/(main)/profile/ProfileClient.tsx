@@ -365,12 +365,12 @@ export default function ProfileClient({
   .card { background: #fff; border-radius: 16px; padding: 18px; margin-bottom: 16px; border: 1px solid rgba(0,0,0,0.07); box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
   .meta { font-size: 13px; color: #888; margin-top: 4px; }
   .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .stat { text-align: center; padding: 12px; background: #fef9ef; border-radius: 12px; border: 1px solid rgba(212,166,70,0.2); }
+  .stat { text-align: center; padding: 12px; background: #fef9ef; border-radius: 12px; border: 1px solid rgba(200,146,74,0.2); }
   .stat .num { font-size: 28px; font-weight: 800; color: #c8920a; }
   .stat .label { font-size: 11px; color: #888; margin-top: 3px; }
   .heatmap { display: flex; flex-wrap: wrap; gap: 3px; }
   ul { padding-left: 18px; font-size: 14px; line-height: 2; }
-  .badge { display: inline-block; background: rgba(212,166,70,0.15); color: #7B1A1A; border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 600; margin-left: 8px; }
+  .badge { display: inline-block; background: rgba(200,146,74,0.15); color: #7B1A1A; border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 600; margin-left: 8px; }
   .footer { text-align: center; font-size: 11px; color: #aaa; margin-top: 24px; }
   @media print { body { padding: 0; } }
 </style>
@@ -605,7 +605,7 @@ export default function ProfileClient({
                 type="button"
                 onClick={() => avatarUrl && setShowAvatarPreview(true)}
                 disabled={!avatarUrl}
-                className={`relative w-16 h-16 rounded-full bg-[color:var(--brand-primary-soft)] border border-[rgba(212,166,70,0.16)] flex items-center justify-center text-[color:var(--brand-primary-strong)] text-xl font-medium overflow-hidden ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
+                className={`relative w-16 h-16 rounded-full bg-[color:var(--brand-primary-soft)] border border-[rgba(200,146,74,0.16)] flex items-center justify-center text-[color:var(--brand-primary-strong)] text-xl font-medium overflow-hidden ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
                 title={avatarUrl ? 'View profile photo' : 'No profile photo yet'}
               >
                 {avatarUrl
@@ -614,7 +614,7 @@ export default function ProfileClient({
               </button>
               <label
                 htmlFor="avatar-upload"
-                className={`absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border border-[rgba(212,166,70,0.16)] bg-[color:var(--surface-soft)] shadow-md ${uploading ? 'opacity-60' : 'cursor-pointer'}`}
+                className={`absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border border-[rgba(200,146,74,0.16)] bg-[color:var(--surface-soft)] shadow-md ${uploading ? 'opacity-60' : 'cursor-pointer'}`}
                 title="Change photo"
               >
                 {uploading
@@ -639,7 +639,7 @@ export default function ProfileClient({
                     style={{
                       background: 'linear-gradient(135deg, #d4a818 0%, #c8920a 60%, #b07a08 100%)',
                       color: '#1c1c1a',
-                      boxShadow: '0 0 8px rgba(212,166,70,0.35)',
+                      boxShadow: '0 0 8px rgba(200,146,74,0.35)',
                     }}
                   >
                     ✦ SANGAM PRO
@@ -1033,9 +1033,9 @@ export default function ProfileClient({
                     color: '#1c1c1a',
                     borderColor: 'transparent',
                   } : {
-                    background: 'rgba(212,166,70,0.06)',
+                    background: 'rgba(200,146,74,0.06)',
                     color: 'var(--brand-muted)',
-                    borderColor: 'rgba(212,166,70,0.14)',
+                    borderColor: 'rgba(200,146,74,0.14)',
                   }}
                 >
                   {lang.label}
@@ -1065,7 +1065,7 @@ export default function ProfileClient({
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-medium theme-muted">Tradition</label>
               <span className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full"
-                style={{ background: 'rgba(212,166,70,0.12)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(212,166,70,0.2)' }}>
+                style={{ background: 'rgba(200,146,74,0.12)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(200,146,74,0.2)' }}>
                 <Lock size={9} /> Set at signup
               </span>
             </div>
@@ -1257,7 +1257,7 @@ export default function ProfileClient({
         <div className="flex items-start gap-4">
           <div
             className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
-            style={{ background: 'rgba(212,166,70,0.12)', color: 'var(--brand-primary-strong)' }}
+            style={{ background: 'rgba(200,146,74,0.12)', color: 'var(--brand-primary-strong)' }}
           >
             <BarChart2 size={22} />
           </div>
@@ -1272,7 +1272,7 @@ export default function ProfileClient({
           className="mt-3 w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-sm font-semibold transition disabled:opacity-60"
           style={{
             background: reportLoading
-              ? 'rgba(212,166,70,0.12)'
+              ? 'rgba(200,146,74,0.12)'
               : 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))',
             color: reportLoading ? 'var(--brand-muted)' : '#1c1c1a',
           }}
@@ -1284,12 +1284,13 @@ export default function ProfileClient({
       </SurfaceSection>
 
       {/* ── Account ── */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-3">
-        <div className="text-sm text-gray-500">
-          Signed in as <span className="font-medium text-gray-700">{userEmail}</span>
+      <div className="rounded-2xl border p-4 space-y-3" style={{ background: 'rgba(22, 18, 12, 0.9)', borderColor: 'rgba(255,255,255,0.07)' }}>
+        <div className="text-sm" style={{ color: 'var(--text-dim)' }}>
+          Signed in as <span className="font-medium" style={{ color: 'var(--text-muted)' }}>{userEmail}</span>
         </div>
         <button onClick={signOut}
-          className="flex items-center gap-2 text-sm text-red-500 hover:text-red-700 transition font-medium">
+          className="flex items-center gap-2 text-sm font-medium transition"
+          style={{ color: 'rgba(220,80,80,0.8)' }}>
           <LogOut size={15} /> Sign out
         </button>
       </div>

@@ -110,7 +110,7 @@ function JapaAmbient() {
           style={{
             width: 1 + (i % 2), height: 1 + (i % 2),
             left: `${(i * 5.1) % 98}%`, top: `${(i * 6.9) % 78}%`,
-            background: `rgba(212,140,40,${0.14 + (i % 4) * 0.07})`,
+            background: `rgba(200,146,74,${0.14 + (i % 4) * 0.07})`,
           }}
           animate={{ opacity: [0.1, 0.5, 0.1], scale: [0.7, 1.6, 0.7] }}
           transition={{ duration: 3.5 + (i % 5) * 0.7, repeat: Infinity, delay: i * 0.32 }}
@@ -136,21 +136,21 @@ function MantraPickerSheet({
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 32, stiffness: 320 }}
         className="w-full max-w-2xl mx-auto rounded-t-3xl shadow-2xl p-5 space-y-3 max-h-[75vh] overflow-y-auto"
-        style={{ background: 'linear-gradient(180deg, #1f0e0a 0%, #150807 100%)', border: '1px solid rgba(212,140,40,0.22)' }}
+        style={{ background: 'linear-gradient(180deg, #1f0e0a 0%, #150807 100%)', border: '1px solid rgba(200,146,74,0.22)' }}
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-2">
           <h3 className="font-bold" style={{ color: '#f5dfa0' }}>Choose Mantra</h3>
           <button onClick={onClose}
             className="w-8 h-8 rounded-full flex items-center justify-center text-lg"
-            style={{ background: 'rgba(212,140,40,0.14)', color: '#f5dfa0' }}>×</button>
+            style={{ background: 'rgba(200,146,74,0.14)', color: '#f5dfa0' }}>×</button>
         </div>
         {mantras.map(m => (
           <button key={m.id} onClick={() => { onSelect(m); onClose(); }}
             className="w-full text-left rounded-2xl p-4 border transition-all"
             style={selected?.id === m.id
-              ? { borderColor: 'rgba(212,140,40,0.55)', background: 'rgba(212,140,40,0.12)' }
-              : { borderColor: 'rgba(212,140,40,0.12)', background: 'rgba(18,10,6,0.8)' }}>
+              ? { borderColor: 'rgba(200,146,74,0.55)', background: 'rgba(200,146,74,0.12)' }
+              : { borderColor: 'rgba(200,146,74,0.12)', background: 'rgba(18,10,6,0.8)' }}>
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-semibold text-sm" style={{ color: '#f5dfa0' }}>{m.name}</p>
@@ -159,7 +159,7 @@ function MantraPickerSheet({
                   {m.sanskrit?.split('\n')[0]?.slice(0, 50)}…
                 </p>
               </div>
-              {selected?.id === m.id && <Check size={18} style={{ color: '#d4a830' }} />}
+              {selected?.id === m.id && <Check size={18} style={{ color: '#C8924A' }} />}
             </div>
           </button>
         ))}
@@ -185,10 +185,10 @@ function CompletionSheet({
         initial={{ y: '100%' }} animate={{ y: 0 }}
         transition={{ type: 'spring', damping: 30, stiffness: 280 }}
         className="w-full max-w-2xl mx-auto rounded-t-3xl shadow-2xl p-8 space-y-6"
-        style={{ background: 'linear-gradient(180deg, #200e0a 0%, #130608 100%)', border: '1px solid rgba(212,140,40,0.22)' }}>
+        style={{ background: 'linear-gradient(180deg, #200e0a 0%, #130608 100%)', border: '1px solid rgba(200,146,74,0.22)' }}>
         <div className="text-center space-y-3">
           <motion.div className="text-6xl" animate={{ scale: [0.7, 1.15, 1] }} transition={{ duration: 0.65 }}>🙏</motion.div>
-          <h2 className="font-bold text-2xl" style={{ color: '#f5dfa0' }}>Japa Complete</h2>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.7rem', fontWeight: 600, color: 'var(--text-cream)', letterSpacing: '-0.01em' }}>Japa Complete</h2>
           <p style={{ color: 'rgba(245,200,120,0.5)' }}>
             {rounds} mala{rounds > 1 ? 's' : ''} of {mantraName}
           </p>
@@ -200,17 +200,17 @@ function CompletionSheet({
             { label: 'Time',   value: `${mins}m ${secs}s` },
           ].map(s => (
             <div key={s.label} className="rounded-2xl p-4 text-center border"
-              style={{ background: 'rgba(180,60,20,0.09)', borderColor: 'rgba(212,140,40,0.18)' }}>
-              <p className="font-bold text-xl" style={{ color: '#d4a830' }}>{s.value}</p>
+              style={{ background: 'rgba(180,60,20,0.09)', borderColor: 'rgba(200,146,74,0.18)' }}>
+              <p className="font-bold text-xl" style={{ color: '#C8924A' }}>{s.value}</p>
               <p className="text-xs mt-1" style={{ color: 'rgba(245,200,120,0.42)' }}>{s.label}</p>
             </div>
           ))}
         </div>
         {streak > 0 && isPro && (
           <div className="flex items-center justify-center gap-2 rounded-2xl p-3 border"
-            style={{ background: 'rgba(180,100,10,0.1)', borderColor: 'rgba(212,140,40,0.2)' }}>
-            <Flame size={20} style={{ color: '#d4a830' }} />
-            <span className="font-semibold" style={{ color: '#d4a830' }}>{streak} day streak!</span>
+            style={{ background: 'rgba(180,100,10,0.1)', borderColor: 'rgba(200,146,74,0.2)' }}>
+            <Flame size={20} style={{ color: '#C8924A' }} />
+            <span className="font-semibold" style={{ color: '#C8924A' }}>{streak} day streak!</span>
           </div>
         )}
         <button onClick={onClose}
@@ -239,12 +239,12 @@ function JapaHistoryChart({ history = [], streak, isPro = false }: { history: Da
 
   return (
     <div className="mx-4 mb-4 rounded-2xl border px-4 py-4 space-y-3"
-      style={{ background: 'rgba(18,10,6,0.9)', borderColor: 'rgba(212,140,40,0.12)' }}>
+      style={{ background: 'rgba(18,10,6,0.9)', borderColor: 'rgba(200,146,74,0.12)' }}>
       <div className="flex items-center justify-between">
         <p className="text-sm font-semibold" style={{ color: '#f5dfa0' }}>Last 30 days</p>
         <div className="flex items-center gap-3 text-xs">
           {streak > 0 && isPro && (
-            <span className="flex items-center gap-1" style={{ color: '#d4a830' }}>
+            <span className="flex items-center gap-1" style={{ color: '#C8924A' }}>
               <Flame size={12} /> {streak}d streak
             </span>
           )}
@@ -260,8 +260,8 @@ function JapaHistoryChart({ history = [], streak, isPro = false }: { history: Da
                 ? 'linear-gradient(135deg,#d4643a,#7B1A1A)'
                 : day.isToday
                   ? 'rgba(123,26,26,0.22)'
-                  : 'rgba(212,140,40,0.06)',
-              boxShadow: day.isToday ? 'inset 0 0 0 1.5px rgba(212,140,40,0.3)' : undefined,
+                  : 'rgba(200,146,74,0.06)',
+              boxShadow: day.isToday ? 'inset 0 0 0 1.5px rgba(200,146,74,0.3)' : undefined,
             }} />
         ))}
       </div>
@@ -271,7 +271,7 @@ function JapaHistoryChart({ history = [], streak, isPro = false }: { history: Da
           accent="#d4643a"
           size={44}
           strokeWidth={4}
-          label={<span className="text-[9px] font-bold" style={{ color: '#d4a830' }}>{completionPct}%</span>}
+          label={<span className="text-[9px] font-bold" style={{ color: '#C8924A' }}>{completionPct}%</span>}
         />
         <p className="text-[11px]" style={{ color: 'rgba(245,200,120,0.45)' }}>consistency this month</p>
       </div>
@@ -320,9 +320,9 @@ function JapaFocusOverlay({
           onClick={onClose}
           className="flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium"
           style={{
-            background: 'rgba(212,140,40,0.1)',
-            border: '1px solid rgba(212,140,40,0.22)',
-            color: '#d4a830',
+            background: 'rgba(200,146,74,0.1)',
+            border: '1px solid rgba(200,146,74,0.22)',
+            color: '#C8924A',
           }}
         >
           <ChevronLeft size={16} />
@@ -333,9 +333,9 @@ function JapaFocusOverlay({
         </div>
         {streak > 0 && (
           <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5"
-            style={{ background: 'rgba(212,140,40,0.1)', border: '1px solid rgba(212,140,40,0.2)' }}>
-            <Flame size={12} style={{ color: '#d4a830' }} />
-            <span className="text-[10px] font-semibold" style={{ color: '#d4a830' }}>{streak}d</span>
+            style={{ background: 'rgba(200,146,74,0.1)', border: '1px solid rgba(200,146,74,0.2)' }}>
+            <Flame size={12} style={{ color: '#C8924A' }} />
+            <span className="text-[10px] font-semibold" style={{ color: '#C8924A' }}>{streak}d</span>
           </div>
         )}
       </div>
@@ -349,12 +349,12 @@ function JapaFocusOverlay({
             <p className="text-4xl font-bold" style={{ color: '#d4643a' }}>{roundsDone}</p>
             <p className="text-xs mt-1" style={{ color: 'rgba(245,200,120,0.42)' }}>Rounds</p>
           </div>
-          <div className="w-px h-10" style={{ background: 'rgba(212,140,40,0.18)' }} />
+          <div className="w-px h-10" style={{ background: 'rgba(200,146,74,0.18)' }} />
           <div className="text-center">
             <p className="text-4xl font-bold font-mono" style={{ color: '#f5dfa0' }}>{formatTime(duration)}</p>
             <p className="text-xs mt-1" style={{ color: 'rgba(245,200,120,0.42)' }}>Time</p>
           </div>
-          <div className="w-px h-10" style={{ background: 'rgba(212,140,40,0.18)' }} />
+          <div className="w-px h-10" style={{ background: 'rgba(200,146,74,0.18)' }} />
           <div className="text-center">
             <p className="text-4xl font-bold" style={{ color: 'rgba(245,200,120,0.55)' }}>{targetRounds}</p>
             <p className="text-xs mt-1" style={{ color: 'rgba(245,200,120,0.42)' }}>Target</p>
@@ -397,7 +397,7 @@ function JapaFocusOverlay({
         {/* Mantra text */}
         <motion.p
           className="text-center px-4 font-bold font-[family:var(--font-deva)] text-base leading-relaxed"
-          style={{ color: '#f5dfa0', textShadow: '0 0 22px rgba(212,140,40,0.28)' }}
+          style={{ color: '#f5dfa0', textShadow: '0 0 22px rgba(200,146,74,0.28)' }}
           animate={{ opacity: [0.65, 1, 0.65] }}
           transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}>
           {selectedMantra?.sanskrit?.split('\n')[0] ?? defaultMantraShort}
@@ -405,9 +405,9 @@ function JapaFocusOverlay({
 
         {/* Audio player */}
         <div className="w-full max-w-xs rounded-2xl overflow-hidden border"
-          style={{ borderColor: 'rgba(212,140,40,0.18)', background: 'rgba(14,8,4,0.5)' }}>
+          style={{ borderColor: 'rgba(200,146,74,0.18)', background: 'rgba(14,8,4,0.5)' }}>
           <div className="flex items-center gap-2 px-3 pt-2.5 pb-1">
-            <Music2 size={11} style={{ color: 'rgba(212,140,40,0.5)' }} />
+            <Music2 size={11} style={{ color: 'rgba(200,146,74,0.5)' }} />
             <p className="text-[10px] tracking-wide" style={{ color: 'rgba(245,200,120,0.4)' }}>Mantra Audio</p>
           </div>
           <ChantAudioPlayer title="Japa focus" trackIds={audioTrackIds} compact />
@@ -428,7 +428,7 @@ function JapaFocusOverlay({
         <button
           onClick={onReset}
           className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl border text-sm font-medium"
-          style={{ borderColor: 'rgba(212,140,40,0.15)', color: 'rgba(245,200,120,0.45)' }}>
+          style={{ borderColor: 'rgba(200,146,74,0.15)', color: 'rgba(245,200,120,0.45)' }}>
           <RotateCcw size={14} /> Reset
         </button>
       </div>
@@ -595,18 +595,18 @@ export default function JapaClient({
         initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <button onClick={() => router.back()}
           className="w-9 h-9 rounded-full flex items-center justify-center"
-          style={{ background: 'rgba(212,140,40,0.1)', border: '1px solid rgba(212,140,40,0.2)' }}>
-          <ChevronLeft size={20} style={{ color: '#d4a830' }} />
+          style={{ background: 'rgba(200,146,74,0.1)', border: '1px solid rgba(200,146,74,0.2)' }}>
+          <ChevronLeft size={20} style={{ color: '#C8924A' }} />
         </button>
         <div className="flex-1">
-          <h1 className="font-bold text-lg" style={{ color: '#f5dfa0' }}>Japa Counter</h1>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-cream)', letterSpacing: '-0.01em' }}>Japa Counter</h1>
           <p className="text-xs" style={{ color: 'rgba(245,200,120,0.38)' }}>मन, वाक्, कर्म</p>
         </div>
         {streak > 0 && isPro && (
           <div className="flex items-center gap-1 rounded-xl px-3 py-1.5"
-            style={{ background: 'rgba(212,140,40,0.1)', border: '1px solid rgba(212,140,40,0.2)' }}>
-            <Flame size={14} style={{ color: '#d4a830' }} />
-            <span className="text-xs font-semibold" style={{ color: '#d4a830' }}>{streak}d</span>
+            style={{ background: 'rgba(200,146,74,0.1)', border: '1px solid rgba(200,146,74,0.2)' }}>
+            <Flame size={14} style={{ color: '#C8924A' }} />
+            <span className="text-xs font-semibold" style={{ color: '#C8924A' }}>{streak}d</span>
           </div>
         )}
         {!isPro && <PremiumGate compact>{null}</PremiumGate>}
@@ -631,19 +631,19 @@ export default function JapaClient({
             {/* Mantra picker */}
             <button onClick={() => setShowPicker(true)}
               className="w-full flex items-center justify-between rounded-2xl border px-4 py-3"
-              style={{ background: 'rgba(18,10,6,0.85)', borderColor: 'rgba(212,140,40,0.18)' }}>
+              style={{ background: 'rgba(18,10,6,0.85)', borderColor: 'rgba(200,146,74,0.18)' }}>
               <div className="text-left">
                 <p className="text-xs font-medium" style={{ color: 'rgba(245,200,120,0.42)' }}>Mantra</p>
                 <p className="font-semibold mt-0.5" style={{ color: '#f5dfa0' }}>
                   {selectedMantra?.name ?? defaultMantra.name}
                 </p>
               </div>
-              <ChevronDown size={18} style={{ color: 'rgba(212,140,40,0.45)' }} />
+              <ChevronDown size={18} style={{ color: 'rgba(200,146,74,0.45)' }} />
             </button>
 
             {/* Rounds */}
             <div className="flex items-center justify-between rounded-2xl border px-4 py-3"
-              style={{ background: 'rgba(18,10,6,0.85)', borderColor: 'rgba(212,140,40,0.14)' }}>
+              style={{ background: 'rgba(18,10,6,0.85)', borderColor: 'rgba(200,146,74,0.14)' }}>
               <span className="text-sm font-medium" style={{ color: 'rgba(245,200,120,0.6)' }}>Rounds</span>
               <div className="flex items-center gap-2">
                 {[1, 2, 3, 5, 11].map(n => (
@@ -651,7 +651,7 @@ export default function JapaClient({
                     className="w-8 h-8 rounded-xl text-sm font-bold transition-all"
                     style={targetRounds === n
                       ? { background: 'linear-gradient(135deg,#d4643a,#7B1A1A)', color: '#f5dfa0' }
-                      : { background: 'rgba(212,140,40,0.09)', color: 'rgba(245,200,120,0.5)' }}>
+                      : { background: 'rgba(200,146,74,0.09)', color: 'rgba(245,200,120,0.5)' }}>
                     {n}
                   </button>
                 ))}
@@ -660,7 +660,7 @@ export default function JapaClient({
 
             {/* Bead type selector */}
             <div className="rounded-2xl border px-4 py-3"
-              style={{ background: 'rgba(18,10,6,0.85)', borderColor: 'rgba(212,140,40,0.14)' }}>
+              style={{ background: 'rgba(18,10,6,0.85)', borderColor: 'rgba(200,146,74,0.14)' }}>
               <p className="text-xs font-medium mb-2" style={{ color: 'rgba(245,200,120,0.42)' }}>Bead Type</p>
               <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-none">
                 {BEAD_TYPES.map(t => (
@@ -679,7 +679,7 @@ export default function JapaClient({
                       : {
                           background: 'rgba(28,14,8,0.7)',
                           color: 'rgba(245,200,120,0.45)',
-                          border: '1px solid rgba(212,140,40,0.12)',
+                          border: '1px solid rgba(200,146,74,0.12)',
                         }}>
                     {t.emoji} {t.label}
                   </motion.button>
@@ -703,7 +703,7 @@ export default function JapaClient({
 
           <svg width="220" height="220" className="rotate-[-90deg]">
             <circle cx="110" cy="110" r={radius}
-              fill="none" stroke="rgba(212,140,40,0.1)" strokeWidth="8" />
+              fill="none" stroke="rgba(200,146,74,0.1)" strokeWidth="8" />
             <circle cx="110" cy="110" r={radius}
               fill="none" stroke="url(#japaGrad)" strokeWidth="8"
               strokeLinecap="round"
@@ -714,7 +714,7 @@ export default function JapaClient({
             <defs>
               <linearGradient id="japaGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stopColor="#d4643a" />
-                <stop offset="100%" stopColor="#d4a830" />
+                <stop offset="100%" stopColor="#C8924A" />
               </linearGradient>
             </defs>
           </svg>
@@ -761,7 +761,7 @@ export default function JapaClient({
                   }}>
                     <span style={{ fontSize: 28, lineHeight: 1, marginLeft: 3, color: activeBead.textColor }}>▶</span>
                   </div>
-                  <motion.span className="text-sm font-semibold" style={{ color: '#d4a830' }}
+                  <motion.span className="text-sm font-semibold" style={{ color: '#C8924A' }}
                     animate={{ opacity: [0.6, 1, 0.6] }}
                     transition={{ duration: 2.5, repeat: Infinity }}>
                     Begin
@@ -781,7 +781,7 @@ export default function JapaClient({
                 <p className="text-3xl font-bold" style={{ color: '#d4643a' }}>{roundsDone}</p>
                 <p className="text-xs" style={{ color: 'rgba(245,200,120,0.42)' }}>Rounds done</p>
               </div>
-              <div className="w-px" style={{ background: 'rgba(212,140,40,0.15)' }} />
+              <div className="w-px" style={{ background: 'rgba(200,146,74,0.15)' }} />
               <div className="text-center">
                 <p className="text-3xl font-bold font-mono" style={{ color: '#f5dfa0' }}>{formatTime(duration)}</p>
                 <p className="text-xs" style={{ color: 'rgba(245,200,120,0.42)' }}>Time</p>
@@ -795,7 +795,7 @@ export default function JapaClient({
           animate={{ opacity: [0.65, 1, 0.65] }}
           transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}>
           <p className="font-bold font-[family:var(--font-deva)] text-lg leading-relaxed"
-            style={{ color: '#f5dfa0', textShadow: '0 0 22px rgba(212,140,40,0.28)' }}>
+            style={{ color: '#f5dfa0', textShadow: '0 0 22px rgba(200,146,74,0.28)' }}>
             {selectedMantra?.sanskrit?.split('\n')[0] ?? defaultMantra.short}
           </p>
           {selectedMantra?.transliteration && (
@@ -812,9 +812,9 @@ export default function JapaClient({
               initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               transition={{ delay: 0.25 }}>
               <div className="rounded-2xl overflow-hidden border"
-                style={{ borderColor: 'rgba(212,140,40,0.18)', background: 'rgba(14,8,4,0.5)' }}>
+                style={{ borderColor: 'rgba(200,146,74,0.18)', background: 'rgba(14,8,4,0.5)' }}>
                 <div className="flex items-center gap-2 px-3 pt-2.5 pb-1">
-                  <Music2 size={11} style={{ color: 'rgba(212,140,40,0.5)' }} />
+                  <Music2 size={11} style={{ color: 'rgba(200,146,74,0.5)' }} />
                   <p className="text-[10px] tracking-wide" style={{ color: 'rgba(245,200,120,0.4)' }}>Mantra Audio</p>
                 </div>
                 <ChantAudioPlayer title="Japa companion" trackIds={audioTrackIds} compact />
@@ -837,7 +837,7 @@ export default function JapaClient({
             <button
               onClick={() => setFocusMode(true)}
               className="py-4 px-4 rounded-2xl flex items-center gap-1.5 text-sm font-medium"
-              style={{ background: 'rgba(212,140,40,0.1)', border: '1px solid rgba(212,140,40,0.22)', color: '#d4a830' }}>
+              style={{ background: 'rgba(200,146,74,0.1)', border: '1px solid rgba(200,146,74,0.22)', color: '#C8924A' }}>
               <Maximize2 size={15} />
               Focus
             </button>
@@ -847,7 +847,7 @@ export default function JapaClient({
           <button
             onClick={handleReset}
             className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl border font-medium text-sm"
-            style={{ borderColor: 'rgba(212,140,40,0.15)', color: 'rgba(245,200,120,0.45)' }}>
+            style={{ borderColor: 'rgba(200,146,74,0.15)', color: 'rgba(245,200,120,0.45)' }}>
             <RotateCcw size={15} /> Reset
           </button>
         )}

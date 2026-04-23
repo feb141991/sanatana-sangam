@@ -256,7 +256,7 @@ export default function TirthaMapPage() {
             className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
               tradFilter === f.value
                 ? 'text-white'
-                : 'bg-[color:var(--brand-accent)] text-[color:var(--text-dim)] border border-[rgba(212,166,70,0.14)]'
+                : 'bg-[color:var(--brand-accent)] text-[color:var(--text-dim)] border border-[rgba(200,146,74,0.14)]'
             }`}
             style={tradFilter === f.value ? { background: 'var(--brand-primary)' } : {}}>
             {f.emoji} {f.label}
@@ -272,7 +272,7 @@ export default function TirthaMapPage() {
               className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
                 sampFilter === f.value
                   ? 'text-[#1c1c1a]'
-                  : 'bg-[color:var(--brand-accent)] text-[color:var(--text-dim)] border border-[rgba(212,166,70,0.14)]'
+                  : 'bg-[color:var(--brand-accent)] text-[color:var(--text-dim)] border border-[rgba(200,146,74,0.14)]'
               }`}
               style={sampFilter === f.value ? { background: 'var(--brand-secondary)' } : {}}>
               {f.emoji} {f.label}
@@ -291,7 +291,7 @@ export default function TirthaMapPage() {
               className={`px-2.5 py-1 rounded-full text-xs font-medium transition ${
                 radius === opt.value
                   ? 'text-[#1c1c1a]'
-                  : 'bg-[color:var(--brand-accent)] text-[color:var(--text-dim)] border border-[rgba(212,166,70,0.14)]'
+                  : 'bg-[color:var(--brand-accent)] text-[color:var(--text-dim)] border border-[rgba(200,146,74,0.14)]'
               }`}
               style={radius === opt.value ? { background: 'var(--brand-primary)' } : {}}>
               {opt.label}
@@ -307,7 +307,7 @@ export default function TirthaMapPage() {
             { label: 'Tradition', value: tradFilter === 'all' ? 'All' : tradFilter.slice(0, 1).toUpperCase() + tradFilter.slice(1) },
             { label: 'Radius', value: RADIUS_OPTIONS.find((option) => option.value === radius)?.label ?? '15 mi' },
           ].map((item) => (
-            <div key={item.label} className="rounded-[1.05rem] border px-3 py-3 text-center" style={{ background: 'rgba(51,51,48,0.72)', borderColor: 'rgba(212,166,70,0.14)' }}>
+            <div key={item.label} className="rounded-[1.05rem] border px-3 py-3 text-center" style={{ background: 'rgba(51,51,48,0.72)', borderColor: 'rgba(200,146,74,0.14)' }}>
               <p className="type-metric">{item.value}</p>
               <p className="type-card-label mt-1">{item.label}</p>
             </div>
@@ -380,7 +380,7 @@ export default function TirthaMapPage() {
                       <div className="flex items-start justify-between gap-2">
                         <div className="space-y-1">
                           <div className="inline-flex items-center gap-2 flex-wrap">
-                            <span className="type-chip rounded-full border px-2.5 py-1" style={{ background: 'var(--chip-fill)', color: 'var(--chip-text)', borderColor: 'rgba(212,166,70,0.16)' }}>
+                            <span className="type-chip rounded-full border px-2.5 py-1" style={{ background: 'var(--chip-fill)', color: 'var(--chip-text)', borderColor: 'rgba(200,146,74,0.16)' }}>
                               {traditionBadge}
                             </span>
                             {samp !== 'all' && sampInfo && (

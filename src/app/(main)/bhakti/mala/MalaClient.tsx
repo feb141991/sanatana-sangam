@@ -169,7 +169,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
       <p className="type-body">Target {target} • {activeMantraSource}</p>
       <button
         onClick={tapBead}
-        className="mx-auto flex h-48 w-48 items-center justify-center rounded-full border border-[rgba(212,166,70,0.18)] text-xl font-medium text-[color:var(--text-cream)] shadow-sacred"
+        className="mx-auto flex h-48 w-48 items-center justify-center rounded-full border border-[rgba(200,146,74,0.18)] text-xl font-medium text-[color:var(--text-cream)] shadow-sacred"
         style={{ background: 'radial-gradient(circle at 30% 30%, rgba(240,200,109,0.22), rgba(28,28,26,0.82))' }}
       >
         Tap bead
@@ -238,7 +238,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
           <select
             value={mantra}
             onChange={(event) => setMantra(event.target.value)}
-            className="type-body w-full rounded-xl border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-3 outline-none"
+            className="type-body w-full rounded-xl border border-[rgba(200,146,74,0.18)] bg-[color:var(--brand-accent)] px-4 py-3 outline-none"
           >
             {BHAKTI_MANTRAS.map((item) => (
               <option key={item.value} value={item.value}>{item.value}</option>
@@ -264,7 +264,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
             <button
               key={value}
               onClick={() => setTarget(value)}
-              className={`rounded-full px-4 py-2 type-chip transition ${target === value ? 'text-[#1c1c1a]' : 'bg-[color:var(--brand-accent)] text-[color:var(--text-dim)] border border-[rgba(212,166,70,0.18)]'}`}
+              className={`rounded-full px-4 py-2 type-chip transition ${target === value ? 'text-[#1c1c1a]' : 'bg-[color:var(--brand-accent)] text-[color:var(--text-dim)] border border-[rgba(200,146,74,0.18)]'}`}
               style={target === value ? { background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' } : undefined}
             >
               {value}
@@ -293,14 +293,14 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
             onChange={(event) => setNotes(event.target.value)}
             rows={3}
             placeholder="Sankalpa or notes..."
-            className="type-body w-full rounded-xl border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-3 outline-none"
+            className="type-body w-full rounded-xl border border-[rgba(200,146,74,0.18)] bg-[color:var(--brand-accent)] px-4 py-3 outline-none"
           />
           <div className="space-y-2">
             <label className="type-section-label block">Share</label>
             <select
               value={shareScope}
               onChange={(event) => setShareScope(event.target.value as 'private' | 'kul' | 'public')}
-              className="type-body w-full rounded-xl border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-3 outline-none"
+              className="type-body w-full rounded-xl border border-[rgba(200,146,74,0.18)] bg-[color:var(--brand-accent)] px-4 py-3 outline-none"
             >
               <option value="private">Private</option>
               <option value="kul">Kul later</option>
@@ -334,7 +334,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
           <p className="type-micro">{filteredSessions.length} shown</p>
         </div>
         <div className="mt-4 grid gap-3 md:grid-cols-[1fr_180px_180px]">
-          <div className="rounded-[1.4rem] border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-4">
+          <div className="rounded-[1.4rem] border border-[rgba(200,146,74,0.18)] bg-[color:var(--brand-accent)] px-4 py-4">
             <p className="type-card-heading">Share card preview</p>
             <p className="type-body mt-2">
               {buildMalaShareText({
@@ -348,14 +348,14 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
           <select
             value={historyMantra}
             onChange={(event) => setHistoryMantra(event.target.value)}
-            className="type-body rounded-xl border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-3 outline-none"
+            className="type-body rounded-xl border border-[rgba(200,146,74,0.18)] bg-[color:var(--brand-accent)] px-4 py-3 outline-none"
           >
             <option value="all">All mantras</option>
             {BHAKTI_MANTRAS.map((item) => (
               <option key={item.value} value={item.value}>{item.value}</option>
             ))}
           </select>
-          <div className="flex rounded-xl border border-[rgba(200,127,146,0.18)] bg-white p-1">
+          <div className="flex rounded-xl border border-[rgba(200,146,74,0.16)] p-1" style={{ background: 'rgba(20,16,10,0.8)' }}>
             {(['7d', '30d', 'all'] as const).map((value) => (
               <button
                 key={value}
@@ -372,15 +372,15 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
           </div>
         </div>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
-          <div className="rounded-[1.4rem] border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-4">
+          <div className="rounded-[1.4rem] border border-[rgba(200,146,74,0.18)] bg-[color:var(--brand-accent)] px-4 py-4">
             <p className="type-card-label">Filtered count</p>
             <p className="type-metric mt-2">{filteredCountTotal}</p>
           </div>
-          <div className="rounded-[1.4rem] border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-4">
+          <div className="rounded-[1.4rem] border border-[rgba(200,146,74,0.18)] bg-[color:var(--brand-accent)] px-4 py-4">
             <p className="type-card-label">Sessions</p>
             <p className="type-metric mt-2">{filteredSessions.length}</p>
           </div>
-            <div className="rounded-[1.4rem] border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-4">
+            <div className="rounded-[1.4rem] border border-[rgba(200,146,74,0.18)] bg-[color:var(--brand-accent)] px-4 py-4">
               <p className="type-card-label">Practice abundance</p>
               <p className="type-body mt-2">
                 {totalSessions > 0
@@ -394,7 +394,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
             <p className="type-body">Your saved mala sessions will appear here.</p>
           ) : (
             filteredSessions.map((session) => (
-              <div key={session.id} className="rounded-[1.4rem] border border-[rgba(212,166,70,0.18)] bg-[color:var(--brand-accent)] px-4 py-4">
+              <div key={session.id} className="rounded-[1.4rem] border border-[rgba(200,146,74,0.18)] bg-[color:var(--brand-accent)] px-4 py-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="type-card-heading">{session.mantra}</p>
@@ -409,7 +409,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
                   <span className="rounded-full bg-[var(--chip-fill)] px-3 py-1 type-chip text-[color:var(--chip-text)]">
                     {session.target_count ? `${session.count}/${session.target_count}` : `${session.count}`}
                   </span>
-                  <span className="rounded-full border border-[rgba(212,166,70,0.18)] bg-[color:var(--surface-soft)] px-3 py-1 type-chip text-[color:var(--text-dim)]">
+                  <span className="rounded-full border border-[rgba(200,146,74,0.18)] bg-[color:var(--surface-soft)] px-3 py-1 type-chip text-[color:var(--text-dim)]">
                     {formatShareScope(session.share_scope)}
                   </span>
                 </div>
@@ -440,7 +440,7 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
               style={{ background: 'radial-gradient(circle, rgba(240,200,109,0.16), rgba(240,200,109,0) 68%)' }}
             />
           </div>
-          <div className="mx-auto grid h-full w-full max-w-3xl grid-rows-[auto_1fr_auto] rounded-[2.2rem] border border-[rgba(212,166,70,0.18)] bg-[rgba(28,28,26,0.56)] px-5 py-5 shadow-sacred backdrop-blur-xl md:px-8 md:py-8">
+          <div className="mx-auto grid h-full w-full max-w-3xl grid-rows-[auto_1fr_auto] rounded-[2.2rem] border border-[rgba(200,146,74,0.18)] bg-[rgba(28,28,26,0.56)] px-5 py-5 shadow-sacred backdrop-blur-xl md:px-8 md:py-8">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="type-card-label">Focused mala</p>

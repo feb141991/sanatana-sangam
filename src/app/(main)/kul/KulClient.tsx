@@ -84,7 +84,7 @@ function Avatar({ name, url, size = 10, gradient = 'linear-gradient(135deg, var(
 function TaskBadge({ type }: { type: string }) {
   const t = TASK_TYPES[type] ?? { label: type, emoji: '📌' };
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border border-[rgba(212,166,70,0.16)] bg-[rgba(40,40,37,0.92)] theme-ink">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border border-[rgba(200,146,74,0.16)] bg-[rgba(40,40,37,0.92)] theme-ink">
       {t.emoji} {t.label}
     </span>
   );
@@ -436,7 +436,7 @@ function NoKulPrompt({ userId, userName }: { userId: string; userName: string })
               {KUL_EMOJIS.map(e => (
                 <button key={e} onClick={() => setEmoji(e)}
                   className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center transition ${emoji === e ? 'border-2 border-[color:var(--brand-primary)]' : 'border border-white/10 hover:border-white/20'}`}
-                  style={emoji === e ? { background: 'rgba(212,166,70,0.14)' } : undefined}>
+                  style={emoji === e ? { background: 'rgba(200,146,74,0.14)' } : undefined}>
                   {e}
                 </button>
               ))}
@@ -518,7 +518,7 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
       </div>
 
       {/* Kul header card */}
-      <div className="rounded-2xl p-5 text-[color:var(--text-cream)]" style={{ background: 'linear-gradient(135deg, rgba(51,51,48,0.98), rgba(43,43,40,0.96))', border: '1px solid rgba(212,166,70,0.16)' }}>
+      <div className="rounded-2xl p-5 text-[color:var(--text-cream)]" style={{ background: 'linear-gradient(135deg, rgba(51,51,48,0.98), rgba(43,43,40,0.96))', border: '1px solid rgba(200,146,74,0.16)' }}>
         <div className="flex items-center gap-3 mb-4">
           <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl bg-white/10">
             {kul.avatar_emoji}
@@ -557,7 +557,7 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
           <button
             onClick={() => setShowInviteSearch(true)}
             className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition border"
-            style={{ background: 'rgba(212,166,70,0.10)', borderColor: 'rgba(212,166,70,0.25)', color: 'var(--brand-primary-strong)' }}
+            style={{ background: 'rgba(200,146,74,0.10)', borderColor: 'rgba(200,146,74,0.25)', color: 'var(--brand-primary-strong)' }}
           >
             <UserPlus size={15} /> Invite a Member by Name
           </button>
@@ -579,7 +579,7 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
                 key={m.id}
                 type="button"
                 onClick={() => setSelectedMember(m)}
-                className="w-full rounded-2xl border border-[rgba(212,166,70,0.14)] bg-[color:var(--brand-accent)] p-3 text-left flex items-center gap-3 transition hover:border-[color:var(--brand-primary-soft)]"
+                className="w-full rounded-2xl border border-[rgba(200,146,74,0.14)] bg-[color:var(--brand-accent)] p-3 text-left flex items-center gap-3 transition hover:border-[color:var(--brand-primary-soft)]"
               >
                 <Avatar name={p?.full_name || p?.username || '?'} url={p?.avatar_url} size={10}
                   gradient={m.user_id === userId ? 'var(--brand-primary)' : 'linear-gradient(135deg, var(--brand-accent), #d6b06a)'} />
@@ -771,7 +771,7 @@ function TasksTab({ tasks, members, userId, myRole, kulId }: {
       {myRole === 'guardian' && (
         <button onClick={() => setShowCompose(!showCompose)}
           className="w-full glass-panel border border-dashed border-[color:var(--brand-primary)]/30 rounded-2xl p-3 flex items-center gap-3 text-[color:var(--brand-muted)] hover:border-[color:var(--brand-primary)]/50 hover:text-[color:var(--brand-primary-strong)] transition">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(212,166,70,0.10)' }}>
+          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(200,146,74,0.10)' }}>
             <Plus size={15} style={{ color: 'var(--brand-primary)' }} />
           </div>
           <span className="text-sm">Assign a sadhana task…</span>
@@ -1084,7 +1084,7 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
         <button
           onClick={() => setShowEmojis(e => !e)}
           className="w-9 h-9 rounded-xl flex items-center justify-center text-xl shrink-0 transition"
-          style={{ background: showEmojiPicker ? 'rgba(212,166,70,0.18)' : 'rgba(255,255,255,0.06)' }}
+          style={{ background: showEmojiPicker ? 'rgba(200,146,74,0.18)' : 'rgba(255,255,255,0.06)' }}
         >
           🙏
         </button>
@@ -1405,7 +1405,7 @@ function InviteSearchModal({
                 onClick={() => sendInvite(r.id, r.full_name || r.username || 'them')}
                 disabled={invited.has(r.id)}
                 className="px-4 py-1.5 rounded-xl text-xs font-semibold transition disabled:opacity-50"
-                style={{ background: invited.has(r.id) ? 'rgba(34,197,94,0.14)' : 'rgba(212,166,70,0.14)', color: invited.has(r.id) ? '#4ade80' : 'var(--brand-primary-strong)', border: `1px solid ${invited.has(r.id) ? 'rgba(34,197,94,0.25)' : 'rgba(212,166,70,0.25)'}` }}
+                style={{ background: invited.has(r.id) ? 'rgba(34,197,94,0.14)' : 'rgba(200,146,74,0.14)', color: invited.has(r.id) ? '#4ade80' : 'var(--brand-primary-strong)', border: `1px solid ${invited.has(r.id) ? 'rgba(34,197,94,0.25)' : 'rgba(200,146,74,0.25)'}` }}
               >
                 {invited.has(r.id) ? '✓ Invited' : 'Invite'}
               </button>
@@ -1960,7 +1960,7 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
                   />
                   <button onClick={searchAppUsers} disabled={linkUserSearching || !linkUserQuery.trim()}
                     className="px-3 py-2 rounded-xl text-xs font-semibold disabled:opacity-40 transition"
-                    style={{ background: 'rgba(212,166,70,0.14)', color: 'var(--brand-primary-strong)' }}>
+                    style={{ background: 'rgba(200,146,74,0.14)', color: 'var(--brand-primary-strong)' }}>
                     {linkUserSearching ? '…' : 'Find'}
                   </button>
                 </div>
@@ -2105,7 +2105,7 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
           {canManageVansh && (
             <button onClick={() => setShowAddEvent(!showAddEvent)}
               className="w-full glass-panel border border-dashed border-[color:var(--brand-primary)]/30 rounded-2xl p-3 flex items-center gap-3 text-[color:var(--brand-muted)] hover:border-[color:var(--brand-primary)]/50 hover:text-[color:var(--brand-primary-strong)] transition">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(212,166,70,0.10)' }}>
+              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(200,146,74,0.10)' }}>
                 <Plus size={14} style={{ color: 'var(--brand-primary)' }} />
               </div>
               <span className="text-sm">Add event, puja date, anniversary…</span>
@@ -2156,7 +2156,7 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
           )}
 
           {upcomingEvents.map(ev => (
-            <div key={ev.id} className="bg-white rounded-2xl border border-white/8 p-3 flex items-center gap-3">
+            <div key={ev.id} className="rounded-2xl border border-white/8 p-3 flex items-center gap-3" style={{ background: 'rgba(28, 22, 14, 0.92)' }}>
               <div className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
                 style={{ background: '#7B1A1A0D' }}>
                 {EVENT_EMOJI[ev.event_type] ?? '📅'}
