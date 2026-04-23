@@ -99,10 +99,8 @@ function MessageBubble({ msg }: { msg: Message }) {
       {/* Bubble */}
       <div className={`max-w-[80%] ${isUser ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
         <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
-          isUser
-            ? 'bg-[#7B1A1A] text-white rounded-tr-sm'
-            : 'bg-white text-gray-800 rounded-tl-sm border border-orange-100 shadow-sm'
-        }`}>
+          isUser ? 'bg-[#7B1A1A] text-white rounded-tr-sm' : 'rounded-tl-sm border'
+        }`} style={!isUser ? { background: 'rgba(38, 30, 18, 0.95)', borderColor: 'rgba(200,146,74,0.16)', color: 'rgba(240,225,195,0.88)' } : undefined}>
           {msg.text}
           {/* ── Scripture sources (RAG only) ── */}
           {!isUser && msg.verses && msg.verses.length > 0 && (
@@ -116,7 +114,7 @@ function MessageBubble({ msg }: { msg: Message }) {
             {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </span>
           {msg.fromRag && (
-            <span className="text-[9px] bg-orange-50 text-orange-500 border border-orange-100 rounded-full px-1.5 py-0.5 font-medium">
+            <span className="text-[9px] rounded-full px-1.5 py-0.5 font-medium border" style={{ background: 'rgba(200,146,74,0.1)', color: '#C8924A', borderColor: 'rgba(200,146,74,0.22)' }}>
               📖 Scripture-grounded
             </span>
           )}
@@ -133,7 +131,7 @@ function TypingIndicator() {
       <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-sm bg-gradient-to-br from-amber-400 to-orange-500 text-white">
         ✨
       </div>
-      <div className="bg-white border border-orange-100 shadow-sm rounded-2xl rounded-tl-sm px-4 py-3">
+      <div className="border rounded-2xl rounded-tl-sm px-4 py-3" style={{ background: 'rgba(38, 30, 18, 0.95)', borderColor: 'rgba(200,146,74,0.16)' }}>
         <div className="flex gap-1 items-center h-5">
           <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce" style={{ animationDelay: '0ms' }} />
           <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -382,7 +380,8 @@ export default function AIChatClient({ userId, userName, tradition, sampradaya, 
                 <div className="flex flex-col gap-2">
                   {suggestions.slice(0, 4).map(s => (
                     <button key={s} onClick={() => sendMessage(s)}
-                      className="text-left px-4 py-2.5 rounded-xl bg-white border border-orange-100 text-sm text-gray-700 hover:border-orange-300 hover:text-[#7B1A1A] transition shadow-sm">
+                      className="text-left px-4 py-2.5 rounded-xl text-sm border transition"
+                      style={{ background: 'rgba(38,30,18,0.8)', borderColor: 'rgba(200,146,74,0.18)', color: 'rgba(240,210,160,0.75)' }}>
                       {s}
                     </button>
                   ))}
@@ -398,13 +397,14 @@ export default function AIChatClient({ userId, userName, tradition, sampradaya, 
       </div>
 
       {/* ── Input area ─────────────────────────────────────────────────────── */}
-      <div className="pt-3 border-t border-orange-100/60 mt-2">
+      <div className="pt-3 border-t mt-2" style={{ borderColor: 'rgba(200,146,74,0.12)' }}>
         {/* Quick suggestion chips (after conversation starts) */}
         {!isEmpty && !loading && (
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {suggestions.slice(4).map(s => (
               <button key={s} onClick={() => sendMessage(s)}
-                className="flex-shrink-0 px-3 py-1.5 rounded-full bg-white border border-orange-100 text-xs text-gray-600 hover:border-orange-300 hover:text-[#7B1A1A] transition whitespace-nowrap">
+                className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs border transition whitespace-nowrap"
+                style={{ background: 'rgba(38,30,18,0.7)', borderColor: 'rgba(200,146,74,0.16)', color: 'rgba(200,146,74,0.7)' }}>
                 {s}
               </button>
             ))}
@@ -412,7 +412,7 @@ export default function AIChatClient({ userId, userName, tradition, sampradaya, 
         )}
 
         <div className="flex items-end gap-2">
-          <div className="flex-1 bg-white rounded-2xl border border-gray-200 focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100 transition overflow-hidden">
+          <div className="flex-1 rounded-2xl border transition overflow-hidden" style={{ background: 'rgba(30,22,12,0.9)', borderColor: 'rgba(200,146,74,0.2)' }}>
             <textarea
               ref={inputRef}
               value={input}
@@ -421,8 +421,8 @@ export default function AIChatClient({ userId, userName, tradition, sampradaya, 
               placeholder="Ask anything… Shift+Enter for new line"
               rows={1}
               disabled={loading}
-              style={{ resize: 'none', maxHeight: '120px' }}
-              className="w-full px-4 py-3 text-sm text-gray-800 placeholder-gray-400 outline-none bg-transparent disabled:opacity-60"
+              style={{ resize: 'none', maxHeight: '120px', color: 'rgba(240,210,160,0.9)', background: 'transparent' }}
+              className="w-full px-4 py-3 text-sm outline-none disabled:opacity-60"
               onInput={e => {
                 const el = e.currentTarget;
                 el.style.height = 'auto';

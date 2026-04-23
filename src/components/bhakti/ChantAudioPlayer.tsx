@@ -94,7 +94,8 @@ export default function ChantAudioPlayer({
             setPlaying(false);
             setTrackId(event.target.value);
           }}
-          className="mt-3 w-full rounded-xl border border-[rgba(200,127,146,0.18)] bg-white px-3 py-2.5 text-sm outline-none"
+          className="mt-3 w-full rounded-xl border px-3 py-2.5 text-sm outline-none"
+          style={{ background: 'rgba(20,14,8,0.9)', borderColor: 'rgba(200,146,74,0.2)', color: 'rgba(240,210,160,0.8)', colorScheme: 'dark' }}
         >
           {tracks.map((track) => (
             <option key={track.id} value={track.id}>{track.title}</option>
