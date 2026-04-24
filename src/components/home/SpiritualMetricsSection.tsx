@@ -327,9 +327,6 @@ export default function SpiritualMetricsSection({
 
   const shlokaWeekFilled = Math.min(7, Math.max(0, shlokaStreak > 0 ? (readToday ? Math.min(7, shlokaStreak) : Math.min(6, shlokaStreak - 1)) : 0));
 
-  // Today's ritual entries for timeline
-  const today = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
-
   return (
     <div className="space-y-3">
       {/* ── Daily Overview rings ─────────────────────────────────────────────── */}
@@ -372,55 +369,6 @@ export default function SpiritualMetricsSection({
         </div>
       </div>
 
-      {/* ── Ritual Timeline ───────────────────────────────────────────────────── */}
-      <SectionLabel>Ritual Timeline</SectionLabel>
-
-      <div className="space-y-2">
-        <TimelineEntry
-          icon="🌅" title="Brahma Muhurta window" time="4:30 – 6:00 AM · Dawn practice" href="/panchang" done
-        />
-        <TimelineEntry
-          icon="📿"
-          title="Japa · 108 Maala rounds"
-          time={japaAlreadyDoneToday ? 'Completed today · streak ' + japaStreak : 'Pending · tap to begin'}
-          href="/bhakti/mala"
-          done={japaAlreadyDoneToday}
-        />
-        <TimelineEntry
-          icon="📖"
-          title={tradition === 'sikh' ? 'Gurbani reading' : tradition === 'buddhist' ? 'Dhamma reading' : 'Scripture · Gita / Upanishad'}
-          time={readToday ? 'Read today · ' + shlokaStreak + '-day streak' : 'Pending · open Pathshala'}
-          href="/library"
-          done={readToday}
-        />
-        <TimelineEntry
-          icon="🙏" title="Evening reflection" time={`${today} · Set intention`} href="/bhakti"
-        />
-      </div>
-
-      {/* ── Bottom action row ────────────────────────────────────────────────── */}
-      <div className="flex gap-2.5 pt-1">
-        <Link
-          href="/nitya-karma"
-          className="flex-1 h-10 rounded-full flex items-center justify-center text-[11.5px] font-semibold tracking-[0.04em] transition"
-          style={{
-            border: '1px solid rgba(200,146,74,0.22)',
-            color: 'rgba(200,146,74,0.7)',
-          }}
-        >
-          Edit Rituals
-        </Link>
-        <Link
-          href="/library"
-          className="flex-1 h-10 rounded-full flex items-center justify-center text-[11.5px] font-semibold tracking-[0.04em] transition"
-          style={{
-            border: '1px solid rgba(200,146,74,0.22)',
-            color: 'rgba(200,146,74,0.7)',
-          }}
-        >
-          View All Practices
-        </Link>
-      </div>
     </div>
   );
 }

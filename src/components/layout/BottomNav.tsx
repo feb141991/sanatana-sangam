@@ -42,7 +42,7 @@ function QuickActionsPanel({ open, onClose, isGuest }: { open: boolean; onClose:
     <AnimatePresence>
       <motion.div
         className="fixed inset-0 z-[60]"
-        style={{ background: 'rgba(8,6,4,0.72)', backdropFilter: 'blur(8px)' }}
+        style={{ background: 'rgba(4,2,0,0.55)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
         onClick={onClose}
         initial={prefersReducedMotion ? undefined : { opacity: 0 }}
         animate={prefersReducedMotion ? undefined : { opacity: 1 }}
@@ -54,24 +54,26 @@ function QuickActionsPanel({ open, onClose, isGuest }: { open: boolean; onClose:
           initial={prefersReducedMotion ? undefined : { y: 40, opacity: 0 }}
           animate={prefersReducedMotion ? undefined : { y: 0, opacity: 1 }}
           exit={prefersReducedMotion ? undefined : { y: 32, opacity: 0 }}
-          transition={{ duration: 0.3, ease: [0.34, 1.1, 0.64, 1] }}
+          transition={{ duration: 0.28, ease: [0.34, 1.1, 0.64, 1] }}
         >
-          {/* Panel */}
+          {/* Panel — glass sheet */}
           <div
             className="max-w-2xl mx-auto rounded-[2rem] p-5 space-y-4"
             style={{
-              background: 'linear-gradient(165deg, rgba(38,32,22,0.99), rgba(26,22,14,0.99))',
-              border: '1px solid rgba(200,146,74,0.18)',
-              boxShadow: '0 -20px 60px rgba(0,0,0,0.45)',
+              background: 'rgba(10,7,3,0.52)',
+              backdropFilter: 'blur(48px) saturate(180%) brightness(0.92)',
+              WebkitBackdropFilter: 'blur(48px) saturate(180%) brightness(0.92)',
+              border: '1px solid rgba(200,146,74,0.16)',
+              boxShadow: '0 -2px 40px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,240,200,0.06)',
             }}
           >
             {/* Handle + header */}
             <div className="flex items-center justify-between">
               <div>
-                <div className="w-8 h-[3px] rounded-full mb-3" style={{ background: 'rgba(200,146,74,0.25)' }} />
+                <div className="w-8 h-[3px] rounded-full mb-3" style={{ background: 'rgba(200,146,74,0.22)' }} />
                 <p
                   className="text-[10.5px] font-semibold uppercase tracking-[0.18em]"
-                  style={{ color: 'rgba(200,146,74,0.55)' }}
+                  style={{ color: 'rgba(200,146,74,0.50)' }}
                 >
                   Quick Actions
                 </p>
@@ -84,7 +86,10 @@ function QuickActionsPanel({ open, onClose, isGuest }: { open: boolean; onClose:
               <button
                 onClick={onClose}
                 className="w-9 h-9 rounded-full flex items-center justify-center transition motion-press"
-                style={{ background: 'rgba(200,146,74,0.1)', border: '1px solid rgba(200,146,74,0.18)' }}
+                style={{
+                  background: 'rgba(255,255,255,0.07)',
+                  border: '1px solid rgba(200,146,74,0.14)',
+                }}
               >
                 <X size={14} style={{ color: 'var(--text-muted-warm)' }} />
               </button>
@@ -98,8 +103,8 @@ function QuickActionsPanel({ open, onClose, isGuest }: { open: boolean; onClose:
                   onClick={() => { onClose(); router.push(href); }}
                   className="rounded-[1.3rem] p-3 flex flex-col items-center gap-1.5 text-center transition motion-press"
                   style={{
-                    background: 'rgba(200,146,74,0.06)',
-                    border: '1px solid rgba(200,146,74,0.1)',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(200,146,74,0.10)',
                   }}
                 >
                   <span className="text-2xl leading-none">{icon}</span>
@@ -183,11 +188,11 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
             style={{
               width: '100%',
               maxWidth: '42rem',
-              background: 'rgba(12,8,4,0.38)',
-              backdropFilter: 'blur(28px) saturate(140%)',
-              WebkitBackdropFilter: 'blur(28px) saturate(140%)',
-              border: '1px solid rgba(200,146,74,0.10)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,240,200,0.04)',
+              background: 'rgba(8,5,2,0.22)',
+              backdropFilter: 'blur(36px) saturate(180%) brightness(0.85)',
+              WebkitBackdropFilter: 'blur(36px) saturate(180%) brightness(0.85)',
+              border: '1px solid rgba(200,146,74,0.13)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,240,200,0.06)',
             }}
           >
             {/* ── Left: Home button (always visible) ─────────────────────── */}
