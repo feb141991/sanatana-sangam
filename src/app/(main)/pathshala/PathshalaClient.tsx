@@ -385,13 +385,13 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
     }
   }
 
-  // ── Unenroll ─────────────────────────────────────────────────────────────────
+  // ── Unenroll (leave path) ─────────────────────────────────────────────────────
   async function unenroll(pathId: string, pathTitle: string) {
-    if (!confirm(`Leave "${pathTitle}"? Your progress will be saved but you'll be removed from the active list.`)) return;
+    if (!confirm(`Leave "${pathTitle}"? Your progress will be saved and you can re-enroll anytime.`)) return;
     try {
       const { error } = await supabase
         .from('guided_path_progress')
-        .update({ status: 'paused' })
+        .update({ status: 'dismissed' })   // 'paused' is not in CHECK constraint
         .eq('user_id', userId)
         .eq('path_id', pathId);
       if (error) throw error;
@@ -399,6 +399,27 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
       toast.success('Removed from active paths. You can re-enroll anytime.');
     } catch (err: any) {
       toast.error(err?.message ?? 'Could not unenroll. Please try again.');
+    }
+  }
+
+  // ── Start Over — resets lesson progress but keeps enrollment active ──────────
+  async function startOver(pathId: string, pathTitle: string) {
+    if (!confirm(`Start "${pathTitle}" from the beginning? This will reset your lesson progress.`)) return;
+    try {
+      const { error } = await supabase
+        .from('guided_path_progress')
+        .update({ current_lesson: 0, completed_lessons: [], status: 'active' })
+        .eq('user_id', userId)
+        .eq('path_id', pathId);
+      if (error) throw error;
+      setActive(prev => prev.map(e =>
+        e.path_id === pathId
+          ? { ...e, current_lesson: 0, completed_lessons: [] }
+          : e
+      ));
+      toast.success('Path reset! Starting fresh from Lesson 1. 🙏');
+    } catch (err: any) {
+      toast.error(err?.message ?? 'Could not reset. Please try again.');
     }
   }
 
@@ -466,10 +487,16 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
             <Mic size={13} /> Recite
           </Link>
           <button
+            onClick={() => startOver(enrollment.path_id, path.title)}
+            className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition-all hover:bg-white/4"
+          >
+            <Trophy size={13} /> Start over
+          </button>
+          <button
             onClick={() => unenroll(enrollment.path_id, path.title)}
             className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition-all hover:bg-white/4"
           >
-            <X size={13} /> Leave path
+            <X size={13} /> Leave
           </button>
         </div>
       </div>

@@ -909,6 +909,73 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Omit<P
         </div>
       ) : (
         <div className="px-4 space-y-3">
+
+          {/* ── Colorful ring progress summary ───────────────────────────── */}
+          {!allDone && (
+            <div
+              className="rounded-2xl px-4 py-4 flex items-center gap-4 border border-white/8"
+              style={{ background: `${accent}08` }}
+            >
+              {/* Big ring */}
+              {(() => {
+                const r    = 32;
+                const circ = 2 * Math.PI * r;
+                const off  = circ * (1 - progressPct / 100);
+                return (
+                  <svg width="80" height="80" viewBox="0 0 80 80" className="-rotate-90 flex-shrink-0">
+                    <defs>
+                      <linearGradient id="nitya-ring-grad" x1="1" y1="0" x2="0" y2="1">
+                        <stop offset="0%"   stopColor="#f0c86d" />
+                        <stop offset="60%"  stopColor={accent} />
+                        <stop offset="100%" stopColor="#D4784A" />
+                      </linearGradient>
+                    </defs>
+                    <circle cx="40" cy="40" r={r}
+                      fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={7} />
+                    <motion.circle
+                      cx="40" cy="40" r={r}
+                      fill="none"
+                      stroke={completedCount === totalSteps ? '#7ec87e' : 'url(#nitya-ring-grad)'}
+                      strokeWidth={7}
+                      strokeLinecap="round"
+                      strokeDasharray={circ}
+                      initial={{ strokeDashoffset: circ }}
+                      animate={{ strokeDashoffset: off }}
+                      transition={{ duration: 0.7, ease: 'easeOut' }}
+                    />
+                  </svg>
+                );
+              })()}
+              {/* Text */}
+              <div className="flex-1 min-w-0">
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: 700, color: accent, lineHeight: 1 }}>
+                  {completedCount}<span style={{ fontSize: '1rem', color: 'var(--brand-muted)' }}>/{totalSteps}</span>
+                </p>
+                <p className="text-sm font-semibold text-[color:var(--brand-ink)] mt-0.5">
+                  {completedCount === 0 ? 'Start your sadhana' : `${totalSteps - completedCount} step${totalSteps - completedCount !== 1 ? 's' : ''} remaining`}
+                </p>
+                <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">
+                  {Math.round(progressPct)}% of today's Nitya Karma done
+                </p>
+              </div>
+              {/* Mini rings for each step */}
+              <div className="flex gap-1 flex-wrap justify-end" style={{ maxWidth: 80 }}>
+                {displaySteps.map(s => (
+                  <motion.div
+                    key={s.id}
+                    className="w-4 h-4 rounded-full flex-shrink-0"
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    style={{
+                      background: s.completed ? accent : 'rgba(255,255,255,0.08)',
+                      border: s.completed ? 'none' : `1px solid ${accent}30`,
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
           {displaySteps.map((step, idx) => {
             const isJustDone = justCompleted === step.id;
             const isBusy     = busySteps.has(step.id);

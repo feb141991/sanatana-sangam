@@ -182,17 +182,17 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
       <nav className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 safe-area-pb pointer-events-none">
         <div className="max-w-2xl mx-auto flex items-center justify-center">
 
-          {/* ── Translucent floating bar ──────────────────────────────────── */}
+          {/* ── Floating pill — transparent with amber border ─────────────── */}
           <div
             className="relative flex items-center h-[60px] rounded-[2rem] pointer-events-auto"
             style={{
               width: '100%',
               maxWidth: '42rem',
-              background: 'rgba(8,5,2,0.22)',
-              backdropFilter: 'blur(36px) saturate(180%) brightness(0.85)',
-              WebkitBackdropFilter: 'blur(36px) saturate(180%) brightness(0.85)',
-              border: '1px solid rgba(200,146,74,0.13)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,240,200,0.06)',
+              background: 'rgba(8,4,1,0.10)',
+              backdropFilter: 'blur(32px) saturate(180%) brightness(0.95)',
+              WebkitBackdropFilter: 'blur(32px) saturate(180%) brightness(0.95)',
+              border: '1px solid rgba(200,146,74,0.26)',
+              boxShadow: '0 2px 24px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,240,200,0.08), 0 0 0 0.5px rgba(200,146,74,0.10)',
             }}
           >
             {/* ── Left: Home button (always visible) ─────────────────────── */}

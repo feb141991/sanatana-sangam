@@ -156,24 +156,76 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
     }
   }
 
+  // Ring dimensions
+  const RING_R    = 92;
+  const RING_CIRC = 2 * Math.PI * RING_R;
+
   const counterPanel = (
-    <div className="space-y-4 rounded-[1.8rem] bg-[var(--brand-primary-soft)]/55 px-5 py-5 text-center">
+    <div className="rounded-[1.8rem] bg-[var(--brand-primary-soft)]/55 px-5 py-5 text-center space-y-3">
       <p className="type-micro">{mantra}</p>
-      <p className="type-metric">{count}</p>
-      <div className="h-2 overflow-hidden rounded-full bg-white/80">
-        <div
-          className="h-full rounded-full transition-all"
-          style={{ width: `${progress}%`, background: 'linear-gradient(90deg, var(--brand-primary-strong), var(--brand-primary))' }}
-        />
+
+      {/* ── SVG Ring + Tap Bead Button ── */}
+      <div className="relative mx-auto flex items-center justify-center" style={{ width: 212, height: 212 }}>
+        {/* Ring behind the button */}
+        <svg
+          width="212" height="212" viewBox="0 0 212 212"
+          className="absolute inset-0 pointer-events-none -rotate-90"
+        >
+          <defs>
+            <linearGradient id="japa-ring-grad" x1="1" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stopColor="#f0c86d" />
+              <stop offset="50%"  stopColor="#C8924A" />
+              <stop offset="100%" stopColor="#D4784A" />
+            </linearGradient>
+          </defs>
+          {/* Track */}
+          <circle cx="106" cy="106" r={RING_R}
+            fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={10} />
+          {/* Progress arc */}
+          <motion.circle
+            cx="106" cy="106" r={RING_R}
+            fill="none"
+            stroke={progress >= 100 ? '#7ec87e' : 'url(#japa-ring-grad)'}
+            strokeWidth={10}
+            strokeLinecap="round"
+            strokeDasharray={RING_CIRC}
+            initial={{ strokeDashoffset: RING_CIRC }}
+            animate={{ strokeDashoffset: RING_CIRC * (1 - Math.min(progress, 100) / 100) }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+          />
+        </svg>
+
+        {/* Tap Bead button — fills the inner ring */}
+        <motion.button
+          onClick={tapBead}
+          whileTap={{ scale: 0.94 }}
+          className="relative z-10 rounded-full flex flex-col items-center justify-center"
+          style={{
+            width: 170, height: 170,
+            background: 'radial-gradient(circle at 35% 28%, rgba(240,200,109,0.18), rgba(10,6,2,0.90))',
+            border: '1px solid rgba(200,146,74,0.22)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,240,180,0.07)',
+          }}
+        >
+          <span
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '3rem',
+              fontWeight: 700,
+              color: 'var(--text-cream)',
+              lineHeight: 1,
+            }}
+          >
+            {count}
+          </span>
+          <span style={{ fontSize: '0.68rem', color: 'rgba(200,146,74,0.65)', marginTop: 5, letterSpacing: '0.05em' }}>
+            {progress >= 100 ? '✓ Complete' : 'tap bead'}
+          </span>
+        </motion.button>
       </div>
-      <p className="type-body">Target {target} • {activeMantraSource}</p>
-      <button
-        onClick={tapBead}
-        className="mx-auto flex h-48 w-48 items-center justify-center rounded-full border border-[rgba(200,146,74,0.18)] text-xl font-medium text-[color:var(--text-cream)] shadow-sacred"
-        style={{ background: 'radial-gradient(circle at 30% 30%, rgba(240,200,109,0.22), rgba(28,28,26,0.82))' }}
-      >
-        Tap bead
-      </button>
+
+      <p className="type-body">Target {target} · {activeMantraSource}</p>
+
       <div className="flex justify-center gap-3">
         <button
           onClick={() => setCount((current) => Math.max(0, current - 1))}

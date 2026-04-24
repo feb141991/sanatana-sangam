@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
+import { activateProLocally } from '@/lib/premium';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -38,6 +39,8 @@ export default function FloatingPill({
   wantsShlokaReminders = true,
   wantsCommunityNotifications = true,
   wantsFamilyNotifications = true,
+  savedTimezone = null,
+  initialIsPro = false,
 }: {
   userId: string;
   isGuest?: boolean;
@@ -50,6 +53,8 @@ export default function FloatingPill({
   wantsShlokaReminders?: boolean;
   wantsCommunityNotifications?: boolean;
   wantsFamilyNotifications?: boolean;
+  savedTimezone?: string | null;
+  initialIsPro?: boolean;
 }) {
   const router = useRouter();
   const supabase = useRef(createClient()).current;
@@ -100,6 +105,24 @@ export default function FloatingPill({
   }, [city, countryCode, pushConfigured, tradition, userId,
     wantsCommunityNotifications, wantsFamilyNotifications,
     wantsFestivalReminders, wantsShlokaReminders]);
+
+  // ── Hydrate Pro from server on mount ─────────────────────────────────────────
+  useEffect(() => {
+    if (initialIsPro) activateProLocally();
+  }, [initialIsPro]);
+
+  // ── Auto-save browser timezone if different from stored ──────────────────────
+  useEffect(() => {
+    if (!userId || isGuest) return;
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (!tz || tz === savedTimezone) return;
+      supabase.from('profiles').update({ timezone: tz }).eq('id', userId).then(({ error }) => {
+        if (error) console.warn('[FloatingPill] timezone save failed:', error.message);
+      });
+    } catch { /* Intl not available */ }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   const unreadCount = notifs.filter((n) => !n.read).length;
   const shouldSuppressPrompt = Boolean(

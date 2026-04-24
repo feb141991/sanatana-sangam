@@ -36,11 +36,13 @@ export default async function MainLayout({
   let wantsCommunityNotifications     = true;
   let wantsFamilyNotifications        = true;
   let appLanguage: AppLang            = 'en';
+  let savedTimezone:   string | null  = null;
+  let initialIsPro:    boolean        = false;
 
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('latitude, longitude, city, country, country_code, tradition, avatar_url, full_name, username, wants_festival_reminders, wants_shloka_reminders, wants_community_notifications, wants_family_notifications, onboarding_completed, app_language')
+      .select('latitude, longitude, city, country, country_code, tradition, avatar_url, full_name, username, wants_festival_reminders, wants_shloka_reminders, wants_community_notifications, wants_family_notifications, onboarding_completed, app_language, timezone, is_pro')
       .eq('id', user.id)
       .single();
 
@@ -68,6 +70,8 @@ export default async function MainLayout({
     appLanguage = (['en', 'hi', 'pa'] as AppLang[]).includes(rawLang as AppLang)
       ? (rawLang as AppLang)
       : 'en';
+    savedTimezone = (profile as any)?.timezone ?? null;
+    initialIsPro  = (profile as any)?.is_pro   ?? false;
   }
 
   return (
@@ -85,6 +89,8 @@ export default async function MainLayout({
           wantsShlokaReminders={wantsShlokaReminders}
           wantsCommunityNotifications={wantsCommunityNotifications}
           wantsFamilyNotifications={wantsFamilyNotifications}
+          savedTimezone={savedTimezone}
+          initialIsPro={initialIsPro}
         />
         <main className="flex-1 max-w-2xl mx-auto w-full px-3 pt-2 pb-28 sm:px-4">
           <EngineProvider userId={userId || null} tradition={tradition}>
