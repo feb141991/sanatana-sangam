@@ -4,6 +4,7 @@ import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import AppProviders from '@/components/providers/AppProviders';
 import {
+  Inter,
   Noto_Sans_Devanagari,
   Noto_Sans_Tamil,
   Noto_Sans_Bengali,
@@ -11,7 +12,12 @@ import {
   Noto_Sans_Telugu,
   Noto_Sans_Kannada,
   Noto_Sans_Malayalam,
+  Playfair_Display,
 } from 'next/font/google';
+
+// ── Editorial Latin fonts ────────────────────────────────────────────────────
+const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-inter-next', display: 'swap' });
+const playfair = Playfair_Display({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-playfair', display: 'swap' });
 
 // ── Indic script fonts ────────────────────────────────────────────────────────
 const notoDevanagari = Noto_Sans_Devanagari({ subsets: ['devanagari'], weight: ['400','600'], variable: '--font-deva',     display: 'swap' });
@@ -23,6 +29,8 @@ const notoKannada    = Noto_Sans_Kannada({    subsets: ['kannada'],    weight: [
 const notoMalayalam  = Noto_Sans_Malayalam({  subsets: ['malayalam'],  weight: ['400','600'], variable: '--font-malayalam', display: 'swap' });
 
 const fontVars = [
+  inter.variable,
+  playfair.variable,
   notoDevanagari.variable,
   notoTamil.variable,
   notoBengali.variable,
@@ -55,7 +63,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor:   '#C87F92',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#FDFBF7' },
+    { media: '(prefers-color-scheme: dark)', color: '#1a1916' },
+  ],
   width:        'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -77,9 +88,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               style: {
                 background: '#1a1a1a',
                 color:      '#fdf6e3',
-                fontFamily: 'Source Sans 3, sans-serif',
+                fontFamily: 'var(--font-inter)',
               },
-              success: { iconTheme: { primary: '#C87F92', secondary: '#fdf6e3' } },
+              success: { iconTheme: { primary: '#8E5E2A', secondary: '#fdf6e3' } },
             }}
           />
         </AppProviders>

@@ -1,14 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Source+Sans+3:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
   /* ── Fonts ─────────────────────────────────────────────────────────────── */
-  --font-inter:      'Source Sans 3', system-ui, sans-serif;
-  --font-poppins:    'Source Sans 3', system-ui, sans-serif;
-  --font-serif:      'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-inter:      var(--font-inter-next), Inter, system-ui, sans-serif;
+  --font-poppins:    var(--font-playfair), 'Playfair Display', Georgia, serif;
+  --font-serif:      var(--font-playfair), 'Playfair Display', Georgia, 'Times New Roman', serif;
   --font-devanagari: 'Noto Sans Devanagari', sans-serif;
 
   /* ── Spacing ────────────────────────────────────────────────────────────── */
@@ -61,16 +59,16 @@
   /* ── Typography scale ───────────────────────────────────────────────────── */
   --type-display:       36px;
   --type-hero:          28px;
-  --type-screen-title:  22px;
-  --type-card-heading:  16px;
+  --type-screen-title:  23px;
+  --type-card-heading:  17px;
   --type-sanskrit:      18px;
   --type-metric:        24px;
-  --type-body:          13px;
+  --type-body:          14px;
   --type-section-label: 14px;
-  --type-card-label:    12px;
+  --type-card-label:    12.5px;
   --type-chip:          11px;
-  --type-tab:           10px;
-  --type-micro:         11px;
+  --type-tab:           11px;
+  --type-micro:         12px;
 
   /* ── Text colours ───────────────────────────────────────────────────────── */
   --text-cream:         #ede8de;
@@ -93,41 +91,41 @@
 }
 
 :root[data-theme='light'] {
-  --brand-primary:        #A76F2B;
-  --brand-primary-strong: #854F0B;
-  --brand-primary-soft:   rgba(167, 111, 43, 0.14);
-  --brand-secondary:      #BA7517;
-  --brand-accent:         #FFFFFF;
-  --brand-accent-soft:    rgba(186, 117, 23, 0.12);
-  --brand-earth:          #854F0B;
-  --brand-ink:            #1f1d19;
-  --brand-muted:          #6f685f;
+  --brand-primary:        #8E5E2A;
+  --brand-primary-strong: #5F3A16;
+  --brand-primary-soft:   rgba(142, 94, 42, 0.10);
+  --brand-secondary:      #736858;
+  --brand-accent:         #FFFDF8;
+  --brand-accent-soft:    rgba(142, 94, 42, 0.08);
+  --brand-earth:          #7A5126;
+  --brand-ink:            #211B14;
+  --brand-muted:          #62594E;
 
-  --saffron:       #A76F2B;
-  --sacred-gold:   #A76F2B;
-  --sacred-cream:  #1f1d19;
-  --maroon:        #A76F2B;
-  --maroon-dark:   #854F0B;
-  --maroon-light:  rgba(167, 111, 43, 0.14);
-  --cream:         #1f1d19;
-  --orange-accent: #A76F2B;
+  --saffron:       #8E5E2A;
+  --sacred-gold:   #8E5E2A;
+  --sacred-cream:  #211B14;
+  --maroon:        #8E5E2A;
+  --maroon-dark:   #5F3A16;
+  --maroon-light:  rgba(142, 94, 42, 0.10);
+  --cream:         #211B14;
+  --orange-accent: #8E5E2A;
 
-  --surface-base:   #F9F7F4;
-  --surface-soft:   #F1EDE6;
-  --surface-raised: rgba(255, 255, 255, 0.96);
+  --surface-base:   #FDFBF7;
+  --surface-soft:   #F4EFE6;
+  --surface-raised: rgba(255, 253, 248, 0.98);
 
-  --text-cream:          #1f1d19;
-  --text-dim:            #81786c;
-  --text-muted-warm:     #5f584f;
-  --text-saffron-soft:   #854F0B;
-  --text-saffron-strong: #854F0B;
+  --text-cream:          #211B14;
+  --text-dim:            #8A8176;
+  --text-muted-warm:     #62594E;
+  --text-saffron-soft:   #6C431D;
+  --text-saffron-strong: #6C431D;
 
-  --chip-fill: #FAEEDA;
-  --chip-text: #854F0B;
+  --chip-fill: #EFE3CF;
+  --chip-text: #5F3A16;
 
-  --shadow-soft:   0 12px 28px rgba(65, 36, 2, 0.08);
-  --shadow-strong: 0 18px 36px rgba(65, 36, 2, 0.12);
-  --shadow-glow:   0 24px 44px rgba(65, 36, 2, 0.14);
+  --shadow-soft:   0 10px 24px rgba(49, 35, 20, 0.06);
+  --shadow-strong: 0 16px 34px rgba(49, 35, 20, 0.10);
+  --shadow-glow:   0 22px 42px rgba(49, 35, 20, 0.12);
 }
 
 /* ── Reset & base ──────────────────────────────────────────────────────────── */
@@ -152,7 +150,16 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Headings use Cormorant Garamond for elegance */
+:root[data-theme='light'] body {
+  background:
+    linear-gradient(rgba(33, 27, 20, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(33, 27, 20, 0.014) 1px, transparent 1px),
+    #FDFBF7;
+  background-size: 28px 28px, 28px 28px, auto;
+  color: var(--brand-ink);
+}
+
+/* Headings use Playfair Display for a manuscript-editorial hierarchy. */
 h1, h2, h3, h4 {
   font-family: var(--font-serif);
   line-height: 1.15;
@@ -162,6 +169,15 @@ h1, h2, h3, h4 {
 
 h5, h6 {
   line-height: 1.2;
+  font-weight: 500;
+}
+
+.font-display {
+  font-family: var(--font-serif);
+}
+
+.font-display.font-bold,
+.font-display.font-semibold {
   font-weight: 500;
 }
 
@@ -239,9 +255,9 @@ h5, h6 {
 .type-chip {
   font-size: var(--type-chip);
   line-height: 1.2;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-transform: none;
   color: var(--chip-text);
 }
 
@@ -294,7 +310,7 @@ body::after {
 
 :root[data-theme='light'] body::before,
 :root[data-theme='light'] body::after {
-  opacity: 0.35;
+  opacity: 0;
 }
 
 /* ── Sacred gradient text ───────────────────────────────────────────────────── */
@@ -425,11 +441,13 @@ body::after {
 :root[data-theme='light'] .glass-nav,
 :root[data-theme='light'] .glass-chip,
 :root[data-theme='light'] .glass-input {
-  border-color: rgba(65, 36, 2, 0.10);
-  background: rgba(255, 255, 255, 0.94);
+  border-color: rgba(95, 58, 22, 0.13);
+  background: rgba(255, 253, 248, 0.94);
+  backdrop-filter: blur(10px) saturate(108%);
+  -webkit-backdrop-filter: blur(10px) saturate(108%);
   box-shadow:
-    0 14px 32px rgba(65, 36, 2, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    0 10px 26px rgba(49, 35, 20, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
 }
 
 .glass-panel,
@@ -475,7 +493,7 @@ body::after {
 }
 
 :root[data-theme='light'] .glass-panel {
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 253, 248, 0.94);
 }
 
 .glass-panel-strong {
@@ -485,7 +503,7 @@ body::after {
 }
 
 :root[data-theme='light'] .glass-panel-strong {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(250, 238, 218, 0.72));
+  background: rgba(255, 253, 248, 0.98);
 }
 
 .glass-nav {
@@ -500,8 +518,8 @@ body::after {
 }
 
 :root[data-theme='light'] .glass-nav {
-  background: rgba(255, 255, 255, 0.94);
-  border-color: rgba(65, 36, 2, 0.10);
+  background: rgba(253, 251, 247, 0.96);
+  border-color: rgba(95, 58, 22, 0.13);
 }
 
 .glass-chip {
@@ -509,7 +527,7 @@ body::after {
 }
 
 :root[data-theme='light'] .glass-chip {
-  background: rgba(250, 238, 218, 0.82);
+  background: rgba(239, 227, 207, 0.72);
 }
 
 .glass-input {
@@ -526,8 +544,8 @@ body::after {
 }
 
 :root[data-theme='light'] .surface-panel {
-  border-color: rgba(65, 36, 2, 0.10);
-  background: rgba(255, 255, 255, 0.94);
+  border-color: rgba(95, 58, 22, 0.13);
+  background: rgba(255, 253, 248, 0.96);
 }
 
 .surface-card {
@@ -538,8 +556,9 @@ body::after {
 }
 
 :root[data-theme='light'] .surface-card {
-  border-color: rgba(65, 36, 2, 0.10);
-  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(95, 58, 22, 0.12);
+  background: rgba(255, 253, 248, 0.94);
+  box-shadow: 0 8px 20px rgba(49, 35, 20, 0.055);
 }
 
 .surface-soft-card {
@@ -550,8 +569,8 @@ body::after {
 }
 
 :root[data-theme='light'] .surface-soft-card {
-  border-color: rgba(65, 36, 2, 0.08);
-  background: rgba(250, 238, 218, 0.64);
+  border-color: rgba(95, 58, 22, 0.10);
+  background: rgba(244, 239, 230, 0.74);
 }
 
 .surface-sheet {
@@ -561,8 +580,8 @@ body::after {
 }
 
 :root[data-theme='light'] .surface-sheet {
-  border-color: rgba(65, 36, 2, 0.12);
-  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(95, 58, 22, 0.14);
+  background: rgba(255, 253, 248, 0.98);
 }
 
 .surface-input,
@@ -578,8 +597,8 @@ body::after {
 :root[data-theme='light'] .surface-input,
 :root[data-theme='light'] .surface-select,
 :root[data-theme='light'] .surface-textarea {
-  border-color: rgba(65, 36, 2, 0.12);
-  background: rgba(255, 255, 255, 0.96);
+  border-color: rgba(95, 58, 22, 0.14);
+  background: rgba(255, 253, 248, 0.98);
   color: var(--text-cream);
 }
 
@@ -595,8 +614,8 @@ body::after {
 }
 
 :root[data-theme='light'] .surface-tabbar {
-  background: rgba(255, 255, 255, 0.92);
-  border-color: rgba(65, 36, 2, 0.10);
+  background: rgba(244, 239, 230, 0.80);
+  border-color: rgba(95, 58, 22, 0.12);
 }
 
 .surface-tab-active {
@@ -605,7 +624,7 @@ body::after {
 }
 
 :root[data-theme='light'] .surface-tab-active {
-  background: rgba(250, 238, 218, 0.86);
+  background: rgba(255, 253, 248, 0.98);
 }
 
 /* ── Decorative orbits ──────────────────────────────────────────────────────── */
@@ -673,8 +692,8 @@ body::after {
 }
 
 :root[data-theme='light'] .glass-button-secondary {
-  background: rgba(255, 255, 255, 0.92);
-  border-color: rgba(65, 36, 2, 0.12);
+  background: rgba(255, 253, 248, 0.92);
+  border-color: rgba(95, 58, 22, 0.14);
 }
 .glass-button-secondary:hover { transform: translateY(-1px); border-color: rgba(200, 146, 74, 0.28); }
 
@@ -698,8 +717,8 @@ body::after {
 }
 
 :root[data-theme='light'] .clay-card {
-  background: rgba(255, 255, 255, 0.94);
-  border-color: rgba(65, 36, 2, 0.10);
+  background: rgba(255, 253, 248, 0.94);
+  border-color: rgba(95, 58, 22, 0.12);
   box-shadow: var(--shadow-soft);
 }
 
