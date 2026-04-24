@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, BarChart2, Loader2, ChevronLeft } from 'lucide-react';
+import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, BarChart2, Loader2, ChevronLeft, LayoutGrid } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { APP } from '@/lib/config';
 import { createClient } from '@/lib/supabase';
@@ -139,6 +139,21 @@ function generateInviteCode(userId: string): string {
   return userId.replace(/-/g, '').slice(0, 8).toUpperCase();
 }
 
+// ── Home Customisation ───────────────────────────────────────────────────
+const HOME_EXPLORE_CARDS = [
+  { label: 'Tirtha',    icon: '🛕', href: '/tirtha-map', desc: 'Find sacred places near you'  },
+  { label: 'Mandali',   icon: '🏡', href: '/mandali',    desc: 'Your local sangam'             },
+  { label: 'Kul',       icon: '❤️', href: '/kul',        desc: 'Family sadhana together'       },
+  { label: 'Pathshala', icon: '📖', href: '/library',    desc: 'Tradition-first study tracks'  },
+];
+const HOME_DEFAULT_CARD_ORDER = HOME_EXPLORE_CARDS.map(c => c.href);
+const HOME_CARD_MAP = Object.fromEntries(HOME_EXPLORE_CARDS.map(c => [c.href, c]));
+
+const HOME_SECTIONS = [
+  { key: 'vichaar-sabha',  icon: '💬', label: 'Vichaar Sabha',  desc: 'Community discussion forum' },
+  { key: 'invite-friends', icon: '🙏', label: 'Invite Friends', desc: 'Spread the light of dharma' },
+];
+
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function ProfileClient({
   profile,
@@ -184,6 +199,63 @@ export default function ProfileClient({
   const [blockedProfiles, setBlockedProfiles] = useState(initialBlockedProfiles);
   const [mutedProfiles, setMutedProfiles] = useState(initialMutedProfiles);
   const [hiddenItems, setHiddenItems] = useState(initialHiddenItems);
+  // ── Home layout customisation (synced via localStorage) ──────────────────
+  const [homeCardOrder, setHomeCardOrder] = useState<string[]>(() => {
+    if (typeof window === 'undefined') return HOME_DEFAULT_CARD_ORDER;
+    try {
+      const saved = localStorage.getItem('home_card_order');
+      if (saved) {
+        const parsed = JSON.parse(saved) as string[];
+        const merged = [...parsed.filter((h: string) => HOME_DEFAULT_CARD_ORDER.includes(h)), ...HOME_DEFAULT_CARD_ORDER.filter(h => !parsed.includes(h))];
+        return merged;
+      }
+    } catch { /* ignore */ }
+    return HOME_DEFAULT_CARD_ORDER;
+  });
+  const [homeHiddenCards, setHomeHiddenCards] = useState<Set<string>>(() => {
+    if (typeof window === 'undefined') return new Set();
+    try {
+      const saved = localStorage.getItem('home_hidden_cards');
+      return saved ? new Set(JSON.parse(saved) as string[]) : new Set<string>();
+    } catch { return new Set<string>(); }
+  });
+  const [homeHiddenSections, setHomeHiddenSections] = useState<Set<string>>(() => {
+    if (typeof window === 'undefined') return new Set();
+    try {
+      const saved = localStorage.getItem('home_hidden_sections');
+      return saved ? new Set(JSON.parse(saved) as string[]) : new Set<string>();
+    } catch { return new Set<string>(); }
+  });
+
+  function homeToggleCard(href: string) {
+    setHomeHiddenCards(prev => {
+      const next = new Set(prev);
+      if (next.has(href)) next.delete(href); else next.add(href);
+      try { localStorage.setItem('home_hidden_cards', JSON.stringify([...next])); } catch {}
+      return next;
+    });
+  }
+  function homeMoveCard(href: string, dir: 'up' | 'down') {
+    setHomeCardOrder(prev => {
+      const idx = prev.indexOf(href);
+      if (idx < 0) return prev;
+      const next = [...prev];
+      if (dir === 'up' && idx > 0) [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
+      else if (dir === 'down' && idx < next.length - 1) [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
+      try { localStorage.setItem('home_card_order', JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }
+  function homeToggleSection(key: string) {
+    setHomeHiddenSections(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      try { localStorage.setItem('home_hidden_sections', JSON.stringify([...next])); } catch {}
+      return next;
+    });
+  }
+  const homeOrderedCards = homeCardOrder.map(h => HOME_CARD_MAP[h]).filter(Boolean);
+
   const [form, setForm] = useState({
     full_name:        liveProfile?.full_name        ?? '',
     bio:              liveProfile?.bio              ?? '',
@@ -1270,6 +1342,163 @@ export default function ProfileClient({
           </div>
         </div>
       )}
+
+      {/* ── Customize Home ── */}
+      <SurfaceSection
+        eyebrow="Customise"
+        title="Your home layout"
+        description="Reorder and show or hide cards on your home screen."
+      >
+        {/* Explore Cards */}
+        <div className="space-y-2">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.15em] px-1" style={{ color: 'var(--text-dim)' }}>
+            Explore Cards
+          </p>
+          {homeOrderedCards.map((item, idx) => {
+            const hidden = homeHiddenCards.has(item.href);
+            return (
+              <div
+                key={item.href}
+                className="flex items-center gap-2 rounded-2xl px-3 py-2.5 transition-all"
+                style={{
+                  background: hidden ? 'rgba(255,255,255,0.03)' : 'rgba(200,146,74,0.08)',
+                  border: `1px solid ${hidden ? 'rgba(255,255,255,0.08)' : 'rgba(200,146,74,0.20)'}`,
+                }}
+              >
+                {/* Up / Down arrows */}
+                <div className="flex flex-col gap-0.5 flex-shrink-0">
+                  <button
+                    onClick={() => homeMoveCard(item.href, 'up')}
+                    disabled={idx === 0}
+                    className="w-6 h-6 rounded-lg flex items-center justify-center transition disabled:opacity-25"
+                    style={{ background: 'rgba(255,255,255,0.07)' }}
+                    aria-label="Move up"
+                  >
+                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                      <path d="M6 9V3M3 6l3-3 3 3" stroke="rgba(200,146,74,0.75)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => homeMoveCard(item.href, 'down')}
+                    disabled={idx === homeOrderedCards.length - 1}
+                    className="w-6 h-6 rounded-lg flex items-center justify-center transition disabled:opacity-25"
+                    style={{ background: 'rgba(255,255,255,0.07)' }}
+                    aria-label="Move down"
+                  >
+                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                      <path d="M6 3v6M3 6l3 3 3-3" stroke="rgba(200,146,74,0.75)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Icon + label */}
+                <span className="text-lg leading-none flex-shrink-0">{item.icon}</span>
+                <div className="flex-1 min-w-0 text-left">
+                  <p className="text-sm font-semibold truncate" style={{ color: hidden ? 'var(--text-dim)' : 'var(--text-cream)' }}>
+                    {item.label}
+                  </p>
+                  <p className="text-[10px] truncate" style={{ color: 'var(--text-dim)' }}>{item.desc}</p>
+                </div>
+
+                {/* Toggle switch */}
+                <button
+                  onClick={() => homeToggleCard(item.href)}
+                  className="flex-shrink-0"
+                  aria-label={hidden ? 'Show card' : 'Hide card'}
+                >
+                  <div
+                    className="w-11 h-6 rounded-full transition-all flex items-center px-0.5"
+                    style={{ background: hidden ? 'rgba(255,255,255,0.10)' : 'rgba(200,146,74,0.55)' }}
+                  >
+                    <div
+                      className="w-5 h-5 rounded-full transition-all"
+                      style={{
+                        background: '#fff',
+                        transform: hidden ? 'translateX(0)' : 'translateX(20px)',
+                        boxShadow: '0 1px 4px rgba(0,0,0,0.25)',
+                      }}
+                    />
+                  </div>
+                </button>
+              </div>
+            );
+          })}
+
+          {/* Reset buttons */}
+          <div className="flex gap-2 pt-1">
+            {homeHiddenCards.size > 0 && (
+              <button
+                onClick={() => {
+                  setHomeHiddenCards(new Set());
+                  try { localStorage.removeItem('home_hidden_cards'); } catch {}
+                }}
+                className="flex-1 py-2 rounded-2xl text-xs font-semibold"
+                style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.18)', color: 'var(--text-muted-warm)' }}
+              >
+                Show all
+              </button>
+            )}
+            <button
+              onClick={() => {
+                setHomeCardOrder(HOME_DEFAULT_CARD_ORDER);
+                try { localStorage.removeItem('home_card_order'); } catch {}
+              }}
+              className="flex-1 py-2 rounded-2xl text-xs font-semibold"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-dim)' }}
+            >
+              Reset order
+            </button>
+          </div>
+        </div>
+
+        {/* Sections */}
+        <div className="space-y-2 mt-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.15em] px-1" style={{ color: 'var(--text-dim)' }}>
+            Sections
+          </p>
+          {HOME_SECTIONS.map(({ key, icon, label, desc }) => {
+            const hidden = homeHiddenSections.has(key);
+            return (
+              <button
+                key={key}
+                onClick={() => homeToggleSection(key)}
+                className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 transition-all motion-press"
+                style={{
+                  background: hidden ? 'rgba(255,255,255,0.03)' : 'rgba(200,146,74,0.08)',
+                  border: `1px solid ${hidden ? 'rgba(255,255,255,0.08)' : 'rgba(200,146,74,0.20)'}`,
+                }}
+              >
+                <span className="text-xl flex-shrink-0">{icon}</span>
+                <div className="flex-1 text-left">
+                  <p className="text-sm font-semibold" style={{ color: hidden ? 'var(--text-dim)' : 'var(--text-cream)' }}>{label}</p>
+                  <p className="text-[10px]" style={{ color: 'var(--text-dim)' }}>{desc}</p>
+                </div>
+                <div
+                  className="w-11 h-6 rounded-full transition-all flex-shrink-0 flex items-center px-0.5"
+                  style={{ background: hidden ? 'rgba(255,255,255,0.10)' : 'rgba(200,146,74,0.55)' }}
+                >
+                  <div
+                    className="w-5 h-5 rounded-full transition-all"
+                    style={{
+                      background: '#fff',
+                      transform: hidden ? 'translateX(0)' : 'translateX(20px)',
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.25)',
+                    }}
+                  />
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Link back to home to see effect */}
+        <div className="flex items-center gap-2 mt-3 px-1">
+          <LayoutGrid size={11} style={{ color: 'var(--text-dim)' }} />
+          <p className="text-[10px]" style={{ color: 'var(--text-dim)' }}>
+            Changes apply instantly on your home screen.
+          </p>
+        </div>
+      </SurfaceSection>
 
       {/* ── Sadhana Report ── */}
       <SurfaceSection
