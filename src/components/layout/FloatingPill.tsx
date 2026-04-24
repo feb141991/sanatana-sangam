@@ -349,56 +349,25 @@ export default function FloatingPill({
 
   return (
     <>
-      <div className="fixed top-3 right-3 z-50 flex items-center gap-1.5"
-        style={{
-          background: 'rgba(16,12,6,0.55)',
-          border: '1px solid rgba(200,146,74,0.16)',
-          borderRadius: '2rem',
-          padding: '4px 8px 4px 5px',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
-        }}>
+      <div className="fixed top-3 right-3 z-50 flex items-center gap-2">
 
-        {/* Avatar — leftmost */}
-        <Link href="/profile"
-          className="relative flex-shrink-0 rounded-full flex items-center justify-center overflow-hidden"
-          style={{
-            width: 34,
-            height: 34,
-            background: 'linear-gradient(135deg, rgba(51,51,48,0.98), rgba(43,43,40,0.94))',
-            border: avatarUrl ? '2px solid rgba(200,146,74,0.60)' : '1.5px solid rgba(200,146,74,0.28)',
-            boxShadow: avatarUrl ? '0 0 0 3px rgba(200,146,74,0.12)' : 'none',
-          }}
-        >
-          {avatarUrl ? (
-            <Image src={avatarUrl} alt="Profile" fill sizes="34px" className="object-cover" />
-          ) : (
-            <span className="text-[10px] font-bold" style={{ color: 'var(--brand-primary-strong)' }}>
-              {userInitials}
-            </span>
-          )}
-        </Link>
-
-        {/* Bell — to the right of avatar */}
+        {/* Bell */}
         <button
           onClick={handleBellClick}
           aria-label="Notifications"
-          className="relative w-9 h-9 rounded-full flex items-center justify-center transition"
-          style={{ color: 'var(--text-dim)' }}
+          className="relative w-12 h-12 rounded-full flex items-center justify-center transition"
+          style={{ color: 'rgba(200,146,74,0.80)' }}
         >
-          <svg viewBox="0 0 24 24" fill="none" className="w-[17px] h-[17px]" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
             <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
           </svg>
-          {/* Unread badge */}
           {unreadCount > 0 && (
             <span className="absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold"
               style={{ background: 'var(--brand-primary)', color: '#1c1c1a' }}>
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
-          {/* Push-not-enabled pulse dot — show when no unread badge and push not granted */}
           {unreadCount === 0 && pushConfigured && permission !== 'granted' && !isIosSafariNonPwa && (
             <span
               className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full"
@@ -410,6 +379,26 @@ export default function FloatingPill({
             />
           )}
         </button>
+
+        {/* Avatar */}
+        <Link href="/profile"
+          className="relative flex-shrink-0 rounded-full flex items-center justify-center overflow-hidden"
+          style={{
+            width: 48,
+            height: 48,
+            background: 'linear-gradient(135deg, rgba(51,51,48,0.98), rgba(43,43,40,0.94))',
+            border: avatarUrl ? '2px solid rgba(200,146,74,0.70)' : '1.5px solid rgba(200,146,74,0.35)',
+            boxShadow: avatarUrl ? '0 0 0 3px rgba(200,146,74,0.15)' : 'none',
+          }}
+        >
+          {avatarUrl ? (
+            <Image src={avatarUrl} alt="Profile" fill sizes="48px" className="object-cover" />
+          ) : (
+            <span className="text-sm font-bold" style={{ color: 'var(--brand-primary-strong)' }}>
+              {userInitials}
+            </span>
+          )}
+        </Link>
       </div>
 
       {notificationSheet}

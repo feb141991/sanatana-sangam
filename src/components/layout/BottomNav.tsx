@@ -182,9 +182,9 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
       <nav className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 safe-area-pb pointer-events-none">
         <div className="max-w-2xl mx-auto flex items-center justify-center">
 
-          {/* ── Floating pill — transparent with amber border ─────────────── */}
+          {/* ── Floating pill — transparent ───────────────────────────────── */}
           <div
-            className="relative flex items-center h-[60px] rounded-[2rem] pointer-events-auto"
+            className="relative flex items-center h-[72px] rounded-[2rem] pointer-events-auto"
             style={{
               width: '100%',
               maxWidth: '42rem',
@@ -198,7 +198,7 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
               <Link
                 href={isGuest ? '/guest' : '/home'}
                 aria-label="Home"
-                className="relative w-[44px] h-[44px] rounded-full flex items-center justify-center transition-all motion-press"
+                className="relative w-[54px] h-[54px] rounded-full flex items-center justify-center transition-all motion-press"
                 style={{
                   background: isHome
                     ? 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))'
@@ -208,7 +208,7 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
                 }}
               >
                 <svg
-                  width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  width="27" height="27" viewBox="0 0 24 24" fill="none"
                   stroke={isHome ? '#1a1610' : 'rgba(200,146,74,0.72)'}
                   strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                 >
@@ -259,13 +259,13 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
                         }
                       />
                     )}
-                    <div className="relative z-10 w-7 h-7 flex items-center justify-center">
+                    <div className="relative z-10 w-10 h-10 flex items-center justify-center">
                       <motion.div
                         animate={prefersReducedMotion ? undefined : { scale: active ? 1.1 : 1 }}
                         transition={{ type: 'spring', stiffness: 420, damping: 26 }}
                       >
                         <Icon
-                          size={18}
+                          size={27}
                           strokeWidth={active ? 2.3 : 1.8}
                           style={{ color: active ? 'var(--brand-primary)' : 'var(--text-dim)' }}
                         />
@@ -296,14 +296,14 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
               <button
                 onClick={() => setQuickOpen(true)}
                 aria-label="Quick actions"
-                className="w-[44px] h-[44px] rounded-full flex items-center justify-center transition-all motion-press"
+                className="w-[54px] h-[54px] rounded-full flex items-center justify-center transition-all motion-press"
                 style={{
                   background: 'rgba(200,146,74,0.09)',
                   border: '1px solid rgba(200,146,74,0.22)',
                 }}
               >
                 <motion.svg
-                  width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  width="24" height="24" viewBox="0 0 24 24" fill="none"
                   stroke="rgba(200,146,74,0.82)"
                   strokeWidth="2.2" strokeLinecap="round"
                   animate={quickOpen ? { rotate: 45 } : { rotate: 0 }}
