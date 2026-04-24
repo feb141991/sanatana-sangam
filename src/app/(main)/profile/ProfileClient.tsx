@@ -4,13 +4,13 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, BarChart2, Loader2, ChevronLeft, LayoutGrid, ChevronRight, Monitor, Moon, Sun } from 'lucide-react';
+import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, Monitor, Moon, Sun } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { APP } from '@/lib/config';
 import { createClient } from '@/lib/supabase';
 import type { HiddenContentSummary, SafetyProfileSummary } from '@/lib/user-safety';
-import { getInitials, ISHTA_DEVATAS, SAMPRADAYAS, SPIRITUAL_LEVELS, TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getIshtaDevataLabel, getSampradayaLabel } from '@/lib/utils';
-import { APP_LANGUAGES, MEANING_LANGUAGE_OPTIONS, SCRIPTURE_SCRIPT_OPTIONS, getLanguageLabel } from '@/lib/language-preferences';
+import { getInitials, TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getIshtaDevataLabel, getSampradayaLabel } from '@/lib/utils';
+import { APP_LANGUAGES, MEANING_LANGUAGE_OPTIONS, SCRIPTURE_SCRIPT_OPTIONS } from '@/lib/language-preferences';
 import type { TraditionKey } from '@/lib/traditions';
 import { useLocation } from '@/lib/LocationContext';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
@@ -26,19 +26,6 @@ import type { ProfileUpdate } from '@/lib/api/profile';
 import { usePremium } from '@/hooks/usePremium';
 import { THEME_OPTIONS, type ThemePreference } from '@/lib/theme-preferences';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
-
-const SEVA_LEVELS = [
-  { min: 0,    max: 99,   label: 'Jigyasu',    emoji: '🌱' },
-  { min: 100,  max: 299,  label: 'Sadhaka',    emoji: '🪷' },
-  { min: 300,  max: 599,  label: 'Shishya',    emoji: '📿' },
-  { min: 600,  max: 999,  label: 'Seva Dhari', emoji: '🙏' },
-  { min: 1000, max: 1999, label: 'Mahatma',    emoji: '🕉️' },
-  { min: 2000, max: 9999, label: 'Acharya',    emoji: '🔱' },
-];
-
-function getSevaBadge(score: number) {
-  return SEVA_LEVELS.find((l) => score >= l.min && score <= l.max) ?? SEVA_LEVELS[0];
-}
 
 // ── Profile Completion ────────────────────────────────────────────────────────
 const COMPLETION_FIELDS: { key: keyof Profile | string; label: string }[] = [
@@ -59,46 +46,6 @@ function calcCompletion(profile: Profile | null): { pct: number; missing: string
     .map(f => f.label);
   const pct = Math.round(((COMPLETION_FIELDS.length - missing.length) / COMPLETION_FIELDS.length) * 100);
   return { pct, missing };
-}
-
-// ── Seva Score Bar ────────────────────────────────────────────────────────────
-function SevaScoreBar({ score }: { score: number }) {
-  const badge     = getSevaBadge(score);
-  const nextLevel = SEVA_LEVELS.find((l) => l.min > score);
-  const pct = nextLevel
-    ? Math.min(100, Math.round(((score - badge.min) / (nextLevel.min - badge.min)) * 100))
-    : 100;
-
-  return (
-    <div className="glass-panel rounded-2xl p-4 flex items-center gap-4">
-      {/* Circular seva-progress ring */}
-      <CircularProgress
-        pct={pct}
-        accent="var(--brand-primary)"
-        size={64}
-        strokeWidth={5}
-        label={<span className="text-2xl leading-none">{badge.emoji}</span>}
-      />
-      {/* Label + score */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="type-card-heading">{badge.label}</p>
-            <p className="type-card-label">Seva level</p>
-          </div>
-          <div className="text-right">
-            <p className="type-metric">{score}</p>
-            <p className="type-micro">seva points</p>
-          </div>
-        </div>
-        {nextLevel && (
-          <p className="type-micro mt-1.5">
-            {nextLevel.min - score} pts to {nextLevel.label}
-          </p>
-        )}
-      </div>
-    </div>
-  );
 }
 
 // ── Profile Completion Bar ────────────────────────────────────────────────────
@@ -141,21 +88,6 @@ function generateInviteCode(userId: string): string {
   return userId.replace(/-/g, '').slice(0, 8).toUpperCase();
 }
 
-// ── Home Customisation ───────────────────────────────────────────────────
-const HOME_EXPLORE_CARDS = [
-  { label: 'Tirtha',    icon: '🛕', href: '/tirtha-map', desc: 'Find sacred places near you'  },
-  { label: 'Mandali',   icon: '🏡', href: '/mandali',    desc: 'Your local sangam'             },
-  { label: 'Kul',       icon: '❤️', href: '/kul',        desc: 'Family sadhana together'       },
-  { label: 'Pathshala', icon: '📖', href: '/library',    desc: 'Tradition-first study tracks'  },
-];
-const HOME_DEFAULT_CARD_ORDER = HOME_EXPLORE_CARDS.map(c => c.href);
-const HOME_CARD_MAP = Object.fromEntries(HOME_EXPLORE_CARDS.map(c => [c.href, c]));
-
-const HOME_SECTIONS = [
-  { key: 'vichaar-sabha',  icon: '💬', label: 'Vichaar Sabha',  desc: 'Community discussion forum' },
-  { key: 'invite-friends', icon: '🙏', label: 'Invite Friends', desc: 'Spread the light of dharma' },
-];
-
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function ProfileClient({
   profile,
@@ -193,71 +125,12 @@ export default function ProfileClient({
   const [savingNotificationPrefs, setSavingNotificationPrefs] = useState(false);
   const [reportLoading, setReportLoading] = useState(false);
   const [showNotificationAdvanced, setShowNotificationAdvanced] = useState(false);
-  const [showNotificationDiagnostics, setShowNotificationDiagnostics] = useState(false);
   const [safetyBusyKey, setSafetyBusyKey] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>((profile as any)?.avatar_url ?? null);
   const [showAvatarPreview, setShowAvatarPreview] = useState(false);
-  const [browserPermission, setBrowserPermission] = useState<NotificationPermission>('default');
-  const [browserPushSubscriptionId, setBrowserPushSubscriptionId] = useState<string | null>(null);
   const [blockedProfiles, setBlockedProfiles] = useState(initialBlockedProfiles);
   const [mutedProfiles, setMutedProfiles] = useState(initialMutedProfiles);
   const [hiddenItems, setHiddenItems] = useState(initialHiddenItems);
-  // ── Home layout customisation (synced via localStorage) ──────────────────
-  const [homeCardOrder, setHomeCardOrder] = useState<string[]>(() => {
-    if (typeof window === 'undefined') return HOME_DEFAULT_CARD_ORDER;
-    try {
-      const saved = localStorage.getItem('home_card_order');
-      if (saved) {
-        const parsed = JSON.parse(saved) as string[];
-        const merged = [...parsed.filter((h: string) => HOME_DEFAULT_CARD_ORDER.includes(h)), ...HOME_DEFAULT_CARD_ORDER.filter(h => !parsed.includes(h))];
-        return merged;
-      }
-    } catch { /* ignore */ }
-    return HOME_DEFAULT_CARD_ORDER;
-  });
-  const [homeHiddenCards, setHomeHiddenCards] = useState<Set<string>>(() => {
-    if (typeof window === 'undefined') return new Set();
-    try {
-      const saved = localStorage.getItem('home_hidden_cards');
-      return saved ? new Set(JSON.parse(saved) as string[]) : new Set<string>();
-    } catch { return new Set<string>(); }
-  });
-  const [homeHiddenSections, setHomeHiddenSections] = useState<Set<string>>(() => {
-    if (typeof window === 'undefined') return new Set();
-    try {
-      const saved = localStorage.getItem('home_hidden_sections');
-      return saved ? new Set(JSON.parse(saved) as string[]) : new Set<string>();
-    } catch { return new Set<string>(); }
-  });
-
-  function homeToggleCard(href: string) {
-    setHomeHiddenCards(prev => {
-      const next = new Set(prev);
-      if (next.has(href)) next.delete(href); else next.add(href);
-      try { localStorage.setItem('home_hidden_cards', JSON.stringify([...next])); } catch {}
-      return next;
-    });
-  }
-  function homeMoveCard(href: string, dir: 'up' | 'down') {
-    setHomeCardOrder(prev => {
-      const idx = prev.indexOf(href);
-      if (idx < 0) return prev;
-      const next = [...prev];
-      if (dir === 'up' && idx > 0) [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
-      else if (dir === 'down' && idx < next.length - 1) [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
-      try { localStorage.setItem('home_card_order', JSON.stringify(next)); } catch {}
-      return next;
-    });
-  }
-  function homeToggleSection(key: string) {
-    setHomeHiddenSections(prev => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key); else next.add(key);
-      try { localStorage.setItem('home_hidden_sections', JSON.stringify([...next])); } catch {}
-      return next;
-    });
-  }
-  const homeOrderedCards = homeCardOrder.map(h => HOME_CARD_MAP[h]).filter(Boolean);
 
   const [form, setForm] = useState({
     full_name:        liveProfile?.full_name        ?? '',
@@ -287,10 +160,7 @@ export default function ProfileClient({
 
   const { coords, city: liveCity, country: liveCountry, countryCode: liveCountryCode } = useLocation();
 
-  const devata    = ISHTA_DEVATAS.find((d) => d.value === liveProfile?.ishta_devata);
-  const sampr     = SAMPRADAYAS.find((s)  => s.value  === liveProfile?.sampradaya);
   const initials  = getInitials(liveProfile?.full_name ?? 'S');
-  const sevaScore = liveProfile?.seva_score ?? 0;
   const streak    = (liveProfile as any)?.shloka_streak ?? 0;
   const profileCountryCode = (liveProfile as any)?.country_code ?? null;
   const profileTimezone = (liveProfile as any)?.timezone ?? null;
@@ -339,11 +209,6 @@ export default function ProfileClient({
     if (!browserTimeZone || browserTimeZone === profileTimezone) return;
     supabase.from('profiles').update({ timezone: browserTimeZone }).eq('id', userId);
   }, [profileTimezone, supabase, userId]);
-
-  useEffect(() => {
-    setBrowserPermission(getPermissionState());
-    getPlayerId().then((id) => setBrowserPushSubscriptionId(id));
-  }, []);
 
   async function uploadAvatar(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -640,29 +505,7 @@ export default function ProfileClient({
     toast.success('Content restored to your feed.');
   }
 
-  const traditionLabel = TRADITIONS.find(t => t.value === (liveProfile as any)?.tradition);
-  const identityRows = [
-    { label: 'Tradition',    value: traditionLabel ? `${traditionLabel.emoji} ${traditionLabel.label}` : null, emoji: null },
-    { label: sampr ? getSampradayaLabel((liveProfile as any)?.tradition) : 'Sampradaya', value: sampr?.label, emoji: '🏛️' },
-    { label: devata ? getIshtaDevataLabel((liveProfile as any)?.tradition) : 'Ishta Devata', value: devata ? `${devata.emoji} ${devata.label}` : null, emoji: null },
-    { label: 'Gotra',        value: liveProfile?.gotra,                                  emoji: '📿' },
-    { label: 'Kul Devata',   value: (liveProfile as any)?.kul_devata,                   emoji: '🪔' },
-    { label: 'Home Town',    value: (liveProfile as any)?.home_town,                    emoji: '🏡' },
-    { label: 'Time Zone',    value: profileTimezone,                                emoji: '🕰️' },
-  ].filter((r) => r.value);
-  const pathRows = identityRows.filter((row) => ['Tradition', 'Gotra', 'Kul Devata'].includes(row.label));
-  const practiceRows = identityRows.filter((row) => ['Sampradaya', 'Ishta Devata'].includes(row.label));
-  const placeRows = [
-    { label: 'Current place', value: [liveProfile?.city, liveProfile?.country].filter(Boolean).join(', '), emoji: '📍' },
-    { label: 'Home Town', value: (liveProfile as any)?.home_town, emoji: '🏡' },
-    { label: 'Time Zone', value: profileTimezone, emoji: '🕰️' },
-  ].filter((row) => row.value);
-  const languageRows = [
-    { label: 'App language', value: getLanguageLabel(APP_LANGUAGES, (liveProfile as any)?.app_language), emoji: '🌐' },
-    { label: 'Scripture view', value: getLanguageLabel(SCRIPTURE_SCRIPT_OPTIONS, (liveProfile as any)?.scripture_script), emoji: '📜' },
-    { label: 'Transliteration', value: (liveProfile as any)?.show_transliteration ? 'Shown' : 'Hidden', emoji: '🔤' },
-    { label: 'Meaning language', value: getLanguageLabel(MEANING_LANGUAGE_OPTIONS, (liveProfile as any)?.meaning_language), emoji: '🈯' },
-  ];
+  const hasSafetyItems = blockedProfiles.length > 0 || mutedProfiles.length > 0 || hiddenItems.length > 0;
   const themeIconMap = {
     system: Monitor,
     dark: Moon,
@@ -779,128 +622,66 @@ export default function ProfileClient({
         </div>
       </div>
 
-      {/* ── Seva Score ── */}
-      <SevaScoreBar score={sevaScore} />
-
-      <div className="grid gap-4">
-        {(profile?.bio || pathRows.length > 0) && (
-          <SurfaceSection
-            eyebrow="My Path"
-            title="Identity and belonging"
-            description="Your dharmic profile."
-          >
-            {liveProfile?.bio ? (
-              <div className="rounded-[1.35rem] bg-[var(--brand-primary-soft)] px-4 py-3">
-                <p className="text-[10px] uppercase tracking-[0.16em] font-semibold theme-dim mb-2">About</p>
-                <p className="text-sm theme-ink leading-relaxed">{liveProfile.bio}</p>
-              </div>
-            ) : null}
-            {pathRows.length > 0 ? (
-              <div className="divide-y divide-white/5">
-                {pathRows.map(({ label, value, emoji }) => (
-                  <div key={label} className="flex items-center justify-between py-2.5 gap-4">
-                    <span className="text-sm theme-dim">{emoji ? `${emoji} ` : ''}{label}</span>
-                    <span className="text-sm font-medium theme-ink text-right">{value}</span>
-                  </div>
-                ))}
-              </div>
-            ) : null}
-          </SurfaceSection>
-        )}
-
-        {practiceRows.length > 0 && (
-          <SurfaceSection
-            eyebrow="My Practice"
-            title="How you walk the path"
-            description="Your practice details."
-          >
-            <div className="divide-y divide-white/5">
-              {practiceRows.map(({ label, value, emoji }) => (
-                <div key={label} className="flex items-center justify-between py-2.5 gap-4">
-                  <span className="text-sm theme-dim">{emoji ? `${emoji} ` : ''}{label}</span>
-                  <span className="text-sm font-medium theme-ink text-right">{value}</span>
-                </div>
-              ))}
-            </div>
-          </SurfaceSection>
-        )}
-
-        {placeRows.length > 0 && (
-          <SurfaceSection
-            eyebrow="My Place"
-            title="Where sacred time follows you"
-            description="Your place and time details."
-          >
-            <div className="divide-y divide-white/5">
-              {placeRows.map(({ label, value, emoji }) => (
-                <div key={label} className="flex items-center justify-between py-2.5 gap-4">
-                  <span className="text-sm theme-dim">{emoji ? `${emoji} ` : ''}{label}</span>
-                  <span className="text-sm font-medium theme-ink text-right">{value}</span>
-                </div>
-              ))}
-            </div>
-          </SurfaceSection>
-        )}
-      </div>
-
       <SurfaceSection
-        eyebrow="Notifications"
-        title="What should reach you"
-        description="Control reminders and quiet hours."
+        eyebrow="Settings"
+        title="App preferences"
+        description="Only the choices needed for daily use."
       >
-        <div className="space-y-4">
-          {[
-            {
-              key: 'wants_shloka_reminders',
-              title: 'Daily shloka reminders',
-              description: 'Evening reminders for the day’s reading.',
-            },
-            {
-              key: 'wants_festival_reminders',
-              title: 'Festival reminders',
-              description: 'Morning reminders for observances.',
-            },
-            {
-              key: 'wants_community_notifications',
-              title: 'Community updates',
-              description: 'Mandali replies, RSVPs, and nearby activity.',
-            },
-            {
-              key: 'wants_family_notifications',
-              title: 'Family updates',
-              description: 'Kul reminders, dates, and family activity.',
-            },
-          ].map((item) => {
-            const checked = notificationPrefs[item.key as keyof typeof notificationPrefs] as boolean;
-            return (
-              <label key={item.key} className="flex items-start justify-between gap-4 rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 cursor-pointer">
-                <div>
-                  <p className="text-sm font-medium theme-ink">{item.title}</p>
-                  <p className="text-xs theme-dim mt-1 leading-relaxed">{item.description}</p>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={(e) => setNotificationPrefs((current) => ({ ...current, [item.key]: e.target.checked }))}
-                  className="mt-1 h-4 w-4 rounded border-gray-300"
-                  style={{ accentColor: 'var(--brand-primary)' }}
-                />
-              </label>
-            );
-          })}
+        <div className="space-y-5">
+          <div>
+            <p className="type-card-label mb-2">Theme</p>
+            <div className="grid grid-cols-3 gap-2">
+              {THEME_OPTIONS.map((option) => {
+                const active = themePreference === option.value;
+                const Icon = themeIconMap[option.value];
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setThemePreference(option.value)}
+                    className="rounded-2xl border px-3 py-3 text-left transition motion-press"
+                    style={{
+                      background: active ? 'rgba(200,146,74,0.14)' : 'rgba(255,255,255,0.04)',
+                      borderColor: active ? 'rgba(200,146,74,0.32)' : 'rgba(255,255,255,0.08)',
+                    }}
+                  >
+                    <Icon size={16} style={{ color: active ? 'var(--brand-primary-strong)' : 'var(--text-dim)' }} />
+                    <p className="mt-2 text-sm font-medium theme-ink">{option.label}</p>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="type-micro mt-2">Current surface: {resolvedTheme}</p>
+          </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={saveNotificationPreferences}
-              disabled={savingNotificationPrefs}
-              className="glass-button-primary inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-white font-semibold disabled:opacity-60"
-            >
-              <span>🔔</span>
-              <span>{savingNotificationPrefs ? 'Saving…' : 'Save notification preferences'}</span>
-            </button>
-            <p className="text-xs theme-dim">
-              Save the reminder choices above.
-            </p>
+          <div>
+            <p className="type-card-label mb-2">App language</p>
+            <div className="flex gap-2">
+              {APP_LANGUAGES.map((lang) => {
+                const active = ((liveProfile as any)?.app_language ?? 'en') === lang.value;
+                return (
+                  <button
+                    key={lang.value}
+                    onClick={() => {
+                      setLang(lang.value as AppLang);
+                      patchProfile({ app_language: lang.value }, `Language set to ${lang.label}`);
+                    }}
+                    className="flex-1 rounded-xl border py-2 text-sm font-medium transition"
+                    style={active ? {
+                      background: 'var(--brand-primary)',
+                      color: '#1c1c1a',
+                      borderColor: 'transparent',
+                    } : {
+                      background: 'rgba(255,255,255,0.04)',
+                      color: 'var(--text-muted-warm)',
+                      borderColor: 'rgba(255,255,255,0.08)',
+                    }}
+                  >
+                    {lang.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 space-y-3">
@@ -910,15 +691,35 @@ export default function ProfileClient({
               className="flex w-full items-center justify-between gap-3 text-left"
             >
               <div>
-                <p className="text-sm font-medium theme-ink">Advanced notification controls</p>
-                <p className="text-xs theme-dim mt-1">Quiet hours, device status, and a delivery check.</p>
+                <p className="text-sm font-medium theme-ink">Notifications</p>
+                <p className="text-xs theme-dim mt-1">Daily, festival, community, and family reminders.</p>
               </div>
               <span className="type-chip rounded-full border border-white/8 px-3 py-1 text-[color:var(--text-cream)]">
                 {showNotificationAdvanced ? 'Hide' : 'Show'}
               </span>
             </button>
             {showNotificationAdvanced ? (
-              <>
+              <div className="space-y-3">
+                {[
+                  { key: 'wants_shloka_reminders', title: 'Daily shloka' },
+                  { key: 'wants_festival_reminders', title: 'Festival reminders' },
+                  { key: 'wants_community_notifications', title: 'Community updates' },
+                  { key: 'wants_family_notifications', title: 'Family updates' },
+                ].map((item) => {
+                  const checked = notificationPrefs[item.key as keyof typeof notificationPrefs] as boolean;
+                  return (
+                    <label key={item.key} className="flex items-center justify-between gap-4 rounded-xl border border-white/6 bg-white/[0.03] px-3 py-2.5 cursor-pointer">
+                      <span className="text-sm theme-ink">{item.title}</span>
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e) => setNotificationPrefs((current) => ({ ...current, [item.key]: e.target.checked }))}
+                        className="h-4 w-4 rounded"
+                        style={{ accentColor: 'var(--brand-primary)' }}
+                      />
+                    </label>
+                  );
+                })}
                 <div className="rounded-2xl border border-white/6 bg-white/[0.03] px-4 py-4 space-y-3">
                   <div>
                     <p className="text-sm font-medium theme-ink">Quiet hours</p>
@@ -956,76 +757,35 @@ export default function ProfileClient({
                     Local time zone: {profileTimezone ?? 'UTC fallback until your browser reports a timezone'}
                   </p>
                 </div>
-
-                <div className="rounded-2xl border border-white/6 bg-white/[0.03] px-4 py-4 space-y-3">
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={saveNotificationPreferences}
+                    disabled={savingNotificationPrefs}
+                    className="glass-button-primary inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium disabled:opacity-60"
+                  >
+                    {savingNotificationPrefs ? 'Saving...' : 'Save notifications'}
+                  </button>
                   <button
                     onClick={sendTestNotification}
                     disabled={sendingTestNotification}
-                    className="glass-button-secondary inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium disabled:opacity-60"
+                    className="glass-button-secondary inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium disabled:opacity-60"
                     style={{ color: 'var(--text-cream)' }}
                   >
-                    <span>🔔</span>
-                    <span>{sendingTestNotification ? 'Sending test notification…' : 'Send test notification'}</span>
+                    {sendingTestNotification ? 'Testing...' : 'Test'}
                   </button>
-                  <p className="text-xs theme-dim">
-                    Use this only to verify the bell feed and browser push on this device.
-                  </p>
                 </div>
-
-                <div className="rounded-2xl border border-white/6 bg-white/[0.03] px-4 py-4 space-y-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowNotificationDiagnostics((current) => !current)}
-                    className="flex w-full items-center justify-between gap-3 text-left"
-                  >
-                    <div>
-                      <p className="text-sm font-medium theme-ink">Notification diagnostics</p>
-                      <p className="text-xs theme-dim mt-1">Permission, push link status, and reminder targeting.</p>
-                    </div>
-                    <span className="type-chip rounded-full border border-white/8 px-3 py-1 text-[color:var(--text-cream)]">
-                      {showNotificationDiagnostics ? 'Hide' : 'Show'}
-                    </span>
-                  </button>
-                  {showNotificationDiagnostics ? (
-                    <>
-                      <div className="grid gap-2 sm:grid-cols-2">
-                        {[
-                          { label: 'Browser permission', value: browserPermission },
-                          { label: 'Push linked on this device', value: browserPushSubscriptionId ? 'Yes' : 'No' },
-                          { label: 'Festival reminders', value: notificationPrefs.wants_festival_reminders ? 'On' : 'Off' },
-                          { label: 'Shloka reminders', value: notificationPrefs.wants_shloka_reminders ? 'On' : 'Off' },
-                          { label: 'Community updates', value: notificationPrefs.wants_community_notifications ? 'On' : 'Off' },
-                          { label: 'Family updates', value: notificationPrefs.wants_family_notifications ? 'On' : 'Off' },
-                        ].map((item) => (
-                          <div key={item.label} className="rounded-xl bg-white/[0.04] px-3 py-3 border border-white/6">
-                            <p className="text-[10px] uppercase tracking-[0.16em] theme-dim font-semibold">{item.label}</p>
-                            <p className="text-sm font-medium theme-ink mt-1">{item.value}</p>
-                          </div>
-                        ))}
-                      </div>
-                      <p className="text-xs theme-dim">
-                        Target windows: <span className="font-medium theme-ink">09:00</span> for festivals and <span className="font-medium theme-ink">19:00</span> for shloka reminders.
-                      </p>
-                    </>
-                  ) : null}
-                </div>
-              </>
+              </div>
             ) : null}
           </div>
         </div>
       </SurfaceSection>
 
-      <SurfaceSection
-        eyebrow="Safety"
-        title="Visibility and boundaries"
-        description="Manage hidden, muted, and blocked activity."
-      >
-
-        {blockedProfiles.length === 0 && mutedProfiles.length === 0 && hiddenItems.length === 0 ? (
-          <p className="text-sm theme-dim">
-            Nothing hidden right now.
-          </p>
-        ) : (
+      {hasSafetyItems ? (
+        <SurfaceSection
+          eyebrow="Safety"
+          title="Visibility and boundaries"
+          description="Manage hidden, muted, and blocked activity."
+        >
           <div className="space-y-4">
             {blockedProfiles.length > 0 && (
               <div className="space-y-2">
@@ -1107,85 +867,8 @@ export default function ProfileClient({
               </div>
             )}
           </div>
-        )}
-      </SurfaceSection>
-
-      <SurfaceSection
-        eyebrow="Language"
-        title="How sacred text should read"
-        description="Keep app language, script view, and meaning preferences separate."
-      >
-        {/* Quick inline app language switcher */}
-        <div className="mb-4">
-          <p className="text-xs text-[color:var(--brand-muted)] mb-2">🌐 App language</p>
-          <div className="flex gap-2">
-            {APP_LANGUAGES.map((lang) => {
-              const active = ((liveProfile as any)?.app_language ?? 'en') === lang.value;
-              return (
-                <button
-                  key={lang.value}
-                  onClick={() => {
-                    // Update context immediately for instant UI feedback
-                    setLang(lang.value as AppLang);
-                    // Persist to DB + trigger server re-render
-                    patchProfile({ app_language: lang.value }, `Language set to ${lang.label} 🙏`);
-                  }}
-                  className="flex-1 py-2 rounded-xl text-sm font-semibold transition-all border"
-                  style={active ? {
-                    background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))',
-                    color: '#1c1c1a',
-                    borderColor: 'transparent',
-                  } : {
-                    background: 'rgba(200,146,74,0.06)',
-                    color: 'var(--brand-muted)',
-                    borderColor: 'rgba(200,146,74,0.14)',
-                  }}
-                >
-                  {lang.label}
-                </button>
-              );
-            })}
-          </div>
-          <p className="text-[10px] text-[color:var(--brand-muted)]/60 mt-1.5">Changes take effect immediately</p>
-        </div>
-        <div className="divide-y divide-white/5">
-          {languageRows.slice(1).map(({ label, value, emoji }) => (
-            <div key={label} className="flex items-center justify-between py-2.5 gap-4">
-              <span className="text-sm theme-dim">{emoji ? `${emoji} ` : ''}{label}</span>
-              <span className="text-sm font-medium theme-ink text-right">{value}</span>
-            </div>
-          ))}
-        </div>
-      </SurfaceSection>
-
-      <SurfaceSection
-        eyebrow="Appearance"
-        title="Theme"
-        description={`Current app surface: ${resolvedTheme}.`}
-      >
-        <div className="grid grid-cols-3 gap-2">
-          {THEME_OPTIONS.map((option) => {
-            const active = themePreference === option.value;
-            const Icon = themeIconMap[option.value];
-            return (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => setThemePreference(option.value)}
-                className="rounded-2xl border px-3 py-3 text-left transition motion-press"
-                style={{
-                  background: active ? 'rgba(200,146,74,0.14)' : 'rgba(255,255,255,0.04)',
-                  borderColor: active ? 'rgba(200,146,74,0.32)' : 'rgba(255,255,255,0.08)',
-                }}
-              >
-                <Icon size={16} style={{ color: active ? 'var(--brand-primary-strong)' : 'var(--text-dim)' }} />
-                <p className="mt-2 text-sm font-medium theme-ink">{option.label}</p>
-                <p className="mt-0.5 text-xs theme-dim leading-snug">{option.description}</p>
-              </button>
-            );
-          })}
-        </div>
-      </SurfaceSection>
+        </SurfaceSection>
+      ) : null}
 
       {/* ── Edit Form ── */}
       {editing && (
@@ -1380,230 +1063,37 @@ export default function ProfileClient({
         </div>
       )}
 
-      {/* ── Customize Home ── */}
-      <SurfaceSection
-        eyebrow="Customise"
-        title="Your home layout"
-        description="Reorder and show or hide cards on your home screen."
-      >
-        {/* Explore Cards */}
-        <div className="space-y-2">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.15em] px-1" style={{ color: 'var(--text-dim)' }}>
-            Explore Cards
-          </p>
-          {homeOrderedCards.map((item, idx) => {
-            const hidden = homeHiddenCards.has(item.href);
-            return (
-              <div
-                key={item.href}
-                className="flex items-center gap-2 rounded-2xl px-3 py-2.5 transition-all"
-                style={{
-                  background: hidden ? 'rgba(255,255,255,0.03)' : 'rgba(200,146,74,0.08)',
-                  border: `1px solid ${hidden ? 'rgba(255,255,255,0.08)' : 'rgba(200,146,74,0.20)'}`,
-                }}
-              >
-                {/* Up / Down arrows */}
-                <div className="flex flex-col gap-0.5 flex-shrink-0">
-                  <button
-                    onClick={() => homeMoveCard(item.href, 'up')}
-                    disabled={idx === 0}
-                    className="w-6 h-6 rounded-lg flex items-center justify-center transition disabled:opacity-25"
-                    style={{ background: 'rgba(255,255,255,0.07)' }}
-                    aria-label="Move up"
-                  >
-                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-                      <path d="M6 9V3M3 6l3-3 3 3" stroke="rgba(200,146,74,0.75)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => homeMoveCard(item.href, 'down')}
-                    disabled={idx === homeOrderedCards.length - 1}
-                    className="w-6 h-6 rounded-lg flex items-center justify-center transition disabled:opacity-25"
-                    style={{ background: 'rgba(255,255,255,0.07)' }}
-                    aria-label="Move down"
-                  >
-                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-                      <path d="M6 3v6M3 6l3 3 3-3" stroke="rgba(200,146,74,0.75)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                </div>
-
-                {/* Icon + label */}
-                <span className="text-lg leading-none flex-shrink-0">{item.icon}</span>
-                <div className="flex-1 min-w-0 text-left">
-                  <p className="text-sm font-semibold truncate" style={{ color: hidden ? 'var(--text-dim)' : 'var(--text-cream)' }}>
-                    {item.label}
-                  </p>
-                  <p className="text-[10px] truncate" style={{ color: 'var(--text-dim)' }}>{item.desc}</p>
-                </div>
-
-                {/* Toggle switch */}
-                <button
-                  onClick={() => homeToggleCard(item.href)}
-                  className="flex-shrink-0"
-                  aria-label={hidden ? 'Show card' : 'Hide card'}
-                >
-                  <div
-                    className="w-11 h-6 rounded-full transition-all flex items-center px-0.5"
-                    style={{ background: hidden ? 'rgba(255,255,255,0.10)' : 'rgba(200,146,74,0.55)' }}
-                  >
-                    <div
-                      className="w-5 h-5 rounded-full transition-all"
-                      style={{
-                        background: '#fff',
-                        transform: hidden ? 'translateX(0)' : 'translateX(20px)',
-                        boxShadow: '0 1px 4px rgba(0,0,0,0.25)',
-                      }}
-                    />
-                  </div>
-                </button>
-              </div>
-            );
-          })}
-
-          {/* Reset buttons */}
-          <div className="flex gap-2 pt-1">
-            {homeHiddenCards.size > 0 && (
-              <button
-                onClick={() => {
-                  setHomeHiddenCards(new Set());
-                  try { localStorage.removeItem('home_hidden_cards'); } catch {}
-                }}
-                className="flex-1 py-2 rounded-2xl text-xs font-semibold"
-                style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.18)', color: 'var(--text-muted-warm)' }}
-              >
-                Show all
-              </button>
-            )}
-            <button
-              onClick={() => {
-                setHomeCardOrder(HOME_DEFAULT_CARD_ORDER);
-                try { localStorage.removeItem('home_card_order'); } catch {}
-              }}
-              className="flex-1 py-2 rounded-2xl text-xs font-semibold"
-              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-dim)' }}
-            >
-              Reset order
-            </button>
-          </div>
-        </div>
-
-        {/* Sections */}
-        <div className="space-y-2 mt-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.15em] px-1" style={{ color: 'var(--text-dim)' }}>
-            Sections
-          </p>
-          {HOME_SECTIONS.map(({ key, icon, label, desc }) => {
-            const hidden = homeHiddenSections.has(key);
-            return (
-              <button
-                key={key}
-                onClick={() => homeToggleSection(key)}
-                className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 transition-all motion-press"
-                style={{
-                  background: hidden ? 'rgba(255,255,255,0.03)' : 'rgba(200,146,74,0.08)',
-                  border: `1px solid ${hidden ? 'rgba(255,255,255,0.08)' : 'rgba(200,146,74,0.20)'}`,
-                }}
-              >
-                <span className="text-xl flex-shrink-0">{icon}</span>
-                <div className="flex-1 text-left">
-                  <p className="text-sm font-semibold" style={{ color: hidden ? 'var(--text-dim)' : 'var(--text-cream)' }}>{label}</p>
-                  <p className="text-[10px]" style={{ color: 'var(--text-dim)' }}>{desc}</p>
-                </div>
-                <div
-                  className="w-11 h-6 rounded-full transition-all flex-shrink-0 flex items-center px-0.5"
-                  style={{ background: hidden ? 'rgba(255,255,255,0.10)' : 'rgba(200,146,74,0.55)' }}
-                >
-                  <div
-                    className="w-5 h-5 rounded-full transition-all"
-                    style={{
-                      background: '#fff',
-                      transform: hidden ? 'translateX(0)' : 'translateX(20px)',
-                      boxShadow: '0 1px 4px rgba(0,0,0,0.25)',
-                    }}
-                  />
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Link back to home to see effect */}
-        <div className="flex items-center gap-2 mt-3 px-1">
-          <LayoutGrid size={11} style={{ color: 'var(--text-dim)' }} />
-          <p className="text-[10px]" style={{ color: 'var(--text-dim)' }}>
-            Changes apply instantly on your home screen.
-          </p>
-        </div>
-      </SurfaceSection>
-
-      {/* ── Sadhana Report ── */}
-      <SurfaceSection
-        eyebrow="My Progress"
-        title="30-day sadhana report"
-        description="Download a summary of your japa, nitya karma, and community activity for the past month."
-      >
-        <div className="flex items-start gap-4">
-          <div
-            className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
-            style={{ background: 'rgba(200,146,74,0.12)', color: 'var(--brand-primary-strong)' }}
-          >
-            <BarChart2 size={22} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium theme-ink">Japa sessions, Nitya Karma streaks, and community contribution — all in one file you can save or print.</p>
-            <p className="text-xs theme-dim mt-1">Covers the last 30 days · Downloads as HTML</p>
-          </div>
-        </div>
-        <button
-          onClick={downloadReport}
-          disabled={reportLoading}
-          className="mt-3 w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-sm font-semibold transition disabled:opacity-60"
-          style={{
-            background: reportLoading
-              ? 'rgba(200,146,74,0.12)'
-              : 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))',
-            color: reportLoading ? 'var(--brand-muted)' : '#1c1c1a',
-          }}
-        >
-          {reportLoading
-            ? <><Loader2 size={16} className="animate-spin" /> Generating…</>
-            : <><Download size={16} /> Download Report</>}
-        </button>
-      </SurfaceSection>
-
-      {/* ── Invite Friends ── */}
-      <button
-        onClick={() => setInviteOpen(true)}
-        className="w-full rounded-[1.6rem] border p-4 flex items-center gap-4 transition motion-press"
-        style={{
-          background: 'linear-gradient(150deg, rgba(30,22,14,0.97), rgba(22,16,8,0.96))',
-          borderColor: 'rgba(200,146,74,0.20)',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
-        }}
-      >
-        <div className="w-11 h-11 rounded-[0.9rem] flex items-center justify-center text-2xl flex-shrink-0"
-          style={{ background: 'rgba(200,146,74,0.12)' }}>
-          🙏
-        </div>
-        <div className="text-left">
-          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)' }}>
-            Invite Friends &amp; Family
-          </p>
-          <p className="text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>Spread the light of dharma</p>
-        </div>
-      </button>
-
       {/* ── Account ── */}
-      <div className="rounded-2xl border p-4 space-y-3" style={{ background: 'rgba(22, 18, 12, 0.9)', borderColor: 'rgba(255,255,255,0.07)' }}>
-        <div className="text-sm" style={{ color: 'var(--text-dim)' }}>
-          Signed in as <span className="font-medium" style={{ color: 'var(--text-muted)' }}>{userEmail}</span>
+      <div className="surface-card rounded-2xl p-4 space-y-3">
+        <div>
+          <p className="type-card-heading">Account</p>
+          <p className="type-micro mt-1">Signed in as {userEmail}</p>
         </div>
-        <button onClick={signOut}
-          className="flex items-center gap-2 text-sm font-medium transition"
-          style={{ color: 'rgba(220,80,80,0.8)' }}>
-          <LogOut size={15} /> Sign out
-        </button>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <button
+            onClick={() => setInviteOpen(true)}
+            className="glass-button-secondary inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium"
+            style={{ color: 'var(--text-cream)' }}
+          >
+            Invite family
+          </button>
+          <button
+            onClick={downloadReport}
+            disabled={reportLoading}
+            className="glass-button-secondary inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium disabled:opacity-60"
+            style={{ color: 'var(--text-cream)' }}
+          >
+            {reportLoading ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
+            Report
+          </button>
+          <button
+            onClick={signOut}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition"
+            style={{ borderColor: 'rgba(220,80,80,0.20)', color: 'rgba(220,80,80,0.82)' }}
+          >
+            <LogOut size={15} /> Sign out
+          </button>
+        </div>
       </div>
 
       {/* ── Invite Modal ── */}
