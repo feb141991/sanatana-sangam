@@ -748,6 +748,25 @@ export default function HomeDashboard({
     const today = new Date().toISOString().split('T')[0];
     return lastShlokaDate === today;
   });
+  const [editHomeOpen,     setEditHomeOpen]     = useState(false);
+  const [hiddenHrefs,      setHiddenHrefs]      = useState<Set<string>>(() => {
+    if (typeof window === 'undefined') return new Set();
+    try {
+      const saved = localStorage.getItem('home_hidden_cards');
+      return saved ? new Set(JSON.parse(saved) as string[]) : new Set<string>();
+    } catch { return new Set<string>(); }
+  });
+
+  function toggleCard(href: string) {
+    setHiddenHrefs(prev => {
+      const next = new Set(prev);
+      if (next.has(href)) next.delete(href); else next.add(href);
+      try { localStorage.setItem('home_hidden_cards', JSON.stringify([...next])); } catch {}
+      return next;
+    });
+  }
+
+  const visibleAccessItems = quickAccessItems.filter(item => !hiddenHrefs.has(item.href));
 
   const { coords, city: liveCity } = useLocation();
 
@@ -1403,9 +1422,6 @@ export default function HomeDashboard({
           </p>
         )}
 
-        <p className="px-4 pb-3 text-[10px]" style={{ color: 'var(--text-dim)' }}>
-          {festivalCalendarMeta.sourceNote}
-        </p>
       </motion.div>
 
       {/* ── Japa Streak Card ── */}
@@ -1462,7 +1478,7 @@ export default function HomeDashboard({
           Explore
         </p>
         <MotionStagger className="grid grid-cols-2 gap-3" delay={0.06}>
-          {quickAccessItems.map((item, i) => (
+          {visibleAccessItems.map((item, i) => (
             <MotionItem key={item.href}>
               <Link
                 href={item.href}
@@ -1533,6 +1549,7 @@ export default function HomeDashboard({
 
       {/* ── Edit Home ── */}
       <button
+        onClick={() => setEditHomeOpen(true)}
         className="mx-auto flex items-center gap-2 px-5 py-2 rounded-full text-xs font-semibold motion-press"
         style={{
           background: 'rgba(200,146,74,0.08)',
@@ -1547,6 +1564,112 @@ export default function HomeDashboard({
         </svg>
         Edit Home
       </button>
+
+      {/* ── Edit Home sheet ── */}
+      <AnimatePresence>
+        {editHomeOpen && (
+          <motion.div
+            className="fixed inset-0 z-[60]"
+            style={{ background: 'rgba(4,2,0,0.60)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
+            onClick={() => setEditHomeOpen(false)}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="absolute bottom-0 left-0 right-0 px-3 pb-6"
+              onClick={e => e.stopPropagation()}
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 32, opacity: 0 }}
+              transition={{ duration: 0.28, ease: [0.34, 1.1, 0.64, 1] }}
+            >
+              <div
+                className="max-w-2xl mx-auto rounded-[2rem] p-5 space-y-5"
+                style={{
+                  background: 'rgba(14,9,4,0.96)',
+                  backdropFilter: 'blur(48px)',
+                  WebkitBackdropFilter: 'blur(48px)',
+                  border: '1px solid rgba(200,146,74,0.18)',
+                  boxShadow: '0 -4px 40px rgba(0,0,0,0.28)',
+                }}
+              >
+                {/* Handle + header */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="w-8 h-[3px] rounded-full mb-3" style={{ background: 'rgba(200,146,74,0.22)' }} />
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(200,146,74,0.50)' }}>
+                      Customise
+                    </p>
+                    <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-cream)', marginTop: '2px' }}>
+                      Edit Home
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setEditHomeOpen(false)}
+                    className="w-9 h-9 rounded-full flex items-center justify-center"
+                    style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(200,146,74,0.14)' }}
+                  >
+                    <X size={14} style={{ color: 'var(--text-muted-warm)' }} />
+                  </button>
+                </div>
+
+                {/* Explore card toggles */}
+                <div className="space-y-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.15em] px-1" style={{ color: 'var(--text-dim)' }}>
+                    Explore Cards
+                  </p>
+                  {quickAccessItems.map(item => {
+                    const hidden = hiddenHrefs.has(item.href);
+                    return (
+                      <button
+                        key={item.href}
+                        onClick={() => toggleCard(item.href)}
+                        className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 transition-all motion-press"
+                        style={{
+                          background: hidden ? 'rgba(255,255,255,0.03)' : 'rgba(200,146,74,0.08)',
+                          border: `1px solid ${hidden ? 'rgba(255,255,255,0.08)' : 'rgba(200,146,74,0.22)'}`,
+                        }}
+                      >
+                        <span className="text-xl">{item.icon}</span>
+                        <div className="flex-1 text-left">
+                          <p className="text-sm font-semibold" style={{ color: hidden ? 'var(--text-dim)' : 'var(--text-cream)' }}>{item.label}</p>
+                          <p className="text-[10px]" style={{ color: 'var(--text-dim)' }}>{item.desc}</p>
+                        </div>
+                        {/* Toggle pill */}
+                        <div
+                          className="w-11 h-6 rounded-full transition-all flex-shrink-0 flex items-center px-0.5"
+                          style={{ background: hidden ? 'rgba(255,255,255,0.10)' : 'rgba(200,146,74,0.55)' }}
+                        >
+                          <div
+                            className="w-5 h-5 rounded-full transition-all"
+                            style={{
+                              background: '#fff',
+                              transform: hidden ? 'translateX(0)' : 'translateX(20px)',
+                              boxShadow: '0 1px 4px rgba(0,0,0,0.25)',
+                            }}
+                          />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {hiddenHrefs.size > 0 && (
+                  <button
+                    onClick={() => {
+                      setHiddenHrefs(new Set());
+                      try { localStorage.removeItem('home_hidden_cards'); } catch {}
+                    }}
+                    className="w-full py-2.5 rounded-2xl text-xs font-semibold"
+                    style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.18)', color: 'var(--text-muted-warm)' }}
+                  >
+                    Show all cards
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Parva / Festivals modal ── */}
       <AnimatePresence>
