@@ -332,7 +332,7 @@ export default function FloatingPill({
   // ── Pill ──────────────────────────────────────────────────────────────────
   if (isGuest) {
     return (
-      <div className="fixed top-3 left-3 z-50 flex items-center gap-2">
+      <div className="fixed top-3 right-3 z-50 flex items-center gap-2">
         <Link href="/login"
           className="px-4 py-2 rounded-full text-xs font-semibold transition"
           style={{ background: 'rgba(28,26,22,0.85)', border: '1px solid rgba(200,146,74,0.2)', color: 'var(--text-dim)', backdropFilter: 'blur(12px)' }}>
@@ -349,7 +349,7 @@ export default function FloatingPill({
 
   return (
     <>
-      <div className="fixed top-3 left-3 z-50 flex items-center gap-1.5"
+      <div className="fixed top-3 right-3 z-50 flex items-center gap-1.5"
         style={{
           background: 'rgba(16,12,6,0.55)',
           border: '1px solid rgba(200,146,74,0.16)',

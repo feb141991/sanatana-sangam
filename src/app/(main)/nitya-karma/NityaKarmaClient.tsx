@@ -955,7 +955,7 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Omit<P
                   {completedCount === 0 ? 'Start your sadhana' : `${totalSteps - completedCount} step${totalSteps - completedCount !== 1 ? 's' : ''} remaining`}
                 </p>
                 <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">
-                  {Math.round(progressPct)}% of today's Nitya Karma done
+                  {Math.round(progressPct)}% of today&apos;s Nitya Karma done
                 </p>
               </div>
               {/* Mini rings for each step */}
