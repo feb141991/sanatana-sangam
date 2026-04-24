@@ -149,7 +149,7 @@ function MetricCard({
       <div className="flex items-center gap-1.5 mb-1.5">
         {icon && <span className="text-[12px]">{icon}</span>}
         <p
-          className="text-[9.5px] font-semibold uppercase tracking-[0.14em]"
+          className="text-[11px] font-medium"
           style={{ color: 'rgba(200,146,74,0.55)' }}
         >
           {eyebrow}
@@ -185,7 +185,7 @@ function MetricCard({
       )}
 
       <p
-        className="text-[9.5px] mt-2 leading-[1.45]"
+        className="text-[11px] mt-2 leading-[1.45]"
         style={{ color: 'var(--text-dim)' }}
       >
         {insight}

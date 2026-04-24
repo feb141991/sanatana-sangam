@@ -67,7 +67,7 @@ export default function ChantAudioPlayer({
   if (!activeTrack) return null;
 
   return (
-    <div className={`rounded-[1.45rem] border border-[color:var(--brand-primary-soft)] bg-white/90 ${compact ? 'px-3 py-3' : 'px-4 py-4'}`}>
+    <div className={`surface-card ${compact ? 'px-3 py-3' : 'px-4 py-4'}`}>
       <audio ref={audioRef} preload="none" />
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

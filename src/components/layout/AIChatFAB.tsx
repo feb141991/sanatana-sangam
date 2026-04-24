@@ -65,14 +65,15 @@ function VerseChip({ verse }: { verse: ScriptureRef }) {
   return (
     <div className="mt-2">
       <button onClick={() => setOpen(o => !o)}
-        className="flex items-center gap-1.5 text-xs text-[color:var(--brand-primary)] font-medium bg-orange-50 border border-orange-100 rounded-full px-2.5 py-0.5 hover:bg-orange-100 transition-colors">
+        className="flex items-center gap-1.5 text-xs text-[color:var(--brand-primary)] font-medium rounded-full px-2.5 py-0.5 transition-colors"
+        style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.18)' }}>
         <BookOpen size={10} />
         {formatVerseLabel(verse)}
         <ChevronDown size={10} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && verse.sanskrit && (
-        <div className="mt-1.5 bg-orange-50/60 border border-orange-100 rounded-xl p-2.5 text-xs">
-          <p className="font-[family:var(--font-deva)] text-[#7B1A1A] font-medium leading-relaxed">{verse.sanskrit}</p>
+        <div className="mt-1.5 rounded-xl p-2.5 text-xs" style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.16)' }}>
+          <p className="font-[family:var(--font-deva)] font-medium leading-relaxed" style={{ color: 'var(--text-cream)' }}>{verse.sanskrit}</p>
           {verse.transliteration && <p className="text-[color:var(--brand-muted)] italic mt-0.5">{verse.transliteration}</p>}
         </div>
       )}
@@ -204,7 +205,8 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
             className="fixed inset-x-0 bottom-0 flex flex-col rounded-t-[2rem] overflow-hidden"
             style={{
               zIndex: 9991,
-              background: '#fefaf5',
+              background: 'var(--surface-raised)',
+              border: '1px solid rgba(200,146,74,0.14)',
               maxHeight: '92dvh',
               paddingBottom: 'env(safe-area-inset-bottom, 0px)',
             }}
@@ -217,7 +219,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
             </div>
 
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 flex-shrink-0 border-b border-orange-100">
+            <div className="flex items-center justify-between px-4 py-3 flex-shrink-0 border-b" style={{ borderColor: 'rgba(200,146,74,0.12)' }}>
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-2xl flex items-center justify-center text-lg"
                   style={{ background: 'linear-gradient(135deg, #ff770220, #d4a01720)' }}>

@@ -641,10 +641,10 @@ function ComposeThreadModal({
               </div>
             </div>
 
-            <div className="sticky bottom-0 bg-white/90 backdrop-blur px-5 py-4 border-t border-white/60 flex flex-col-reverse gap-3 sm:flex-row">
+            <div className="sticky bottom-0 px-5 py-4 border-t flex flex-col-reverse gap-3 sm:flex-row" style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.12)' }}>
               <button
                 onClick={onClose}
-                className="flex-1 py-3 border border-[rgba(200,146,74,0.2)] text-[color:var(--brand-muted)] rounded-xl text-sm hover:border-gray-300 transition"
+                className="flex-1 py-3 border border-[rgba(200,146,74,0.2)] text-[color:var(--brand-muted)] rounded-xl text-sm hover:border-[rgba(200,146,74,0.35)] transition"
               >
                 Cancel
               </button>

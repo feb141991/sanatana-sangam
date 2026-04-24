@@ -586,15 +586,15 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <p className="type-card-heading truncate">{p?.full_name || p?.username}</p>
-                    {m.role === 'guardian' && <Crown size={11} className="text-amber-500 flex-shrink-0" />}
+                    {m.role === 'guardian' && <Crown size={11} className="flex-shrink-0" style={{ color: 'var(--brand-primary-strong)' }} />}
                     {m.user_id === userId && <span className="type-tab" style={{ color: 'var(--text-saffron-soft)' }}>(you)</span>}
                   </div>
                   <p className="type-micro">{p?.spiritual_level ?? 'Seeker'} · {TRADITION_EMOJI[p?.tradition ?? ''] ?? '🙏'}</p>
                 </div>
                 <div className="text-right">
                   <div className="type-card-heading flex items-center gap-1">
-                    <Flame size={13} className="text-orange-500" />
-                    <span style={{ color: streak > 0 ? '#ea580c' : '#9ca3af' }}>{streak}</span>
+                    <Flame size={13} style={{ color: streak > 0 ? 'var(--brand-primary-strong)' : 'var(--text-dim)' }} />
+                    <span style={{ color: streak > 0 ? 'var(--brand-primary-strong)' : 'var(--text-dim)' }}>{streak}</span>
                   </div>
                   <div className="type-tab">streak</div>
                 </div>
@@ -614,7 +614,7 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
           <div className="space-y-2">
             {tasks.filter(t => !t.completed).slice(0, 3).map(task => (
               <Link key={task.id} href="/kul/tasks" className="glass-panel rounded-2xl border border-white/8 p-3 flex items-center gap-3 transition hover:border-[color:var(--brand-primary-soft)]">
-                <div className="w-8 h-8 rounded-xl bg-orange-50 flex items-center justify-center text-base flex-shrink-0">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base flex-shrink-0" style={{ background: 'rgba(200,146,74,0.12)' }}>
                   {TASK_TYPES[task.task_type]?.emoji ?? '📌'}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -684,7 +684,7 @@ function MembersTab({ members, userId, myRole, kul }: {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
                 <p className="text-sm font-semibold text-[color:var(--brand-ink)] truncate">{name}</p>
-                {m.role === 'guardian' && <Crown size={12} className="text-amber-500 flex-shrink-0" />}
+                {m.role === 'guardian' && <Crown size={12} className="flex-shrink-0" style={{ color: 'var(--brand-primary-strong)' }} />}
                 {isMe && <span className="text-[10px] text-[color:var(--brand-primary-strong)] font-medium">(you)</span>}
               </div>
               <p className="text-xs text-[color:var(--brand-muted)]">
@@ -699,12 +699,13 @@ function MembersTab({ members, userId, myRole, kul }: {
               <div className="flex items-center gap-1">
                 {m.role === 'sadhak' && (
                   <button onClick={() => promote(m.id, kul.id)}
-                    className="px-2 py-1 text-[10px] font-medium rounded-lg border border-amber-200 text-amber-600 hover:bg-amber-50 transition">
+                    className="min-h-9 px-3 py-1 text-xs font-medium rounded-lg transition"
+                    style={{ border: '1px solid rgba(200,146,74,0.18)', color: 'var(--brand-primary-strong)', background: 'rgba(200,146,74,0.08)' }}>
                     Promote
                   </button>
                 )}
                 <button onClick={() => remove(m.id, name)}
-                  className="w-7 h-7 rounded-lg flex items-center justify-center border border-white/10 text-[color:var(--brand-muted)] hover:text-red-500 hover:border-red-200 transition">
+                  className="w-10 h-10 rounded-lg flex items-center justify-center border border-white/10 text-[color:var(--brand-muted)] hover:text-red-400 hover:border-red-300 transition">
                   <X size={12} />
                 </button>
               </div>
@@ -861,9 +862,9 @@ function TaskCard({ task, isMyTask, userId, onComplete }: {
 }) {
   const assignee = task.assigned_to_profile;
   return (
-    <div className={`glass-panel rounded-2xl border border-white/8 p-3 flex items-start gap-3 ${task.completed ? 'border-green-100 opacity-70' : 'border-orange-100'}`}>
+    <div className={`glass-panel rounded-2xl border border-white/8 p-3 flex items-start gap-3 ${task.completed ? 'opacity-70' : ''}`}>
       <div className="w-8 h-8 rounded-xl flex items-center justify-center text-base flex-shrink-0"
-        style={{ background: task.completed ? '#f0fdf4' : '#fff8f0' }}>
+        style={{ background: task.completed ? 'rgba(34,197,94,0.14)' : 'rgba(200,146,74,0.12)' }}>
         {task.completed ? '✅' : (TASK_TYPES[task.task_type]?.emoji ?? '📌')}
       </div>
       <div className="flex-1 min-w-0">
@@ -891,7 +892,7 @@ function TaskCard({ task, isMyTask, userId, onComplete }: {
             </span>
           )}
           {task.completed && task.score != null && (
-            <span className="text-xs text-green-600 font-medium">Score: {task.score}/100</span>
+            <span className="text-xs font-medium" style={{ color: '#86efac' }}>Score: {task.score}/100</span>
           )}
         </div>
       </div>
@@ -1027,7 +1028,7 @@ function SabhaTab({ messages: initialMessages, userId, kulId, userName }: {
                   {/* Hover reaction button */}
                   <button
                     onClick={() => setReactionTray(r => r === msg.id ? null : msg.id)}
-                    className={`absolute top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] px-1.5 py-0.5 rounded-full border border-white/12 bg-black/60 text-[color:var(--brand-muted)] ${
+                    className={`absolute top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-sm w-10 h-10 rounded-full border border-white/12 bg-black/60 text-[color:var(--brand-muted)] ${
                       isMe ? '-left-8' : '-right-8'
                     }`}
                   >
@@ -1856,7 +1857,7 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
             <Plus size={16} />
           </button>
         ) : (
-          <div className="px-3 py-2 rounded-xl border border-amber-200 bg-amber-50 text-[11px] font-medium text-amber-700 flex-shrink-0">
+          <div className="px-3 py-2 rounded-xl text-[11px] font-medium flex-shrink-0" style={{ border: '1px solid rgba(200,146,74,0.18)', background: 'rgba(200,146,74,0.08)', color: 'var(--brand-primary-strong)' }}>
             Guardian managed
           </div>
         )}
@@ -2171,11 +2172,11 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
               </div>
               <div className="text-right flex-shrink-0">
                 {ev.daysUntil === 0 ? (
-                  <span className="text-xs font-bold px-2 py-1 rounded-full text-white" style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}>Today 🎉</span>
+                  <span className="text-xs font-medium px-2 py-1 rounded-full text-[#1c1c1a]" style={{ background: 'var(--brand-primary)' }}>Today</span>
                 ) : ev.daysUntil === 1 ? (
-                  <span className="text-xs font-semibold text-orange-600">Tomorrow</span>
+                  <span className="text-xs font-medium" style={{ color: 'var(--brand-primary-strong)' }}>Tomorrow</span>
                 ) : ev.daysUntil <= 7 ? (
-                  <span className="text-xs font-semibold text-amber-600">In {ev.daysUntil}d</span>
+                  <span className="text-xs font-medium" style={{ color: 'var(--brand-primary-strong)' }}>In {ev.daysUntil}d</span>
                 ) : (
                   <span className="text-xs text-[color:var(--brand-muted)]">{ev.daysUntil}d</span>
                 )}

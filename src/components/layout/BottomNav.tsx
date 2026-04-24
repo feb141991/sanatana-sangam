@@ -150,9 +150,9 @@ export default function BottomNav({
   const navItems = isGuest ? guestNavItems : memberNavItems;
   const isHome   = pathname === '/home' || pathname === '/guest';
 
-  const spring = prefersReducedMotion
+  const navTransition = prefersReducedMotion
     ? { duration: 0 }
-    : { type: 'spring' as const, stiffness: 320, damping: 34, mass: 0.75 };
+    : { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const };
 
   return (
     <>
@@ -216,7 +216,7 @@ export default function BottomNav({
                 x:       scrolled ? -32 : 0,
                 opacity: scrolled ? 0    : 1,
               }}
-              transition={spring}
+                  transition={navTransition}
               style={{ pointerEvents: scrolled ? 'none' : 'auto' }}
             >
               {navItems.map(({ href, label, mobileLabel, icon: Icon }) => {
@@ -240,14 +240,14 @@ export default function BottomNav({
                         transition={
                           prefersReducedMotion
                             ? { duration: 0 }
-                            : { type: 'spring', stiffness: 360, damping: 30, mass: 0.8 }
+                            : { duration: 0.3, ease: [0.22, 1, 0.36, 1] }
                         }
                       />
                     )}
                     <div className="relative z-10 w-10 h-10 flex items-center justify-center">
                       <motion.div
                         animate={prefersReducedMotion ? undefined : { scale: active ? 1.1 : 1 }}
-                        transition={{ type: 'spring', stiffness: 420, damping: 26 }}
+                        transition={navTransition}
                       >
                         <Icon
                           size={27}
@@ -257,7 +257,7 @@ export default function BottomNav({
                       </motion.div>
                     </div>
                     <span
-                      className="type-tab relative z-10 text-[9.5px]"
+                      className="type-tab relative z-10 text-[11px]"
                       style={{ color: active ? 'var(--brand-primary)' : 'var(--text-dim)' }}
                     >
                       <span className="sm:hidden">{mobileLabel ?? label}</span>
@@ -275,7 +275,7 @@ export default function BottomNav({
                 x:       scrolled ? 32 : 0,
                 opacity: scrolled ? 0  : 1,
               }}
-              transition={spring}
+              transition={navTransition}
               style={{ pointerEvents: scrolled ? 'none' : 'auto' }}
             >
               <button
@@ -295,7 +295,7 @@ export default function BottomNav({
                   stroke="rgba(200,146,74,0.85)"
                   strokeWidth="2.2" strokeLinecap="round"
                   animate={quickOpen ? { rotate: 45 } : { rotate: 0 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+                  transition={navTransition}
                 >
                   <line x1="12" y1="5" x2="12" y2="19" />
                   <line x1="5" y1="12" x2="19" y2="12" />

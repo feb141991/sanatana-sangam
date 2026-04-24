@@ -3,10 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { MapPin, Loader2, ChevronRight, Check } from 'lucide-react';
+import { MapPin, Loader2, ChevronRight, Check, Monitor, Moon, Sun } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { TRADITIONS } from '@/lib/traditions';
 import { APP_LANGUAGES } from '@/lib/language-preferences';
+import { THEME_OPTIONS, type ThemePreference } from '@/lib/theme-preferences';
+import { useThemePreference } from '@/components/providers/ThemeProvider';
 import toast from 'react-hot-toast';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -162,6 +164,7 @@ export default function OnboardingClient({ userId, hasTradition, hasCity, hasLan
   const router   = useRouter();
   const supabase = createClient();
   const prefersReducedMotion = useReducedMotion();
+  const { preference: themePreference, setPreference: setThemePreference } = useThemePreference();
 
   const firstStep: Step = !hasTradition ? 1 : !hasLanguage ? 3 : !hasCity ? 4 : 5;
   const [step, setStep]       = useState<Step>(firstStep === 5 ? 5 : firstStep);
@@ -176,6 +179,11 @@ export default function OnboardingClient({ userId, hasTradition, hasCity, hasLan
   const [latitude,   setLatitude]   = useState<number | null>(null);
   const [longitude,  setLongitude]  = useState<number | null>(null);
   const [goals,      setGoals]      = useState<string[]>([]);
+  const themeIconMap = {
+    system: Monitor,
+    dark: Moon,
+    light: Sun,
+  } satisfies Record<ThemePreference, typeof Monitor>;
 
   // Animated background crossfade
   const [bgStep, setBgStep] = useState(step);
@@ -681,6 +689,38 @@ export default function OnboardingClient({ userId, hasTradition, hasCity, hasLan
                   <p className="text-center text-[10px]" style={{ color: 'rgba(200,170,110,0.28)' }}>
                     Select any that resonate — or none at all
                   </p>
+
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(200,146,74,0.55)' }}>
+                      App theme
+                    </p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {THEME_OPTIONS.map((option) => {
+                        const selected = themePreference === option.value;
+                        const Icon = themeIconMap[option.value];
+                        return (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => setThemePreference(option.value)}
+                            className="rounded-[1rem] px-3 py-3 text-left"
+                            style={{
+                              background: selected ? 'rgba(200, 146, 74, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                              border: `1px solid ${selected ? 'rgba(200, 146, 74, 0.38)' : 'rgba(255, 255, 255, 0.07)'}`,
+                            }}
+                          >
+                            <Icon size={15} style={{ color: selected ? '#f0c870' : 'rgba(200,170,110,0.45)' }} />
+                            <p className="mt-2 text-[12px] font-medium leading-tight" style={{ color: selected ? '#f0c870' : 'rgba(220,195,130,0.65)' }}>
+                              {option.label}
+                            </p>
+                            <p className="mt-0.5 text-[10px] leading-tight" style={{ color: 'rgba(200,170,110,0.35)' }}>
+                              {option.description}
+                            </p>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </motion.div>
               )}
 

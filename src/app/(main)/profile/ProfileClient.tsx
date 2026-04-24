@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, BarChart2, Loader2, ChevronLeft, LayoutGrid, ChevronRight } from 'lucide-react';
+import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, BarChart2, Loader2, ChevronLeft, LayoutGrid, ChevronRight, Monitor, Moon, Sun } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { APP } from '@/lib/config';
 import { createClient } from '@/lib/supabase';
@@ -24,6 +24,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import type { ProfileUpdate } from '@/lib/api/profile';
 import { usePremium } from '@/hooks/usePremium';
+import { THEME_OPTIONS, type ThemePreference } from '@/lib/theme-preferences';
+import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 const SEVA_LEVELS = [
   { min: 0,    max: 99,   label: 'Jigyasu',    emoji: '🌱' },
@@ -178,6 +180,7 @@ export default function ProfileClient({
   const supabase    = useRef(createClient()).current;
   const queryClient = useQueryClient();
   const { setLang } = useLanguage();
+  const { preference: themePreference, resolvedTheme, setPreference: setThemePreference } = useThemePreference();
   const isPro       = usePremium();
   const profileQuery = useProfileQuery(userId, profile);
   const updateProfileMutation = useUpdateProfileMutation(userId);
@@ -660,6 +663,11 @@ export default function ProfileClient({
     { label: 'Transliteration', value: (liveProfile as any)?.show_transliteration ? 'Shown' : 'Hidden', emoji: '🔤' },
     { label: 'Meaning language', value: getLanguageLabel(MEANING_LANGUAGE_OPTIONS, (liveProfile as any)?.meaning_language), emoji: '🈯' },
   ];
+  const themeIconMap = {
+    system: Monitor,
+    dark: Moon,
+    light: Sun,
+  } satisfies Record<ThemePreference, typeof Monitor>;
 
   return (
     <div className="space-y-4 fade-in">
@@ -1150,6 +1158,35 @@ export default function ProfileClient({
         </div>
       </SurfaceSection>
 
+      <SurfaceSection
+        eyebrow="Appearance"
+        title="Theme"
+        description={`Current app surface: ${resolvedTheme}.`}
+      >
+        <div className="grid grid-cols-3 gap-2">
+          {THEME_OPTIONS.map((option) => {
+            const active = themePreference === option.value;
+            const Icon = themeIconMap[option.value];
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setThemePreference(option.value)}
+                className="rounded-2xl border px-3 py-3 text-left transition motion-press"
+                style={{
+                  background: active ? 'rgba(200,146,74,0.14)' : 'rgba(255,255,255,0.04)',
+                  borderColor: active ? 'rgba(200,146,74,0.32)' : 'rgba(255,255,255,0.08)',
+                }}
+              >
+                <Icon size={16} style={{ color: active ? 'var(--brand-primary-strong)' : 'var(--text-dim)' }} />
+                <p className="mt-2 text-sm font-medium theme-ink">{option.label}</p>
+                <p className="mt-0.5 text-xs theme-dim leading-snug">{option.description}</p>
+              </button>
+            );
+          })}
+        </div>
+      </SurfaceSection>
+
       {/* ── Edit Form ── */}
       {editing && (
         <div className="surface-sheet rounded-2xl p-5 space-y-4 fade-in">
@@ -1629,7 +1666,7 @@ function SafetyProfileRow({
   const initials = getInitials(profile.full_name || profile.username || 'S');
 
   return (
-    <div className="rounded-2xl border border-gray-100 px-3 py-3 flex items-center gap-3">
+    <div className="rounded-2xl px-3 py-3 flex items-center gap-3" style={{ border: '1px solid rgba(200,146,74,0.12)', background: 'rgba(255,255,255,0.04)' }}>
       <div className="relative w-10 h-10 rounded-full bg-gradient-sacred text-white flex items-center justify-center text-xs font-bold overflow-hidden flex-shrink-0">
         {profile.avatar_url
           ? <Image src={profile.avatar_url} alt="" fill sizes="40px" className="object-cover" />
@@ -1646,7 +1683,7 @@ function SafetyProfileRow({
         style={{
           border: '1px solid rgba(124, 58, 45, 0.18)',
           color: 'var(--brand-primary)',
-          background: 'rgba(255,255,255,0.85)',
+          background: 'rgba(200,146,74,0.08)',
         }}
       >
         {actionLabel}
@@ -1673,7 +1710,8 @@ function AvatarPreviewModal({
         <button
           type="button"
           onClick={onClose}
-          className="absolute -top-2 right-0 z-10 w-10 h-10 rounded-full bg-white/90 text-[color:var(--text-muted-warm)] flex items-center justify-center shadow-lg"
+          className="absolute -top-2 right-0 z-10 w-10 h-10 rounded-full text-[color:var(--text-muted-warm)] flex items-center justify-center shadow-lg"
+          style={{ background: 'var(--surface-raised)' }}
           aria-label="Close profile photo"
         >
           <X size={18} />

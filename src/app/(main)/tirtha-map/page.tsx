@@ -244,14 +244,14 @@ export default function TirthaMapPage() {
       {/* ── Search bar ── */}
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--text-dim)]" />
           <input
             type="text"
             placeholder={liveCity ? `${liveCity} — or search another city` : 'Search city — "Leicester, UK"'}
             value={cityInput}
             onChange={(e) => setCityInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && searchCity()}
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-[color:var(--brand-primary)] outline-none text-sm"
+            className="surface-input pl-9 pr-4 py-2.5 outline-none text-sm"
           />
         </div>
         <button onClick={searchCity} disabled={loading}
@@ -273,7 +273,7 @@ export default function TirthaMapPage() {
             onClick={() => { setTradFilter(f.value); setSampFilter('all'); }}
             className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
               tradFilter === f.value
-                ? 'text-white'
+                ? 'text-[#1c1c1a]'
                 : 'bg-[color:var(--brand-accent)] text-[color:var(--text-dim)] border border-[rgba(200,146,74,0.14)]'
             }`}
             style={tradFilter === f.value ? { background: 'var(--brand-primary)' } : {}}>
@@ -334,7 +334,7 @@ export default function TirthaMapPage() {
       </div>
 
       {geoError && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-2.5 flex items-center gap-2">
+        <div className="text-sm rounded-xl px-4 py-2.5 flex items-center gap-2" style={{ background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.22)', color: '#fca5a5' }}>
           <Info size={14} /> {geoError}
         </div>
       )}
