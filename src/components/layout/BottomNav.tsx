@@ -187,7 +187,7 @@ export default function BottomNav({
                     ? 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))'
                     : 'rgba(200,146,74,0.09)',
                   border: isHome ? 'none' : '1px solid rgba(200,146,74,0.18)',
-                  boxShadow: isHome ? '0 4px 18px rgba(200,146,74,0.30)' : 'none',
+                  boxShadow: isHome ? '0 2px 10px rgba(200,146,74,0.15)' : 'none',
                 }}
               >
                 <svg
@@ -236,7 +236,7 @@ export default function BottomNav({
                       <motion.span
                         layoutId="bottom-nav-active-shell"
                         className="absolute inset-x-0 inset-y-0 rounded-[1rem]"
-                        style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.18)' }}
+                        style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.10)' }}
                         transition={
                           prefersReducedMotion
                             ? { duration: 0 }
