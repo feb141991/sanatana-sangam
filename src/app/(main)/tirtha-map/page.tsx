@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { Search, Navigation, Info, Clock } from 'lucide-react';
+import { Search, Navigation, Info, Clock, ChevronLeft } from 'lucide-react';
 import { fetchNearbyTemples, geocodeCity, type Temple } from '@/lib/overpass';
 import { useLocation } from '@/lib/LocationContext';
 import { API, MAP, MANDIR } from '@/lib/config';
@@ -127,6 +128,7 @@ function getTraditionSummary(temple: Temple) {
 }
 
 export default function TirthaMapPage() {
+  const router = useRouter();
   const { coords, city: liveCity, loading: locLoading } = useLocation();
 
   const [temples,     setTemples]    = useState<Temple[]>([]);
@@ -219,6 +221,21 @@ export default function TirthaMapPage() {
   const activeCityLabel = cityInput.trim() || liveCity || 'your area';
   return (
     <div className="space-y-3 fade-in">
+      {/* Back button */}
+      <div className="flex items-center gap-3 px-1 pt-1">
+        <button
+          onClick={() => router.back()}
+          aria-label="Go back"
+          className="w-9 h-9 rounded-full flex items-center justify-center transition-all flex-shrink-0"
+          style={{
+            background: 'rgba(200,146,74,0.10)',
+            border: '1px solid rgba(200,146,74,0.20)',
+          }}
+        >
+          <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.80)' }} />
+        </button>
+      </div>
+
       <div className="glass-panel rounded-[1.7rem] px-4 py-4 sm:rounded-[1.9rem] sm:px-5 sm:py-5 space-y-2">
         <h1 className="type-screen-title">Tirtha Map</h1>
         <p className="type-body hidden sm:block">Search sacred places, filter by tradition, and open the result that feels right.</p>

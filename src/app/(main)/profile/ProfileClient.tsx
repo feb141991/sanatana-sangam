@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, BarChart2, Loader2 } from 'lucide-react';
+import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, BarChart2, Loader2, ChevronLeft } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import type { HiddenContentSummary, SafetyProfileSummary } from '@/lib/user-safety';
 import { getInitials, ISHTA_DEVATAS, SAMPRADAYAS, SPIRITUAL_LEVELS, TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getIshtaDevataLabel, getSampradayaLabel } from '@/lib/utils';
@@ -583,6 +583,21 @@ export default function ProfileClient({
 
   return (
     <div className="space-y-4 fade-in">
+
+      {/* Back button */}
+      <div className="flex items-center gap-3 px-1 pt-1">
+        <button
+          onClick={() => router.back()}
+          aria-label="Go back"
+          className="w-9 h-9 rounded-full flex items-center justify-center transition-all flex-shrink-0"
+          style={{
+            background: 'rgba(200,146,74,0.10)',
+            border: '1px solid rgba(200,146,74,0.20)',
+          }}
+        >
+          <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.80)' }} />
+        </button>
+      </div>
 
       {showAvatarPreview && avatarUrl && (
         <AvatarPreviewModal

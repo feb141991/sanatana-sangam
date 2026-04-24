@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft } from 'lucide-react';
 import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
 
 /* ─── Incense smoke rising from the diya ─────────────────────────── */
@@ -160,6 +162,7 @@ const DAILY_SHLOKA = {
 };
 
 export default function BhaktiClient() {
+  const router = useRouter();
   const [showPlayer, setShowPlayer] = useState(false);
 
   return (
@@ -174,6 +177,21 @@ export default function BhaktiClient() {
 
       {/* Safe-area notch spacer */}
       <div style={{ height: 'max(env(safe-area-inset-top, 0px), 16px)' }} />
+
+      {/* Back button */}
+      <div className="flex items-center px-4 pb-2">
+        <button
+          onClick={() => router.back()}
+          aria-label="Go back"
+          className="w-9 h-9 rounded-full flex items-center justify-center transition-all flex-shrink-0"
+          style={{
+            background: 'rgba(200,146,74,0.10)',
+            border: '1px solid rgba(200,146,74,0.20)',
+          }}
+        >
+          <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.80)' }} />
+        </button>
+      </div>
 
       <div className="relative space-y-5 px-4 pb-28">
         {/* ── Hero ──────────────────────────────────────── */}

@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, MessageSquare, Send, Users } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ArrowLeft, MessageSquare, Send, Users, ChevronLeft } from 'lucide-react';
 import { AsyncStateCard, EmptyState, SurfaceSection } from '@/components/ui';
 import type { MessageThread, ThreadMessage } from '@/lib/contracts/messages';
 import { useMarkThreadReadMutation, useMessageThreadsQuery, useSendThreadMessageMutation, useThreadMessagesQuery } from '@/hooks/useMessages';
@@ -51,6 +52,7 @@ export default function MessagesClient({
   initialThreads: MessageThread[];
   initialMessages: ThreadMessage[];
 }) {
+  const router = useRouter();
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(initialThreads[0]?.id ?? null);
   const [draft, setDraft] = useState('');
 
@@ -103,6 +105,21 @@ export default function MessagesClient({
 
   return (
     <MobileScreen>
+      {/* Back button */}
+      <div className="flex items-center gap-3 px-4 pt-3 pb-1">
+        <button
+          onClick={() => router.back()}
+          aria-label="Go back"
+          className="w-9 h-9 rounded-full flex items-center justify-center transition-all flex-shrink-0"
+          style={{
+            background: 'rgba(200,146,74,0.10)',
+            border: '1px solid rgba(200,146,74,0.20)',
+          }}
+        >
+          <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.80)' }} />
+        </button>
+      </div>
+
       <MobileScreenHeader
         eyebrow="Messages"
         title={selectedThread ? selectedThread.title : 'Sacred conversations'}

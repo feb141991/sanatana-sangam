@@ -1,7 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { ChevronLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
 import { createClient } from '@/lib/supabase';
@@ -56,6 +58,7 @@ function formatShareScope(scope: MalaSession['share_scope']) {
 }
 
 export default function MalaClient({ userId, initialSessions }: { userId: string; initialSessions: MalaSession[]; }) {
+  const router = useRouter();
   const supabase = createClient();
   const [mantra, setMantra] = useState<string>(BHAKTI_MANTRAS[0].value);
   const [target, setTarget] = useState(108);
@@ -250,6 +253,21 @@ export default function MalaClient({ userId, initialSessions }: { userId: string
 
   return (
     <div className="fade-in space-y-5">
+      {/* Back button */}
+      <div className="flex items-center gap-3 px-1 pt-1">
+        <button
+          onClick={() => router.back()}
+          aria-label="Go back"
+          className="w-9 h-9 rounded-full flex items-center justify-center transition-all flex-shrink-0"
+          style={{
+            background: 'rgba(200,146,74,0.10)',
+            border: '1px solid rgba(200,146,74,0.20)',
+          }}
+        >
+          <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.80)' }} />
+        </button>
+      </div>
+
       <section className="glass-panel rounded-[2rem] px-5 py-6 md:px-7">
         <div className="space-y-4">
           <div className="clay-pill inline-flex type-chip text-[color:var(--text-dim)]">Mala mode</div>

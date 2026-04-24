@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, RotateCcw, ChevronDown, BookOpen } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Send, Sparkles, RotateCcw, ChevronDown, BookOpen, ChevronLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useEngine } from '@/contexts/EngineContext';
 
@@ -204,6 +205,7 @@ function VerseChip({ verse }: { verse: ScriptureRef }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function AIChatClient({ userId, userName, tradition, sampradaya, city, country, seeking, initialPrompt, contextLabel }: Props) {
+  const router = useRouter();
   const [messages,   setMessages]   = useState<Message[]>([]);
   const [input,      setInput]      = useState(initialPrompt ?? '');
   const [loading,    setLoading]    = useState(false);
@@ -337,6 +339,17 @@ export default function AIChatClient({ userId, userName, tradition, sampradaya, 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.back()}
+            aria-label="Go back"
+            className="w-9 h-9 rounded-full flex items-center justify-center transition-all flex-shrink-0"
+            style={{
+              background: 'rgba(200,146,74,0.10)',
+              border: '1px solid rgba(200,146,74,0.20)',
+            }}
+          >
+            <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.80)' }} />
+          </button>
           <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl"
             style={{ background: 'linear-gradient(135deg, #ff770220, #d4a01720)' }}>
             ✨

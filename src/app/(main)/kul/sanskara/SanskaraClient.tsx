@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, ChevronDown, ChevronUp, Info, Lock, Sparkles, User, Users, ChevronRight, Zap } from 'lucide-react';
+import { Check, X, ChevronDown, ChevronUp, Info, Lock, Sparkles, User, Users, ChevronRight, Zap, ChevronLeft } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import CircularProgress from '@/components/ui/CircularProgress';
@@ -746,6 +747,7 @@ export default function SanskaraClient({
   tradition,
   userBirthDate,
 }: Props) {
+  const router         = useRouter();
   const supabase       = createClient();
   const isPro          = usePremium();
   const [completed,    setCompleted]    = useState<CompletedRecord[]>(initialCompleted);
@@ -869,6 +871,17 @@ export default function SanskaraClient({
         }}
       >
         <div className="flex items-center gap-4">
+          <button
+            onClick={() => router.back()}
+            aria-label="Go back"
+            className="w-9 h-9 rounded-full flex items-center justify-center transition-all flex-shrink-0"
+            style={{
+              background: 'rgba(200,146,74,0.10)',
+              border: '1px solid rgba(200,146,74,0.20)',
+            }}
+          >
+            <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.80)' }} />
+          </button>
           <CircularProgress
             pct={pct}
             accent="#d4a030"
