@@ -127,7 +127,7 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
   const [quickOpen, setQuickOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Collapse center nav items on scroll-down; restore on scroll-up
+  // Collapse on scroll-down, restore on scroll-up
   const lastScrollYRef = useRef(0);
   const accumRef = useRef(0);
   useEffect(() => {
@@ -166,135 +166,153 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
   const navItems = isGuest ? guestNavItems : memberNavItems;
   const isHome   = pathname === '/home' || pathname === '/guest';
 
+  const spring = prefersReducedMotion
+    ? { duration: 0 }
+    : { type: 'spring' as const, stiffness: 320, damping: 34, mass: 0.75 };
+
   return (
     <>
       <QuickActionsPanel open={quickOpen} onClose={() => setQuickOpen(false)} isGuest={isGuest} />
 
-      <nav className="fixed bottom-0 left-0 right-0 z-50 px-3 pb-3 safe-area-pb">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 safe-area-pb pointer-events-none">
         <div className="max-w-2xl mx-auto flex items-center justify-center">
-        <motion.div
-          className="glass-nav flex items-center h-16 rounded-[1.75rem] px-1.5 overflow-hidden"
-          animate={{ gap: scrolled ? 2 : 4 }}
-          style={{ width: '100%', maxWidth: '42rem', backdropFilter: 'blur(20px)' }}
-        >
 
-          {/* ── Left: circular Home button ─────────────────────────────────── */}
-          <Link
-            href={isGuest ? '/guest' : '/home'}
-            aria-label="Home"
-            className="relative flex-shrink-0 w-[44px] h-[44px] rounded-full flex items-center justify-center transition-all motion-press"
+          {/* ── Translucent floating bar ──────────────────────────────────── */}
+          <div
+            className="relative flex items-center h-[60px] rounded-[2rem] pointer-events-auto"
             style={{
-              background: isHome
-                ? 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))'
-                : 'rgba(200,146,74,0.10)',
-              border: isHome ? 'none' : '1px solid rgba(200,146,74,0.2)',
-              boxShadow: isHome ? '0 4px 20px rgba(200,146,74,0.28)' : 'none',
+              width: '100%',
+              maxWidth: '42rem',
+              background: 'rgba(12,8,4,0.38)',
+              backdropFilter: 'blur(28px) saturate(140%)',
+              WebkitBackdropFilter: 'blur(28px) saturate(140%)',
+              border: '1px solid rgba(200,146,74,0.10)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,240,200,0.04)',
             }}
           >
-            {/* House SVG */}
-            <svg
-              width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke={isHome ? '#1a1610' : 'rgba(200,146,74,0.75)'}
-              strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-            >
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
-            {/* Animated active ring */}
-            {isHome && !prefersReducedMotion && (
-              <motion.span
-                className="absolute inset-0 rounded-full"
-                style={{ border: '1.5px solid rgba(200,146,74,0.35)' }}
-                animate={{ scale: [1, 1.18, 1], opacity: [0.6, 0, 0.6] }}
-                transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
-              />
-            )}
-          </Link>
-
-          {/* ── Center: nav items (collapses on scroll) ──────────────────── */}
-          <motion.div
-            className="flex items-center justify-around overflow-hidden"
-            animate={{
-              width: scrolled ? 0 : 272,
-              opacity: scrolled ? 0 : 1,
-            }}
-            transition={
-              prefersReducedMotion
-                ? { duration: 0 }
-                : { type: 'spring', stiffness: 300, damping: 32, mass: 0.8 }
-            }
-            style={{ pointerEvents: scrolled ? 'none' : 'auto', flexShrink: 0 }}
-          >
-            {navItems.map(({ href, label, mobileLabel, icon: Icon }) => {
-              const active = pathname === href || (href !== '/home' && pathname.startsWith(href));
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  className={cn(
-                    'relative flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all',
-                    active ? 'text-[color:var(--brand-primary)]' : 'text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary-strong)]'
-                  )}
+            {/* ── Left: Home button (always visible) ─────────────────────── */}
+            <div className="pl-2 flex-shrink-0">
+              <Link
+                href={isGuest ? '/guest' : '/home'}
+                aria-label="Home"
+                className="relative w-[44px] h-[44px] rounded-full flex items-center justify-center transition-all motion-press"
+                style={{
+                  background: isHome
+                    ? 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))'
+                    : 'rgba(200,146,74,0.09)',
+                  border: isHome ? 'none' : '1px solid rgba(200,146,74,0.18)',
+                  boxShadow: isHome ? '0 4px 18px rgba(200,146,74,0.30)' : 'none',
+                }}
+              >
+                <svg
+                  width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke={isHome ? '#1a1610' : 'rgba(200,146,74,0.72)'}
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                 >
-                  {active && (
-                    <motion.span
-                      layoutId="bottom-nav-active-shell"
-                      className="absolute inset-x-0 inset-y-0 rounded-[1rem]"
-                      style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.18)' }}
-                      transition={
-                        prefersReducedMotion
-                          ? { duration: 0 }
-                          : { type: 'spring', stiffness: 360, damping: 30, mass: 0.8 }
-                      }
-                    />
-                  )}
-                  <div className="relative z-10 w-7 h-7 flex items-center justify-center">
-                    <motion.div
-                      animate={prefersReducedMotion ? undefined : { scale: active ? 1.1 : 1 }}
-                      transition={{ type: 'spring', stiffness: 420, damping: 26 }}
-                    >
-                      <Icon
-                        size={18}
-                        strokeWidth={active ? 2.3 : 1.8}
-                        style={{ color: active ? 'var(--brand-primary)' : 'var(--text-dim)' }}
-                      />
-                    </motion.div>
-                  </div>
-                  <span
-                    className="type-tab relative z-10 text-[9.5px]"
-                    style={{ color: active ? 'var(--brand-primary)' : 'var(--text-dim)' }}
-                  >
-                    <span className="sm:hidden">{mobileLabel ?? label}</span>
-                    <span className="hidden sm:inline">{label}</span>
-                  </span>
-                </Link>
-              );
-            })}
-          </motion.div>
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                {isHome && !prefersReducedMotion && (
+                  <motion.span
+                    className="absolute inset-0 rounded-full"
+                    style={{ border: '1.5px solid rgba(200,146,74,0.35)' }}
+                    animate={{ scale: [1, 1.18, 1], opacity: [0.6, 0, 0.6] }}
+                    transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
+                  />
+                )}
+              </Link>
+            </div>
 
-          {/* ── Right: circular Plus button ───────────────────────────────── */}
-          <button
-            onClick={() => setQuickOpen(true)}
-            aria-label="Quick actions"
-            className="relative flex-shrink-0 w-[44px] h-[44px] rounded-full flex items-center justify-center transition-all motion-press"
-            style={{
-              background: 'rgba(200,146,74,0.07)',
-              border: '1px solid rgba(200,146,74,0.25)',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.22)',
-            }}
-          >
-            <motion.svg
-              width="16" height="16" viewBox="0 0 24 24" fill="none"
-              stroke="rgba(200,146,74,0.8)"
-              strokeWidth="2.2" strokeLinecap="round"
-              animate={quickOpen ? { rotate: 45 } : { rotate: 0 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+            {/* ── Center: nav items — slide LEFT on scroll ─────────────────── */}
+            <motion.div
+              className="flex-1 flex items-center justify-around overflow-hidden"
+              animate={{
+                x:       scrolled ? -32 : 0,
+                opacity: scrolled ? 0    : 1,
+              }}
+              transition={spring}
+              style={{ pointerEvents: scrolled ? 'none' : 'auto' }}
             >
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </motion.svg>
-          </button>
-        </motion.div>
+              {navItems.map(({ href, label, mobileLabel, icon: Icon }) => {
+                const active = pathname === href || (href !== '/home' && pathname.startsWith(href));
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={cn(
+                      'relative flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all',
+                      active ? 'text-[color:var(--brand-primary)]' : 'text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary-strong)]'
+                    )}
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId="bottom-nav-active-shell"
+                        className="absolute inset-x-0 inset-y-0 rounded-[1rem]"
+                        style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.18)' }}
+                        transition={
+                          prefersReducedMotion
+                            ? { duration: 0 }
+                            : { type: 'spring', stiffness: 360, damping: 30, mass: 0.8 }
+                        }
+                      />
+                    )}
+                    <div className="relative z-10 w-7 h-7 flex items-center justify-center">
+                      <motion.div
+                        animate={prefersReducedMotion ? undefined : { scale: active ? 1.1 : 1 }}
+                        transition={{ type: 'spring', stiffness: 420, damping: 26 }}
+                      >
+                        <Icon
+                          size={18}
+                          strokeWidth={active ? 2.3 : 1.8}
+                          style={{ color: active ? 'var(--brand-primary)' : 'var(--text-dim)' }}
+                        />
+                      </motion.div>
+                    </div>
+                    <span
+                      className="type-tab relative z-10 text-[9.5px]"
+                      style={{ color: active ? 'var(--brand-primary)' : 'var(--text-dim)' }}
+                    >
+                      <span className="sm:hidden">{mobileLabel ?? label}</span>
+                      <span className="hidden sm:inline">{label}</span>
+                    </span>
+                  </Link>
+                );
+              })}
+            </motion.div>
+
+            {/* ── Right: Plus button — slide RIGHT on scroll ──────────────── */}
+            <motion.div
+              className="pr-2 flex-shrink-0"
+              animate={{
+                x:       scrolled ? 32 : 0,
+                opacity: scrolled ? 0  : 1,
+              }}
+              transition={spring}
+              style={{ pointerEvents: scrolled ? 'none' : 'auto' }}
+            >
+              <button
+                onClick={() => setQuickOpen(true)}
+                aria-label="Quick actions"
+                className="w-[44px] h-[44px] rounded-full flex items-center justify-center transition-all motion-press"
+                style={{
+                  background: 'rgba(200,146,74,0.09)',
+                  border: '1px solid rgba(200,146,74,0.22)',
+                }}
+              >
+                <motion.svg
+                  width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="rgba(200,146,74,0.82)"
+                  strokeWidth="2.2" strokeLinecap="round"
+                  animate={quickOpen ? { rotate: 45 } : { rotate: 0 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </motion.svg>
+              </button>
+            </motion.div>
+          </div>
+
         </div>
       </nav>
     </>

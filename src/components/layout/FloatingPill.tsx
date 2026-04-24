@@ -309,7 +309,7 @@ export default function FloatingPill({
   // ── Pill ──────────────────────────────────────────────────────────────────
   if (isGuest) {
     return (
-      <div className="fixed top-3 right-3 z-50 flex items-center gap-2">
+      <div className="fixed top-3 left-3 z-50 flex items-center gap-2">
         <Link href="/login"
           className="px-4 py-2 rounded-full text-xs font-semibold transition"
           style={{ background: 'rgba(28,26,22,0.85)', border: '1px solid rgba(200,146,74,0.2)', color: 'var(--text-dim)', backdropFilter: 'blur(12px)' }}>
@@ -326,43 +326,26 @@ export default function FloatingPill({
 
   return (
     <>
-      <div className="fixed top-3 right-3 z-50 flex items-center gap-1.5"
+      <div className="fixed top-3 left-3 z-50 flex items-center gap-1.5"
         style={{
-          background: 'rgba(28,26,22,0.82)',
-          border: '1px solid rgba(200,146,74,0.18)',
+          background: 'rgba(16,12,6,0.55)',
+          border: '1px solid rgba(200,146,74,0.16)',
           borderRadius: '2rem',
-          padding: '4px 6px 4px 8px',
-          backdropFilter: 'blur(16px)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+          padding: '4px 8px 4px 5px',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
         }}>
 
-        {/* Bell */}
-        <button
-          onClick={handleBellClick}
-          aria-label="Notifications"
-          className="relative w-9 h-9 rounded-full flex items-center justify-center transition"
-          style={{ color: 'var(--text-dim)' }}
-        >
-          <svg viewBox="0 0 24 24" fill="none" className="w-[18px] h-[18px]" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-          </svg>
-          {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold"
-              style={{ background: 'var(--brand-primary)', color: '#1c1c1a' }}>
-              {unreadCount > 9 ? '9+' : unreadCount}
-            </span>
-          )}
-        </button>
-
-        {/* Avatar */}
+        {/* Avatar — leftmost */}
         <Link href="/profile"
           className="relative flex-shrink-0 rounded-full flex items-center justify-center overflow-hidden"
           style={{
             width: 34,
             height: 34,
             background: 'linear-gradient(135deg, rgba(51,51,48,0.98), rgba(43,43,40,0.94))',
-            border: avatarUrl ? '2px solid rgba(200,146,74,0.55)' : '1.5px solid rgba(200,146,74,0.25)',
+            border: avatarUrl ? '2px solid rgba(200,146,74,0.60)' : '1.5px solid rgba(200,146,74,0.28)',
+            boxShadow: avatarUrl ? '0 0 0 3px rgba(200,146,74,0.12)' : 'none',
           }}
         >
           {avatarUrl ? (
@@ -373,6 +356,25 @@ export default function FloatingPill({
             </span>
           )}
         </Link>
+
+        {/* Bell — to the right of avatar */}
+        <button
+          onClick={handleBellClick}
+          aria-label="Notifications"
+          className="relative w-9 h-9 rounded-full flex items-center justify-center transition"
+          style={{ color: 'var(--text-dim)' }}
+        >
+          <svg viewBox="0 0 24 24" fill="none" className="w-[17px] h-[17px]" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+          </svg>
+          {unreadCount > 0 && (
+            <span className="absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold"
+              style={{ background: 'var(--brand-primary)', color: '#1c1c1a' }}>
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </span>
+          )}
+        </button>
       </div>
 
       {notificationSheet}
