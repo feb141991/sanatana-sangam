@@ -749,6 +749,14 @@ export default function HomeDashboard({
     return lastShlokaDate === today;
   });
   const [editHomeOpen,     setEditHomeOpen]     = useState(false);
+  const [personalContent, setPersonalContent] = useState<{
+    shloka_text: string;
+    shloka_source: string;
+    shloka_meaning: string;
+    suggestion: string;
+    nudge: string | null;
+  } | null>(null);
+  const [personalLoading, setPersonalLoading] = useState(true);
   const [hiddenHrefs,      setHiddenHrefs]      = useState<Set<string>>(() => {
     if (typeof window === 'undefined') return new Set();
     try {
@@ -785,6 +793,26 @@ export default function HomeDashboard({
       rahuKaal:  p.rahuKaal,
     });
   }, [selectedDate, lat, lon]);
+
+  // Fetch personalised daily content from Gemini-backed API
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchPersonalContent() {
+      setPersonalLoading(true);
+      try {
+        const res = await fetch('/api/home/personalise');
+        if (!res.ok) throw new Error('personalise failed');
+        const data = await res.json();
+        if (!cancelled && data?.shloka_text) setPersonalContent(data);
+      } catch {
+        // silently skip — fallback to nothing
+      } finally {
+        if (!cancelled) setPersonalLoading(false);
+      }
+    }
+    fetchPersonalContent();
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     const focus = searchParams.get('focus');
@@ -1255,6 +1283,88 @@ export default function HomeDashboard({
         </div>
 
       </motion.div>
+
+      {/* ── Personalised For You ── */}
+      <AnimatePresence>
+        {!personalLoading && personalContent && (
+          <motion.div
+            key="personal-card"
+            className="rounded-[1.85rem] p-5 relative overflow-hidden border"
+            style={{
+              background: 'linear-gradient(150deg, rgba(30,20,12,0.97), rgba(22,14,8,0.96))',
+              borderColor: 'rgba(200,146,74,0.22)',
+              boxShadow: '0 18px 36px rgba(0,0,0,0.22)',
+            }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {/* Ambient glow */}
+            <div className="absolute inset-0 pointer-events-none" style={{
+              background: 'radial-gradient(ellipse at top left, rgba(200,146,74,0.07), transparent 60%)',
+            }} />
+
+            {/* Header */}
+            <div className="relative flex items-center gap-2.5 mb-4">
+              <div className="w-9 h-9 rounded-[0.85rem] flex items-center justify-center text-xl flex-shrink-0"
+                style={{ background: 'rgba(200,146,74,0.12)' }}>
+                ✨
+              </div>
+              <div>
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)', lineHeight: 1.2 }}>
+                  Personalised For You
+                </p>
+                <p className="text-[10px] font-semibold mt-0.5" style={{ color: 'rgba(200,146,74,0.70)' }}>
+                  Today's guidance · AI-curated
+                </p>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="relative h-px mb-4" style={{ background: 'linear-gradient(90deg, rgba(200,146,74,0.25), transparent)' }} />
+
+            {/* Verse */}
+            <p className="relative leading-relaxed mb-2"
+              style={{
+                fontFamily: 'Georgia, "Noto Serif Devanagari", serif',
+                fontSize: '1.05rem',
+                color: 'var(--text-cream)',
+                lineHeight: 1.75,
+              }}>
+              {personalContent.shloka_text}
+            </p>
+
+            {/* Source */}
+            <p className="text-[10px] font-semibold mb-3" style={{ color: 'rgba(200,146,74,0.65)' }}>
+              — {personalContent.shloka_source}
+            </p>
+
+            {/* Meaning */}
+            <p className="text-sm leading-relaxed mb-4" style={{ color: 'var(--text-muted-warm)', fontSize: '0.83rem' }}>
+              {personalContent.shloka_meaning}
+            </p>
+
+            {/* Practice suggestion */}
+            <div className="rounded-[1rem] p-3.5 mb-3"
+              style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.18)' }}>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] mb-1.5" style={{ color: 'rgba(200,146,74,0.80)' }}>
+                Today's Practice
+              </p>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-cream)', fontSize: '0.83rem' }}>
+                {personalContent.suggestion}
+              </p>
+            </div>
+
+            {/* Nudge */}
+            {personalContent.nudge && (
+              <p className="text-[11px] italic leading-relaxed text-center" style={{ color: 'var(--text-dim)' }}>
+                {personalContent.nudge}
+              </p>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Daily Sacred Text — tradition-aware ── */}
       <motion.div

@@ -200,6 +200,42 @@ export default function ReciteClient({
   const ttsRateRef  = useRef<number>(0.75);
   const autoPlayRef = useRef(false);
 
+  // ExplainEngine state
+  const [explainLoading, setExplainLoading] = useState(false);
+  const [explainResult,  setExplainResult]  = useState<{
+    explanation: { word_by_word: string; meaning: string; commentary: string; daily_application: string; contemplation: string; related_text: string };
+    tradition: string;
+    teacher: string;
+  } | null>(null);
+
+  async function explainVerse() {
+    if (!verse || explainLoading) return;
+    setExplainResult(null);
+    setExplainLoading(true);
+    try {
+      const res = await fetch('/api/pathshala/explain', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sanskrit:       verse.original,
+          transliteration: verse.transliteration,
+          translation:    verse.meaning,
+          source:         verse.source,
+          title:          verse.title,
+          tradition:      _tradition,
+          language:       'en',
+        }),
+      });
+      if (!res.ok) throw new Error('Explain failed');
+      const data = await res.json();
+      setExplainResult(data);
+    } catch {
+      toast.error('Could not generate explanation — check your connection');
+    } finally {
+      setExplainLoading(false);
+    }
+  }
+
   // Shruti recording state
   const [recordState,  setRecordState]  = useState<RecordState>('idle');
   const [lastResult,   setLastResult]   = useState<RecitationResult | null>(null);
@@ -665,7 +701,120 @@ export default function ReciteClient({
                 )}
               </AnimatePresence>
             </div>
+
+            {/* ── Explain button ───────────────────────────────────────────────── */}
+            <div className="pt-1 border-t border-white/6">
+              <button
+                onClick={explainVerse}
+                disabled={explainLoading}
+                className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full transition-all w-full justify-center"
+                style={{
+                  background: explainResult ? `${accentColour}18` : 'rgba(255,255,255,0.06)',
+                  color: explainLoading ? 'var(--brand-muted)' : accentColour,
+                  border: `1px solid ${explainResult ? accentColour + '40' : 'rgba(255,255,255,0.10)'}`,
+                }}
+              >
+                {explainLoading
+                  ? <><Loader2 size={12} className="animate-spin" /> Asking teacher…</>
+                  : <><Sparkles size={12} /> {explainResult ? 'Refresh explanation' : 'Explain this verse'}</>
+                }
+              </button>
+            </div>
           </motion.div>
+        </AnimatePresence>
+
+        {/* ── ExplainEngine result panel ───────────────────────────────────────── */}
+        <AnimatePresence>
+          {explainResult && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              className="rounded-3xl border border-white/8 p-5 space-y-4"
+              style={{ background: `linear-gradient(135deg, ${accentColour}08, rgba(255,255,255,0.02))` }}
+            >
+              {/* Teacher tag */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">🪔</span>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: accentColour + 'aa' }}>
+                      {explainResult.tradition}
+                    </p>
+                    <p className="text-xs font-semibold text-[color:var(--brand-muted)]">
+                      In the spirit of {explainResult.teacher}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setExplainResult(null)}
+                  className="text-xs text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)]"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Word by word */}
+              {explainResult.explanation.word_by_word && (
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: accentColour + '88' }}>
+                    Word by Word
+                  </p>
+                  <p className="text-xs text-[color:var(--brand-muted)] leading-relaxed italic">
+                    {explainResult.explanation.word_by_word}
+                  </p>
+                </div>
+              )}
+
+              {/* Meaning */}
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: accentColour + '88' }}>
+                  Meaning
+                </p>
+                <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed">
+                  {explainResult.explanation.meaning}
+                </p>
+              </div>
+
+              {/* Commentary */}
+              {explainResult.explanation.commentary && (
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: accentColour + '88' }}>
+                    Commentary
+                  </p>
+                  <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">
+                    {explainResult.explanation.commentary}
+                  </p>
+                </div>
+              )}
+
+              {/* Daily application */}
+              {explainResult.explanation.daily_application && (
+                <div className="rounded-2xl px-4 py-3" style={{ background: `${accentColour}10`, border: `1px solid ${accentColour}25` }}>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: accentColour }}>
+                    Today&apos;s Practice
+                  </p>
+                  <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed">
+                    {explainResult.explanation.daily_application}
+                  </p>
+                </div>
+              )}
+
+              {/* Contemplation */}
+              {explainResult.explanation.contemplation && (
+                <p className="text-sm text-center italic text-[color:var(--brand-muted)] border-t border-white/6 pt-3 leading-relaxed">
+                  &ldquo;{explainResult.explanation.contemplation}&rdquo;
+                </p>
+              )}
+
+              {/* Related text */}
+              {explainResult.explanation.related_text && (
+                <p className="text-[10px] text-[color:var(--brand-muted)] text-right">
+                  Also explore: {explainResult.explanation.related_text}
+                </p>
+              )}
+            </motion.div>
+          )}
         </AnimatePresence>
 
         {/* ── Shruti Voice Scoring ─────────────────────────────────────────────── */}
