@@ -152,6 +152,12 @@ export default function DiscoverClient({ tradition }: Props) {
       if (!res.ok) throw new Error('Discovery failed');
       const data = await res.json();
       setResults(data.results ?? []);
+      // Persist mood for today so the home screen prompt dismisses
+      const today = new Date().toISOString().split('T')[0];
+      try {
+        localStorage.setItem('home_mood_date', today);
+        localStorage.setItem('home_mood_key', moodKey);
+      } catch { /* ignore */ }
     } catch {
       setError('Could not load verses — please try again.');
     } finally {

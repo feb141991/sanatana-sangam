@@ -88,6 +88,20 @@ const DEFAULT_QUICK_ACCESS = [
 const DEFAULT_CARD_ORDER = DEFAULT_QUICK_ACCESS.map(i => i.href);
 const QUICK_ACCESS_MAP   = Object.fromEntries(DEFAULT_QUICK_ACCESS.map(i => [i.href, i]));
 
+// Mood quick-lookup (mirrors DiscoverClient MOODS)
+const MOOD_QUICK_MAP: Record<string, { emoji: string; label: string; colour: string }> = {
+  anxious:     { emoji: '😰', label: 'Anxious',     colour: '#7b6f9e' },
+  grieving:    { emoji: '🌧️', label: 'Grieving',    colour: '#6b8aad' },
+  angry:       { emoji: '🔥', label: 'Angry',        colour: '#c86a3a' },
+  scattered:   { emoji: '🌀', label: 'Scattered',    colour: '#7aab94' },
+  lost:        { emoji: '🌑', label: 'Lost',         colour: '#8e8e7a' },
+  joyful:      { emoji: '☀️', label: 'Joyful',       colour: '#c8923a' },
+  seeking:     { emoji: '🔍', label: 'Seeking',      colour: '#c8925e' },
+  lonely:      { emoji: '🕊️', label: 'Lonely',       colour: '#8aadad' },
+  overwhelmed: { emoji: '🌊', label: 'Overwhelmed',  colour: '#6b8ab0' },
+  grateful:    { emoji: '🙏', label: 'Grateful',     colour: '#b09a6a' },
+};
+
 const HOME_THEMES: Record<string, FeatureTheme> = {
   // Dawn amber — Panchang, daily ritual
   panchang: {
@@ -788,6 +802,20 @@ export default function HomeDashboard({
     } catch { return new Set<string>(); }
   });
 
+  // Mood pill — null = not set today, undefined = loading
+  const [moodToday, setMoodToday] = useState<{ emoji: string; label: string; colour: string } | null | undefined>(undefined);
+
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const moodDate = localStorage.getItem('home_mood_date');
+    const moodKey  = localStorage.getItem('home_mood_key');
+    if (moodDate === today && moodKey && MOOD_QUICK_MAP[moodKey]) {
+      setMoodToday(MOOD_QUICK_MAP[moodKey]);
+    } else {
+      setMoodToday(null);
+    }
+  }, []);
+
   function toggleCard(href: string) {
     setHiddenHrefs(prev => {
       const next = new Set(prev);
@@ -1109,32 +1137,59 @@ export default function HomeDashboard({
               {showFirstTimeGuidance ? greetingMode : 'A quieter sacred day, ready when you are.'}
             </p>
 
-            {/* Mood prompt — subtle nudge if no mood set today */}
-            {(() => {
-              if (typeof window === 'undefined') return null;
-              const today = new Date().toISOString().split('T')[0];
-              const moodDate = localStorage.getItem('home_mood_date');
-              if (moodDate === today) return null;
-              return (
-                <Link
-                  href="/discover"
-                  className="inline-flex items-center gap-1.5 mt-3 rounded-full px-3 py-1.5 text-[11px] font-medium transition motion-press"
-                  style={{
-                    background: 'rgba(200,146,74,0.09)',
-                    border: '1px solid rgba(200,146,74,0.20)',
-                    color: 'rgba(200,146,74,0.75)',
-                  }}
+            {/* Mood — nudge if not set, premium pill if set */}
+            {moodToday === undefined ? null : moodToday ? (
+              /* ── Mood set: glowy premium pill ── */
+              <Link
+                href="/discover"
+                className="inline-flex items-center gap-3 mt-3 rounded-[1.4rem] px-4 py-2.5 transition motion-press"
+                style={{
+                  background: `linear-gradient(135deg, ${moodToday.colour}22, ${moodToday.colour}0e)`,
+                  border: `1px solid ${moodToday.colour}40`,
+                  boxShadow: `0 4px 20px ${moodToday.colour}28, 0 0 0 1px ${moodToday.colour}18`,
+                  backdropFilter: 'blur(12px)',
+                  WebkitBackdropFilter: 'blur(12px)',
+                }}
+              >
+                <motion.span
+                  className="text-[2rem] leading-none flex-shrink-0"
+                  animate={prefersReducedMotion ? undefined : { scale: [1, 1.08, 1] }}
+                  transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
                 >
-                  <motion.span
-                    animate={{ opacity: [0.5, 1, 0.5] }}
-                    transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-                    className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                    style={{ background: 'rgba(200,146,74,0.80)' }}
-                  />
-                  How are you feeling today?
-                </Link>
-              );
-            })()}
+                  {moodToday.emoji}
+                </motion.span>
+                <div className="min-w-0">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: `${moodToday.colour}99` }}>
+                    Today&apos;s mood
+                  </p>
+                  <p className="text-[14px] font-semibold leading-tight" style={{ color: moodToday.colour }}>
+                    {moodToday.label}
+                  </p>
+                </div>
+                <span className="ml-auto text-[10px] flex-shrink-0" style={{ color: `${moodToday.colour}70` }}>
+                  Change ›
+                </span>
+              </Link>
+            ) : (
+              /* ── No mood set: subtle pulsing nudge ── */
+              <Link
+                href="/discover"
+                className="inline-flex items-center gap-1.5 mt-3 rounded-full px-3 py-1.5 text-[11px] font-medium transition motion-press"
+                style={{
+                  background: 'rgba(200,146,74,0.09)',
+                  border: '1px solid rgba(200,146,74,0.20)',
+                  color: 'rgba(200,146,74,0.75)',
+                }}
+              >
+                <motion.span
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+                  className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                  style={{ background: 'rgba(200,146,74,0.80)' }}
+                />
+                How are you feeling today?
+              </Link>
+            )}
 
             {/* City */}
             {displayCity && (

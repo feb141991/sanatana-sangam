@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Send, Sparkles, RotateCcw, ChevronDown, BookOpen, ChevronLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useEngine } from '@/contexts/EngineContext';
 
@@ -89,39 +90,73 @@ const SUGGESTIONS_BY_TRADITION: Record<string, string[]> = {
 function MessageBubble({ msg }: { msg: Message }) {
   const isUser = msg.role === 'user';
   return (
-    <div className={`flex gap-2 mb-4 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={`flex gap-3 mb-6 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
+    >
       {/* Avatar */}
-      <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-sm ${
-        isUser ? 'bg-[#7B1A1A] text-white' : 'bg-gradient-to-br from-amber-400 to-orange-500 text-white'
+      <div className={`w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center text-base font-medium ${
+        isUser
+          ? 'bg-[rgba(200,100,60,0.30)] text-[var(--text-cream)]'
+          : 'bg-gradient-to-br from-[var(--brand-primary)] to-orange-500 text-white'
       }`}>
         {isUser ? '🙏' : '✨'}
       </div>
 
       {/* Bubble */}
-      <div className={`max-w-[80%] ${isUser ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
-        <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
-          isUser ? 'text-white rounded-tr-sm' : 'rounded-tl-sm border'
-        }`} style={isUser ? { background: 'rgba(200,100,60,0.35)', border: '1px solid rgba(200,100,60,0.30)' } : { background: 'rgba(38, 30, 18, 0.95)', borderColor: 'rgba(200,146,74,0.16)', color: 'rgba(240,225,195,0.88)' }}>
-          {msg.text}
+      <div className={`max-w-[85%] ${isUser ? 'items-end' : 'items-start'} flex flex-col gap-2.5`}>
+        <div
+          className={`px-5 py-4 rounded-2xl whitespace-pre-wrap font-normal transition-all ${
+            isUser
+              ? 'text-[var(--text-cream)] rounded-tr-sm'
+              : 'rounded-tl-sm border'
+          }`}
+          style={isUser
+            ? {
+                background: 'rgba(200,100,60,0.22)',
+                border: '1px solid rgba(200,100,60,0.28)',
+              }
+            : {
+                background: 'rgba(38, 30, 18, 0.85)',
+                borderColor: 'rgba(200,146,74,0.20)',
+                color: 'var(--text-cream)',
+              }
+          }
+        >
+          <div className="text-sm leading-[1.75] font-normal">
+            {msg.text}
+          </div>
+
           {/* ── Scripture sources (RAG only) ── */}
           {!isUser && msg.verses && msg.verses.length > 0 && (
-            <div className="mt-1">
+            <div className="mt-4 space-y-2">
               {msg.verses.map((v, i) => <VerseChip key={i} verse={v} />)}
             </div>
           )}
         </div>
-        <div className="flex items-center gap-1.5 px-1">
-          <span className="text-[10px] text-[color:var(--text-dim)]">
+
+        {/* Timestamp & badge */}
+        <div className="flex items-center gap-2.5 px-1 justify-start">
+          <span className="text-[11px] font-medium text-[color:var(--text-dim)]">
             {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </span>
           {msg.fromRag && (
-            <span className="text-[9px] rounded-full px-1.5 py-0.5 font-medium border" style={{ background: 'rgba(200,146,74,0.1)', color: '#C8924A', borderColor: 'rgba(200,146,74,0.22)' }}>
-              📖 Scripture-grounded
+            <span
+              className="text-[9px] rounded-full px-2 py-1 font-medium border transition-colors"
+              style={{
+                background: 'rgba(200,146,74,0.12)',
+                color: 'rgba(200,146,74,0.95)',
+                borderColor: 'rgba(200,146,74,0.25)',
+              }}
+            >
+              📖 Dharma-sourced
             </span>
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
