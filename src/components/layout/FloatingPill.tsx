@@ -368,11 +368,23 @@ export default function FloatingPill({
             <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
             <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
           </svg>
+          {/* Unread badge */}
           {unreadCount > 0 && (
             <span className="absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold"
               style={{ background: 'var(--brand-primary)', color: '#1c1c1a' }}>
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
+          )}
+          {/* Push-not-enabled pulse dot — show when no unread badge and push not granted */}
+          {unreadCount === 0 && pushConfigured && permission !== 'granted' && !isIosSafariNonPwa && (
+            <span
+              className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full"
+              style={{
+                background: 'rgba(230,150,60,0.9)',
+                boxShadow: '0 0 0 3px rgba(200,146,74,0.2)',
+                animation: 'pulse 2s ease-in-out infinite',
+              }}
+            />
           )}
         </button>
       </div>
@@ -385,6 +397,13 @@ export default function FloatingPill({
 // ── Empty state ───────────────────────────────────────────────────────────────
 function NotificationsEmptyState({ userId, onNotificationSent }: { userId: string; onNotificationSent: () => void }) {
   const [sending, setSending] = useState(false);
+  const [diagnosing, setDiagnosing] = useState(false);
+  const [diagResult, setDiagResult] = useState<{
+    all_ok: boolean;
+    fail_count: number;
+    next_steps: string[];
+    checks: Record<string, { ok: boolean; detail: string }>;
+  } | null>(null);
 
   async function sendTest() {
     if (!userId || sending) return;
@@ -402,26 +421,106 @@ function NotificationsEmptyState({ userId, onNotificationSent }: { userId: strin
     }
   }
 
+  async function runDiagnostics() {
+    if (diagnosing) return;
+    setDiagnosing(true);
+    try {
+      const res = await fetch('/api/notifications/diagnostics');
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data) { toast.error('Diagnostics failed to run'); return; }
+      setDiagResult(data);
+      // If the diagnostic inserted a test notification, refresh the list
+      if (data.checks?.db_insert_test?.ok) onNotificationSent();
+    } catch {
+      toast.error('Could not reach diagnostics');
+    } finally {
+      setDiagnosing(false);
+    }
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center px-6 py-12 text-center gap-5">
-      <div className="w-16 h-16 rounded-3xl flex items-center justify-center text-3xl"
-        style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.15)' }}>
-        🪔
+    <div className="flex flex-col items-start px-5 py-8 gap-5">
+      {/* Header */}
+      <div className="flex flex-col items-center w-full text-center gap-3">
+        <div className="w-16 h-16 rounded-3xl flex items-center justify-center text-3xl"
+          style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.15)' }}>
+          🪔
+        </div>
+        <div>
+          <p className="text-base font-semibold" style={{ color: 'var(--text-cream)' }}>All quiet for now</p>
+          <p className="text-sm mt-1 leading-relaxed max-w-[260px] mx-auto" style={{ color: 'var(--text-dim)' }}>
+            Festival alerts, morning sadhana reminders, and streak nudges will appear here.
+          </p>
+        </div>
       </div>
-      <div>
-        <p className="text-base font-semibold" style={{ color: 'var(--text-cream)' }}>All quiet for now</p>
-        <p className="text-sm mt-1.5 leading-relaxed max-w-[260px] mx-auto" style={{ color: 'var(--text-dim)' }}>
-          Festival alerts, morning sadhana reminders, and streak nudges will show up here.
-        </p>
+
+      {/* Action buttons */}
+      <div className="flex flex-col gap-2 w-full">
+        <button onClick={sendTest} disabled={sending}
+          className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition disabled:opacity-50"
+          style={{ background: 'rgba(200,146,74,0.1)', border: '1px solid rgba(200,146,74,0.22)', color: 'var(--brand-primary-strong)' }}>
+          <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+          </svg>
+          {sending ? 'Sending…' : 'Send a test notification'}
+        </button>
+
+        <button onClick={runDiagnostics} disabled={diagnosing}
+          className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition disabled:opacity-50"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-dim)' }}>
+          <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          {diagnosing ? 'Checking pipeline…' : 'Why am I not getting notifications?'}
+        </button>
       </div>
-      <button onClick={sendTest} disabled={sending}
-        className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition disabled:opacity-50"
-        style={{ background: 'rgba(200,146,74,0.1)', border: '1px solid rgba(200,146,74,0.22)', color: 'var(--brand-primary-strong)' }}>
-        <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-        </svg>
-        {sending ? 'Sending…' : 'Send a test notification'}
-      </button>
+
+      {/* Diagnostics result */}
+      {diagResult && (
+        <div className="w-full rounded-2xl overflow-hidden"
+          style={{ border: `1px solid ${diagResult.all_ok ? 'rgba(106,184,122,0.25)' : 'rgba(200,100,74,0.25)'}` }}>
+          {/* Summary bar */}
+          <div className="px-4 py-3 flex items-center gap-2"
+            style={{ background: diagResult.all_ok ? 'rgba(106,184,122,0.08)' : 'rgba(200,100,74,0.08)' }}>
+            <span className="text-base">{diagResult.all_ok ? '✅' : '⚠️'}</span>
+            <p className="text-xs font-semibold" style={{ color: diagResult.all_ok ? '#6ab87a' : '#e87a5a' }}>
+              {diagResult.all_ok
+                ? 'Everything is configured correctly'
+                : `${diagResult.fail_count} issue${diagResult.fail_count !== 1 ? 's' : ''} found`}
+            </p>
+          </div>
+
+          {/* Check list */}
+          <div className="divide-y" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
+            {Object.entries(diagResult.checks).map(([key, { ok, detail }]) => (
+              <div key={key} className="px-4 py-2.5 flex items-start gap-2.5">
+                <span className="text-xs mt-0.5 flex-shrink-0">{ok ? '✓' : '✗'}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10.5px] font-bold uppercase tracking-wide mb-0.5"
+                    style={{ color: ok ? 'rgba(106,184,122,0.8)' : 'rgba(230,120,80,0.85)' }}>
+                    {key.replace(/_/g, ' ')}
+                  </p>
+                  <p className="text-[11px] leading-[1.5]" style={{ color: 'var(--text-dim)' }}>{detail}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Next steps */}
+          {!diagResult.all_ok && (
+            <div className="px-4 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(0,0,0,0.12)' }}>
+              <p className="text-[10.5px] font-bold uppercase tracking-wide mb-2" style={{ color: 'rgba(200,146,74,0.6)' }}>
+                Fix these first
+              </p>
+              {diagResult.next_steps.map((step, i) => (
+                <p key={i} className="text-[11px] leading-[1.6]" style={{ color: 'var(--text-dim)' }}>
+                  • {step}
+                </p>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -16,6 +16,8 @@
     { "path": "/api/cron/brahma-muhurta",     "schedule": "0 1 * * *"   },
     { "path": "/api/cron/brahma-muhurta",     "schedule": "0 2 * * *"   },
     { "path": "/api/cron/brahma-muhurta",     "schedule": "0 3 * * *"   },
-    { "path": "/api/cron/sanskar-milestone",  "schedule": "0 6 * * *"   }
+    { "path": "/api/cron/sanskar-milestone",  "schedule": "0 6 * * *"   },
+    { "path": "/api/cron/sattvic-reminder",   "schedule": "0 11 * * *"  },
+    { "path": "/api/cron/guided-plan-reminder","schedule": "0 6 * * *"   }
   ]
 }
