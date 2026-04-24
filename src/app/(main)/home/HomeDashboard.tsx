@@ -1362,7 +1362,7 @@ export default function HomeDashboard({
                   Personalised For You
                 </p>
                 <p className="text-[10px] font-semibold mt-0.5" style={{ color: 'rgba(200,146,74,0.70)' }}>
-                  Today's guidance · AI-curated
+                  Today&apos;s guidance · AI-curated
                 </p>
               </div>
             </div>
@@ -1395,7 +1395,7 @@ export default function HomeDashboard({
             <div className="rounded-[1rem] p-3.5 mb-3"
               style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.18)' }}>
               <p className="text-[10px] font-semibold uppercase tracking-[0.1em] mb-1.5" style={{ color: 'rgba(200,146,74,0.80)' }}>
-                Today's Practice
+                Today&apos;s Practice
               </p>
               <p className="text-sm leading-relaxed" style={{ color: 'var(--text-cream)', fontSize: '0.83rem' }}>
                 {personalContent.suggestion}
