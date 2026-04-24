@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { GraduationCap, Heart, Users, Sun, X } from 'lucide-react';
+import { GraduationCap, Heart, Users, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
@@ -14,118 +14,97 @@ interface Props {
   isGuest?: boolean;
 }
 
-// ── Quick Actions panel ────────────────────────────────────────────────────────
+// ── Quick Actions ──────────────────────────────────────────────────────────────
 const QUICK_ACTIONS = [
-  { icon: '📿', label: 'Japa',         href: '/bhakti/mala',  desc: 'Begin your maala rounds' },
-  { icon: '🕉️', label: 'Sattvic',      href: '/bhakti/zen',   desc: 'Prānāyāma & kīrtana'  },
-  { icon: '🙏', label: 'Bhakti',       href: '/bhakti',       desc: 'Chant, pray, reflect' },
-  { icon: '📖', label: 'Scripture',    href: '/library',      desc: 'Open Pathshala' },
-  { icon: '☀️', label: 'Nitya Karma',  href: '/nitya-karma',  desc: 'Daily ritual checklist' },
-  { icon: '🛕', label: 'Tirtha',       href: '/tirtha-map',   desc: 'Sacred places near you' },
-  { icon: '🤖', label: 'Dharma AI',    href: '/ai-chat',      desc: 'Ask Dharma Mitra' },
+  { icon: '📿', label: 'Japa',        href: '/bhakti/mala'  },
+  { icon: '🕉️', label: 'Sattvic',     href: '/bhakti/zen'   },
+  { icon: '🙏', label: 'Bhakti',      href: '/bhakti'       },
+  { icon: '📖', label: 'Scripture',   href: '/library'      },
+  { icon: '☀️', label: 'Nitya',       href: '/nitya-karma'  },
+  { icon: '🛕', label: 'Tirtha',      href: '/tirtha-map'   },
+  { icon: '🤖', label: 'Dharma AI',   href: '/ai-chat'      },
 ];
 
 const GUEST_QUICK_ACTIONS = [
-  { icon: '✨', label: 'Join',         href: '/signup',        desc: 'Create your dharma home' },
-  { icon: '🔍', label: 'Explore',      href: '/guest',         desc: 'See what awaits' },
-  { icon: '💬', label: 'Vichaar',      href: '/vichaar-sabha', desc: 'Forum discussions' },
+  { icon: '✨', label: 'Join',        href: '/signup'        },
+  { icon: '🔍', label: 'Explore',     href: '/guest'         },
+  { icon: '💬', label: 'Vichaar',     href: '/vichaar-sabha' },
 ];
 
-function QuickActionsPanel({ open, onClose, isGuest }: { open: boolean; onClose: () => void; isGuest: boolean }) {
+// ── Floating vertical quick-action pills ──────────────────────────────────────
+function FloatingQuickMenu({
+  open,
+  onClose,
+  isGuest,
+}: {
+  open: boolean;
+  onClose: () => void;
+  isGuest: boolean;
+}) {
   const prefersReducedMotion = useReducedMotion();
   const router = useRouter();
   const actions = isGuest ? GUEST_QUICK_ACTIONS : QUICK_ACTIONS;
-
-  if (!open) return null;
+  // render bottom-to-top: reverse so the first item is highest
+  const reversed = [...actions].reverse();
 
   return (
     <AnimatePresence>
-      <motion.div
-        className="fixed inset-0 z-[60]"
-        style={{ background: 'rgba(4,2,0,0.55)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
-        onClick={onClose}
-        initial={prefersReducedMotion ? undefined : { opacity: 0 }}
-        animate={prefersReducedMotion ? undefined : { opacity: 1 }}
-        exit={prefersReducedMotion ? undefined : { opacity: 0 }}
-      >
-        <motion.div
-          className="absolute bottom-0 left-0 right-0 px-3 pb-4"
-          onClick={e => e.stopPropagation()}
-          initial={prefersReducedMotion ? undefined : { y: 40, opacity: 0 }}
-          animate={prefersReducedMotion ? undefined : { y: 0, opacity: 1 }}
-          exit={prefersReducedMotion ? undefined : { y: 32, opacity: 0 }}
-          transition={{ duration: 0.28, ease: [0.34, 1.1, 0.64, 1] }}
-        >
-          {/* Panel — glass sheet */}
-          <div
-            className="max-w-2xl mx-auto rounded-[2rem] p-5 space-y-4"
-            style={{
-              background: 'rgba(10,7,3,0.52)',
-              backdropFilter: 'blur(48px) saturate(180%) brightness(0.92)',
-              WebkitBackdropFilter: 'blur(48px) saturate(180%) brightness(0.92)',
-              border: '1px solid rgba(200,146,74,0.16)',
-              boxShadow: '0 -2px 40px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,240,200,0.06)',
-            }}
-          >
-            {/* Handle + header */}
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="w-8 h-[3px] rounded-full mb-3" style={{ background: 'rgba(200,146,74,0.22)' }} />
-                <p
-                  className="text-[10.5px] font-semibold uppercase tracking-[0.18em]"
-                  style={{ color: 'rgba(200,146,74,0.50)' }}
-                >
-                  Quick Actions
-                </p>
-                <p
-                  style={{ fontFamily: 'var(--font-serif)', fontSize: '1.15rem', fontWeight: 600, color: 'var(--text-cream)', letterSpacing: '-0.01em', marginTop: '2px' }}
-                >
-                  Begin a practice
-                </p>
-              </div>
-              <button
-                onClick={onClose}
-                className="w-9 h-9 rounded-full flex items-center justify-center transition motion-press"
-                style={{
-                  background: 'rgba(255,255,255,0.07)',
-                  border: '1px solid rgba(200,146,74,0.14)',
-                }}
-              >
-                <X size={14} style={{ color: 'var(--text-muted-warm)' }} />
-              </button>
-            </div>
+      {open && (
+        <>
+          {/* Thin transparent backdrop — just for outside-click */}
+          <motion.div
+            className="fixed inset-0 z-[54]"
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+          />
 
-            {/* Action grid */}
-            <div className="grid grid-cols-3 gap-2">
-              {actions.map(({ icon, label, href, desc }) => (
-                <button
-                  key={href}
-                  onClick={() => { onClose(); router.push(href); }}
-                  className="rounded-[1.3rem] p-3 flex flex-col items-center gap-1.5 text-center transition motion-press"
+          {/* Floating pill stack — anchored above the + button (bottom-right) */}
+          <div className="fixed bottom-[90px] right-4 z-[55] flex flex-col-reverse items-end gap-2">
+            {reversed.map((action, i) => {
+              const delay = prefersReducedMotion ? 0 : i * 0.045;
+              return (
+                <motion.button
+                  key={action.href}
+                  onClick={() => { onClose(); router.push(action.href); }}
+                  className="flex items-center gap-3 rounded-full px-4 py-2.5 cursor-pointer motion-press"
                   style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(200,146,74,0.10)',
+                    background: 'rgba(12,8,3,0.90)',
+                    border: '1px solid rgba(200,146,74,0.28)',
+                    backdropFilter: 'blur(32px) saturate(180%)',
+                    WebkitBackdropFilter: 'blur(32px) saturate(180%)',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.35)',
                   }}
+                  initial={prefersReducedMotion ? undefined : { opacity: 0, y: 12, scale: 0.88 }}
+                  animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
+                  exit={prefersReducedMotion ? undefined : { opacity: 0, y: 8, scale: 0.90 }}
+                  transition={{ duration: 0.24, delay, ease: [0.34, 1.1, 0.64, 1] }}
                 >
-                  <span className="text-2xl leading-none">{icon}</span>
-                  <span className="text-[11.5px] font-semibold" style={{ color: 'var(--text-cream)' }}>
-                    {label}
+                  <span className="text-[1.15rem] leading-none">{action.icon}</span>
+                  <span
+                    className="text-[13px] font-semibold"
+                    style={{ color: 'var(--text-cream)', letterSpacing: '-0.01em' }}
+                  >
+                    {action.label}
                   </span>
-                  <span className="text-[9.5px] leading-[1.3]" style={{ color: 'var(--text-dim)' }}>
-                    {desc}
-                  </span>
-                </button>
-              ))}
-            </div>
+                </motion.button>
+              );
+            })}
           </div>
-        </motion.div>
-      </motion.div>
+        </>
+      )}
     </AnimatePresence>
   );
 }
 
 // ── Main BottomNav ─────────────────────────────────────────────────────────────
-export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLabel = 'Pathshala', isGuest = false }: Props) {
+export default function BottomNav({
+  libraryLabel = 'Pathshala',
+  libraryMobileLabel = 'Pathshala',
+  isGuest = false,
+}: Props) {
   const pathname = usePathname();
   const prefersReducedMotion = useReducedMotion();
   const { t } = useLanguage();
@@ -158,10 +137,10 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
   }, []);
 
   const memberNavItems = [
-    { href: '/nitya-karma', label: 'Nitya',             mobileLabel: 'Nitya',            icon: Sun           },
-    { href: '/library',     label: libraryLabel,         mobileLabel: libraryMobileLabel, icon: GraduationCap },
-    { href: '/kul',         label: t('navKul'),          mobileLabel: t('navKul'),         icon: Heart         },
-    { href: '/mandali',     label: t('navMandali'),      mobileLabel: t('navMandali'),     icon: Users         },
+    { href: '/nitya-karma', label: 'Nitya',           mobileLabel: 'Nitya',            icon: Sun           },
+    { href: '/library',     label: libraryLabel,       mobileLabel: libraryMobileLabel, icon: GraduationCap },
+    { href: '/kul',         label: t('navKul'),        mobileLabel: t('navKul'),         icon: Heart         },
+    { href: '/mandali',     label: t('navMandali'),    mobileLabel: t('navMandali'),     icon: Users         },
   ];
 
   const guestNavItems = [
@@ -177,7 +156,11 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
 
   return (
     <>
-      <QuickActionsPanel open={quickOpen} onClose={() => setQuickOpen(false)} isGuest={isGuest} />
+      <FloatingQuickMenu
+        open={quickOpen}
+        onClose={() => setQuickOpen(false)}
+        isGuest={isGuest}
+      />
 
       <nav className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 safe-area-pb pointer-events-none">
         <div className="max-w-2xl mx-auto flex items-center justify-center">
@@ -193,7 +176,7 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
               boxShadow: 'none',
             }}
           >
-            {/* ── Left: Home button (always visible) ─────────────────────── */}
+            {/* ── Left: Home button ─────────────────────────────────────── */}
             <div className="pl-2 flex-shrink-0">
               <Link
                 href={isGuest ? '/guest' : '/home'}
@@ -226,7 +209,7 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
               </Link>
             </div>
 
-            {/* ── Center: nav items — slide LEFT on scroll ─────────────────── */}
+            {/* ── Center: nav items — slide LEFT on scroll ──────────────── */}
             <motion.div
               className="flex-1 flex items-center justify-around overflow-hidden"
               animate={{
@@ -244,7 +227,9 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
                     href={href}
                     className={cn(
                       'relative flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all',
-                      active ? 'text-[color:var(--brand-primary)]' : 'text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary-strong)]'
+                      active
+                        ? 'text-[color:var(--brand-primary)]'
+                        : 'text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary-strong)]'
                     )}
                   >
                     {active && (
@@ -283,7 +268,7 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
               })}
             </motion.div>
 
-            {/* ── Right: Plus button — slide RIGHT on scroll ──────────────── */}
+            {/* ── Right: Plus button — slide RIGHT on scroll ─────────────── */}
             <motion.div
               className="pr-2 flex-shrink-0"
               animate={{
@@ -294,17 +279,20 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
               style={{ pointerEvents: scrolled ? 'none' : 'auto' }}
             >
               <button
-                onClick={() => setQuickOpen(true)}
+                onClick={() => setQuickOpen(v => !v)}
                 aria-label="Quick actions"
                 className="w-[54px] h-[54px] rounded-full flex items-center justify-center transition-all motion-press"
                 style={{
-                  background: 'rgba(200,146,74,0.09)',
+                  background: quickOpen
+                    ? 'rgba(200,146,74,0.18)'
+                    : 'rgba(200,146,74,0.09)',
                   border: '1px solid rgba(200,146,74,0.22)',
+                  boxShadow: quickOpen ? '0 0 0 4px rgba(200,146,74,0.10)' : 'none',
                 }}
               >
                 <motion.svg
                   width="24" height="24" viewBox="0 0 24 24" fill="none"
-                  stroke="rgba(200,146,74,0.82)"
+                  stroke="rgba(200,146,74,0.85)"
                   strokeWidth="2.2" strokeLinecap="round"
                   animate={quickOpen ? { rotate: 45 } : { rotate: 0 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 28 }}

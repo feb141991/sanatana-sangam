@@ -78,12 +78,15 @@ interface Props {
   japaAlreadyDoneToday?: boolean;
 }
 
-const quickAccessItems = [
-  { label: 'Tirtha', icon: '🛕', href: '/tirtha-map', desc: 'Find sacred places near you', theme: 'tirtha' },
-  { label: 'Mandali', icon: '🏡', href: '/mandali', desc: 'Your local sangam', theme: 'mandali' },
-  { label: 'Kul', icon: '❤️', href: '/kul', desc: 'Family sadhana together', theme: 'kul' },
-  { label: 'Pathshala', icon: '📖', href: '/library', desc: 'Tradition-first study tracks', theme: 'pathshala' },
+const DEFAULT_QUICK_ACCESS = [
+  { label: 'Tirtha',     icon: '🛕', href: '/tirtha-map', desc: 'Find sacred places near you',   theme: 'tirtha'    },
+  { label: 'Mandali',    icon: '🏡', href: '/mandali',    desc: 'Your local sangam',              theme: 'mandali'   },
+  { label: 'Kul',        icon: '❤️', href: '/kul',        desc: 'Family sadhana together',        theme: 'kul'       },
+  { label: 'Pathshala',  icon: '📖', href: '/library',    desc: 'Tradition-first study tracks',   theme: 'pathshala' },
 ];
+// All possible hrefs in default order
+const DEFAULT_CARD_ORDER = DEFAULT_QUICK_ACCESS.map(i => i.href);
+const QUICK_ACCESS_MAP   = Object.fromEntries(DEFAULT_QUICK_ACCESS.map(i => [i.href, i]));
 
 const HOME_THEMES: Record<string, FeatureTheme> = {
   // Dawn amber — Panchang, daily ritual
@@ -764,6 +767,26 @@ export default function HomeDashboard({
       return saved ? new Set(JSON.parse(saved) as string[]) : new Set<string>();
     } catch { return new Set<string>(); }
   });
+  const [cardOrder,        setCardOrder]        = useState<string[]>(() => {
+    if (typeof window === 'undefined') return DEFAULT_CARD_ORDER;
+    try {
+      const saved = localStorage.getItem('home_card_order');
+      if (saved) {
+        const parsed = JSON.parse(saved) as string[];
+        // Merge: ensure all default hrefs present (handles new cards added later)
+        const merged = [...parsed.filter(h => DEFAULT_CARD_ORDER.includes(h)), ...DEFAULT_CARD_ORDER.filter(h => !parsed.includes(h))];
+        return merged;
+      }
+    } catch { /* fall through */ }
+    return DEFAULT_CARD_ORDER;
+  });
+  const [hiddenSections,   setHiddenSections]   = useState<Set<string>>(() => {
+    if (typeof window === 'undefined') return new Set();
+    try {
+      const saved = localStorage.getItem('home_hidden_sections');
+      return saved ? new Set(JSON.parse(saved) as string[]) : new Set<string>();
+    } catch { return new Set<string>(); }
+  });
 
   function toggleCard(href: string) {
     setHiddenHrefs(prev => {
@@ -774,7 +797,30 @@ export default function HomeDashboard({
     });
   }
 
-  const visibleAccessItems = quickAccessItems.filter(item => !hiddenHrefs.has(item.href));
+  function moveCard(href: string, dir: 'up' | 'down') {
+    setCardOrder(prev => {
+      const idx = prev.indexOf(href);
+      if (idx < 0) return prev;
+      const next = [...prev];
+      if (dir === 'up' && idx > 0) { [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]]; }
+      else if (dir === 'down' && idx < next.length - 1) { [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]]; }
+      try { localStorage.setItem('home_card_order', JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }
+
+  function toggleSection(key: string) {
+    setHiddenSections(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      try { localStorage.setItem('home_hidden_sections', JSON.stringify([...next])); } catch {}
+      return next;
+    });
+  }
+
+  // Ordered + visibility-filtered explore cards
+  const orderedAccessItems = cardOrder.map(h => QUICK_ACCESS_MAP[h]).filter(Boolean);
+  const visibleAccessItems = orderedAccessItems.filter(item => !hiddenHrefs.has(item.href));
 
   const { coords, city: liveCity } = useLocation();
 
@@ -1622,40 +1668,44 @@ export default function HomeDashboard({
       </div>
 
       {/* ── Vichaar Sabha CTA ── */}
-      <Link href="/vichaar-sabha"
-        className="block w-full rounded-[1.7rem] border p-4 text-center relative overflow-hidden motion-lift"
-        style={{
-          borderColor: HOME_THEMES.pathshala.border,
-          background: HOME_THEMES.pathshala.surface,
-          boxShadow: '0 12px 24px rgba(0, 0, 0, 0.16)',
-        }}>
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: 'radial-gradient(ellipse at center, rgba(200, 146, 74, 0.05), transparent 70%)',
-        }} />
-        <span className="relative text-xl">💬</span>
-        <p className="relative mt-1" style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)' }}>
-          Vichaar Sabha
-        </p>
-        <p className="relative text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>Discuss dharma, share wisdom, ask questions</p>
-      </Link>
+      {!hiddenSections.has('vichaar-sabha') && (
+        <Link href="/vichaar-sabha"
+          className="block w-full rounded-[1.7rem] border p-4 text-center relative overflow-hidden motion-lift"
+          style={{
+            borderColor: HOME_THEMES.pathshala.border,
+            background: HOME_THEMES.pathshala.surface,
+            boxShadow: '0 12px 24px rgba(0, 0, 0, 0.16)',
+          }}>
+          <div className="absolute inset-0 pointer-events-none" style={{
+            background: 'radial-gradient(ellipse at center, rgba(200, 146, 74, 0.05), transparent 70%)',
+          }} />
+          <span className="relative text-xl">💬</span>
+          <p className="relative mt-1" style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)' }}>
+            Vichaar Sabha
+          </p>
+          <p className="relative text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>Discuss dharma, share wisdom, ask questions</p>
+        </Link>
+      )}
 
       {/* ── Invite Friends ── */}
-      <button onClick={() => setInviteOpen(true)}
-        className="w-full rounded-[1.7rem] border p-4 text-center relative overflow-hidden motion-lift"
-        style={{
-          borderColor: HOME_THEMES.kul.border,
-          background: HOME_THEMES.kul.surface,
-          boxShadow: '0 12px 24px rgba(0, 0, 0, 0.16)',
-        }}>
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: 'radial-gradient(ellipse at center, rgba(157, 120, 74, 0.06), transparent 70%)',
-        }} />
-        <span className="relative text-xl">🙏</span>
-        <p className="relative mt-1" style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)' }}>
-          Invite Friends &amp; Family
-        </p>
-        <p className="relative text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>Spread the light of dharma</p>
-      </button>
+      {!hiddenSections.has('invite-friends') && (
+        <button onClick={() => setInviteOpen(true)}
+          className="w-full rounded-[1.7rem] border p-4 text-center relative overflow-hidden motion-lift"
+          style={{
+            borderColor: HOME_THEMES.kul.border,
+            background: HOME_THEMES.kul.surface,
+            boxShadow: '0 12px 24px rgba(0, 0, 0, 0.16)',
+          }}>
+          <div className="absolute inset-0 pointer-events-none" style={{
+            background: 'radial-gradient(ellipse at center, rgba(157, 120, 74, 0.06), transparent 70%)',
+          }} />
+          <span className="relative text-xl">🙏</span>
+          <p className="relative mt-1" style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)' }}>
+            Invite Friends &amp; Family
+          </p>
+          <p className="relative text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>Spread the light of dharma</p>
+        </button>
+      )}
 
       {/* ── Edit Home ── */}
       <button
@@ -1693,13 +1743,14 @@ export default function HomeDashboard({
               transition={{ duration: 0.28, ease: [0.34, 1.1, 0.64, 1] }}
             >
               <div
-                className="max-w-2xl mx-auto rounded-[2rem] p-5 space-y-5"
+                className="max-w-2xl mx-auto rounded-[2rem] p-5 space-y-5 overflow-y-auto"
                 style={{
-                  background: 'rgba(14,9,4,0.96)',
+                  background: 'rgba(14,9,4,0.97)',
                   backdropFilter: 'blur(48px)',
                   WebkitBackdropFilter: 'blur(48px)',
                   border: '1px solid rgba(200,146,74,0.18)',
                   boxShadow: '0 -4px 40px rgba(0,0,0,0.28)',
+                  maxHeight: '85dvh',
                 }}
               >
                 {/* Handle + header */}
@@ -1722,29 +1773,125 @@ export default function HomeDashboard({
                   </button>
                 </div>
 
-                {/* Explore card toggles */}
+                {/* ── Explore Cards — toggle + reorder ── */}
                 <div className="space-y-2">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.15em] px-1" style={{ color: 'var(--text-dim)' }}>
                     Explore Cards
                   </p>
-                  {quickAccessItems.map(item => {
+                  {orderedAccessItems.map((item, idx) => {
                     const hidden = hiddenHrefs.has(item.href);
                     return (
-                      <button
+                      <div
                         key={item.href}
-                        onClick={() => toggleCard(item.href)}
+                        className="flex items-center gap-2 rounded-2xl px-3 py-2.5 transition-all"
+                        style={{
+                          background: hidden ? 'rgba(255,255,255,0.03)' : 'rgba(200,146,74,0.08)',
+                          border: `1px solid ${hidden ? 'rgba(255,255,255,0.08)' : 'rgba(200,146,74,0.20)'}`,
+                        }}
+                      >
+                        {/* Up / Down arrows */}
+                        <div className="flex flex-col gap-0.5 flex-shrink-0">
+                          <button
+                            onClick={() => moveCard(item.href, 'up')}
+                            disabled={idx === 0}
+                            className="w-6 h-6 rounded-lg flex items-center justify-center transition disabled:opacity-25"
+                            style={{ background: 'rgba(255,255,255,0.07)' }}
+                          >
+                            <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                              <path d="M6 9V3M3 6l3-3 3 3" stroke="rgba(200,146,74,0.75)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => moveCard(item.href, 'down')}
+                            disabled={idx === orderedAccessItems.length - 1}
+                            className="w-6 h-6 rounded-lg flex items-center justify-center transition disabled:opacity-25"
+                            style={{ background: 'rgba(255,255,255,0.07)' }}
+                          >
+                            <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                              <path d="M6 3v6M3 6l3 3 3-3" stroke="rgba(200,146,74,0.75)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </button>
+                        </div>
+
+                        {/* Icon + label */}
+                        <span className="text-lg leading-none flex-shrink-0">{item.icon}</span>
+                        <div className="flex-1 min-w-0 text-left">
+                          <p className="text-sm font-semibold truncate" style={{ color: hidden ? 'var(--text-dim)' : 'var(--text-cream)' }}>
+                            {item.label}
+                          </p>
+                          <p className="text-[10px] truncate" style={{ color: 'var(--text-dim)' }}>{item.desc}</p>
+                        </div>
+
+                        {/* Toggle */}
+                        <button
+                          onClick={() => toggleCard(item.href)}
+                          className="flex-shrink-0"
+                          aria-label={hidden ? 'Show' : 'Hide'}
+                        >
+                          <div
+                            className="w-11 h-6 rounded-full transition-all flex items-center px-0.5"
+                            style={{ background: hidden ? 'rgba(255,255,255,0.10)' : 'rgba(200,146,74,0.55)' }}
+                          >
+                            <div
+                              className="w-5 h-5 rounded-full transition-all"
+                              style={{
+                                background: '#fff',
+                                transform: hidden ? 'translateX(0)' : 'translateX(20px)',
+                                boxShadow: '0 1px 4px rgba(0,0,0,0.25)',
+                              }}
+                            />
+                          </div>
+                        </button>
+                      </div>
+                    );
+                  })}
+
+                  {/* Reset order + show-all */}
+                  <div className="flex gap-2 pt-1">
+                    {hiddenHrefs.size > 0 && (
+                      <button
+                        onClick={() => { setHiddenHrefs(new Set()); try { localStorage.removeItem('home_hidden_cards'); } catch {} }}
+                        className="flex-1 py-2 rounded-2xl text-xs font-semibold"
+                        style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.18)', color: 'var(--text-muted-warm)' }}
+                      >
+                        Show all
+                      </button>
+                    )}
+                    <button
+                      onClick={() => { setCardOrder(DEFAULT_CARD_ORDER); try { localStorage.removeItem('home_card_order'); } catch {} }}
+                      className="flex-1 py-2 rounded-2xl text-xs font-semibold"
+                      style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-dim)' }}
+                    >
+                      Reset order
+                    </button>
+                  </div>
+                </div>
+
+                {/* ── Sections ── */}
+                <div className="space-y-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.15em] px-1" style={{ color: 'var(--text-dim)' }}>
+                    Sections
+                  </p>
+                  {[
+                    { key: 'vichaar-sabha',  icon: '💬', label: 'Vichaar Sabha',        desc: 'Community discussion forum' },
+                    { key: 'invite-friends', icon: '🙏', label: 'Invite Friends',        desc: 'Spread the light of dharma' },
+                  ].map(({ key, icon, label, desc }) => {
+                    const hidden = hiddenSections.has(key);
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => toggleSection(key)}
                         className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 transition-all motion-press"
                         style={{
                           background: hidden ? 'rgba(255,255,255,0.03)' : 'rgba(200,146,74,0.08)',
-                          border: `1px solid ${hidden ? 'rgba(255,255,255,0.08)' : 'rgba(200,146,74,0.22)'}`,
+                          border: `1px solid ${hidden ? 'rgba(255,255,255,0.08)' : 'rgba(200,146,74,0.20)'}`,
                         }}
                       >
-                        <span className="text-xl">{item.icon}</span>
+                        <span className="text-xl flex-shrink-0">{icon}</span>
                         <div className="flex-1 text-left">
-                          <p className="text-sm font-semibold" style={{ color: hidden ? 'var(--text-dim)' : 'var(--text-cream)' }}>{item.label}</p>
-                          <p className="text-[10px]" style={{ color: 'var(--text-dim)' }}>{item.desc}</p>
+                          <p className="text-sm font-semibold" style={{ color: hidden ? 'var(--text-dim)' : 'var(--text-cream)' }}>{label}</p>
+                          <p className="text-[10px]" style={{ color: 'var(--text-dim)' }}>{desc}</p>
                         </div>
-                        {/* Toggle pill */}
                         <div
                           className="w-11 h-6 rounded-full transition-all flex-shrink-0 flex items-center px-0.5"
                           style={{ background: hidden ? 'rgba(255,255,255,0.10)' : 'rgba(200,146,74,0.55)' }}
@@ -1762,19 +1909,6 @@ export default function HomeDashboard({
                     );
                   })}
                 </div>
-
-                {hiddenHrefs.size > 0 && (
-                  <button
-                    onClick={() => {
-                      setHiddenHrefs(new Set());
-                      try { localStorage.removeItem('home_hidden_cards'); } catch {}
-                    }}
-                    className="w-full py-2.5 rounded-2xl text-xs font-semibold"
-                    style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.18)', color: 'var(--text-muted-warm)' }}
-                  >
-                    Show all cards
-                  </button>
-                )}
               </div>
             </motion.div>
           </motion.div>
