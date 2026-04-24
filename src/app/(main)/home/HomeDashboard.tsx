@@ -642,13 +642,6 @@ function CalendarModal({
         </div>
 
         <div className="overflow-y-auto flex-1 px-4 py-3 space-y-2 pb-8">
-          {/* Note */}
-          <div className="rounded-xl border px-3 py-2.5 text-xs leading-relaxed"
-            style={{ background: 'rgba(200, 146, 74, 0.07)', borderColor: 'rgba(200, 146, 74, 0.14)', color: 'var(--text-muted-warm)' }}>
-            <span className="font-semibold" style={{ color: 'var(--text-cream)' }}>Calendar note: </span>
-            {calendarMeta.sourceNote}
-          </div>
-
           {upcoming.length > 0 && (
             <>
               <p className="text-[10px] font-semibold uppercase tracking-[0.14em] mb-2 mt-1" style={{ color: 'var(--text-dim)' }}>Upcoming</p>
@@ -1242,9 +1235,6 @@ export default function HomeDashboard({
           </button>
         </div>
 
-        <div className="relative px-4 pb-3 text-[10px]" style={{ color: 'var(--text-dim)' }}>
-          {PANCHANG_TRUST_META.precisionLabel}. {PANCHANG_TRUST_META.guidanceNote}
-        </div>
       </motion.div>
 
       {/* ── Daily Sacred Text — tradition-aware ── */}
@@ -1539,6 +1529,23 @@ export default function HomeDashboard({
           Invite Friends &amp; Family
         </p>
         <p className="relative text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>Spread the light of dharma</p>
+      </button>
+
+      {/* ── Edit Home ── */}
+      <button
+        className="mx-auto flex items-center gap-2 px-5 py-2 rounded-full text-xs font-semibold motion-press"
+        style={{
+          background: 'rgba(200,146,74,0.08)',
+          border: '1px solid rgba(200,146,74,0.18)',
+          color: 'var(--text-muted-warm)',
+          display: 'flex',
+        }}
+      >
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+        </svg>
+        Edit Home
       </button>
 
       {/* ── Parva / Festivals modal ── */}

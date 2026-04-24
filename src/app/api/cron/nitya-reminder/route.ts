@@ -129,10 +129,10 @@ export async function GET(request: Request) {
 
     // ── Step 4: Build engine-enriched, tradition-aware notifications ──────────
     const TRADITION_NUDGE: Record<string, { title: string; body: string }> = {
-      hindu:    { title: '🌅 Brahma Muhurta — Begin Your Sadhana', body: 'Suprabhat! Your morning sequence awaits. Start with snana and let the day begin in dharma.' },
-      sikh:     { title: '☬ Amrit Vela — Begin Your Nitnem',       body: 'Sat Sri Akal! This is the ambrosial hour. Your morning Nitnem brings Waheguru\'s grace.' },
-      buddhist: { title: '☸️ Morning Practice Awaits',               body: 'May this morning bring clarity. Begin your sitting before the day takes hold.' },
-      jain:     { title: '🤲 Begin Your Morning Pratikraman',       body: 'Jai Jinendra! The dawn hour is auspicious. Begin your Samayika and Navkar Mantra.' },
+      hindu:    { title: '🌅 Brahma Muhurta — Your Sadhana Path Awaits', body: 'Suprabhat! Your personalised morning sequence is ready. Begin with snana and let the day unfold in dharma.' },
+      sikh:     { title: '☬ Amrit Vela — Your Nitnem Awaits',            body: 'Sat Sri Akal! The ambrosial hour is here. Your personalised Nitnem brings Waheguru\'s grace.' },
+      buddhist: { title: '☸️ Your Morning Practice Awaits',               body: 'May this dawn bring clarity. Your personalised sitting practice is ready — begin before the day takes hold.' },
+      jain:     { title: '🤲 Your Morning Pratikraman Awaits',            body: 'Jai Jinendra! The dawn hour is auspicious. Your personalised Samayika and Navkar sequence is ready.' },
     };
 
     const notifications = unstartedUsers.map((u) => {

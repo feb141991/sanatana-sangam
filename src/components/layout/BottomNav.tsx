@@ -17,6 +17,7 @@ interface Props {
 // ── Quick Actions panel ────────────────────────────────────────────────────────
 const QUICK_ACTIONS = [
   { icon: '📿', label: 'Japa',         href: '/bhakti/mala',  desc: 'Begin your maala rounds' },
+  { icon: '🕉️', label: 'Sattvic',      href: '/bhakti/zen',   desc: 'Prānāyāma & kīrtana'  },
   { icon: '🙏', label: 'Bhakti',       href: '/bhakti',       desc: 'Chant, pray, reflect' },
   { icon: '📖', label: 'Scripture',    href: '/library',      desc: 'Open Pathshala' },
   { icon: '☀️', label: 'Nitya Karma',  href: '/nitya-karma',  desc: 'Daily ritual checklist' },

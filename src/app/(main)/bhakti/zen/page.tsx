@@ -34,9 +34,9 @@ const ENVIRONMENTS: Record<EnvId, { label: string; emoji: string; bg: string; gl
 
 // ─── Modes ──────────────────────────────────────────────────────────────────
 const MODES = [
-  { id: 'reading', emoji: '📖', title: 'Reading', description: 'Silent scripture reading.' },
-  { id: 'breath',  emoji: '🫁', title: 'Breath',  description: '4-2-6 pranayama cycle.'   },
-  { id: 'chant',   emoji: '🕉️', title: 'Chant',   description: 'One mantra, one rhythm.'  },
+  { id: 'reading', emoji: '📖', title: 'Svādhyāya', description: 'Silent scripture in sattva.' },
+  { id: 'breath',  emoji: '🫁', title: 'Prānāyāma', description: 'Nāḍī śodhana — 4-2-6 cycle.' },
+  { id: 'chant',   emoji: '🕉️', title: 'Kīrtana',   description: 'One mantra, one pointed mind.' },
 ] as const;
 
 // ─── Ambient options ─────────────────────────────────────────────────────────
@@ -341,7 +341,7 @@ function EnvParticles({ env }: { env: EnvId }) {
 }
 
 // ─── Main Page ─────────────────────────────────────────────────────────────
-export default function ZenModePage() {
+export default function SattvicModePage() {
   const [mode,       setMode]     = useState<'reading' | 'breath' | 'chant'>('breath');
   const [duration,   setDuration] = useState(24);
   const [customInput,setCustomInput] = useState('');
@@ -605,6 +605,29 @@ export default function ZenModePage() {
             Ambient plays when session begins
           </p>
         )}
+      </section>
+
+      {/* ── Sattva context ─────────────────────────────────────────────────── */}
+      <section className="rounded-[1.6rem] px-4 py-3.5"
+        style={{ background: 'rgba(12,8,4,0.9)', border: '1px solid rgba(200,146,74,0.09)' }}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: 'rgba(200,146,74,0.5)' }}>
+          Sattva Guna
+        </p>
+        <p className="text-[12.5px] leading-relaxed" style={{ color: 'rgba(220,195,145,0.60)', fontFamily: 'var(--font-serif)' }}>
+          Sattvic practice cultivates clarity, lightness, and equanimity — the guṇa of wisdom and peace. This space is your invitation to step out of rajas and tamas, and into presence.
+        </p>
+        <div className="flex gap-3 mt-3">
+          {[
+            { icon: '🌿', label: 'Light food before' },
+            { icon: '🤫', label: 'Silence preferred' },
+            { icon: '🌅', label: 'Best at sandhyā' },
+          ].map(({ icon, label }) => (
+            <div key={label} className="flex items-center gap-1.5 text-[10.5px]" style={{ color: 'rgba(200,175,120,0.45)' }}>
+              <span>{icon}</span>
+              <span>{label}</span>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* ── Full Focus Overlay ─────────────────────────────────────────────── */}

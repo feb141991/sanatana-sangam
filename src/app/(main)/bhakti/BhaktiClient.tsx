@@ -143,9 +143,9 @@ const PORTALS = [
   {
     href: '/bhakti/zen',
     emoji: '🕉️',
-    title: 'Zen',
-    sub: 'Deep Focus',
-    desc: 'Enter a full-screen devotional space: breath, chant, or silent reading.',
+    title: 'Sattvic Mode',
+    sub: 'Sattva Practice',
+    desc: 'Enter a full-screen sattvic space: prānāyāma, kīrtana, or silent svādhyāya.',
     glow: 'rgba(80,58,180,0.32)',
     accent: '#8b7de0',
     border: 'rgba(130,100,220,0.2)',

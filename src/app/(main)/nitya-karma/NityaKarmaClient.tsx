@@ -533,10 +533,10 @@ function StreakCard({ streak, accent }: { streak: NityaKarmaStreak; accent: stri
 function ProUpgradeSheet({ onClose, accent }: { onClose: () => void; accent: string }) {
   const PRO_FEATURES = [
     '🔥 30-day streak analytics & heatmap',
-    '🤖 AI-personalised morning sequences',
+    '🤖 AI-personalised sadhana sequences',
     '📿 Full Japa history & insights',
-    '🧘 Extended Zen deep-focus sessions',
-    '📅 Panchang-aware vrat reminders',
+    '🕉️ Sattvic Mode — guided prānāyāma & kīrtana',
+    '📅 Panchang-aware vrat & sandhyā reminders',
     '☬ Tradition-specific step variations',
   ];
   return (
@@ -829,9 +829,9 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Omit<P
           <ChevronLeft size={20} style={{ color: accent }} />
         </button>
         <div className="flex-1">
-          <h1 className="font-bold text-lg text-[color:var(--brand-ink)]">Nitya Karma</h1>
+          <h1 className="font-bold text-lg text-[color:var(--brand-ink)]">My Sadhana Path</h1>
           <p className="text-xs text-[color:var(--brand-muted)]">
-            {meta.symbol} Daily {tradition === 'sikh' ? 'Nitnem' : tradition === 'buddhist' ? 'Morning Practice' : 'Morning Sequence'}
+            {meta.symbol} {tradition === 'sikh' ? 'Nitnem' : tradition === 'buddhist' ? 'Morning Practice' : 'Nitya Karma'} · personalised for you
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -1020,7 +1020,7 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Omit<P
                   <span className="font-semibold">{nextBrahmaMuhurtaText()}</span>.
                 </p>
               </div>
-              <div className="flex justify-center gap-3 pt-1">
+              <div className="flex justify-center gap-3 pt-1 flex-wrap">
                 <Link href="/japa" className="px-4 py-2 rounded-xl text-xs font-semibold"
                   style={{ background: `${accent}18`, color: accent }}>
                   Japa Counter
@@ -1028,6 +1028,10 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Omit<P
                 <Link href="/pathshala" className="px-4 py-2 rounded-xl text-xs font-semibold"
                   style={{ background: `${accent}18`, color: accent }}>
                   Pathshala
+                </Link>
+                <Link href="/nitya-karma/plans" className="px-4 py-2 rounded-xl text-xs font-semibold"
+                  style={{ background: `${accent}18`, color: accent }}>
+                  ✦ Guided Plans
                 </Link>
               </div>
             </motion.div>
@@ -1134,7 +1138,10 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Omit<P
               >
                 Sangam Pro
               </button>
-              {' '}unlocks AI-personalised sequences based on your practice history and current streak.
+              {' '}unlocks AI-personalised sequences, 30-day analytics, and{' '}
+              <Link href="/nitya-karma/plans" className="font-semibold text-[color:var(--brand-ink)] underline underline-offset-2">
+                Guided Sadhana Plans
+              </Link>.
             </p>
           </div>
         </div>

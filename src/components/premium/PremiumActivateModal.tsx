@@ -6,48 +6,78 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { X, Check } from 'lucide-react';
 import { activatePro } from '@/lib/premium';
 
-// ─── Benefit groups ────────────────────────────────────────────────────────────
-const BENEFIT_GROUPS = [
+// ─── Individual luxury benefit cards ──────────────────────────────────────────
+const LUXURY_CARDS = [
   {
-    label: 'Daily Ritual',
-    color: 'rgba(200, 146, 74, 0.14)',
-    borderColor: 'rgba(200, 146, 74, 0.22)',
-    accentColor: '#C8924A',
-    items: [
-      { emoji: '🌅', title: 'Brahma Muhurta Alert',   desc: 'A sacred notification precisely when your spiritual window opens each morning.' },
-      { emoji: '⚙️', title: 'Customise Your Nitya',   desc: 'Rename steps, set personal alert times, and build a routine that is truly yours.' },
-      { emoji: '🕉️', title: 'Custom Nitya Karma',     desc: 'Add your own practices beyond the default sequence.' },
+    emoji: '🌅',
+    label: 'Deeper Rituals',
+    tagline: 'Your morning, sacred by design',
+    surface: 'linear-gradient(160deg, rgba(200,146,74,0.14) 0%, rgba(200,146,74,0.05) 100%)',
+    border: 'rgba(200,146,74,0.22)',
+    accent: '#C8924A',
+    glow: 'rgba(200,146,74,0.18)',
+    features: [
+      { icon: '🌅', text: 'Brahma Muhurta alert — timed to your location' },
+      { icon: '⚙️', text: 'Personalise every step of your Nitya Karma' },
+      { icon: '🔔', text: 'Custom sadhana reminders at your chosen times' },
     ],
   },
   {
+    emoji: '🧭',
+    label: 'Personalised Guidance',
+    tagline: 'A path shaped around you',
+    surface: 'linear-gradient(160deg, rgba(100,140,220,0.14) 0%, rgba(80,120,200,0.05) 100%)',
+    border: 'rgba(100,140,220,0.22)',
+    accent: '#6a9cd4',
+    glow: 'rgba(100,140,220,0.18)',
+    features: [
+      { icon: '✦', text: '7-day and 21-day guided Sadhana plans' },
+      { icon: '🪔', text: 'Adaptive practice suggestions from Sattvic AI' },
+      { icon: '📊', text: 'Weekly spiritual review and growth insights' },
+    ],
+  },
+  {
+    emoji: '📿',
     label: 'Practice Depth',
-    color: 'rgba(160, 100, 220, 0.10)',
-    borderColor: 'rgba(160, 100, 220, 0.20)',
-    accentColor: '#b07ad4',
-    items: [
-      { emoji: '📿', title: 'Full Japa History',       desc: 'Every session, every mantra, in a beautiful timeline with insights.' },
-      { emoji: '🔥', title: 'Streak & Milestones',     desc: 'Track your shloka streak, longest run, and celebrate sacred milestones.' },
-      { emoji: '📖', title: 'Advanced Pathshala',      desc: 'Unlock all study paths and deepen your scriptural understanding.' },
+    tagline: 'Every mantra. Every milestone',
+    surface: 'linear-gradient(160deg, rgba(160,100,220,0.14) 0%, rgba(140,80,200,0.05) 100%)',
+    border: 'rgba(160,100,220,0.22)',
+    accent: '#b07ad4',
+    glow: 'rgba(160,100,220,0.18)',
+    features: [
+      { icon: '📿', text: 'Full Japa history with insights and timelines' },
+      { icon: '🔥', text: 'Streak tracking, milestones, and celebrations' },
+      { icon: '📖', text: 'All Pathshala study paths unlocked' },
     ],
   },
   {
-    label: 'Family & Kul',
-    color: 'rgba(80, 160, 100, 0.10)',
-    borderColor: 'rgba(80, 160, 100, 0.20)',
-    accentColor: '#6ab87a',
-    items: [
-      { emoji: '🏡', title: 'Kul Reminders',           desc: 'Smart nudges for family observances, anniversaries, and kul milestones.' },
-      { emoji: '🌿', title: 'Sanskar Lifecycle',       desc: 'Track all 16 Sanskaras for every family member with milestone notifications.' },
+    emoji: '🏡',
+    label: 'Kul & Sanskar',
+    tagline: 'Dharma flows through generations',
+    surface: 'linear-gradient(160deg, rgba(80,160,100,0.14) 0%, rgba(60,140,80,0.05) 100%)',
+    border: 'rgba(80,160,100,0.22)',
+    accent: '#6ab87a',
+    glow: 'rgba(80,160,100,0.18)',
+    features: [
+      { icon: '🏡', text: 'Smart nudges for family observances and kul milestones' },
+      { icon: '🌿', text: 'All 16 Sanskaras tracked for every family member' },
+      { icon: '🕯️', text: 'Pitru Paksha and ancestral remembrance reminders' },
     ],
   },
   {
+    emoji: '✨',
     label: 'Coming Soon',
-    color: 'rgba(200, 146, 74, 0.06)',
-    borderColor: 'rgba(200, 146, 74, 0.12)',
-    accentColor: 'rgba(200,146,74,0.55)',
-    items: [
-      { emoji: '✨', title: 'AI Spiritual Guidance',    desc: 'Personalised practice plans, scripture recommendations, and dharmic insights.' },
+    tagline: 'The sanctuary grows with you',
+    surface: 'linear-gradient(160deg, rgba(200,146,74,0.07) 0%, rgba(200,146,74,0.03) 100%)',
+    border: 'rgba(200,146,74,0.12)',
+    accent: 'rgba(200,146,74,0.5)',
+    glow: 'rgba(200,146,74,0.08)',
+    features: [
+      { icon: '🤖', text: 'Dharma Mitra AI — your personal dharmic companion' },
+      { icon: '🎵', text: 'Sanskrit pronunciation with Bhashini audio' },
+      { icon: '🛕', text: 'Tirtha maps, darshan alerts, and pilgrimage guides' },
     ],
+    dimmed: true,
   },
 ];
 
@@ -232,60 +262,85 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
               {/* ── Divider ── */}
               <div className="mx-5 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(200,146,74,0.16), transparent)' }} />
 
-              {/* ── Benefit groups ── */}
-              <div className="px-5 py-5 space-y-4">
-                {BENEFIT_GROUPS.map((group, gi) => (
+              {/* ── Luxury benefit cards ── */}
+              <div className="px-5 py-5 space-y-3">
+                {LUXURY_CARDS.map((card, ci) => (
                   <motion.div
-                    key={group.label}
-                    initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10 }}
+                    key={card.label}
+                    initial={prefersReducedMotion ? undefined : { opacity: 0, y: 12 }}
                     animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 + gi * 0.08, duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
-                    className="rounded-[1.4rem] overflow-hidden border"
-                    style={{ background: group.color, borderColor: group.borderColor }}
+                    transition={{ delay: 0.1 + ci * 0.07, duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+                    className="rounded-[1.6rem] overflow-hidden border"
+                    style={{
+                      background: card.surface,
+                      borderColor: card.border,
+                      opacity: card.dimmed ? 0.72 : 1,
+                    }}
                   >
-                    {/* Group label */}
-                    <div className="px-4 pt-3 pb-1">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: group.accentColor }}>
-                        {group.label}
-                      </p>
+                    {/* Card header */}
+                    <div className="px-5 pt-5 pb-3 flex items-start gap-4">
+                      {/* Emoji well with glow */}
+                      <div
+                        className="flex-shrink-0 w-12 h-12 rounded-[1rem] flex items-center justify-center text-2xl"
+                        style={{
+                          background: `radial-gradient(circle at 40% 40%, ${card.glow}, rgba(0,0,0,0.22))`,
+                          border: `1px solid ${card.border}`,
+                          boxShadow: `0 4px 16px ${card.glow}`,
+                        }}
+                      >
+                        {card.emoji}
+                      </div>
+
+                      {/* Title + tagline */}
+                      <div className="flex-1 min-w-0 pt-0.5">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: card.accent }}>
+                          {card.label}
+                        </p>
+                        <p
+                          style={{
+                            fontFamily: 'var(--font-serif)',
+                            fontSize: '1.05rem',
+                            fontWeight: 600,
+                            color: card.dimmed ? 'rgba(220,195,145,0.55)' : '#ede0c4',
+                            lineHeight: 1.25,
+                            marginTop: '2px',
+                          }}
+                        >
+                          {card.tagline}
+                        </p>
+                      </div>
                     </div>
 
-                    {/* Items */}
-                    <div className="px-3 pb-3 space-y-1">
-                      {group.items.map((item) => (
-                        <div
-                          key={item.title}
-                          className="flex items-start gap-3 rounded-[1rem] px-3 py-3"
-                          style={{ background: 'rgba(0,0,0,0.18)' }}
-                        >
-                          {/* Icon well */}
-                          <div
-                            className="flex-shrink-0 w-9 h-9 rounded-[0.7rem] flex items-center justify-center text-xl"
-                            style={{ background: 'rgba(255,255,255,0.05)' }}
-                          >
-                            {item.emoji}
-                          </div>
+                    {/* Divider */}
+                    <div className="mx-5 h-px" style={{ background: `linear-gradient(90deg, ${card.border}, transparent)` }} />
 
-                          {/* Text */}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[13px] font-semibold leading-tight" style={{ color: '#ede0c4' }}>
-                              {item.title}
-                            </p>
-                            <p className="text-[11px] leading-relaxed mt-0.5" style={{ color: 'rgba(210,185,135,0.50)' }}>
-                              {item.desc}
-                            </p>
-                          </div>
-
-                          {/* Check */}
+                    {/* Features */}
+                    <div className="px-5 py-3 space-y-2">
+                      {card.features.map((f, fi) => (
+                        <div key={fi} className="flex items-center gap-3">
                           <div
-                            className="flex-shrink-0 mt-0.5 w-4 h-4 rounded-full flex items-center justify-center"
-                            style={{ background: `${group.accentColor}22`, border: `1px solid ${group.accentColor}55` }}
+                            className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[11px]"
+                            style={{ background: `${card.accent}1a`, border: `1px solid ${card.accent}33` }}
                           >
-                            <Check size={9} style={{ color: group.accentColor }} strokeWidth={2.5} />
+                            <Check size={9} style={{ color: card.accent }} strokeWidth={2.8} />
                           </div>
+                          <p className="text-[12px] leading-snug" style={{ color: card.dimmed ? 'rgba(200,175,120,0.45)' : 'rgba(220,195,145,0.72)' }}>
+                            {f.text}
+                          </p>
                         </div>
                       ))}
                     </div>
+
+                    {card.dimmed && (
+                      <div className="px-5 pb-4">
+                        <span
+                          className="inline-flex items-center gap-1.5 text-[10px] font-semibold px-3 py-1 rounded-full"
+                          style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.14)', color: 'rgba(200,146,74,0.50)' }}
+                        >
+                          ✦ In development
+                        </span>
+                      </div>
+                    )}
                   </motion.div>
                 ))}
               </div>
