@@ -189,10 +189,8 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
               width: '100%',
               maxWidth: '42rem',
               background: 'transparent',
-              backdropFilter: 'blur(24px) saturate(160%)',
-              WebkitBackdropFilter: 'blur(24px) saturate(160%)',
-              border: '1px solid rgba(200,146,74,0.30)',
-              boxShadow: '0 2px 20px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,240,200,0.06)',
+              border: 'none',
+              boxShadow: 'none',
             }}
           >
             {/* ── Left: Home button (always visible) ─────────────────────── */}
