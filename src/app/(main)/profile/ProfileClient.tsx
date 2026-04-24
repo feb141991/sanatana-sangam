@@ -5,6 +5,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, BarChart2, Loader2, ChevronLeft } from 'lucide-react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { APP } from '@/lib/config';
 import { createClient } from '@/lib/supabase';
 import type { HiddenContentSummary, SafetyProfileSummary } from '@/lib/user-safety';
 import { getInitials, ISHTA_DEVATAS, SAMPRADAYAS, SPIRITUAL_LEVELS, TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getIshtaDevataLabel, getSampradayaLabel } from '@/lib/utils';
@@ -132,6 +134,11 @@ function CompletionBar({ profile, onEdit }: { profile: Profile | null; onEdit: (
   );
 }
 
+// ── Invite Code Generator ────────────────────────────────────────────────
+function generateInviteCode(userId: string): string {
+  return userId.replace(/-/g, '').slice(0, 8).toUpperCase();
+}
+
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function ProfileClient({
   profile,
@@ -161,6 +168,7 @@ export default function ProfileClient({
   const updateProfileMutation = useUpdateProfileMutation(userId);
   const liveProfile = profileQuery.data ?? profile;
   const [editing,   setEditing]   = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
   const [sendingTestNotification, setSendingTestNotification] = useState(false);
@@ -1298,6 +1306,28 @@ export default function ProfileClient({
         </button>
       </SurfaceSection>
 
+      {/* ── Invite Friends ── */}
+      <button
+        onClick={() => setInviteOpen(true)}
+        className="w-full rounded-[1.6rem] border p-4 flex items-center gap-4 transition motion-press"
+        style={{
+          background: 'linear-gradient(150deg, rgba(30,22,14,0.97), rgba(22,16,8,0.96))',
+          borderColor: 'rgba(200,146,74,0.20)',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
+        }}
+      >
+        <div className="w-11 h-11 rounded-[0.9rem] flex items-center justify-center text-2xl flex-shrink-0"
+          style={{ background: 'rgba(200,146,74,0.12)' }}>
+          🙏
+        </div>
+        <div className="text-left">
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)' }}>
+            Invite Friends &amp; Family
+          </p>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>Spread the light of dharma</p>
+        </div>
+      </button>
+
       {/* ── Account ── */}
       <div className="rounded-2xl border p-4 space-y-3" style={{ background: 'rgba(22, 18, 12, 0.9)', borderColor: 'rgba(255,255,255,0.07)' }}>
         <div className="text-sm" style={{ color: 'var(--text-dim)' }}>
@@ -1309,6 +1339,48 @@ export default function ProfileClient({
           <LogOut size={15} /> Sign out
         </button>
       </div>
+
+      {/* ── Invite Modal ── */}
+      <AnimatePresence>
+        {inviteOpen && (() => {
+          const code = generateInviteCode(userId);
+          const baseUrl = typeof window !== 'undefined' ? window.location.origin : APP.BASE_URL;
+          const link = `${baseUrl}/join?ref=${code}`;
+          async function share() {
+            const shareText = `Join me on Sanatana Sangam — your dharmic home.\n\nInvite code: ${code}\n${link}`;
+            if (typeof navigator !== 'undefined' && navigator.share) {
+              try { await navigator.share({ title: 'Join Sanatana Sangam 🙏', text: shareText, url: link }); return; } catch {}
+            }
+            try { await navigator.clipboard.writeText(shareText); toast.success('Invite link copied! 🙏'); } catch { window.prompt('Copy your invite link:', link); }
+          }
+          return (
+            <motion.div className="fixed inset-0 z-50 flex items-end" onClick={() => setInviteOpen(false)}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <motion.div className="w-full rounded-t-[2rem] p-6 space-y-5" onClick={e => e.stopPropagation()}
+                style={{ background: 'linear-gradient(180deg, rgba(44,38,28,0.99), rgba(34,30,22,0.99))', borderTop: '1px solid rgba(200,146,74,0.20)', boxShadow: '0 -20px 48px rgba(0,0,0,0.38)' }}
+                initial={{ y: 32, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}
+                transition={{ duration: 0.32, ease: [0.34, 1.26, 0.64, 1] }}>
+                <div className="w-10 h-1 rounded-full mx-auto mb-1" style={{ background: 'rgba(200,146,74,0.28)' }} />
+                <div className="flex items-center justify-between">
+                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-cream)' }}>Invite Friends &amp; Family</h3>
+                  <button onClick={() => setInviteOpen(false)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(200,146,74,0.10)' }}>
+                    <X size={15} style={{ color: 'var(--text-muted-warm)' }} />
+                  </button>
+                </div>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>Share Sanatana Sangam with your family and friends using your personal invite code.</p>
+                <div className="rounded-[1.4rem] p-5 text-center border" style={{ background: 'rgba(200,146,74,0.08)', borderColor: 'rgba(200,146,74,0.18)' }}>
+                  <p className="text-[10px] mb-2 font-semibold uppercase tracking-[0.16em]" style={{ color: 'var(--text-dim)' }}>Your Invite Code</p>
+                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', fontWeight: 700, letterSpacing: '0.18em', color: 'var(--brand-primary)' }}>{code}</p>
+                  <p className="text-[11px] mt-2" style={{ color: 'var(--text-dim)' }}>{link}</p>
+                </div>
+                <button onClick={share} className="w-full py-3.5 rounded-2xl font-semibold text-sm" style={{ background: 'var(--brand-primary)', color: '#1a1610' }}>
+                  🙏 Share invite
+                </button>
+              </motion.div>
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
 
     </div>
   );

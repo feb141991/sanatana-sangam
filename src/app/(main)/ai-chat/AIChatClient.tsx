@@ -100,8 +100,8 @@ function MessageBubble({ msg }: { msg: Message }) {
       {/* Bubble */}
       <div className={`max-w-[80%] ${isUser ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
         <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
-          isUser ? 'bg-[#7B1A1A] text-white rounded-tr-sm' : 'rounded-tl-sm border'
-        }`} style={!isUser ? { background: 'rgba(38, 30, 18, 0.95)', borderColor: 'rgba(200,146,74,0.16)', color: 'rgba(240,225,195,0.88)' } : undefined}>
+          isUser ? 'text-white rounded-tr-sm' : 'rounded-tl-sm border'
+        }`} style={isUser ? { background: 'rgba(200,100,60,0.35)', border: '1px solid rgba(200,100,60,0.30)' } : { background: 'rgba(38, 30, 18, 0.95)', borderColor: 'rgba(200,146,74,0.16)', color: 'rgba(240,225,195,0.88)' }}>
           {msg.text}
           {/* ── Scripture sources (RAG only) ── */}
           {!isUser && msg.verses && msg.verses.length > 0 && (
@@ -183,15 +183,16 @@ function VerseChip({ verse }: { verse: ScriptureRef }) {
     <div className="mt-2">
       <button
         onClick={() => setOpen(o => !o)}
-        className="flex items-center gap-1.5 text-xs text-orange-600 font-medium bg-orange-50 border border-orange-100 rounded-full px-3 py-1 hover:bg-orange-100 transition-colors"
+        className="flex items-center gap-1.5 text-xs font-medium rounded-full px-3 py-1 transition-colors"
+        style={{ background: 'rgba(200,146,74,0.12)', borderColor: 'rgba(200,146,74,0.25)', color: 'rgba(200,146,74,0.90)', border: '1px solid rgba(200,146,74,0.25)' }}
       >
         <BookOpen size={11} />
         {label}
         <ChevronDown size={11} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && verse.sanskrit && (
-        <div className="mt-2 bg-orange-50/60 border border-orange-100 rounded-xl p-3 text-xs space-y-1">
-          <p className="font-[family:var(--font-deva)] text-[#7B1A1A] font-medium leading-relaxed">
+        <div className="mt-2 rounded-xl p-3 text-xs space-y-1" style={{ background: 'rgba(200,146,74,0.07)', borderColor: 'rgba(200,146,74,0.18)', border: '1px solid rgba(200,146,74,0.18)' }}>
+          <p className="font-[family:var(--font-deva)] font-medium leading-relaxed" style={{ color: 'var(--text-cream)' }}>
             {verse.sanskrit}
           </p>
           {verse.transliteration && (
@@ -395,7 +396,7 @@ export default function AIChatClient({ userId, userName, tradition, sampradaya, 
                   {suggestions.slice(0, 4).map(s => (
                     <button key={s} onClick={() => sendMessage(s)}
                       className="text-left px-4 py-2.5 rounded-xl text-sm border transition"
-                      style={{ background: 'rgba(38,30,18,0.8)', borderColor: 'rgba(200,146,74,0.18)', color: 'rgba(240,210,160,0.75)' }}>
+                      style={{ background: 'rgba(38,30,18,0.8)', borderColor: 'rgba(200,146,74,0.18)', color: 'rgba(240,210,160,0.75)', borderLeft: '2px solid rgba(200,146,74,0.30)' }}>
                       {s}
                     </button>
                   ))}
@@ -418,7 +419,7 @@ export default function AIChatClient({ userId, userName, tradition, sampradaya, 
             {suggestions.slice(4).map(s => (
               <button key={s} onClick={() => sendMessage(s)}
                 className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs border transition whitespace-nowrap"
-                style={{ background: 'rgba(38,30,18,0.7)', borderColor: 'rgba(200,146,74,0.16)', color: 'rgba(200,146,74,0.7)' }}>
+                style={{ background: 'rgba(38,30,18,0.7)', borderColor: 'rgba(200,146,74,0.16)', color: 'rgba(200,146,74,0.7)', borderLeft: '2px solid rgba(200,146,74,0.30)' }}>
                 {s}
               </button>
             ))}

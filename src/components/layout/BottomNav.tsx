@@ -17,12 +17,12 @@ interface Props {
 // ── Quick Actions ──────────────────────────────────────────────────────────────
 const QUICK_ACTIONS = [
   { icon: '📿', label: 'Japa',        href: '/bhakti/mala'  },
+  { icon: '💬', label: 'Vichaar',     href: '/vichaar-sabha' },
   { icon: '🕉️', label: 'Sattvic',     href: '/bhakti/zen'   },
   { icon: '🙏', label: 'Bhakti',      href: '/bhakti'       },
   { icon: '📖', label: 'Scripture',   href: '/library'      },
   { icon: '☀️', label: 'Nitya',       href: '/nitya-karma'  },
   { icon: '🛕', label: 'Tirtha',      href: '/tirtha-map'   },
-  { icon: '🤖', label: 'Dharma AI',   href: '/ai-chat'      },
 ];
 
 const GUEST_QUICK_ACTIONS = [
@@ -69,7 +69,7 @@ function FloatingQuickMenu({
                 <motion.button
                   key={action.href}
                   onClick={() => { onClose(); router.push(action.href); }}
-                  className="flex items-center gap-3 rounded-full px-4 py-2.5 cursor-pointer motion-press"
+                  className="flex items-center gap-3 rounded-full px-4 py-3 cursor-pointer motion-press"
                   style={{
                     background: 'rgba(12,8,3,0.90)',
                     border: '1px solid rgba(200,146,74,0.28)',
@@ -82,9 +82,9 @@ function FloatingQuickMenu({
                   exit={prefersReducedMotion ? undefined : { opacity: 0, y: 8, scale: 0.90 }}
                   transition={{ duration: 0.24, delay, ease: [0.34, 1.1, 0.64, 1] }}
                 >
-                  <span className="text-[1.15rem] leading-none">{action.icon}</span>
+                  <span className="text-[2.3rem] leading-none">{action.icon}</span>
                   <span
-                    className="text-[13px] font-semibold"
+                    className="text-[14px] font-semibold"
                     style={{ color: 'var(--text-cream)', letterSpacing: '-0.01em' }}
                   >
                     {action.label}
