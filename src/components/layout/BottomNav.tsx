@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
@@ -126,9 +126,27 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
   const [quickOpen, setQuickOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Reduce nav opacity slightly on scroll
+  // Collapse center nav items on scroll-down; restore on scroll-up
+  const lastScrollYRef = useRef(0);
+  const accumRef = useRef(0);
   useEffect(() => {
-    function onScroll() { setScrolled(window.scrollY > 40); }
+    function onScroll() {
+      const y = window.scrollY;
+      const delta = y - lastScrollYRef.current;
+      if (Math.abs(delta) < 2) { lastScrollYRef.current = y; return; }
+      accumRef.current += delta;
+      if (y <= 48) {
+        setScrolled(false);
+        accumRef.current = 0;
+      } else if (accumRef.current > 20) {
+        setScrolled(true);
+        accumRef.current = 0;
+      } else if (accumRef.current < -16) {
+        setScrolled(false);
+        accumRef.current = 0;
+      }
+      lastScrollYRef.current = y;
+    }
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -151,13 +169,12 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
     <>
       <QuickActionsPanel open={quickOpen} onClose={() => setQuickOpen(false)} isGuest={isGuest} />
 
-      <nav
-        className="fixed bottom-0 left-0 right-0 z-50 px-3 pb-3 safe-area-pb"
-        style={{ transition: 'opacity 0.3s ease', opacity: scrolled ? 0.88 : 1 }}
-      >
-        <div
-          className="glass-nav max-w-2xl mx-auto flex items-center h-16 rounded-[1.75rem] gap-1 px-1.5"
-          style={{ transition: 'backdrop-filter 0.3s ease' }}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 px-3 pb-3 safe-area-pb">
+        <div className="max-w-2xl mx-auto flex items-center justify-center">
+        <motion.div
+          className="glass-nav flex items-center h-16 rounded-[1.75rem] px-1.5 overflow-hidden"
+          animate={{ gap: scrolled ? 2 : 4 }}
+          style={{ width: '100%', maxWidth: '42rem', backdropFilter: 'blur(20px)' }}
         >
 
           {/* ── Left: circular Home button ─────────────────────────────────── */}
@@ -193,8 +210,20 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
             )}
           </Link>
 
-          {/* ── Center: nav items ─────────────────────────────────────────── */}
-          <div className="flex-1 flex items-center justify-around">
+          {/* ── Center: nav items (collapses on scroll) ──────────────────── */}
+          <motion.div
+            className="flex items-center justify-around overflow-hidden"
+            animate={{
+              width: scrolled ? 0 : 272,
+              opacity: scrolled ? 0 : 1,
+            }}
+            transition={
+              prefersReducedMotion
+                ? { duration: 0 }
+                : { type: 'spring', stiffness: 300, damping: 32, mass: 0.8 }
+            }
+            style={{ pointerEvents: scrolled ? 'none' : 'auto', flexShrink: 0 }}
+          >
             {navItems.map(({ href, label, mobileLabel, icon: Icon }) => {
               const active = pathname === href || (href !== '/home' && pathname.startsWith(href));
               return (
@@ -240,7 +269,7 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
                 </Link>
               );
             })}
-          </div>
+          </motion.div>
 
           {/* ── Right: circular Plus button ───────────────────────────────── */}
           <button
@@ -264,6 +293,7 @@ export default function BottomNav({ libraryLabel = 'Pathshala', libraryMobileLab
               <line x1="5" y1="12" x2="19" y2="12" />
             </motion.svg>
           </button>
+        </motion.div>
         </div>
       </nav>
     </>

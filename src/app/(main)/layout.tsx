@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import BottomNav from '@/components/layout/BottomNav';
-import TopBar from '@/components/layout/TopBar';
+import FloatingPill from '@/components/layout/FloatingPill';
 import AIChatFAB from '@/components/layout/AIChatFAB';
 import { LocationProvider } from '@/lib/LocationContext';
 import { getTraditionMeta } from '@/lib/tradition-config';
@@ -73,7 +73,7 @@ export default async function MainLayout({
   return (
     <LanguageProvider lang={appLanguage}>
       <div className="min-h-screen flex flex-col">
-        <TopBar
+        <FloatingPill
           userId={userId}
           isGuest={!user}
           avatarUrl={avatarUrl}
@@ -86,7 +86,7 @@ export default async function MainLayout({
           wantsCommunityNotifications={wantsCommunityNotifications}
           wantsFamilyNotifications={wantsFamilyNotifications}
         />
-        <main className="flex-1 max-w-2xl mx-auto w-full px-3 pt-3 pb-28 sm:px-4 sm:pt-4">
+        <main className="flex-1 max-w-2xl mx-auto w-full px-3 pt-2 pb-28 sm:px-4">
           <EngineProvider userId={userId || null} tradition={tradition}>
             <LocationProvider
               savedLat={savedLat}

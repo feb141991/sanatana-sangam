@@ -347,95 +347,29 @@ export default function SpiritualMetricsSection({
           style={{ background: 'radial-gradient(circle at top right, rgba(200,146,74,0.07), transparent 70%)' }}
         />
 
-        <SectionLabel>Daily Overview</SectionLabel>
-
-        {/* Rings row */}
+        {/* Sādhana rings — tap each for details */}
         <div className="flex gap-3 justify-between overflow-x-auto pb-1 no-scrollbar">
           <SpiritualRing
-            id="presence" score={scores.presence} label="Presence"
+            id="japa" score={scores.presence} label="Japa"
             color="#C8924A" color2="#D4784A"
           />
           <SpiritualRing
-            id="clarity" score={scores.clarity} label="Clarity"
+            id="svadhyaya" score={scores.clarity} label="Svādhyāya"
             color="#6aafcc" color2="#4a8ab4"
           />
           <SpiritualRing
-            id="balance" score={scores.balance} label="Balance"
+            id="sadhana" score={scores.balance} label="Sādhana"
             color="#b06adc" color2="#8850b4"
           />
           <SpiritualRing
-            id="grounding" score={scores.grounding} label="Grounding"
+            id="nitya" score={scores.grounding} label="Nitya"
             color="#e09050" color2="#c06030"
           />
           <SpiritualRing
-            id="renewal" score={scores.renewal} label="Renewal"
+            id="viveka" score={scores.renewal} label="Viveka"
             color="#7ab85a" color2="#5a9840"
           />
         </div>
-      </div>
-
-      {/* ── Energy & Balance metric cards ────────────────────────────────────── */}
-      <SectionLabel>Energy &amp; Balance</SectionLabel>
-
-      <div className="grid grid-cols-2 gap-2.5">
-        <MetricCard
-          eyebrow="Japa Streak"
-          value={`${japaStreak}${japaStreak === 1 ? ' day' : ' days'}`}
-          status={japaStatus.text}
-          statusColor={japaStatus.color}
-          barFill={Math.min(100, (japaStreak / 21) * 100)}
-          barColor="#7ab85a"
-          sparkValues={detJapaSparkline}
-          insight={japaStreak >= 21 ? 'Maala complete — exemplary' : `${21 - japaStreak} days to full cycle`}
-          href="/bhakti/mala"
-          icon={<Flame size={11} style={{ color: '#7ab85a', display: 'inline' }} />}
-        />
-        <MetricCard
-          eyebrow="Reflection"
-          value={`${shlokaWeekFilled}/7`}
-          status={shlokaStatus.text}
-          statusColor={shlokaStatus.color}
-          barFill={(shlokaWeekFilled / 7) * 100}
-          barColor="#6aafcc"
-          segFilled={shlokaWeekFilled}
-          segTotal={7}
-          insight={readToday ? 'Read today · streak maintained' : 'Open scripture to continue'}
-          href="/library"
-          icon={<BookOpen size={11} style={{ color: '#6aafcc', display: 'inline' }} />}
-        />
-        <MetricCard
-          eyebrow="Balance Score"
-          value={`${scores.balance}%`}
-          status={balanceStatus.text}
-          statusColor={balanceStatus.color}
-          barFill={scores.balance}
-          barColor="#b06adc"
-          sparkValues={[
-            Math.max(0, scores.balance - 20 + ((0 * 7) % 15)),
-            Math.max(0, scores.balance - 15 + ((1 * 7) % 15)),
-            Math.max(0, scores.balance - 12 + ((2 * 7) % 15)),
-            Math.max(0, scores.balance - 8 + ((3 * 7) % 15)),
-            Math.max(0, scores.balance - 5 + ((4 * 7) % 15)),
-            Math.max(0, scores.balance - 2 + ((5 * 7) % 15)),
-            scores.balance,
-          ]}
-          insight="Japa + scripture in harmony"
-          href="/nitya-karma"
-          icon={<TrendingUp size={11} style={{ color: '#b06adc', display: 'inline' }} />}
-        />
-        <MetricCard
-          eyebrow="Grounding"
-          value={`${scores.grounding}%`}
-          status={groundingStatus.text}
-          statusColor={groundingStatus.color}
-          barFill={scores.grounding}
-          barColor="#e09050"
-          segFilled={Math.round((scores.grounding / 100) * 5)}
-          segTotal={5}
-          insight={japaAlreadyDoneToday && readToday ? 'Both pillars done today' : 'Complete today\'s rituals'}
-          href="/nitya-karma"
-          icon={<Sun size={11} style={{ color: '#e09050', display: 'inline' }} />}
-        />
       </div>
 
       {/* ── Ritual Timeline ───────────────────────────────────────────────────── */}
