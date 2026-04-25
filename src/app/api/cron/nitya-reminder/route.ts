@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 import { getPanchangTimes, getTithiReminder, isInWindow } from '@/lib/panchang';
+import { getAshramaNudgeSuffix, type LifeStage } from '@/lib/ashrama';
 
 // ─── Nitya Karma Morning Reminder Cron ───────────────────────────────────────
 // Schedule: runs twice daily — 10:30 PM UTC (≈ 4 AM IST) and 6 AM UTC.
@@ -48,7 +49,7 @@ export async function GET(request: Request) {
     // Fetch users — now also select lat/lon for Panchang engine
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, full_name, tradition, timezone, latitude, longitude, notification_quiet_hours_start, notification_quiet_hours_end');
+      .select('id, full_name, tradition, life_stage, timezone, latitude, longitude, notification_quiet_hours_start, notification_quiet_hours_end');
 
     if (usersError) {
       console.error('Nitya cron users query failed:', usersError);
@@ -138,8 +139,9 @@ export async function GET(request: Request) {
     const notifications = unstartedUsers.map((u) => {
       const tz        = resolveTimeZone((u as any).timezone);
       const localDate = getLocalDateIso(now, resolveTimeZone((u as any).timezone));
-      const tradition = (u as any).tradition ?? 'hindu';
-      const nudge     = TRADITION_NUDGE[tradition] ?? TRADITION_NUDGE.hindu;
+      const tradition  = (u as any).tradition  ?? 'hindu';
+      const lifeStage  = (u as any).life_stage as LifeStage | null;
+      const nudge      = TRADITION_NUDGE[tradition] ?? TRADITION_NUDGE.hindu;
 
       // Enrich body with today's tithi from the Panchang engine
       let tithiSuffix = '';
@@ -155,10 +157,13 @@ export async function GET(request: Request) {
         }
       } catch { /* panchang enrichment is best-effort */ }
 
+      // Ashrama-aware suffix — appended after tithi enrichment
+      const ashramaSuffix = getAshramaNudgeSuffix(lifeStage);
+
       return {
         user_id:          u.id,
         title:            nudge.title,
-        body:             nudge.body + tithiSuffix,
+        body:             nudge.body + tithiSuffix + ashramaSuffix,
         emoji:            '🌅',
         type:             'nitya' as const,
         action_url:       actionPath,

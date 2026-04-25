@@ -7,13 +7,14 @@ import { MapPin, Loader2, ChevronRight, Check, Monitor, Moon, Sun } from 'lucide
 import { createClient } from '@/lib/supabase';
 import { TRADITIONS } from '@/lib/traditions';
 import { APP_LANGUAGES } from '@/lib/language-preferences';
+import { getAllAshramaStages, type LifeStage } from '@/lib/ashrama';
 import { THEME_OPTIONS, type ThemePreference } from '@/lib/theme-preferences';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import toast from 'react-hot-toast';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type TraditionKey = 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'other';
-type Step = 1 | 2 | 3 | 4 | 5;
+type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
 const GOALS = [
   { id: 'japa',      emoji: '📿', label: 'Daily Japa',      desc: 'Mantra practice & mala' },
@@ -28,9 +29,10 @@ const GOALS = [
 const SCREEN_BG: Record<number, string> = {
   1: 'radial-gradient(ellipse at 40% 30%, rgba(60,32,8,0.95) 0%, rgba(16,10,4,0.98) 55%, rgba(10,8,6,1) 100%)',
   2: 'radial-gradient(ellipse at 60% 25%, rgba(46,24,8,0.96) 0%, rgba(12,8,4,0.98) 55%, rgba(8,6,4,1) 100%)',
-  3: 'radial-gradient(ellipse at 40% 60%, rgba(24,20,40,0.96) 0%, rgba(10,8,18,0.98) 55%, rgba(8,6,14,1) 100%)',
-  4: 'radial-gradient(ellipse at 55% 35%, rgba(8,24,32,0.96) 0%, rgba(6,12,20,0.98) 55%, rgba(4,8,14,1) 100%)',
-  5: 'radial-gradient(ellipse at 45% 45%, rgba(28,16,8,0.96) 0%, rgba(12,8,4,0.98) 55%, rgba(8,5,3,1) 100%)',
+  3: 'radial-gradient(ellipse at 50% 40%, rgba(16,28,16,0.96) 0%, rgba(8,16,8,0.98) 55%, rgba(4,10,4,1) 100%)',
+  4: 'radial-gradient(ellipse at 40% 60%, rgba(24,20,40,0.96) 0%, rgba(10,8,18,0.98) 55%, rgba(8,6,14,1) 100%)',
+  5: 'radial-gradient(ellipse at 55% 35%, rgba(8,24,32,0.96) 0%, rgba(6,12,20,0.98) 55%, rgba(4,8,14,1) 100%)',
+  6: 'radial-gradient(ellipse at 45% 45%, rgba(28,16,8,0.96) 0%, rgba(12,8,4,0.98) 55%, rgba(8,5,3,1) 100%)',
 };
 
 // ─── Ambient sacred glow — diya flame ────────────────────────────────────────
@@ -154,25 +156,27 @@ const slide = {
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 interface Props {
-  userId:       string;
-  hasTradition: boolean;
-  hasCity:      boolean;
-  hasLanguage:  boolean;
+  userId:        string;
+  hasTradition:  boolean;
+  hasLifeStage:  boolean;
+  hasCity:       boolean;
+  hasLanguage:   boolean;
 }
 
-export default function OnboardingClient({ userId, hasTradition, hasCity, hasLanguage }: Props) {
+export default function OnboardingClient({ userId, hasTradition, hasLifeStage, hasCity, hasLanguage }: Props) {
   const router   = useRouter();
   const supabase = createClient();
   const prefersReducedMotion = useReducedMotion();
   const { preference: themePreference, setPreference: setThemePreference } = useThemePreference();
 
-  const firstStep: Step = !hasTradition ? 1 : !hasLanguage ? 3 : !hasCity ? 4 : 5;
-  const [step, setStep]       = useState<Step>(firstStep === 5 ? 5 : firstStep);
-  const [prevStep, setPrevStep] = useState<Step>(firstStep === 5 ? 5 : firstStep);
+  const firstStep: Step = !hasTradition ? 1 : !hasLifeStage ? 3 : !hasLanguage ? 4 : !hasCity ? 5 : 6;
+  const [step, setStep]       = useState<Step>(firstStep === 6 ? 6 : firstStep);
+  const [prevStep, setPrevStep] = useState<Step>(firstStep === 6 ? 6 : firstStep);
 
   const [saving,     setSaving]     = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
   const [tradition,  setTradition]  = useState<TraditionKey | ''>('');
+  const [lifeStage,  setLifeStage]  = useState<LifeStage | ''>('');
   const [language,   setLanguage]   = useState('en');
   const [city,       setCity]       = useState('');
   const [country,    setCountry]    = useState('');
@@ -225,8 +229,9 @@ export default function OnboardingClient({ userId, hasTradition, hasCity, hasLan
     setSaving(true);
     try {
       const updates: Record<string, unknown> = { onboarding_completed: true };
-      if (tradition) updates.tradition    = tradition;
-      if (language)  updates.app_language = language;
+      if (tradition)  updates.tradition    = tradition;
+      if (lifeStage)  updates.life_stage   = lifeStage;
+      if (language)   updates.app_language = language;
       if (city)      updates.city         = city;
       if (country)   updates.country      = country;
       if (latitude)  updates.latitude     = latitude;
@@ -246,11 +251,12 @@ export default function OnboardingClient({ userId, hasTradition, hasCity, hasLan
   function canAdvance() {
     if (step === 1) return true;
     if (step === 2) return tradition !== '';
+    if (step === 3) return lifeStage !== '';
     return true;
   }
 
   function advance() {
-    if (step < 5) navigateTo((step + 1) as Step);
+    if (step < 6) navigateTo((step + 1) as Step);
     else finish();
   }
 
@@ -284,7 +290,7 @@ export default function OnboardingClient({ userId, hasTradition, hasCity, hasLan
 
           {/* Progress pills */}
           <div className="mb-8">
-            <ProgressPills step={step} total={5} />
+            <ProgressPills step={step} total={6} />
           </div>
 
           {/* ── Screens ── */}
@@ -385,7 +391,7 @@ export default function OnboardingClient({ userId, hasTradition, hasCity, hasLan
                 >
                   <div className="space-y-2">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(200,146,74,0.55)' }}>
-                      Step 1 of 4
+                      Step 1 of 5
                     </p>
                     <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: 600, color: '#f0e2c0', lineHeight: 1.15, letterSpacing: '-0.01em' }}>
                       Your Tradition
@@ -462,7 +468,7 @@ export default function OnboardingClient({ userId, hasTradition, hasCity, hasLan
                 </motion.div>
               )}
 
-              {/* ── Screen 3 — Language ────────────────────────────────── */}
+              {/* ── Screen 3 — Life Stage / Ashrama ──────────────────── */}
               {step === 3 && (
                 <motion.div
                   key="s3"
@@ -471,8 +477,100 @@ export default function OnboardingClient({ userId, hasTradition, hasCity, hasLan
                   className="space-y-6"
                 >
                   <div className="space-y-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(100,180,100,0.55)' }}>
+                      Step 2 of 5
+                    </p>
+                    <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: 600, color: '#f0e2c0', lineHeight: 1.15, letterSpacing: '-0.01em' }}>
+                      Your Stage<br />of Life
+                    </h2>
+                    <p className="text-sm leading-relaxed" style={{ color: 'rgba(160,210,160,0.50)' }}>
+                      Your duties shift with each stage. This shapes your Nitya Karma, daily guidance, and how we speak to you.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {getAllAshramaStages(tradition || 'hindu').map((stage, i) => {
+                      const selected = lifeStage === stage.key;
+                      return (
+                        <motion.button
+                          key={stage.key}
+                          onClick={() => setLifeStage(stage.key)}
+                          className="w-full flex items-center gap-4 rounded-[1.1rem] px-4 py-3.5 text-left relative overflow-hidden"
+                          style={{
+                            background: selected
+                              ? `${stage.accent}1a`
+                              : 'rgba(255,255,255,0.03)',
+                            border: `1.5px solid ${selected ? `${stage.accent}55` : 'rgba(255,255,255,0.07)'}`,
+                            transition: 'all 220ms cubic-bezier(0.34, 1.26, 0.64, 1)',
+                          }}
+                          initial={prefersReducedMotion ? undefined : { opacity: 0, x: 12 }}
+                          animate={prefersReducedMotion ? undefined : { opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.07, duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                          {/* Selection glow */}
+                          {selected && (
+                            <div className="absolute inset-0 pointer-events-none" style={{
+                              background: `radial-gradient(ellipse at left, ${stage.accent}18, transparent 60%)`,
+                            }} />
+                          )}
+
+                          {/* Icon well */}
+                          <div
+                            className="relative flex-shrink-0 w-11 h-11 rounded-[0.85rem] flex items-center justify-center text-2xl"
+                            style={{ background: selected ? `${stage.accent}22` : 'rgba(255,255,255,0.05)' }}
+                          >
+                            {stage.icon}
+                          </div>
+
+                          <div className="flex-1 min-w-0 relative">
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm font-semibold" style={{ color: selected ? stage.accent : 'rgba(230,200,130,0.72)' }}>
+                                {stage.label}
+                              </p>
+                              <span className="text-[9px] rounded-full px-1.5 py-0.5" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(200,180,130,0.40)' }}>
+                                {stage.ageRange}
+                              </span>
+                            </div>
+                            <p className="text-xs mt-0.5" style={{ color: 'rgba(200,170,110,0.38)' }}>{stage.subtitle}</p>
+                          </div>
+
+                          {/* Check */}
+                          <AnimatePresence>
+                            {selected && (
+                              <motion.div
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0, opacity: 0 }}
+                                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                                className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center"
+                                style={{ background: stage.accent }}
+                              >
+                                <Check size={11} color="#1a0e04" strokeWidth={2.5} />
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+
+                  <p className="text-center text-[10px]" style={{ color: 'rgba(160,200,160,0.28)' }}>
+                    Age ranges are a guide — choose what feels true for you
+                  </p>
+                </motion.div>
+              )}
+
+              {/* ── Screen 4 — Language ────────────────────────────────── */}
+              {step === 4 && (
+                <motion.div
+                  key="s4"
+                  {...(prefersReducedMotion ? {} : slide)}
+                  transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+                  className="space-y-6"
+                >
+                  <div className="space-y-2">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(180,120,220,0.55)' }}>
-                      Step 2 of 4
+                      Step 3 of 5
                     </p>
                     <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: 600, color: '#f0e2c0', lineHeight: 1.15, letterSpacing: '-0.01em' }}>
                       Your Language
@@ -521,17 +619,17 @@ export default function OnboardingClient({ userId, hasTradition, hasCity, hasLan
                 </motion.div>
               )}
 
-              {/* ── Screen 4 — Location ────────────────────────────────── */}
-              {step === 4 && (
+              {/* ── Screen 5 — Location ────────────────────────────────── */}
+              {step === 5 && (
                 <motion.div
-                  key="s4"
+                  key="s5"
                   {...(prefersReducedMotion ? {} : slide)}
                   transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
                   className="space-y-6"
                 >
                   <div className="space-y-2">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(80,160,200,0.55)' }}>
-                      Step 3 of 4
+                      Step 4 of 5
                     </p>
                     <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: 600, color: '#f0e2c0', lineHeight: 1.15, letterSpacing: '-0.01em' }}>
                       Your Sacred<br />Location
@@ -617,17 +715,17 @@ export default function OnboardingClient({ userId, hasTradition, hasCity, hasLan
                 </motion.div>
               )}
 
-              {/* ── Screen 5 — Intentions ─────────────────────────────── */}
-              {step === 5 && (
+              {/* ── Screen 6 — Intentions ─────────────────────────────── */}
+              {step === 6 && (
                 <motion.div
-                  key="s5"
+                  key="s6"
                   {...(prefersReducedMotion ? {} : slide)}
                   transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
                   className="space-y-6"
                 >
                   <div className="space-y-2">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(200,146,74,0.55)' }}>
-                      Step 4 of 4
+                      Step 5 of 5
                     </p>
                     <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: 600, color: '#f0e2c0', lineHeight: 1.15, letterSpacing: '-0.01em' }}>
                       What draws<br />you here?
@@ -729,8 +827,8 @@ export default function OnboardingClient({ userId, hasTradition, hasCity, hasLan
 
           {/* ── CTA ──────────────────────────────────────────────────────── */}
           <div className="mt-8 space-y-3">
-            {/* Primary advance button */}
-            {step !== 4 && (
+            {/* Primary advance button — all screens except location (step 5) */}
+            {step !== 5 && (
               <motion.button
                 onClick={advance}
                 disabled={!canAdvance() || saving}
@@ -747,14 +845,14 @@ export default function OnboardingClient({ userId, hasTradition, hasCity, hasLan
               >
                 {saving
                   ? <><Loader2 size={15} className="animate-spin" /> Saving…</>
-                  : step === 5
+                  : step === 6
                     ? '🙏 Enter Sanatana Sangam'
                     : <>Continue <ChevronRight size={15} /></>}
               </motion.button>
             )}
 
-            {/* Screen 4 — location CTA */}
-            {step === 4 && (
+            {/* Screen 5 — location CTA */}
+            {step === 5 && (
               <motion.button
                 onClick={advance}
                 disabled={saving}

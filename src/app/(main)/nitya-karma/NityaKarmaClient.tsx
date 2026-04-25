@@ -18,7 +18,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ChevronLeft, Flame, CheckCircle2, Circle, Loader2,
+  ChevronLeft, ChevronDown, Flame, CheckCircle2, Circle, Loader2,
   Info, Lock, Trophy, Sunrise, Star, X, Settings2, Plus, Bell,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -26,6 +26,7 @@ import { createClient } from '@/lib/supabase';
 import { useEngine } from '@/contexts/EngineContext';
 import { hapticLight, hapticSuccess } from '@/lib/platform';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import { getAshramaDuties, getAshramaMeta, type LifeStage } from '@/lib/ashrama';
 import { usePremium } from '@/hooks/usePremium';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import NityaHeroBanner from '@/components/nitya/NityaHeroBanner';
@@ -588,13 +589,14 @@ function ProUpgradeSheet({ onClose, accent }: { onClose: () => void; accent: str
 }
 
 interface Props {
-  userId:    string;
-  userName:  string;
-  tradition: string;
-  isPro?:    boolean;
+  userId:     string;
+  userName:   string;
+  tradition:  string;
+  lifeStage:  string | null;
+  isPro?:     boolean;
 }
 
-export default function NityaKarmaClient({ userId, userName, tradition }: Omit<Props, 'isPro'>) {
+export default function NityaKarmaClient({ userId, userName, tradition, lifeStage }: Omit<Props, 'isPro'>) {
   const router              = useRouter();
   const supabase            = useRef(createClient()).current;
   const { engine, isReady } = useEngine();
@@ -615,6 +617,16 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Omit<P
   const [showCustom,    setShowCustom]   = useState(false);
   const [custom,        setCustom]       = useState<NityaCustom>({ labels: {}, descriptions: {}, alertTime: '04:30', extraSteps: [] });
   const [showConfetti,  setShowConfetti] = useState(false);
+  const [ashramaOpen,   setAshramaOpen]  = useState(true);
+  const [dutyChecks,    setDutyChecks]   = useState<Set<string>>(() => {
+    // Local daily check-ins — stored per calendar date in sessionStorage
+    if (typeof window === 'undefined') return new Set<string>();
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      const raw   = sessionStorage.getItem(`ashrama_checks:${today}`);
+      return raw ? new Set(JSON.parse(raw)) : new Set<string>();
+    } catch { return new Set<string>(); }
+  });
 
   const confettiFired = useRef(false);
   const stepsRef      = useRef<NityaSequenceStep[]>([]);
@@ -1078,6 +1090,145 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Omit<P
           {!allDone && streak && streak.current_streak > 0 && (
             <StreakCard streak={streak} accent={accent} />
           )}
+
+          {/* ── Ashrama Dharma Section ─────────────────────────────────────── */}
+          {lifeStage && (() => {
+            const stageMeta  = getAshramaMeta(tradition, lifeStage as LifeStage);
+            const duties     = getAshramaDuties(tradition, lifeStage as LifeStage);
+            const doneCount  = duties.filter(d => dutyChecks.has(d.id)).length;
+
+            function toggleDuty(id: string) {
+              setDutyChecks(prev => {
+                const next = new Set(prev);
+                if (next.has(id)) next.delete(id); else next.add(id);
+                try {
+                  const today = new Date().toISOString().slice(0, 10);
+                  sessionStorage.setItem(`ashrama_checks:${today}`, JSON.stringify([...next]));
+                } catch {}
+                return next;
+              });
+            }
+
+            return (
+              <div
+                className="rounded-[1.5rem] overflow-hidden border"
+                style={{ borderColor: `${stageMeta.accent}22`, background: 'var(--surface-raised)' }}
+              >
+                {/* Header — tappable to collapse */}
+                <button
+                  onClick={() => setAshramaOpen(o => !o)}
+                  className="w-full flex items-center justify-between px-5 pt-4 pb-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-9 h-9 rounded-[0.7rem] flex items-center justify-center text-lg shrink-0"
+                      style={{ background: `${stageMeta.accent}18` }}
+                    >
+                      {stageMeta.icon}
+                    </div>
+                    <div className="text-left">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: `${stageMeta.accent}99` }}>
+                        {stageMeta.label} Dharma
+                      </p>
+                      <p className="text-[11px]" style={{ color: 'var(--text-dim)' }}>
+                        {doneCount}/{duties.length} reflected on today
+                      </p>
+                    </div>
+                  </div>
+                  <motion.div
+                    animate={{ rotate: ashramaOpen ? 0 : -90 }}
+                    transition={{ duration: 0.22 }}
+                  >
+                    <ChevronDown size={16} style={{ color: 'var(--brand-muted)' }} />
+                  </motion.div>
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {ashramaOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                      className="overflow-hidden"
+                    >
+                      {/* Subtitle */}
+                      <p className="px-5 pb-3 text-[11.5px] leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
+                        {stageMeta.subtitle} — reflect on each as you move through the day.
+                      </p>
+
+                      {/* Divider */}
+                      <div className="mx-5 h-px mb-3" style={{ background: `${stageMeta.accent}14` }} />
+
+                      {/* Duties */}
+                      <div className="px-4 pb-4 space-y-2">
+                        {duties.map((duty, idx) => {
+                          const done = dutyChecks.has(duty.id);
+                          return (
+                            <motion.button
+                              key={duty.id}
+                              onClick={() => toggleDuty(duty.id)}
+                              initial={{ opacity: 0, x: 8 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: idx * 0.04, duration: 0.28 }}
+                              whileTap={{ scale: 0.97 }}
+                              className="w-full flex items-center gap-3.5 rounded-[1rem] px-3.5 py-3 text-left"
+                              style={{
+                                background: done ? `${stageMeta.accent}10` : 'rgba(255,255,255,0.025)',
+                                border: `1px solid ${done ? `${stageMeta.accent}30` : 'rgba(255,255,255,0.05)'}`,
+                                transition: 'all 200ms ease',
+                              }}
+                            >
+                              {/* Icon */}
+                              <div
+                                className="w-9 h-9 rounded-[0.65rem] flex items-center justify-center text-lg shrink-0"
+                                style={{ background: done ? `${stageMeta.accent}18` : 'rgba(255,255,255,0.04)' }}
+                              >
+                                {done
+                                  ? <CheckCircle2 size={18} style={{ color: stageMeta.accent }} />
+                                  : <span>{duty.icon}</span>
+                                }
+                              </div>
+
+                              {/* Text */}
+                              <div className="flex-1 min-w-0">
+                                <p className={`text-[12.5px] font-semibold leading-tight ${done ? 'line-through' : ''}`}
+                                  style={{ color: done ? 'var(--brand-muted)' : 'var(--brand-ink)' }}>
+                                  {duty.label}
+                                </p>
+                                {!done && (
+                                  <p className="text-[10.5px] mt-0.5 leading-relaxed" style={{ color: 'var(--text-dim)' }}>
+                                    {duty.description}
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Duration badge */}
+                              {duty.minutes && duty.minutes > 0 && !done && (
+                                <span
+                                  className="text-[9px] font-semibold rounded-full px-1.5 py-0.5 shrink-0"
+                                  style={{ background: `${stageMeta.accent}14`, color: stageMeta.accent }}
+                                >
+                                  {duty.minutes}m
+                                </span>
+                              )}
+                            </motion.button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Footer note */}
+                      <div className="px-5 pb-4">
+                        <p className="text-[10px] text-center" style={{ color: 'var(--text-dim)' }}>
+                          These are reflections, not obligations — check when done, uncheck to revisit
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })()}
 
           {/* 30-Day Practice Graph */}
           <div className="glass-panel rounded-2xl border border-white/8 overflow-hidden">
