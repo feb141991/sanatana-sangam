@@ -15,6 +15,9 @@ const LangContext = createContext<LangContextValue>({
   t: (key) => translateFn('en', key),
 });
 
+const LANG_STORAGE_KEY = 'ss-app-lang';
+const VALID_LANGS: AppLang[] = ['en', 'hi', 'pa'];
+
 export function LanguageProvider({
   lang: serverLang,
   children,
@@ -22,18 +25,34 @@ export function LanguageProvider({
   lang: AppLang;
   children: ReactNode;
 }) {
-  // Client-side state so language updates are instant without a server round-trip.
-  // Initialised from the server-rendered value; syncs whenever the server sends
-  // a new value (e.g. after router.refresh()).
+  // Client-side state initialised from the server-rendered profile value.
+  // On hydration we prefer the locally-stored preference so the language
+  // survives page reloads without a round-trip to the database.
   const [lang, setLangState] = useState<AppLang>(serverLang);
 
+  // After hydration: read localStorage. Local preference wins over serverLang
+  // so the UI stays in the user's chosen language even if the DB hasn't synced.
   useEffect(() => {
+    try {
+      const stored = localStorage.getItem(LANG_STORAGE_KEY) as AppLang | null;
+      if (stored && VALID_LANGS.includes(stored)) {
+        setLangState(stored);
+        return;
+      }
+    } catch { /* localStorage unavailable */ }
+    // Fall back to whatever the server sent
     setLangState(serverLang);
-  }, [serverLang]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const setLang = (newLang: AppLang) => {
+    setLangState(newLang);
+    try { localStorage.setItem(LANG_STORAGE_KEY, newLang); } catch { /* ignore */ }
+  };
 
   const value: LangContextValue = {
     lang,
-    setLang: (newLang: AppLang) => setLangState(newLang),
+    setLang,
     t: (key) => translateFn(lang, key),
   };
   return <LangContext.Provider value={value}>{children}</LangContext.Provider>;

@@ -151,6 +151,30 @@ export default function BottomNav({
   const navItems = isGuest ? guestNavItems : memberNavItems;
   const isHome   = pathname === '/home' || pathname === '/guest';
 
+  // When collapsed (scrolled), the home button morphs to show the active section
+  const activeNavItem = navItems.find(({ href }) =>
+    href !== '/home' && pathname.startsWith(href)
+  );
+  // Home SVG icon (used when on home or no active section found)
+  const HomeSvg = (
+    <svg
+      width="27" height="27" viewBox="0 0 24 24" fill="none"
+      stroke={isHome ? '#1a1610' : 'rgba(200,146,74,0.72)'}
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+    >
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <polyline points="9 22 9 12 15 12 15 22" />
+    </svg>
+  );
+  // Icon to show in collapsed state
+  const CollapsedIcon = scrolled && activeNavItem
+    ? <activeNavItem.icon size={27} strokeWidth={2.3} style={{ color: 'var(--brand-primary)' }} />
+    : HomeSvg;
+  const collapsedHref = scrolled && activeNavItem
+    ? activeNavItem.href
+    : (isGuest ? '/guest' : '/home');
+  const collapsedIsActive = scrolled && activeNavItem ? true : isHome;
+
   const navTransition = prefersReducedMotion
     ? { duration: 0 }
     : { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const };
@@ -166,40 +190,35 @@ export default function BottomNav({
       <nav className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 safe-area-pb pointer-events-none">
         <div className="max-w-2xl mx-auto flex items-center justify-center">
 
-          {/* ── Floating pill — transparent ───────────────────────────────── */}
+          {/* ── Floating pill — frosted glass ─────────────────────────────── */}
           <div
             className="relative flex items-center h-[72px] rounded-[2rem] pointer-events-auto"
             style={{
               width: '100%',
               maxWidth: '42rem',
-              background: 'transparent',
-              border: 'none',
-              boxShadow: 'none',
+              background: 'rgba(10,7,3,0.72)',
+              backdropFilter: 'blur(24px) saturate(160%)',
+              WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+              border: '1px solid rgba(200,146,74,0.14)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,220,140,0.06)',
             }}
           >
-            {/* ── Left: Home button ─────────────────────────────────────── */}
+            {/* ── Left: Home/Current-page button ────────────────────────── */}
             <div className="pl-2 flex-shrink-0">
               <Link
-                href={isGuest ? '/guest' : '/home'}
-                aria-label="Home"
+                href={collapsedHref}
+                aria-label={activeNavItem && scrolled ? activeNavItem.label : 'Home'}
                 className="relative w-[54px] h-[54px] rounded-full flex items-center justify-center transition-all motion-press"
                 style={{
-                  background: isHome
+                  background: collapsedIsActive
                     ? 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))'
                     : 'rgba(200,146,74,0.09)',
-                  border: isHome ? 'none' : '1px solid rgba(200,146,74,0.18)',
-                  boxShadow: isHome ? '0 2px 10px rgba(200,146,74,0.15)' : 'none',
+                  border: collapsedIsActive ? 'none' : '1px solid rgba(200,146,74,0.18)',
+                  boxShadow: collapsedIsActive ? '0 2px 10px rgba(200,146,74,0.15)' : 'none',
                 }}
               >
-                <svg
-                  width="27" height="27" viewBox="0 0 24 24" fill="none"
-                  stroke={isHome ? '#1a1610' : 'rgba(200,146,74,0.72)'}
-                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                >
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                  <polyline points="9 22 9 12 15 12 15 22" />
-                </svg>
-                {isHome && !prefersReducedMotion && (
+                {CollapsedIcon}
+                {collapsedIsActive && !prefersReducedMotion && (
                   <motion.span
                     className="absolute inset-0 rounded-full"
                     style={{ border: '1.5px solid rgba(200,146,74,0.35)' }}

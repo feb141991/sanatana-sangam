@@ -70,16 +70,16 @@ function VerseCard({ result, index, accentColour }: { result: DiscoverResult; in
         </Link>
       </div>
 
-      {/* Original verse */}
-      <p className="relative leading-relaxed mb-2"
+      {/* Original verse — rendered in Devanagari/script font */}
+      <p
+        className="relative leading-relaxed mb-2 font-[family:var(--font-deva)]"
         style={{
-          fontFamily: 'Georgia, "Noto Serif Devanagari", serif',
-          fontSize: '0.98rem',
+          fontSize: '1.05rem',
           color: 'var(--text-cream)',
-          lineHeight: 1.7,
+          lineHeight: 1.8,
         }}
       >
-        {result.entry.original.split('\n')[0]}
+        {result.entry.original}
       </p>
 
       {/* Transliteration */}

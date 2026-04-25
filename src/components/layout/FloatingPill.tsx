@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { activateProLocally } from '@/lib/premium';
 import { createPortal } from 'react-dom';
@@ -57,9 +57,12 @@ export default function FloatingPill({
   initialIsPro?: boolean;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const supabase = useRef(createClient()).current;
   const prefersReducedMotion = useReducedMotion();
   const pushConfigured = isOneSignalConfigured();
+  // Bell + avatar only appear on the Home page to keep inner pages clean
+  const isHomePage = pathname === '/home';
   const wantsAnyNotifications = Boolean(
     wantsFestivalReminders || wantsShlokaReminders || wantsCommunityNotifications || wantsFamilyNotifications
   );
@@ -333,32 +336,44 @@ export default function FloatingPill({
 
   // ── Pill ──────────────────────────────────────────────────────────────────
   if (isGuest) {
+    // Guest sign-in / join buttons only shown on home/guest
+    if (!isHomePage) return null;
     return (
       <div className="fixed top-3 right-3 z-50 flex items-center gap-2">
         <Link href="/login"
           className="px-4 py-2 rounded-full text-xs font-semibold transition"
-          style={{ background: 'rgba(28,26,22,0.85)', border: '1px solid rgba(200,146,74,0.2)', color: 'var(--text-dim)', backdropFilter: 'blur(12px)' }}>
+          style={{ background: 'rgba(28,26,22,0.85)', border: '1px solid rgba(200,146,74,0.2)', color: 'var(--text-dim)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
           Sign in
         </Link>
         <Link href="/signup"
           className="px-4 py-2 rounded-full text-xs font-semibold transition"
-          style={{ background: 'rgba(200,146,74,0.15)', border: '1px solid rgba(200,146,74,0.3)', color: 'var(--brand-primary)', backdropFilter: 'blur(12px)' }}>
+          style={{ background: 'rgba(200,146,74,0.15)', border: '1px solid rgba(200,146,74,0.3)', color: 'var(--brand-primary)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
           Join Free
         </Link>
       </div>
     );
   }
 
+  // Bell + avatar shown ONLY on the home page
+  if (!isHomePage) return null;
+
   return (
     <>
       <div className="fixed top-3 right-3 z-50 flex items-center gap-2">
 
-        {/* Bell */}
+        {/* Bell — frosted glass background for readability over any content */}
         <button
           onClick={handleBellClick}
           aria-label="Notifications"
           className="relative w-12 h-12 rounded-full flex items-center justify-center transition"
-          style={{ color: 'rgba(200,146,74,0.80)' }}
+          style={{
+            background: 'rgba(14,10,4,0.72)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            border: '1px solid rgba(200,146,74,0.20)',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.28)',
+            color: 'rgba(200,146,74,0.90)',
+          }}
         >
           <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
@@ -382,15 +397,19 @@ export default function FloatingPill({
           )}
         </button>
 
-        {/* Avatar */}
+        {/* Avatar — frosted glass pill linking to profile */}
         <Link href="/profile"
           className="relative flex-shrink-0 rounded-full flex items-center justify-center overflow-hidden"
           style={{
             width: 48,
             height: 48,
-            background: 'var(--surface-raised)',
+            background: avatarUrl ? 'transparent' : 'rgba(14,10,4,0.72)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
             border: avatarUrl ? '2px solid rgba(200,146,74,0.70)' : '1.5px solid rgba(200,146,74,0.35)',
-            boxShadow: avatarUrl ? '0 0 0 3px rgba(200,146,74,0.15)' : 'none',
+            boxShadow: avatarUrl
+              ? '0 0 0 3px rgba(200,146,74,0.15), 0 2px 12px rgba(0,0,0,0.28)'
+              : '0 2px 12px rgba(0,0,0,0.28)',
           }}
         >
           {avatarUrl ? (
