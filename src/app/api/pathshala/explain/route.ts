@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 // Body: { sanskrit, transliteration, translation, source, title, tradition, language? }
 // Returns tradition-aware Gemini explanation — no DB chunk needed.
 
-const GEMINI_MODEL = 'gemini-2.0-flash-lite';
+const GEMINI_MODEL = 'gemini-2.0-flash';
 const GEMINI_URL   = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 const COMMENTARY: Record<string, { name: string; school: string; lens: string }> = {

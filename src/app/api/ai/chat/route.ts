@@ -13,7 +13,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 //
 // Set GEMINI_MODEL in Vercel → Settings → Environment Variables to override.
 
-const GEMINI_MODEL_DEFAULT  = 'gemini-2.0-flash-lite';
+const GEMINI_MODEL_DEFAULT  = 'gemini-2.0-flash';
 const GEMINI_MODEL_FALLBACK = 'gemini-1.5-flash';
 
 function geminiUrl(model: string) {

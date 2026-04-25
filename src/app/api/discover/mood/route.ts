@@ -6,7 +6,7 @@ import { ALL_LIBRARY_ENTRIES } from '@/lib/library-content';
 // Returns up to 6 curated verses matching the mood via keyword scoring.
 // Optional Gemini re-ranking/commentary if API key is set.
 
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 // ── Mood → keyword seeds ──────────────────────────────────────────────────────
 const MOOD_SEEDS: Record<string, string[]> = {

@@ -5,7 +5,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 // Returns today's personalised shloka + practice suggestion for the authenticated user.
 // Checks the recommendations cache first; generates via Gemini if stale.
 
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 // Curated fallback shlokas (tradition-neutral; used when Gemini is unavailable)
 const FALLBACK_SHLOKAS = [
