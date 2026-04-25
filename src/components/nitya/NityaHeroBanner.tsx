@@ -17,7 +17,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import CircularProgress from '@/components/ui/CircularProgress';
+import RadialRing from '@/components/ui/RadialRing';
 import { Flame } from 'lucide-react';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -429,7 +429,7 @@ export default function NityaHeroBanner({
 
           {/* Progress ring */}
           <div className="mt-4 flex items-center gap-4">
-            <CircularProgress pct={progressPct} accent={config.accentColor} size={64} />
+            <RadialRing pct={progressPct} accent={config.accentColor} size={64} strokeWidth={6} showPct />
             <div>
               <p style={{ color: config.textColor }} className="font-bold text-lg leading-none">
                 {completedCount}/{totalSteps}

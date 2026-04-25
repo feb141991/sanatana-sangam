@@ -30,6 +30,7 @@ import { usePremium } from '@/hooks/usePremium';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import NityaHeroBanner from '@/components/nitya/NityaHeroBanner';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
+import RadialRing from '@/components/ui/RadialRing';
 import type { NityaSequenceStep, NityaKarmaStreak } from '@sangam/sadhana-engine';
 
 // ── Tradition greetings ─────────────────────────────────────────────────────────
@@ -202,26 +203,7 @@ function heatColour(count: number, total: number, accent: string): string {
   return `${accent}33`;
 }
 
-// ── Circular progress ring ────────────────────────────────────────────────────
-function CircularProgress({ pct, accent, size = 56 }: { pct: number; accent: string; size?: number }) {
-  const r   = (size - 8) / 2;
-  const circ = 2 * Math.PI * r;
-  const offset = circ * (1 - Math.min(pct, 100) / 100);
-  return (
-    <svg width={size} height={size} className="flex-shrink-0 -rotate-90">
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={5} />
-      <motion.circle
-        cx={size / 2} cy={size / 2} r={r}
-        fill="none" stroke={accent} strokeWidth={5}
-        strokeLinecap="round"
-        strokeDasharray={circ}
-        initial={{ strokeDashoffset: circ }}
-        animate={{ strokeDashoffset: offset }}
-        transition={{ duration: 0.7, ease: 'easeOut' }}
-      />
-    </svg>
-  );
-}
+// (CircularProgress removed — use shared RadialRing from @/components/ui/RadialRing)
 
 // ── Nitya customization — localStorage helpers ────────────────────────────────
 interface NityaCustom {
@@ -921,36 +903,20 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Omit<P
               className="rounded-2xl px-4 py-4 flex items-center gap-4 border border-white/8"
               style={{ background: `${accent}08` }}
             >
-              {/* Big ring */}
-              {(() => {
-                const r    = 32;
-                const circ = 2 * Math.PI * r;
-                const off  = circ * (1 - progressPct / 100);
-                return (
-                  <svg width="80" height="80" viewBox="0 0 80 80" className="-rotate-90 flex-shrink-0">
-                    <defs>
-                      <linearGradient id="nitya-ring-grad" x1="1" y1="0" x2="0" y2="1">
-                        <stop offset="0%"   stopColor="#f0c86d" />
-                        <stop offset="60%"  stopColor={accent} />
-                        <stop offset="100%" stopColor="#D4784A" />
-                      </linearGradient>
-                    </defs>
-                    <circle cx="40" cy="40" r={r}
-                      fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={7} />
-                    <motion.circle
-                      cx="40" cy="40" r={r}
-                      fill="none"
-                      stroke={completedCount === totalSteps ? '#7ec87e' : 'url(#nitya-ring-grad)'}
-                      strokeWidth={7}
-                      strokeLinecap="round"
-                      strokeDasharray={circ}
-                      initial={{ strokeDashoffset: circ }}
-                      animate={{ strokeDashoffset: off }}
-                      transition={{ duration: 0.7, ease: 'easeOut' }}
-                    />
-                  </svg>
-                );
-              })()}
+              {/* Big ring — unified RadialRing */}
+              <RadialRing
+                pct={progressPct}
+                accent={completedCount === totalSteps ? '#7ec87e' : accent}
+                accentEnd={completedCount === totalSteps ? '#a0e098' : '#D4784A'}
+                gradientId="nitya-progress-ring"
+                size={80}
+                strokeWidth={7}
+                label={
+                  <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 700, color: accent }}>
+                    {completedCount}<span style={{ fontSize: '0.65rem', color: 'var(--brand-muted)' }}>/{totalSteps}</span>
+                  </span>
+                }
+              />
               {/* Text */}
               <div className="flex-1 min-w-0">
                 <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: 700, color: accent, lineHeight: 1 }}>

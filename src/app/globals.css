@@ -35,6 +35,11 @@
   --brand-primary-strong: #D4784A;
   --brand-primary-soft:   rgba(200, 146, 74, 0.16);
   --brand-secondary:      #8a7a5a;
+
+  /* ── Progress Ring system ──────────────────────────────────────────────────── */
+  --ring-track:           rgba(200, 146, 74, 0.12);
+  --ring-track-dark:      rgba(255, 255, 255, 0.08);
+  --ring-glow:            rgba(200, 146, 74, 0.20);
   --brand-accent:         #333330;
   --brand-accent-soft:    rgba(138, 122, 90, 0.18);
   --brand-earth:          #9d7a50;
@@ -95,6 +100,11 @@
   --brand-primary-strong: #5F3A16;
   --brand-primary-soft:   rgba(142, 94, 42, 0.10);
   --brand-secondary:      #736858;
+
+  /* ── Progress Ring system (light overrides) ─────────────────────────────── */
+  --ring-track:           rgba(142, 94, 42, 0.10);
+  --ring-track-dark:      rgba(49, 35, 20, 0.08);
+  --ring-glow:            rgba(142, 94, 42, 0.16);
   --brand-accent:         #FFFDF8;
   --brand-accent-soft:    rgba(142, 94, 42, 0.08);
   --brand-earth:          #7A5126;
