@@ -26,7 +26,7 @@ import { createClient } from '@/lib/supabase';
 import { useEngine } from '@/contexts/EngineContext';
 import { hapticLight, hapticSuccess } from '@/lib/platform';
 import { getTraditionMeta } from '@/lib/tradition-config';
-import { getAshramaDuties, getAshramaMeta, type LifeStage } from '@/lib/ashrama';
+import { getAshramaDuties, getAshramaMeta, type LifeStage, type GenderContext } from '@/lib/ashrama';
 import { usePremium } from '@/hooks/usePremium';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import NityaHeroBanner from '@/components/nitya/NityaHeroBanner';
@@ -602,14 +602,15 @@ function ProUpgradeSheet({ onClose, accent }: { onClose: () => void; accent: str
 }
 
 interface Props {
-  userId:     string;
-  userName:   string;
-  tradition:  string;
-  lifeStage:  string | null;
-  isPro?:     boolean;
+  userId:        string;
+  userName:      string;
+  tradition:     string;
+  lifeStage:     string | null;
+  genderContext: string | null;
+  isPro?:        boolean;
 }
 
-export default function NityaKarmaClient({ userId, userName, tradition, lifeStage }: Omit<Props, 'isPro'>) {
+export default function NityaKarmaClient({ userId, userName, tradition, lifeStage, genderContext }: Omit<Props, 'isPro'>) {
   const router              = useRouter();
   const supabase            = useRef(createClient()).current;
   const { engine, isReady } = useEngine();
@@ -1106,8 +1107,9 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
 
           {/* ── Ashrama Dharma Section ─────────────────────────────────────── */}
           {lifeStage && (() => {
-            const stageMeta  = getAshramaMeta(tradition, lifeStage as LifeStage);
-            const duties     = getAshramaDuties(tradition, lifeStage as LifeStage);
+            const gc         = (genderContext as GenderContext | null);
+            const stageMeta  = getAshramaMeta(tradition, lifeStage as LifeStage, gc);
+            const duties     = getAshramaDuties(tradition, lifeStage as LifeStage, gc);
             const doneCount  = duties.filter(d => dutyChecks.has(d.id)).length;
 
             function toggleDuty(id: string) {

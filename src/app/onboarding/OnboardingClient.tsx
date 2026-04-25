@@ -7,7 +7,7 @@ import { MapPin, Loader2, ChevronRight, Check, Monitor, Moon, Sun } from 'lucide
 import { createClient } from '@/lib/supabase';
 import { TRADITIONS } from '@/lib/traditions';
 import { APP_LANGUAGES } from '@/lib/language-preferences';
-import { getAllAshramaStages, type LifeStage } from '@/lib/ashrama';
+import { getAllAshramaStages, type LifeStage, type GenderContext } from '@/lib/ashrama';
 import { THEME_OPTIONS, type ThemePreference } from '@/lib/theme-preferences';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import toast from 'react-hot-toast';
@@ -176,7 +176,8 @@ export default function OnboardingClient({ userId, hasTradition, hasLifeStage, h
   const [saving,     setSaving]     = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
   const [tradition,  setTradition]  = useState<TraditionKey | ''>('');
-  const [lifeStage,  setLifeStage]  = useState<LifeStage | ''>('');
+  const [lifeStage,    setLifeStage]    = useState<LifeStage | ''>('');
+  const [genderContext, setGenderContext] = useState<GenderContext>('general');
   const [language,   setLanguage]   = useState('en');
   const [city,       setCity]       = useState('');
   const [country,    setCountry]    = useState('');
@@ -230,7 +231,8 @@ export default function OnboardingClient({ userId, hasTradition, hasLifeStage, h
     try {
       const updates: Record<string, unknown> = { onboarding_completed: true };
       if (tradition)  updates.tradition    = tradition;
-      if (lifeStage)  updates.life_stage   = lifeStage;
+      if (lifeStage)  updates.life_stage    = lifeStage;
+      updates.gender_context = genderContext;
       if (language)   updates.app_language = language;
       if (city)      updates.city         = city;
       if (country)   updates.country      = country;
@@ -553,6 +555,67 @@ export default function OnboardingClient({ userId, hasTradition, hasLifeStage, h
                       );
                     })}
                   </div>
+
+                  {/* ── Practice path picker — slides in once a stage is chosen ── */}
+                  <AnimatePresence>
+                    {lifeStage && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 6 }}
+                        transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                        className="space-y-2.5"
+                      >
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'rgba(100,180,100,0.42)' }}>
+                          Your practice path
+                        </p>
+                        <div className="grid grid-cols-2 gap-2.5">
+                          {([
+                            { key: 'general' as GenderContext, icon: '🌿', label: 'General path',    sub: 'Traditional practice for all' },
+                            { key: 'female'  as GenderContext, icon: '🌸', label: 'Stridharma path', sub: 'Women\'s tradition-specific duties' },
+                          ] as const).map(opt => {
+                            const sel = genderContext === opt.key;
+                            return (
+                              <motion.button
+                                key={opt.key}
+                                onClick={() => setGenderContext(opt.key)}
+                                className="flex flex-col items-start gap-1.5 rounded-[1rem] px-3.5 py-3 text-left relative overflow-hidden"
+                                style={{
+                                  background: sel ? 'rgba(100,200,120,0.10)' : 'rgba(255,255,255,0.03)',
+                                  border: `1.5px solid ${sel ? 'rgba(100,200,120,0.38)' : 'rgba(255,255,255,0.07)'}`,
+                                  transition: 'all 200ms cubic-bezier(0.34,1.26,0.64,1)',
+                                }}
+                                whileTap={{ scale: 0.97 }}
+                              >
+                                {sel && (
+                                  <div className="absolute inset-0 pointer-events-none" style={{
+                                    background: 'radial-gradient(ellipse at top left, rgba(100,200,120,0.10), transparent 70%)',
+                                  }} />
+                                )}
+                                <span className="text-xl relative">{opt.icon}</span>
+                                <p className="text-xs font-semibold relative" style={{ color: sel ? 'rgba(140,220,150,0.90)' : 'rgba(200,180,120,0.55)' }}>
+                                  {opt.label}
+                                </p>
+                                <p className="text-[10px] relative" style={{ color: 'rgba(180,160,100,0.32)' }}>
+                                  {opt.sub}
+                                </p>
+                                {sel && (
+                                  <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    className="absolute top-2.5 right-2.5 w-4 h-4 rounded-full flex items-center justify-center"
+                                    style={{ background: 'rgba(100,200,120,0.70)' }}
+                                  >
+                                    <Check size={9} color="#0a1a0a" strokeWidth={3} />
+                                  </motion.div>
+                                )}
+                              </motion.button>
+                            );
+                          })}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
                   <p className="text-center text-[10px]" style={{ color: 'rgba(160,200,160,0.28)' }}>
                     Age ranges are a guide — choose what feels true for you

@@ -49,7 +49,7 @@ export async function GET(request: Request) {
     // Fetch users — now also select lat/lon for Panchang engine
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, full_name, tradition, life_stage, timezone, latitude, longitude, notification_quiet_hours_start, notification_quiet_hours_end');
+      .select('id, full_name, tradition, life_stage, gender_context, timezone, latitude, longitude, notification_quiet_hours_start, notification_quiet_hours_end');
 
     if (usersError) {
       console.error('Nitya cron users query failed:', usersError);
@@ -140,8 +140,9 @@ export async function GET(request: Request) {
       const tz        = resolveTimeZone((u as any).timezone);
       const localDate = getLocalDateIso(now, resolveTimeZone((u as any).timezone));
       const tradition  = (u as any).tradition  ?? 'hindu';
-      const lifeStage  = (u as any).life_stage as LifeStage | null;
-      const nudge      = TRADITION_NUDGE[tradition] ?? TRADITION_NUDGE.hindu;
+      const lifeStage     = (u as any).life_stage    as LifeStage    | null;
+      const genderContext = (u as any).gender_context as 'female' | 'general' | null;
+      const nudge         = TRADITION_NUDGE[tradition] ?? TRADITION_NUDGE.hindu;
 
       // Enrich body with today's tithi from the Panchang engine
       let tithiSuffix = '';
@@ -157,8 +158,8 @@ export async function GET(request: Request) {
         }
       } catch { /* panchang enrichment is best-effort */ }
 
-      // Ashrama-aware suffix — appended after tithi enrichment
-      const ashramaSuffix = getAshramaNudgeSuffix(lifeStage);
+      // Ashrama-aware suffix — stage + gender-context personalised
+      const ashramaSuffix = getAshramaNudgeSuffix(lifeStage, genderContext);
 
       return {
         user_id:          u.id,
