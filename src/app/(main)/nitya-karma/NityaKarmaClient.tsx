@@ -90,11 +90,11 @@ function getStepMessage(stepId: string): string {
 const FALLBACK_STEPS: NityaSequenceStep[] = [
   { id: 'woke_brahma_muhurta', label: 'Brahma Muhurta',  icon: '🌙', minutes: 0,  description: 'Wake before sunrise — the most auspicious hour for sadhana', completed: false },
   { id: 'snana_done',          label: 'Snana',           icon: '🌊', minutes: 10, description: 'Sacred bath — purify body and mind before worship', completed: false },
-  { id: 'tilak_done',          label: 'Tilak / Simran',  icon: '🔱', minutes: 2,  description: 'Apply tilak or begin naam simran — awaken divine awareness', completed: false },
+  { id: 'aarti_done',          label: 'Aarti / Kirtan',  icon: '🪔', minutes: 5,  description: 'Offer incense, light a diya, and invoke the deity — prepare the sacred space before seated practice', completed: false },
   { id: 'sandhya_done',        label: 'Sandhya Vandana', icon: '🙏', minutes: 15, description: 'Morning prayers or Surya Namaskar — greet the day with devotion', completed: false },
   { id: 'japa_done',           label: 'Japa',            icon: '📿', minutes: 30, description: 'Mantra japa — 1 mala (108 repetitions) to anchor the mind', completed: false },
   { id: 'shloka_done',         label: 'Shloka Paath',    icon: '📖', minutes: 10, description: 'Read or recite today\'s sacred verse — nourish the intellect', completed: false },
-  { id: 'aarti_done',          label: 'Aarti / Kirtan',  icon: '🪔', minutes: 5,  description: 'Morning aarti — offer light and song to the divine before beginning your day', completed: false },
+  { id: 'tilak_done',          label: 'Tilak / Simran',  icon: '🔱', minutes: 2,  description: 'Apply tilak and offer a closing prayer — seal your sadhana with sankalpam before stepping into the world', completed: false },
 ];
 
 // ── Tradition-aware step labels ────────────────────────────────────────────────
@@ -295,7 +295,7 @@ function NityaCustomSheet({
         className="fixed inset-x-0 bottom-0 rounded-t-[2rem] flex flex-col"
         style={{
           zIndex: 9999,
-          background: 'linear-gradient(175deg, #1a0d1a 0%, #110808 60%, #130c06 100%)',
+          background: 'var(--surface-raised)',
           border: '1px solid rgba(200,146,74,0.18)',
           borderBottom: 'none',
           maxHeight: '90dvh',
@@ -315,7 +315,7 @@ function NityaCustomSheet({
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-2 pb-4 flex-shrink-0">
           <div>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.35rem', fontWeight: 600, color: 'var(--text-cream)', letterSpacing: '-0.01em' }}>Customise Your Nitya</h2>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.35rem', fontWeight: 600, color: 'var(--brand-ink)', letterSpacing: '-0.01em' }}>Customise Your Nitya</h2>
             <p className="text-xs mt-0.5" style={{ color: 'var(--brand-muted)' }}>Rename steps, set your wake-up time, add practices</p>
           </div>
           <button
@@ -353,11 +353,10 @@ function NityaCustomSheet({
                   background: 'rgba(200,146,74,0.12)',
                   color: accent,
                   borderColor: 'rgba(200,146,74,0.25)',
-                  colorScheme: 'dark',
                 }}
               />
             </div>
-            <p className="text-[10px] mt-1.5 px-1" style={{ color: 'rgba(180,160,100,0.45)' }}>
+            <p className="text-[10px] mt-1.5 px-1" style={{ color: 'var(--text-dim)' }}>
               We&apos;ll send your Brahma Muhurta alert at this time each morning
             </p>
           </div>
@@ -905,7 +904,7 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Omit<P
             >
               {/* Big ring — unified RadialRing */}
               <RadialRing
-                pct={progressPct}
+                pct={Math.round(progressPct)}
                 accent={completedCount === totalSteps ? '#7ec87e' : accent}
                 accentEnd={completedCount === totalSteps ? '#a0e098' : '#D4784A'}
                 gradientId="nitya-progress-ring"

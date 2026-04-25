@@ -50,7 +50,7 @@ function PlanDetailSheet({
       <motion.div
         className="fixed inset-x-0 bottom-0 z-[61] rounded-t-[2rem] flex flex-col overflow-hidden"
         style={{
-          background: 'linear-gradient(170deg, rgba(24,16,8,0.99) 0%, rgba(14,10,4,0.99) 100%)',
+          background: 'var(--surface-raised)',
           border: `1px solid ${plan.borderColor}`,
           borderBottom: 'none',
           maxHeight: '92dvh',
@@ -72,9 +72,9 @@ function PlanDetailSheet({
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-full flex items-center justify-center"
-            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}
+            style={{ background: 'var(--surface-raised)', border: '1px solid rgba(200,146,74,0.15)' }}
           >
-            <X size={14} style={{ color: 'rgba(200,170,120,0.65)' }} />
+            <X size={14} style={{ color: 'var(--brand-muted)' }} />
           </button>
         </div>
 
@@ -96,10 +96,10 @@ function PlanDetailSheet({
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: plan.accentColor }}>
               {plan.duration}-Day Plan · {plan.difficulty}
             </p>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: 600, color: '#f0e2c0', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: 600, color: 'var(--brand-ink)', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
               {plan.title}
             </h2>
-            <p className="text-sm mt-3 leading-relaxed max-w-[280px] mx-auto" style={{ color: 'rgba(220,190,130,0.5)' }}>
+            <p className="text-sm mt-3 leading-relaxed max-w-[280px] mx-auto" style={{ color: 'var(--brand-muted)' }}>
               {plan.description}
             </p>
 
@@ -128,7 +128,7 @@ function PlanDetailSheet({
 
           {/* Day-by-day overview */}
           <div className="px-5 py-4 space-y-2">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-3" style={{ color: 'rgba(200,146,74,0.5)' }}>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-3" style={{ color: 'var(--brand-muted)' }}>
               What you&apos;ll practise
             </p>
             {plan.days.slice(0, 7).map(day => (
@@ -144,15 +144,15 @@ function PlanDetailSheet({
                   {day.day}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[12.5px] font-semibold leading-tight" style={{ color: '#ede0c4' }}>{day.title}</p>
-                  <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: 'rgba(210,185,135,0.48)' }}>
+                  <p className="text-[12.5px] font-semibold leading-tight" style={{ color: 'var(--brand-ink)' }}>{day.title}</p>
+                  <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: 'var(--text-dim)' }}>
                     {day.focus} · {day.duration} min
                   </p>
                 </div>
               </div>
             ))}
             {plan.days.length > 7 && (
-              <p className="text-[11px] text-center mt-2" style={{ color: 'rgba(200,170,120,0.35)' }}>
+              <p className="text-[11px] text-center mt-2" style={{ color: 'var(--text-dim)' }}>
                 + {plan.days.length - 7} more days
               </p>
             )}
@@ -162,7 +162,7 @@ function PlanDetailSheet({
         {/* Footer */}
         <div
           className="flex-shrink-0 px-5 pt-4 pb-3 space-y-3"
-          style={{ borderTop: '1px solid rgba(200,146,74,0.1)', background: 'rgba(14,10,8,0.92)', backdropFilter: 'blur(12px)' }}
+          style={{ borderTop: '1px solid rgba(200,146,74,0.1)', background: 'var(--surface-base)', backdropFilter: 'blur(12px)' }}
         >
           {!isActive && !isCompleted && (
             <motion.button
@@ -195,7 +195,7 @@ function PlanDetailSheet({
               <button
                 onClick={onAbandon}
                 className="py-3.5 px-4 rounded-[1.1rem] text-sm"
-                style={{ background: 'rgba(255,255,255,0.04)', color: 'rgba(200,170,120,0.45)', border: '1px solid rgba(255,255,255,0.08)' }}
+                style={{ background: 'var(--surface-raised)', color: 'var(--brand-muted)', border: '1px solid rgba(200,146,74,0.12)' }}
               >
                 Abandon
               </button>
@@ -214,7 +214,7 @@ function PlanDetailSheet({
             </motion.button>
           )}
 
-          <p className="text-center text-[10px]" style={{ color: 'rgba(180,150,90,0.35)' }}>
+          <p className="text-center text-[10px]" style={{ color: 'var(--text-dim)' }}>
             Your progress is saved automatically each day
           </p>
         </div>
@@ -297,27 +297,45 @@ export default function GuidedPlansClient({ userId, tradition, plans, statusMap 
           <ChevronLeft size={20} style={{ color: '#C8924A' }} />
         </button>
         <div className="flex-1">
-          <h1 className="font-bold text-lg" style={{ color: 'var(--text-cream)' }}>Guided Sadhana Plans</h1>
+          <h1 className="font-bold text-lg" style={{ color: 'var(--brand-ink)' }}>Guided Sadhana Plans</h1>
           <p className="text-xs" style={{ color: 'var(--text-dim)' }}>7-day and 21-day structured practices</p>
         </div>
       </div>
 
       {/* Hero */}
       <div
-        className="mx-4 mb-4 rounded-[1.75rem] px-5 py-5 relative overflow-hidden"
-        style={{ background: 'linear-gradient(160deg, rgba(28,18,10,0.98) 0%, rgba(16,10,4,0.99) 100%)', border: '1px solid rgba(200,146,74,0.16)' }}
+        className="mx-4 mb-5 rounded-[1.75rem] px-5 pt-5 pb-6 relative overflow-hidden"
+        style={{ background: 'var(--surface-raised)', border: '1px solid rgba(200,146,74,0.16)' }}
       >
-        <div className="absolute top-0 right-0 w-32 h-32 rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(circle, rgba(200,146,74,0.12) 0%, transparent 70%)', transform: 'translate(20%, -20%)' }} />
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: 'rgba(200,146,74,0.6)' }}>
+        {/* Decorative glow */}
+        <div className="absolute top-0 right-0 w-40 h-40 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(200,146,74,0.10) 0%, transparent 70%)', transform: 'translate(25%, -25%)' }} />
+
+        <p className="text-[10px] font-bold uppercase tracking-[0.22em] mb-3" style={{ color: 'rgba(200,146,74,0.65)' }}>
           Structured Practice
         </p>
-        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 600, color: '#f0e2c0', lineHeight: 1.25 }}>
+        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.35rem', fontWeight: 600, color: 'var(--brand-ink)', lineHeight: 1.22 }}>
           The Vedic tradition says:<br />21 days forms a samskara.
         </p>
-        <p className="text-[12px] mt-2 leading-relaxed" style={{ color: 'rgba(220,190,130,0.48)' }}>
-          Choose a path, commit to the sequence, let the practice shape you from the inside.
+        <p className="text-[13px] mt-3 leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
+          A sadhana plan is more than a routine — it is a vow to yourself. Each plan below is a structured sequence of practices, designed to build depth and consistency over 7 or 21 days.
         </p>
+        <p className="text-[12.5px] mt-2 leading-relaxed" style={{ color: 'var(--text-dim)' }}>
+          Choose a path that calls to you. Show up each day. Let the repetition do its quiet work.
+        </p>
+
+        {/* Stats row */}
+        <div className="flex gap-4 mt-4 pt-4 border-t" style={{ borderColor: 'rgba(200,146,74,0.1)' }}>
+          <div>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 700, color: 'var(--brand-ink)' }}>7 & 21</p>
+            <p className="text-[10px]" style={{ color: 'var(--text-dim)' }}>Day plans</p>
+          </div>
+          <div className="w-px" style={{ background: 'rgba(200,146,74,0.12)' }} />
+          <div>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 700, color: 'var(--brand-ink)' }}>Beginner → Deep</p>
+            <p className="text-[10px]" style={{ color: 'var(--text-dim)' }}>All levels</p>
+          </div>
+        </div>
       </div>
 
       {/* Filter tabs */}
@@ -328,8 +346,8 @@ export default function GuidedPlansClient({ userId, tradition, plans, statusMap 
             onClick={() => setFilter(f)}
             className="rounded-full px-4 py-1.5 text-xs font-semibold transition-all"
             style={filter === f
-              ? { background: 'rgba(200,146,74,0.18)', color: '#f5dfa0', border: '1px solid rgba(200,146,74,0.35)' }
-              : { background: 'rgba(28,18,10,0.7)', color: 'rgba(245,210,130,0.45)', border: '1px solid rgba(200,146,74,0.12)' }
+              ? { background: 'rgba(200,146,74,0.18)', color: 'var(--brand-ink)', border: '1px solid rgba(200,146,74,0.35)' }
+              : { background: 'var(--surface-raised)', color: 'var(--text-dim)', border: '1px solid rgba(200,146,74,0.12)' }
             }
           >
             {f === 'all' ? 'All Plans' : `${f}-Day`}
@@ -354,7 +372,7 @@ export default function GuidedPlansClient({ userId, tradition, plans, statusMap 
               whileTap={{ scale: 0.98 }}
               className="w-full text-left rounded-[1.75rem] overflow-hidden border relative"
               style={{
-                background: `linear-gradient(160deg, ${plan.accentColor}0e 0%, rgba(14,10,4,0.9) 100%)`,
+                background: `linear-gradient(160deg, ${plan.accentColor}14 0%, var(--surface-raised) 100%)`,
                 borderColor: isActive ? plan.borderColor : 'rgba(200,146,74,0.1)',
                 boxShadow: isActive ? `0 4px 20px ${plan.accentColor}18` : 'none',
               }}
@@ -394,10 +412,10 @@ export default function GuidedPlansClient({ userId, tradition, plans, statusMap 
                   <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: plan.accentColor }}>
                     {plan.duration} Days · {plan.difficulty}
                   </p>
-                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: 600, color: '#ede0c4', lineHeight: 1.25, marginTop: '2px' }}>
+                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: 600, color: 'var(--brand-ink)', lineHeight: 1.25, marginTop: '2px' }}>
                     {plan.title}
                   </p>
-                  <p className="text-[11.5px] mt-1.5 leading-snug" style={{ color: 'rgba(210,185,135,0.5)' }}>
+                  <p className="text-[11.5px] mt-1.5 leading-snug" style={{ color: 'var(--brand-muted)' }}>
                     {plan.tagline}
                   </p>
                 </div>
