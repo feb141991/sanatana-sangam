@@ -55,14 +55,19 @@ const STEP_MESSAGES: Record<string, string[]> = {
     'Sacred bath done. The tradition says even the river rejoices when a sadhak bathes with intention.',
   ],
   tilak_done: [
-    'The mark on your forehead carries the tradition of a million practitioners before you. Well done.',
-    'Tilak applied — a daily reminder of who you are and what you are here for.',
-    'Naam simran begun. Even one moment of genuine naam is worth more than hours of ritual without heart.',
+    'The mark on your forehead carries the tradition of a million practitioners before you. You are ready.',
+    'Tilak applied — sankalpa made. The ajna chakra is sealed; your intention for this day is set.',
+    'Wearing the sign of your ishtadevata, you step into worship. The outer mark reminds you of the inner vow.',
   ],
   sandhya_done: [
-    'Sandhya done — you have greeted the day with the same prayer as your ancestors. Beautiful.',
-    'Morning prayer complete. The Gita says: the constant effort of practice (abhyasa) is the surest path.',
-    'You prayed before you opened your phone. That is dharma in action.',
+    'Vandana done — you have greeted the sun with the same arghya as your ancestors for ten thousand years. Beautiful.',
+    'Morning salutation complete. The Gita says: the constant effort of practice (abhyasa) is the surest path.',
+    'You offered the dawn its due before opening your phone. That is dharma in action.',
+  ],
+  aarti_done: [
+    '🪔 Aarti complete — the flame that rose carried your sankalpa to your ishtadevata. The worship is received.',
+    'Puja done. You met the divine with flowers, water, and fire. No offering is ever too small.',
+    'The diya burns — and for a moment the boundary between worshipper and worshipped dissolved. That is the point.',
   ],
   japa_done: [
     '🪬 Japa done — 108 turns of the mala, 108 moments of pure attention. The mind is calmer than before.',
@@ -71,13 +76,8 @@ const STEP_MESSAGES: Record<string, string[]> = {
   ],
   shloka_done: [
     '📖 Shloka received. The scripture enters the heart through the ear and through repetition — you fed both.',
-    'Pathshala done. Reading the word of the rishis in the morning plants a seed that grows all day.',
-    'Shloka complete. Carry a single line with you today — let it arise when needed.',
-  ],
-  aarti_done: [
-    '🪔 Aarti complete — the flame that went up today carries your intention to what you worship.',
-    'The morning closed with gratitude. That is the finest offering a sadhak can make.',
-    'Kirtan done. Sound is the oldest medicine. Your vibration for the day is set.',
+    'Svadhyaya done. Reading the word of the rishis in the morning plants a seed that grows all day.',
+    'Shloka complete. Carry a single line with you into the world — let it arise when you need it most.',
   ],
 };
 
@@ -88,44 +88,57 @@ function getStepMessage(stepId: string): string {
 }
 
 // ── Static fallback steps ─────────────────────────────────────────────────────
+// Liturgical order per Dharmashastra / Gita Press Nitya Karma Puja Prakash:
+//   1. Brahma Muhurta — rise in the auspicious pre-dawn hour
+//   2. Snana          — sacred bath cleanses and prepares the body
+//   3. Tilak          — apply sacred mark; sankalpa (resolve) is set AFTER bath, BEFORE worship
+//   4. Vandana        — morning salutation: arghya to Surya, Gayatri, pranayama
+//   5. Puja / Aarti   — deity worship; Aarti is the culminating flame offering
+//   6. Japa           — mantra repetition with mala in a purified and worshipped space
+//   7. Shloka Paath   — Svadhyaya (self-study) closes the Nitya cycle; scripture read last
 const FALLBACK_STEPS: NityaSequenceStep[] = [
-  { id: 'woke_brahma_muhurta', label: 'Brahma Muhurta',  icon: '🌙', minutes: 0,  description: 'Wake before sunrise — the most auspicious hour for sadhana', completed: false },
-  { id: 'snana_done',          label: 'Snana',           icon: '🌊', minutes: 10, description: 'Sacred bath — purify body and mind before worship', completed: false },
-  { id: 'aarti_done',          label: 'Aarti / Kirtan',  icon: '🪔', minutes: 5,  description: 'Offer incense, light a diya, and invoke the deity — prepare the sacred space before seated practice', completed: false },
-  { id: 'sandhya_done',        label: 'Sandhya Vandana', icon: '🙏', minutes: 15, description: 'Morning prayers or Surya Namaskar — greet the day with devotion', completed: false },
-  { id: 'japa_done',           label: 'Japa',            icon: '📿', minutes: 30, description: 'Mantra japa — 1 mala (108 repetitions) to anchor the mind', completed: false },
-  { id: 'shloka_done',         label: 'Shloka Paath',    icon: '📖', minutes: 10, description: 'Read or recite today\'s sacred verse — nourish the intellect', completed: false },
-  { id: 'tilak_done',          label: 'Tilak / Simran',  icon: '🔱', minutes: 2,  description: 'Apply tilak and offer a closing prayer — seal your sadhana with sankalpam before stepping into the world', completed: false },
+  { id: 'woke_brahma_muhurta', label: 'Brahma Muhurta', icon: '🌙', minutes: 0,  description: 'Wake in the pre-dawn hour — the veil between the human and the divine is thinnest here', completed: false },
+  { id: 'snana_done',          label: 'Snana',          icon: '🌊', minutes: 10, description: 'Sacred bath — water purifies body, prana, and subtle body before you enter the worship space', completed: false },
+  { id: 'tilak_done',          label: 'Tilak',          icon: '🔱', minutes: 2,  description: 'Apply the sacred mark and set your sankalpa — this is the threshold gesture that opens the day\'s worship', completed: false },
+  { id: 'sandhya_done',        label: 'Vandana',        icon: '🙏', minutes: 15, description: 'Morning salutation — offer arghya to Surya, recite Gayatri, and greet the dawn with your tradition\'s prayers', completed: false },
+  { id: 'aarti_done',          label: 'Puja / Aarti',   icon: '🪔', minutes: 20, description: 'Worship your ishtadevata with panchopachar or shodashopachara; conclude with Aarti — the lamp of devotion', completed: false },
+  { id: 'japa_done',           label: 'Japa',           icon: '📿', minutes: 30, description: 'Mantra japa — one mala (108 repetitions) in the purified space, mind anchored by the naam', completed: false },
+  { id: 'shloka_done',         label: 'Shloka Paath',   icon: '📖', minutes: 10, description: 'Svadhyaya — read or recite a passage from your tradition\'s scripture; let the word enter the day', completed: false },
 ];
 
 // ── Tradition-aware step labels ────────────────────────────────────────────────
+// Keys mirror FALLBACK_STEPS ids. Order in this map does not matter — it is
+// applied as an overlay. Each tradition follows its own equivalent sequence logic.
 const STEP_LABELS: Record<string, Record<string, { label: string; icon: string; description: string }>> = {
   sikh: {
-    woke_brahma_muhurta: { label: 'Amrit Vela',    icon: '🌙', description: 'Rise before dawn — the ambrosial hour for naam simran' },
-    snana_done:          { label: 'Ishnan',         icon: '🌊', description: 'Bathe and purify before beginning nitnem' },
-    tilak_done:          { label: 'Naam Simran',    icon: '☬',  description: 'Begin Waheguru simran — Gurmantar in the heart' },
-    sandhya_done:        { label: 'Japji Sahib',    icon: '📖', description: 'Recite Japji Sahib — the morning prayer of Guru Nanak Dev Ji' },
-    japa_done:           { label: 'Jaap + Chaupai', icon: '📿', description: 'Recite Jaap Sahib and Chaupai Sahib — protection and power' },
-    shloka_done:         { label: 'Hukamnama',      icon: '📜', description: 'Receive today\'s divine order from Guru Granth Sahib Ji' },
-    aarti_done:          { label: 'Ardas',          icon: '🙏', description: 'Offer Ardas — Sikh supplication for the sangat and the world' },
+    // Sikh Nitnem sequence: Amrit Vela → Ishnan → Naam Simran → Japji Sahib → Ardas → Jaap+Chaupai → Hukamnama
+    woke_brahma_muhurta: { label: 'Amrit Vela',    icon: '🌙', description: 'Rise before dawn — the ambrosial hour for naam simran, before the mind is touched by the world' },
+    snana_done:          { label: 'Ishnan',         icon: '🌊', description: 'Bathe and purify body and mind — Sikhi teaches that inner cleanliness begins with outer' },
+    tilak_done:          { label: 'Naam Simran',    icon: '☬',  description: 'Begin Waheguru naam simran — the Gurmantar settles the mind before the banis begin' },
+    sandhya_done:        { label: 'Japji Sahib',    icon: '📖', description: 'Recite Japji Sahib — the morning bani of Guru Nanak Dev Ji, foundation of all Nitnem' },
+    aarti_done:          { label: 'Ardas',          icon: '🙏', description: 'Offer Ardas — the Sikh prayer of supplication for the sangat, the panth, and all of creation' },
+    japa_done:           { label: 'Jaap + Chaupai', icon: '📿', description: 'Recite Jaap Sahib and Chaupai Sahib — the banis of power, protection, and divine praise' },
+    shloka_done:         { label: 'Hukamnama',      icon: '📜', description: 'Receive today\'s Hukamnama — the divine order from Guru Granth Sahib Ji; this word is your guidance for the day' },
   },
   buddhist: {
-    woke_brahma_muhurta: { label: 'Early Rising',       icon: '🌙', description: 'Rise early — fresh mind supports deep meditation' },
-    snana_done:          { label: 'Purification',       icon: '🌊', description: 'Wash and purify body — outer cleanliness reflects inner intention' },
-    tilak_done:          { label: 'Precept Reflection', icon: '☸️', description: 'Reflect on the Five Precepts — renew your commitment to ethical life' },
-    sandhya_done:        { label: 'Metta Bhavana',      icon: '💛', description: 'Loving-kindness meditation — radiate goodwill to all beings' },
-    japa_done:           { label: 'Sitting Practice',   icon: '🧘', description: 'Silent sitting or breath meditation — cultivate samadhi and vipassana' },
-    shloka_done:         { label: 'Dhamma Reading',     icon: '📖', description: 'Study a passage from the Dhammapada or a sutta of your choice' },
-    aarti_done:          { label: 'Dana Intention',     icon: '🤲', description: 'Set an intention of generosity and service for the day ahead' },
+    // Buddhist morning sequence: Early Rising → Purification → Precepts → Metta → Puja/Offerings → Sitting → Dhamma
+    woke_brahma_muhurta: { label: 'Early Rising',       icon: '🌙', description: 'Rise before the world stirs — a fresh, uncontaminated mind is the best ground for meditation' },
+    snana_done:          { label: 'Purification',       icon: '🌊', description: 'Wash body and rinse mouth — outer cleanliness reflects the inner intention of purity (sila)' },
+    tilak_done:          { label: 'Precept Renewal',    icon: '☸️', description: 'Silently renew the Five Precepts — this is your threshold gesture before approaching the shrine' },
+    sandhya_done:        { label: 'Metta Bhavana',      icon: '💛', description: 'Loving-kindness practice — radiate goodwill outward: self, loved ones, neutrals, difficult beings, all sentient life' },
+    aarti_done:          { label: 'Puja / Offerings',   icon: '🪔', description: 'Offer flowers, incense, and light before the Buddha image — the three gems are honoured, merit is made' },
+    japa_done:           { label: 'Sitting Practice',   icon: '🧘', description: 'Silent breath or mantra meditation — cultivate samatha and vipassana in a purified and worshipped space' },
+    shloka_done:         { label: 'Dhamma Reading',     icon: '📖', description: 'Study a passage from the Dhammapada, Sutta Pitaka, or a teacher\'s commentary — let the teaching close the practice' },
   },
   jain: {
-    woke_brahma_muhurta: { label: 'Brahma Muhurta', icon: '🌙', description: 'Rise before dawn — auspicious time for pratikraman and reflection' },
-    snana_done:          { label: 'Shaucha',         icon: '🌊', description: 'Physical purification — cleanse body before worship' },
-    tilak_done:          { label: 'Sthapana',        icon: '🤲', description: 'Set up the altar and offer flowers or rice to the Tirthankar' },
-    sandhya_done:        { label: 'Samayika',        icon: '🙏', description: '48-minute meditation — practise equanimity, the heart of Jain sadhana' },
-    japa_done:           { label: 'Navkar Mantra',   icon: '📿', description: 'Recite Navkar Mantra 108 times — salutation to the five supreme beings' },
-    shloka_done:         { label: 'Agam Path',       icon: '📖', description: 'Study from the Agam — the canonical Jain texts' },
-    aarti_done:          { label: 'Pratikraman',     icon: '🪔', description: 'Morning pratikraman — reflect on and repent for yesterday\'s actions' },
+    // Jain morning sequence: Brahma Muhurta → Shaucha → Sthapana → Samayika → Puja → Navkar → Agam
+    woke_brahma_muhurta: { label: 'Brahma Muhurta', icon: '🌙', description: 'Rise before dawn — the auspicious hour for pratikraman, reflection, and setting the mind in ahimsa' },
+    snana_done:          { label: 'Shaucha',         icon: '🌊', description: 'Physical purification — cleanse body completely before entering the worship space' },
+    tilak_done:          { label: 'Sthapana',        icon: '🤲', description: 'Set up the Jina image or symbol and offer flowers, rice, or saffron — the altar is opened for the day' },
+    sandhya_done:        { label: 'Samayika',        icon: '🙏', description: '48-minute vow of equanimity — the supreme Jain sadhana; the mind is set to pratikraman mode' },
+    aarti_done:          { label: 'Puja / Aarti',    icon: '🪔', description: 'Ashtaprakari Puja (eight offerings) before the Tirthankar; conclude with diya Aarti' },
+    japa_done:           { label: 'Navkar Mantra',   icon: '📿', description: 'Recite Navkar Mantra 108 times — salutation to the five supreme beings who have conquered the self' },
+    shloka_done:         { label: 'Agam Path',       icon: '📖', description: 'Study from the Agam — the canonical Jain texts; let scripture seal the morning and seed the intellect' },
   },
 };
 
