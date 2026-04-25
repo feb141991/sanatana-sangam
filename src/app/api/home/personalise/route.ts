@@ -63,9 +63,8 @@ export async function GET() {
       .maybeSingle();
 
     if (!apiKey) {
-      // Return a fallback shloka without AI
       const fallback = FALLBACK_SHLOKAS[new Date().getDate() % FALLBACK_SHLOKAS.length];
-      return NextResponse.json({ shloka_text: fallback.text, shloka_source: fallback.source, shloka_meaning: fallback.meaning, suggestion: fallback.suggestion, nudge: null, from_cache: false });
+      return NextResponse.json({ suggestion: fallback.suggestion, nudge: null, context_label: 'Today\'s practice', from_cache: false });
     }
 
     // ── 3. Generate via Gemini ───────────────────────────────────────────────────
@@ -76,7 +75,7 @@ export async function GET() {
 
     const dayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
 
-    const prompt = `You are a warm, wise spiritual guide. Generate today's personalised spiritual content for ${name}.
+    const prompt = `You are a warm, wise spiritual guide. Generate a personalised daily practice suggestion for ${name}.
 
 USER PROFILE:
 - Tradition: ${tradition}
@@ -84,16 +83,14 @@ USER PROFILE:
 - Currently seeking: ${seeking || 'general guidance'}
 - Day: ${dayOfWeek}
 
-Return ONLY this JSON (no markdown fences):
+Return ONLY this JSON (no markdown fences, no extra keys):
 {
-  "shloka_text": "<A short verse or saying relevant to their tradition and current seeking. Can be Sanskrit, Gurmukhi, Pali, or another sacred language — 1-2 lines max.>",
-  "shloka_source": "<Text name and reference, e.g. 'Bhagavad Gita 2.47'>",
-  "shloka_meaning": "<Plain English meaning of the verse, 1 sentence>",
-  "suggestion": "<A specific, actionable practice suggestion for today that matches their level and seeking. 2-3 sentences. Make it concrete — not vague.>",
-  "nudge": "<A single warm, encouraging sentence for their journey today. Optional — can be null.>"
+  "suggestion": "<A specific, actionable practice for today matching their level and seeking. 2-3 sentences. Concrete — not vague. For example: 'Spend 10 minutes with Pranayama before breakfast today' or 'Read one chapter of the Gita and journal one insight.' Vary by day and level.>",
+  "nudge": "<One warm, personal sentence of encouragement. Optional — null is fine.>",
+  "context_label": "<A 2-4 word label for the type of practice, e.g. 'Morning sadhana', 'Contemplative reading', 'Breathwork focus'. Used as the section eyebrow.>"
 }
 
-Keep the tone warm, personal, and grounded — not preachy.`;
+Keep the tone warm, grounded, and personal — not preachy. No shloka text needed.`;
 
     const res = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
       method:  'POST',
@@ -106,7 +103,7 @@ Keep the tone warm, personal, and grounded — not preachy.`;
 
     if (!res.ok) {
       const fallback = FALLBACK_SHLOKAS[new Date().getDate() % FALLBACK_SHLOKAS.length];
-      return NextResponse.json({ shloka_text: fallback.text, shloka_source: fallback.source, shloka_meaning: fallback.meaning, suggestion: fallback.suggestion, nudge: null, from_cache: false });
+      return NextResponse.json({ suggestion: fallback.suggestion, nudge: null, context_label: 'Today\'s practice', from_cache: false });
     }
 
     const data  = await res.json();
@@ -117,9 +114,9 @@ Keep the tone warm, personal, and grounded — not preachy.`;
       try { parsed = JSON.parse(match[1]); } catch { /* fall through */ }
     }
 
-    if (!parsed?.shloka_text) {
+    if (!parsed?.suggestion) {
       const fallback = FALLBACK_SHLOKAS[new Date().getDate() % FALLBACK_SHLOKAS.length];
-      parsed = { shloka_text: fallback.text, shloka_source: fallback.source, shloka_meaning: fallback.meaning, suggestion: fallback.suggestion, nudge: null };
+      parsed = { suggestion: fallback.suggestion, nudge: null, context_label: 'Today\'s practice' };
     }
 
     // ── 4. Cache result ──────────────────────────────────────────────────────────

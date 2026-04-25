@@ -770,11 +770,9 @@ export default function HomeDashboard({
   });
   const [editHomeOpen,     setEditHomeOpen]     = useState(false);
   const [personalContent, setPersonalContent] = useState<{
-    shloka_text: string;
-    shloka_source: string;
-    shloka_meaning: string;
     suggestion: string;
     nudge: string | null;
+    context_label?: string | null;
   } | null>(null);
   const [personalLoading, setPersonalLoading] = useState(true);
   const [hiddenHrefs,      setHiddenHrefs]      = useState<Set<string>>(() => {
@@ -1491,11 +1489,16 @@ export default function HomeDashboard({
           <div className="relative rounded-[0.9rem] px-3 py-2.5 mb-3"
             style={{ background: 'rgba(200,146,74,0.07)', borderLeft: '2px solid rgba(200,146,74,0.35)' }}>
             <p className="text-[9.5px] font-semibold uppercase tracking-[0.12em] mb-1" style={{ color: 'rgba(200,146,74,0.65)' }}>
-              ✨ Today&apos;s Practice
+              ✨ {personalContent.context_label ?? 'Today\'s Practice'}
             </p>
             <p className="text-[12px] leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>
               {personalContent.suggestion}
             </p>
+            {personalContent.nudge && (
+              <p className="text-[11px] mt-1.5 italic" style={{ color: 'rgba(200,146,74,0.55)' }}>
+                {personalContent.nudge}
+              </p>
+            )}
           </div>
         )}
 
