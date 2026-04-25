@@ -302,7 +302,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
       )}
 
       {/* ── Content ──────────────────────────────────────────────────── */}
-      <div className="relative z-10 px-4 pt-4 space-y-3">
+      <div className="relative z-10 px-4 pt-16 space-y-3">
 
         {/* Header */}
         <div className="flex items-center gap-3">

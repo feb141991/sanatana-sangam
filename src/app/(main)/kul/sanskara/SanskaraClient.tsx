@@ -429,8 +429,8 @@ function SanskaraCard({
       transition={{ duration: 0.35 }}
       className="rounded-2xl overflow-hidden relative"
       style={{
-        background: done ? 'rgba(80,200,100,0.06)' : locked ? 'rgba(10,8,20,0.4)' : 'rgba(10,8,22,0.6)',
-        border: `1px solid ${done ? 'rgba(80,200,100,0.2)' : locked ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.08)'}`,
+        background: done ? 'rgba(80,200,100,0.06)' : 'var(--surface-raised)',
+        border: `1px solid ${done ? 'rgba(80,200,100,0.2)' : 'rgba(200,146,74,0.10)'}`,
         opacity: locked ? 0.7 : 1,
       }}
     >
@@ -473,7 +473,7 @@ function SanskaraCard({
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-semibold" style={{ color: done ? 'rgba(180,240,180,0.85)' : 'rgba(245,220,150,0.85)' }}>
+            <span className="text-sm font-semibold" style={{ color: done ? '#4caf70' : 'var(--brand-ink)' }}>
               {s.name}
             </span>
             <span className="text-[10px]" style={{ color: 'rgba(245,210,130,0.4)' }}>{s.devanagari}</span>
@@ -485,7 +485,7 @@ function SanskaraCard({
             >
               {s.stageEmoji} {s.stage}
             </span>
-            <span className="text-[11px]" style={{ color: 'rgba(245,210,130,0.45)' }}>{s.meaning}</span>
+            <span className="text-[11px]" style={{ color: 'var(--brand-muted)' }}>{s.meaning}</span>
           </div>
           {done && record?.completed_date && (
             <p className="mt-1 text-[10px]" style={{ color: 'rgba(80,200,100,0.6)' }}>
@@ -866,7 +866,7 @@ export default function SanskaraClient({
       <div
         className="rounded-[1.8rem] px-5 py-5"
         style={{
-          background: 'linear-gradient(135deg, rgba(30,18,10,0.95), rgba(20,12,8,0.98))',
+          background: 'var(--surface-raised)',
           border: '1px solid rgba(200,146,74,0.15)',
         }}
       >
@@ -895,13 +895,13 @@ export default function SanskaraClient({
             }
           />
           <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-bold" style={{ color: '#f5dfa0' }}>
+            <h1 className="text-xl font-bold" style={{ color: 'var(--brand-ink)' }}>
               {selectedMember ? `${selectedMemberName}'s Sanskaras` : '16 Sanskaras'}
             </h1>
-            <p className="text-sm mt-0.5" style={{ color: 'rgba(245,210,130,0.45)' }}>
+            <p className="text-sm mt-0.5" style={{ color: 'var(--brand-muted)' }}>
               षोडश संस्कार — Sacred rites of passage
             </p>
-            <p className="text-[11px] mt-1" style={{ color: 'rgba(245,210,130,0.35)' }}>
+            <p className="text-[11px] mt-1" style={{ color: 'var(--text-dim)' }}>
               {pct}% of lifecycle journey recorded
             </p>
           </div>
@@ -912,7 +912,7 @@ export default function SanskaraClient({
       {familyMembers.length > 0 && (
         <div
           className="rounded-2xl px-4 py-3"
-          style={{ background: 'rgba(10,8,22,0.6)', border: '1px solid rgba(255,255,255,0.07)' }}
+          style={{ background: 'var(--surface-raised)', border: '1px solid rgba(200,146,74,0.10)' }}
         >
           <MemberSelector
             familyMembers={familyMembers}

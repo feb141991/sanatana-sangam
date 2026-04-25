@@ -1582,9 +1582,11 @@ export default function HomeDashboard({
         ref={festivalsRef}
         className="rounded-[1.85rem] border overflow-hidden relative"
         style={{
-          background: HOME_THEMES.tirtha.surface,
+          background: getCardBg(HOME_THEMES.tirtha),
           borderColor: HOME_THEMES.tirtha.border,
-          boxShadow: '0 18px 36px rgba(0, 0, 0, 0.20)',
+          boxShadow: getCardShadow(),
+          backdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
+          WebkitBackdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
         }}
         initial={prefersReducedMotion ? undefined : { opacity: 0, y: 6 }}
         animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}

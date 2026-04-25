@@ -151,7 +151,7 @@ function MantraPickerSheet({
             className="w-full text-left rounded-2xl p-4 border transition-all"
             style={selected?.id === m.id
               ? { borderColor: 'rgba(200,146,74,0.55)', background: 'rgba(200,146,74,0.12)' }
-              : { borderColor: 'rgba(200,146,74,0.12)', background: 'rgba(18,10,6,0.8)' }}>
+              : { borderColor: 'rgba(200,146,74,0.12)', background: 'var(--surface-raised)' }}>
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-semibold text-sm" style={{ color: '#f5dfa0' }}>{m.name}</p>
@@ -240,9 +240,9 @@ function JapaHistoryChart({ history = [], streak, isPro = false }: { history: Da
 
   return (
     <div className="mx-4 mb-4 rounded-2xl border px-4 py-4 space-y-3"
-      style={{ background: 'rgba(18,10,6,0.9)', borderColor: 'rgba(200,146,74,0.12)' }}>
+      style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.12)' }}>
       <div className="flex items-center justify-between">
-        <p className="text-sm font-semibold" style={{ color: '#f5dfa0' }}>Last 30 days</p>
+        <p className="text-sm font-semibold" style={{ color: 'var(--brand-ink)' }}>Last 30 days</p>
         <div className="flex items-center gap-3 text-xs">
           {streak > 0 && isPro && (
             <span className="flex items-center gap-1" style={{ color: '#C8924A' }}>
@@ -637,7 +637,7 @@ export default function JapaClient({
             {/* Mantra picker */}
             <button onClick={() => setShowPicker(true)}
               className="w-full flex items-center justify-between rounded-2xl border px-4 py-3"
-              style={{ background: 'rgba(18,10,6,0.85)', borderColor: 'rgba(200,146,74,0.18)' }}>
+              style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.18)' }}>
               <div className="text-left">
                 <p className="text-xs font-medium" style={{ color: 'rgba(245,200,120,0.42)' }}>Mantra</p>
                 <p className="font-semibold mt-0.5" style={{ color: '#f5dfa0' }}>
@@ -649,7 +649,7 @@ export default function JapaClient({
 
             {/* Rounds */}
             <div className="flex items-center justify-between rounded-2xl border px-4 py-3"
-              style={{ background: 'rgba(18,10,6,0.85)', borderColor: 'rgba(200,146,74,0.14)' }}>
+              style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.14)' }}>
               <span className="text-sm font-medium" style={{ color: 'rgba(245,200,120,0.6)' }}>Rounds</span>
               <div className="flex items-center gap-2">
                 {[1, 2, 3, 5, 11].map(n => (
@@ -666,7 +666,7 @@ export default function JapaClient({
 
             {/* Bead type selector */}
             <div className="rounded-2xl border px-4 py-3"
-              style={{ background: 'rgba(18,10,6,0.85)', borderColor: 'rgba(200,146,74,0.14)' }}>
+              style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.14)' }}>
               <p className="text-xs font-medium mb-2" style={{ color: 'rgba(245,200,120,0.42)' }}>Bead Type</p>
               <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-none">
                 {BEAD_TYPES.map(t => (

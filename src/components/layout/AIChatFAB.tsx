@@ -90,7 +90,7 @@ function MessageBubble({ msg }: { msg: Message }) {
       </div>
       <div className={`max-w-[82%] ${isUser ? 'items-end' : 'items-start'} flex flex-col gap-0.5`}>
         <div className={`px-3 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${isUser ? 'bg-[#7B1A1A] text-white rounded-tr-sm' : 'rounded-tl-sm border'}`}
-          style={!isUser ? { background: 'rgba(38, 30, 18, 0.95)', borderColor: 'rgba(200,146,74,0.16)', color: 'rgba(240,225,195,0.88)' } : undefined}>
+          style={!isUser ? { background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.16)', color: 'var(--brand-ink)' } : undefined}>
           {msg.text}
           {!isUser && msg.verses && msg.verses.length > 0 && (
             <div className="mt-1">{msg.verses.map((v, i) => <VerseChip key={i} verse={v} />)}</div>
@@ -109,7 +109,7 @@ function TypingIndicator() {
   return (
     <div className="flex gap-2 mb-3">
       <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-amber-400 to-orange-500 text-white text-xs">✨</div>
-      <div className="border rounded-2xl rounded-tl-sm px-3 py-2.5" style={{ background: 'rgba(38, 30, 18, 0.95)', borderColor: 'rgba(200,146,74,0.16)' }}>
+      <div className="border rounded-2xl rounded-tl-sm px-3 py-2.5" style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.16)' }}>
         <div className="flex gap-1 items-center h-4">
           {[0, 150, 300].map(delay => (
             <span key={delay} className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-bounce" style={{ animationDelay: `${delay}ms` }} />
@@ -234,7 +234,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
                 {!isEmpty && (
                   <button onClick={clearChat}
                     className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs border transition"
-                    style={{ background: 'rgba(30,22,12,0.7)', borderColor: 'rgba(200,146,74,0.18)', color: 'rgba(200,146,74,0.6)' }}>
+                    style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.18)', color: 'var(--brand-muted)' }}>
                     <RotateCcw size={11} /> New
                   </button>
                 )}
@@ -265,7 +265,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
                       {suggestions.slice(0, 4).map(s => (
                         <button key={s} onClick={() => sendMessage(s)}
                           className="text-left p-2.5 rounded-xl text-xs transition leading-snug border"
-                          style={{ background: 'rgba(38,30,18,0.8)', borderColor: 'rgba(200,146,74,0.18)', color: 'rgba(240,210,160,0.75)' }}>
+                          style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.18)', color: 'var(--brand-muted)' }}>
                           {s}
                         </button>
                       ))}
@@ -282,7 +282,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
             </div>
 
             {/* Input */}
-            <div className="flex-shrink-0 px-3 py-2 border-t" style={{ borderColor: 'rgba(200,146,74,0.12)', background: 'rgba(16,12,8,0.96)' }}>
+            <div className="flex-shrink-0 px-3 py-2 border-t" style={{ borderColor: 'rgba(200,146,74,0.12)', background: 'var(--surface-base)' }}>
               <div className="flex items-end gap-2">
                 <textarea
                   ref={inputRef}
@@ -293,7 +293,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
                   placeholder="Ask a dharmic question…"
                   disabled={loading}
                   className="flex-1 resize-none rounded-2xl border px-3.5 py-2.5 text-sm focus:outline-none transition disabled:opacity-50"
-                  style={{ background: 'rgba(30,22,12,0.9)', borderColor: 'rgba(200,146,74,0.2)', color: 'rgba(240,210,160,0.9)', minHeight: '40px', maxHeight: '120px' } as React.CSSProperties}
+                  style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.2)', color: 'var(--brand-ink)', minHeight: '40px', maxHeight: '120px' } as React.CSSProperties}
                 />
                 <motion.button
                   onClick={() => sendMessage()}

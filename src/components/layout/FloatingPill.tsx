@@ -167,7 +167,9 @@ export default function FloatingPill({
             className="fixed inset-x-0 bottom-0 flex flex-col rounded-t-[2rem] overflow-hidden"
             style={{
               zIndex: 9999,
-              background: 'linear-gradient(180deg, rgba(28,26,22,0.99) 0%, rgba(22,20,17,0.99) 100%)',
+              background: 'var(--surface-raised)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
               border: '1px solid rgba(200,146,74,0.14)',
               borderBottom: 'none',
               maxHeight: '85dvh',
@@ -386,7 +388,7 @@ export default function FloatingPill({
           style={{
             width: 48,
             height: 48,
-            background: 'linear-gradient(135deg, rgba(51,51,48,0.98), rgba(43,43,40,0.94))',
+            background: 'var(--surface-raised)',
             border: avatarUrl ? '2px solid rgba(200,146,74,0.70)' : '1.5px solid rgba(200,146,74,0.35)',
             boxShadow: avatarUrl ? '0 0 0 3px rgba(200,146,74,0.15)' : 'none',
           }}

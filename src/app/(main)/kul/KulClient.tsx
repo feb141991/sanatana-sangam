@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import {
   Users, MessageSquare, CheckSquare, Plus, X, Copy,
-  Send, Crown, ChevronRight, Flame, Pencil,
+  Send, Crown, ChevronLeft, ChevronRight, Flame, Pencil,
   Check, ClipboardList, Share2, Search, UserPlus,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
@@ -1471,6 +1471,13 @@ function KulHubView({
   return (
     <div className="space-y-4">
       <div className="clay-card rounded-[2rem] p-5 sm:p-6">
+        {/* Back to home */}
+        <Link href="/home"
+          className="inline-flex items-center gap-1.5 mb-4 text-xs font-medium rounded-full px-3 py-1.5 transition"
+          style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.18)', color: 'rgba(200,146,74,0.85)' }}>
+          <ChevronLeft size={14} />
+          Home
+        </Link>
         <div className="flex items-start gap-4">
           <div className="w-16 h-16 rounded-[1.4rem] flex items-center justify-center text-3xl flex-shrink-0"
             style={{ background: 'linear-gradient(135deg, rgba(31, 107, 114, 0.16), rgba(195, 135, 47, 0.18))' }}>

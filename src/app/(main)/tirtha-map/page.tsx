@@ -261,7 +261,7 @@ export default function TirthaMapPage() {
         </button>
         <button onClick={useMyLocation} title="Use my location"
           className="px-3 py-2.5 rounded-xl border transition"
-          style={{ background: 'rgba(30,22,12,0.85)', borderColor: 'rgba(200,146,74,0.2)' }}>
+          style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.2)' }}>
           <Navigation size={15} style={{ color: 'var(--brand-primary)' }} />
         </button>
       </div>
@@ -325,7 +325,7 @@ export default function TirthaMapPage() {
             { label: 'Tradition', value: tradFilter === 'all' ? 'All' : tradFilter.slice(0, 1).toUpperCase() + tradFilter.slice(1) },
             { label: 'Radius', value: RADIUS_OPTIONS.find((option) => option.value === radius)?.label ?? '15 mi' },
           ].map((item) => (
-            <div key={item.label} className="rounded-[1.05rem] border px-3 py-3 text-center" style={{ background: 'rgba(51,51,48,0.72)', borderColor: 'rgba(200,146,74,0.14)' }}>
+            <div key={item.label} className="rounded-[1.05rem] border px-3 py-3 text-center" style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.14)' }}>
               <p className="type-metric">{item.value}</p>
               <p className="type-card-label mt-1">{item.label}</p>
             </div>

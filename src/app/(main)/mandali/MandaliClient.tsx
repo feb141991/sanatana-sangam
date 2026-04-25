@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown, CornerDownRight, MoreHorizontal } from 'lucide-react';
+import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown, ChevronLeft, CornerDownRight, MoreHorizontal } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
 import { formatRelativeTime, getInitials, ISHTA_DEVATAS } from '@/lib/utils';
@@ -995,6 +995,7 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
 // ─── Main Component ──────────────────────────────────────────────
 export default function MandaliClient({ profile, posts: initialPosts, comments: initialComments, rsvps: initialRsvps, members, userId, blendedPosts = [] }: Props) {
   const isPro = usePremium();
+  const router = useRouter();
   const mandaliQuery = useMandaliQuery(userId, {
     profile,
     posts: initialPosts,
@@ -1188,7 +1189,15 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
       {/* ── Mandali Header ── */}
       <div className="surface-soft-card decorative-orbit rounded-[1.8rem] p-5">
         <div className="flex items-start justify-between">
-          <div>
+          <div className="flex items-start gap-3 flex-1 min-w-0">
+            <button
+              onClick={() => router.back()}
+              className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center mt-0.5"
+              style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.20)' }}
+              aria-label="Go back">
+              <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.80)' }} />
+            </button>
+            <div className="flex-1 min-w-0">
             <div className="mb-1 flex items-center gap-2">
               <Users size={16} className="theme-muted" />
               <span className="type-card-heading">
@@ -1205,8 +1214,9 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
             <p className="type-body mt-3 sm:hidden">
               Start with one local step.
             </p>
+            </div>
           </div>
-          <div className="text-right">
+          <div className="text-right flex-shrink-0">
             <div className="type-metric">{visibleMembers.length}</div>
             <div className="type-card-label">members</div>
           </div>
