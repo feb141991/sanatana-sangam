@@ -29,6 +29,7 @@ import { getTraditionMeta } from '@/lib/tradition-config';
 import { usePremium } from '@/hooks/usePremium';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import NityaHeroBanner from '@/components/nitya/NityaHeroBanner';
+import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import type { NityaSequenceStep, NityaKarmaStreak } from '@sangam/sadhana-engine';
 
 // ── Tradition greetings ─────────────────────────────────────────────────────────
@@ -632,6 +633,7 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Omit<P
   const [showProSheet,  setShowProSheet] = useState(false);
   const [showCustom,    setShowCustom]   = useState(false);
   const [custom,        setCustom]       = useState<NityaCustom>({ labels: {}, descriptions: {}, alertTime: '04:30', extraSteps: [] });
+  const [showConfetti,  setShowConfetti] = useState(false);
 
   const confettiFired = useRef(false);
   const stepsRef      = useRef<NityaSequenceStep[]>([]);
@@ -777,6 +779,7 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Omit<P
       if (allNowDone && !confettiFired.current) {
         confettiFired.current = true;
         await hapticSuccess();
+        setShowConfetti(true);
         toast.success(morning.allDoneMsg, { duration: 5000 });
         if (engine) {
           try { const str = await engine.nityaKarma.getStreak(userId); setStreak(str); } catch { /* silent */ }
@@ -819,6 +822,8 @@ export default function NityaKarmaClient({ userId, userName, tradition }: Omit<P
 
   return (
     <div className="min-h-screen pb-28">
+
+      <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
 
       {/* Header */}
       <div className="flex items-center gap-3 px-4 pt-4 pb-3">

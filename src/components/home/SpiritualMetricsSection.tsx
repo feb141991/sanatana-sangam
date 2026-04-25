@@ -1,52 +1,57 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { TrendingUp, Flame, BookOpen, Sun } from 'lucide-react';
 
 // ── SVG Ring ─────────────────────────────────────────────────────────────────
-const R = 24;
-const CIRC = 2 * Math.PI * R; // ≈ 150.8
+const R = 26;
+const CIRC = 2 * Math.PI * R; // ≈ 163.4
 
 interface RingProps {
   score: number;        // 0-100
-  color: string;        // gradient stop start
-  color2: string;       // gradient stop end
+  color: string;        // solid color
   label: string;
   id: string;
+  href: string;
 }
 
-function SpiritualRing({ score, color, color2, label, id }: RingProps) {
+function SpiritualRing({ score, color, label, id, href }: RingProps) {
   const clamped = Math.min(100, Math.max(0, score));
   const offset  = CIRC * (1 - clamped / 100);
 
-  return (
+  // Detect light theme for text color
+  const [isLight, setIsLight] = useState(false);
+  useEffect(() => {
+    const check = () => setIsLight(document.documentElement.dataset.theme === 'light');
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => obs.disconnect();
+  }, []);
+
+  const textFill = isLight ? 'rgba(26,22,16,0.85)' : '#ede8de';
+
+  const ring = (
     <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
       <svg
-        width="64" height="64" viewBox="0 0 62 62"
+        width="68" height="68" viewBox="0 0 68 68"
         style={{ transform: 'rotate(-90deg)', display: 'block' }}
         role="img"
         aria-label={`${label}: ${clamped}%`}
       >
-        <defs>
-          <linearGradient id={`grad-${id}`} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor={color} />
-            <stop offset="100%" stopColor={color2} />
-          </linearGradient>
-        </defs>
         {/* Track */}
         <circle
-          cx="31" cy="31" r={R}
-          fill="rgba(22, 18, 12, 0.95)"
-          stroke="rgba(200,146,74,0.08)"
+          cx="34" cy="34" r={R}
+          fill="rgba(200,146,74,0.06)"
+          stroke="rgba(200,146,74,0.10)"
           strokeWidth="5.5"
         />
         {/* Progress arc */}
         {clamped > 0 && (
           <circle
-            cx="31" cy="31" r={R}
+            cx="34" cy="34" r={R}
             fill="none"
-            stroke={`url(#grad-${id})`}
+            stroke={color}
             strokeWidth="5.5"
             strokeLinecap="round"
             strokeDasharray={`${CIRC}`}
@@ -55,195 +60,30 @@ function SpiritualRing({ score, color, color2, label, id }: RingProps) {
         )}
         {/* Score numeral — counter-rotate so it reads upright */}
         <text
-          x="31" y="34"
+          x="34" y="37"
           textAnchor="middle"
-          transform="rotate(90 31 31)"
+          transform="rotate(90 34 34)"
           fontSize={clamped >= 100 ? '10' : '12'}
           fontWeight="700"
-          fill="#ede8de"
+          fill={textFill}
           fontFamily="var(--font-serif, Georgia, serif)"
         >
           {clamped}
         </text>
       </svg>
       <span
-        className="text-[9px] font-semibold uppercase tracking-[0.13em] text-center"
+        className="text-[9px] font-bold uppercase tracking-[0.13em] text-center"
         style={{ color: 'var(--text-dim)' }}
       >
         {label}
       </span>
     </div>
   );
-}
 
-// ── Mini sparkline bars ───────────────────────────────────────────────────────
-function Sparkline({ values, color }: { values: number[]; color: string }) {
-  const max = Math.max(...values, 1);
   return (
-    <div className="flex items-end gap-[2px] h-4 mt-1.5">
-      {values.map((v, i) => (
-        <div
-          key={i}
-          className="w-[4px] rounded-sm"
-          style={{
-            height: `${Math.max(20, (v / max) * 100)}%`,
-            background: v > 0 ? color : 'rgba(200,146,74,0.1)',
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-// ── Segmented bar ─────────────────────────────────────────────────────────────
-function SegBar({ filled, total, color }: { filled: number; total: number; color: string }) {
-  return (
-    <div className="flex gap-[2px] mt-2">
-      {Array.from({ length: total }, (_, i) => (
-        <div
-          key={i}
-          className="flex-1 h-[3px] rounded-full"
-          style={{ background: i < filled ? color : 'rgba(200,146,74,0.1)' }}
-        />
-      ))}
-    </div>
-  );
-}
-
-// ── Metric Card ───────────────────────────────────────────────────────────────
-interface MetricCardProps {
-  eyebrow: string;
-  value: string;
-  status: string;
-  statusColor: string;
-  barFill: number;      // 0-100
-  barColor: string;
-  sparkValues?: number[];
-  segFilled?: number;
-  segTotal?: number;
-  insight: string;
-  href?: string;
-  icon?: React.ReactNode;
-}
-
-function MetricCard({
-  eyebrow, value, status, statusColor, barFill, barColor,
-  sparkValues, segFilled, segTotal, insight, href, icon,
-}: MetricCardProps) {
-  const Wrapper = href ? Link : 'div';
-  return (
-    <Wrapper
-      href={href as string}
-      className="rounded-[1.4rem] p-3.5 relative overflow-hidden block"
-      style={{
-        background: 'linear-gradient(150deg, rgba(38,32,22,0.98), rgba(28,24,16,0.96))',
-        border: '1px solid rgba(200,146,74,0.13)',
-      }}
-    >
-      {/* Ambient corner glow */}
-      <div
-        className="absolute top-0 right-0 w-12 h-12 pointer-events-none"
-        style={{ background: `radial-gradient(circle at top right, ${barColor}18, transparent 70%)` }}
-      />
-
-      <div className="flex items-center gap-1.5 mb-1.5">
-        {icon && <span className="text-[12px]">{icon}</span>}
-        <p
-          className="text-[11px] font-medium"
-          style={{ color: 'rgba(200,146,74,0.55)' }}
-        >
-          {eyebrow}
-        </p>
-      </div>
-
-      <p
-        className="text-[22px] leading-none font-semibold relative"
-        style={{ fontFamily: 'var(--font-serif, Georgia, serif)', color: 'var(--text-cream)', letterSpacing: '-0.02em' }}
-      >
-        {value}
-      </p>
-
-      <p className="text-[10px] font-semibold mt-1" style={{ color: statusColor }}>
-        {status}
-      </p>
-
-      {/* Progress bar */}
-      <div
-        className="h-[2px] rounded-full mt-2 overflow-hidden"
-        style={{ background: 'rgba(200,146,74,0.1)' }}
-      >
-        <div
-          className="h-full rounded-full"
-          style={{ width: `${barFill}%`, background: barColor }}
-        />
-      </div>
-
-      {/* Trend or segments */}
-      {sparkValues && <Sparkline values={sparkValues} color={barColor} />}
-      {segFilled !== undefined && segTotal !== undefined && (
-        <SegBar filled={segFilled} total={segTotal} color={barColor} />
-      )}
-
-      <p
-        className="text-[11px] mt-2 leading-[1.45]"
-        style={{ color: 'var(--text-dim)' }}
-      >
-        {insight}
-      </p>
-    </Wrapper>
-  );
-}
-
-// ── Timeline Entry ────────────────────────────────────────────────────────────
-function TimelineEntry({
-  icon, title, time, href, done = false,
-}: { icon: string; title: string; time: string; href: string; done?: boolean }) {
-  return (
-    <Link
-      href={href}
-      className="flex items-center gap-3 rounded-[1.3rem] px-3.5 py-3 motion-lift"
-      style={{
-        background: done ? 'rgba(200,146,74,0.07)' : 'rgba(32,26,18,0.95)',
-        border: `1px solid ${done ? 'rgba(200,146,74,0.18)' : 'rgba(200,146,74,0.1)'}`,
-      }}
-    >
-      <div
-        className="w-9 h-9 rounded-[11px] flex items-center justify-center text-[16px] flex-shrink-0"
-        style={{ background: done ? 'rgba(200,146,74,0.14)' : 'rgba(200,146,74,0.08)' }}
-      >
-        {icon}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p
-          className="text-[12.5px] font-semibold leading-snug"
-          style={{ color: done ? 'var(--brand-primary)' : 'var(--text-cream)' }}
-        >
-          {title}
-        </p>
-        <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-dim)' }}>
-          {time}
-        </p>
-      </div>
-      <svg
-        width="14" height="14" viewBox="0 0 24 24" fill="none"
-        stroke={done ? 'rgba(200,146,74,0.5)' : 'rgba(200,146,74,0.25)'}
-        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-      >
-        <polyline points="9 18 15 12 9 6" />
-      </svg>
+    <Link href={href} className="motion-press">
+      {ring}
     </Link>
-  );
-}
-
-// ── Section Label ─────────────────────────────────────────────────────────────
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p
-      className="text-[10px] font-semibold uppercase tracking-[0.18em] mb-2 mt-1 px-0.5"
-      style={{ color: 'rgba(200,146,74,0.55)' }}
-    >
-      {children}
-    </p>
   );
 }
 
@@ -263,6 +103,24 @@ export default function SpiritualMetricsSection({
   readToday,
   tradition,
 }: SpiritualMetricsSectionProps) {
+  // ── Theme detection ────────────────────────────────────────────────────────
+  const [isDark, setIsDark] = useState(true);
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.dataset.theme !== 'light');
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => obs.disconnect();
+  }, []);
+
+  const containerBg = isDark
+    ? 'linear-gradient(150deg, rgba(30,24,16,0.98), rgba(22,18,12,0.96))'
+    : 'rgba(255, 253, 248, 0.90)';
+
+  const containerShadow = isDark
+    ? '0 12px 32px rgba(0,0,0,0.24)'
+    : '0 8px 24px rgba(49,35,20,0.07), inset 0 1px 0 rgba(255,255,255,0.85)';
+
   // ── Score computation ──────────────────────────────────────────────────────
   const scores = useMemo(() => {
     // Presence: japa streak — 21 days = full (consistent sadhana = presence)
@@ -285,57 +143,15 @@ export default function SpiritualMetricsSection({
     return { presence, clarity, balance, grounding, renewal };
   }, [japaStreak, shlokaStreak, japaAlreadyDoneToday, readToday]);
 
-  // ── Metric card data ───────────────────────────────────────────────────────
-  const japaStatus = japaAlreadyDoneToday
-    ? { text: 'Aligned', color: '#7ab85a' }
-    : japaStreak > 0
-      ? { text: 'Restoring', color: '#C8924A' }
-      : { text: 'Begin today', color: 'var(--text-dim)' };
-
-  const shlokaStatus = readToday
-    ? { text: 'Elevated', color: '#6aafcc' }
-    : shlokaStreak > 0
-      ? { text: 'Restoring', color: '#C8924A' }
-      : { text: 'Open scripture', color: 'var(--text-dim)' };
-
-  const balanceStatus = scores.balance >= 70
-    ? { text: 'Balanced', color: '#b06adc' }
-    : scores.balance >= 40
-      ? { text: 'Building', color: '#C8924A' }
-      : { text: 'Low — begin rituals', color: 'var(--text-dim)' };
-
-  const groundingStatus = scores.grounding >= 70
-    ? { text: 'Grounded', color: '#7ab85a' }
-    : scores.grounding >= 40
-      ? { text: 'Centering', color: '#C8924A' }
-      : { text: 'Needs attention', color: 'var(--text-dim)' };
-
-  // Mock 7-day sparkline values — derived from streaks so it looks real
-  const japaSparkline = Array.from({ length: 7 }, (_, i) => {
-    const daysAgo = 6 - i;
-    return daysAgo < japaStreak ? Math.round(60 + Math.random() * 40) : 0;
-  });
-
-  // Replace random with deterministic values based on streak
-  const detJapaSparkline = Array.from({ length: 7 }, (_, i) => {
-    const daysAgo = 6 - i;
-    if (daysAgo < japaStreak) {
-      return 60 + ((i * 17) % 40);
-    }
-    return 0;
-  });
-
-  const shlokaWeekFilled = Math.min(7, Math.max(0, shlokaStreak > 0 ? (readToday ? Math.min(7, shlokaStreak) : Math.min(6, shlokaStreak - 1)) : 0));
-
   return (
     <div className="space-y-3">
       {/* ── Daily Overview rings ─────────────────────────────────────────────── */}
       <div
         className="rounded-[1.7rem] px-4 py-4 relative overflow-hidden"
         style={{
-          background: 'linear-gradient(150deg, rgba(30,24,16,0.98), rgba(22,18,12,0.96))',
+          background: containerBg,
           border: '1px solid rgba(200,146,74,0.14)',
-          boxShadow: '0 12px 32px rgba(0,0,0,0.24)',
+          boxShadow: containerShadow,
         }}
       >
         {/* Top corner glow */}
@@ -348,23 +164,28 @@ export default function SpiritualMetricsSection({
         <div className="flex gap-3 justify-between overflow-x-auto pb-1 no-scrollbar">
           <SpiritualRing
             id="japa" score={scores.presence} label="Japa"
-            color="#C8924A" color2="#D4784A"
+            color="#C8924A"
+            href="/japa"
           />
           <SpiritualRing
             id="svadhyaya" score={scores.clarity} label="Svādhyāya"
-            color="#6aafcc" color2="#4a8ab4"
+            color="#6aafcc"
+            href="/library"
           />
           <SpiritualRing
             id="sadhana" score={scores.balance} label="Sādhana"
-            color="#b06adc" color2="#8850b4"
+            color="#b06adc"
+            href="/nitya-karma"
           />
           <SpiritualRing
             id="nitya" score={scores.grounding} label="Nitya"
-            color="#e09050" color2="#c06030"
+            color="#e09050"
+            href="/nitya-karma"
           />
           <SpiritualRing
             id="viveka" score={scores.renewal} label="Viveka"
-            color="#7ab85a" color2="#5a9840"
+            color="#7ab85a"
+            href="/discover"
           />
         </div>
       </div>

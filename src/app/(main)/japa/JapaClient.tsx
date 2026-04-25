@@ -20,6 +20,7 @@ import { usePremium } from '@/hooks/usePremium';
 import PremiumGate from '@/components/premium/PremiumGate';
 import CircularProgress from '@/components/ui/CircularProgress';
 import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
+import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import type { Mantra } from '@sangam/sadhana-engine';
 
 // ── Constants ──────────────────────────────────────────────────────────────────
@@ -456,6 +457,7 @@ export default function JapaClient({
   const [tapFlash,       setTapFlash]   = useState(false);
   const [beadTypeId,     setBeadTypeId] = useState<BeadTypeId>('rudraksha');
   const [isFocusMode,    setFocusMode]  = useState(false);
+  const [showConfetti,   setShowConfetti] = useState(false);
 
   const isPro = usePremium();
   const startedAt = useRef<string>('');
@@ -550,6 +552,7 @@ export default function JapaClient({
 
     setFocusMode(false);
     setComplete(true);
+    setShowConfetti(true);
   }, [engine, selectedMantra, userId, duration, targetRounds]);
 
   const handleComplete = useCallback(() => {
@@ -579,6 +582,9 @@ export default function JapaClient({
   return (
     <div className="relative min-h-screen flex flex-col"
       style={{ background: 'linear-gradient(180deg, #110809 0%, #1a0d0a 45%, #130c06 100%)' }}>
+
+      {/* Sacred confetti on mala completion */}
+      <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
 
       {/* Ambient particles */}
       <JapaAmbient />

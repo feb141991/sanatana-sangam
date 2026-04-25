@@ -25,6 +25,8 @@ import { createClient } from '@/lib/supabase';
 import { APP } from '@/lib/config';
 import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
 import SpiritualMetricsSection from '@/components/home/SpiritualMetricsSection';
+import MoodGlyph from '@/components/ui/MoodGlyph';
+import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 
 interface Panchang {
   tithi:     string;
@@ -92,17 +94,17 @@ const DEFAULT_CARD_ORDER = DEFAULT_QUICK_ACCESS.map(i => i.href);
 const QUICK_ACCESS_MAP   = Object.fromEntries(DEFAULT_QUICK_ACCESS.map(i => [i.href, i]));
 
 // Mood quick-lookup (mirrors DiscoverClient MOODS)
-const MOOD_QUICK_MAP: Record<string, { emoji: string; label: string; colour: string }> = {
-  anxious:     { emoji: '😰', label: 'Anxious',     colour: '#7b6f9e' },
-  grieving:    { emoji: '🌧️', label: 'Grieving',    colour: '#6b8aad' },
-  angry:       { emoji: '🔥', label: 'Angry',        colour: '#c86a3a' },
-  scattered:   { emoji: '🌀', label: 'Scattered',    colour: '#7aab94' },
-  lost:        { emoji: '🌑', label: 'Lost',         colour: '#8e8e7a' },
-  joyful:      { emoji: '☀️', label: 'Joyful',       colour: '#c8923a' },
-  seeking:     { emoji: '🔍', label: 'Seeking',      colour: '#c8925e' },
-  lonely:      { emoji: '🕊️', label: 'Lonely',       colour: '#8aadad' },
-  overwhelmed: { emoji: '🌊', label: 'Overwhelmed',  colour: '#6b8ab0' },
-  grateful:    { emoji: '🙏', label: 'Grateful',     colour: '#b09a6a' },
+const MOOD_QUICK_MAP: Record<string, { key: string; label: string; colour: string }> = {
+  anxious:     { key: 'anxious',     label: 'Anxious',     colour: '#7b6f9e' },
+  grieving:    { key: 'grieving',    label: 'Grieving',    colour: '#6b8aad' },
+  angry:       { key: 'angry',       label: 'Angry',       colour: '#c86a3a' },
+  scattered:   { key: 'scattered',   label: 'Scattered',   colour: '#7aab94' },
+  lost:        { key: 'lost',        label: 'Lost',        colour: '#8e8e7a' },
+  joyful:      { key: 'joyful',      label: 'Joyful',      colour: '#c8923a' },
+  seeking:     { key: 'seeking',     label: 'Seeking',     colour: '#c8925e' },
+  lonely:      { key: 'lonely',      label: 'Lonely',      colour: '#8aadad' },
+  overwhelmed: { key: 'overwhelmed', label: 'Overwhelmed', colour: '#6b8ab0' },
+  grateful:    { key: 'grateful',    label: 'Grateful',    colour: '#b09a6a' },
 };
 
 const HOME_THEMES: Record<string, FeatureTheme> = {
@@ -803,8 +805,21 @@ export default function HomeDashboard({
     } catch { return new Set<string>(); }
   });
 
+  // Light/dark theme detection — drives card surface swaps
+  const [isDark, setIsDark] = useState(true);
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.dataset.theme !== 'light');
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => obs.disconnect();
+  }, []);
+
+  // Confetti
+  const [showConfetti, setShowConfetti] = useState(false);
+
   // Mood pill — null = not set today, undefined = loading
-  const [moodToday, setMoodToday] = useState<{ emoji: string; label: string; colour: string } | null | undefined>(undefined);
+  const [moodToday, setMoodToday] = useState<{ key: string; label: string; colour: string } | null | undefined>(undefined);
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -1052,6 +1067,10 @@ export default function HomeDashboard({
     }
 
     toast.success(`🔥 ${newStreak}-day streak! +5 seva points`);
+    // Confetti on milestones (7, 14, 21, 30 days) or first read
+    if (newStreak === 1 || newStreak % 7 === 0) {
+      setShowConfetti(true);
+    }
     router.refresh(); // Ensure server state syncs on next visit
   }
 
@@ -1078,6 +1097,17 @@ export default function HomeDashboard({
     }
   }
 
+  // Light theme card surface — warm translucent paper
+  const LIGHT_CARD_BG   = 'rgba(255, 253, 248, 0.90)';
+  const LIGHT_CARD_SHADOW = '0 8px 24px rgba(49,35,20,0.07), inset 0 1px 0 rgba(255,255,255,0.85)';
+  const DARK_CARD_SHADOW  = '0 20px 40px rgba(0, 0, 0, 0.28)';
+  function getCardBg(theme: FeatureTheme) {
+    return isDark ? theme.surface : LIGHT_CARD_BG;
+  }
+  function getCardShadow() {
+    return isDark ? DARK_CARD_SHADOW : LIGHT_CARD_SHADOW;
+  }
+
   const homeHeroTheme = HOME_THEMES.pathshala;
   const panchangTheme = HOME_THEMES.panchang;
   const sacredTextTheme = tradition === 'hindu' ? HOME_THEMES.pathshala : HOME_THEMES.bhakti;
@@ -1085,13 +1115,18 @@ export default function HomeDashboard({
   return (
     <div className="space-y-4 pb-2 fade-in">
 
+      {/* ── Sacred confetti celebration ── */}
+      <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
+
       {/* ── Greeting Hero ── */}
       <motion.div
         className="rounded-[2rem] px-5 py-5 relative overflow-hidden"
         style={{
-          background: homeHeroTheme.surface,
+          background: getCardBg(homeHeroTheme),
           border: `1px solid ${homeHeroTheme.border}`,
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.28)',
+          boxShadow: getCardShadow(),
+          backdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
+          WebkitBackdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
         }}
         initial={prefersReducedMotion ? undefined : { opacity: 0, y: 8 }}
         animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
@@ -1153,11 +1188,12 @@ export default function HomeDashboard({
                 }}
               >
                 <motion.span
-                  className="text-[2rem] leading-none flex-shrink-0"
+                  className="leading-none flex-shrink-0 flex items-center justify-center"
+                  style={{ width: 36, height: 36 }}
                   animate={prefersReducedMotion ? undefined : { scale: [1, 1.08, 1] }}
                   transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
                 >
-                  {moodToday.emoji}
+                  <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={32} />
                 </motion.span>
                 <div className="min-w-0">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: `${moodToday.colour}99` }}>
@@ -1332,9 +1368,11 @@ export default function HomeDashboard({
       <motion.div
         className="rounded-[1.95rem] overflow-hidden border relative"
         style={{
-          background: panchangTheme.surface,
+          background: getCardBg(panchangTheme),
           borderColor: panchangTheme.border,
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.22)',
+          boxShadow: getCardShadow(),
+          backdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
+          WebkitBackdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
         }}
         initial={prefersReducedMotion ? undefined : { opacity: 0, y: 6 }}
         animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
@@ -1420,8 +1458,10 @@ export default function HomeDashboard({
         className="rounded-[1.85rem] p-5 relative overflow-hidden border"
         style={{
           borderColor: sacredTextTheme.border,
-          background: sacredTextTheme.surface,
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.22)',
+          background: getCardBg(sacredTextTheme),
+          boxShadow: getCardShadow(),
+          backdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
+          WebkitBackdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
         }}
         initial={prefersReducedMotion ? undefined : { opacity: 0, y: 6 }}
         animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
@@ -1609,9 +1649,11 @@ export default function HomeDashboard({
         <Link href="/japa"
           className="block rounded-[1.7rem] p-4 relative overflow-hidden border motion-lift"
           style={{
-            background: 'linear-gradient(150deg, rgba(44, 34, 28, 0.98), rgba(34, 26, 20, 0.96))',
+            background: isDark ? 'linear-gradient(150deg, rgba(44, 34, 28, 0.98), rgba(34, 26, 20, 0.96))' : LIGHT_CARD_BG,
             borderColor: 'rgba(212, 120, 74, 0.20)',
-            boxShadow: '0 16px 32px rgba(0, 0, 0, 0.20)',
+            boxShadow: isDark ? '0 16px 32px rgba(0, 0, 0, 0.20)' : LIGHT_CARD_SHADOW,
+            backdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
+            WebkitBackdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
           }}>
           {/* Ambient glow */}
           <div className="absolute inset-0 pointer-events-none" style={{
@@ -1660,9 +1702,11 @@ export default function HomeDashboard({
                 href={item.href}
                 className="border rounded-[1.6rem] p-4 flex items-start gap-3 relative overflow-hidden motion-lift"
                 style={{
-                  background: HOME_THEMES[item.theme].surface,
+                  background: getCardBg(HOME_THEMES[item.theme]),
                   borderColor: HOME_THEMES[item.theme].border,
-                  boxShadow: '0 14px 28px rgba(0, 0, 0, 0.18)',
+                  boxShadow: isDark ? '0 14px 28px rgba(0, 0, 0, 0.18)' : LIGHT_CARD_SHADOW,
+                  backdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
+                  WebkitBackdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
                   animationDelay: `${i * 60}ms`,
                 }}
               >
@@ -1693,8 +1737,10 @@ export default function HomeDashboard({
           className="block w-full rounded-[1.7rem] border p-4 text-center relative overflow-hidden motion-lift"
           style={{
             borderColor: HOME_THEMES.pathshala.border,
-            background: HOME_THEMES.pathshala.surface,
-            boxShadow: '0 12px 24px rgba(0, 0, 0, 0.16)',
+            background: getCardBg(HOME_THEMES.pathshala),
+            boxShadow: isDark ? '0 12px 24px rgba(0, 0, 0, 0.16)' : LIGHT_CARD_SHADOW,
+            backdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
+            WebkitBackdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
           }}>
           <div className="absolute inset-0 pointer-events-none" style={{
             background: 'radial-gradient(ellipse at center, rgba(200, 146, 74, 0.05), transparent 70%)',

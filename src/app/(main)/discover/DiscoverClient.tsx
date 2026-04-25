@@ -6,6 +6,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ChevronLeft, Sparkles, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 import type { LibraryEntry } from '@/lib/library-content';
+import MoodGlyph from '@/components/ui/MoodGlyph';
 
 interface Props {
   tradition:     string | null;
@@ -229,7 +230,9 @@ export default function DiscoverClient({ tradition }: Props) {
                 }}
                 animate={prefersReducedMotion ? undefined : { scale: isActive ? 1.01 : 1 }}
               >
-                <span className="text-[1.4rem] leading-none flex-shrink-0">{mood.emoji}</span>
+                <span className="leading-none flex-shrink-0 flex items-center justify-center" style={{ width: 28, height: 28 }}>
+                  <MoodGlyph mood={mood.key} color={isActive ? mood.colour : `${mood.colour}99`} size={24} />
+                </span>
                 <span
                   className="text-[13px] font-semibold leading-tight"
                   style={{ color: isActive ? mood.colour : 'var(--text-cream)' }}
@@ -296,7 +299,9 @@ export default function DiscoverClient({ tradition }: Props) {
             {/* Results header */}
             <div className="flex items-center justify-between py-1">
               <div className="flex items-center gap-2">
-                <span className="text-base">{activeMood.emoji}</span>
+                <span className="flex items-center justify-center" style={{ width: 22, height: 22 }}>
+                  <MoodGlyph mood={activeMood.key} color={activeMood.colour} size={20} />
+                </span>
                 <p className="text-sm font-semibold" style={{ color: activeMood.colour }}>
                   For when you feel {activeMood.label.toLowerCase()}
                 </p>

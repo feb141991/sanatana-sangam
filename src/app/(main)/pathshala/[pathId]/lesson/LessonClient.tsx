@@ -19,6 +19,7 @@ import { createClient } from '@/lib/supabase';
 import { GITA_FULL_DATA } from '@/lib/gita-full-data';
 import { ALL_LIBRARY_ENTRIES } from '@/lib/library-content';
 import CircularProgress from '@/components/ui/CircularProgress';
+import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { SEED_PATHS } from '@/app/(main)/pathshala/PathshalaClient';
 import { useSadhana } from '@/contexts/EngineContext';
 import type { LibraryEntry } from '@/lib/library-content';
@@ -247,6 +248,7 @@ export default function LessonClient({
   const [lessonIndex, setLessonIndex] = useState(initialLesson ?? 0);
   const [completed, setCompleted] = useState<number[]>(initialCompleted ?? []);
   const [saving, setSaving] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const lesson = lessons[lessonIndex];
   const isCompleted = completed.includes(lessonIndex);
@@ -272,7 +274,9 @@ export default function LessonClient({
       if (error) throw error;
 
       setCompleted(newCompleted);
-      toast.success(newCompleted.length === totalLessons ? 'Path completed! 🎉 Jai Ho!' : 'Lesson complete 🙏');
+      const isPathDone = newCompleted.length === totalLessons;
+      toast.success(isPathDone ? 'Path completed! 🎉 Jai Ho!' : 'Lesson complete 🙏');
+      if (isPathDone) setShowConfetti(true);
 
       // Fire-and-forget engine tracking (don't block UI)
       if (engine) {
@@ -310,6 +314,9 @@ export default function LessonClient({
 
   return (
     <div className="min-h-screen pb-28">
+
+      {/* Sacred confetti on path completion */}
+      <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
 
       {/* Header */}
       <div className="sticky top-0 z-30 glass-panel border-b border-white/8 px-4 py-3">
