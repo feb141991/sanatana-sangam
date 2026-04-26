@@ -1,1288 +1,1014 @@
 'use client';
 
-// ─── Japa Counter — Still Water ───────────────────────────────────────────────
+// ─── Japa Mala — Multi-screen redesign ────────────────────────────────────────
 //
-// "Still Water" concept: the bead is a lake surface. Each mantra repetition
-// sends a ripple outward. Minimal, dark, deeply meditative.
+//  Screen 1 — Choose Mala   (sandalwood / rudraksha / rose quartz / tulsi / crystal)
+//  Screen 2 — Choose Mantra (6 options across traditions)
+//  Screen 3 — Japa practice (SVG bead ring, counter in center)
+//  Overlay  — Completion    (stats + streak)
+//  Sheet    — Sacred Sounds (ambient audio)
 //
-//   • Single large bead (no SVG ring) — water ripple on every tap
-//   • Tradition-aware accent colour from bead type
-//   • Tap mantra text → full-screen frosted overlay with complete Sanskrit +
-//     ambience switcher (Silence / Rain / River / Temple Bells)
-//   • WeeklyCoins: 7-day Apple Journal style coin strip (free tier)
-//   • 30-day binary heatmap: gold = any japa that day, dark grey = none (Pro)
-//   • Tap a past day → detail bottom sheet
-//   • Focus Mode (full-screen) retained for deep sessions
+//  Theme: follows global data-theme dark/light via useThemePreference()
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Check, RotateCcw, ChevronDown, Flame, Maximize2, Lock } from 'lucide-react';
+import { ChevronLeft, Volume2, VolumeX, Flame, RotateCcw } from 'lucide-react';
 import { useEngine } from '@/contexts/EngineContext';
 import { hapticLight, hapticSuccess } from '@/lib/platform';
 import { createClient } from '@/lib/supabase';
 import { usePremium } from '@/hooks/usePremium';
-import PremiumGate from '@/components/premium/PremiumGate';
-import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
-import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
-import type { Mantra } from '@sangam/sadhana-engine';
+import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 // ── Constants ──────────────────────────────────────────────────────────────────
-const BEADS_PER_MALA = 108;
+const TOTAL_BEADS = 108;
+const SVG_W = 340;
+const SVG_CX = SVG_W / 2;
+const SVG_CY = SVG_W / 2;
+const RING_R = 148;
+const BEAD_R = 5.2;
+const SUMERU_R = 8;
+const STORAGE_MALA    = 'ss-japa-mala';
+const STORAGE_MANTRA  = 'ss-japa-mantra';
 
-// ── Tradition-aware mantra defaults ───────────────────────────────────────────
-const DEFAULT_MANTRA_BY_TRADITION: Record<string, { id: string; name: string; short: string; full: string; source?: string }> = {
-  hindu:    {
-    id:     'gayatri',
-    name:   'Gayatri Mantra',
-    short:  'ॐ भूर्भुवः स्वः...',
-    full:   'ॐ भूर्भुवः स्वः\nतत्सवितुर्वरेण्यं\nभर्गो देवस्य धीमहि\nधियो यो नः प्रचोदयात् ।।',
-    source: 'Rigveda 3.62.10',
-  },
-  sikh:     {
-    id:     'waheguru',
-    name:   'Waheguru Naam Simran',
-    short:  'ਵਾਹਿਗੁਰੂ',
-    full:   'ਵਾਹਿਗੁਰੂ\nਵਾਹਿਗੁਰੂ\nਵਾਹਿਗੁਰੂ\nਵਾਹਿਗੁਰੂ',
-    source: 'Sri Guru Granth Sahib',
-  },
-  buddhist: {
-    id:     'om_mani',
-    name:   'Om Mani Padme Hum',
-    short:  'ओम् मणि पद्मे हूम्',
-    full:   'ओम् मणि पद्मे हूम्',
-    source: 'Karaṇḍavyūha Sūtra',
-  },
-  jain:     {
-    id:     'namokar',
-    name:   'Namokar Mantra',
-    short:  'णमो अरिहंताणं',
-    full:   'णमो अरिहंताणं\nणमो सिद्धाणं\nणमो आयरियाणं\nणमो उवज्झायाणं\nणमो लोए सव्व साहूणं',
-    source: 'Jain Āgamas',
-  },
-};
-
-// ── Audio track map ────────────────────────────────────────────────────────────
-const MANTRA_AUDIO_TRACKS: Record<string, string[]> = {
-  gayatri:  ['gayatri-mantra-as-it-is'],
-  waheguru: ['guru-stotram', 'gayatri-mantra-as-it-is'],
-  om_mani:  ['gayatri-mantra-as-it-is'],
-  namokar:  ['gayatri-mantra-as-it-is'],
-};
-const DEFAULT_AUDIO_TRACKS = ['gayatri-mantra-as-it-is', 'guru-stotram'];
-
-// ── Bead types ─────────────────────────────────────────────────────────────────
-const BEAD_TYPES = [
+// ── Mala definitions ───────────────────────────────────────────────────────────
+const MALAS = [
   {
-    id:        'rudraksha',
-    label:     'Rudraksha',
-    emoji:     '🟤',
-    bg:        'radial-gradient(circle at 33% 28%, #a07858 0%, #6B3F1C 48%, #3d1e0a 100%)',
-    tapBg:     'radial-gradient(circle at 33% 28%, #c09878 0%, #8B5A28 48%, #5a2e10 100%)',
-    shadow:    'rgba(100,55,18,0.65)',
-    tapShadow: 'rgba(180,90,30,0.9)',
-    border:    'rgba(180,120,55,0.6)',
-    glow:      'rgba(140,80,30,',
-    ripple:    'rgba(160,100,45,',
-    textColor: '#fde8c8',
-    accent:    '#C8924A',
+    id: 'sandalwood',
+    name: 'Sandalwood',
+    subtitle: 'Calming · All Traditions',
+    emoji: '🟤',
+    dark:  { thread: 'rgba(120,80,40,0.20)', bead: '#5A3218', counted: '#C8924A', sumeru: '#2E1508', glow: 'rgba(200,146,74,0.55)' },
+    light: { thread: 'rgba(80,50,20,0.15)',  bead: '#C8A070', counted: '#7A4A1E', sumeru: '#5A3010', glow: 'rgba(122,74,30,0.45)' },
   },
   {
-    id:        'tulsi',
-    label:     'Tulsi',
-    emoji:     '🌿',
-    bg:        'radial-gradient(circle at 33% 28%, #7fba60 0%, #3d7a28 48%, #1e4010 100%)',
-    tapBg:     'radial-gradient(circle at 33% 28%, #9fd080 0%, #5a9840 48%, #2e5a18 100%)',
-    shadow:    'rgba(40,90,20,0.65)',
-    tapShadow: 'rgba(60,150,30,0.8)',
-    border:    'rgba(80,160,50,0.5)',
-    glow:      'rgba(60,120,30,',
-    ripple:    'rgba(80,160,50,',
-    textColor: '#f0fce8',
-    accent:    '#6abf6a',
+    id: 'rudraksha',
+    name: 'Rudraksha',
+    subtitle: 'Sacred · Shaiva',
+    emoji: '🟤',
+    dark:  { thread: 'rgba(80,40,20,0.20)', bead: '#3A1A08', counted: '#C8924A', sumeru: '#1A0802', glow: 'rgba(200,100,60,0.55)' },
+    light: { thread: 'rgba(60,30,10,0.15)', bead: '#A07050', counted: '#5A2E10', sumeru: '#3A1A02', glow: 'rgba(90,46,16,0.45)' },
   },
   {
-    id:        'crystal',
-    label:     'Crystal',
-    emoji:     '💎',
-    bg:        'radial-gradient(circle at 30% 25%, rgba(255,255,255,0.95) 0%, rgba(160,200,255,0.88) 38%, rgba(80,130,220,0.85) 72%, rgba(40,80,180,0.9) 100%)',
-    tapBg:     'radial-gradient(circle at 30% 25%, rgba(255,255,255,1) 0%, rgba(190,230,255,0.95) 38%, rgba(110,165,240,0.9) 72%, rgba(60,110,210,0.95) 100%)',
-    shadow:    'rgba(80,120,220,0.55)',
-    tapShadow: 'rgba(130,180,255,0.85)',
-    border:    'rgba(180,210,255,0.75)',
-    glow:      'rgba(100,150,240,',
-    ripple:    'rgba(120,170,255,',
-    textColor: '#1a2850',
-    accent:    '#7aabf5',
+    id: 'rose_quartz',
+    name: 'Rose Quartz',
+    subtitle: 'Love & Healing · Universal',
+    emoji: '🩷',
+    dark:  { thread: 'rgba(160,80,100,0.20)', bead: '#5A2A3A', counted: '#D4826A', sumeru: '#3A1828', glow: 'rgba(210,120,140,0.55)' },
+    light: { thread: 'rgba(160,80,100,0.15)', bead: '#E8B0C0', counted: '#C07090', sumeru: '#A04870', glow: 'rgba(192,112,144,0.45)' },
   },
   {
-    id:        'sandal',
-    label:     'Sandalwood',
-    emoji:     '🪵',
-    bg:        'radial-gradient(circle at 33% 28%, #e8c87a 0%, #b07820 48%, #6a4408 100%)',
-    tapBg:     'radial-gradient(circle at 33% 28%, #f8e09a 0%, #d09830 48%, #8a5818 100%)',
-    shadow:    'rgba(140,90,15,0.65)',
-    tapShadow: 'rgba(200,140,20,0.85)',
-    border:    'rgba(220,170,50,0.65)',
-    glow:      'rgba(180,130,30,',
-    ripple:    'rgba(210,160,40,',
-    textColor: '#2a1a00',
-    accent:    '#d4a83c',
+    id: 'tulsi',
+    name: 'Tulsi',
+    subtitle: 'Pure & Auspicious · Vaishnava',
+    emoji: '🌿',
+    dark:  { thread: 'rgba(40,100,40,0.20)', bead: '#1E3E1E', counted: '#C8924A', sumeru: '#0E2A0E', glow: 'rgba(60,160,60,0.40)' },
+    light: { thread: 'rgba(30,80,30,0.15)',  bead: '#90C090', counted: '#3A7A3A', sumeru: '#1E5A1E', glow: 'rgba(58,122,58,0.40)' },
+  },
+  {
+    id: 'crystal',
+    name: 'Crystal',
+    subtitle: 'Clarity & Purity · Universal',
+    emoji: '🔮',
+    dark:  { thread: 'rgba(180,200,220,0.12)', bead: 'rgba(200,215,235,0.12)', counted: '#C8924A', sumeru: 'rgba(200,220,240,0.22)', glow: 'rgba(180,200,240,0.50)' },
+    light: { thread: 'rgba(100,120,160,0.15)',  bead: 'rgba(160,180,210,0.35)', counted: '#6878A8', sumeru: 'rgba(140,160,200,0.55)', glow: 'rgba(104,120,168,0.40)' },
   },
 ] as const;
-type BeadTypeId = typeof BEAD_TYPES[number]['id'];
 
-// ── Ambience ───────────────────────────────────────────────────────────────────
-type AmbienceId = 'silence' | 'rain' | 'river' | 'bells';
-const AMBIENCE_OPTIONS: { id: AmbienceId; label: string; emoji: string }[] = [
-  { id: 'silence', label: 'Silence',  emoji: '🔕' },
-  { id: 'rain',    label: 'Rain',     emoji: '🌧️' },
-  { id: 'river',   label: 'River',    emoji: '🌊' },
-  { id: 'bells',   label: 'Bells',    emoji: '🔔' },
+type MalaId = typeof MALAS[number]['id'];
+
+// ── Mantra definitions ─────────────────────────────────────────────────────────
+const MANTRAS = [
+  {
+    id: 'om_namah_shivaya',
+    name: 'Om Namah Shivaya',
+    devanagari: 'ॐ नमः शिवाय',
+    tradition: 'Shaiva',
+    description: 'Salutation to Shiva — the five elements',
+    full: 'ॐ नमः शिवाय\nॐ नमः शिवाय\nॐ नमः शिवाय',
+    tradColor: '#A06888',
+  },
+  {
+    id: 'om_namo_narayanaya',
+    name: 'Om Namo Narayanaya',
+    devanagari: 'ॐ नमो नारायणाय',
+    tradition: 'Vaishnava',
+    description: 'Salutation to Lord Narayana',
+    full: 'ॐ नमो नारायणाय\nॐ नमो नारायणाय\nॐ नमो नारायणाय',
+    tradColor: '#6888C8',
+  },
+  {
+    id: 'gayatri',
+    name: 'Gayatri Mantra',
+    devanagari: 'ॐ भूर्भुवः स्वः',
+    tradition: 'Vedic',
+    description: 'Universal mantra of light and wisdom',
+    full: 'ॐ भूर्भुवः स्वः\nतत्सवितुर्वरेण्यं\nभर्गो देवस्य धीमहि\nधियो यो नः प्रचोदयात् ।।',
+    tradColor: '#C8A040',
+  },
+  {
+    id: 'hare_krishna',
+    name: 'Hare Krishna Mahamantra',
+    devanagari: 'हरे कृष्ण हरे कृष्ण',
+    tradition: 'Vaishnava',
+    description: 'The great mantra of Krishna and Rama',
+    full: 'हरे कृष्ण हरे कृष्ण\nकृष्ण कृष्ण हरे हरे\nहरे राम हरे राम\nराम राम हरे हरे',
+    tradColor: '#5888C8',
+  },
+  {
+    id: 'mahamrityunjaya',
+    name: 'Mahamrityunjaya',
+    devanagari: 'ॐ त्र्यम्बकं यजामहे',
+    tradition: 'Vedic',
+    description: 'The great death-conquering mantra of Shiva',
+    full: 'ॐ त्र्यम्बकं यजामहे\nसुगन्धिं पुष्टिवर्धनम्\nउर्वारुकमिव बन्धनान्\nमृत्योर्मुक्षीय मामृतात् ।।',
+    tradColor: '#A86838',
+  },
+  {
+    id: 'om_mani',
+    name: 'Om Mani Padme Hum',
+    devanagari: 'ॐ मणि पद्मे हूँ',
+    tradition: 'Buddhist',
+    description: 'Jewel in the lotus — mantra of compassion',
+    full: 'ॐ मणि पद्मे हूँ\nॐ मणि पद्मे हूँ\nॐ मणि पद्मे हूँ',
+    tradColor: '#6A9888',
+  },
+] as const;
+
+type MantraId = typeof MANTRAS[number]['id'];
+
+// ── Sound definitions ──────────────────────────────────────────────────────────
+type SoundId = 'silence' | 'rain' | 'river' | 'bells' | 'forest';
+const SOUNDS: { id: SoundId; label: string; emoji: string; url: string; bg: string }[] = [
+  { id: 'silence', label: 'Silence',       emoji: '🤫', url: '', bg: 'linear-gradient(135deg, #1a1a2e, #0d0d1a)' },
+  { id: 'rain',    label: 'Rain',          emoji: '🌧️', url: 'https://cdn.freesound.org/previews/346/346170_5121236-lq.mp3', bg: 'linear-gradient(135deg, #1a2a3a, #0a1a2a)' },
+  { id: 'river',   label: 'River',         emoji: '🌊', url: 'https://cdn.freesound.org/previews/531/531947_11861866-lq.mp3', bg: 'linear-gradient(135deg, #0e2030, #1a3040)' },
+  { id: 'bells',   label: 'Temple Bells',  emoji: '🔔', url: 'https://cdn.freesound.org/previews/411/411090_5121236-lq.mp3', bg: 'linear-gradient(135deg, #2a1a0e, #1a0e06)' },
+  { id: 'forest',  label: 'Forest',        emoji: '🌿', url: 'https://cdn.freesound.org/previews/250/250978_4486188-lq.mp3', bg: 'linear-gradient(135deg, #0e2010, #182a18)' },
 ];
-// Royalty-free ambient sounds — replace with self-hosted assets before production
-const AMBIENCE_URLS: Partial<Record<AmbienceId, string>> = {
-  rain:  'https://cdn.freesound.org/previews/346/346170_5121236-lq.mp3',
-  river: 'https://cdn.freesound.org/previews/531/531947_11861866-lq.mp3',
-  bells: 'https://cdn.freesound.org/previews/411/411090_5121236-lq.mp3',
-};
 
-// ── Types ──────────────────────────────────────────────────────────────────────
-interface DayRecord { date: string; done: boolean; }
-interface Ripple    { id: number; }
-interface Props {
-  userId:               string;
-  userName:             string;
-  tradition:            string;
-  currentStreak:        number;
-  japaAlreadyDoneToday: boolean;
-  history?:             DayRecord[];
+// ── SVG Mala ───────────────────────────────────────────────────────────────────
+function beadPos(i: number) {
+  const angle = ((i / TOTAL_BEADS) * Math.PI * 2) - Math.PI / 2;
+  return { x: SVG_CX + RING_R * Math.cos(angle), y: SVG_CY + RING_R * Math.sin(angle) };
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Sub-components
-// ─────────────────────────────────────────────────────────────────────────────
-
-// ── MantraFullScreen ──────────────────────────────────────────────────────────
-// Frosted glass full-screen overlay: complete Sanskrit text + ambience switcher
-function MantraFullScreen({
-  mantra, defaultMantra, ambience, onAmbienceChange, onClose,
+function MalaSVG({
+  malaId, beadCount, isDark, pulsing, onTap,
 }: {
-  mantra:            Mantra | null;
-  defaultMantra:     typeof DEFAULT_MANTRA_BY_TRADITION[string];
-  ambience:          AmbienceId;
-  onAmbienceChange:  (id: AmbienceId) => void;
-  onClose:           () => void;
+  malaId: MalaId; beadCount: number; isDark: boolean;
+  pulsing: boolean; onTap: () => void;
 }) {
-  const fullText = mantra?.sanskrit ?? defaultMantra.full;
-  const title    = mantra?.name    ?? defaultMantra.name;
-  const source   = defaultMantra.source;
+  const mala = MALAS.find(m => m.id === malaId) ?? MALAS[0];
+  const c = isDark ? mala.dark : mala.light;
+  const currentBeadIdx = beadCount % TOTAL_BEADS;
+  const roundComplete  = beadCount > 0 && beadCount % TOTAL_BEADS === 0;
+
+  const countDisplay = roundComplete ? TOTAL_BEADS : currentBeadIdx;
+
+  return (
+    <svg
+      viewBox={`0 0 ${SVG_W} ${SVG_W}`}
+      style={{ width: '100%', maxWidth: 320, cursor: 'pointer', touchAction: 'manipulation' }}
+      onClick={onTap}
+    >
+      <defs>
+        {/* 3D bead gradients */}
+        <radialGradient id={`bead-un-${malaId}`} cx="38%" cy="32%" r="60%">
+          <stop offset="0%"   stopColor={c.bead} stopOpacity="1" />
+          <stop offset="100%" stopColor={c.bead} stopOpacity="0.55" />
+        </radialGradient>
+        <radialGradient id={`bead-done-${malaId}`} cx="38%" cy="32%" r="60%">
+          <stop offset="0%"   stopColor={isDark ? '#F4C860' : c.counted} stopOpacity="1" />
+          <stop offset="100%" stopColor={c.counted} stopOpacity="0.85" />
+        </radialGradient>
+        <radialGradient id={`sumeru-${malaId}`} cx="38%" cy="32%" r="60%">
+          <stop offset="0%"   stopColor={isDark ? '#3E2010' : c.sumeru} stopOpacity="1" />
+          <stop offset="100%" stopColor={c.sumeru} stopOpacity="0.8" />
+        </radialGradient>
+        {/* Glow filter for current bead */}
+        <filter id="bead-glow" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="3.5" result="blur" />
+          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+        {/* Center glow */}
+        <radialGradient id="center-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stopColor={c.glow} stopOpacity="0.18" />
+          <stop offset="100%" stopColor={c.glow} stopOpacity="0" />
+        </radialGradient>
+      </defs>
+
+      {/* Thread / string */}
+      <circle cx={SVG_CX} cy={SVG_CY} r={RING_R} fill="none"
+        stroke={c.thread} strokeWidth="1.5" />
+
+      {/* Center glow */}
+      <circle cx={SVG_CX} cy={SVG_CY} r={RING_R - 20} fill="url(#center-glow)" />
+
+      {/* 108 beads */}
+      {Array.from({ length: TOTAL_BEADS }, (_, i) => {
+        const isSumeru = i === 0;
+        const isDone   = i > 0 && i <= currentBeadIdx && !roundComplete
+                        || (roundComplete && i > 0);
+        const isCurrent = !roundComplete && i === currentBeadIdx + 1 && beadCount > 0;
+        const pos = beadPos(i);
+        const r   = isSumeru ? SUMERU_R : BEAD_R;
+        const fill = isSumeru
+          ? `url(#sumeru-${malaId})`
+          : isDone
+          ? `url(#bead-done-${malaId})`
+          : `url(#bead-un-${malaId})`;
+
+        return (
+          <circle
+            key={i}
+            cx={pos.x}
+            cy={pos.y}
+            r={r}
+            fill={fill}
+            filter={isCurrent ? 'url(#bead-glow)' : undefined}
+            stroke={isCurrent ? c.glow : isDone ? (isDark ? 'rgba(240,180,60,0.35)' : 'rgba(100,60,20,0.3)') : 'none'}
+            strokeWidth={isCurrent ? 1.5 : isDone ? 0.8 : 0}
+          />
+        );
+      })}
+
+      {/* Counter in center */}
+      <text
+        x={SVG_CX}
+        y={SVG_CY - 8}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize={countDisplay >= 100 ? 46 : 54}
+        fontWeight="700"
+        fontFamily="system-ui, -apple-system, sans-serif"
+        fill={isDark ? 'rgba(245,225,185,0.97)' : '#2D1F0E'}
+        letterSpacing="-2"
+      >
+        {countDisplay}
+      </text>
+      <text
+        x={SVG_CX}
+        y={SVG_CY + 32}
+        textAnchor="middle"
+        fontSize={14}
+        fontFamily="system-ui, -apple-system, sans-serif"
+        fill={isDark ? 'rgba(200,146,74,0.65)' : 'rgba(100,65,25,0.65)'}
+        letterSpacing="1"
+      >
+        / 108
+      </text>
+
+      {/* "Tap" hint when not started */}
+      {beadCount === 0 && (
+        <text
+          x={SVG_CX}
+          y={SVG_CY + 54}
+          textAnchor="middle"
+          fontSize={11}
+          fontFamily="system-ui, -apple-system, sans-serif"
+          fill={isDark ? 'rgba(200,146,74,0.40)' : 'rgba(100,65,25,0.40)'}
+        >
+          tap to begin
+        </text>
+      )}
+    </svg>
+  );
+}
+
+// ── Screen 1: Choose Mala ─────────────────────────────────────────────────────
+function ChooseMalaScreen({
+  isDark, selected, onSelect, onConfirm,
+}: {
+  isDark: boolean; selected: MalaId;
+  onSelect: (id: MalaId) => void; onConfirm: () => void;
+}) {
+  const bg   = isDark ? '#08070A' : '#F5F0E8';
+  const card = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)';
+  const text = isDark ? 'rgba(245,225,185,0.95)' : '#2D1F0E';
+  const sub  = isDark ? 'rgba(200,146,74,0.60)' : 'rgba(100,65,25,0.60)';
+  const amber = isDark ? '#C8924A' : '#7A4A1E';
 
   return (
     <motion.div
-      className="fixed inset-0 z-[95] flex flex-col items-center justify-center px-6"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.35 }}
-      onClick={onClose}
-      style={{
-        background: 'rgba(4,6,10,0.88)',
-        backdropFilter: 'blur(32px) saturate(140%)',
-        WebkitBackdropFilter: 'blur(32px) saturate(140%)',
-      }}
+      className="flex flex-col min-h-screen"
+      style={{ background: bg }}
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
     >
-      {/* Close pill */}
-      <button
-        onClick={onClose}
-        className="absolute top-4 right-4 px-4 py-2 rounded-full text-xs font-semibold"
-        style={{
-          background: 'rgba(200,146,74,0.12)',
-          border: '1px solid rgba(200,146,74,0.25)',
-          color: 'rgba(200,146,74,0.8)',
-        }}
-      >
-        ✕ Close
-      </button>
+      {/* Header */}
+      <div className="px-6 pt-14 pb-4">
+        <p className="text-[11px] font-semibold tracking-[0.18em] uppercase mb-2"
+          style={{ color: amber }}>Choose Your</p>
+        <h1 className="text-[2rem] font-bold leading-tight" style={{ color: text, fontFamily: 'var(--font-serif)' }}>
+          Mala
+        </h1>
+        <p className="text-sm mt-1" style={{ color: sub }}>The sacred beads for your practice</p>
+      </div>
 
-      {/* Main content */}
-      <motion.div
-        className="flex flex-col items-center gap-8 max-w-sm w-full"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.12, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Full mantra text */}
-        <motion.p
-          className="text-center font-[family:var(--font-deva)] leading-loose whitespace-pre-line"
-          style={{
-            fontSize: 'clamp(1.25rem, 5vw, 1.8rem)',
-            color: 'var(--text-cream)',
-            textShadow: '0 0 40px rgba(200,146,74,0.22)',
-            letterSpacing: '0.02em',
-          }}
-          animate={{ opacity: [0.80, 1, 0.80] }}
-          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          {fullText}
-        </motion.p>
-
-        {/* Title + source */}
-        <div className="text-center space-y-1">
-          <p className="text-sm font-semibold tracking-wide" style={{ color: 'rgba(200,146,74,0.75)' }}>
-            {title}
-          </p>
-          {source && (
-            <p className="text-[11px]" style={{ color: 'rgba(200,146,74,0.38)' }}>{source}</p>
-          )}
-        </div>
-
-        {/* Ambience switcher */}
-        <div className="flex flex-col items-center gap-3 w-full">
-          <p className="text-[11px] uppercase tracking-widest" style={{ color: 'rgba(200,146,74,0.4)' }}>
-            Ambience
-          </p>
-          <div className="flex gap-2 justify-center">
-            {AMBIENCE_OPTIONS.map(opt => (
-              <button
-                key={opt.id}
-                onClick={() => onAmbienceChange(opt.id)}
-                className="flex flex-col items-center gap-1.5 px-3 py-2.5 rounded-2xl transition-all"
-                style={ambience === opt.id
-                  ? {
-                      background: 'rgba(200,146,74,0.18)',
-                      border: '1px solid rgba(200,146,74,0.45)',
-                      boxShadow: '0 0 12px rgba(200,146,74,0.18)',
-                    }
-                  : {
-                      background: 'rgba(255,255,255,0.04)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                    }}
-              >
-                <span className="text-xl leading-none">{opt.emoji}</span>
-                <span className="text-[10px] font-medium"
-                  style={{ color: ambience === opt.id ? 'rgba(200,146,74,0.9)' : 'rgba(255,255,255,0.35)' }}>
-                  {opt.label}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-// ── WeeklyCoins ──────────────────────────────────────────────────────────────
-// 7-day Apple Journal-style coin strip — free tier
-function WeeklyCoins({ history }: { history: DayRecord[] }) {
-  const today   = new Date();
-  const DAY_ABBR = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const coins: { label: string; dateStr: string; done: boolean; isToday: boolean }[] = [];
-
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().slice(0, 10);
-    const done    = history.some(h => h.date === dateStr && h.done);
-    coins.push({ label: DAY_ABBR[d.getDay()], dateStr, done, isToday: i === 0 });
-  }
-
-  return (
-    <div className="mx-4 rounded-2xl border px-4 py-3.5"
-      style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(200,146,74,0.12)' }}>
-      <p className="text-[11px] uppercase tracking-widest mb-3"
-        style={{ color: 'rgba(200,146,74,0.45)' }}>
-        This Week
-      </p>
-      <div className="flex justify-between items-end">
-        {coins.map(c => (
-          <div key={c.dateStr} className="flex flex-col items-center gap-1.5">
-            {/* Coin */}
-            <motion.div
-              className="rounded-full flex items-center justify-center"
+      {/* Mala list */}
+      <div className="flex-1 px-5 space-y-3 overflow-y-auto pb-6">
+        {MALAS.map(m => {
+          const malaC = isDark ? m.dark : m.light;
+          const isSelected = selected === m.id;
+          return (
+            <motion.button
+              key={m.id}
+              onClick={() => onSelect(m.id as MalaId)}
+              whileTap={{ scale: 0.975 }}
+              className="w-full text-left rounded-2xl p-4 flex items-center gap-4 border transition-all"
               style={{
-                width: 36, height: 36,
-                background: c.done
-                  ? 'linear-gradient(135deg, #f0c060 0%, #C8924A 55%, #a06520 100%)'
-                  : 'rgba(255,255,255,0.07)',
-                border: c.isToday
-                  ? '2px solid rgba(200,146,74,0.55)'
-                  : c.done
-                    ? '2px solid rgba(240,190,80,0.4)'
-                    : '2px solid rgba(255,255,255,0.08)',
-                boxShadow: c.done
-                  ? '0 0 10px rgba(200,146,74,0.35), inset 0 1px 0 rgba(255,240,160,0.3)'
-                  : 'none',
+                background: isSelected
+                  ? isDark ? 'rgba(200,146,74,0.10)' : 'rgba(122,74,30,0.08)'
+                  : card,
+                borderColor: isSelected ? `${malaC.glow}` : isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+                boxShadow: isSelected ? `0 0 0 1.5px ${malaC.glow}` : 'none',
               }}
-              animate={c.done && !c.isToday ? { scale: [1, 1.05, 1] } : {}}
-              transition={{ duration: 2, repeat: Infinity, delay: Math.random() * 1.5 }}
             >
-              {c.done && (
-                <Check size={14} strokeWidth={2.5}
-                  style={{ color: '#2a1a00' }} />
-              )}
-            </motion.div>
-            {/* Day label */}
-            <span className="text-[10px] font-medium"
-              style={{ color: c.isToday ? 'rgba(200,146,74,0.8)' : 'rgba(255,255,255,0.28)' }}>
-              {c.label}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ── DayDetailSheet ─────────────────────────────────────────────────────────────
-function DayDetailSheet({
-  date, done, onClose,
-}: {
-  date: string; done: boolean; onClose: () => void;
-}) {
-  const d = new Date(date);
-  const displayDate = d.toLocaleDateString('en-IN', {
-    weekday: 'long', day: 'numeric', month: 'long',
-  });
-
-  return (
-    <motion.div className="fixed inset-0 z-50 flex items-end"
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      onClick={onClose}
-      style={{ background: 'rgba(0,0,0,0.62)' }}>
-      <motion.div
-        className="w-full max-w-2xl mx-auto rounded-t-3xl px-6 py-6 space-y-4"
-        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-        transition={{ type: 'spring', damping: 32, stiffness: 320 }}
-        style={{
-          background: 'rgba(12,14,20,0.97)',
-          backdropFilter: 'blur(24px)',
-          border: '1px solid rgba(200,146,74,0.15)',
-          borderBottom: 'none',
-        }}
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="w-10 h-1 rounded-full mx-auto" style={{ background: 'rgba(200,146,74,0.25)' }} />
-
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
-            style={{ background: done ? 'rgba(200,146,74,0.15)' : 'rgba(255,255,255,0.05)' }}>
-            {done ? '📿' : '○'}
-          </div>
-          <div>
-            <p className="font-semibold text-sm" style={{ color: 'var(--text-cream)' }}>{displayDate}</p>
-            <p className="text-xs mt-0.5" style={{ color: done ? '#C8924A' : 'rgba(255,255,255,0.3)' }}>
-              {done ? 'Japa completed ✓' : 'No japa recorded'}
-            </p>
-          </div>
-        </div>
-
-        {done && (
-          <div className="rounded-2xl px-4 py-3 text-sm"
-            style={{ background: 'rgba(200,146,74,0.07)', border: '1px solid rgba(200,146,74,0.14)', color: 'rgba(200,146,74,0.75)' }}>
-            Mala session logged for this day. Full session details available in a future update.
-          </div>
-        )}
-
-        <button onClick={onClose}
-          className="w-full py-3.5 rounded-2xl font-semibold text-sm"
-          style={{ background: 'rgba(200,146,74,0.1)', border: '1px solid rgba(200,146,74,0.2)', color: 'rgba(200,146,74,0.8)' }}>
-          Close
-        </button>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-// ── JapaHistoryChart ─────────────────────────────────────────────────────────
-// 30-day binary heatmap — gold pill = did japa, dark grey = none. Pro-gated.
-function JapaHistoryChart({
-  history = [], streak, isPro = false,
-}: {
-  history: DayRecord[]; streak: number; isPro?: boolean;
-}) {
-  const [selectedDay, setSelectedDay] = useState<{ date: string; done: boolean } | null>(null);
-  const today = new Date();
-
-  const days = Array.from({ length: 30 }, (_, i) => {
-    const d = new Date(today);
-    d.setDate(d.getDate() - (29 - i));
-    const dateStr = d.toISOString().slice(0, 10);
-    const done    = history.some(h => h.date === dateStr && h.done);
-    return { date: dateStr, done, isToday: i === 29 };
-  });
-
-  const doneDays = days.filter(d => d.done).length;
-
-  return (
-    <>
-      <div className="mx-4 mb-2 rounded-2xl border overflow-hidden"
-        style={{ borderColor: 'rgba(200,146,74,0.12)' }}>
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 pt-3.5 pb-2">
-          <div className="flex items-center gap-2">
-            <p className="text-sm font-semibold" style={{ color: 'rgba(200,146,74,0.8)' }}>
-              30-Day Journey
-            </p>
-            {!isPro && (
-              <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                style={{ background: 'rgba(200,146,74,0.1)', border: '1px solid rgba(200,146,74,0.2)', color: 'rgba(200,146,74,0.7)' }}>
-                <Lock size={9} /> Pro
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-3 text-xs">
-            {streak > 0 && isPro && (
-              <span className="flex items-center gap-1" style={{ color: '#C8924A' }}>
-                <Flame size={12} /> {streak}d
-              </span>
-            )}
-            {isPro && (
-              <span style={{ color: 'rgba(255,255,255,0.25)' }}>{doneDays}/30</span>
-            )}
-          </div>
-        </div>
-
-        {/* Grid */}
-        <div className={`relative px-4 pb-4 ${!isPro ? 'select-none' : ''}`}>
-          <div className="grid gap-[5px]" style={{ gridTemplateColumns: 'repeat(10, 1fr)' }}>
-            {days.map(day => (
-              <motion.button
-                key={day.date}
-                disabled={!isPro}
-                onClick={() => isPro && setSelectedDay(day)}
-                className="aspect-square rounded-lg transition-all"
-                whileTap={isPro ? { scale: 0.88 } : {}}
-                style={{
-                  background: day.done
-                    ? 'linear-gradient(135deg, #f0c060 0%, #C8924A 55%, #a06520 100%)'
-                    : day.isToday
-                      ? 'rgba(200,146,74,0.14)'
-                      : 'rgba(255,255,255,0.06)',
-                  border: day.isToday
-                    ? '1.5px solid rgba(200,146,74,0.4)'
-                    : day.done
-                      ? '1px solid rgba(240,180,60,0.3)'
-                      : '1px solid transparent',
-                  boxShadow: day.done ? '0 0 6px rgba(200,146,74,0.25)' : 'none',
-                  cursor: isPro ? 'pointer' : 'default',
-                }}
-                title={isPro ? day.date : undefined}
-              />
-            ))}
-          </div>
-
-          {/* Pro lock overlay */}
-          {!isPro && (
-            <div className="absolute inset-0 rounded-xl flex flex-col items-center justify-center gap-2"
-              style={{
-                background: 'rgba(6,8,14,0.82)',
-                backdropFilter: 'blur(6px)',
-                WebkitBackdropFilter: 'blur(6px)',
-              }}>
-              <Lock size={20} style={{ color: 'rgba(200,146,74,0.6)' }} />
-              <p className="text-xs font-semibold" style={{ color: 'rgba(200,146,74,0.75)' }}>
-                30-day history is Pro
-              </p>
-              <PremiumGate compact>{null}</PremiumGate>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Day detail sheet */}
-      <AnimatePresence>
-        {selectedDay && (
-          <DayDetailSheet
-            date={selectedDay.date}
-            done={selectedDay.done}
-            onClose={() => setSelectedDay(null)}
-          />
-        )}
-      </AnimatePresence>
-    </>
-  );
-}
-
-// ── MantraPickerSheet ────────────────────────────────────────────────────────
-function MantraPickerSheet({
-  mantras, selected, onSelect, onClose,
-}: {
-  mantras: Mantra[]; selected: Mantra | null;
-  onSelect: (m: Mantra) => void; onClose: () => void;
-}) {
-  return (
-    <motion.div className="fixed inset-0 z-50 flex items-end"
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      onClick={onClose}
-      style={{ background: 'rgba(0,0,0,0.65)' }}>
-      <motion.div
-        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-        transition={{ type: 'spring', damping: 32, stiffness: 320 }}
-        className="w-full max-w-2xl mx-auto rounded-t-3xl px-5 pt-4 pb-8 space-y-3 max-h-[75vh] overflow-y-auto"
-        style={{
-          background: 'rgba(10,12,18,0.98)',
-          backdropFilter: 'blur(24px)',
-          border: '1px solid rgba(200,146,74,0.15)',
-          borderBottom: 'none',
-        }}
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="w-10 h-1 rounded-full mx-auto mb-2" style={{ background: 'rgba(200,146,74,0.25)' }} />
-        <h3 className="font-semibold text-sm mb-3" style={{ color: 'var(--text-cream)' }}>Choose Mantra</h3>
-        {mantras.map(m => (
-          <button key={m.id} onClick={() => { onSelect(m); onClose(); }}
-            className="w-full text-left rounded-2xl p-4 border transition-all"
-            style={selected?.id === m.id
-              ? { borderColor: 'rgba(200,146,74,0.55)', background: 'rgba(200,146,74,0.10)' }
-              : { borderColor: 'rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.03)' }}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-semibold text-sm" style={{ color: 'var(--text-cream)' }}>{m.name}</p>
-                <p className="text-xs mt-0.5 font-[family:var(--font-deva)]"
-                  style={{ color: 'rgba(200,146,74,0.5)' }}>
-                  {m.sanskrit?.split('\n')[0]?.slice(0, 50)}…
-                </p>
+              {/* Mini mala SVG preview */}
+              <div style={{ width: 52, height: 52, flexShrink: 0 }}>
+                <svg viewBox="0 0 52 52">
+                  <circle cx={26} cy={26} r={22} fill="none"
+                    stroke={malaC.thread} strokeWidth="1" />
+                  {Array.from({ length: 24 }, (_, i) => {
+                    const a = ((i / 24) * Math.PI * 2) - Math.PI / 2;
+                    const x = 26 + 22 * Math.cos(a);
+                    const y = 26 + 22 * Math.sin(a);
+                    const done = i < 8;
+                    return (
+                      <circle key={i} cx={x} cy={y} r={i === 0 ? 3.5 : 2.2}
+                        fill={i === 0 ? malaC.sumeru : done ? malaC.counted : malaC.bead}
+                        opacity={i === 0 ? 1 : done ? 0.9 : 0.7} />
+                    );
+                  })}
+                </svg>
               </div>
-              {selected?.id === m.id && <Check size={18} style={{ color: '#C8924A' }} />}
-            </div>
+
+              <div className="flex-1">
+                <p className="font-semibold text-[15px]" style={{ color: text }}>{m.name}</p>
+                <p className="text-[12px] mt-0.5" style={{ color: sub }}>{m.subtitle}</p>
+              </div>
+
+              {isSelected && (
+                <div className="w-5 h-5 rounded-full flex items-center justify-center"
+                  style={{ background: amber }}>
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                    <path d="M1 4l3 3 5-6" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                </div>
+              )}
+            </motion.button>
+          );
+        })}
+      </div>
+
+      {/* Confirm button */}
+      <div className="px-5 pb-10 pt-2">
+        <motion.button
+          onClick={onConfirm}
+          whileTap={{ scale: 0.97 }}
+          className="w-full py-4 rounded-2xl font-bold text-[15px]"
+          style={{
+            background: isDark
+              ? 'linear-gradient(135deg, #C8924A, #8a5818)'
+              : 'linear-gradient(135deg, #8B5E3C, #5a3010)',
+            color: isDark ? '#fde8c8' : '#fff8f0',
+            boxShadow: '0 4px 24px rgba(200,146,74,0.25)',
+          }}
+        >
+          Continue →
+        </motion.button>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Screen 2: Choose Mantra ───────────────────────────────────────────────────
+function ChooseMantraScreen({
+  isDark, selected, onSelect, onBack, onConfirm,
+}: {
+  isDark: boolean; selected: MantraId;
+  onSelect: (id: MantraId) => void; onBack: () => void; onConfirm: () => void;
+}) {
+  const bg   = isDark ? '#08070A' : '#F5F0E8';
+  const card = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)';
+  const text = isDark ? 'rgba(245,225,185,0.95)' : '#2D1F0E';
+  const sub  = isDark ? 'rgba(200,146,74,0.60)' : 'rgba(100,65,25,0.60)';
+  const amber = isDark ? '#C8924A' : '#7A4A1E';
+
+  return (
+    <motion.div
+      className="flex flex-col min-h-screen"
+      style={{ background: bg }}
+      initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -40, opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      {/* Header */}
+      <div className="flex items-center gap-3 px-4 pt-14 pb-4">
+        <button onClick={onBack} className="w-9 h-9 rounded-full flex items-center justify-center"
+          style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
+          <ChevronLeft size={20} style={{ color: amber }} />
+        </button>
+        <div>
+          <p className="text-[11px] font-semibold tracking-[0.18em] uppercase" style={{ color: amber }}>Choose Your</p>
+          <h1 className="text-[1.8rem] font-bold leading-tight" style={{ color: text, fontFamily: 'var(--font-serif)' }}>Mantra</h1>
+        </div>
+      </div>
+
+      {/* Mantra list */}
+      <div className="flex-1 px-5 space-y-3 overflow-y-auto pb-6">
+        {MANTRAS.map(m => {
+          const isSelected = selected === m.id;
+          return (
+            <motion.button
+              key={m.id}
+              onClick={() => onSelect(m.id as MantraId)}
+              whileTap={{ scale: 0.975 }}
+              className="w-full text-left rounded-2xl p-4 border transition-all"
+              style={{
+                background: isSelected
+                  ? isDark ? 'rgba(200,146,74,0.09)' : 'rgba(122,74,30,0.07)'
+                  : card,
+                borderColor: isSelected ? `${m.tradColor}55` : isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+                boxShadow: isSelected ? `0 0 0 1.5px ${m.tradColor}44` : 'none',
+              }}
+            >
+              {/* Tradition badge + check */}
+              <div className="flex items-start justify-between mb-2">
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                  style={{ background: `${m.tradColor}20`, color: m.tradColor, border: `1px solid ${m.tradColor}30` }}>
+                  {m.tradition}
+                </span>
+                {isSelected && (
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center"
+                    style={{ background: amber }}>
+                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                      <path d="M1 4l3 3 5-6" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                    </svg>
+                  </div>
+                )}
+              </div>
+              {/* Devanagari */}
+              <p className="text-[1.35rem] font-medium mb-0.5 leading-snug"
+                style={{ fontFamily: 'var(--font-devanagari), "Noto Sans Devanagari", sans-serif', color: text }}>
+                {m.devanagari}
+              </p>
+              <p className="text-[13px] font-semibold mb-1" style={{ color: text, opacity: 0.85 }}>{m.name}</p>
+              <p className="text-[11.5px]" style={{ color: sub }}>{m.description}</p>
+            </motion.button>
+          );
+        })}
+      </div>
+
+      {/* Confirm */}
+      <div className="px-5 pb-10 pt-2">
+        <motion.button
+          onClick={onConfirm}
+          whileTap={{ scale: 0.97 }}
+          className="w-full py-4 rounded-2xl font-bold text-[15px]"
+          style={{
+            background: isDark
+              ? 'linear-gradient(135deg, #C8924A, #8a5818)'
+              : 'linear-gradient(135deg, #8B5E3C, #5a3010)',
+            color: isDark ? '#fde8c8' : '#fff8f0',
+            boxShadow: '0 4px 24px rgba(200,146,74,0.25)',
+          }}
+        >
+          Begin Practice →
+        </motion.button>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Sounds Sheet ──────────────────────────────────────────────────────────────
+function SoundsSheet({
+  isDark, current, onSelect, onClose,
+}: {
+  isDark: boolean; current: SoundId;
+  onSelect: (id: SoundId) => void; onClose: () => void;
+}) {
+  const bg   = isDark ? 'rgba(12,10,16,0.97)' : 'rgba(245,240,232,0.97)';
+  const text = isDark ? 'rgba(245,225,185,0.95)' : '#2D1F0E';
+  const sub  = isDark ? 'rgba(200,146,74,0.60)' : 'rgba(100,65,25,0.60)';
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-end"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      style={{ background: 'rgba(0,0,0,0.55)' }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: '100%' }} animate={{ y: 0 }}
+        transition={{ type: 'spring', damping: 32, stiffness: 300 }}
+        className="w-full max-w-2xl mx-auto rounded-t-3xl px-5 pt-3 pb-10"
+        style={{ background: bg, backdropFilter: 'blur(24px)' }}
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="w-10 h-1 rounded-full mx-auto mb-5"
+          style={{ background: isDark ? 'rgba(200,146,74,0.25)' : 'rgba(100,65,25,0.20)' }} />
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <p className="text-[11px] font-semibold tracking-widest uppercase" style={{ color: sub }}>Ambience</p>
+            <h2 className="text-[1.3rem] font-bold" style={{ color: text, fontFamily: 'var(--font-serif)' }}>Sacred Sounds</h2>
+          </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-full flex items-center justify-center"
+            style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M1 1l12 12M13 1L1 13" stroke={isDark ? 'rgba(245,225,185,0.7)' : '#2D1F0E'} strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
           </button>
-        ))}
+        </div>
+
+        <div className="grid grid-cols-5 gap-2">
+          {SOUNDS.map(s => {
+            const isActive = current === s.id;
+            return (
+              <button key={s.id} onClick={() => onSelect(s.id)}
+                className="flex flex-col items-center gap-2 rounded-2xl py-4 border transition-all"
+                style={{
+                  background: isActive
+                    ? isDark ? 'rgba(200,146,74,0.14)' : 'rgba(122,74,30,0.10)'
+                    : isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+                  borderColor: isActive
+                    ? isDark ? 'rgba(200,146,74,0.40)' : 'rgba(122,74,30,0.35)'
+                    : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
+                }}>
+                <span className="text-[1.6rem] leading-none">{s.emoji}</span>
+                <span className="text-[9px] font-semibold text-center" style={{ color: isActive ? (isDark ? '#C8924A' : '#7A4A1E') : sub }}>
+                  {s.label}
+                </span>
+                {isActive && (
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ background: isDark ? '#C8924A' : '#7A4A1E' }} />
+                )}
+              </button>
+            );
+          })}
+        </div>
       </motion.div>
     </motion.div>
   );
 }
 
-// ── CompletionSheet ──────────────────────────────────────────────────────────
-function CompletionSheet({
-  rounds, durationSecs, mantraName, streak, isPro, onClose,
+// ── Completion Overlay ────────────────────────────────────────────────────────
+function CompletionOverlay({
+  isDark, rounds, durationSecs, mantraName, streak, onClose,
 }: {
-  rounds: number; durationSecs: number; mantraName: string;
-  streak: number; isPro: boolean; onClose: () => void;
+  isDark: boolean; rounds: number; durationSecs: number;
+  mantraName: string; streak: number; onClose: () => void;
 }) {
   const mins = Math.floor(durationSecs / 60);
   const secs = durationSecs % 60;
-  return (
-    <motion.div className="fixed inset-0 z-50 flex items-end"
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-      style={{ background: 'rgba(0,0,0,0.72)' }}>
-      <motion.div
-        initial={{ y: '100%' }} animate={{ y: 0 }}
-        transition={{ type: 'spring', damping: 30, stiffness: 280 }}
-        className="w-full max-w-2xl mx-auto rounded-t-3xl px-8 pt-6 pb-10 space-y-6"
-        style={{
-          background: 'rgba(10,12,18,0.98)',
-          backdropFilter: 'blur(24px)',
-          border: '1px solid rgba(200,146,74,0.15)',
-          borderBottom: 'none',
-        }}>
-        <div className="w-10 h-1 rounded-full mx-auto" style={{ background: 'rgba(200,146,74,0.25)' }} />
-        <div className="text-center space-y-3">
-          <motion.div className="text-5xl" animate={{ scale: [0.7, 1.15, 1] }} transition={{ duration: 0.65 }}>🙏</motion.div>
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: 600, color: 'var(--text-cream)', letterSpacing: '-0.01em' }}>
-            Japa Complete
-          </h2>
-          <p style={{ color: 'rgba(200,146,74,0.5)' }}>
-            {rounds} mala{rounds > 1 ? 's' : ''} of {mantraName}
-          </p>
-        </div>
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { label: 'Rounds', value: `${rounds}` },
-            { label: 'Beads',  value: `${rounds * BEADS_PER_MALA}` },
-            { label: 'Time',   value: `${mins}m ${secs}s` },
-          ].map(s => (
-            <div key={s.label} className="rounded-2xl p-4 text-center border"
-              style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(200,146,74,0.14)' }}>
-              <p className="font-bold text-xl" style={{ color: '#C8924A' }}>{s.value}</p>
-              <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.3)' }}>{s.label}</p>
-            </div>
-          ))}
-        </div>
-        {streak > 0 && isPro && (
-          <div className="flex items-center justify-center gap-2 rounded-2xl p-3 border"
-            style={{ background: 'rgba(200,146,74,0.07)', borderColor: 'rgba(200,146,74,0.18)' }}>
-            <Flame size={20} style={{ color: '#C8924A' }} />
-            <span className="font-semibold" style={{ color: '#C8924A' }}>{streak} day streak!</span>
-          </div>
-        )}
-        <button onClick={onClose}
-          className="w-full py-4 rounded-2xl font-bold text-base"
-          style={{ background: 'linear-gradient(135deg, #C8924A, #8a5818)', color: '#fde8c8', boxShadow: '0 4px 24px rgba(200,146,74,0.25)' }}>
-          🕉️ Hari Om
-        </button>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-// ── JapaFocusOverlay ──────────────────────────────────────────────────────────
-// Full-screen focus mode — updated to Still Water palette
-function JapaFocusOverlay({
-  activeBead, beadCount, roundsDone, duration, targetRounds,
-  selectedMantra, defaultMantra, audioTrackIds, streak, tapFlash, ripples,
-  onBead, onComplete, onReset, onClose,
-}: {
-  activeBead:       typeof BEAD_TYPES[number];
-  beadCount:        number;
-  roundsDone:       number;
-  duration:         number;
-  targetRounds:     number;
-  selectedMantra:   Mantra | null;
-  defaultMantra:    typeof DEFAULT_MANTRA_BY_TRADITION[string];
-  audioTrackIds:    string[];
-  streak:           number;
-  tapFlash:         boolean;
-  ripples:          Ripple[];
-  onBead:           () => void;
-  onComplete:       () => void;
-  onReset:          () => void;
-  onClose:          () => void;
-}) {
-  const fmt = (s: number) =>
-    `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+  const bg   = isDark ? 'rgba(8,6,12,0.97)' : 'rgba(245,240,232,0.97)';
+  const text = isDark ? 'rgba(245,225,185,0.97)' : '#2D1F0E';
+  const sub  = isDark ? 'rgba(200,146,74,0.60)' : 'rgba(100,65,25,0.60)';
+  const amber = isDark ? '#C8924A' : '#7A4A1E';
 
   return (
     <motion.div
-      className="fixed inset-0 z-[90] flex flex-col"
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      transition={{ duration: 0.45 }}
-      style={{ background: 'linear-gradient(180deg, #050810 0%, #080c14 50%, #050810 100%)' }}
+      className="fixed inset-0 z-50 flex items-end"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+      style={{ background: 'rgba(0,0,0,0.65)' }}
     >
-      {/* Top bar */}
-      <div className="relative flex items-center gap-3 px-4"
-        style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 18px)', paddingBottom: 12 }}>
-        <button onClick={onClose}
-          className="flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium"
-          style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.2)', color: 'rgba(200,146,74,0.7)' }}>
-          <ChevronLeft size={16} /> Back
-        </button>
-        <div className="flex-1 text-center">
-          <p className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.6)' }}>Japa Focus</p>
-        </div>
-        {streak > 0 && (
-          <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5"
-            style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.18)' }}>
-            <Flame size={12} style={{ color: '#C8924A' }} />
-            <span className="text-[10px] font-semibold" style={{ color: '#C8924A' }}>{streak}d</span>
-          </div>
-        )}
-      </div>
+      <motion.div
+        initial={{ y: '100%' }} animate={{ y: 0 }}
+        transition={{ type: 'spring', damping: 30, stiffness: 280 }}
+        className="w-full max-w-2xl mx-auto rounded-t-3xl px-6 pt-6 pb-10 space-y-6"
+        style={{ background: bg, backdropFilter: 'blur(28px)', border: `1px solid ${amber}28`, borderBottom: 'none' }}
+      >
+        <div className="w-10 h-1 rounded-full mx-auto" style={{ background: `${amber}30` }} />
 
-      {/* Center */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-6 px-6">
-        {/* Stats */}
-        <div className="flex items-center gap-8">
+        {/* Celebration */}
+        <div className="text-center space-y-2">
+          <motion.div className="text-5xl"
+            animate={{ scale: [0.5, 1.2, 1] }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
+            🙏
+          </motion.div>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', fontWeight: 700, color: text, letterSpacing: '-0.01em' }}>
+            Japa Complete
+          </h2>
+          <p style={{ color: sub, fontSize: '0.9rem' }}>
+            {rounds} mala{rounds > 1 ? 's' : ''} · {mantraName}
+          </p>
+        </div>
+
+        {/* Stats grid */}
+        <div className="grid grid-cols-3 gap-3">
           {[
-            { val: String(roundsDone), lbl: 'Rounds' },
-            { val: fmt(duration),      lbl: 'Time',   mono: true },
-            { val: String(targetRounds), lbl: 'Target' },
-          ].map(({ val, lbl, mono }) => (
-            <div key={lbl} className="text-center">
-              <p className={`text-3xl font-bold ${mono ? 'font-mono' : ''}`}
-                style={{ color: 'var(--text-cream)' }}>{val}</p>
-              <p className="text-[11px] mt-1" style={{ color: 'rgba(255,255,255,0.3)' }}>{lbl}</p>
+            { label: 'Rounds', value: `${rounds}` },
+            { label: 'Beads',  value: `${rounds * TOTAL_BEADS}` },
+            { label: 'Time',   value: `${mins}m ${secs}s` },
+          ].map(s => (
+            <div key={s.label} className="rounded-2xl p-4 text-center border"
+              style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)', borderColor: `${amber}1A` }}>
+              <p className="font-bold text-xl" style={{ color: amber }}>{s.value}</p>
+              <p className="text-[11px] mt-1" style={{ color: sub }}>{s.label}</p>
             </div>
           ))}
         </div>
 
-        {/* Bead + ripples */}
-        <div className="relative flex items-center justify-center" style={{ width: 200, height: 200 }}>
-          {/* Ripple rings */}
-          {ripples.map(r => (
-            <motion.div key={r.id}
-              className="absolute rounded-full pointer-events-none"
-              style={{ border: `1.5px solid ${activeBead.ripple}0.6)` }}
-              initial={{ width: 160, height: 160, opacity: 0.8 }}
-              animate={{ width: 280, height: 280, opacity: 0 }}
-              transition={{ duration: 0.85, ease: 'easeOut' }}
-            />
-          ))}
+        {/* Streak */}
+        {streak > 0 && (
+          <div className="flex items-center justify-center gap-2 rounded-2xl p-3 border"
+            style={{ background: `${amber}10`, borderColor: `${amber}28` }}>
+            <Flame size={18} style={{ color: amber }} />
+            <span className="font-semibold text-sm" style={{ color: amber }}>{streak} day streak</span>
+          </div>
+        )}
 
-          <button onPointerDown={onBead}
-            className="relative rounded-full select-none focus:outline-none"
-            style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}>
-            <motion.div
-              animate={{ scale: tapFlash ? 0.84 : 1 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 15 }}>
-              <div style={{
-                width: 160, height: 160, borderRadius: '50%',
-                background: tapFlash ? activeBead.tapBg : activeBead.bg,
-                boxShadow: tapFlash
-                  ? `0 0 60px ${activeBead.tapShadow}, 0 0 100px ${activeBead.shadow}`
-                  : `0 0 36px ${activeBead.shadow}, 0 0 70px rgba(0,0,0,0.5)`,
-                border: `2px solid ${activeBead.border}`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <span className="text-4xl font-bold" style={{ color: activeBead.textColor }}>
-                  {beadCount}
-                </span>
-              </div>
-            </motion.div>
-          </button>
-        </div>
-
-        {/* Mantra */}
-        <motion.p
-          className="text-center font-[family:var(--font-deva)] text-base px-4 leading-relaxed"
-          style={{ color: 'rgba(255,255,255,0.65)', textShadow: `0 0 20px ${activeBead.glow}0.3)` }}
-          animate={{ opacity: [0.55, 0.9, 0.55] }}
-          transition={{ duration: 5.5, repeat: Infinity }}>
-          {selectedMantra?.sanskrit?.split('\n')[0] ?? defaultMantra.short}
-        </motion.p>
-
-        {/* Audio */}
-        <div className="w-full max-w-xs rounded-2xl overflow-hidden border"
-          style={{ borderColor: 'rgba(200,146,74,0.14)', background: 'rgba(255,255,255,0.03)' }}>
-          <ChantAudioPlayer title="Japa focus" trackIds={audioTrackIds} compact />
-        </div>
-      </div>
-
-      {/* Bottom */}
-      <div className="px-4 space-y-2.5"
-        style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 24px)' }}>
-        <button onClick={onComplete}
-          className="w-full py-4 rounded-2xl font-bold text-base"
-          style={{ background: 'linear-gradient(135deg, #C8924A, #8a5818)', color: '#fde8c8', boxShadow: '0 4px 24px rgba(200,146,74,0.22)' }}>
-          Complete Session ✓
-        </button>
-        <button onClick={onReset}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl border text-sm font-medium"
-          style={{ borderColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)' }}>
-          <RotateCcw size={14} /> Reset
-        </button>
-      </div>
+        {/* CTA */}
+        <motion.button
+          onClick={onClose}
+          whileTap={{ scale: 0.97 }}
+          className="w-full py-4 rounded-2xl font-bold text-[15px]"
+          style={{
+            background: isDark
+              ? 'linear-gradient(135deg, #C8924A, #8a5818)'
+              : 'linear-gradient(135deg, #8B5E3C, #5a3010)',
+            color: isDark ? '#fde8c8' : '#fff8f0',
+            boxShadow: '0 4px 24px rgba(200,146,74,0.28)',
+          }}>
+          🕉️  Hari Om
+        </motion.button>
+      </motion.div>
     </motion.div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Main Component
-// ─────────────────────────────────────────────────────────────────────────────
+// ── Main JapaClient ────────────────────────────────────────────────────────────
+type Screen = 'chooseMala' | 'chooseMantra' | 'japa';
+
+interface Props {
+  userId: string;
+  userName: string;
+  tradition: string;
+  currentStreak: number;
+  japaAlreadyDoneToday: boolean;
+  history: { date: string; done: boolean }[];
+}
+
 export default function JapaClient({
-  userId, userName, tradition, currentStreak, japaAlreadyDoneToday, history = [],
+  userId, userName, tradition, currentStreak, japaAlreadyDoneToday, history,
 }: Props) {
   const router = useRouter();
-  const { engine, isReady } = useEngine();
+  const { resolvedTheme } = useThemePreference();
+  const isDark = resolvedTheme === 'dark';
+  const engine = useEngine();
+  const { isPro } = usePremium();
 
-  const [mantras,         setMantras]         = useState<Mantra[]>([]);
-  const [selectedMantra,  setMantra]          = useState<Mantra | null>(null);
-  const [showPicker,      setShowPicker]      = useState(false);
-  const [showMantraFull,  setMantraFull]      = useState(false);
-  const [beadCount,       setBeadCount]       = useState(0);
-  const [roundsDone,      setRounds]          = useState(0);
-  const [targetRounds,    setTarget]          = useState(1);
-  const [isActive,        setIsActive]        = useState(false);
-  const [showComplete,    setComplete]        = useState(false);
-  const [duration,        setDuration]        = useState(0);
-  const [streak,          setStreak]          = useState(currentStreak);
-  const [tapFlash,        setTapFlash]        = useState(false);
-  const [ripples,         setRipples]         = useState<Ripple[]>([]);
-  const [beadTypeId,      setBeadTypeId]      = useState<BeadTypeId>('rudraksha');
-  const [isFocusMode,     setFocusMode]       = useState(false);
-  const [showConfetti,    setShowConfetti]    = useState(false);
-  const [ambience,        setAmbience]        = useState<AmbienceId>('silence');
+  // ── Default mantra by tradition ──────────────────────────────────────────
+  const defaultMantraId: MantraId = tradition === 'sikh' ? 'om_namah_shivaya'
+    : tradition === 'buddhist' ? 'om_mani'
+    : 'gayatri';
 
-  const isPro      = usePremium();
-  const startedAt  = useRef<string>('');
-  const timerRef   = useRef<ReturnType<typeof setInterval> | null>(null);
-  const audioRef   = useRef<HTMLAudioElement | null>(null);
+  // ── Persisted selections ─────────────────────────────────────────────────
+  const [screen, setScreen]       = useState<Screen>('chooseMala');
+  const [malaId, setMalaId]       = useState<MalaId>('sandalwood');
+  const [mantraId, setMantraId]   = useState<MantraId>(defaultMantraId);
 
-  const defaultMantra = DEFAULT_MANTRA_BY_TRADITION[tradition] ?? DEFAULT_MANTRA_BY_TRADITION.hindu;
-  const audioTrackIds = MANTRA_AUDIO_TRACKS[selectedMantra?.id ?? defaultMantra.id] ?? DEFAULT_AUDIO_TRACKS;
-  const activeBead    = BEAD_TYPES.find(t => t.id === beadTypeId) ?? BEAD_TYPES[0];
-
-  // ── Load mantras ────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!isReady || !engine) return;
-    engine.mantras.getByTradition(tradition as any).then(list => {
-      setMantras(list);
-      if (list.length > 0) setMantra(list[0]);
-    }).catch(() => {
-      const fallback: Mantra = {
-        id: defaultMantra.id, name: defaultMantra.name,
-        sanskrit: defaultMantra.full, transliteration: '', deity: '',
-        tradition: tradition as any, beads_per_round: 108,
-      };
-      setMantras([fallback]);
-      setMantra(fallback);
-    });
-  }, [isReady, engine, tradition]); // eslint-disable-line react-hooks/exhaustive-deps
+    try {
+      const savedMala   = localStorage.getItem(STORAGE_MALA)   as MalaId | null;
+      const savedMantra = localStorage.getItem(STORAGE_MANTRA) as MantraId | null;
+      if (savedMala   && MALAS.find(m => m.id === savedMala))     setMalaId(savedMala);
+      if (savedMantra && MANTRAS.find(m => m.id === savedMantra)) setMantraId(savedMantra);
+    } catch { /* ok */ }
+  }, []);
 
-  // ── Timer ────────────────────────────────────────────────────────────────────
+  // ── Japa state ───────────────────────────────────────────────────────────
+  const [beadCount,   setBeadCount]   = useState(0);   // within current round 0-108
+  const [roundsDone,  setRoundsDone]  = useState(0);   // completed rounds
+  const [totalBeads,  setTotalBeads]  = useState(0);   // total beads ever tapped
+  const [paused,      setPaused]      = useState(false);
+  const [showComplete, setShowComplete] = useState(false);
+  const [showSounds,  setShowSounds]  = useState(false);
+  const [soundId,     setSoundId]     = useState<SoundId>('silence');
+  const [streak,      setStreak]      = useState(currentStreak);
+  const [saved,       setSaved]       = useState(japaAlreadyDoneToday);
+  const [pulsing,     setPulsing]     = useState(false);
+
+  // Timer
+  const [duration, setDuration] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const startedAt = useRef<number | null>(null);
+
   useEffect(() => {
-    if (isActive) {
-      timerRef.current = setInterval(() => setDuration(d => d + 1), 1000);
-    } else {
-      if (timerRef.current) clearInterval(timerRef.current);
-    }
+    if (screen !== 'japa' || paused || showComplete) return;
+    if (!startedAt.current) startedAt.current = Date.now();
+    timerRef.current = setInterval(() => setDuration(s => s + 1), 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [isActive]);
+  }, [screen, paused, showComplete]);
 
-  // ── Ambience audio ───────────────────────────────────────────────────────────
+  // ── Audio ────────────────────────────────────────────────────────────────
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
   useEffect(() => {
-    const url = AMBIENCE_URLS[ambience];
+    const url = SOUNDS.find(s => s.id === soundId)?.url ?? '';
     if (!url) {
       audioRef.current?.pause();
+      audioRef.current = null;
       return;
     }
-    try {
-      if (!audioRef.current) {
-        audioRef.current = new Audio(url);
-        audioRef.current.loop = true;
-      } else if (audioRef.current.src !== url) {
-        audioRef.current.pause();
-        audioRef.current = new Audio(url);
-        audioRef.current.loop = true;
-      }
-      audioRef.current.play().catch(() => {});
-    } catch { /* Audio not available */ }
-    return () => { audioRef.current?.pause(); };
-  }, [ambience]);
+    if (!audioRef.current || audioRef.current.src !== url) {
+      audioRef.current?.pause();
+      const a = new Audio(url);
+      a.loop = true;
+      audioRef.current = a;
+    }
+    const playPromise = audioRef.current.play();
+    if (playPromise) playPromise.catch(() => { /* autoplay blocked */ });
+    return () => {
+      audioRef.current?.pause();
+    };
+  }, [soundId]);
 
-  // Stop ambience when overlay closes
-  useEffect(() => {
-    if (!showMantraFull) audioRef.current?.pause();
-  }, [showMantraFull]);
+  // Cleanup on unmount
+  useEffect(() => () => { audioRef.current?.pause(); }, []);
 
-  const startSession = useCallback(() => {
-    setIsActive(true);
-    setBeadCount(0);
-    setRounds(0);
-    setDuration(0);
-    startedAt.current = new Date().toISOString();
-  }, []);
+  // ── Count bead ───────────────────────────────────────────────────────────
+  const countBead = useCallback(() => {
+    if (paused || showComplete) return;
+    hapticLight();
+    setPulsing(true);
+    setTimeout(() => setPulsing(false), 120);
 
-  const addRipple = useCallback(() => {
-    const id = Date.now() + Math.random();
-    setRipples(r => [...r.slice(-4), { id }]); // keep max 5
-    setTimeout(() => setRipples(r => r.filter(x => x.id !== id)), 900);
-  }, []);
-
-  const countBead = useCallback(async () => {
-    setTapFlash(true);
-    addRipple();
-    setTimeout(() => setTapFlash(false), 130);
-    await hapticLight();
     setBeadCount(prev => {
       const next = prev + 1;
-      if (next >= BEADS_PER_MALA) {
-        setRounds(r => {
-          const newRounds = r + 1;
-          if (newRounds >= targetRounds) {
-            setIsActive(false);
-            finishSession(newRounds);
-          }
-          return newRounds;
-        });
+      if (next >= TOTAL_BEADS) {
+        // Round complete
+        hapticSuccess();
+        setRoundsDone(r => r + 1);
+        setTotalBeads(t => t + next);
+        setTimeout(() => setShowComplete(true), 300);
         return 0;
       }
+      setTotalBeads(t => t + 1);
       return next;
     });
-  }, [targetRounds, addRipple]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [paused, showComplete]);
 
-  const finishSession = useCallback(async (rounds: number) => {
-    await hapticSuccess();
-    if (!selectedMantra) return;
-    const completedAt = new Date().toISOString();
+  // ── Save session ─────────────────────────────────────────────────────────
+  const saveSession = useCallback(async (completedRounds: number) => {
+    if (saved || completedRounds === 0) return;
     try {
       const supabase = createClient();
+      const today = new Date().toISOString().slice(0, 10);
       await supabase.from('mala_sessions').insert({
-        user_id:          userId,
-        mantra:           selectedMantra.name,
-        chant_source:     selectedMantra.id,
-        count:            rounds * BEADS_PER_MALA,
-        target_count:     targetRounds * BEADS_PER_MALA,
-        duration_seconds: duration,
-        share_scope:      'private' as const,
-        completed_at:     completedAt,
+        user_id: userId, date: today,
+        rounds: completedRounds,
+        bead_count: completedRounds * TOTAL_BEADS,
+        mantra_id: mantraId,
+        duration_secs: duration,
       });
-    } catch (err) { console.error('[Japa] mala_sessions insert failed:', err); }
+      // Update sadhana
+      const { data: existing } = await supabase
+        .from('daily_sadhana').select('streak_count').eq('user_id', userId).eq('date', today).single();
+      const newStreak = (existing?.streak_count ?? 0) + 1;
+      await supabase.from('daily_sadhana').upsert({
+        user_id: userId, date: today, japa_done: true, streak_count: newStreak,
+      }, { onConflict: 'user_id,date' });
+      engine?.logSadhanaStep({ userId, step: 'japa', date: today });
+      setStreak(newStreak);
+      setSaved(true);
+    } catch { /* silent */ }
+  }, [saved, userId, mantraId, duration, engine]);
 
-    if (engine) {
-      try {
-        await engine.tracker.trackJapaSession({
-          mantra_id: selectedMantra.id, mantra_name: selectedMantra.name,
-          rounds_completed: rounds, beads_count: rounds * BEADS_PER_MALA,
-          duration_seconds: duration, completed: true,
-          started_at: startedAt.current, completed_at: completedAt,
-        });
-        const streakRecord = await engine.streaks.getTodayRecord(userId);
-        setStreak(streakRecord.streak_count);
-      } catch (err) { console.error('[Japa] engine tracking failed:', err); }
-    }
+  // ── Handlers ─────────────────────────────────────────────────────────────
+  const handleConfirmMala = () => {
+    try { localStorage.setItem(STORAGE_MALA, malaId); } catch { /* ok */ }
+    setScreen('chooseMantra');
+  };
 
-    setFocusMode(false);
-    setComplete(true);
-    setShowConfetti(true);
-  }, [engine, selectedMantra, userId, duration, targetRounds]);
+  const handleConfirmMantra = () => {
+    try { localStorage.setItem(STORAGE_MANTRA, mantraId); } catch { /* ok */ }
+    setScreen('japa');
+  };
 
-  const handleComplete = useCallback(() => {
-    setIsActive(false);
-    finishSession(roundsDone + (beadCount > 0 ? 1 : 0));
-  }, [roundsDone, beadCount, finishSession]);
-
-  const handleReset = useCallback(() => {
-    setIsActive(false);
+  const handleReset = () => {
     setBeadCount(0);
-    setRounds(0);
+    setRoundsDone(0);
+    setTotalBeads(0);
     setDuration(0);
-    setRipples([]);
-  }, []);
+    startedAt.current = null;
+    setPaused(false);
+    setShowComplete(false);
+  };
 
-  const fmt = (s: number) =>
-    `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+  const handleCompleteClose = () => {
+    saveSession(roundsDone);
+    setShowComplete(false);
+    setBeadCount(0);
+  };
 
-  // Progress fraction 0–1 for the bead (shown as text inside)
-  const progress = beadCount / BEADS_PER_MALA;
+  const currentMantra = MANTRAS.find(m => m.id === mantraId) ?? MANTRAS[0];
+  const currentMala   = MALAS.find(m => m.id === malaId)     ?? MALAS[0];
+
+  // ── Theme tokens for japa screen ─────────────────────────────────────────
+  const bg    = isDark ? '#06060A' : '#F5F0E8';
+  const text  = isDark ? 'rgba(245,225,185,0.97)' : '#2D1F0E';
+  const sub   = isDark ? 'rgba(200,146,74,0.60)'  : 'rgba(100,65,25,0.60)';
+  const amber = isDark ? '#C8924A' : '#7A4A1E';
+  const cardBg = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)';
+  const malaColors = isDark ? currentMala.dark : currentMala.light;
 
   return (
-    <div className="relative min-h-screen flex flex-col"
-      style={{ background: 'linear-gradient(180deg, #060910 0%, #080c16 50%, #060910 100%)' }}>
-
-      <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
-
-      {/* ── Header ──────────────────────────────────────────────────────────── */}
-      <motion.div className="relative flex items-center gap-3 px-4 pt-5 pb-3"
-        initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-        <button onClick={() => router.back()}
-          className="w-9 h-9 rounded-full flex items-center justify-center"
-          style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.18)' }}>
-          <ChevronLeft size={20} style={{ color: 'rgba(200,146,74,0.7)' }} />
-        </button>
-        <div className="flex-1">
-          <h1 style={{
-            fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 600,
-            color: 'var(--text-cream)', letterSpacing: '-0.01em',
-          }}>Japa</h1>
-          <p className="text-[11px] font-[family:var(--font-deva)]"
-            style={{ color: 'rgba(200,146,74,0.35)' }}>मन · वाक् · कर्म</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {streak > 0 && isPro && (
-            <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5"
-              style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.18)' }}>
-              <Flame size={13} style={{ color: '#C8924A' }} />
-              <span className="text-xs font-semibold" style={{ color: '#C8924A' }}>{streak}d</span>
-            </div>
-          )}
-          {!isPro && <PremiumGate compact>{null}</PremiumGate>}
-        </div>
-      </motion.div>
-
-      {/* ── Already done banner ──────────────────────────────────────────────── */}
-      {japaAlreadyDoneToday && (
-        <div className="mx-4 mb-2 rounded-xl px-4 py-2 flex items-center gap-2"
-          style={{ background: 'rgba(40,80,50,0.2)', border: '1px solid rgba(80,150,80,0.18)' }}>
-          <Check size={15} style={{ color: '#6abf6a' }} />
-          <span className="text-sm font-medium" style={{ color: '#8ed48e' }}>Japa complete for today 🙏</span>
-        </div>
+    <AnimatePresence mode="wait">
+      {screen === 'chooseMala' && (
+        <ChooseMalaScreen key="chooseMala"
+          isDark={isDark} selected={malaId}
+          onSelect={setMalaId} onConfirm={handleConfirmMala}
+        />
       )}
 
-      {/* ── Setup panel (visible before session starts) ──────────────────────── */}
-      <AnimatePresence>
-        {!isActive && !showComplete && (
-          <motion.div className="px-4 mb-2 space-y-2.5"
-            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.32 }}>
+      {screen === 'chooseMantra' && (
+        <ChooseMantraScreen key="chooseMantra"
+          isDark={isDark} selected={mantraId}
+          onSelect={setMantraId}
+          onBack={() => setScreen('chooseMala')}
+          onConfirm={handleConfirmMantra}
+        />
+      )}
 
-            {/* Mantra picker */}
-            <button onClick={() => setShowPicker(true)}
-              className="w-full flex items-center justify-between rounded-2xl border px-4 py-3"
-              style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(200,146,74,0.14)' }}>
-              <div className="text-left">
-                <p className="text-[10px] font-semibold uppercase tracking-widest mb-0.5"
-                  style={{ color: 'rgba(200,146,74,0.4)' }}>Mantra</p>
-                <p className="font-semibold text-sm" style={{ color: 'var(--text-cream)' }}>
-                  {selectedMantra?.name ?? defaultMantra.name}
-                </p>
-              </div>
-              <ChevronDown size={17} style={{ color: 'rgba(200,146,74,0.4)' }} />
+      {screen === 'japa' && (
+        <motion.div
+          key="japa"
+          className="flex flex-col min-h-screen relative"
+          style={{ background: bg }}
+          initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          {/* ── Top bar ─────────────────────────────────────────────────── */}
+          <div className="flex items-center justify-between px-5 pt-14 pb-2">
+            <button
+              onClick={() => setScreen('chooseMala')}
+              className="w-9 h-9 rounded-full flex items-center justify-center"
+              style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
+              <ChevronLeft size={20} style={{ color: amber }} />
             </button>
 
-            {/* Rounds */}
-            <div className="flex items-center justify-between rounded-2xl border px-4 py-3"
-              style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(200,146,74,0.10)' }}>
-              <span className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.4)' }}>Rounds</span>
-              <div className="flex items-center gap-1.5">
-                {[1, 2, 3, 5, 11].map(n => (
-                  <button key={n} onClick={() => setTarget(n)}
-                    className="w-8 h-8 rounded-xl text-sm font-bold transition-all"
-                    style={targetRounds === n
-                      ? { background: 'linear-gradient(135deg, #C8924A, #8a5818)', color: '#fde8c8' }
-                      : { background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.35)' }}>
-                    {n}
-                  </button>
-                ))}
-              </div>
+            {/* Mantra name */}
+            <div className="text-center">
+              <p className="text-[10px] tracking-widest uppercase font-semibold" style={{ color: sub }}>
+                {currentMantra.tradition}
+              </p>
+              <p className="text-[13px] font-semibold" style={{ color: text }}>
+                {currentMantra.name}
+              </p>
             </div>
 
-            {/* Bead type */}
-            <div className="rounded-2xl border px-4 py-3"
-              style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(200,146,74,0.10)' }}>
-              <p className="text-[10px] font-semibold uppercase tracking-widest mb-2.5"
-                style={{ color: 'rgba(200,146,74,0.4)' }}>Bead</p>
-              <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-none">
-                {BEAD_TYPES.map(b => (
-                  <motion.button key={b.id} onClick={() => setBeadTypeId(b.id)} whileTap={{ scale: 0.94 }}
-                    className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs whitespace-nowrap flex-shrink-0 font-medium transition-all"
-                    style={beadTypeId === b.id
-                      ? { background: b.bg, color: b.textColor, border: `1.5px solid ${b.border}`, boxShadow: `0 0 10px ${b.shadow}` }
-                      : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.3)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                    {b.emoji} {b.label}
-                  </motion.button>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {/* Sounds button */}
+            <button
+              onClick={() => setShowSounds(true)}
+              className="w-9 h-9 rounded-full flex items-center justify-center"
+              style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
+              {soundId === 'silence'
+                ? <VolumeX size={17} style={{ color: amber }} />
+                : <Volume2 size={17} style={{ color: amber }} />}
+            </button>
+          </div>
 
-      {/* ── Main counter area ────────────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 gap-5 py-4">
-
-        {/* Mantra text — tappable to open full-screen view */}
-        <motion.button
-          onClick={() => setMantraFull(true)}
-          className="text-center px-6 py-2 rounded-2xl max-w-xs"
-          style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(200,146,74,0.08)', cursor: 'pointer' }}
-          whileTap={{ scale: 0.97 }}
-        >
-          <motion.p
-            className="font-[family:var(--font-deva)] text-base leading-relaxed"
-            style={{ color: 'rgba(255,255,255,0.75)', textShadow: `0 0 24px ${activeBead.glow}0.25)` }}
-            animate={{ opacity: [0.65, 1, 0.65] }}
-            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}>
-            {selectedMantra?.sanskrit?.split('\n')[0] ?? defaultMantra.short}
-          </motion.p>
-          {selectedMantra?.transliteration && (
-            <p className="text-[11px] italic mt-0.5" style={{ color: 'rgba(200,146,74,0.35)' }}>
-              {selectedMantra.transliteration.split('\n')[0]}
+          {/* ── Mantra devanagari ────────────────────────────────────────── */}
+          <div className="text-center px-6 pb-4">
+            <p style={{
+              fontFamily: 'var(--font-devanagari), "Noto Sans Devanagari", sans-serif',
+              fontSize: '1.4rem',
+              color: isDark ? 'rgba(245,210,150,0.75)' : 'rgba(80,45,10,0.65)',
+              lineHeight: 1.6,
+              letterSpacing: '0.03em',
+            }}>
+              {currentMantra.devanagari}
             </p>
-          )}
-          <p className="text-[10px] mt-1.5 uppercase tracking-widest" style={{ color: 'rgba(200,146,74,0.3)' }}>
-            tap to expand
-          </p>
-        </motion.button>
+          </div>
 
-        {/* Bead + water ripples — the centrepiece */}
-        <div className="relative flex items-center justify-center" style={{ width: 240, height: 240 }}>
-
-          {/* Ambient glow behind bead */}
-          <motion.div className="absolute rounded-full pointer-events-none"
-            style={{
-              width: 220, height: 220,
-              background: `radial-gradient(circle, ${activeBead.glow}0.08) 0%, transparent 70%)`,
-            }}
-            animate={{ scale: isActive ? [1, 1.1, 1] : 1, opacity: isActive ? [0.5, 0.9, 0.5] : 0.4 }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          />
-
-          {/* Water ripples (expand outward on each tap) */}
-          <AnimatePresence>
-            {ripples.map(r => (
-              <motion.div key={r.id}
-                className="absolute rounded-full pointer-events-none"
-                style={{ border: `1.5px solid ${activeBead.ripple}0.55)` }}
-                initial={{ width: 160, height: 160, opacity: 0.75, x: '-50%', y: '-50%', left: '50%', top: '50%' }}
-                animate={{ width: 320, height: 320, opacity: 0 }}
-                exit={{}}
-                transition={{ duration: 0.9, ease: [0.2, 0.8, 0.4, 1] }}
+          {/* ── SVG Mala — center of screen ──────────────────────────────── */}
+          <div className="flex-1 flex flex-col items-center justify-center px-8 gap-4">
+            <motion.div
+              className="w-full flex items-center justify-center"
+              animate={pulsing ? { scale: [1, 0.985, 1] } : {}}
+              transition={{ duration: 0.12 }}
+              style={{ maxWidth: 340 }}
+            >
+              <MalaSVG
+                malaId={malaId}
+                beadCount={beadCount + roundsDone * TOTAL_BEADS}
+                isDark={isDark}
+                pulsing={pulsing}
+                onTap={countBead}
               />
-            ))}
+            </motion.div>
+
+            {/* Round indicator */}
+            <div className="flex items-center gap-2">
+              {Array.from({ length: Math.max(1, roundsDone + 1) }, (_, i) => (
+                <div key={i}
+                  className="rounded-full transition-all"
+                  style={{
+                    width: i === roundsDone ? 20 : 6,
+                    height: 6,
+                    background: i < roundsDone
+                      ? amber
+                      : i === roundsDone
+                      ? `${amber}80`
+                      : `${amber}25`,
+                  }}
+                />
+              ))}
+              {roundsDone > 0 && (
+                <p className="text-[11px] font-semibold ml-1" style={{ color: sub }}>
+                  Round {roundsDone + 1}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* ── Bottom controls ───────────────────────────────────────────── */}
+          <div className="px-5 pb-10 space-y-3">
+            {/* Streak + stats row */}
+            <div className="flex items-center justify-between px-2">
+              <div className="flex items-center gap-1.5">
+                <Flame size={15} style={{ color: streak > 0 ? amber : `${amber}40` }} />
+                <span className="text-[12px] font-semibold" style={{ color: streak > 0 ? amber : `${amber}40` }}>
+                  {streak > 0 ? `${streak} day streak` : 'Start your streak'}
+                </span>
+              </div>
+              {totalBeads > 0 && (
+                <p className="text-[11px]" style={{ color: sub }}>
+                  {totalBeads} beads total
+                </p>
+              )}
+            </div>
+
+            {/* Action row */}
+            <div className="flex gap-3">
+              {/* Pause / Resume */}
+              <button
+                onClick={() => setPaused(p => !p)}
+                className="flex-1 py-3.5 rounded-2xl font-semibold text-[14px] border transition-all"
+                style={{
+                  background: cardBg,
+                  borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)',
+                  color: text,
+                }}>
+                {paused ? '▶  Resume' : '⏸  Pause'}
+              </button>
+
+              {/* Reset */}
+              <button
+                onClick={handleReset}
+                className="w-14 py-3.5 rounded-2xl flex items-center justify-center border transition-all"
+                style={{
+                  background: cardBg,
+                  borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)',
+                }}>
+                <RotateCcw size={17} style={{ color: sub }} />
+              </button>
+            </div>
+
+            {/* Manual complete */}
+            {roundsDone > 0 && (
+              <button
+                onClick={() => { saveSession(roundsDone); setShowComplete(true); }}
+                className="w-full py-3 rounded-2xl font-semibold text-[13px]"
+                style={{
+                  background: isDark ? 'rgba(200,146,74,0.12)' : 'rgba(122,74,30,0.08)',
+                  color: amber,
+                  border: `1px solid ${amber}28`,
+                }}>
+                End & Save Session
+              </button>
+            )}
+          </div>
+
+          {/* ── Sound sheet ───────────────────────────────────────────────── */}
+          <AnimatePresence>
+            {showSounds && (
+              <SoundsSheet
+                isDark={isDark}
+                current={soundId}
+                onSelect={id => { setSoundId(id); }}
+                onClose={() => setShowSounds(false)}
+              />
+            )}
           </AnimatePresence>
 
-          {/* The bead itself */}
-          <button
-            onPointerDown={isActive ? countBead : undefined}
-            onClick={!isActive ? startSession : undefined}
-            className="absolute rounded-full select-none focus:outline-none"
-            style={{
-              width: 160, height: 160,
-              left: '50%', top: '50%',
-              transform: 'translate(-50%, -50%)',
-              WebkitTapHighlightColor: 'transparent',
-              touchAction: 'manipulation',
-            }}
-          >
-            <motion.div
-              animate={{ scale: tapFlash ? 0.87 : 1 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 16 }}
-              style={{ width: '100%', height: '100%' }}
-            >
-              <div style={{
-                width: '100%', height: '100%', borderRadius: '50%',
-                background: tapFlash ? activeBead.tapBg : activeBead.bg,
-                boxShadow: tapFlash
-                  ? `0 0 60px ${activeBead.tapShadow}, 0 0 100px ${activeBead.shadow}, inset 0 3px 12px rgba(255,220,160,0.3)`
-                  : `0 0 32px ${activeBead.shadow}, 0 0 60px rgba(0,0,0,0.6), inset 0 2px 8px rgba(255,200,120,0.14)`,
-                border: `2px solid ${activeBead.border}`,
-                display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center', gap: 4,
-                transition: 'box-shadow 0.1s ease',
-              }}>
-                {isActive ? (
-                  <>
-                    <span className="text-4xl font-bold leading-none"
-                      style={{ color: activeBead.textColor, textShadow: '0 0 16px rgba(255,210,130,0.5)' }}>
-                      {beadCount}
-                    </span>
-                    <span className="text-[10px]"
-                      style={{ color: `${activeBead.textColor}80` }}>
-                      / {BEADS_PER_MALA}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <span style={{ fontSize: 32, lineHeight: 1, color: activeBead.textColor, opacity: 0.8 }}>▶</span>
-                    <motion.span className="text-[10px] font-semibold"
-                      style={{ color: `${activeBead.textColor}80` }}
-                      animate={{ opacity: [0.5, 1, 0.5] }}
-                      transition={{ duration: 2.2, repeat: Infinity }}>
-                      Begin
-                    </motion.span>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          </button>
-        </div>
-
-        {/* Active session stats */}
-        <AnimatePresence>
-          {isActive && (
-            <motion.div className="flex items-center gap-8"
-              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-              <div className="text-center">
-                <p className="text-3xl font-bold" style={{ color: activeBead.accent }}>{roundsDone}</p>
-                <p className="text-[11px] mt-0.5" style={{ color: 'rgba(255,255,255,0.3)' }}>Rounds</p>
-              </div>
-              <div className="w-px h-8" style={{ background: 'rgba(255,255,255,0.08)' }} />
-              <div className="text-center">
-                <p className="text-3xl font-bold font-mono" style={{ color: 'var(--text-cream)' }}>{fmt(duration)}</p>
-                <p className="text-[11px] mt-0.5" style={{ color: 'rgba(255,255,255,0.3)' }}>Time</p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Audio — during active session */}
-        <AnimatePresence>
-          {isActive && (
-            <motion.div className="w-full max-w-xs"
-              initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              transition={{ delay: 0.2 }}>
-              <div className="rounded-2xl overflow-hidden border"
-                style={{ borderColor: 'rgba(200,146,74,0.12)', background: 'rgba(255,255,255,0.03)' }}>
-                <ChantAudioPlayer title="Japa companion" trackIds={audioTrackIds} compact />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* ── Action buttons ───────────────────────────────────────────────────── */}
-      <div className="px-4 pb-4 space-y-2.5">
-        {isActive && (
-          <>
-            <div className="flex gap-2">
-              <button onClick={handleComplete}
-                className="flex-1 py-4 rounded-2xl font-bold text-base"
-                style={{ background: 'linear-gradient(135deg, #C8924A, #8a5818)', color: '#fde8c8', boxShadow: '0 4px 24px rgba(200,146,74,0.22)' }}>
-                Complete ✓
-              </button>
-              <button onClick={() => setFocusMode(true)}
-                className="py-4 px-4 rounded-2xl flex items-center gap-1.5 text-sm font-medium"
-                style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.18)', color: 'rgba(200,146,74,0.75)' }}>
-                <Maximize2 size={15} /> Focus
-              </button>
-            </div>
-            <button onClick={handleReset}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl border text-sm font-medium"
-              style={{ borderColor: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.28)' }}>
-              <RotateCcw size={14} /> Reset
-            </button>
-          </>
-        )}
-        {!isActive && !showComplete && (
-          <p className="text-center text-[11px] pb-2" style={{ color: 'rgba(255,255,255,0.2)' }}>
-            Tap ▶ to begin · tap the bead to count each repetition
-          </p>
-        )}
-      </div>
-
-      {/* ── History section ─────────────────────────────────────────────────── */}
-      {!isActive && !showComplete && (
-        <div className="space-y-3 pb-8">
-          {/* Weekly coins — free */}
-          <WeeklyCoins history={history} />
-
-          {/* 30-day heatmap — Pro */}
-          <JapaHistoryChart history={history} streak={streak} isPro={isPro} />
-        </div>
+          {/* ── Completion overlay ────────────────────────────────────────── */}
+          <AnimatePresence>
+            {showComplete && (
+              <CompletionOverlay
+                isDark={isDark}
+                rounds={roundsDone}
+                durationSecs={duration}
+                mantraName={currentMantra.name}
+                streak={streak}
+                onClose={handleCompleteClose}
+              />
+            )}
+          </AnimatePresence>
+        </motion.div>
       )}
-
-      {/* ── Overlays / Sheets ────────────────────────────────────────────────── */}
-      <AnimatePresence>
-        {showMantraFull && (
-          <MantraFullScreen
-            mantra={selectedMantra}
-            defaultMantra={defaultMantra}
-            ambience={ambience}
-            onAmbienceChange={setAmbience}
-            onClose={() => setMantraFull(false)}
-          />
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {showPicker && (
-          <MantraPickerSheet
-            mantras={mantras}
-            selected={selectedMantra}
-            onSelect={setMantra}
-            onClose={() => setShowPicker(false)}
-          />
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {showComplete && (
-          <CompletionSheet
-            rounds={roundsDone}
-            durationSecs={duration}
-            mantraName={selectedMantra?.name ?? defaultMantra.name}
-            streak={streak}
-            isPro={isPro}
-            onClose={() => { setComplete(false); router.back(); }}
-          />
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {isFocusMode && isActive && (
-          <JapaFocusOverlay
-            activeBead={activeBead}
-            beadCount={beadCount}
-            roundsDone={roundsDone}
-            duration={duration}
-            targetRounds={targetRounds}
-            selectedMantra={selectedMantra}
-            defaultMantra={defaultMantra}
-            audioTrackIds={audioTrackIds}
-            streak={streak}
-            tapFlash={tapFlash}
-            ripples={ripples}
-            onBead={countBead}
-            onComplete={handleComplete}
-            onReset={() => { handleReset(); setFocusMode(false); }}
-            onClose={() => setFocusMode(false)}
-          />
-        )}
-      </AnimatePresence>
-    </div>
+    </AnimatePresence>
   );
 }
