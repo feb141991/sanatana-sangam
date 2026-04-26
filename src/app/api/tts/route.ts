@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { GoogleAuth } from 'google-auth-library';
 
-// Detect Devanagari script — covers Sanskrit, Hindi, Marathi
-function hasDevanagari(text: string): boolean {
-  return /[ऀ-ॿ]/.test(text);
-}
+// Force Node.js runtime — google-auth-library requires it
+export const runtime = 'nodejs';
 
-// Detect Gurmukhi (Punjabi / Gurbani)
-function hasGurmukhi(text: string): boolean {
-  return /[਀-੿]/.test(text);
-}
-
-// Detect any Indic script broadly
-function hasIndicScript(text: string): boolean {
-  return hasDevanagari(text) || hasGurmukhi(text);
-}
+// ── Script detection ──────────────────────────────────────────────────────────
+function hasDevanagari(text: string): boolean { return /[ऀ-ॿ]/.test(text); }
+function hasGurmukhi(text: string): boolean   { return /[਀-੿]/.test(text); }
 
 interface VoiceConfig {
   languageCode: string;
@@ -22,26 +15,34 @@ interface VoiceConfig {
 }
 
 function pickVoice(text: string): VoiceConfig {
-  if (hasDevanagari(text)) {
-    // sa-IN — actual Sanskrit locale; Standard-A is a clear female voice
+  if (hasDevanagari(text))
     return { languageCode: 'sa-IN', name: 'sa-IN-Standard-A', ssmlGender: 'FEMALE' };
-  }
-  if (hasGurmukhi(text)) {
+  if (hasGurmukhi(text))
     return { languageCode: 'pa-IN', name: 'pa-IN-Standard-A', ssmlGender: 'FEMALE' };
-  }
-  // Default: clear Indian-English reading voice for transliterations
   return { languageCode: 'en-IN', name: 'en-IN-Standard-A', ssmlGender: 'FEMALE' };
 }
 
-export async function POST(req: NextRequest) {
-  const apiKey = process.env.GOOGLE_TTS_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: 'TTS not configured — set GOOGLE_TTS_API_KEY' },
-      { status: 503 }
-    );
+// ── Cached GoogleAuth client ──────────────────────────────────────────────────
+let _auth: GoogleAuth | null = null;
+
+function getAuth(): GoogleAuth {
+  if (_auth) return _auth;
+  const client_email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  const private_key  = process.env.GOOGLE_SERVICE_ACCOUNT_KEY?.replace(/\\n/g, '\n');
+
+  if (!client_email || !private_key) {
+    throw new Error('Set GOOGLE_SERVICE_ACCOUNT_EMAIL and GOOGLE_SERVICE_ACCOUNT_KEY');
   }
 
+  _auth = new GoogleAuth({
+    credentials: { client_email, private_key },
+    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+  });
+  return _auth;
+}
+
+// ── POST /api/tts ─────────────────────────────────────────────────────────────
+export async function POST(req: NextRequest) {
   let text: string;
   let rate: number;
 
@@ -53,43 +54,47 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  if (!text) {
-    return NextResponse.json({ error: 'text is required' }, { status: 400 });
-  }
-
-  // Cap rate to valid range [0.25, 4.0]
+  if (!text) return NextResponse.json({ error: 'text is required' }, { status: 400 });
   rate = Math.max(0.25, Math.min(4.0, rate));
 
-  const voice = pickVoice(text);
+  // Get OAuth2 access token
+  let token: string | null | undefined;
+  try {
+    const auth   = getAuth();
+    const client = await auth.getClient();
+    const res    = await client.getAccessToken();
+    token = res.token;
+    if (!token) throw new Error('Empty token returned');
+  } catch (err: any) {
+    console.error('[TTS] Auth error:', err?.message);
+    return NextResponse.json({ error: 'TTS auth failed', detail: err?.message }, { status: 503 });
+  }
 
-  const payload = {
+  const ttsPayload = {
     input: { text },
-    voice,
+    voice: pickVoice(text),
     audioConfig: {
       audioEncoding: 'MP3',
       speakingRate: rate,
-      pitch: -1.5,            // Slightly lower pitch sounds more meditative / authoritative
-      effectsProfileId: [],   // No DSP effects — pure voice
+      pitch: -1.5,
+      effectsProfileId: [],
     },
   };
 
   try {
-    const gRes = await fetch(
-      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      }
-    );
+    const gRes = await fetch('https://texttospeech.googleapis.com/v1/text:synthesize', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(ttsPayload),
+    });
 
     if (!gRes.ok) {
       const errText = await gRes.text();
       console.error('[TTS] Google API error:', gRes.status, errText);
-      return NextResponse.json(
-        { error: 'TTS upstream error', detail: gRes.status },
-        { status: 502 }
-      );
+      return NextResponse.json({ error: 'TTS upstream error', detail: gRes.status }, { status: 502 });
     }
 
     const data = await gRes.json() as { audioContent: string };
