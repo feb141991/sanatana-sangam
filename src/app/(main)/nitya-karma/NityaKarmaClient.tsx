@@ -31,7 +31,6 @@ import { usePremium } from '@/hooks/usePremium';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import NityaHeroBanner from '@/components/nitya/NityaHeroBanner';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
-import RadialRing from '@/components/ui/RadialRing';
 import type { NityaSequenceStep, NityaKarmaStreak } from '@sangam/sadhana-engine';
 
 // ── Tradition greetings ─────────────────────────────────────────────────────────
@@ -933,56 +932,6 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
         </div>
       ) : (
         <div className="px-4 space-y-3">
-
-          {/* ── Colorful ring progress summary ───────────────────────────── */}
-          {!allDone && (
-            <div
-              className="rounded-2xl px-4 py-4 flex items-center gap-4 border border-white/8"
-              style={{ background: `${accent}08` }}
-            >
-              {/* Big ring — unified RadialRing */}
-              <RadialRing
-                pct={Math.round(progressPct)}
-                accent={completedCount === totalSteps ? '#7ec87e' : accent}
-                accentEnd={completedCount === totalSteps ? '#a0e098' : '#D4784A'}
-                gradientId="nitya-progress-ring"
-                size={80}
-                strokeWidth={7}
-                label={
-                  <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 700, color: accent }}>
-                    {completedCount}<span style={{ fontSize: '0.65rem', color: 'var(--brand-muted)' }}>/{totalSteps}</span>
-                  </span>
-                }
-              />
-              {/* Text */}
-              <div className="flex-1 min-w-0">
-                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: 700, color: accent, lineHeight: 1 }}>
-                  {completedCount}<span style={{ fontSize: '1rem', color: 'var(--brand-muted)' }}>/{totalSteps}</span>
-                </p>
-                <p className="text-sm font-semibold text-[color:var(--brand-ink)] mt-0.5">
-                  {completedCount === 0 ? 'Start your sadhana' : `${totalSteps - completedCount} step${totalSteps - completedCount !== 1 ? 's' : ''} remaining`}
-                </p>
-                <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">
-                  {Math.round(progressPct)}% of today&apos;s Nitya Karma done
-                </p>
-              </div>
-              {/* Mini rings for each step */}
-              <div className="flex gap-1 flex-wrap justify-end" style={{ maxWidth: 80 }}>
-                {displaySteps.map(s => (
-                  <motion.div
-                    key={s.id}
-                    className="w-4 h-4 rounded-full flex-shrink-0"
-                    initial={{ scale: 0.5, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    style={{
-                      background: s.completed ? accent : 'rgba(255,255,255,0.08)',
-                      border: s.completed ? 'none' : `1px solid ${accent}30`,
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
 
           {displaySteps.map((step, idx) => {
             const isJustDone = justCompleted === step.id;

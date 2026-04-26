@@ -74,6 +74,40 @@ export default async function HomePage() {
     .eq('date', today)
     .single();
 
+  // 28-day practice history for Practice Pulse heatmap
+  const twentyEightDaysAgo = new Date();
+  twentyEightDaysAgo.setDate(twentyEightDaysAgo.getDate() - 27);
+  const historyFrom = twentyEightDaysAgo.toISOString().slice(0, 10);
+
+  const [{ data: sadhanaHistory }, { data: nityaHistory }] = await Promise.all([
+    supabase
+      .from('daily_sadhana')
+      .select('date, japa_done')
+      .eq('user_id', user.id)
+      .gte('date', historyFrom)
+      .lte('date', today),
+    supabase
+      .from('nitya_karma_log')
+      .select('log_date')
+      .eq('user_id', user.id)
+      .gte('log_date', historyFrom)
+      .lte('log_date', today),
+  ]);
+
+  // Build nitya set (dates with any log entry = done)
+  const nityaDates = new Set((nityaHistory ?? []).map(r => r.log_date));
+
+  // Merge into DayDot[]
+  const sadhanaMap: Record<string, boolean> = {};
+  (sadhanaHistory ?? []).forEach(r => { sadhanaMap[r.date] = r.japa_done; });
+
+  const practiceHistory = Array.from({ length: 28 }, (_, i) => {
+    const d = new Date(twentyEightDaysAgo);
+    d.setDate(d.getDate() + i);
+    const dateStr = d.toISOString().slice(0, 10);
+    return { date: dateStr, japa: sadhanaMap[dateStr] ?? false, nitya: nityaDates.has(dateStr) };
+  });
+
   const meta = getTraditionMeta(tradition);
   const showFirstTimeGuidance = (
     (profile?.shloka_streak ?? 0) === 0
@@ -113,6 +147,8 @@ export default async function HomePage() {
       showFirstTimeGuidance={showFirstTimeGuidance}
       japaStreak={todaySadhana?.streak_count ?? 0}
       japaAlreadyDoneToday={todaySadhana?.japa_done ?? false}
+      nityaDoneToday={nityaDates.has(today)}
+      practiceHistory={practiceHistory}
     />
   );
 }

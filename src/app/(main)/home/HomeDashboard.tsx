@@ -24,7 +24,7 @@ import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
 import { APP } from '@/lib/config';
 import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
-import SpiritualMetricsSection from '@/components/home/SpiritualMetricsSection';
+import PracticePulse from '@/components/home/PracticePulse';
 import MoodGlyph from '@/components/ui/MoodGlyph';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 
@@ -78,6 +78,8 @@ interface Props {
   showFirstTimeGuidance: boolean;
   japaStreak?:          number;
   japaAlreadyDoneToday?: boolean;
+  nityaDoneToday?:       boolean;
+  practiceHistory?:      { date: string; japa: boolean; nitya: boolean }[];
 }
 
 const DEFAULT_QUICK_ACCESS = [
@@ -745,6 +747,8 @@ export default function HomeDashboard({
   showFirstTimeGuidance,
   japaStreak = 0,
   japaAlreadyDoneToday = false,
+  nityaDoneToday = false,
+  practiceHistory = [],
 }: Props) {
   const supabase = createClient();
   const router   = useRouter();
@@ -1261,13 +1265,12 @@ export default function HomeDashboard({
         </div>
       </motion.div>
 
-      {/* ── Spiritual Metrics ── */}
-      <SpiritualMetricsSection
+      {/* ── Practice Pulse ── */}
+      <PracticePulse
         japaStreak={japaStreak}
-        shlokaStreak={streak}
         japaAlreadyDoneToday={japaAlreadyDoneToday}
-        readToday={readToday}
-        tradition={tradition}
+        nityaDoneToday={nityaDoneToday}
+        history={practiceHistory}
       />
 
       {showFirstTimeGuidance && personalizedPaths.length > 0 && (
