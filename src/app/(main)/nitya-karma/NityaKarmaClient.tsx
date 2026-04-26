@@ -783,6 +783,9 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
   const [custom,        setCustom]       = useState<NityaCustom>({ labels: {}, descriptions: {}, alertTime: '04:30', extraSteps: [] });
   const [showConfetti,  setShowConfetti] = useState(false);
   const [ashramaOpen,       setAshramaOpen]      = useState(true);
+  // ── Screen navigation (hub → sub-screen, like Japa multi-screen) ─────────
+  type NityaScreen = 'hub' | 'dincharya' | 'ashrama' | 'journey';
+  const [nityaScreen, setNityaScreen] = useState<NityaScreen>('hub');
   // ── Inline Ashrama setup (for users with null life_stage) ─────────────────
   const [localLifeStage,    setLocalLifeStage]   = useState<string | null>(lifeStage);
   const [localGenderCtx,    setLocalGenderCtx]   = useState<string | null>(genderContext);
@@ -1000,100 +1003,293 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
   const allDone        = completedCount === totalSteps && totalSteps > 0;
   const vataDays       = panchang?.vrata ?? null;
 
-  return (
-    <div className="min-h-screen pb-28">
+  // ── Hoisted Ashrama derived values (used by tab badge + tab 2 content) ────
+  const _gc        = (localGenderCtx as GenderContext | null);
+  const _stageMeta = localLifeStage
+    ? getAshramaMeta(tradition, localLifeStage as LifeStage, _gc)
+    : null;
+  const _duties    = localLifeStage
+    ? getAshramaDuties(tradition, localLifeStage as LifeStage, _gc)
+    : [];
+  const ashramaDoneCount = _duties.filter(d => dutyChecks.has(d.id)).length;
 
-      <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
+  function toggleDuty(id: string) {
+    setDutyChecks(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      try {
+        const today = new Date().toISOString().slice(0, 10);
+        sessionStorage.setItem(`ashrama_checks:${today}`, JSON.stringify([...next]));
+      } catch {}
+      return next;
+    });
+  }
 
-      {/* Header */}
+  // ── Shared header used by all sub-screens ─────────────────────────────────
+  function SubHeader({ title, subtitle, onBack }: { title: string; subtitle: string; onBack: () => void }) {
+    return (
       <div className="flex items-center gap-3 px-4 pt-4 pb-3">
         <button
-          onClick={() => router.back()}
+          onClick={onBack}
           className="w-9 h-9 rounded-full glass-panel border border-white/10 flex items-center justify-center"
         >
           <ChevronLeft size={20} style={{ color: accent }} />
         </button>
         <div className="flex-1">
-          <h1 className="font-bold text-lg text-[color:var(--brand-ink)]">My Sadhana Path</h1>
-          <p className="text-xs text-[color:var(--brand-muted)]">
-            {meta.symbol} {tradition === 'sikh' ? 'Nitnem' : tradition === 'buddhist' ? 'Morning Practice' : 'Nitya Karma'} · personalised for you
-          </p>
+          <h1 className="font-bold text-lg text-[color:var(--brand-ink)]">{title}</h1>
+          <p className="text-xs text-[color:var(--brand-muted)]">{subtitle}</p>
         </div>
         <div className="flex items-center gap-2">
           {streak && streak.current_streak > 0 && isPro && (
-            <div
-              className="flex items-center gap-1 rounded-xl px-3 py-1.5 border border-white/10"
-              style={{ background: `${accent}14` }}
-            >
+            <div className="flex items-center gap-1 rounded-xl px-3 py-1.5 border border-white/10"
+              style={{ background: `${accent}14` }}>
               <Flame size={14} style={{ color: accent }} />
               <span className="text-xs font-semibold" style={{ color: accent }}>{streak.current_streak}d</span>
             </div>
           )}
-          {/* Customise button — Pro only */}
           {isPro ? (
             <>
-              <button
-                onClick={() => setShowCustom(true)}
-                className="w-9 h-9 rounded-full flex items-center justify-center border border-white/10"
-                style={{ background: `${accent}14` }}
-                title="Customise your Nitya Karma"
-              >
-                <Settings2 size={15} style={{ color: accent }} />
-              </button>
+              {nityaScreen === 'dincharya' && (
+                <button onClick={() => setShowCustom(true)}
+                  className="w-9 h-9 rounded-full flex items-center justify-center border border-white/10"
+                  style={{ background: `${accent}14` }}>
+                  <Settings2 size={15} style={{ color: accent }} />
+                </button>
+              )}
               <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-amber-400/30 bg-amber-400/10">
                 <Star size={12} className="text-amber-400 fill-amber-400" />
                 <span className="text-[10px] font-bold text-amber-400">PRO</span>
               </div>
             </>
           ) : (
-            <button
-              onClick={() => setShowProSheet(true)}
-              className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-amber-400/20 bg-amber-400/8 transition-all hover:bg-amber-400/14"
-            >
+            <button onClick={() => setShowProSheet(true)}
+              className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-amber-400/20 bg-amber-400/8">
               <Star size={11} className="text-amber-400/70" />
               <span className="text-[10px] font-semibold text-amber-400/70">Pro</span>
             </button>
           )}
         </div>
       </div>
+    );
+  }
 
-      {/* Hero banner — time-aware animated sky */}
-      <NityaHeroBanner
-        greeting={greeting || morning.greeting}
-        userName={userName}
-        completedCount={completedCount}
-        totalSteps={totalSteps}
-        progressPct={progressPct}
-        streak={streak}
-        isPro={isPro}
-        panchang={panchang}
-        vataDays={vataDays}
-      />
+  return (
+    <div className="min-h-screen pb-28">
 
-      {/* Vrat alert */}
-      {vataDays && (
-        <div
-          className="mx-4 mb-3 rounded-2xl border px-4 py-3 flex items-start gap-3"
-          style={{ background: `${accent}10`, borderColor: `${accent}30` }}
-        >
-          <span className="text-xl shrink-0">🌟</span>
-          <div>
-            <p className="text-sm font-semibold text-[color:var(--brand-ink)]">Today is {vataDays}</p>
-            <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-relaxed">
-              A vrat/fast day adds extra spiritual merit to your sadhana. Observe nirjala or phalahar as per your tradition and add an extended japa or stotra session.
-            </p>
-          </div>
-        </div>
-      )}
+      <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
 
-      {/* Steps */}
-      {loading ? (
-        <div className="flex items-center justify-center gap-3 pt-20">
-          <Loader2 size={22} className="animate-spin" style={{ color: accent }} />
-          <span className="text-sm text-[color:var(--brand-muted)]">Getting your morning sequence…</span>
-        </div>
-      ) : (
-        <div className="px-4 space-y-3">
+      <AnimatePresence mode="wait">
+
+        {/* ════════════════════════════════════════════════════════════════════
+            HUB — the main menu screen, picks a practice mode
+        ════════════════════════════════════════════════════════════════════ */}
+        {nityaScreen === 'hub' && (
+          <motion.div
+            key="hub"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.22 }}
+          >
+            {/* Header */}
+            <div className="flex items-center gap-3 px-4 pt-4 pb-3">
+              <button onClick={() => router.back()}
+                className="w-9 h-9 rounded-full glass-panel border border-white/10 flex items-center justify-center">
+                <ChevronLeft size={20} style={{ color: accent }} />
+              </button>
+              <div className="flex-1">
+                <h1 className="font-bold text-lg text-[color:var(--brand-ink)]">My Sadhana Path</h1>
+                <p className="text-xs text-[color:var(--brand-muted)]">
+                  {meta.symbol} {tradition === 'sikh' ? 'Nitnem' : tradition === 'buddhist' ? 'Morning Practice' : 'Nitya Karma'} · personalised for you
+                </p>
+              </div>
+              {isPro ? (
+                <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-amber-400/30 bg-amber-400/10">
+                  <Star size={12} className="text-amber-400 fill-amber-400" />
+                  <span className="text-[10px] font-bold text-amber-400">PRO</span>
+                </div>
+              ) : (
+                <button onClick={() => setShowProSheet(true)}
+                  className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-amber-400/20 bg-amber-400/8">
+                  <Star size={11} className="text-amber-400/70" />
+                  <span className="text-[10px] font-semibold text-amber-400/70">Pro</span>
+                </button>
+              )}
+            </div>
+
+            {/* Hero banner */}
+            <NityaHeroBanner
+              greeting={greeting || morning.greeting}
+              userName={userName}
+              completedCount={completedCount}
+              totalSteps={totalSteps}
+              progressPct={progressPct}
+              streak={streak}
+              isPro={isPro}
+              panchang={panchang}
+              vataDays={vataDays}
+            />
+
+            {/* Vrat alert */}
+            {vataDays && (
+              <div className="mx-4 mb-3 rounded-2xl border px-4 py-3 flex items-start gap-3"
+                style={{ background: `${accent}10`, borderColor: `${accent}30` }}>
+                <span className="text-xl shrink-0">🌟</span>
+                <div>
+                  <p className="text-sm font-semibold text-[color:var(--brand-ink)]">Today is {vataDays}</p>
+                  <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-relaxed">
+                    A vrat day adds extra spiritual merit. Observe nirjala or phalahar and add extended japa.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* 3 practice mode cards */}
+            <div className="px-4 pt-1 space-y-3">
+
+              {/* ① Dincharya — FREE */}
+              <motion.button
+                onClick={() => setNityaScreen('dincharya')}
+                whileTap={{ scale: 0.975 }}
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05, duration: 0.35 }}
+                className="w-full text-left rounded-[1.4rem] border p-5 flex items-center gap-4 glass-panel"
+                style={{ borderColor: `${accent}28` }}
+              >
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0"
+                  style={{ background: `${accent}18` }}>
+                  🌅
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="font-bold text-[15px] text-[color:var(--brand-ink)]">Dincharya</p>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
+                      style={{ background: 'rgba(34,197,94,0.15)', color: 'rgb(34,197,94)' }}>FREE</span>
+                  </div>
+                  <p className="text-[11.5px] leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
+                    Your daily morning sequence · 7 sacred steps
+                  </p>
+                  <div className="mt-2 flex items-center gap-2">
+                    <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: `${accent}18` }}>
+                      <div className="h-full rounded-full" style={{ width: `${progressPct}%`, background: accent }} />
+                    </div>
+                    <span className="text-[9px] font-semibold shrink-0" style={{ color: accent }}>
+                      {loading ? '…' : `${completedCount}/${totalSteps}`}
+                    </span>
+                  </div>
+                </div>
+                <ChevronDown size={16} style={{ color: accent, transform: 'rotate(-90deg)', flexShrink: 0 }} />
+              </motion.button>
+
+              {/* ② Ashrama Dharma — PRO */}
+              <motion.button
+                onClick={() => isPro ? setNityaScreen('ashrama') : setShowProSheet(true)}
+                whileTap={{ scale: 0.975 }}
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.10, duration: 0.35 }}
+                className="w-full text-left rounded-[1.4rem] border p-5 flex items-center gap-4 glass-panel"
+                style={{ borderColor: isPro ? (localLifeStage ? `${(_stageMeta?.accent ?? accent)}28` : `${accent}28`) : 'rgba(251,191,36,0.18)' }}
+              >
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0"
+                  style={{ background: isPro ? `${(_stageMeta?.accent ?? accent)}18` : 'rgba(251,191,36,0.10)' }}>
+                  {isPro && _stageMeta ? _stageMeta.icon : '🏡'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="font-bold text-[15px] text-[color:var(--brand-ink)]">Ashrama Dharma</p>
+                    {isPro
+                      ? (!localLifeStage
+                        ? <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-400">Set up</span>
+                        : null)
+                      : <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-400/15 text-amber-400 flex items-center gap-0.5">
+                          <Lock size={8} /> Pro
+                        </span>
+                    }
+                  </div>
+                  <p className="text-[11.5px] leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
+                    {isPro && _stageMeta
+                      ? `${_stageMeta.label} duties · ${ashramaDoneCount}/${_duties.length} reflected today`
+                      : 'Life-stage duties personalised to your Ashrama'}
+                  </p>
+                </div>
+                {isPro
+                  ? <ChevronDown size={16} style={{ color: accent, transform: 'rotate(-90deg)', flexShrink: 0 }} />
+                  : <Lock size={16} className="text-amber-400/60 shrink-0" />
+                }
+              </motion.button>
+
+              {/* ③ Journey (Plans + Calendar) — PRO */}
+              <motion.button
+                onClick={() => isPro ? setNityaScreen('journey') : setShowProSheet(true)}
+                whileTap={{ scale: 0.975 }}
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15, duration: 0.35 }}
+                className="w-full text-left rounded-[1.4rem] border p-5 flex items-center gap-4 glass-panel"
+                style={{ borderColor: isPro ? `${accent}28` : 'rgba(251,191,36,0.18)' }}
+              >
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0"
+                  style={{ background: isPro ? `${accent}18` : 'rgba(251,191,36,0.10)' }}>
+                  ✦
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="font-bold text-[15px] text-[color:var(--brand-ink)]">Journey</p>
+                    {!isPro && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-400/15 text-amber-400 flex items-center gap-0.5">
+                        <Lock size={8} /> Pro
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[11.5px] leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
+                    Guided sadhana plans · 30-day history & streaks
+                  </p>
+                </div>
+                {isPro
+                  ? <ChevronDown size={16} style={{ color: accent, transform: 'rotate(-90deg)', flexShrink: 0 }} />
+                  : <Lock size={16} className="text-amber-400/60 shrink-0" />
+                }
+              </motion.button>
+
+              {/* Engine info */}
+              <div className="glass-panel rounded-2xl border border-white/6 px-4 py-3 flex items-start gap-2.5">
+                <Info size={14} className="text-[color:var(--brand-muted)] shrink-0 mt-0.5" />
+                <p className="text-xs text-[color:var(--brand-muted)] leading-relaxed">
+                  Your sequence adapts to today&apos;s tithi, nakshatra, and vrat.{' '}
+                  <button onClick={() => setShowProSheet(true)}
+                    className="font-semibold text-[color:var(--brand-ink)] underline underline-offset-2">
+                    Sangam Pro
+                  </button>
+                  {' '}unlocks AI-personalised sequences, Ashrama Dharma, and Guided Plans.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ════════════════════════════════════════════════════════════════════
+            SCREEN 1 — Dincharya (7-step morning routine, FREE)
+        ════════════════════════════════════════════════════════════════════ */}
+        {nityaScreen === 'dincharya' && (
+          <motion.div
+            key="dincharya"
+            initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <SubHeader
+              title={tradition === 'sikh' ? 'Nitnem' : tradition === 'buddhist' ? 'Morning Practice' : 'Dincharya'}
+              subtitle={`${meta.symbol} Your 7-step morning sequence`}
+              onBack={() => setNityaScreen('hub')}
+            />
+
+            {/* Steps */}
+            {loading ? (
+              <div className="flex items-center justify-center gap-3 pt-20">
+                <Loader2 size={22} className="animate-spin" style={{ color: accent }} />
+                <span className="text-sm text-[color:var(--brand-muted)]">Getting your morning sequence…</span>
+              </div>
+            ) : (
+              <div className="px-4 space-y-3">
 
           {displaySteps.map((step, idx) => {
             const isJustDone = justCompleted === step.id;
@@ -1116,7 +1312,6 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                   transition: 'box-shadow 0.4s ease',
                 }}
               >
-                {/* Icon */}
                 <motion.div
                   className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shrink-0"
                   style={{ background: step.completed ? `${accent}20` : `${accent}12` }}
@@ -1130,61 +1325,42 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                       : <span>{step.icon}</span>
                   }
                 </motion.div>
-
-                {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className={`font-semibold text-sm ${
-                      step.completed ? 'text-[color:var(--brand-muted)] line-through' : 'text-[color:var(--brand-ink)]'
-                    }`}>
+                    <p className={`font-semibold text-sm ${step.completed ? 'text-[color:var(--brand-muted)] line-through' : 'text-[color:var(--brand-ink)]'}`}>
                       {step.label}
                     </p>
                     {step.minutes > 0 && (
                       <span className="text-[10px] font-medium rounded-full px-2 py-0.5"
-                        style={{ background: `${accent}14`, color: accent }}>
-                        {step.minutes}m
-                      </span>
+                        style={{ background: `${accent}14`, color: accent }}>{step.minutes}m</span>
                     )}
-                    {step.completed && (
-                      <span className="text-[10px] text-green-400 font-medium">Done ✓</span>
-                    )}
+                    {step.completed && <span className="text-[10px] text-green-400 font-medium">Done ✓</span>}
                   </div>
                   {!step.completed && (
-                    <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-relaxed">
-                      {step.description}
-                    </p>
+                    <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-relaxed">{step.description}</p>
                   )}
                   {step.id === 'japa_done' && !step.completed && (
                     <Link href="/japa" onClick={e => e.stopPropagation()}
                       className="mt-1.5 inline-flex text-xs font-semibold underline underline-offset-2"
-                      style={{ color: accent }}>
-                      Open Japa Counter →
-                    </Link>
+                      style={{ color: accent }}>Open Japa Counter →</Link>
                   )}
                   {step.id === 'shloka_done' && !step.completed && (
                     <Link href="/pathshala" onClick={e => e.stopPropagation()}
                       className="mt-1.5 inline-flex text-xs font-semibold underline underline-offset-2"
-                      style={{ color: accent }}>
-                      Open Pathshala →
-                    </Link>
+                      style={{ color: accent }}>Open Pathshala →</Link>
                   )}
                 </div>
-
-                {/* Right */}
                 {step.completed
                   ? <Lock size={16} className="text-white/20 shrink-0" />
-                  : !isBusy
-                    ? <Circle size={20} className="text-white/20 shrink-0" />
-                    : null}
+                  : !isBusy ? <Circle size={20} className="text-white/20 shrink-0" /> : null}
               </motion.button>
             );
           })}
 
-          {/* All done state */}
+          {/* All done */}
           {allDone && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
               className="rounded-3xl p-6 text-center space-y-3 border border-white/10"
               style={{ background: `linear-gradient(135deg, ${accent}20, ${accent}10)` }}
             >
@@ -1196,29 +1372,22 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                   {streak.current_streak}-day streak · Longest: {streak.longest_streak} days
                 </p>
               )}
-              <div
-                className="mt-2 mx-auto max-w-xs rounded-2xl px-4 py-3 flex items-start gap-2.5"
-                style={{ background: `${accent}14`, border: `1px solid ${accent}30` }}
-              >
+              <div className="mt-2 mx-auto max-w-xs rounded-2xl px-4 py-3 flex items-start gap-2.5"
+                style={{ background: `${accent}14`, border: `1px solid ${accent}30` }}>
                 <Sunrise size={16} style={{ color: accent }} className="shrink-0 mt-0.5" />
                 <p className="text-xs leading-relaxed text-left" style={{ color: accent }}>
-                  Your steps are locked for today. Come back tomorrow — next Brahma Muhurta opens{' '}
+                  Locked for today. Come back tomorrow — Brahma Muhurta opens{' '}
                   <span className="font-semibold">{nextBrahmaMuhurtaText()}</span>.
                 </p>
               </div>
               <div className="flex justify-center gap-3 pt-1 flex-wrap">
                 <Link href="/japa" className="px-4 py-2 rounded-xl text-xs font-semibold"
-                  style={{ background: `${accent}18`, color: accent }}>
-                  Japa Counter
-                </Link>
+                  style={{ background: `${accent}18`, color: accent }}>Japa Counter</Link>
                 <Link href="/pathshala" className="px-4 py-2 rounded-xl text-xs font-semibold"
-                  style={{ background: `${accent}18`, color: accent }}>
-                  Pathshala
-                </Link>
-                <Link href="/nitya-karma/plans" className="px-4 py-2 rounded-xl text-xs font-semibold"
-                  style={{ background: `${accent}18`, color: accent }}>
-                  ✦ Guided Plans
-                </Link>
+                  style={{ background: `${accent}18`, color: accent }}>Pathshala</Link>
+                <button onClick={() => isPro ? setNityaScreen('journey') : setShowProSheet(true)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold"
+                  style={{ background: `${accent}18`, color: accent }}>✦ Guided Plans</button>
               </div>
             </motion.div>
           )}
@@ -1227,304 +1396,248 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
           {!allDone && streak && streak.current_streak > 0 && (
             <StreakCard streak={streak} accent={accent} />
           )}
+        </div>
+            )}
+          </motion.div>
+        )}
 
-          {/* ── Ashrama Dharma Section ─────────────────────────────────────── */}
-          {/* When life_stage is not set — show inline setup picker */}
-          {!localLifeStage && (
-            <AshramaSetupPrompt
-              accent={accent}
-              tradition={tradition}
-              saving={savingAshrama}
-              onSave={saveAshramaSetup}
+        {/* ════════════════════════════════════════════════════════════════════
+            SCREEN 2 — Ashrama Dharma (life-stage duties, PRO)
+        ════════════════════════════════════════════════════════════════════ */}
+        {nityaScreen === 'ashrama' && (
+          <motion.div
+            key="ashrama"
+            initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <SubHeader
+              title="Ashrama Dharma"
+              subtitle={_stageMeta ? `${_stageMeta.label} · life-stage duties` : 'Life-stage practice path'}
+              onBack={() => setNityaScreen('hub')}
             />
-          )}
+            <div className="px-4 space-y-3 pt-1">
+              <p className="text-[11.5px] leading-relaxed px-1" style={{ color: 'var(--brand-muted)' }}>
+                Duties and reflections aligned to your current Ashrama. Tap to mark each one as reflected on.
+              </p>
 
-          {localLifeStage && (() => {
-            const gc         = (localGenderCtx as GenderContext | null);
-            const stageMeta  = getAshramaMeta(tradition, localLifeStage as LifeStage, gc);
-            const duties     = getAshramaDuties(tradition, localLifeStage as LifeStage, gc);
-            const doneCount  = duties.filter(d => dutyChecks.has(d.id)).length;
-
-            function toggleDuty(id: string) {
-              setDutyChecks(prev => {
-                const next = new Set(prev);
-                if (next.has(id)) next.delete(id); else next.add(id);
-                try {
-                  const today = new Date().toISOString().slice(0, 10);
-                  sessionStorage.setItem(`ashrama_checks:${today}`, JSON.stringify([...next]));
-                } catch {}
-                return next;
-              });
-            }
-
-            return (
-              <div
-                className="rounded-[1.5rem] overflow-hidden border"
-                style={{ borderColor: `${stageMeta.accent}22`, background: 'var(--surface-raised)' }}
-              >
-                {/* Header — tappable to collapse */}
-                <button
-                  onClick={() => setAshramaOpen(o => !o)}
-                  className="w-full flex items-center justify-between px-5 pt-4 pb-3"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-9 h-9 rounded-[0.7rem] flex items-center justify-center text-lg shrink-0"
-                      style={{ background: `${stageMeta.accent}18` }}
-                    >
-                      {stageMeta.icon}
-                    </div>
-                    <div className="text-left">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: `${stageMeta.accent}99` }}>
-                        {stageMeta.label} Dharma
-                      </p>
-                      <p className="text-[11px]" style={{ color: 'var(--text-dim)' }}>
-                        {doneCount}/{duties.length} reflected on today
-                      </p>
+              {!localLifeStage ? (
+                <AshramaSetupPrompt
+                  accent={accent}
+                  tradition={tradition}
+                  saving={savingAshrama}
+                  onSave={saveAshramaSetup}
+                />
+              ) : _stageMeta && (
+                <div className="rounded-[1.5rem] overflow-hidden border"
+                  style={{ borderColor: `${_stageMeta.accent}22`, background: 'var(--surface-raised)' }}>
+                  {/* Section header */}
+                  <div className="flex items-center justify-between px-5 pt-4 pb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-[0.7rem] flex items-center justify-center text-xl shrink-0"
+                        style={{ background: `${_stageMeta.accent}18` }}>
+                        {_stageMeta.icon}
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.16em]"
+                          style={{ color: `${_stageMeta.accent}99` }}>{_stageMeta.label} Dharma</p>
+                        <p className="text-[11px]" style={{ color: 'var(--text-dim)' }}>
+                          {ashramaDoneCount}/{_duties.length} reflected on today
+                        </p>
                     </div>
                   </div>
-                  <motion.div
-                    animate={{ rotate: ashramaOpen ? 0 : -90 }}
-                    transition={{ duration: 0.22 }}
-                  >
-                    <ChevronDown size={16} style={{ color: 'var(--brand-muted)' }} />
-                  </motion.div>
-                </button>
+                </div>
 
-                <AnimatePresence initial={false}>
-                  {ashramaOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                      className="overflow-hidden"
-                    >
-                      {/* Subtitle */}
-                      <p className="px-5 pb-3 text-[11.5px] leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
-                        {stageMeta.subtitle} — reflect on each as you move through the day.
-                      </p>
+                {/* Subtitle */}
+                <p className="px-5 pb-3 text-[11.5px] leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
+                  {_stageMeta.subtitle} — reflect on each as you move through the day.
+                </p>
+                <div className="mx-5 h-px mb-3" style={{ background: `${_stageMeta.accent}14` }} />
 
-                      {/* Divider */}
-                      <div className="mx-5 h-px mb-3" style={{ background: `${stageMeta.accent}14` }} />
+                {/* Duty list */}
+                <div className="px-4 pb-4 space-y-2">
+                  {_duties.map((duty, idx) => {
+                    const done = dutyChecks.has(duty.id);
+                    return (
+                      <motion.button
+                        key={duty.id}
+                        onClick={() => toggleDuty(duty.id)}
+                        initial={{ opacity: 0, x: 8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.04, duration: 0.28 }}
+                        whileTap={{ scale: 0.97 }}
+                        className="w-full flex items-center gap-3.5 rounded-[1rem] px-3.5 py-3 text-left"
+                        style={{
+                          background: done ? `${_stageMeta.accent}10` : 'rgba(255,255,255,0.025)',
+                          border: `1px solid ${done ? `${_stageMeta.accent}30` : 'rgba(255,255,255,0.05)'}`,
+                          transition: 'all 200ms ease',
+                        }}
+                      >
+                        <div className="w-9 h-9 rounded-[0.65rem] flex items-center justify-center text-lg shrink-0"
+                          style={{ background: done ? `${_stageMeta.accent}18` : 'var(--card-bg)' }}>
+                          {done
+                            ? <CheckCircle2 size={18} style={{ color: _stageMeta.accent }} />
+                            : <span>{duty.icon}</span>
+                          }
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-[12.5px] font-semibold leading-tight ${done ? 'line-through' : ''}`}
+                            style={{ color: done ? 'var(--brand-muted)' : 'var(--brand-ink)' }}>
+                            {duty.label}
+                          </p>
+                          {!done && (
+                            <p className="text-[10.5px] mt-0.5 leading-relaxed" style={{ color: 'var(--text-dim)' }}>
+                              {duty.description}
+                            </p>
+                          )}
+                        </div>
+                        {duty.minutes && duty.minutes > 0 && !done && (
+                          <span className="text-[9px] font-semibold rounded-full px-1.5 py-0.5 shrink-0"
+                            style={{ background: `${_stageMeta.accent}14`, color: _stageMeta.accent }}>
+                            {duty.minutes}m
+                          </span>
+                        )}
+                      </motion.button>
+                    );
+                  })}
+                </div>
+                <div className="px-5 pb-4">
+                  <p className="text-[10px] text-center" style={{ color: 'var(--text-dim)' }}>
+                    These are reflections, not obligations — check when done, uncheck to revisit
+                  </p>
+                </div>
+              </div>
+              )}
+            </div>
+          </motion.div>
+        )}
 
-                      {/* Duties */}
-                      <div className="px-4 pb-4 space-y-2">
-                        {duties.map((duty, idx) => {
-                          const done = dutyChecks.has(duty.id);
+        {/* ════════════════════════════════════════════════════════════════════
+            SCREEN 3 — Journey (Guided Plans + 30-day calendar, PRO)
+        ════════════════════════════════════════════════════════════════════ */}
+        {nityaScreen === 'journey' && (
+          <motion.div
+            key="journey"
+            initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <SubHeader
+              title="Journey"
+              subtitle="Guided plans · practice history"
+              onBack={() => setNityaScreen('hub')}
+            />
+            <div className="px-4 space-y-3 pt-1">
+
+              {/* Guided Plans card */}
+              <Link href="/nitya-karma/plans"
+                className="block rounded-[1.4rem] border px-5 py-4 flex items-center gap-4 glass-panel active:scale-[0.98] transition-transform"
+                style={{ borderColor: `${accent}28` }}
+              >
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0"
+                  style={{ background: `${accent}18` }}>🗺️</div>
+                <div className="flex-1">
+                  <p className="font-bold text-[15px] text-[color:var(--brand-ink)]">Guided Sadhana Plans</p>
+                  <p className="text-[11.5px] mt-0.5 leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
+                    Structured 21-day paths — Navratri, Ekadashi, Sattvic Fast & more
+                  </p>
+                </div>
+                <ChevronDown size={16} style={{ color: accent, transform: 'rotate(-90deg)', flexShrink: 0 }} />
+              </Link>
+
+              {/* 30-day calendar */}
+              <div className="glass-panel rounded-2xl border border-white/8 overflow-hidden">
+                <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-[color:var(--brand-ink)]">30-Day Sadhana</p>
+                    <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">Step intensity · last 30 days</p>
+                  </div>
+                </div>
+                <div className="px-4 pb-4">
+                  <div className="grid gap-[4px] mb-1" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
+                    {['S','M','T','W','T','F','S'].map((d, i) => (
+                      <div key={i} className="text-center text-[9px] font-semibold"
+                        style={{ color: 'rgba(255,255,255,0.25)' }}>{d}</div>
+                    ))}
+                  </div>
+                  {(() => {
+                    const today     = new Date();
+                    const startDate = new Date(today);
+                    startDate.setDate(today.getDate() - 29);
+                    const dayOfWeek = startDate.getDay();
+                    const slots: (DayRecord | null)[] = Array(dayOfWeek).fill(null);
+                    for (const rec of dayRecords) slots.push(rec);
+                    while (slots.length % 7 !== 0) slots.push(null);
+                    return (
+                      <div className="grid gap-[4px]" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
+                        {slots.map((slot, idx) => {
+                          if (!slot) return <div key={idx} className="aspect-square" />;
+                          const isToday = slot.date === today.toISOString().slice(0, 10);
                           return (
-                            <motion.button
-                              key={duty.id}
-                              onClick={() => toggleDuty(duty.id)}
-                              initial={{ opacity: 0, x: 8 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: idx * 0.04, duration: 0.28 }}
-                              whileTap={{ scale: 0.97 }}
-                              className="w-full flex items-center gap-3.5 rounded-[1rem] px-3.5 py-3 text-left"
+                            <div key={slot.date}
+                              title={`${slot.date}: ${slot.count} steps`}
+                              className="aspect-square rounded-md transition-all"
                               style={{
-                                background: done ? `${stageMeta.accent}10` : 'rgba(255,255,255,0.025)',
-                                border: `1px solid ${done ? `${stageMeta.accent}30` : 'rgba(255,255,255,0.05)'}`,
-                                transition: 'all 200ms ease',
+                                ...heatStyle(slot.count),
+                                outline: isToday ? `2px solid rgba(200,146,74,0.55)` : undefined,
+                                outlineOffset: '1px',
                               }}
-                            >
-                              {/* Icon */}
-                              <div
-                                className="w-9 h-9 rounded-[0.65rem] flex items-center justify-center text-lg shrink-0"
-                                style={{ background: done ? `${stageMeta.accent}18` : 'var(--card-bg)' }}
-                              >
-                                {done
-                                  ? <CheckCircle2 size={18} style={{ color: stageMeta.accent }} />
-                                  : <span>{duty.icon}</span>
-                                }
-                              </div>
-
-                              {/* Text */}
-                              <div className="flex-1 min-w-0">
-                                <p className={`text-[12.5px] font-semibold leading-tight ${done ? 'line-through' : ''}`}
-                                  style={{ color: done ? 'var(--brand-muted)' : 'var(--brand-ink)' }}>
-                                  {duty.label}
-                                </p>
-                                {!done && (
-                                  <p className="text-[10.5px] mt-0.5 leading-relaxed" style={{ color: 'var(--text-dim)' }}>
-                                    {duty.description}
-                                  </p>
-                                )}
-                              </div>
-
-                              {/* Duration badge */}
-                              {duty.minutes && duty.minutes > 0 && !done && (
-                                <span
-                                  className="text-[9px] font-semibold rounded-full px-1.5 py-0.5 shrink-0"
-                                  style={{ background: `${stageMeta.accent}14`, color: stageMeta.accent }}
-                                >
-                                  {duty.minutes}m
-                                </span>
-                              )}
-                            </motion.button>
+                            />
                           );
                         })}
                       </div>
-
-                      {/* Footer note */}
-                      <div className="px-5 pb-4">
-                        <p className="text-[10px] text-center" style={{ color: 'var(--text-dim)' }}>
-                          These are reflections, not obligations — check when done, uncheck to revisit
-                        </p>
+                    );
+                  })()}
+                  <div className="flex items-center gap-3 mt-3 flex-wrap">
+                    {[{ style: heatStyle(0), label: '0' }, { style: heatStyle(1), label: '1' },
+                      { style: heatStyle(2), label: '2' }, { style: heatStyle(3), label: '3+' }].map(({ style, label }) => (
+                      <div key={label} className="flex items-center gap-1">
+                        <div className="w-3 h-3 rounded-sm" style={style} />
+                        <span className="text-[10px]" style={{ color: 'var(--text-dim)' }}>{label} step{label === '1' ? '' : 's'}</span>
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            );
-          })()}
-
-          {/* 30-Day Sadhana Calendar */}
-          <div className="glass-panel rounded-2xl border border-white/8 overflow-hidden">
-            <div className="px-4 pt-4 pb-3 flex items-center justify-between">
-              <div>
-                <p className="text-sm font-semibold text-[color:var(--brand-ink)]">30-Day Sadhana</p>
-                <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">Step intensity · last 30 days</p>
-              </div>
-              {!isPro && (
-                <button
-                  onClick={() => setShowProSheet(true)}
-                  className="flex items-center gap-1.5 rounded-xl px-2.5 py-1 border border-amber-400/30 bg-amber-400/10 transition-all hover:bg-amber-400/18"
-                >
-                  <Lock size={11} className="text-amber-400" />
-                  <span className="text-[10px] font-semibold text-amber-400">Pro</span>
-                </button>
-              )}
-            </div>
-
-            {isPro ? (
-              <div className="px-4 pb-4">
-                {/* Day-of-week labels */}
-                <div className="grid gap-[4px] mb-1" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
-                  {['S','M','T','W','T','F','S'].map((d, i) => (
-                    <div key={i} className="text-center text-[9px] font-semibold"
-                      style={{ color: 'rgba(255,255,255,0.25)' }}>{d}</div>
-                  ))}
-                </div>
-                {/* Calendar grid — padded so day-1 lands on correct weekday */}
-                {(() => {
-                  const today     = new Date();
-                  // Build a 35-slot grid starting from Sunday of the week 30 days ago
-                  const startDate = new Date(today);
-                  startDate.setDate(today.getDate() - 29);
-                  // pad to Sunday
-                  const dayOfWeek = startDate.getDay(); // 0=Sun
-                  const slots: (DayRecord | null)[] = Array(dayOfWeek).fill(null);
-                  for (const rec of dayRecords) slots.push(rec);
-                  // pad end to complete final row
-                  while (slots.length % 7 !== 0) slots.push(null);
-                  return (
-                    <div className="grid gap-[4px]" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
-                      {slots.map((slot, idx) => {
-                        if (!slot) return <div key={idx} className="aspect-square" />;
-                        const isToday = slot.date === today.toISOString().slice(0, 10);
-                        return (
-                          <div key={slot.date}
-                            title={`${slot.date}: ${slot.count} step${slot.count !== 1 ? 's' : ''}`}
-                            className="aspect-square rounded-md transition-all"
-                            style={{
-                              ...heatStyle(slot.count),
-                              outline: isToday ? `2px solid rgba(200,146,74,0.55)` : undefined,
-                              outlineOffset: '1px',
-                            }}
-                          />
-                        );
-                      })}
-                    </div>
-                  );
-                })()}
-
-                {/* Legend */}
-                <div className="flex items-center gap-3 mt-3 flex-wrap">
-                  {[
-                    { style: heatStyle(0), label: '0' },
-                    { style: heatStyle(1), label: '1' },
-                    { style: heatStyle(2), label: '2' },
-                    { style: heatStyle(3), label: '3+' },
-                  ].map(({ style, label }) => (
-                    <div key={label} className="flex items-center gap-1">
-                      <div className="w-3 h-3 rounded-sm" style={style} />
-                      <span className="text-[10px]" style={{ color: 'var(--text-dim)' }}>{label} step{label === '1' ? '' : 's'}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {streak && (
-                  <div className="mt-3 pt-3 border-t border-white/6 flex items-center justify-around">
-                    <div className="text-center">
-                      <p className="text-lg font-bold" style={{ color: accent }}>{streak.current_streak}</p>
-                      <p className="text-[10px] text-[color:var(--brand-muted)]">Current streak</p>
-                    </div>
-                    <div className="w-px h-8 bg-white/10" />
-                    <div className="text-center">
-                      <p className="text-lg font-bold" style={{ color: accent }}>{streak.longest_streak}</p>
-                      <p className="text-[10px] text-[color:var(--brand-muted)]">Best streak</p>
-                    </div>
-                    <div className="w-px h-8 bg-white/10" />
-                    <div className="text-center">
-                      <p className="text-lg font-bold" style={{ color: accent }}>
-                        {dayRecords.filter(d => d.count > 0).length}
-                      </p>
-                      <p className="text-[10px] text-[color:var(--brand-muted)]">Active days</p>
-                    </div>
+                    ))}
                   </div>
-                )}
-              </div>
-            ) : (
-              <div className="relative px-4 pb-4">
-                {/* Blurred preview */}
-                <div className="grid gap-[4px] blur-sm pointer-events-none select-none" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
-                  {buildDateRange(28).map((d, i) => (
-                    <div key={d} className="aspect-square rounded-md"
-                      style={heatStyle([0,1,2,3][i % 4])} />
-                  ))}
-                </div>
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/40 rounded-b-2xl">
-                  <Lock size={18} className="text-amber-400" />
-                  <p className="text-xs font-semibold text-[color:var(--brand-ink)]">Practice history is a Pro feature</p>
-                  <p className="text-[10px] text-[color:var(--brand-muted)] text-center px-6">
-                    Unlock 30-day graphs, streak analytics, and AI-personalised sequences
-                  </p>
-                  <motion.button
-                    onClick={() => setShowProSheet(true)}
-                    whileTap={{ scale: 0.96 }}
-                    className="mt-1 px-4 py-1.5 rounded-xl text-xs font-semibold bg-amber-400/20 text-amber-400 border border-amber-400/30"
-                  >
-                    Upgrade to Pro →
-                  </motion.button>
+                  {streak && (
+                    <div className="mt-3 pt-3 border-t border-white/6 flex items-center justify-around">
+                      <div className="text-center">
+                        <p className="text-lg font-bold" style={{ color: accent }}>{streak.current_streak}</p>
+                        <p className="text-[10px] text-[color:var(--brand-muted)]">Current streak</p>
+                      </div>
+                      <div className="w-px h-8 bg-white/10" />
+                      <div className="text-center">
+                        <p className="text-lg font-bold" style={{ color: accent }}>{streak.longest_streak}</p>
+                        <p className="text-[10px] text-[color:var(--brand-muted)]">Best streak</p>
+                      </div>
+                      <div className="w-px h-8 bg-white/10" />
+                      <div className="text-center">
+                        <p className="text-lg font-bold" style={{ color: accent }}>
+                          {dayRecords.filter(d => d.count > 0).length}
+                        </p>
+                        <p className="text-[10px] text-[color:var(--brand-muted)]">Active days</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
-            )}
-          </div>
 
-          {/* Engine note */}
-          <div className="glass-panel rounded-2xl border border-white/6 px-4 py-3 flex items-start gap-2.5">
-            <Info size={14} className="text-[color:var(--brand-muted)] shrink-0 mt-0.5" />
-            <p className="text-xs text-[color:var(--brand-muted)] leading-relaxed">
-              Your sequence adapts to today&apos;s tithi, nakshatra, and vrat.{' '}
-              <button
-                onClick={() => setShowProSheet(true)}
-                className="font-semibold text-[color:var(--brand-ink)] underline underline-offset-2"
-              >
-                Sangam Pro
-              </button>
-              {' '}unlocks AI-personalised sequences, 30-day analytics, and{' '}
-              <Link href="/nitya-karma/plans" className="font-semibold text-[color:var(--brand-ink)] underline underline-offset-2">
-                Guided Sadhana Plans
-              </Link>.
-            </p>
-          </div>
-        </div>
-      )}
+              {/* Engine note */}
+              <div className="glass-panel rounded-2xl border border-white/6 px-4 py-3 flex items-start gap-2.5">
+                <Info size={14} className="text-[color:var(--brand-muted)] shrink-0 mt-0.5" />
+                <p className="text-xs text-[color:var(--brand-muted)] leading-relaxed">
+                  Your sequence adapts to today&apos;s tithi, nakshatra, and vrat.{' '}
+                  <button onClick={() => setShowProSheet(true)}
+                    className="font-semibold text-[color:var(--brand-ink)] underline underline-offset-2">
+                    Sangam Pro
+                  </button>
+                  {' '}unlocks AI-personalised sequences, full analytics, and all Guided Plans.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
-      {/* Premium activation modal (replaces old ProUpgradeSheet) */}
+      </AnimatePresence>
+
+      {/* Modals */}
       <PremiumActivateModal open={showProSheet} onClose={() => setShowProSheet(false)} />
-
-      {/* Nitya customization sheet — Pro only */}
       {showCustom && isPro && (
         <NityaCustomSheet
           userId={userId}
