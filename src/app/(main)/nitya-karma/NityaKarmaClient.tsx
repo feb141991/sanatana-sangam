@@ -612,6 +612,146 @@ function ProUpgradeSheet({ onClose, accent }: { onClose: () => void; accent: str
   );
 }
 
+// ── Ashrama Setup Prompt ──────────────────────────────────────────────────────
+// Shown inline on Nitya Karma for existing users who completed onboarding
+// before the life_stage step was added (life_stage = null in DB).
+const ASHRAMA_STAGES: { key: string; icon: string; label: string; subtitle: string }[] = [
+  { key: 'brahmacharya', icon: '🌱', label: 'Student / Youth',      subtitle: 'Learning, building, growing' },
+  { key: 'grihastha',    icon: '🏡', label: 'Householder',           subtitle: 'Family, work, dharma' },
+  { key: 'vanaprastha',  icon: '🍃', label: 'Forest Dweller',        subtitle: 'Transition, wisdom, letting go' },
+  { key: 'sannyasa',     icon: '🌅', label: 'Renunciant',            subtitle: 'Surrender, liberation, moksha' },
+];
+
+function AshramaSetupPrompt({
+  accent, tradition, saving, onSave,
+}: {
+  accent:     string;
+  tradition:  string;
+  saving:     boolean;
+  onSave:     (stage: string, gc: string | null) => void;
+}) {
+  const [selected,  setSelected]  = useState<string | null>(null);
+  const [gender,    setGender]    = useState<'male' | 'female' | null>(null);
+  const [step,      setStep]      = useState<'stage' | 'gender'>('stage');
+
+  function handleStageSelect(key: string) {
+    setSelected(key);
+    setStep('gender');
+  }
+
+  function handleGenderSelect(gc: 'male' | 'female' | null) {
+    if (!selected) return;
+    onSave(selected, gc);
+  }
+
+  return (
+    <div
+      className="rounded-[1.5rem] overflow-hidden border"
+      style={{ borderColor: `${accent}30`, background: 'var(--surface-raised)' }}
+    >
+      {/* Header */}
+      <div className="px-5 pt-5 pb-3">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-9 h-9 rounded-[0.7rem] flex items-center justify-center text-lg shrink-0"
+            style={{ background: `${accent}18` }}>
+            🕉
+          </div>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: `${accent}99` }}>
+              Ashrama Dharma
+            </p>
+            <p className="text-[13px] font-semibold text-[color:var(--brand-ink)]">
+              Unlock your life-stage duties
+            </p>
+          </div>
+        </div>
+        <p className="text-[11.5px] leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
+          {step === 'stage'
+            ? 'Which Ashrama best describes where you are in life? Your daily dharma duties will be personalised to your stage.'
+            : 'One more — your duties will be tailored accordingly.'}
+        </p>
+      </div>
+
+      <div className="mx-5 h-px mb-4" style={{ background: `${accent}14` }} />
+
+      <AnimatePresence mode="wait">
+        {step === 'stage' && (
+          <motion.div
+            key="stage"
+            initial={{ opacity: 0, x: 12 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -12 }}
+            className="px-5 pb-5 space-y-2"
+          >
+            {ASHRAMA_STAGES.map(s => (
+              <motion.button
+                key={s.key}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => handleStageSelect(s.key)}
+                className="w-full flex items-center gap-3 rounded-2xl px-4 py-3.5 text-left transition-all"
+                style={{ background: `${accent}0e`, border: `1px solid ${accent}20` }}
+              >
+                <span className="text-2xl">{s.icon}</span>
+                <div>
+                  <p className="text-[13px] font-semibold text-[color:var(--brand-ink)]">{s.label}</p>
+                  <p className="text-[11px]" style={{ color: 'var(--brand-muted)' }}>{s.subtitle}</p>
+                </div>
+              </motion.button>
+            ))}
+          </motion.div>
+        )}
+
+        {step === 'gender' && (
+          <motion.div
+            key="gender"
+            initial={{ opacity: 0, x: 12 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -12 }}
+            className="px-5 pb-5 space-y-3"
+          >
+            <p className="text-[12px] font-semibold text-[color:var(--brand-ink)] mb-1">
+              How would you like your dharma duties framed?
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { key: 'male',   icon: '🔱', label: 'Traditional male duties' },
+                { key: 'female', icon: '🌸', label: 'Traditional female duties' },
+              ].map(g => (
+                <motion.button
+                  key={g.key}
+                  whileTap={{ scale: 0.96 }}
+                  disabled={saving}
+                  onClick={() => handleGenderSelect(g.key as 'male' | 'female')}
+                  className="flex flex-col items-center gap-2 rounded-2xl px-3 py-4 transition-all"
+                  style={{ background: `${accent}0e`, border: `1px solid ${accent}20` }}
+                >
+                  <span className="text-3xl">{g.icon}</span>
+                  <p className="text-[11px] text-center font-medium text-[color:var(--brand-ink)]">{g.label}</p>
+                </motion.button>
+              ))}
+            </div>
+            <button
+              disabled={saving}
+              onClick={() => handleGenderSelect(null)}
+              className="w-full py-2.5 rounded-2xl text-[12px] text-center"
+              style={{ color: 'var(--brand-muted)', background: `${accent}08`, border: `1px solid ${accent}14` }}
+            >
+              {saving ? 'Saving…' : 'Skip — show general duties'}
+            </button>
+            <button
+              onClick={() => setStep('stage')}
+              className="w-full text-[11px] text-center"
+              style={{ color: 'var(--brand-muted)' }}
+            >
+              ← Back
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 interface Props {
   userId:        string;
   userName:      string;
@@ -642,7 +782,11 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
   const [showCustom,    setShowCustom]   = useState(false);
   const [custom,        setCustom]       = useState<NityaCustom>({ labels: {}, descriptions: {}, alertTime: '04:30', extraSteps: [] });
   const [showConfetti,  setShowConfetti] = useState(false);
-  const [ashramaOpen,   setAshramaOpen]  = useState(true);
+  const [ashramaOpen,       setAshramaOpen]      = useState(true);
+  // ── Inline Ashrama setup (for users with null life_stage) ─────────────────
+  const [localLifeStage,    setLocalLifeStage]   = useState<string | null>(lifeStage);
+  const [localGenderCtx,    setLocalGenderCtx]   = useState<string | null>(genderContext);
+  const [savingAshrama,     setSavingAshrama]     = useState(false);
   const [dutyChecks,    setDutyChecks]   = useState<Set<string>>(() => {
     // Local daily check-ins — stored per calendar date in sessionStorage
     if (typeof window === 'undefined') return new Set<string>();
@@ -656,6 +800,24 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
   const confettiFired = useRef(false);
   const stepsRef      = useRef<NityaSequenceStep[]>([]);
   useEffect(() => { stepsRef.current = steps; }, [steps]);
+
+  // ── Save inline Ashrama setup ──────────────────────────────────────────────
+  async function saveAshramaSetup(stage: string, gc: string | null) {
+    setSavingAshrama(true);
+    try {
+      await supabase.from('profiles').update({
+        life_stage:     stage,
+        gender_context: gc ?? null,
+      }).eq('id', userId);
+      setLocalLifeStage(stage);
+      setLocalGenderCtx(gc);
+      toast.success('Ashrama Dharma unlocked 🙏');
+    } catch (err: any) {
+      toast.error('Could not save — try again');
+    } finally {
+      setSavingAshrama(false);
+    }
+  }
 
   // ── Load customization from localStorage ──────────────────────────────────
   useEffect(() => {
@@ -1067,10 +1229,20 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
           )}
 
           {/* ── Ashrama Dharma Section ─────────────────────────────────────── */}
-          {lifeStage && (() => {
-            const gc         = (genderContext as GenderContext | null);
-            const stageMeta  = getAshramaMeta(tradition, lifeStage as LifeStage, gc);
-            const duties     = getAshramaDuties(tradition, lifeStage as LifeStage, gc);
+          {/* When life_stage is not set — show inline setup picker */}
+          {!localLifeStage && (
+            <AshramaSetupPrompt
+              accent={accent}
+              tradition={tradition}
+              saving={savingAshrama}
+              onSave={saveAshramaSetup}
+            />
+          )}
+
+          {localLifeStage && (() => {
+            const gc         = (localGenderCtx as GenderContext | null);
+            const stageMeta  = getAshramaMeta(tradition, localLifeStage as LifeStage, gc);
+            const duties     = getAshramaDuties(tradition, localLifeStage as LifeStage, gc);
             const doneCount  = duties.filter(d => dutyChecks.has(d.id)).length;
 
             function toggleDuty(id: string) {
