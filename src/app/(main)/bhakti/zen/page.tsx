@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Settings2 } from 'lucide-react';
 import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
 import { BHAKTI_MANTRAS } from '@/lib/bhakti-practice';
+import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 // ─── Timing ──────────────────────────────────────────────────────────────────
 const PRESET_DURATIONS = [12, 24, 48];
@@ -342,6 +343,31 @@ function EnvParticles({ env }: { env: EnvId }) {
 
 // ─── Main Page ─────────────────────────────────────────────────────────────
 export default function SattvicModePage() {
+  const { resolvedTheme } = useThemePreference();
+  const isDark = resolvedTheme === 'dark';
+
+  // ── Theme tokens ───────────────────────────────────────────────────────
+  const mainCardBg   = isDark ? 'linear-gradient(160deg,rgba(26,14,8,0.97) 0%,rgba(14,8,4,0.99) 100%)' : 'linear-gradient(160deg,rgba(255,245,230,0.98) 0%,rgba(250,235,210,0.99) 100%)';
+  const mainCardBdr  = isDark ? 'rgba(200,146,74,0.16)' : 'rgba(160,100,30,0.18)';
+  const sectionBg    = isDark ? 'rgba(12,8,4,0.9)' : 'rgba(255,245,230,0.95)';
+  const sectionBdr   = isDark ? 'rgba(200,146,74,0.09)' : 'rgba(180,110,30,0.14)';
+  const pillBgInact  = isDark ? 'rgba(28,18,10,0.6)' : 'rgba(235,215,185,0.7)';
+  const pillBdrInact = isDark ? 'rgba(200,146,74,0.10)' : 'rgba(180,120,40,0.18)';
+  const pillBgAct    = isDark ? 'rgba(200,146,74,0.16)' : 'rgba(200,146,74,0.14)';
+  const pillBdrAct   = isDark ? 'rgba(200,146,74,0.38)' : 'rgba(200,146,74,0.40)';
+  const textPrimary  = isDark ? '#f5dfa0' : '#2a1002';
+  const textSecond   = isDark ? 'rgba(245,210,130,0.45)' : 'rgba(100,55,10,0.50)';
+  const textMuted    = isDark ? 'rgba(245,210,130,0.35)' : 'rgba(120,70,15,0.40)';
+  const inputBg      = isDark ? 'rgba(18,12,8,0.9)' : 'rgba(240,225,200,0.9)';
+  const inputBdr     = isDark ? 'rgba(200,146,74,0.18)' : 'rgba(180,120,40,0.22)';
+  const progressBg   = isDark ? 'rgba(200,146,74,0.1)' : 'rgba(200,146,74,0.12)';
+  const chantPickerBg= isDark ? 'rgba(28,18,10,0.8)' : 'rgba(240,225,200,0.85)';
+  const chantPickerBdr = isDark ? 'rgba(200,146,74,0.14)' : 'rgba(180,120,40,0.18)';
+  const sattvaBg     = isDark ? 'rgba(12,8,4,0.9)' : 'rgba(255,245,230,0.95)';
+  const sattvaText   = isDark ? 'rgba(220,195,145,0.60)' : 'rgba(70,35,5,0.65)';
+  const sattvaLabel  = isDark ? 'rgba(200,146,74,0.5)' : 'rgba(160,90,20,0.55)';
+  const sattvaHints  = isDark ? 'rgba(200,175,120,0.45)' : 'rgba(110,65,15,0.50)';
+
   const [mode,       setMode]     = useState<'reading' | 'breath' | 'chant'>('breath');
   const [duration,   setDuration] = useState(24);
   const [customInput,setCustomInput] = useState('');
@@ -354,6 +380,9 @@ export default function SattvicModePage() {
   const [phase,      setPhase]    = useState<Phase>('inhale');
   const [ambientId,  setAmbient]  = useState<AmbientId>('off');
   const [showFocusSettings, setShowFocusSettings] = useState(false);
+  // Tracks total minutes practised this session (increments each minute while running)
+  const [sessionMins, setSessionMins] = useState(0);
+  const sessionRef = useRef(0);
 
   const intervalRef  = useRef<ReturnType<typeof setInterval> | null>(null);
   const phaseTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -404,6 +433,16 @@ export default function SattvicModePage() {
 
   useEffect(() => () => fadeOutAmbient(), []);
 
+  // Track minutes practiced this session
+  useEffect(() => {
+    if (!running) return;
+    const id = setInterval(() => {
+      sessionRef.current += 1;
+      setSessionMins(sessionRef.current);
+    }, 60000);
+    return () => clearInterval(id);
+  }, [running]);
+
   const activeMode  = MODES.find(m => m.id === mode) ?? MODES[0];
   const activeChant = BHAKTI_MANTRAS.find(m => m.value === chantMantra) ?? BHAKTI_MANTRAS[0];
   const activeEnv   = ENVIRONMENTS[focusEnv];
@@ -424,7 +463,7 @@ export default function SattvicModePage() {
 
       {/* ── Top card: mode + timer + controls ───────────────────────────── */}
       <section className="relative overflow-hidden rounded-[2rem]"
-        style={{ background: 'linear-gradient(160deg,rgba(26,14,8,0.97) 0%,rgba(14,8,4,0.99) 100%)', border: '1px solid rgba(200,146,74,0.16)' }}>
+        style={{ background: mainCardBg, border: `1px solid ${mainCardBdr}` }}>
 
         {/* Background mandala */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-30">
@@ -441,12 +480,12 @@ export default function SattvicModePage() {
                 className="flex-1 rounded-[1.2rem] py-2.5 text-center transition-all"
                 whileTap={{ scale: 0.96 }}
                 style={{
-                  background: mode === item.id ? 'rgba(200,146,74,0.16)' : 'rgba(28,18,10,0.6)',
-                  border: `1px solid ${mode === item.id ? 'rgba(200,146,74,0.38)' : 'rgba(200,146,74,0.1)'}`,
+                  background: mode === item.id ? pillBgAct : pillBgInact,
+                  border: `1px solid ${mode === item.id ? pillBdrAct : pillBdrInact}`,
                 }}>
                 <div className="text-base leading-none">{item.emoji}</div>
                 <p className="text-[11px] mt-1 font-medium"
-                  style={{ color: mode === item.id ? '#f5dfa0' : 'rgba(245,220,150,0.45)' }}>
+                  style={{ color: mode === item.id ? textPrimary : textSecond }}>
                   {item.title}
                 </p>
               </motion.button>
@@ -462,12 +501,12 @@ export default function SattvicModePage() {
           ) : (
             <div className="text-center py-3">
               <motion.p className="font-mono font-light"
-                style={{ color: '#f5dfa0', fontSize: '3.2rem', textShadow: '0 0 28px rgba(200,146,74,0.35)' }}
+                style={{ color: textPrimary, fontSize: '3.2rem', textShadow: '0 0 28px rgba(200,146,74,0.25)' }}
                 animate={{ opacity: running ? [0.85, 1, 0.85] : 1 }}
                 transition={{ duration: 4, repeat: running ? Infinity : 0 }}>
                 {formatClock(remaining)}
               </motion.p>
-              <p className="text-xs mt-1" style={{ color: 'rgba(245,210,130,0.38)' }}>{activeMode.description}</p>
+              <p className="text-xs mt-1" style={{ color: textSecond }}>{activeMode.description}</p>
             </div>
           )}
 
@@ -476,10 +515,10 @@ export default function SattvicModePage() {
             {mode === 'chant' && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden rounded-[1.3rem] border px-3 py-3"
-                style={{ background: 'rgba(28,18,10,0.8)', borderColor: 'rgba(200,146,74,0.14)' }}>
+                style={{ background: chantPickerBg, borderColor: chantPickerBdr }}>
                 <select value={chantMantra} onChange={e => setMantra(e.target.value)}
                   className="w-full rounded-xl px-3 py-2 text-sm outline-none mb-2"
-                  style={{ background: 'rgba(18,12,8,0.9)', border: '1px solid rgba(200,146,74,0.14)', color: 'rgba(245,220,150,0.8)' }}>
+                  style={{ background: inputBg, border: `1px solid ${inputBdr}`, color: textPrimary }}>
                   {BHAKTI_MANTRAS.map(m => <option key={m.value} value={m.value}>{m.value}</option>)}
                 </select>
                 <ChantAudioPlayer title="Chant companion" trackIds={chantTrackIds}
@@ -496,15 +535,15 @@ export default function SattvicModePage() {
                   className="rounded-full px-4 py-1.5 text-xs font-medium transition-all"
                   style={duration === v && !showCustom
                     ? { background: 'linear-gradient(135deg,rgba(212,100,20,0.9),rgba(200,146,74,0.85))', color: '#1c1208' }
-                    : { background: 'rgba(28,18,10,0.7)', color: 'rgba(245,210,130,0.45)', border: '1px solid rgba(200,146,74,0.12)' }}>
+                    : { background: pillBgInact, color: textSecond, border: `1px solid ${pillBdrInact}` }}>
                   {v} min
                 </button>
               ))}
               <button onClick={() => setShowCustom(v => !v)}
                 className="rounded-full px-4 py-1.5 text-xs font-medium transition-all"
                 style={showCustom
-                  ? { background: 'rgba(200,146,74,0.16)', color: '#f5dfa0', border: '1px solid rgba(200,146,74,0.32)' }
-                  : { background: 'rgba(28,18,10,0.7)', color: 'rgba(245,210,130,0.45)', border: '1px solid rgba(200,146,74,0.12)' }}>
+                  ? { background: pillBgAct, color: textPrimary, border: `1px solid ${pillBdrAct}` }
+                  : { background: pillBgInact, color: textSecond, border: `1px solid ${pillBdrInact}` }}>
                 Custom
               </button>
             </div>
@@ -516,7 +555,7 @@ export default function SattvicModePage() {
                   initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
                   className="overflow-hidden">
                   <div className="flex items-center gap-2 rounded-xl border px-3 py-2"
-                    style={{ background: 'rgba(18,12,8,0.9)', borderColor: 'rgba(200,146,74,0.18)' }}>
+                    style={{ background: inputBg, borderColor: inputBdr }}>
                     <input
                       type="number" min="1" max="180"
                       value={customInput}
@@ -524,22 +563,22 @@ export default function SattvicModePage() {
                       onKeyDown={e => e.key === 'Enter' && applyCustomDuration()}
                       placeholder="e.g. 60"
                       className="flex-1 bg-transparent outline-none text-sm"
-                      style={{ color: '#f5dfa0' }}
+                      style={{ color: textPrimary }}
                     />
-                    <span className="text-xs" style={{ color: 'rgba(245,210,130,0.4)' }}>min</span>
+                    <span className="text-xs" style={{ color: textSecond }}>min</span>
                     <button onClick={applyCustomDuration}
                       className="rounded-lg px-3 py-1 text-xs font-semibold"
                       style={{ background: 'rgba(212,100,20,0.8)', color: '#f5dfa0' }}>
                       Set
                     </button>
                   </div>
-                  <p className="text-[10px] mt-1 text-center" style={{ color: 'rgba(245,210,130,0.3)' }}>1–180 minutes</p>
+                  <p className="text-[10px] mt-1 text-center" style={{ color: textMuted }}>1–180 minutes</p>
                 </motion.div>
               )}
             </AnimatePresence>
 
             {/* Progress bar */}
-            <div className="h-0.5 overflow-hidden rounded-full" style={{ background: 'rgba(200,146,74,0.1)' }}>
+            <div className="h-0.5 overflow-hidden rounded-full" style={{ background: progressBg }}>
               <motion.div className="h-full rounded-full"
                 style={{ background: 'linear-gradient(90deg,rgba(212,100,20,0.9),rgba(200,146,74,1))' }}
                 animate={{ width: `${progress}%` }} transition={{ duration: 0.6 }} />
@@ -551,8 +590,8 @@ export default function SattvicModePage() {
             <motion.button onClick={toggleRunning} whileTap={{ scale: 0.95 }}
               className="rounded-full px-7 py-3 text-sm font-medium transition-all"
               style={{
-                background: running ? 'rgba(200,146,74,0.14)' : 'linear-gradient(135deg,rgba(212,100,20,0.9),rgba(200,146,74,0.85))',
-                color: running ? 'rgba(245,210,130,0.8)' : '#1c1208',
+                background: running ? pillBgAct : 'linear-gradient(135deg,rgba(212,100,20,0.9),rgba(200,146,74,0.85))',
+                color: running ? textPrimary : '#1c1208',
                 border: '1px solid rgba(200,146,74,0.3)',
                 boxShadow: running ? 'none' : '0 4px 24px rgba(212,120,20,0.3)',
               }}>
@@ -565,7 +604,7 @@ export default function SattvicModePage() {
             </button>
             <button onClick={reset}
               className="rounded-full px-4 py-3 text-sm transition-all"
-              style={{ color: 'rgba(245,210,130,0.38)', border: '1px solid rgba(200,146,74,0.1)' }}>
+              style={{ color: textSecond, border: `1px solid ${pillBdrInact}` }}>
               ↺
             </button>
           </div>
@@ -574,34 +613,34 @@ export default function SattvicModePage() {
 
       {/* ── Environment + Ambient ─────────────────────────────────────────── */}
       <section className="rounded-[1.6rem] px-4 py-3"
-        style={{ background: 'rgba(12,8,4,0.9)', border: '1px solid rgba(200,146,74,0.09)' }}>
-        <p className="text-[10px] mb-2" style={{ color: 'rgba(245,210,130,0.35)' }}>Sanctuary</p>
+        style={{ background: sectionBg, border: `1px solid ${sectionBdr}` }}>
+        <p className="text-[10px] mb-2" style={{ color: textMuted }}>Sanctuary</p>
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           {(Object.entries(ENVIRONMENTS) as [EnvId, typeof ENVIRONMENTS[EnvId]][]).map(([id, env]) => (
             <button key={id} onClick={() => setEnv(id)}
               className="rounded-full px-3 py-1.5 text-xs whitespace-nowrap transition-all flex-shrink-0"
               style={focusEnv === id
-                ? { background: 'rgba(200,146,74,0.18)', color: '#f5dfa0', border: '1px solid rgba(200,146,74,0.32)', boxShadow: '0 0 10px rgba(200,146,74,0.1)' }
-                : { background: 'rgba(28,18,10,0.6)', color: 'rgba(245,210,130,0.42)', border: '1px solid rgba(200,146,74,0.08)' }}>
+                ? { background: pillBgAct, color: textPrimary, border: `1px solid ${pillBdrAct}`, boxShadow: '0 0 10px rgba(200,146,74,0.1)' }
+                : { background: pillBgInact, color: textSecond, border: `1px solid ${pillBdrInact}` }}>
               {env.emoji} {env.label}
             </button>
           ))}
         </div>
 
-        <p className="text-[10px] mt-3 mb-2" style={{ color: 'rgba(245,210,130,0.35)' }}>Ambient sound</p>
+        <p className="text-[10px] mt-3 mb-2" style={{ color: textMuted }}>Ambient sound</p>
         <div className="flex gap-2">
           {AMBIENT_OPTIONS.map(opt => (
             <button key={opt.id} onClick={() => setAmbient(opt.id)}
               className="flex-1 rounded-full py-1.5 text-xs font-medium transition-all"
               style={ambientId === opt.id
-                ? { background: 'rgba(200,146,74,0.16)', color: '#f5dfa0', border: '1px solid rgba(200,146,74,0.3)' }
-                : { background: 'rgba(18,12,8,0.6)', color: 'rgba(245,210,130,0.4)', border: '1px solid rgba(200,146,74,0.08)' }}>
+                ? { background: pillBgAct, color: textPrimary, border: `1px solid ${pillBdrAct}` }
+                : { background: pillBgInact, color: textSecond, border: `1px solid ${pillBdrInact}` }}>
               {opt.emoji} {opt.label}
             </button>
           ))}
         </div>
         {ambientId !== 'off' && !running && (
-          <p className="text-[10px] mt-2 text-center" style={{ color: 'rgba(245,210,130,0.3)' }}>
+          <p className="text-[10px] mt-2 text-center" style={{ color: textMuted }}>
             Ambient plays when session begins
           </p>
         )}
@@ -609,11 +648,11 @@ export default function SattvicModePage() {
 
       {/* ── Sattva context ─────────────────────────────────────────────────── */}
       <section className="rounded-[1.6rem] px-4 py-3.5"
-        style={{ background: 'rgba(12,8,4,0.9)', border: '1px solid rgba(200,146,74,0.09)' }}>
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: 'rgba(200,146,74,0.5)' }}>
+        style={{ background: sattvaBg, border: `1px solid ${sectionBdr}` }}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: sattvaLabel }}>
           Sattva Guna
         </p>
-        <p className="text-[12.5px] leading-relaxed" style={{ color: 'rgba(220,195,145,0.60)', fontFamily: 'var(--font-serif)' }}>
+        <p className="text-[12.5px] leading-relaxed" style={{ color: sattvaText, fontFamily: 'var(--font-serif)' }}>
           Sattvic practice cultivates clarity, lightness, and equanimity — the guṇa of wisdom and peace. This space is your invitation to step out of rajas and tamas, and into presence.
         </p>
         <div className="flex gap-3 mt-3">
@@ -622,12 +661,51 @@ export default function SattvicModePage() {
             { icon: '🤫', label: 'Silence preferred' },
             { icon: '🌅', label: 'Best at sandhyā' },
           ].map(({ icon, label }) => (
-            <div key={label} className="flex items-center gap-1.5 text-[10.5px]" style={{ color: 'rgba(200,175,120,0.45)' }}>
+            <div key={label} className="flex items-center gap-1.5 text-[10.5px]" style={{ color: sattvaHints }}>
               <span>{icon}</span>
               <span>{label}</span>
             </div>
           ))}
         </div>
+      </section>
+
+      {/* ── Session Insights ─────────────────────────────────────────────── */}
+      <section className="rounded-[1.6rem] px-4 py-4"
+        style={{ background: sectionBg, border: `1px solid ${sectionBdr}` }}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3" style={{ color: sattvaLabel }}>
+          Today&apos;s Practice
+        </p>
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            {
+              value: sessionMins > 0 ? `${sessionMins}m` : '—',
+              label: 'Sat',
+              sub: sessionMins > 0 ? 'this session' : 'not started',
+            },
+            {
+              value: running ? activeMode.title : mode === 'breath' ? 'Prānāyāma' : mode === 'chant' ? 'Kīrtana' : 'Svādhyāya',
+              label: 'Mode',
+              sub: running ? 'in session' : 'selected',
+            },
+            {
+              value: activeEnv.emoji,
+              label: 'Sanctuary',
+              sub: activeEnv.label,
+            },
+          ].map(({ value, label, sub }) => (
+            <div key={label} className="rounded-[1rem] px-3 py-3 text-center"
+              style={{ background: isDark ? 'rgba(28,18,10,0.6)' : 'rgba(240,220,190,0.7)', border: `1px solid ${pillBdrInact}` }}>
+              <p className="text-lg font-semibold leading-tight" style={{ color: textPrimary }}>{value}</p>
+              <p className="text-[10px] mt-0.5 font-medium uppercase tracking-wide" style={{ color: 'rgba(200,146,74,0.75)' }}>{label}</p>
+              <p className="text-[9px] mt-0.5" style={{ color: textMuted }}>{sub}</p>
+            </div>
+          ))}
+        </div>
+        {sessionMins === 0 && (
+          <p className="text-center text-[11px] mt-3" style={{ color: textMuted }}>
+            Press <span style={{ color: 'rgba(200,146,74,0.85)' }}>Begin</span> to start tracking your session.
+          </p>
+        )}
       </section>
 
       {/* ── Full Focus Overlay ─────────────────────────────────────────────── */}

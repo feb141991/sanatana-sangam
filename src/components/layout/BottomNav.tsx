@@ -7,6 +7,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { GraduationCap, Heart, Users, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 interface Props {
   libraryLabel?: string;
@@ -31,23 +32,29 @@ const GUEST_QUICK_ACTIONS = [
   { icon: '💬', label: 'Vichaar', href: '/vichaar-sabha' },
 ];
 
-// Glass tokens — single source of truth so pill + quick-menu match
-const GLASS = {
-  bg:           'rgba(18, 14, 8, 0.55)',
-  border:       'rgba(200, 146, 74, 0.18)',
-  blur:         'blur(28px) saturate(180%)',
-  shadow:       '0 8px 32px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,220,140,0.06)',
-  shadowSubtle: '0 2px 12px rgba(0,0,0,0.12)',
-} as const;
+// Glass tokens — computed per-theme inside the component (see useGlass below)
+function useGlass(isDark: boolean) {
+  return {
+    bg:           isDark ? 'rgba(18, 14, 8, 0.72)'       : 'rgba(255, 251, 244, 0.82)',
+    border:       isDark ? 'rgba(200, 146, 74, 0.18)'    : 'rgba(160, 100, 30, 0.18)',
+    blur:         'blur(28px) saturate(180%)',
+    shadow:       isDark
+      ? '0 8px 32px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,220,140,0.06)'
+      : '0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.70)',
+    shadowSubtle: isDark ? '0 2px 8px rgba(0,0,0,0.08)' : '0 2px 8px rgba(0,0,0,0.06)',
+  };
+}
 
 // ── Quick-action menu ─────────────────────────────────────────────────────────
 function FloatingQuickMenu({
-  open, onClose, isGuest,
-}: { open: boolean; onClose: () => void; isGuest: boolean }) {
+  open, onClose, isGuest, isDark,
+}: { open: boolean; onClose: () => void; isGuest: boolean; isDark: boolean }) {
   const prefersReducedMotion = useReducedMotion();
   const router  = useRouter();
   const actions = isGuest ? GUEST_QUICK_ACTIONS : QUICK_ACTIONS;
   const reversed = [...actions].reverse();
+  const GLASS = useGlass(isDark);
+  const labelColor = isDark ? 'rgba(245, 220, 160, 0.92)' : 'rgba(80, 45, 8, 0.88)';
 
   return (
     <AnimatePresence>
@@ -84,7 +91,7 @@ function FloatingQuickMenu({
                 >
                   <span className="text-[1.7rem] leading-none">{action.icon}</span>
                   <span className="text-[13px] font-semibold"
-                    style={{ color: 'rgba(245, 220, 160, 0.92)', letterSpacing: '-0.01em' }}>
+                    style={{ color: labelColor, letterSpacing: '-0.01em' }}>
                     {action.label}
                   </span>
                 </motion.button>
@@ -106,6 +113,9 @@ export default function BottomNav({
   const pathname  = usePathname();
   const prefRM    = useReducedMotion();
   const { t }     = useLanguage();
+  const { resolvedTheme } = useThemePreference();
+  const isDark    = resolvedTheme === 'dark';
+  const GLASS     = useGlass(isDark);
   const [quickOpen, setQuickOpen] = useState(false);
   const [scrolled, setScrolled]   = useState(false);
 
@@ -170,7 +180,7 @@ export default function BottomNav({
 
   return (
     <>
-      <FloatingQuickMenu open={quickOpen} onClose={() => setQuickOpen(false)} isGuest={isGuest} />
+      <FloatingQuickMenu open={quickOpen} onClose={() => setQuickOpen(false)} isGuest={isGuest} isDark={isDark} />
 
       <nav className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 safe-area-pb pointer-events-none">
         <div className="max-w-2xl mx-auto">

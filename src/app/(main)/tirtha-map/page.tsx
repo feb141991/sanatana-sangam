@@ -129,7 +129,7 @@ function getTraditionSummary(temple: Temple) {
 
 export default function TirthaMapPage() {
   const router = useRouter();
-  const { coords, city: liveCity, loading: locLoading } = useLocation();
+  const { coords, city: liveCity, loading: locLoading, refresh: refreshLocation } = useLocation();
 
   const [temples,     setTemples]    = useState<Temple[]>([]);
   const [center,      setCenter]     = useState<[number, number]>(MAP.DEFAULT_CENTER);
@@ -142,6 +142,14 @@ export default function TirthaMapPage() {
   const [tradFilter,  setTradFilter] = useState('all');
   const [sampFilter,  setSampFilter] = useState('all');
   const [locUsed,     setLocUsed]    = useState(false);
+
+  // Proactively request location on page entry if we don't have it yet
+  useEffect(() => {
+    if (!coords && !locLoading) {
+      refreshLocation();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadTemples = useCallback(async (lat: number, lon: number, r: number) => {
     setLoading(true);

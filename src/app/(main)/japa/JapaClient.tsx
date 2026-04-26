@@ -136,13 +136,126 @@ type MantraId = typeof MANTRAS[number]['id'];
 
 // ── Sound definitions ──────────────────────────────────────────────────────────
 type SoundId = 'silence' | 'rain' | 'river' | 'bells' | 'forest';
-const SOUNDS: { id: SoundId; label: string; emoji: string; url: string }[] = [
-  { id: 'silence', label: 'Silence',       emoji: '🤫', url: '' },
-  { id: 'rain',    label: 'Rain',          emoji: '🌧️', url: 'https://cdn.freesound.org/previews/346/346170_5121236-lq.mp3' },
-  { id: 'river',   label: 'River',         emoji: '🌊', url: 'https://cdn.freesound.org/previews/531/531947_11861866-lq.mp3' },
-  { id: 'bells',   label: 'Temple Bells',  emoji: '🔔', url: 'https://cdn.freesound.org/previews/411/411090_5121236-lq.mp3' },
-  { id: 'forest',  label: 'Forest',        emoji: '🌿', url: 'https://cdn.freesound.org/previews/250/250978_4486188-lq.mp3' },
+const SOUNDS: { id: SoundId; label: string; emoji: string }[] = [
+  { id: 'silence', label: 'Silence',      emoji: '🤫' },
+  { id: 'rain',    label: 'Rain',         emoji: '🌧️' },
+  { id: 'river',   label: 'River',        emoji: '🌊' },
+  { id: 'bells',   label: 'Temple Bells', emoji: '🔔' },
+  { id: 'forest',  label: 'Forest',       emoji: '🌿' },
 ];
+
+// ── Web Audio ambient engine (no external URLs — works offline + no CORS) ──────
+let _japaCtx: AudioContext | null = null;
+let _japaStopFns: (() => void)[] = [];
+
+function _getCtx(): AudioContext | null {
+  try {
+    const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
+    if (!Ctx) return null;
+    if (!_japaCtx || _japaCtx.state === 'closed') _japaCtx = new Ctx() as AudioContext;
+    const ctx = _japaCtx;
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+    return ctx;
+  } catch { return null; }
+}
+
+function _noiseBuffer(ctx: AudioContext, secs = 4): AudioBuffer {
+  const len = Math.ceil(ctx.sampleRate * secs);
+  const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+  const d   = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  return buf;
+}
+
+function stopJapaAmbient() {
+  _japaStopFns.forEach(fn => { try { fn(); } catch {} });
+  _japaStopFns = [];
+}
+
+function _startRain(ctx: AudioContext) {
+  const src = ctx.createBufferSource(); src.buffer = _noiseBuffer(ctx, 4); src.loop = true;
+  const lp  = ctx.createBiquadFilter(); lp.type = 'lowpass';  lp.frequency.value = 650; lp.Q.value = 0.4;
+  const hp  = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 90;
+  const g   = ctx.createGain(); g.gain.setValueAtTime(0, ctx.currentTime);
+  g.gain.linearRampToValueAtTime(0.32, ctx.currentTime + 1.8);
+  src.connect(lp); lp.connect(hp); hp.connect(g); g.connect(ctx.destination);
+  src.start();
+  return () => {
+    g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.6);
+    setTimeout(() => { try { src.stop(); } catch {} }, 700);
+  };
+}
+
+function _startRiver(ctx: AudioContext) {
+  const src  = ctx.createBufferSource(); src.buffer = _noiseBuffer(ctx, 5); src.loop = true;
+  const bp   = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 320; bp.Q.value = 0.7;
+  const lp   = ctx.createBiquadFilter(); lp.type = 'lowpass';  lp.frequency.value = 1400;
+  const g    = ctx.createGain(); g.gain.setValueAtTime(0, ctx.currentTime);
+  g.gain.linearRampToValueAtTime(0.26, ctx.currentTime + 2.2);
+  const lfo  = ctx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 0.15;
+  const lfoG = ctx.createGain(); lfoG.gain.value = 0.07;
+  lfo.connect(lfoG); lfoG.connect(g.gain);
+  src.connect(bp); bp.connect(lp); lp.connect(g); g.connect(ctx.destination);
+  src.start(); lfo.start();
+  return () => {
+    g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.6);
+    setTimeout(() => { try { src.stop(); lfo.stop(); } catch {} }, 700);
+  };
+}
+
+function _startBells(ctx: AudioContext) {
+  let active = true;
+  function ring() {
+    if (!active) return;
+    const t0 = ctx.currentTime;
+    [432, 648, 864, 1080].forEach((freq, i) => {
+      const osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.value = freq;
+      const g   = ctx.createGain();
+      g.gain.setValueAtTime(0.14 / (i + 1), t0);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 3.2 - i * 0.25);
+      osc.connect(g); g.connect(ctx.destination);
+      osc.start(t0); osc.stop(t0 + 3.5);
+    });
+    const delay = 9000 + Math.random() * 8000;
+    setTimeout(() => { if (active) ring(); }, delay);
+  }
+  ring();
+  return () => { active = false; };
+}
+
+function _startForest(ctx: AudioContext) {
+  // Wind layer
+  const s1 = ctx.createBufferSource(); s1.buffer = _noiseBuffer(ctx, 6); s1.loop = true;
+  const hp1 = ctx.createBiquadFilter(); hp1.type = 'highpass'; hp1.frequency.value = 1800;
+  const lp1 = ctx.createBiquadFilter(); lp1.type = 'lowpass';  lp1.frequency.value = 4500;
+  const g1  = ctx.createGain(); g1.gain.setValueAtTime(0, ctx.currentTime);
+  g1.gain.linearRampToValueAtTime(0.11, ctx.currentTime + 2);
+  s1.connect(hp1); hp1.connect(lp1); lp1.connect(g1); g1.connect(ctx.destination);
+  // Low rustle layer
+  const s2 = ctx.createBufferSource(); s2.buffer = _noiseBuffer(ctx, 4); s2.loop = true;
+  const lp2 = ctx.createBiquadFilter(); lp2.type = 'lowpass'; lp2.frequency.value = 280;
+  const g2  = ctx.createGain(); g2.gain.setValueAtTime(0, ctx.currentTime);
+  g2.gain.linearRampToValueAtTime(0.16, ctx.currentTime + 2);
+  s2.connect(lp2); lp2.connect(g2); g2.connect(ctx.destination);
+  s1.start(); s2.start();
+  return () => {
+    [g1, g2].forEach(g => g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.6));
+    setTimeout(() => { try { s1.stop(); s2.stop(); } catch {} }, 700);
+  };
+}
+
+function startJapaAmbient(id: SoundId) {
+  const ctx = _getCtx();
+  if (!ctx) return;
+  stopJapaAmbient();
+  if (id === 'silence') return;
+  const fn = id === 'rain'   ? _startRain(ctx)
+           : id === 'river'  ? _startRiver(ctx)
+           : id === 'bells'  ? _startBells(ctx)
+           : id === 'forest' ? _startForest(ctx)
+           : null;
+  if (fn) _japaStopFns.push(fn);
+}
 
 // ── Target rounds ──────────────────────────────────────────────────────────────
 const TARGET_OPTIONS = [1, 3, 5, 11] as const;
@@ -191,10 +304,9 @@ function beadPos(i: number) {
 }
 
 function MalaSVG({
-  malaId, beadCount, isDark, pulsing, onTap,
+  malaId, beadCount, isDark, pulsing,
 }: {
-  malaId: MalaId; beadCount: number; isDark: boolean;
-  pulsing: boolean; onTap: () => void;
+  malaId: MalaId; beadCount: number; isDark: boolean; pulsing: boolean;
 }) {
   const mala = MALAS.find(m => m.id === malaId) ?? MALAS[0];
   const c = isDark ? mala.dark : mala.light;
@@ -205,8 +317,7 @@ function MalaSVG({
   return (
     <svg
       viewBox={`0 0 ${SVG_W} ${SVG_W}`}
-      style={{ width: '100%', maxWidth: 320, cursor: 'pointer', touchAction: 'manipulation', userSelect: 'none' }}
-      onClick={onTap}
+      style={{ width: '100%', maxWidth: 320, touchAction: 'manipulation', userSelect: 'none' }}
     >
       <defs>
         <radialGradient id={`bead-un-${malaId}`} cx="38%" cy="32%" r="60%">
@@ -579,9 +690,9 @@ function SoundsSheet({
 
 // ── Completion Overlay ────────────────────────────────────────────────────────
 function CompletionOverlay({
-  isDark, rounds, targetRounds, durationSecs, mantraName, streak, onClose, onViewInsights,
+  isDark, rounds, partialBeads, targetRounds, durationSecs, mantraName, streak, onClose, onViewInsights,
 }: {
-  isDark: boolean; rounds: number; targetRounds: number; durationSecs: number;
+  isDark: boolean; rounds: number; partialBeads: number; targetRounds: number; durationSecs: number;
   mantraName: string; streak: number; onClose: () => void; onViewInsights: () => void;
 }) {
   const mins  = Math.floor(durationSecs / 60);
@@ -591,6 +702,7 @@ function CompletionOverlay({
   const sub   = isDark ? 'rgba(200,146,74,0.60)' : 'rgba(100,65,25,0.60)';
   const amber = isDark ? '#C8924A' : '#7A4A1E';
   const isGoalMet = rounds >= targetRounds;
+  const totalBeadsShown = rounds * TOTAL_BEADS + partialBeads;
 
   return (
     <>
@@ -640,8 +752,8 @@ function CompletionOverlay({
           {/* Stats */}
           <div className="grid grid-cols-3 gap-3">
             {[
-              { label: 'Rounds', value: `${rounds}` },
-              { label: 'Beads',  value: `${rounds * TOTAL_BEADS}` },
+              { label: 'Rounds', value: rounds > 0 ? `${rounds}` : '—' },
+              { label: 'Beads',  value: `${totalBeadsShown}` },
               { label: 'Time',   value: `${mins}m ${secs}s` },
             ].map(s => (
               <div key={s.label} className="rounded-2xl p-4 text-center border"
@@ -756,56 +868,24 @@ export default function JapaClient({
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [screen, paused, showComplete]);
 
-  // ── Audio — event-driven (user gesture based) ────────────────────────────
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  function startAmbience(id: SoundId) {
-    // Stop current
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = '';
-      audioRef.current = null;
-    }
-    const url = SOUNDS.find(s => s.id === id)?.url ?? '';
-    if (!url) return;
-
-    const a = new Audio();
-    a.preload = 'auto';
-    a.loop    = true;
-    a.volume  = 0.5;
-    a.src     = url;
-    audioRef.current = a;
-    // Play is called synchronously with a user gesture (button tap), so should work
-    a.play().catch(() => {
-      // Autoplay blocked — audio will play on next interaction
-    });
-  }
-
-  function stopAmbience() {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = '';
-      audioRef.current = null;
-    }
-  }
-
+  // ── Audio — Web Audio API (no CORS, no external URLs) ───────────────────
   // Cleanup on unmount
-  useEffect(() => () => { stopAmbience(); }, []);
+  useEffect(() => () => { stopJapaAmbient(); }, []);
 
-  // Pause/resume ambience with japa pause state
+  // Pause/resume: Web Audio context suspend/resume
   useEffect(() => {
-    if (!audioRef.current) return;
+    if (!_japaCtx) return;
     if (paused) {
-      audioRef.current.pause();
+      _japaCtx.suspend().catch(() => {});
     } else {
-      audioRef.current.play().catch(() => {});
+      _japaCtx.resume().catch(() => {});
     }
   }, [paused]);
 
   // Stop audio when leaving japa screen
   useEffect(() => {
     if (screen !== 'japa') {
-      stopAmbience();
+      stopJapaAmbient();
       setSoundId('silence');
     }
   }, [screen]);
@@ -813,7 +893,7 @@ export default function JapaClient({
   // ── Handle sound selection (called from SoundsSheet — user gesture) ──────
   function handleSoundSelect(id: SoundId) {
     setSoundId(id);
-    startAmbience(id);
+    startJapaAmbient(id);
     setShowSounds(false);
   }
 
@@ -843,15 +923,15 @@ export default function JapaClient({
   }, [paused, showComplete]);
 
   // ── Save session ─────────────────────────────────────────────────────────
-  const saveSession = useCallback(async (completedRounds: number) => {
-    if (saved || completedRounds === 0) return;
+  const saveSession = useCallback(async (completedRounds: number, partialBeads = 0) => {
+    if (saved || (completedRounds === 0 && partialBeads === 0)) return;
     try {
       const supabase = createClient();
       const today = new Date().toISOString().slice(0, 10);
       await supabase.from('mala_sessions').insert({
         user_id: userId, date: today,
         rounds: completedRounds,
-        bead_count: completedRounds * TOTAL_BEADS,
+        bead_count: completedRounds * TOTAL_BEADS + partialBeads,
         mantra_id: mantraId,
         duration_secs: duration,
       });
@@ -888,14 +968,14 @@ export default function JapaClient({
   };
 
   const handleCompleteClose = () => {
-    saveSession(roundsDone);
+    saveSession(roundsDone, beadCount);
     setShowComplete(false);
     setBeadCount(0);
     // Do NOT reset roundsDone so user can continue
   };
 
   const handleViewInsights = () => {
-    saveSession(roundsDone);
+    saveSession(roundsDone, beadCount);
     router.push('/japa/insights');
   };
 
@@ -1060,7 +1140,6 @@ export default function JapaClient({
                 beadCount={beadCount + roundsDone * TOTAL_BEADS}
                 isDark={isDark}
                 pulsing={pulsing}
-                onTap={countBead}
               />
             </motion.div>
 
@@ -1128,7 +1207,7 @@ export default function JapaClient({
             {/* Finish session — always shown once any beads counted */}
             {(roundsDone > 0 || beadCount > 0) && (
               <button
-                onClick={() => { saveSession(roundsDone); setShowComplete(true); }}
+                onClick={() => { saveSession(roundsDone, beadCount); setShowComplete(true); }}
                 className="w-full py-3 rounded-2xl font-semibold text-[13px]"
                 style={{
                   background: isDark ? 'rgba(200,146,74,0.12)' : 'rgba(122,74,30,0.08)',
@@ -1158,6 +1237,7 @@ export default function JapaClient({
               <CompletionOverlay
                 isDark={isDark}
                 rounds={roundsDone}
+                partialBeads={beadCount}
                 targetRounds={targetRounds}
                 durationSecs={duration}
                 mantraName={currentMantra.name}

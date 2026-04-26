@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft } from 'lucide-react';
 import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
+import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 /* ─── Incense smoke rising from the diya ─────────────────────────── */
 function IncenseParticles() {
@@ -163,15 +164,44 @@ const DAILY_SHLOKA = {
 
 export default function BhaktiClient() {
   const router = useRouter();
+  const { resolvedTheme } = useThemePreference();
+  const isDark = resolvedTheme === 'dark';
   const [showPlayer, setShowPlayer] = useState(false);
+
+  const pageBg = isDark
+    ? 'linear-gradient(180deg, #1a0d0d 0%, #20130e 40%, #1a1208 100%)'
+    : 'linear-gradient(180deg, #fdf6ee 0%, #f7ede0 40%, #f2e8d5 100%)';
+  const heroBg = isDark
+    ? 'linear-gradient(180deg, rgba(60,22,10,0.92) 0%, rgba(28,14,8,0.96) 100%)'
+    : 'linear-gradient(180deg, rgba(255,240,220,0.96) 0%, rgba(255,230,200,0.98) 100%)';
+  const heroBorder = isDark ? 'rgba(200,146,74,0.18)' : 'rgba(160,90,30,0.18)';
+  const heroShadow = isDark ? '0 0 50px rgba(200,100,20,0.12)' : '0 0 50px rgba(200,100,20,0.06)';
+  const headingColor = isDark ? 'var(--text-cream)' : '#1A0A02';
+  const subColor = isDark ? 'rgba(245,210,130,0.5)' : 'rgba(120,65,10,0.55)';
+  const descColor = isDark ? 'rgba(245,210,130,0.45)' : 'rgba(100,55,10,0.50)';
+  const cardBg = isDark
+    ? 'linear-gradient(140deg, rgba(28,20,12,0.92), rgba(18,12,8,0.96))'
+    : 'linear-gradient(140deg, rgba(255,244,228,0.96), rgba(250,235,210,0.98))';
+  const cardTitleColor = isDark ? '#f5dfa0' : '#3a1a02';
+  const cardSubColor = isDark ? 'rgba(245,220,150,0.45)' : 'rgba(100,55,10,0.45)';
+  const cardDescColor = isDark ? 'rgba(245,210,130,0.55)' : 'rgba(80,40,8,0.60)';
+  const sectionBg = isDark ? 'rgba(18,12,8,0.9)' : 'rgba(255,245,230,0.95)';
+  const sectionBorder = isDark ? 'rgba(200,146,74,0.1)' : 'rgba(180,110,30,0.15)';
+  const sectionTitleColor = isDark ? '#f5dfa0' : '#2a1002';
+  const sectionSubColor = isDark ? 'rgba(245,210,130,0.45)' : 'rgba(100,55,10,0.50)';
+  const shlokaChipColor = isDark ? 'rgba(200,146,74,0.07)' : 'rgba(200,146,74,0.08)';
+  const shlokaChipText = isDark ? 'rgba(245,210,130,0.45)' : 'rgba(100,55,10,0.55)';
+  const shlokaBg = isDark ? 'rgba(12,8,4,0.8)' : 'rgba(255,245,228,0.95)';
+  const shlokaBorder = isDark ? 'rgba(200,146,74,0.07)' : 'rgba(180,110,30,0.12)';
+  const shlokaLabelColor = isDark ? 'rgba(200,146,74,0.45)' : 'rgba(160,90,20,0.50)';
+  const shlokaOrigColor = isDark ? 'rgba(245,220,150,0.75)' : 'rgba(60,30,5,0.80)';
+  const shlokaTransColor = isDark ? 'rgba(245,210,130,0.42)' : 'rgba(80,40,8,0.55)';
+  const shlokaSourceColor = isDark ? 'rgba(200,146,74,0.3)' : 'rgba(160,90,20,0.40)';
 
   return (
     <div
       className="relative min-h-screen"
-      style={{
-        background:
-          'linear-gradient(180deg, #1a0d0d 0%, #20130e 40%, #1a1208 100%)',
-      }}
+      style={{ background: pageBg }}
     >
       <AmbientSpecks />
 
@@ -201,10 +231,9 @@ export default function BhaktiClient() {
           transition={{ duration: 0.8 }}
           className="relative overflow-hidden rounded-[3rem] px-5 pb-8 pt-12 text-center"
           style={{
-            background:
-              'linear-gradient(180deg, rgba(60,22,10,0.92) 0%, rgba(28,14,8,0.96) 100%)',
-            border: '1px solid rgba(200,146,74,0.18)',
-            boxShadow: '0 0 50px rgba(200,100,20,0.12)',
+            background: heroBg,
+            border: `1px solid ${heroBorder}`,
+            boxShadow: heroShadow,
           }}
         >
           <IncenseParticles />
@@ -226,7 +255,7 @@ export default function BhaktiClient() {
                   fontSize: 'clamp(2rem, 7vw, 2.4rem)',
                   fontWeight: 600,
                   letterSpacing: '-0.01em',
-                  color: 'var(--text-cream)',
+                  color: headingColor,
                   lineHeight: 1.1,
                 }}
               >
@@ -234,13 +263,13 @@ export default function BhaktiClient() {
               </h1>
               <p
                 className="mt-1 text-sm tracking-widest"
-                style={{ color: 'rgba(245,210,130,0.5)' }}
+                style={{ color: subColor }}
               >
                 भक्ति — the path of devotion
               </p>
               <p
                 className="mx-auto mt-3 max-w-[280px] text-sm leading-relaxed"
-                style={{ color: 'rgba(245,210,130,0.45)' }}
+                style={{ color: descColor }}
               >
                 A quiet space for mantra, breath, and remembrance.
               </p>
@@ -261,8 +290,7 @@ export default function BhaktiClient() {
                 href={portal.href}
                 className="group block rounded-[1.8rem] p-5 motion-lift relative overflow-hidden"
                 style={{
-                  background:
-                    'linear-gradient(140deg, rgba(28,20,12,0.92), rgba(18,12,8,0.96))',
+                  background: cardBg,
                   border: `1px solid ${portal.border}`,
                   boxShadow: `0 4px 32px ${portal.glow}`,
                 }}
@@ -298,20 +326,20 @@ export default function BhaktiClient() {
                     <div className="flex items-baseline gap-2">
                       <p
                         className="text-base font-semibold"
-                        style={{ color: '#f5dfa0' }}
+                        style={{ color: cardTitleColor }}
                       >
                         {portal.title}
                       </p>
                       <p
                         className="text-xs"
-                        style={{ color: 'rgba(245,220,150,0.45)' }}
+                        style={{ color: cardSubColor }}
                       >
                         {portal.sub}
                       </p>
                     </div>
                     <p
                       className="mt-1.5 text-sm leading-relaxed"
-                      style={{ color: 'rgba(245,210,130,0.55)' }}
+                      style={{ color: cardDescColor }}
                     >
                       {portal.desc}
                     </p>
@@ -336,18 +364,18 @@ export default function BhaktiClient() {
           transition={{ delay: 0.65, duration: 0.6 }}
           className="rounded-[1.8rem] p-5"
           style={{
-            background: 'rgba(18,12,8,0.9)',
-            border: '1px solid rgba(200,146,74,0.1)',
+            background: sectionBg,
+            border: `1px solid ${sectionBorder}`,
           }}
         >
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-medium" style={{ color: '#f5dfa0' }}>
+              <p className="text-sm font-medium" style={{ color: sectionTitleColor }}>
                 Sacred Sounds
               </p>
               <p
                 className="mt-0.5 text-xs"
-                style={{ color: 'rgba(245,210,130,0.45)' }}
+                style={{ color: sectionSubColor }}
               >
                 Let the chant carry you inward
               </p>
@@ -394,8 +422,8 @@ export default function BhaktiClient() {
                   key={name}
                   className="rounded-full px-3 py-1 text-xs"
                   style={{
-                    background: 'rgba(200,146,74,0.07)',
-                    color: 'rgba(245,210,130,0.45)',
+                    background: shlokaChipColor,
+                    color: shlokaChipText,
                     border: '1px solid rgba(200,146,74,0.1)',
                   }}
                 >
@@ -413,13 +441,13 @@ export default function BhaktiClient() {
           transition={{ delay: 0.85, duration: 0.8 }}
           className="rounded-[1.8rem] px-5 py-6 text-center"
           style={{
-            background: 'rgba(12,8,4,0.8)',
-            border: '1px solid rgba(200,146,74,0.07)',
+            background: shlokaBg,
+            border: `1px solid ${shlokaBorder}`,
           }}
         >
           <p
             className="text-[10px] uppercase tracking-[0.18em]"
-            style={{ color: 'rgba(200,146,74,0.45)' }}
+            style={{ color: shlokaLabelColor }}
           >
             Verse of the day
           </p>
@@ -433,7 +461,7 @@ export default function BhaktiClient() {
               fontFamily: 'var(--font-serif)',
               fontSize: '1.05rem',
               fontWeight: 500,
-              color: 'rgba(245,220,150,0.75)',
+              color: shlokaOrigColor,
               fontStyle: 'italic',
             }}
           >
@@ -445,14 +473,14 @@ export default function BhaktiClient() {
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
             className="mx-auto mt-3 max-w-[280px] text-sm leading-relaxed"
-            style={{ color: 'rgba(245,210,130,0.42)' }}
+            style={{ color: shlokaTransColor }}
           >
             &ldquo;{DAILY_SHLOKA.translation}&rdquo;
           </motion.p>
 
           <p
             className="mt-3 text-xs"
-            style={{ color: 'rgba(200,146,74,0.3)' }}
+            style={{ color: shlokaSourceColor }}
           >
             {DAILY_SHLOKA.source}
           </p>

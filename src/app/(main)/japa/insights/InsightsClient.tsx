@@ -21,8 +21,9 @@ interface Props {
 }
 
 // ── Time filter options ───────────────────────────────────────────────────────
-type FilterKey = '7d' | '30d' | '90d' | '1y';
+type FilterKey = '1d' | '7d' | '30d' | '90d' | '1y';
 const FILTERS: { key: FilterKey; label: string; days: number }[] = [
+  { key: '1d',  label: 'Today',    days: 1   },
   { key: '7d',  label: '7 Days',   days: 7   },
   { key: '30d', label: '30 Days',  days: 30  },
   { key: '90d', label: '90 Days',  days: 90  },
