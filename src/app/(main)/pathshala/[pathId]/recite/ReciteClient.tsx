@@ -169,7 +169,7 @@ interface Props {
 
 // ─── Mode types ────────────────────────────────────────────────────────────────
 type ReciteMode = 'read' | 'hidden' | 'timed';
-type RecordState = 'idle' | 'recording' | 'uploading' | 'done' | 'error';
+type RecordState = 'idle' | 'recording' | 'preview' | 'uploading' | 'done' | 'error';
 
 export default function ReciteClient({
   userId,
@@ -228,27 +228,35 @@ export default function ReciteClient({
           language:       'en',
         }),
       });
-      if (!res.ok) throw new Error('Explain failed');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData?.error ?? `Explain failed (${res.status})`);
+      }
       const data = await res.json();
       setExplainResult(data);
-    } catch {
-      toast.error('Could not generate explanation — check your connection');
+    } catch (err: any) {
+      const msg = err?.message ?? 'Could not generate explanation';
+      toast.error(msg.includes('503') ? 'Explain unavailable — GEMINI_API_KEY not set in Vercel' : msg);
     } finally {
       setExplainLoading(false);
     }
   }
 
   // Shruti recording state
-  const [recordState,  setRecordState]  = useState<RecordState>('idle');
-  const [lastResult,   setLastResult]   = useState<RecitationResult | null>(null);
-  const [micGranted,   setMicGranted]   = useState<boolean | null>(null); // null=unknown
+  const [recordState,      setRecordState]      = useState<RecordState>('idle');
+  const [lastResult,       setLastResult]        = useState<RecitationResult | null>(null);
+  const [micGranted,       setMicGranted]        = useState<boolean | null>(null);
+  const [recordingBlob,    setRecordingBlob]     = useState<Blob | null>(null);
+  const [recordingMime,    setRecordingMime]     = useState<string>('audio/webm');
+  const [previewPlaying,   setPreviewPlaying]    = useState(false);
   // If engine hasn't loaded within ENGINE_TIMEOUT_MS we allow recording but skip AI scoring
   const [engineTimedOut, setEngineTimedOut] = useState(false);
   const ENGINE_TIMEOUT_MS = 5000;
 
-  const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
-  const mediaRecRef = useRef<MediaRecorder | null>(null);
-  const chunksRef   = useRef<Blob[]>([]);
+  const timerRef       = useRef<ReturnType<typeof setInterval> | null>(null);
+  const mediaRecRef    = useRef<MediaRecorder | null>(null);
+  const chunksRef      = useRef<Blob[]>([]);
+  const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const verse = verses[verseIndex];
 
   // Engine timeout — if pathshala isn't ready after ENGINE_TIMEOUT_MS, unlock mic anyway
@@ -258,8 +266,11 @@ export default function ReciteClient({
     return () => clearTimeout(t);
   }, [pathshala]);
 
-  // Keep refs in sync with state (used in effects that must not re-run on every change)
-  useEffect(() => { ttsRateRef.current = ttsRate; }, [ttsRate]);
+  // Keep refs in sync with state; also apply speed change to currently-playing audio
+  useEffect(() => {
+    ttsRateRef.current = ttsRate;
+    if (audioRef.current) audioRef.current.playbackRate = ttsRate;
+  }, [ttsRate]);
   useEffect(() => { autoPlayRef.current = autoPlay; }, [autoPlay]);
 
   // ── TTS controller (Google Cloud TTS — sa-IN for Devanagari) ─────────────────
@@ -308,6 +319,69 @@ export default function ReciteClient({
 
   // Stop TTS on unmount
   useEffect(() => () => { stopTTS(); }, [stopTTS]);
+
+  // ── Preview: play back the just-recorded audio before submitting ──────────
+  const playPreview = useCallback(() => {
+    if (!recordingBlob) return;
+    if (previewAudioRef.current) { previewAudioRef.current.pause(); }
+    const url   = URL.createObjectURL(recordingBlob);
+    const audio = new Audio(url);
+    previewAudioRef.current = audio;
+    audio.onended = () => { setPreviewPlaying(false); URL.revokeObjectURL(url); };
+    audio.onerror = () => { setPreviewPlaying(false); URL.revokeObjectURL(url); };
+    audio.play().then(() => setPreviewPlaying(true)).catch(() => setPreviewPlaying(false));
+  }, [recordingBlob]);
+
+  const stopPreview = useCallback(() => {
+    if (previewAudioRef.current) { previewAudioRef.current.pause(); previewAudioRef.current = null; }
+    setPreviewPlaying(false);
+  }, []);
+
+  const resetRecording = useCallback(() => {
+    stopPreview();
+    setRecordingBlob(null);
+    setRecordState('idle');
+    setLastResult(null);
+  }, [stopPreview]);
+
+  // ── Submit recording for AI scoring ──────────────────────────────────────
+  const submitRecording = useCallback(async () => {
+    if (!recordingBlob || !verse) return;
+    stopPreview();
+    setRecordState('uploading');
+    try {
+      if (!pathshala) {
+        toast('Practice recorded ✓ (Shruti scoring offline — engine loading)', {
+          icon: '🎤', duration: 3500,
+          style: { background: '#1c1c1a', color: 'var(--brand-ink)' },
+        });
+        setRecordState('idle');
+        setRecordingBlob(null);
+        return;
+      }
+      const chunkId      = `${pathId}--verse-${verseIndex}`;
+      const expectedText = verse.original || verse.transliteration || verse.title;
+      const result = await pathshala.shruti.uploadAndScore(userId, {
+        audioBlob: recordingBlob,
+        chunkId,
+        expectedText,
+        language: 'sa',
+      });
+      setLastResult(result);
+      setRecordState('done');
+      setRecordingBlob(null);
+      const score = result.scores?.overall ?? 0;
+      const emoji = score >= 80 ? '🌟' : score >= 60 ? '👍' : '💪';
+      toast.success(`${emoji} Shruti score: ${Math.round(score)}/100`, { duration: 3500 });
+      if (engine) {
+        engine.tracker.track('shloka_listen', { path_id: pathId, lesson: currentLesson, verse_index: verseIndex }).catch(() => {});
+      }
+    } catch (err: any) {
+      console.error('[Shruti] submitRecording error:', err);
+      toast.error(err?.message?.slice(0, 80) ?? 'Scoring failed — please try again');
+      setRecordState('error');
+    }
+  }, [recordingBlob, verse, stopPreview, pathshala, pathId, verseIndex, userId, engine, currentLesson]);
 
   // Timer
   useEffect(() => {
@@ -378,52 +452,19 @@ export default function ReciteClient({
       chunksRef.current = [];
       const mr = new MediaRecorder(stream, { mimeType });
       mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
-      mr.onstop = async () => {
-        // Stop all tracks
+      mr.onstop = () => {
+        // Stop all mic tracks
         stream.getTracks().forEach(t => t.stop());
-
         const blob = new Blob(chunksRef.current, { type: mimeType });
         if (blob.size < 1000) {
           toast.error('Recording too short — please recite the verse aloud');
           setRecordState('idle');
           return;
         }
-
-        setRecordState('uploading');
-
-        try {
-          if (!pathshala) {
-            // Engine still offline — still count the practice, skip AI scoring
-            toast('Practice recorded ✓ (Shruti scoring offline — will retry when engine loads)', {
-              icon: '🎤',
-              duration: 3500,
-              style: { background: '#1c1c1a', color: 'var(--brand-ink)' },
-            });
-            setRecordState('idle');
-            return;
-          }
-
-          const chunkId      = `${pathId}--verse-${verseIndex}`;
-          const expectedText = verse.original || verse.transliteration || verse.title;
-          const language     = 'sa'; // Sanskrit — default; could be inferred from tradition
-
-          const result = await pathshala.shruti.uploadAndScore(userId, {
-            audioBlob: blob,
-            chunkId,
-            expectedText,
-            language,
-          });
-
-          setLastResult(result);
-          setRecordState('done');
-          const score = result.scores?.overall ?? 0;
-          const emoji = score >= 80 ? '🌟' : score >= 60 ? '👍' : '💪';
-          toast.success(`${emoji} Shruti score: ${Math.round(score)}/100`, { duration: 3500 });
-        } catch (err: any) {
-          console.error('[Shruti] uploadAndScore error:', err);
-          toast.error(err?.message?.slice(0, 80) ?? 'Scoring failed — please try again');
-          setRecordState('error');
-        }
+        // Go to preview — user listens back before submitting for scoring
+        setRecordingBlob(blob);
+        setRecordingMime(mimeType);
+        setRecordState('preview');
       };
 
       mr.start(500); // collect chunks every 500ms
@@ -438,7 +479,7 @@ export default function ReciteClient({
       }
       setRecordState('idle');
     }
-  }, [verse, pathId, verseIndex, userId, pathshala]);
+  }, [verse]);
 
   const stopRecording = useCallback(() => {
     if (mediaRecRef.current && mediaRecRef.current.state !== 'inactive') {
@@ -848,53 +889,101 @@ export default function ReciteClient({
             <div>
               <p className="text-xs font-semibold text-[color:var(--brand-ink)]">🎤 Voice Recitation</p>
               <p className="text-[10px] text-[color:var(--brand-muted)] mt-0.5">
-                {shrutiReady
-                  ? 'Record your recitation — Shruti Engine scores pronunciation'
-                  : engineTimedOut
-                    ? 'AI scoring offline — recording still available'
-                    : 'Shruti engine loading…'}
+                {recordState === 'preview'
+                  ? 'Listen back, then submit for scoring'
+                  : shrutiReady
+                    ? 'Record your recitation — Shruti Engine scores pronunciation'
+                    : engineTimedOut
+                      ? 'AI scoring offline — recording still available'
+                      : 'Shruti engine loading…'}
               </p>
             </div>
-            {/* Mic button */}
-            <button
-              onClick={isRecording ? stopRecording : startRecording}
-              disabled={isUploading || !micEnabled}
-              className="w-11 h-11 rounded-full flex items-center justify-center transition-all shadow-lg disabled:opacity-40"
-              style={{
-                background: isRecording
-                  ? 'linear-gradient(135deg, #ef4444, #dc2626)'
-                  : `linear-gradient(135deg, ${accentColour}, ${accentColour}cc)`,
-                boxShadow: isRecording ? '0 0 0 4px rgba(239,68,68,0.25)' : 'none',
-              }}
-              title={isRecording ? 'Stop recording' : 'Start recording'}
-            >
-              {isUploading
-                ? <Loader2 size={18} className="text-white animate-spin" />
-                : isRecording
-                  ? <MicOff size={18} className="text-white" />
-                  : <Mic size={18} className="text-white" />
-              }
-            </button>
+            {/* Mic / stop button — hidden in preview state */}
+            {recordState !== 'preview' && (
+              <button
+                onClick={isRecording ? stopRecording : startRecording}
+                disabled={isUploading || !micEnabled}
+                className="w-11 h-11 rounded-full flex items-center justify-center transition-all shadow-lg disabled:opacity-40"
+                style={{
+                  background: isRecording
+                    ? 'linear-gradient(135deg, #ef4444, #dc2626)'
+                    : `linear-gradient(135deg, ${accentColour}, ${accentColour}cc)`,
+                  boxShadow: isRecording ? '0 0 0 4px rgba(239,68,68,0.25)' : 'none',
+                }}
+                title={isRecording ? 'Stop recording' : 'Start recording'}
+              >
+                {isUploading
+                  ? <Loader2 size={18} className="text-white animate-spin" />
+                  : isRecording
+                    ? <MicOff size={18} className="text-white" />
+                    : <Mic size={18} className="text-white" />
+                }
+              </button>
+            )}
           </div>
 
           {/* Recording indicator */}
           {isRecording && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex items-center gap-2"
-            >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
               <motion.div
                 className="w-2 h-2 rounded-full bg-red-400"
                 animate={{ opacity: [1, 0.2, 1] }}
                 transition={{ duration: 0.9, repeat: Infinity }}
               />
-              <span className="text-xs text-red-300 font-medium">Recording… tap 🛑 to stop</span>
+              <span className="text-xs text-red-300 font-medium">Recording… tap ⏹ to stop</span>
+            </motion.div>
+          )}
+
+          {/* ── Preview panel ─────────────────────────────────────────────────── */}
+          {recordState === 'preview' && (
+            <motion.div
+              initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+              className="space-y-2"
+            >
+              {/* Listen back row */}
+              <div className="flex items-center gap-3 py-1">
+                <button
+                  onClick={previewPlaying ? stopPreview : playPreview}
+                  className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ background: `${accentColour}20`, border: `1px solid ${accentColour}40` }}
+                >
+                  {previewPlaying
+                    ? <Pause size={16} style={{ color: accentColour }} />
+                    : <Play  size={16} style={{ color: accentColour }} />
+                  }
+                </button>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-[color:var(--brand-ink)]">Your recording</p>
+                  <p className="text-[10px] text-[color:var(--brand-muted)]">
+                    {previewPlaying ? 'Playing…' : 'Tap to listen back'}
+                  </p>
+                </div>
+                {/* Re-record */}
+                <button
+                  onClick={resetRecording}
+                  className="text-[10px] font-semibold px-3 py-1.5 rounded-full"
+                  style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--brand-muted)', border: '1px solid rgba(255,255,255,0.10)' }}
+                >
+                  Re-record
+                </button>
+              </div>
+              {/* Submit button */}
+              <button
+                onClick={submitRecording}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold"
+                style={{ background: `linear-gradient(135deg, ${accentColour}, ${accentColour}cc)`, color: '#1c1c1a' }}
+              >
+                <CheckCircle2 size={13} />
+                Submit for Shruti scoring
+              </button>
             </motion.div>
           )}
 
           {isUploading && (
-            <p className="text-xs text-[color:var(--brand-muted)]">Uploading and scoring…</p>
+            <div className="flex items-center gap-2">
+              <Loader2 size={13} className="animate-spin text-[color:var(--brand-muted)]" />
+              <p className="text-xs text-[color:var(--brand-muted)]">Uploading and scoring…</p>
+            </div>
           )}
 
           {micGranted === false && (
@@ -904,7 +993,10 @@ export default function ReciteClient({
           )}
 
           {recordState === 'error' && (
-            <p className="text-xs text-red-300">Scoring failed. Check your internet connection and try again.</p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs text-red-300 flex-1">Scoring failed. Check your connection.</p>
+              <button onClick={resetRecording} className="text-[10px] text-[color:var(--brand-muted)] underline">Retry</button>
+            </div>
           )}
         </div>
 

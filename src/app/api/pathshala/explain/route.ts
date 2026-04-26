@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 // Body: { sanskrit, transliteration, translation, source, title, tradition, language? }
 // Returns tradition-aware Gemini explanation — no DB chunk needed.
 
-const GEMINI_MODEL = 'gemini-2.0-flash';
+const GEMINI_MODEL = 'gemini-1.5-flash';
 const GEMINI_URL   = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 const COMMENTARY: Record<string, { name: string; school: string; lens: string }> = {
@@ -53,7 +53,8 @@ function getCommentary(tradition: string | null) {
 export async function POST(req: Request) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ error: 'GEMINI_API_KEY not configured' }, { status: 503 });
+    console.error('[Explain] GEMINI_API_KEY is not set');
+    return NextResponse.json({ error: 'GEMINI_API_KEY not configured — add it to Vercel env vars' }, { status: 503 });
   }
 
   const { sanskrit, transliteration, translation, source, title, tradition, language = 'en' } =
@@ -105,7 +106,8 @@ ${langNote}`;
 
     if (!res.ok) {
       const err = await res.text().catch(() => 'Gemini error');
-      return NextResponse.json({ error: err }, { status: 502 });
+      console.error('[Explain] Gemini error:', res.status, err);
+      return NextResponse.json({ error: `Gemini ${res.status}: ${err.slice(0, 200)}` }, { status: 502 });
     }
 
     const data = await res.json();
