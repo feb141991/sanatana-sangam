@@ -4,8 +4,11 @@ import { NextResponse } from 'next/server';
 // Body: { sanskrit, transliteration, translation, source, title, tradition, language? }
 // Returns tradition-aware Gemini explanation — no DB chunk needed.
 
-const GEMINI_MODEL = 'gemini-2.0-flash';
-const GEMINI_URL   = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+// Model priority: lite first (higher free-tier RPM), flash as fallback
+const GEMINI_MODELS = ['gemini-2.0-flash-lite', 'gemini-2.0-flash'];
+function geminiUrl(model: string) {
+  return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+}
 
 const COMMENTARY: Record<string, { name: string; school: string; lens: string }> = {
   vaishnava: {
@@ -95,23 +98,31 @@ Return ONLY this JSON (no markdown, no extra text):
 ${langNote}`;
 
   try {
-    const res = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.5, maxOutputTokens: 900 },
-      }),
-    });
+    let raw = '';
 
-    if (!res.ok) {
-      const err = await res.text().catch(() => 'Gemini error');
-      console.error('[Explain] Gemini error:', res.status, err);
-      return NextResponse.json({ error: `Gemini ${res.status}: ${err.slice(0, 200)}` }, { status: 502 });
+    for (const model of GEMINI_MODELS) {
+      const res = await fetch(`${geminiUrl(model)}?key=${apiKey}`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.5, maxOutputTokens: 900 },
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        raw = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+        break;
+      }
+
+      const errText = await res.text().catch(() => '');
+      console.warn(`[Explain] model=${model} status=${res.status}`);
+
+      if (res.status === 429 || res.status === 404) continue; // try fallback
+      // For other errors surface immediately
+      return NextResponse.json({ error: `Gemini ${res.status}: ${errText.slice(0, 200)}` }, { status: 502 });
     }
-
-    const data = await res.json();
-    const raw  = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
 
     // Parse JSON from response (may or may not have code fences)
     const jsonMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/) || raw.match(/(\{[\s\S]*\})/);

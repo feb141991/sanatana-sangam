@@ -30,8 +30,23 @@ function getAuth(): GoogleAuth {
   const client_email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const private_key  = process.env.GOOGLE_SERVICE_ACCOUNT_KEY?.replace(/\\n/g, '\n');
 
-  if (!client_email || !private_key) {
-    throw new Error('Set GOOGLE_SERVICE_ACCOUNT_EMAIL and GOOGLE_SERVICE_ACCOUNT_KEY');
+  if (!client_email) {
+    throw new Error(
+      'GOOGLE_SERVICE_ACCOUNT_EMAIL is not set. Add it to Vercel → Settings → Environment Variables. ' +
+      'Call GET /api/tts/health for a full diagnosis.'
+    );
+  }
+  if (!private_key) {
+    throw new Error(
+      'GOOGLE_SERVICE_ACCOUNT_KEY is not set. Add the service account private key to Vercel env vars. ' +
+      'Call GET /api/tts/health for a full diagnosis.'
+    );
+  }
+  if (!private_key.includes('-----BEGIN')) {
+    throw new Error(
+      'GOOGLE_SERVICE_ACCOUNT_KEY does not contain a valid PEM header (-----BEGIN PRIVATE KEY-----). ' +
+      'Ensure you copied the full private_key value from the JSON service account file.'
+    );
   }
 
   _auth = new GoogleAuth({

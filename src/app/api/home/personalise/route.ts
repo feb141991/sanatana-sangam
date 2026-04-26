@@ -5,7 +5,11 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 // Returns today's personalised shloka + practice suggestion for the authenticated user.
 // Checks the recommendations cache first; generates via Gemini if stale.
 
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+// Model priority: lite first (higher free-tier RPM), flash as fallback
+const GEMINI_MODELS = ['gemini-2.0-flash-lite', 'gemini-2.0-flash'];
+function geminiUrl(model: string) {
+  return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+}
 
 // Curated fallback shlokas (tradition-neutral; used when Gemini is unavailable)
 const FALLBACK_SHLOKAS = [
@@ -92,22 +96,32 @@ Return ONLY this JSON (no markdown fences, no extra keys):
 
 Keep the tone warm, grounded, and personal — not preachy. No shloka text needed.`;
 
-    const res = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 500 },
-      }),
-    });
+    let raw = '';
+    for (const model of GEMINI_MODELS) {
+      const res = await fetch(`${geminiUrl(model)}?key=${apiKey}`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.7, maxOutputTokens: 500 },
+        }),
+      });
 
-    if (!res.ok) {
+      if (res.ok) {
+        const data = await res.json();
+        raw = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+        break;
+      }
+
+      console.warn(`[personalise] model=${model} status=${res.status}`);
+      if (res.status === 429 || res.status === 404) continue;
+      break; // other error — fall through to fallback
+    }
+
+    if (!raw) {
       const fallback = FALLBACK_SHLOKAS[new Date().getDate() % FALLBACK_SHLOKAS.length];
       return NextResponse.json({ suggestion: fallback.suggestion, nudge: null, context_label: 'Today\'s practice', from_cache: false });
     }
-
-    const data  = await res.json();
-    const raw   = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
     const match = raw.match(/```(?:json)?\s*([\s\S]*?)```/) || raw.match(/(\{[\s\S]*\})/);
     let parsed: Record<string, string | null> | null = null;
     if (match) {
