@@ -135,9 +135,11 @@ const MANTRAS = [
 type MantraId = typeof MANTRAS[number]['id'];
 
 // ── Sound definitions ──────────────────────────────────────────────────────────
-type SoundId = 'silence' | 'rain' | 'river' | 'bells' | 'forest';
+type SoundId = 'silence' | 'om' | 'bowl' | 'rain' | 'river' | 'bells' | 'forest';
 const SOUNDS: { id: SoundId; label: string; emoji: string }[] = [
   { id: 'silence', label: 'Silence',      emoji: '🤫' },
+  { id: 'om',      label: 'Om Chant',     emoji: '🕉' },
+  { id: 'bowl',    label: 'Singing Bowl', emoji: '🪘' },
   { id: 'rain',    label: 'Rain',         emoji: '🌧️' },
   { id: 'river',   label: 'River',        emoji: '🌊' },
   { id: 'bells',   label: 'Temple Bells', emoji: '🔔' },
@@ -216,10 +218,80 @@ function _startBells(ctx: AudioContext) {
       osc.connect(g); g.connect(ctx.destination);
       osc.start(t0); osc.stop(t0 + 3.5);
     });
-    const delay = 9000 + Math.random() * 8000;
+    // Ring every 5-9 seconds (was 9-17s — much more responsive now)
+    const delay = 5000 + Math.random() * 4000;
     setTimeout(() => { if (active) ring(); }, delay);
   }
   ring();
+  return () => { active = false; };
+}
+
+function _startOm(ctx: AudioContext) {
+  // Synthesises a repeating Om chant using formant filter sweep: A→U→M
+  let active = true;
+  function chant() {
+    if (!active) return;
+    const t0  = ctx.currentTime;
+    const dur = 5.5; // duration of one Om
+
+    // Sawtooth source — rich in harmonics like a human voice
+    const src = ctx.createOscillator();
+    src.type = 'sawtooth';
+    src.frequency.value = 130; // ~C3 — deep, resonant male fundamental
+
+    // Formant bandpass filter sweeps through A→U→M vowel shapes
+    const filt = ctx.createBiquadFilter();
+    filt.type = 'bandpass';
+    filt.Q.value = 4.0;
+    filt.frequency.setValueAtTime(800, t0 + 0.05);          // 'A' vowel open
+    filt.frequency.linearRampToValueAtTime(380, t0 + 2.2);  // 'U' vowel closing
+    filt.frequency.linearRampToValueAtTime(180, t0 + 3.8);  // 'M' nasal/hum
+
+    // Gentle reverb via convolver-like delay feedback
+    const delay  = ctx.createDelay(0.25);
+    delay.delayTime.value = 0.18;
+    const fbGain = ctx.createGain(); fbGain.gain.value = 0.25;
+
+    const masterG = ctx.createGain();
+    masterG.gain.setValueAtTime(0, t0);
+    masterG.gain.linearRampToValueAtTime(0.22, t0 + 0.5);
+    masterG.gain.setValueAtTime(0.22, t0 + dur - 1.4);
+    masterG.gain.linearRampToValueAtTime(0, t0 + dur);
+
+    src.connect(filt);
+    filt.connect(masterG);
+    filt.connect(delay); delay.connect(fbGain); fbGain.connect(delay);
+    delay.connect(masterG);
+    masterG.connect(ctx.destination);
+
+    src.start(t0); src.stop(t0 + dur);
+    // 2 seconds of silence between Oms
+    setTimeout(() => { if (active) chant(); }, (dur + 2.0) * 1000);
+  }
+  chant();
+  return () => { active = false; };
+}
+
+function _startBowl(ctx: AudioContext) {
+  // Tibetan singing bowl — 3 sinusoidal partials, struck every 10-15s
+  let active = true;
+  function strike() {
+    if (!active) return;
+    const t0 = ctx.currentTime;
+    [[432, 0.22], [540, 0.10], [864, 0.05]].forEach(([freq, amp]) => {
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(amp, t0);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 8.0);
+      osc.connect(g); g.connect(ctx.destination);
+      osc.start(t0); osc.stop(t0 + 8.5);
+    });
+    const delay = 10000 + Math.random() * 5000;
+    setTimeout(() => { if (active) strike(); }, delay);
+  }
+  strike();
   return () => { active = false; };
 }
 
@@ -253,6 +325,8 @@ function startJapaAmbient(id: SoundId) {
            : id === 'river'  ? _startRiver(ctx)
            : id === 'bells'  ? _startBells(ctx)
            : id === 'forest' ? _startForest(ctx)
+           : id === 'om'     ? _startOm(ctx)
+           : id === 'bowl'   ? _startBowl(ctx)
            : null;
   if (fn) _japaStopFns.push(fn);
 }
@@ -652,7 +726,7 @@ function SoundsSheet({
             </svg>
           </button>
         </div>
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-4 gap-2">
           {SOUNDS.map(s => {
             const isActive = current === s.id;
             return (
@@ -834,6 +908,9 @@ export default function JapaClient({
   const [malaId,    setMalaId]    = useState<MalaId>('sandalwood');
   const [mantraId,  setMantraId]  = useState<MantraId>(defaultMantraId);
   const [targetRounds, setTargetRounds] = useState(1);
+  // Ref so countBead callback always reads the latest targetRounds without stale closure
+  const targetRoundsRef = useRef(1);
+  useEffect(() => { targetRoundsRef.current = targetRounds; }, [targetRounds]);
 
   useEffect(() => {
     try {
@@ -890,6 +967,24 @@ export default function JapaClient({
     }
   }, [screen]);
 
+  // Full-screen: enter when japa begins, exit when leaving
+  useEffect(() => {
+    if (screen === 'japa') {
+      try {
+        const el = document.documentElement;
+        if (el.requestFullscreen && !document.fullscreenElement) {
+          el.requestFullscreen().catch(() => {});
+        }
+      } catch { /* ok — not all browsers support fullscreen */ }
+    } else {
+      try {
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        }
+      } catch { /* ok */ }
+    }
+  }, [screen]);
+
   // ── Handle sound selection (called from SoundsSheet — user gesture) ──────
   function handleSoundSelect(id: SoundId) {
     setSoundId(id);
@@ -911,8 +1006,11 @@ export default function JapaClient({
         setRoundsDone(r => {
           const newRounds = r + 1;
           setTotalBeads(t => t + next);
-          // Auto-complete if target reached
-          setTimeout(() => setShowComplete(true), 300);
+          // Only auto-complete when the user has hit their target rounds
+          if (newRounds >= targetRoundsRef.current) {
+            stopJapaAmbient();   // silence the ambient sound when sadhana is done
+            setTimeout(() => setShowComplete(true), 300);
+          }
           return newRounds;
         });
         return 0;
@@ -974,8 +1072,8 @@ export default function JapaClient({
     // Do NOT reset roundsDone so user can continue
   };
 
-  const handleViewInsights = () => {
-    saveSession(roundsDone, beadCount);
+  const handleViewInsights = async () => {
+    await saveSession(roundsDone, beadCount);
     router.push('/japa/insights');
   };
 
@@ -1041,7 +1139,10 @@ export default function JapaClient({
           {/* ── Top bar ─────────────────────────────────────────────────── */}
           <div className="flex items-center justify-between px-5 pt-14 pb-2">
             <button
-              onClick={() => setScreen('chooseMala')}
+              onClick={() => {
+                try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch {}
+                setScreen('chooseMala');
+              }}
               className="w-9 h-9 rounded-full flex items-center justify-center"
               style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
               <ChevronLeft size={20} style={{ color: amber }} />
@@ -1061,7 +1162,10 @@ export default function JapaClient({
             <div className="flex items-center gap-2">
               {/* Change mala/mantra */}
               <button
-                onClick={() => setScreen('chooseMala')}
+                onClick={() => {
+                  try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch {}
+                  setScreen('chooseMala');
+                }}
                 className="w-9 h-9 rounded-full flex items-center justify-center"
                 style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
                 <Settings2 size={15} style={{ color: amber }} />

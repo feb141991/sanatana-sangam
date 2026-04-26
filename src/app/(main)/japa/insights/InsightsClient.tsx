@@ -255,7 +255,7 @@ export default function InsightsClient({ sessions }: Props) {
               Complete your first Japa session and your practice story will appear here.
             </p>
             <button
-              onClick={() => router.back()}
+              onClick={() => router.push('/japa')}
               className="mt-2 px-6 py-3 rounded-2xl font-semibold text-sm"
               style={{ background: isDark ? 'rgba(200,146,74,0.14)' : 'rgba(122,74,30,0.10)', color: amber, border: `1px solid ${amber}30` }}
             >
