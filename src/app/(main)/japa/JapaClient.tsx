@@ -285,7 +285,7 @@ function ChooseMalaScreen({
   onSelect: (id: MalaId) => void; onConfirm: () => void;
 }) {
   const bg   = isDark ? '#08070A' : '#F5F0E8';
-  const card = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)';
+  const card = isDark ? 'var(--card-bg)' : 'rgba(0,0,0,0.04)';
   const text = isDark ? 'rgba(245,225,185,0.95)' : '#2D1F0E';
   const sub  = isDark ? 'rgba(200,146,74,0.60)' : 'rgba(100,65,25,0.60)';
   const amber = isDark ? '#C8924A' : '#7A4A1E';
@@ -392,7 +392,7 @@ function ChooseMantraScreen({
   onSelect: (id: MantraId) => void; onBack: () => void; onConfirm: () => void;
 }) {
   const bg   = isDark ? '#08070A' : '#F5F0E8';
-  const card = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)';
+  const card = isDark ? 'var(--card-bg)' : 'rgba(0,0,0,0.04)';
   const text = isDark ? 'rgba(245,225,185,0.95)' : '#2D1F0E';
   const sub  = isDark ? 'rgba(200,146,74,0.60)' : 'rgba(100,65,25,0.60)';
   const amber = isDark ? '#C8924A' : '#7A4A1E';
@@ -531,7 +531,7 @@ function SoundsSheet({
                 style={{
                   background: isActive
                     ? isDark ? 'rgba(200,146,74,0.14)' : 'rgba(122,74,30,0.10)'
-                    : isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+                    : isDark ? 'var(--card-bg)' : 'rgba(0,0,0,0.04)',
                   borderColor: isActive
                     ? isDark ? 'rgba(200,146,74,0.40)' : 'rgba(122,74,30,0.35)'
                     : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
@@ -603,7 +603,7 @@ function CompletionOverlay({
             { label: 'Time',   value: `${mins}m ${secs}s` },
           ].map(s => (
             <div key={s.label} className="rounded-2xl p-4 text-center border"
-              style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)', borderColor: `${amber}1A` }}>
+              style={{ background: isDark ? 'var(--card-bg)' : 'rgba(0,0,0,0.04)', borderColor: `${amber}1A` }}>
               <p className="font-bold text-xl" style={{ color: amber }}>{s.value}</p>
               <p className="text-[11px] mt-1" style={{ color: sub }}>{s.label}</p>
             </div>
@@ -811,7 +811,7 @@ export default function JapaClient({
   const text  = isDark ? 'rgba(245,225,185,0.97)' : '#2D1F0E';
   const sub   = isDark ? 'rgba(200,146,74,0.60)'  : 'rgba(100,65,25,0.60)';
   const amber = isDark ? '#C8924A' : '#7A4A1E';
-  const cardBg = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)';
+  const cardBg = isDark ? 'var(--card-bg)' : 'rgba(0,0,0,0.04)';
   const malaColors = isDark ? currentMala.dark : currentMala.light;
 
   return (

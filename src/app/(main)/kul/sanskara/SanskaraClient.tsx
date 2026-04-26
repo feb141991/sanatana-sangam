@@ -516,11 +516,11 @@ function SanskaraCard({
                   {s.description}
                 </p>
                 <div className="grid grid-cols-2 gap-2 pt-1">
-                  <div className="rounded-xl px-3 py-2" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                  <div className="rounded-xl px-3 py-2" style={{ background: 'var(--card-bg)' }}>
                     <p className="text-[10px] text-white/30 uppercase tracking-wider">Timing</p>
                     <p className="text-xs mt-0.5" style={{ color: 'rgba(245,220,150,0.65)' }}>{s.timing}</p>
                   </div>
-                  <div className="rounded-xl px-3 py-2" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                  <div className="rounded-xl px-3 py-2" style={{ background: 'var(--card-bg)' }}>
                     <p className="text-[10px] text-white/30 uppercase tracking-wider">Deity</p>
                     <p className="text-xs mt-0.5" style={{ color: 'rgba(245,220,150,0.65)' }}>{s.deity}</p>
                   </div>
@@ -608,7 +608,7 @@ function MemberSelector({
               onClick={() => onChange(o.id)}
               className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs transition"
               style={{
-                background: active ? 'rgba(200,146,74,0.15)' : 'rgba(255,255,255,0.04)',
+                background: active ? 'rgba(200,146,74,0.15)' : 'var(--card-bg)',
                 border: `1px solid ${active ? 'rgba(200,146,74,0.4)' : 'rgba(255,255,255,0.08)'}`,
                 color: active ? 'rgba(245,220,150,0.9)' : 'rgba(245,210,130,0.5)',
               }}

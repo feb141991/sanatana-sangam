@@ -270,7 +270,7 @@ export default function DiscoverClient({ tradition }: Props) {
                 className="rounded-[1.6rem] p-4 border animate-pulse"
                 style={{
                   height: '120px',
-                  background: 'rgba(255,255,255,0.03)',
+                  background: 'var(--card-bg)',
                   borderColor: 'rgba(255,255,255,0.06)',
                 }}
               />

@@ -1209,7 +1209,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                               {/* Icon */}
                               <div
                                 className="w-9 h-9 rounded-[0.65rem] flex items-center justify-center text-lg shrink-0"
-                                style={{ background: done ? `${stageMeta.accent}18` : 'rgba(255,255,255,0.04)' }}
+                                style={{ background: done ? `${stageMeta.accent}18` : 'var(--card-bg)' }}
                               >
                                 {done
                                   ? <CheckCircle2 size={18} style={{ color: stageMeta.accent }} />

@@ -39,7 +39,7 @@ const QUICK_LINKS = [
 ] as const;
 
 const shellTint = {
-  background: 'linear-gradient(135deg, rgba(51, 51, 48, 0.98), rgba(43, 43, 40, 0.96))',
+  background: 'linear-gradient(135deg, var(--card-bg), var(--card-bg))',
   borderColor: 'rgba(212, 166, 70, 0.18)',
 };
 
@@ -497,7 +497,7 @@ export default function TopBar({
                   style={{
                     width: 38,
                     height: 38,
-                    background: 'linear-gradient(135deg, rgba(51,51,48,0.98), rgba(43,43,40,0.94))',
+                    background: 'linear-gradient(135deg, var(--card-bg), rgba(43,43,40,0.94))',
                     border: avatarUrl ? '2px solid rgba(200,146,74,0.55)' : '1.5px solid rgba(200,146,74,0.22)',
                     boxShadow: avatarUrl ? '0 0 0 1px rgba(200,146,74,0.15)' : 'none',
                   }}

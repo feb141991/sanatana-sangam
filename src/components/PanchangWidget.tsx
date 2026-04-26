@@ -58,7 +58,7 @@ export default function PanchangWidget({ lat = 51.5074, lon = -0.1278 }: Props) 
       </div>
 
       {/* Grid */}
-      <div className="relative grid grid-cols-3 divide-x divide-y backdrop-blur-[2px]" style={{ background: 'rgba(40, 40, 37, 0.92)', borderTop: '1px solid rgba(212, 166, 70, 0.08)', borderColor: 'rgba(212, 166, 70, 0.08)' }}>
+      <div className="relative grid grid-cols-3 divide-x divide-y backdrop-blur-[2px]" style={{ background: 'var(--card-bg)', borderTop: '1px solid rgba(212, 166, 70, 0.08)', borderColor: 'rgba(212, 166, 70, 0.08)' }}>
         {items.map((item) => (
           <div key={item.label} className="px-3 py-2.5" style={{ borderColor: 'rgba(200, 127, 146, 0.08)' }}>
             <div className="flex items-center gap-1 mb-0.5">

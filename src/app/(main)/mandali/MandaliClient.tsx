@@ -148,7 +148,7 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
               <button
                 onClick={() => { toast('Wider Sangam connections open after launch polish.', { icon: '🙏' }); }}
                 className="flex-shrink-0 px-3 py-1.5 text-xs font-semibold rounded-full transition"
-                style={{ border: '1px solid rgba(212, 166, 70, 0.18)', color: 'var(--text-cream)', background: 'rgba(40, 40, 37, 0.92)' }}>
+                style={{ border: '1px solid rgba(212, 166, 70, 0.18)', color: 'var(--text-cream)', background: 'var(--card-bg)' }}>
                 Connect
               </button>
             </div>
@@ -1305,7 +1305,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
                 await mandaliMutations.leaveMandali.mutateAsync();
               }}
               className="w-full flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm theme-ink transition hover:bg-white/[0.06]"
-              style={{ border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.03)' }}
+              style={{ border: '1px solid rgba(255,255,255,0.06)', background: 'var(--card-bg)' }}
             >
               <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(200,146,74,0.1)' }}>
                 <MapPin size={15} style={{ color: 'var(--brand-primary)' }} />

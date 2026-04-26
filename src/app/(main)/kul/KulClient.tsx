@@ -84,7 +84,7 @@ function Avatar({ name, url, size = 10, gradient = 'linear-gradient(135deg, var(
 function TaskBadge({ type }: { type: string }) {
   const t = TASK_TYPES[type] ?? { label: type, emoji: '📌' };
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border border-[rgba(200,146,74,0.16)] bg-[rgba(40,40,37,0.92)] theme-ink">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border border-[rgba(200,146,74,0.16)] bg-[var(--card-bg)] theme-ink">
       {t.emoji} {t.label}
     </span>
   );
@@ -518,7 +518,7 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
       </div>
 
       {/* Kul header card */}
-      <div className="rounded-2xl p-5 text-[color:var(--text-cream)]" style={{ background: 'linear-gradient(135deg, rgba(51,51,48,0.98), rgba(43,43,40,0.96))', border: '1px solid rgba(200,146,74,0.16)' }}>
+      <div className="rounded-2xl p-5 text-[color:var(--text-cream)]" style={{ background: 'linear-gradient(135deg, var(--card-bg), var(--card-bg))', border: '1px solid rgba(200,146,74,0.16)' }}>
         <div className="flex items-center gap-3 mb-4">
           <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl bg-white/10">
             {kul.avatar_emoji}
@@ -1356,7 +1356,7 @@ function InviteSearchModal({
     <div className="fixed inset-0 z-50 flex items-end" onClick={onClose}>
       <div
         className="w-full max-w-lg mx-auto rounded-t-3xl max-h-[85vh] flex flex-col"
-        style={{ background: 'rgba(12,10,28,0.98)', border: '1px solid rgba(255,255,255,0.10)', backdropFilter: 'blur(20px)' }}
+        style={{ background: 'var(--card-bg)', border: '1px solid rgba(255,255,255,0.10)', backdropFilter: 'blur(20px)' }}
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-white/8">

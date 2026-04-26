@@ -455,7 +455,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
           {/* Samvat */}
           {'samvatYear' in p && (
             <div className="rounded-xl px-4 py-2.5 flex items-center gap-3"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+              style={{ background: 'var(--card-bg)', border: '1px solid rgba(255,255,255,0.06)' }}>
               <span className="text-white/40 text-[10px] font-medium uppercase tracking-wider">Vikram Samvat</span>
               <span className="text-white/80 text-sm font-semibold ml-auto">
                 {(p as any).samvatYear} {(p as any).samvatName}

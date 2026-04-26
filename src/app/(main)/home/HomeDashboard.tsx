@@ -196,7 +196,7 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
         className="w-full rounded-t-[2rem] p-6 space-y-5"
         onClick={e => e.stopPropagation()}
         style={{
-          background: 'linear-gradient(180deg, rgba(44, 38, 28, 0.99), rgba(34, 30, 22, 0.99))',
+          background: 'linear-gradient(180deg, var(--surface-raised), rgba(34, 30, 22, 0.99))',
           borderTop: '1px solid rgba(200, 146, 74, 0.20)',
           boxShadow: '0 -20px 48px rgba(0, 0, 0, 0.38)',
         }}
@@ -1853,7 +1853,7 @@ export default function HomeDashboard({
                         key={item.href}
                         className="flex items-center gap-2 rounded-2xl px-3 py-2.5 transition-all"
                         style={{
-                          background: hidden ? 'rgba(255,255,255,0.03)' : 'rgba(200,146,74,0.08)',
+                          background: hidden ? 'var(--card-bg)' : 'rgba(200,146,74,0.08)',
                           border: `1px solid ${hidden ? 'rgba(255,255,255,0.08)' : 'rgba(200,146,74,0.20)'}`,
                         }}
                       >
@@ -1951,7 +1951,7 @@ export default function HomeDashboard({
                         onClick={() => toggleSection(key)}
                         className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 transition-all motion-press"
                         style={{
-                          background: hidden ? 'rgba(255,255,255,0.03)' : 'rgba(200,146,74,0.08)',
+                          background: hidden ? 'var(--card-bg)' : 'rgba(200,146,74,0.08)',
                           border: `1px solid ${hidden ? 'rgba(255,255,255,0.08)' : 'rgba(200,146,74,0.20)'}`,
                         }}
                       >

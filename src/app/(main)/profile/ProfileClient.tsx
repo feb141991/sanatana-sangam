@@ -641,7 +641,7 @@ export default function ProfileClient({
                     onClick={() => setThemePreference(option.value)}
                     className="rounded-2xl border px-3 py-3 text-left transition motion-press"
                     style={{
-                      background: active ? 'rgba(200,146,74,0.14)' : 'rgba(255,255,255,0.04)',
+                      background: active ? 'rgba(200,146,74,0.14)' : 'var(--card-bg)',
                       borderColor: active ? 'rgba(200,146,74,0.32)' : 'rgba(255,255,255,0.08)',
                     }}
                   >
@@ -672,7 +672,7 @@ export default function ProfileClient({
                       color: '#1c1c1a',
                       borderColor: 'transparent',
                     } : {
-                      background: 'rgba(255,255,255,0.04)',
+                      background: 'var(--card-bg)',
                       color: 'var(--text-muted-warm)',
                       borderColor: 'rgba(255,255,255,0.08)',
                     }}
@@ -856,7 +856,7 @@ export default function ProfileClient({
                         style={{
                           border: '1px solid rgba(124, 58, 45, 0.18)',
                           color: 'var(--brand-primary)',
-                          background: 'rgba(40,40,37,0.92)',
+                          background: 'var(--card-bg)',
                         }}
                       >
                         {busy ? 'Updating…' : 'Unhide'}
@@ -1113,7 +1113,7 @@ export default function ProfileClient({
             <motion.div className="fixed inset-0 z-50 flex items-end" onClick={() => setInviteOpen(false)}
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               <motion.div className="w-full rounded-t-[2rem] p-6 space-y-5" onClick={e => e.stopPropagation()}
-                style={{ background: 'linear-gradient(180deg, rgba(44,38,28,0.99), rgba(34,30,22,0.99))', borderTop: '1px solid rgba(200,146,74,0.20)', boxShadow: '0 -20px 48px rgba(0,0,0,0.38)' }}
+                style={{ background: 'linear-gradient(180deg, var(--surface-raised), rgba(34,30,22,0.99))', borderTop: '1px solid rgba(200,146,74,0.20)', boxShadow: '0 -20px 48px rgba(0,0,0,0.38)' }}
                 initial={{ y: 32, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}
                 transition={{ duration: 0.32, ease: [0.34, 1.26, 0.64, 1] }}>
                 <div className="w-10 h-1 rounded-full mx-auto mb-1" style={{ background: 'rgba(200,146,74,0.28)' }} />
@@ -1156,7 +1156,7 @@ function SafetyProfileRow({
   const initials = getInitials(profile.full_name || profile.username || 'S');
 
   return (
-    <div className="rounded-2xl px-3 py-3 flex items-center gap-3" style={{ border: '1px solid rgba(200,146,74,0.12)', background: 'rgba(255,255,255,0.04)' }}>
+    <div className="rounded-2xl px-3 py-3 flex items-center gap-3" style={{ border: '1px solid rgba(200,146,74,0.12)', background: 'var(--card-bg)' }}>
       <div className="relative w-10 h-10 rounded-full bg-gradient-sacred text-white flex items-center justify-center text-xs font-bold overflow-hidden flex-shrink-0">
         {profile.avatar_url
           ? <Image src={profile.avatar_url} alt="" fill sizes="40px" className="object-cover" />
