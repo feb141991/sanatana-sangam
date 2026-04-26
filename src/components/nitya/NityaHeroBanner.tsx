@@ -17,7 +17,6 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import RadialRing from '@/components/ui/RadialRing';
 import { Flame } from 'lucide-react';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -427,24 +426,34 @@ export default function NityaHeroBanner({
             {userName}
           </p>
 
-          {/* Progress ring */}
-          <div className="mt-4 flex items-center gap-4">
-            <RadialRing pct={progressPct} accent={config.accentColor} size={64} strokeWidth={6} showPct />
-            <div>
-              <p style={{ color: config.textColor }} className="font-bold text-lg leading-none">
-                {completedCount}/{totalSteps}
-              </p>
-              <p style={{ color: config.textColor, opacity: 0.6 }} className="text-xs mt-1">
-                steps complete
-              </p>
-              {isPro && streak && streak.current_streak > 0 && (
-                <div className="flex items-center gap-1 mt-1.5">
-                  <Flame size={11} style={{ color: config.accentColor }} />
-                  <span className="text-[10px] font-semibold" style={{ color: config.accentColor }}>
-                    {streak.current_streak}-day streak
-                  </span>
-                </div>
+          {/* Streak — only if active */}
+          {isPro && streak && streak.current_streak > 0 && (
+            <div className="flex items-center gap-1 mt-3">
+              <Flame size={12} style={{ color: config.accentColor }} />
+              <span className="text-[11px] font-semibold" style={{ color: config.accentColor }}>
+                {streak.current_streak}-day streak
+              </span>
+            </div>
+          )}
+
+          {/* Simple progress bar — no ring, no floating number */}
+          <div className="mt-4 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-medium" style={{ color: config.textColor, opacity: 0.65 }}>
+                {completedCount} of {totalSteps} steps
+              </span>
+              {completedCount === totalSteps && totalSteps > 0 && (
+                <span className="text-[10px] font-bold" style={{ color: config.accentColor }}>✓ Complete</span>
               )}
+            </div>
+            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.12)' }}>
+              <motion.div
+                className="h-full rounded-full"
+                style={{ background: config.accentColor }}
+                initial={{ width: 0 }}
+                animate={{ width: `${progressPct}%` }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              />
             </div>
           </div>
         </div>
