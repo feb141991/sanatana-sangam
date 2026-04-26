@@ -84,7 +84,7 @@ Also assess urgency as one of: "now" (should be done soon, within weeks), "soon"
 Respond in this exact JSON format: {"message": "...", "urgency": "now|soon|later"}`;
 
   try {
-    const models = ['gemini-2.0-flash-lite', 'gemini-1.5-flash'];
+    const models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite'];
     let responseText = '';
 
     for (const model of models) {
