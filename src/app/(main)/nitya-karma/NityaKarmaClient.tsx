@@ -208,13 +208,25 @@ function buildDateRange(days: number): string[] {
   return out;
 }
 
-function heatColour(count: number, total: number, accent: string): string {
-  if (total === 0 || count === 0) return 'rgba(255,255,255,0.04)';
-  const ratio = count / total;
-  if (ratio >= 1) return accent;
-  if (ratio >= 0.7) return `${accent}cc`;
-  if (ratio >= 0.4) return `${accent}77`;
-  return `${accent}33`;
+// ── Nitya heatmap colour — based on raw step count (not ratio) ────────────────
+// 0 steps → dark grey | 1 → dim saffron | 2 → medium saffron | 3+ → bright gold
+function heatColour(count: number): string {
+  if (count === 0) return 'rgba(255,255,255,0.06)';
+  if (count === 1) return 'rgba(200,120,40,0.38)';
+  if (count === 2) return 'rgba(210,140,40,0.68)';
+  // 3+ steps → full gold gradient (return special sentinel; callers check for 'gold')
+  return 'gold';
+}
+function heatStyle(count: number): React.CSSProperties {
+  if (count === 0)  return { background: 'rgba(255,255,255,0.06)' };
+  if (count === 1)  return { background: 'rgba(200,120,40,0.38)',  border: '1px solid rgba(200,120,40,0.25)' };
+  if (count === 2)  return { background: 'rgba(210,140,40,0.70)',  border: '1px solid rgba(220,150,40,0.35)' };
+  // 3+
+  return {
+    background: 'linear-gradient(135deg, #f0c060 0%, #C8924A 55%, #a06520 100%)',
+    border:     '1px solid rgba(240,180,60,0.4)',
+    boxShadow:  '0 0 6px rgba(200,146,74,0.3)',
+  };
 }
 
 // (CircularProgress removed — use shared RadialRing from @/components/ui/RadialRing)
@@ -1245,12 +1257,12 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
             );
           })()}
 
-          {/* 30-Day Practice Graph */}
+          {/* 30-Day Sadhana Calendar */}
           <div className="glass-panel rounded-2xl border border-white/8 overflow-hidden">
             <div className="px-4 pt-4 pb-3 flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold text-[color:var(--brand-ink)]">30-Day Sadhana</p>
-                <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">Daily practice completion</p>
+                <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">Step intensity · last 30 days</p>
               </div>
               {!isPro && (
                 <button
@@ -1265,23 +1277,61 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
 
             {isPro ? (
               <div className="px-4 pb-4">
-                <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(10, 1fr)' }}>
-                  {dayRecords.map(d => (
-                    <div key={d.date} title={`${d.date}: ${d.count}/${d.total} steps`}
-                      className="aspect-square rounded-md transition-colors"
-                      style={{ background: heatColour(d.count, d.total, accent) }} />
+                {/* Day-of-week labels */}
+                <div className="grid gap-[4px] mb-1" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
+                  {['S','M','T','W','T','F','S'].map((d, i) => (
+                    <div key={i} className="text-center text-[9px] font-semibold"
+                      style={{ color: 'rgba(255,255,255,0.25)' }}>{d}</div>
                   ))}
                 </div>
-                <div className="flex items-center justify-between mt-3">
-                  <span className="text-[10px] text-[color:var(--brand-muted)]">30 days ago</span>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-sm" style={{ background: `${accent}33` }} />
-                    <span className="text-[10px] text-[color:var(--brand-muted)]">Partial</span>
-                    <div className="w-2.5 h-2.5 rounded-sm ml-1" style={{ background: accent }} />
-                    <span className="text-[10px] text-[color:var(--brand-muted)]">Full</span>
-                  </div>
-                  <span className="text-[10px] text-[color:var(--brand-muted)]">Today</span>
+                {/* Calendar grid — padded so day-1 lands on correct weekday */}
+                {(() => {
+                  const today     = new Date();
+                  // Build a 35-slot grid starting from Sunday of the week 30 days ago
+                  const startDate = new Date(today);
+                  startDate.setDate(today.getDate() - 29);
+                  // pad to Sunday
+                  const dayOfWeek = startDate.getDay(); // 0=Sun
+                  const slots: (DayRecord | null)[] = Array(dayOfWeek).fill(null);
+                  for (const rec of dayRecords) slots.push(rec);
+                  // pad end to complete final row
+                  while (slots.length % 7 !== 0) slots.push(null);
+                  return (
+                    <div className="grid gap-[4px]" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
+                      {slots.map((slot, idx) => {
+                        if (!slot) return <div key={idx} className="aspect-square" />;
+                        const isToday = slot.date === today.toISOString().slice(0, 10);
+                        return (
+                          <div key={slot.date}
+                            title={`${slot.date}: ${slot.count} step${slot.count !== 1 ? 's' : ''}`}
+                            className="aspect-square rounded-md transition-all"
+                            style={{
+                              ...heatStyle(slot.count),
+                              outline: isToday ? `2px solid rgba(200,146,74,0.55)` : undefined,
+                              outlineOffset: '1px',
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
+
+                {/* Legend */}
+                <div className="flex items-center gap-3 mt-3 flex-wrap">
+                  {[
+                    { style: heatStyle(0), label: '0' },
+                    { style: heatStyle(1), label: '1' },
+                    { style: heatStyle(2), label: '2' },
+                    { style: heatStyle(3), label: '3+' },
+                  ].map(({ style, label }) => (
+                    <div key={label} className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded-sm" style={style} />
+                      <span className="text-[10px]" style={{ color: 'var(--text-dim)' }}>{label} step{label === '1' ? '' : 's'}</span>
+                    </div>
+                  ))}
                 </div>
+
                 {streak && (
                   <div className="mt-3 pt-3 border-t border-white/6 flex items-center justify-around">
                     <div className="text-center">
@@ -1305,11 +1355,11 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
               </div>
             ) : (
               <div className="relative px-4 pb-4">
-                <div className="grid gap-1 blur-sm pointer-events-none select-none"
-                  style={{ gridTemplateColumns: 'repeat(10, 1fr)' }}>
-                  {buildDateRange(30).map((d, i) => (
+                {/* Blurred preview */}
+                <div className="grid gap-[4px] blur-sm pointer-events-none select-none" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
+                  {buildDateRange(28).map((d, i) => (
                     <div key={d} className="aspect-square rounded-md"
-                      style={{ background: i % 3 === 0 ? accent : i % 3 === 1 ? `${accent}55` : `${accent}18` }} />
+                      style={heatStyle([0,1,2,3][i % 4])} />
                   ))}
                 </div>
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/40 rounded-b-2xl">

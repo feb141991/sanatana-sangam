@@ -357,65 +357,55 @@ export default function FloatingPill({
   // Bell + avatar shown ONLY on the home page
   if (!isHomePage) return null;
 
+  // ── Unified frosted-glass pill: [🔔 | divider | avatar] ─────────────────
   return (
     <>
-      <div className="fixed top-3 right-3 z-50 flex items-center gap-2">
-
-        {/* Bell — frosted glass background for readability over any content */}
+      <div
+        className="fixed top-3 right-3 z-50 flex items-center rounded-full"
+        style={{
+          background:           'rgba(18, 14, 8, 0.52)',
+          backdropFilter:       'blur(28px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+          border:               '1px solid rgba(200,146,74,0.20)',
+          boxShadow:            '0 4px 20px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,220,140,0.06)',
+        }}
+      >
+        {/* ── Bell ──────────────────────────────────────────────────── */}
         <button
           onClick={handleBellClick}
           aria-label="Notifications"
-          className="relative w-12 h-12 rounded-full flex items-center justify-center transition"
-          style={{
-            background: 'rgba(14,10,4,0.72)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
-            border: '1px solid rgba(200,146,74,0.20)',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.28)',
-            color: 'rgba(200,146,74,0.90)',
-          }}
+          className="relative flex items-center justify-center transition"
+          style={{ width: 48, height: 48, color: 'rgba(200,146,74,0.88)', flexShrink: 0 }}
         >
-          <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
             <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
             <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
           </svg>
           {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold"
+            <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold"
               style={{ background: 'var(--brand-primary)', color: '#1c1c1a' }}>
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
           {unreadCount === 0 && pushConfigured && permission !== 'granted' && !isIosSafariNonPwa && (
-            <span
-              className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full"
-              style={{
-                background: 'rgba(230,150,60,0.9)',
-                boxShadow: '0 0 0 3px rgba(200,146,74,0.2)',
-                animation: 'pulse 2s ease-in-out infinite',
-              }}
-            />
+            <span className="absolute top-2 right-2 w-2 h-2 rounded-full"
+              style={{ background: 'rgba(230,150,60,0.9)', boxShadow: '0 0 0 2px rgba(200,146,74,0.22)', animation: 'pulse 2s ease-in-out infinite' }} />
           )}
         </button>
 
-        {/* Avatar — frosted glass pill linking to profile */}
-        <Link href="/profile"
-          className="relative flex-shrink-0 rounded-full flex items-center justify-center overflow-hidden"
-          style={{
-            width: 48,
-            height: 48,
-            background: avatarUrl ? 'transparent' : 'rgba(14,10,4,0.72)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
-            border: avatarUrl ? '2px solid rgba(200,146,74,0.70)' : '1.5px solid rgba(200,146,74,0.35)',
-            boxShadow: avatarUrl
-              ? '0 0 0 3px rgba(200,146,74,0.15), 0 2px 12px rgba(0,0,0,0.28)'
-              : '0 2px 12px rgba(0,0,0,0.28)',
-          }}
+        {/* ── Divider ────────────────────────────────────────────────── */}
+        <div style={{ width: 1, height: 28, background: 'rgba(200,146,74,0.18)', flexShrink: 0 }} />
+
+        {/* ── Avatar → profile ────────────────────────────────────────── */}
+        <Link
+          href="/profile"
+          className="relative flex-shrink-0 flex items-center justify-center overflow-hidden"
+          style={{ width: 48, height: 48 }}
         >
           {avatarUrl ? (
             <Image src={avatarUrl} alt="Profile" fill sizes="48px" className="object-cover" />
           ) : (
-            <span className="text-sm font-bold" style={{ color: 'var(--brand-primary-strong)' }}>
+            <span className="text-sm font-bold" style={{ color: 'rgba(200,146,74,0.88)' }}>
               {userInitials}
             </span>
           )}

@@ -30,11 +30,11 @@ import {
   type LibraryEntry,
 } from '@/lib/library-content';
 
-// ── Difficulty colours ─────────────────────────────────────────────────────────
-const DIFF_STYLE: Record<string, { bg: string; text: string; label: string }> = {
-  beginner:     { bg: 'bg-green-900/30',  text: 'text-green-400',  label: 'Beginner'     },
-  intermediate: { bg: 'bg-amber-900/30',  text: 'text-amber-400',  label: 'Intermediate' },
-  advanced:     { bg: 'bg-red-900/30',    text: 'text-red-400',    label: 'Advanced'     },
+// ── Difficulty badges — inline styles so they read clearly on any bg ──────────
+const DIFF_STYLE: Record<string, { bg: string; text: string; border: string; label: string }> = {
+  beginner:     { bg: 'rgba(34,197,94,0.12)',  text: '#4ade80', border: 'rgba(74,222,128,0.28)',   label: 'Beginner'     },
+  intermediate: { bg: 'rgba(251,191,36,0.12)', text: '#fcd34d', border: 'rgba(252,211,77,0.28)',   label: 'Intermediate' },
+  advanced:     { bg: 'rgba(248,113,113,0.12)',text: '#f87171', border: 'rgba(248,113,113,0.28)',  label: 'Advanced'     },
 };
 
 const TRAD_ICON: Record<string, string> = {
@@ -567,7 +567,8 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="font-bold text-[color:var(--brand-ink)] text-sm">{path.title}</h3>
-                  <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${diff.bg} ${diff.text}`}>
+                  <span className="text-[10px] font-semibold rounded-full px-2 py-0.5"
+                    style={{ background: diff.bg, color: diff.text, border: `1px solid ${diff.border}` }}>
                     {diff.label}
                   </span>
                 </div>
