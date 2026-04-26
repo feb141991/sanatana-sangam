@@ -1272,6 +1272,13 @@ export default function HomeDashboard({
         nityaDoneToday={nityaDoneToday}
         history={practiceHistory}
       />
+      <div className="flex justify-end">
+        <Link href="/my-progress"
+          className="text-[12px] font-medium"
+          style={{ color: 'var(--brand-primary)', opacity: 0.85 }}>
+          View full progress →
+        </Link>
+      </div>
 
       {showFirstTimeGuidance && personalizedPaths.length > 0 && (
         <section className="space-y-2">

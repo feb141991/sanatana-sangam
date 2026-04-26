@@ -194,11 +194,13 @@ export default function ReciteClient({
   const [completed,    setCompleted]    = useState<number[]>([]);
 
   // TTS state
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [ttsRate,    setTtsRate]    = useState<0.5 | 0.75 | 1 | 1.25>(0.75);
-  const [autoPlay,   setAutoPlay]   = useState(false);
-  const ttsRateRef  = useRef<number>(0.75);
-  const autoPlayRef = useRef(false);
+  const [isSpeaking,  setIsSpeaking]  = useState(false);
+  const [ttsLoading,  setTtsLoading]  = useState(false);
+  const [ttsRate,     setTtsRate]     = useState<0.5 | 0.75 | 1 | 1.25>(0.75);
+  const [autoPlay,    setAutoPlay]    = useState(false);
+  const ttsRateRef    = useRef<number>(0.75);
+  const autoPlayRef   = useRef(false);
+  const audioRef      = useRef<HTMLAudioElement | null>(null);
 
   // ExplainEngine state
   const [explainLoading, setExplainLoading] = useState(false);
@@ -260,31 +262,49 @@ export default function ReciteClient({
   useEffect(() => { ttsRateRef.current = ttsRate; }, [ttsRate]);
   useEffect(() => { autoPlayRef.current = autoPlay; }, [autoPlay]);
 
-  // ── TTS controller ────────────────────────────────────────────────────────────
+  // ── TTS controller (Google Cloud TTS — sa-IN for Devanagari) ─────────────────
   const stopTTS = useCallback(() => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = '';
     }
     setIsSpeaking(false);
+    setTtsLoading(false);
   }, []);
 
-  const speakCurrent = useCallback((textOverride?: string) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    const text = textOverride || '';
+  const speakCurrent = useCallback(async (textOverride?: string) => {
+    const text = (textOverride || '').trim();
     if (!text) return;
-    window.speechSynthesis.cancel();
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.rate  = ttsRateRef.current;
-    utt.pitch = 1;
-    utt.onend   = () => setIsSpeaking(false);
-    utt.onerror = () => setIsSpeaking(false);
-    window.speechSynthesis.speak(utt);
-    setIsSpeaking(true);
+    stopTTS();
+    setTtsLoading(true);
+    try {
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, rate: ttsRateRef.current }),
+      });
+      if (!res.ok) throw new Error('TTS fetch failed');
+      const { audioContent } = await res.json() as { audioContent: string };
+      // Decode base64 MP3 and play
+      const bytes = Uint8Array.from(atob(audioContent), c => c.charCodeAt(0));
+      const blob  = new Blob([bytes], { type: 'audio/mpeg' });
+      const url   = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audioRef.current = audio;
+      audio.onended = () => { setIsSpeaking(false); URL.revokeObjectURL(url); };
+      audio.onerror = () => { setIsSpeaking(false); URL.revokeObjectURL(url); };
+      await audio.play();
+      setIsSpeaking(true);
+    } catch {
+      setIsSpeaking(false);
+    } finally {
+      setTtsLoading(false);
+    }
     // Fire-and-forget engine listen tracking
     if (engine) {
       engine.tracker.track('shloka_listen', { path_id: pathId, lesson: currentLesson, verse_index: verseIndex }).catch(() => {});
     }
-  }, [engine, pathId, currentLesson, verseIndex]);
+  }, [stopTTS, engine, pathId, currentLesson, verseIndex]);
 
   // Stop TTS on unmount
   useEffect(() => () => { stopTTS(); }, [stopTTS]);
@@ -305,14 +325,12 @@ export default function ReciteClient({
     setRecordState('idle');
     chunksRef.current = [];
     // Stop any ongoing speech
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
-    }
+    stopTTS();
     // Auto-play the incoming verse after a brief settle delay
+    // Prefer original Devanagari for sa-IN voice; fall back to transliteration
     if (autoPlayRef.current && verse) {
-      const text = verse.transliteration || verse.original;
-      const t = setTimeout(() => speakCurrent(text), 400);
+      const text = verse.original || verse.transliteration || '';
+      const t = setTimeout(() => { speakCurrent(text); }, 400);
       return () => clearTimeout(t);
     }
     return undefined;
@@ -581,18 +599,25 @@ export default function ReciteClient({
                   if (isSpeaking) {
                     stopTTS();
                   } else {
-                    speakCurrent(verse.transliteration || verse.original);
+                    // Prefer Devanagari original for sa-IN voice accuracy
+                    speakCurrent(verse.original || verse.transliteration || '');
                   }
                 }}
+                disabled={ttsLoading}
                 className="w-9 h-9 rounded-full border flex items-center justify-center transition-all flex-shrink-0"
                 style={{
                   color: accentColour,
                   background: isSpeaking ? `${accentColour}25` : `${accentColour}10`,
                   borderColor: isSpeaking ? `${accentColour}50` : 'rgba(255,255,255,0.10)',
                 }}
-                title={isSpeaking ? 'Stop reading' : 'Listen (TTS)'}
+                title={isSpeaking ? 'Stop reading' : 'Listen — Sanskrit voice'}
               >
-                {isSpeaking ? <VolumeX size={15} /> : <Volume2 size={15} />}
+                {ttsLoading
+                  ? <Loader2 size={15} className="animate-spin" />
+                  : isSpeaking
+                    ? <VolumeX size={15} />
+                    : <Volume2 size={15} />
+                }
               </button>
             </div>
 

@@ -25,6 +25,7 @@ const QUICK_ACTIONS = [
   { icon: '☀️', label: 'Nitya',     href: '/nitya-karma'   },
   { icon: '🪔', label: 'Sanskar',   href: '/kul/sanskara'  },
   { icon: '🛕', label: 'Tirtha',    href: '/tirtha-map'    },
+  { icon: '📊', label: 'Progress',  href: '/my-progress'   },
 ];
 const GUEST_QUICK_ACTIONS = [
   { icon: '✨', label: 'Join',    href: '/signup'        },
