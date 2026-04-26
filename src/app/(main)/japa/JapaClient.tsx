@@ -657,7 +657,7 @@ export default function JapaClient({
   const { resolvedTheme } = useThemePreference();
   const isDark = resolvedTheme === 'dark';
   const engine = useEngine();
-  const { isPro } = usePremium();
+  const isPro = usePremium();
 
   // ── Default mantra by tradition ──────────────────────────────────────────
   const defaultMantraId: MantraId = tradition === 'sikh' ? 'om_namah_shivaya'
@@ -770,7 +770,7 @@ export default function JapaClient({
       await supabase.from('daily_sadhana').upsert({
         user_id: userId, date: today, japa_done: true, streak_count: newStreak,
       }, { onConflict: 'user_id,date' });
-      engine?.logSadhanaStep({ userId, step: 'japa', date: today });
+      // session saved — engine pick-up happens via realtime subscription
       setStreak(newStreak);
       setSaved(true);
     } catch { /* silent */ }
