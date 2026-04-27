@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Download, Lock, TrendingUp, TrendingDown, Minus, Calendar, LayoutGrid } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, Lock, TrendingUp, TrendingDown, Minus, Calendar, LayoutGrid, Sparkles, Share2, ExternalLink } from 'lucide-react';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -441,11 +441,43 @@ function ShieldBadges({
   );
 }
 
+// ── AI explanation hook ────────────────────────────────────────────────────────
+function useAiExplain() {
+  const [loading, setLoading] = useState(false);
+  const [text,    setText]    = useState<string | null>(null);
+
+  const explain = useCallback(async (prompt: string) => {
+    if (loading || text) return;
+    setLoading(true);
+    try {
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: prompt }],
+          systemPrompt: 'You are a wise spiritual guide. Interpret the user\'s sadhana (spiritual practice) data in 2–3 sentences — warm, encouraging, specific. No bullet points. Use Sanskrit terms naturally.',
+        }),
+      });
+      if (!res.ok) throw new Error();
+      const json = await res.json();
+      setText(json.reply ?? json.content ?? json.message ?? 'Could not generate interpretation.');
+    } catch {
+      setText('Could not generate AI interpretation right now. Trust your practice — the data speaks for itself.');
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, text]);
+
+  return { loading, text, explain, reset: () => setText(null) };
+}
+
 // ── Premium Report Modal ──────────────────────────────────────────────────────
 function ReportModal({ report, isPro, onClose, isDark, streak }: {
   report: ReportData; isPro: boolean; onClose: () => void; isDark: boolean; streak: number;
 }) {
   const printRef = useRef<HTMLDivElement>(null);
+  const japaAi   = useAiExplain();
+  const nityaAi  = useAiExplain();
 
   const bg     = isDark ? '#130e08' : '#fdf6ec';
   const card   = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.92)';
@@ -464,8 +496,18 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
   if (report.topMantra)       highlights.push(`Favourite mantra: "${report.topMantra}"`);
   if (!highlights.length)     highlights.push('Every step on the path of sādhana matters. Keep going. 🕉️');
 
-  function handlePrint() {
-    window.print();
+  function handlePrint() { window.print(); }
+
+  function handleShare() {
+    const nityaRate2 = report.curDaysElapsed
+      ? Math.round((report.curNityaDays / report.curDaysElapsed) * 100)
+      : 0;
+    const text = `🕉️ ${monthName(report.curMonthStart)} Sādhana Report\n🔥 ${streak}-day streak\n🪷 ${report.curSessions} japa sessions · ${report.curRounds} rounds\n🌅 ${nityaRate2}% Nitya Karma\nPracticed with Sanatan Sangam 🙏`;
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      navigator.share({ title: 'My Sadhana Report', text }).catch(() => {});
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {});
+    }
   }
 
   if (!isPro) {
@@ -516,7 +558,14 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
                   {monthName(report.curMonthStart)}
                 </h2>
               </div>
-              <div className="text-3xl">🕉️</div>
+              <div className="flex items-center gap-2">
+                <button onClick={handleShare}
+                  className="w-9 h-9 rounded-full flex items-center justify-center"
+                  style={{ background: isDark ? 'rgba(200,146,74,0.12)' : 'rgba(200,146,74,0.10)', border: `1px solid ${border}` }}>
+                  <Share2 size={15} style={{ color: 'rgba(200,146,74,0.75)' }} />
+                </button>
+                <div className="text-3xl">🕉️</div>
+              </div>
             </div>
             {/* Streak hero */}
             <div className="mt-4 flex items-center gap-3">
@@ -580,9 +629,20 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
           <div className="px-6 py-5 space-y-4">
 
             {/* ── Japa vs prev month ── */}
-            <div className="rounded-[1.2rem] p-4" style={{ background: card, border: `1px solid ${border}` }}>
-              <p className="text-[11px] font-semibold uppercase tracking-wider mb-3"
-                style={{ color: 'rgba(200,146,74,0.7)' }}>🪷 Japa Practice</p>
+            <motion.div whileTap={{ scale: 0.99 }} className="rounded-[1.2rem] p-4 cursor-pointer"
+              style={{ background: card, border: `1px solid ${border}` }}
+              onClick={() => japaAi.explain(`This user's japa practice this month: ${report.curSessions} sessions, ${report.curRounds} rounds, ${report.curBeads} beads${report.topMantra ? `, favourite mantra: ${report.topMantra}` : ''}. Last month was ${report.prevSessions} sessions, ${report.prevRounds} rounds, ${report.prevBeads} beads. Current streak: ${streak} days. Interpret this data as a spiritual guide.`)}>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(200,146,74,0.7)' }}>🪷 Japa Practice</p>
+                <div className="flex items-center gap-2">
+                  <Link href="/japa/insights" onClick={e => e.stopPropagation()}
+                    className="flex items-center gap-1 text-[10px] rounded-full px-2 py-0.5"
+                    style={{ color: 'rgba(200,146,74,0.6)', background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.14)' }}>
+                    <ExternalLink size={9} /> Insights
+                  </Link>
+                  <span className="text-[10px]" style={{ color: muted }}>Tap for AI ✨</span>
+                </div>
+              </div>
               <div className="grid grid-cols-3 gap-3">
                 {[
                   { label: 'Sessions', cur: report.curSessions, prev: report.prevSessions },
@@ -601,12 +661,35 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
                   Most chanted: <span style={{ color: h1 }}>{report.topMantra}</span>
                 </p>
               )}
-            </div>
+              {/* AI explanation */}
+              <AnimatePresence>
+                {(japaAi.loading || japaAi.text) && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                    className="mt-3 pt-3" style={{ borderTop: `1px solid ${border}` }}>
+                    {japaAi.loading
+                      ? <div className="flex items-center gap-2"><motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}><Sparkles size={12} style={{ color: 'rgba(200,146,74,0.6)' }} /></motion.div><span className="text-[11px]" style={{ color: muted }}>Interpreting your practice…</span></div>
+                      : <p className="text-[12px] leading-relaxed italic" style={{ color: isDark ? 'rgba(245,215,160,0.80)' : '#3a1a06' }}>{japaAi.text}</p>
+                    }
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
 
             {/* ── Nitya Karma ── */}
-            <div className="rounded-[1.2rem] p-4" style={{ background: card, border: `1px solid ${border}` }}>
-              <p className="text-[11px] font-semibold uppercase tracking-wider mb-3"
-                style={{ color: 'rgba(200,146,74,0.7)' }}>🌅 Nitya Karma</p>
+            <motion.div whileTap={{ scale: 0.99 }} className="rounded-[1.2rem] p-4 cursor-pointer"
+              style={{ background: card, border: `1px solid ${border}` }}
+              onClick={() => nityaAi.explain(`This user completed Nitya Karma (daily dharmic duties) on ${report.curNityaDays} out of ${report.curDaysElapsed} days this month (${nityaRate}% completion rate). Their overall streak is ${streak} days. Interpret this as a spiritual guide.`)}>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(200,146,74,0.7)' }}>🌅 Nitya Karma</p>
+                <div className="flex items-center gap-2">
+                  <Link href="/nitya-karma/insights" onClick={e => e.stopPropagation()}
+                    className="flex items-center gap-1 text-[10px] rounded-full px-2 py-0.5"
+                    style={{ color: 'rgba(200,146,74,0.6)', background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.14)' }}>
+                    <ExternalLink size={9} /> Insights
+                  </Link>
+                  <span className="text-[10px]" style={{ color: muted }}>Tap for AI ✨</span>
+                </div>
+              </div>
               <div className="flex items-end gap-4">
                 <div>
                   <p className="text-3xl font-bold" style={{ fontFamily: 'var(--font-serif)', color: h1 }}>{nityaRate}%</p>
@@ -620,16 +703,24 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
                   <p className="text-xs" style={{ color: muted }}>of {report.curDaysElapsed} days elapsed</p>
                 </div>
               </div>
-              {/* Progress bar */}
               <div className="mt-3 h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}>
                 <motion.div className="h-full rounded-full"
                   style={{ background: 'linear-gradient(90deg,rgba(140,180,100,0.8),rgba(100,160,70,0.9))' }}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${nityaRate}%` }}
-                  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                />
+                  initial={{ width: 0 }} animate={{ width: `${nityaRate}%` }}
+                  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }} />
               </div>
-            </div>
+              <AnimatePresence>
+                {(nityaAi.loading || nityaAi.text) && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                    className="mt-3 pt-3" style={{ borderTop: `1px solid ${border}` }}>
+                    {nityaAi.loading
+                      ? <div className="flex items-center gap-2"><motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}><Sparkles size={12} style={{ color: 'rgba(200,146,74,0.6)' }} /></motion.div><span className="text-[11px]" style={{ color: muted }}>Interpreting…</span></div>
+                      : <p className="text-[12px] leading-relaxed italic" style={{ color: isDark ? 'rgba(245,215,160,0.80)' : '#3a1a06' }}>{nityaAi.text}</p>
+                    }
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
 
             {/* ── Highlights ── */}
             <div className="rounded-[1.2rem] p-4" style={{ background: card, border: `1px solid ${border}` }}>
@@ -891,11 +982,18 @@ export default function MyProgressClient({
                     <p className="text-xs" style={{ color: dimText }}>Daily practices</p>
                   </div>
                 </div>
-                <Link href="/nitya-karma"
-                  className="rounded-full px-3.5 py-1.5 text-[11px] font-semibold"
-                  style={{ background: 'rgba(140,180,100,0.12)', color: 'rgba(100,160,70,0.90)', border: '1px solid rgba(140,180,100,0.22)' }}>
-                  Open →
-                </Link>
+                <div className="flex items-center gap-2">
+                  <Link href="/nitya-karma/insights"
+                    className="rounded-full px-3 py-1.5 text-[11px] font-semibold"
+                    style={{ background: 'rgba(140,180,100,0.10)', color: 'rgba(100,160,70,0.80)', border: '1px solid rgba(140,180,100,0.18)' }}>
+                    Insights
+                  </Link>
+                  <Link href="/nitya-karma"
+                    className="rounded-full px-3 py-1.5 text-[11px] font-semibold"
+                    style={{ background: 'rgba(140,180,100,0.12)', color: 'rgba(100,160,70,0.90)', border: '1px solid rgba(140,180,100,0.22)' }}>
+                    Open →
+                  </Link>
+                </div>
               </div>
               <div className="grid grid-cols-3 gap-2 mb-4">
                 {[
@@ -923,11 +1021,11 @@ export default function MyProgressClient({
               </div>
             </div>
 
-            {/* Pathshala + Sattvic mini cards */}
+            {/* Pathshala + Bhakti mini cards */}
             <div className="grid grid-cols-2 gap-3">
               {[
-                { emoji: '📖', label: 'Pathshala', sub: 'Study paths', href: '/pathshala', accent: 'rgba(80,160,200,' },
-                { emoji: '🕉️', label: 'Sattvic',   sub: 'Meditation', href: '/bhakti/zen', accent: 'rgba(130,100,220,' },
+                { emoji: '📖', label: 'Pathshala', sub: 'Study paths',      href: '/pathshala/insights', accent: 'rgba(80,160,200,' },
+                { emoji: '🪷', label: 'Bhakti',    sub: 'Devotion insights', href: '/bhakti/insights',   accent: 'rgba(196,120,154,' },
               ].map(p => (
                 <Link key={p.label} href={p.href}
                   className="block rounded-[1.6rem] p-4"
