@@ -102,6 +102,22 @@ function InteractiveCalendar({
     );
   }
 
+  // Must be declared before any conditional returns (Rules of Hooks)
+  const calDays = useMemo(() => {
+    const first = new Date(calMonth.year, calMonth.month, 1);
+    const last  = new Date(calMonth.year, calMonth.month + 1, 0);
+    const cells: (string | null)[] = Array(first.getDay()).fill(null);
+    for (let d = 1; d <= last.getDate(); d++) {
+      const iso = `${calMonth.year}-${String(calMonth.month + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      cells.push(iso);
+    }
+    while (cells.length % 7 !== 0) cells.push(null);
+    return cells;
+  }, [calMonth]);
+
+  const monthLabel = new Date(calMonth.year, calMonth.month, 1)
+    .toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+
   if (!monthView) {
     // ── Compact 28-day strip ─────────────────────────────────────────────────
     const weeks: Props['heatmap'][] = [];
@@ -156,22 +172,6 @@ function InteractiveCalendar({
   }
 
   // ── Full month calendar grid ─────────────────────────────────────────────────
-  const calDays = useMemo(() => {
-    const first = new Date(calMonth.year, calMonth.month, 1);
-    const last  = new Date(calMonth.year, calMonth.month + 1, 0);
-    const cells: (string | null)[] = Array(first.getDay()).fill(null);
-    for (let d = 1; d <= last.getDate(); d++) {
-      const iso = `${calMonth.year}-${String(calMonth.month + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      cells.push(iso);
-    }
-    while (cells.length % 7 !== 0) cells.push(null);
-    return cells;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [calMonth]);
-
-  const monthLabel = new Date(calMonth.year, calMonth.month, 1)
-    .toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-
   return (
     <div>
       {/* Month navigation */}
