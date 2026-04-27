@@ -4,7 +4,11 @@
 //
 // 7-step tradition-aware morning routine.
 // Steps are persisted in nitya_karma_log (one row per step per day).
-// Ticks lock for the day — reset happens at midnight (new date = new rows).
+//
+// SPIRITUAL DAY: In Sanatana Dharma a new day begins at Brahma Muhurta (dawn),
+// not at civil midnight. We use localSpiritualDate(timezone, 4) everywhere
+// "today" is needed — before 4 AM local time, the previous date is returned so
+// the sadhak still sees their completed steps from the night before.
 //
 // Engine calls (when available):
 //   engine.nityaKarma.getMorningSequence(userId) → steps + panchang context
@@ -27,6 +31,7 @@ import { useEngine } from '@/contexts/EngineContext';
 import { hapticLight, hapticSuccess } from '@/lib/platform';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { getAshramaDuties, getAshramaMeta, type LifeStage, type GenderContext } from '@/lib/ashrama';
+import { localSpiritualDate, buildSpiritualDateRange } from '@/lib/sacred-time';
 import { usePremium } from '@/hooks/usePremium';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import NityaHeroBanner from '@/components/nitya/NityaHeroBanner';
@@ -152,7 +157,9 @@ function getDefaultSteps(tradition: string): NityaSequenceStep[] {
   }));
 }
 
-function todayDateString(): string {
+// todayDateString is replaced by localSpiritualDate(timezone) — see Props.
+// Kept as a UTC fallback for callers that don't have timezone yet.
+function todayDateStringUtc(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
@@ -197,15 +204,7 @@ function nextBrahmaMuhurtaText(): string {
 // ── 30-day heatmap helpers ─────────────────────────────────────────────────────
 interface DayRecord { date: string; count: number; total: number }
 
-function buildDateRange(days: number): string[] {
-  const out: string[] = [];
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    out.push(d.toISOString().slice(0, 10));
-  }
-  return out;
-}
+// buildDateRange is replaced by buildSpiritualDateRange(timezone, days) below.
 
 // ── Nitya heatmap colour — based on raw step count (not ratio) ────────────────
 // 0 steps → dark grey | 1 → dim saffron | 2 → medium saffron | 3+ → bright gold
@@ -758,10 +757,15 @@ interface Props {
   tradition:     string;
   lifeStage:     string | null;
   genderContext: string | null;
+  timezone:      string | null;
   isPro?:        boolean;
 }
 
-export default function NityaKarmaClient({ userId, userName, tradition, lifeStage, genderContext }: Omit<Props, 'isPro'>) {
+export default function NityaKarmaClient({ userId, userName, tradition, lifeStage, genderContext, timezone }: Omit<Props, 'isPro'>) {
+  // Compute "today" as a spiritual date: before 4 AM local = still yesterday.
+  // This is re-evaluated each render — if the app is left open across Brahma
+  // Muhurta it will naturally shift to the new day on next interaction.
+  const spiritualToday = localSpiritualDate(timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone, 4);
   const router              = useRouter();
   const supabase            = useRef(createClient()).current;
   const { engine, isReady } = useEngine();
@@ -791,10 +795,10 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
   const [localGenderCtx,    setLocalGenderCtx]   = useState<string | null>(genderContext);
   const [savingAshrama,     setSavingAshrama]     = useState(false);
   const [dutyChecks,    setDutyChecks]   = useState<Set<string>>(() => {
-    // Local daily check-ins — stored per calendar date in sessionStorage
+    // Local daily check-ins — stored per spiritual day in sessionStorage
     if (typeof window === 'undefined') return new Set<string>();
     try {
-      const today = new Date().toISOString().slice(0, 10);
+      const today = localSpiritualDate(timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone, 4);
       const raw   = sessionStorage.getItem(`ashrama_checks:${today}`);
       return raw ? new Set(JSON.parse(raw)) : new Set<string>();
     } catch { return new Set<string>(); }
@@ -835,7 +839,11 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
   // ── Load 30-day history ───────────────────────────────────────────────────
   useEffect(() => {
     async function loadHistory() {
-      const dates = buildDateRange(30);
+      const dates = buildSpiritualDateRange(
+        timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
+        30,
+        4
+      );
       const from = dates[0];
       const { data } = await supabase
         .from('nitya_karma_log')
@@ -858,7 +866,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
     let cancelled = false;
 
     async function loadTodayLog(baseSteps: NityaSequenceStep[]): Promise<NityaSequenceStep[]> {
-      const today = todayDateString();
+      const today = spiritualToday;
 
       // Always start with what we have locally — instant, works offline
       const doneIds = getLocalDone(userId, today);
@@ -929,7 +937,8 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
       setTimeout(() => setJustCompleted(null), 2500);
 
       // ── Persist step completion ──────────────────────────────────────────
-      const today = todayDateString();
+      // Use the spiritual date — before 4 AM = still yesterday's practice day.
+      const today = spiritualToday;
 
       // 1. Write to localStorage immediately — always works, survives navigation
       saveLocalDone(userId, today, stepId);
@@ -955,9 +964,10 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
         console.warn('[Nitya] DB write threw:', err);
       }
 
-      // Engine sync (best-effort)
+      // Engine sync — pass the spiritual date explicitly so the engine doesn't
+      // fall back to UTC midnight
       if (engine) {
-        try { await engine.nityaKarma.markStep(userId, stepId as any); } catch { /* silent */ }
+        try { await engine.nityaKarma.markStep(userId, stepId as any, true, today); } catch { /* silent */ }
       }
 
       // Check all done using ref (avoids stale closure)
@@ -1023,8 +1033,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
       try {
-        const today = new Date().toISOString().slice(0, 10);
-        sessionStorage.setItem(`ashrama_checks:${today}`, JSON.stringify([...next]));
+        sessionStorage.setItem(`ashrama_checks:${spiritualToday}`, JSON.stringify([...next]));
       } catch {}
       return next;
     });
@@ -1564,10 +1573,9 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                     ))}
                   </div>
                   {(() => {
-                    const today     = new Date();
-                    const startDate = new Date(today);
-                    startDate.setDate(today.getDate() - 29);
-                    const dayOfWeek = startDate.getDay();
+                    // Use the spiritual date range that was used to build dayRecords
+                    const startDate = new Date(`${dayRecords[0]?.date ?? spiritualToday}T12:00:00Z`);
+                    const dayOfWeek = startDate.getUTCDay();
                     const slots: (DayRecord | null)[] = Array(dayOfWeek).fill(null);
                     for (const rec of dayRecords) slots.push(rec);
                     while (slots.length % 7 !== 0) slots.push(null);
@@ -1575,7 +1583,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                       <div className="grid gap-[4px]" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
                         {slots.map((slot, idx) => {
                           if (!slot) return <div key={idx} className="aspect-square" />;
-                          const isToday = slot.date === today.toISOString().slice(0, 10);
+                          const isToday = slot.date === spiritualToday;
                           return (
                             <div key={slot.date}
                               title={`${slot.date}: ${slot.count} steps`}

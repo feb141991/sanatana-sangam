@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { localSpiritualDate } from '@/lib/sacred-time';
 
 // GET /api/home/personalise
 // Returns today's personalised shloka + practice suggestion for the authenticated user.
@@ -41,7 +42,15 @@ export async function GET() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
 
-    const today = new Date().toISOString().split('T')[0];
+    // ── 0. Fetch timezone for spiritual date ─────────────────────────────────────
+    const { data: tzRow } = await supabase
+      .from('profiles')
+      .select('timezone')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    // Spiritual day: starts at 4 AM local time, not midnight UTC
+    const today = localSpiritualDate(tzRow?.timezone, 4);
 
     // ── 1. Check recommendations cache ──────────────────────────────────────────
     const { data: cached } = await supabase

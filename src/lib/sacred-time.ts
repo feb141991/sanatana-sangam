@@ -90,3 +90,52 @@ export function isoDateDiff(targetDateIso: string, baseDateIso: string): number 
   const base = new Date(`${baseDateIso}T00:00:00Z`);
   return Math.round((target.getTime() - base.getTime()) / 86_400_000);
 }
+
+/**
+ * Returns the "spiritual day" date in YYYY-MM-DD for the given timezone.
+ *
+ * In Sanatana tradition, a new day begins at Brahma Muhurta (dawn), not at
+ * civil midnight. Before `brahmaMuhurtaHour` (default 4 AM local time), the
+ * previous calendar date is returned — the sadhak is still in the previous
+ * spiritual day and should see their completed steps.
+ *
+ * Safe for both browser and Node.js (uses Intl.DateTimeFormat).
+ */
+export function localSpiritualDate(
+  timeZone: string | null | undefined,
+  brahmaMuhurtaHour = 4
+): string {
+  const tz  = resolveTimeZone(timeZone);
+  const now  = new Date();
+  const { year, month, day, hour } = getParts(now, tz);
+
+  // Before Brahma Muhurta — still the previous spiritual day
+  if (hour < brahmaMuhurtaHour) {
+    // Use UTC constructor; JS handles day=0 as last day of previous month
+    const prev = new Date(Date.UTC(year, month - 1, day - 1));
+    return prev.toISOString().slice(0, 10);
+  }
+
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
+/**
+ * Build a contiguous range of spiritual-day date strings.
+ * `days=30` → last 30 spiritual days, ascending, using the user's timezone.
+ */
+export function buildSpiritualDateRange(
+  timeZone: string | null | undefined,
+  days: number,
+  brahmaMuhurtaHour = 4
+): string[] {
+  const tz      = resolveTimeZone(timeZone);
+  const todayIso = localSpiritualDate(tz, brahmaMuhurtaHour);
+  const result: string[] = [];
+  for (let i = days - 1; i >= 0; i--) {
+    // Subtract i days from today
+    const d = new Date(`${todayIso}T12:00:00Z`); // noon UTC to avoid DST edge cases
+    d.setUTCDate(d.getUTCDate() - i);
+    result.push(d.toISOString().slice(0, 10));
+  }
+  return result;
+}

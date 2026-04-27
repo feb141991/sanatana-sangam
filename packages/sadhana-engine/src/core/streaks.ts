@@ -12,14 +12,30 @@ export class StreakTracker {
     this.supabase = supabase;
   }
 
-  // Get today's date string in YYYY-MM-DD format
-  private today(): string {
-    return new Date().toISOString().slice(0, 10);
+  // Get today's spiritual date (before 4 AM = still yesterday).
+  // Falls back to UTC if Intl is unavailable.
+  private today(timeZone?: string): string {
+    try {
+      const tz  = timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const now  = new Date();
+      const fmt  = new Intl.DateTimeFormat('en-GB', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hour12: false });
+      const parts = Object.fromEntries(fmt.formatToParts(now).map(p => [p.type, p.value]));
+      const hour = Number(parts['hour'] ?? 12);
+      const y = Number(parts['year']), m = Number(parts['month']), d = Number(parts['day']);
+      if (hour < 4) {
+        const prev = new Date(Date.UTC(y, m - 1, d - 1));
+        return prev.toISOString().slice(0, 10);
+      }
+      return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    } catch {
+      return new Date().toISOString().slice(0, 10);
+    }
   }
 
-  private yesterday(): string {
-    const d = new Date();
-    d.setDate(d.getDate() - 1);
+  private yesterday(timeZone?: string): string {
+    const todayIso = this.today(timeZone);
+    const d = new Date(`${todayIso}T12:00:00Z`);
+    d.setUTCDate(d.getUTCDate() - 1);
     return d.toISOString().slice(0, 10);
   }
 

@@ -9,7 +9,7 @@ export default async function NityaKarmaPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, tradition, life_stage, gender_context, latitude, longitude')
+    .select('full_name, username, tradition, life_stage, gender_context, latitude, longitude, timezone')
     .eq('id', user.id)
     .single();
 
@@ -20,6 +20,7 @@ export default async function NityaKarmaPage() {
       tradition={profile?.tradition ?? 'hindu'}
       lifeStage={profile?.life_stage ?? null}
       genderContext={profile?.gender_context ?? null}
+      timezone={profile?.timezone ?? null}
     />
   );
 }
