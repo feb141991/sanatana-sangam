@@ -758,6 +758,7 @@ export default function HomeDashboard({
   const festivalsRef = useRef<HTMLDivElement | null>(null);
 
   const [shlokaExpanded,    setShlokaExpanded]    = useState(false);
+  const [shlokaModalOpen,   setShlokaModalOpen]   = useState(false);
   const [panchang,          setPanchang]          = useState<Panchang>(initialPanchang);
   const [calendarOpen,      setCalendarOpen]      = useState(false);
   const [datePickerOpen,    setDatePickerOpen]    = useState(false);
@@ -1070,11 +1071,13 @@ export default function HomeDashboard({
       }
     }
 
-    toast.success(`🔥 ${newStreak}-day streak! +5 seva points`);
-    // Confetti on milestones (7, 14, 21, 30 days) or first read
-    if (newStreak === 1 || newStreak % 7 === 0) {
-      setShowConfetti(true);
-    }
+    // Always show confetti + close modal for the full celebration moment
+    setShowConfetti(true);
+    setShlokaModalOpen(false);
+    const milestoneMsg = newStreak % 7 === 0
+      ? ` 🏅 ${newStreak}-day milestone!`
+      : newStreak === 1 ? ' First shloka of your streak! 🌱' : '';
+    toast.success(`🔥 ${newStreak}-day streak! +5 seva points${milestoneMsg}`);
     router.refresh(); // Ensure server state syncs on next visit
   }
 
@@ -1121,6 +1124,121 @@ export default function HomeDashboard({
 
       {/* ── Sacred confetti celebration ── */}
       <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
+
+      {/* ── Shloka fullscreen modal ── */}
+      <AnimatePresence>
+        {shlokaModalOpen && (
+          <motion.div
+            className="fixed inset-0 z-[200] flex flex-col"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{
+              background: isDark
+                ? 'linear-gradient(160deg,#1c0e06 0%,#110905 100%)'
+                : 'linear-gradient(160deg,#fff8ef 0%,#fdf0de 100%)',
+            }}
+          >
+            {/* Ambient glow */}
+            <div className="absolute inset-0 pointer-events-none" style={{
+              background: `radial-gradient(ellipse at 50% 30%, ${sacredTextTheme.iconWell}, transparent 65%)`,
+            }} />
+
+            {/* Header bar */}
+            <div className="relative flex items-center justify-between px-5 pt-[max(env(safe-area-inset-top,0px),20px)] pb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center text-base"
+                  style={{ background: sacredTextTheme.iconWell }}>
+                  {sacredTextMeta.icon}
+                </div>
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)' }}>
+                  {sacredTextMeta.label}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={shareShloka}
+                  className="w-9 h-9 rounded-full flex items-center justify-center"
+                  style={{ background: sacredTextTheme.iconWell }}>
+                  <Share2 size={15} style={{ color: 'var(--text-cream)' }} />
+                </button>
+                <button onClick={() => setShlokaModalOpen(false)}
+                  className="w-9 h-9 rounded-full flex items-center justify-center"
+                  style={{ background: 'rgba(255,255,255,0.08)' }}>
+                  <X size={16} style={{ color: 'var(--text-muted-warm)' }} />
+                </button>
+              </div>
+            </div>
+
+            {/* Content — scrollable */}
+            <div className="relative flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-6">
+              {/* Source badge */}
+              <span className="self-start text-[10px] font-semibold px-3 py-1 rounded-full"
+                style={{ background: 'rgba(200,146,74,0.14)', color: 'var(--brand-primary)' }}>
+                {sacredText ? sacredText.source : shloka.source}
+              </span>
+
+              {/* Sanskrit — large, elevated */}
+              <div>
+                <p style={{
+                  fontFamily: 'Georgia, "Noto Serif Devanagari", serif',
+                  fontSize: 'clamp(1.25rem, 4.5vw, 1.65rem)',
+                  lineHeight: 1.75,
+                  color: 'var(--text-cream)',
+                  whiteSpace: 'pre-line',
+                }}>
+                  {sacredText ? sacredText.original : shloka.sanskrit}
+                </p>
+              </div>
+
+              {/* Transliteration */}
+              <p className="italic text-base leading-relaxed" style={{ color: 'var(--text-muted-warm)', fontSize: '0.9rem' }}>
+                {sacredText ? sacredText.transliteration : shloka.transliteration}
+              </p>
+
+              {/* Meaning */}
+              <div className="rounded-[1.4rem] px-5 py-4" style={{ background: sacredTextTheme.iconWell }}>
+                <p className="text-[9px] font-semibold uppercase tracking-[0.16em] mb-2" style={{ color: 'rgba(200,146,74,0.65)' }}>
+                  Meaning
+                </p>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>
+                  {sacredText ? sacredText.meaning : shloka.meaning}
+                </p>
+              </div>
+
+              {/* AI suggestion */}
+              {personalContent?.suggestion && (
+                <div className="rounded-[1.2rem] px-4 py-3.5" style={{ background: 'rgba(200,146,74,0.07)', borderLeft: '2px solid rgba(200,146,74,0.35)' }}>
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.12em] mb-1.5" style={{ color: 'rgba(200,146,74,0.65)' }}>
+                    ✨ {personalContent.context_label ?? 'Today\'s Practice'}
+                  </p>
+                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>{personalContent.suggestion}</p>
+                  {personalContent.nudge && <p className="text-xs mt-1.5 italic" style={{ color: 'rgba(200,146,74,0.55)' }}>{personalContent.nudge}</p>}
+                </div>
+              )}
+
+              {/* Streak info */}
+              {streak > 0 && (
+                <p className="text-center text-xs font-semibold" style={{ color: 'var(--brand-primary)' }}>
+                  🔥 {streak}-day reading streak
+                </p>
+              )}
+            </div>
+
+            {/* CTA bar */}
+            <div className="relative px-5 py-4 pb-[max(env(safe-area-inset-bottom,0px),16px)]" style={{ borderTop: `1px solid ${sacredTextTheme.border}` }}>
+              <motion.button
+                onClick={markShlokaRead}
+                disabled={readToday}
+                className="w-full rounded-full py-3.5 text-sm font-semibold flex items-center justify-center gap-2"
+                style={readToday
+                  ? { background: 'rgba(200,146,74,0.12)', color: 'var(--brand-primary)', border: '1px solid rgba(200,146,74,0.22)' }
+                  : { background: 'linear-gradient(135deg,rgba(212,100,20,0.92),rgba(200,146,74,0.88))', color: '#1c1208' }}
+                whileTap={readToday ? undefined : { scale: 0.97 }}
+              >
+                {readToday ? `✓ Marked read today` : `${sacredTextMeta.icon} Mark as read — earn 5 seva points`}
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Greeting Hero ── */}
       <motion.div
@@ -1380,24 +1498,56 @@ export default function HomeDashboard({
         style={{
           background: getCardBg(panchangTheme),
           borderColor: panchangTheme.border,
-          boxShadow: getCardShadow(),
           backdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
           WebkitBackdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
         }}
+        animate={prefersReducedMotion ? undefined : {
+          boxShadow: isToday ? [
+            `0 4px 24px ${panchangTheme.accent}28, 0 0 0 1px ${panchangTheme.accent}18`,
+            `0 8px 32px ${panchangTheme.accent}42, 0 0 0 1px ${panchangTheme.accent}30`,
+            `0 4px 24px ${panchangTheme.accent}28, 0 0 0 1px ${panchangTheme.accent}18`,
+          ] : getCardShadow(),
+        }}
+        transition={prefersReducedMotion ? undefined : {
+          boxShadow: { duration: 3.5, repeat: Infinity, ease: 'easeInOut' },
+          opacity: { duration: 0.38, delay: 0.06 },
+          y: { duration: 0.38, delay: 0.06 },
+        }}
         initial={prefersReducedMotion ? undefined : { opacity: 0, y: 6 }}
-        animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-        transition={{ duration: 0.38, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* Ambient glow */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: `radial-gradient(ellipse at top left, ${panchangTheme.iconWell}, transparent 60%)`,
-        }} />
+        {/* Ambient glow — pulses gently for today */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          animate={prefersReducedMotion ? undefined : {
+            opacity: isToday ? [0.6, 1, 0.6] : 1,
+          }}
+          transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            background: `radial-gradient(ellipse at top left, ${panchangTheme.iconWell}, transparent 60%)`,
+          }}
+        />
+        {/* Extra shimmer sweep for today */}
+        {isToday && !prefersReducedMotion && (
+          <motion.div
+            className="absolute inset-0 pointer-events-none"
+            animate={{ x: ['-100%', '120%'] }}
+            transition={{ duration: 3.2, repeat: Infinity, repeatDelay: 4, ease: 'easeInOut' }}
+            style={{
+              background: `linear-gradient(105deg, transparent 30%, ${panchangTheme.accent}18 50%, transparent 70%)`,
+            }}
+          />
+        )}
 
         {/* Header */}
         <div className="relative px-4 pt-4 pb-2 flex items-center gap-2">
-          <div className="w-7 h-7 rounded-xl flex items-center justify-center text-sm" style={{ background: panchangTheme.iconWell }}>
+          <motion.div
+            className="w-7 h-7 rounded-xl flex items-center justify-center text-sm"
+            style={{ background: panchangTheme.iconWell }}
+            animate={isToday && !prefersReducedMotion ? { scale: [1, 1.10, 1] } : undefined}
+            transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
+          >
             🪔
-          </div>
+          </motion.div>
           <span style={{ fontFamily: 'var(--font-serif)', fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-cream)' }}>
             {isToday ? 'Aaj Ka Panchang' : 'Panchang'}
           </span>
@@ -1465,7 +1615,7 @@ export default function HomeDashboard({
       {/* ── Daily Sacred Text — tradition-aware ── */}
       <motion.div
         ref={shlokaRef}
-        className="rounded-[1.85rem] p-5 relative overflow-hidden border"
+        className="rounded-[1.85rem] p-5 relative overflow-hidden border cursor-pointer"
         style={{
           borderColor: sacredTextTheme.border,
           background: getCardBg(sacredTextTheme),
@@ -1476,6 +1626,8 @@ export default function HomeDashboard({
         initial={prefersReducedMotion ? undefined : { opacity: 0, y: 6 }}
         animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
         transition={{ duration: 0.38, delay: 0.10, ease: [0.22, 1, 0.36, 1] }}
+        onClick={() => setShlokaModalOpen(true)}
+        whileTap={{ scale: 0.985 }}
       >
         {/* Ambient glow */}
         <div className="absolute inset-0 pointer-events-none" style={{
@@ -1505,7 +1657,7 @@ export default function HomeDashboard({
               style={{ background: 'rgba(200, 146, 74, 0.12)', color: 'var(--brand-primary)' }}>
               {sacredText ? sacredText.source : shloka.source}
             </span>
-            <button onClick={shareShloka}
+            <button onClick={e => { e.stopPropagation(); shareShloka(); }}
               className="w-7 h-7 rounded-full flex items-center justify-center motion-press"
               style={{ background: sacredTextTheme.iconWell }}
               title={`Share ${sacredTextMeta.shareLabel}`}>
@@ -1554,14 +1706,14 @@ export default function HomeDashboard({
 
         {/* Actions row */}
         <div className="relative flex items-center justify-between gap-2">
-          <button onClick={() => setShlokaExpanded(!shlokaExpanded)}
+          <button onClick={e => { e.stopPropagation(); setShlokaExpanded(!shlokaExpanded); }}
             className="flex items-center gap-1 text-xs font-medium motion-press"
             style={{ color: 'var(--brand-primary)' }}>
             {shlokaExpanded ? 'Hide meaning' : 'Show meaning'}
             {shlokaExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
           </button>
 
-          <button onClick={markShlokaRead} disabled={readToday}
+          <button onClick={e => { e.stopPropagation(); markShlokaRead(); }} disabled={readToday}
             className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-semibold motion-press"
             style={readToday
               ? { background: 'rgba(200, 146, 74, 0.12)', color: 'var(--brand-primary)', border: '1px solid rgba(200, 146, 74, 0.18)' }
@@ -1676,7 +1828,7 @@ export default function HomeDashboard({
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-[1rem] flex items-center justify-center text-2xl flex-shrink-0"
                 style={{ background: 'rgba(212, 120, 74, 0.14)' }}>
-                📿
+                🪷
               </div>
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.12em] mb-1" style={{ color: 'var(--text-dim)' }}>

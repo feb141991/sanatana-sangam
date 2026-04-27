@@ -18,6 +18,7 @@ import { ChevronLeft, Volume2, VolumeX, Flame, RotateCcw, BarChart2, Settings2 }
 import { useEngine } from '@/contexts/EngineContext';
 import { hapticLight, hapticSuccess } from '@/lib/platform';
 import { createClient } from '@/lib/supabase';
+import { localSpiritualDate } from '@/lib/sacred-time';
 import { usePremium } from '@/hooks/usePremium';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import Link from 'next/link';
@@ -1020,19 +1021,32 @@ export default function JapaClient({
     });
   }, [paused, showComplete]);
 
+  // ── Milestone thresholds ─────────────────────────────────────────────────
+  const STREAK_MILESTONES  = [7, 21, 40, 54, 108, 365];
+  const SESSION_MILESTONES = [7, 21, 40, 108, 365, 1000];
+
   // ── Save session ─────────────────────────────────────────────────────────
   const saveSession = useCallback(async (completedRounds: number, partialBeads = 0) => {
     if (saved || (completedRounds === 0 && partialBeads === 0)) return;
     try {
       const supabase = createClient();
-      const today = new Date().toISOString().slice(0, 10);
-      await supabase.from('mala_sessions').insert({
-        user_id: userId, date: today,
-        rounds: completedRounds,
-        bead_count: completedRounds * TOTAL_BEADS + partialBeads,
-        mantra_id: mantraId,
-        duration_secs: duration,
-      });
+      const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
+      const today = localSpiritualDate(tz, 4);
+
+      // Insert japa session and get new all-time count in parallel
+      const [, { count: newTotalSessions }] = await Promise.all([
+        supabase.from('mala_sessions').insert({
+          user_id: userId, date: today,
+          rounds: completedRounds,
+          bead_count: completedRounds * TOTAL_BEADS + partialBeads,
+          mantra_id: mantraId,
+          duration_secs: duration,
+        }),
+        supabase.from('mala_sessions')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', userId),
+      ]);
+
       const { data: existing } = await supabase
         .from('daily_sadhana').select('streak_count').eq('user_id', userId).eq('date', today).single();
       const newStreak = (existing?.streak_count ?? 0) + 1;
@@ -1041,8 +1055,27 @@ export default function JapaClient({
       }, { onConflict: 'user_id,date' });
       setStreak(newStreak);
       setSaved(true);
+
+      // ── Fire milestone notifications (fire-and-forget) ──────────────────
+      const milestonePayloads: { type: 'streak' | 'session'; threshold: number }[] = [];
+
+      if (STREAK_MILESTONES.includes(newStreak)) {
+        milestonePayloads.push({ type: 'streak', threshold: newStreak });
+      }
+      const total = newTotalSessions ?? 0;
+      if (SESSION_MILESTONES.includes(total)) {
+        milestonePayloads.push({ type: 'session', threshold: total });
+      }
+
+      for (const payload of milestonePayloads) {
+        fetch('/api/notifications/milestone', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        }).catch(() => { /* best-effort */ });
+      }
     } catch { /* silent */ }
-  }, [saved, userId, mantraId, duration]);
+  }, [saved, userId, mantraId, duration]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Handlers ─────────────────────────────────────────────────────────────
   const handleConfirmMala = () => {

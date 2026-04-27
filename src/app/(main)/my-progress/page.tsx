@@ -42,6 +42,7 @@ export default async function MyProgressPage() {
     { data: malaPrev },
     { data: nityaLog },
     { data: sadhana28 },
+    { count: allTimeSessions },
   ] = await Promise.all([
     supabase
       .from('profiles')
@@ -81,6 +82,12 @@ export default async function MyProgressPage() {
       .eq('user_id', user.id)
       .gte('date', twentyEight)
       .lte('date', today),
+
+    // All-time session count (for achievement shields)
+    supabase
+      .from('mala_sessions')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id),
   ]);
 
   // Build 28-day heatmap
@@ -146,6 +153,8 @@ export default async function MyProgressPage() {
       japa30dMins={Math.round(totalDurationSecs / 60)}
       topMantra={topMantra}
       dowCounts={dowCounts}
+      // Japa — all-time (for achievement shields)
+      totalJapaSessions={allTimeSessions ?? 0}
       // Nitya — 30d
       nitya30dDays={nityaDaysCount}
       // Premium report data — current month vs prev month

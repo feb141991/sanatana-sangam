@@ -144,6 +144,11 @@ export default function BottomNav({
   // Close quick menu whenever nav collapses
   useEffect(() => { if (scrolled) setQuickOpen(false); }, [scrolled]);
 
+  // Signal AI FAB to hide/show when quick menu toggles
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('ai-fab-visibility', { detail: { hidden: quickOpen } }));
+  }, [quickOpen]);
+
   const memberNavItems = [
     { href: '/nitya-karma', label: 'Nitya',        mobileLabel: 'Nitya',           icon: Sun           },
     { href: '/library',     label: libraryLabel,    mobileLabel: libraryMobileLabel, icon: GraduationCap },

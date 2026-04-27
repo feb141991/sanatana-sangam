@@ -594,8 +594,52 @@ const DUTIES_FEMALE: Record<string, Record<LifeStage, AshramaDuty[]>> = {
   },
 };
 
-export function getAshramaDuties(tradition: string, stage: LifeStage, genderContext?: GenderContext | null): AshramaDuty[] {
+// ── Modern female duties — contemporary, gender-equal framing ─────────────────
+// These parallel DUTIES_FEMALE but replace classical stridharma framing with
+// modern dharmic practice: career, wellness, equal partnership, community leadership.
+// Traditions share the same "modern" set as the ethos transcends tradition.
+const DUTIES_FEMALE_MODERN: Record<LifeStage, AshramaDuty[]> = {
+  brahmacharya: [
+    { id: 'm_study',    icon: '📚', label: 'Deep Study',          description: 'Pursue knowledge in any field — academic, spiritual, or creative. Learning is your birthright.', minutes: 60 },
+    { id: 'm_body',     icon: '🧘', label: 'Body Practice',       description: 'Yoga, breathwork, or exercise — a healthy body is the first temple. Non-negotiable self-care.', minutes: 30 },
+    { id: 'm_skills',   icon: '✨', label: 'Build a Skill',       description: 'Develop a skill that will serve you and the world — coding, writing, music, design, craft.', minutes: 45 },
+    { id: 'm_journal',  icon: '📝', label: 'Reflective Journaling',description: 'Write thoughts, dreams, and intentions — clarity of mind is the foundation of dharmic action.', minutes: 15 },
+    { id: 'm_mentor',   icon: '🌱', label: 'Seek Mentorship',     description: 'Find women (and men) who have walked the path you aspire to — learn from lived wisdom.', minutes: 0 },
+    { id: 'm_service',  icon: '🤝', label: 'Community Service',   description: 'Give back — volunteer, teach, support — service multiplies purpose.', minutes: 30 },
+  ],
+  grihastha: [
+    { id: 'm_career',   icon: '💼', label: 'Purposeful Work',     description: 'Your career is dharma — bring full presence to your vocation, whether professional or creative.', minutes: 0 },
+    { id: 'm_partner',  icon: '🤝', label: 'Equal Partnership',   description: 'Shared responsibility — household duties, parenting, financial decisions — together, not assigned.', minutes: 0 },
+    { id: 'm_practice', icon: '🧘', label: 'Personal Sadhana',    description: 'Meditation, breathwork, or puja — your spiritual life belongs to you, separate from family duty.', minutes: 20 },
+    { id: 'm_finance',  icon: '💡', label: 'Financial Wisdom',    description: 'Understand and participate in household finances — financial literacy is modern dharma.', minutes: 15 },
+    { id: 'm_wellness', icon: '🌿', label: 'Preventive Wellness', description: 'Nourishing food, adequate sleep, annual health checks — self-care is not selfish, it is essential.', minutes: 0 },
+    { id: 'm_lead',     icon: '🌟', label: 'Community Leadership',description: 'Lead in your community — workplace, school, neighbourhood, or online. Your voice matters.', minutes: 0 },
+  ],
+  vanaprastha: [
+    { id: 'm_mentor2',  icon: '🌿', label: 'Mentor Younger Women',description: 'Share hard-won wisdom with women starting out — mentorship is the highest gift at this stage.', minutes: 30 },
+    { id: 'm_simplify', icon: '🍃', label: 'Intentional Simplicity',description: 'Declutter — possessions, commitments, roles. Create space for what truly matters now.', minutes: 0 },
+    { id: 'm_deepen',   icon: '🧘', label: 'Deepen Practice',     description: 'Meditation, retreat, contemplation — this is the season to go deeper than ever before.', minutes: 30 },
+    { id: 'm_create',   icon: '🎨', label: 'Creative Expression', description: 'Write, paint, teach, build — express the wisdom accumulated over a lifetime.', minutes: 45 },
+    { id: 'm_health2',  icon: '💪', label: 'Active Ageing',       description: 'Strength, flexibility, and mindful movement — longevity is a spiritual act.', minutes: 30 },
+  ],
+  sannyasa: [
+    { id: 'm_presence', icon: '🕊️', label: 'Presence as Teaching',description: 'Your stillness and equanimity are the teaching — simply being is the deepest service.', minutes: 0 },
+    { id: 'm_release',  icon: '🌊', label: 'Graceful Release',    description: 'Release identification with roles, outcomes, and identity — what remains is the essential self.', minutes: 0 },
+    { id: 'm_wisdom',   icon: '📖', label: 'Transmit Wisdom',     description: 'Share stories, write, or speak — the accumulated wisdom of a full life deserves to be recorded.', minutes: 30 },
+    { id: 'm_peace',    icon: '☮️', label: 'Inner Peace Practice', description: 'Daily silence and stillness — the final frontier of practice is unconditional equanimity.', minutes: 20 },
+  ],
+};
+
+export function getAshramaDuties(
+  tradition: string,
+  stage: LifeStage,
+  genderContext?: GenderContext | null,
+  practiceMode?: 'traditional' | 'modern',
+): AshramaDuty[] {
   if (genderContext === 'female') {
+    if (practiceMode === 'modern') {
+      return DUTIES_FEMALE_MODERN[stage] ?? DUTIES_FEMALE_MODERN.grihastha;
+    }
     const byTradition = DUTIES_FEMALE[tradition] ?? DUTIES_FEMALE.other;
     return byTradition[stage] ?? DUTIES_FEMALE.other[stage];
   }

@@ -1,14 +1,14 @@
 'use client';
 
 // ─── AI Chat Floating Action Button ──────────────────────────────────────────
-// Renders a persistent FAB (Bot icon) above the bottom nav on every page.
-// Tapping opens a full-screen bottom sheet with the Dharma Mitra AI chat.
-// Conversation is preserved as long as the FAB is mounted (session-scoped).
+// Draggable FAB — user can reposition it anywhere on screen.
+// Position persists via localStorage.
+// Hides when the BottomNav quick-action menu is open (via CustomEvent).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
 import { Bot, X, Send, RotateCcw, BookOpen, ChevronDown } from 'lucide-react';
 
 interface ScriptureRef {
@@ -35,6 +35,11 @@ interface Props {
   userName:  string;
   isGuest?:  boolean;
 }
+
+const FAB_SIZE   = 52;
+const FAB_RIGHT  = 16; // initial right offset (px)
+const FAB_BOTTOM = 82; // initial bottom offset above nav (px)
+const POS_KEY    = 'ai-fab-pos';
 
 const SUGGESTIONS: Record<string, string[]> = {
   hindu:    ['What does the Gita say about anxiety?', 'How do I start a daily sadhana?', 'What is the meaning of dharma?', 'How to balance work and spiritual life?'],
@@ -121,21 +126,65 @@ function TypingIndicator() {
 }
 
 export default function AIChatFAB({ userId, tradition, userName, isGuest = false }: Props) {
-  const [open,           setOpen]           = useState(false);
-  const [messages,       setMessages]       = useState<Message[]>([]);
-  const [input,          setInput]          = useState('');
-  const [loading,        setLoading]        = useState(false);
-  const [showSuggestions,setShowSuggestions]= useState(true);
-  const [portalTarget,   setPortalTarget]   = useState<Element | null>(null);
+  const [open,            setOpen]           = useState(false);
+  const [messages,        setMessages]       = useState<Message[]>([]);
+  const [input,           setInput]          = useState('');
+  const [loading,         setLoading]        = useState(false);
+  const [showSuggestions, setShowSuggestions]= useState(true);
+  const [portalTarget,    setPortalTarget]   = useState<Element | null>(null);
+  const [menuObscuring,   setMenuObscuring]  = useState(false); // quick-action menu is open
+  const [constraints,     setConstraints]    = useState({ left: 0, right: 0, top: 0, bottom: 0 });
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef       = useRef<HTMLTextAreaElement>(null);
+  const didDrag        = useRef(false); // distinguish tap vs drag
 
-  useEffect(() => { setPortalTarget(document.body); }, []);
+  // Persisted drag position (transforms from the default anchor)
+  const fabX = useMotionValue(0);
+  const fabY = useMotionValue(0);
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  useEffect(() => {
+    setPortalTarget(document.body);
+
+    // Restore saved drag position
+    try {
+      const saved = JSON.parse(localStorage.getItem(POS_KEY) ?? 'null');
+      if (saved?.x != null) fabX.set(saved.x);
+      if (saved?.y != null) fabY.set(saved.y);
+    } catch { /* ok */ }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Drag constraints — recomputed on resize ───────────────────────────────
+  useEffect(() => {
+    function compute() {
+      setConstraints({
+        right:  0,                                                   // can't go past default anchor
+        left:   -(window.innerWidth  - FAB_SIZE - FAB_RIGHT * 2),   // to left edge
+        bottom: 0,
+        top:    -(window.innerHeight - FAB_SIZE - FAB_BOTTOM - 72), // to near top (72px safe-area pad)
+      });
+    }
+    compute();
+    window.addEventListener('resize', compute);
+    return () => window.removeEventListener('resize', compute);
+  }, []);
+
+  // ── Listen for quick-menu visibility signal from BottomNav ────────────────
+  useEffect(() => {
+    function handler(e: Event) {
+      setMenuObscuring((e as CustomEvent<{ hidden: boolean }>).detail.hidden);
+    }
+    window.addEventListener('ai-fab-visibility', handler);
+    return () => window.removeEventListener('ai-fab-visibility', handler);
+  }, []);
+
+  // ── Auto-scroll chat ──────────────────────────────────────────────────────
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
-  // Auto-resize textarea
+  // ── Auto-resize textarea ──────────────────────────────────────────────────
   useEffect(() => {
     const el = inputRef.current;
     if (!el) return;
@@ -148,6 +197,11 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
   const isEmpty     = messages.length === 0;
 
   function newId() { return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`; }
+
+  function saveFabPos() {
+    try { localStorage.setItem(POS_KEY, JSON.stringify({ x: fabX.get(), y: fabY.get() })); }
+    catch { /* ok */ }
+  }
 
   async function sendMessage(text?: string) {
     const msgText = (text ?? input).trim();
@@ -188,6 +242,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
 
   if (isGuest) return null;
 
+  // ── Chat sheet portal ─────────────────────────────────────────────────────
   const sheet = portalTarget ? createPortal(
     <AnimatePresence>
       {open && (
@@ -316,32 +371,53 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
     portalTarget
   ) : null;
 
+  // ── FAB — draggable, hides when chat or quick-menu open ──────────────────
+  const fabHidden = open || menuObscuring;
+
   return (
     <>
-      {/* FAB — right side, above bottom nav */}
-      <AnimatePresence>
-        {!open && (
-          <motion.button
-            onClick={() => setOpen(true)}
-            className="fixed right-4 z-[9989] flex items-center justify-center rounded-full shadow-lg"
-            style={{
-              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 82px)',
-              width:  '52px',
-              height: '52px',
-              background: 'linear-gradient(135deg, #c8920a 0%, #d4a818 50%, #b07a08 100%)',
-              boxShadow: '0 4px 20px rgba(212,166,70,0.45)',
-            }}
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 24 }}
-            title="Dharma Mitra — AI Guide"
-          >
-            <Bot size={22} className="text-[#1c1c1a]" />
-          </motion.button>
-        )}
-      </AnimatePresence>
+      {/* Draggable FAB container */}
+      <motion.div
+        drag
+        dragMomentum={false}
+        dragElastic={0}
+        dragConstraints={constraints}
+        onDragStart={() => { didDrag.current = false; }}
+        onDrag={() => { didDrag.current = true; }}
+        onDragEnd={saveFabPos}
+        onClick={() => {
+          if (didDrag.current) { didDrag.current = false; return; }
+          setOpen(true);
+        }}
+        className="fixed z-[9989] cursor-grab active:cursor-grabbing"
+        style={{
+          right:  FAB_RIGHT,
+          bottom: `calc(env(safe-area-inset-bottom, 0px) + ${FAB_BOTTOM}px)`,
+          x: fabX,
+          y: fabY,
+          touchAction: 'none', // required for mobile pointer-events
+          width:  FAB_SIZE,
+          height: FAB_SIZE,
+        }}
+        animate={{
+          opacity:       fabHidden ? 0 : 1,
+          scale:         fabHidden ? 0.7 : 1,
+          pointerEvents: fabHidden ? 'none' : 'auto',
+        }}
+        transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+        title="Dharma Mitra — AI Guide (drag to move)"
+      >
+        <motion.div
+          className="w-full h-full rounded-full flex items-center justify-center shadow-lg select-none"
+          style={{
+            background:  'linear-gradient(135deg, #c8920a 0%, #d4a818 50%, #b07a08 100%)',
+            boxShadow:   '0 4px 20px rgba(212,166,70,0.45)',
+          }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <Bot size={22} className="text-[#1c1c1a] pointer-events-none" />
+        </motion.div>
+      </motion.div>
 
       {sheet}
     </>

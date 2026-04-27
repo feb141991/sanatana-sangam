@@ -794,6 +794,11 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
   const [localLifeStage,    setLocalLifeStage]   = useState<string | null>(lifeStage);
   const [localGenderCtx,    setLocalGenderCtx]   = useState<string | null>(genderContext);
   const [savingAshrama,     setSavingAshrama]     = useState(false);
+  // Women's practice mode — traditional (classical stridharma) or modern (contemporary)
+  const [womenMode,         setWomenMode]         = useState<'traditional' | 'modern'>(() => {
+    if (typeof window === 'undefined') return 'traditional';
+    return (localStorage.getItem('ashrama_women_mode') as 'traditional' | 'modern') ?? 'traditional';
+  });
   const [dutyChecks,    setDutyChecks]   = useState<Set<string>>(() => {
     // Local daily check-ins — stored per spiritual day in sessionStorage
     if (typeof window === 'undefined') return new Set<string>();
@@ -825,7 +830,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
       toast.success('Ashrama Dharma unlocked 🙏');
     } catch (err: any) {
       console.error('[Ashrama save]', err);
-      toast.error('Could not save — try again');
+      toast.error(err?.message ? `Could not save: ${err.message}` : 'Could not save — try again');
     } finally {
       setSavingAshrama(false);
     }
@@ -1024,7 +1029,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
     ? getAshramaMeta(tradition, localLifeStage as LifeStage, _gc)
     : null;
   const _duties    = localLifeStage
-    ? getAshramaDuties(tradition, localLifeStage as LifeStage, _gc)
+    ? getAshramaDuties(tradition, localLifeStage as LifeStage, _gc, _gc === 'female' ? womenMode : undefined)
     : [];
   const ashramaDoneCount = _duties.filter(d => dutyChecks.has(d.id)).length;
 
@@ -1457,9 +1462,30 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                         <p className="text-[11px]" style={{ color: 'var(--text-dim)' }}>
                           {ashramaDoneCount}/{_duties.length} reflected on today
                         </p>
+                      </div>
                     </div>
+                    {/* Women's practice mode toggle — only shown for female gender context */}
+                    {localGenderCtx === 'female' && (
+                      <div className="flex items-center rounded-full overflow-hidden border shrink-0"
+                        style={{ borderColor: `${_stageMeta.accent}28`, background: `${_stageMeta.accent}08` }}>
+                        {(['traditional', 'modern'] as const).map(mode => (
+                          <button
+                            key={mode}
+                            onClick={() => {
+                              setWomenMode(mode);
+                              try { localStorage.setItem('ashrama_women_mode', mode); } catch {}
+                            }}
+                            className="px-2.5 py-1 text-[10px] font-semibold transition-all"
+                            style={{
+                              background: womenMode === mode ? `${_stageMeta.accent}22` : 'transparent',
+                              color: womenMode === mode ? _stageMeta.accent : 'var(--text-dim)',
+                            }}>
+                            {mode === 'traditional' ? '🏛️' : '✨'} {mode === 'traditional' ? 'Classical' : 'Modern'}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </div>
 
                 {/* Subtitle */}
                 <p className="px-5 pb-3 text-[11.5px] leading-relaxed" style={{ color: 'var(--brand-muted)' }}>

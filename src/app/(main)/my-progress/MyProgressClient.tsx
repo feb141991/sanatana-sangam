@@ -34,6 +34,7 @@ interface Props {
   japa30dMins:      number;
   topMantra:        string | null;
   dowCounts:        number[];
+  totalJapaSessions: number;
   nitya30dDays:     number;
   report:           ReportData;
 }
@@ -303,9 +304,146 @@ function Trend({ cur, prev }: { cur: number; prev: number }) {
   );
 }
 
+// ── Achievement Shields ───────────────────────────────────────────────────────
+const STREAK_SHIELDS = [
+  { threshold: 7,   name: 'Saptāha',    emoji: '🔥', desc: '7-day streak'    },
+  { threshold: 21,  name: 'Niyama',     emoji: '🕯️',  desc: '21-day streak'   },
+  { threshold: 40,  name: 'Chālisā',   emoji: '🌟', desc: '40-day streak'   },
+  { threshold: 54,  name: 'Ardha Mālā',emoji: '📿', desc: '54-day streak'   },
+  { threshold: 108, name: 'Pūrṇa Mālā',emoji: '🙏', desc: '108-day streak'  },
+  { threshold: 365, name: 'Varsha',     emoji: '☀️',  desc: '365-day streak'  },
+];
+
+const SESSION_SHIELDS = [
+  { threshold: 7,    name: 'Prārambha', emoji: '🌱', desc: '7 sessions'    },
+  { threshold: 21,   name: 'Abhyāsa',  emoji: '⚡', desc: '21 sessions'   },
+  { threshold: 40,   name: 'Tapas',    emoji: '🔆', desc: '40 sessions'   },
+  { threshold: 108,  name: 'Mālā',     emoji: '📿', desc: '108 sessions'  },
+  { threshold: 365,  name: 'Varshika', emoji: '🌕', desc: '365 sessions'  },
+  { threshold: 1000, name: 'Sahasra',  emoji: '💎', desc: '1000 sessions' },
+];
+
+function ShieldBadges({
+  streak, totalSessions, isDark,
+}: {
+  streak: number; totalSessions: number; isDark: boolean;
+}) {
+  const [activeTab, setActiveTab] = useState<'streak' | 'session'>('streak');
+  const shields = activeTab === 'streak' ? STREAK_SHIELDS : SESSION_SHIELDS;
+  const value   = activeTab === 'streak' ? streak : totalSessions;
+
+  const h1      = isDark ? '#f5dfa0' : '#1a0a02';
+  const muted   = isDark ? 'rgba(245,210,130,0.45)' : 'rgba(100,55,10,0.50)';
+  const cardBg  = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.90)';
+  const cardBdr = isDark ? 'rgba(200,146,74,0.12)' : 'rgba(180,120,40,0.14)';
+
+  const nextMilestone = shields.find(s => s.threshold > value);
+  const progress = nextMilestone
+    ? Math.min(100, Math.round((value / nextMilestone.threshold) * 100))
+    : 100;
+
+  return (
+    <div className="rounded-[1.8rem] p-5" style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: isDark ? 'none' : '0 1px 10px rgba(0,0,0,0.05)' }}>
+      {/* Header + tab switcher */}
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'rgba(200,146,74,0.70)' }}>
+            🏅 Achievement Shields
+          </p>
+          <p className="text-[10px] mt-0.5" style={{ color: muted }}>
+            {value} {activeTab === 'streak' ? 'day streak' : 'total sessions'}
+          </p>
+        </div>
+        <div className="flex gap-1 p-1 rounded-xl" style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }}>
+          {(['streak', 'session'] as const).map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className="rounded-lg px-2.5 py-1 text-[10px] font-semibold transition-all"
+              style={{
+                background: activeTab === tab ? 'rgba(200,146,74,0.22)' : 'transparent',
+                color: activeTab === tab ? 'rgba(200,146,74,0.95)' : muted,
+              }}
+            >
+              {tab === 'streak' ? '🔥 Streak' : '📿 Sessions'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Shields grid */}
+      <div className="grid grid-cols-6 gap-2 mb-4">
+        {shields.map(shield => {
+          const earned = value >= shield.threshold;
+          return (
+            <div key={shield.threshold} className="flex flex-col items-center gap-1">
+              <motion.div
+                className="w-full aspect-square rounded-xl flex items-center justify-center relative"
+                style={{
+                  background: earned
+                    ? isDark ? 'rgba(200,146,74,0.22)' : 'rgba(200,146,74,0.14)'
+                    : isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+                  border: earned
+                    ? '1px solid rgba(200,146,74,0.45)'
+                    : `1px solid ${isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)'}`,
+                  filter: earned ? 'none' : 'grayscale(1) opacity(0.3)',
+                }}
+                animate={earned ? { scale: [1, 1.06, 1] } : {}}
+                transition={{ duration: 0.4, delay: 0.05 }}
+              >
+                <span className="text-[18px] leading-none">{shield.emoji}</span>
+                {earned && (
+                  <div className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full flex items-center justify-center"
+                    style={{ background: 'rgba(80,200,80,0.9)', border: `1px solid ${cardBg}` }}>
+                    <span className="text-[7px] text-white font-bold leading-none">✓</span>
+                  </div>
+                )}
+              </motion.div>
+              <p className="text-[7px] text-center leading-tight px-0.5" style={{
+                color: earned ? h1 : muted,
+                fontWeight: earned ? 600 : 400,
+              }}>
+                {shield.name}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Progress to next */}
+      {nextMilestone ? (
+        <div>
+          <div className="flex justify-between mb-1.5">
+            <span className="text-[10px]" style={{ color: muted }}>
+              Next: <span style={{ color: h1, fontWeight: 600 }}>{nextMilestone.name}</span>
+              <span style={{ color: muted }}> · {nextMilestone.desc}</span>
+            </span>
+            <span className="text-[10px] font-semibold" style={{ color: 'rgba(200,146,74,0.85)' }}>
+              {value}/{nextMilestone.threshold}
+            </span>
+          </div>
+          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}>
+            <motion.div
+              className="h-full rounded-full"
+              style={{ background: 'linear-gradient(90deg,rgba(200,146,74,0.75),rgba(212,100,20,0.85))' }}
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            />
+          </div>
+        </div>
+      ) : (
+        <p className="text-center text-sm" style={{ color: 'rgba(200,146,74,0.70)', fontFamily: 'var(--font-serif)' }}>
+          सर्वसिद्धि — All shields earned! 🙏
+        </p>
+      )}
+    </div>
+  );
+}
+
 // ── Premium Report Modal ──────────────────────────────────────────────────────
-function ReportModal({ report, isPro, onClose, isDark }: {
-  report: ReportData; isPro: boolean; onClose: () => void; isDark: boolean;
+function ReportModal({ report, isPro, onClose, isDark, streak }: {
+  report: ReportData; isPro: boolean; onClose: () => void; isDark: boolean; streak: number;
 }) {
   const printRef = useRef<HTMLDivElement>(null);
 
@@ -380,8 +518,50 @@ function ReportModal({ report, isPro, onClose, isDark }: {
               </div>
               <div className="text-3xl">🕉️</div>
             </div>
+            {/* Streak hero */}
+            <div className="mt-4 flex items-center gap-3">
+              <div className="flex items-center gap-2 rounded-2xl px-4 py-2.5 flex-shrink-0"
+                style={{
+                  background: streak > 0
+                    ? (isDark ? 'rgba(200,100,20,0.18)' : 'rgba(255,140,40,0.12)')
+                    : (isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'),
+                  border: `1.5px solid ${streak > 0 ? 'rgba(220,120,40,0.30)' : border}`,
+                }}>
+                <motion.span
+                  className="text-2xl leading-none select-none"
+                  animate={streak > 0 ? { scale: [1, 1.15, 1] } : {}}
+                  transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}>
+                  🔥
+                </motion.span>
+                <div>
+                  <p className="text-2xl font-bold leading-none"
+                    style={{ fontFamily: 'var(--font-serif)', color: streak > 0 ? (isDark ? '#f5c87a' : '#b45309') : muted }}>
+                    {streak}
+                  </p>
+                  <p className="text-[10px] mt-0.5 whitespace-nowrap" style={{ color: muted }}>
+                    {streak === 0 ? 'Start your streak' : `day${streak !== 1 ? 's' : ''} streak`}
+                  </p>
+                </div>
+              </div>
+              <div className="flex-1">
+                <p className="text-xs leading-snug" style={{ color: muted }}>
+                  {streak === 0
+                    ? 'Begin today — every great sādhaka started with day one.'
+                    : streak < 7
+                    ? 'Keep going — a week of consistency changes the mind.'
+                    : streak < 21
+                    ? 'One week complete! Habits form at 21 days — you\'re on the path.'
+                    : streak < 40
+                    ? 'Three weeks of discipline — your Niyama is taking root.'
+                    : streak < 108
+                    ? `${streak} days of unbroken sādhana — a true Abhyāsa.`
+                    : 'Pūrṇa Mālā 🙏 — 108 days of unbroken devotion. Extraordinary.'}
+                </p>
+              </div>
+            </div>
+
             {/* Summary pills */}
-            <div className="mt-4 flex gap-2 flex-wrap">
+            <div className="mt-3 flex gap-2 flex-wrap">
               {[
                 { label: 'Sessions', value: String(report.curSessions) },
                 { label: 'Rounds',   value: String(report.curRounds)   },
@@ -402,7 +582,7 @@ function ReportModal({ report, isPro, onClose, isDark }: {
             {/* ── Japa vs prev month ── */}
             <div className="rounded-[1.2rem] p-4" style={{ background: card, border: `1px solid ${border}` }}>
               <p className="text-[11px] font-semibold uppercase tracking-wider mb-3"
-                style={{ color: 'rgba(200,146,74,0.7)' }}>📿 Japa Practice</p>
+                style={{ color: 'rgba(200,146,74,0.7)' }}>🪷 Japa Practice</p>
               <div className="grid grid-cols-3 gap-3">
                 {[
                   { label: 'Sessions', cur: report.curSessions, prev: report.prevSessions },
@@ -515,6 +695,7 @@ export default function MyProgressClient({
   japa30dMins,
   topMantra,
   dowCounts,
+  totalJapaSessions,
   nitya30dDays,
   report,
 }: Props) {
@@ -653,7 +834,7 @@ export default function MyProgressClient({
             <div className="rounded-[1.8rem] p-5" style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: isDark ? 'none' : '0 1px 10px rgba(0,0,0,0.05)' }}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl">📿</span>
+                  <span className="text-2xl">🪷</span>
                   <div>
                     <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: muted }}>Japa</p>
                     <p className="text-xs" style={{ color: dimText }}>Mantra repetition</p>
@@ -761,6 +942,16 @@ export default function MyProgressClient({
             </div>
           </motion.section>
 
+          {/* ── Achievement Shields ── */}
+          <motion.section
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.20 }}>
+            <ShieldBadges
+              streak={streak}
+              totalSessions={totalJapaSessions}
+              isDark={isDark}
+            />
+          </motion.section>
+
           {/* ── Day-of-week chart ── */}
           <motion.section
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.30 }}
@@ -810,6 +1001,7 @@ export default function MyProgressClient({
             isPro={isPro}
             onClose={() => setShowReport(false)}
             isDark={isDark}
+            streak={streak}
           />
         )}
       </AnimatePresence>
