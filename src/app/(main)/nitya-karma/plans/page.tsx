@@ -28,12 +28,19 @@ export default async function GuidedPlansPage() {
 
   const statusMap = buildGuidedPathStatusMap((progressRows ?? []) as GuidedPathProgressRow[]);
 
+  // Build a day_reached map so the client can show current day for active plans
+  const dayMap = ((progressRows ?? []) as GuidedPathProgressRow[]).reduce<Record<string, number>>(
+    (acc, row) => { acc[row.path_id] = row.day_reached ?? 1; return acc; },
+    {}
+  );
+
   return (
     <GuidedPlansClient
       userId={user.id}
       tradition={tradition}
       plans={GUIDED_PLANS}
       statusMap={statusMap}
+      dayMap={dayMap}
     />
   );
 }

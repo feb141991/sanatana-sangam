@@ -16,7 +16,10 @@ interface VoiceConfig {
 
 function pickVoice(text: string): VoiceConfig {
   if (hasDevanagari(text))
-    return { languageCode: 'sa-IN', name: 'sa-IN-Standard-A', ssmlGender: 'FEMALE' };
+    // Sanskrit has no dedicated Google Cloud TTS voice. hi-IN voices handle
+    // Devanagari script and Sanskrit pronunciation well — Standard-D has the
+    // clearest articulation for liturgical recitation.
+    return { languageCode: 'hi-IN', name: 'hi-IN-Standard-D', ssmlGender: 'FEMALE' };
   if (hasGurmukhi(text))
     return { languageCode: 'pa-IN', name: 'pa-IN-Standard-A', ssmlGender: 'FEMALE' };
   return { languageCode: 'en-IN', name: 'en-IN-Standard-A', ssmlGender: 'FEMALE' };

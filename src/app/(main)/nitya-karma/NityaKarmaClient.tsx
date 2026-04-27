@@ -1180,13 +1180,46 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                 <ChevronDown size={16} style={{ color: accent, transform: 'rotate(-90deg)', flexShrink: 0 }} />
               </motion.button>
 
-              {/* ② Ashrama Dharma — PRO */}
+              {/* ② Sadhana Patha — Guided Plans — PRO (direct nav to /nitya-karma/plans) */}
+              <motion.button
+                onClick={() => isPro ? router.push('/nitya-karma/plans') : setShowProSheet(true)}
+                whileTap={{ scale: 0.975 }}
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.10, duration: 0.35 }}
+                className="w-full text-left rounded-[1.4rem] border p-5 flex items-center gap-4 glass-panel"
+                style={{ borderColor: isPro ? `${accent}28` : 'rgba(251,191,36,0.18)' }}
+              >
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0"
+                  style={{ background: isPro ? `${accent}18` : 'rgba(251,191,36,0.10)' }}>
+                  📿
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="font-bold text-[15px] text-[color:var(--brand-ink)]">Sadhana Patha</p>
+                    {!isPro && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-400/15 text-amber-400 flex items-center gap-0.5">
+                        <Lock size={8} /> Pro
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[11.5px] leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
+                    7 & 21-day guided plans · structured daily practices
+                  </p>
+                </div>
+                {isPro
+                  ? <ChevronDown size={16} style={{ color: accent, transform: 'rotate(-90deg)', flexShrink: 0 }} />
+                  : <Lock size={16} className="text-amber-400/60 shrink-0" />
+                }
+              </motion.button>
+
+              {/* ③ Ashrama Dharma — PRO */}
               <motion.button
                 onClick={() => isPro ? setNityaScreen('ashrama') : setShowProSheet(true)}
                 whileTap={{ scale: 0.975 }}
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.10, duration: 0.35 }}
+                transition={{ delay: 0.15, duration: 0.35 }}
                 className="w-full text-left rounded-[1.4rem] border p-5 flex items-center gap-4 glass-panel"
                 style={{ borderColor: isPro ? (localLifeStage ? `${(_stageMeta?.accent ?? accent)}28` : `${accent}28`) : 'rgba(251,191,36,0.18)' }}
               >
@@ -1210,39 +1243,6 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                     {isPro && _stageMeta
                       ? `${_stageMeta.label} duties · ${ashramaDoneCount}/${_duties.length} reflected today`
                       : 'Life-stage duties personalised to your Ashrama'}
-                  </p>
-                </div>
-                {isPro
-                  ? <ChevronDown size={16} style={{ color: accent, transform: 'rotate(-90deg)', flexShrink: 0 }} />
-                  : <Lock size={16} className="text-amber-400/60 shrink-0" />
-                }
-              </motion.button>
-
-              {/* ③ Journey (Plans + Calendar) — PRO */}
-              <motion.button
-                onClick={() => isPro ? setNityaScreen('journey') : setShowProSheet(true)}
-                whileTap={{ scale: 0.975 }}
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15, duration: 0.35 }}
-                className="w-full text-left rounded-[1.4rem] border p-5 flex items-center gap-4 glass-panel"
-                style={{ borderColor: isPro ? `${accent}28` : 'rgba(251,191,36,0.18)' }}
-              >
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0"
-                  style={{ background: isPro ? `${accent}18` : 'rgba(251,191,36,0.10)' }}>
-                  ✦
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <p className="font-bold text-[15px] text-[color:var(--brand-ink)]">Journey</p>
-                    {!isPro && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-400/15 text-amber-400 flex items-center gap-0.5">
-                        <Lock size={8} /> Pro
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-[11.5px] leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
-                    Guided sadhana plans · 30-day history & streaks
                   </p>
                 </div>
                 {isPro
