@@ -2,9 +2,10 @@
 
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { ChevronLeft, Calendar } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, Calendar, ChevronRight } from 'lucide-react';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+import { localSpiritualDate } from '@/lib/sacred-time';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Session {
@@ -122,6 +123,145 @@ function getBestTimeOfDay(sessions: Session[]): string {
   return `${fmt(best)} – ${fmt((best + 2) % 24)}`;
 }
 
+// ── Month calendar view (interactive) ────────────────────────────────────────
+function CalendarMonthView({ sessions, isDark, amber, text, sub, borderCol, surface }: {
+  sessions: Session[]; isDark: boolean; amber: string; text: string; sub: string; borderCol: string; surface: string;
+}) {
+  const now = new Date();
+  const [calMonth, setCalMonth] = useState({ year: now.getFullYear(), month: now.getMonth() });
+  const [selected, setSelected] = useState<string | null>(null);
+
+  const dateMap = useMemo(() => {
+    const m: Record<string, Session[]> = {};
+    sessions.forEach(s => {
+      if (!m[s.date]) m[s.date] = [];
+      m[s.date].push(s);
+    });
+    return m;
+  }, [sessions]);
+
+  const calDays = useMemo(() => {
+    const first = new Date(calMonth.year, calMonth.month, 1);
+    const last  = new Date(calMonth.year, calMonth.month + 1, 0);
+    const cells: (string | null)[] = Array(first.getDay()).fill(null);
+    for (let d = 1; d <= last.getDate(); d++) {
+      const iso = `${calMonth.year}-${String(calMonth.month + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      cells.push(iso);
+    }
+    while (cells.length % 7 !== 0) cells.push(null);
+    return cells;
+  }, [calMonth]);
+
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const monthLabel = new Date(calMonth.year, calMonth.month, 1).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+
+  const prevMonth = () => setCalMonth(m => {
+    const d = new Date(m.year, m.month - 1, 1);
+    return { year: d.getFullYear(), month: d.getMonth() };
+  });
+  const nextMonth = () => setCalMonth(m => {
+    const d = new Date(m.year, m.month + 1, 1);
+    return { year: d.getFullYear(), month: d.getMonth() };
+  });
+
+  const selectedSessions = selected ? (dateMap[selected] ?? []) : [];
+
+  return (
+    <div className="px-5 pb-5">
+      <div className="rounded-2xl p-5 border" style={{ background: surface, borderColor: borderCol, boxShadow: isDark ? 'none' : '0 2px 12px rgba(0,0,0,0.06)' }}>
+        {/* Month nav */}
+        <div className="flex items-center justify-between mb-4">
+          <button onClick={prevMonth} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
+            <ChevronLeft size={16} style={{ color: amber }} />
+          </button>
+          <p className="text-[13px] font-semibold" style={{ color: text, fontFamily: 'var(--font-serif)' }}>{monthLabel}</p>
+          <button onClick={nextMonth} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
+            <ChevronRight size={16} style={{ color: amber }} />
+          </button>
+        </div>
+
+        {/* DOW headers */}
+        <div className="grid grid-cols-7 gap-1 mb-2">
+          {['S','M','T','W','T','F','S'].map((d, i) => (
+            <div key={i} className="text-center text-[10px] font-semibold" style={{ color: sub }}>{d}</div>
+          ))}
+        </div>
+
+        {/* Day cells */}
+        <div className="grid grid-cols-7 gap-1">
+          {calDays.map((iso, i) => {
+            if (!iso) return <div key={i} />;
+            const sess = dateMap[iso];
+            const hasSession = !!sess;
+            const isToday = iso === todayIso;
+            const isSelected = iso === selected;
+            return (
+              <motion.button
+                key={iso}
+                onClick={() => setSelected(isSelected ? null : iso)}
+                whileTap={{ scale: 0.88 }}
+                className="aspect-square flex items-center justify-center rounded-full text-[11px] font-semibold transition-all"
+                style={{
+                  background: isSelected
+                    ? amber
+                    : hasSession
+                      ? isDark ? 'rgba(200,146,74,0.35)' : 'rgba(200,146,74,0.22)'
+                      : 'transparent',
+                  color: isSelected
+                    ? '#fff'
+                    : hasSession
+                      ? amber
+                      : isDark ? 'rgba(245,210,130,0.35)' : 'rgba(100,55,10,0.40)',
+                  border: isToday ? `1.5px solid ${amber}` : 'none',
+                  fontWeight: isToday || isSelected ? 700 : 500,
+                }}
+              >
+                {new Date(iso + 'T12:00:00').getDate()}
+              </motion.button>
+            );
+          })}
+        </div>
+
+        {/* Selected day details */}
+        <AnimatePresence>
+          {selected && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="mt-4 rounded-xl p-3"
+              style={{ background: isDark ? 'rgba(200,146,74,0.10)' : 'rgba(200,146,74,0.08)' }}
+            >
+              <p className="text-[11px] font-semibold mb-2" style={{ color: amber }}>
+                {new Date(selected + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
+              </p>
+              {selectedSessions.length === 0 ? (
+                <p className="text-[11px]" style={{ color: sub }}>No japa session this day.</p>
+              ) : selectedSessions.map((s, i) => (
+                <div key={i} className="text-[11px]" style={{ color: text }}>
+                  📿 {s.rounds} mala{s.rounds !== 1 ? 's' : ''} · {s.bead_count} beads
+                  {s.duration_secs > 0 && ` · ${Math.round(s.duration_secs / 60)}m`}
+                </div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Legend */}
+        <div className="flex items-center gap-4 mt-4 justify-center">
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded-full" style={{ background: amber, opacity: 0.6 }} />
+            <span className="text-[10px]" style={{ color: sub }}>Japa done</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded-full border" style={{ borderColor: amber }} />
+            <span className="text-[10px]" style={{ color: sub }}>Today</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 export default function InsightsClient({ sessions }: Props) {
   const router = useRouter();
@@ -129,6 +269,7 @@ export default function InsightsClient({ sessions }: Props) {
   const isDark = resolvedTheme === 'dark';
 
   const [filter, setFilter] = useState<FilterKey>('30d');
+  const [showCalendar, setShowCalendar] = useState(false);
 
   // Theme tokens
   const bg    = isDark ? '#06060A' : '#F5F0E8';
@@ -141,8 +282,13 @@ export default function InsightsClient({ sessions }: Props) {
   // Filter sessions by date range
   const days = FILTERS.find(f => f.key === filter)?.days ?? 30;
   const cutoff = useMemo(() => {
-    const d = new Date();
-    d.setDate(d.getDate() - (days - 1));
+    const tz = typeof Intl !== 'undefined'
+      ? Intl.DateTimeFormat().resolvedOptions().timeZone
+      : 'UTC';
+    const spiritualToday = localSpiritualDate(tz, 4);
+    if (days === 1) return spiritualToday; // just today (spiritual)
+    const d = new Date(`${spiritualToday}T12:00:00Z`);
+    d.setUTCDate(d.getUTCDate() - (days - 1));
     return d.toISOString().slice(0, 10);
   }, [days]);
 
@@ -211,10 +357,19 @@ export default function InsightsClient({ sessions }: Props) {
               Insights
             </h1>
           </div>
-          <div className="w-9 h-9 rounded-full flex items-center justify-center"
-            style={{ background: isDark ? 'rgba(200,146,74,0.10)' : 'rgba(122,74,30,0.08)' }}>
+          <button
+            onClick={() => setShowCalendar(v => !v)}
+            className="w-9 h-9 rounded-full flex items-center justify-center transition-all"
+            style={{
+              background: showCalendar
+                ? (isDark ? 'rgba(200,146,74,0.22)' : 'rgba(122,74,30,0.14)')
+                : (isDark ? 'rgba(200,146,74,0.10)' : 'rgba(122,74,30,0.08)'),
+              border: showCalendar ? `1.5px solid ${amber}` : 'none',
+            }}
+            aria-label="Toggle calendar view"
+          >
             <Calendar size={16} style={{ color: amber }} />
-          </div>
+          </button>
         </div>
 
         {/* ── Filter pills ───────────────────────────────────────────────── */}
@@ -243,6 +398,27 @@ export default function InsightsClient({ sessions }: Props) {
             ))}
           </div>
         </div>
+
+        {/* ── Calendar month view (toggleable) ──────────────────────── */}
+        <AnimatePresence>
+          {showCalendar && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.28 }}
+              style={{ overflow: 'hidden' }}
+            >
+              <CalendarMonthView
+                sessions={sessions}
+                isDark={isDark}
+                amber={amber}
+                text={text}
+                sub={sub}
+                borderCol={borderCol}
+                surface={surface}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {isEmpty ? (
           // ── Empty state ────────────────────────────────────────────────

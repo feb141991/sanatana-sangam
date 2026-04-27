@@ -1504,10 +1504,10 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                             </p>
                           )}
                         </div>
-                        {duty.minutes && duty.minutes > 0 && !done && (
+                        {!done && (
                           <span className="text-[9px] font-semibold rounded-full px-1.5 py-0.5 shrink-0"
                             style={{ background: `${_stageMeta.accent}14`, color: _stageMeta.accent }}>
-                            {duty.minutes}m
+                            {duty.minutes && duty.minutes > 0 ? `${duty.minutes}m` : 'All day'}
                           </span>
                         )}
                       </motion.button>

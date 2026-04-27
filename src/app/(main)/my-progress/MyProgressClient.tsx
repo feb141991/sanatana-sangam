@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Download, Lock, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, Lock, TrendingUp, TrendingDown, Minus, Calendar, LayoutGrid } from 'lucide-react';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -55,50 +55,208 @@ function monthName(iso: string) {
   return new Date(iso).toLocaleString('default', { month: 'long', year: 'numeric' });
 }
 
-// ── Heatmap ───────────────────────────────────────────────────────────────────
-function Heatmap({ days, isDark }: { days: Props['heatmap']; isDark: boolean }) {
-  const weeks: Props['heatmap'][] = [];
-  for (let i = 0; i < days.length; i += 7) weeks.push(days.slice(i, i + 7));
+// ── Interactive Activity Calendar ─────────────────────────────────────────────
+function InteractiveCalendar({
+  days, isDark, monthView,
+}: {
+  days: Props['heatmap']; isDark: boolean; monthView: boolean;
+}) {
+  const dayMap = useMemo(() => {
+    const m: Record<string, { japa: boolean; nitya: boolean }> = {};
+    days.forEach(d => { m[d.date] = { japa: d.japa, nitya: d.nitya }; });
+    return m;
+  }, [days]);
+
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [calMonth, setCalMonth] = useState(() => {
+    const now = new Date();
+    return { year: now.getFullYear(), month: now.getMonth() };
+  });
+
+  const amber = 'rgba(200,146,74,';
+  const green = 'rgba(140,180,100,';
+  const dimBg = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
+  const sub   = isDark ? 'rgba(245,210,130,0.38)' : 'rgba(100,60,10,0.45)';
+
+  function DayDetail({ iso }: { iso: string }) {
+    const d = dayMap[iso];
+    const hasAny = d?.japa || d?.nitya;
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+        className="mt-3 rounded-xl px-4 py-2.5 text-center text-xs"
+        style={{ background: isDark ? 'rgba(200,146,74,0.10)' : 'rgba(200,146,74,0.08)' }}
+      >
+        <span style={{ color: isDark ? '#f5dfa0' : '#2a1002', fontWeight: 600 }}>
+          {new Date(iso + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
+        </span>
+        <br />
+        <span style={{ color: isDark ? 'rgba(245,210,130,0.65)' : 'rgba(100,55,10,0.65)' }}>
+          {d?.japa ? '📿 Japa' : ''}
+          {d?.japa && d?.nitya ? ' · ' : ''}
+          {d?.nitya ? '🌅 Nitya' : ''}
+          {!hasAny ? 'Rest day' : ''}
+        </span>
+      </motion.div>
+    );
+  }
+
+  if (!monthView) {
+    // ── Compact 28-day strip ─────────────────────────────────────────────────
+    const weeks: Props['heatmap'][] = [];
+    for (let i = 0; i < days.length; i += 7) weeks.push(days.slice(i, i + 7));
+    return (
+      <div>
+        <div className="flex gap-1.5">
+          {weeks.map((week, wi) => (
+            <div key={wi} className="flex flex-col gap-1.5 flex-1">
+              {week.map(day => {
+                const both = day.japa && day.nitya;
+                const bg = both
+                  ? `${amber}0.85)`
+                  : day.japa ? `${amber}0.45)` : day.nitya ? `${green}0.50)` : dimBg;
+                const isToday = day.date === todayIso;
+                const isSelected = day.date === selectedDay;
+                return (
+                  <motion.button
+                    key={day.date}
+                    onClick={() => setSelectedDay(isSelected ? null : day.date)}
+                    className="rounded-[5px] aspect-square w-full cursor-pointer transition-transform"
+                    style={{
+                      background: isSelected ? `${amber}0.95)` : bg,
+                      outline: isToday ? `2px solid ${amber}0.70)` : 'none',
+                      outlineOffset: '1px',
+                    }}
+                    whileHover={{ scale: 1.3 }}
+                    whileTap={{ scale: 0.88 }}
+                  />
+                );
+              })}
+            </div>
+          ))}
+        </div>
+        <div className="flex items-center gap-4 mt-2">
+          {[
+            { color: `${amber}0.85)`, label: 'Both' },
+            { color: `${amber}0.45)`, label: 'Japa' },
+            { color: `${green}0.50)`, label: 'Nitya' },
+          ].map(({ color, label }) => (
+            <div key={label} className="flex items-center gap-1">
+              <div className="w-2.5 h-2.5 rounded-[3px]" style={{ background: color }} />
+              <span className="text-[10px]" style={{ color: sub }}>{label}</span>
+            </div>
+          ))}
+        </div>
+        <AnimatePresence>
+          {selectedDay && <DayDetail iso={selectedDay} />}
+        </AnimatePresence>
+      </div>
+    );
+  }
+
+  // ── Full month calendar grid ─────────────────────────────────────────────────
+  const calDays = useMemo(() => {
+    const first = new Date(calMonth.year, calMonth.month, 1);
+    const last  = new Date(calMonth.year, calMonth.month + 1, 0);
+    const cells: (string | null)[] = Array(first.getDay()).fill(null);
+    for (let d = 1; d <= last.getDate(); d++) {
+      const iso = `${calMonth.year}-${String(calMonth.month + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      cells.push(iso);
+    }
+    while (cells.length % 7 !== 0) cells.push(null);
+    return cells;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [calMonth]);
+
+  const monthLabel = new Date(calMonth.year, calMonth.month, 1)
+    .toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+
   return (
-    <div className="space-y-1.5">
-      <div className="flex gap-1.5">
-        {weeks.map((week, wi) => (
-          <div key={wi} className="flex flex-col gap-1.5 flex-1">
-            {week.map(day => {
-              const both  = day.japa && day.nitya;
-              const one   = day.japa || day.nitya;
-              const bg = both
-                ? 'rgba(200,146,74,0.85)'
-                : day.japa
-                  ? 'rgba(200,146,74,0.45)'
-                  : day.nitya
-                    ? 'rgba(140,180,100,0.50)'
-                    : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
-              return (
-                <motion.div
-                  key={day.date}
-                  className="rounded-[4px] aspect-square w-full"
-                  style={{ background: bg }}
-                  whileHover={{ scale: 1.25 }}
-                  title={`${day.date}${day.japa ? ' · Japa ✓' : ''}${day.nitya ? ' · Nitya ✓' : ''}`}
-                />
-              );
-            })}
-          </div>
+    <div>
+      {/* Month navigation */}
+      <div className="flex items-center justify-between mb-3">
+        <button
+          onClick={() => setCalMonth(m => { const d = new Date(m.year, m.month - 1, 1); return { year: d.getFullYear(), month: d.getMonth() }; })}
+          className="w-7 h-7 rounded-full flex items-center justify-center"
+          style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}
+        >
+          <ChevronLeft size={14} style={{ color: `${amber}0.80)` }} />
+        </button>
+        <p className="text-[13px] font-semibold" style={{ color: isDark ? '#f5dfa0' : '#1a0a02', fontFamily: 'var(--font-serif)' }}>
+          {monthLabel}
+        </p>
+        <button
+          onClick={() => setCalMonth(m => { const d = new Date(m.year, m.month + 1, 1); return { year: d.getFullYear(), month: d.getMonth() }; })}
+          className="w-7 h-7 rounded-full flex items-center justify-center"
+          style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}
+        >
+          <ChevronRight size={14} style={{ color: `${amber}0.80)` }} />
+        </button>
+      </div>
+
+      {/* Day headers */}
+      <div className="grid grid-cols-7 gap-1 mb-1.5">
+        {['S','M','T','W','T','F','S'].map((d, i) => (
+          <div key={i} className="text-center text-[10px] font-semibold" style={{ color: sub }}>{d}</div>
         ))}
       </div>
-      <div className="flex items-center gap-3 mt-1">
+
+      {/* Day cells */}
+      <div className="grid grid-cols-7 gap-1">
+        {calDays.map((iso, i) => {
+          if (!iso) return <div key={i} />;
+          const d = dayMap[iso];
+          const both = d?.japa && d?.nitya;
+          const isToday    = iso === todayIso;
+          const isSelected = iso === selectedDay;
+          const bg = isSelected
+            ? `${amber}0.90)`
+            : both         ? `${amber}0.65)`
+            : d?.japa      ? isDark ? `${amber}0.30)` : `${amber}0.22)`
+            : d?.nitya     ? isDark ? `${green}0.30)` : `${green}0.22)`
+            : 'transparent';
+          const color = isSelected
+            ? '#fff'
+            : (d?.japa || d?.nitya)
+              ? isDark ? 'rgba(245,210,130,0.92)' : '#3a1a02'
+              : isDark ? 'rgba(245,210,130,0.25)' : 'rgba(100,55,10,0.30)';
+          return (
+            <motion.button
+              key={iso}
+              onClick={() => setSelectedDay(isSelected ? null : iso)}
+              whileTap={{ scale: 0.88 }}
+              className="aspect-square flex items-center justify-center rounded-full text-[11px] transition-all"
+              style={{
+                background: bg,
+                color,
+                border: isToday ? `1.5px solid ${amber}0.70)` : 'none',
+                fontWeight: isToday || isSelected ? 700 : 400,
+              }}
+            >
+              {new Date(iso + 'T12:00:00').getDate()}
+            </motion.button>
+          );
+        })}
+      </div>
+
+      {/* Legend */}
+      <div className="flex items-center gap-4 mt-3 justify-center">
         {[
-          { color: 'rgba(200,146,74,0.85)', label: 'Both' },
-          { color: 'rgba(200,146,74,0.45)', label: 'Japa' },
-          { color: 'rgba(140,180,100,0.50)', label: 'Nitya' },
+          { color: `${amber}0.65)`, label: 'Both' },
+          { color: `${amber}0.30)`, label: 'Japa' },
+          { color: `${green}0.30)`, label: 'Nitya' },
         ].map(({ color, label }) => (
           <div key={label} className="flex items-center gap-1">
-            <div className="w-2.5 h-2.5 rounded-[3px]" style={{ background: color }} />
-            <span className="text-[10px]" style={{ color: isDark ? 'rgba(245,210,130,0.38)' : 'rgba(100,60,10,0.45)' }}>{label}</span>
+            <div className="w-2.5 h-2.5 rounded-full" style={{ background: color }} />
+            <span className="text-[10px]" style={{ color: sub }}>{label}</span>
           </div>
         ))}
       </div>
+
+      <AnimatePresence>
+        {selectedDay && <DayDetail iso={selectedDay} />}
+      </AnimatePresence>
     </div>
   );
 }
@@ -362,66 +520,23 @@ export default function MyProgressClient({
 }: Props) {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
-  const isDark = resolvedTheme === 'dark';
-  const [showReport, setShowReport] = useState(false);
+  const isDark    = resolvedTheme === 'dark';
+  const [showReport, setShowReport]     = useState(false);
+  const [calMonthView, setCalMonthView] = useState(false); // false = 28d strip, true = full month
 
   // Theme tokens
   const pageBg  = isDark ? 'linear-gradient(180deg,#130e08 0%,#1a1208 100%)' : 'linear-gradient(180deg,#fdf6ee 0%,#f7ede0 100%)';
   const cardBg  = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.90)';
   const cardBdr = isDark ? 'rgba(200,146,74,0.12)' : 'rgba(180,120,40,0.14)';
+  const heroBg  = isDark ? 'linear-gradient(160deg,rgba(50,24,8,0.97),rgba(28,16,6,0.99))' : 'linear-gradient(160deg,rgba(255,243,222,0.99),rgba(250,231,201,0.99))';
   const h1      = isDark ? '#f5dfa0' : '#1a0a02';
   const muted   = isDark ? 'rgba(245,210,130,0.45)' : 'rgba(100,55,10,0.50)';
   const dimText = isDark ? 'rgba(245,210,130,0.30)' : 'rgba(100,55,10,0.35)';
-  const amber   = 'rgba(200,146,74,0.65)';
+  const amber   = 'rgba(200,146,74,0.70)';
 
-  const nityaRate = Math.round((nitya30dDays / 30) * 100);
-
-  const pillars = [
-    {
-      emoji: '📿', label: 'Japa',
-      stats: [
-        { val: String(japa30dSessions), sub: 'sessions' },
-        { val: fmt(japa30dBeads),       sub: 'beads'    },
-        { val: `${japa30dMins}m`,       sub: 'sat'      },
-      ],
-      href: '/japa',
-      insightsHref: '/japa/insights',
-      accent: 'rgba(200,146,74,',
-    },
-    {
-      emoji: '🌅', label: 'Nitya',
-      stats: [
-        { val: `${nitya30dDays}`, sub: 'days' },
-        { val: `${nityaRate}%`,   sub: 'rate' },
-        { val: japa30dRounds > 0 ? `${streak}🔥` : '—', sub: 'streak' },
-      ],
-      href: '/nitya-karma',
-      insightsHref: null,
-      accent: 'rgba(140,180,100,',
-    },
-    {
-      emoji: '🕉️', label: 'Sattvic',
-      stats: [
-        { val: '—', sub: 'min sat' },
-        { val: '—', sub: 'sessions' },
-        { val: '—', sub: 'env'     },
-      ],
-      href: '/bhakti/zen',
-      insightsHref: null,
-      accent: 'rgba(130,100,220,',
-    },
-    {
-      emoji: '📖', label: 'Pathshala',
-      stats: [
-        { val: '—', sub: 'lessons' },
-        { val: '—', sub: 'verses'  },
-        { val: '—', sub: 'paths'   },
-      ],
-      href: '/pathshala',
-      insightsHref: null,
-      accent: 'rgba(80,160,200,',
-    },
-  ];
+  const nityaRate   = Math.round((nitya30dDays / 30) * 100);
+  const japaRate    = Math.round((heatmap.filter(d => d.japa).length / 28) * 100);
+  const activeDays  = heatmap.filter(d => d.japa || d.nitya).length;
 
   return (
     <>
@@ -429,16 +544,16 @@ export default function MyProgressClient({
         {/* Safe area */}
         <div style={{ height: 'max(env(safe-area-inset-top,0px),16px)' }} />
 
-        {/* Top bar */}
-        <div className="flex items-center gap-3 px-4 pb-3">
+        {/* ── Top bar ── */}
+        <div className="flex items-center gap-3 px-4 pb-4">
           <button onClick={() => router.back()}
             className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.20)' }}>
-            <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.80)' }} />
+            style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.18)' }}>
+            <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.85)' }} />
           </button>
-          <div>
-            <p className="text-[11px] tracking-widest uppercase" style={{ color: muted }}>My Progress</p>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 600, color: h1, lineHeight: 1.1 }}>
+          <div className="flex-1">
+            <p className="text-[10px] tracking-[0.18em] uppercase font-medium" style={{ color: muted }}>My Progress</p>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.35rem', fontWeight: 700, color: h1, lineHeight: 1.1 }}>
               {userName}&apos;s Sādhana
             </h1>
           </div>
@@ -446,90 +561,221 @@ export default function MyProgressClient({
 
         <div className="px-4 space-y-4">
 
-          {/* ── Streak + heatmap hero ── */}
+          {/* ── Activity calendar hero ── */}
           <motion.section
-            initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: -14 }} animate={{ opacity: 1, y: 0 }}
             className="rounded-[2rem] p-5"
-            style={{ background: isDark ? 'linear-gradient(160deg,rgba(50,24,8,0.95),rgba(28,16,6,0.98))' : 'linear-gradient(160deg,rgba(255,242,220,0.98),rgba(250,230,200,0.99))', border: `1px solid ${cardBdr}` }}>
-            <div className="flex items-center justify-between mb-4">
+            style={{ background: heroBg, border: `1px solid ${cardBdr}` }}>
+
+            {/* Header row: streak + calendar toggle */}
+            <div className="flex items-start justify-between mb-5">
               <div>
-                <p className="text-[10px] uppercase tracking-widest" style={{ color: muted }}>Current streak</p>
-                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '2.4rem', fontWeight: 700, color: h1, lineHeight: 1 }}>
-                  {streak}<span className="text-xl">🔥</span>
+                <p className="text-[10px] uppercase tracking-[0.16em] font-semibold mb-1" style={{ color: muted }}>Current Streak</p>
+                <div className="flex items-baseline gap-2">
+                  <motion.p
+                    style={{ fontFamily: 'var(--font-serif)', fontSize: '3rem', fontWeight: 700, color: h1, lineHeight: 1 }}
+                    animate={{ scale: streak > 0 ? [1, 1.04, 1] : 1 }}
+                    transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 3, ease: 'easeInOut' }}
+                  >
+                    {streak}
+                  </motion.p>
+                  <span style={{ fontSize: '1.8rem' }}>🔥</span>
+                </div>
+                <p className="text-[11px] mt-1" style={{ color: dimText }}>
+                  {streak === 0 ? 'Start your streak today' : `day${streak !== 1 ? 's' : ''} in a row`}
                 </p>
-                <p className="text-xs mt-0.5" style={{ color: dimText }}>days of continuous practice</p>
               </div>
-              <Link href="/japa/insights"
-                className="rounded-full px-4 py-1.5 text-xs font-medium"
-                style={{ background: 'rgba(200,146,74,0.12)', color: 'rgba(200,146,74,0.85)', border: '1px solid rgba(200,146,74,0.22)' }}>
-                Japa insights →
-              </Link>
+
+              {/* Quick stats column */}
+              <div className="flex flex-col gap-1.5 items-end">
+                <div className="rounded-xl px-3 py-1.5 text-center" style={{ background: isDark ? 'rgba(200,146,74,0.12)' : 'rgba(200,146,74,0.10)', border: `1px solid rgba(200,146,74,0.18)` }}>
+                  <p className="text-[15px] font-bold" style={{ color: h1 }}>{activeDays}</p>
+                  <p className="text-[9px]" style={{ color: muted }}>active days</p>
+                </div>
+                <div className="rounded-xl px-3 py-1.5 text-center" style={{ background: isDark ? 'rgba(140,180,100,0.10)' : 'rgba(140,180,100,0.10)', border: '1px solid rgba(140,180,100,0.18)' }}>
+                  <p className="text-[15px] font-bold" style={{ color: h1 }}>{nityaRate}%</p>
+                  <p className="text-[9px]" style={{ color: muted }}>nitya rate</p>
+                </div>
+              </div>
             </div>
-            <Heatmap days={heatmap} isDark={isDark} />
-            <p className="text-[10px] text-right mt-2" style={{ color: dimText }}>Last 28 days</p>
+
+            {/* Calendar view toggle */}
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: dimText }}>
+                {calMonthView ? 'Month view' : 'Last 28 days'}
+              </p>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setCalMonthView(false)}
+                  className="w-7 h-7 rounded-full flex items-center justify-center transition-all"
+                  style={{
+                    background: !calMonthView ? 'rgba(200,146,74,0.20)' : 'transparent',
+                    border: !calMonthView ? '1px solid rgba(200,146,74,0.35)' : '1px solid transparent',
+                  }}
+                  aria-label="Strip view"
+                >
+                  <LayoutGrid size={13} style={{ color: amber }} />
+                </button>
+                <button
+                  onClick={() => setCalMonthView(true)}
+                  className="w-7 h-7 rounded-full flex items-center justify-center transition-all"
+                  style={{
+                    background: calMonthView ? 'rgba(200,146,74,0.20)' : 'transparent',
+                    border: calMonthView ? '1px solid rgba(200,146,74,0.35)' : '1px solid transparent',
+                  }}
+                  aria-label="Month calendar"
+                >
+                  <Calendar size={13} style={{ color: amber }} />
+                </button>
+              </div>
+            </div>
+
+            {/* Interactive calendar */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={calMonthView ? 'month' : 'strip'}
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+              >
+                <InteractiveCalendar days={heatmap} isDark={isDark} monthView={calMonthView} />
+              </motion.div>
+            </AnimatePresence>
           </motion.section>
 
-          {/* ── Pillar cards grid ── */}
-          <div className="grid grid-cols-2 gap-3">
-            {pillars.map((p, i) => (
-              <motion.div key={p.label}
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + i * 0.07 }}>
-                <Link href={p.href}
-                  className="block rounded-[1.6rem] p-4 h-full"
-                  style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: isDark ? 'none' : '0 1px 8px rgba(0,0,0,0.05)' }}>
-                  {/* Accent top strip */}
-                  <div className="h-0.5 rounded-full mb-3" style={{ background: `${p.accent}0.6)` }} />
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xl">{p.emoji}</span>
-                    {p.insightsHref && (
-                      <Link href={p.insightsHref} onClick={e => e.stopPropagation()}
-                        className="text-[10px] rounded-full px-2 py-0.5"
-                        style={{ color: `${p.accent}0.8)`, background: `${p.accent}0.10)`, border: `1px solid ${p.accent}0.20)` }}>
-                        Insights
-                      </Link>
-                    )}
+          {/* ── Practice pillars — full-width cards ── */}
+          <motion.section
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.10 }}
+            className="space-y-3"
+          >
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] px-1" style={{ color: muted }}>Practice Pillars · 30 days</p>
+
+            {/* Japa card — full width with rich stats */}
+            <div className="rounded-[1.8rem] p-5" style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: isDark ? 'none' : '0 1px 10px rgba(0,0,0,0.05)' }}>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">📿</span>
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: muted }}>Japa</p>
+                    <p className="text-xs" style={{ color: dimText }}>Mantra repetition</p>
                   </div>
-                  <p className="text-sm font-semibold mb-2" style={{ color: h1 }}>{p.label}</p>
-                  <div className="space-y-1">
-                    {p.stats.map(({ val, sub }) => (
-                      <div key={sub} className="flex items-baseline gap-1.5">
-                        <span className="text-base font-bold" style={{ color: h1 }}>{val}</span>
-                        <span className="text-[10px]" style={{ color: muted }}>{sub}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-[9px] mt-2" style={{ color: dimText }}>Last 30 days</p>
+                </div>
+                <Link href="/japa/insights"
+                  className="rounded-full px-3.5 py-1.5 text-[11px] font-semibold"
+                  style={{ background: 'rgba(200,146,74,0.12)', color: 'rgba(200,146,74,0.90)', border: '1px solid rgba(200,146,74,0.22)' }}>
+                  Insights →
                 </Link>
-              </motion.div>
-            ))}
-          </div>
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {[
+                  { val: String(japa30dSessions), sub: 'sessions' },
+                  { val: fmt(japa30dBeads),       sub: 'beads'    },
+                  { val: japa30dRounds > 0 ? String(japa30dRounds) : '—', sub: 'rounds'   },
+                  { val: japa30dMins > 0 ? `${japa30dMins}m` : '—',       sub: 'sat'      },
+                ].map(({ val, sub: s }) => (
+                  <div key={s} className="text-center rounded-xl py-2" style={{ background: isDark ? 'rgba(200,146,74,0.07)' : 'rgba(200,146,74,0.06)' }}>
+                    <p className="text-[16px] font-bold" style={{ color: h1 }}>{val}</p>
+                    <p className="text-[9px] mt-0.5" style={{ color: muted }}>{s}</p>
+                  </div>
+                ))}
+              </div>
+              {/* Consistency bar */}
+              <div className="mt-4">
+                <div className="flex justify-between mb-1">
+                  <span className="text-[10px]" style={{ color: muted }}>Consistency</span>
+                  <span className="text-[10px] font-semibold" style={{ color: 'rgba(200,146,74,0.85)' }}>{japaRate}%</span>
+                </div>
+                <div className="h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}>
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ background: 'linear-gradient(90deg,rgba(200,146,74,0.75),rgba(212,100,20,0.85))' }}
+                    initial={{ width: 0 }} animate={{ width: `${japaRate}%` }}
+                    transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                  />
+                </div>
+              </div>
+              {topMantra && (
+                <p className="text-[11px] mt-3 pt-3" style={{ color: muted, borderTop: `1px solid ${cardBdr}` }}>
+                  Most chanted: <span style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{topMantra}</span>
+                </p>
+              )}
+            </div>
+
+            {/* Nitya Karma card */}
+            <div className="rounded-[1.8rem] p-5" style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: isDark ? 'none' : '0 1px 10px rgba(0,0,0,0.05)' }}>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">🌅</span>
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: muted }}>Nitya Karma</p>
+                    <p className="text-xs" style={{ color: dimText }}>Daily practices</p>
+                  </div>
+                </div>
+                <Link href="/nitya-karma"
+                  className="rounded-full px-3.5 py-1.5 text-[11px] font-semibold"
+                  style={{ background: 'rgba(140,180,100,0.12)', color: 'rgba(100,160,70,0.90)', border: '1px solid rgba(140,180,100,0.22)' }}>
+                  Open →
+                </Link>
+              </div>
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                {[
+                  { val: String(nitya30dDays), sub: 'days done' },
+                  { val: `${nityaRate}%`,      sub: 'rate'      },
+                  { val: `${30 - nitya30dDays}`, sub: 'missed'  },
+                ].map(({ val, sub: s }) => (
+                  <div key={s} className="text-center rounded-xl py-2" style={{ background: isDark ? 'rgba(140,180,100,0.07)' : 'rgba(140,180,100,0.06)' }}>
+                    <p className="text-[16px] font-bold" style={{ color: h1 }}>{val}</p>
+                    <p className="text-[9px] mt-0.5" style={{ color: muted }}>{s}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-between mb-1">
+                <span className="text-[10px]" style={{ color: muted }}>Completion rate</span>
+                <span className="text-[10px] font-semibold" style={{ color: 'rgba(100,160,70,0.85)' }}>{nityaRate}%</span>
+              </div>
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}>
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{ background: 'linear-gradient(90deg,rgba(140,180,100,0.75),rgba(90,150,60,0.85))' }}
+                  initial={{ width: 0 }} animate={{ width: `${nityaRate}%` }}
+                  transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+                />
+              </div>
+            </div>
+
+            {/* Pathshala + Sattvic mini cards */}
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { emoji: '📖', label: 'Pathshala', sub: 'Study paths', href: '/pathshala', accent: 'rgba(80,160,200,' },
+                { emoji: '🕉️', label: 'Sattvic',   sub: 'Meditation', href: '/bhakti/zen', accent: 'rgba(130,100,220,' },
+              ].map(p => (
+                <Link key={p.label} href={p.href}
+                  className="block rounded-[1.6rem] p-4"
+                  style={{ background: cardBg, border: `1px solid ${cardBdr}` }}>
+                  <div className="h-0.5 rounded-full mb-3" style={{ background: `${p.accent}0.55)` }} />
+                  <span className="text-xl block mb-2">{p.emoji}</span>
+                  <p className="text-sm font-semibold" style={{ color: h1 }}>{p.label}</p>
+                  <p className="text-[10px] mt-0.5" style={{ color: muted }}>{p.sub}</p>
+                  <p className="text-[10px] mt-3 font-medium" style={{ color: `${p.accent}0.70)` }}>Open →</p>
+                </Link>
+              ))}
+            </div>
+          </motion.section>
 
           {/* ── Day-of-week chart ── */}
           <motion.section
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
-            className="rounded-[1.6rem] p-4"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.30 }}
+            className="rounded-[1.8rem] p-5"
             style={{ background: cardBg, border: `1px solid ${cardBdr}` }}>
-            <p className="text-[11px] font-semibold uppercase tracking-wider mb-1"
-              style={{ color: amber }}>Practice Days</p>
-            <p className="text-[10px] mb-3" style={{ color: muted }}>Which days you sit for japa</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] mb-0.5" style={{ color: amber }}>
+              Practice Rhythm
+            </p>
+            <p className="text-[10px] mb-4" style={{ color: muted }}>Which days you sit for japa (last 30 days)</p>
             <DowChart counts={dowCounts} isDark={isDark} />
           </motion.section>
 
-          {/* ── Top mantra ── */}
-          {topMantra && (
-            <motion.section
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.42 }}
-              className="rounded-[1.6rem] px-5 py-4 text-center"
-              style={{ background: isDark ? 'rgba(40,22,8,0.7)' : 'rgba(255,242,220,0.90)', border: `1px solid ${cardBdr}` }}>
-              <p className="text-[10px] uppercase tracking-widest mb-1" style={{ color: muted }}>Most Chanted</p>
-              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 600, color: h1 }}>{topMantra}</p>
-            </motion.section>
-          )}
-
-          {/* ── Premium report CTA ── */}
+          {/* ── Monthly Sadhana Report CTA ── */}
           <motion.section
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.48 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.40 }}
             className="rounded-[2rem] p-5 text-center"
             style={{ background: isDark ? 'linear-gradient(140deg,rgba(50,28,8,0.95),rgba(28,16,6,0.98))' : 'linear-gradient(140deg,rgba(255,238,210,0.98),rgba(245,222,185,0.99))', border: '1px solid rgba(200,146,74,0.22)' }}>
             <p className="text-2xl mb-2">📊</p>

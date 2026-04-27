@@ -684,7 +684,7 @@ export default function ProfileClient({
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 space-y-3">
+          <div className="rounded-2xl surface-input border px-4 py-4 space-y-3">
             <button
               type="button"
               onClick={() => setShowNotificationAdvanced((current) => !current)}
@@ -694,7 +694,7 @@ export default function ProfileClient({
                 <p className="text-sm font-medium theme-ink">Notifications</p>
                 <p className="text-xs theme-dim mt-1">Daily, festival, community, and family reminders.</p>
               </div>
-              <span className="type-chip rounded-full border border-white/8 px-3 py-1 text-[color:var(--text-cream)]">
+              <span className="type-chip rounded-full surface-input border px-3 py-1 text-[color:var(--text-cream)]">
                 {showNotificationAdvanced ? 'Hide' : 'Show'}
               </span>
             </button>
@@ -838,7 +838,7 @@ export default function ProfileClient({
                 {hiddenItems.map((item) => {
                   const busy = safetyBusyKey === `hide:${item.content_type}:${item.content_id}`;
                   return (
-                    <div key={`${item.content_type}:${item.content_id}`} className="rounded-2xl border border-white/8 bg-white/[0.03] px-3 py-3 flex items-center gap-3">
+                    <div key={`${item.content_type}:${item.content_id}`} className="rounded-2xl surface-input border px-3 py-3 flex items-center gap-3">
                       <div
                         className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
                         style={{ background: 'rgba(124, 58, 45, 0.08)', color: 'var(--brand-primary)' }}
@@ -887,7 +887,7 @@ export default function ProfileClient({
             {(() => {
               const t = TRADITIONS.find(t => t.value === form.tradition);
               return t ? (
-                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.04] border border-white/8">
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl surface-input border">
                   <span className="text-2xl">{t.emoji}</span>
                   <div>
                     <p className="font-semibold text-sm theme-ink">{t.label}</p>
@@ -1023,7 +1023,7 @@ export default function ProfileClient({
               </select>
             </div>
             <div>
-              <label className="flex items-start justify-between gap-4 rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 cursor-pointer">
+              <label className="flex items-start justify-between gap-4 rounded-2xl surface-input border px-4 py-3 cursor-pointer">
                 <div>
                   <p className="text-sm font-medium theme-ink">Show transliteration</p>
                   <p className="text-xs theme-dim mt-1 leading-relaxed">Keep Roman transliteration visible when available.</p>

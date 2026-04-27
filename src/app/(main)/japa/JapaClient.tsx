@@ -1120,11 +1120,11 @@ export default function JapaClient({
           key="japa"
           className="flex flex-col"
           style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 100,
             background: bg,
-            minHeight: '100dvh',
-            marginLeft: '-0.75rem',
-            marginRight: '-0.75rem',
-            marginTop: '-0.5rem',
+            overflowY: 'auto',
           }}
           initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
