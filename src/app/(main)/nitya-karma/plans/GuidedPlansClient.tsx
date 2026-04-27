@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, CheckCircle2, Play, X, Flame, ArrowRight, Clock, Target } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle2, Play, X, Flame, ArrowRight, Clock, Target, BarChart2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import type { GuidedPlan, GuidedPathStatus, GuidedPlanDay } from '@/lib/guided-paths';
@@ -131,6 +131,8 @@ function PlanDetailSheet({
   onClose,
   onStart,
   onAbandon,
+  onRestart,
+  onLeave,
   onDayComplete,
   starting,
 }: {
@@ -141,6 +143,8 @@ function PlanDetailSheet({
   onClose:       () => void;
   onStart:       () => void;
   onAbandon:     () => void;
+  onRestart:     () => void;
+  onLeave:       () => void;
   onDayComplete: (newDay: number) => void;
   starting:      boolean;
 }) {
@@ -404,11 +408,12 @@ function PlanDetailSheet({
                 )}
 
                 {isActive && (
-                  <div className="flex gap-3">
+                  <div className="space-y-2">
+                    {/* Primary CTA */}
                     <motion.button
                       onClick={() => setView('day')}
                       whileTap={{ scale: 0.97 }}
-                      className="flex-1 py-3.5 rounded-[1.1rem] font-semibold text-sm flex items-center justify-center gap-2"
+                      className="w-full py-4 rounded-[1.1rem] font-semibold text-sm flex items-center justify-center gap-2"
                       style={{
                         background: `linear-gradient(135deg, ${plan.accentColor}ee, ${plan.accentColor}aa)`,
                         color: '#1a0c04',
@@ -418,13 +423,30 @@ function PlanDetailSheet({
                       <ArrowRight size={14} />
                       Continue Day {currentDay}
                     </motion.button>
-                    <button
-                      onClick={onAbandon}
-                      className="py-3.5 px-4 rounded-[1.1rem] text-sm"
-                      style={{ background: 'var(--surface-raised)', color: 'var(--brand-muted)', border: '1px solid rgba(200,146,74,0.12)' }}
-                    >
-                      Pause
-                    </button>
+                    {/* Secondary actions row */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={onRestart}
+                        className="flex-1 py-2.5 rounded-[0.9rem] text-xs font-semibold"
+                        style={{ background: 'var(--surface-raised)', color: 'var(--brand-muted)', border: '1px solid rgba(200,146,74,0.12)' }}
+                      >
+                        🔄 Start Over
+                      </button>
+                      <button
+                        onClick={onAbandon}
+                        className="flex-1 py-2.5 rounded-[0.9rem] text-xs font-semibold"
+                        style={{ background: 'var(--surface-raised)', color: 'var(--brand-muted)', border: '1px solid rgba(200,146,74,0.12)' }}
+                      >
+                        ⏸ Pause
+                      </button>
+                      <button
+                        onClick={onLeave}
+                        className="flex-1 py-2.5 rounded-[0.9rem] text-xs font-semibold"
+                        style={{ background: 'rgba(220,60,60,0.07)', color: 'rgba(220,80,80,0.8)', border: '1px solid rgba(220,60,60,0.15)' }}
+                      >
+                        ✕ Leave
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -503,8 +525,9 @@ export default function GuidedPlansClient({ userId, tradition, plans, statusMap,
   }
 
   async function abandonPlan(plan: GuidedPlan) {
+    // Pause — keeps progress, sets status to dismissed
     try {
-      await supabase
+      const { error } = await supabase
         .from('guided_path_progress')
         .upsert({
           user_id:    userId,
@@ -512,12 +535,61 @@ export default function GuidedPlansClient({ userId, tradition, plans, statusMap,
           status:     'dismissed',
           updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id,path_id' });
-
+      if (error) throw error;
       setLocalStatus(prev => ({ ...prev, [plan.id]: 'dismissed' }));
       setSelected(null);
-      toast('Plan paused. You can restart anytime.', { icon: '⏸️' });
+      toast('Plan paused. Your progress is saved — resume anytime.', { icon: '⏸️' });
     } catch (err) {
       console.error(err);
+      toast.error('Could not pause. Try again.');
+    }
+  }
+
+  async function restartPlan(plan: GuidedPlan) {
+    // Start Over — resets to Day 1, status active
+    try {
+      const { error } = await supabase
+        .from('guided_path_progress')
+        .upsert({
+          user_id:      userId,
+          path_id:      plan.id,
+          status:       'active',
+          started_at:   new Date().toISOString(),
+          completed_at: null,
+          day_reached:  1,
+          updated_at:   new Date().toISOString(),
+        }, { onConflict: 'user_id,path_id' });
+      if (error) throw error;
+      setLocalStatus(prev => ({ ...prev, [plan.id]: 'active' }));
+      setLocalDayMap(prev => ({ ...prev, [plan.id]: 1 }));
+      setSelected(null);
+      toast.success('Starting fresh from Day 1 🙏', {
+        style: { background: '#1c1c1a', color: '#f0ede4', border: `1px solid ${plan.accentColor}40`, borderRadius: '14px' },
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error('Could not restart. Try again.');
+    }
+  }
+
+  async function leavePlan(plan: GuidedPlan) {
+    // Leave — removes the record entirely (or marks abandoned permanently)
+    const confirmed = window.confirm(`Leave "${plan.title}"? All progress will be lost.`);
+    if (!confirmed) return;
+    try {
+      const { error } = await supabase
+        .from('guided_path_progress')
+        .delete()
+        .eq('user_id', userId)
+        .eq('path_id', plan.id);
+      if (error) throw error;
+      setLocalStatus(prev => { const n = { ...prev }; delete n[plan.id]; return n; });
+      setLocalDayMap(prev =>  { const n = { ...prev }; delete n[plan.id]; return n; });
+      setSelected(null);
+      toast('Plan removed. You can start again anytime.', { icon: '✕' });
+    } catch (err) {
+      console.error(err);
+      toast.error('Could not remove. Try again.');
     }
   }
 
@@ -544,6 +616,13 @@ export default function GuidedPlansClient({ userId, tradition, plans, statusMap,
           <h1 className="font-bold text-lg" style={{ color: 'var(--brand-ink)' }}>Sadhana Patha</h1>
           <p className="text-xs" style={{ color: 'var(--text-dim)' }}>7-day and 21-day structured practices</p>
         </div>
+        <button
+          onClick={() => router.push('/nitya-karma/plans/insights')}
+          className="w-9 h-9 rounded-full glass-panel border border-white/10 flex items-center justify-center"
+          title="View insights"
+        >
+          <BarChart2 size={17} style={{ color: '#C8924A' }} />
+        </button>
       </div>
 
       {/* Active plan banner — shown when a plan is in progress */}
@@ -743,6 +822,8 @@ export default function GuidedPlansClient({ userId, tradition, plans, statusMap,
             onClose={() => setSelected(null)}
             onStart={() => startPlan(selected)}
             onAbandon={() => abandonPlan(selected)}
+            onRestart={() => restartPlan(selected)}
+            onLeave={() => leavePlan(selected)}
             onDayComplete={(newDay) => handleDayComplete(selected, newDay)}
             starting={starting}
           />

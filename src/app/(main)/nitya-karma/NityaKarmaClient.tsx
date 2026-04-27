@@ -808,14 +808,19 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
   async function saveAshramaSetup(stage: string, gc: string | null) {
     setSavingAshrama(true);
     try {
-      await supabase.from('profiles').update({
+      // Must destructure { error } — Supabase does NOT throw on DB errors,
+      // it returns them. Without this check, the toast fires and local state
+      // updates even on a failed write, so the prompt reappears next login.
+      const { error } = await supabase.from('profiles').update({
         life_stage:     stage,
         gender_context: gc ?? null,
       }).eq('id', userId);
+      if (error) throw error;
       setLocalLifeStage(stage);
       setLocalGenderCtx(gc);
       toast.success('Ashrama Dharma unlocked 🙏');
     } catch (err: any) {
+      console.error('[Ashrama save]', err);
       toast.error('Could not save — try again');
     } finally {
       setSavingAshrama(false);

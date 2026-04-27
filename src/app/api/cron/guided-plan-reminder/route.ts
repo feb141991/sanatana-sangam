@@ -139,25 +139,10 @@ export async function GET(request: Request) {
       totalPushTargets += pushResult.sent;
     }
 
-    // 6. Advance day_reached for users who received today's notification
-    // (increment by 1, cap at plan.days.length, mark completed if done)
-    for (const row of windowPlans as any[]) {
-      if (!insertedUserIds.includes(row.user_id)) continue;
-      const plan   = getPlanById(row.path_id);
-      if (!plan) continue;
-      const nextDay = (row.day_reached ?? 1) + 1;
-      const newStatus = nextDay > plan.days.length ? 'completed' : 'active';
-      await supabase
-        .from('guided_path_progress')
-        .update({
-          day_reached:  Math.min(nextDay, plan.days.length),
-          status:       newStatus,
-          completed_at: newStatus === 'completed' ? new Date().toISOString() : null,
-          updated_at:   new Date().toISOString(),
-        })
-        .eq('user_id', row.user_id)
-        .eq('path_id', row.path_id);
-    }
+    // NOTE: We do NOT auto-advance day_reached here.
+    // Day advancement is exclusively driven by the user tapping "Mark Day Complete"
+    // in the app. Auto-advancing on notification send would mark days complete
+    // without the user actually doing the practice.
 
     return NextResponse.json({
       message:      'Guided plan reminders sent',
