@@ -73,6 +73,7 @@ interface Props {
   sampradaya:        string | null;
   spiritualLevel:    string | null;
   seeking:           string[];
+  lifeStage:         string | null;
   customGreeting:    string | null;
   guidedPathProgress: GuidedPathProgressRow[];
   showFirstTimeGuidance: boolean;
@@ -742,6 +743,7 @@ export default function HomeDashboard({
   sampradaya,
   spiritualLevel,
   seeking,
+  lifeStage,
   customGreeting,
   guidedPathProgress,
   showFirstTimeGuidance,
@@ -945,6 +947,8 @@ export default function HomeDashboard({
     seeking,
     spiritualLevel,
     city: displayCity || null,
+    ashrama: lifeStage,
+    tradition,
   });
   const visiblePersonalizedPaths = personalizedPaths.filter((path) => {
     const status = guidedPathStatusMap[path.id];

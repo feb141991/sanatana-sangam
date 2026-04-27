@@ -21,6 +21,8 @@ type BuildPersonalizedPathsOptions = {
   seeking: string[];
   spiritualLevel?: string | null;
   city?: string | null;
+  ashrama?: string | null;
+  tradition?: string | null;
 };
 
 const PATH_DEFINITIONS: Record<SeekingKey, Omit<PersonalizedPath, 'id' | 'badges'>> = {
@@ -76,6 +78,84 @@ const PATH_DEFINITIONS: Record<SeekingKey, Omit<PersonalizedPath, 'id' | 'badges
   },
 };
 
+// ── Ashrama-specific card definitions ────────────────────────────────────────
+const ASHRAMA_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> = {
+  brahmacharya: {
+    eyebrow: 'Student Stage',
+    title: 'Build your foundation',
+    description: 'Focus on structured study and daily discipline. One text, one practice, one return each morning.',
+    accentClass: 'clay-card-knowledge',
+    actions: [
+      { label: 'Start a study path', href: '/library', icon: '📖' },
+      { label: 'Ask in Vichaar Sabha', href: '/vichaar-sabha', icon: '💬' },
+    ],
+  },
+  grihastha: {
+    eyebrow: 'Householder Stage',
+    title: 'Integrate dharma with life',
+    description: 'Practice within family, work, and community. Small, steady rhythms make the difference.',
+    accentClass: 'clay-card-community',
+    actions: [
+      { label: 'Open Kul', href: '/kul', icon: '❤️' },
+      { label: 'Open My Mandali', href: '/mandali', icon: '🏡' },
+    ],
+  },
+  vanaprastha: {
+    eyebrow: 'Elder Stage',
+    title: 'Share what you have learned',
+    description: 'Shift from doing to guiding. Mentorship, wisdom exchange, and deeper study are your path now.',
+    accentClass: 'clay-card-mentorship',
+    actions: [
+      { label: 'Answer in Vichaar Sabha', href: '/vichaar-sabha', icon: '🙏' },
+      { label: 'Explore Pathshala', href: '/library', icon: '📚' },
+    ],
+  },
+  sannyasa: {
+    eyebrow: 'Renunciate Stage',
+    title: 'Deepen your inner practice',
+    description: 'Let go of outcomes. Daily japa, sacred study, and being a quiet presence for others.',
+    accentClass: 'clay-card-guided',
+    actions: [
+      { label: 'Open Japa', href: '/japa', icon: '📿' },
+      { label: 'Study scripture', href: '/library', icon: '📖' },
+    ],
+  },
+};
+
+// ── Tradition-specific card overrides ─────────────────────────────────────────
+const TRADITION_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> = {
+  sikh: {
+    eyebrow: 'Sikh Path',
+    title: 'Root yourself in Gurbani',
+    description: 'Begin each day with Nitnem, study Guru Granth Sahib, and connect with your local Sangat.',
+    accentClass: 'clay-card-knowledge',
+    actions: [
+      { label: 'Study Gurbani', href: '/library', icon: '🙏' },
+      { label: 'Find Sangat', href: '/mandali', icon: '🏡' },
+    ],
+  },
+  buddhist: {
+    eyebrow: 'Buddhist Path',
+    title: 'Practice the Dhamma daily',
+    description: 'Cultivate mindfulness, study the suttas, and find your local Sangha for shared practice.',
+    accentClass: 'clay-card-guided',
+    actions: [
+      { label: 'Study Dhamma', href: '/library', icon: '☸️' },
+      { label: 'Find Sangha', href: '/mandali', icon: '🏡' },
+    ],
+  },
+  jain: {
+    eyebrow: 'Jain Path',
+    title: 'Walk the path of ahimsa',
+    description: 'Daily study of Agam, Samayika practice, and community — the three pillars of Jain sadhana.',
+    accentClass: 'clay-card-knowledge',
+    actions: [
+      { label: 'Study Agam', href: '/library', icon: '📖' },
+      { label: 'Open Mandali', href: '/mandali', icon: '🏡' },
+    ],
+  },
+};
+
 function normalizeSeeking(values: string[]): SeekingKey[] {
   return values.filter((value): value is SeekingKey =>
     value === 'community' ||
@@ -96,12 +176,15 @@ export function buildPersonalizedPaths({
   seeking,
   spiritualLevel,
   city,
+  ashrama,
+  tradition,
 }: BuildPersonalizedPathsOptions): PersonalizedPath[] {
   const normalized = normalizeSeeking(seeking);
   const effectiveSeeking = normalized.length > 0 ? normalized : getDefaultSeeking(spiritualLevel);
   const cards: PersonalizedPath[] = [];
   const isExplicitlyPersonalized = normalized.length > 0;
 
+  // ── 1. Jigyasu (beginner) card — always first ─────────────────────────────
   if (spiritualLevel === 'jigyasu') {
     cards.push({
       id: 'new-to-dharma',
@@ -111,12 +194,13 @@ export function buildPersonalizedPaths({
       badges: ['Beginner-friendly', 'First week'],
       accentClass: 'clay-card-guided',
       actions: [
-        { label: 'Read today’s sacred text', href: '/home?focus=shloka', icon: '🪷' },
+        { label: 'Read today\'s sacred text', href: '/home?focus=shloka', icon: '🪷' },
         { label: 'Browse Vichaar Sabha', href: '/vichaar-sabha', icon: '💬' },
       ],
     });
   }
 
+  // ── 2. City anchor card ───────────────────────────────────────────────────
   if (city) {
     const cityIsEntryPath = normalized.some((value) => value === 'community' || value === 'events');
     cards.push({
@@ -135,6 +219,29 @@ export function buildPersonalizedPaths({
     });
   }
 
+  // ── 3. Tradition card — non-Hindu traditions get a tradition-specific card ─
+  const normalisedTradition = tradition?.toLowerCase() ?? 'hindu';
+  if (normalisedTradition !== 'hindu' && normalisedTradition !== 'other' && TRADITION_CARDS[normalisedTradition]) {
+    const def = TRADITION_CARDS[normalisedTradition];
+    cards.push({
+      id: `seeking-${normalisedTradition}` as PersonalizedPathId,
+      ...def,
+      badges: ['Your tradition'],
+    });
+  }
+
+  // ── 4. Ashrama card — life-stage aware ───────────────────────────────────
+  const normalisedAshrama = ashrama?.toLowerCase() ?? null;
+  if (normalisedAshrama && ASHRAMA_CARDS[normalisedAshrama]) {
+    const def = ASHRAMA_CARDS[normalisedAshrama];
+    cards.push({
+      id: `seeking-${normalisedAshrama}` as PersonalizedPathId,
+      ...def,
+      badges: [`${normalisedAshrama.charAt(0).toUpperCase() + normalisedAshrama.slice(1)} stage`],
+    });
+  }
+
+  // ── 5. Seeking cards — from signup preferences ────────────────────────────
   for (const key of effectiveSeeking.slice(0, 2)) {
     const definition = PATH_DEFINITIONS[key];
     cards.push({
