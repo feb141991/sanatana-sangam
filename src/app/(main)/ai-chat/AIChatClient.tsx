@@ -392,7 +392,14 @@ export default function AIChatClient({ userId, userName, tradition, sampradaya, 
           </div>
           <div>
             <h1 className="font-display font-bold text-[color:var(--text-cream)] text-lg leading-tight">Dharma Mitra</h1>
-            <p className="text-xs text-[color:var(--text-dim)]">AI guide for life & spirituality</p>
+            {contextLabel ? (
+              <p className="text-[10px] font-medium px-2 py-0.5 rounded-full inline-block mt-0.5"
+                style={{ background: 'rgba(200,146,74,0.14)', color: 'rgba(200,146,74,0.85)' }}>
+                {contextLabel}
+              </p>
+            ) : (
+              <p className="text-xs text-[color:var(--text-dim)]">AI guide for life & spirituality</p>
+            )}
           </div>
         </div>
         {!isEmpty && (
