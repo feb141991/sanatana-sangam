@@ -8,17 +8,47 @@ import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { localSpiritualDate } from '@/lib/sacred-time';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
-interface Session {
-  date: string;
-  rounds: number;
-  bead_count: number;
-  duration_secs: number;
-  mantra_id: string;
+// Handles both:
+//   old schema (pre migration-v30): count, duration_seconds, mantra
+//   new schema (post migration-v30): rounds, bead_count, duration_secs, mantra_id, date
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Session = Record<string, any> & {
   created_at: string;
+  // New columns (null if migration not run)
+  date?: string | null;
+  rounds?: number | null;
+  bead_count?: number | null;
+  duration_secs?: number | null;
+  mantra_id?: string | null;
+  // Old columns (present in original schema)
+  count?: number | null;
+  duration_seconds?: number | null;
+  mantra?: string | null;
+};
+
+// ── Schema-agnostic field accessors ──────────────────────────────────────────
+function sessionBeads(s: Session): number {
+  return (s.bead_count ?? s.count ?? 0);
+}
+function sessionSecs(s: Session): number {
+  return (s.duration_secs ?? s.duration_seconds ?? 0);
+}
+function sessionMantra(s: Session): string | null {
+  return s.mantra_id ?? s.mantra ?? null;
+}
+function sessionRounds(s: Session): number {
+  if (s.rounds != null) return s.rounds;
+  // Old schema: count = total beads, estimate rounds from count
+  if (s.count != null) return Math.floor(s.count / 108);
+  return 0;
+}
+function sessionDate(s: Session): string {
+  return s.date ?? s.created_at?.slice(0, 10) ?? '';
 }
 
 interface Props {
-  sessions: Session[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  sessions: any[];
 }
 
 // ── Time filter options ───────────────────────────────────────────────────────
@@ -125,7 +155,8 @@ function getBestTimeOfDay(sessions: Session[]): string {
 
 // ── Month calendar view (interactive) ────────────────────────────────────────
 function CalendarMonthView({ sessions, isDark, amber, text, sub, borderCol, surface }: {
-  sessions: Session[]; isDark: boolean; amber: string; text: string; sub: string; borderCol: string; surface: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  sessions: any[]; isDark: boolean; amber: string; text: string; sub: string; borderCol: string; surface: string;
 }) {
   const now = new Date();
   const [calMonth, setCalMonth] = useState({ year: now.getFullYear(), month: now.getMonth() });
@@ -240,8 +271,8 @@ function CalendarMonthView({ sessions, isDark, amber, text, sub, borderCol, surf
                 <p className="text-[11px]" style={{ color: sub }}>No japa session this day.</p>
               ) : selectedSessions.map((s, i) => (
                 <div key={i} className="text-[11px]" style={{ color: text }}>
-                  📿 {s.rounds} mala{s.rounds !== 1 ? 's' : ''} · {s.bead_count} beads
-                  {s.duration_secs > 0 && ` · ${Math.round(s.duration_secs / 60)}m`}
+                  📿 {sessionRounds(s)} mala{sessionRounds(s) !== 1 ? 's' : ''} · {sessionBeads(s)} beads
+                  {sessionSecs(s) > 0 && ` · ${Math.round(sessionSecs(s) / 60)}m`}
                 </div>
               ))}
             </motion.div>
@@ -296,24 +327,22 @@ export default function InsightsClient({ sessions }: Props) {
 
   const filtered = useMemo(() =>
     // Use date if set (new sessions), fall back to created_at date for pre-migration rows
-    sessions.filter(s => (s.date ?? s.created_at?.slice(0, 10) ?? '') >= cutoff),
+    sessions.filter(s => sessionDate(s) >= cutoff),
     [sessions, cutoff]
   );
 
-  // Aggregate stats
+  // Aggregate stats — schema-agnostic via accessor helpers
   const stats = useMemo(() => {
-    const totalBeads    = filtered.reduce((a, s) => a + (s.bead_count ?? 0), 0);
+    const totalBeads    = filtered.reduce((a, s) => a + sessionBeads(s), 0);
     const totalSessions = filtered.length;
-    const totalSecs     = filtered.reduce((a, s) => a + (s.duration_secs ?? 0), 0);
+    const totalSecs     = filtered.reduce((a, s) => a + sessionSecs(s), 0);
     const avgPerDay     = days > 0 ? Math.round(totalBeads / days) : 0;
     return { totalBeads, totalSessions, totalSecs, avgPerDay };
   }, [filtered, days]);
 
   // Consistency: % of days in range that had a session
   const consistency = useMemo(() => {
-    const dateSet = new Set(
-      filtered.map(s => s.date ?? s.created_at?.slice(0, 10)).filter(Boolean)
-    );
+    const dateSet = new Set(filtered.map(s => sessionDate(s)).filter(Boolean));
     return days > 0 ? Math.round((dateSet.size / days) * 100) : 0;
   }, [filtered, days]);
 
@@ -321,7 +350,7 @@ export default function InsightsClient({ sessions }: Props) {
   const dowData = useMemo(() => {
     const counts = new Array(7).fill(0);
     for (const s of filtered) {
-      const dateKey = s.date ?? s.created_at?.slice(0, 10);
+      const dateKey = sessionDate(s);
       if (!dateKey) continue;
       const dow = new Date(dateKey + 'T12:00:00').getDay();
       counts[dow]++;
@@ -544,7 +573,7 @@ export default function InsightsClient({ sessions }: Props) {
               </p>
               <div className="space-y-2">
                 {filtered.slice(0, 12).map((s, i) => {
-                  const dateKey = s.date ?? s.created_at?.slice(0, 10) ?? '1970-01-01';
+                  const dateKey = sessionDate(s) || '1970-01-01';
                   const dateObj = new Date(dateKey + 'T12:00:00');
                   const dateStr = dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
                   const dow     = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dateObj.getDay()];
@@ -574,11 +603,11 @@ export default function InsightsClient({ sessions }: Props) {
                       {/* Stats */}
                       <div className="flex-1">
                         <p className="text-[13px] font-semibold" style={{ color: text }}>
-                          {s.rounds} mala{s.rounds !== 1 ? 's' : ''} · {fmtNum(s.bead_count)} beads
+                          {sessionRounds(s)} mala{sessionRounds(s) !== 1 ? 's' : ''} · {fmtNum(sessionBeads(s))} beads
                         </p>
                         <p className="text-[11px] mt-0.5" style={{ color: sub }}>
-                          {s.duration_secs > 0 ? fmtTime(s.duration_secs) : ''}
-                          {s.mantra_id ? ` · ${s.mantra_id.replace(/_/g, ' ')}` : ''}
+                          {sessionSecs(s) > 0 ? fmtTime(sessionSecs(s)) : ''}
+                          {sessionMantra(s) ? ` · ${sessionMantra(s)!.replace(/_/g, ' ')}` : ''}
                         </p>
                       </div>
 

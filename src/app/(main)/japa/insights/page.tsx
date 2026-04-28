@@ -12,9 +12,12 @@ export default async function JapaInsightsPage() {
   oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
   const fromDate = oneYearAgo.toISOString().slice(0, 10);
 
+  // Select * so the query never errors if migration-v30 hasn't been run yet.
+  // InsightsClient handles both old column names (count, duration_seconds, mantra)
+  // and new column names (rounds, bead_count, duration_secs, mantra_id, date).
   const { data: sessions, error: sessErr } = await supabase
     .from('mala_sessions')
-    .select('date, rounds, bead_count, duration_secs, mantra_id, created_at')
+    .select('*')
     .eq('user_id', user.id)
     .gte('created_at', fromDate + 'T00:00:00')   // filter by created_at — always exists
     .order('created_at', { ascending: false });

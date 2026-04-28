@@ -1042,22 +1042,38 @@ export default function JapaClient({
       const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
       const today = localSpiritualDate(tz, 4);
 
-      // Insert japa session and get new all-time count in parallel
-      const [insertResult, { count: newTotalSessions }] = await Promise.all([
-        supabase.from('mala_sessions').insert({
-          user_id: userId, date: today,
-          rounds: completedRounds,
-          bead_count: completedRounds * TOTAL_BEADS + partialBeads,
-          mantra_id: mantraId,
-          duration_secs: duration,
-        }),
+      // Insert japa session — try new schema first (post migration-v30),
+      // fall back to original column names if those columns don't exist yet.
+      const totalBeads = completedRounds * TOTAL_BEADS + partialBeads;
+      const newSchemaRow = {
+        user_id: userId, date: today,
+        rounds: completedRounds,
+        bead_count: totalBeads,
+        mantra_id: mantraId,
+        duration_secs: duration,
+      };
+      const oldSchemaRow = {
+        user_id: userId,
+        mantra: mantraId ?? 'om_namah_shivaya',
+        count: totalBeads,
+        duration_seconds: duration,
+      };
+
+      const [primaryInsert, { count: newTotalSessions }] = await Promise.all([
+        supabase.from('mala_sessions').insert(newSchemaRow),
         supabase.from('mala_sessions')
           .select('*', { count: 'exact', head: true })
           .eq('user_id', userId),
       ]);
-      if (insertResult.error) {
-        console.error('[Japa] mala_sessions insert failed:', insertResult.error);
-        throw insertResult.error;
+
+      if (primaryInsert.error) {
+        // New columns may not exist (migration-v30 not run) — try old schema
+        console.warn('[Japa] new-schema insert failed, trying old schema:', primaryInsert.error.message);
+        const fallback = await supabase.from('mala_sessions').insert(oldSchemaRow);
+        if (fallback.error) {
+          console.error('[Japa] mala_sessions insert failed (both schemas):', fallback.error);
+          throw fallback.error;
+        }
       }
 
       // Streak: look at yesterday's record to build a consecutive-day count
