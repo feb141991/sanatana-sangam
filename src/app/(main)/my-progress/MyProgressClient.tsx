@@ -4,7 +4,7 @@ import { useState, useRef, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Download, Lock, TrendingUp, TrendingDown, Minus, Calendar, LayoutGrid, Sparkles, Share2, ExternalLink } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, Lock, TrendingUp, TrendingDown, Minus, Calendar, Activity, Sparkles, Share2, ExternalLink } from 'lucide-react';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -56,11 +56,120 @@ function monthName(iso: string) {
   return new Date(iso).toLocaleString('default', { month: 'long', year: 'numeric' });
 }
 
+// ── 28-day Sparkline line graph ───────────────────────────────────────────────
+function SparklineView({ days, isDark }: { days: Props['heatmap']; isDark: boolean }) {
+  const amber   = 'rgba(200,146,74,';
+  const sub     = isDark ? 'rgba(245,210,130,0.35)' : 'rgba(100,60,10,0.40)';
+
+  // Build 28-day japa presence array (oldest → newest)
+  const sorted = [...days].sort((a, b) => a.date.localeCompare(b.date)).slice(-28);
+  const W = 300; const H = 72; const pad = 8;
+  const n = sorted.length;
+  if (n < 2) return <p className="text-center text-xs py-4" style={{ color: sub }}>Not enough data yet</p>;
+
+  const stepX = (W - pad * 2) / (n - 1);
+  // smooth path: japa = 1 → top zone; none = 0 → bottom
+  const pts = sorted.map((d, i) => ({
+    x: pad + i * stepX,
+    y: d.japa ? H * 0.18 : H * 0.82,
+    japa: d.japa,
+    date: d.date,
+  }));
+
+  // Catmull-rom smooth path
+  function catmullRom(p: typeof pts) {
+    if (p.length < 2) return '';
+    let d = `M ${p[0].x} ${p[0].y}`;
+    for (let i = 0; i < p.length - 1; i++) {
+      const p0 = p[Math.max(i - 1, 0)];
+      const p1 = p[i];
+      const p2 = p[i + 1];
+      const p3 = p[Math.min(i + 2, p.length - 1)];
+      const cp1x = p1.x + (p2.x - p0.x) / 6;
+      const cp1y = p1.y + (p2.y - p0.y) / 6;
+      const cp2x = p2.x - (p3.x - p1.x) / 6;
+      const cp2y = p2.y - (p3.y - p1.y) / 6;
+      d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
+    }
+    return d;
+  }
+
+  const linePath = catmullRom(pts);
+  const areaPath = linePath + ` L ${pts[n - 1].x} ${H} L ${pts[0].x} ${H} Z`;
+  const todayIso = new Date().toISOString().slice(0, 10);
+
+  const streak = sorted.reduceRight((acc, d) => {
+    if (acc.done) return acc;
+    if (d.japa) { acc.count++; return acc; }
+    acc.done = true; return acc;
+  }, { count: 0, done: false }).count;
+
+  return (
+    <div>
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: 'block', overflow: 'visible' }}>
+        <defs>
+          <linearGradient id="spkGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={`${amber}0.35)`} />
+            <stop offset="100%" stopColor={`${amber}0.00)`} />
+          </linearGradient>
+        </defs>
+        {/* Area fill */}
+        <motion.path d={areaPath} fill="url(#spkGrad)"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }} />
+        {/* Line */}
+        <motion.path d={linePath} fill="none"
+          stroke={`${amber}0.80)`} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
+          initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} />
+        {/* Dots for each day */}
+        {pts.map((pt, i) => (
+          <circle key={i}
+            cx={pt.x} cy={pt.y} r={pt.date === todayIso ? 4 : pt.japa ? 3 : 2}
+            fill={pt.japa ? `${amber}0.90)` : isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.10)'}
+            stroke={pt.date === todayIso ? `${amber}1.0)` : 'none'}
+            strokeWidth={1.5}
+          />
+        ))}
+        {/* Horizontal guide lines */}
+        <line x1={pad} y1={H * 0.18} x2={W - pad} y2={H * 0.18}
+          stroke={`${amber}0.08)`} strokeWidth={1} strokeDasharray="3,4" />
+        <line x1={pad} y1={H * 0.82} x2={W - pad} y2={H * 0.82}
+          stroke={`${amber}0.08)`} strokeWidth={1} strokeDasharray="3,4" />
+        {/* "Done" / "Rest" labels */}
+        <text x={W - pad + 3} y={H * 0.18 + 4} fontSize={8} fill={`${amber}0.45)`}>Japa</text>
+        <text x={W - pad + 3} y={H * 0.82 + 4} fontSize={8} fill={`${amber}0.28)`}>Rest</text>
+      </svg>
+
+      {/* Week labels */}
+      <div className="flex justify-between mt-1 px-2">
+        {['4w ago', '3w ago', '2w ago', 'This week'].map(l => (
+          <span key={l} className="text-[9px]" style={{ color: sub }}>{l}</span>
+        ))}
+      </div>
+
+      {/* Quick stats row */}
+      <div className="flex gap-2 mt-3">
+        {[
+          { val: `${sorted.filter(d => d.japa).length}`, label: 'days active' },
+          { val: `${streak}`, label: 'current streak' },
+          { val: `${Math.round((sorted.filter(d => d.japa).length / Math.max(sorted.length, 1)) * 100)}%`, label: 'consistency' },
+        ].map(({ val, label }) => (
+          <div key={label} className="flex-1 text-center rounded-xl py-1.5"
+            style={{ background: isDark ? 'rgba(200,146,74,0.07)' : 'rgba(200,146,74,0.06)' }}>
+            <p className="text-[13px] font-bold" style={{ color: isDark ? '#f5dfa0' : '#1a0a02' }}>{val}</p>
+            <p className="text-[8px] mt-0.5" style={{ color: sub }}>{label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ── Interactive Activity Calendar ─────────────────────────────────────────────
 function InteractiveCalendar({
-  days, isDark, monthView,
+  days, isDark,
 }: {
-  days: Props['heatmap']; isDark: boolean; monthView: boolean;
+  days: Props['heatmap']; isDark: boolean;
 }) {
   const dayMap = useMemo(() => {
     const m: Record<string, { japa: boolean; nitya: boolean }> = {};
@@ -118,59 +227,6 @@ function InteractiveCalendar({
 
   const monthLabel = new Date(calMonth.year, calMonth.month, 1)
     .toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-
-  if (!monthView) {
-    // ── Compact 28-day strip ─────────────────────────────────────────────────
-    const weeks: Props['heatmap'][] = [];
-    for (let i = 0; i < days.length; i += 7) weeks.push(days.slice(i, i + 7));
-    return (
-      <div>
-        <div className="flex gap-1.5">
-          {weeks.map((week, wi) => (
-            <div key={wi} className="flex flex-col gap-1.5 flex-1">
-              {week.map(day => {
-                const both = day.japa && day.nitya;
-                const bg = both
-                  ? `${amber}0.85)`
-                  : day.japa ? `${amber}0.45)` : day.nitya ? `${green}0.50)` : dimBg;
-                const isToday = day.date === todayIso;
-                const isSelected = day.date === selectedDay;
-                return (
-                  <motion.button
-                    key={day.date}
-                    onClick={() => setSelectedDay(isSelected ? null : day.date)}
-                    className="rounded-[5px] aspect-square w-full cursor-pointer transition-transform"
-                    style={{
-                      background: isSelected ? `${amber}0.95)` : bg,
-                      outline: isToday ? `2px solid ${amber}0.70)` : 'none',
-                      outlineOffset: '1px',
-                    }}
-                    whileHover={{ scale: 1.3 }}
-                    whileTap={{ scale: 0.88 }}
-                  />
-                );
-              })}
-            </div>
-          ))}
-        </div>
-        <div className="flex items-center gap-4 mt-2">
-          {[
-            { color: `${amber}0.85)`, label: 'Both' },
-            { color: `${amber}0.45)`, label: 'Japa' },
-            { color: `${green}0.50)`, label: 'Nitya' },
-          ].map(({ color, label }) => (
-            <div key={label} className="flex items-center gap-1">
-              <div className="w-2.5 h-2.5 rounded-[3px]" style={{ background: color }} />
-              <span className="text-[10px]" style={{ color: sub }}>{label}</span>
-            </div>
-          ))}
-        </div>
-        <AnimatePresence>
-          {selectedDay && <DayDetail iso={selectedDay} />}
-        </AnimatePresence>
-      </div>
-    );
-  }
 
   // ── Full month calendar grid ─────────────────────────────────────────────────
   return (
@@ -323,116 +379,93 @@ const SESSION_SHIELDS = [
   { threshold: 1000, name: 'Sahasra',  emoji: '💎', desc: '1000 sessions' },
 ];
 
-function ShieldBadges({
+function ShieldBadgesPreview({
   streak, totalSessions, isDark,
 }: {
   streak: number; totalSessions: number; isDark: boolean;
 }) {
-  const [activeTab, setActiveTab] = useState<'streak' | 'session'>('streak');
-  const shields = activeTab === 'streak' ? STREAK_SHIELDS : SESSION_SHIELDS;
-  const value   = activeTab === 'streak' ? streak : totalSessions;
-
   const h1      = isDark ? '#f5dfa0' : '#1a0a02';
   const muted   = isDark ? 'rgba(245,210,130,0.45)' : 'rgba(100,55,10,0.50)';
   const cardBg  = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.90)';
   const cardBdr = isDark ? 'rgba(200,146,74,0.12)' : 'rgba(180,120,40,0.14)';
 
-  const nextMilestone = shields.find(s => s.threshold > value);
-  const progress = nextMilestone
-    ? Math.min(100, Math.round((value / nextMilestone.threshold) * 100))
-    : 100;
+  const streakEarned  = STREAK_SHIELDS.filter(s => streak >= s.threshold).length;
+  const sessionEarned = SESSION_SHIELDS.filter(s => totalSessions >= s.threshold).length;
+  const totalEarned   = streakEarned + sessionEarned;
+  const totalShields  = STREAK_SHIELDS.length + SESSION_SHIELDS.length;
+
+  const nextStreak  = STREAK_SHIELDS.find(s => streak < s.threshold);
+  const nextSession = SESSION_SHIELDS.find(s => totalSessions < s.threshold);
 
   return (
     <div className="rounded-[1.8rem] p-5" style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: isDark ? 'none' : '0 1px 10px rgba(0,0,0,0.05)' }}>
-      {/* Header + tab switcher */}
       <div className="flex items-center justify-between mb-4">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'rgba(200,146,74,0.70)' }}>
             🏅 Achievement Shields
           </p>
-          <p className="text-[10px] mt-0.5" style={{ color: muted }}>
-            {value} {activeTab === 'streak' ? 'day streak' : 'total sessions'}
+          <p className="text-[13px] font-bold mt-0.5" style={{ color: h1 }}>
+            {totalEarned} / {totalShields} <span className="text-[10px] font-normal" style={{ color: muted }}>earned</span>
           </p>
         </div>
-        <div className="flex gap-1 p-1 rounded-xl" style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }}>
-          {(['streak', 'session'] as const).map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className="rounded-lg px-2.5 py-1 text-[10px] font-semibold transition-all"
-              style={{
-                background: activeTab === tab ? 'rgba(200,146,74,0.22)' : 'transparent',
-                color: activeTab === tab ? 'rgba(200,146,74,0.95)' : muted,
-              }}
-            >
-              {tab === 'streak' ? '🔥 Streak' : '📿 Sessions'}
-            </button>
-          ))}
-        </div>
+        <Link href="/my-progress/shields"
+          className="rounded-full px-3.5 py-1.5 text-[11px] font-semibold flex items-center gap-1"
+          style={{ background: 'rgba(200,146,74,0.12)', color: 'rgba(200,146,74,0.90)', border: '1px solid rgba(200,146,74,0.22)' }}>
+          See all →
+        </Link>
       </div>
 
-      {/* Shields grid */}
-      <div className="grid grid-cols-6 gap-2 mb-4">
-        {shields.map(shield => {
-          const earned = value >= shield.threshold;
+      {/* Mini shields row — show the 6 streak shields */}
+      <div className="flex gap-2 mb-4">
+        {STREAK_SHIELDS.map(shield => {
+          const earned = streak >= shield.threshold;
           return (
-            <div key={shield.threshold} className="flex flex-col items-center gap-1">
-              <motion.div
-                className="w-full aspect-square rounded-xl flex items-center justify-center relative"
+            <div key={shield.threshold} className="flex-1 flex flex-col items-center gap-1">
+              <div
+                className="w-full aspect-square rounded-xl flex items-center justify-center text-[16px]"
                 style={{
                   background: earned
                     ? isDark ? 'rgba(200,146,74,0.22)' : 'rgba(200,146,74,0.14)'
                     : isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
                   border: earned
-                    ? '1px solid rgba(200,146,74,0.45)'
-                    : `1px solid ${isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)'}`,
-                  filter: earned ? 'none' : 'grayscale(1) opacity(0.3)',
+                    ? '1px solid rgba(200,146,74,0.40)'
+                    : `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)'}`,
+                  filter: earned ? 'none' : 'grayscale(1) opacity(0.25)',
                 }}
-                animate={earned ? { scale: [1, 1.06, 1] } : {}}
-                transition={{ duration: 0.4, delay: 0.05 }}
               >
-                <span className="text-[18px] leading-none">{shield.emoji}</span>
-                {earned && (
-                  <div className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full flex items-center justify-center"
-                    style={{ background: 'rgba(80,200,80,0.9)', border: `1px solid ${cardBg}` }}>
-                    <span className="text-[7px] text-white font-bold leading-none">✓</span>
-                  </div>
-                )}
-              </motion.div>
-              <p className="text-[7px] text-center leading-tight px-0.5" style={{
-                color: earned ? h1 : muted,
-                fontWeight: earned ? 600 : 400,
-              }}>
-                {shield.name}
-              </p>
+                {shield.emoji}
+              </div>
             </div>
           );
         })}
       </div>
 
-      {/* Progress to next */}
-      {nextMilestone ? (
-        <div>
-          <div className="flex justify-between mb-1.5">
-            <span className="text-[10px]" style={{ color: muted }}>
-              Next: <span style={{ color: h1, fontWeight: 600 }}>{nextMilestone.name}</span>
-              <span style={{ color: muted }}> · {nextMilestone.desc}</span>
-            </span>
-            <span className="text-[10px] font-semibold" style={{ color: 'rgba(200,146,74,0.85)' }}>
-              {value}/{nextMilestone.threshold}
-            </span>
+      {/* Next milestone progress */}
+      {(nextStreak || nextSession) && (() => {
+        const next = nextStreak ?? nextSession!;
+        const val  = nextStreak ? streak : totalSessions;
+        const pct  = Math.min(100, Math.round((val / next.threshold) * 100));
+        return (
+          <div>
+            <div className="flex justify-between mb-1.5">
+              <span className="text-[10px]" style={{ color: muted }}>
+                Next: <span style={{ color: h1, fontWeight: 600 }}>{next.emoji} {next.name}</span>
+                <span style={{ color: muted }}> · {next.desc}</span>
+              </span>
+              <span className="text-[10px] font-semibold" style={{ color: 'rgba(200,146,74,0.85)' }}>
+                {val}/{next.threshold}
+              </span>
+            </div>
+            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}>
+              <motion.div className="h-full rounded-full"
+                style={{ background: 'linear-gradient(90deg,rgba(200,146,74,0.75),rgba(212,100,20,0.85))' }}
+                initial={{ width: 0 }} animate={{ width: `${pct}%` }}
+                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} />
+            </div>
           </div>
-          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}>
-            <motion.div
-              className="h-full rounded-full"
-              style={{ background: 'linear-gradient(90deg,rgba(200,146,74,0.75),rgba(212,100,20,0.85))' }}
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            />
-          </div>
-        </div>
-      ) : (
+        );
+      })()}
+      {!nextStreak && !nextSession && (
         <p className="text-center text-sm" style={{ color: 'rgba(200,146,74,0.70)', fontFamily: 'var(--font-serif)' }}>
           सर्वसिद्धि — All shields earned! 🙏
         </p>

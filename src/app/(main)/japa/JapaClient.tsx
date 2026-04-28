@@ -1145,7 +1145,10 @@ export default function JapaClient({
   const cardBg   = isDark ? 'var(--card-bg)' : 'rgba(0,0,0,0.04)';
 
   // Progress toward target
-  const progressPct = targetRounds > 0 ? Math.min(100, (roundsDone / targetRounds) * 100) : 0;
+  // For multi-round targets: full rounds completed / target; for single mala: bead count / 108
+  const progressPct = targetRounds > 1
+    ? Math.min(100, (roundsDone / targetRounds) * 100)
+    : Math.min(100, (beadCount / 108) * 100);
 
   return (
     <AnimatePresence mode="wait">
@@ -1272,21 +1275,21 @@ export default function JapaClient({
           </div>
 
           {/* ── Progress bar toward target ────────────────────────────────── */}
-          {targetRounds > 1 && (
-            <div className="px-8 pb-2">
-              <div className="h-1 rounded-full overflow-hidden" style={{ background: `${amber}18` }}>
-                <motion.div
-                  className="h-full rounded-full"
-                  style={{ background: amber }}
-                  animate={{ width: `${progressPct}%` }}
-                  transition={{ duration: 0.4, ease: 'easeOut' }}
-                />
-              </div>
-              <p className="text-[10px] text-center mt-1" style={{ color: sub }}>
-                {roundsDone}/{targetRounds} malas
-              </p>
+          <div className="px-8 pb-2">
+            <div className="h-1 rounded-full overflow-hidden" style={{ background: `${amber}18` }}>
+              <motion.div
+                className="h-full rounded-full"
+                style={{ background: amber }}
+                animate={{ width: `${progressPct}%` }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+              />
             </div>
-          )}
+            <p className="text-[10px] text-center mt-1" style={{ color: sub }}>
+              {targetRounds > 1
+                ? `${roundsDone}/${targetRounds} malas`
+                : `${beadCount}/108 beads`}
+            </p>
+          </div>
 
           {/* ── SVG Mala ─────────────────────────────────────────────────── */}
           <div className="flex-1 flex flex-col items-center justify-center px-6 gap-3">

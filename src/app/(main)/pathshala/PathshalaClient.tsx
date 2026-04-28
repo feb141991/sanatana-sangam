@@ -286,9 +286,10 @@ function ScriptureTab({
 
 // ── Props ──────────────────────────────────────────────────────────────────────
 interface Props {
-  userId:    string;
-  userName:  string;
-  tradition: string;
+  userId:      string;
+  userName:    string;
+  tradition:   string;
+  initialTab?: 'learn' | 'scripture' | 'explore';
 }
 
 // ── Active enrollment record ───────────────────────────────────────────────────
@@ -301,7 +302,7 @@ interface ActiveEnrollment {
 }
 
 // ── Main Component ─────────────────────────────────────────────────────────────
-export default function PathshalaClient({ userId, userName, tradition }: Props) {
+export default function PathshalaClient({ userId, userName, tradition, initialTab }: Props) {
   const router    = useRouter();
   const supabase  = useRef(createClient()).current;
   const meta      = getTraditionMeta(tradition);
@@ -312,7 +313,7 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
   const [enrolling,   setEnrolling] = useState<string | null>(null);
 
   // Tab: 'learn' | 'scripture' | 'explore'
-  const [tab, setTab] = useState<'learn' | 'scripture' | 'explore'>('learn');
+  const [tab, setTab] = useState<'learn' | 'scripture' | 'explore'>(initialTab ?? 'learn');
 
   // Filter paths to those relevant to this tradition
   const traditionPaths = useMemo(() => {
