@@ -311,7 +311,9 @@ export default function InsightsClient({ sessions }: Props) {
 
   // Consistency: % of days in range that had a session
   const consistency = useMemo(() => {
-    const dateSet = new Set(filtered.map(s => s.date));
+    const dateSet = new Set(
+      filtered.map(s => s.date ?? s.created_at?.slice(0, 10)).filter(Boolean)
+    );
     return days > 0 ? Math.round((dateSet.size / days) * 100) : 0;
   }, [filtered, days]);
 
@@ -319,7 +321,9 @@ export default function InsightsClient({ sessions }: Props) {
   const dowData = useMemo(() => {
     const counts = new Array(7).fill(0);
     for (const s of filtered) {
-      const dow = new Date(s.date + 'T12:00:00').getDay();
+      const dateKey = s.date ?? s.created_at?.slice(0, 10);
+      if (!dateKey) continue;
+      const dow = new Date(dateKey + 'T12:00:00').getDay();
       counts[dow]++;
     }
     // Normalize to 0-1
@@ -486,11 +490,28 @@ export default function InsightsClient({ sessions }: Props) {
                 <p className="text-[12px] font-semibold uppercase tracking-wide mb-1" style={{ color: sub }}>
                   Practice Consistency
                 </p>
-                <div className="flex items-baseline gap-2 mb-5">
+                <div className="flex items-baseline gap-2 mb-3">
                   <span style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', fontWeight: 700, color: text }}>
                     {consistency}%
                   </span>
                   <span className="text-sm font-semibold" style={{ color: amber }}>{consistencyLabel}</span>
+                </div>
+                {/* Consistency progress bar */}
+                <div className="mb-5">
+                  <div className="h-2 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}>
+                    <motion.div
+                      className="h-full rounded-full"
+                      style={{ background: `linear-gradient(90deg, rgba(200,146,74,0.6), rgba(212,100,20,0.90))` }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${consistency}%` }}
+                      transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                  </div>
+                  <p className="text-[10px] mt-1.5" style={{ color: isDark ? 'rgba(200,146,74,0.45)' : 'rgba(100,65,25,0.50)' }}>
+                    {days > 0
+                      ? `Practiced on ${Math.round((consistency / 100) * days)} of ${days} days`
+                      : 'Select a time range'}
+                  </p>
                 </div>
                 <DayOfWeekChart data={dowData} isDark={isDark} amber={amber} />
               </div>
@@ -523,7 +544,8 @@ export default function InsightsClient({ sessions }: Props) {
               </p>
               <div className="space-y-2">
                 {filtered.slice(0, 12).map((s, i) => {
-                  const dateObj = new Date(s.date + 'T12:00:00');
+                  const dateKey = s.date ?? s.created_at?.slice(0, 10) ?? '1970-01-01';
+                  const dateObj = new Date(dateKey + 'T12:00:00');
                   const dateStr = dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
                   const dow     = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dateObj.getDay()];
                   return (

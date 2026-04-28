@@ -9,7 +9,52 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
-import { Bot, X, Send, RotateCcw, BookOpen, ChevronDown } from 'lucide-react';
+import { X, Send, RotateCcw, BookOpen, ChevronDown } from 'lucide-react';
+
+// ── Shankha (Conch Shell) SVG Icon ────────────────────────────────────────────
+function ShankhaIcon({ size = 22, color = 'currentColor', opacity = 1 }: { size?: number; color?: string; opacity?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ opacity }}>
+      {/* Main conch body */}
+      <path
+        d="M5.8 15.8C4.3 13.9 4.1 11.3 5.2 9C6.4 6.3 9.1 4.6 12.1 5C15.1 5.4 17.4 7.9 17.2 11C17 14 14.6 16.6 11.5 17.3C9.4 17.8 7.2 17.2 5.8 15.8Z"
+        fill={color}
+      />
+      {/* Pointed spire protruding upper-right */}
+      <path
+        d="M12.1 5C13.3 3.3 15.6 1.9 17.2 2.5C18.8 3.1 18.3 5.8 16.4 7.1C15.2 7.9 13.2 8.2 12 7.2"
+        fill={color}
+        opacity="0.85"
+      />
+      {/* Mouth / opening - small flare */}
+      <path
+        d="M5.8 15.8L3.5 19.8"
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+        fill="none"
+      />
+      {/* Inner spiral groove */}
+      <path
+        d="M11 13C10.2 11.3 11.1 9.2 13.1 9.7C15 10.2 14.8 12.8 13 13.2"
+        stroke="white"
+        strokeWidth="0.9"
+        strokeOpacity="0.50"
+        fill="none"
+        strokeLinecap="round"
+      />
+      {/* Second subtle groove */}
+      <path
+        d="M9.5 11.5C9 10 9.8 8.5 11.2 8.5"
+        stroke="white"
+        strokeWidth="0.7"
+        strokeOpacity="0.28"
+        fill="none"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
 
 interface ScriptureRef {
   text_id?: string;
@@ -90,8 +135,9 @@ function MessageBubble({ msg }: { msg: Message }) {
   const isUser = msg.role === 'user';
   return (
     <div className={`flex gap-2 mb-3 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
-      <div className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs ${isUser ? 'bg-[#7B1A1A] text-white' : 'bg-gradient-to-br from-amber-400 to-orange-500 text-white'}`}>
-        {isUser ? '🙏' : '✨'}
+      <div className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs ${isUser ? 'bg-[#7B1A1A] text-white' : ''}`}
+        style={!isUser ? { background: 'linear-gradient(135deg, #c8920a 0%, #d4a818 100%)' } : undefined}>
+        {isUser ? '🙏' : <ShankhaIcon size={16} color="#1c1c1a" />}
       </div>
       <div className={`max-w-[82%] ${isUser ? 'items-end' : 'items-start'} flex flex-col gap-0.5`}>
         <div className={`px-3 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${isUser ? 'bg-[#7B1A1A] text-white rounded-tr-sm' : 'rounded-tl-sm border'}`}
@@ -113,7 +159,10 @@ function MessageBubble({ msg }: { msg: Message }) {
 function TypingIndicator() {
   return (
     <div className="flex gap-2 mb-3">
-      <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-amber-400 to-orange-500 text-white text-xs">✨</div>
+      <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center"
+        style={{ background: 'linear-gradient(135deg, #c8920a 0%, #d4a818 100%)' }}>
+        <ShankhaIcon size={15} color="#1c1c1a" />
+      </div>
       <div className="border rounded-2xl rounded-tl-sm px-3 py-2.5" style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.16)' }}>
         <div className="flex gap-1 items-center h-4">
           {[0, 150, 300].map(delay => (
@@ -276,9 +325,9 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 flex-shrink-0 border-b" style={{ borderColor: 'rgba(200,146,74,0.12)' }}>
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-2xl flex items-center justify-center text-lg"
-                  style={{ background: 'linear-gradient(135deg, #ff770220, #d4a01720)' }}>
-                  ✨
+                <div className="w-9 h-9 rounded-2xl flex items-center justify-center"
+                  style={{ background: 'linear-gradient(135deg, #c8920a22, #d4a81822)', border: '1px solid rgba(200,146,74,0.22)' }}>
+                  <ShankhaIcon size={20} color="rgba(200,146,74,0.90)" />
                 </div>
                 <div>
                   <h2 className="font-display font-bold text-[color:var(--text-cream)] text-base leading-tight">Dharma Mitra</h2>
@@ -408,14 +457,21 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
         title="Dharma Mitra — AI Guide (drag to move)"
       >
         <motion.div
-          className="w-full h-full rounded-full flex items-center justify-center shadow-lg select-none"
+          className="w-full h-full rounded-full flex items-center justify-center shadow-lg select-none relative overflow-hidden"
           style={{
             background:  'linear-gradient(135deg, #c8920a 0%, #d4a818 50%, #b07a08 100%)',
             boxShadow:   '0 4px 20px rgba(212,166,70,0.45)',
           }}
           whileTap={{ scale: 0.9 }}
         >
-          <Bot size={22} className="text-[#1c1c1a] pointer-events-none" />
+          {/* Animated glow ring */}
+          <motion.span
+            className="absolute inset-0 rounded-full"
+            style={{ border: '1.5px solid rgba(255,230,140,0.55)' }}
+            animate={{ scale: [1, 1.22, 1], opacity: [0.7, 0, 0.7] }}
+            transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <ShankhaIcon size={22} color="#1c1c1a" />
         </motion.div>
       </motion.div>
 

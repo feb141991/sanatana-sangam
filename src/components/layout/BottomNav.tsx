@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { GraduationCap, Heart, Users, Sun } from 'lucide-react';
+import { BookOpen, Heart, Users, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
@@ -159,7 +159,7 @@ export default function BottomNav({
 
   const memberNavItems = [
     { href: '/nitya-karma', label: 'Nitya',        mobileLabel: 'Nitya',           icon: Sun           },
-    { href: '/library',     label: libraryLabel,    mobileLabel: libraryMobileLabel, icon: GraduationCap },
+    { href: '/library',     label: libraryLabel,    mobileLabel: libraryMobileLabel, icon: BookOpen      },
     { href: '/kul',         label: t('navKul'),     mobileLabel: t('navKul'),        icon: Heart         },
     { href: '/mandali',     label: t('navMandali'), mobileLabel: t('navMandali'),    icon: Users         },
   ];

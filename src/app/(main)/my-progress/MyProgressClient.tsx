@@ -829,11 +829,16 @@ export default function MyProgressClient({
   const [showReport, setShowReport]     = useState(false);
   const [calView, setCalView] = useState<'calendar' | 'sparkline'>('calendar');
 
-  // Theme tokens
-  const pageBg  = isDark ? 'linear-gradient(180deg,#130e08 0%,#1a1208 100%)' : 'linear-gradient(180deg,#fdf6ee 0%,#f7ede0 100%)';
-  const cardBg  = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.90)';
-  const cardBdr = isDark ? 'rgba(200,146,74,0.12)' : 'rgba(180,120,40,0.14)';
-  const heroBg  = isDark ? 'linear-gradient(160deg,rgba(50,24,8,0.97),rgba(28,16,6,0.99))' : 'linear-gradient(160deg,rgba(255,243,222,0.99),rgba(250,231,201,0.99))';
+  // Theme tokens — glassmorphism style
+  const pageBg  = isDark
+    ? 'linear-gradient(165deg,#0e0a05 0%,#17100a 50%,#1a1208 100%)'
+    : 'linear-gradient(165deg,#fdf6ee 0%,#f5e8d5 50%,#f0dfc8 100%)';
+  const cardBg  = isDark ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.60)';
+  const cardBdr = isDark ? 'rgba(200,146,74,0.14)' : 'rgba(180,120,40,0.18)';
+  const cardBlur = 'blur(18px) saturate(160%)';
+  const heroBg  = isDark
+    ? 'linear-gradient(160deg,rgba(58,28,8,0.72),rgba(28,16,6,0.80))'
+    : 'linear-gradient(160deg,rgba(255,243,222,0.72),rgba(250,231,201,0.80))';
   const h1      = isDark ? '#f5dfa0' : '#1a0a02';
   const muted   = isDark ? 'rgba(245,210,130,0.45)' : 'rgba(100,55,10,0.50)';
   const dimText = isDark ? 'rgba(245,210,130,0.30)' : 'rgba(100,55,10,0.35)';
@@ -870,7 +875,7 @@ export default function MyProgressClient({
           <motion.section
             initial={{ opacity: 0, y: -14 }} animate={{ opacity: 1, y: 0 }}
             className="rounded-[2rem] p-4"
-            style={{ background: heroBg, border: `1px solid ${cardBdr}` }}>
+            style={{ background: heroBg, border: `1px solid ${cardBdr}`, backdropFilter: cardBlur, WebkitBackdropFilter: cardBlur }}>
 
             {/* Compact header: title + streak pill + stats + toggle */}
             <div className="flex items-center gap-2 mb-3">
@@ -947,7 +952,7 @@ export default function MyProgressClient({
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] px-1" style={{ color: muted }}>Practice Pillars · 30 days</p>
 
             {/* Japa card — full width with rich stats */}
-            <div className="rounded-[1.8rem] p-5" style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: isDark ? 'none' : '0 1px 10px rgba(0,0,0,0.05)' }}>
+            <div className="rounded-[1.8rem] p-5" style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: isDark ? 'none' : '0 2px 16px rgba(0,0,0,0.07)', backdropFilter: cardBlur, WebkitBackdropFilter: cardBlur }}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">🪷</span>
@@ -1017,7 +1022,7 @@ export default function MyProgressClient({
             </div>
 
             {/* Nitya Karma card */}
-            <div className="rounded-[1.8rem] p-5" style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: isDark ? 'none' : '0 1px 10px rgba(0,0,0,0.05)' }}>
+            <div className="rounded-[1.8rem] p-5" style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: isDark ? 'none' : '0 2px 16px rgba(0,0,0,0.07)', backdropFilter: cardBlur, WebkitBackdropFilter: cardBlur }}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">🌅</span>
@@ -1073,7 +1078,7 @@ export default function MyProgressClient({
               ].map(p => (
                 <Link key={p.label} href={p.href}
                   className="block rounded-[1.6rem] p-4"
-                  style={{ background: cardBg, border: `1px solid ${cardBdr}` }}>
+                  style={{ background: cardBg, border: `1px solid ${cardBdr}`, backdropFilter: cardBlur, WebkitBackdropFilter: cardBlur }}>
                   <div className="h-0.5 rounded-full mb-3" style={{ background: `${p.accent}0.55)` }} />
                   <span className="text-xl block mb-2">{p.emoji}</span>
                   <p className="text-sm font-semibold" style={{ color: h1 }}>{p.label}</p>
@@ -1098,7 +1103,7 @@ export default function MyProgressClient({
           <motion.section
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.30 }}
             className="rounded-[1.8rem] p-5"
-            style={{ background: cardBg, border: `1px solid ${cardBdr}` }}>
+            style={{ background: cardBg, border: `1px solid ${cardBdr}`, backdropFilter: cardBlur, WebkitBackdropFilter: cardBlur }}>
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] mb-0.5" style={{ color: amber }}>
               Practice Rhythm
             </p>
