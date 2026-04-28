@@ -180,7 +180,7 @@ export default function NityaInsightsClient({ logs }: Props) {
   const cutoff = useMemo(() => {
     const d = new Date(); d.setDate(d.getDate() - days + 1);
     return d.toISOString().slice(0, 10);
-  }, [filter, days]);
+  }, [days]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const filtered = useMemo(() => logs.filter(l => l.log_date >= cutoff), [logs, cutoff]);
 

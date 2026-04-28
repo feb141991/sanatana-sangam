@@ -5,7 +5,7 @@ import PathshalaClient from './PathshalaClient';
 export default async function PathshalaPage({
   searchParams,
 }: {
-  searchParams: { tab?: string };
+  searchParams: Promise<{ tab?: string }>;
 }) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -17,10 +17,11 @@ export default async function PathshalaPage({
     .eq('id', user.id)
     .single();
 
+  const params = await searchParams;
   const validTabs = ['learn', 'scripture', 'explore'] as const;
   type Tab = typeof validTabs[number];
-  const initialTab: Tab = validTabs.includes(searchParams.tab as Tab)
-    ? (searchParams.tab as Tab)
+  const initialTab: Tab = validTabs.includes(params.tab as Tab)
+    ? (params.tab as Tab)
     : 'learn';
 
   return (

@@ -827,7 +827,7 @@ export default function MyProgressClient({
   const { resolvedTheme } = useThemePreference();
   const isDark    = resolvedTheme === 'dark';
   const [showReport, setShowReport]     = useState(false);
-  const [calMonthView, setCalMonthView] = useState(false); // false = 28d strip, true = full month
+  const [calView, setCalView] = useState<'calendar' | 'sparkline'>('calendar');
 
   // Theme tokens
   const pageBg  = isDark ? 'linear-gradient(180deg,#130e08 0%,#1a1208 100%)' : 'linear-gradient(180deg,#fdf6ee 0%,#f7ede0 100%)';
@@ -903,39 +903,38 @@ export default function MyProgressClient({
                 </div>
               </div>
 
-              {/* View toggle */}
+              {/* View toggle: Calendar / Sparkline */}
               <div className="flex items-center gap-1 p-0.5 rounded-full" style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }}>
                 <button
-                  onClick={() => setCalMonthView(false)}
+                  onClick={() => setCalView('calendar')}
                   className="w-6 h-6 rounded-full flex items-center justify-center transition-all"
-                  style={{
-                    background: !calMonthView ? 'rgba(200,146,74,0.22)' : 'transparent',
-                  }}
-                  aria-label="Strip view"
-                >
-                  <LayoutGrid size={12} style={{ color: amber }} />
-                </button>
-                <button
-                  onClick={() => setCalMonthView(true)}
-                  className="w-6 h-6 rounded-full flex items-center justify-center transition-all"
-                  style={{
-                    background: calMonthView ? 'rgba(200,146,74,0.22)' : 'transparent',
-                  }}
+                  style={{ background: calView === 'calendar' ? 'rgba(200,146,74,0.22)' : 'transparent' }}
                   aria-label="Month calendar"
                 >
                   <Calendar size={12} style={{ color: amber }} />
                 </button>
+                <button
+                  onClick={() => setCalView('sparkline')}
+                  className="w-6 h-6 rounded-full flex items-center justify-center transition-all"
+                  style={{ background: calView === 'sparkline' ? 'rgba(200,146,74,0.22)' : 'transparent' }}
+                  aria-label="Activity graph"
+                >
+                  <Activity size={12} style={{ color: amber }} />
+                </button>
               </div>
             </div>
 
-            {/* Interactive calendar */}
+            {/* Calendar / Sparkline toggle view */}
             <AnimatePresence mode="wait">
               <motion.div
-                key={calMonthView ? 'month' : 'strip'}
+                key={calView}
                 initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.18 }}
               >
-                <InteractiveCalendar days={heatmap} isDark={isDark} monthView={calMonthView} />
+                {calView === 'calendar'
+                  ? <InteractiveCalendar days={heatmap} isDark={isDark} />
+                  : <SparklineView days={heatmap} isDark={isDark} />
+                }
               </motion.div>
             </AnimatePresence>
           </motion.section>
@@ -1085,10 +1084,10 @@ export default function MyProgressClient({
             </div>
           </motion.section>
 
-          {/* ── Achievement Shields ── */}
+          {/* ── Achievement Shields (compact preview → full page) ── */}
           <motion.section
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.20 }}>
-            <ShieldBadges
+            <ShieldBadgesPreview
               streak={streak}
               totalSessions={totalJapaSessions}
               isDark={isDark}

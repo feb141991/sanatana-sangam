@@ -189,7 +189,7 @@ export default function BhaktiInsightsClient({ sessions, shlokaStreak, sevaScore
   const cutoff = useMemo(() => {
     const d = new Date(); d.setDate(d.getDate() - days + 1);
     return d.toISOString().slice(0, 10);
-  }, [filter, days]);
+  }, [days]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const filtered = useMemo(() => sessions.filter(s => s.date >= cutoff), [sessions, cutoff]);
 
