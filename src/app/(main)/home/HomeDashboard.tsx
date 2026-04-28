@@ -1269,6 +1269,7 @@ export default function HomeDashboard({
           borderRadius: '0 2rem 0 0',
         }} />
 
+        {/* ── Row 1: Greeting + Date badge (date is always visible) ── */}
         <div className="relative flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <p className="type-card-label tracking-[0.12em] uppercase text-[10px]">Sanatana Sangam</p>
@@ -1303,78 +1304,9 @@ export default function HomeDashboard({
             <p className="type-body mt-2 leading-relaxed" style={{ fontSize: '0.82rem' }}>
               {showFirstTimeGuidance ? greetingMode : 'A quieter sacred day, ready when you are.'}
             </p>
-
-            {/* Mood — nudge if not set, premium pill if set */}
-            {moodToday === undefined ? null : moodToday ? (
-              /* ── Mood set: glowy premium pill ── */
-              <Link
-                href="/discover"
-                className="inline-flex items-center gap-3 mt-3 rounded-[1.4rem] px-4 py-2.5 transition motion-press"
-                style={{
-                  background: `linear-gradient(135deg, ${moodToday.colour}22, ${moodToday.colour}0e)`,
-                  border: `1px solid ${moodToday.colour}40`,
-                  boxShadow: `0 4px 20px ${moodToday.colour}28, 0 0 0 1px ${moodToday.colour}18`,
-                  backdropFilter: 'blur(12px)',
-                  WebkitBackdropFilter: 'blur(12px)',
-                }}
-              >
-                <motion.span
-                  className="leading-none flex-shrink-0 flex items-center justify-center"
-                  style={{ width: 36, height: 36 }}
-                  animate={prefersReducedMotion ? undefined : { scale: [1, 1.08, 1] }}
-                  transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                  <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={32} />
-                </motion.span>
-                <div className="min-w-0">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: `${moodToday.colour}99` }}>
-                    Today&apos;s mood
-                  </p>
-                  <p className="text-[14px] font-semibold leading-tight" style={{ color: moodToday.colour }}>
-                    {moodToday.label}
-                  </p>
-                </div>
-                <span className="ml-auto text-[10px] flex-shrink-0" style={{ color: `${moodToday.colour}70` }}>
-                  Change ›
-                </span>
-              </Link>
-            ) : (
-              /* ── No mood set: subtle pulsing nudge ── */
-              <Link
-                href="/discover"
-                className="inline-flex items-center gap-1.5 mt-3 rounded-full px-3 py-1.5 text-[11px] font-medium transition motion-press"
-                style={{
-                  background: 'rgba(200,146,74,0.09)',
-                  border: '1px solid rgba(200,146,74,0.20)',
-                  color: 'rgba(200,146,74,0.75)',
-                }}
-              >
-                <motion.span
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-                  className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                  style={{ background: 'rgba(200,146,74,0.80)' }}
-                />
-                How are you feeling today?
-              </Link>
-            )}
-
-            {/* City */}
-            {displayCity && (
-              <p className="mt-2.5 flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-dim)' }}>
-                <MapPin size={11} style={{ color: homeHeroTheme.accent, flexShrink: 0 }} />
-                <span>{displayCity}</span>
-                {coords && (
-                  <span className="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[9px] font-semibold tracking-wider uppercase"
-                    style={{ background: 'rgba(200, 146, 74, 0.12)', color: 'var(--brand-primary)' }}>
-                    live
-                  </span>
-                )}
-              </p>
-            )}
           </div>
 
-          {/* Date badge */}
+          {/* Date badge — flex-shrink-0 ensures it's always visible */}
           <div
             className="flex-shrink-0 rounded-[1.1rem] px-3 py-2 text-center"
             style={{ background: homeHeroTheme.iconWell, minWidth: '3rem' }}
@@ -1390,6 +1322,77 @@ export default function HomeDashboard({
             </p>
           </div>
         </div>
+
+        {/* ── Row 2: Mood + City (full-width, below greeting row) ── */}
+        {moodToday !== undefined && (
+          moodToday ? (
+            /* ── Mood set: glowy pill — full width so it never overlaps the date ── */
+            <Link
+              href="/discover"
+              className="flex items-center gap-3 mt-3 rounded-[1.4rem] px-4 py-2.5 transition motion-press"
+              style={{
+                background: `linear-gradient(135deg, ${moodToday.colour}22, ${moodToday.colour}0e)`,
+                border: `1px solid ${moodToday.colour}40`,
+                boxShadow: `0 4px 20px ${moodToday.colour}28, 0 0 0 1px ${moodToday.colour}18`,
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+              }}
+            >
+              <motion.span
+                className="leading-none flex-shrink-0 flex items-center justify-center"
+                style={{ width: 36, height: 36 }}
+                animate={prefersReducedMotion ? undefined : { scale: [1, 1.08, 1] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={32} />
+              </motion.span>
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: `${moodToday.colour}99` }}>
+                  Today&apos;s mood
+                </p>
+                <p className="text-[14px] font-semibold leading-tight" style={{ color: moodToday.colour }}>
+                  {moodToday.label}
+                </p>
+              </div>
+              <span className="text-[10px] flex-shrink-0" style={{ color: `${moodToday.colour}70` }}>
+                Change ›
+              </span>
+            </Link>
+          ) : (
+            /* ── No mood: subtle inline nudge ── */
+            <Link
+              href="/discover"
+              className="inline-flex items-center gap-1.5 mt-3 rounded-full px-3 py-1.5 text-[11px] font-medium transition motion-press"
+              style={{
+                background: 'rgba(200,146,74,0.09)',
+                border: '1px solid rgba(200,146,74,0.20)',
+                color: 'rgba(200,146,74,0.75)',
+              }}
+            >
+              <motion.span
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+                className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                style={{ background: 'rgba(200,146,74,0.80)' }}
+              />
+              How are you feeling today?
+            </Link>
+          )
+        )}
+
+        {/* City */}
+        {displayCity && (
+          <p className="mt-2.5 flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-dim)' }}>
+            <MapPin size={11} style={{ color: homeHeroTheme.accent, flexShrink: 0 }} />
+            <span>{displayCity}</span>
+            {coords && (
+              <span className="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[9px] font-semibold tracking-wider uppercase"
+                style={{ background: 'rgba(200, 146, 74, 0.12)', color: 'var(--brand-primary)' }}>
+                live
+              </span>
+            )}
+          </p>
+        )}
       </motion.div>
 
       {/* ── Practice Pulse ── */}

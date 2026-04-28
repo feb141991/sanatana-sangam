@@ -82,6 +82,7 @@ export default function TopBar({
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [isHidden,   setIsHidden]   = useState(false);
   const [pushPromptDismissedUntil, setPushPromptDismissedUntil] = useState<number | null>(null);
+  const [avatarFailed, setAvatarFailed] = useState(false);
   // iOS Safari without "Add to Home Screen" cannot receive web push (iOS 16.4+ PWA only).
   // Detect this early so we swap the prompt copy and hide the broken "Enable now" button.
   const [isIosSafariNonPwa, setIsIosSafariNonPwa] = useState(false);
@@ -89,6 +90,10 @@ export default function TopBar({
   // Rendering the sheet into document.body means it's never inside the sticky
   // header element, so the header's CSS transform cannot affect fixed positioning.
   const [portalTarget, setPortalTarget] = useState<Element | null>(null);
+
+  useEffect(() => {
+    setAvatarFailed(false);
+  }, [avatarUrl]);
 
   const lastScrollYRef       = useRef(0);
   const scrollAccumulatorRef = useRef(0);
@@ -498,12 +503,21 @@ export default function TopBar({
                     width: 38,
                     height: 38,
                     background: 'linear-gradient(135deg, var(--card-bg), rgba(43,43,40,0.94))',
-                    border: avatarUrl ? '2px solid rgba(200,146,74,0.55)' : '1.5px solid rgba(200,146,74,0.22)',
-                    boxShadow: avatarUrl ? '0 0 0 1px rgba(200,146,74,0.15)' : 'none',
+                    border: avatarUrl && !avatarFailed ? '2px solid rgba(200,146,74,0.55)' : '1.5px solid rgba(200,146,74,0.22)',
+                    boxShadow: avatarUrl && !avatarFailed ? '0 0 0 1px rgba(200,146,74,0.15)' : 'none',
                   }}
                 >
-                  {avatarUrl ? (
-                    <Image src={avatarUrl} alt="Profile" fill sizes="38px" className="object-cover" />
+                  {avatarUrl && !avatarFailed ? (
+                    <Image
+                      key={avatarUrl}
+                      src={avatarUrl}
+                      alt="Profile"
+                      fill
+                      sizes="38px"
+                      className="object-cover"
+                      unoptimized
+                      onError={() => setAvatarFailed(true)}
+                    />
                   ) : (
                     <span className="text-[11px] font-bold text-[color:var(--brand-primary-strong)]">
                       {userInitials}

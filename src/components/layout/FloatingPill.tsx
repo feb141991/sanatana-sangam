@@ -72,6 +72,7 @@ export default function FloatingPill({
   const [pushPromptDismissedUntil, setPushPromptDismissedUntil] = useState<number | null>(null);
   const [isIosSafariNonPwa, setIsIosSafariNonPwa] = useState(false);
   const [portalTarget, setPortalTarget] = useState<Element | null>(null);
+  const [avatarFailed, setAvatarFailed] = useState(false);
 
   const notificationsQuery = useNotificationsQuery(userId);
   const notifs = notificationsQuery.data ?? [];
@@ -128,6 +129,10 @@ export default function FloatingPill({
   }, [userId]);
 
   const unreadCount = notifs.filter((n) => !n.read).length;
+
+  useEffect(() => {
+    setAvatarFailed(false);
+  }, [avatarUrl]);
   const shouldSuppressPrompt = Boolean(
     pushPromptDismissedUntil && Number.isFinite(pushPromptDismissedUntil) && pushPromptDismissedUntil > Date.now()
   );
@@ -399,11 +404,25 @@ export default function FloatingPill({
         {/* ── Avatar → profile ────────────────────────────────────────── */}
         <Link
           href="/profile"
-          className="relative flex-shrink-0 flex items-center justify-center overflow-hidden"
-          style={{ width: 48, height: 48 }}
+          className="relative flex-shrink-0 rounded-full flex items-center justify-center overflow-hidden"
+          style={{
+            width: 48,
+            height: 48,
+            background: 'rgba(200,146,74,0.10)',
+            border: avatarUrl && !avatarFailed ? '2px solid rgba(200,146,74,0.50)' : '1px solid rgba(200,146,74,0.18)',
+          }}
         >
-          {avatarUrl ? (
-            <Image src={avatarUrl} alt="Profile" fill sizes="48px" className="object-cover" />
+          {avatarUrl && !avatarFailed ? (
+            <Image
+              key={avatarUrl}
+              src={avatarUrl}
+              alt="Profile"
+              fill
+              sizes="48px"
+              className="object-cover"
+              unoptimized
+              onError={() => setAvatarFailed(true)}
+            />
           ) : (
             <span className="text-sm font-bold" style={{ color: 'rgba(200,146,74,0.88)' }}>
               {userInitials}
