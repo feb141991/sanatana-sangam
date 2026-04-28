@@ -900,7 +900,7 @@ export default function HomeDashboard({
         const res = await fetch('/api/home/personalise');
         if (!res.ok) throw new Error('personalise failed');
         const data = await res.json();
-        if (!cancelled && data?.shloka_text) setPersonalContent(data);
+        if (!cancelled && data?.suggestion) setPersonalContent(data);
       } catch {
         // silently skip — fallback to nothing
       } finally {
@@ -1402,12 +1402,12 @@ export default function HomeDashboard({
         </Link>
       </div>
 
-      {showFirstTimeGuidance && personalizedPaths.length > 0 && (
+      {personalizedPaths.length > 0 && (
         <section className="space-y-2">
           <div>
-            <p className="type-card-label">Start here</p>
+            <p className="type-card-label">Your Path</p>
             <p className="type-body mt-0.5">
-              These first steps are based on what you chose during signup. Once you settle in, Home stays lighter and the rest can come through reminders.
+              Personalized to your tradition, life stage, and interests.
             </p>
           </div>
 

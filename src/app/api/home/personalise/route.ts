@@ -63,7 +63,7 @@ export async function GET() {
 
     if (cached?.content) {
       const c = cached.content as Record<string, unknown>;
-      if (c?.shloka_text && c?.suggestion) {
+      if (c?.suggestion) {
         return NextResponse.json({ ...c, from_cache: true });
       }
     }

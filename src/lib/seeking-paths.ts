@@ -156,14 +156,31 @@ const TRADITION_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> =
   },
 };
 
+// Map onboarding goal IDs (saved to seeking column) -> SeekingKey cards
+const GOAL_TO_SEEKING: Record<string, SeekingKey> = {
+  community:  'community',
+  knowledge:  'knowledge',
+  events:     'events',
+  mentorship: 'mentorship',
+  youth:      'youth',
+  japa:       'knowledge',
+  learning:   'knowledge',
+  festivals:  'events',
+  family:     'community',
+  temples:    'events',
+};
+
 function normalizeSeeking(values: string[]): SeekingKey[] {
-  return values.filter((value): value is SeekingKey =>
-    value === 'community' ||
-    value === 'knowledge' ||
-    value === 'events' ||
-    value === 'mentorship' ||
-    value === 'youth'
-  );
+  const seen   = new Set<SeekingKey>();
+  const result: SeekingKey[] = [];
+  for (const v of values) {
+    const mapped = GOAL_TO_SEEKING[v];
+    if (mapped && !seen.has(mapped)) {
+      seen.add(mapped);
+      result.push(mapped);
+    }
+  }
+  return result;
 }
 
 function getDefaultSeeking(spiritualLevel?: string | null): SeekingKey[] {
