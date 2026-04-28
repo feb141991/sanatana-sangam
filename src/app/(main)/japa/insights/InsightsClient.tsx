@@ -8,23 +8,22 @@ import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { localSpiritualDate } from '@/lib/sacred-time';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
-// Handles both:
-//   old schema (pre migration-v30): count, duration_seconds, mantra
-//   new schema (post migration-v30): rounds, bead_count, duration_secs, mantra_id, date
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Session = Record<string, any> & {
+// Handles both pre-migration-v30 schema (count, duration_seconds, mantra)
+// and new schema (rounds, bead_count, duration_secs, mantra_id, date).
+interface Session {
   created_at: string;
-  // New columns (null if migration not run)
+  // New columns (null/undefined if migration not run yet)
   date?: string | null;
   rounds?: number | null;
   bead_count?: number | null;
   duration_secs?: number | null;
   mantra_id?: string | null;
-  // Old columns (present in original schema)
+  // Old columns (always present in original schema)
   count?: number | null;
   duration_seconds?: number | null;
   mantra?: string | null;
-};
+  [key: string]: unknown; // allow extra DB columns from select('*')
+}
 
 // ── Schema-agnostic field accessors ──────────────────────────────────────────
 function sessionBeads(s: Session): number {
@@ -47,8 +46,7 @@ function sessionDate(s: Session): string {
 }
 
 interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sessions: any[];
+  sessions: Session[];
 }
 
 // ── Time filter options ───────────────────────────────────────────────────────
@@ -155,8 +153,7 @@ function getBestTimeOfDay(sessions: Session[]): string {
 
 // ── Month calendar view (interactive) ────────────────────────────────────────
 function CalendarMonthView({ sessions, isDark, amber, text, sub, borderCol, surface }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sessions: any[]; isDark: boolean; amber: string; text: string; sub: string; borderCol: string; surface: string;
+  sessions: Session[]; isDark: boolean; amber: string; text: string; sub: string; borderCol: string; surface: string;
 }) {
   const now = new Date();
   const [calMonth, setCalMonth] = useState({ year: now.getFullYear(), month: now.getMonth() });
