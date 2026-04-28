@@ -1564,7 +1564,7 @@ export default function HomeDashboard({
           >
             🪔
           </motion.div>
-          <span style={{ fontFamily: 'var(--font-serif)', fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-cream)' }}>
+          <span className="home-card-title">
             {isToday ? 'Aaj Ka Panchang' : 'Panchang'}
           </span>
 
@@ -1659,7 +1659,7 @@ export default function HomeDashboard({
               {sacredTextMeta.icon}
             </div>
             <div>
-              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)', lineHeight: 1.2 }}>
+              <p className="home-card-title">
                 {sacredTextMeta.label}
               </p>
               {streak > 0 && (
@@ -1774,7 +1774,7 @@ export default function HomeDashboard({
       >
         {/* Header */}
         <div className="px-4 pt-4 pb-1 flex items-center justify-between">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'var(--text-dim)' }}>
+          <p className="home-section-label">
             Coming Up
           </p>
           <button
@@ -1792,10 +1792,10 @@ export default function HomeDashboard({
               {festival.emoji}
             </div>
             <div className="flex-1 min-w-0">
-              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)', lineHeight: 1.2 }}>
+              <p className="home-card-title">
                 {festival.name}
               </p>
-              <p className="text-xs mt-0.5 leading-snug" style={{ color: 'var(--text-muted-warm)' }}>{festival.description}</p>
+              <p className="home-card-copy mt-0.5">{festival.description}</p>
             </div>
             {/* Countdown pill */}
             <div className="flex-shrink-0 rounded-[0.9rem] px-3 py-2 text-center"
@@ -1850,10 +1850,10 @@ export default function HomeDashboard({
                 🪷
               </div>
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] mb-1" style={{ color: 'var(--text-dim)' }}>
+                <p className="home-section-label mb-1">
                   Daily Japa
                 </p>
-                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)', lineHeight: 1.2 }}>
+                <p className="home-card-title">
                   {japaAlreadyDoneToday ? 'Completed today 🙏' : 'Start your mala'}
                 </p>
               </div>
@@ -1875,7 +1875,7 @@ export default function HomeDashboard({
 
       {/* ── Quick Access ── */}
       <div>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] mb-3" style={{ color: 'var(--text-dim)' }}>
+        <p className="home-section-label mb-3">
           Explore
         </p>
         <MotionStagger className="grid grid-cols-2 gap-3" delay={0.06}>
@@ -1904,10 +1904,10 @@ export default function HomeDashboard({
                   {item.icon}
                 </div>
                 <div className="relative">
-                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-cream)', lineHeight: 1.2 }}>
+                  <p className="home-card-title">
                     {item.label}
                   </p>
-                  <p className="text-[11px] mt-1 leading-snug" style={{ color: 'var(--text-dim)' }}>{item.desc}</p>
+                  <p className="home-card-copy mt-1">{item.desc}</p>
                 </div>
               </Link>
             </MotionItem>
@@ -1931,10 +1931,10 @@ export default function HomeDashboard({
             background: 'radial-gradient(ellipse at center, rgba(200, 146, 74, 0.05), transparent 70%)',
           }} />
           <span className="relative text-xl">💬</span>
-          <p className="relative mt-1" style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)' }}>
+          <p className="home-card-title relative mt-1">
             Vichaar Sabha
           </p>
-          <p className="relative text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>Discuss dharma, share wisdom, ask questions</p>
+          <p className="home-card-copy relative mt-0.5">Discuss dharma, share wisdom, ask questions</p>
         </Link>
       )}
 
@@ -1952,10 +1952,10 @@ export default function HomeDashboard({
             background: 'radial-gradient(ellipse at center, rgba(157, 120, 74, 0.06), transparent 70%)',
           }} />
           <span className="relative text-xl">🙏</span>
-          <p className="relative mt-1" style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 600, color: 'var(--text-cream)' }}>
+          <p className="home-card-title relative mt-1">
             Invite Friends &amp; Family
           </p>
-          <p className="relative text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>Spread the light of dharma</p>
+          <p className="home-card-copy relative mt-0.5">Spread the light of dharma</p>
         </button>
       )}
 
@@ -1981,45 +1981,45 @@ export default function HomeDashboard({
       <AnimatePresence>
         {editHomeOpen && (
           <motion.div
-            className="fixed inset-0 z-[60]"
-            style={{ background: 'rgba(4,2,0,0.60)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
+            className="fixed inset-0 z-[60] flex items-end justify-center overflow-hidden px-3 pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]"
+            style={{ background: isDark ? 'rgba(4,2,0,0.60)' : 'rgba(35,25,12,0.28)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
             onClick={() => setEditHomeOpen(false)}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           >
             <motion.div
-              className="absolute bottom-0 left-0 right-0 px-3 pb-6"
+              className="w-full max-w-2xl"
               onClick={e => e.stopPropagation()}
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 32, opacity: 0 }}
-              transition={{ duration: 0.28, ease: [0.34, 1.1, 0.64, 1] }}
+              transition={{ duration: 0.30, ease: [0.22, 1, 0.36, 1] }}
             >
               <div
-                className="max-w-2xl mx-auto rounded-[2rem] p-5 space-y-5 overflow-y-auto"
+                className="rounded-[2rem] p-5 space-y-5 overflow-y-auto overscroll-contain"
                 style={{
-                  background: 'rgba(14,9,4,0.97)',
+                  background: isDark ? 'rgba(35,34,30,0.98)' : 'rgba(255,250,242,0.98)',
                   backdropFilter: 'blur(48px)',
                   WebkitBackdropFilter: 'blur(48px)',
                   border: '1px solid rgba(200,146,74,0.18)',
-                  boxShadow: '0 -4px 40px rgba(0,0,0,0.28)',
-                  maxHeight: '85dvh',
+                  boxShadow: isDark ? '0 -4px 40px rgba(0,0,0,0.28)' : '0 -4px 34px rgba(70,45,16,0.18)',
+                  maxHeight: 'min(78dvh, 680px)',
                 }}
               >
                 {/* Handle + header */}
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="w-8 h-[3px] rounded-full mb-3" style={{ background: 'rgba(200,146,74,0.22)' }} />
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(200,146,74,0.50)' }}>
+                    <p className="home-section-label">
                       Customise
                     </p>
-                    <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-cream)', marginTop: '2px' }}>
+                    <p className="home-card-title mt-0.5">
                       Edit Home
                     </p>
                   </div>
                   <button
                     onClick={() => setEditHomeOpen(false)}
                     className="w-9 h-9 rounded-full flex items-center justify-center"
-                    style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(200,146,74,0.14)' }}
+                    style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(95,58,22,0.08)', border: '1px solid rgba(200,146,74,0.14)' }}
                   >
                     <X size={14} style={{ color: 'var(--text-muted-warm)' }} />
                   </button>
@@ -2038,7 +2038,7 @@ export default function HomeDashboard({
                         className="flex items-center gap-2 rounded-2xl px-3 py-2.5 transition-all"
                         style={{
                           background: hidden ? 'var(--card-bg)' : 'rgba(200,146,74,0.08)',
-                          border: `1px solid ${hidden ? 'rgba(255,255,255,0.08)' : 'rgba(200,146,74,0.20)'}`,
+                          border: `1px solid ${hidden ? (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(95,58,22,0.10)') : 'rgba(200,146,74,0.20)'}`,
                         }}
                       >
                         {/* Up / Down arrows */}
@@ -2047,7 +2047,7 @@ export default function HomeDashboard({
                             onClick={() => moveCard(item.href, 'up')}
                             disabled={idx === 0}
                             className="w-6 h-6 rounded-lg flex items-center justify-center transition disabled:opacity-25"
-                            style={{ background: 'rgba(255,255,255,0.07)' }}
+                            style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(95,58,22,0.08)' }}
                           >
                             <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
                               <path d="M6 9V3M3 6l3-3 3 3" stroke="rgba(200,146,74,0.75)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
@@ -2057,7 +2057,7 @@ export default function HomeDashboard({
                             onClick={() => moveCard(item.href, 'down')}
                             disabled={idx === orderedAccessItems.length - 1}
                             className="w-6 h-6 rounded-lg flex items-center justify-center transition disabled:opacity-25"
-                            style={{ background: 'rgba(255,255,255,0.07)' }}
+                            style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(95,58,22,0.08)' }}
                           >
                             <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
                               <path d="M6 3v6M3 6l3 3 3-3" stroke="rgba(200,146,74,0.75)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
@@ -2068,10 +2068,10 @@ export default function HomeDashboard({
                         {/* Icon + label */}
                         <span className="text-lg leading-none flex-shrink-0">{item.icon}</span>
                         <div className="flex-1 min-w-0 text-left">
-                          <p className="text-sm font-semibold truncate" style={{ color: hidden ? 'var(--text-dim)' : 'var(--text-cream)' }}>
+                          <p className="home-card-title truncate" style={{ color: hidden ? 'var(--brand-muted)' : 'var(--brand-ink)' }}>
                             {item.label}
                           </p>
-                          <p className="text-[10px] truncate" style={{ color: 'var(--text-dim)' }}>{item.desc}</p>
+                          <p className="home-card-copy truncate">{item.desc}</p>
                         </div>
 
                         {/* Toggle */}
@@ -2082,7 +2082,7 @@ export default function HomeDashboard({
                         >
                           <div
                             className="w-11 h-6 rounded-full transition-all flex items-center px-0.5"
-                            style={{ background: hidden ? 'rgba(255,255,255,0.10)' : 'rgba(200,146,74,0.55)' }}
+                            style={{ background: hidden ? (isDark ? 'rgba(255,255,255,0.10)' : 'rgba(95,58,22,0.14)') : 'rgba(200,146,74,0.55)' }}
                           >
                             <div
                               className="w-5 h-5 rounded-full transition-all"
@@ -2112,7 +2112,7 @@ export default function HomeDashboard({
                     <button
                       onClick={() => { setCardOrder(DEFAULT_CARD_ORDER); try { localStorage.removeItem('home_card_order'); } catch {} }}
                       className="flex-1 py-2 rounded-2xl text-xs font-semibold"
-                      style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-dim)' }}
+                      style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(95,58,22,0.07)', border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(95,58,22,0.10)', color: 'var(--brand-muted)' }}
                     >
                       Reset order
                     </button>
@@ -2136,17 +2136,17 @@ export default function HomeDashboard({
                         className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 transition-all motion-press"
                         style={{
                           background: hidden ? 'var(--card-bg)' : 'rgba(200,146,74,0.08)',
-                          border: `1px solid ${hidden ? 'rgba(255,255,255,0.08)' : 'rgba(200,146,74,0.20)'}`,
+                          border: `1px solid ${hidden ? (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(95,58,22,0.10)') : 'rgba(200,146,74,0.20)'}`,
                         }}
                       >
                         <span className="text-xl flex-shrink-0">{icon}</span>
                         <div className="flex-1 text-left">
-                          <p className="text-sm font-semibold" style={{ color: hidden ? 'var(--text-dim)' : 'var(--text-cream)' }}>{label}</p>
-                          <p className="text-[10px]" style={{ color: 'var(--text-dim)' }}>{desc}</p>
+                          <p className="home-card-title" style={{ color: hidden ? 'var(--brand-muted)' : 'var(--brand-ink)' }}>{label}</p>
+                          <p className="home-card-copy">{desc}</p>
                         </div>
                         <div
                           className="w-11 h-6 rounded-full transition-all flex-shrink-0 flex items-center px-0.5"
-                          style={{ background: hidden ? 'rgba(255,255,255,0.10)' : 'rgba(200,146,74,0.55)' }}
+                          style={{ background: hidden ? (isDark ? 'rgba(255,255,255,0.10)' : 'rgba(95,58,22,0.14)') : 'rgba(200,146,74,0.55)' }}
                         >
                           <div
                             className="w-5 h-5 rounded-full transition-all"

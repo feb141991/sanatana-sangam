@@ -73,6 +73,7 @@ export default function FloatingPill({
   const [isIosSafariNonPwa, setIsIosSafariNonPwa] = useState(false);
   const [portalTarget, setPortalTarget] = useState<Element | null>(null);
   const [avatarFailed, setAvatarFailed] = useState(false);
+  const [pillExpanded, setPillExpanded] = useState(false);
 
   const notificationsQuery = useNotificationsQuery(userId);
   const notifs = notificationsQuery.data ?? [];
@@ -133,6 +134,12 @@ export default function FloatingPill({
   useEffect(() => {
     setAvatarFailed(false);
   }, [avatarUrl]);
+
+  useEffect(() => {
+    if (!pillExpanded || open) return;
+    const collapseTimer = window.setTimeout(() => setPillExpanded(false), 4200);
+    return () => window.clearTimeout(collapseTimer);
+  }, [open, pillExpanded]);
   const shouldSuppressPrompt = Boolean(
     pushPromptDismissedUntil && Number.isFinite(pushPromptDismissedUntil) && pushPromptDismissedUntil > Date.now()
   );
@@ -142,6 +149,7 @@ export default function FloatingPill({
 
   function handleBellClick() {
     const opening = !open;
+    setPillExpanded(true);
     setOpen(opening);
     if (opening) notificationsQuery.refetch();
   }
@@ -365,7 +373,7 @@ export default function FloatingPill({
   // ── Unified frosted-glass pill: [🔔 | divider | avatar] ─────────────────
   return (
     <>
-      <div
+      <motion.div
         className="fixed top-3 right-3 z-50 flex items-center rounded-full"
         style={{
           background:           'rgba(18, 14, 8, 0.52)',
@@ -373,63 +381,123 @@ export default function FloatingPill({
           WebkitBackdropFilter: 'blur(28px) saturate(180%)',
           border:               '1px solid rgba(200,146,74,0.20)',
           boxShadow:            '0 4px 20px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,220,140,0.06)',
+          overflow:             'hidden',
         }}
+        animate={{ width: pillExpanded ? 98 : 44 }}
+        transition={{ duration: prefersReducedMotion ? 0 : 0.30, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* ── Bell ──────────────────────────────────────────────────── */}
-        <button
-          onClick={handleBellClick}
-          aria-label="Notifications"
-          className="relative flex items-center justify-center transition"
-          style={{ width: 48, height: 48, color: 'rgba(200,146,74,0.88)', flexShrink: 0 }}
-        >
-          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-          </svg>
-          {unreadCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold"
-              style={{ background: 'var(--brand-primary)', color: '#1c1c1a' }}>
-              {unreadCount > 9 ? '9+' : unreadCount}
-            </span>
-          )}
-          {unreadCount === 0 && pushConfigured && permission !== 'granted' && !isIosSafariNonPwa && (
-            <span className="absolute top-2 right-2 w-2 h-2 rounded-full"
-              style={{ background: 'rgba(230,150,60,0.9)', boxShadow: '0 0 0 2px rgba(200,146,74,0.22)', animation: 'pulse 2s ease-in-out infinite' }} />
-          )}
-        </button>
+        <AnimatePresence initial={false}>
+          {pillExpanded && (
+            <>
+              {/* ── Bell ──────────────────────────────────────────────────── */}
+              <motion.button
+                key="home-pill-bell"
+                onClick={handleBellClick}
+                aria-label="Notifications"
+                className="relative flex items-center justify-center transition"
+                style={{ width: 48, height: 44, color: 'rgba(200,146,74,0.88)', flexShrink: 0 }}
+                initial={prefersReducedMotion ? false : { opacity: 0, x: 10 }}
+                animate={prefersReducedMotion ? undefined : { opacity: 1, x: 0 }}
+                exit={prefersReducedMotion ? undefined : { opacity: 0, x: 8 }}
+                transition={{ duration: 0.20, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                  <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                </svg>
+                {unreadCount > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold"
+                    style={{ background: 'var(--brand-primary)', color: '#1c1c1a' }}>
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+                {unreadCount === 0 && pushConfigured && permission !== 'granted' && !isIosSafariNonPwa && (
+                  <span className="absolute top-2 right-2 w-2 h-2 rounded-full"
+                    style={{ background: 'rgba(230,150,60,0.9)', boxShadow: '0 0 0 2px rgba(200,146,74,0.22)', animation: 'pulse 2s ease-in-out infinite' }} />
+                )}
+              </motion.button>
 
-        {/* ── Divider ────────────────────────────────────────────────── */}
-        <div style={{ width: 1, height: 28, background: 'rgba(200,146,74,0.18)', flexShrink: 0 }} />
-
-        {/* ── Avatar → profile ────────────────────────────────────────── */}
-        <Link
-          href="/profile"
-          className="relative flex-shrink-0 rounded-full flex items-center justify-center overflow-hidden"
-          style={{
-            width: 48,
-            height: 48,
-            background: 'rgba(200,146,74,0.10)',
-            border: avatarUrl && !avatarFailed ? '2px solid rgba(200,146,74,0.50)' : '1px solid rgba(200,146,74,0.18)',
-          }}
-        >
-          {avatarUrl && !avatarFailed ? (
-            <Image
-              key={avatarUrl}
-              src={avatarUrl}
-              alt="Profile"
-              fill
-              sizes="48px"
-              className="object-cover"
-              unoptimized
-              onError={() => setAvatarFailed(true)}
-            />
-          ) : (
-            <span className="text-sm font-bold" style={{ color: 'rgba(200,146,74,0.88)' }}>
-              {userInitials}
-            </span>
+              {/* ── Divider ────────────────────────────────────────────────── */}
+              <motion.div
+                key="home-pill-divider"
+                style={{ width: 1, height: 26, background: 'rgba(200,146,74,0.18)', flexShrink: 0 }}
+                initial={prefersReducedMotion ? false : { opacity: 0 }}
+                animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+                exit={prefersReducedMotion ? undefined : { opacity: 0 }}
+                transition={{ duration: 0.18 }}
+              />
+            </>
           )}
-        </Link>
-      </div>
+        </AnimatePresence>
+
+        {!pillExpanded ? (
+          <button
+            type="button"
+            onClick={() => setPillExpanded(true)}
+            aria-label="Open profile and notifications"
+            className="relative flex-shrink-0 rounded-full flex items-center justify-center overflow-hidden"
+            style={{
+              width: 44,
+              height: 44,
+              background: 'rgba(200,146,74,0.10)',
+              border: avatarUrl && !avatarFailed ? '2px solid rgba(200,146,74,0.50)' : '1px solid rgba(200,146,74,0.18)',
+            }}
+          >
+            {avatarUrl && !avatarFailed ? (
+              <Image
+                key={avatarUrl}
+                src={avatarUrl}
+                alt="Profile"
+                fill
+                sizes="44px"
+                className="object-cover"
+                unoptimized
+                onError={() => setAvatarFailed(true)}
+              />
+            ) : (
+              <span className="text-sm font-bold" style={{ color: 'rgba(200,146,74,0.88)' }}>
+                {userInitials}
+              </span>
+            )}
+            {unreadCount > 0 && (
+              <span className="absolute top-0.5 right-0.5 min-w-4 h-4 rounded-full px-1 flex items-center justify-center text-[9px] font-bold"
+                style={{ background: 'var(--brand-primary)', color: '#1c1c1a' }}>
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </button>
+        ) : (
+          <Link
+            href="/profile"
+            onClick={() => setPillExpanded(false)}
+            className="relative flex-shrink-0 rounded-full flex items-center justify-center overflow-hidden"
+            style={{
+              width: 48,
+              height: 44,
+              background: 'rgba(200,146,74,0.10)',
+              border: avatarUrl && !avatarFailed ? '2px solid rgba(200,146,74,0.50)' : '1px solid rgba(200,146,74,0.18)',
+            }}
+            aria-label="Open profile"
+          >
+            {avatarUrl && !avatarFailed ? (
+              <Image
+                key={avatarUrl}
+                src={avatarUrl}
+                alt="Profile"
+                fill
+                sizes="48px"
+                className="object-cover"
+                unoptimized
+                onError={() => setAvatarFailed(true)}
+              />
+            ) : (
+              <span className="text-sm font-bold" style={{ color: 'rgba(200,146,74,0.88)' }}>
+                {userInitials}
+              </span>
+            )}
+          </Link>
+        )}
+      </motion.div>
 
       {notificationSheet}
     </>
