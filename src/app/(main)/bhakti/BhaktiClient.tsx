@@ -4,9 +4,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, BarChart2 } from 'lucide-react';
 import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+import type { Shloka } from '@/lib/shlokas';
 
 /* ─── Incense smoke rising from the diya ─────────────────────────── */
 function IncenseParticles() {
@@ -155,14 +156,7 @@ const PORTALS = [
   },
 ] as const;
 
-const DAILY_SHLOKA = {
-  original: 'मन्मना भव मद्भक्तो मद्याजी मां नमस्कुरु',
-  translation:
-    'Fill your mind with Me, be devoted to Me, worship Me, bow down to Me.',
-  source: 'Bhagavad Gita 9.34',
-};
-
-export default function BhaktiClient() {
+export default function BhaktiClient({ shloka }: { shloka: Shloka }) {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
   const isDark = resolvedTheme === 'dark';
@@ -357,6 +351,18 @@ export default function BhaktiClient() {
           ))}
         </div>
 
+        {/* ── Insights link ──────────────────────────── */}
+        <div className="flex justify-end">
+          <Link
+            href="/bhakti/insights"
+            className="flex items-center gap-1.5 text-[12px] font-medium"
+            style={{ color: 'rgba(200,146,74,0.85)' }}
+          >
+            <BarChart2 size={13} />
+            View Practice Insights →
+          </Link>
+        </div>
+
         {/* ── Sacred sounds ──────────────────────────── */}
         <motion.section
           initial={{ opacity: 0, y: 18 }}
@@ -465,7 +471,7 @@ export default function BhaktiClient() {
               fontStyle: 'italic',
             }}
           >
-            &ldquo;{DAILY_SHLOKA.original}&rdquo;
+            &ldquo;{shloka.sanskrit}&rdquo;
           </motion.p>
 
           <motion.p
@@ -475,14 +481,14 @@ export default function BhaktiClient() {
             className="mx-auto mt-3 max-w-[280px] text-sm leading-relaxed"
             style={{ color: shlokaTransColor }}
           >
-            &ldquo;{DAILY_SHLOKA.translation}&rdquo;
+            &ldquo;{shloka.meaning}&rdquo;
           </motion.p>
 
           <p
             className="mt-3 text-xs"
             style={{ color: shlokaSourceColor }}
           >
-            {DAILY_SHLOKA.source}
+            {shloka.source}
           </p>
         </motion.section>
       </div>

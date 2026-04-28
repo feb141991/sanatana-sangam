@@ -131,6 +131,15 @@ const MANTRAS = [
     full: 'ॐ मणि पद्मे हूँ\nॐ मणि पद्मे हूँ\nॐ मणि पद्मे हूँ',
     tradColor: '#6A9888',
   },
+  {
+    id: 'waheguru',
+    name: 'Waheguru Simran',
+    devanagari: 'ਵਾਹਿਗੁਰੂ',
+    tradition: 'Sikh',
+    description: 'The wondrous Guru — sacred simran of the Sikhs',
+    full: 'ਵਾਹਿਗੁਰੂ\nਵਾਹਿਗੁਰੂ\nਵਾਹਿਗੁਰੂ',
+    tradColor: '#4A8870',
+  },
 ] as const;
 
 type MantraId = typeof MANTRAS[number]['id'];
@@ -900,7 +909,7 @@ export default function JapaClient({
   const engine = useEngine();
   const isPro  = usePremium();
 
-  const defaultMantraId: MantraId = tradition === 'sikh'     ? 'om_namah_shivaya'
+  const defaultMantraId: MantraId = tradition === 'sikh'     ? 'waheguru'
     : tradition === 'buddhist' ? 'om_mani'
     : 'gayatri';
 
@@ -1047,9 +1056,18 @@ export default function JapaClient({
           .eq('user_id', userId),
       ]);
 
-      const { data: existing } = await supabase
-        .from('daily_sadhana').select('streak_count').eq('user_id', userId).eq('date', today).single();
-      const newStreak = (existing?.streak_count ?? 0) + 1;
+      // Streak: look at yesterday's record to build a consecutive-day count
+      const yesterdayObj = new Date(today + 'T12:00:00Z');
+      yesterdayObj.setUTCDate(yesterdayObj.getUTCDate() - 1);
+      const yesterday = yesterdayObj.toISOString().slice(0, 10);
+      const [{ data: todayRow }, { data: yesterdayRow }] = await Promise.all([
+        supabase.from('daily_sadhana').select('streak_count, japa_done').eq('user_id', userId).eq('date', today).maybeSingle(),
+        supabase.from('daily_sadhana').select('streak_count, japa_done').eq('user_id', userId).eq('date', yesterday).maybeSingle(),
+      ]);
+      // If today already has a streak count (edge case), keep it; otherwise derive from yesterday
+      const newStreak = todayRow?.streak_count
+        ? todayRow.streak_count
+        : (yesterdayRow?.japa_done ? (yesterdayRow.streak_count ?? 0) + 1 : 1);
       await supabase.from('daily_sadhana').upsert({
         user_id: userId, date: today, japa_done: true, streak_count: newStreak,
       }, { onConflict: 'user_id,date' });
