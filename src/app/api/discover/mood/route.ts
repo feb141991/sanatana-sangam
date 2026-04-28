@@ -84,9 +84,10 @@ export async function POST(req: Request) {
   // ── Check in-memory cache ────────────────────────────────────────────────────
   const cached = _moodCache.get(moodKey);
   if (cached && Date.now() - cached.ts < CACHE_TTL_MS) {
-    // Re-use cached insights with newly shuffled top6 (verses may differ, map by index)
+    // Return the cached verse+insight pairs together — insights are verse-specific,
+    // so we must use the same top6 they were generated for (not a new shuffle).
     return NextResponse.json({
-      results: top6.map((entry, i) => ({ entry, insight: cached.insights[i] ?? null })),
+      results: cached.top6.map((entry, i) => ({ entry, insight: cached.insights[i] ?? null })),
     });
   }
 

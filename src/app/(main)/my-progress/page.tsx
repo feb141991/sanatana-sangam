@@ -135,6 +135,11 @@ export default async function MyProgressPage() {
   const prevBeads   = prevMalaSessions.reduce((s, r) => s + (r.bead_count ?? 0), 0);
   const prevSessions = prevMalaSessions.length;
 
+  // Current calendar month — filter from already-fetched malaCur (last 30d always contains current month)
+  const curMonthSessions = malaSessions.filter(r => r.created_at >= curMonthStart);
+  const curMonthRounds   = curMonthSessions.reduce((s, r) => s + (r.rounds ?? 0), 0);
+  const curMonthBeads    = curMonthSessions.reduce((s, r) => s + (r.bead_count ?? 0), 0);
+
   // Current month Nitya (for report — subset of 30d)
   const curMonthNitya = (nityaLog ?? []).filter(r => r.log_date >= curMonthStart && r.log_date <= curMonthEnd).length;
   const curMonthDays  = new Date().getDate(); // days elapsed in this month
@@ -157,13 +162,13 @@ export default async function MyProgressPage() {
       totalJapaSessions={allTimeSessions ?? 0}
       // Nitya — 30d
       nitya30dDays={nityaDaysCount}
-      // Premium report data — current month vs prev month
+      // Premium report data — current calendar month vs prev month
       report={{
         curMonthStart,
         curMonthEnd,
-        curSessions:  totalSessions,
-        curRounds:    totalRounds,
-        curBeads:     totalBeads,
+        curSessions:  curMonthSessions.length,
+        curRounds:    curMonthRounds,
+        curBeads:     curMonthBeads,
         curNityaDays: curMonthNitya,
         curDaysElapsed: curMonthDays,
         prevSessions,

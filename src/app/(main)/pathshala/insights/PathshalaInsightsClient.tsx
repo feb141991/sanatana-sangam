@@ -8,21 +8,22 @@ import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 interface ProgressRow {
   path_id: string; status: string; completed_at: string | null;
-  current_lesson: number; completed_lessons: number; created_at: string; updated_at: string;
+  current_lesson: number; completed_lessons: number[]; created_at: string; updated_at: string;
 }
 interface Props { progress: ProgressRow[]; tradition: string; }
 
-// Friendly path names (matches PathshalaClient)
-const PATH_NAMES: Record<string, { name: string; icon: string }> = {
-  'bhagavad-gita-7d':  { name: 'Bhagavad Gita 7-Day',  icon: '📖' },
-  'yoga-sutras-14d':   { name: 'Yoga Sutras 14-Day',    icon: '🧘' },
-  'upanishad-21d':     { name: 'Upanishad Journey',     icon: '🕉️' },
-  'guru-granth-7d':    { name: 'Guru Granth 7-Day',     icon: '🙏' },
-  'dhammapada-14d':    { name: 'Dhammapada 14-Day',     icon: '☸️' },
+// Friendly path names — must match SEED_PATHS ids in PathshalaClient.tsx
+const PATH_NAMES: Record<string, { name: string; icon: string; total_lessons: number }> = {
+  'bhagavad-gita-intro': { name: 'Bhagavad Gita — Foundations', icon: '📖', total_lessons: 30 },
+  'upanishads-core':     { name: 'Core Upanishads',              icon: '🕉️', total_lessons: 20 },
+  'stotra-path':         { name: 'Daily Stotra Practice',        icon: '🙏', total_lessons: 14 },
+  'yoga-sutras':         { name: 'Patanjali Yoga Sutras',        icon: '🧘', total_lessons: 40 },
+  'nitnem-daily':        { name: 'Nitnem — Daily Banis',         icon: '🕉️', total_lessons: 10 },
+  'dhammapada-path':     { name: 'Dhammapada — 26 Chapters',    icon: '☸️', total_lessons: 26 },
 };
 
 function getPathInfo(id: string) {
-  return PATH_NAMES[id] ?? { name: id.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), icon: '📚' };
+  return PATH_NAMES[id] ?? { name: id.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), icon: '📚', total_lessons: 0 };
 }
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
@@ -66,10 +67,10 @@ function PathCard({ row, isDark, amber }: { row: ProgressRow; isDark: boolean; a
   const bg      = isDark ? 'var(--card-bg)'         : 'rgba(255,255,255,0.90)';
   const text    = isDark ? 'rgba(245,225,185,0.97)' : '#1A1208';
   const sub     = isDark ? 'rgba(200,165,110,0.55)' : 'rgba(100,65,25,0.55)';
-  const done    = row.status === 'completed';
-  const pct     = row.completed_lessons > 0
-    ? Math.min(100, Math.round((row.current_lesson / row.completed_lessons) * 100))
-    : 0;
+  const done           = row.status === 'completed';
+  const completedCount = Array.isArray(row.completed_lessons) ? row.completed_lessons.length : 0;
+  const totalLessons   = info.total_lessons > 0 ? info.total_lessons : Math.max(1, row.current_lesson + 1);
+  const pct            = Math.min(100, Math.round((completedCount / totalLessons) * 100));
 
   return (
     <motion.div whileTap={{ scale: 0.98 }} onClick={() => setOpen(v => !v)}
@@ -100,7 +101,7 @@ function PathCard({ row, isDark, amber }: { row: ProgressRow; isDark: boolean; a
             className="mt-3 pt-3 text-[11px] space-y-1" style={{ borderTop: `1px solid ${border}`, color: sub }}>
             <p>Started: {new Date(row.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
             {row.updated_at && <p>Last active: {new Date(row.updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>}
-            <p>Lessons completed: {row.completed_lessons}</p>
+            <p>Lessons completed: {Array.isArray(row.completed_lessons) ? row.completed_lessons.length : 0}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -124,8 +125,8 @@ export default function PathshalaInsightsClient({ progress }: Props) {
 
   const stats = useMemo(() => {
     const completed  = progress.filter(p => p.status === 'completed');
-    const active     = progress.filter(p => p.status === 'in_progress' || p.status === 'active');
-    const totalLessons = progress.reduce((s, p) => s + (p.completed_lessons ?? 0), 0);
+    const active     = progress.filter(p => p.status === 'active');
+    const totalLessons = progress.reduce((s, p) => s + (Array.isArray(p.completed_lessons) ? p.completed_lessons.length : 0), 0);
     const totalPaths   = progress.length;
     const completedPaths = completed.length;
 

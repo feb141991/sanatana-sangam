@@ -89,7 +89,7 @@ function VerseCard({ result, index, accentColour }: { result: DiscoverResult; in
       <p className="relative italic text-[11px] mb-3 leading-relaxed"
         style={{ color: 'rgba(200,160,100,0.55)', letterSpacing: '0.01em' }}
       >
-        {result.entry.transliteration.split('|')[0].trim()}
+        {(result.entry.transliteration ?? '').split('|')[0].trim()}
       </p>
 
       {/* AI insight */}

@@ -263,7 +263,12 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
       `🌅 Sunrise: ${p.sunrise}  🌆 Sunset: ${p.sunset}\n` +
       `⚠️ Rahu Kaal: ${p.rahuKaal}\n✨ Abhijit Muhurat: ${p.abhijitMuhurat}\n\n— Sanatana Sangam`;
     if (navigator.share) { try { await navigator.share({ title: 'Panchang', text }); return; } catch {} }
-    await navigator.clipboard.writeText(text);
+    try {
+      await navigator.clipboard.writeText(text);
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const toast = (await import('react-hot-toast')).default;
+      toast.success('Copied to clipboard 📋');
+    } catch { /* clipboard not available */ }
   }
 
   return (
