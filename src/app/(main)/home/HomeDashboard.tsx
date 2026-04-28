@@ -17,9 +17,7 @@ import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { DailySacredText } from '@/lib/sacred-texts';
 import { calculatePanchang, PANCHANG_TRUST_META } from '@/lib/panchang';
 import { getGreeting, GREETING_POOLS } from '@/lib/traditions';
-import { buildPersonalizedPaths } from '@/lib/seeking-paths';
-import type { GuidedPathProgressRow, GuidedPathStatus } from '@/lib/guided-paths';
-import { buildGuidedPathStatusMap } from '@/lib/guided-paths';
+import type { GuidedPathProgressRow } from '@/lib/guided-paths';
 import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
 import { localSpiritualDate } from '@/lib/sacred-time';
@@ -922,10 +920,6 @@ export default function HomeDashboard({
   const [greetingSheetOpen, setGreetingSheetOpen] = useState(false);
   const [inviteOpen,        setInviteOpen]        = useState(false);
   const [localGreeting,     setLocalGreeting]     = useState<string | null>(customGreeting);
-  const [guidedPathStatusMap, setGuidedPathStatusMap] = useState<Record<string, GuidedPathStatus>>(
-    () => buildGuidedPathStatusMap(guidedPathProgress)
-  );
-  const [guidedPathBusyId, setGuidedPathBusyId] = useState<string | null>(null);
   const [streak,           setStreak]           = useState(initialStreak);
   const [selectedDate,     setSelectedDate]     = useState<Date>(new Date());
   const [readToday,        setReadToday]        = useState(() => {
@@ -1099,18 +1093,6 @@ export default function HomeDashboard({
   }
 
   const displayCity = liveCity || savedCity;
-  const personalizedPaths = buildPersonalizedPaths({
-    seeking,
-    spiritualLevel,
-    city: displayCity || null,
-    ashrama: lifeStage,
-    tradition,
-  });
-  const visiblePersonalizedPaths = personalizedPaths.filter((path) => {
-    const status = guidedPathStatusMap[path.id];
-    return status !== 'dismissed' && status !== 'completed';
-  });
-  const hiddenPersonalizedCount = personalizedPaths.length - visiblePersonalizedPaths.length;
   // Welcome back: user hasn't been active in 2+ days
   const isWelcomeBack = (() => {
     if (!lastShlokaDate) return false;
@@ -1138,62 +1120,6 @@ export default function HomeDashboard({
       return;
     }
     toast.success(newGreeting ? 'Greeting updated 🙏' : 'Greeting reset to auto');
-  }
-
-  async function updateGuidedPath(pathId: string, status: GuidedPathStatus) {
-    const previousState = { ...guidedPathStatusMap };
-    const now = new Date().toISOString();
-
-    setGuidedPathBusyId(pathId);
-    setGuidedPathStatusMap((current) => ({ ...current, [pathId]: status }));
-
-    const { error } = await supabase
-      .from('guided_path_progress')
-      .upsert({
-        user_id: userId,
-        path_id: pathId,
-        status,
-        updated_at: now,
-        last_interacted_at: now,
-        completed_at: status === 'completed' ? now : null,
-      }, {
-        onConflict: 'user_id,path_id',
-      });
-
-    setGuidedPathBusyId(null);
-
-    if (error) {
-      setGuidedPathStatusMap(previousState);
-      toast.error(error.message);
-      return;
-    }
-
-    toast.success(status === 'completed' ? 'Path marked complete.' : 'Path hidden for now.');
-  }
-
-  async function resetGuidedPaths() {
-    const pathIds = personalizedPaths.map((path) => path.id);
-    if (pathIds.length === 0) return;
-
-    setGuidedPathBusyId('reset-all');
-    const previousState = { ...guidedPathStatusMap };
-    setGuidedPathStatusMap({});
-
-    const { error } = await supabase
-      .from('guided_path_progress')
-      .delete()
-      .eq('user_id', userId)
-      .in('path_id', pathIds);
-
-    setGuidedPathBusyId(null);
-
-    if (error) {
-      setGuidedPathStatusMap(previousState);
-      toast.error(error.message);
-      return;
-    }
-
-    toast.success('Guided paths restored.');
   }
 
   // ── Shloka streak ──────────────────────────────────────────────────────────
@@ -1570,102 +1496,7 @@ export default function HomeDashboard({
         </Link>
       </div>
 
-      {personalizedPaths.length > 0 && (
-        <section className="space-y-2">
-          <div>
-            <p className="type-card-label">Your Path</p>
-            <p className="type-body mt-0.5">
-              Personalized to your tradition, life stage, and interests.
-            </p>
-          </div>
-
-          {visiblePersonalizedPaths.length > 0 ? (
-            <MotionStagger className="grid gap-3" delay={0.04}>
-              {visiblePersonalizedPaths.map((path) => (
-              <MotionItem key={path.id}>
-              <div
-                className={`home-luminous-card clay-card ${path.accentClass} rounded-[1.8rem] p-4`}
-                style={{ ['--home-luminous-colour' as string]: 'rgba(200,146,74,0.20)' }}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="type-card-label">
-                      {path.eyebrow}
-                    </p>
-                    <h2 className="type-card-heading mt-1">{path.title}</h2>
-                  </div>
-                  <div className="flex flex-wrap justify-end gap-2">
-                    {path.badges.map((badge) => (
-                      <span key={badge} className="clay-pill type-chip">
-                        {badge}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <p className="type-body mt-2">{path.description}</p>
-
-                <div className="grid gap-2 sm:grid-cols-2 mt-4">
-                  {path.actions.map((action) => (
-                    <Link
-                      key={`${path.id}-${action.href}`}
-                      href={action.href}
-                      className="clay-action rounded-2xl px-4 py-3 flex items-center gap-3 transition hover:-translate-y-0.5"
-                    >
-                      <span className="clay-icon-well text-base">{action.icon}</span>
-                      <span className="type-card-heading">{action.label}</span>
-                    </Link>
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-between gap-3 mt-4 pt-3 border-t border-white/55">
-                  <p className="type-micro">
-                    Keep this visible until you complete it, or hide it for later.
-                  </p>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <button
-                      type="button"
-                      onClick={() => updateGuidedPath(path.id, 'dismissed')}
-                      disabled={guidedPathBusyId === path.id}
-                      className="px-3 py-1.5 rounded-full type-chip border border-[rgba(212,166,70,0.14)] bg-[color:var(--brand-accent)] transition disabled:opacity-50"
-                    >
-                      Later
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => updateGuidedPath(path.id, 'completed')}
-                      disabled={guidedPathBusyId === path.id}
-                      className="px-3 py-1.5 rounded-full type-chip text-[#1c1c1a] glass-button-primary disabled:opacity-50"
-                    >
-                      Done
-                    </button>
-                  </div>
-                </div>
-              </div>
-              </MotionItem>
-              ))}
-            </MotionStagger>
-          ) : (
-            <div className="glass-panel rounded-[1.75rem] px-4 py-4 flex items-center justify-between gap-3">
-              <div>
-                <p className="type-card-heading">Your guided paths are tucked away</p>
-                <p className="type-micro mt-1">
-                  {hiddenPersonalizedCount} path{hiddenPersonalizedCount === 1 ? '' : 's'} completed or dismissed. Bring them back anytime.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={resetGuidedPaths}
-                disabled={guidedPathBusyId === 'reset-all'}
-                className="glass-button-secondary px-4 py-2 rounded-full type-chip disabled:opacity-50"
-                style={{ color: 'var(--brand-primary)' }}
-              >
-                Show again
-              </button>
-            </div>
-          )}
-        </section>
-      )}
+      {/* Guided paths surface inside Nitya Karma — not on home */}
 
       {/* ── Panchang Widget ── */}
       <motion.div
