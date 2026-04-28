@@ -12,12 +12,14 @@ export default async function JapaInsightsPage() {
   oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
   const fromDate = oneYearAgo.toISOString().slice(0, 10);
 
-  const { data: sessions } = await supabase
+  const { data: sessions, error: sessErr } = await supabase
     .from('mala_sessions')
     .select('date, rounds, bead_count, duration_secs, mantra_id, created_at')
     .eq('user_id', user.id)
-    .gte('date', fromDate)
-    .order('date', { ascending: false });
+    .gte('created_at', fromDate + 'T00:00:00')   // filter by created_at — always exists
+    .order('created_at', { ascending: false });
+
+  if (sessErr) console.error('[JapaInsights] mala_sessions fetch error:', sessErr.message);
 
   return <InsightsClient sessions={sessions ?? []} />;
 }

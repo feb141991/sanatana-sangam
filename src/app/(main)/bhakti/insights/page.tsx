@@ -17,8 +17,8 @@ export default async function BhaktiInsightsPage() {
       .from('mala_sessions')
       .select('date, rounds, bead_count, duration_secs, mantra_id, created_at')
       .eq('user_id', user.id)
-      .gte('date', fromDate)
-      .order('date', { ascending: false }),
+      .gte('created_at', fromDate + 'T00:00:00')   // filter by created_at — always exists
+      .order('created_at', { ascending: false }),
 
     supabase
       .from('profiles')

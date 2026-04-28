@@ -134,8 +134,10 @@ function CalendarMonthView({ sessions, isDark, amber, text, sub, borderCol, surf
   const dateMap = useMemo(() => {
     const m: Record<string, Session[]> = {};
     sessions.forEach(s => {
-      if (!m[s.date]) m[s.date] = [];
-      m[s.date].push(s);
+      const key = s.date ?? s.created_at?.slice(0, 10);
+      if (!key) return;
+      if (!m[key]) m[key] = [];
+      m[key].push(s);
     });
     return m;
   }, [sessions]);
@@ -293,7 +295,8 @@ export default function InsightsClient({ sessions }: Props) {
   }, [days]);
 
   const filtered = useMemo(() =>
-    sessions.filter(s => s.date >= cutoff),
+    // Use date if set (new sessions), fall back to created_at date for pre-migration rows
+    sessions.filter(s => (s.date ?? s.created_at?.slice(0, 10) ?? '') >= cutoff),
     [sessions, cutoff]
   );
 
