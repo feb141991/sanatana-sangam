@@ -833,71 +833,64 @@ export default function MyProgressClient({
 
         <div className="px-4 space-y-4">
 
-          {/* ── Activity calendar hero ── */}
+          {/* ── Activity Calendar — compact, calendar-first ── */}
           <motion.section
             initial={{ opacity: 0, y: -14 }} animate={{ opacity: 1, y: 0 }}
-            className="rounded-[2rem] p-5"
+            className="rounded-[2rem] p-4"
             style={{ background: heroBg, border: `1px solid ${cardBdr}` }}>
 
-            {/* Header row: streak + calendar toggle */}
-            <div className="flex items-start justify-between mb-5">
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.16em] font-semibold mb-1" style={{ color: muted }}>Current Streak</p>
-                <div className="flex items-baseline gap-2">
-                  <motion.p
-                    style={{ fontFamily: 'var(--font-serif)', fontSize: '3rem', fontWeight: 700, color: h1, lineHeight: 1 }}
-                    animate={{ scale: streak > 0 ? [1, 1.04, 1] : 1 }}
-                    transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 3, ease: 'easeInOut' }}
+            {/* Compact header: title + streak pill + stats + toggle */}
+            <div className="flex items-center gap-2 mb-3">
+              {/* Label + streak inline */}
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-[0.16em] font-semibold" style={{ color: muted }}>Sādhana Calendar</p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <motion.span
+                    style={{ fontSize: '1rem' }}
+                    animate={streak > 0 ? { scale: [1, 1.18, 1] } : {}}
+                    transition={{ duration: 2.2, repeat: Infinity, repeatDelay: 4, ease: 'easeInOut' }}
                   >
-                    {streak}
-                  </motion.p>
-                  <span style={{ fontSize: '1.8rem' }}>🔥</span>
-                </div>
-                <p className="text-[11px] mt-1" style={{ color: dimText }}>
-                  {streak === 0 ? 'Start your streak today' : `day${streak !== 1 ? 's' : ''} in a row`}
-                </p>
-              </div>
-
-              {/* Quick stats column */}
-              <div className="flex flex-col gap-1.5 items-end">
-                <div className="rounded-xl px-3 py-1.5 text-center" style={{ background: isDark ? 'rgba(200,146,74,0.12)' : 'rgba(200,146,74,0.10)', border: `1px solid rgba(200,146,74,0.18)` }}>
-                  <p className="text-[15px] font-bold" style={{ color: h1 }}>{activeDays}</p>
-                  <p className="text-[9px]" style={{ color: muted }}>active days</p>
-                </div>
-                <div className="rounded-xl px-3 py-1.5 text-center" style={{ background: isDark ? 'rgba(140,180,100,0.10)' : 'rgba(140,180,100,0.10)', border: '1px solid rgba(140,180,100,0.18)' }}>
-                  <p className="text-[15px] font-bold" style={{ color: h1 }}>{nityaRate}%</p>
-                  <p className="text-[9px]" style={{ color: muted }}>nitya rate</p>
+                    🔥
+                  </motion.span>
+                  <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: 700, color: h1 }}>
+                    {streak > 0 ? `${streak} day${streak !== 1 ? 's' : ''}` : 'Start your streak'}
+                  </span>
                 </div>
               </div>
-            </div>
 
-            {/* Calendar view toggle */}
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: dimText }}>
-                {calMonthView ? 'Month view' : 'Last 28 days'}
-              </p>
+              {/* Stat pills */}
               <div className="flex items-center gap-1.5">
+                <div className="rounded-lg px-2 py-1 text-center" style={{ background: isDark ? 'rgba(200,146,74,0.12)' : 'rgba(200,146,74,0.10)', border: `1px solid rgba(200,146,74,0.18)` }}>
+                  <p className="text-[13px] font-bold leading-none" style={{ color: h1 }}>{activeDays}</p>
+                  <p className="text-[8px] mt-0.5" style={{ color: muted }}>active</p>
+                </div>
+                <div className="rounded-lg px-2 py-1 text-center" style={{ background: isDark ? 'rgba(140,180,100,0.10)' : 'rgba(140,180,100,0.10)', border: '1px solid rgba(140,180,100,0.18)' }}>
+                  <p className="text-[13px] font-bold leading-none" style={{ color: h1 }}>{nityaRate}%</p>
+                  <p className="text-[8px] mt-0.5" style={{ color: muted }}>nitya</p>
+                </div>
+              </div>
+
+              {/* View toggle */}
+              <div className="flex items-center gap-1 p-0.5 rounded-full" style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }}>
                 <button
                   onClick={() => setCalMonthView(false)}
-                  className="w-7 h-7 rounded-full flex items-center justify-center transition-all"
+                  className="w-6 h-6 rounded-full flex items-center justify-center transition-all"
                   style={{
-                    background: !calMonthView ? 'rgba(200,146,74,0.20)' : 'transparent',
-                    border: !calMonthView ? '1px solid rgba(200,146,74,0.35)' : '1px solid transparent',
+                    background: !calMonthView ? 'rgba(200,146,74,0.22)' : 'transparent',
                   }}
                   aria-label="Strip view"
                 >
-                  <LayoutGrid size={13} style={{ color: amber }} />
+                  <LayoutGrid size={12} style={{ color: amber }} />
                 </button>
                 <button
                   onClick={() => setCalMonthView(true)}
-                  className="w-7 h-7 rounded-full flex items-center justify-center transition-all"
+                  className="w-6 h-6 rounded-full flex items-center justify-center transition-all"
                   style={{
-                    background: calMonthView ? 'rgba(200,146,74,0.20)' : 'transparent',
-                    border: calMonthView ? '1px solid rgba(200,146,74,0.35)' : '1px solid transparent',
+                    background: calMonthView ? 'rgba(200,146,74,0.22)' : 'transparent',
                   }}
                   aria-label="Month calendar"
                 >
-                  <Calendar size={13} style={{ color: amber }} />
+                  <Calendar size={12} style={{ color: amber }} />
                 </button>
               </div>
             </div>
@@ -906,8 +899,8 @@ export default function MyProgressClient({
             <AnimatePresence mode="wait">
               <motion.div
                 key={calMonthView ? 'month' : 'strip'}
-                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.2 }}
+                initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.18 }}
               >
                 <InteractiveCalendar days={heatmap} isDark={isDark} monthView={calMonthView} />
               </motion.div>
@@ -928,7 +921,7 @@ export default function MyProgressClient({
                   <span className="text-2xl">🪷</span>
                   <div>
                     <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: muted }}>Japa</p>
-                    <p className="text-xs" style={{ color: dimText }}>Mantra repetition</p>
+                    <p className="text-xs" style={{ color: dimText }}>Mantra repetition · 30 days</p>
                   </div>
                 </div>
                 <Link href="/japa/insights"
@@ -937,38 +930,57 @@ export default function MyProgressClient({
                   Insights →
                 </Link>
               </div>
-              <div className="grid grid-cols-4 gap-2">
-                {[
-                  { val: String(japa30dSessions), sub: 'sessions' },
-                  { val: fmt(japa30dBeads),       sub: 'beads'    },
-                  { val: japa30dRounds > 0 ? String(japa30dRounds) : '—', sub: 'rounds'   },
-                  { val: japa30dMins > 0 ? `${japa30dMins}m` : '—',       sub: 'sat'      },
-                ].map(({ val, sub: s }) => (
-                  <div key={s} className="text-center rounded-xl py-2" style={{ background: isDark ? 'rgba(200,146,74,0.07)' : 'rgba(200,146,74,0.06)' }}>
-                    <p className="text-[16px] font-bold" style={{ color: h1 }}>{val}</p>
-                    <p className="text-[9px] mt-0.5" style={{ color: muted }}>{s}</p>
+
+              {japa30dSessions === 0 ? (
+                /* ── No sessions yet ── */
+                <div className="text-center py-4">
+                  <p className="text-2xl mb-2">📿</p>
+                  <p className="text-sm font-medium" style={{ color: h1 }}>No sessions yet</p>
+                  <p className="text-[11px] mt-1" style={{ color: muted }}>
+                    Start your first Japa session to see stats here.
+                  </p>
+                  <Link href="/japa"
+                    className="inline-flex items-center mt-3 rounded-full px-4 py-1.5 text-[11px] font-semibold"
+                    style={{ background: 'rgba(200,146,74,0.14)', color: 'rgba(200,146,74,0.90)', border: '1px solid rgba(200,146,74,0.25)' }}>
+                    Begin Japa →
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[
+                      { val: String(japa30dSessions), sub: 'sessions' },
+                      { val: fmt(japa30dBeads),       sub: 'beads'    },
+                      { val: japa30dRounds > 0 ? String(japa30dRounds) : '—', sub: 'rounds' },
+                      { val: japa30dMins > 0 ? `${japa30dMins}m` : '—',       sub: 'sat'   },
+                    ].map(({ val, sub: s }) => (
+                      <div key={s} className="text-center rounded-xl py-2" style={{ background: isDark ? 'rgba(200,146,74,0.07)' : 'rgba(200,146,74,0.06)' }}>
+                        <p className="text-[16px] font-bold" style={{ color: h1 }}>{val}</p>
+                        <p className="text-[9px] mt-0.5" style={{ color: muted }}>{s}</p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              {/* Consistency bar */}
-              <div className="mt-4">
-                <div className="flex justify-between mb-1">
-                  <span className="text-[10px]" style={{ color: muted }}>Consistency</span>
-                  <span className="text-[10px] font-semibold" style={{ color: 'rgba(200,146,74,0.85)' }}>{japaRate}%</span>
-                </div>
-                <div className="h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}>
-                  <motion.div
-                    className="h-full rounded-full"
-                    style={{ background: 'linear-gradient(90deg,rgba(200,146,74,0.75),rgba(212,100,20,0.85))' }}
-                    initial={{ width: 0 }} animate={{ width: `${japaRate}%` }}
-                    transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-                  />
-                </div>
-              </div>
-              {topMantra && (
-                <p className="text-[11px] mt-3 pt-3" style={{ color: muted, borderTop: `1px solid ${cardBdr}` }}>
-                  Most chanted: <span style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{topMantra}</span>
-                </p>
+                  {/* Consistency bar — only shown when there are actual sessions */}
+                  <div className="mt-4">
+                    <div className="flex justify-between mb-1">
+                      <span className="text-[10px]" style={{ color: muted }}>Consistency</span>
+                      <span className="text-[10px] font-semibold" style={{ color: 'rgba(200,146,74,0.85)' }}>{japaRate}%</span>
+                    </div>
+                    <div className="h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}>
+                      <motion.div
+                        className="h-full rounded-full"
+                        style={{ background: 'linear-gradient(90deg,rgba(200,146,74,0.75),rgba(212,100,20,0.85))' }}
+                        initial={{ width: 0 }} animate={{ width: `${japaRate}%` }}
+                        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                      />
+                    </div>
+                  </div>
+                  {topMantra && (
+                    <p className="text-[11px] mt-3 pt-3" style={{ color: muted, borderTop: `1px solid ${cardBdr}` }}>
+                      Most chanted: <span style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{topMantra}</span>
+                    </p>
+                  )}
+                </>
               )}
             </div>
 

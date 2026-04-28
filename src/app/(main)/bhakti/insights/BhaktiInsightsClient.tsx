@@ -9,8 +9,9 @@ import { useThemePreference } from '@/components/providers/ThemeProvider';
 interface Session { date: string; rounds: number; bead_count: number; duration_secs: number; mantra_id: string; created_at: string; }
 interface Props { sessions: Session[]; shlokaStreak: number; sevaScore: number; tradition: string; }
 
-type Filter = '7d' | '30d' | '90d';
+type Filter = '1d' | '7d' | '30d' | '90d';
 const FILTERS: { key: Filter; label: string; days: number }[] = [
+  { key: '1d',  label: 'Today',   days: 1  },
   { key: '7d',  label: '7 Days',  days: 7  },
   { key: '30d', label: '30 Days', days: 30 },
   { key: '90d', label: '90 Days', days: 90 },
