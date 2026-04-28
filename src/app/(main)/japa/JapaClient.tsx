@@ -1043,7 +1043,7 @@ export default function JapaClient({
       const today = localSpiritualDate(tz, 4);
 
       // Insert japa session and get new all-time count in parallel
-      const [, { count: newTotalSessions }] = await Promise.all([
+      const [insertResult, { count: newTotalSessions }] = await Promise.all([
         supabase.from('mala_sessions').insert({
           user_id: userId, date: today,
           rounds: completedRounds,
@@ -1055,6 +1055,10 @@ export default function JapaClient({
           .select('*', { count: 'exact', head: true })
           .eq('user_id', userId),
       ]);
+      if (insertResult.error) {
+        console.error('[Japa] mala_sessions insert failed:', insertResult.error);
+        throw insertResult.error;
+      }
 
       // Streak: look at yesterday's record to build a consecutive-day count
       const yesterdayObj = new Date(today + 'T12:00:00Z');
@@ -1092,7 +1096,9 @@ export default function JapaClient({
           body: JSON.stringify(payload),
         }).catch(() => { /* best-effort */ });
       }
-    } catch { /* silent */ }
+    } catch (err) {
+      console.error('[Japa] saveSession error:', err);
+    }
   }, [saved, userId, mantraId, duration]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Handlers ─────────────────────────────────────────────────────────────

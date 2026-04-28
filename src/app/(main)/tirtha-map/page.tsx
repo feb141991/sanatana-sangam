@@ -30,15 +30,6 @@ const TRADITION_FILTERS = [
   { label: 'Jain',     value: 'jain',     emoji: '🤲'  },
 ];
 
-// Sampradaya sub-filters (shown only for Hindu / All)
-const SAMPRADAYA_FILTERS = [
-  { label: 'All',      value: 'all',       emoji: '🛕' },
-  { label: 'Vaishnava',value: 'vaishnava', emoji: '🦚' },
-  { label: 'Shaiva',   value: 'shaiva',    emoji: '🔱' },
-  { label: 'Shakta',   value: 'shakta',    emoji: '⚔️' },
-  { label: 'Smarta',   value: 'smarta',    emoji: '🕉️' },
-];
-
 const TRADITION_PLACE_LABEL: Record<string, string> = {
   all: 'sacred places', hindu: 'mandirs', sikh: 'gurudwaras',
   buddhist: 'viharas & stupas', jain: 'Jain temples',
@@ -140,7 +131,6 @@ export default function TirthaMapPage() {
   const [selected,    setSelected]   = useState<Temple | null>(null);
   const [geoError,    setGeoError]   = useState('');
   const [tradFilter,  setTradFilter] = useState('all');
-  const [sampFilter,  setSampFilter] = useState('all');
   const [locUsed,     setLocUsed]    = useState(false);
 
   // Proactively request location on page entry if we don't have it yet
@@ -216,14 +206,10 @@ export default function TirthaMapPage() {
     }
   }
 
-  // Filter: tradition first, then sampradaya (Hindu only)
-  const byTradition = tradFilter === 'all'
+  // Filter by tradition
+  const filtered = tradFilter === 'all'
     ? temples
     : temples.filter((t) => t.tradition === tradFilter);
-
-  const filtered = (tradFilter === 'all' || tradFilter === 'hindu') && sampFilter !== 'all'
-    ? byTradition.filter((t) => t.tradition === 'hindu' && getSampradaya(t) === sampFilter)
-    : byTradition;
 
   const placeLabel = TRADITION_PLACE_LABEL[tradFilter] ?? 'sacred places';
   const activeCityLabel = cityInput.trim() || liveCity || 'your area';
@@ -278,7 +264,7 @@ export default function TirthaMapPage() {
       <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
         {TRADITION_FILTERS.map((f) => (
           <button key={f.value}
-            onClick={() => { setTradFilter(f.value); setSampFilter('all'); }}
+            onClick={() => setTradFilter(f.value)}
             className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
               tradFilter === f.value
                 ? 'text-[#1c1c1a]'
@@ -289,23 +275,6 @@ export default function TirthaMapPage() {
           </button>
         ))}
       </div>
-
-      {/* ── Sampradaya sub-filters (Hindu only) ── */}
-      {(tradFilter === 'all' || tradFilter === 'hindu') && (
-        <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
-          {SAMPRADAYA_FILTERS.map((f) => (
-            <button key={f.value} onClick={() => setSampFilter(f.value)}
-              className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
-                sampFilter === f.value
-                  ? 'text-[#1c1c1a]'
-                  : 'bg-[color:var(--brand-accent)] text-[color:var(--text-dim)] border border-[rgba(200,146,74,0.14)]'
-              }`}
-              style={sampFilter === f.value ? { background: 'var(--brand-secondary)' } : {}}>
-              {f.emoji} {f.label}
-            </button>
-          ))}
-        </div>
-      )}
 
       {/* ── Radius filter ── */}
       <div className="flex items-center gap-2">
@@ -377,8 +346,6 @@ export default function TirthaMapPage() {
           {filtered.slice(0, API.OVERPASS.MAX_RESULTS).map((temple) => {
             const distMi   = getDistanceLabel(center, temple);
             const open     = isOpen(temple);
-            const samp     = getSampradaya(temple);
-            const sampInfo = SAMPRADAYA_FILTERS.find((f) => f.value === samp);
             const isExpanded = selected?.id === temple.id;
             const traditionSummary = getTraditionSummary(temple);
             const traditionBadge = TRADITION_BADGE_LABEL[temple.tradition ?? 'other'];
@@ -409,9 +376,6 @@ export default function TirthaMapPage() {
                             <span className="type-chip rounded-full border px-2.5 py-1" style={{ background: 'var(--chip-fill)', color: 'var(--chip-text)', borderColor: 'rgba(200,146,74,0.16)' }}>
                               {traditionBadge}
                             </span>
-                            {samp !== 'all' && sampInfo && (
-                              <span className="type-micro">{sampInfo.emoji} {sampInfo.label}</span>
-                            )}
                           </div>
                           <h3 className="type-card-heading leading-tight">{temple.name}</h3>
                         </div>

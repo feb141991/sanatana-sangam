@@ -1,5 +1,6 @@
 // 108 key shlokas for daily rotation
 // One shloka per day, cycling through the list
+import { localSpiritualDate, resolveTimeZone } from '@/lib/sacred-time';
 
 export interface Shloka {
   id: number;
@@ -769,14 +770,24 @@ export const SHLOKAS: Shloka[] = [
 ];
 
 /**
- * Get today's shloka based on day of year
+ * Get today's shloka based on spiritual day of year.
+ * Uses a 4 AM cutoff so the shloka doesn't rotate at midnight UTC —
+ * before 4 AM the previous day's shloka is shown (Brahma Muhurta boundary).
+ *
+ * @param timezone  IANA timezone string (e.g. "Europe/London"). Defaults to
+ *                  the browser/server local timezone when omitted.
  */
-export function getTodayShloka(): Shloka {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const diff = now.getTime() - start.getTime();
-  const oneDay = 1000 * 60 * 60 * 24;
-  const dayOfYear = Math.floor(diff / oneDay);
-  const idx = dayOfYear % SHLOKAS.length;
-  return SHLOKAS[idx];
+export function getTodayShloka(timezone?: string): Shloka {
+  const tz = resolveTimeZone(timezone ?? (
+    typeof Intl !== 'undefined'
+      ? Intl.DateTimeFormat().resolvedOptions().timeZone
+      : 'UTC'
+  ));
+  const spiritualDate = localSpiritualDate(tz, 4); // 'YYYY-MM-DD'
+  const [year, month, day] = spiritualDate.split('-').map(Number);
+  const dateObj     = new Date(year, month - 1, day);
+  const startOfYear = new Date(year, 0, 0); // Dec 31 of previous year
+  const oneDay      = 1000 * 60 * 60 * 24;
+  const dayOfYear   = Math.floor((dateObj.getTime() - startOfYear.getTime()) / oneDay);
+  return SHLOKAS[dayOfYear % SHLOKAS.length];
 }

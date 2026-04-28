@@ -507,7 +507,7 @@ export default function PathshalaClient({ userId, userName, tradition }: Props) 
   // (Engine shloka-of-day wired separately; show a motivational prompt for now)
   function DailyVersePrompt() {
     return (
-      <Link href="/pathshala/scripture" className="block rounded-3xl overflow-hidden shadow-sm border border-white/8 mb-4">
+      <Link href="/pathshala?tab=explore" className="block rounded-3xl overflow-hidden shadow-sm border border-white/8 mb-4">
         <div className="p-5" style={{ background: `linear-gradient(135deg, ${meta.accentColour} 0%, ${meta.accentColour}99 100%)` }}>
           <p className="text-white/70 text-xs font-medium uppercase tracking-wider mb-2">
             {meta.sacredTextLabel} · Today

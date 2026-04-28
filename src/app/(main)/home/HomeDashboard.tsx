@@ -22,6 +22,7 @@ import type { GuidedPathProgressRow, GuidedPathStatus } from '@/lib/guided-paths
 import { buildGuidedPathStatusMap } from '@/lib/guided-paths';
 import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
+import { localSpiritualDate } from '@/lib/sacred-time';
 import { APP } from '@/lib/config';
 import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
 import PracticePulse from '@/components/home/PracticePulse';
@@ -774,7 +775,8 @@ export default function HomeDashboard({
   const [streak,           setStreak]           = useState(initialStreak);
   const [selectedDate,     setSelectedDate]     = useState<Date>(new Date());
   const [readToday,        setReadToday]        = useState(() => {
-    const today = new Date().toISOString().split('T')[0];
+    const tz    = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
+    const today = localSpiritualDate(tz, 4);
     return lastShlokaDate === today;
   });
   const [editHomeOpen,     setEditHomeOpen]     = useState(false);
@@ -1043,8 +1045,11 @@ export default function HomeDashboard({
   // ── Shloka streak ──────────────────────────────────────────────────────────
   async function markShlokaRead() {
     if (readToday || !userId) return;
-    const today     = new Date().toISOString().split('T')[0];
-    const yesterday = new Date(Date.now() - 86_400_000).toISOString().split('T')[0];
+    const tz        = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
+    const today     = localSpiritualDate(tz, 4);
+    const yestObj   = new Date(today + 'T12:00:00Z');
+    yestObj.setUTCDate(yestObj.getUTCDate() - 1);
+    const yesterday = yestObj.toISOString().slice(0, 10);
 
     // Streak continues only if last read was exactly yesterday; otherwise reset to 1
     const newStreak = lastShlokaDate === yesterday ? streak + 1 : 1;

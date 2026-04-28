@@ -24,7 +24,7 @@ export default async function HomePage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, tradition, spiritual_level, seeking, custom_greeting, life_stage')
+    .select('full_name, username, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, tradition, spiritual_level, seeking, custom_greeting, life_stage, timezone')
     .eq('id', user.id)
     .single();
 
@@ -44,7 +44,7 @@ export default async function HomePage() {
 
   // Tradition-aware daily sacred text
   // Hindu + other use shlokas.ts; other traditions use sacred-texts.ts
-  const shloka     = getTodayShloka();
+  const shloka     = getTodayShloka(profile?.timezone ?? undefined);
   const sacredText = getDailySacredText(tradition, dayIndex); // null for Hindu
 
   const calendarFromDb = ((calendarRows ?? []) as Pick<Database['public']['Tables']['festivals']['Row'], 'name' | 'date' | 'emoji' | 'description' | 'type' | 'tradition' | 'source_name' | 'source_kind' | 'review_status'>[])
