@@ -723,6 +723,160 @@ function CalendarModal({
   );
 }
 
+// ── Sky Animation ─────────────────────────────────────────────────────────────
+interface SkyPhase {
+  gradient: string;
+  opacity: number;
+  starOpacity: number;
+  moonVisible: boolean;
+  sunVisible: boolean;
+  sunTop: string;
+  sunRight: string;
+  sunColor: string;
+  cloudOpacity: number;
+  horizonGlow: string | null;
+}
+
+function getSkyPhase(hour: number): SkyPhase {
+  if (hour >= 0 && hour < 4) {
+    return { gradient: 'linear-gradient(180deg,#07091a 0%,#0c1028 45%,#111830 100%)', opacity: 0.58, starOpacity: 0.95, moonVisible: true, sunVisible: false, sunTop: '50%', sunRight: '20%', sunColor: '#fff', cloudOpacity: 0.12, horizonGlow: null };
+  } else if (hour < 6) {
+    return { gradient: 'linear-gradient(180deg,#0c1238 0%,#1c1a48 50%,#2a1a34 100%)', opacity: 0.52, starOpacity: 0.60, moonVisible: true, sunVisible: false, sunTop: '50%', sunRight: '20%', sunColor: '#fff', cloudOpacity: 0.22, horizonGlow: 'rgba(90,40,110,0.38)' };
+  } else if (hour < 8) {
+    return { gradient: 'linear-gradient(180deg,#1a1438 0%,#4a2260 35%,#b85e28 68%,#e8883a 100%)', opacity: 0.48, starOpacity: 0.10, moonVisible: false, sunVisible: true, sunTop: '62%', sunRight: '24%', sunColor: '#f09040', cloudOpacity: 0.55, horizonGlow: 'rgba(240,110,40,0.52)' };
+  } else if (hour < 12) {
+    return { gradient: 'linear-gradient(180deg,#1a2f60 0%,#264d90 48%,#4278be 100%)', opacity: 0.36, starOpacity: 0, moonVisible: false, sunVisible: true, sunTop: '18%', sunRight: '22%', sunColor: '#ffd055', cloudOpacity: 0.65, horizonGlow: null };
+  } else if (hour < 16) {
+    return { gradient: 'linear-gradient(180deg,#1c3870 0%,#2756a0 48%,#3a76c6 100%)', opacity: 0.30, starOpacity: 0, moonVisible: false, sunVisible: true, sunTop: '10%', sunRight: '18%', sunColor: '#ffe070', cloudOpacity: 0.80, horizonGlow: null };
+  } else if (hour < 18) {
+    return { gradient: 'linear-gradient(180deg,#281e50 0%,#683020 42%,#c05e2c 68%,#e08a48 100%)', opacity: 0.46, starOpacity: 0, moonVisible: false, sunVisible: true, sunTop: '58%', sunRight: '20%', sunColor: '#ff7828', cloudOpacity: 0.70, horizonGlow: 'rgba(220,95,38,0.48)' };
+  } else if (hour < 20) {
+    return { gradient: 'linear-gradient(180deg,#1a1535 0%,#3a1524 45%,#701c0e 80%,#c03c1c 100%)', opacity: 0.52, starOpacity: 0.22, moonVisible: false, sunVisible: false, sunTop: '50%', sunRight: '20%', sunColor: '#ff5a28', cloudOpacity: 0.42, horizonGlow: 'rgba(180,55,18,0.52)' };
+  } else {
+    return { gradient: 'linear-gradient(180deg,#080b16 0%,#0b0f20 42%,#10162e 100%)', opacity: 0.56, starOpacity: 0.88, moonVisible: true, sunVisible: false, sunTop: '50%', sunRight: '20%', sunColor: '#fff', cloudOpacity: 0.08, horizonGlow: null };
+  }
+}
+
+// Deterministic star positions — seeded so they're stable across renders
+const STAR_DATA = Array.from({ length: 30 }, (_, i) => ({
+  x: ((i * 37 + 13) % 90) + 4,
+  y: ((i * 61 + 7)  % 62) + 2,
+  r: i % 5 === 0 ? 1.6 : i % 3 === 0 ? 1.1 : 0.75,
+  delay: (i * 0.41) % 2.6,
+  dur:   2.2 + (i * 0.31) % 1.6,
+}));
+
+const CLOUD_DATA = [
+  { xPct: 52, yPct: 14, scale: 1.00, speed: 20, delay: 0 },
+  { xPct: 12, yPct: 30, scale: 0.68, speed: 27, delay: 5 },
+  { xPct: 72, yPct: 40, scale: 0.80, speed: 23, delay: 9 },
+  { xPct: 30, yPct: 55, scale: 0.55, speed: 32, delay: 3 },
+];
+
+function SkyBackground({ hour }: { hour: number }) {
+  const p = getSkyPhase(hour);
+  const rm = useReducedMotion();
+
+  return (
+    <div
+      className="absolute inset-0 pointer-events-none select-none"
+      style={{ borderRadius: 'inherit', opacity: p.opacity, zIndex: 0 }}
+      aria-hidden="true"
+    >
+      {/* Base gradient */}
+      <div className="absolute inset-0" style={{ background: p.gradient }} />
+
+      {/* Stars */}
+      {p.starOpacity > 0 && (
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+          {STAR_DATA.map((s, i) => (
+            <motion.circle
+              key={i}
+              cx={s.x} cy={s.y} r={s.r}
+              fill="white"
+              initial={{ opacity: p.starOpacity * 0.5 }}
+              animate={rm ? undefined : { opacity: [p.starOpacity * 0.4, p.starOpacity, p.starOpacity * 0.35] }}
+              transition={{ duration: s.dur, delay: s.delay, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          ))}
+        </svg>
+      )}
+
+      {/* Moon — crescent via circle occlusion */}
+      {p.moonVisible && (
+        <motion.div
+          className="absolute"
+          style={{ top: '9%', right: '20%', width: 20, height: 20 }}
+          animate={rm ? undefined : { opacity: [0.72, 0.92, 0.72], y: [0, -1.5, 0] }}
+          transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <svg viewBox="0 0 20 20" width="20" height="20">
+            <circle cx="10" cy="10" r="7.5" fill="rgba(215,220,255,0.88)" />
+            <circle cx="13.5" cy="7.5" r="6.5" fill="rgba(10,12,28,0.95)" />
+          </svg>
+          {/* Moon halo */}
+          <div className="absolute inset-0 rounded-full" style={{
+            background: 'radial-gradient(circle at 38% 42%, rgba(200,210,255,0.18) 0%, transparent 65%)',
+            transform: 'scale(2.2)',
+          }} />
+        </motion.div>
+      )}
+
+      {/* Shooting star (night only, occasional) */}
+      {p.starOpacity > 0.5 && !rm && (
+        <motion.div
+          className="absolute"
+          style={{ top: '18%', left: '15%', width: 40, height: 1.5,
+            background: 'linear-gradient(90deg, rgba(255,255,255,0.9), transparent)',
+            borderRadius: 2,
+          }}
+          animate={{ x: [0, 60], opacity: [0, 0.8, 0], scaleX: [0.2, 1, 0.2] }}
+          transition={{ duration: 0.8, delay: 8, repeat: Infinity, repeatDelay: 18, ease: 'easeOut' }}
+        />
+      )}
+
+      {/* Sun glow */}
+      {p.sunVisible && (
+        <motion.div
+          className="absolute"
+          style={{
+            top: p.sunTop, right: p.sunRight,
+            width: 36, height: 36,
+            borderRadius: '50%',
+            background: `radial-gradient(circle, ${p.sunColor}cc 0%, ${p.sunColor}55 38%, transparent 68%)`,
+            transform: 'translate(50%, -50%)',
+          }}
+          animate={rm ? undefined : { scale: [0.92, 1.06, 0.92], opacity: [0.72, 0.95, 0.72] }}
+          transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      )}
+
+      {/* Horizon glow (dawn / dusk) */}
+      {p.horizonGlow && (
+        <div className="absolute bottom-0 left-0 right-0" style={{ height: '38%',
+          background: `linear-gradient(to top, ${p.horizonGlow}, transparent)` }} />
+      )}
+
+      {/* Clouds */}
+      {CLOUD_DATA.map((c, i) => (
+        <motion.div
+          key={i}
+          className="absolute"
+          style={{ top: `${c.yPct}%`, left: `${c.xPct}%`, opacity: p.cloudOpacity * (0.55 + c.scale * 0.3) }}
+          animate={rm ? undefined : { x: [0, 14, 0] }}
+          transition={{ duration: c.speed, delay: c.delay, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <svg width={54 * c.scale} height={22 * c.scale} viewBox="0 0 54 22" fill="none">
+            <ellipse cx="27" cy="16" rx="25" ry="6.5" fill="rgba(255,255,255,0.52)" />
+            <ellipse cx="18" cy="12" rx="14.5" ry="9" fill="rgba(255,255,255,0.48)" />
+            <ellipse cx="36" cy="13" rx="12.5" ry="8" fill="rgba(255,255,255,0.44)" />
+          </svg>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 // ── Main Dashboard ────────────────────────────────────────────────────────────
 export default function HomeDashboard({
   userId,
@@ -1263,14 +1417,18 @@ export default function HomeDashboard({
         animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
         transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* Ambient glow accent */}
+        {/* ── Sky Animation (time-aware, atmospheric) ── */}
+        <SkyBackground hour={new Date().getHours()} />
+
+        {/* Ambient glow accent — above sky layer */}
         <div className="absolute top-0 right-0 w-36 h-36 pointer-events-none" style={{
           background: `radial-gradient(circle at top right, ${homeHeroTheme.iconWell}, transparent 70%)`,
           borderRadius: '0 2rem 0 0',
+          zIndex: 1,
         }} />
 
         {/* ── Row 1: Greeting + Date badge (date is always visible) ── */}
-        <div className="relative flex items-start justify-between gap-3">
+        <div className="relative flex items-start justify-between gap-3" style={{ zIndex: 2 }}>
           <div className="flex-1 min-w-0">
             <p className="type-card-label tracking-[0.12em] uppercase text-[10px]">Sanatana Sangam</p>
 
@@ -1324,6 +1482,7 @@ export default function HomeDashboard({
         </div>
 
         {/* ── Row 2: Mood + City (full-width, below greeting row) ── */}
+        <div style={{ position: 'relative', zIndex: 2 }}>
         {moodToday !== undefined && (
           moodToday ? (
             /* ── Mood set: glowy pill — full width so it never overlaps the date ── */
@@ -1393,6 +1552,7 @@ export default function HomeDashboard({
             )}
           </p>
         )}
+        </div>{/* end z-[2] row 2 wrapper */}
       </motion.div>
 
       {/* ── Practice Pulse ── */}
