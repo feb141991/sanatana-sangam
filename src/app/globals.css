@@ -741,6 +741,51 @@ body::after {
 .mood-sparkle-one { top: 22%; right: 20%; animation: moodSparkle 2.8s ease-in-out infinite; }
 .mood-sparkle-two { bottom: 24%; right: 34%; animation: moodSparkle 3.4s ease-in-out 0.7s infinite; }
 
+.home-luminous-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.home-luminous-card::before {
+  content: '';
+  position: absolute;
+  inset: -35%;
+  z-index: -1;
+  opacity: 0.36;
+  background:
+    radial-gradient(circle at 18% 20%, var(--home-luminous-colour, rgba(200, 146, 74, 0.20)), transparent 13%),
+    radial-gradient(circle at 86% 16%, rgba(255, 238, 184, 0.16), transparent 10%),
+    radial-gradient(circle at 72% 84%, var(--home-luminous-colour, rgba(200, 146, 74, 0.14)), transparent 16%);
+  transform: scale(0.96);
+  transition: opacity 320ms var(--ease-out), transform 520ms var(--ease-out);
+  pointer-events: none;
+}
+
+.home-luminous-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: linear-gradient(112deg, transparent 0%, rgba(255, 244, 214, 0) 36%, rgba(255, 244, 214, 0.18) 50%, rgba(255, 244, 214, 0) 64%, transparent 100%);
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+
+.home-luminous-card:hover::before,
+.home-luminous-card:focus-visible::before,
+.home-luminous-card:focus-within::before {
+  opacity: 0.76;
+  transform: scale(1);
+}
+
+.home-luminous-card:hover::after,
+.home-luminous-card:focus-visible::after,
+.home-luminous-card:focus-within::after {
+  opacity: 1;
+  animation: moodCardGlint 2.2s var(--ease-out);
+}
+
 @keyframes moodCardGlint {
   0%   { transform: translateX(-120%); }
   52%  { transform: translateX(125%); }
@@ -754,6 +799,7 @@ body::after {
 
 @media (prefers-reduced-motion: reduce) {
   .mood-discovery-card::after,
+  .home-luminous-card::after,
   .mood-sparkle {
     animation: none !important;
   }

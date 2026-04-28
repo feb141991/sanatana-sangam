@@ -1423,7 +1423,10 @@ export default function HomeDashboard({
             <MotionStagger className="grid gap-3" delay={0.04}>
               {visiblePersonalizedPaths.map((path) => (
               <MotionItem key={path.id}>
-              <div className={`clay-card ${path.accentClass} rounded-[1.8rem] p-4`}>
+              <div
+                className={`home-luminous-card clay-card ${path.accentClass} rounded-[1.8rem] p-4`}
+                style={{ ['--home-luminous-colour' as string]: 'rgba(200,146,74,0.20)' }}
+              >
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="type-card-label">
@@ -1506,8 +1509,9 @@ export default function HomeDashboard({
 
       {/* ── Panchang Widget ── */}
       <motion.div
-        className="rounded-[1.95rem] overflow-hidden border relative"
+        className="home-luminous-card rounded-[1.95rem] overflow-hidden border relative"
         style={{
+          ['--home-luminous-colour' as string]: panchangTheme.iconWell,
           background: getCardBg(panchangTheme),
           borderColor: panchangTheme.border,
           backdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
@@ -1627,8 +1631,9 @@ export default function HomeDashboard({
       {/* ── Daily Sacred Text — tradition-aware ── */}
       <motion.div
         ref={shlokaRef}
-        className="rounded-[1.85rem] p-5 relative overflow-hidden border cursor-pointer"
+        className="home-luminous-card rounded-[1.85rem] p-5 relative overflow-hidden border cursor-pointer"
         style={{
+          ['--home-luminous-colour' as string]: sacredTextTheme.iconWell,
           borderColor: sacredTextTheme.border,
           background: getCardBg(sacredTextTheme),
           boxShadow: getCardShadow(),
@@ -1754,8 +1759,9 @@ export default function HomeDashboard({
       {/* ── Coming Up ── */}
       <motion.div
         ref={festivalsRef}
-        className="rounded-[1.85rem] border overflow-hidden relative"
+        className="home-luminous-card rounded-[1.85rem] border overflow-hidden relative"
         style={{
+          ['--home-luminous-colour' as string]: HOME_THEMES.tirtha.iconWell,
           background: getCardBg(HOME_THEMES.tirtha),
           borderColor: HOME_THEMES.tirtha.border,
           boxShadow: getCardShadow(),
@@ -1823,8 +1829,9 @@ export default function HomeDashboard({
         transition={{ duration: 0.38, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
       >
         <Link href="/japa"
-          className="block rounded-[1.7rem] p-4 relative overflow-hidden border motion-lift"
+          className="home-luminous-card block rounded-[1.7rem] p-4 relative overflow-hidden border motion-lift"
           style={{
+            ['--home-luminous-colour' as string]: 'rgba(212, 120, 74, 0.22)',
             background: isDark ? 'linear-gradient(150deg, rgba(44, 34, 28, 0.98), rgba(34, 26, 20, 0.96))' : LIGHT_CARD_BG,
             borderColor: 'rgba(212, 120, 74, 0.20)',
             boxShadow: isDark ? '0 16px 32px rgba(0, 0, 0, 0.20)' : LIGHT_CARD_SHADOW,
@@ -1876,8 +1883,9 @@ export default function HomeDashboard({
             <MotionItem key={item.href}>
               <Link
                 href={item.href}
-                className="border rounded-[1.6rem] p-4 flex items-start gap-3 relative overflow-hidden motion-lift"
+                className="home-luminous-card border rounded-[1.6rem] p-4 flex items-start gap-3 relative overflow-hidden motion-lift"
                 style={{
+                  ['--home-luminous-colour' as string]: HOME_THEMES[item.theme].iconWell,
                   background: getCardBg(HOME_THEMES[item.theme]),
                   borderColor: HOME_THEMES[item.theme].border,
                   boxShadow: isDark ? '0 14px 28px rgba(0, 0, 0, 0.18)' : LIGHT_CARD_SHADOW,
@@ -1910,8 +1918,9 @@ export default function HomeDashboard({
       {/* ── Vichaar Sabha CTA ── */}
       {!hiddenSections.has('vichaar-sabha') && (
         <Link href="/vichaar-sabha"
-          className="block w-full rounded-[1.7rem] border p-4 text-center relative overflow-hidden motion-lift"
+          className="home-luminous-card block w-full rounded-[1.7rem] border p-4 text-center relative overflow-hidden motion-lift"
           style={{
+            ['--home-luminous-colour' as string]: HOME_THEMES.pathshala.iconWell,
             borderColor: HOME_THEMES.pathshala.border,
             background: getCardBg(HOME_THEMES.pathshala),
             boxShadow: isDark ? '0 12px 24px rgba(0, 0, 0, 0.16)' : LIGHT_CARD_SHADOW,
@@ -1932,8 +1941,9 @@ export default function HomeDashboard({
       {/* ── Invite Friends ── */}
       {!hiddenSections.has('invite-friends') && (
         <button onClick={() => setInviteOpen(true)}
-          className="w-full rounded-[1.7rem] border p-4 text-center relative overflow-hidden motion-lift"
+          className="home-luminous-card w-full rounded-[1.7rem] border p-4 text-center relative overflow-hidden motion-lift"
           style={{
+            ['--home-luminous-colour' as string]: HOME_THEMES.kul.iconWell,
             borderColor: HOME_THEMES.kul.border,
             background: HOME_THEMES.kul.surface,
             boxShadow: '0 12px 24px rgba(0, 0, 0, 0.16)',
