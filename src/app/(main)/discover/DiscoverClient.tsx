@@ -224,15 +224,23 @@ export default function DiscoverClient({ tradition }: Props) {
                 key={mood.key}
                 onClick={() => fetchForMood(mood.key)}
                 disabled={loading}
-                className="flex items-center gap-3 rounded-[1.4rem] px-4 py-3.5 text-left transition-all motion-press"
+                data-active={isActive}
+                className="mood-discovery-card flex items-center gap-3 rounded-[1.4rem] px-4 py-3.5 text-left transition-all motion-press"
                 style={{
-                  background: isActive ? `${mood.colour}1e` : mood.bg,
-                  border: `1px solid ${isActive ? mood.colour + '55' : mood.colour + '25'}`,
-                  boxShadow: isActive ? `0 0 0 2px ${mood.colour}22` : 'none',
+                  ['--mood-colour-soft' as string]: `${mood.colour}30`,
+                  background: isActive
+                    ? `linear-gradient(145deg, ${mood.colour}2c, rgba(255,245,214,0.08))`
+                    : `linear-gradient(145deg, ${mood.colour}18, rgba(255,245,214,0.04))`,
+                  border: `1px solid ${isActive ? mood.colour + '66' : mood.colour + '32'}`,
+                  boxShadow: isActive
+                    ? `0 0 0 2px ${mood.colour}24, 0 14px 28px ${mood.colour}18`
+                    : `0 8px 18px ${mood.colour}0d`,
                   opacity: loading && !isActive ? 0.45 : 1,
                 }}
                 animate={prefersReducedMotion ? undefined : { scale: isActive ? 1.01 : 1 }}
               >
+                <span className="mood-sparkle mood-sparkle-one" />
+                <span className="mood-sparkle mood-sparkle-two" />
                 <span className="leading-none flex-shrink-0 flex items-center justify-center" style={{ width: 28, height: 28 }}>
                   <MoodGlyph mood={mood.key} color={isActive ? mood.colour : `${mood.colour}99`} size={24} />
                 </span>

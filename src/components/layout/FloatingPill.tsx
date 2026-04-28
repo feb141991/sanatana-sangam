@@ -161,7 +161,7 @@ export default function FloatingPill({
 
   // ── Notification bottom sheet (portal) ────────────────────────────────────
   const notificationSheet = portalTarget ? createPortal(
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {open && (
         <>
           <motion.div
@@ -169,7 +169,7 @@ export default function FloatingPill({
             style={{ zIndex: 9998 }}
             onClick={() => setOpen(false)}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
           />
           <motion.div
             className="fixed inset-x-0 bottom-0 flex flex-col rounded-t-[2rem] overflow-hidden"
@@ -183,8 +183,8 @@ export default function FloatingPill({
               maxHeight: '85dvh',
               paddingBottom: 'env(safe-area-inset-bottom, 0px)',
             }}
-            initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-            transition={{ type: 'spring', stiffness: 340, damping: 38, mass: 0.9 }}
+            initial={{ y: '104%', opacity: 0.96 }} animate={{ y: 0, opacity: 1 }} exit={{ y: '104%', opacity: 0.98 }}
+            transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
           >
             {/* Drag handle */}
             <div className="flex justify-center pt-3 pb-1 flex-shrink-0">

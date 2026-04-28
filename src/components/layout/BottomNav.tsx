@@ -53,8 +53,10 @@ function FloatingQuickMenu({
   const GLASS = useGlass(isDark);
   const labelColor = isDark ? 'rgba(245, 220, 160, 0.92)' : 'rgba(80, 45, 8, 0.88)';
 
+  const menuEase = [0.22, 1, 0.36, 1] as const;
+
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="popLayout">
       {open && (
         <>
           {/* Thin backdrop for outside-click */}
@@ -62,11 +64,17 @@ function FloatingQuickMenu({
             className="fixed inset-0 z-[54]"
             onClick={onClose}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
+            transition={{ duration: 0.22, ease: menuEase }}
           />
 
           {/* Quick-action pills — anchored above the + button */}
-          <div className="fixed bottom-[90px] right-4 z-[55] flex flex-col-reverse items-end gap-2">
+          <motion.div
+            className="fixed bottom-[90px] right-4 z-[55] flex flex-col-reverse items-end gap-2"
+            initial={prefersReducedMotion ? undefined : { opacity: 0, y: 8, scale: 0.98 }}
+            animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
+            exit={prefersReducedMotion ? undefined : { opacity: 0, y: 8, scale: 0.98 }}
+            transition={{ duration: 0.26, ease: menuEase }}
+          >
             {reversed.map((action, i) => {
               const delay = prefersReducedMotion ? 0 : i * 0.042;
               return (
@@ -81,10 +89,10 @@ function FloatingQuickMenu({
                     WebkitBackdropFilter: GLASS.blur,
                     boxShadow:           GLASS.shadow,
                   }}
-                  initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10, scale: 0.90 }}
+                  initial={prefersReducedMotion ? undefined : { opacity: 0, y: 12, scale: 0.94 }}
                   animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0,  scale: 1    }}
-                  exit={prefersReducedMotion    ? undefined : { opacity: 0, y: 6,  scale: 0.92 }}
-                  transition={{ duration: 0.22, delay, ease: [0.34, 1.1, 0.64, 1] }}
+                  exit={prefersReducedMotion    ? undefined : { opacity: 0, y: 8,  scale: 0.96 }}
+                  transition={{ duration: 0.26, delay, ease: menuEase }}
                 >
                   <span className="text-[1.7rem] leading-none">{action.icon}</span>
                   <span className="text-[13px] font-semibold"
@@ -94,7 +102,7 @@ function FloatingQuickMenu({
                 </motion.button>
               );
             })}
-          </div>
+          </motion.div>
         </>
       )}
     </AnimatePresence>

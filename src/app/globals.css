@@ -126,13 +126,13 @@
   --cream:         #211B14;
   --orange-accent: #8E5E2A;
 
-  --surface-base:   #FDFCFA;
-  --surface-soft:   #F5F0E8;
-  --surface-raised: rgba(255, 255, 255, 0.99);
+  --surface-base:   #F7F1E8;
+  --surface-soft:   #EFE4D3;
+  --surface-raised: rgba(255, 251, 244, 0.98);
 
   /* Light card tokens */
-  --card-bg:        rgba(255, 255, 255, 0.96);
-  --card-bg-soft:   rgba(250, 247, 242, 0.88);
+  --card-bg:        rgba(255, 251, 244, 0.94);
+  --card-bg-soft:   rgba(247, 241, 232, 0.88);
   --card-border:    rgba(95, 58, 22, 0.10);
   --card-border-soft: rgba(95, 58, 22, 0.06);
 
@@ -174,9 +174,9 @@ body {
 
 :root[data-theme='light'] body {
   background:
-    linear-gradient(rgba(33, 27, 20, 0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(33, 27, 20, 0.011) 1px, transparent 1px),
-    #FDFCFA;
+    linear-gradient(rgba(33, 27, 20, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(33, 27, 20, 0.014) 1px, transparent 1px),
+    #F7F1E8;
   background-size: 28px 28px, 28px 28px, auto;
   color: var(--brand-ink);
 }
@@ -465,7 +465,7 @@ body::after {
 :root[data-theme='light'] .glass-chip,
 :root[data-theme='light'] .glass-input {
   border-color: rgba(95, 58, 22, 0.13);
-  background: rgba(255, 253, 248, 0.94);
+  background: rgba(255, 251, 244, 0.92);
   backdrop-filter: blur(10px) saturate(108%);
   -webkit-backdrop-filter: blur(10px) saturate(108%);
   box-shadow:
@@ -516,7 +516,7 @@ body::after {
 }
 
 :root[data-theme='light'] .glass-panel {
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(255, 251, 244, 0.92);
 }
 
 .glass-panel-strong {
@@ -526,7 +526,7 @@ body::after {
 }
 
 :root[data-theme='light'] .glass-panel-strong {
-  background: rgba(255, 255, 255, 0.99);
+  background: rgba(255, 251, 244, 0.96);
 }
 
 .glass-nav {
@@ -541,7 +541,7 @@ body::after {
 }
 
 :root[data-theme='light'] .glass-nav {
-  background: rgba(255, 255, 255, 0.97);
+  background: rgba(247, 241, 232, 0.94);
   border-color: rgba(95, 58, 22, 0.13);
 }
 
@@ -568,7 +568,7 @@ body::after {
 
 :root[data-theme='light'] .surface-panel {
   border-color: rgba(95, 58, 22, 0.10);
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(255, 251, 244, 0.94);
   box-shadow: 0 10px 28px rgba(49, 35, 20, 0.07);
 }
 
@@ -581,7 +581,7 @@ body::after {
 
 :root[data-theme='light'] .surface-card {
   border-color: rgba(95, 58, 22, 0.09);
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(255, 251, 244, 0.92);
   box-shadow: 0 6px 20px rgba(49, 35, 20, 0.06);
 }
 
@@ -594,7 +594,7 @@ body::after {
 
 :root[data-theme='light'] .surface-soft-card {
   border-color: rgba(95, 58, 22, 0.08);
-  background: rgba(252, 250, 246, 0.96);
+  background: rgba(247, 241, 232, 0.92);
   box-shadow: 0 4px 14px rgba(49, 35, 20, 0.05);
 }
 
@@ -606,7 +606,7 @@ body::after {
 
 :root[data-theme='light'] .surface-sheet {
   border-color: rgba(95, 58, 22, 0.12);
-  background: rgba(255, 255, 255, 0.99);
+  background: rgba(255, 251, 244, 0.98);
   box-shadow: 0 -4px 32px rgba(49, 35, 20, 0.08);
 }
 
@@ -624,7 +624,7 @@ body::after {
 :root[data-theme='light'] .surface-select,
 :root[data-theme='light'] .surface-textarea {
   border-color: rgba(95, 58, 22, 0.14);
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(255, 251, 244, 0.98);
   color: var(--text-cream);
 }
 
@@ -650,7 +650,7 @@ body::after {
 }
 
 :root[data-theme='light'] .surface-tab-active {
-  background: rgba(255, 255, 255, 0.99);
+  background: rgba(255, 251, 244, 0.98);
   box-shadow: 0 4px 12px rgba(49, 35, 20, 0.08);
 }
 
@@ -680,6 +680,84 @@ body::after {
 /* ── Page background helper ─────────────────────────────────────────────────── */
 /* Some client pages set their own bg — this ensures they use the token          */
 .page-bg { background: var(--surface-base); min-height: 100dvh; }
+
+/* ── Mood discovery cards ──────────────────────────────────────────────────── */
+.mood-discovery-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.mood-discovery-card::before {
+  content: '';
+  position: absolute;
+  inset: -45%;
+  z-index: -1;
+  opacity: 0.52;
+  background:
+    radial-gradient(circle at 20% 24%, var(--mood-colour-soft, rgba(200, 146, 74, 0.22)), transparent 11%),
+    radial-gradient(circle at 82% 18%, rgba(255, 244, 214, 0.28), transparent 8%),
+    radial-gradient(circle at 72% 82%, var(--mood-colour-soft, rgba(200, 146, 74, 0.18)), transparent 12%);
+  transform: scale(0.92);
+  transition: opacity 280ms var(--ease-out), transform 420ms var(--ease-out);
+}
+
+.mood-discovery-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: linear-gradient(115deg, transparent 0%, rgba(255, 245, 214, 0.0) 34%, rgba(255, 245, 214, 0.32) 48%, rgba(255, 245, 214, 0.0) 62%, transparent 100%);
+  transform: translateX(-120%);
+  transition: opacity 260ms var(--ease-out);
+  pointer-events: none;
+}
+
+.mood-discovery-card:hover::before,
+.mood-discovery-card:focus-visible::before,
+.mood-discovery-card[data-active='true']::before {
+  opacity: 0.86;
+  transform: scale(1);
+}
+
+.mood-discovery-card:hover::after,
+.mood-discovery-card:focus-visible::after,
+.mood-discovery-card[data-active='true']::after {
+  opacity: 1;
+  animation: moodCardGlint 1.7s var(--ease-out) infinite;
+}
+
+.mood-sparkle {
+  position: absolute;
+  width: 0.22rem;
+  height: 0.22rem;
+  border-radius: 9999px;
+  background: rgba(255, 238, 184, 0.92);
+  box-shadow: 0 0 10px rgba(255, 225, 150, 0.55);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.mood-sparkle-one { top: 22%; right: 20%; animation: moodSparkle 2.8s ease-in-out infinite; }
+.mood-sparkle-two { bottom: 24%; right: 34%; animation: moodSparkle 3.4s ease-in-out 0.7s infinite; }
+
+@keyframes moodCardGlint {
+  0%   { transform: translateX(-120%); }
+  52%  { transform: translateX(125%); }
+  100% { transform: translateX(125%); }
+}
+
+@keyframes moodSparkle {
+  0%, 100% { opacity: 0.20; transform: scale(0.72); }
+  45%      { opacity: 0.95; transform: scale(1.2); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mood-discovery-card::after,
+  .mood-sparkle {
+    animation: none !important;
+  }
+}
 
 /* ── Decorative orbits ──────────────────────────────────────────────────────── */
 .decorative-orbit {
