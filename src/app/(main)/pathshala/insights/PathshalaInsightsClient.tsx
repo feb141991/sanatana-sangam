@@ -67,32 +67,53 @@ function PathCard({ row, isDark, amber }: { row: ProgressRow; isDark: boolean; a
   const bg      = isDark ? 'var(--card-bg)'         : 'rgba(255,255,255,0.90)';
   const text    = isDark ? 'rgba(245,225,185,0.97)' : '#1A1208';
   const sub     = isDark ? 'rgba(200,165,110,0.55)' : 'rgba(100,65,25,0.55)';
-  const done           = row.status === 'completed';
+  const done       = row.status === 'completed';
+  const left       = row.status === 'dismissed';
   const completedCount = Array.isArray(row.completed_lessons) ? row.completed_lessons.length : 0;
   const totalLessons   = info.total_lessons > 0 ? info.total_lessons : Math.max(1, row.current_lesson + 1);
   const pct            = Math.min(100, Math.round((completedCount / totalLessons) * 100));
 
+  const statusBadge = done
+    ? <span className="text-[10px] rounded-full px-2 py-0.5 font-bold" style={{ background: `${amber}20`, color: amber }}>Done ✓</span>
+    : left
+      ? <span className="text-[10px] rounded-full px-2 py-0.5 font-bold" style={{ background: 'rgba(255,255,255,0.07)', color: sub }}>Left</span>
+      : <span className="text-[10px] rounded-full px-2 py-0.5 font-bold" style={{ background: 'rgba(72,200,120,0.14)', color: '#4BC878' }}>Active</span>;
+
+  const subLine = done
+    ? `Completed${row.completed_at ? ' ' + new Date(row.completed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}`
+    : left
+      ? `Left at lesson ${row.current_lesson} · ${completedCount} lesson${completedCount !== 1 ? 's' : ''} done`
+      : `Lesson ${row.current_lesson} · ${completedCount}/${totalLessons} done`;
+
   return (
     <motion.div whileTap={{ scale: 0.98 }} onClick={() => setOpen(v => !v)}
       className="rounded-2xl p-4 border cursor-pointer"
-      style={{ background: bg, borderColor: done ? `${amber}40` : border, boxShadow: isDark ? 'none' : '0 1px 8px rgba(0,0,0,0.06)' }}>
+      style={{
+        background: left ? (isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)') : bg,
+        borderColor: done ? `${amber}40` : border,
+        boxShadow: isDark ? 'none' : '0 1px 8px rgba(0,0,0,0.06)',
+        opacity: left ? 0.65 : 1,
+      }}>
       <div className="flex items-center gap-3">
         <span className="text-3xl">{info.icon}</span>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <p className="text-[13px] font-semibold truncate" style={{ color: text }}>{info.name}</p>
-            {done && <span className="text-[10px] rounded-full px-2 py-0.5 font-bold" style={{ background: `${amber}20`, color: amber }}>Done ✓</span>}
+            {statusBadge}
           </div>
-          <p className="text-[11px] mt-0.5" style={{ color: sub }}>
-            {done ? `Completed${row.completed_at ? ' ' + new Date(row.completed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}` : `Day ${row.current_lesson} · ${row.status}`}
-          </p>
+          <p className="text-[11px] mt-0.5" style={{ color: sub }}>{subLine}</p>
         </div>
       </div>
-      {!done && (
+      {!done && !left && (
         <div className="mt-3 h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}>
           <motion.div className="h-full rounded-full" style={{ background: amber }}
             initial={{ width: 0 }} animate={{ width: `${pct}%` }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }} />
+        </div>
+      )}
+      {left && pct > 0 && (
+        <div className="mt-3 h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}>
+          <div className="h-full rounded-full" style={{ background: sub, width: `${pct}%` }} />
         </div>
       )}
       <AnimatePresence>
@@ -126,17 +147,28 @@ export default function PathshalaInsightsClient({ progress }: Props) {
   const stats = useMemo(() => {
     const completed  = progress.filter(p => p.status === 'completed');
     const active     = progress.filter(p => p.status === 'active');
-    const totalLessons = progress.reduce((s, p) => s + (Array.isArray(p.completed_lessons) ? p.completed_lessons.length : 0), 0);
-    const totalPaths   = progress.length;
+    const dismissed  = progress.filter(p => p.status === 'dismissed');
+
+    // "Enrolled" = any path the user has touched that isn't just left behind.
+    // Dismissed paths are excluded from the enrolled count (user actively left them).
+    const enrolled = progress.filter(p => p.status !== 'dismissed');
+
+    // Lessons done — exclude dismissed paths (they don't count toward current progress)
+    const totalLessons = enrolled.reduce(
+      (s, p) => s + (Array.isArray(p.completed_lessons) ? p.completed_lessons.length : 0),
+      0,
+    );
+    const totalPaths    = enrolled.length;
     const completedPaths = completed.length;
 
-    // Days since first enrollment
-    const first = progress.length > 0
-      ? new Date(progress.reduce((a, b) => a.created_at < b.created_at ? a : b).created_at)
+    // Days since first non-dismissed enrollment
+    const nonDismissed = enrolled.length > 0 ? enrolled : progress; // fallback
+    const first = nonDismissed.length > 0
+      ? new Date(nonDismissed.reduce((a, b) => a.created_at < b.created_at ? a : b).created_at)
       : null;
     const daysOnJourney = first ? Math.max(1, Math.round((Date.now() - first.getTime()) / 86400000)) : 0;
 
-    return { completed, active, totalLessons, totalPaths, completedPaths, daysOnJourney };
+    return { completed, active, dismissed, totalLessons, totalPaths, completedPaths, daysOnJourney };
   }, [progress]);
 
   function handleShare() {
@@ -192,17 +224,36 @@ export default function PathshalaInsightsClient({ progress }: Props) {
             detail={stats.active.length > 0 ? `${stats.active.length} path${stats.active.length !== 1 ? 's' : ''} in progress. Continue your studies daily.` : 'No active paths — start a new study journey.'} />
         </div>
 
-        {/* Path list */}
+        {/* Path list — active/completed first, dismissed at bottom */}
         {progress.length > 0 ? (
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider mb-3 px-1" style={{ color: `${amber}80` }}>
-              Your Paths
-            </p>
-            <div className="space-y-3">
-              {progress.map(row => (
-                <PathCard key={row.path_id} row={row} isDark={isDark} amber={amber} />
-              ))}
-            </div>
+          <div className="space-y-4">
+            {/* Active + completed */}
+            {stats.active.length > 0 || stats.completed.length > 0 ? (
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wider mb-3 px-1" style={{ color: `${amber}80` }}>
+                  Your Paths
+                </p>
+                <div className="space-y-3">
+                  {[...stats.active, ...stats.completed].map(row => (
+                    <PathCard key={row.path_id} row={row} isDark={isDark} amber={amber} />
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {/* Dismissed / left paths */}
+            {stats.dismissed.length > 0 && (
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wider mb-3 px-1" style={{ color: sub }}>
+                  Left Paths
+                </p>
+                <div className="space-y-3">
+                  {stats.dismissed.map(row => (
+                    <PathCard key={row.path_id} row={row} isDark={isDark} amber={amber} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="rounded-2xl p-6 border text-center" style={{ background: bg, borderColor: border }}>

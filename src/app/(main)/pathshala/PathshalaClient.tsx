@@ -29,6 +29,7 @@ import {
   getEntriesBySection,
   type LibraryEntry,
 } from '@/lib/library-content';
+import { SEED_PATHS as SEED_PATHS_LIB, PATHSHALA_PATH_IDS } from '@/lib/pathshala-paths';
 
 // ── Difficulty badges — inline styles so they read clearly on any bg ──────────
 const DIFF_STYLE: Record<string, { bg: string; text: string; border: string; label: string }> = {
@@ -51,63 +52,11 @@ const SECTIONS_BY_TRADITION: Record<string, string[]> = {
   other:    ['gita','bhagavatam','ramayana','upanishad','gurbani','dhammapada','jain'],
 };
 
-// ── Static seed paths ──────────────────────────────────────────────────────────
-export const SEED_PATHS = [
-  {
-    id: 'bhagavad-gita-intro',
-    title: 'Bhagavad Gita — Foundations',
-    description: 'The 18 chapters of the Gita distilled into 30 focused lessons. Begin at any chapter.',
-    difficulty: 'beginner',
-    tradition: 'hindu',
-    total_lessons: 30,
-    duration_days: 30,
-  },
-  {
-    id: 'upanishads-core',
-    title: 'Core Upanishads',
-    description: 'Isha, Kena, Katha, Mandukya — the four shortest Upanishads with commentary.',
-    difficulty: 'intermediate',
-    tradition: 'hindu',
-    total_lessons: 20,
-    duration_days: 20,
-  },
-  {
-    id: 'stotra-path',
-    title: 'Daily Stotra Practice',
-    description: 'Learn 7 core stotras by heart — Hanuman Chalisa, Durga Saptashati excerpts, Vishnu Sahasranama.',
-    difficulty: 'beginner',
-    tradition: 'hindu',
-    total_lessons: 14,
-    duration_days: 21,
-  },
-  {
-    id: 'yoga-sutras',
-    title: 'Patanjali Yoga Sutras',
-    description: '196 sutras, 4 chapters — Samadhi, Sadhana, Vibhuti, Kaivalya.',
-    difficulty: 'advanced',
-    tradition: 'hindu',
-    total_lessons: 40,
-    duration_days: 40,
-  },
-  {
-    id: 'nitnem-daily',
-    title: 'Nitnem — Daily Banis',
-    description: 'Five core Gurbani prayers for morning and evening practice.',
-    difficulty: 'beginner',
-    tradition: 'sikh',
-    total_lessons: 10,
-    duration_days: 30,
-  },
-  {
-    id: 'dhammapada-path',
-    title: 'Dhammapada — 26 Chapters',
-    description: 'The path of truth — 423 verses on the Buddha\'s practical teachings.',
-    difficulty: 'beginner',
-    tradition: 'buddhist',
-    total_lessons: 26,
-    duration_days: 26,
-  },
-];
+// ── Static seed paths — sourced from shared lib so server components can import too ──
+export const SEED_PATHS = SEED_PATHS_LIB as unknown as {
+  id: string; title: string; description: string;
+  difficulty: string; tradition: string; total_lessons: number; duration_days: number;
+}[];
 
 // ── Share helper ───────────────────────────────────────────────────────────────
 async function shareEntry(entry: LibraryEntry) {
@@ -322,6 +271,10 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
   const allPaths = traditionPaths.length > 0 ? traditionPaths : SEED_PATHS;
 
   // ── Load active enrollments from guided_path_progress ───────────────────────
+  // PATHSHALA_PATH_IDS is imported from @/lib/pathshala-paths.
+  // It scopes all queries away from NityaKarma guided-plan rows (brahma-muhurta-7 etc.)
+  // which share the guided_path_progress table. Without it those rows inflate the badge.
+
   useEffect(() => {
     async function loadEnrollments() {
       try {
@@ -329,7 +282,8 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
           .from('guided_path_progress')
           .select('path_id, status, completed_at, current_lesson, completed_lessons')
           .eq('user_id', userId)
-          .eq('status', 'active');
+          .eq('status', 'active')
+          .in('path_id', PATHSHALA_PATH_IDS);  // ← only Pathshala paths
 
         if (error) throw error;
         setActive(data ?? []);
@@ -368,12 +322,13 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
 
       if (error) throw error;
 
-      // Refresh active list
+      // Refresh active list — scoped to PATHSHALA_PATH_IDS so NityaKarma rows don't bleed in
       const { data } = await supabase
         .from('guided_path_progress')
         .select('path_id, status, completed_at, current_lesson, completed_lessons')
         .eq('user_id', userId)
-        .eq('status', 'active');
+        .eq('status', 'active')
+        .in('path_id', PATHSHALA_PATH_IDS);
 
       setActive(data ?? []);
       toast.success('Enrolled! Your journey begins. 🙏');
