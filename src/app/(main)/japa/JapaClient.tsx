@@ -25,12 +25,12 @@ import Link from 'next/link';
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 const TOTAL_BEADS = 108;
-const SVG_W = 340;
+const SVG_W = 400;          // ↑ larger canvas so beads fill more screen
 const SVG_CX = SVG_W / 2;
 const SVG_CY = SVG_W / 2;
-const RING_R = 148;
-const BEAD_R = 7.0;
-const SUMERU_R = 11;
+const RING_R = 170;         // ↑ wider ring
+const BEAD_R = 10.5;        // ↑ significantly bigger beads (was 7.0)
+const SUMERU_R = 16;        // ↑ bigger sumeru bead (was 11)
 const STORAGE_MALA   = 'ss-japa-mala';
 const STORAGE_MANTRA = 'ss-japa-mantra';
 const STORAGE_BG     = 'ss-japa-bg';
@@ -454,7 +454,7 @@ function MalaSVG({
   return (
     <svg
       viewBox={`0 0 ${SVG_W} ${SVG_W}`}
-      style={{ width: '100%', maxWidth: 330, touchAction: 'manipulation', userSelect: 'none' }}
+      style={{ width: '100%', maxWidth: '100%', touchAction: 'manipulation', userSelect: 'none' }}
     >
       <defs>
         {/* ── Uncounted bead — 3-stop 3D gradient ── */}
@@ -572,34 +572,58 @@ function MalaSVG({
         );
       })}
 
-      {/* ── Pulsing ring around current bead ── */}
+      {/* ── Pulsing ring around current bead (next to tap) ── */}
       {nextBeadIdx >= 0 && (() => {
         const pos = beadPos(nextBeadIdx);
         return (
-          <motion.circle
-            cx={pos.x} cy={pos.y}
-            fill="none"
-            stroke={c.glow}
-            strokeWidth={1.5}
-            animate={{ r: [BEAD_R * 1.35, BEAD_R * 1.80, BEAD_R * 1.35], opacity: [0.65, 0.18, 0.65] }}
-            transition={{ duration: 2.0, repeat: Infinity, ease: 'easeInOut' }}
-          />
+          <>
+            {/* Inner glow ring */}
+            <motion.circle
+              cx={pos.x} cy={pos.y}
+              fill={c.glow}
+              animate={{ r: [BEAD_R * 1.15, BEAD_R * 1.35, BEAD_R * 1.15], opacity: [0.35, 0.10, 0.35] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            {/* Outer guide ring */}
+            <motion.circle
+              cx={pos.x} cy={pos.y}
+              fill="none"
+              stroke={c.glow}
+              strokeWidth={2}
+              animate={{ r: [BEAD_R * 1.55, BEAD_R * 2.1, BEAD_R * 1.55], opacity: [0.70, 0.12, 0.70] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          </>
         );
       })()}
 
-      {/* ── Flash ripple when a bead is counted ── */}
+      {/* ── Flash ripple when a bead is counted — two-ring burst ── */}
       {flashBeadIdx >= 0 && flashBeadIdx < TOTAL_BEADS && (() => {
         const pos = beadPos(flashBeadIdx);
         return (
-          <motion.circle
-            key={`flash-${flashKey}`}
-            cx={pos.x} cy={pos.y}
-            fill={c.glow}
-            filter="url(#flash-glow)"
-            initial={{ r: BEAD_R * 1.1, opacity: 0.85 }}
-            animate={{ r: BEAD_R * 3.0, opacity: 0 }}
-            transition={{ duration: 0.55, ease: 'easeOut' }}
-          />
+          <>
+            {/* Inner burst */}
+            <motion.circle
+              key={`flash-inner-${flashKey}`}
+              cx={pos.x} cy={pos.y}
+              fill={c.glow}
+              filter="url(#flash-glow)"
+              initial={{ r: BEAD_R * 1.0, opacity: 0.95 }}
+              animate={{ r: BEAD_R * 2.8, opacity: 0 }}
+              transition={{ duration: 0.40, ease: 'easeOut' }}
+            />
+            {/* Outer shockwave ring */}
+            <motion.circle
+              key={`flash-outer-${flashKey}`}
+              cx={pos.x} cy={pos.y}
+              fill="none"
+              stroke={c.glow}
+              strokeWidth={2.5}
+              initial={{ r: BEAD_R * 1.2, opacity: 0.80 }}
+              animate={{ r: BEAD_R * 4.5, opacity: 0 }}
+              transition={{ duration: 0.65, ease: 'easeOut' }}
+            />
+          </>
         );
       })()}
 
@@ -1073,6 +1097,117 @@ function CompletionOverlay({
   );
 }
 
+// ── In-practice Settings Sheet ────────────────────────────────────────────────
+// Opened via the gear icon — lets user change target rounds and sounds WITHOUT
+// exiting fullscreen / going back to chooseMala.
+function PracticeSettingsSheet({
+  isDark, targetRounds, onTargetChange,
+  soundId, onSoundSelect,
+  onChangeMala, onClose,
+}: {
+  isDark: boolean;
+  targetRounds: number; onTargetChange: (n: number) => void;
+  soundId: SoundId; onSoundSelect: (id: SoundId) => void;
+  onChangeMala: () => void; onClose: () => void;
+}) {
+  const bg   = isDark ? 'rgba(10,8,14,0.97)' : 'rgba(248,244,236,0.97)';
+  const text = isDark ? 'rgba(245,225,185,0.95)' : '#2D1F0E';
+  const sub  = isDark ? 'rgba(200,146,74,0.60)' : 'rgba(100,65,25,0.60)';
+  const amber = isDark ? '#C8924A' : '#7A4A1E';
+  const border = isDark ? 'rgba(200,146,74,0.14)' : 'rgba(0,0,0,0.07)';
+  const cardBg = isDark ? 'var(--card-bg)' : 'rgba(0,0,0,0.04)';
+
+  const [localSound, setLocalSound] = useState<SoundId>(soundId);
+
+  return (
+    <motion.div
+      className="fixed inset-0 flex items-end"
+      style={{ zIndex: 120, background: 'rgba(0,0,0,0.60)' }}
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: '100%' }} animate={{ y: 0 }}
+        transition={{ type: 'spring', damping: 32, stiffness: 300 }}
+        className="w-full max-w-2xl mx-auto rounded-t-3xl px-5 pt-3"
+        style={{ background: bg, backdropFilter: 'blur(28px)', paddingBottom: 'max(2.5rem, calc(env(safe-area-inset-bottom,0px) + 2rem))' }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Drag handle */}
+        <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: `${amber}30` }} />
+
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: `${amber}80` }}>Practice</p>
+            <h2 className="text-xl font-bold" style={{ fontFamily: 'var(--font-serif)', color: text }}>Settings</h2>
+          </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-full flex items-center justify-center"
+            style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M1 1l12 12M13 1L1 13" stroke={text} strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
+            </svg>
+          </button>
+        </div>
+
+        {/* Target rounds */}
+        <div className="mb-5">
+          <p className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: sub }}>Rounds target</p>
+          <div className="grid grid-cols-4 gap-2">
+            {TARGET_OPTIONS.map(n => (
+              <button
+                key={n}
+                onClick={() => onTargetChange(n)}
+                className="py-3 rounded-2xl text-sm font-semibold border transition-all"
+                style={{
+                  background: targetRounds === n ? `${amber}20` : cardBg,
+                  borderColor: targetRounds === n ? `${amber}60` : border,
+                  color: targetRounds === n ? amber : text,
+                  boxShadow: targetRounds === n ? `0 0 0 1.5px ${amber}35` : 'none',
+                }}
+              >
+                {n}×
+              </button>
+            ))}
+          </div>
+          <p className="text-[10px] mt-2 text-center" style={{ color: sub }}>
+            {targetRounds} mala{targetRounds > 1 ? 's' : ''} = {targetRounds * 108} mantras
+          </p>
+        </div>
+
+        {/* Ambient sound */}
+        <div className="mb-5">
+          <p className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: sub }}>Ambient sound</p>
+          <div className="grid grid-cols-4 gap-2">
+            {SOUNDS.map(s => {
+              const isActive = localSound === s.id;
+              return (
+                <button key={s.id}
+                  onClick={() => { setLocalSound(s.id); onSoundSelect(s.id); }}
+                  className="flex flex-col items-center gap-1.5 py-3 rounded-2xl border transition-all"
+                  style={{
+                    background: isActive ? `${amber}14` : cardBg,
+                    borderColor: isActive ? `${amber}45` : border,
+                  }}>
+                  <span className="text-xl leading-none">{s.emoji}</span>
+                  <span className="text-[9px] font-semibold" style={{ color: isActive ? amber : sub }}>{s.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Change mala / mantra */}
+        <button
+          onClick={onChangeMala}
+          className="w-full py-3.5 rounded-2xl font-semibold text-sm border flex items-center justify-center gap-2"
+          style={{ background: cardBg, borderColor: border, color: text }}>
+          <span>🪬</span> Change Mala &amp; Mantra
+        </button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // ── Main JapaClient ────────────────────────────────────────────────────────────
 type Screen = 'chooseMala' | 'chooseMantra' | 'japa';
 
@@ -1135,6 +1270,14 @@ export default function JapaClient({
   const flashTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
   const beadCountRef   = useRef(0);
 
+  // ── Floating "+1" particles — one per bead tap ────────────────────────
+  interface FloatParticle { id: number }
+  const [floatParticles, setFloatParticles] = useState<FloatParticle[]>([]);
+  const floatIdRef = useRef(0);
+
+  // ── Settings sheet state ─────────────────────────────────────────────
+  const [showSettings, setShowSettings] = useState(false);
+
   useEffect(() => {
     try {
       const savedMala   = localStorage.getItem(STORAGE_MALA)   as MalaId | null;
@@ -1152,7 +1295,6 @@ export default function JapaClient({
   const [totalBeads,   setTotalBeads]   = useState(0);
   const [paused,       setPaused]       = useState(false);
   const [showComplete, setShowComplete] = useState(false);
-  const [showSounds,   setShowSounds]   = useState(false);
   const [soundId,      setSoundId]      = useState<SoundId>('silence');
   const [streak,       setStreak]       = useState(currentStreak);
   const [saved,        setSaved]        = useState(japaAlreadyDoneToday);
@@ -1213,11 +1355,11 @@ export default function JapaClient({
     }
   }, [screen]);
 
-  // ── Handle sound selection (called from SoundsSheet — user gesture) ──────
+  // ── Handle sound selection (called from PracticeSettingsSheet — user gesture) ──
   function handleSoundSelect(id: SoundId) {
     setSoundId(id);
     startJapaAmbient(id);
-    setShowSounds(false);
+    // Don't close settings here — let user continue adjusting; sheet has its own close
   }
 
   // ── Count bead ───────────────────────────────────────────────────────────
@@ -1229,6 +1371,11 @@ export default function JapaClient({
 
     // Show controls briefly on any tap, reset auto-hide timer
     showControlsBriefly();
+
+    // Spawn a floating "+1" particle from the mala center
+    const pid = ++floatIdRef.current;
+    setFloatParticles(prev => [...prev.slice(-5), { id: pid }]);
+    setTimeout(() => setFloatParticles(prev => prev.filter(p => p.id !== pid)), 800);
 
     // Flash ripple on the bead we're about to count
     const countingIdx = beadCountRef.current % TOTAL_BEADS;
@@ -1437,7 +1584,7 @@ export default function JapaClient({
             inset: 0,
             zIndex: 100,
             background: bg,
-            overflowY: 'auto',
+            overflow: 'hidden',   // no scroll — this is a full-screen immersive view
           }}
           initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
@@ -1483,24 +1630,21 @@ export default function JapaClient({
 
             {/* Right controls */}
             <div className="flex items-center gap-2">
-              {/* Change mala/mantra */}
+              {/* Sound quick-toggle */}
               <button
-                onClick={() => {
-                  try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch {}
-                  setScreen('chooseMala');
-                }}
-                className="w-9 h-9 rounded-full flex items-center justify-center"
-                style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
-                <Settings2 size={15} style={{ color: amber }} />
-              </button>
-              {/* Sounds */}
-              <button
-                onClick={() => setShowSounds(true)}
+                onClick={() => setShowSettings(true)}
                 className="w-9 h-9 rounded-full flex items-center justify-center"
                 style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
                 {soundId === 'silence'
                   ? <VolumeX size={15} style={{ color: amber }} />
                   : <Volume2 size={15} style={{ color: amber }} />}
+              </button>
+              {/* Settings — opens in-screen sheet, does NOT exit fullscreen */}
+              <button
+                onClick={() => setShowSettings(true)}
+                className="w-9 h-9 rounded-full flex items-center justify-center"
+                style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
+                <Settings2 size={15} style={{ color: amber }} />
               </button>
             </div>
           </div>
@@ -1518,28 +1662,9 @@ export default function JapaClient({
             </p>
           </div>
 
-          {/* ── Target rounds selector ────────────────────────────────────── */}
-          <div className="flex items-center justify-center gap-2 px-4 pb-3">
-            <p className="text-[10px] font-semibold uppercase tracking-wider mr-1" style={{ color: sub }}>Target</p>
-            {TARGET_OPTIONS.map(n => (
-              <button
-                key={n}
-                onClick={() => setTargetRounds(n)}
-                className="px-3 py-1 rounded-full text-[11px] font-semibold border transition-all"
-                style={{
-                  background: targetRounds === n ? `${amber}22` : 'transparent',
-                  borderColor: targetRounds === n ? `${amber}70` : `${amber}28`,
-                  color: targetRounds === n ? amber : sub,
-                }}
-              >
-                {n} mala
-              </button>
-            ))}
-          </div>
-
-          {/* ── Progress bar toward target ────────────────────────────────── */}
+          {/* ── Progress bar + compact target indicator ───────────────────── */}
           <div className="px-8 pb-2">
-            <div className="h-1 rounded-full overflow-hidden" style={{ background: `${amber}18` }}>
+            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: `${amber}18` }}>
               <motion.div
                 className="h-full rounded-full"
                 style={{ background: amber }}
@@ -1547,22 +1672,63 @@ export default function JapaClient({
                 transition={{ duration: 0.4, ease: 'easeOut' }}
               />
             </div>
-            <p className="text-[10px] text-center mt-1" style={{ color: sub }}>
-              {targetRounds > 1
-                ? `${roundsDone}/${targetRounds} malas`
-                : `${beadCount}/108 beads`}
-            </p>
+            <div className="flex items-center justify-between mt-1.5 px-0.5">
+              <p className="text-[10px]" style={{ color: sub }}>
+                {targetRounds > 1
+                  ? `${roundsDone}/${targetRounds} malas`
+                  : `${beadCount}/108 beads`}
+              </p>
+              {/* Tap to open settings sheet */}
+              <button
+                onClick={() => setShowSettings(true)}
+                className="text-[10px] font-semibold flex items-center gap-1 px-2 py-0.5 rounded-full border"
+                style={{ color: amber, borderColor: `${amber}35`, background: `${amber}10` }}>
+                Target: {targetRounds}× <span className="opacity-60">›</span>
+              </button>
+            </div>
           </div>
 
           </motion.div>{/* end auto-hide controls wrapper */}
 
-          {/* ── SVG Mala ─────────────────────────────────────────────────── */}
-          <div className="flex-1 flex flex-col items-center justify-center px-6 gap-3" style={{ position: 'relative', zIndex: 1 }}>
+          {/* ── SVG Mala + floating +1 particles ─────────────────────────── */}
+          <div className="flex-1 flex flex-col items-center justify-center px-2 gap-2" style={{ position: 'relative', zIndex: 1, minHeight: 0 }}>
+
+            {/* Floating +1 particles (rendered absolute over the mala area) */}
+            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 20 }}>
+              <AnimatePresence>
+                {floatParticles.map(p => (
+                  <motion.div
+                    key={p.id}
+                    style={{
+                      position: 'absolute',
+                      left: '50%',
+                      top: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      fontSize: '1.4rem',
+                      fontWeight: 800,
+                      fontFamily: 'system-ui, -apple-system, sans-serif',
+                      color: amber,
+                      pointerEvents: 'none',
+                      letterSpacing: '-0.02em',
+                      textShadow: isDark ? `0 0 12px ${amber}80` : 'none',
+                    }}
+                    initial={{ opacity: 1, y: 0, scale: 1.1 }}
+                    animate={{ opacity: 0, y: -72, scale: 0.85 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.75, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  >
+                    +1
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+
+            {/* Mala SVG — fills available space, max-height constrained */}
             <motion.div
               className="w-full flex items-center justify-center"
-              animate={pulsing ? { scale: [1, 0.982, 1] } : {}}
-              transition={{ duration: 0.12 }}
-              style={{ maxWidth: 340 }}
+              animate={pulsing ? { scale: [1, 0.980, 1.005, 1] } : {}}
+              transition={{ duration: 0.15 }}
+              style={{ maxWidth: 420, maxHeight: 'calc(100vh - 26rem)', aspectRatio: '1 / 1' }}
             >
               <MalaSVG
                 malaId={malaId}
@@ -1581,12 +1747,12 @@ export default function JapaClient({
                   key={i}
                   className="rounded-full transition-all"
                   style={{
-                    width: i === roundsDone ? 20 : 6,
-                    height: 6,
+                    width: i === roundsDone ? 22 : 7,
+                    height: 7,
                     background: i < roundsDone
                       ? amber
                       : i === roundsDone
-                      ? `${amber}80`
+                      ? `${amber}85`
                       : `${amber}22`,
                   }}
                 />
@@ -1656,14 +1822,21 @@ export default function JapaClient({
           </div>
           </motion.div>{/* end bottom controls auto-hide wrapper */}
 
-          {/* ── Sounds sheet ──────────────────────────────────────────────── */}
+          {/* ── Practice settings sheet (target rounds + sound — stays in fullscreen) ── */}
           <AnimatePresence>
-            {showSounds && (
-              <SoundsSheet
+            {showSettings && (
+              <PracticeSettingsSheet
                 isDark={isDark}
-                current={soundId}
-                onSelect={handleSoundSelect}
-                onClose={() => setShowSounds(false)}
+                targetRounds={targetRounds}
+                onTargetChange={n => { setTargetRounds(n); targetRoundsRef.current = n; }}
+                soundId={soundId}
+                onSoundSelect={handleSoundSelect}
+                onChangeMala={() => {
+                  setShowSettings(false);
+                  // Small delay so sheet closes before screen transitions
+                  setTimeout(() => setScreen('chooseMala'), 150);
+                }}
+                onClose={() => setShowSettings(false)}
               />
             )}
           </AnimatePresence>
