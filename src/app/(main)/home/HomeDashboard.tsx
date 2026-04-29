@@ -1509,6 +1509,8 @@ export default function HomeDashboard({
           WebkitBackdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
         }}
         animate={prefersReducedMotion ? undefined : {
+          opacity: 1,
+          y: 0,
           boxShadow: isToday ? [
             `0 4px 24px ${panchangTheme.accent}28, 0 0 0 1px ${panchangTheme.accent}18`,
             `0 8px 32px ${panchangTheme.accent}42, 0 0 0 1px ${panchangTheme.accent}30`,
@@ -1516,9 +1518,9 @@ export default function HomeDashboard({
           ] : getCardShadow(),
         }}
         transition={prefersReducedMotion ? undefined : {
-          boxShadow: { duration: 3.5, repeat: Infinity, ease: 'easeInOut' },
           opacity: { duration: 0.38, delay: 0.06 },
-          y: { duration: 0.38, delay: 0.06 },
+          y: { duration: 0.38, delay: 0.06, ease: [0.22, 1, 0.36, 1] },
+          boxShadow: { duration: 3.5, repeat: Infinity, ease: 'easeInOut' },
         }}
         initial={prefersReducedMotion ? undefined : { opacity: 0, y: 6 }}
       >

@@ -386,8 +386,11 @@ function ShieldBadgesPreview({
 }) {
   const h1      = isDark ? '#f5dfa0' : '#1a0a02';
   const muted   = isDark ? 'rgba(245,210,130,0.45)' : 'rgba(100,55,10,0.50)';
-  const cardBg  = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.90)';
-  const cardBdr = isDark ? 'rgba(200,146,74,0.12)' : 'rgba(180,120,40,0.14)';
+  // Shields — gold sanctuary gradient
+  const cardBg  = isDark
+    ? 'linear-gradient(150deg, rgba(44,36,20,0.98) 0%, rgba(34,28,16,0.96) 100%)'
+    : 'linear-gradient(150deg, rgba(255,246,220,0.97) 0%, rgba(250,235,195,0.99) 100%)';
+  const cardBdr = isDark ? 'rgba(200,146,74,0.22)' : 'rgba(200,146,74,0.24)';
 
   const streakEarned  = STREAK_SHIELDS.filter(s => streak >= s.threshold).length;
   const sessionEarned = SESSION_SHIELDS.filter(s => totalSessions >= s.threshold).length;
@@ -398,7 +401,7 @@ function ShieldBadgesPreview({
   const nextSession = SESSION_SHIELDS.find(s => totalSessions < s.threshold);
 
   return (
-    <div className="rounded-[1.8rem] p-5" style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: isDark ? 'none' : '0 1px 10px rgba(0,0,0,0.05)' }}>
+    <div className="rounded-[1.8rem] p-5" style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.38)' : '0 2px 16px rgba(0,0,0,0.07)' }}>
       <div className="flex items-center justify-between mb-4">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'rgba(200,146,74,0.70)' }}>
@@ -829,24 +832,60 @@ export default function MyProgressClient({
   const [showReport, setShowReport]     = useState(false);
   const [calView, setCalView] = useState<'calendar' | 'sparkline'>('calendar');
 
-  // Theme tokens — glassmorphism style
+  // ── Page + shared tokens ──────────────────────────────────────────────────
   const pageBg  = isDark
     ? 'linear-gradient(165deg,#0e0a05 0%,#17100a 50%,#1a1208 100%)'
     : 'linear-gradient(165deg,#fdf6ee 0%,#f5e8d5 50%,#f0dfc8 100%)';
-  const cardBg  = isDark ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.60)';
-  const cardBdr = isDark ? 'rgba(200,146,74,0.14)' : 'rgba(180,120,40,0.18)';
-  const cardBlur = 'blur(18px) saturate(160%)';
-  const heroBg  = isDark
-    ? 'linear-gradient(160deg,rgba(58,28,8,0.72),rgba(28,16,6,0.80))'
-    : 'linear-gradient(160deg,rgba(255,243,222,0.72),rgba(250,231,201,0.80))';
   const h1      = isDark ? '#f5dfa0' : '#1a0a02';
   const muted   = isDark ? 'rgba(245,210,130,0.45)' : 'rgba(100,55,10,0.50)';
   const dimText = isDark ? 'rgba(245,210,130,0.30)' : 'rgba(100,55,10,0.35)';
   const amber   = 'rgba(200,146,74,0.70)';
 
+  // ── Per-card sanctuary gradients (mirrors HOME_THEMES) ────────────────────
+  // Calendar — panchang: dawn amber
+  const cardCalBg  = isDark
+    ? 'linear-gradient(150deg, rgba(52,42,28,0.97) 0%, rgba(38,32,22,0.96) 100%)'
+    : 'linear-gradient(150deg, rgba(255,246,232,0.97) 0%, rgba(250,236,210,0.99) 100%)';
+  const cardCalBdr = isDark ? 'rgba(200,146,74,0.22)' : 'rgba(200,146,74,0.22)';
+
+  // Japa — bhakti: soft terracotta
+  const cardJapaBg  = isDark
+    ? 'linear-gradient(150deg, rgba(46,34,26,0.98) 0%, rgba(36,28,22,0.96) 100%)'
+    : 'linear-gradient(150deg, rgba(255,240,228,0.97) 0%, rgba(248,226,205,0.99) 100%)';
+  const cardJapaBdr = isDark ? 'rgba(212,120,74,0.20)' : 'rgba(212,120,74,0.22)';
+
+  // Nitya Karma — mandali: forest-warm green
+  const cardNityaBg  = isDark
+    ? 'linear-gradient(150deg, rgba(26,34,28,0.98) 0%, rgba(22,28,24,0.96) 100%)'
+    : 'linear-gradient(150deg, rgba(236,248,236,0.97) 0%, rgba(220,238,220,0.99) 100%)';
+  const cardNityaBdr = isDark ? 'rgba(100,140,100,0.22)' : 'rgba(100,140,100,0.28)';
+
+  // Pathshala mini — deep ink
+  const cardPathBg  = isDark
+    ? 'linear-gradient(150deg, rgba(30,30,28,0.99) 0%, rgba(24,24,22,0.97) 100%)'
+    : 'linear-gradient(150deg, rgba(235,238,248,0.97) 0%, rgba(225,228,240,0.99) 100%)';
+  const cardPathBdr = isDark ? 'rgba(200,146,74,0.18)' : 'rgba(130,130,200,0.22)';
+
+  // Bhakti mini — warm rose-terracotta
+  const cardBhaktiBg  = isDark
+    ? 'linear-gradient(150deg, rgba(46,28,30,0.98) 0%, rgba(36,22,24,0.96) 100%)'
+    : 'linear-gradient(150deg, rgba(248,234,238,0.97) 0%, rgba(240,220,226,0.99) 100%)';
+  const cardBhaktiBdr = isDark ? 'rgba(196,100,120,0.20)' : 'rgba(196,100,120,0.22)';
+
+  // Practice Rhythm — kul: warm earth
+  const cardRhythmBg  = isDark
+    ? 'linear-gradient(150deg, rgba(38,32,26,0.98) 0%, rgba(30,26,20,0.96) 100%)'
+    : 'linear-gradient(150deg, rgba(255,242,224,0.97) 0%, rgba(250,232,205,0.99) 100%)';
+  const cardRhythmBdr = isDark ? 'rgba(157,120,74,0.22)' : 'rgba(157,120,74,0.25)';
+
+  // ── Stats ─────────────────────────────────────────────────────────────────
   const nityaRate   = Math.round((nitya30dDays / 30) * 100);
-  const japaRate    = Math.round((heatmap.filter(d => d.japa).length / 28) * 100);
-  const activeDays  = heatmap.filter(d => d.japa || d.nitya).length;
+  // Use actual heatmap window as denominator (accounts for new users with < 28 days)
+  const japaActiveDays = heatmap.filter(d => d.japa).length;
+  const japaRate       = Math.round((japaActiveDays / Math.max(heatmap.length, 1)) * 100);
+  const activeDays     = heatmap.filter(d => d.japa || d.nitya).length;
+  // Does user have sessions outside the 30-day window?
+  const hasOlderSessions = japa30dSessions === 0 && totalJapaSessions > 0;
 
   return (
     <>
@@ -875,7 +914,7 @@ export default function MyProgressClient({
           <motion.section
             initial={{ opacity: 0, y: -14 }} animate={{ opacity: 1, y: 0 }}
             className="rounded-[2rem] p-4"
-            style={{ background: heroBg, border: `1px solid ${cardBdr}`, backdropFilter: cardBlur, WebkitBackdropFilter: cardBlur }}>
+            style={{ background: cardCalBg, border: `1px solid ${cardCalBdr}`, boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.38)' : '0 2px 20px rgba(0,0,0,0.07)' }}>
 
             {/* Compact header: title + streak pill + stats + toggle */}
             <div className="flex items-center gap-2 mb-3">
@@ -949,16 +988,20 @@ export default function MyProgressClient({
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.10 }}
             className="space-y-3"
           >
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] px-1" style={{ color: muted }}>Practice Pillars · 30 days</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] px-1" style={{ color: muted }}>
+              Practice Pillars · last 30 days
+            </p>
 
             {/* Japa card — full width with rich stats */}
-            <div className="rounded-[1.8rem] p-5" style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: isDark ? 'none' : '0 2px 16px rgba(0,0,0,0.07)', backdropFilter: cardBlur, WebkitBackdropFilter: cardBlur }}>
+            <div className="rounded-[1.8rem] p-5" style={{ background: cardJapaBg, border: `1px solid ${cardJapaBdr}`, boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.35)' : '0 2px 16px rgba(0,0,0,0.07)' }}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">🪷</span>
                   <div>
                     <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: muted }}>Japa</p>
-                    <p className="text-xs" style={{ color: dimText }}>Mantra repetition · 30 days</p>
+                    <p className="text-xs" style={{ color: dimText }}>
+                      {hasOlderSessions ? 'Mantra repetition · older sessions exist' : 'Mantra repetition · 30 days'}
+                    </p>
                   </div>
                 </div>
                 <Link href="/japa/insights"
@@ -969,18 +1012,41 @@ export default function MyProgressClient({
               </div>
 
               {japa30dSessions === 0 ? (
-                /* ── No sessions yet ── */
+                /* ── No sessions in last 30 days ── */
                 <div className="text-center py-4">
-                  <p className="text-2xl mb-2">📿</p>
-                  <p className="text-sm font-medium" style={{ color: h1 }}>No sessions yet</p>
-                  <p className="text-[11px] mt-1" style={{ color: muted }}>
-                    Start your first Japa session to see stats here.
-                  </p>
-                  <Link href="/japa"
-                    className="inline-flex items-center mt-3 rounded-full px-4 py-1.5 text-[11px] font-semibold"
-                    style={{ background: 'rgba(200,146,74,0.14)', color: 'rgba(200,146,74,0.90)', border: '1px solid rgba(200,146,74,0.25)' }}>
-                    Begin Japa →
-                  </Link>
+                  <p className="text-2xl mb-2">{hasOlderSessions ? '📿' : '🪷'}</p>
+                  {hasOlderSessions ? (
+                    <>
+                      <p className="text-sm font-medium" style={{ color: h1 }}>No sessions in the last 30 days</p>
+                      <p className="text-[11px] mt-1" style={{ color: muted }}>
+                        You have {totalJapaSessions} session{totalJapaSessions !== 1 ? 's' : ''} in your history — view them in Insights.
+                      </p>
+                      <div className="flex items-center justify-center gap-2 mt-3">
+                        <Link href="/japa/insights"
+                          className="inline-flex items-center rounded-full px-4 py-1.5 text-[11px] font-semibold"
+                          style={{ background: 'rgba(200,146,74,0.14)', color: 'rgba(200,146,74,0.90)', border: '1px solid rgba(200,146,74,0.25)' }}>
+                          View Insights →
+                        </Link>
+                        <Link href="/japa"
+                          className="inline-flex items-center rounded-full px-4 py-1.5 text-[11px] font-semibold"
+                          style={{ background: 'rgba(200,146,74,0.07)', color: 'rgba(200,146,74,0.75)', border: '1px solid rgba(200,146,74,0.18)' }}>
+                          Resume Japa
+                        </Link>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm font-medium" style={{ color: h1 }}>No sessions yet</p>
+                      <p className="text-[11px] mt-1" style={{ color: muted }}>
+                        Start your first Japa session to see stats here.
+                      </p>
+                      <Link href="/japa"
+                        className="inline-flex items-center mt-3 rounded-full px-4 py-1.5 text-[11px] font-semibold"
+                        style={{ background: 'rgba(200,146,74,0.14)', color: 'rgba(200,146,74,0.90)', border: '1px solid rgba(200,146,74,0.25)' }}>
+                        Begin Japa →
+                      </Link>
+                    </>
+                  )}
                 </div>
               ) : (
                 <>
@@ -1013,7 +1079,7 @@ export default function MyProgressClient({
                     </div>
                   </div>
                   {topMantra && (
-                    <p className="text-[11px] mt-3 pt-3" style={{ color: muted, borderTop: `1px solid ${cardBdr}` }}>
+                    <p className="text-[11px] mt-3 pt-3" style={{ color: muted, borderTop: `1px solid ${cardJapaBdr}` }}>
                       Most chanted: <span style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{topMantra}</span>
                     </p>
                   )}
@@ -1022,7 +1088,7 @@ export default function MyProgressClient({
             </div>
 
             {/* Nitya Karma card */}
-            <div className="rounded-[1.8rem] p-5" style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: isDark ? 'none' : '0 2px 16px rgba(0,0,0,0.07)', backdropFilter: cardBlur, WebkitBackdropFilter: cardBlur }}>
+            <div className="rounded-[1.8rem] p-5" style={{ background: cardNityaBg, border: `1px solid ${cardNityaBdr}`, boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.35)' : '0 2px 16px rgba(0,0,0,0.07)' }}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">🌅</span>
@@ -1072,20 +1138,24 @@ export default function MyProgressClient({
 
             {/* Pathshala + Bhakti mini cards */}
             <div className="grid grid-cols-2 gap-3">
-              {[
-                { emoji: '📖', label: 'Pathshala', sub: 'Study paths',      href: '/pathshala/insights', accent: 'rgba(80,160,200,' },
-                { emoji: '🪷', label: 'Bhakti',    sub: 'Devotion insights', href: '/bhakti/insights',   accent: 'rgba(196,120,154,' },
-              ].map(p => (
-                <Link key={p.label} href={p.href}
-                  className="block rounded-[1.6rem] p-4"
-                  style={{ background: cardBg, border: `1px solid ${cardBdr}`, backdropFilter: cardBlur, WebkitBackdropFilter: cardBlur }}>
-                  <div className="h-0.5 rounded-full mb-3" style={{ background: `${p.accent}0.55)` }} />
-                  <span className="text-xl block mb-2">{p.emoji}</span>
-                  <p className="text-sm font-semibold" style={{ color: h1 }}>{p.label}</p>
-                  <p className="text-[10px] mt-0.5" style={{ color: muted }}>{p.sub}</p>
-                  <p className="text-[10px] mt-3 font-medium" style={{ color: `${p.accent}0.70)` }}>Open →</p>
-                </Link>
-              ))}
+              <Link href="/pathshala/insights"
+                className="block rounded-[1.6rem] p-4"
+                style={{ background: cardPathBg, border: `1px solid ${cardPathBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.30)' : '0 1px 12px rgba(0,0,0,0.06)' }}>
+                <div className="h-0.5 rounded-full mb-3" style={{ background: 'rgba(80,160,200,0.55)' }} />
+                <span className="text-xl block mb-2">📖</span>
+                <p className="text-sm font-semibold" style={{ color: h1 }}>Pathshala</p>
+                <p className="text-[10px] mt-0.5" style={{ color: muted }}>Study paths</p>
+                <p className="text-[10px] mt-3 font-medium" style={{ color: 'rgba(80,160,200,0.70)' }}>Open →</p>
+              </Link>
+              <Link href="/bhakti/insights"
+                className="block rounded-[1.6rem] p-4"
+                style={{ background: cardBhaktiBg, border: `1px solid ${cardBhaktiBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.30)' : '0 1px 12px rgba(0,0,0,0.06)' }}>
+                <div className="h-0.5 rounded-full mb-3" style={{ background: 'rgba(196,120,154,0.55)' }} />
+                <span className="text-xl block mb-2">🪷</span>
+                <p className="text-sm font-semibold" style={{ color: h1 }}>Bhakti</p>
+                <p className="text-[10px] mt-0.5" style={{ color: muted }}>Devotion insights</p>
+                <p className="text-[10px] mt-3 font-medium" style={{ color: 'rgba(196,120,154,0.70)' }}>Open →</p>
+              </Link>
             </div>
           </motion.section>
 
@@ -1103,7 +1173,7 @@ export default function MyProgressClient({
           <motion.section
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.30 }}
             className="rounded-[1.8rem] p-5"
-            style={{ background: cardBg, border: `1px solid ${cardBdr}`, backdropFilter: cardBlur, WebkitBackdropFilter: cardBlur }}>
+            style={{ background: cardRhythmBg, border: `1px solid ${cardRhythmBdr}`, boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.35)' : '0 2px 16px rgba(0,0,0,0.07)' }}>
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] mb-0.5" style={{ color: amber }}>
               Practice Rhythm
             </p>
