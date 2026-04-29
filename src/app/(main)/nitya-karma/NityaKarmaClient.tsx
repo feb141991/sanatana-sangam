@@ -987,6 +987,31 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
         if (engine) {
           try { const str = await engine.nityaKarma.getStreak(userId); setStreak(str); } catch { /* silent */ }
         }
+        // ── Bridge to Guided Plan: advance day_reached when all Nitya steps done ──
+        // Finds the user's active guided plan and increments the current day,
+        // so completing dincharya automatically progresses their sadhana path.
+        try {
+          const { data: planRow } = await supabase
+            .from('guided_path_progress')
+            .select('id, day_reached, path_id')
+            .eq('user_id', userId)
+            .eq('status', 'active')
+            .order('updated_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (planRow) {
+            const nextDay = (planRow.day_reached ?? 0) + 1;
+            await supabase
+              .from('guided_path_progress')
+              .update({ day_reached: nextDay, updated_at: new Date().toISOString() })
+              .eq('id', planRow.id);
+            toast('Guided plan day advanced 📖', {
+              icon: '🌿',
+              duration: 2500,
+              style: { background: '#1c1c1a', color: '#f0ede4', borderRadius: '14px', fontSize: '12px' },
+            });
+          }
+        } catch { /* silent — guided plan bridge is best-effort */ }
       } else {
         // Use hardcoded colors — CSS variables don't work inside toast portals
         toast(getStepMessage(stepId), {

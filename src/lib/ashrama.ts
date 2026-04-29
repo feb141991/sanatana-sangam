@@ -97,6 +97,34 @@ export function getAllAshramaStages(tradition: string): AshramaMeta[] {
   return stages.map(s => getAshramaMeta(tradition, s));
 }
 
+// ── Age → Ashrama auto-suggestion ─────────────────────────────────────────────
+// Takes a YYYY-MM-DD date of birth string, computes age, returns the suggested
+// life stage. Age ranges are soft guides, not hard rules — users should always
+// be able to override.
+export function ageToAshrama(dob: string): LifeStage {
+  const birth = new Date(dob);
+  if (isNaN(birth.getTime())) return 'grihastha'; // fallback for invalid date
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age--;
+  if (age < 25)  return 'brahmacharya';
+  if (age < 50)  return 'grihastha';
+  if (age < 75)  return 'vanaprastha';
+  return 'sannyasa';
+}
+
+// Returns age in years from a YYYY-MM-DD DOB string, or null if invalid.
+export function ageFromDob(dob: string): number | null {
+  const birth = new Date(dob);
+  if (isNaN(birth.getTime())) return null;
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age--;
+  return age;
+}
+
 // ── Ashrama Duties — tradition × life stage ───────────────────────────────────
 // 8 duties per stage, adapted per tradition
 

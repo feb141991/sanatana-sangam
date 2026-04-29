@@ -17,7 +17,7 @@ import Link from 'next/link';
 import {
   ChevronLeft, BookOpen, Mic, Trophy,
   Loader2, Play, Star, Plus, Search, X,
-  Share2, ChevronDown, ChevronUp, GraduationCap, Lock, Sparkles,
+  Share2, ChevronDown, ChevronUp, GraduationCap, Lock, Sparkles, BarChart2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
@@ -694,6 +694,13 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
             </span>
           </div>
         )}
+        <Link
+          href="/pathshala/insights"
+          className="w-9 h-9 rounded-full glass-panel border border-white/10 flex items-center justify-center shadow-sm"
+          title="Learning Insights"
+        >
+          <BarChart2 size={17} style={{ color: meta.accentColour }} />
+        </Link>
       </div>
 
       {/* Tab bar */}

@@ -928,12 +928,26 @@ export default function HomeDashboard({
     return lastShlokaDate === today;
   });
   const [editHomeOpen,     setEditHomeOpen]     = useState(false);
+  // Personalised content — load from cache immediately, refresh in background
+  const PERSONAL_CACHE_KEY = 'ss-personal-content';
+  const PERSONAL_CACHE_DATE_KEY = 'ss-personal-content-date';
   const [personalContent, setPersonalContent] = useState<{
     suggestion: string;
     nudge: string | null;
     context_label?: string | null;
-  } | null>(null);
-  const [personalLoading, setPersonalLoading] = useState(true);
+  } | null>(() => {
+    // Hydrate from localStorage cache so the card renders immediately on load
+    if (typeof window === 'undefined') return null;
+    try {
+      const cacheDate = localStorage.getItem(PERSONAL_CACHE_DATE_KEY);
+      const today     = new Date().toISOString().split('T')[0];
+      if (cacheDate === today) {
+        const raw = localStorage.getItem(PERSONAL_CACHE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      }
+    } catch { /* silent */ }
+    return null;
+  });
   const [hiddenHrefs,      setHiddenHrefs]      = useState<Set<string>>(() => {
     if (typeof window === 'undefined') return new Set();
     try {
@@ -1041,20 +1055,27 @@ export default function HomeDashboard({
     });
   }, [selectedDate, lat, lon]);
 
-  // Fetch personalised daily content from Gemini-backed API
+  // Fetch personalised daily content from Gemini-backed API.
+  // Cache result in localStorage keyed to today's date — so on repeat visits
+  // the suggestion renders immediately from cache (no blank-space wait).
+  // The fetch always runs in background to refresh stale cache from yesterday.
   useEffect(() => {
     let cancelled = false;
     async function fetchPersonalContent() {
-      setPersonalLoading(true);
       try {
         const res = await fetch('/api/home/personalise');
         if (!res.ok) throw new Error('personalise failed');
         const data = await res.json();
-        if (!cancelled && data?.suggestion) setPersonalContent(data);
+        if (!cancelled && data?.suggestion) {
+          setPersonalContent(data);
+          try {
+            const today = new Date().toISOString().split('T')[0];
+            localStorage.setItem(PERSONAL_CACHE_KEY, JSON.stringify(data));
+            localStorage.setItem(PERSONAL_CACHE_DATE_KEY, today);
+          } catch { /* localStorage unavailable */ }
+        }
       } catch {
-        // silently skip — fallback to nothing
-      } finally {
-        if (!cancelled) setPersonalLoading(false);
+        // silently skip — cached value (if any) remains visible
       }
     }
     fetchPersonalContent();

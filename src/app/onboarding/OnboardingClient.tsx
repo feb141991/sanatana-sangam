@@ -7,7 +7,7 @@ import { MapPin, Loader2, ChevronRight, Check, Monitor, Moon, Sun } from 'lucide
 import { createClient } from '@/lib/supabase';
 import { TRADITIONS } from '@/lib/traditions';
 import { APP_LANGUAGES } from '@/lib/language-preferences';
-import { getAllAshramaStages, type LifeStage, type GenderContext } from '@/lib/ashrama';
+import { getAllAshramaStages, ageToAshrama, ageFromDob, type LifeStage, type GenderContext } from '@/lib/ashrama';
 import { THEME_OPTIONS, type ThemePreference } from '@/lib/theme-preferences';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import toast from 'react-hot-toast';
@@ -176,7 +176,9 @@ export default function OnboardingClient({ userId, hasTradition, hasLifeStage, h
   const [saving,     setSaving]     = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
   const [tradition,  setTradition]  = useState<TraditionKey | ''>('');
+  const [dob,          setDob]          = useState('');
   const [lifeStage,    setLifeStage]    = useState<LifeStage | ''>('');
+  const [lifeStageOverridden, setLifeStageOverridden] = useState(false);
   const [genderContext, setGenderContext] = useState<GenderContext>('general');
   const [language,   setLanguage]   = useState('en');
   const [city,       setCity]       = useState('');
@@ -233,6 +235,8 @@ export default function OnboardingClient({ userId, hasTradition, hasLifeStage, h
       if (tradition)  updates.tradition    = tradition;
       if (lifeStage)  updates.life_stage    = lifeStage;
       updates.gender_context = genderContext;
+      if (dob)        updates.date_of_birth  = dob;
+      if (lifeStageOverridden) updates.life_stage_locked = true;
       if (language)   updates.app_language = language;
       if (city)      updates.city         = city;
       if (country)   updates.country      = country;
@@ -490,13 +494,53 @@ export default function OnboardingClient({ userId, hasTradition, hasLifeStage, h
                     </p>
                   </div>
 
+                  {/* ── DOB picker (optional — auto-suggests ashrama) ── */}
+                  <div className="space-y-1.5">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'rgba(100,180,100,0.42)' }}>
+                      Date of birth (optional)
+                    </p>
+                    <div className="relative">
+                      <input
+                        type="date"
+                        value={dob}
+                        max={new Date().toISOString().split('T')[0]}
+                        min="1920-01-01"
+                        onChange={e => {
+                          const v = e.target.value;
+                          setDob(v);
+                          if (v && !lifeStageOverridden) {
+                            setLifeStage(ageToAshrama(v));
+                          }
+                        }}
+                        className="w-full rounded-[1rem] px-4 py-3 text-sm font-medium appearance-none"
+                        style={{
+                          background: 'rgba(255,255,255,0.04)',
+                          border: '1.5px solid rgba(255,255,255,0.08)',
+                          color: dob ? 'rgba(220,195,140,0.85)' : 'rgba(180,155,100,0.30)',
+                          colorScheme: 'dark',
+                          outline: 'none',
+                        }}
+                      />
+                    </div>
+                    {dob && !lifeStageOverridden && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-[10px] pl-1"
+                        style={{ color: 'rgba(120,200,140,0.55)' }}
+                      >
+                        ✓ Stage suggested from age {ageFromDob(dob)} — tap any option to override
+                      </motion.p>
+                    )}
+                  </div>
+
                   <div className="space-y-2.5">
                     {getAllAshramaStages(tradition || 'hindu').map((stage, i) => {
                       const selected = lifeStage === stage.key;
                       return (
                         <motion.button
                           key={stage.key}
-                          onClick={() => setLifeStage(stage.key)}
+                          onClick={() => { setLifeStage(stage.key); if (dob) setLifeStageOverridden(true); }}
                           className="w-full flex items-center gap-4 rounded-[1.1rem] px-4 py-3.5 text-left relative overflow-hidden"
                           style={{
                             background: selected
