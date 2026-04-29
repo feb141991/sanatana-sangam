@@ -29,10 +29,11 @@ const SVG_W = 340;
 const SVG_CX = SVG_W / 2;
 const SVG_CY = SVG_W / 2;
 const RING_R = 148;
-const BEAD_R = 5.2;
-const SUMERU_R = 8;
+const BEAD_R = 7.0;
+const SUMERU_R = 11;
 const STORAGE_MALA   = 'ss-japa-mala';
 const STORAGE_MANTRA = 'ss-japa-mantra';
+const STORAGE_BG     = 'ss-japa-bg';
 
 // ── Mala definitions ───────────────────────────────────────────────────────────
 const MALAS = [
@@ -155,6 +156,54 @@ const SOUNDS: { id: SoundId; label: string; emoji: string }[] = [
   { id: 'bells',   label: 'Temple Bells', emoji: '🔔' },
   { id: 'forest',  label: 'Forest',       emoji: '🌿' },
 ];
+
+// ── Background scenes ──────────────────────────────────────────────────────────
+const BG_SCENES = [
+  {
+    id: 'midnight',
+    name: 'Midnight',
+    emoji: '🌙',
+    dark:  { bg: '#06060A', overlay: 'none' },
+    light: { bg: '#F5F0E8', overlay: 'none' },
+  },
+  {
+    id: 'himalayan_dawn',
+    name: 'Himalayan',
+    emoji: '🏔️',
+    dark:  { bg: '#0A0614', overlay: 'radial-gradient(ellipse 80% 60% at 50% 100%, rgba(200,120,50,0.40) 0%, rgba(100,50,140,0.20) 55%, transparent 100%)' },
+    light: { bg: '#FFF0E0', overlay: 'radial-gradient(ellipse 80% 60% at 50% 100%, rgba(255,180,80,0.55) 0%, rgba(220,140,80,0.25) 55%, transparent 100%)' },
+  },
+  {
+    id: 'temple',
+    name: 'Temple',
+    emoji: '🛕',
+    dark:  { bg: '#0E0804', overlay: 'radial-gradient(ellipse 70% 80% at 30% 80%, rgba(200,130,40,0.38) 0%, rgba(140,80,20,0.12) 60%, transparent 100%)' },
+    light: { bg: '#FDF4E0', overlay: 'radial-gradient(ellipse 70% 80% at 30% 80%, rgba(220,160,60,0.45) 0%, rgba(200,140,60,0.15) 60%, transparent 100%)' },
+  },
+  {
+    id: 'river_ghat',
+    name: 'River Ghat',
+    emoji: '🌊',
+    dark:  { bg: '#040A12', overlay: 'radial-gradient(ellipse 90% 50% at 50% 90%, rgba(30,100,140,0.38) 0%, rgba(15,60,100,0.15) 60%, transparent 100%)' },
+    light: { bg: '#E8F4F8', overlay: 'radial-gradient(ellipse 90% 50% at 50% 90%, rgba(70,140,180,0.45) 0%, rgba(50,110,160,0.18) 60%, transparent 100%)' },
+  },
+  {
+    id: 'forest_ashram',
+    name: 'Forest',
+    emoji: '🌿',
+    dark:  { bg: '#040C06', overlay: 'radial-gradient(ellipse 80% 70% at 50% 65%, rgba(30,90,40,0.35) 0%, rgba(15,60,25,0.12) 60%, transparent 100%)' },
+    light: { bg: '#EAF5EA', overlay: 'radial-gradient(ellipse 80% 70% at 50% 65%, rgba(60,140,70,0.45) 0%, rgba(40,110,55,0.18) 60%, transparent 100%)' },
+  },
+  {
+    id: 'cosmos',
+    name: 'Cosmos',
+    emoji: '✨',
+    dark:  { bg: '#04040E', overlay: 'radial-gradient(ellipse 70% 80% at 50% 20%, rgba(80,60,160,0.42) 0%, rgba(40,30,120,0.18) 55%, transparent 100%)' },
+    light: { bg: '#EEE8F8', overlay: 'radial-gradient(ellipse 70% 80% at 50% 20%, rgba(120,100,200,0.45) 0%, rgba(80,60,160,0.18) 55%, transparent 100%)' },
+  },
+] as const;
+
+type BgSceneId = typeof BG_SCENES[number]['id'];
 
 // ── Web Audio ambient engine (no external URLs — works offline + no CORS) ──────
 let _japaCtx: AudioContext | null = null;
@@ -388,9 +437,10 @@ function beadPos(i: number) {
 }
 
 function MalaSVG({
-  malaId, beadCount, isDark, pulsing,
+  malaId, beadCount, isDark, pulsing, flashBeadIdx, flashKey,
 }: {
   malaId: MalaId; beadCount: number; isDark: boolean; pulsing: boolean;
+  flashBeadIdx: number; flashKey: number;
 }) {
   const mala = MALAS.find(m => m.id === malaId) ?? MALAS[0];
   const c = isDark ? mala.dark : mala.light;
@@ -398,44 +448,76 @@ function MalaSVG({
   const roundComplete  = beadCount > 0 && beadCount % TOTAL_BEADS === 0;
   const countDisplay   = roundComplete ? TOTAL_BEADS : currentBeadIdx;
 
+  // Current bead (next to be tapped)
+  const nextBeadIdx = !roundComplete && beadCount > 0 ? currentBeadIdx + 1 : -1;
+
   return (
     <svg
       viewBox={`0 0 ${SVG_W} ${SVG_W}`}
-      style={{ width: '100%', maxWidth: 320, touchAction: 'manipulation', userSelect: 'none' }}
+      style={{ width: '100%', maxWidth: 330, touchAction: 'manipulation', userSelect: 'none' }}
     >
       <defs>
-        <radialGradient id={`bead-un-${malaId}`} cx="38%" cy="32%" r="60%">
+        {/* ── Uncounted bead — 3-stop 3D gradient ── */}
+        <radialGradient id={`bead-un-${malaId}`} cx="35%" cy="30%" r="65%">
           <stop offset="0%"   stopColor={c.bead} stopOpacity="1" />
-          <stop offset="100%" stopColor={c.bead} stopOpacity="0.55" />
+          <stop offset="55%"  stopColor={c.bead} stopOpacity="0.82" />
+          <stop offset="100%" stopColor={c.bead} stopOpacity="0.45" />
         </radialGradient>
-        <radialGradient id={`bead-done-${malaId}`} cx="38%" cy="32%" r="60%">
-          <stop offset="0%"   stopColor={isDark ? '#F4C860' : c.counted} stopOpacity="1" />
-          <stop offset="100%" stopColor={c.counted} stopOpacity="0.85" />
+        {/* ── Counted bead — warm gold glow ── */}
+        <radialGradient id={`bead-done-${malaId}`} cx="35%" cy="30%" r="65%">
+          <stop offset="0%"   stopColor={isDark ? '#F6D070' : c.counted} stopOpacity="1" />
+          <stop offset="50%"  stopColor={isDark ? '#D4A040' : c.counted} stopOpacity="0.95" />
+          <stop offset="100%" stopColor={c.counted} stopOpacity="0.75" />
         </radialGradient>
-        <radialGradient id={`sumeru-${malaId}`} cx="38%" cy="32%" r="60%">
-          <stop offset="0%"   stopColor={isDark ? '#3E2010' : c.sumeru} stopOpacity="1" />
+        {/* ── Sumeru bead ── */}
+        <radialGradient id={`sumeru-${malaId}`} cx="35%" cy="28%" r="65%">
+          <stop offset="0%"   stopColor={isDark ? '#4E2A12' : c.sumeru} stopOpacity="1" />
           <stop offset="100%" stopColor={c.sumeru} stopOpacity="0.8" />
         </radialGradient>
+        {/* ── Specular highlight (applied on top of each bead) ── */}
+        <radialGradient id={`spec-${malaId}`} cx="32%" cy="28%" r="48%">
+          <stop offset="0%"   stopColor="white" stopOpacity={malaId === 'crystal' ? 0.70 : 0.48} />
+          <stop offset="100%" stopColor="white" stopOpacity="0" />
+        </radialGradient>
+        {/* ── Drop shadow filter ── */}
+        <filter id="bead-shadow" x="-40%" y="-40%" width="180%" height="180%">
+          <feDropShadow dx="1.2" dy="1.8" stdDeviation="1.4" floodColor="#000" floodOpacity="0.45" />
+        </filter>
+        {/* ── Glow filter for current bead ── */}
         <filter id="bead-glow" x="-80%" y="-80%" width="260%" height="260%">
-          <feGaussianBlur stdDeviation="3.5" result="blur" />
+          <feGaussianBlur stdDeviation="3.8" result="blur" />
           <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
-        <radialGradient id="center-glow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%"   stopColor={c.glow} stopOpacity="0.18" />
+        {/* ── Strong glow for flash ripple ── */}
+        <filter id="flash-glow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="4.5" result="blur" />
+          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+        {/* ── Crystal inner glow ── */}
+        {malaId === 'crystal' && (
+          <radialGradient id="crystal-inner" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stopColor="rgba(180,210,255,0.30)" stopOpacity="1" />
+            <stop offset="100%" stopColor="rgba(180,210,255,0)" stopOpacity="0" />
+          </radialGradient>
+        )}
+        {/* ── Center ambient glow ── */}
+        <radialGradient id={`center-glow-${malaId}`} cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stopColor={c.glow} stopOpacity="0.22" />
           <stop offset="100%" stopColor={c.glow} stopOpacity="0" />
         </radialGradient>
       </defs>
 
       {/* Thread */}
-      <circle cx={SVG_CX} cy={SVG_CY} r={RING_R} fill="none" stroke={c.thread} strokeWidth="1.5" />
-      {/* Center glow */}
-      <circle cx={SVG_CX} cy={SVG_CY} r={RING_R - 20} fill="url(#center-glow)" />
+      <circle cx={SVG_CX} cy={SVG_CY} r={RING_R} fill="none" stroke={c.thread} strokeWidth="1.8" />
+      {/* Center ambient glow */}
+      <circle cx={SVG_CX} cy={SVG_CY} r={RING_R - 22} fill={`url(#center-glow-${malaId})`} />
 
-      {/* 108 beads */}
+      {/* ── 108 beads — shadow layer first, then bead, then specular ── */}
       {Array.from({ length: TOTAL_BEADS }, (_, i) => {
         const isSumeru  = i === 0;
         const isDone    = (!roundComplete && i > 0 && i <= currentBeadIdx) || (roundComplete && i > 0);
-        const isCurrent = !roundComplete && i === currentBeadIdx + 1 && beadCount > 0;
+        const isCurrent = i === nextBeadIdx;
+        const isFlash   = i === flashBeadIdx;
         const pos = beadPos(i);
         const r   = isSumeru ? SUMERU_R : BEAD_R;
         const fill = isSumeru
@@ -444,22 +526,82 @@ function MalaSVG({
           : `url(#bead-un-${malaId})`;
 
         return (
-          <circle
-            key={i}
-            cx={pos.x}
-            cy={pos.y}
-            r={r}
-            fill={fill}
-            filter={isCurrent ? 'url(#bead-glow)' : undefined}
-            stroke={
-              isCurrent ? c.glow
-              : isDone   ? (isDark ? 'rgba(240,180,60,0.35)' : 'rgba(100,60,20,0.3)')
-              : 'none'
-            }
-            strokeWidth={isCurrent ? 1.5 : isDone ? 0.8 : 0}
-          />
+          <g key={i}>
+            {/* Shadow */}
+            <circle cx={pos.x + 1.2} cy={pos.y + 1.8} r={r * 0.92} fill="black" opacity="0.38" />
+            {/* Main bead */}
+            <circle
+              cx={pos.x} cy={pos.y} r={r}
+              fill={fill}
+              filter={isCurrent ? 'url(#bead-glow)' : 'url(#bead-shadow)'}
+              stroke={
+                isCurrent ? c.glow
+                : isDone   ? (isDark ? 'rgba(240,180,60,0.40)' : 'rgba(100,60,20,0.35)')
+                : (isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)')
+              }
+              strokeWidth={isCurrent ? 1.8 : isDone ? 0.9 : 0.5}
+            />
+            {/* Crystal inner glow */}
+            {malaId === 'crystal' && (
+              <circle cx={pos.x} cy={pos.y} r={r * 0.75} fill="url(#crystal-inner)" />
+            )}
+            {/* Specular highlight */}
+            <circle
+              cx={pos.x - r * 0.22} cy={pos.y - r * 0.26}
+              r={r * (isSumeru ? 0.40 : 0.38)}
+              fill={`url(#spec-${malaId})`}
+            />
+            {/* Rudraksha grain lines */}
+            {malaId === 'rudraksha' && !isSumeru && (
+              <>
+                <line
+                  x1={pos.x - r * 0.55} y1={pos.y}
+                  x2={pos.x + r * 0.55} y2={pos.y}
+                  stroke={isDark ? 'rgba(0,0,0,0.35)' : 'rgba(60,30,10,0.30)'}
+                  strokeWidth="0.7" strokeLinecap="round"
+                />
+                <line
+                  x1={pos.x} y1={pos.y - r * 0.55}
+                  x2={pos.x} y2={pos.y + r * 0.55}
+                  stroke={isDark ? 'rgba(0,0,0,0.25)' : 'rgba(60,30,10,0.22)'}
+                  strokeWidth="0.5" strokeLinecap="round"
+                />
+              </>
+            )}
+          </g>
         );
       })}
+
+      {/* ── Pulsing ring around current bead ── */}
+      {nextBeadIdx >= 0 && (() => {
+        const pos = beadPos(nextBeadIdx);
+        return (
+          <motion.circle
+            cx={pos.x} cy={pos.y}
+            fill="none"
+            stroke={c.glow}
+            strokeWidth={1.5}
+            animate={{ r: [BEAD_R * 1.35, BEAD_R * 1.80, BEAD_R * 1.35], opacity: [0.65, 0.18, 0.65] }}
+            transition={{ duration: 2.0, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        );
+      })()}
+
+      {/* ── Flash ripple when a bead is counted ── */}
+      {flashBeadIdx >= 0 && flashBeadIdx < TOTAL_BEADS && (() => {
+        const pos = beadPos(flashBeadIdx);
+        return (
+          <motion.circle
+            key={`flash-${flashKey}`}
+            cx={pos.x} cy={pos.y}
+            fill={c.glow}
+            filter="url(#flash-glow)"
+            initial={{ r: BEAD_R * 1.1, opacity: 0.85 }}
+            animate={{ r: BEAD_R * 3.0, opacity: 0 }}
+            transition={{ duration: 0.55, ease: 'easeOut' }}
+          />
+        );
+      })()}
 
       {/* Counter */}
       <text
@@ -499,10 +641,11 @@ function MalaSVG({
 
 // ── Screen 1: Choose Mala ─────────────────────────────────────────────────────
 function ChooseMalaScreen({
-  isDark, selected, onSelect, onConfirm, onBack,
+  isDark, selected, onSelect, onConfirm, onBack, bgSceneId, onBgSceneSelect,
 }: {
   isDark: boolean; selected: MalaId;
   onSelect: (id: MalaId) => void; onConfirm: () => void; onBack: () => void;
+  bgSceneId: BgSceneId; onBgSceneSelect: (id: BgSceneId) => void;
 }) {
   const bg    = isDark ? '#08070A' : '#F5F0E8';
   const card  = isDark ? 'var(--card-bg)' : 'rgba(0,0,0,0.04)';
@@ -582,6 +725,48 @@ function ChooseMalaScreen({
             </motion.button>
           );
         })}
+      </div>
+
+      {/* ── Background Scene Picker ── */}
+      <div className="px-5 pb-4">
+        <p className="text-[11px] font-semibold tracking-[0.16em] uppercase mb-3" style={{ color: sub }}>
+          Practice Background
+        </p>
+        <div className="flex gap-3 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+          {BG_SCENES.map(scene => {
+            const sc = isDark ? scene.dark : scene.light;
+            const isSelected = bgSceneId === scene.id;
+            return (
+              <button
+                key={scene.id}
+                onClick={() => onBgSceneSelect(scene.id as BgSceneId)}
+                className="flex flex-col items-center gap-1.5 flex-shrink-0"
+                style={{ minWidth: 60 }}
+              >
+                <div
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all"
+                  style={{
+                    background: sc.bg,
+                    border: `2px solid ${isSelected ? amber : (isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)')}`,
+                    boxShadow: isSelected ? `0 0 0 2px ${amber}55` : 'none',
+                    position: 'relative',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {/* Overlay gradient preview */}
+                  {sc.overlay !== 'none' && (
+                    <div style={{ position: 'absolute', inset: 0, background: sc.overlay, borderRadius: 'inherit' }} />
+                  )}
+                  <span className="text-2xl relative z-10">{scene.emoji}</span>
+                </div>
+                <p className="text-[9px] font-semibold text-center leading-tight"
+                  style={{ color: isSelected ? amber : sub, maxWidth: 56 }}>
+                  {scene.name}
+                </p>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Confirm */}
@@ -917,17 +1102,47 @@ export default function JapaClient({
   const [screen,    setScreen]    = useState<Screen>('chooseMala');
   const [malaId,    setMalaId]    = useState<MalaId>('sandalwood');
   const [mantraId,  setMantraId]  = useState<MantraId>(defaultMantraId);
+  const [bgSceneId, setBgSceneId] = useState<BgSceneId>('midnight');
   const [targetRounds, setTargetRounds] = useState(1);
   // Ref so countBead callback always reads the latest targetRounds without stale closure
   const targetRoundsRef = useRef(1);
   useEffect(() => { targetRoundsRef.current = targetRounds; }, [targetRounds]);
 
+  // ── Auto-hide controls state (immersive mode) ────────────────────────────
+  const [controlsVisible, setControlsVisible] = useState(true);
+  const controlsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showControlsBriefly = useCallback(() => {
+    setControlsVisible(true);
+    if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current);
+    controlsTimerRef.current = setTimeout(() => setControlsVisible(false), 4000);
+  }, []);
+
+  // Show controls on entering japa screen, hide after 4s
+  useEffect(() => {
+    if (screen === 'japa') {
+      showControlsBriefly();
+    } else {
+      setControlsVisible(true);
+      if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current);
+    }
+    return () => { if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current); };
+  }, [screen]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Per-bead flash animation state ──────────────────────────────────────
+  const [flashBeadIdx, setFlashBeadIdx] = useState(-1);
+  const [flashKey,     setFlashKey]     = useState(0);
+  const flashTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const beadCountRef   = useRef(0);
+
   useEffect(() => {
     try {
       const savedMala   = localStorage.getItem(STORAGE_MALA)   as MalaId | null;
       const savedMantra = localStorage.getItem(STORAGE_MANTRA) as MantraId | null;
-      if (savedMala   && MALAS.find(m => m.id === savedMala))     setMalaId(savedMala);
-      if (savedMantra && MANTRAS.find(m => m.id === savedMantra)) setMantraId(savedMantra);
+      const savedBg     = localStorage.getItem(STORAGE_BG)     as BgSceneId | null;
+      if (savedMala   && MALAS.find(m => m.id === savedMala))         setMalaId(savedMala);
+      if (savedMantra && MANTRAS.find(m => m.id === savedMantra))     setMantraId(savedMantra);
+      if (savedBg     && BG_SCENES.find(s => s.id === savedBg))       setBgSceneId(savedBg);
     } catch { /* ok */ }
   }, []);
 
@@ -942,6 +1157,9 @@ export default function JapaClient({
   const [streak,       setStreak]       = useState(currentStreak);
   const [saved,        setSaved]        = useState(japaAlreadyDoneToday);
   const [pulsing,      setPulsing]      = useState(false);
+
+  // Keep beadCountRef in sync so countBead can read current value without closure staleness
+  useEffect(() => { beadCountRef.current = beadCount; }, [beadCount]);
 
   // Timer
   const [duration, setDuration] = useState(0);
@@ -1008,6 +1226,16 @@ export default function JapaClient({
     hapticLight();
     setPulsing(true);
     setTimeout(() => setPulsing(false), 120);
+
+    // Show controls briefly on any tap, reset auto-hide timer
+    showControlsBriefly();
+
+    // Flash ripple on the bead we're about to count
+    const countingIdx = beadCountRef.current % TOTAL_BEADS;
+    setFlashBeadIdx(countingIdx);
+    setFlashKey(k => k + 1);
+    if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
+    flashTimerRef.current = setTimeout(() => setFlashBeadIdx(-1), 650);
 
     setBeadCount(prev => {
       const next = prev + 1;
@@ -1118,6 +1346,11 @@ export default function JapaClient({
   }, [saved, userId, mantraId, duration]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Handlers ─────────────────────────────────────────────────────────────
+  const handleBgSceneSelect = (id: BgSceneId) => {
+    setBgSceneId(id);
+    try { localStorage.setItem(STORAGE_BG, id); } catch { /* ok */ }
+  };
+
   const handleConfirmMala = () => {
     try { localStorage.setItem(STORAGE_MALA, malaId); } catch { /* ok */ }
     setScreen('chooseMantra');
@@ -1152,13 +1385,15 @@ export default function JapaClient({
 
   const currentMantra = MANTRAS.find(m => m.id === mantraId)  ?? MANTRAS[0];
   const currentMala   = MALAS.find(m => m.id === malaId)      ?? MALAS[0];
+  const currentBgScene = BG_SCENES.find(s => s.id === bgSceneId) ?? BG_SCENES[0];
+  const bgC = isDark ? currentBgScene.dark : currentBgScene.light;
 
   // Theme tokens for japa screen
-  const bg      = isDark ? '#06060A' : '#F5F0E8';
+  const bg      = bgC.bg;
   const text     = isDark ? 'rgba(245,225,185,0.97)' : '#2D1F0E';
   const sub      = isDark ? 'rgba(200,146,74,0.60)'  : 'rgba(100,65,25,0.60)';
   const amber    = isDark ? '#C8924A' : '#7A4A1E';
-  const cardBg   = isDark ? 'var(--card-bg)' : 'rgba(0,0,0,0.04)';
+  const cardBg   = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
 
   // Progress toward target
   // For multi-round targets: full rounds completed / target; for single mala: bead count / 108
@@ -1177,6 +1412,8 @@ export default function JapaClient({
           onSelect={setMalaId}
           onConfirm={handleConfirmMala}
           onBack={() => router.back()}
+          bgSceneId={bgSceneId}
+          onBgSceneSelect={handleBgSceneSelect}
         />
       )}
 
@@ -1204,15 +1441,25 @@ export default function JapaClient({
           }}
           initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          // Tap anywhere on the japa screen (except controls) counts a bead
           onClick={(e) => {
-            // Only count if the tap is on the background (not on buttons/controls)
             const target = e.target as HTMLElement;
             if (target.closest('button') || target.closest('a') || target.tagName === 'BUTTON') return;
             countBead();
           }}
         >
-          {/* ── Top bar ─────────────────────────────────────────────────── */}
+          {/* ── Atmospheric bg overlay ─────────────────────────────────────── */}
+          {bgC.overlay !== 'none' && (
+            <div style={{
+              position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
+              background: bgC.overlay,
+            }} />
+          )}
+          {/* ── Top bar — auto-hides after 4s of no tap ─────────────────── */}
+          <motion.div
+            animate={{ opacity: controlsVisible ? 1 : 0 }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            style={{ pointerEvents: controlsVisible ? 'auto' : 'none', position: 'relative', zIndex: 10 }}
+          >
           <div className="flex items-center justify-between px-5 pt-14 pb-2">
             <button
               onClick={() => {
@@ -1307,11 +1554,13 @@ export default function JapaClient({
             </p>
           </div>
 
+          </motion.div>{/* end auto-hide controls wrapper */}
+
           {/* ── SVG Mala ─────────────────────────────────────────────────── */}
-          <div className="flex-1 flex flex-col items-center justify-center px-6 gap-3">
+          <div className="flex-1 flex flex-col items-center justify-center px-6 gap-3" style={{ position: 'relative', zIndex: 1 }}>
             <motion.div
               className="w-full flex items-center justify-center"
-              animate={pulsing ? { scale: [1, 0.985, 1] } : {}}
+              animate={pulsing ? { scale: [1, 0.982, 1] } : {}}
               transition={{ duration: 0.12 }}
               style={{ maxWidth: 340 }}
             >
@@ -1320,6 +1569,8 @@ export default function JapaClient({
                 beadCount={beadCount + roundsDone * TOTAL_BEADS}
                 isDark={isDark}
                 pulsing={pulsing}
+                flashBeadIdx={flashBeadIdx}
+                flashKey={flashKey}
               />
             </motion.div>
 
@@ -1348,7 +1599,12 @@ export default function JapaClient({
             </div>
           </div>
 
-          {/* ── Bottom controls ───────────────────────────────────────────── */}
+          {/* ── Bottom controls — auto-hides ─────────────────────────────── */}
+          <motion.div
+            animate={{ opacity: controlsVisible ? 1 : 0 }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            style={{ pointerEvents: controlsVisible ? 'auto' : 'none', position: 'relative', zIndex: 10 }}
+          >
           <div className="px-5 space-y-3" style={{ paddingBottom: 'max(5.5rem, calc(env(safe-area-inset-bottom, 0px) + 4.5rem))' }}>
             {/* Streak + insights row */}
             <div className="flex items-center justify-between px-1">
@@ -1398,6 +1654,7 @@ export default function JapaClient({
               </button>
             )}
           </div>
+          </motion.div>{/* end bottom controls auto-hide wrapper */}
 
           {/* ── Sounds sheet ──────────────────────────────────────────────── */}
           <AnimatePresence>
