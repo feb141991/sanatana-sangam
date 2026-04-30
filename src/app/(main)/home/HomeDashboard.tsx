@@ -1228,12 +1228,246 @@ export default function HomeDashboard({
   const homeHeroTheme = HOME_THEMES.pathshala;
   const panchangTheme = HOME_THEMES.panchang;
   const sacredTextTheme = tradition === 'hindu' ? HOME_THEMES.pathshala : HOME_THEMES.bhakti;
+  const dailyTextLine = (sacredText ? sacredText.original : shloka.sanskrit).split('\n')[0];
+  const dailyNudge = personalContent?.suggestion
+    ?? (!readToday
+      ? `Read ${sacredTextMeta.label.toLowerCase()} and keep today's practice alive.`
+      : !japaAlreadyDoneToday
+        ? 'Start one quiet mala when you have a focused moment.'
+        : !nityaDoneToday
+          ? 'Complete the remaining nitya rhythm for today.'
+          : 'Your core practice is steady today. Continue study or review Panchang.');
+  const nextHomeAction = !readToday
+      ? {
+        label: `Read ${sacredText ? 'today’s text' : 'today’s shloka'}`,
+        detail: 'Open the sacred text and mark it read.',
+        href: null,
+        onClick: () => setShlokaModalOpen(true),
+      }
+    : !japaAlreadyDoneToday
+      ? {
+          label: 'Start mala',
+          detail: japaStreak > 0 ? `${japaStreak}-day japa streak ready.` : 'Begin today’s japa session.',
+          href: '/bhakti/mala',
+          onClick: undefined,
+        }
+      : !nityaDoneToday
+        ? {
+            label: 'Continue nitya karma',
+            detail: 'Finish the daily practice loop.',
+            href: '/nitya-karma',
+            onClick: undefined,
+          }
+        : {
+            label: 'Continue Pathshala',
+            detail: 'Move into study with a calm base.',
+            href: '/pathshala',
+            onClick: undefined,
+          };
+  const practiceStatus = [
+    { label: 'Text', value: readToday ? 'read' : 'open', active: readToday },
+    { label: 'Mala', value: japaAlreadyDoneToday ? 'done' : 'start', active: japaAlreadyDoneToday },
+    { label: 'Nitya', value: nityaDoneToday ? 'done' : 'pending', active: nityaDoneToday },
+  ];
 
   return (
     <div className="space-y-4 pb-2 fade-in">
 
       {/* ── Sacred confetti celebration ── */}
       <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
+
+      {/* ── Daily Darshan Hero ── */}
+      <motion.section
+        className="rounded-[2rem] px-5 py-5 relative overflow-hidden"
+        style={{
+          background: getCardBg(homeHeroTheme),
+          border: `1px solid ${homeHeroTheme.border}`,
+          boxShadow: getCardShadow(),
+          backdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
+          WebkitBackdropFilter: isDark ? undefined : 'blur(10px) saturate(110%)',
+        }}
+        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 18 }}
+        animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <SkyBackground hour={hour} />
+        <motion.div
+          className="absolute -right-16 -top-12 h-48 w-48 rounded-full pointer-events-none"
+          animate={prefersReducedMotion ? undefined : { scale: [1, 1.08, 1], opacity: [0.38, 0.58, 0.38] }}
+          transition={{ duration: 6.2, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            background: `radial-gradient(circle, ${homeHeroTheme.iconWell}, transparent 66%)`,
+            zIndex: 1,
+          }}
+        />
+
+        <div className="relative flex items-start justify-between gap-3" style={{ zIndex: 2 }}>
+          <div className="min-w-0 flex-1">
+            <p className="type-card-label tracking-[0.12em] uppercase text-[10px]">Today in sangam</p>
+            <button
+              onClick={() => setGreetingSheetOpen(true)}
+              className="group mt-2 -ml-0.5 rounded-2xl flex items-end gap-2 text-left motion-press"
+            >
+              <h1
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: 'clamp(1.35rem, 5vw, 1.65rem)',
+                  fontWeight: 500,
+                  lineHeight: 1.2,
+                  color: 'var(--text-cream)',
+                  letterSpacing: '-0.01em',
+                }}
+              >
+                {greeting},&nbsp;{userName.split(' ')[0]}
+              </h1>
+              <Pencil size={13} style={{ color: 'var(--text-dim)', marginBottom: '0.22rem', flexShrink: 0 }} />
+            </button>
+            <p className="type-body mt-2 leading-relaxed" style={{ fontSize: '0.82rem' }}>
+              One calm start: panchang, sacred text, and the next practice that matters now.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setDatePickerOpen(true)}
+            className="flex-shrink-0 rounded-[1.1rem] px-3 py-2 text-center motion-press"
+            style={{ background: homeHeroTheme.iconWell, minWidth: '3rem' }}
+          >
+            <p className="text-[9px] font-medium uppercase tracking-[0.12em]" style={{ color: 'var(--text-dim)' }}>
+              {new Date().toLocaleDateString('en-IN', { weekday: 'short' })}
+            </p>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 500, lineHeight: 1.1, color: 'var(--text-cream)' }}>
+              {new Date().getDate()}
+            </p>
+            <p className="text-[9px] font-medium" style={{ color: 'var(--text-dim)' }}>
+              {new Date().toLocaleDateString('en-IN', { month: 'short' })}
+            </p>
+          </button>
+        </div>
+
+        <div
+          className="relative mt-5 rounded-[1.5rem] p-4"
+          style={{
+            zIndex: 2,
+            background: isDark ? 'rgba(0,0,0,0.24)' : 'rgba(255,255,255,0.62)',
+            border: `1px solid ${homeHeroTheme.border}`,
+          }}
+        >
+          <div className="grid grid-cols-3 gap-2">
+            <div>
+              <p className="home-section-label">Tithi</p>
+              <p className="home-card-title mt-1 truncate">{panchang.tithi}</p>
+            </div>
+            <div>
+              <p className="home-section-label">Nakshatra</p>
+              <p className="home-card-title mt-1 truncate">{panchang.nakshatra}</p>
+            </div>
+            <div>
+              <p className="home-section-label">Rahu kaal</p>
+              <p className="home-card-title mt-1 truncate">{panchang.rahuKaal}</p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShlokaModalOpen(true)}
+            className="mt-4 w-full text-left motion-press"
+          >
+            <span
+              className="inline-flex rounded-full px-2.5 py-1 text-[10px] font-medium"
+              style={{ background: 'rgba(250,238,218,0.95)', color: '#854F0B' }}
+            >
+              {sacredText ? sacredText.source : shloka.source}
+            </span>
+            <p
+              className="mt-3 line-clamp-2"
+              style={{
+                fontFamily: 'Georgia, "Noto Serif Devanagari", serif',
+                fontSize: '1.05rem',
+                lineHeight: 1.6,
+                color: 'var(--text-cream)',
+              }}
+            >
+              {dailyTextLine}
+            </p>
+          </button>
+
+          <div className="mt-4 rounded-[1.15rem] p-3" style={{ background: homeHeroTheme.iconWell }}>
+            <p className="home-section-label">Next for you</p>
+            <p className="home-card-title mt-1">{nextHomeAction.label}</p>
+            <p className="home-card-copy mt-1">{nextHomeAction.detail}</p>
+            <p className="home-card-copy mt-2">{dailyNudge}</p>
+          </div>
+
+          <div className="mt-4 flex gap-2">
+            {nextHomeAction.href ? (
+              <Link
+                href={nextHomeAction.href}
+                className="flex-1 rounded-full px-4 py-3 text-center text-sm font-medium motion-press"
+                style={{ background: 'var(--brand-primary)', color: '#1a1610' }}
+              >
+                {nextHomeAction.label}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={nextHomeAction.onClick}
+                className="flex-1 rounded-full px-4 py-3 text-sm font-medium motion-press"
+                style={{ background: 'var(--brand-primary)', color: '#1a1610' }}
+              >
+                {nextHomeAction.label}
+              </button>
+            )}
+            <Link
+              href="/panchang"
+              className="rounded-full px-4 py-3 text-center text-sm font-medium motion-press"
+              style={{ background: homeHeroTheme.iconWell, color: 'var(--text-cream)', border: `1px solid ${homeHeroTheme.border}` }}
+            >
+              Panchang
+            </Link>
+          </div>
+        </div>
+
+        <div className="relative mt-3 grid grid-cols-3 gap-2" style={{ zIndex: 2 }}>
+          {practiceStatus.map((item, index) => (
+            <motion.div
+              key={item.label}
+              className="rounded-[1rem] px-3 py-2"
+              initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10 }}
+              animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.44, delay: 0.12 + index * 0.07, ease: [0.22, 1, 0.36, 1] }}
+              style={{
+                background: item.active ? 'rgba(200,146,74,0.16)' : 'rgba(255,255,255,0.06)',
+                border: item.active ? '1px solid rgba(200,146,74,0.26)' : '1px solid rgba(255,255,255,0.08)',
+              }}
+            >
+              <p className="home-section-label">{item.label}</p>
+              <p className="home-card-title mt-0.5">{item.value}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        {(moodToday || displayCity) && (
+          <div className="relative mt-3 flex flex-wrap items-center gap-2" style={{ zIndex: 2 }}>
+            {moodToday && (
+              <Link
+                href="/discover"
+                className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] font-medium motion-press"
+                style={{ background: homeHeroTheme.iconWell, color: 'var(--text-muted-warm)', border: `1px solid ${homeHeroTheme.border}` }}
+              >
+                <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={16} />
+                {moodToday.label}
+              </Link>
+            )}
+            {displayCity && (
+              <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-[11px]" style={{ background: homeHeroTheme.iconWell, color: 'var(--text-dim)' }}>
+                <MapPin size={11} style={{ color: homeHeroTheme.accent, flexShrink: 0 }} />
+                {displayCity}
+              </span>
+            )}
+          </div>
+        )}
+      </motion.section>
 
       {/* ── Shloka fullscreen modal ── */}
       <AnimatePresence>
@@ -1352,7 +1586,7 @@ export default function HomeDashboard({
 
       {/* ── Greeting Hero ── */}
       <motion.div
-        className="rounded-[2rem] px-5 py-5 relative overflow-hidden"
+        className="hidden rounded-[2rem] px-5 py-5 relative overflow-hidden"
         style={{
           background: getCardBg(homeHeroTheme),
           border: `1px solid ${homeHeroTheme.border}`,

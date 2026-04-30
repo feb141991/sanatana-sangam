@@ -54,7 +54,7 @@ const ConfettiOverlay: React.FC<ConfettiOverlayProps> = ({ show, onComplete }) =
   }, []);
 
   useEffect(() => {
-    if (!show) {
+    if (!show || !mounted) {
       return;
     }
 
@@ -234,7 +234,7 @@ const ConfettiOverlay: React.FC<ConfettiOverlayProps> = ({ show, onComplete }) =
       }
       window.removeEventListener('resize', resizeCanvas);
     };
-  }, [show, onComplete]);
+  }, [show, mounted, onComplete]);
 
   if (!show || !mounted) {
     return null;
