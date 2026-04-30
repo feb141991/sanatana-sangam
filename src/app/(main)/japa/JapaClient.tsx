@@ -21,6 +21,7 @@ import { createClient } from '@/lib/supabase';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { buildMalaSessionInsert } from '@/lib/mala-sessions';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import Link from 'next/link';
 
 // ── Constants ──────────────────────────────────────────────────────────────────
@@ -395,39 +396,7 @@ const TARGET_OPTIONS = [1, 3, 5, 11] as const;
 
 // ── Confetti burst on completion ───────────────────────────────────────────────
 function ConfettiShower() {
-  const particles = useMemo(() =>
-    Array.from({ length: 64 }, (_, i) => ({
-      id: i,
-      left: `${3 + ((i * 1.516) % 94)}%`,
-      delay: (i * 0.028) % 1.1,
-      duration: 1.3 + (i % 6) * 0.18,
-      color: ['#FFD700','#FF6B6B','#C8924A','#9988CC','#66BBAA','#FF9060','#88D4A8','#FF88BB'][i % 8],
-      size: 5 + (i % 4),
-      shape: i % 3 === 0 ? '50%' : i % 3 === 1 ? '2px' : '0%',
-      rotate: Math.random() * 720 - 360,
-    })), []
-  );
-
-  return (
-    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 62, overflow: 'hidden' }}>
-      {particles.map(p => (
-        <motion.div
-          key={p.id}
-          style={{
-            position: 'absolute',
-            left: p.left,
-            top: -14,
-            width: p.size,
-            height: p.size,
-            borderRadius: p.shape,
-            background: p.color,
-          }}
-          animate={{ y: '110vh', rotate: p.rotate, opacity: [1, 1, 0.2] }}
-          transition={{ duration: p.duration, delay: p.delay, ease: [0.25, 0.46, 0.45, 0.94] }}
-        />
-      ))}
-    </div>
-  );
+  return <ConfettiOverlay show />;
 }
 
 // ── SVG Mala ───────────────────────────────────────────────────────────────────
