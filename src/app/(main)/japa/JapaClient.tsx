@@ -14,12 +14,11 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Volume2, VolumeX, Flame, RotateCcw, BarChart2, Settings2 } from 'lucide-react';
+import { ChevronLeft, Volume2, VolumeX, Flame, RotateCcw, BarChart2, Settings2, X } from 'lucide-react';
 import { useEngine } from '@/contexts/EngineContext';
 import { hapticLight, hapticSuccess } from '@/lib/platform';
 import { createClient } from '@/lib/supabase';
 import { localSpiritualDate } from '@/lib/sacred-time';
-import { usePremium } from '@/hooks/usePremium';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import Link from 'next/link';
 
@@ -983,10 +982,10 @@ function SoundsSheet({
 
 // ── Completion Overlay ────────────────────────────────────────────────────────
 function CompletionOverlay({
-  isDark, rounds, partialBeads, targetRounds, durationSecs, mantraName, streak, onClose, onViewInsights,
+  isDark, rounds, partialBeads, targetRounds, durationSecs, mantraName, streak, onContinue, onChangeMala, onViewInsights,
 }: {
   isDark: boolean; rounds: number; partialBeads: number; targetRounds: number; durationSecs: number;
-  mantraName: string; streak: number; onClose: () => void; onViewInsights: () => void;
+  mantraName: string; streak: number; onContinue: () => void; onChangeMala: () => void; onViewInsights: () => void;
 }) {
   const mins  = Math.floor(durationSecs / 60);
   const secs  = durationSecs % 60;
@@ -1069,7 +1068,7 @@ function CompletionOverlay({
           {/* CTAs */}
           <div className="space-y-2.5">
             <motion.button
-              onClick={onClose}
+              onClick={onContinue}
               whileTap={{ scale: 0.97 }}
               className="w-full py-4 rounded-2xl font-bold text-[15px]"
               style={{
@@ -1077,7 +1076,7 @@ function CompletionOverlay({
                 color: isDark ? '#fde8c8' : '#fff8f0',
                 boxShadow: '0 4px 24px rgba(200,146,74,0.28)',
               }}>
-              🕉️  Hari Om
+              Continue another mala
             </motion.button>
 
             <button
@@ -1090,10 +1089,117 @@ function CompletionOverlay({
               }}>
               View Insights →
             </button>
+            <button
+              onClick={onChangeMala}
+              className="w-full py-3 rounded-2xl text-sm font-semibold border"
+              style={{
+                background: 'transparent',
+                borderColor: `${amber}22`,
+                color: sub,
+              }}>
+              Change mala &amp; mantra
+            </button>
           </div>
         </motion.div>
       </motion.div>
     </>
+  );
+}
+
+function StopPracticeSheet({
+  isDark, hasProgress, saving, onSaveAndStop, onDiscard, onContinue,
+}: {
+  isDark: boolean;
+  hasProgress: boolean;
+  saving: boolean;
+  onSaveAndStop: () => void;
+  onDiscard: () => void;
+  onContinue: () => void;
+}) {
+  const bg     = isDark ? 'rgba(10,8,14,0.97)' : 'rgba(248,244,236,0.97)';
+  const text   = isDark ? 'rgba(245,225,185,0.95)' : '#2D1F0E';
+  const sub    = isDark ? 'rgba(200,146,74,0.60)' : 'rgba(100,65,25,0.60)';
+  const amber  = isDark ? '#C8924A' : '#7A4A1E';
+  const border = isDark ? 'rgba(200,146,74,0.14)' : 'rgba(0,0,0,0.07)';
+
+  return (
+    <motion.div
+      className="fixed inset-0 flex items-end"
+      style={{ zIndex: 125, background: 'rgba(0,0,0,0.62)' }}
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      onClick={onContinue}
+    >
+      <motion.div
+        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-2xl mx-auto rounded-t-3xl px-5 pt-3 space-y-4"
+        style={{
+          background: bg,
+          backdropFilter: 'blur(28px)',
+          border: `1px solid ${border}`,
+          borderBottom: 'none',
+          paddingBottom: 'max(2.5rem, calc(env(safe-area-inset-bottom,0px) + 2rem))',
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="w-10 h-1 rounded-full mx-auto" style={{ background: `${amber}30` }} />
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: `${amber}80` }}>Focused mala</p>
+            <h2 className="text-xl font-bold mt-1" style={{ fontFamily: 'var(--font-serif)', color: text }}>
+              Stop this session?
+            </h2>
+            <p className="text-sm leading-relaxed mt-2" style={{ color: sub }}>
+              {hasProgress
+                ? 'Save your current beads before leaving, or discard this unfinished session.'
+                : 'No beads have been counted yet. You can leave setup or continue practice.'}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onContinue}
+            className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}
+            aria-label="Continue practice"
+          >
+            <X size={15} style={{ color: sub }} />
+          </button>
+        </div>
+
+        <div className="grid gap-2">
+          {hasProgress && (
+            <button
+              type="button"
+              onClick={onSaveAndStop}
+              disabled={saving}
+              className="w-full py-4 rounded-2xl font-bold text-[15px] disabled:opacity-60"
+              style={{
+                background: isDark ? 'linear-gradient(135deg, #C8924A, #8a5818)' : 'linear-gradient(135deg, #8B5E3C, #5a3010)',
+                color: isDark ? '#fde8c8' : '#fff8f0',
+              }}
+            >
+              {saving ? 'Saving...' : 'End & save'}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onContinue}
+            className="w-full py-3.5 rounded-2xl font-semibold text-sm border"
+            style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)', borderColor: border, color: text }}
+          >
+            Continue practice
+          </button>
+          <button
+            type="button"
+            onClick={onDiscard}
+            className="w-full py-3 rounded-2xl font-semibold text-sm"
+            style={{ color: sub }}
+          >
+            {hasProgress ? 'Discard and leave' : 'Leave setup'}
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -1221,13 +1327,12 @@ interface Props {
 }
 
 export default function JapaClient({
-  userId, userName, tradition, currentStreak, japaAlreadyDoneToday, history,
+  userId, tradition, currentStreak,
 }: Props) {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
   const isDark = resolvedTheme === 'dark';
   const engine = useEngine();
-  const isPro  = usePremium();
 
   const defaultMantraId: MantraId = tradition === 'sikh'     ? 'waheguru'
     : tradition === 'buddhist' ? 'om_mani'
@@ -1295,9 +1400,11 @@ export default function JapaClient({
   const [totalBeads,   setTotalBeads]   = useState(0);
   const [paused,       setPaused]       = useState(false);
   const [showComplete, setShowComplete] = useState(false);
+  const [showStopSheet, setShowStopSheet] = useState(false);
   const [soundId,      setSoundId]      = useState<SoundId>('silence');
   const [streak,       setStreak]       = useState(currentStreak);
-  const [saved,        setSaved]        = useState(japaAlreadyDoneToday);
+  const [saved,        setSaved]        = useState(false);
+  const [savingSession, setSavingSession] = useState(false);
   const [pulsing,      setPulsing]      = useState(false);
 
   // Keep beadCountRef in sync so countBead can read current value without closure staleness
@@ -1403,7 +1510,7 @@ export default function JapaClient({
       setTotalBeads(t => t + 1);
       return next;
     });
-  }, [paused, showComplete]);
+  }, [paused, showComplete, showControlsBriefly]);
 
   // ── Milestone thresholds ─────────────────────────────────────────────────
   const STREAK_MILESTONES  = [7, 21, 40, 54, 108, 365];
@@ -1411,7 +1518,8 @@ export default function JapaClient({
 
   // ── Save session ─────────────────────────────────────────────────────────
   const saveSession = useCallback(async (completedRounds: number, partialBeads = 0) => {
-    if (saved || (completedRounds === 0 && partialBeads === 0)) return;
+    if (saved || savingSession || (completedRounds === 0 && partialBeads === 0)) return false;
+    setSavingSession(true);
     try {
       const supabase = createClient();
       const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
@@ -1487,10 +1595,14 @@ export default function JapaClient({
           body: JSON.stringify(payload),
         }).catch(() => { /* best-effort */ });
       }
+      return true;
     } catch (err) {
       console.error('[Japa] saveSession error:', err);
+      return false;
+    } finally {
+      setSavingSession(false);
     }
-  }, [saved, userId, mantraId, duration]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [saved, savingSession, userId, mantraId, duration]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Handlers ─────────────────────────────────────────────────────────────
   const handleBgSceneSelect = (id: BgSceneId) => {
@@ -1518,16 +1630,63 @@ export default function JapaClient({
     setShowComplete(false);
   };
 
-  const handleCompleteClose = () => {
-    saveSession(roundsDone, beadCount);
+  const resetPracticeForNextRound = () => {
     setShowComplete(false);
     setBeadCount(0);
-    // Do NOT reset roundsDone so user can continue
+    setRoundsDone(0);
+    setTotalBeads(0);
+    setDuration(0);
+    startedAt.current = null;
+    setPaused(false);
+    setSaved(false);
   };
 
   const handleViewInsights = async () => {
     await saveSession(roundsDone, beadCount);
     router.push('/japa/insights');
+  };
+
+  const handleContinueAfterComplete = async () => {
+    await saveSession(roundsDone, beadCount);
+    resetPracticeForNextRound();
+  };
+
+  const handleChangeAfterComplete = async () => {
+    await saveSession(roundsDone, beadCount);
+    leavePracticeSetup();
+  };
+
+  const leavePracticeSetup = useCallback(() => {
+    stopJapaAmbient();
+    setShowStopSheet(false);
+    setShowSettings(false);
+    setShowComplete(false);
+    setPaused(false);
+    setScreen('chooseMala');
+  }, []);
+
+  const handleSaveAndStop = async () => {
+    await saveSession(roundsDone, beadCount);
+    leavePracticeSetup();
+  };
+
+  const handleDiscardAndStop = () => {
+    setBeadCount(0);
+    setRoundsDone(0);
+    setTotalBeads(0);
+    setDuration(0);
+    startedAt.current = null;
+    setSaved(false);
+    leavePracticeSetup();
+  };
+
+  const handleManualEnd = async () => {
+    if (roundsDone === 0 && beadCount === 0) {
+      setShowStopSheet(true);
+      return;
+    }
+    await saveSession(roundsDone, beadCount);
+    setShowComplete(true);
   };
 
   const currentMantra = MANTRAS.find(m => m.id === mantraId)  ?? MANTRAS[0];
@@ -1609,13 +1768,11 @@ export default function JapaClient({
           >
           <div className="flex items-center justify-between px-5 pt-14 pb-2">
             <button
-              onClick={() => {
-                try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch {}
-                setScreen('chooseMala');
-              }}
+              onClick={() => setShowStopSheet(true)}
+              aria-label="Stop or exit mala"
               className="w-9 h-9 rounded-full flex items-center justify-center"
               style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
-              <ChevronLeft size={20} style={{ color: amber }} />
+              <X size={17} style={{ color: amber }} />
             </button>
 
             {/* Mantra name + tradition */}
@@ -1809,14 +1966,15 @@ export default function JapaClient({
             {/* Finish session — always shown once any beads counted */}
             {(roundsDone > 0 || beadCount > 0) && (
               <button
-                onClick={() => { saveSession(roundsDone, beadCount); setShowComplete(true); }}
+                onClick={handleManualEnd}
+                disabled={savingSession}
                 className="w-full py-3 rounded-2xl font-semibold text-[13px]"
                 style={{
                   background: isDark ? 'rgba(200,146,74,0.12)' : 'rgba(122,74,30,0.08)',
                   color: amber,
                   border: `1px solid ${amber}28`,
                 }}>
-                End & Save Session
+                {savingSession ? 'Saving...' : 'End & Save Session'}
               </button>
             )}
           </div>
@@ -1831,12 +1989,21 @@ export default function JapaClient({
                 onTargetChange={n => { setTargetRounds(n); targetRoundsRef.current = n; }}
                 soundId={soundId}
                 onSoundSelect={handleSoundSelect}
-                onChangeMala={() => {
-                  setShowSettings(false);
-                  // Small delay so sheet closes before screen transitions
-                  setTimeout(() => setScreen('chooseMala'), 150);
-                }}
+                onChangeMala={() => setShowStopSheet(true)}
                 onClose={() => setShowSettings(false)}
+              />
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {showStopSheet && (
+              <StopPracticeSheet
+                isDark={isDark}
+                hasProgress={roundsDone > 0 || beadCount > 0}
+                saving={savingSession}
+                onSaveAndStop={handleSaveAndStop}
+                onDiscard={handleDiscardAndStop}
+                onContinue={() => setShowStopSheet(false)}
               />
             )}
           </AnimatePresence>
@@ -1852,7 +2019,8 @@ export default function JapaClient({
                 durationSecs={duration}
                 mantraName={currentMantra.name}
                 streak={streak}
-                onClose={handleCompleteClose}
+                onContinue={handleContinueAfterComplete}
+                onChangeMala={handleChangeAfterComplete}
                 onViewInsights={handleViewInsights}
               />
             )}

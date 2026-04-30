@@ -15,7 +15,7 @@ export default async function BhaktiInsightsPage() {
     // Bhakti mala sessions (same table as Japa — devotional practice)
     supabase
       .from('mala_sessions')
-      .select('date, rounds, bead_count, duration_secs, mantra_id, created_at')
+      .select('*')
       .eq('user_id', user.id)
       .gte('created_at', fromDate + 'T00:00:00')   // filter by created_at — always exists
       .order('created_at', { ascending: false }),

@@ -6,7 +6,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Share2 } from 'lucide-react';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 
-interface Session { date: string; rounds: number; bead_count: number; duration_secs: number; mantra_id: string; created_at: string; }
+interface Session {
+  created_at: string;
+  date?: string | null;
+  rounds?: number | null;
+  bead_count?: number | null;
+  duration_secs?: number | null;
+  mantra_id?: string | null;
+  count?: number | null;
+  duration_seconds?: number | null;
+  mantra?: string | null;
+  [key: string]: unknown;
+}
 interface Props { sessions: Session[]; shlokaStreak: number; sevaScore: number; tradition: string; }
 
 type Filter = '1d' | '7d' | '30d' | '90d';
@@ -17,6 +28,28 @@ const FILTERS: { key: Filter; label: string; days: number }[] = [
   { key: '90d', label: '90 Days', days: 90 },
 ];
 const DAY_LABELS = ['S','M','T','W','T','F','S'];
+
+function sessionDate(s: Session): string {
+  return s.date ?? s.created_at?.slice(0, 10) ?? '';
+}
+
+function sessionRounds(s: Session): number {
+  if (s.rounds != null) return s.rounds;
+  if (s.count != null) return Math.max(1, Math.floor(s.count / 108));
+  return 0;
+}
+
+function sessionBeads(s: Session): number {
+  return s.bead_count ?? s.count ?? 0;
+}
+
+function sessionSecs(s: Session): number {
+  return s.duration_secs ?? s.duration_seconds ?? 0;
+}
+
+function sessionMantra(s: Session): string | null {
+  return s.mantra_id ?? s.mantra ?? null;
+}
 
 function DowChart({ data, color, isDark }: { data: number[]; color: string; isDark: boolean }) {
   const max = Math.max(...data, 1);
@@ -73,7 +106,12 @@ function CalView({ sessions, isDark, color, text, sub, border, bg }: {
 
   const dateMap = useMemo(() => {
     const m: Record<string, Session[]> = {};
-    sessions.forEach(s => { if (!m[s.date]) m[s.date] = []; m[s.date].push(s); });
+    sessions.forEach(s => {
+      const key = sessionDate(s);
+      if (!key) return;
+      if (!m[key]) m[key] = [];
+      m[key].push(s);
+    });
     return m;
   }, [sessions]);
 
@@ -133,8 +171,8 @@ function CalView({ sessions, isDark, color, text, sub, border, bg }: {
             {dateMap[sel]
               ? (() => {
                   const s = dateMap[sel];
-                  const rounds = s.reduce((a,b) => a + (b.rounds ?? 0), 0);
-                  const beads  = s.reduce((a,b) => a + (b.bead_count ?? 0), 0);
+                  const rounds = s.reduce((a,b) => a + sessionRounds(b), 0);
+                  const beads  = s.reduce((a,b) => a + sessionBeads(b), 0);
                   return <span style={{ color: text }}>{s.length} session{s.length !== 1 ? 's' : ''} · {rounds} rounds · {beads.toLocaleString()} beads 🪷</span>;
                 })()
               : <span>No bhakti session on {new Date(sel + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}.</span>}
@@ -191,23 +229,35 @@ export default function BhaktiInsightsClient({ sessions, shlokaStreak, sevaScore
     return d.toISOString().slice(0, 10);
   }, [days]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const filtered = useMemo(() => sessions.filter(s => s.date >= cutoff), [sessions, cutoff]);
+  const filtered = useMemo(() => sessions.filter(s => sessionDate(s) >= cutoff), [sessions, cutoff]);
 
   const stats = useMemo(() => {
     const byDate: Record<string, Session[]> = {};
-    filtered.forEach(s => { if (!byDate[s.date]) byDate[s.date] = []; byDate[s.date].push(s); });
+    filtered.forEach(s => {
+      const key = sessionDate(s);
+      if (!key) return;
+      if (!byDate[key]) byDate[key] = [];
+      byDate[key].push(s);
+    });
 
     const activeDays    = Object.keys(byDate).length;
     const totalSessions = filtered.length;
-    const totalRounds   = filtered.reduce((a, s) => a + (s.rounds ?? 0), 0);
-    const totalBeads    = filtered.reduce((a, s) => a + (s.bead_count ?? 0), 0);
-    const totalSecs     = filtered.reduce((a, s) => a + (s.duration_secs ?? 0), 0);
+    const totalRounds   = filtered.reduce((a, s) => a + sessionRounds(s), 0);
+    const totalBeads    = filtered.reduce((a, s) => a + sessionBeads(s), 0);
+    const totalSecs     = filtered.reduce((a, s) => a + sessionSecs(s), 0);
 
     const dow = Array(7).fill(0) as number[];
-    filtered.forEach(s => { dow[new Date(s.date + 'T12:00:00').getDay()]++; });
+    filtered.forEach(s => {
+      const key = sessionDate(s);
+      if (!key) return;
+      dow[new Date(key + 'T12:00:00').getDay()]++;
+    });
 
     const mantraFreq: Record<string, number> = {};
-    filtered.forEach(s => { if (s.mantra_id) mantraFreq[s.mantra_id] = (mantraFreq[s.mantra_id] ?? 0) + 1; });
+    filtered.forEach(s => {
+      const mantra = sessionMantra(s);
+      if (mantra) mantraFreq[mantra] = (mantraFreq[mantra] ?? 0) + 1;
+    });
     const mantras = Object.entries(mantraFreq).sort((a, b) => b[1] - a[1]).slice(0, 5);
     const maxMantra = mantras[0]?.[1] ?? 1;
 
