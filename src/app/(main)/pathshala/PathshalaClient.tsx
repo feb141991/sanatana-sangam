@@ -14,6 +14,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   ChevronLeft, BookOpen, Mic, Trophy,
   Loader2, Play, Star, Plus, Search, X,
@@ -74,7 +75,7 @@ async function shareEntry(entry: LibraryEntry) {
 function EntryCard({ entry, accentColour }: { entry: LibraryEntry; accentColour: string }) {
   const [expanded, setExpanded] = useState(false);
   return (
-    <div className="glass-panel rounded-2xl overflow-hidden border border-white/8">
+    <div className="pathshala-glass-card rounded-[1.45rem] overflow-hidden">
       <button
         className="w-full text-left px-4 py-4"
         onClick={() => setExpanded(e => !e)}
@@ -256,10 +257,12 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
   const supabase  = useRef(createClient()).current;
   const meta      = getTraditionMeta(tradition);
   const isPro     = usePremium();
+  const prefersReducedMotion = useReducedMotion();
 
   const [activePaths, setActive]    = useState<ActiveEnrollment[]>([]);
   const [loading,     setLoading]   = useState(true);
   const [enrolling,   setEnrolling] = useState<string | null>(null);
+  const [isDark,      setIsDark]    = useState(true);
 
   // Tab: 'learn' | 'scripture' | 'explore'
   const [tab, setTab] = useState<'learn' | 'scripture' | 'explore'>(initialTab ?? 'learn');
@@ -269,6 +272,31 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
     return SEED_PATHS.filter(p => p.tradition === tradition || p.tradition === 'all');
   }, [tradition]);
   const allPaths = traditionPaths.length > 0 ? traditionPaths : SEED_PATHS;
+
+  useEffect(() => {
+    const checkTheme = () => setIsDark(document.documentElement.dataset.theme !== 'light');
+    checkTheme();
+    const obs = new MutationObserver(checkTheme);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => obs.disconnect();
+  }, []);
+
+  const primaryText = isDark ? 'var(--text-cream)' : '#211B14';
+  const secondaryText = isDark ? 'var(--text-muted-warm)' : '#4D4035';
+  const tertiaryText = isDark ? 'var(--text-dim)' : '#66584A';
+  const glassSurface = isDark ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.72)';
+  const glassSurfaceStrong = isDark ? 'rgba(255,255,255,0.082)' : 'rgba(255,255,255,0.84)';
+  const glassBorder = isDark ? 'rgba(250,238,218,0.12)' : 'rgba(65,36,2,0.12)';
+  const glassShadow = isDark
+    ? '0 22px 58px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.06)'
+    : '0 18px 46px rgba(49,35,20,0.10), inset 0 1px 0 rgba(255,255,255,0.80)';
+  const cardStyle = {
+    background: glassSurface,
+    border: `1px solid ${glassBorder}`,
+    boxShadow: glassShadow,
+    backdropFilter: 'blur(18px) saturate(128%)',
+    WebkitBackdropFilter: 'blur(18px) saturate(128%)',
+  };
 
   // ── Load active enrollments from guided_path_progress ───────────────────────
   // PATHSHALA_PATH_IDS is imported from @/lib/pathshala-paths.
@@ -395,9 +423,17 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
     const lessonLabel  = resumeLesson > 0 ? `Lesson ${resumeLesson + 1}` : 'First Lesson';
 
     return (
-      <div
-        className="rounded-3xl overflow-hidden border border-white/10 mb-1"
-        style={{ background: `linear-gradient(135deg, ${meta.accentColour}18 0%, ${meta.accentColour}08 100%)` }}
+      <motion.div
+        className="rounded-[1.8rem] overflow-hidden mb-1"
+        style={{
+          ...cardStyle,
+          background: isDark
+            ? `linear-gradient(135deg, ${meta.accentColour}18 0%, rgba(255,255,255,0.055) 100%)`
+            : `linear-gradient(135deg, ${meta.accentColour}18 0%, rgba(255,255,255,0.78) 100%)`,
+        }}
+        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 14 }}
+        animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="p-5">
           <p className="text-[10px] font-bold uppercase tracking-widest mb-2"
@@ -414,13 +450,13 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
               label={
                 <div className="text-center">
                   <div className="text-base font-bold" style={{ color: meta.accentColour }}>{progressPct}%</div>
-                  <div className="text-[8px] text-[color:var(--brand-muted)] leading-none">done</div>
+                  <div className="text-[8px] leading-none" style={{ color: tertiaryText }}>done</div>
                 </div>
               }
             />
             <div className="flex-1 min-w-0">
-              <h2 className="font-bold text-base text-[color:var(--brand-ink)] leading-snug">{path.title}</h2>
-              <p className="text-xs text-[color:var(--brand-muted)] mt-1">
+              <h2 className="font-semibold text-base leading-snug" style={{ color: primaryText }}>{path.title}</h2>
+              <p className="text-xs mt-1" style={{ color: secondaryText }}>
                 {doneLessons} of {path.total_lessons} lessons · Up next: {lessonLabel}
               </p>
               <Link
@@ -434,7 +470,7 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
           </div>
         </div>
         {/* Quick actions strip */}
-        <div className="border-t border-white/8 flex divide-x divide-white/8">
+        <div className="flex divide-x" style={{ borderTop: `1px solid ${glassBorder}`, borderColor: glassBorder }}>
           <Link
             href={`/pathshala/${enrollment.path_id}/recite`}
             className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold transition-all hover:bg-white/4"
@@ -444,18 +480,20 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
           </Link>
           <button
             onClick={() => startOver(enrollment.path_id, path.title)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition-all hover:bg-white/4"
+            className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold transition-all hover:bg-white/4"
+            style={{ color: secondaryText }}
           >
             <Trophy size={13} /> Start over
           </button>
           <button
             onClick={() => unenroll(enrollment.path_id, path.title)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition-all hover:bg-white/4"
+            className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold transition-all hover:bg-white/4"
+            style={{ color: secondaryText }}
           >
             <X size={13} /> Leave
           </button>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
@@ -463,12 +501,12 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
   // (Engine shloka-of-day wired separately; show a motivational prompt for now)
   function DailyVersePrompt() {
     return (
-      <Link href="/pathshala?tab=explore" className="block rounded-3xl overflow-hidden shadow-sm border border-white/8 mb-4">
-        <div className="p-5" style={{ background: `linear-gradient(135deg, ${meta.accentColour} 0%, ${meta.accentColour}99 100%)` }}>
-          <p className="text-white/70 text-xs font-medium uppercase tracking-wider mb-2">
+      <Link href="/pathshala?tab=explore" className="pathshala-glass-card block rounded-[1.8rem] overflow-hidden mb-4 motion-press">
+        <div className="p-5" style={{ background: `linear-gradient(135deg, ${meta.accentColour}28 0%, transparent 100%)` }}>
+          <p className="text-xs font-medium uppercase tracking-wider mb-2" style={{ color: tertiaryText }}>
             {meta.sacredTextLabel} · Today
           </p>
-          <p className="text-white font-bold text-base leading-relaxed">
+          <p className="font-[family:var(--font-deva)] font-semibold text-base leading-relaxed" style={{ color: primaryText }}>
             {tradition === 'sikh'
               ? 'ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ, ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਹਿ'
               : tradition === 'buddhist'
@@ -476,8 +514,8 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
               : 'यदा यदा हि धर्मस्य ग्लानिर्भवति भारत'}
           </p>
         </div>
-        <div className="glass-panel p-4">
-          <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">
+        <div className="p-4" style={{ borderTop: `1px solid ${glassBorder}`, background: isDark ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.38)' }}>
+          <p className="text-sm leading-relaxed" style={{ color: secondaryText }}>
             {tradition === 'sikh'
               ? 'The Khalsa belongs to Waheguru, and victory belongs to Waheguru.'
               : tradition === 'buddhist'
@@ -507,7 +545,13 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
       : 'Start';
 
     return (
-      <div className="glass-panel rounded-2xl border border-white/8 p-4">
+      <motion.div
+        className="rounded-[1.45rem] p-4"
+        style={cardStyle}
+        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10 }}
+        animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+      >
         <div className="flex items-start gap-3">
           <div className="relative flex-shrink-0">
             <CircularProgress
@@ -522,27 +566,27 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-bold text-[color:var(--brand-ink)] text-sm">{path.title}</h3>
+                  <h3 className="font-semibold text-sm" style={{ color: primaryText }}>{path.title}</h3>
                   <span className="text-[10px] font-semibold rounded-full px-2 py-0.5"
                     style={{ background: diff.bg, color: diff.text, border: `1px solid ${diff.border}` }}>
                     {diff.label}
                   </span>
                 </div>
-                <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 truncate">{path.description}</p>
+                <p className="text-xs mt-0.5 truncate" style={{ color: secondaryText }}>{path.description}</p>
               </div>
               {/* Unenroll */}
               <button
                 onClick={() => unenroll(enrollment.path_id, path.title)}
                 className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center opacity-40 hover:opacity-80 transition"
-                style={{ background: 'rgba(255,255,255,0.06)' }}
+                style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.62)', border: `1px solid ${glassBorder}` }}
                 title="Leave this path"
               >
-                <X size={13} className="text-[color:var(--brand-muted)]" />
+                <X size={13} style={{ color: tertiaryText }} />
               </button>
             </div>
             <div className="mt-1.5 flex items-center gap-2">
               <span className="text-xs font-semibold" style={{ color: meta.accentColour }}>{progressPct}%</span>
-              <span className="text-xs text-[color:var(--brand-muted)]">
+              <span className="text-xs" style={{ color: secondaryText }}>
                 {doneLessons}/{path.total_lessons} lessons · {path.duration_days} days
               </span>
             </div>
@@ -558,13 +602,13 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
           </Link>
           <Link
             href={`/pathshala/${enrollment.path_id}/recite`}
-            className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl font-semibold text-sm border border-white/12"
-            style={{ color: meta.accentColour }}
+            className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl font-semibold text-sm"
+            style={{ color: meta.accentColour, border: `1px solid ${glassBorder}`, background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.62)' }}
           >
             <Mic size={14} /> Recite
           </Link>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
@@ -573,7 +617,13 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
     const isEnrolled = activePaths.some(e => e.path_id === path.id);
     const diff       = DIFF_STYLE[path.difficulty] ?? DIFF_STYLE.beginner;
     return (
-      <div className="glass-panel rounded-2xl border border-white/8 p-4">
+      <motion.div
+        className="rounded-[1.45rem] p-4"
+        style={cardStyle}
+        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10 }}
+        animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+      >
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0"
             style={{ background: `${meta.accentColour}14` }}>
@@ -581,13 +631,14 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-semibold text-[color:var(--brand-ink)] text-sm">{path.title}</h3>
-              <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${diff.bg} ${diff.text}`}>
+              <h3 className="font-semibold text-sm" style={{ color: primaryText }}>{path.title}</h3>
+              <span className="text-[10px] font-semibold rounded-full px-2 py-0.5"
+                style={{ background: diff.bg, color: diff.text, border: `1px solid ${diff.border}` }}>
                 {diff.label}
               </span>
             </div>
-            <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 line-clamp-2">{path.description}</p>
-            <p className="text-xs text-[color:var(--brand-muted)]/70 mt-1">
+            <p className="text-xs mt-0.5 line-clamp-2" style={{ color: secondaryText }}>{path.description}</p>
+            <p className="text-xs mt-1" style={{ color: tertiaryText }}>
               {path.total_lessons} lessons · {path.duration_days}-day journey
             </p>
           </div>
@@ -598,11 +649,12 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
           className={`mt-3 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-semibold text-sm transition-all border ${
             isEnrolled
               ? 'border-green-800/40 text-green-400 bg-green-900/20 cursor-default'
-              : 'border-white/10 hover:border-transparent'
+              : ''
           }`}
           style={!isEnrolled ? {
             background: `${meta.accentColour}12`,
             color: meta.accentColour,
+            border: `1px solid ${glassBorder}`,
           } : {}}
         >
           {enrolling === path.id
@@ -612,7 +664,7 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
               : <><Plus size={14} /> Enroll in this Path</>
           }
         </button>
-      </div>
+      </motion.div>
     );
   }
 
@@ -630,19 +682,20 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
       {/* Header */}
       <div className="flex items-center gap-3 px-4 pt-4 pb-3">
         <button onClick={() => router.back()}
-          className="w-9 h-9 rounded-full glass-panel border border-white/10 flex items-center justify-center shadow-sm">
+          className="w-9 h-9 rounded-full flex items-center justify-center shadow-sm motion-press"
+          style={{ background: glassSurfaceStrong, border: `1px solid ${glassBorder}`, backdropFilter: 'blur(16px)' }}>
           <ChevronLeft size={20} style={{ color: meta.accentColour }} />
         </button>
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <span className="text-lg">{meta.symbol}</span>
-            <h1 className="font-bold text-lg text-[color:var(--brand-ink)]">Pathshala</h1>
+            <h1 className="font-semibold text-lg" style={{ color: primaryText }}>Pathshala</h1>
           </div>
-          <p className="text-xs text-[color:var(--brand-muted)]">Digital Gurukul · {meta.label}</p>
+          <p className="text-xs" style={{ color: secondaryText }}>Digital Gurukul · {meta.label}</p>
         </div>
         {activePaths.length > 0 && (
-          <div className="flex items-center gap-1 rounded-xl px-3 py-1.5 border border-white/10"
-            style={{ background: `${meta.accentColour}14` }}>
+          <div className="flex items-center gap-1 rounded-xl px-3 py-1.5"
+            style={{ background: `${meta.accentColour}16`, border: `1px solid ${glassBorder}` }}>
             <Trophy size={14} style={{ color: meta.accentColour }} />
             <span className="text-xs font-semibold" style={{ color: meta.accentColour }}>
               {activePaths.length} active
@@ -651,7 +704,8 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
         )}
         <Link
           href="/pathshala/insights"
-          className="w-9 h-9 rounded-full glass-panel border border-white/10 flex items-center justify-center shadow-sm"
+          className="w-9 h-9 rounded-full flex items-center justify-center shadow-sm motion-press"
+          style={{ background: glassSurfaceStrong, border: `1px solid ${glassBorder}`, backdropFilter: 'blur(16px)' }}
           title="Learning Insights"
         >
           <BarChart2 size={17} style={{ color: meta.accentColour }} />
@@ -660,17 +714,17 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
 
       {/* Tab bar */}
       <div className="px-4 mb-4">
-        <div className="flex glass-panel rounded-2xl border border-white/8 p-1 shadow-sm gap-0.5">
+        <div className="flex rounded-2xl p-1 shadow-sm gap-0.5" style={cardStyle}>
           {TABS.map(t => (
             <button key={t.id} onClick={() => setTab(t.id)}
               className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all relative ${
-                tab === t.id ? 'text-[#1c1c1a] shadow-sm' : 'text-[color:var(--brand-muted)]'
+                tab === t.id ? 'text-[#1c1c1a] shadow-sm' : ''
               }`}
-              style={tab === t.id ? { background: meta.accentColour } : {}}
+              style={tab === t.id ? { background: meta.accentColour } : { color: secondaryText }}
             >
               {t.label}
               {t.count !== undefined && t.count > 0 && (
-                <span className={`ml-1 text-[10px] ${tab === t.id ? 'text-[#1c1c1a]/60' : 'text-[color:var(--brand-muted)]'}`}>
+                <span className="ml-1 text-[10px]" style={{ color: tab === t.id ? 'rgba(28,28,26,0.62)' : tertiaryText }}>
                   ({t.count})
                 </span>
               )}
@@ -694,10 +748,10 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
               {activePaths.length === 0 ? (
                 <>
                   <DailyVersePrompt />
-                  <div className="text-center py-10">
-                    <GraduationCap size={44} className="mx-auto mb-3 text-white/20" />
-                    <p className="font-semibold text-[color:var(--brand-ink)]">No active learning paths</p>
-                    <p className="text-sm text-[color:var(--brand-muted)] mt-1">Enroll in a path to begin your journey</p>
+                  <div className="pathshala-glass-card rounded-[1.8rem] text-center py-10 px-5">
+                    <GraduationCap size={44} className="mx-auto mb-3" style={{ color: `${meta.accentColour}88` }} />
+                    <p className="font-semibold" style={{ color: primaryText }}>No active learning paths</p>
+                    <p className="text-sm mt-1" style={{ color: secondaryText }}>Enroll in a path to begin your journey</p>
                     <button onClick={() => setTab('explore')}
                       className="mt-4 px-6 py-2.5 rounded-xl text-[#1c1c1a] font-semibold text-sm"
                       style={{ background: meta.accentColour }}>
@@ -720,12 +774,12 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
 
                   {/* Pro upgrade nudge for free users */}
                   {!isPro && (
-                    <div className="flex items-center gap-3 rounded-2xl border border-white/8 p-4"
-                      style={{ background: `${meta.accentColour}08` }}>
+                    <div className="flex items-center gap-3 rounded-[1.45rem] p-4"
+                      style={{ ...cardStyle, background: isDark ? `${meta.accentColour}10` : `${meta.accentColour}12` }}>
                       <Lock size={18} style={{ color: meta.accentColour }} className="flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold text-[color:var(--brand-ink)]">Sangam Pro — unlimited paths</p>
-                        <p className="text-[10px] text-[color:var(--brand-muted)] mt-0.5">
+                        <p className="text-xs font-semibold" style={{ color: primaryText }}>Sangam Pro — unlimited paths</p>
+                        <p className="text-[10px] mt-0.5" style={{ color: secondaryText }}>
                           Free plan: 1 active path. Pro unlocks all paths, From Memory &amp; Timed recitation modes, and progress analytics.
                         </p>
                       </div>
@@ -754,7 +808,7 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
           {tab === 'explore' && (
             <>
               <div className="flex items-center justify-between pb-1">
-                <p className="text-xs text-[color:var(--brand-muted)]">
+                <p className="text-xs" style={{ color: secondaryText }}>
                   {allPaths.length} paths available for {meta.label}
                 </p>
                 {!isPro && (

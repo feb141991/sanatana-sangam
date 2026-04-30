@@ -147,7 +147,7 @@ function VerseCard({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
-      className="glass-panel rounded-2xl overflow-hidden border border-white/8"
+      className="pathshala-glass-card rounded-[1.45rem] overflow-hidden"
     >
       <button className="w-full text-left p-4" onClick={() => setExpanded(e => !e)}>
         <div className="flex items-start justify-between gap-2">
@@ -178,7 +178,7 @@ function VerseCard({
             transition={{ duration: 0.22 }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 space-y-3 border-t border-white/6 pt-3">
+            <div className="px-4 pb-4 space-y-3 pt-3" style={{ borderTop: '1px solid rgba(200,146,74,0.14)' }}>
               {/* Full original */}
               {entry.original.includes('\n') && (
                 <div>
@@ -319,11 +319,17 @@ export default function LessonClient({
       <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
 
       {/* Header */}
-      <div className="sticky top-0 z-30 glass-panel border-b border-white/8 px-4 py-3">
+      <div className="sticky top-0 z-30 px-4 py-3"
+        style={{
+          background: 'var(--card-bg)',
+          borderBottom: '1px solid rgba(200,146,74,0.14)',
+          backdropFilter: 'blur(18px) saturate(125%)',
+          WebkitBackdropFilter: 'blur(18px) saturate(125%)',
+        }}>
         <div className="flex items-center gap-3 max-w-2xl mx-auto">
           <button
             onClick={() => router.push('/pathshala')}
-            className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center"
+            className="w-9 h-9 rounded-full flex items-center justify-center motion-press"
             style={{ background: `${accentColour}14` }}
           >
             <ChevronLeft size={18} style={{ color: accentColour }} />
@@ -339,8 +345,8 @@ export default function LessonClient({
           </div>
           <Link
             href={`/pathshala/${pathId}/recite`}
-            className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-full border border-white/10"
-            style={{ color: accentColour, background: `${accentColour}10` }}
+            className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-full motion-press"
+            style={{ color: accentColour, background: `${accentColour}10`, border: '1px solid rgba(200,146,74,0.16)' }}
           >
             <Mic size={13} /> Recite
           </Link>
@@ -373,7 +379,7 @@ export default function LessonClient({
         )}
 
         {/* AI Explanation teaser (Pro feature) */}
-        <div className="glass-panel rounded-2xl border border-white/6 p-4 flex items-start gap-3">
+        <div className="pathshala-glass-card rounded-[1.45rem] p-4 flex items-start gap-3">
           <Lock size={16} className="text-[color:var(--brand-muted)] shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-semibold text-[color:var(--brand-ink)]">AI Teacher Explanation</p>
@@ -395,7 +401,8 @@ export default function LessonClient({
           <button
             onClick={() => goTo(lessonIndex - 1)}
             disabled={lessonIndex === 0}
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl border border-white/10 text-sm font-semibold text-[color:var(--brand-muted)] disabled:opacity-30 transition-opacity"
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold text-[color:var(--brand-muted)] disabled:opacity-30 transition-opacity motion-press"
+            style={{ border: '1px solid rgba(200,146,74,0.16)', background: 'rgba(255,255,255,0.04)' }}
           >
             <ChevronLeft size={16} /> Previous
           </button>

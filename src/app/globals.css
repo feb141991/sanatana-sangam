@@ -796,6 +796,21 @@ body::after {
   animation: homeCardSlowGlint 7s var(--ease-out) infinite;
 }
 
+.pathshala-glass-card {
+  position: relative;
+  border: 1px solid rgba(250, 238, 218, 0.12);
+  background: rgba(255, 255, 255, 0.055);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(18px) saturate(128%);
+  -webkit-backdrop-filter: blur(18px) saturate(128%);
+}
+
+:root[data-theme="light"] .pathshala-glass-card {
+  border-color: rgba(65, 36, 2, 0.12);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 16px 42px rgba(49, 35, 20, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
 .home-luminous-card:hover::before,
 .home-luminous-card:focus-visible::before,
 .home-luminous-card:focus-within::before {
