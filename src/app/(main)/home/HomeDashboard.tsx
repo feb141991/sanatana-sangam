@@ -197,9 +197,11 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
         className="w-full rounded-t-[2rem] p-6 space-y-5"
         onClick={e => e.stopPropagation()}
         style={{
-          background: 'linear-gradient(180deg, var(--surface-raised), rgba(34, 30, 22, 0.99))',
+          background: 'linear-gradient(180deg, var(--surface-raised), var(--card-bg))',
           borderTop: '1px solid rgba(200, 146, 74, 0.20)',
-          boxShadow: '0 -20px 48px rgba(0, 0, 0, 0.38)',
+          boxShadow: '0 -20px 48px rgba(0, 0, 0, 0.24)',
+          backdropFilter: 'blur(22px) saturate(125%)',
+          WebkitBackdropFilter: 'blur(22px) saturate(125%)',
         }}
         initial={prefersReducedMotion ? undefined : { y: 32, opacity: 0 }}
         animate={prefersReducedMotion ? undefined : { y: 0, opacity: 1 }}
@@ -228,7 +230,7 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
         <div
           className="rounded-[1.4rem] p-5 text-center border"
           style={{
-            background: 'linear-gradient(135deg, rgba(200, 146, 74, 0.10), rgba(34, 30, 22, 0.96))',
+            background: 'linear-gradient(135deg, rgba(200, 146, 74, 0.12), var(--card-bg))',
             borderColor: 'rgba(200, 146, 74, 0.18)',
           }}
         >
@@ -1227,6 +1229,11 @@ export default function HomeDashboard({
   const homeHeroTheme = HOME_THEMES.pathshala;
   const panchangTheme = HOME_THEMES.panchang;
   const sacredTextTheme = tradition === 'hindu' ? HOME_THEMES.pathshala : HOME_THEMES.bhakti;
+  const heroPrimaryText = isDark ? 'var(--text-cream)' : '#211B14';
+  const heroSecondaryText = isDark ? 'var(--text-muted-warm)' : '#4D4035';
+  const heroTertiaryText = isDark ? 'var(--text-dim)' : '#66584A';
+  const heroGlassSurface = isDark ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.72)';
+  const heroGlassBorder = isDark ? 'rgba(250,238,218,0.12)' : 'rgba(65,36,2,0.12)';
   const dailyTextLine = (sacredText ? sacredText.original : shloka.sanskrit).split('\n')[0];
   const dailyNudge = personalContent?.suggestion
     ?? (!readToday
@@ -1304,7 +1311,7 @@ export default function HomeDashboard({
 
         <div className="relative flex items-start justify-between gap-3" style={{ zIndex: 2 }}>
           <div className="min-w-0 flex-1">
-            <p className="type-card-label tracking-[0.12em] uppercase text-[10px]">Today in sangam</p>
+            <p className="type-card-label tracking-[0.12em] uppercase text-[10px]" style={{ color: heroTertiaryText }}>Today in sangam</p>
             <button
               onClick={() => setGreetingSheetOpen(true)}
               className="group mt-2 -ml-0.5 rounded-2xl flex items-end gap-2 text-left motion-press"
@@ -1315,15 +1322,15 @@ export default function HomeDashboard({
                   fontSize: 'clamp(1.35rem, 5vw, 1.65rem)',
                   fontWeight: 500,
                   lineHeight: 1.2,
-                  color: 'var(--text-cream)',
+                  color: heroPrimaryText,
                   letterSpacing: '-0.01em',
                 }}
               >
                 {greeting},&nbsp;{userName.split(' ')[0]}
               </h1>
-              <Pencil size={13} style={{ color: 'var(--text-dim)', marginBottom: '0.22rem', flexShrink: 0 }} />
+              <Pencil size={13} style={{ color: heroTertiaryText, marginBottom: '0.22rem', flexShrink: 0 }} />
             </button>
-            <p className="type-body mt-2 leading-relaxed" style={{ fontSize: '0.82rem' }}>
+            <p className="type-body mt-2 leading-relaxed" style={{ fontSize: '0.82rem', color: heroSecondaryText }}>
               One calm start: panchang, sacred text, and the next practice that matters now.
             </p>
           </div>
@@ -1332,15 +1339,15 @@ export default function HomeDashboard({
             type="button"
             onClick={() => setDatePickerOpen(true)}
             className="flex-shrink-0 rounded-[1.1rem] px-3 py-2 text-center motion-press"
-            style={{ background: homeHeroTheme.iconWell, minWidth: '3rem' }}
+            style={{ background: isDark ? homeHeroTheme.iconWell : 'rgba(255,255,255,0.66)', minWidth: '3rem', border: `1px solid ${heroGlassBorder}` }}
           >
-            <p className="text-[9px] font-medium uppercase tracking-[0.12em]" style={{ color: 'var(--text-dim)' }}>
+            <p className="text-[9px] font-medium uppercase tracking-[0.12em]" style={{ color: heroTertiaryText }}>
               {new Date().toLocaleDateString('en-IN', { weekday: 'short' })}
             </p>
-            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 500, lineHeight: 1.1, color: 'var(--text-cream)' }}>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 500, lineHeight: 1.1, color: heroPrimaryText }}>
               {new Date().getDate()}
             </p>
-            <p className="text-[9px] font-medium" style={{ color: 'var(--text-dim)' }}>
+            <p className="text-[9px] font-medium" style={{ color: heroTertiaryText }}>
               {new Date().toLocaleDateString('en-IN', { month: 'short' })}
             </p>
           </button>
@@ -1350,28 +1357,28 @@ export default function HomeDashboard({
           className="relative mt-5 rounded-[1.5rem] p-4"
           style={{
             zIndex: 2,
-            background: isDark ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.56)',
-            border: `1px solid ${isDark ? 'rgba(250,238,218,0.12)' : 'rgba(65,36,2,0.10)'}`,
+            background: heroGlassSurface,
+            border: `1px solid ${heroGlassBorder}`,
             boxShadow: isDark ? 'inset 0 1px 0 rgba(255,255,255,0.06)' : 'inset 0 1px 0 rgba(255,255,255,0.74)',
             backdropFilter: 'blur(18px) saturate(130%)',
             WebkitBackdropFilter: 'blur(18px) saturate(130%)',
           }}
         >
           <Link href="/panchang" className="grid grid-cols-3 gap-2 rounded-[1.15rem] p-3 motion-press" style={{
-            background: isDark ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.46)',
-            border: `1px solid ${isDark ? 'rgba(250,238,218,0.10)' : 'rgba(65,36,2,0.08)'}`,
+            background: isDark ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.64)',
+            border: `1px solid ${heroGlassBorder}`,
           }}>
             <div className="min-w-0">
-              <p className="home-section-label">Tithi</p>
-              <p className="home-card-title mt-1 truncate">{panchang.tithi}</p>
+              <p className="home-section-label" style={{ color: heroTertiaryText }}>Tithi</p>
+              <p className="home-card-title mt-1 truncate" style={{ color: heroPrimaryText }}>{panchang.tithi}</p>
             </div>
             <div className="min-w-0">
-              <p className="home-section-label">Nakshatra</p>
-              <p className="home-card-title mt-1 truncate">{panchang.nakshatra}</p>
+              <p className="home-section-label" style={{ color: heroTertiaryText }}>Nakshatra</p>
+              <p className="home-card-title mt-1 truncate" style={{ color: heroPrimaryText }}>{panchang.nakshatra}</p>
             </div>
             <div className="min-w-0">
-              <p className="home-section-label">Panchang</p>
-              <p className="home-card-title mt-1 truncate">open →</p>
+              <p className="home-section-label" style={{ color: heroTertiaryText }}>Panchang</p>
+              <p className="home-card-title mt-1 truncate" style={{ color: heroPrimaryText }}>open →</p>
             </div>
           </Link>
 
@@ -1380,8 +1387,8 @@ export default function HomeDashboard({
             onClick={() => setShlokaModalOpen(true)}
             className="mt-4 w-full rounded-[1.35rem] p-4 text-left motion-press"
             style={{
-              background: isDark ? 'rgba(0,0,0,0.22)' : 'rgba(255,255,255,0.52)',
-              border: `1px solid ${isDark ? 'rgba(250,238,218,0.11)' : 'rgba(65,36,2,0.09)'}`,
+              background: isDark ? 'rgba(0,0,0,0.22)' : 'rgba(255,255,255,0.68)',
+              border: `1px solid ${heroGlassBorder}`,
               backdropFilter: 'blur(16px) saturate(130%)',
               WebkitBackdropFilter: 'blur(16px) saturate(130%)',
             }}
@@ -1398,7 +1405,7 @@ export default function HomeDashboard({
                 fontFamily: 'Georgia, "Noto Serif Devanagari", serif',
                 fontSize: 'clamp(1.08rem, 4.2vw, 1.28rem)',
                 lineHeight: 1.72,
-                color: 'var(--text-cream)',
+                color: heroPrimaryText,
                 textShadow: isDark ? '0 1px 16px rgba(0,0,0,0.35)' : 'none',
               }}
             >
@@ -1407,15 +1414,15 @@ export default function HomeDashboard({
           </button>
 
           <div className="mt-4 rounded-[1.15rem] p-3" style={{
-            background: isDark ? 'rgba(250,238,218,0.075)' : 'rgba(250,238,218,0.58)',
-            border: `1px solid ${isDark ? 'rgba(250,238,218,0.10)' : 'rgba(65,36,2,0.08)'}`,
+            background: isDark ? 'rgba(250,238,218,0.075)' : 'rgba(255,255,255,0.62)',
+            border: `1px solid ${heroGlassBorder}`,
             backdropFilter: 'blur(14px) saturate(125%)',
             WebkitBackdropFilter: 'blur(14px) saturate(125%)',
           }}>
-            <p className="home-section-label">Next for you</p>
-            <p className="home-card-title mt-1">{nextHomeAction.label}</p>
-            <p className="home-card-copy mt-1">{nextHomeAction.detail}</p>
-            <p className="home-card-copy mt-2">{dailyNudge}</p>
+            <p className="home-section-label" style={{ color: heroTertiaryText }}>Next for you</p>
+            <p className="home-card-title mt-1" style={{ color: heroPrimaryText }}>{nextHomeAction.label}</p>
+            <p className="home-card-copy mt-1" style={{ color: heroSecondaryText }}>{nextHomeAction.detail}</p>
+            <p className="home-card-copy mt-2" style={{ color: heroSecondaryText }}>{dailyNudge}</p>
           </div>
 
           <div className="mt-4 flex gap-2">
@@ -1440,7 +1447,7 @@ export default function HomeDashboard({
             <Link
               href="/panchang"
               className="rounded-full px-4 py-3 text-center text-sm font-medium motion-press"
-              style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.56)', color: 'var(--text-cream)', border: `1px solid ${isDark ? 'rgba(250,238,218,0.11)' : 'rgba(65,36,2,0.09)'}`, backdropFilter: 'blur(14px)' }}
+              style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.68)', color: heroPrimaryText, border: `1px solid ${heroGlassBorder}`, backdropFilter: 'blur(14px)' }}
             >
               Details
             </Link>
@@ -1460,13 +1467,13 @@ export default function HomeDashboard({
                   href={item.href}
                   className="block rounded-[1rem] px-3 py-2 motion-press"
                   style={{
-                    background: item.active ? 'rgba(200,146,74,0.15)' : 'rgba(255,255,255,0.055)',
-                    border: item.active ? '1px solid rgba(200,146,74,0.24)' : '1px solid rgba(255,255,255,0.08)',
+                    background: item.active ? 'rgba(250,199,117,0.18)' : heroGlassSurface,
+                    border: item.active ? '1px solid rgba(200,146,74,0.26)' : `1px solid ${heroGlassBorder}`,
                     backdropFilter: 'blur(12px)',
                   }}
                 >
-                  <p className="home-section-label">{item.label}</p>
-                  <p className="home-card-title mt-0.5">{item.value}</p>
+                  <p className="home-section-label" style={{ color: heroTertiaryText }}>{item.label}</p>
+                  <p className="home-card-title mt-0.5" style={{ color: heroPrimaryText }}>{item.value}</p>
                 </Link>
               ) : (
                 <button
@@ -1474,13 +1481,13 @@ export default function HomeDashboard({
                   onClick={item.onClick}
                   className="block w-full rounded-[1rem] px-3 py-2 text-left motion-press"
                   style={{
-                    background: item.active ? 'rgba(200,146,74,0.15)' : 'rgba(255,255,255,0.055)',
-                    border: item.active ? '1px solid rgba(200,146,74,0.24)' : '1px solid rgba(255,255,255,0.08)',
+                    background: item.active ? 'rgba(250,199,117,0.18)' : heroGlassSurface,
+                    border: item.active ? '1px solid rgba(200,146,74,0.26)' : `1px solid ${heroGlassBorder}`,
                     backdropFilter: 'blur(12px)',
                   }}
                 >
-                  <p className="home-section-label">{item.label}</p>
-                  <p className="home-card-title mt-0.5">{item.value}</p>
+                  <p className="home-section-label" style={{ color: heroTertiaryText }}>{item.label}</p>
+                  <p className="home-card-title mt-0.5" style={{ color: heroPrimaryText }}>{item.value}</p>
                 </button>
               )}
             </motion.div>
@@ -1493,14 +1500,14 @@ export default function HomeDashboard({
               <Link
                 href="/discover"
                 className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] font-medium motion-press"
-                style={{ background: homeHeroTheme.iconWell, color: 'var(--text-muted-warm)', border: `1px solid ${homeHeroTheme.border}` }}
+                style={{ background: isDark ? homeHeroTheme.iconWell : 'rgba(255,255,255,0.66)', color: heroSecondaryText, border: `1px solid ${heroGlassBorder}` }}
               >
                 <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={16} />
                 {moodToday.label}
               </Link>
             )}
             {displayCity && (
-              <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-[11px]" style={{ background: homeHeroTheme.iconWell, color: 'var(--text-dim)' }}>
+              <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-[11px]" style={{ background: isDark ? homeHeroTheme.iconWell : 'rgba(255,255,255,0.66)', color: heroTertiaryText, border: `1px solid ${heroGlassBorder}` }}>
                 <MapPin size={11} style={{ color: homeHeroTheme.accent, flexShrink: 0 }} />
                 {displayCity}
               </span>
@@ -1513,7 +1520,7 @@ export default function HomeDashboard({
       <AnimatePresence>
         {shlokaModalOpen && (
           <motion.div
-            className="fixed inset-0 z-[200] flex flex-col"
+            className="fixed inset-0 z-[200] grid grid-rows-[auto,1fr,auto]"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             style={{
               background: isDark
@@ -1554,7 +1561,12 @@ export default function HomeDashboard({
             )}
 
             {/* Header bar */}
-            <div className="relative flex items-center justify-between px-5 pt-[max(env(safe-area-inset-top,0px),20px)] pb-3">
+            <div className="relative flex items-center justify-between px-5 pt-[max(env(safe-area-inset-top,0px),12px)] pb-2"
+              style={{
+                background: isDark ? 'rgba(20,20,18,0.38)' : 'rgba(255,253,248,0.52)',
+                backdropFilter: 'blur(14px) saturate(120%)',
+                WebkitBackdropFilter: 'blur(14px) saturate(120%)',
+              }}>
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl flex items-center justify-center text-base"
                   style={{ background: sacredTextTheme.iconWell }}>
@@ -1579,7 +1591,7 @@ export default function HomeDashboard({
             </div>
 
             {/* Content — scrollable */}
-            <div className="relative flex-1 overflow-y-auto px-5 py-3 flex w-full max-w-2xl mx-auto flex-col justify-center gap-4">
+            <div className="relative min-h-0 overflow-y-auto px-5 py-2 flex w-full max-w-2xl mx-auto flex-col justify-start gap-3">
               {/* Source badge */}
               <span className="self-start text-[10px] font-semibold px-3 py-1 rounded-full"
                 style={{ background: 'rgba(200,146,74,0.14)', color: 'var(--brand-primary)' }}>
@@ -1588,7 +1600,7 @@ export default function HomeDashboard({
 
               {/* Sanskrit — large, elevated */}
               <motion.div
-                className="rounded-[1.7rem] px-5 py-5"
+                className="rounded-[1.7rem] px-5 py-4"
                 initial={prefersReducedMotion ? undefined : { opacity: 0, y: 18, scale: 0.98 }}
                 animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
@@ -1601,8 +1613,8 @@ export default function HomeDashboard({
               >
                 <p style={{
                   fontFamily: 'Georgia, "Noto Serif Devanagari", serif',
-                  fontSize: 'clamp(1.22rem, 4.6vw, 1.72rem)',
-                  lineHeight: 1.75,
+                  fontSize: 'clamp(1.18rem, 4.3vw, 1.62rem)',
+                  lineHeight: 1.68,
                   color: 'var(--text-cream)',
                   whiteSpace: 'pre-line',
                 }}>
@@ -1611,12 +1623,17 @@ export default function HomeDashboard({
               </motion.div>
 
               {/* Transliteration */}
-              <p className="italic text-base leading-relaxed" style={{ color: 'var(--text-muted-warm)', fontSize: '0.9rem' }}>
+              <p className="italic text-base leading-relaxed" style={{ color: 'var(--text-muted-warm)', fontSize: '0.86rem' }}>
                 {sacredText ? sacredText.transliteration : shloka.transliteration}
               </p>
 
               {/* Meaning */}
-              <div className="rounded-[1.4rem] px-5 py-4" style={{ background: sacredTextTheme.iconWell }}>
+              <div className="rounded-[1.4rem] px-4 py-3" style={{
+                background: isDark ? sacredTextTheme.iconWell : 'rgba(255,255,255,0.58)',
+                border: `1px solid ${isDark ? 'rgba(250,238,218,0.10)' : 'rgba(65,36,2,0.09)'}`,
+                backdropFilter: 'blur(14px) saturate(120%)',
+                WebkitBackdropFilter: 'blur(14px) saturate(120%)',
+              }}>
                 <p className="text-[9px] font-semibold uppercase tracking-[0.16em] mb-2" style={{ color: 'rgba(200,146,74,0.65)' }}>
                   Meaning
                 </p>
@@ -1645,7 +1662,7 @@ export default function HomeDashboard({
             </div>
 
             {/* CTA bar */}
-            <div className="relative px-5 py-4 pb-[max(env(safe-area-inset-bottom,0px),16px)]" style={{
+            <div className="relative px-5 py-3 pb-[max(env(safe-area-inset-bottom,0px),12px)]" style={{
               borderTop: `1px solid ${isDark ? 'rgba(250,238,218,0.12)' : 'rgba(65,36,2,0.10)'}`,
               background: isDark ? 'rgba(20,20,18,0.62)' : 'rgba(255,253,248,0.62)',
               backdropFilter: 'blur(18px) saturate(125%)',
@@ -1654,7 +1671,7 @@ export default function HomeDashboard({
               <motion.button
                 onClick={markShlokaRead}
                 disabled={readToday}
-                className="w-full rounded-full py-3.5 text-sm font-semibold flex items-center justify-center gap-2"
+                className="w-full rounded-full py-3 text-sm font-semibold flex items-center justify-center gap-2"
                 style={readToday
                   ? { background: 'rgba(200,146,74,0.12)', color: 'var(--brand-primary)', border: '1px solid rgba(200,146,74,0.22)' }
                   : { background: 'rgba(250,199,117,0.90)', color: '#1c1208', boxShadow: '0 14px 30px rgba(239,159,39,0.20)' }}
@@ -2263,8 +2280,10 @@ export default function HomeDashboard({
           style={{
             ['--home-luminous-colour' as string]: HOME_THEMES.kul.iconWell,
             borderColor: HOME_THEMES.kul.border,
-            background: HOME_THEMES.kul.surface,
-            boxShadow: '0 12px 24px rgba(0, 0, 0, 0.16)',
+            background: getCardBg(HOME_THEMES.kul),
+            boxShadow: getCardShadow(),
+            backdropFilter: isDark ? undefined : 'blur(12px) saturate(115%)',
+            WebkitBackdropFilter: isDark ? undefined : 'blur(12px) saturate(115%)',
           }}>
           <div className="absolute inset-0 pointer-events-none" style={{
             background: 'radial-gradient(ellipse at center, rgba(157, 120, 74, 0.06), transparent 70%)',
