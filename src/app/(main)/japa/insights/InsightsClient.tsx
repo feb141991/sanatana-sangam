@@ -11,6 +11,7 @@ import {
   malaSessionBeads as sessionBeads,
   malaSessionDate as sessionDate,
   malaSessionDurationSeconds as sessionSecs,
+  malaSessionMalaId as sessionMalaId,
   malaSessionMantra as sessionMantra,
   malaSessionRounds as sessionRounds,
 } from '@/lib/mala-sessions';
@@ -31,6 +32,13 @@ const FILTERS: { key: FilterKey; label: string; days: number }[] = [
 
 // ── Day-of-week bar chart ─────────────────────────────────────────────────────
 const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const MALA_LABELS: Record<string, string> = {
+  sandalwood: 'Sandalwood',
+  rudraksha: 'Rudraksha',
+  rose_quartz: 'Rose quartz',
+  tulsi: 'Tulsi',
+  crystal: 'Crystal',
+};
 
 function DayOfWeekChart({ data, isDark, amber }: {
   data: number[]; // 0=Sun … 6=Sat, values 0-1 (fraction of weeks)
@@ -304,7 +312,14 @@ export default function InsightsClient({ sessions }: Props) {
     const totalSessions = filtered.length;
     const totalSecs     = filtered.reduce((a, s) => a + sessionSecs(s), 0);
     const avgPerDay     = days > 0 ? Math.round(totalBeads / days) : 0;
-    return { totalBeads, totalSessions, totalSecs, avgPerDay };
+    const malaFreq: Record<string, number> = {};
+    filtered.forEach(s => {
+      const mala = sessionMalaId(s);
+      if (mala) malaFreq[mala] = (malaFreq[mala] ?? 0) + 1;
+    });
+    const malas = Object.entries(malaFreq).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const topMala = malas[0]?.[0] ?? null;
+    return { totalBeads, totalSessions, totalSecs, avgPerDay, malas, topMala };
   }, [filtered, days]);
 
   // Consistency: % of days in range that had a session
@@ -533,6 +548,38 @@ export default function InsightsClient({ sessions }: Props) {
               </div>
             )}
 
+            {/* ── Mala preference ─────────────────────────────────────── */}
+            {stats.malas.length > 0 && (
+              <div className="px-5 mb-5">
+                <div
+                  className="rounded-2xl p-5 border"
+                  style={{ background: surface, borderColor: borderCol, boxShadow: isDark ? 'none' : '0 2px 12px rgba(0,0,0,0.06)' }}
+                >
+                  <p className="text-[12px] font-semibold uppercase tracking-wide mb-1" style={{ color: sub }}>
+                    Mala style
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 700, color: text }}>
+                    {stats.topMala ? MALA_LABELS[stats.topMala] ?? stats.topMala.replace(/_/g, ' ') : 'Not tracked yet'}
+                  </p>
+                  <div className="mt-4 space-y-2">
+                    {stats.malas.map(([mala, count]) => (
+                      <div key={mala} className="flex items-center justify-between gap-3">
+                        <span className="text-[12px] font-semibold" style={{ color: text }}>
+                          {MALA_LABELS[mala] ?? mala.replace(/_/g, ' ')}
+                        </span>
+                        <span className="text-[11px]" style={{ color: sub }}>
+                          {count} session{count !== 1 ? 's' : ''}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs mt-3" style={{ color: sub }}>
+                    We can use this later to tune reminders around your preferred mala style and practice time.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* ── Recent sessions list ─────────────────────────────────── */}
             <div className="px-5">
               <p className="text-[12px] font-semibold uppercase tracking-wide mb-3 px-1" style={{ color: sub }}>
@@ -546,7 +593,7 @@ export default function InsightsClient({ sessions }: Props) {
                   const dow     = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dateObj.getDay()];
                   return (
                     <motion.div
-                      key={`${s.date}-${i}`}
+                      key={`${sessionDate(s)}-${i}`}
                       className="flex items-center gap-3 rounded-2xl px-4 py-3 border"
                       style={{ background: isDark ? 'var(--card-bg)' : 'rgba(255,255,255,0.90)', borderColor: borderCol }}
                       initial={{ opacity: 0, y: 6 }}
@@ -575,6 +622,7 @@ export default function InsightsClient({ sessions }: Props) {
                         <p className="text-[11px] mt-0.5" style={{ color: sub }}>
                           {sessionSecs(s) > 0 ? fmtTime(sessionSecs(s)) : ''}
                           {sessionMantra(s) ? ` · ${sessionMantra(s)!.replace(/_/g, ' ')}` : ''}
+                          {sessionMalaId(s) ? ` · ${MALA_LABELS[sessionMalaId(s)!] ?? sessionMalaId(s)!.replace(/_/g, ' ')}` : ''}
                         </p>
                       </div>
 

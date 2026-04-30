@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import CircularProgress from '@/components/ui/CircularProgress';
 import { usePremium } from '@/hooks/usePremium';
+import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 
 // ─── 16 Sanskaras data ───────────────────────────────────────────────────────
 export const SANSKARAS = [
@@ -754,6 +755,7 @@ export default function SanskaraClient({
   const [selectedMember, setSelectedMember] = useState<string | null>(null); // null = "Me"
   const [showSmartStart, setShowSmartStart] = useState(true);
   const [aiNudge, setAiNudge] = useState<{ message: string; nextName: string; urgency: 'now'|'soon'|'later' } | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   // Fetch AI nudge on mount (non-blocking, best-effort)
   useEffect(() => {
@@ -837,6 +839,7 @@ export default function SanskaraClient({
       }];
     });
 
+    setShowConfetti(true);
     toast.success('Sanskara recorded 🙏', { duration: 2500 });
 
     // If Garbhadhana + expected_date → schedule milestone notifications (fire and forget)
@@ -862,6 +865,8 @@ export default function SanskaraClient({
 
   return (
     <div className="space-y-4 pb-8">
+      <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
+
       {/* Header */}
       <div
         className="rounded-[1.8rem] px-5 py-5"

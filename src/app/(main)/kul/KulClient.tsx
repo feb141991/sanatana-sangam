@@ -14,6 +14,7 @@ import { createClient } from '@/lib/supabase';
 import { getInitials } from '@/lib/utils';
 import type { KulSectionView } from './sections';
 import { AsyncStateCard, EmptyState } from '@/components/ui';
+import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { useKulMutations, useKulQuery } from '@/hooks/useKul';
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -731,6 +732,7 @@ function TasksTab({ tasks, members, userId, myRole, kulId }: {
   const [dueDate,     setDueDate]     = useState('');
   const [description, setDescription] = useState('');
   const [saving,      setSaving]      = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const myTasks    = tasks.filter(t => t.assigned_to === userId);
   const otherTasks = tasks.filter(t => t.assigned_to !== userId);
@@ -760,6 +762,7 @@ function TasksTab({ tasks, members, userId, myRole, kulId }: {
   async function completeTask(taskId: string) {
     try {
       await kulMutations.completeTask.mutateAsync(taskId);
+      setShowConfetti(true);
       toast.success('Task completed! 🎉 +10 seva');
     } catch (error: any) {
       toast.error(error.message ?? 'Could not complete this task.');
@@ -768,6 +771,8 @@ function TasksTab({ tasks, members, userId, myRole, kulId }: {
 
   return (
     <div className="space-y-4">
+      <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
+
       {/* Assign button for guardians */}
       {myRole === 'guardian' && (
         <button onClick={() => setShowCompose(!showCompose)}

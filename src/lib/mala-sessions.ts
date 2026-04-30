@@ -21,6 +21,8 @@ export interface MalaSessionRow {
   bead_count?: number | null;
   mantra_id?: string | null;
   duration_secs?: number | null;
+  mala_id?: string | null;
+  background_scene?: string | null;
 }
 
 export interface MalaSessionInsert {
@@ -38,6 +40,8 @@ export interface MalaSessionInsert {
   bead_count?: number | null;
   mantra_id?: string | null;
   duration_secs?: number | null;
+  mala_id?: string | null;
+  background_scene?: string | null;
 }
 
 export function malaSessionDate(row: MalaSessionRow): string {
@@ -72,6 +76,10 @@ export function malaSessionMantra(row: MalaSessionRow): string | null {
   return row.mantra ?? row.mantra_id ?? null;
 }
 
+export function malaSessionMalaId(row: MalaSessionRow): string | null {
+  return row.mala_id ?? null;
+}
+
 export function buildMalaSessionInsert(input: {
   userId: string;
   mantra: string;
@@ -79,6 +87,8 @@ export function buildMalaSessionInsert(input: {
   durationSeconds: number;
   completedAt?: string;
   date?: string | null;
+  malaId?: string | null;
+  backgroundScene?: string | null;
   targetCount?: number | null;
   chantSource?: string | null;
   notes?: string | null;
@@ -104,5 +114,7 @@ export function buildMalaSessionInsert(input: {
     bead_count: input.count,
     mantra_id: input.mantra,
     duration_secs: input.durationSeconds,
+    mala_id: input.malaId ?? null,
+    background_scene: input.backgroundScene ?? null,
   };
 }

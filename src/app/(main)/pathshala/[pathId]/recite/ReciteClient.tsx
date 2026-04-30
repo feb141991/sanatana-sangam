@@ -23,6 +23,7 @@ import { usePremium } from '@/hooks/usePremium';
 import type { LibraryEntry } from '@/lib/library-content';
 import type { RecitationResult } from '@sangam/pathshala-engine';
 import CircularProgress from '@/components/ui/CircularProgress';
+import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 
 // ─── Pick recite content for a path ────────────────────────────────────────────
 function getReciteVerses(pathId: string, lessonIndex: number): LibraryEntry[] {
@@ -192,6 +193,7 @@ export default function ReciteClient({
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
   const [completed,    setCompleted]    = useState<number[]>([]);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   // TTS state
   const [isSpeaking,  setIsSpeaking]  = useState(false);
@@ -420,6 +422,7 @@ export default function ReciteClient({
   function markVerseComplete() {
     if (!completed.includes(verseIndex)) {
       setCompleted(c => [...c, verseIndex]);
+      setShowConfetti(true);
       toast.success('Verse marked ✓', { duration: 1500 });
       // Fire-and-forget engine tracking
       if (engine) {
@@ -509,6 +512,7 @@ export default function ReciteClient({
 
   return (
     <div className="min-h-screen pb-28 flex flex-col">
+      <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
 
       {/* Header */}
       <div className="sticky top-0 z-30 glass-panel border-b border-white/8 px-4 py-3">

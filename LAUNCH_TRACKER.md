@@ -102,6 +102,10 @@ Last updated: 2026-04-09
 - [ ] Add a focused Howler-backed Pathshala audio layer later for recitation and guided reading, not generic app-wide UI sounds
 - [x] Define `Zen mode` as a distraction-light reading and recitation surface for launch-facing Pathshala use
 - [x] Define `Mala mode` as an elder-friendly japa tracker with large controls, session history, shareable progress, and optional rights-safe chant support
+- [x] Route Mala/Japa through `/bhakti/mala`, canonicalize session storage around `mala_sessions`, and retain legacy `/japa` redirects
+- [x] Record Mala session context (`mala_id`, `background_scene`) so insights and future reminders can personalize by actual practice style
+- [ ] Build the daily darshan welcome layer: first open of the spiritual day, engine-informed panchang/shloka/context, optional tap-to-play ambience, and AI-guided daily nudge
+- [ ] Add Mala-time notification intelligence: infer preferred practice window, preferred mala style, and send OneSignal reminders without exceeding free-tier constraints
 - [x] Deepen `Mala mode` with session filters, share-card copy, and a clearer return rhythm so Bhakti feels usable day to day
 - [x] Ship the first live Bhakti practice slice with dedicated `Zen` and `Mala` routes instead of leaving both modes as planning-only ideas
 - [ ] Curate a rights-safe devotional audio starter pack for launch: mantra/chant clips first, then selective bhajan/kirtan where reuse terms are clear

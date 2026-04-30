@@ -1541,6 +1541,8 @@ export default function JapaClient({
         durationSeconds: duration,
         completedAt,
         date: today,
+        malaId,
+        backgroundScene: bgSceneId,
       });
 
       const primaryInsert = await supabase.from('mala_sessions').insert(malaSessionRow);
@@ -1548,7 +1550,16 @@ export default function JapaClient({
       if (primaryInsert.error) {
         // Some environments may not have compatibility alias columns yet.
         console.warn('[Mala] full insert failed, trying canonical columns only:', primaryInsert.error.message);
-        const { date: _date, rounds: _rounds, bead_count: _beadCount, mantra_id: _mantraId, duration_secs: _durationSecs, ...canonicalRow } = malaSessionRow;
+        const {
+          date: _date,
+          rounds: _rounds,
+          bead_count: _beadCount,
+          mantra_id: _mantraId,
+          duration_secs: _durationSecs,
+          mala_id: _malaId,
+          background_scene: _backgroundScene,
+          ...canonicalRow
+        } = malaSessionRow;
         const fallback = await supabase.from('mala_sessions').insert(canonicalRow);
         if (fallback.error) {
           console.error('[Mala] mala_sessions insert failed:', fallback.error);
@@ -1604,7 +1615,7 @@ export default function JapaClient({
     } finally {
       setSavingSession(false);
     }
-  }, [saved, savingSession, userId, mantraId, duration]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [saved, savingSession, userId, mantraId, malaId, bgSceneId, duration]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Handlers ─────────────────────────────────────────────────────────────
   const handleBgSceneSelect = (id: BgSceneId) => {

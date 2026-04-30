@@ -125,6 +125,8 @@ export interface Database {
           bead_count: number | null;
           mantra_id: string | null;
           duration_secs: number | null;
+          mala_id: string | null;
+          background_scene: string | null;
         };
         Insert: Omit<Database['public']['Tables']['mala_sessions']['Row'], 'id' | 'created_at' | 'completed_at'> & {
           completed_at?: string;

@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, CheckCircle2, Play, X, Flame, ArrowRight, Cl
 import { createClient } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import type { GuidedPlan, GuidedPathStatus, GuidedPlanDay } from '@/lib/guided-paths';
+import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 
 interface Props {
   userId:    string;
@@ -152,6 +153,7 @@ function PlanDetailSheet({
   const isCompleted = status === 'completed';
   const [view, setView]           = useState<'overview' | 'day'>('overview');
   const [completing, setCompleting] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   const supabase = createClient();
 
   // Which day are we currently on (0-indexed for array access, 1-indexed for display)
@@ -176,6 +178,7 @@ function PlanDetailSheet({
         }, { onConflict: 'user_id,path_id' });
 
       onDayComplete(isLastDay ? plan.duration : newDay);
+      setShowConfetti(true);
 
       if (isLastDay) {
         toast.success(`🎉 ${plan.title} complete! Incredible dedication.`, {
@@ -199,6 +202,8 @@ function PlanDetailSheet({
 
   return (
     <>
+      <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
+
       {/* Backdrop */}
       <motion.div
         className="fixed inset-0 z-[60]"

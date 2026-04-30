@@ -15,6 +15,7 @@ import {
   getPathshalaSectionHref,
   getPathshalaTraditionHref,
 } from '@/lib/pathshala-links';
+import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 
 function openCompanion(url: string) {
   window.open(url, '_blank', 'noopener,noreferrer');
@@ -35,6 +36,7 @@ export default function GitaRecitationClient({
     completedChapterIds: [],
   });
   const [focusedChapterId, setFocusedChapterId] = useState<string | null>(highlightedChapterId ?? null);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
     const saved = readGitaAudioState();
@@ -62,10 +64,13 @@ export default function GitaRecitationClient({
 
   function completeTrack(track: GitaAudioTrack) {
     setAudioState(markGitaAudioCompleted(track));
+    setShowConfetti(true);
   }
 
   return (
     <MotionFade className="space-y-4 pb-6 fade-in">
+      <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
+
       <div className="glass-panel rounded-[1.8rem] px-5 py-5 space-y-4">
         <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-muted)]">
           <Link href="/library" className="text-[color:var(--brand-primary)]">Pathshala</Link>
