@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface ConfettiOverlayProps {
   show: boolean;
@@ -20,6 +21,8 @@ interface Particle {
   alpha: number;
   lifetime: number;
   age: number;
+  gravity: number;
+  drag: number;
 }
 
 const SACRED_COLORS = [
@@ -44,6 +47,11 @@ const ConfettiOverlay: React.FC<ConfettiOverlayProps> = ({ show, onComplete }) =
   const particlesRef = useRef<Particle[]>([]);
   const animationFrameRef = useRef<number>();
   const startTimeRef = useRef<number>();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!show) {
@@ -53,34 +61,71 @@ const ConfettiOverlay: React.FC<ConfettiOverlayProps> = ({ show, onComplete }) =
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Set canvas to full screen
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Initialize particles
-    const particleCount = Math.floor(Math.random() * 30) + 100; // 100-130 particles
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const resizeCanvas = () => {
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = '100vw';
+      canvas.style.height = '100dvh';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resizeCanvas();
+
     particlesRef.current = [];
 
-    for (let i = 0; i < particleCount; i++) {
-      const angle = (Math.random() * Math.PI * 2); // Full circle spread
-      const speed = Math.random() * 4 + 1.5; // 1.5-5.5 velocity
+    const addBurst = (originX: number, originY: number, count: number, spread: number, baseAngle: number, power: number) => {
+      for (let i = 0; i < count; i += 1) {
+        const angle = baseAngle + (Math.random() - 0.5) * spread;
+        const speed = Math.random() * power + power * 0.35;
+        const size = Math.floor(Math.random() * 10) + 5;
+        const lifetime = 3.2 + Math.random() * 1.4;
+        particlesRef.current.push({
+          x: originX + (Math.random() - 0.5) * 24,
+          y: originY + (Math.random() - 0.5) * 18,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          rotation: Math.random() * Math.PI * 2,
+          spin: (Math.random() - 0.5) * 0.24,
+          size,
+          color: SACRED_COLORS[Math.floor(Math.random() * SACRED_COLORS.length)],
+          shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
+          alpha: 1,
+          lifetime,
+          age: 0,
+          gravity: 0.12 + Math.random() * 0.08,
+          drag: 0.992 + Math.random() * 0.004,
+        });
+      }
+    };
 
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    addBurst(vw * 0.50, vh * 0.18, 95, Math.PI * 1.45, Math.PI * 0.5, 7.4);
+    addBurst(vw * 0.18, vh * 0.58, 52, Math.PI * 0.75, -Math.PI * 0.18, 6.2);
+    addBurst(vw * 0.82, vh * 0.58, 52, Math.PI * 0.75, Math.PI * 1.18, 6.2);
+
+    // A soft front-center sparkle so the celebration reads above the card stack.
+    for (let i = 0; i < 40; i += 1) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 2.2 + 0.8;
       particlesRef.current.push({
-        x: canvas.width / 2,
-        y: -20, // Start from top-center
+        x: vw / 2,
+        y: vh * 0.42,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed + 0.5, // Bias downward
+        vy: Math.sin(angle) * speed - 0.8,
         rotation: Math.random() * Math.PI * 2,
-        spin: (Math.random() - 0.5) * 0.2,
-        size: Math.floor(Math.random() * 9) + 4, // 4-12px
+        spin: (Math.random() - 0.5) * 0.18,
+        size: Math.floor(Math.random() * 6) + 3,
         color: SACRED_COLORS[Math.floor(Math.random() * SACRED_COLORS.length)],
-        shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
+        shape: Math.random() > 0.35 ? 'circle' : 'diamond',
         alpha: 1,
-        lifetime: 3.5,
+        lifetime: 2.4 + Math.random() * 0.8,
         age: 0,
+        gravity: 0.05,
+        drag: 0.986,
       });
     }
 
@@ -90,7 +135,7 @@ const ConfettiOverlay: React.FC<ConfettiOverlayProps> = ({ show, onComplete }) =
       const elapsed = (currentTime - (startTimeRef.current || currentTime)) / 1000;
 
       // Clear canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
       // Update and draw particles
       for (let i = particlesRef.current.length - 1; i >= 0; i--) {
@@ -103,15 +148,13 @@ const ConfettiOverlay: React.FC<ConfettiOverlayProps> = ({ show, onComplete }) =
         }
 
         // Update physics
-        particle.vy += 0.2; // Gravity
+        particle.vx *= particle.drag;
+        particle.vy = particle.vy * particle.drag + particle.gravity;
         particle.x += particle.vx;
         particle.y += particle.vy;
         particle.rotation += particle.spin;
 
-        // Fade out in last 1 second
-        if (particle.age > particle.lifetime - 1) {
-          particle.alpha = Math.max(0, 1 - (particle.age - (particle.lifetime - 1)));
-        }
+        particle.alpha = Math.max(0, 1 - Math.max(0, particle.age - (particle.lifetime - 0.9)) / 0.9);
 
         // Draw particle
         ctx.save();
@@ -119,6 +162,8 @@ const ConfettiOverlay: React.FC<ConfettiOverlayProps> = ({ show, onComplete }) =
         ctx.fillStyle = particle.color;
         ctx.strokeStyle = particle.color;
         ctx.lineWidth = 1.5;
+        ctx.shadowColor = particle.color;
+        ctx.shadowBlur = particle.shape === 'circle' ? 10 : 4;
         ctx.translate(particle.x, particle.y);
         ctx.rotate(particle.rotation);
 
@@ -170,7 +215,7 @@ const ConfettiOverlay: React.FC<ConfettiOverlayProps> = ({ show, onComplete }) =
         ctx.restore();
       }
 
-      if (elapsed >= 3.5) {
+      if (elapsed >= 4.4) {
         if (onComplete) {
           onComplete();
         }
@@ -181,29 +226,34 @@ const ConfettiOverlay: React.FC<ConfettiOverlayProps> = ({ show, onComplete }) =
     };
 
     animationFrameRef.current = requestAnimationFrame(animate);
+    window.addEventListener('resize', resizeCanvas);
 
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
+      window.removeEventListener('resize', resizeCanvas);
     };
   }, [show, onComplete]);
 
-  if (!show) {
+  if (!show || !mounted) {
     return null;
   }
 
-  return (
+  return createPortal(
     <canvas
       ref={canvasRef}
+      aria-hidden="true"
       style={{
         position: 'fixed',
-        top: 0,
-        left: 0,
+        inset: 0,
         pointerEvents: 'none',
-        zIndex: 9999,
+        zIndex: 2147483647,
+        width: '100vw',
+        height: '100dvh',
       }}
-    />
+    />,
+    document.body
   );
 };
 
