@@ -1,5 +1,11 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import {
+  malaSessionBeads,
+  malaSessionDate,
+  malaSessionDurationSeconds,
+  malaSessionMantra,
+} from '@/lib/mala-sessions';
 
 // ─── GET /api/user/report ─────────────────────────────────────────────────────
 // Returns a 30-day sadhana activity summary for the authenticated user.
@@ -28,17 +34,18 @@ export async function GET() {
   // ── 2. Japa sessions ────────────────────────────────────────────────────────
   const { data: japaSessions } = await supabase
     .from('mala_sessions')
-    .select('mantra, count, duration_seconds, completed_at')
+    .select('*')
     .eq('user_id', userId)
     .gte('completed_at', from.toISOString())
     .order('completed_at', { ascending: true });
 
   const japaTotal     = japaSessions?.length ?? 0;
-  const japaBeads     = japaSessions?.reduce((s, r) => s + (r.count ?? 0), 0) ?? 0;
-  const japaDuration  = japaSessions?.reduce((s, r) => s + (r.duration_seconds ?? 0), 0) ?? 0;
+  const japaBeads     = japaSessions?.reduce((s, r) => s + malaSessionBeads(r), 0) ?? 0;
+  const japaDuration  = japaSessions?.reduce((s, r) => s + malaSessionDurationSeconds(r), 0) ?? 0;
   const mantraCounts: Record<string, number> = {};
   for (const s of japaSessions ?? []) {
-    if (s.mantra) mantraCounts[s.mantra] = (mantraCounts[s.mantra] ?? 0) + 1;
+    const mantra = malaSessionMantra(s);
+    if (mantra) mantraCounts[mantra] = (mantraCounts[mantra] ?? 0) + 1;
   }
   const topMantras = Object.entries(mantraCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
 
@@ -104,7 +111,7 @@ export async function GET() {
 
   // ── 6. Build 30-day heatmap (activity per day) ─────────────────────────────
   const heatmap: { date: string; japa: number; nitya: number }[] = [];
-  const japaDates = new Set((japaSessions ?? []).map(s => (s.completed_at ?? '').slice(0, 10)));
+  const japaDates = new Set((japaSessions ?? []).map(s => malaSessionDate(s)).filter(Boolean));
   for (let i = 0; i < 30; i++) {
     const d = new Date(from);
     d.setDate(d.getDate() + i);

@@ -6,44 +6,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Calendar, ChevronRight } from 'lucide-react';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { localSpiritualDate } from '@/lib/sacred-time';
-
-// ── Types ─────────────────────────────────────────────────────────────────────
-// Handles both pre-migration-v30 schema (count, duration_seconds, mantra)
-// and new schema (rounds, bead_count, duration_secs, mantra_id, date).
-interface Session {
-  created_at: string;
-  // New columns (null/undefined if migration not run yet)
-  date?: string | null;
-  rounds?: number | null;
-  bead_count?: number | null;
-  duration_secs?: number | null;
-  mantra_id?: string | null;
-  // Old columns (always present in original schema)
-  count?: number | null;
-  duration_seconds?: number | null;
-  mantra?: string | null;
-  [key: string]: unknown; // allow extra DB columns from select('*')
-}
-
-// ── Schema-agnostic field accessors ──────────────────────────────────────────
-function sessionBeads(s: Session): number {
-  return (s.bead_count ?? s.count ?? 0);
-}
-function sessionSecs(s: Session): number {
-  return (s.duration_secs ?? s.duration_seconds ?? 0);
-}
-function sessionMantra(s: Session): string | null {
-  return s.mantra_id ?? s.mantra ?? null;
-}
-function sessionRounds(s: Session): number {
-  if (s.rounds != null) return s.rounds;
-  // Old schema: count = total beads, estimate rounds from count
-  if (s.count != null) return Math.floor(s.count / 108);
-  return 0;
-}
-function sessionDate(s: Session): string {
-  return s.date ?? s.created_at?.slice(0, 10) ?? '';
-}
+import {
+  type MalaSessionRow as Session,
+  malaSessionBeads as sessionBeads,
+  malaSessionDate as sessionDate,
+  malaSessionDurationSeconds as sessionSecs,
+  malaSessionMantra as sessionMantra,
+  malaSessionRounds as sessionRounds,
+} from '@/lib/mala-sessions';
 
 interface Props {
   sessions: Session[];
@@ -162,7 +132,7 @@ function CalendarMonthView({ sessions, isDark, amber, text, sub, borderCol, surf
   const dateMap = useMemo(() => {
     const m: Record<string, Session[]> = {};
     sessions.forEach(s => {
-      const key = s.date ?? s.created_at?.slice(0, 10);
+      const key = sessionDate(s);
       if (!key) return;
       if (!m[key]) m[key] = [];
       m[key].push(s);
@@ -464,7 +434,7 @@ export default function InsightsClient({ sessions }: Props) {
               Complete your first Japa session and your practice story will appear here.
             </p>
             <button
-              onClick={() => router.push('/japa')}
+              onClick={() => router.push('/bhakti/mala')}
               className="mt-2 px-6 py-3 rounded-2xl font-semibold text-sm"
               style={{ background: isDark ? 'rgba(200,146,74,0.14)' : 'rgba(122,74,30,0.10)', color: amber, border: `1px solid ${amber}30` }}
             >

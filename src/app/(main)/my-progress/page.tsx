@@ -1,5 +1,11 @@
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import {
+  malaSessionBeads,
+  malaSessionDurationSeconds,
+  malaSessionMantra,
+  malaSessionRounds,
+} from '@/lib/mala-sessions';
 import MyProgressClient from './MyProgressClient';
 
 // ── Date helpers ──────────────────────────────────────────────────────────────
@@ -53,7 +59,7 @@ export default async function MyProgressPage() {
     // Japa sessions — current month (for report) + last 30d (for dashboard)
     supabase
       .from('mala_sessions')
-      .select('created_at, rounds, bead_count, duration_secs, mantra_id')
+      .select('*')
       .eq('user_id', user.id)
       .gte('created_at', thirtyAgo)
       .lte('created_at', today + 'T23:59:59')
@@ -62,7 +68,7 @@ export default async function MyProgressPage() {
     // Japa sessions — previous calendar month (for month-over-month in report)
     supabase
       .from('mala_sessions')
-      .select('created_at, rounds, bead_count, duration_secs, mantra_id')
+      .select('*')
       .eq('user_id', user.id)
       .gte('created_at', prevMonthStart)
       .lte('created_at', prevMonthEnd + 'T23:59:59'),
@@ -111,14 +117,15 @@ export default async function MyProgressPage() {
   // Japa summary — last 30d
   const malaSessions = malaCur ?? [];
   const totalSessions = malaSessions.length;
-  const totalRounds   = malaSessions.reduce((s, r) => s + (r.rounds ?? 0), 0);
-  const totalBeads    = malaSessions.reduce((s, r) => s + (r.bead_count ?? 0), 0);
-  const totalDurationSecs = malaSessions.reduce((s, r) => s + (r.duration_secs ?? 0), 0);
+  const totalRounds   = malaSessions.reduce((s, r) => s + malaSessionRounds(r), 0);
+  const totalBeads    = malaSessions.reduce((s, r) => s + malaSessionBeads(r), 0);
+  const totalDurationSecs = malaSessions.reduce((s, r) => s + malaSessionDurationSeconds(r), 0);
 
   // Mantra frequency
   const mantraFreq: Record<string, number> = {};
   malaSessions.forEach(r => {
-    if (r.mantra_id) mantraFreq[r.mantra_id] = (mantraFreq[r.mantra_id] ?? 0) + 1;
+    const mantra = malaSessionMantra(r);
+    if (mantra) mantraFreq[mantra] = (mantraFreq[mantra] ?? 0) + 1;
   });
   const topMantra = Object.entries(mantraFreq).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
 
@@ -131,14 +138,14 @@ export default async function MyProgressPage() {
 
   // Premium report: previous month comparison
   const prevMalaSessions = malaPrev ?? [];
-  const prevRounds  = prevMalaSessions.reduce((s, r) => s + (r.rounds ?? 0), 0);
-  const prevBeads   = prevMalaSessions.reduce((s, r) => s + (r.bead_count ?? 0), 0);
+  const prevRounds  = prevMalaSessions.reduce((s, r) => s + malaSessionRounds(r), 0);
+  const prevBeads   = prevMalaSessions.reduce((s, r) => s + malaSessionBeads(r), 0);
   const prevSessions = prevMalaSessions.length;
 
   // Current calendar month — filter from already-fetched malaCur (last 30d always contains current month)
   const curMonthSessions = malaSessions.filter(r => r.created_at >= curMonthStart);
-  const curMonthRounds   = curMonthSessions.reduce((s, r) => s + (r.rounds ?? 0), 0);
-  const curMonthBeads    = curMonthSessions.reduce((s, r) => s + (r.bead_count ?? 0), 0);
+  const curMonthRounds   = curMonthSessions.reduce((s, r) => s + malaSessionRounds(r), 0);
+  const curMonthBeads    = curMonthSessions.reduce((s, r) => s + malaSessionBeads(r), 0);
 
   // Current month Nitya (for report — subset of 30d)
   const curMonthNitya = (nityaLog ?? []).filter(r => r.log_date >= curMonthStart && r.log_date <= curMonthEnd).length;

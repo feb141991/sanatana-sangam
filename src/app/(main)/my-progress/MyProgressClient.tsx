@@ -671,7 +671,7 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
               <div className="flex items-center justify-between mb-3">
                 <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(200,146,74,0.7)' }}>🪷 Japa Practice</p>
                 <div className="flex items-center gap-2">
-                  <Link href="/japa/insights" onClick={e => e.stopPropagation()}
+                  <Link href="/bhakti/mala/insights" onClick={e => e.stopPropagation()}
                     className="flex items-center gap-1 text-[10px] rounded-full px-2 py-0.5"
                     style={{ color: 'rgba(200,146,74,0.6)', background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.14)' }}>
                     <ExternalLink size={9} /> Insights
@@ -1004,7 +1004,7 @@ export default function MyProgressClient({
                     </p>
                   </div>
                 </div>
-                <Link href="/japa/insights"
+                <Link href="/bhakti/mala/insights"
                   className="rounded-full px-3.5 py-1.5 text-[11px] font-semibold"
                   style={{ background: 'rgba(200,146,74,0.12)', color: 'rgba(200,146,74,0.90)', border: '1px solid rgba(200,146,74,0.22)' }}>
                   Insights →
@@ -1022,12 +1022,12 @@ export default function MyProgressClient({
                         You have {totalJapaSessions} session{totalJapaSessions !== 1 ? 's' : ''} in your history — view them in Insights.
                       </p>
                       <div className="flex items-center justify-center gap-2 mt-3">
-                        <Link href="/japa/insights"
+                        <Link href="/bhakti/mala/insights"
                           className="inline-flex items-center rounded-full px-4 py-1.5 text-[11px] font-semibold"
                           style={{ background: 'rgba(200,146,74,0.14)', color: 'rgba(200,146,74,0.90)', border: '1px solid rgba(200,146,74,0.25)' }}>
                           View Insights →
                         </Link>
-                        <Link href="/japa"
+                        <Link href="/bhakti/mala"
                           className="inline-flex items-center rounded-full px-4 py-1.5 text-[11px] font-semibold"
                           style={{ background: 'rgba(200,146,74,0.07)', color: 'rgba(200,146,74,0.75)', border: '1px solid rgba(200,146,74,0.18)' }}>
                           Resume Japa
@@ -1040,7 +1040,7 @@ export default function MyProgressClient({
                       <p className="text-[11px] mt-1" style={{ color: muted }}>
                         Start your first Japa session to see stats here.
                       </p>
-                      <Link href="/japa"
+                      <Link href="/bhakti/mala"
                         className="inline-flex items-center mt-3 rounded-full px-4 py-1.5 text-[11px] font-semibold"
                         style={{ background: 'rgba(200,146,74,0.14)', color: 'rgba(200,146,74,0.90)', border: '1px solid rgba(200,146,74,0.25)' }}>
                         Begin Japa →

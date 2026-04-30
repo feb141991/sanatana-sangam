@@ -1384,7 +1384,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                     <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-relaxed">{step.description}</p>
                   )}
                   {step.id === 'japa_done' && !step.completed && (
-                    <Link href="/japa" onClick={e => e.stopPropagation()}
+                    <Link href="/bhakti/mala" onClick={e => e.stopPropagation()}
                       className="mt-1.5 inline-flex text-xs font-semibold underline underline-offset-2"
                       style={{ color: accent }}>Open Japa Counter →</Link>
                   )}
@@ -1425,7 +1425,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                 </p>
               </div>
               <div className="flex justify-center gap-3 pt-1 flex-wrap">
-                <Link href="/japa" className="px-4 py-2 rounded-xl text-xs font-semibold"
+                <Link href="/bhakti/mala" className="px-4 py-2 rounded-xl text-xs font-semibold"
                   style={{ background: `${accent}18`, color: accent }}>Japa Counter</Link>
                 <Link href="/pathshala" className="px-4 py-2 rounded-xl text-xs font-semibold"
                   style={{ background: `${accent}18`, color: accent }}>Pathshala</Link>

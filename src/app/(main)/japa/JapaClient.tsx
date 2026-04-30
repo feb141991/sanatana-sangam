@@ -19,6 +19,7 @@ import { useEngine } from '@/contexts/EngineContext';
 import { hapticLight, hapticSuccess } from '@/lib/platform';
 import { createClient } from '@/lib/supabase';
 import { localSpiritualDate } from '@/lib/sacred-time';
+import { buildMalaSessionInsert } from '@/lib/mala-sessions';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import Link from 'next/link';
 
@@ -1444,16 +1445,10 @@ export default function JapaClient({
     }
   }, [screen]);
 
-  // Full-screen: enter when japa begins, exit when leaving
+  // Full-screen exit when leaving practice. Entry is requested inside the start
+  // click handler because browsers require a direct user gesture.
   useEffect(() => {
-    if (screen === 'japa') {
-      try {
-        const el = document.documentElement;
-        if (el.requestFullscreen && !document.fullscreenElement) {
-          el.requestFullscreen().catch(() => {});
-        }
-      } catch { /* ok — not all browsers support fullscreen */ }
-    } else {
+    if (screen !== 'japa') {
       try {
         if (document.fullscreenElement) {
           document.exitFullscreen().catch(() => {});
@@ -1461,6 +1456,15 @@ export default function JapaClient({
       } catch { /* ok */ }
     }
   }, [screen]);
+
+  const enterBrowserFullscreen = useCallback(() => {
+    try {
+      const el = document.documentElement;
+      if (el.requestFullscreen && !document.fullscreenElement) {
+        el.requestFullscreen().catch(() => {});
+      }
+    } catch { /* ok — fixed viewport remains the fallback */ }
+  }, []);
 
   // ── Handle sound selection (called from PracticeSettingsSheet — user gesture) ──
   function handleSoundSelect(id: SoundId) {
@@ -1525,39 +1529,37 @@ export default function JapaClient({
       const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
       const today = localSpiritualDate(tz, 4);
 
-      // Insert japa session — try new schema first (post migration-v30),
-      // fall back to original column names if those columns don't exist yet.
+      // Persist through the canonical Mala schema. Compatibility alias columns
+      // are included only so deployments that already added v30 fields stay in sync.
       const totalBeads = completedRounds * TOTAL_BEADS + partialBeads;
-      const newSchemaRow = {
-        user_id: userId, date: today,
-        rounds: completedRounds,
-        bead_count: totalBeads,
-        mantra_id: mantraId,
-        duration_secs: duration,
-      };
-      const oldSchemaRow = {
-        user_id: userId,
+      const completedAt = new Date().toISOString();
+      const malaSessionRow = buildMalaSessionInsert({
+        userId,
         mantra: mantraId ?? 'om_namah_shivaya',
         count: totalBeads,
-        duration_seconds: duration,
-      };
+        targetCount: TOTAL_BEADS,
+        durationSeconds: duration,
+        completedAt,
+        date: today,
+      });
 
-      const [primaryInsert, { count: newTotalSessions }] = await Promise.all([
-        supabase.from('mala_sessions').insert(newSchemaRow),
-        supabase.from('mala_sessions')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', userId),
-      ]);
+      const primaryInsert = await supabase.from('mala_sessions').insert(malaSessionRow);
 
       if (primaryInsert.error) {
-        // New columns may not exist (migration-v30 not run) — try old schema
-        console.warn('[Japa] new-schema insert failed, trying old schema:', primaryInsert.error.message);
-        const fallback = await supabase.from('mala_sessions').insert(oldSchemaRow);
+        // Some environments may not have compatibility alias columns yet.
+        console.warn('[Mala] full insert failed, trying canonical columns only:', primaryInsert.error.message);
+        const { date: _date, rounds: _rounds, bead_count: _beadCount, mantra_id: _mantraId, duration_secs: _durationSecs, ...canonicalRow } = malaSessionRow;
+        const fallback = await supabase.from('mala_sessions').insert(canonicalRow);
         if (fallback.error) {
-          console.error('[Japa] mala_sessions insert failed (both schemas):', fallback.error);
+          console.error('[Mala] mala_sessions insert failed:', fallback.error);
           throw fallback.error;
         }
       }
+
+      const { count: newTotalSessions } = await supabase
+        .from('mala_sessions')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId);
 
       // Streak: look at yesterday's record to build a consecutive-day count
       const yesterdayObj = new Date(today + 'T12:00:00Z');
@@ -1617,6 +1619,7 @@ export default function JapaClient({
 
   const handleConfirmMantra = () => {
     try { localStorage.setItem(STORAGE_MANTRA, mantraId); } catch { /* ok */ }
+    enterBrowserFullscreen();
     setScreen('japa');
   };
 
@@ -1643,7 +1646,7 @@ export default function JapaClient({
 
   const handleViewInsights = async () => {
     await saveSession(roundsDone, beadCount);
-    router.push('/japa/insights');
+    router.push('/bhakti/mala/insights');
   };
 
   const handleContinueAfterComplete = async () => {
@@ -1938,7 +1941,7 @@ export default function JapaClient({
                 </span>
               </div>
               <Link
-                href="/japa/insights"
+                href="/bhakti/mala/insights"
                 className="flex items-center gap-1"
                 onClick={e => e.stopPropagation()}
               >

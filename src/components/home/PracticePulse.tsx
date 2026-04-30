@@ -145,7 +145,7 @@ export default function PracticePulse({
           Practice Pulse
         </p>
         <Link
-          href="/japa/insights"
+          href="/bhakti/mala/insights"
           className="flex items-center gap-0.5 text-[10px] font-semibold"
           style={{ color: 'rgba(200,146,74,0.75)' }}
         >

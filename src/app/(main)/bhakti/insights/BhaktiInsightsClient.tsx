@@ -5,19 +5,15 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Share2 } from 'lucide-react';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+import {
+  type MalaSessionRow as Session,
+  malaSessionBeads as sessionBeads,
+  malaSessionDate as sessionDate,
+  malaSessionDurationSeconds as sessionSecs,
+  malaSessionMantra as sessionMantra,
+  malaSessionRounds as sessionRounds,
+} from '@/lib/mala-sessions';
 
-interface Session {
-  created_at: string;
-  date?: string | null;
-  rounds?: number | null;
-  bead_count?: number | null;
-  duration_secs?: number | null;
-  mantra_id?: string | null;
-  count?: number | null;
-  duration_seconds?: number | null;
-  mantra?: string | null;
-  [key: string]: unknown;
-}
 interface Props { sessions: Session[]; shlokaStreak: number; sevaScore: number; tradition: string; }
 
 type Filter = '1d' | '7d' | '30d' | '90d';
@@ -28,28 +24,6 @@ const FILTERS: { key: Filter; label: string; days: number }[] = [
   { key: '90d', label: '90 Days', days: 90 },
 ];
 const DAY_LABELS = ['S','M','T','W','T','F','S'];
-
-function sessionDate(s: Session): string {
-  return s.date ?? s.created_at?.slice(0, 10) ?? '';
-}
-
-function sessionRounds(s: Session): number {
-  if (s.rounds != null) return s.rounds;
-  if (s.count != null) return Math.max(1, Math.floor(s.count / 108));
-  return 0;
-}
-
-function sessionBeads(s: Session): number {
-  return s.bead_count ?? s.count ?? 0;
-}
-
-function sessionSecs(s: Session): number {
-  return s.duration_secs ?? s.duration_seconds ?? 0;
-}
-
-function sessionMantra(s: Session): string | null {
-  return s.mantra_id ?? s.mantra ?? null;
-}
 
 function DowChart({ data, color, isDark }: { data: number[]; color: string; isDark: boolean }) {
   const max = Math.max(...data, 1);

@@ -120,9 +120,15 @@ export interface Database {
           share_scope: 'private' | 'kul' | 'public';
           completed_at: string;
           created_at: string;
+          date: string | null;
+          rounds: number | null;
+          bead_count: number | null;
+          mantra_id: string | null;
+          duration_secs: number | null;
         };
         Insert: Omit<Database['public']['Tables']['mala_sessions']['Row'], 'id' | 'created_at' | 'completed_at'> & {
           completed_at?: string;
+          created_at?: string;
         };
         Update: Partial<Database['public']['Tables']['mala_sessions']['Insert']>;
       };

@@ -116,7 +116,7 @@ const ASHRAMA_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> = {
     description: 'Let go of outcomes. Daily japa, sacred study, and being a quiet presence for others.',
     accentClass: 'clay-card-guided',
     actions: [
-      { label: 'Open Japa', href: '/japa', icon: '📿' },
+      { label: 'Open Japa', href: '/bhakti/mala', icon: '📿' },
       { label: 'Study scripture', href: '/library', icon: '📖' },
     ],
   },

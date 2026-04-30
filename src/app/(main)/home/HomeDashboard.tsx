@@ -1842,7 +1842,7 @@ export default function HomeDashboard({
         animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
         transition={{ duration: 0.38, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
       >
-        <Link href="/japa"
+        <Link href="/bhakti/mala"
           className="home-luminous-card block rounded-[1.7rem] p-4 relative overflow-hidden border motion-lift"
           style={{
             ['--home-luminous-colour' as string]: 'rgba(212, 120, 74, 0.22)',
