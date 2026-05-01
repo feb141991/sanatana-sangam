@@ -6,6 +6,8 @@ import { ChevronLeft, Settings2 } from 'lucide-react';
 import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
 import { BHAKTI_MANTRAS } from '@/lib/bhakti-practice';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+import toast from 'react-hot-toast';
+import { createClient } from '@/lib/supabase';
 
 // ─── Timing ──────────────────────────────────────────────────────────────────
 const PRESET_DURATIONS = [12, 24, 48];
@@ -400,12 +402,35 @@ export default function SattvicModePage() {
     if (!running) { if (intervalRef.current) clearInterval(intervalRef.current); return; }
     intervalRef.current = setInterval(() => {
       setRemaining(cur => {
-        if (cur <= 1) { clearInterval(intervalRef.current!); setRunning(false); hapticFinish(); playBell(432, 3, 0.25); return 0; }
+        if (cur <= 1) { 
+          clearInterval(intervalRef.current!); 
+          setRunning(false); 
+          hapticFinish(); 
+          playBell(432, 3, 0.25);
+          
+          // Save session
+          createClient().auth.getUser().then(({ data: { user } }) => {
+            if (user) {
+              createClient().from('sattvic_sessions').insert({
+                user_id: user.id,
+                mode: mode,
+                duration_secs: totalSecs,
+                environment: focusEnv,
+                mantra: mode === 'chant' ? chantMantra : null,
+              }).then(({ error }) => {
+                if (error) console.error('Failed to save sattvic session:', error);
+                else toast.success('Session saved 🙏', { icon: '✨' });
+              });
+            }
+          });
+          
+          return 0; 
+        }
         return cur - 1;
       });
     }, 1000);
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [running]);
+  }, [running, totalSecs, mode, focusEnv, chantMantra]);
 
   // Breath phase cycle
   useEffect(() => {

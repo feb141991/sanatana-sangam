@@ -75,7 +75,7 @@ async function shareEntry(entry: LibraryEntry) {
 function EntryCard({ entry, accentColour }: { entry: LibraryEntry; accentColour: string }) {
   const [expanded, setExpanded] = useState(false);
   return (
-    <div className="pathshala-glass-card rounded-[1.45rem] overflow-hidden">
+    <div className="rounded-[1.45rem] overflow-hidden" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
       <button
         className="w-full text-left px-4 py-4"
         onClick={() => setExpanded(e => !e)}
@@ -281,21 +281,22 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
     return () => obs.disconnect();
   }, []);
 
-  const primaryText = isDark ? 'var(--text-cream)' : '#211B14';
-  const secondaryText = isDark ? 'var(--text-muted-warm)' : '#4D4035';
-  const tertiaryText = isDark ? 'var(--text-dim)' : '#66584A';
-  const glassSurface = isDark ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.72)';
-  const glassSurfaceStrong = isDark ? 'rgba(255,255,255,0.082)' : 'rgba(255,255,255,0.84)';
-  const glassBorder = isDark ? 'rgba(250,238,218,0.12)' : 'rgba(65,36,2,0.12)';
+  const primaryText = isDark ? '#f5dfa0' : '#2a1002';
+  const secondaryText = isDark ? 'rgba(245,210,130,0.55)' : 'rgba(120,65,10,0.55)';
+  const tertiaryText = isDark ? 'rgba(245,210,130,0.35)' : 'rgba(100,55,10,0.40)';
+  
+  const pageBg = isDark ? 'linear-gradient(180deg,#160b08 0%,#1c1008 40%,#120a05 100%)' : 'linear-gradient(180deg,#fdf6ee 0%,#f7ede0 40%,#f2e8d5 100%)';
+  const glassSurface = isDark ? 'linear-gradient(140deg,rgba(28,20,12,0.92),rgba(18,12,8,0.96))' : 'linear-gradient(140deg,rgba(255,244,228,0.96),rgba(250,235,210,0.98))';
+  const glassSurfaceStrong = isDark ? 'rgba(28,18,10,0.95)' : 'rgba(255,245,230,0.95)';
+  const glassBorder = isDark ? 'rgba(200,146,74,0.14)' : 'rgba(180,110,30,0.15)';
   const glassShadow = isDark
-    ? '0 22px 58px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.06)'
-    : '0 18px 46px rgba(49,35,20,0.10), inset 0 1px 0 rgba(255,255,255,0.80)';
+    ? '0 4px 24px rgba(200,146,74,0.05), inset 0 1px 0 rgba(255,255,255,0.04)'
+    : '0 4px 24px rgba(180,110,30,0.06), inset 0 1px 0 rgba(255,255,255,0.6)';
+    
   const cardStyle = {
     background: glassSurface,
     border: `1px solid ${glassBorder}`,
     boxShadow: glassShadow,
-    backdropFilter: 'blur(18px) saturate(128%)',
-    WebkitBackdropFilter: 'blur(18px) saturate(128%)',
   };
 
   // ── Load active enrollments from guided_path_progress ───────────────────────
@@ -428,8 +429,10 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
         style={{
           ...cardStyle,
           background: isDark
-            ? `linear-gradient(135deg, ${meta.accentColour}18 0%, rgba(255,255,255,0.055) 100%)`
-            : `linear-gradient(135deg, ${meta.accentColour}18 0%, rgba(255,255,255,0.78) 100%)`,
+            ? `linear-gradient(135deg, rgba(28,20,12,0.96) 0%, rgba(18,12,8,0.98) 100%)`
+            : `linear-gradient(135deg, rgba(255,244,228,0.98) 0%, rgba(250,235,210,0.99) 100%)`,
+          boxShadow: `0 8px 32px ${meta.accentColour}15`,
+          border: `1px solid ${meta.accentColour}25`
         }}
         initial={prefersReducedMotion ? undefined : { opacity: 0, y: 14 }}
         animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
@@ -501,9 +504,10 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
   // (Engine shloka-of-day wired separately; show a motivational prompt for now)
   function DailyVersePrompt() {
     return (
-      <Link href="/pathshala?tab=explore" className="pathshala-glass-card block rounded-[1.8rem] overflow-hidden mb-4 motion-press">
-        <div className="p-5" style={{ background: `linear-gradient(135deg, ${meta.accentColour}28 0%, transparent 100%)` }}>
-          <p className="text-xs font-medium uppercase tracking-wider mb-2" style={{ color: tertiaryText }}>
+      <Link href="/pathshala?tab=explore" className="block rounded-[1.8rem] overflow-hidden mb-4 motion-press"
+        style={cardStyle}>
+        <div className="p-5" style={{ background: `linear-gradient(135deg, ${meta.accentColour}12 0%, transparent 100%)` }}>
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color: tertiaryText }}>
             {meta.sacredTextLabel} · Today
           </p>
           <p className="font-[family:var(--font-deva)] font-semibold text-base leading-relaxed" style={{ color: primaryText }}>
@@ -677,19 +681,24 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
 
   // ─────────────────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative overflow-hidden" style={{ background: pageBg }}>
+      {/* Ambient background effects */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full pointer-events-none"
+        style={{ background: `radial-gradient(circle at center, ${meta.accentColour}08, transparent 60%)`, filter: 'blur(40px)' }} />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none"
+        style={{ background: `radial-gradient(circle at center, ${meta.accentColour}05, transparent 60%)`, filter: 'blur(40px)' }} />
 
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 pt-4 pb-3">
+      <div className="relative z-10 flex items-center gap-3 px-4 pt-4 pb-3">
         <button onClick={() => router.back()}
           className="w-9 h-9 rounded-full flex items-center justify-center shadow-sm motion-press"
-          style={{ background: glassSurfaceStrong, border: `1px solid ${glassBorder}`, backdropFilter: 'blur(16px)' }}>
+          style={{ background: `${meta.accentColour}12`, border: `1px solid ${meta.accentColour}25` }}>
           <ChevronLeft size={20} style={{ color: meta.accentColour }} />
         </button>
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <span className="text-lg">{meta.symbol}</span>
-            <h1 className="font-semibold text-lg" style={{ color: primaryText }}>Pathshala</h1>
+            <span className="text-[22px] drop-shadow-md">{meta.symbol}</span>
+            <h1 className="font-bold text-xl tracking-tight" style={{ fontFamily: 'var(--font-serif)', color: primaryText }}>Pathshala</h1>
           </div>
           <p className="text-xs" style={{ color: secondaryText }}>Digital Gurukul · {meta.label}</p>
         </div>
