@@ -299,17 +299,30 @@ body {
 
 .divine-hero {
   position: relative;
-  min-height: clamp(320px, 68vw, 380px);
+  min-height: clamp(380px, 80vw, 440px);
   overflow: hidden;
-  border-radius: 28px;
-  padding: 20px;
-  background: #EFE4D3;
-  border: 1px solid var(--divine-border);
-  box-shadow: 0 8px 24px rgba(62, 42, 31, 0.08), 0 2px 8px rgba(62, 42, 31, 0.05);
+  background: var(--divine-bg);
+  margin-left: -0.75rem;
+  margin-right: -0.75rem;
+}
+
+@media (min-width: 640px) {
+  .divine-hero {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .divine-hero {
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 28px;
+  }
 }
 
 :root[data-theme='dark'] .divine-hero {
-  background: #333330;
+  background: var(--divine-bg);
 }
 
 .divine-hero-image {
@@ -325,16 +338,22 @@ body {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background:
-    linear-gradient(180deg, rgba(250, 246, 239, 0.08) 0%, rgba(250, 246, 239, 0.40) 42%, #FAF6EF 100%),
-    linear-gradient(90deg, rgba(62, 42, 31, 0.08), transparent 52%);
+  background: linear-gradient(
+    to bottom,
+    rgba(250, 246, 239, 0) 0%,
+    rgba(250, 246, 239, 0.45) 55%,
+    #FAF6EF 100%
+  );
   pointer-events: none;
 }
 
 :root[data-theme='dark'] .divine-hero-overlay {
-  background:
-    linear-gradient(180deg, rgba(28, 28, 26, 0.10) 0%, rgba(28, 28, 26, 0.54) 48%, #1c1c1a 100%),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.20), transparent 54%);
+  background: linear-gradient(
+    to bottom,
+    rgba(28, 28, 26, 0) 0%,
+    rgba(28, 28, 26, 0.45) 55%,
+    #1c1c1a 100%
+  );
 }
 
 .divine-mandala {
@@ -364,10 +383,11 @@ body {
   z-index: 2;
   height: 100%;
   display: flex;
-  min-height: clamp(280px, 60vw, 340px);
+  min-height: clamp(340px, 70vw, 400px);
   flex-direction: column;
   justify-content: flex-end;
   gap: 14px;
+  padding: 24px 20px;
 }
 
 .divine-greeting {
@@ -383,7 +403,6 @@ body {
   color: var(--divine-muted);
 }
 
-.divine-shloka-card,
 .divine-feature-card,
 .divine-seva-card {
   position: relative;
@@ -394,7 +413,6 @@ body {
   box-shadow: 0 8px 24px rgba(62, 42, 31, 0.08), 0 2px 8px rgba(62, 42, 31, 0.05);
 }
 
-:root[data-theme='dark'] .divine-shloka-card,
 :root[data-theme='dark'] .divine-feature-card,
 :root[data-theme='dark'] .divine-seva-card {
   background: rgba(51, 51, 48, 0.82);
@@ -404,9 +422,11 @@ body {
   display: flex;
   width: 100%;
   flex-direction: column;
-  gap: 10px;
-  padding: 16px;
+  gap: 8px;
   text-align: left;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .divine-chip {
