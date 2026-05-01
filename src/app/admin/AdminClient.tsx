@@ -462,6 +462,18 @@ function HeroAssetsTab({ assets: initialAssets }: { assets: HeroAssetRow[] }) {
           </div>
         </div>
 
+        <div className="mb-4 rounded-2xl border border-[color:var(--card-border)] bg-[color:var(--card-bg)] p-3">
+          <p className="text-xs font-semibold text-[color:var(--text-cream)]">Upload rules</p>
+          <div className="mt-2 grid gap-1.5 text-[11px] leading-relaxed text-[color:var(--text-dim)]">
+            <p>Filename format: use lowercase kebab-case, e.g. <span className="font-mono text-[color:var(--brand-muted)]">shiv-default.webp</span>, <span className="font-mono text-[color:var(--brand-muted)]">janmashtami-krishna.webp</span>.</p>
+            <p>Best image format: <span className="font-mono text-[color:var(--brand-muted)]">.webp</span>, portrait/tall crop, ideally 1200x1600 or 1440x1920, under 500 KB.</p>
+            <p>Composition: keep the deity/subject upper-center or upper-right; the hero text sits at the bottom over a cream overlay.</p>
+            <p>DB rule: image files stay in Supabase Storage bucket <span className="font-mono text-[color:var(--brand-muted)]">hero-assets</span>; DB stores metadata only.</p>
+            <p>Matching fields are comma-separated. Example: traditions <span className="font-mono text-[color:var(--brand-muted)]">hindu</span>, sampradayas <span className="font-mono text-[color:var(--brand-muted)]">shaiva</span>, ishta devatas <span className="font-mono text-[color:var(--brand-muted)]">shiva, mahadev</span>, festival slugs <span className="font-mono text-[color:var(--brand-muted)]">maha-shivaratri</span>.</p>
+            <p>Priority: higher number wins. Festival assets should usually be 100+, default tradition assets 10-50.</p>
+          </div>
+        </div>
+
         <form onSubmit={uploadHeroAsset} className="grid gap-3">
           <input name="label" required placeholder="Label, e.g. Shaiva default" className="rounded-xl border border-[color:var(--card-border)] bg-[color:var(--card-bg)] px-3 py-2 text-sm" />
           <input name="heroAlt" required placeholder="Alt text, e.g. Soft devotional Shiva artwork" className="rounded-xl border border-[color:var(--card-border)] bg-[color:var(--card-bg)] px-3 py-2 text-sm" />
