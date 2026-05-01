@@ -85,7 +85,7 @@ const DEFAULT_QUICK_ACCESS = [
   { label: 'Tirtha',     icon: '🛕', href: '/tirtha-map',    desc: 'Find sacred places near you',   theme: 'tirtha'    },
   { label: 'Mandali',    icon: '🏡', href: '/mandali',        desc: 'Your local sangam',              theme: 'mandali'   },
   { label: 'Kul',        icon: '❤️', href: '/kul',            desc: 'Family sadhana together',        theme: 'kul'       },
-  { label: 'Pathshala',  icon: '📖', href: '/library',        desc: 'Tradition-first study tracks',   theme: 'pathshala' },
+  { label: 'Pathshala',  icon: '📖', href: '/pathshala',        desc: 'Tradition-first study tracks',   theme: 'pathshala' },
   { label: 'Sanskar',    icon: '🪔', href: '/kul/sanskara',   desc: '16 sacred lifecycle rites',      theme: 'kul'       },
   { label: 'Discover',   icon: '🌿', href: '/discover',       desc: 'Scripture for your mood',        theme: 'bhakti'    },
   { label: 'Panchang',   icon: '📅', href: '/panchang',       desc: 'Today\'s tithi & muhurta',       theme: 'panchang'  },

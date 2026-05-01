@@ -159,7 +159,7 @@ export default function BottomNav({
 
   const memberNavItems = [
     { href: '/nitya-karma', label: 'Nitya',        mobileLabel: 'Nitya',           icon: Sun           },
-    { href: '/library',     label: libraryLabel,    mobileLabel: libraryMobileLabel, icon: BookOpen      },
+    { href: '/pathshala',     label: libraryLabel,    mobileLabel: libraryMobileLabel, icon: BookOpen      },
     { href: '/kul',         label: t('navKul'),     mobileLabel: t('navKul'),        icon: Heart         },
     { href: '/mandali',     label: t('navMandali'), mobileLabel: t('navMandali'),    icon: Users         },
   ];

@@ -18,7 +18,7 @@ const RINGS = [
   {
     id:        'svadhyaya',
     label:     'Svādhyāya',
-    href:      '/library',
+    href:      '/pathshala',
     accent:    '#6aafcc',
     accentEnd: '#88ccee',
     scoreKey:  'clarity' as const,

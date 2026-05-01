@@ -42,7 +42,7 @@ const PATH_DEFINITIONS: Record<SeekingKey, Omit<PersonalizedPath, 'id' | 'badges
     description: 'Begin with one text, one question, and one place to return tomorrow so learning feels grounded, not overwhelming.',
     accentClass: 'clay-card-knowledge',
     actions: [
-      { label: 'Open Pathshala', href: '/library', icon: '📚' },
+      { label: 'Open Pathshala', href: '/pathshala', icon: '📚' },
       { label: 'Enter Vichaar Sabha', href: '/vichaar-sabha', icon: '💬' },
     ],
   },
@@ -63,7 +63,7 @@ const PATH_DEFINITIONS: Record<SeekingKey, Omit<PersonalizedPath, 'id' | 'badges
     accentClass: 'clay-card-mentorship',
     actions: [
       { label: 'Ask in Vichaar Sabha', href: '/vichaar-sabha', icon: '🙏' },
-      { label: 'Read in Pathshala', href: '/library', icon: '📖' },
+      { label: 'Read in Pathshala', href: '/pathshala', icon: '📖' },
     ],
   },
   youth: {
@@ -72,7 +72,7 @@ const PATH_DEFINITIONS: Record<SeekingKey, Omit<PersonalizedPath, 'id' | 'badges
     description: 'Use shorter, friendlier entry points first: simple explanations, local discovery, and one clear next step.',
     accentClass: 'clay-card-youth',
     actions: [
-      { label: 'Start beginner Pathshala', href: '/library', icon: '🌱' },
+      { label: 'Start beginner Pathshala', href: '/pathshala', icon: '🌱' },
       { label: 'Explore community questions', href: '/vichaar-sabha', icon: '💭' },
     ],
   },
@@ -86,7 +86,7 @@ const ASHRAMA_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> = {
     description: 'Focus on structured study and daily discipline. One text, one practice, one return each morning.',
     accentClass: 'clay-card-knowledge',
     actions: [
-      { label: 'Start a study path', href: '/library', icon: '📖' },
+      { label: 'Start a study path', href: '/pathshala', icon: '📖' },
       { label: 'Ask in Vichaar Sabha', href: '/vichaar-sabha', icon: '💬' },
     ],
   },
@@ -107,7 +107,7 @@ const ASHRAMA_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> = {
     accentClass: 'clay-card-mentorship',
     actions: [
       { label: 'Answer in Vichaar Sabha', href: '/vichaar-sabha', icon: '🙏' },
-      { label: 'Explore Pathshala', href: '/library', icon: '📚' },
+      { label: 'Explore Pathshala', href: '/pathshala', icon: '📚' },
     ],
   },
   sannyasa: {
@@ -117,7 +117,7 @@ const ASHRAMA_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> = {
     accentClass: 'clay-card-guided',
     actions: [
       { label: 'Open Japa', href: '/bhakti/mala', icon: '📿' },
-      { label: 'Study scripture', href: '/library', icon: '📖' },
+      { label: 'Study scripture', href: '/pathshala', icon: '📖' },
     ],
   },
 };
@@ -130,7 +130,7 @@ const TRADITION_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> =
     description: 'Begin each day with Nitnem, study Guru Granth Sahib, and connect with your local Sangat.',
     accentClass: 'clay-card-knowledge',
     actions: [
-      { label: 'Study Gurbani', href: '/library', icon: '🙏' },
+      { label: 'Study Gurbani', href: '/pathshala', icon: '🙏' },
       { label: 'Find Sangat', href: '/mandali', icon: '🏡' },
     ],
   },
@@ -140,7 +140,7 @@ const TRADITION_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> =
     description: 'Cultivate mindfulness, study the suttas, and find your local Sangha for shared practice.',
     accentClass: 'clay-card-guided',
     actions: [
-      { label: 'Study Dhamma', href: '/library', icon: '☸️' },
+      { label: 'Study Dhamma', href: '/pathshala', icon: '☸️' },
       { label: 'Find Sangha', href: '/mandali', icon: '🏡' },
     ],
   },
@@ -150,7 +150,7 @@ const TRADITION_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> =
     description: 'Daily study of Agam, Samayika practice, and community — the three pillars of Jain sadhana.',
     accentClass: 'clay-card-knowledge',
     actions: [
-      { label: 'Study Agam', href: '/library', icon: '📖' },
+      { label: 'Study Agam', href: '/pathshala', icon: '📖' },
       { label: 'Open Mandali', href: '/mandali', icon: '🏡' },
     ],
   },
