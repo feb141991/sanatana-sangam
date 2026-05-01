@@ -7,7 +7,7 @@ import { ChevronLeft, Play, Pause, RotateCcw, Repeat, BookOpen } from 'lucide-re
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { getStotramById, DEITY_META } from '@/lib/stotrams';
 import { DEVOTIONAL_STARTER_TRACKS } from '@/lib/devotional-audio';
-import { Suspense } from 'react';
+import { Suspense, use } from 'react';
 
 // ─── Improved audio player with seek + loop ───────────────────────────────────
 function AudioPanel({ trackId, autoplay, accentColor }: {
@@ -281,10 +281,11 @@ function StotramReader({ id }: { id: string }) {
   );
 }
 
-export default function StotramPage({ params }: { params: { id: string } }) {
+export default function StotramPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><span className="text-3xl">🙏</span></div>}>
-      <StotramReader id={params.id} />
+      <StotramReader id={id} />
     </Suspense>
   );
 }

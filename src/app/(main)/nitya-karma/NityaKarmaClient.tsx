@@ -864,7 +864,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
       setDayRecords(dates.map(d => ({ date: d, count: countMap[d] ?? 0, total: FALLBACK_STEPS.length })));
     }
     loadHistory();
-  }, [userId, supabase]);
+  }, [userId, supabase, timezone]);
 
   // ── Load + merge engine steps with DB-persisted ticks ─────────────────────
   useEffect(() => {
@@ -927,7 +927,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
 
     load();
     return () => { cancelled = true; clearTimeout(fallbackTimer); };
-  }, [isReady, engine, userId, tradition, morning.greeting, supabase]);
+  }, [isReady, engine, userId, tradition, morning.greeting, supabase, spiritualToday]);
 
   // ── Mark a step — try-finally ensures busySteps always clears ─────────────
   async function markStep(stepId: string, done: boolean) {
