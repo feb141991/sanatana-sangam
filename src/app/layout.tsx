@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast';
 import AppProviders from '@/components/providers/AppProviders';
 import {
   Inter,
+  Cormorant_Garamond,
   Noto_Sans_Devanagari,
   Noto_Sans_Tamil,
   Noto_Sans_Bengali,
@@ -12,12 +13,11 @@ import {
   Noto_Sans_Telugu,
   Noto_Sans_Kannada,
   Noto_Sans_Malayalam,
-  Playfair_Display,
 } from 'next/font/google';
 
 // ── Editorial Latin fonts ────────────────────────────────────────────────────
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-inter-next', display: 'swap' });
-const playfair = Playfair_Display({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-playfair', display: 'swap' });
+const cormorant = Cormorant_Garamond({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-cormorant', display: 'swap' });
 
 // ── Indic script fonts ────────────────────────────────────────────────────────
 const notoDevanagari = Noto_Sans_Devanagari({ subsets: ['devanagari'], weight: ['400','600'], variable: '--font-deva',     display: 'swap' });
@@ -30,7 +30,7 @@ const notoMalayalam  = Noto_Sans_Malayalam({  subsets: ['malayalam'],  weight: [
 
 const fontVars = [
   inter.variable,
-  playfair.variable,
+  cormorant.variable,
   notoDevanagari.variable,
   notoTamil.variable,
   notoBengali.variable,

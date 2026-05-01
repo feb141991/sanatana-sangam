@@ -4,7 +4,22 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { MapPin, ChevronDown, ChevronUp, Share2, CalendarDays, X, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
+import {
+  Bell,
+  BookOpen,
+  CalendarDays,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  Heart,
+  MapPin,
+  Pencil,
+  Share2,
+  Sparkles,
+  Users,
+  X,
+} from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
 import {
@@ -1275,6 +1290,44 @@ export default function HomeDashboard({
     { label: 'Mala', value: japaAlreadyDoneToday ? 'complete' : 'start', active: japaAlreadyDoneToday, href: '/bhakti/mala', onClick: undefined },
     { label: 'Nitya', value: nityaDoneToday ? 'complete' : 'continue', active: nityaDoneToday, href: '/nitya-karma', onClick: undefined },
   ];
+  const divineFeatureCards = [
+    {
+      title: 'Daily Darshan',
+      description: 'Get divine blessings every day',
+      href: '/daily-darshan',
+      icon: Sparkles,
+    },
+    {
+      title: 'Panchang',
+      description: 'Tithi, Nakshatra, Yoga & more',
+      href: '/panchang',
+      icon: CalendarDays,
+    },
+    {
+      title: 'Bhakti',
+      description: 'Mala, zen, aarti and sacred practice',
+      href: '/bhakti',
+      icon: Heart,
+    },
+    {
+      title: 'Bhagavad Gita',
+      description: 'Study, recite and reflect daily',
+      href: '/library/hindu/gita',
+      icon: BookOpen,
+    },
+    {
+      title: 'Mandali',
+      description: 'Join satsang and community circles',
+      href: '/mandali',
+      icon: Users,
+    },
+    {
+      title: 'Tirtha',
+      description: 'Find temples near you',
+      href: '/tirtha-map',
+      icon: MapPin,
+    },
+  ];
 
   return (
     <div className="space-y-4 pb-2 fade-in">
@@ -1282,9 +1335,100 @@ export default function HomeDashboard({
       {/* ── Sacred confetti celebration ── */}
       <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
 
+      {/* ── Divine Minimalist home concept ── */}
+      <motion.section
+        className="divine-home-shell"
+        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 18 }}
+        animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div className="divine-topbar">
+          <div>
+            <p className="divine-brand">Sanatan Universe</p>
+            <p className="divine-helper">{displayCity ? `Today in ${displayCity}` : 'Your daily sacred space'}</p>
+          </div>
+          <Link href="/profile/notifications" className="divine-icon-button" aria-label="Open notifications">
+            <Bell size={19} />
+          </Link>
+        </div>
+
+        <div className="divine-hero">
+          <div className="divine-mandala" aria-hidden="true" />
+          <div className="divine-om" aria-hidden="true">ॐ</div>
+          <div className="divine-shiva-portrait" aria-hidden="true">
+            <div className="divine-halo" />
+            <div className="divine-face" />
+            <div className="divine-trishul">
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+          <div className="divine-temples" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
+
+          <div className="divine-hero-content">
+            <button
+              type="button"
+              onClick={() => setGreetingSheetOpen(true)}
+              className="divine-greeting motion-press"
+            >
+              {greeting.replace('🙏', '').trim()}, {userName.split(' ')[0]}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShlokaModalOpen(true)}
+              className="divine-shloka-card motion-press"
+            >
+              <span className="divine-chip">{sacredText ? sacredText.source : shloka.source}</span>
+              <span className="divine-sanskrit">{dailyTextLine}</span>
+              <span className="divine-card-copy">{sacredText ? sacredText.meaning : shloka.meaning}</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="divine-section-row">
+          <div>
+            <p className="divine-section-title">Begin here</p>
+            <p className="divine-helper">Six core doors, clean and launch-ready.</p>
+          </div>
+          <Link href="/panchang" className="divine-mini-link">Panchang</Link>
+        </div>
+
+        <MotionStagger className="divine-feature-grid" delay={0.08}>
+          {divineFeatureCards.map((item) => {
+            const Icon = item.icon;
+            return (
+              <MotionItem key={item.href}>
+                <Link href={item.href} className="divine-feature-card motion-lift">
+                  <span className="divine-card-motif" aria-hidden="true" />
+                  <span className="divine-feature-icon">
+                    <Icon size={20} strokeWidth={1.8} />
+                  </span>
+                  <span className="divine-feature-title">{item.title}</span>
+                  <span className="divine-feature-copy">{item.description}</span>
+                </Link>
+              </MotionItem>
+            );
+          })}
+        </MotionStagger>
+
+        <Link href="/seva" className="divine-seva-card motion-lift">
+          <span className="divine-card-motif divine-card-motif-large" aria-hidden="true" />
+          <span>
+            <span className="divine-section-title">Donate / Seva</span>
+            <span className="divine-feature-copy mt-1 block">Support temples, cow seva, annadaan and more.</span>
+          </span>
+          <span className="divine-seva-cta">Donate Now</span>
+        </Link>
+      </motion.section>
+
       {/* ── Daily Darshan Hero ── */}
       <motion.section
-        className="rounded-[2rem] px-5 py-5 relative overflow-hidden"
+        className="hidden rounded-[2rem] px-5 py-5 relative overflow-hidden"
         style={{
           background: isDark
             ? 'linear-gradient(150deg, rgba(30,30,28,0.72), rgba(24,24,22,0.54))'
@@ -2094,7 +2238,7 @@ export default function HomeDashboard({
       {/* ── Coming Up ── */}
       <motion.div
         ref={festivalsRef}
-        className="home-luminous-card rounded-[1.85rem] border overflow-hidden relative"
+        className="hidden home-luminous-card rounded-[1.85rem] border overflow-hidden relative"
         style={{
           ['--home-luminous-colour' as string]: HOME_THEMES.tirtha.iconWell,
           background: getCardBg(HOME_THEMES.tirtha),
@@ -2159,6 +2303,7 @@ export default function HomeDashboard({
 
       {/* ── Japa Streak Card ── */}
       <motion.div
+        className="hidden"
         initial={prefersReducedMotion ? undefined : { opacity: 0, y: 6 }}
         animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
         transition={{ duration: 0.38, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
@@ -2209,7 +2354,7 @@ export default function HomeDashboard({
       </motion.div>
 
       {/* ── Quick Access ── */}
-      <div>
+      <div className="hidden">
         <p className="home-section-label mb-3">
           Explore
         </p>
@@ -2251,7 +2396,7 @@ export default function HomeDashboard({
       </div>
 
       {/* ── Vichaar Sabha CTA ── */}
-      {!hiddenSections.has('vichaar-sabha') && (
+      {false && !hiddenSections.has('vichaar-sabha') && (
         <Link href="/vichaar-sabha"
           className="home-luminous-card block w-full rounded-[1.7rem] border p-4 text-center relative overflow-hidden motion-lift"
           style={{
@@ -2274,7 +2419,7 @@ export default function HomeDashboard({
       )}
 
       {/* ── Invite Friends ── */}
-      {!hiddenSections.has('invite-friends') && (
+      {false && !hiddenSections.has('invite-friends') && (
         <button onClick={() => setInviteOpen(true)}
           className="home-luminous-card w-full rounded-[1.7rem] border p-4 text-center relative overflow-hidden motion-lift"
           style={{
@@ -2299,7 +2444,7 @@ export default function HomeDashboard({
       {/* ── Edit Home ── */}
       <button
         onClick={() => setEditHomeOpen(true)}
-        className="mx-auto flex items-center gap-2 px-5 py-2 rounded-full text-xs font-semibold motion-press"
+        className="hidden mx-auto items-center gap-2 px-5 py-2 rounded-full text-xs font-semibold motion-press"
         style={{
           background: 'rgba(200,146,74,0.08)',
           border: '1px solid rgba(200,146,74,0.18)',

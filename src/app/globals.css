@@ -5,8 +5,8 @@
 :root {
   /* ── Fonts ─────────────────────────────────────────────────────────────── */
   --font-inter:      var(--font-inter-next), Inter, system-ui, sans-serif;
-  --font-poppins:    var(--font-playfair), 'Playfair Display', Georgia, serif;
-  --font-serif:      var(--font-playfair), 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-poppins:    var(--font-cormorant), 'Cormorant Garamond', Georgia, serif;
+  --font-serif:      var(--font-cormorant), 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   --font-devanagari: 'Noto Sans Devanagari', sans-serif;
 
   /* ── Spacing ────────────────────────────────────────────────────────────── */
@@ -102,9 +102,9 @@
 }
 
 :root[data-theme='light'] {
-  --brand-primary:        #8E5E2A;
-  --brand-primary-strong: #5F3A16;
-  --brand-primary-soft:   rgba(142, 94, 42, 0.10);
+  --brand-primary:        #D88A1C;
+  --brand-primary-strong: #9F6314;
+  --brand-primary-soft:   rgba(216, 138, 28, 0.12);
   --brand-secondary:      #736858;
 
   /* ── Progress Ring system (light overrides) ─────────────────────────────── */
@@ -126,21 +126,21 @@
   --cream:         #211B14;
   --orange-accent: #8E5E2A;
 
-  --surface-base:   #F7F1E8;
+  --surface-base:   #FAF6EF;
   --surface-soft:   #EFE4D3;
-  --surface-raised: rgba(255, 251, 244, 0.98);
+  --surface-raised: rgba(255, 253, 249, 0.98);
 
   /* Light card tokens */
-  --card-bg:        rgba(255, 251, 244, 0.94);
-  --card-bg-soft:   rgba(247, 241, 232, 0.88);
-  --card-border:    rgba(95, 58, 22, 0.10);
+  --card-bg:        rgba(255, 253, 249, 0.94);
+  --card-bg-soft:   rgba(250, 246, 239, 0.88);
+  --card-border:    rgba(232, 220, 203, 0.95);
   --card-border-soft: rgba(95, 58, 22, 0.06);
 
-  --text-cream:          #211B14;
-  --text-dim:            #8A8176;
-  --text-muted-warm:     #62594E;
-  --text-saffron-soft:   #6C431D;
-  --text-saffron-strong: #6C431D;
+  --text-cream:          #3E2A1F;
+  --text-dim:            #8E7868;
+  --text-muted-warm:     #6C4B35;
+  --text-saffron-soft:   #6C4B35;
+  --text-saffron-strong: #D88A1C;
 
   --chip-fill: #EFE3CF;
   --chip-text: #5F3A16;
@@ -174,11 +174,473 @@ body {
 
 :root[data-theme='light'] body {
   background:
-    linear-gradient(rgba(33, 27, 20, 0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(33, 27, 20, 0.014) 1px, transparent 1px),
-    #F7F1E8;
+    linear-gradient(rgba(62, 42, 31, 0.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(62, 42, 31, 0.010) 1px, transparent 1px),
+    #FAF6EF;
   background-size: 28px 28px, 28px 28px, auto;
   color: var(--brand-ink);
+}
+
+/* Divine Minimalist concept: warm ivory surfaces, devotional motif, restrained saffron. */
+.divine-home-shell {
+  --divine-bg: #FAF6EF;
+  --divine-surface: #FFFDF9;
+  --divine-sand: #EFE4D3;
+  --divine-saffron: #D88A1C;
+  --divine-gold: #C9A35B;
+  --divine-text: #3E2A1F;
+  --divine-muted: #6C4B35;
+  --divine-border: #E8DCCB;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 2px 0 10px;
+  color: var(--divine-text);
+}
+
+:root[data-theme='dark'] .divine-home-shell {
+  --divine-bg: #1c1c1a;
+  --divine-surface: #333330;
+  --divine-sand: rgba(250, 238, 218, 0.10);
+  --divine-saffron: #EF9F27;
+  --divine-gold: #FAC775;
+  --divine-text: #f0ede6;
+  --divine-muted: #b5b0a5;
+  --divine-border: rgba(250, 238, 218, 0.14);
+}
+
+.divine-topbar,
+.divine-section-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.divine-brand {
+  font-family: var(--font-serif);
+  font-size: clamp(2.25rem, 11vw, 2.65rem);
+  font-weight: 700;
+  line-height: 0.95;
+  color: var(--divine-text);
+  letter-spacing: -0.025em;
+}
+
+.divine-helper,
+.divine-card-copy,
+.divine-feature-copy {
+  font-family: var(--font-inter);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--divine-muted);
+}
+
+.divine-icon-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--divine-saffron);
+  background: var(--divine-surface);
+  border: 1px solid var(--divine-border);
+  box-shadow: 0 8px 24px rgba(62, 42, 31, 0.08), 0 2px 8px rgba(62, 42, 31, 0.05);
+}
+
+.divine-hero {
+  position: relative;
+  min-height: 386px;
+  overflow: hidden;
+  border-radius: 24px;
+  padding: 20px;
+  background:
+    radial-gradient(circle at 76% 12%, rgba(201, 163, 91, 0.20), transparent 26%),
+    radial-gradient(circle at 12% 8%, rgba(216, 138, 28, 0.13), transparent 28%),
+    linear-gradient(180deg, #FFFDF9 0%, #FAF6EF 58%, #EFE4D3 100%);
+  border: 1px solid var(--divine-border);
+  box-shadow: 0 8px 24px rgba(62, 42, 31, 0.08), 0 2px 8px rgba(62, 42, 31, 0.05);
+}
+
+:root[data-theme='dark'] .divine-hero {
+  background:
+    radial-gradient(circle at 76% 12%, rgba(250, 199, 117, 0.14), transparent 26%),
+    radial-gradient(circle at 12% 8%, rgba(239, 159, 39, 0.12), transparent 28%),
+    linear-gradient(180deg, #333330 0%, #272722 58%, #1c1c1a 100%);
+}
+
+.divine-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 253, 249, 0.16) 0%, rgba(255, 253, 249, 0.82) 64%, rgba(250, 246, 239, 0.96) 100%);
+  pointer-events: none;
+}
+
+:root[data-theme='dark'] .divine-hero::after {
+  background: linear-gradient(180deg, rgba(51, 51, 48, 0.10) 0%, rgba(28, 28, 26, 0.74) 68%, rgba(28, 28, 26, 0.95) 100%);
+}
+
+.divine-mandala {
+  position: absolute;
+  right: -58px;
+  top: -42px;
+  width: 220px;
+  height: 220px;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 163, 91, 0.30);
+  box-shadow: inset 0 0 0 18px rgba(201, 163, 91, 0.05), inset 0 0 0 42px rgba(216, 138, 28, 0.04);
+}
+
+.divine-om {
+  position: absolute;
+  right: 31px;
+  top: 42px;
+  font-family: Georgia, serif;
+  font-size: 4.9rem;
+  line-height: 1;
+  color: rgba(201, 163, 91, 0.20);
+}
+
+.divine-shiva-portrait {
+  position: absolute;
+  left: 50%;
+  top: 54px;
+  width: 172px;
+  height: 202px;
+  transform: translateX(-50%);
+}
+
+.divine-halo {
+  position: absolute;
+  inset: 4px 0 auto;
+  margin: auto;
+  width: 154px;
+  height: 154px;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 163, 91, 0.30);
+  background: radial-gradient(circle, rgba(201, 163, 91, 0.12), transparent 66%);
+}
+
+.divine-face {
+  position: absolute;
+  left: 50%;
+  top: 38px;
+  width: 88px;
+  height: 128px;
+  transform: translateX(-50%);
+  border-radius: 46% 46% 42% 42%;
+  background: linear-gradient(180deg, rgba(201, 163, 91, 0.34), rgba(108, 75, 53, 0.16));
+  border: 1px solid rgba(201, 163, 91, 0.24);
+}
+
+.divine-trishul {
+  position: absolute;
+  right: 6px;
+  top: 18px;
+  width: 24px;
+  height: 130px;
+}
+
+.divine-trishul::before,
+.divine-trishul::after,
+.divine-trishul span {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 0;
+  width: 2px;
+  height: 126px;
+  border-radius: 99px;
+  background: rgba(201, 163, 91, 0.42);
+}
+
+.divine-trishul span:nth-child(1) {
+  left: 3px;
+  top: 4px;
+  height: 34px;
+  transform: rotate(-18deg);
+}
+
+.divine-trishul span:nth-child(2) {
+  left: 19px;
+  top: 4px;
+  height: 34px;
+  transform: rotate(18deg);
+}
+
+.divine-trishul span:nth-child(3) {
+  left: 5px;
+  top: 42px;
+  width: 16px;
+  height: 2px;
+}
+
+.divine-temples {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 106px;
+  display: flex;
+  justify-content: space-between;
+  opacity: 0.34;
+}
+
+.divine-temples span {
+  width: 54px;
+  height: 34px;
+  border-radius: 8px 8px 0 0;
+  background: rgba(108, 75, 53, 0.22);
+  clip-path: polygon(50% 0, 100% 38%, 100% 100%, 0 100%, 0 38%);
+}
+
+.divine-hero-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  min-height: 344px;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.divine-greeting {
+  align-self: flex-start;
+  text-align: left;
+  font-family: var(--font-inter);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--divine-muted);
+}
+
+.divine-shloka-card,
+.divine-feature-card,
+.divine-seva-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  background: rgba(255, 253, 249, 0.86);
+  border: 1px solid var(--divine-border);
+  box-shadow: 0 8px 24px rgba(62, 42, 31, 0.08), 0 2px 8px rgba(62, 42, 31, 0.05);
+}
+
+:root[data-theme='dark'] .divine-shloka-card,
+:root[data-theme='dark'] .divine-feature-card,
+:root[data-theme='dark'] .divine-seva-card {
+  background: rgba(51, 51, 48, 0.82);
+}
+
+.divine-shloka-card {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  text-align: left;
+}
+
+.divine-chip {
+  align-self: flex-start;
+  border-radius: 999px;
+  background: #FAEEDA;
+  color: #854F0B;
+  padding: 4px 10px;
+  font-family: var(--font-inter);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.divine-sanskrit {
+  font-family: Georgia, 'Noto Serif Devanagari', serif;
+  font-size: clamp(1.5rem, 7vw, 1.9rem);
+  font-weight: 600;
+  line-height: 1.42;
+  color: var(--divine-text);
+}
+
+.divine-section-title,
+.divine-feature-title {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.08;
+  color: var(--divine-text);
+}
+
+.divine-mini-link {
+  flex-shrink: 0;
+  border-radius: 999px;
+  padding: 8px 13px;
+  background: rgba(216, 138, 28, 0.10);
+  border: 1px solid rgba(216, 138, 28, 0.16);
+  color: var(--divine-saffron);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.divine-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.divine-feature-card {
+  min-height: 154px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 16px;
+}
+
+.divine-feature-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--divine-saffron);
+  background: rgba(216, 138, 28, 0.10);
+}
+
+.divine-feature-title {
+  font-size: 18px;
+}
+
+.divine-feature-copy {
+  position: relative;
+  z-index: 1;
+  font-size: 13px;
+}
+
+.divine-card-motif {
+  position: absolute;
+  right: -18px;
+  bottom: -20px;
+  width: 82px;
+  height: 82px;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 163, 91, 0.22);
+  box-shadow: inset 0 0 0 14px rgba(201, 163, 91, 0.045);
+}
+
+.divine-card-motif-large {
+  width: 132px;
+  height: 132px;
+  right: -36px;
+  bottom: -46px;
+}
+
+.divine-seva-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px;
+}
+
+.divine-seva-cta {
+  flex-shrink: 0;
+  border-radius: 999px;
+  padding: 11px 14px;
+  background: var(--divine-saffron);
+  color: #FFFDF9;
+  font-family: var(--font-inter);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.divine-darshan-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 18px;
+  border-radius: 24px;
+  padding: 20px;
+  background:
+    radial-gradient(circle at 80% 8%, rgba(201, 163, 91, 0.16), transparent 28%),
+    var(--divine-surface);
+  border: 1px solid var(--divine-border);
+  box-shadow: 0 8px 24px rgba(62, 42, 31, 0.08), 0 2px 8px rgba(62, 42, 31, 0.05);
+}
+
+.divine-darshan-art {
+  position: relative;
+  min-height: 210px;
+  border-radius: 24px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle, rgba(216, 138, 28, 0.14), transparent 58%),
+    linear-gradient(180deg, rgba(239, 228, 211, 0.64), rgba(255, 253, 249, 0.80));
+  border: 1px solid var(--divine-border);
+}
+
+.divine-darshan-art::before,
+.divine-darshan-art::after {
+  content: '';
+  position: absolute;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 163, 91, 0.26);
+}
+
+.divine-darshan-art::before {
+  width: 164px;
+  height: 164px;
+}
+
+.divine-darshan-art::after {
+  width: 112px;
+  height: 112px;
+}
+
+.divine-darshan-art span {
+  position: relative;
+  z-index: 1;
+  font-family: Georgia, serif;
+  font-size: 4.6rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--divine-saffron);
+}
+
+.divine-darshan-title {
+  margin-top: 12px;
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--divine-text);
+}
+
+.divine-darshan-action {
+  min-height: 46px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(216, 138, 28, 0.09);
+  border: 1px solid rgba(216, 138, 28, 0.15);
+  color: var(--divine-saffron);
+  font-family: var(--font-inter);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media (min-width: 768px) {
+  .divine-home-shell {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .divine-feature-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 /* Headings use Playfair Display for a manuscript-editorial hierarchy. */

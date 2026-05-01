@@ -4,9 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { BookOpen, Heart, Users, Sun } from 'lucide-react';
+import { BookOpen, Sparkles, Sun, UserCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 interface Props {
@@ -117,7 +116,6 @@ export default function BottomNav({
 }: Props) {
   const pathname  = usePathname();
   const prefRM    = useReducedMotion();
-  const { t }     = useLanguage();
   const { resolvedTheme } = useThemePreference();
   const isDark    = resolvedTheme === 'dark';
   const GLASS     = useGlass(isDark);
@@ -158,13 +156,13 @@ export default function BottomNav({
   }, [quickOpen]);
 
   const memberNavItems = [
-    { href: '/nitya-karma', label: 'Nitya',        mobileLabel: 'Nitya',           icon: Sun           },
-    { href: '/pathshala',     label: libraryLabel,    mobileLabel: libraryMobileLabel, icon: BookOpen      },
-    { href: '/kul',         label: t('navKul'),     mobileLabel: t('navKul'),        icon: Heart         },
-    { href: '/mandali',     label: t('navMandali'), mobileLabel: t('navMandali'),    icon: Users         },
+    { href: '/discover',    label: 'Explore',  mobileLabel: 'Explore',  icon: Sparkles   },
+    { href: '/nitya-karma', label: 'Sadhana',  mobileLabel: 'Sadhana',  icon: Sun        },
+    { href: '/pathshala',   label: 'Library',  mobileLabel: 'Library',  icon: BookOpen   },
+    { href: '/profile',     label: 'Profile',  mobileLabel: 'Profile',  icon: UserCircle },
   ];
   const guestNavItems = [
-    { href: '/vichaar-sabha', label: 'Vichaar', mobileLabel: 'Vichaar', icon: Users },
+    { href: '/vichaar-sabha', label: 'Vichaar', mobileLabel: 'Vichaar', icon: Sparkles },
   ];
 
   const navItems   = isGuest ? guestNavItems : memberNavItems;
