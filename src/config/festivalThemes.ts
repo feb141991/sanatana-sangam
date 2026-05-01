@@ -13,6 +13,20 @@ export type HomeHeroTheme = {
   priority?: number;
 };
 
+export type HeroAssetRow = {
+  id: string | null;
+  label: string;
+  hero_image: string;
+  hero_alt: string;
+  object_position: string;
+  traditions?: string[] | null;
+  sampradayas?: string[] | null;
+  ishta_devatas?: string[] | null;
+  festival_slugs?: string[] | null;
+  priority?: number | null;
+  is_active?: boolean | null;
+};
+
 export type ResolveHomeHeroThemeInput = {
   tradition?: string | null;
   sampradaya?: string | null;
@@ -20,6 +34,7 @@ export type ResolveHomeHeroThemeInput = {
   festival?: Pick<Festival, 'name' | 'tradition'> | null;
   selectedHeroId?: string | null;
   lockSelectedHero?: boolean;
+  dbThemes?: HomeHeroTheme[];
 };
 
 export const HOME_HERO_THEMES: HomeHeroTheme[] = [
@@ -54,6 +69,23 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
   },
 ];
 
+export function mapHeroAssetToTheme(asset: HeroAssetRow): HomeHeroTheme | null {
+  if (asset.is_active === false || !asset.hero_image) return null;
+
+  return {
+    id: asset.id ?? asset.label,
+    label: asset.label,
+    heroImage: asset.hero_image,
+    heroAlt: asset.hero_alt,
+    objectPosition: asset.object_position || 'center 24%',
+    traditions: asset.traditions ?? undefined,
+    sampradayas: asset.sampradayas ?? undefined,
+    ishtaDevatas: asset.ishta_devatas ?? undefined,
+    festivalSlugs: asset.festival_slugs ?? undefined,
+    priority: (asset.priority ?? 0) + 1000,
+  };
+}
+
 export function slugifyFestivalName(name?: string | null) {
   return (name ?? '')
     .toLowerCase()
@@ -73,14 +105,18 @@ function matches(list: string[] | undefined, value?: string | null) {
 }
 
 export function resolveHomeHeroTheme(input: ResolveHomeHeroThemeInput): HomeHeroTheme {
+  const allThemes = [
+    ...(input.dbThemes ?? []),
+    ...HOME_HERO_THEMES,
+  ];
   const selected = input.selectedHeroId
-    ? HOME_HERO_THEMES.find(theme => theme.id === input.selectedHeroId)
+    ? allThemes.find(theme => theme.id === input.selectedHeroId)
     : undefined;
 
   if (selected && input.lockSelectedHero) return selected;
 
   const festivalSlug = slugifyFestivalName(input.festival?.name);
-  const festivalMatch = HOME_HERO_THEMES
+  const festivalMatch = allThemes
     .filter(theme => matches(theme.festivalSlugs, festivalSlug))
     .filter(theme => !theme.traditions?.length || matches(theme.traditions, input.tradition) || matches(theme.traditions, input.festival?.tradition))
     .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
@@ -88,22 +124,22 @@ export function resolveHomeHeroTheme(input: ResolveHomeHeroThemeInput): HomeHero
   if (festivalMatch) return festivalMatch;
   if (selected) return selected;
 
-  const ishtaMatch = HOME_HERO_THEMES
+  const ishtaMatch = allThemes
     .filter(theme => matches(theme.ishtaDevatas, input.ishtaDevata))
     .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
 
   if (ishtaMatch) return ishtaMatch;
 
-  const sampradayaMatch = HOME_HERO_THEMES
+  const sampradayaMatch = allThemes
     .filter(theme => matches(theme.sampradayas, input.sampradaya))
     .filter(theme => !theme.traditions?.length || matches(theme.traditions, input.tradition))
     .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
 
   if (sampradayaMatch) return sampradayaMatch;
 
-  const traditionMatch = HOME_HERO_THEMES
+  const traditionMatch = allThemes
     .filter(theme => matches(theme.traditions, input.tradition))
     .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
 
-  return traditionMatch ?? HOME_HERO_THEMES.find(theme => theme.id === 'global-default') ?? HOME_HERO_THEMES[0];
+  return traditionMatch ?? allThemes.find(theme => theme.id === 'global-default') ?? HOME_HERO_THEMES[0];
 }

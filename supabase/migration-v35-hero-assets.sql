@@ -1,5 +1,10 @@
 -- Hero artwork registry for dynamic Home hero selection.
--- Run this before using the Admin > Hero assets metadata workflow.
+-- Physical files live in Supabase Storage bucket `hero-assets`.
+-- This table stores metadata/matching rules only.
+
+insert into storage.buckets (id, name, public)
+values ('hero-assets', 'hero-assets', true)
+on conflict (id) do update set public = true;
 
 create table if not exists public.hero_assets (
   id uuid primary key default gen_random_uuid(),

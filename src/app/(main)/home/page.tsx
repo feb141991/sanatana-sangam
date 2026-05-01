@@ -10,6 +10,7 @@ import {
   getNextFestival,
   getTodayPanchang,
 } from '@/lib/festivals';
+import { mapHeroAssetToTheme, type HeroAssetRow, type HomeHeroTheme } from '@/config/festivalThemes';
 import { getDailySacredText, getDayOfYear } from '@/lib/sacred-texts';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import type { GuidedPathProgressRow } from '@/lib/guided-paths';
@@ -59,6 +60,16 @@ export default async function HomePage() {
   // Tradition-aware festival: shows their tradition's next festival first
   const festival = getNextFestival(festivalCalendar, new Date(), tradition);
   const daysLeft = festival ? daysUntil(festival.date) : null;
+
+  const { data: heroAssetRows } = await supabase
+    .from('hero_assets')
+    .select('id, label, hero_image, hero_alt, object_position, traditions, sampradayas, ishta_devatas, festival_slugs, priority, is_active')
+    .eq('is_active', true)
+    .order('priority', { ascending: false });
+
+  const heroThemes = ((heroAssetRows ?? []) as HeroAssetRow[])
+    .map(mapHeroAssetToTheme)
+    .filter((theme): theme is HomeHeroTheme => Boolean(theme));
 
   const panchang = getTodayPanchang(
     profile?.latitude  ?? undefined,
@@ -135,6 +146,7 @@ export default async function HomePage() {
       festival={festival}
       festivalCalendar={festivalCalendar}
       festivalCalendarMeta={festivalCalendarMeta}
+      heroThemes={heroThemes}
       daysUntilFestival={daysLeft}
       initialPanchang={panchang}
       shlokaStreak={profile?.shloka_streak ?? 0}

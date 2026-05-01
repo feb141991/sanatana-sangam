@@ -457,7 +457,7 @@ function HeroAssetsTab({ assets: initialAssets }: { assets: HeroAssetRow[] }) {
           <div>
             <h2 className="font-display font-bold text-[color:var(--text-cream)]">Hero assets</h2>
             <p className="text-xs text-[color:var(--text-dim)]">
-              Upload devotional hero artwork with tradition, ishta devata, festival, and object-position metadata.
+              Files upload to Supabase Storage. The DB stores only metadata: tradition, ishta devata, festival, and object-position rules.
             </p>
           </div>
         </div>

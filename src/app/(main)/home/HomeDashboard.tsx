@@ -37,7 +37,7 @@ import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { APP } from '@/lib/config';
-import { resolveHomeHeroTheme } from '@/config/festivalThemes';
+import { resolveHomeHeroTheme, type HomeHeroTheme } from '@/config/festivalThemes';
 import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
 import MoodGlyph from '@/components/ui/MoodGlyph';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
@@ -80,6 +80,7 @@ interface Props {
   festival:          Festival | null;
   festivalCalendar:  Festival[];
   festivalCalendarMeta: FestivalCalendarMeta;
+  heroThemes:        HomeHeroTheme[];
   daysUntilFestival: number | null;
   initialPanchang:   Panchang;
   shlokaStreak:      number;
@@ -908,6 +909,7 @@ export default function HomeDashboard({
   festival,
   festivalCalendar,
   festivalCalendarMeta,
+  heroThemes,
   daysUntilFestival,
   initialPanchang,
   shlokaStreak:   initialStreak,
@@ -1300,6 +1302,7 @@ export default function HomeDashboard({
     sampradaya,
     ishtaDevata,
     festival,
+    dbThemes: heroThemes,
   });
   const divineFeatureCards = [
     {
