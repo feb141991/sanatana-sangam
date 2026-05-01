@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
+  Bell,
   BookOpen,
   CalendarDays,
   ChevronDown,
@@ -1324,9 +1325,9 @@ export default function HomeDashboard({
       icon: Heart,
     },
     {
-      title: 'Bhagavad Gita',
+      title: 'Pathshala',
       description: 'Study, recite and reflect daily',
-      href: '/library/hindu/gita',
+      href: '/pathshala',
       icon: BookOpen,
     },
     {
@@ -1357,8 +1358,10 @@ export default function HomeDashboard({
         transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="divine-topbar">
-          <div className="min-w-0">
-            <p className="divine-brand">Sanatan Universe</p>
+          <Link href="/profile" className="divine-icon-button" aria-label="Open notifications">
+            <Bell size={19} />
+          </Link>
+          <div className="min-w-0 flex-1">
             <div className="divine-topbar-meta">
               {displayCity && (
                 <span className="divine-location">
@@ -1418,14 +1421,6 @@ export default function HomeDashboard({
               <span className="divine-card-copy">{sacredText ? sacredText.meaning : shloka.meaning}</span>
             </button>
           </div>
-        </div>
-
-        <div className="divine-section-row">
-          <div>
-            <p className="divine-section-title">Begin here</p>
-            <p className="divine-helper">Six core doors, clean and launch-ready.</p>
-          </div>
-          <Link href="/panchang" className="divine-mini-link">Panchang</Link>
         </div>
 
         <MotionStagger className="divine-feature-grid" delay={0.08}>

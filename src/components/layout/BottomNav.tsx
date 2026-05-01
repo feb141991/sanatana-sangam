@@ -4,13 +4,11 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { BookOpen, Sparkles, Sun, UserCircle } from 'lucide-react';
+import { Heart, MessageCircle, Sun, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 interface Props {
-  libraryLabel?: string;
-  libraryMobileLabel?: string;
   isGuest?: boolean;
 }
 
@@ -110,8 +108,6 @@ function FloatingQuickMenu({
 
 // ── Main BottomNav ─────────────────────────────────────────────────────────────
 export default function BottomNav({
-  libraryLabel = 'Pathshala',
-  libraryMobileLabel = 'Pathshala',
   isGuest = false,
 }: Props) {
   const pathname  = usePathname();
@@ -156,13 +152,13 @@ export default function BottomNav({
   }, [quickOpen]);
 
   const memberNavItems = [
-    { href: '/discover',    label: 'Explore',  mobileLabel: 'Explore',  icon: Sparkles   },
-    { href: '/nitya-karma', label: 'Sadhana',  mobileLabel: 'Sadhana',  icon: Sun        },
-    { href: '/pathshala',   label: 'Library',  mobileLabel: 'Library',  icon: BookOpen   },
-    { href: '/profile',     label: 'Profile',  mobileLabel: 'Profile',  icon: UserCircle },
+    { href: '/nitya-karma', label: 'Nitya',    mobileLabel: 'Nitya',    icon: Sun           },
+    { href: '/bhakti',      label: 'Bhakti',   mobileLabel: 'Bhakti',   icon: Heart         },
+    { href: '/kul',         label: 'Kul',      mobileLabel: 'Kul',      icon: Users         },
+    { href: '/mandali',     label: 'Mandali',  mobileLabel: 'Mandali',  icon: MessageCircle },
   ];
   const guestNavItems = [
-    { href: '/vichaar-sabha', label: 'Vichaar', mobileLabel: 'Vichaar', icon: Sparkles },
+    { href: '/vichaar-sabha', label: 'Vichaar', mobileLabel: 'Vichaar', icon: MessageCircle },
   ];
 
   const navItems   = isGuest ? guestNavItems : memberNavItems;
