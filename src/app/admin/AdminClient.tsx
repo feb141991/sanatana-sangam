@@ -1,11 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import type { FormEvent } from 'react';
 import toast from 'react-hot-toast';
 import {
   Users, Flag, MessageSquare, Home, BarChart2,
   CheckCircle, XCircle, Shield, AlertTriangle,
-  Trash2, Crown, Send, LogOut,
+  Trash2, Crown, Send, LogOut, Image as ImageIcon, UploadCloud,
 } from 'lucide-react';
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -14,6 +15,7 @@ type ReportRow  = { id: string; content_type: string; content_id: string; reason
 type PostRow    = { id: string; content: string; type: string; created_at: string; mandali_id: string | null; author_id: string; profiles: { full_name: string | null; username: string | null } | null };
 type KulRow     = { id: string; name: string; invite_code: string; avatar_emoji: string; created_at: string; created_by: string };
 type MandaliRow = { id: string; name: string; city: string; country: string; member_count: number };
+type HeroAssetRow = { id: string | null; label: string; hero_image: string; hero_alt: string; object_position: string; traditions: string[]; sampradayas: string[]; ishta_devatas: string[]; festival_slugs: string[]; tags: string[]; priority: number; is_active: boolean; created_at?: string };
 
 async function requestJson<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   const headers = new Headers(init?.headers);
@@ -41,6 +43,7 @@ interface Props {
   posts:     PostRow[];
   kuls:      KulRow[];
   mandalis:  MandaliRow[];
+  heroAssets: HeroAssetRow[];
 }
 
 const TRADITION_EMOJI: Record<string, string> = {
@@ -73,7 +76,7 @@ function StatCard({ label, value, emoji, sub, onClick }: { label: string; value:
 }
 
 // ── Dashboard Tab ─────────────────────────────────────────────────────────────
-type TabKey = 'dashboard' | 'moderation' | 'users' | 'posts' | 'notifications' | 'broadcast';
+type TabKey = 'dashboard' | 'moderation' | 'users' | 'posts' | 'hero-assets' | 'notifications' | 'broadcast';
 
 function DashboardTab({ users, reports, kuls, mandalis, onTabChange }: { users: UserRow[]; reports: ReportRow[]; kuls: KulRow[]; mandalis: MandaliRow[]; onTabChange: (tab: TabKey) => void }) {
   const pendingReports = reports.filter(r => r.status === 'pending').length;
@@ -418,6 +421,93 @@ function PostsTab({ posts: initialPosts }: { posts: PostRow[] }) {
   );
 }
 
+// ── Hero Assets Tab ───────────────────────────────────────────────────────────
+function HeroAssetsTab({ assets: initialAssets }: { assets: HeroAssetRow[] }) {
+  const [assets, setAssets] = useState(initialAssets);
+  const [uploading, setUploading] = useState(false);
+
+  async function uploadHeroAsset(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    setUploading(true);
+    try {
+      const response = await fetch('/api/admin/hero-assets', { method: 'POST', body: formData });
+      const payload = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(payload?.error ?? 'Hero upload failed');
+
+      setAssets(prev => [payload.asset, ...prev]);
+      form.reset();
+      toast.success(payload.metadataStored ? 'Hero asset uploaded' : 'Image uploaded. Run migration v35 to store metadata.');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Hero upload failed');
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="glass-panel rounded-2xl p-4">
+        <div className="flex items-start gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#7B1A1A0D', color: '#7B1A1A' }}>
+            <ImageIcon size={18} />
+          </div>
+          <div>
+            <h2 className="font-display font-bold text-[color:var(--text-cream)]">Hero assets</h2>
+            <p className="text-xs text-[color:var(--text-dim)]">
+              Upload devotional hero artwork with tradition, ishta devata, festival, and object-position metadata.
+            </p>
+          </div>
+        </div>
+
+        <form onSubmit={uploadHeroAsset} className="grid gap-3">
+          <input name="label" required placeholder="Label, e.g. Shaiva default" className="rounded-xl border border-[color:var(--card-border)] bg-[color:var(--card-bg)] px-3 py-2 text-sm" />
+          <input name="heroAlt" required placeholder="Alt text, e.g. Soft devotional Shiva artwork" className="rounded-xl border border-[color:var(--card-border)] bg-[color:var(--card-bg)] px-3 py-2 text-sm" />
+          <div className="grid sm:grid-cols-2 gap-3">
+            <input name="objectPosition" defaultValue="58% 24%" placeholder="Object position" className="rounded-xl border border-[color:var(--card-border)] bg-[color:var(--card-bg)] px-3 py-2 text-sm" />
+            <input name="priority" type="number" defaultValue="0" placeholder="Priority" className="rounded-xl border border-[color:var(--card-border)] bg-[color:var(--card-bg)] px-3 py-2 text-sm" />
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <input name="traditions" placeholder="Traditions: hindu, sikh" className="rounded-xl border border-[color:var(--card-border)] bg-[color:var(--card-bg)] px-3 py-2 text-sm" />
+            <input name="sampradayas" placeholder="Sampradayas: shaiva, vaishnava" className="rounded-xl border border-[color:var(--card-border)] bg-[color:var(--card-bg)] px-3 py-2 text-sm" />
+            <input name="ishtaDevatas" placeholder="Ishta devatas: shiva, krishna" className="rounded-xl border border-[color:var(--card-border)] bg-[color:var(--card-bg)] px-3 py-2 text-sm" />
+            <input name="festivalSlugs" placeholder="Festival slugs: maha-shivaratri" className="rounded-xl border border-[color:var(--card-border)] bg-[color:var(--card-bg)] px-3 py-2 text-sm" />
+          </div>
+          <input name="tags" placeholder="Tags: soft, portrait, launch" className="rounded-xl border border-[color:var(--card-border)] bg-[color:var(--card-bg)] px-3 py-2 text-sm" />
+          <input name="file" required type="file" accept="image/webp,image/jpeg,image/png" className="rounded-xl border border-dashed border-[color:var(--card-border)] bg-[color:var(--card-bg)] px-3 py-3 text-sm" />
+          <button disabled={uploading} className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-white disabled:opacity-60" style={{ background: '#7B1A1A' }}>
+            <UploadCloud size={16} />
+            {uploading ? 'Uploading...' : 'Upload hero asset'}
+          </button>
+        </form>
+      </div>
+
+      <div className="space-y-3">
+        {assets.length === 0 && (
+          <p className="glass-panel rounded-2xl p-4 text-sm text-[color:var(--text-dim)]">
+            No DB hero assets found yet. Static config fallback is still active for Home.
+          </p>
+        )}
+        {assets.map((asset) => (
+          <div key={`${asset.id ?? asset.hero_image}-${asset.label}`} className="glass-panel rounded-2xl p-3 flex gap-3">
+            <div className="h-20 w-16 rounded-xl bg-[color:var(--surface-soft)] bg-cover bg-center border border-[color:var(--card-border)]" style={{ backgroundImage: `url(${asset.hero_image})` }} />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-[color:var(--text-cream)]">{asset.label}</p>
+              <p className="text-xs text-[color:var(--text-dim)] truncate">{asset.hero_alt}</p>
+              <p className="text-[11px] text-[color:var(--brand-muted)] mt-1">Position: {asset.object_position} · Priority: {asset.priority}</p>
+              <p className="text-[11px] text-[color:var(--text-dim)] mt-1 truncate">
+                {[...asset.traditions, ...asset.sampradayas, ...asset.ishta_devatas, ...asset.festival_slugs].join(', ') || 'No tags'}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ── Broadcast Tab ─────────────────────────────────────────────────────────────
 function BroadcastTab({ userCount }: { userCount: number }) {
   const [title,   setTitle]   = useState('');
@@ -621,7 +711,7 @@ function NotificationsTab() {
 }
 
 // ── Main Admin Component ──────────────────────────────────────────────────────
-export default function AdminClient({ adminName, users, reports, posts, kuls, mandalis }: Props) {
+export default function AdminClient({ adminName, users, reports, posts, kuls, mandalis, heroAssets }: Props) {
   const [activeTab, setActiveTab] = useState<TabKey>('dashboard');
   const pendingReports = reports.filter(r => r.status === 'pending').length;
 
@@ -630,6 +720,7 @@ export default function AdminClient({ adminName, users, reports, posts, kuls, ma
     { key: 'moderation',    label: 'Moderation',     icon: <Flag size={14} />, badge: pendingReports || undefined },
     { key: 'users',         label: 'Users',          icon: <Users size={14} />, badge: users.length },
     { key: 'posts',         label: 'Posts',          icon: <MessageSquare size={14} /> },
+    { key: 'hero-assets',   label: 'Hero assets',    icon: <ImageIcon size={14} />, badge: heroAssets.length || undefined },
     { key: 'notifications', label: 'Notifications',  icon: <CheckCircle size={14} /> },
     { key: 'broadcast',     label: 'Broadcast',      icon: <Send size={14} /> },
   ];
@@ -691,6 +782,7 @@ export default function AdminClient({ adminName, users, reports, posts, kuls, ma
         {activeTab === 'moderation'    && <ModerationTab    reports={reports} />}
         {activeTab === 'users'         && <UsersTab         users={users} />}
         {activeTab === 'posts'         && <PostsTab         posts={posts} />}
+        {activeTab === 'hero-assets'   && <HeroAssetsTab    assets={heroAssets} />}
         {activeTab === 'notifications' && <NotificationsTab />}
         {activeTab === 'broadcast'     && <BroadcastTab     userCount={users.length} />}
       </div>

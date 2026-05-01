@@ -29,6 +29,11 @@ export default async function AdminPage() {
       .select('id, name, city, country, member_count')
       .order('member_count', { ascending: false }),
   ]);
+  const heroAssetsRes = await supabase
+    .from('hero_assets')
+    .select('id, label, hero_image, hero_alt, object_position, traditions, sampradayas, ishta_devatas, festival_slugs, tags, priority, is_active, created_at')
+    .order('priority', { ascending: false })
+    .order('created_at', { ascending: false });
 
   return (
     <AdminClient
@@ -38,6 +43,7 @@ export default async function AdminPage() {
       posts={(postsRes.data   ?? []) as any}
       kuls={(kulRes.data      ?? []) as any}
       mandalis={(mandaliRes.data ?? []) as any}
+      heroAssets={(heroAssetsRes.data ?? []) as any}
     />
   );
 }

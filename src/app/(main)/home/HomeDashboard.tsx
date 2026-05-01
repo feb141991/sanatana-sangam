@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
-  Bell,
   BookOpen,
   CalendarDays,
   ChevronDown,
@@ -37,6 +37,7 @@ import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { APP } from '@/lib/config';
+import { resolveHomeHeroTheme } from '@/config/festivalThemes';
 import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
 import MoodGlyph from '@/components/ui/MoodGlyph';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
@@ -68,6 +69,7 @@ interface FeatureTheme {
 interface Props {
   userId:            string;
   userName:          string;
+  avatarUrl:         string | null;
   city:              string;
   savedLat:          number | null;
   savedLon:          number | null;
@@ -84,6 +86,7 @@ interface Props {
   lastShlokaDate:    string | null;
   tradition:         string | null;
   sampradaya:        string | null;
+  ishtaDevata:       string | null;
   spiritualLevel:    string | null;
   seeking:           string[];
   lifeStage:         string | null;
@@ -895,6 +898,7 @@ function SkyBackground({ hour }: { hour: number }) {
 export default function HomeDashboard({
   userId,
   userName,
+  avatarUrl,
   city: savedCity,
   savedLat,
   savedLon,
@@ -910,6 +914,7 @@ export default function HomeDashboard({
   lastShlokaDate,
   tradition,
   sampradaya,
+  ishtaDevata,
   spiritualLevel,
   seeking,
   lifeStage,
@@ -1290,6 +1295,12 @@ export default function HomeDashboard({
     { label: 'Mala', value: japaAlreadyDoneToday ? 'complete' : 'start', active: japaAlreadyDoneToday, href: '/bhakti/mala', onClick: undefined },
     { label: 'Nitya', value: nityaDoneToday ? 'complete' : 'continue', active: nityaDoneToday, href: '/nitya-karma', onClick: undefined },
   ];
+  const heroTheme = resolveHomeHeroTheme({
+    tradition,
+    sampradaya,
+    ishtaDevata,
+    festival,
+  });
   const divineFeatureCards = [
     {
       title: 'Daily Darshan',
@@ -1343,32 +1354,47 @@ export default function HomeDashboard({
         transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="divine-topbar">
-          <div>
+          <div className="min-w-0">
             <p className="divine-brand">Sanatan Universe</p>
-            <p className="divine-helper">{displayCity ? `Today in ${displayCity}` : 'Your daily sacred space'}</p>
+            <div className="divine-topbar-meta">
+              {displayCity && (
+                <span className="divine-location">
+                  <MapPin size={13} />
+                  {displayCity}
+                </span>
+              )}
+              {moodToday && (
+                <Link href="/discover" className="divine-mood-chip motion-press">
+                  <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={15} />
+                  {moodToday.label}
+                </Link>
+              )}
+              {!displayCity && !moodToday && (
+                <span className="divine-helper">Your daily sacred space</span>
+              )}
+            </div>
           </div>
-          <Link href="/profile/notifications" className="divine-icon-button" aria-label="Open notifications">
-            <Bell size={19} />
+          <Link href="/profile" className="divine-profile-link" aria-label="Open profile">
+            {avatarUrl ? (
+              <Image src={avatarUrl} alt={`${userName}'s profile photo`} fill sizes="44px" className="object-cover" />
+            ) : (
+              <span>{userName.trim().charAt(0).toUpperCase() || 'S'}</span>
+            )}
           </Link>
         </div>
 
         <div className="divine-hero">
-          <div className="divine-mandala" aria-hidden="true" />
+          <Image
+            src={heroTheme.heroImage}
+            alt={heroTheme.heroAlt}
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, 760px"
+            className="object-cover object-center divine-hero-image"
+            style={{ objectPosition: heroTheme.objectPosition }}
+          />
+          <div className="divine-hero-overlay" aria-hidden="true" />
           <div className="divine-om" aria-hidden="true">ॐ</div>
-          <div className="divine-shiva-portrait" aria-hidden="true">
-            <div className="divine-halo" />
-            <div className="divine-face" />
-            <div className="divine-trishul">
-              <span />
-              <span />
-              <span />
-            </div>
-          </div>
-          <div className="divine-temples" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </div>
 
           <div className="divine-hero-content">
             <button
@@ -1376,7 +1402,8 @@ export default function HomeDashboard({
               onClick={() => setGreetingSheetOpen(true)}
               className="divine-greeting motion-press"
             >
-              {greeting.replace('🙏', '').trim()}, {userName.split(' ')[0]}
+              <span>{greeting.replace('🙏', '').trim()}, {userName.split(' ')[0]}</span>
+              <Pencil size={15} />
             </button>
             <button
               type="button"

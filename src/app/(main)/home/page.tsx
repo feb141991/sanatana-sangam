@@ -24,7 +24,7 @@ export default async function HomePage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, tradition, spiritual_level, seeking, custom_greeting, life_stage, timezone')
+    .select('full_name, username, avatar_url, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, ishta_devata, tradition, spiritual_level, seeking, custom_greeting, life_stage, timezone')
     .eq('id', user.id)
     .single();
 
@@ -119,6 +119,7 @@ export default async function HomePage() {
     <HomeDashboard
       userId={user.id}
       userName={profile?.full_name ?? profile?.username ?? 'Sanatani'}
+      avatarUrl={profile?.avatar_url ?? null}
       city={profile?.city ?? ''}
       savedLat={profile?.latitude  ?? null}
       savedLon={profile?.longitude ?? null}
@@ -140,6 +141,7 @@ export default async function HomePage() {
       lastShlokaDate={profile?.last_shloka_date ?? null}
       tradition={tradition}
       sampradaya={profile?.sampradaya ?? null}
+      ishtaDevata={profile?.ishta_devata ?? null}
       spiritualLevel={profile?.spiritual_level ?? null}
       seeking={profile?.seeking ?? []}
       lifeStage={(profile as any)?.life_stage ?? null}
