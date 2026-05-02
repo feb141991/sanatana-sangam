@@ -29,8 +29,8 @@ export const SACRED_ASSETS = {
     return `/assets/images/heroes/${tradition}/${filename}.${ext}`;
   },
 
-  getDarshan: (deity: string) => {
-    return `/darshan/${deity.toLowerCase().replace(/\s+/g, '_')}.png`;
+  getDarshan: (deity: string, ext: 'webp' | 'png' | 'jpg' = 'webp') => {
+    return `/darshan/${deity.toLowerCase().replace(/\s+/g, '_')}.${ext}`;
   },
 
   getAudio: (tradition: TraditionKey, type: 'bell' | 'chant' | 'ambient' = 'bell') => {
