@@ -1427,7 +1427,7 @@ export default function HomeDashboard({
           <div className="divine-hero-readability" aria-hidden="true" />
           <div className="divine-poster-motif divine-poster-motif-om" aria-hidden="true">{heroFallback.mark}</div>
           <div className="divine-poster-motif divine-poster-motif-mandala" aria-hidden="true" />
-          <div className="divine-poster-motif divine-poster-motif-lotus" aria-hidden="true"> lotus </div>
+          <div className="divine-poster-motif divine-poster-motif-lotus" aria-hidden="true" />
 
           <div className="divine-hero-content">
             <div className="divine-hero-topline">
