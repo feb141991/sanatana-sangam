@@ -92,5 +92,69 @@ export const LIVE_STREAMS: LiveStream[] = [
     category: 'satsang',
     tradition: 'hindu',
     youtubeVideoId: 'KmQrxaRSurQ', // Verified Brahma Kumaris
-  }
+  },
+  // ── New additions ─────────────────────────────────────────────
+  {
+    id: 'tirupati-balaji',
+    title: 'Tirupati Balaji (TTD)',
+    location: 'Tirupati, Andhra Pradesh',
+    schedule: 'Suprabhata Seva: 3:00 AM',
+    category: 'mandir',
+    tradition: 'hindu',
+    youtubeVideoId: 'oWFK4tgjAGM', // Verified Tirupati Balaji
+  },
+  {
+    id: 'siddhivinayak',
+    title: 'Siddhivinayak Temple',
+    location: 'Mumbai, Maharashtra',
+    schedule: 'Aarti: 6:00 AM & 7:30 PM',
+    category: 'mandir',
+    tradition: 'hindu',
+    youtubeVideoId: 'SIqmLnMj0Ow', // Verified Siddhivinayak
+  },
+  {
+    id: 'kashi-vishwanath',
+    title: 'Kashi Vishwanath Dham',
+    location: 'Varanasi, UP',
+    schedule: 'Mangala Aarti: 3:00 AM',
+    category: 'mandir',
+    tradition: 'hindu',
+    youtubeVideoId: 'CxXJsVLDJko', // Verified Kashi Vishwanath
+  },
+  {
+    id: 'golden-temple-sgpc',
+    title: 'Golden Temple (SGPC Official)',
+    location: 'Amritsar, Punjab',
+    schedule: 'Live Gurbani Kirtan 24/7',
+    category: 'mandir',
+    tradition: 'sikh',
+    youtubeVideoId: '8GTgg2TmRLQ', // Verified SGPC Official
+  },
+  {
+    id: 'shirdi-sai-baba-temple',
+    title: 'Shirdi Sai Baba Temple',
+    location: 'Shirdi, Maharashtra',
+    schedule: 'Live Darshan 24/7',
+    category: 'mandir',
+    tradition: 'hindu',
+    youtubeVideoId: 'HbVd7a7esgA', // Verified Shirdi Darshan
+  },
+  {
+    id: 'puri-jagannath',
+    title: 'Shri Jagannath Puri',
+    location: 'Puri, Odisha',
+    schedule: 'Live Darshan from Puri Dham',
+    category: 'mandir',
+    tradition: 'hindu',
+    youtubeVideoId: '_pplsMPNVmQ', // Verified Jay Jagannath TV
+  },
+  {
+    id: 'kedarnath-temple',
+    title: 'Kedarnath Temple',
+    location: 'Rudraprayag, Uttarakhand',
+    schedule: 'Sandhya Aarti: 6:00 PM',
+    category: 'mandir',
+    tradition: 'hindu',
+    youtubeVideoId: '3oJdFVXsC-o', // Verified Kedarnath Live
+  },
 ];
