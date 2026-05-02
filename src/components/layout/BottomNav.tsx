@@ -14,11 +14,11 @@ interface Props {
 
 // ── Quick Actions ──────────────────────────────────────────────────────────────
 const QUICK_ACTIONS = [
-  { icon: '💬', label: 'Vichaar',   href: '/vichaar-sabha' },
-  { icon: '🙏', label: 'Bhakti',    href: '/bhakti'        },
-  { icon: '🪔', label: 'Sanskar',   href: '/kul/sanskara'  },
-  { icon: '🛕', label: 'Tirtha',    href: '/tirtha-map'    },
-  { icon: '📊', label: 'Progress',  href: '/my-progress'   },
+  { icon: '📿', label: 'Japa Mala', href: '/japa'          },
+  { icon: '📖', label: 'Pathshala', href: '/pathshala'      },
+  { icon: '🤝', label: 'Seva Hub',  href: '/seva'          },
+  { icon: '🛕', label: 'Tirtha Map',href: '/tirtha-map'    },
+  { icon: '📊', label: 'My Progress', href: '/my-progress'   },
 ];
 const GUEST_QUICK_ACTIONS = [
   { icon: '✨', label: 'Join',    href: '/signup'        },

@@ -1,19 +1,24 @@
-import Link from 'next/link';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { redirect } from 'next/navigation';
+import SevaClient from './SevaClient';
 
-export default function SevaPage() {
+export default async function SevaPage() {
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) redirect('/');
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('full_name, username, tradition')
+    .eq('id', user.id)
+    .single();
+
   return (
-    <main className="divine-home-shell pb-28">
-      <section className="divine-darshan-card">
-        <span className="divine-card-motif divine-card-motif-large" aria-hidden="true" />
-        <span className="divine-chip">Coming soon</span>
-        <h1 className="divine-darshan-title">Donate / Seva</h1>
-        <p className="divine-card-copy">
-          This will become the verified seva hub for temples, cow seva, annadaan and community causes.
-        </p>
-        <Link href="/home" className="divine-seva-cta self-start">
-          Back home
-        </Link>
-      </section>
-    </main>
+    <SevaClient 
+      userId={user.id} 
+      userName={profile?.full_name ?? profile?.username ?? 'Sanatani'} 
+      tradition={profile?.tradition ?? 'hindu'} 
+    />
   );
 }

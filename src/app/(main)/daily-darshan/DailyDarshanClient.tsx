@@ -33,6 +33,27 @@ const DARSHAN_CARDS = [
     symbol: 'राम',
     blessing: 'May Hanuman give you focus, devotion, and the energy to complete what matters.',
   },
+  {
+    id: 'sikh',
+    tradition: 'Sikh',
+    title: 'Guru’s Kirpa',
+    symbol: '☬',
+    blessing: 'May the Guru’s wisdom light your path and keep your heart in Chardi Kala (eternal optimism).',
+  },
+  {
+    id: 'buddhist',
+    tradition: 'Buddhist',
+    title: 'Nirvana Path',
+    symbol: '☸️',
+    blessing: 'May you find peace in the present moment and move with mindfulness through the day.',
+  },
+  {
+    id: 'jain',
+    tradition: 'Jain',
+    title: 'Ahimsa Blessing',
+    symbol: '🤲',
+    blessing: 'May your thoughts and actions be rooted in compassion and non-violence toward all beings.',
+  },
 ];
 
 function buildWallpaperSvg(card: typeof DARSHAN_CARDS[number]) {
