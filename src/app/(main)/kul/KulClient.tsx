@@ -1474,84 +1474,156 @@ function KulHubView({
     .sort((a, b) => a.daysUntil - b.daysUntil);
 
   return (
-    <div className="space-y-4">
-      <div className="clay-card rounded-[2rem] p-5 sm:p-6">
-        {/* Back to home */}
-        <Link href="/home"
-          className="inline-flex items-center gap-1.5 mb-4 text-xs font-medium rounded-full px-3 py-1.5 transition"
-          style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.18)', color: 'rgba(200,146,74,0.85)' }}>
-          <ChevronLeft size={14} />
-          Home
-        </Link>
-        <div className="flex items-start gap-4">
-          <div className="w-16 h-16 rounded-[1.4rem] flex items-center justify-center text-3xl flex-shrink-0"
-            style={{ background: 'linear-gradient(135deg, rgba(31, 107, 114, 0.16), rgba(195, 135, 47, 0.18))' }}>
-            {kul.avatar_emoji}
-          </div>
-          <div className="flex-1 min-w-0">
-            {editingName && myRole === 'guardian' ? (
-              <div className="flex items-center gap-2">
-                <input
-                  autoFocus
-                  value={newKulName}
-                  onChange={(e) => setNewKulName(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter') saveKulName(); if (e.key === 'Escape') setEditingName(false); }}
-                  maxLength={40}
-                  className="type-screen-title flex-1 border-b-2 bg-transparent outline-none"
-                  style={{ borderColor: 'var(--brand-primary)' }}
-                />
-                <button
-                  onClick={saveKulName}
-                  disabled={savingName}
-                  className="w-8 h-8 rounded-xl flex items-center justify-center text-white disabled:opacity-50"
-                  style={{ background: 'var(--brand-primary)' }}>
-                  {savingName ? <span className="text-[10px]">…</span> : <Check size={14} />}
-                </button>
-                <button onClick={() => setEditingName(false)}
-                  className="w-8 h-8 rounded-xl flex items-center justify-center bg-white/[0.06] border border-white/8">
-                  <X size={14} className="theme-dim" />
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <h1 className="type-screen-title truncate">{kul.name}</h1>
-                {myRole === 'guardian' && (
-                  <button
-                    onClick={() => { setNewKulName(kul.name); setEditingName(true); }}
-                    className="w-7 h-7 rounded-lg flex items-center justify-center bg-white/[0.06] border border-white/8 hover:bg-white/[0.09] transition flex-shrink-0"
-                    title="Rename Kul">
-                    <Pencil size={12} className="theme-dim" />
-                  </button>
-                )}
-              </div>
-            )}
-            <p className="type-card-label mt-1">
-              Kul Home
-            </p>
-          </div>
-          <div className="type-chip hidden rounded-2xl border px-3 py-2 tracking-widest sm:block"
-            style={{ borderColor: 'rgba(31, 107, 114, 0.24)', color: 'var(--brand-primary)' }}>
-            {kul.invite_code}
+    <div className="space-y-6">
+      <style>{`
+        @keyframes aura-pulse {
+          0% { transform: translate(-50%, -50%) scale(1); opacity: 0.15; }
+          50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.25; }
+          100% { transform: translate(-50%, -50%) scale(1); opacity: 0.15; }
+        }
+        .kul-sacred-aura {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 280px;
+          height: 280px;
+          background: radial-gradient(circle, var(--brand-primary) 0%, transparent 70%);
+          filter: blur(40px);
+          animation: aura-pulse 6s ease-in-out infinite;
+          pointer-events: none;
+          z-index: 0;
+        }
+        .kul-seal-ring {
+          position: relative;
+          z-index: 1;
+          background: linear-gradient(135deg, #f0c040, #d4a645, #a07830);
+          padding: 3px;
+          border-radius: 999px;
+          box-shadow: 0 10px 30px rgba(160, 120, 48, 0.3);
+        }
+        .kul-seal-inner {
+          background: var(--surface-soft);
+          border-radius: 999px;
+          width: 96px;
+          height: 96px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 42px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .floating-pill {
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        .premium-serif {
+          font-family: var(--font-serif);
+          letter-spacing: -0.01em;
+        }
+      `}</style>
+
+      {/* ── NEW SACRED HERO ── */}
+      <div className="relative clay-card rounded-[2.5rem] p-6 overflow-hidden flex flex-col items-center text-center">
+        {/* Background Accents */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--brand-primary)] opacity-[0.03] blur-[60px]" />
+        <div className="absolute bottom-0 left-0 w-40 h-40 bg-[var(--brand-primary-strong)] opacity-[0.03] blur-[80px]" />
+
+        {/* Top Actions Row */}
+        <div className="w-full flex items-center justify-between z-10 mb-8">
+          <Link href="/home"
+            className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full glass-panel border border-white/5 transition hover:bg-white/10"
+            style={{ color: 'var(--brand-primary)' }}>
+            <ChevronLeft size={14} strokeWidth={3} />
+            Home
+          </Link>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--brand-primary)]/20 bg-[var(--brand-primary)]/5">
+            <span className="text-[10px] font-bold text-[var(--brand-primary)] uppercase tracking-widest opacity-60">Invite</span>
+            <span className="text-xs font-bold text-[var(--brand-primary)] tracking-[0.2em]">{kul.invite_code}</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
+        {/* Central Seal & Aura */}
+        <div className="relative mb-6">
+          <div className="kul-sacred-aura" />
+          <div className="kul-seal-ring">
+            <div className="kul-seal-inner">
+              {kul.avatar_emoji}
+            </div>
+          </div>
+        </div>
+
+        {/* Kul Name & Identity */}
+        <div className="z-10 space-y-1">
+          {editingName && myRole === 'guardian' ? (
+            <div className="flex items-center gap-2">
+              <input
+                autoFocus
+                value={newKulName}
+                onChange={(e) => setNewKulName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') saveKulName(); if (e.key === 'Escape') setEditingName(false); }}
+                className="text-3xl font-bold bg-transparent outline-none border-b-2 border-[var(--brand-primary)] text-center w-64 premium-serif"
+              />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-1">
+              <h1 className="text-3xl sm:text-4xl font-bold theme-ink premium-serif flex items-center gap-2">
+                {kul.name}
+                {myRole === 'guardian' && (
+                  <button onClick={() => { setNewKulName(kul.name); setEditingName(true); }} className="opacity-40 hover:opacity-100 transition">
+                    <Pencil size={14} />
+                  </button>
+                )}
+              </h1>
+              <p className="text-[10px] uppercase tracking-[0.3em] font-semibold text-[var(--brand-primary)] opacity-70">
+                Lineage of {members.find(m => m.profiles?.gotra)?.profiles?.gotra || 'Dharma'}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Floating Metrics Row */}
+        <div className="flex flex-wrap justify-center gap-3 mt-10 z-10 w-full max-w-lg">
           {[
-            { label: 'Members', value: members.length, hint: 'Open', href: '/kul/members' },
-            { label: 'Open Tasks', value: openTasks, hint: 'Open', href: '/kul/tasks' },
-            { label: 'Kul Streak', value: totalStreak, hint: 'Sabha', href: '/kul/sabha' },
-            { label: 'Dates Ahead', value: upcomingEvents.length, hint: 'Open', href: '/kul/events' },
+            { label: 'Members', value: members.length, emoji: '👨‍👩‍👧‍👦', href: '/kul/members' },
+            { label: 'Pending', value: openTasks, emoji: '📋', href: '/kul/tasks' },
+            { label: 'Kul Streak', value: totalStreak, emoji: '🔥', href: '/kul/sabha' },
+            { label: 'Dates', value: upcomingEvents.length, emoji: '📅', href: '/kul/events' },
           ].map((item) => (
-            <Link key={item.label} href={item.href} className="glass-panel rounded-[1.35rem] p-3 transition hover:-translate-y-0.5">
-              <p className="type-card-label">{item.label}</p>
-              <p className="type-metric mt-2">{item.value}</p>
-              <p className="type-micro mt-1">{item.hint}</p>
+            <Link key={item.label} href={item.href} className="floating-pill px-4 py-3 rounded-2xl flex items-center gap-3 min-w-[110px] transition-all hover:scale-105 active:scale-95">
+              <div className="text-xl">{item.emoji}</div>
+              <div className="text-left">
+                <p className="text-lg font-bold leading-none theme-ink">{item.value}</p>
+                <p className="text-[9px] uppercase tracking-wider theme-muted mt-1 font-semibold">{item.label}</p>
+              </div>
             </Link>
           ))}
         </div>
       </div>
 
-      <div className="glass-panel rounded-[1.8rem] p-4 sm:p-5 space-y-3">
+      {/* ── FAMILY ALTAR (KUL DEVATA) ── */}
+      {members.some(m => m.profiles?.kul_devata) && (
+        <div className="relative glass-panel rounded-[2rem] p-5 border border-[var(--brand-primary)]/10 overflow-hidden">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[var(--brand-primary)] opacity-5 blur-2xl" />
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-full flex items-center justify-center text-3xl bg-[var(--brand-primary)]/10 border border-[var(--brand-primary)]/20 shadow-inner">
+              🪔
+            </div>
+            <div className="flex-1">
+              <p className="text-[10px] uppercase tracking-widest font-bold text-[var(--brand-primary)]">Family Altar</p>
+              <h3 className="text-lg font-bold theme-ink premium-serif mt-0.5">
+                {members.find(m => m.profiles?.kul_devata)?.profiles?.kul_devata}
+              </h3>
+              <p className="text-xs theme-muted">Our sacred Kul Devata, protecting this lineage.</p>
+            </div>
+            <div className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/5 text-[10px] font-bold text-[var(--brand-primary)] uppercase tracking-tighter">
+              Protected
+            </div>
+          </div>
+        </div>
+      )}
+
         <div className="flex items-center justify-between gap-3">
           <p className="type-card-label">Open a section</p>
           {upcomingEvents[0] ? (
