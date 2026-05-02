@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 import { getPanchangTimes, getTithiReminder, isInWindow } from '@/lib/panchang';
+import { getTraditionMeta } from '@/lib/tradition-config';
 
 // ─── Shloka Streak Reminder Cron ─────────────────────────────────────────────
 // Schedule: 0 18 * * * (daily on Vercel Hobby — route still filters by user local evening)
@@ -78,9 +79,10 @@ export async function GET(request: Request) {
       const localDate = getLocalDateIso(now, timeZone);
       const streak    = u.shloka_streak ?? 0;
       const tradition = (u as any).tradition ?? 'hindu';
+      const meta = getTraditionMeta(tradition);
       const streakMsg = streak > 0
         ? `Don't break your ${streak}-day streak! 🔥`
-        : 'Start your shloka journey today 🌱';
+        : `Start your ${meta.vocabulary.shloka.toLowerCase()} journey today 🌱`;
 
       // Engine enrichment — mention special tithi when relevant
       let tithiSuffix = '';
@@ -101,9 +103,9 @@ export async function GET(request: Request) {
 
       return {
         user_id:    u.id,
-        title:      '🕉️ Aaj Ka Shloka awaits',
-        body:       `${streakMsg} Take a moment for today's shloka.${tithiSuffix}`,
-        emoji:      '🕉️',
+        title:      `${meta.symbol} ${meta.sacredTextLabel} awaits`,
+        body:       `${streakMsg} Take a moment for today's ${meta.vocabulary.shloka.toLowerCase()}.${tithiSuffix}`,
+        emoji:      meta.symbol,
         type:       'streak' as const,
         action_url: actionPath,
         notification_key: `streak:${localDate}`,
@@ -135,7 +137,7 @@ export async function GET(request: Request) {
 
     const pushResult = await sendOneSignalPush({
       userIds: insertedUserIds,
-      title: 'Aaj Ka Shloka awaits',
+      title: 'Your Daily Reading awaits',
       body: 'Take a quiet moment for today\'s sacred text and keep your practice flowing.',
       url: actionUrl,
       data: {

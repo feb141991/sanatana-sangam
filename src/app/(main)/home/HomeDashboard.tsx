@@ -1402,13 +1402,7 @@ export default function HomeDashboard({
                   {displayCity}
                 </span>
               )}
-              {moodToday && (
-                <Link href="/discover" className="divine-mood-chip motion-press">
-                  <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={15} />
-                  {moodToday.label}
-                </Link>
-              )}
-              {!displayCity && !moodToday && (
+              {!displayCity && (
                 <span className="divine-helper">Your daily sacred space</span>
               )}
             </div>
@@ -1442,21 +1436,31 @@ export default function HomeDashboard({
             </div>
           )}
           <div className="divine-hero-overlay" aria-hidden="true" />
-          <div className="divine-om" aria-hidden="true">{heroFallback.mark}</div>
 
           <div className="divine-hero-content">
-            <div className="flex-1 flex flex-col items-center justify-center text-center">
+            {/* Top row: Mood chip */}
+            <div className="p-6 pb-0">
+              {moodToday && (
+                <Link href="/discover" className="divine-mood-chip-immersive motion-press">
+                  <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={16} />
+                  <span>Feeling {moodToday.label}</span>
+                </Link>
+              )}
+            </div>
+
+            {/* Middle row: Left-aligned greeting */}
+            <div className="flex-1 flex flex-col justify-center px-6">
               <button
                 type="button"
                 onClick={() => setGreetingSheetOpen(true)}
-                className="divine-greeting-immersive motion-press"
+                className="divine-greeting-left motion-press"
               >
-                <h1 className="divine-greeting-main">
+                <h1 className="divine-greeting-title">
                   {stripGreetingIcon(greeting)}, {userName.split(' ')[0]}
                 </h1>
-                <div className="divine-greeting-edit">
-                  <Pencil size={14} />
-                  <span>Personalize greeting</span>
+                <div className="divine-greeting-badge">
+                  <Pencil size={12} />
+                  <span>Personalize</span>
                 </div>
               </button>
             </div>
@@ -1464,14 +1468,17 @@ export default function HomeDashboard({
             <button
               type="button"
               onClick={() => setShlokaModalOpen(true)}
-              className="divine-shloka-card-seamless motion-press"
+              className="divine-shloka-card-v2 motion-press"
             >
-              <div className="flex items-center justify-between gap-3 w-full mb-1">
-                <span className="divine-chip-glass">{dailyText.source}</span>
-                <span className="text-[10px] text-white/50 font-medium uppercase tracking-widest">Aaj Ka Shloka →</span>
+              <div className="divine-card-cream-overlay" />
+              <div className="relative z-10 w-full">
+                <div className="flex items-center justify-between gap-3 w-full mb-1.5">
+                  <span className="divine-chip-saffron">{dailyText.source}</span>
+                  <span className="text-[10px] text-black/50 font-bold uppercase tracking-widest">{sacredTextMeta.label} →</span>
+                </div>
+                <p className="divine-sanskrit-immersive-dark line-clamp-2">{dailyTextLine}</p>
+                <p className="divine-meaning-dark line-clamp-1">{dailyText.meaning}</p>
               </div>
-              <p className="divine-sanskrit-immersive line-clamp-2">{dailyTextLine}</p>
-              <p className="divine-meaning-subtle line-clamp-1">{dailyText.meaning}</p>
             </button>
           </div>
         </div>

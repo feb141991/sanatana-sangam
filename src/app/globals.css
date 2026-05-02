@@ -299,11 +299,13 @@ body {
 
 .divine-hero {
   position: relative;
-  min-height: clamp(420px, 90vw, 480px);
+  min-height: clamp(480px, 100vw, 560px);
   overflow: hidden;
   background: var(--divine-bg);
   margin-left: -1rem;
   margin-right: -1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (min-width: 640px) {
@@ -381,8 +383,8 @@ body {
   background: linear-gradient(
     to bottom,
     rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.1) 40%,
-    rgba(0, 0, 0, 0.4) 100%
+    rgba(0, 0, 0, 0.2) 30%,
+    rgba(0, 0, 0, 0.65) 100%
   );
   pointer-events: none;
 }
@@ -430,17 +432,103 @@ body {
   padding: 24px 0 0;
 }
 
-.divine-greeting {
-  align-self: flex-start;
-  text-align: left;
+.divine-mood-chip-immersive {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.divine-greeting-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 12px;
+  color: #fff;
+  text-shadow: 0 4px 30px rgba(0,0,0,0.8);
+  max-width: 90%;
+}
+
+.divine-greeting-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.2rem, 9vw, 3.4rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.divine-greeting-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: rgba(255,255,255,0.15);
+  padding: 5px 14px;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.divine-shloka-card-v2 {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+  border-radius: 32px 32px 0 0;
+  padding: 28px 24px 48px;
+  box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.divine-card-cream-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(252, 248, 238, 0.94) 0%, rgba(245, 235, 215, 0.98) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.divine-chip-saffron {
+  border-radius: 999px;
+  background: #C8924A;
+  color: #fff;
+  padding: 4px 12px;
   font-family: var(--font-inter);
-  font-size: 17px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 12px rgba(200, 146, 74, 0.3);
+}
+
+.divine-sanskrit-immersive-dark {
+  font-family: Georgia, 'Noto Serif Devanagari', serif;
+  font-size: clamp(1.35rem, 5.5vw, 1.6rem);
+  font-weight: 600;
+  line-height: 1.5;
+  color: #2a1b0a;
+}
+
+.divine-meaning-dark {
+  font-family: var(--font-inter);
+  font-size: 14px;
   font-weight: 500;
-  line-height: 1.35;
-  color: var(--divine-muted);
+  color: rgba(42, 27, 10, 0.65);
+  margin-top: 4px;
 }
 
 .divine-feature-card,
