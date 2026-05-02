@@ -1422,15 +1422,19 @@ export default function HomeDashboard({
           </Link>
           <div className="min-w-0 flex-1">
             <div className="divine-topbar-meta">
-              {displayCity && (
-                <span className="divine-location">
-                  <MapPin size={13} />
-                  {displayCity}
-                </span>
-              )}
-              {!displayCity && (
-                <span className="divine-helper">Your daily sacred space</span>
-              )}
+              <button
+                type="button"
+                onClick={() => setGreetingSheetOpen(true)}
+                className="divine-greeting-left motion-press"
+              >
+                <h1 className="divine-greeting-title">
+                  {stripGreetingIcon(greeting)}, {userName.split(' ')[0]}
+                </h1>
+                <div className="divine-greeting-badge">
+                  <Pencil size={10} />
+                  <span>Personalize</span>
+                </div>
+              </button>
             </div>
           </div>
           <Link href="/profile" className="divine-profile-link" aria-label="Open profile">
@@ -1474,21 +1478,8 @@ export default function HomeDashboard({
               )}
             </div>
 
-            {/* Middle row: Left-aligned greeting */}
             <div className="flex-1 flex flex-col justify-center px-6">
-              <button
-                type="button"
-                onClick={() => setGreetingSheetOpen(true)}
-                className="divine-greeting-left motion-press"
-              >
-                <h1 className="divine-greeting-title">
-                  {stripGreetingIcon(greeting)}, {userName.split(' ')[0]}
-                </h1>
-                <div className="divine-greeting-badge">
-                  <Pencil size={12} />
-                  <span>Personalize</span>
-                </div>
-              </button>
+              {/* Spacer - moves content down */}
             </div>
 
             <button
@@ -1498,9 +1489,8 @@ export default function HomeDashboard({
             >
               <div className="divine-card-cream-overlay" />
               <div className="relative z-10 w-full">
-                <div className="flex items-center justify-between gap-3 w-full mb-1.5">
-                  <span className="divine-chip-saffron">{dailyText.source}</span>
-                  <span className="text-[10px] text-black/50 font-bold uppercase tracking-widest">{sacredTextMeta.label} →</span>
+                <div className="flex flex-col items-center justify-center w-full mb-2">
+                  <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">{sacredTextMeta.label}</span>
                 </div>
                 <p className="divine-sanskrit-immersive-dark line-clamp-2">{dailyTextLine}</p>
                 <p className="divine-meaning-dark line-clamp-1">{dailyText.meaning}</p>
