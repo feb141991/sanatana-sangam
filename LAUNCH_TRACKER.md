@@ -129,6 +129,10 @@ Last updated: 2026-04-09
 - [ ] Run the first UX sweep pass section by section instead of only adding net-new features
 - [x] Extend the first UX sweep through Tirtha Map, front-door flows, AI chat, and the Bhakti placeholder so fewer screens feel like unfinished utilities
 - [ ] Move the heavy `Today in Sangam` home guidance lane into a lighter notification / reminder model so Home keeps only one primary next step and compact quick actions
+- [ ] Un-intertwine tradition-specific UI logic across core routes by moving route copy, symbols, defaults, and vocabulary into central tradition config / feature config instead of inline `tradition === ...` checks
+- [ ] Create a unified sacred-calendar interface so `/panchang` can expose Vedic Panchang, Nanakshahi, Buddhist lunar, and Jain calendar views without forcing Hindu calendar concepts onto every tradition
+- [ ] Build tradition-specific Bhakti media defaults so Hindu users see aarti/stotram, Sikh users see kirtan/simran, Buddhist users see chants/meditation, and Jain users see sutra/pratikraman without cross-tradition empty states
+- [ ] Add a vocabulary provider for tradition-sensitive words such as shloka/shabad/sutra, sadhana/simran/practice, sangam/sangat, dharma/dhamma, and path/panth
 
 ## Notes
 
@@ -170,3 +174,5 @@ Last updated: 2026-04-09
 - `ROADMAP.md` is now the main sequencing document for `Phase A` vs `Phase B`.
 - `COLOR_STRATEGY.md` now tracks the palette research, token direction, and rollout rules.
 - `PARAMPARA_PATHSHALA_PLAN.md` now defines the source strategy and learning-product direction for turning Library into Pathshala.
+- Multi-tradition architecture review is now tracked as a later refactor lane. Current hotspots to un-intertwine are Home, Pathshala, Bhakti, Mala/Japa, Nitya Karma, Tirtha Map, and Panchang.
+- Recommended implementation order for that refactor: expand `tradition-config.ts`, split feature-specific config where needed (`bhakti-config`, `japa-config`, `sacred-calendar`), introduce `useVocabulary()`, then remove inline `tradition === ...` checks from React components route by route.
