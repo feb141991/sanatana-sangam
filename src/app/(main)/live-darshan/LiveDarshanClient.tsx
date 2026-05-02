@@ -9,9 +9,10 @@ import TopBar from '@/components/layout/TopBar';
 
 interface LiveDarshanClientProps {
   tradition: string;
+  userId: string;
 }
 
-export default function LiveDarshanClient({ tradition }: LiveDarshanClientProps) {
+export default function LiveDarshanClient({ tradition, userId }: LiveDarshanClientProps) {
   const [activeCategory, setActiveCategory] = useState<LiveStreamCategory | 'all'>('mandir');
   const [activePlayer, setActivePlayer] = useState<string | null>(null);
 
@@ -23,7 +24,7 @@ export default function LiveDarshanClient({ tradition }: LiveDarshanClientProps)
 
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] flex flex-col pb-28">
-      <TopBar userName="Sadhak" tradition={tradition} />
+      <TopBar userId={userId} tradition={tradition} />
 
       <main className="flex-1 px-4 pt-20 max-w-2xl mx-auto w-full">
         {/* Header Section */}

@@ -13,5 +13,5 @@ export default async function LiveDarshanPage() {
     .eq('id', user.id)
     .single();
 
-  return <LiveDarshanClient tradition={profile?.tradition ?? 'hindu'} />;
+  return <LiveDarshanClient tradition={profile?.tradition ?? 'hindu'} userId={user.id} />;
 }
