@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { X, Share2, Download, Maximize2, Volume2, VolumeX, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
@@ -17,6 +18,7 @@ export default function DarshanOverlay({ darshans, initialIndex, isOpen, onClose
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isCleanView, setIsCleanView] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [portalTarget, setPortalTarget] = useState<Element | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const darshan = darshans[currentIndex];
@@ -29,6 +31,10 @@ export default function DarshanOverlay({ darshans, initialIndex, isOpen, onClose
   useEffect(() => {
     setCurrentIndex(initialIndex);
   }, [initialIndex, isOpen]);
+
+  useEffect(() => {
+    setPortalTarget(document.body);
+  }, []);
 
   useEffect(() => {
     if (isOpen && !isMuted) {
@@ -81,9 +87,9 @@ export default function DarshanOverlay({ darshans, initialIndex, isOpen, onClose
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !portalTarget) return null;
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -240,6 +246,7 @@ export default function DarshanOverlay({ darshans, initialIndex, isOpen, onClose
           )}
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    portalTarget
   );
 }
