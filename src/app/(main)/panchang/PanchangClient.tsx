@@ -340,7 +340,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
           style={{ background: `linear-gradient(135deg, ${tradMeta.accent}dd, ${tradMeta.accent}99)`, border: `1px solid rgba(255,255,255,0.12)` }}>
           <span className="text-2xl">🪔</span>
           <div>
-            <p className="text-white font-bold text-sm">{p.paksha} Paksha · {p.masaName} Masa</p>
+            <p className="text-white font-bold text-sm">{p.paksha} Paksha · {p.masaName} {p.labels.monthLabel}</p>
             <p className="text-white/60 text-[11px] mt-0.5">{p.vara} · {tradMeta.note}</p>
           </div>
           <div className="ml-auto text-right">
@@ -361,7 +361,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
             <div className="text-center">
               <p className="font-semibold text-white text-sm">{MONTHS[viewMonth]} {viewYear}</p>
               <p className="text-white/40 text-[10px] mt-0.5">
-                {tradition === 'hindu' ? `${p.masaName} Masa` : tradMeta.note}
+                {p.masaName} {p.labels.monthLabel} · {p.calendarName}
               </p>
             </div>
             <button onClick={nextMonth}

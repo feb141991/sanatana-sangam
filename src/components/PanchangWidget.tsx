@@ -19,11 +19,11 @@ export default function PanchangWidget({ lat = 51.5074, lon = -0.1278, tradition
   };
 
   const items = [
-    { label: 'Tithi',     value: p.tithi,            emoji: '🌙' },
+    { label: p.labels.dayLabel,   value: p.tithi,            emoji: '🌙' },
     { label: 'Nakshatra', value: p.nakshatra,         emoji: '⭐' },
     { label: 'Yoga',      value: p.yoga,              emoji: '🧘' },
     { label: 'Vara',      value: p.vara,              emoji: '📅' },
-    { label: 'Masa',      value: p.masaName,          emoji: '🗓️' },
+    { label: p.labels.monthLabel, value: p.masaName,          emoji: '🗓️' },
     { label: 'Sunrise',   value: p.sunrise,           emoji: '🌅' },
     { label: 'Sunset',    value: p.sunset,            emoji: '🌇' },
     { label: 'Rahu Kaal', value: p.rahuKaal,          emoji: '⚠️' },
@@ -46,7 +46,7 @@ export default function PanchangWidget({ lat = 51.5074, lon = -0.1278, tradition
           <div>
             <div className="text-[10px] uppercase tracking-[0.2em] font-semibold theme-dim">Sacred time</div>
             <div className="font-display font-semibold text-base theme-ink mt-1">आज का पंचांग</div>
-            <div className="theme-muted text-xs mt-0.5">Today&apos;s Panchang</div>
+            <div className="theme-muted text-xs mt-0.5">{p.calendarName}</div>
           </div>
           <div className="flex flex-col items-end gap-1">
             <span className="text-2xl">🪔</span>
