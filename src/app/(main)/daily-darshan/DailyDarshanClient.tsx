@@ -149,7 +149,7 @@ export default function DailyDarshanClient({ tradition }: { tradition: string })
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed inset-0 z-[100] bg-[var(--divine-bg)] flex flex-col items-center justify-center p-4 md:p-8 overflow-hidden touch-none"
+            className="fixed inset-0 z-[100] bg-[var(--divine-bg)] flex flex-col items-center justify-between px-4 pt-20 pb-[calc(1.5rem+env(safe-area-inset-bottom))] overflow-hidden touch-none"
           >
             {/* Close Button */}
             <button 
@@ -159,34 +159,40 @@ export default function DailyDarshanClient({ tradition }: { tradition: string })
               <X size={20} />
             </button>
 
-            <div className="flex-1 w-full flex flex-col items-center justify-center max-h-[85vh]">
+            {/* Immersive Card */}
+            <div className="w-full max-w-sm flex-1 min-h-0 relative rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(62,42,31,0.15)] border border-[var(--divine-border)] bg-[var(--divine-surface)] flex flex-col items-center p-6 text-center">
+              <span className="divine-card-motif divine-card-motif-large opacity-50" aria-hidden="true" />
               
-              {/* Immersive Card */}
-              <div className="w-full max-w-sm flex-1 max-h-[60vh] relative rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(62,42,31,0.15)] border border-[var(--divine-border)] bg-[var(--divine-surface)] flex flex-col items-center justify-center p-6 text-center">
-                <span className="divine-card-motif divine-card-motif-large opacity-50" aria-hidden="true" />
-                <div className="text-[80px] font-serif text-[var(--divine-saffron)] leading-none mb-4">
+              <div className="shrink-0 flex flex-col items-center">
+                <div className="text-[70px] font-serif text-[var(--divine-saffron)] leading-none mb-3">
                   {activeCard.symbol}
                 </div>
-                  <span className="px-3 py-1 rounded-full border border-[var(--divine-gold)]/30 text-[var(--divine-gold)] text-[10px] font-bold uppercase tracking-widest mb-3">
-                    {activeCard.tradition}
-                  </span>
-                  <h1 className="font-serif text-2xl font-bold text-[var(--divine-text)] mb-2">
-                    {activeCard.title}
-                  </h1>
-                  <p className="text-[var(--divine-muted)] text-sm leading-relaxed italic px-2 mb-5">
-                    &ldquo;{activeCard.blessing}&rdquo;
-                  </p>
-                  
-                  {/* Offer Aarti Button */}
-                  <button
-                    onClick={() => setShowAartiMode(true)}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm tracking-wide active:scale-95 transition-transform shadow-lg"
-                    style={{ background: 'linear-gradient(135deg, var(--divine-saffron) 0%, #D4784A 100%)', color: '#1c1c1a' }}
-                  >
-                    <Flame size={16} />
-                    Offer {activeCard.tradition.toLowerCase() === 'sikh' ? 'Ardas' : 'Aarti'}
-                  </button>
-                </div>
+                <span className="px-3 py-1 rounded-full border border-[var(--divine-gold)]/30 text-[var(--divine-gold)] text-[10px] font-bold uppercase tracking-widest mb-3">
+                  {activeCard.tradition}
+                </span>
+                <h1 className="font-serif text-2xl font-bold text-[var(--divine-text)] mb-2">
+                  {activeCard.title}
+                </h1>
+              </div>
+
+              <div className="flex-1 overflow-y-auto w-full px-2 my-2 no-scrollbar flex items-center justify-center">
+                <p className="text-[var(--divine-muted)] text-sm leading-relaxed italic">
+                  &ldquo;{activeCard.blessing}&rdquo;
+                </p>
+              </div>
+              
+              {/* Offer Aarti Button */}
+              <div className="shrink-0 mt-2">
+                <button
+                  onClick={() => setShowAartiMode(true)}
+                  className="flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm tracking-wide active:scale-95 transition-transform shadow-lg"
+                  style={{ background: 'linear-gradient(135deg, var(--divine-saffron) 0%, #D4784A 100%)', color: '#1c1c1a' }}
+                >
+                  <Flame size={16} />
+                  Offer {activeCard.tradition.toLowerCase() === 'sikh' ? 'Ardas' : 'Aarti'}
+                </button>
+              </div>
+            </div>
 
                 {/* Action Bar */}
               <motion.div 
@@ -214,7 +220,6 @@ export default function DailyDarshanClient({ tradition }: { tradition: string })
                   <Download size={20} />
                 </button>
               </motion.div>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
