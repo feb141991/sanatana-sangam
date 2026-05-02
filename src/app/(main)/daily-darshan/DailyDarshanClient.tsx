@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import { Bookmark, Download, Share2, X, Flame } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
