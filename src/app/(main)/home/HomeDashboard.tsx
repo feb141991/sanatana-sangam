@@ -1699,28 +1699,28 @@ export default function HomeDashboard({
             WebkitBackdropFilter: 'blur(14px) saturate(125%)',
           }}>
             <p className="home-section-label" style={{ color: heroTertiaryText }}>Next for you</p>
-            <p className="home-card-title mt-1" style={{ color: heroPrimaryText }}>{nextHomeAction.label}</p>
-            <p className="home-card-copy mt-1" style={{ color: heroSecondaryText }}>{nextHomeAction.detail}</p>
+            <p className="home-card-title mt-1" style={{ color: heroPrimaryText }}>{quickAction.label}</p>
+            <p className="home-card-copy mt-1" style={{ color: heroSecondaryText }}>{quickAction.detail}</p>
             <p className="home-card-copy mt-2" style={{ color: heroSecondaryText }}>{dailyNudge}</p>
           </div>
 
           <div className="mt-4 flex gap-2">
-            {nextHomeAction.href ? (
+            {quickAction.href ? (
               <Link
-                href={nextHomeAction.href}
+                href={quickAction.href}
                 className="flex-1 rounded-full px-4 py-3 text-center text-sm font-medium motion-press"
                 style={{ background: 'rgba(250,199,117,0.88)', color: '#1a1610', boxShadow: '0 10px 26px rgba(239,159,39,0.18)' }}
               >
-                {nextHomeAction.label}
+                {quickAction.label}
               </Link>
             ) : (
               <button
                 type="button"
-                onClick={nextHomeAction.onClick}
+                onClick={quickAction.onClick}
                 className="flex-1 rounded-full px-4 py-3 text-sm font-medium motion-press"
                 style={{ background: 'rgba(250,199,117,0.88)', color: '#1a1610', boxShadow: '0 10px 26px rgba(239,159,39,0.18)' }}
               >
-                {nextHomeAction.label}
+                {quickAction.label}
               </button>
             )}
             <Link
