@@ -1378,10 +1378,7 @@ export default function HomeDashboard({
     {
       title: 'Daily Darshan',
       description: 'Get divine blessings every day',
-      onClick: () => {
-        setDarshanOpen(true);
-        setDarshanAutoOpened(false);
-      },
+      onClick: handleOpenDarshan,
       icon: Sparkles,
     },
     {
