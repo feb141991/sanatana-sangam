@@ -1,10 +1,8 @@
-'use client';
-
-import { useState } from 'react';
 import { Bookmark, Download, Share2, X, Flame } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import InteractiveAarti from '@/components/darshan/InteractiveAarti';
+import { useUserPreferences } from '@/providers/UserPreferencesProvider';
 
 const DARSHAN_CARDS = [
   {
@@ -76,9 +74,16 @@ function buildWallpaperSvg(card: typeof DARSHAN_CARDS[number]) {
 }
 
 export default function DailyDarshanClient() {
+  const { preferences } = useUserPreferences();
   const [saved, setSaved] = useState<Set<string>>(new Set());
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
   const [showAartiMode, setShowAartiMode] = useState(false);
+
+  const userTradition = preferences.tradition || 'Shaiva';
+  const displayedCards = DARSHAN_CARDS.filter(
+    c => c.tradition.toLowerCase() === userTradition.toLowerCase()
+  );
+  const finalCards = displayedCards.length > 0 ? displayedCards : DARSHAN_CARDS;
 
   async function shareCard(card: typeof DARSHAN_CARDS[number]) {
     const text = `${card.title}\n\n${card.blessing}\n\nShared via Sanatan Universe`;
@@ -119,7 +124,7 @@ export default function DailyDarshanClient() {
       </section>
 
       <div className="grid gap-4 pt-[100px] px-4">
-        {DARSHAN_CARDS.map((card) => (
+        {finalCards.map((card) => (
           <article 
             key={card.id} 
             className="divine-darshan-card cursor-pointer active:scale-[0.98] transition-transform"
@@ -144,26 +149,24 @@ export default function DailyDarshanClient() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed inset-0 z-[100] bg-[var(--divine-bg)] overflow-y-auto"
+            className="fixed inset-0 z-[100] bg-[var(--divine-bg)] flex flex-col items-center justify-center p-4 md:p-8 overflow-hidden touch-none"
           >
             {/* Close Button */}
             <button 
               onClick={() => setActiveCardId(null)}
-              className="fixed top-4 right-4 z-50 p-2.5 rounded-full bg-[var(--divine-surface)] shadow-md border border-[var(--divine-border)] text-[var(--divine-text)] active:scale-95 transition-transform"
+              className="absolute top-6 right-6 z-50 p-2.5 rounded-full bg-[var(--divine-surface)] shadow-md border border-[var(--divine-border)] text-[var(--divine-text)] active:scale-95 transition-transform"
             >
               <X size={20} />
             </button>
 
-            <div className="min-h-[100dvh] flex flex-col items-center py-20 px-4 w-full">
-              {/* Immersive Card Wrapper (centers vertically if space allows) */}
-              <div className="my-auto w-full max-w-sm flex flex-col items-center">
-                
-                {/* Immersive Card */}
-                <div className="w-full relative rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(62,42,31,0.15)] border border-[var(--divine-border)] bg-[var(--divine-surface)] flex flex-col items-center justify-center p-6 text-center">
-                  <span className="divine-card-motif divine-card-motif-large opacity-50" aria-hidden="true" />
-                  <div className="text-[90px] font-serif text-[var(--divine-saffron)] leading-none mb-4">
-                    {activeCard.symbol}
-                  </div>
+            <div className="flex-1 w-full flex flex-col items-center justify-center max-h-[85vh]">
+              
+              {/* Immersive Card */}
+              <div className="w-full max-w-sm flex-1 max-h-[60vh] relative rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(62,42,31,0.15)] border border-[var(--divine-border)] bg-[var(--divine-surface)] flex flex-col items-center justify-center p-6 text-center">
+                <span className="divine-card-motif divine-card-motif-large opacity-50" aria-hidden="true" />
+                <div className="text-[80px] font-serif text-[var(--divine-saffron)] leading-none mb-4">
+                  {activeCard.symbol}
+                </div>
                   <span className="px-3 py-1 rounded-full border border-[var(--divine-gold)]/30 text-[var(--divine-gold)] text-[10px] font-bold uppercase tracking-widest mb-3">
                     {activeCard.tradition}
                   </span>
@@ -186,32 +189,32 @@ export default function DailyDarshanClient() {
                 </div>
 
                 {/* Action Bar */}
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15 }}
-                  className="mt-6 flex items-center justify-center gap-4 z-20"
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="mt-6 flex items-center justify-center gap-4 z-20 shrink-0"
+              >
+                <button
+                  onClick={() => saveCard(activeCard)}
+                  className="p-3.5 rounded-full bg-[var(--divine-surface)] border border-[var(--divine-border)] text-[var(--divine-text)] shadow-sm active:scale-95 transition-transform"
                 >
-              <button
-                onClick={() => saveCard(activeCard)}
-                className="p-3.5 rounded-full bg-[var(--divine-surface)] border border-[var(--divine-border)] text-[var(--divine-text)] shadow-sm active:scale-95 transition-transform"
-              >
-                <Bookmark size={20} fill={saved.has(activeCard.id) ? 'currentColor' : 'none'} />
-              </button>
-              <button
-                onClick={() => shareCard(activeCard)}
-                className="p-3.5 rounded-full bg-[var(--divine-surface)] border border-[var(--divine-border)] text-[var(--divine-text)] shadow-sm active:scale-95 transition-transform"
-              >
-                <Share2 size={20} />
-              </button>
-              <button
-                onClick={() => downloadWallpaper(activeCard)}
-                className="p-3.5 rounded-full bg-[var(--divine-surface)] border border-[var(--divine-border)] text-[var(--divine-text)] shadow-sm active:scale-95 transition-transform"
-              >
-                <Download size={20} />
-              </button>
-            </motion.div>
-          </div>
+                  <Bookmark size={20} fill={saved.has(activeCard.id) ? 'currentColor' : 'none'} />
+                </button>
+                <button
+                  onClick={() => shareCard(activeCard)}
+                  className="p-3.5 rounded-full bg-[var(--divine-surface)] border border-[var(--divine-border)] text-[var(--divine-text)] shadow-sm active:scale-95 transition-transform"
+                >
+                  <Share2 size={20} />
+                </button>
+                <button
+                  onClick={() => downloadWallpaper(activeCard)}
+                  className="p-3.5 rounded-full bg-[var(--divine-surface)] border border-[var(--divine-border)] text-[var(--divine-text)] shadow-sm active:scale-95 transition-transform"
+                >
+                  <Download size={20} />
+                </button>
+              </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
