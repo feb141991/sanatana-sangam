@@ -43,10 +43,10 @@ export default async function HomePage() {
     .order('date', { ascending: true })
     .limit(160);
 
-  // Tradition-aware daily sacred text
-  // Hindu + other use shlokas.ts; other traditions use sacred-texts.ts
+  // Tradition-aware daily sacred text.
+  // Explicit Hindu uses shlokas.ts; Sikh/Buddhist/Jain/exploring use sacred-texts.ts.
   const shloka     = getTodayShloka(profile?.timezone ?? undefined);
-  const sacredText = getDailySacredText(tradition, dayIndex); // null for Hindu
+  const sacredText = getDailySacredText(tradition === 'hindu' ? 'hindu' : (tradition ?? 'other'), dayIndex);
 
   const calendarFromDb = ((calendarRows ?? []) as Pick<Database['public']['Tables']['festivals']['Row'], 'name' | 'date' | 'emoji' | 'description' | 'type' | 'tradition' | 'source_name' | 'source_kind' | 'review_status'>[])
     .map((row) => attachFestivalTrust(row));
@@ -119,7 +119,7 @@ export default async function HomePage() {
     return { date: dateStr, japa: sadhanaMap[dateStr] ?? false, nitya: nityaDates.has(dateStr) };
   });
 
-  const meta = getTraditionMeta(tradition);
+  const meta = getTraditionMeta(tradition ?? 'other');
   const showFirstTimeGuidance = (
     (profile?.shloka_streak ?? 0) === 0
     && !profile?.last_shloka_date

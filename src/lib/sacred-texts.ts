@@ -221,6 +221,35 @@ export const JAIN_SUTRAS: SacredText[] = [
   },
 ];
 
+// ─── Exploring / neutral daily wisdom ─────────────────────────────────────────
+
+export const DAILY_WISDOM_TEXTS: SacredText[] = [
+  {
+    id: 1,
+    tradition: 'other',
+    original: 'वसुधैव कुटुम्बकम्।',
+    transliteration: 'Vasudhaiva kuṭumbakam.',
+    meaning: 'The whole world is one family — a simple dharmic reminder to act with kinship and dignity toward all beings.',
+    source: 'Mahopaniṣad 6.72',
+  },
+  {
+    id: 2,
+    tradition: 'other',
+    original: 'अहिंसा परमो धर्मः।',
+    transliteration: 'Ahiṃsā paramo dharmaḥ.',
+    meaning: 'Non-violence is the highest dharma — a shared ethical foundation across dharmic traditions.',
+    source: 'Dharmic teaching',
+  },
+  {
+    id: 3,
+    tradition: 'other',
+    original: 'सर्वे भवन्तु सुखिनः। सर्वे सन्तु निरामयाः।',
+    transliteration: 'Sarve bhavantu sukhinaḥ. Sarve santu nirāmayāḥ.',
+    meaning: 'May all be happy. May all be free from illness. A universal prayer for collective wellbeing.',
+    source: 'Shanti mantra',
+  },
+];
+
 // ─── Unified daily text picker ────────────────────────────────────────────────
 
 export interface DailySacredText {
@@ -231,9 +260,9 @@ export interface DailySacredText {
 }
 
 /**
- * Pick the daily sacred text for non-Hindu traditions.
+ * Pick the daily sacred text for non-Hindu and exploring paths.
  * Uses dayIndex (0-based day of year) for daily rotation.
- * Returns null for Hindu (uses SHLOKAS from shlokas.ts instead).
+ * Returns null only for explicit Hindu (uses SHLOKAS from shlokas.ts instead).
  */
 export function getDailySacredText(
   tradition: string | null,
@@ -252,8 +281,13 @@ export function getDailySacredText(
       const e = JAIN_SUTRAS[dayIndex % JAIN_SUTRAS.length];
       return { original: e.original, transliteration: e.transliteration, meaning: e.meaning, source: e.source };
     }
+    case 'other':
+    case null: {
+      const e = DAILY_WISDOM_TEXTS[dayIndex % DAILY_WISDOM_TEXTS.length];
+      return { original: e.original, transliteration: e.transliteration, meaning: e.meaning, source: e.source };
+    }
     default:
-      return null; // Hindu and 'other' use shlokas.ts
+      return null; // Explicit Hindu uses shlokas.ts
   }
 }
 

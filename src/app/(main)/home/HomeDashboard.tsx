@@ -341,10 +341,17 @@ function getTraditionHeroFallback(tradition: string | null) {
     case 'buddhist':
       return { title: 'Dharma refuge', subtitle: 'Namo Buddhaya', mark: '☸' };
     case 'jain':
-      return { title: 'Jain dharma', subtitle: 'Jai Jinendra', mark: 'ॐ' };
+      return { title: 'Jain dharma', subtitle: 'Jai Jinendra', mark: 'अहिंसा' };
     default:
       return { title: 'Sanatan Universe', subtitle: 'A calm sacred space', mark: 'ॐ' };
   }
+}
+
+function stripGreetingIcon(greeting: string) {
+  return greeting
+    .replace(/[🙏🕉️☬☸️🤲✨🌺🌸🦚🔱⚔️🪔🌟]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 // ── Date Picker Modal ─────────────────────────────────────────────────────────
@@ -1232,7 +1239,7 @@ export default function HomeDashboard({
     setShlokaModalOpen(false);
     const milestoneMsg = newStreak % 7 === 0
       ? ` 🏅 ${newStreak}-day milestone!`
-      : newStreak === 1 ? ' First shloka of your streak! 🌱' : '';
+      : newStreak === 1 ? ` First ${dailyText.actionLabel} of your streak! 🌱` : '';
     toast.success(`🔥 ${newStreak}-day streak! +5 seva points${milestoneMsg}`);
     router.refresh(); // Ensure server state syncs on next visit
   }
@@ -1249,15 +1256,9 @@ export default function HomeDashboard({
   }
 
   function shareShloka() {
-    if (sacredText) {
-      shareContent(sacredTextMeta.shareLabel,
-        `${sacredTextMeta.icon} ${sacredTextMeta.label}\n\n${sacredText.original}\n\n${sacredText.transliteration}\n\nMeaning: ${sacredText.meaning}\n\n${sacredText.source}\n\n— Shared via Sanatana Sangam`
-      );
-    } else {
-      shareContent('Aaj Ka Shloka',
-        `🕉️ Aaj Ka Shloka — ${shloka.source}\n\n${shloka.sanskrit}\n\n${shloka.transliteration}\n\nMeaning: ${shloka.meaning}\n\n— Shared via Sanatana Sangam`
-      );
-    }
+    shareContent(dailyText.shareLabel,
+      `${dailyText.icon} ${dailyText.label} — ${dailyText.source}\n\n${dailyText.original}\n\n${dailyText.transliteration}\n\nMeaning: ${dailyText.meaning}\n\n— Shared via Sanatana Sangam`
+    );
   }
 
   // Light theme card surface — warm translucent paper
@@ -1274,15 +1275,28 @@ export default function HomeDashboard({
   const homeHeroTheme = HOME_THEMES.pathshala;
   const panchangTheme = HOME_THEMES.panchang;
   const sacredTextTheme = tradition === 'hindu' ? HOME_THEMES.pathshala : HOME_THEMES.bhakti;
+  const dailyText = {
+    label: sacredTextMeta.label,
+    icon: sacredTextMeta.icon,
+    shareLabel: sacredTextMeta.shareLabel,
+    source: sacredText ? sacredText.source : shloka.source,
+    original: sacredText ? sacredText.original : shloka.sanskrit,
+    transliteration: sacredText ? sacredText.transliteration : shloka.transliteration,
+    meaning: sacredText ? sacredText.meaning : shloka.meaning,
+    actionLabel: sacredText
+      ? sacredTextMeta.label.toLowerCase().replace(/^aaj ka\s+/i, "today’s ")
+      : "today’s shloka",
+    streakLabel: sacredText ? 'sacred text streak' : 'shloka streak',
+  };
   const heroPrimaryText = isDark ? 'var(--text-cream)' : '#211B14';
   const heroSecondaryText = isDark ? 'var(--text-muted-warm)' : '#4D4035';
   const heroTertiaryText = isDark ? 'var(--text-dim)' : '#66584A';
   const heroGlassSurface = isDark ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.72)';
   const heroGlassBorder = isDark ? 'rgba(250,238,218,0.12)' : 'rgba(65,36,2,0.12)';
-  const dailyTextLine = (sacredText ? sacredText.original : shloka.sanskrit).split('\n')[0];
+  const dailyTextLine = dailyText.original.split('\n')[0];
   const dailyNudge = personalContent?.suggestion
     ?? (!readToday
-      ? `Read ${sacredTextMeta.label.toLowerCase()} and keep today's practice alive.`
+      ? `Read ${dailyText.actionLabel} and keep today's practice alive.`
       : !japaAlreadyDoneToday
         ? 'Start one quiet mala when you have a focused moment.'
         : !nityaDoneToday
@@ -1290,7 +1304,7 @@ export default function HomeDashboard({
           : 'Your core practice is steady today. Continue study or review Panchang.');
   const nextHomeAction = !readToday
       ? {
-        label: `Read ${sacredText ? 'today’s text' : 'today’s shloka'}`,
+        label: `Read ${dailyText.actionLabel}`,
         detail: 'Open the sacred text and mark it read.',
         href: null,
         onClick: () => setShlokaModalOpen(true),
@@ -1437,7 +1451,7 @@ export default function HomeDashboard({
             </div>
           )}
           <div className="divine-hero-overlay" aria-hidden="true" />
-          <div className="divine-om" aria-hidden="true">ॐ</div>
+          <div className="divine-om" aria-hidden="true">{heroFallback.mark}</div>
 
           <div className="divine-hero-content">
             <button
@@ -1445,7 +1459,7 @@ export default function HomeDashboard({
               onClick={() => setGreetingSheetOpen(true)}
               className="divine-greeting motion-press"
             >
-              <span>{greeting.replace('🙏', '').trim()}, {userName.split(' ')[0]}</span>
+              <span>{stripGreetingIcon(greeting)}, {userName.split(' ')[0]}</span>
               <Pencil size={15} />
             </button>
             <button
@@ -1453,9 +1467,9 @@ export default function HomeDashboard({
               onClick={() => setShlokaModalOpen(true)}
               className="divine-shloka-card motion-press"
             >
-              <span className="divine-chip">{sacredText ? sacredText.source : shloka.source}</span>
+              <span className="divine-chip">{dailyText.source}</span>
               <span className="divine-sanskrit">{dailyTextLine}</span>
-              <span className="divine-card-copy">{sacredText ? sacredText.meaning : shloka.meaning}</span>
+              <span className="divine-card-copy">{dailyText.meaning}</span>
             </button>
           </div>
         </div>
@@ -1603,7 +1617,7 @@ export default function HomeDashboard({
               className="inline-flex rounded-full px-2.5 py-1 text-[10px] font-medium"
               style={{ background: 'rgba(250,238,218,0.95)', color: '#854F0B' }}
             >
-              {sacredText ? sacredText.source : shloka.source}
+              {dailyText.source}
             </span>
             <p
               className="mt-3 line-clamp-4"
@@ -1776,10 +1790,10 @@ export default function HomeDashboard({
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl flex items-center justify-center text-base"
                   style={{ background: sacredTextTheme.iconWell }}>
-                  {sacredTextMeta.icon}
+                  {dailyText.icon}
                 </div>
                 <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 500, color: 'var(--text-cream)' }}>
-                  {sacredTextMeta.label}
+                  {dailyText.label}
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -1801,7 +1815,7 @@ export default function HomeDashboard({
               {/* Source badge */}
               <span className="self-start text-[10px] font-semibold px-3 py-1 rounded-full"
                 style={{ background: 'rgba(200,146,74,0.14)', color: 'var(--brand-primary)' }}>
-                {sacredText ? sacredText.source : shloka.source}
+                {dailyText.source}
               </span>
 
               {/* Sanskrit — large, elevated */}
@@ -1824,13 +1838,13 @@ export default function HomeDashboard({
                   color: 'var(--text-cream)',
                   whiteSpace: 'pre-line',
                 }}>
-                  {sacredText ? sacredText.original : shloka.sanskrit}
+                  {dailyText.original}
                 </p>
               </motion.div>
 
               {/* Transliteration */}
               <p className="italic text-base leading-relaxed" style={{ color: 'var(--text-muted-warm)', fontSize: '0.86rem' }}>
-                {sacredText ? sacredText.transliteration : shloka.transliteration}
+                {dailyText.transliteration}
               </p>
 
               {/* Meaning */}
@@ -1844,7 +1858,7 @@ export default function HomeDashboard({
                   Meaning
                 </p>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>
-                  {sacredText ? sacredText.meaning : shloka.meaning}
+                  {dailyText.meaning}
                 </p>
               </div>
 
@@ -1862,7 +1876,7 @@ export default function HomeDashboard({
               {/* Streak info */}
               {streak > 0 && (
                 <p className="text-center text-xs font-semibold" style={{ color: 'var(--brand-primary)' }}>
-                  🔥 {streak}-day reading streak
+                  🔥 {streak}-day {dailyText.streakLabel}
                 </p>
               )}
             </div>
@@ -1883,7 +1897,7 @@ export default function HomeDashboard({
                   : { background: 'rgba(250,199,117,0.90)', color: '#1c1208', boxShadow: '0 14px 30px rgba(239,159,39,0.20)' }}
                 whileTap={readToday ? undefined : { scale: 0.97 }}
               >
-                {readToday ? `✓ Marked read today` : `${sacredTextMeta.icon} Mark as read — earn 5 seva points`}
+                {readToday ? `✓ Marked read today` : `${dailyText.icon} Mark as read — earn 5 seva points`}
               </motion.button>
             </div>
           </motion.div>
@@ -2197,11 +2211,11 @@ export default function HomeDashboard({
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-[0.85rem] flex items-center justify-center text-xl flex-shrink-0"
               style={{ background: sacredTextTheme.iconWell }}>
-              {sacredTextMeta.icon}
+              {dailyText.icon}
             </div>
             <div>
               <p className="home-card-title">
-                {sacredTextMeta.label}
+                {dailyText.label}
               </p>
               {streak > 0 && (
                 <p className="flex items-center gap-1 mt-0.5 text-[10px] font-semibold" style={{ color: 'var(--brand-primary)' }}>
@@ -2213,12 +2227,12 @@ export default function HomeDashboard({
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
               style={{ background: 'rgba(200, 146, 74, 0.12)', color: 'var(--brand-primary)' }}>
-              {sacredText ? sacredText.source : shloka.source}
+              {dailyText.source}
             </span>
             <button onClick={e => { e.stopPropagation(); shareShloka(); }}
               className="w-7 h-7 rounded-full flex items-center justify-center motion-press"
               style={{ background: sacredTextTheme.iconWell }}
-              title={`Share ${sacredTextMeta.shareLabel}`}>
+              title={`Share ${dailyText.shareLabel}`}>
               <Share2 size={12} style={{ color: 'var(--text-muted-warm)' }} />
             </button>
           </div>
@@ -2235,13 +2249,13 @@ export default function HomeDashboard({
             color: 'var(--text-cream)',
             lineHeight: 1.7,
           }}>
-          {sacredText ? sacredText.original : shloka.sanskrit}
+          {dailyText.original}
         </p>
 
         {/* Transliteration */}
         <p className="relative whitespace-pre-line italic mb-4 text-sm leading-relaxed"
           style={{ color: 'var(--text-muted-warm)', fontSize: '0.83rem' }}>
-          {sacredText ? sacredText.transliteration : shloka.transliteration}
+          {dailyText.transliteration}
         </p>
 
         {/* AI practice suggestion — shown when personalisation has loaded */}
@@ -2276,7 +2290,7 @@ export default function HomeDashboard({
             style={readToday
               ? { background: 'rgba(200, 146, 74, 0.12)', color: 'var(--brand-primary)', border: '1px solid rgba(200, 146, 74, 0.18)' }
               : { background: 'var(--brand-primary)', color: '#1a1610' }}>
-            {readToday ? '✓ Read today' : `${sacredTextMeta.icon} Mark as read`}
+            {readToday ? '✓ Read today' : `${dailyText.icon} Mark as read`}
           </button>
         </div>
 
@@ -2291,7 +2305,7 @@ export default function HomeDashboard({
               exit={prefersReducedMotion ? undefined : { opacity: 0, height: 0, y: -4 }}
               transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
             >
-              {sacredText ? sacredText.meaning : shloka.meaning}
+              {dailyText.meaning}
             </motion.div>
           )}
         </AnimatePresence>
