@@ -42,6 +42,7 @@ import { resolveHomeHeroTheme, type HomeHeroTheme } from '@/config/festivalTheme
 import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
 import MoodGlyph from '@/components/ui/MoodGlyph';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
+import { getTraditionMeta } from '@/lib/tradition-config';
 
 interface Panchang {
   tithi:     string;
