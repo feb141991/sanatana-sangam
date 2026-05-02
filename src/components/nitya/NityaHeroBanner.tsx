@@ -17,7 +17,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame } from 'lucide-react';
+import { CalendarDays, Flame } from 'lucide-react';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type Phase = 'night' | 'brahma' | 'sunrise' | 'morning' | 'afternoon' | 'evening' | 'dusk';
@@ -371,7 +371,10 @@ export default function NityaHeroBanner({
         }
       `}</style>
 
-      <div className="mx-4 mb-4 rounded-3xl overflow-hidden" style={{ position: 'relative' }}>
+      <div
+        className="relative -mx-3 mb-5 min-h-[355px] overflow-hidden sm:-mx-4"
+        style={{ isolation: 'isolate' }}
+      >
         {/* ── Animated sky background ── */}
         <motion.div
           className="absolute inset-0"
@@ -384,6 +387,22 @@ export default function NityaHeroBanner({
         <Moon      visible={config.moon}  />
         <Sun       progress={detailedSunProgress} visible={config.sun} />
         <CosmicDust visible={config.hasDust} />
+
+        {/* ── Frameless fade: no hard card edge, just atmosphere dissolving into page ── */}
+        <div
+          className="absolute inset-x-0 top-0 h-24 pointer-events-none"
+          style={{ background: 'linear-gradient(180deg, var(--surface-base), transparent)' }}
+        />
+        <div
+          className="absolute inset-x-0 bottom-0 h-44 pointer-events-none"
+          style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(12,10,7,0.36) 38%, var(--surface-base) 100%)' }}
+        />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse at 50% 74%, rgba(0,0,0,0.08), transparent 62%)',
+          }}
+        />
 
         {/* ── Horizon glow (sunrise/sunset) ── */}
         <AnimatePresence>
@@ -410,19 +429,30 @@ export default function NityaHeroBanner({
         </AnimatePresence>
 
         {/* ── Content overlay ── */}
-        <div className="relative z-10 p-5">
+        <div className="relative z-10 flex min-h-[355px] flex-col justify-end px-5 pb-7 pt-14">
           {/* Phase label */}
-          <div className="flex items-center gap-1.5 mb-1">
-            <span className="text-sm">{config.emoji}</span>
-            <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: config.accentColor, opacity: 0.85 }}>
+          <div
+            className="mb-3 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5"
+            style={{
+              background: 'rgba(255,255,255,0.10)',
+              border: '1px solid rgba(255,255,255,0.14)',
+              backdropFilter: 'blur(14px)',
+              WebkitBackdropFilter: 'blur(14px)',
+            }}
+          >
+            <span className="h-1.5 w-1.5 rounded-full" style={{ background: config.accentColor }} />
+            <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: config.accentColor, opacity: 0.92 }}>
               {config.label}
             </span>
           </div>
 
-          <p style={{ color: config.textColor, opacity: 0.82 }} className="text-sm font-medium">
+          <p style={{ color: config.textColor, opacity: 0.82 }} className="text-[15px] font-medium leading-relaxed">
             {greeting}
           </p>
-          <p style={{ color: config.textColor }} className="font-bold text-xl mt-0.5">
+          <p
+            style={{ color: config.textColor, fontFamily: 'var(--font-serif)' }}
+            className="mt-0.5 text-[2.2rem] font-semibold leading-[0.98] tracking-[-0.03em]"
+          >
             {userName}
           </p>
 
@@ -437,7 +467,15 @@ export default function NityaHeroBanner({
           )}
 
           {/* Simple progress bar — no ring, no floating number */}
-          <div className="mt-4 space-y-1.5">
+          <div
+            className="mt-5 space-y-1.5 rounded-[1.35rem] px-4 py-3"
+            style={{
+              background: 'rgba(255,255,255,0.10)',
+              border: '1px solid rgba(255,255,255,0.12)',
+              backdropFilter: 'blur(16px) saturate(130%)',
+              WebkitBackdropFilter: 'blur(16px) saturate(130%)',
+            }}
+          >
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-medium" style={{ color: config.textColor, opacity: 0.65 }}>
                 {completedCount} of {totalSteps} steps
@@ -460,20 +498,45 @@ export default function NityaHeroBanner({
 
         {/* ── Panchang bar ── */}
         {panchang && (
-          <div className="relative z-10 bg-black/25 px-5 py-3 flex flex-wrap gap-x-4 gap-y-1">
+          <div className="absolute left-5 right-5 top-5 z-10 flex flex-wrap gap-2">
             {panchang.tithi && (
-              <span className="text-xs" style={{ color: `${config.textColor}b0` }}>
-                🌒 {panchang.tithi}{panchang.paksha ? ` · ${panchang.paksha}` : ''}
+              <span
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px]"
+                style={{
+                  color: `${config.textColor}d8`,
+                  background: 'rgba(255,255,255,0.10)',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  backdropFilter: 'blur(12px)',
+                }}
+              >
+                <CalendarDays size={12} />
+                {panchang.tithi}{panchang.paksha ? ` · ${panchang.paksha}` : ''}
               </span>
             )}
             {panchang.vaara && (
-              <span className="text-xs" style={{ color: `${config.textColor}b0` }}>
-                📅 {panchang.vaara}
+              <span
+                className="inline-flex items-center rounded-full px-3 py-1.5 text-[11px]"
+                style={{
+                  color: `${config.textColor}d8`,
+                  background: 'rgba(255,255,255,0.10)',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  backdropFilter: 'blur(12px)',
+                }}
+              >
+                {panchang.vaara}
               </span>
             )}
             {vataDays && (
-              <span className="text-xs font-semibold" style={{ color: config.accentColor }}>
-                🌟 {vataDays}
+              <span
+                className="inline-flex items-center rounded-full px-3 py-1.5 text-[11px] font-semibold"
+                style={{
+                  color: config.accentColor,
+                  background: 'rgba(255,255,255,0.10)',
+                  border: `1px solid ${config.accentColor}33`,
+                  backdropFilter: 'blur(12px)',
+                }}
+              >
+                {vataDays}
               </span>
             )}
           </div>
