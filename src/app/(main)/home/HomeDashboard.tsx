@@ -20,6 +20,7 @@ import {
   Sparkles,
   Users,
   X,
+  Radio,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
@@ -1324,6 +1325,12 @@ export default function HomeDashboard({
       description: 'Get divine blessings every day',
       onClick: handleOpenDarshan,
       icon: Sparkles,
+    },
+    {
+      title: 'Live Darshan',
+      description: '24/7 Temple live streams',
+      href: '/live-darshan',
+      icon: Radio,
     },
     {
       title: 'Panchang',
