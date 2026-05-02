@@ -227,7 +227,7 @@ body {
 }
 
 .divine-topbar-meta {
-  margin-top: 7px;
+  margin-top: 2px;
   display: flex;
   min-height: 28px;
   flex-wrap: wrap;
@@ -478,7 +478,7 @@ body {
   flex-direction: column;
   justify-content: space-between;
   gap: 0;
-  padding: 18px 20px 0;
+  padding: 0 20px 0;
 }
 
 .divine-hero-topline {

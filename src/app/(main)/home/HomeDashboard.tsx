@@ -1135,13 +1135,13 @@ export default function HomeDashboard({
   const compatibleLocalGreeting = isGreetingCompatibleWithTradition(localGreeting, tradition, sampradaya)
     ? localGreeting
     : null;
-  const greeting     = compatibleLocalGreeting ?? autoGreeting;
+  const greeting     = compatibleLocalGreeting ?? timeGreeting ?? autoGreeting;
   const greetingMode = compatibleLocalGreeting
     ? 'Custom greeting saved'
     : isWelcomeBack
       ? 'Welcome back · auto tradition greeting'
       : timeGreeting
-      ? `${timeGreeting} · auto tradition greeting`
+      ? `${timeGreeting} · time greeting`
       : 'Auto tradition greeting';
 
   useEffect(() => {
@@ -1377,7 +1377,7 @@ export default function HomeDashboard({
               >
                 <div className="flex items-center gap-2">
                   <h1 className="divine-greeting-title">
-                    {stripGreetingIcon(greeting)}, {userName.split(' ')[0]}
+                    {stripGreetingIcon(greeting)}
                   </h1>
                 </div>
                 <div className="flex items-center gap-3">

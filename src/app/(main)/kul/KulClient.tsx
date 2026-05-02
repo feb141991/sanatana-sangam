@@ -1623,7 +1623,8 @@ function KulHubView({
           </div>
         </div>
       )}
-
+      {/* ── SECTIONS TILES ── */}
+      <div className="space-y-4">
         <div className="flex items-center justify-between gap-3">
           <p className="type-card-label">Open a section</p>
           {upcomingEvents[0] ? (
