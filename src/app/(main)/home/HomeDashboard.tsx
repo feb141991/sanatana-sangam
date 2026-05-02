@@ -1315,34 +1315,6 @@ export default function HomeDashboard({
         : !nityaDoneToday
           ? 'Complete the remaining nitya rhythm for today.'
           : 'Your core practice is steady today. Continue study or review Panchang.');
-  const nextHomeAction = !readToday
-      ? {
-        label: `Read ${dailyText.actionLabel}`,
-        detail: 'Open the sacred text and mark it read.',
-        href: null,
-        onClick: () => setShlokaModalOpen(true),
-      }
-    : !japaAlreadyDoneToday
-      ? {
-          label: 'Start mala',
-          detail: japaStreak > 0 ? `${japaStreak}-day japa streak ready.` : 'Begin today’s japa session.',
-          href: '/bhakti/mala',
-          onClick: undefined,
-        }
-      : !nityaDoneToday
-        ? {
-            label: 'Continue nitya karma',
-            detail: 'Finish the daily practice loop.',
-            href: '/nitya-karma',
-            onClick: undefined,
-          }
-        : {
-            label: 'Continue Pathshala',
-            detail: 'Move into study with a calm base.',
-            href: '/pathshala',
-            onClick: undefined,
-          };
-  const nityaDoneToday = nityaProgress?.length === meta.defaultRitualTimes.length;
   const quickAction = !readToday 
     ? {
         label: 'Read today\'s sacred text',
