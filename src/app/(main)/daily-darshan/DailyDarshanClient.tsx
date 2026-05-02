@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Bookmark, Download, Share2, X } from 'lucide-react';
+import { Bookmark, Download, Share2, X, Flame } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
+import InteractiveAarti from '@/components/darshan/InteractiveAarti';
 
 const DARSHAN_CARDS = [
   {
@@ -77,6 +78,7 @@ function buildWallpaperSvg(card: typeof DARSHAN_CARDS[number]) {
 export default function DailyDarshanClient() {
   const [saved, setSaved] = useState<Set<string>>(new Set());
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
+  const [showAartiMode, setShowAartiMode] = useState(false);
 
   async function shareCard(card: typeof DARSHAN_CARDS[number]) {
     const text = `${card.title}\n\n${card.blessing}\n\nShared via Sanatan Universe`;
@@ -153,20 +155,30 @@ export default function DailyDarshanClient() {
             </button>
 
             {/* Immersive Card */}
-            <div className="w-full max-w-sm aspect-[9/16] max-h-[75vh] relative rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(62,42,31,0.15)] border border-[var(--divine-border)] bg-[var(--divine-surface)] flex flex-col items-center justify-center p-8 text-center">
+            <div className="w-full max-w-sm aspect-[9/16] max-h-[70vh] relative rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(62,42,31,0.15)] border border-[var(--divine-border)] bg-[var(--divine-surface)] flex flex-col items-center justify-center p-8 text-center">
               <span className="divine-card-motif divine-card-motif-large opacity-50" aria-hidden="true" />
-              <div className="text-[140px] font-serif text-[var(--divine-saffron)] leading-none mb-8">
+              <div className="text-[120px] font-serif text-[var(--divine-saffron)] leading-none mb-6">
                 {activeCard.symbol}
               </div>
-              <span className="px-4 py-1.5 rounded-full border border-[var(--divine-gold)]/30 text-[var(--divine-gold)] text-[10px] font-bold uppercase tracking-widest mb-6">
+              <span className="px-4 py-1.5 rounded-full border border-[var(--divine-gold)]/30 text-[var(--divine-gold)] text-[10px] font-bold uppercase tracking-widest mb-4">
                 {activeCard.tradition}
               </span>
-              <h1 className="font-serif text-3xl font-bold text-[var(--divine-text)] mb-4">
+              <h1 className="font-serif text-3xl font-bold text-[var(--divine-text)] mb-3">
                 {activeCard.title}
               </h1>
-              <p className="text-[var(--divine-muted)] text-lg leading-relaxed italic px-4">
+              <p className="text-[var(--divine-muted)] text-base leading-relaxed italic px-2 mb-6">
                 &ldquo;{activeCard.blessing}&rdquo;
               </p>
+              
+              {/* Offer Aarti Button */}
+              <button
+                onClick={() => setShowAartiMode(true)}
+                className="flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm tracking-wide active:scale-95 transition-transform shadow-lg"
+                style={{ background: 'linear-gradient(135deg, var(--divine-saffron) 0%, #D4784A 100%)', color: '#1c1c1a' }}
+              >
+                <Flame size={18} />
+                Offer {activeCard.tradition.toLowerCase() === 'sikh' ? 'Ardas' : 'Aarti'}
+              </button>
             </div>
 
             {/* Action Bar */}
@@ -174,7 +186,7 @@ export default function DailyDarshanClient() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="mt-8 flex items-center justify-center gap-6 z-20"
+              className="mt-6 flex items-center justify-center gap-6 z-20"
             >
               <button
                 onClick={() => saveCard(activeCard)}
@@ -196,6 +208,12 @@ export default function DailyDarshanClient() {
               </button>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showAartiMode && activeCard && (
+          <InteractiveAarti card={activeCard} onClose={() => setShowAartiMode(false)} />
         )}
       </AnimatePresence>
     </main>
