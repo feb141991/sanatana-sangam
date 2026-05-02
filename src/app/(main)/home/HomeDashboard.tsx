@@ -1608,8 +1608,8 @@ export default function HomeDashboard({
               </div>
             </div>
 
-            {/* Content — scrollable */}
-            <div className="relative min-h-0 overflow-y-auto px-5 py-2 flex w-full max-w-2xl mx-auto flex-col justify-start gap-3">
+            {/* Content — scrollable, but compact enough to fit without scrolling */}
+            <div className="relative min-h-0 overflow-y-auto px-5 py-2 flex w-full max-w-2xl mx-auto flex-col justify-start gap-2">
               {/* Source badge */}
               <span className="self-start text-[10px] font-semibold px-3 py-1 rounded-full"
                 style={{ background: 'rgba(200,146,74,0.14)', color: 'var(--brand-primary)' }}>
@@ -1618,7 +1618,7 @@ export default function HomeDashboard({
 
               {/* Sanskrit — large, elevated */}
               <motion.div
-                className="rounded-[1.7rem] px-5 py-4"
+                className="rounded-[1.4rem] px-4 py-3"
                 initial={prefersReducedMotion ? undefined : { opacity: 0, y: 18, scale: 0.98 }}
                 animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
@@ -1631,8 +1631,8 @@ export default function HomeDashboard({
               >
                 <p style={{
                   fontFamily: 'Georgia, "Noto Serif Devanagari", serif',
-                  fontSize: 'clamp(1.18rem, 4.3vw, 1.62rem)',
-                  lineHeight: 1.68,
+                  fontSize: 'clamp(0.95rem, 3.5vw, 1.25rem)',
+                  lineHeight: 1.55,
                   color: 'var(--text-cream)',
                   whiteSpace: 'pre-line',
                 }}>
@@ -1641,21 +1641,21 @@ export default function HomeDashboard({
               </motion.div>
 
               {/* Transliteration */}
-              <p className="italic text-base leading-relaxed" style={{ color: 'var(--text-muted-warm)', fontSize: '0.86rem' }}>
+              <p className="italic leading-snug" style={{ color: 'var(--text-muted-warm)', fontSize: '0.78rem' }}>
                 {dailyText.transliteration}
               </p>
 
               {/* Meaning */}
-              <div className="rounded-[1.4rem] px-4 py-3" style={{
+              <div className="rounded-[1.2rem] px-3 py-2.5" style={{
                 background: isDark ? sacredTextTheme.iconWell : 'rgba(255,255,255,0.58)',
                 border: `1px solid ${isDark ? 'rgba(250,238,218,0.10)' : 'rgba(65,36,2,0.09)'}`,
                 backdropFilter: 'blur(14px) saturate(120%)',
                 WebkitBackdropFilter: 'blur(14px) saturate(120%)',
               }}>
-                <p className="text-[9px] font-semibold uppercase tracking-[0.16em] mb-2" style={{ color: 'rgba(200,146,74,0.65)' }}>
+                <p className="text-[9px] font-semibold uppercase tracking-[0.16em] mb-1" style={{ color: 'rgba(200,146,74,0.65)' }}>
                   Meaning
                 </p>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>
+                <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>
                   {dailyText.meaning}
                 </p>
               </div>
