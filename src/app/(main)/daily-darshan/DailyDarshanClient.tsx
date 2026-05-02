@@ -162,7 +162,7 @@ export default function DailyDarshanClient({ tradition, sampradaya }: { traditio
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed inset-0 z-[100] bg-[var(--divine-bg)] flex flex-col items-center justify-between px-4 pt-20 pb-[calc(1.5rem+env(safe-area-inset-bottom))] overflow-hidden touch-none"
+            className="fixed inset-0 z-[100] bg-[var(--divine-bg)] flex flex-col items-center justify-between px-4 pt-16 pb-[calc(1rem+env(safe-area-inset-bottom))] overflow-y-auto no-scrollbar"
           >
             {/* Close Button */}
             <button 
