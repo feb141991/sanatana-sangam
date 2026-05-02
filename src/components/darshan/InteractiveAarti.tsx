@@ -259,12 +259,12 @@ export default function InteractiveAarti({ card, onClose }: InteractiveAartiProp
 
       {/* Puja Thali Toolbar */}
       <motion.div 
-        className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-black/90 to-transparent z-40 flex items-end justify-center pb-8"
+        className="absolute bottom-0 inset-x-0 pt-16 pb-[calc(2rem+env(safe-area-inset-bottom))] bg-gradient-to-t from-black via-black/80 to-transparent z-50 flex items-end justify-center"
         initial={{ y: 100 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", damping: 25, stiffness: 200, delay: 0.2 }}
       >
-        <div className="flex items-center gap-2 md:gap-4 px-6 py-4 rounded-[2rem] bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(201,163,91,0.15)]">
+        <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 px-4 sm:px-6 py-4 rounded-[2rem] bg-white/10 backdrop-blur-xl border border-white/20 shadow-[0_0_30px_rgba(201,163,91,0.2)] max-w-[95vw]">
           {tools.map(tool => {
             const isActive = activeToolId === tool.id;
             return (
@@ -275,15 +275,15 @@ export default function InteractiveAarti({ card, onClose }: InteractiveAartiProp
                   setActiveToolId(tool.id);
                   hapticLight();
                 }}
-                className={`relative flex flex-col items-center gap-1.5 p-3 rounded-2xl transition-all ${
-                  isActive ? 'bg-white/10' : 'opacity-60 hover:opacity-100'
+                className={`relative flex flex-col items-center gap-1.5 p-3 sm:p-4 rounded-2xl transition-all ${
+                  isActive ? 'bg-white/15 scale-105' : 'opacity-60 hover:opacity-100 hover:bg-white/5'
                 }`}
                 animate={tool.id === 'ghanti' || tool.id === 'bowl' ? bellControls : {}}
               >
                 {isActive && (
                   <motion.div 
                     layoutId="activeToolIndicator"
-                    className="absolute inset-0 rounded-2xl border border-white/20 bg-white/5"
+                    className="absolute inset-0 rounded-2xl border border-white/30 bg-white/10 shadow-inner"
                     initial={false}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
@@ -291,7 +291,7 @@ export default function InteractiveAarti({ card, onClose }: InteractiveAartiProp
                 <div className="relative z-10" style={{ color: isActive ? tool.color : '#A1A1AA' }}>
                   {tool.icon}
                 </div>
-                <span className={`text-[10px] font-medium relative z-10 ${isActive ? 'text-white' : 'text-zinc-400'}`}>
+                <span className={`text-[10px] font-bold tracking-wider uppercase relative z-10 ${isActive ? 'text-white' : 'text-zinc-400'}`}>
                   {tool.label}
                 </span>
               </motion.button>
