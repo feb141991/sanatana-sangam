@@ -4,18 +4,19 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { Play, MapPin, Clock, Bell, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LIVE_STREAMS, LiveStream, LiveStreamCategory } from '@/lib/live-streams';
+import { LiveStream, LiveStreamCategory } from '@/lib/live-streams';
 
 interface LiveDarshanClientProps {
   tradition: string;
   userId: string;
+  streams: LiveStream[];
 }
 
-export default function LiveDarshanClient({ tradition, userId }: LiveDarshanClientProps) {
+export default function LiveDarshanClient({ tradition, userId, streams }: LiveDarshanClientProps) {
   const [activeCategory, setActiveCategory] = useState<LiveStreamCategory | 'all'>('mandir');
   const [activePlayer, setActivePlayer] = useState<string | null>(null);
 
-  const filteredStreams = LIVE_STREAMS.filter(stream => {
+  const filteredStreams = streams.filter(stream => {
     if (activeCategory !== 'all' && stream.category !== activeCategory) return false;
     // We can filter by tradition if needed, but 'All' usually shows popular ones
     return true;
