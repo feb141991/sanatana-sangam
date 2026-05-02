@@ -1312,7 +1312,13 @@ export default function HomeDashboard({
     setHeroImageFailed(false);
   }, [heroTheme.heroImage]);
 
-  const divineFeatureCards = [
+  const divineFeatureCards: Array<{
+    title: string;
+    description: string;
+    href?: string;
+    onClick?: () => void;
+    icon: React.ElementType;
+  }> = [
     {
       title: 'Daily Darshan',
       description: 'Get divine blessings every day',
