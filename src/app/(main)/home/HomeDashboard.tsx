@@ -1449,15 +1449,6 @@ export default function HomeDashboard({
             <div className="divine-hero-bottom">
               <button
                 type="button"
-                onClick={() => setGreetingSheetOpen(true)}
-                className="divine-greeting-poster motion-press"
-              >
-                <span>{stripGreetingIcon(greeting)}, {userName.split(' ')[0]}</span>
-                <Pencil size={14} />
-              </button>
-
-              <button
-                type="button"
                 onClick={() => setShlokaModalOpen(true)}
                 className="divine-shloka-card-v2 motion-press"
               >

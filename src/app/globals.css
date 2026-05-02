@@ -193,8 +193,8 @@ body {
   --divine-border: #E8DCCB;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 2px 0 10px;
+  gap: 0;
+  padding: 0;
   color: var(--divine-text);
 }
 
@@ -492,8 +492,10 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  align-items: center;
   gap: 13px;
-  padding-bottom: clamp(28px, 8vw, 46px);
+  padding-bottom: clamp(32px, 10vw, 54px);
+  text-align: center;
 }
 
 .divine-mood-chip-immersive {
@@ -558,9 +560,9 @@ body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  text-align: left;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
   background: transparent;
   border: 0;
 }
@@ -635,7 +637,7 @@ body {
   font-weight: 400;
   line-height: 1.52;
   color: var(--divine-muted);
-  max-width: 92%;
+  max-width: 100%;
 }
 
 :root[data-theme='dark'] .divine-sanskrit-immersive-dark {
@@ -798,8 +800,9 @@ body {
 
 .divine-feature-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
+  padding: 0 16px 24px;
 }
 
 .divine-feature-card {
