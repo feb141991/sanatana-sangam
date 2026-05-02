@@ -1172,22 +1172,26 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
               vataDays={vataDays}
             />
 
-            {/* Vrat alert */}
-            {vataDays && (
-              <div className="mx-4 mb-3 rounded-2xl border px-4 py-3 flex items-start gap-3"
-                style={{ background: `${accent}10`, borderColor: `${accent}30` }}>
-                <span className="text-xl shrink-0">🌟</span>
-                <div>
-                  <p className="text-sm font-semibold text-[color:var(--brand-ink)]">Today is {vataDays}</p>
-                  <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-relaxed">
-                    A vrat day adds extra spiritual merit. Observe nirjala or phalahar and add extended japa.
-                  </p>
+            <div
+              className="relative z-20 -mt-10 px-4 pt-8 space-y-3"
+              style={{ background: 'linear-gradient(180deg, transparent 0%, var(--surface-base) 54px)' }}
+            >
+              {/* Vrat alert */}
+              {vataDays && (
+                <div className="rounded-2xl border px-4 py-3 flex items-start gap-3"
+                  style={{ background: `${accent}10`, borderColor: `${accent}30` }}>
+                  <span className="text-xl shrink-0">🌟</span>
+                  <div>
+                    <p className="text-sm font-semibold text-[color:var(--brand-ink)]">Today is {vataDays}</p>
+                    <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-relaxed">
+                      A vrat day adds extra spiritual merit. Observe nirjala or phalahar and add extended japa.
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* 3 practice mode cards */}
-            <div className="px-4 pt-1 space-y-3">
+              {/* 3 practice mode cards */}
+              <div className="space-y-3">
 
               {/* ① Dincharya — FREE */}
               <motion.button
@@ -1306,6 +1310,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                   </button>
                   {' '}unlocks AI-personalised sequences, Ashrama Dharma, and Guided Plans.
                 </p>
+              </div>
               </div>
             </div>
           </motion.div>

@@ -32,7 +32,7 @@ import type { Shloka } from '@/lib/shlokas';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { DailySacredText } from '@/lib/sacred-texts';
 import { calculatePanchang, PANCHANG_TRUST_META } from '@/lib/panchang';
-import { getGreeting, GREETING_POOLS } from '@/lib/traditions';
+import { getGreeting, getGreetingPool, isGreetingCompatibleWithTradition } from '@/lib/traditions';
 import type { GuidedPathProgressRow } from '@/lib/guided-paths';
 import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
@@ -334,6 +334,19 @@ function formatTraditionGreetingLabel(tradition: string | null, sampradaya: stri
     .join(' ');
 }
 
+function getTraditionHeroFallback(tradition: string | null) {
+  switch (tradition) {
+    case 'sikh':
+      return { title: 'Guru Nanak Dev Ji', subtitle: 'Sat Sri Akal', mark: '☬' };
+    case 'buddhist':
+      return { title: 'Dharma refuge', subtitle: 'Namo Buddhaya', mark: '☸' };
+    case 'jain':
+      return { title: 'Jain dharma', subtitle: 'Jai Jinendra', mark: 'ॐ' };
+    default:
+      return { title: 'Sanatan Universe', subtitle: 'A calm sacred space', mark: 'ॐ' };
+  }
+}
+
 // ── Date Picker Modal ─────────────────────────────────────────────────────────
 const DAY_LABELS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
@@ -461,10 +474,7 @@ function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onC
   onClose:         () => void;
 }) {
   const prefersReducedMotion = useReducedMotion();
-  const key  = tradition && sampradaya ? `${tradition}:${sampradaya}` : 'default';
-  const pool = (GREETING_POOLS as Record<string, string[]>)[key]
-            ?? (GREETING_POOLS as Record<string, string[]>)[`${tradition}:other`]
-            ?? (GREETING_POOLS as Record<string, string[]>)['default'];
+  const pool = getGreetingPool(tradition, sampradaya);
 
   const [mounted, setMounted] = useState(false);
   const [selected, setSelected] = useState<string | null>(currentGreeting);
@@ -523,17 +533,17 @@ function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onC
             <div className="sticky top-0 z-10 px-5 py-4 border-b flex items-center justify-between"
               style={{ background: 'rgba(30, 28, 22, 0.97)', borderColor: 'rgba(200, 146, 74, 0.14)', backdropFilter: 'blur(16px)' }}>
               <div>
-                <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 600, color: 'var(--text-cream)' }}>
+                <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 600, color: '#f0ede6' }}>
                   Choose your greeting
                 </h3>
-                <p className="text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>
+                <p className="text-xs mt-0.5" style={{ color: 'rgba(240, 237, 230, 0.70)' }}>
                   Suggested for {pathLabel}. You can stay on auto or save a personal greeting.
                 </p>
               </div>
               <button onClick={onClose}
                 className="w-9 h-9 rounded-full flex items-center justify-center motion-press"
                 style={{ background: 'rgba(200, 146, 74, 0.10)' }}>
-                <X size={15} style={{ color: 'var(--text-muted-warm)' }} />
+                <X size={15} style={{ color: '#f0ede6' }} />
               </button>
             </div>
 
@@ -943,7 +953,10 @@ export default function HomeDashboard({
   const [datePickerOpen,    setDatePickerOpen]    = useState(false);
   const [greetingSheetOpen, setGreetingSheetOpen] = useState(false);
   const [inviteOpen,        setInviteOpen]        = useState(false);
-  const [localGreeting,     setLocalGreeting]     = useState<string | null>(customGreeting);
+  const [localGreeting,     setLocalGreeting]     = useState<string | null>(() => (
+    isGreetingCompatibleWithTradition(customGreeting, tradition, sampradaya) ? customGreeting : null
+  ));
+  const [heroImageFailed,   setHeroImageFailed]   = useState(false);
   const [streak,           setStreak]           = useState(initialStreak);
   const [selectedDate,     setSelectedDate]     = useState<Date>(new Date());
   const [readToday,        setReadToday]        = useState(() => {
@@ -1149,18 +1162,27 @@ export default function HomeDashboard({
   const hour        = new Date().getHours();
   const timeGreeting = getTimeGreeting(hour);
   const autoGreeting = getGreeting(tradition, sampradaya, new Date().getDate());
-  const greeting     = localGreeting ?? (isWelcomeBack ? 'Welcome back! 🙏' : autoGreeting);
-  const greetingMode = localGreeting
+  const compatibleLocalGreeting = isGreetingCompatibleWithTradition(localGreeting, tradition, sampradaya)
+    ? localGreeting
+    : null;
+  const greeting     = compatibleLocalGreeting ?? autoGreeting;
+  const greetingMode = compatibleLocalGreeting
     ? 'Custom greeting saved'
-    : timeGreeting
+    : isWelcomeBack
+      ? 'Welcome back · auto tradition greeting'
+      : timeGreeting
       ? `${timeGreeting} · auto tradition greeting`
       : 'Auto tradition greeting';
+
+  useEffect(() => {
+    setLocalGreeting(isGreetingCompatibleWithTradition(customGreeting, tradition, sampradaya) ? customGreeting : null);
+  }, [customGreeting, tradition, sampradaya]);
 
   async function saveGreeting(newGreeting: string | null) {
     setLocalGreeting(newGreeting);
     const { error } = await supabase.from('profiles').update({ custom_greeting: newGreeting }).eq('id', userId);
     if (error) {
-      setLocalGreeting(customGreeting);
+      setLocalGreeting(isGreetingCompatibleWithTradition(customGreeting, tradition, sampradaya) ? customGreeting : null);
       toast.error(error.message);
       return;
     }
@@ -1305,6 +1327,12 @@ export default function HomeDashboard({
     festival,
     dbThemes: heroThemes,
   });
+  const heroFallback = getTraditionHeroFallback(tradition);
+
+  useEffect(() => {
+    setHeroImageFailed(false);
+  }, [heroTheme.heroImage]);
+
   const divineFeatureCards = [
     {
       title: 'Daily Darshan',
@@ -1390,15 +1418,24 @@ export default function HomeDashboard({
         </div>
 
         <div className="divine-hero">
-          <Image
-            src={heroTheme.heroImage}
-            alt={heroTheme.heroAlt}
-            fill
-            priority
-            sizes="(max-width: 768px) 100vw, 760px"
-            className="object-cover object-center divine-hero-image"
-            style={{ objectPosition: heroTheme.objectPosition }}
-          />
+          {!heroImageFailed ? (
+            <Image
+              src={heroTheme.heroImage}
+              alt={heroTheme.heroAlt}
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 760px"
+              className="object-cover object-center divine-hero-image"
+              style={{ objectPosition: heroTheme.objectPosition }}
+              onError={() => setHeroImageFailed(true)}
+            />
+          ) : (
+            <div className="divine-hero-fallback" aria-hidden="true">
+              <span>{heroFallback.mark}</span>
+              <strong>{heroFallback.title}</strong>
+              <small>{heroFallback.subtitle}</small>
+            </div>
+          )}
           <div className="divine-hero-overlay" aria-hidden="true" />
           <div className="divine-om" aria-hidden="true">ॐ</div>
 
@@ -2703,7 +2740,7 @@ export default function HomeDashboard({
           <GreetingEditSheet
             tradition={tradition}
             sampradaya={sampradaya}
-            currentGreeting={localGreeting}
+            currentGreeting={compatibleLocalGreeting}
             onSave={saveGreeting}
             onClose={() => setGreetingSheetOpen(false)}
           />

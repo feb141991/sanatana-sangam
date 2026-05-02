@@ -334,6 +334,40 @@ body {
   filter: saturate(0.72) contrast(0.84) brightness(0.70);
 }
 
+.divine-hero-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px;
+  color: var(--divine-text);
+  background:
+    radial-gradient(circle at 68% 18%, rgba(201, 163, 91, 0.24), transparent 34%),
+    radial-gradient(circle at 20% 74%, rgba(216, 138, 28, 0.16), transparent 30%),
+    var(--divine-bg);
+}
+
+.divine-hero-fallback span {
+  font-size: clamp(4rem, 20vw, 7rem);
+  line-height: 1;
+  color: rgba(201, 163, 91, 0.28);
+}
+
+.divine-hero-fallback strong {
+  max-width: 13rem;
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 8vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.05;
+}
+
+.divine-hero-fallback small {
+  font-family: var(--font-inter);
+  color: var(--divine-muted);
+}
+
 .divine-hero-overlay {
   position: absolute;
   inset: 0;

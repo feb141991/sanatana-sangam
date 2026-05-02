@@ -126,9 +126,40 @@ export function getGreeting(
   sampradaya?: string | null,
   seed: number = new Date().getDate()
 ): string {
-  const key  = tradition && sampradaya ? `${tradition}:${sampradaya}` : 'default';
-  const pool = GREETING_POOLS[key] ?? GREETING_POOLS[`${tradition}:other`] ?? GREETING_POOLS['default'];
+  const pool = getGreetingPool(tradition, sampradaya);
   return pool[seed % pool.length];
+}
+
+export function getGreetingPool(
+  tradition?: string | null,
+  sampradaya?: string | null,
+): string[] {
+  const key = tradition && sampradaya ? `${tradition}:${sampradaya}` : 'default';
+  return GREETING_POOLS[key] ?? GREETING_POOLS[`${tradition}:other`] ?? GREETING_POOLS.default;
+}
+
+export function isGreetingCompatibleWithTradition(
+  greeting?: string | null,
+  tradition?: string | null,
+  sampradaya?: string | null,
+): boolean {
+  if (!greeting) return true;
+
+  const lower = greeting.toLowerCase();
+  if (getGreetingPool(tradition, sampradaya).includes(greeting)) return true;
+
+  switch (tradition) {
+    case 'sikh':
+      return /waheguru|sat sri akal|nanak|khalsa|fateh|chardi kala/.test(lower);
+    case 'buddhist':
+      return /buddha|buddhaya|dharma|gassho|mani padme|amitabha|sādhu|sadhu/.test(lower);
+    case 'jain':
+      return /jinendra|arihant|mahavir|micchami|namo/.test(lower);
+    case 'hindu':
+      return /om|hari|ram|rama|krishna|radhe|shiva|mahadev|bholenath|mata|ambe|durga|swaminarayan|arya/.test(lower);
+    default:
+      return true;
+  }
 }
 
 /**

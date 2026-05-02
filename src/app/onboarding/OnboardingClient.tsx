@@ -25,6 +25,31 @@ const GOALS = [
   { id: 'community', emoji: '💬', label: 'Community',       desc: 'Mandali, sangat, wisdom' },
 ] as const;
 
+function getPracticePathOptions(tradition: TraditionKey | '') {
+  switch (tradition) {
+    case 'sikh':
+      return [
+        { key: 'general' as GenderContext, icon: '☬', label: 'Sangat path', sub: 'Nitnem, simran, seva and sangat' },
+        { key: 'female' as GenderContext, icon: '🌸', label: 'Kaur path', sub: 'Life-stage guidance with Sikh context' },
+      ];
+    case 'buddhist':
+      return [
+        { key: 'general' as GenderContext, icon: '☸️', label: 'Dharma path', sub: 'Refuge, mindfulness and daily practice' },
+        { key: 'female' as GenderContext, icon: '🪷', label: 'Householder path', sub: 'Life-stage guidance with Buddhist context' },
+      ];
+    case 'jain':
+      return [
+        { key: 'general' as GenderContext, icon: '🤲', label: 'Jain path', sub: 'Ahimsa, svadhyaya and daily reflection' },
+        { key: 'female' as GenderContext, icon: '🌸', label: 'Shravika path', sub: 'Life-stage guidance with Jain context' },
+      ];
+    default:
+      return [
+        { key: 'general' as GenderContext, icon: '🌿', label: 'General path', sub: 'Traditional practice for all' },
+        { key: 'female' as GenderContext, icon: '🌸', label: 'Stridharma path', sub: 'Women’s tradition-specific duties' },
+      ];
+  }
+}
+
 // ─── Per-screen background gradients ─────────────────────────────────────────
 const SCREEN_BG: Record<number, string> = {
   1: 'radial-gradient(ellipse at 40% 30%, rgba(60,32,8,0.95) 0%, rgba(16,10,4,0.98) 55%, rgba(10,8,6,1) 100%)',
@@ -614,10 +639,7 @@ export default function OnboardingClient({ userId, hasTradition, hasLifeStage, h
                           Your practice path
                         </p>
                         <div className="grid grid-cols-2 gap-2.5">
-                          {([
-                            { key: 'general' as GenderContext, icon: '🌿', label: 'General path',    sub: 'Traditional practice for all' },
-                            { key: 'female'  as GenderContext, icon: '🌸', label: 'Stridharma path', sub: 'Women\'s tradition-specific duties' },
-                          ] as const).map(opt => {
+                          {getPracticePathOptions(tradition).map(opt => {
                             const sel = genderContext === opt.key;
                             return (
                               <motion.button
