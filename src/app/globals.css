@@ -398,9 +398,9 @@ body {
   z-index: 1;
   background: linear-gradient(
     to bottom,
-    rgba(250, 246, 239, 0.04) 0%,
-    rgba(250, 246, 239, 0.10) 38%,
-    rgba(250, 246, 239, 0.70) 78%,
+    rgba(250, 246, 239, 0.25) 0%,
+    rgba(250, 246, 239, 0.40) 40%,
+    rgba(250, 246, 239, 0.85) 80%,
     var(--divine-bg) 100%
   );
   pointer-events: none;
