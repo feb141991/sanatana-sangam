@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import RadialRing from '@/components/ui/RadialRing';
+import { useVocabulary } from '@/hooks/useVocabulary';
 
 // ── Ring definitions ───────────────────────────────────────────────────────────
 // Each ring maps to a feature page and carries its own accent pair for the
@@ -9,7 +10,7 @@ import RadialRing from '@/components/ui/RadialRing';
 const RINGS = [
   {
     id:        'japa',
-    label:     'Japa',
+    labelKey:  'japa',
     href:      '/japa',
     accent:    '#C8924A',
     accentEnd: '#E8A860',
@@ -17,7 +18,7 @@ const RINGS = [
   },
   {
     id:        'svadhyaya',
-    label:     'Svādhyāya',
+    labelKey:  'svadhyaya',
     href:      '/pathshala',
     accent:    '#6aafcc',
     accentEnd: '#88ccee',
@@ -25,7 +26,7 @@ const RINGS = [
   },
   {
     id:        'sadhana',
-    label:     'Sādhana',
+    labelKey:  'sadhana',
     href:      '/nitya-karma',
     accent:    '#b06adc',
     accentEnd: '#cc88ee',
@@ -33,7 +34,7 @@ const RINGS = [
   },
   {
     id:        'nitya',
-    label:     'Nitya',
+    labelKey:  'nitya',
     href:      '/nitya-karma',
     accent:    '#e09050',
     accentEnd: '#f0b070',
@@ -41,7 +42,7 @@ const RINGS = [
   },
   {
     id:        'viveka',
-    label:     'Viveka',
+    labelKey:  'viveka',
     href:      '/discover',
     accent:    '#7ab85a',
     accentEnd: '#9ad878',
@@ -63,7 +64,9 @@ export default function SpiritualMetricsSection({
   shlokaStreak,
   japaAlreadyDoneToday,
   readToday,
+  tradition = 'hindu',
 }: SpiritualMetricsSectionProps) {
+  const { term } = useVocabulary(tradition ?? 'hindu');
   // ── Theme detection ────────────────────────────────────────────────────────
   const [isDark, setIsDark] = useState(true);
   useEffect(() => {
@@ -119,7 +122,7 @@ export default function SpiritualMetricsSection({
         className="text-[9px] font-bold uppercase tracking-[0.15em] mb-3"
         style={{ color: 'var(--brand-muted)' }}
       >
-        Sādhana Vitals
+        {term('sadhana')} Vitals
       </p>
 
       {/* Rings row — each is a tappable link */}
@@ -134,7 +137,7 @@ export default function SpiritualMetricsSection({
             size={72}
             strokeWidth={6.5}
             showPct
-            caption={ring.label}
+            caption={term(ring.labelKey)}
             href={ring.href}
           />
         ))}

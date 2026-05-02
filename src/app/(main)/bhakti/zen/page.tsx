@@ -47,8 +47,11 @@ const AMBIENT_OPTIONS = [
   { id: 'off',  label: 'Off',     emoji: '🔇' },
   { id: 'bowl', label: 'Bowl',    emoji: '🎵' },
   { id: 'om',   label: 'Om Nada', emoji: '🕉️' },
+  { id: 'tanpura', label: 'Tanpura', emoji: '🪕' },
+  { id: 'inst', label: 'Strings', emoji: '🎻' },
 ] as const;
 type AmbientId = typeof AMBIENT_OPTIONS[number]['id'];
+const STORAGE_ZEN_SOUND = 'ss-zen-ambient';
 
 // ─── WebAudio ambient ────────────────────────────────────────────────────────
 let ambientCtx: AudioContext | null = null;
@@ -93,6 +96,47 @@ function playOmAmbient(volume = 0.07) {
       osc.frequency.setValueAtTime(freq, ctx.currentTime);
       gain.gain.setValueAtTime(0, ctx.currentTime);
       gain.gain.linearRampToValueAtTime(volume / (i + 1), ctx.currentTime + 3);
+      osc.start(ctx.currentTime);
+      ambientNodes.push({ osc, gain });
+    });
+  } catch {}
+}
+
+function playTanpuraAmbient(volume = 0.08) {
+  try {
+    const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
+    if (!Ctx) return;
+    if (!ambientCtx) ambientCtx = new Ctx();
+    const ctx = ambientCtx!;
+    stopAmbient();
+    // Tanpura: Root, Octave, and Fifth (Pa-Sa-Sa-Sa)
+    [138.59, 138.59 * 1.5, 277.18, 138.59 * 0.75].forEach((freq, i) => {
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = i === 0 ? 'sine' : 'triangle';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(volume / (i + 1), ctx.currentTime + 3);
+      osc.start(ctx.currentTime);
+      ambientNodes.push({ osc, gain });
+    });
+  } catch {}
+}
+
+function playInstrumentalAmbient(volume = 0.05) {
+  try {
+    const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
+    if (!Ctx) return;
+    if (!ambientCtx) ambientCtx = new Ctx();
+    const ctx = ambientCtx!;
+    stopAmbient();
+    [146.83, 220.0, 293.66, 440.0].forEach((freq, i) => {
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(volume / (i + 1.5), ctx.currentTime + 4);
       osc.start(ctx.currentTime);
       ambientNodes.push({ osc, gain });
     });
@@ -380,7 +424,10 @@ export default function SattvicModePage() {
   const [focusMode,  setFocusMode]= useState(false);
   const [focusEnv,   setEnv]      = useState<EnvId>('temple');
   const [phase,      setPhase]    = useState<Phase>('inhale');
-  const [ambientId,  setAmbient]  = useState<AmbientId>('off');
+  const [ambientId,  setAmbient]  = useState<AmbientId>(() => {
+    if (typeof window === 'undefined') return 'off';
+    return (localStorage.getItem(STORAGE_ZEN_SOUND) as AmbientId) || 'off';
+  });
   const [showFocusSettings, setShowFocusSettings] = useState(false);
   // Tracks total minutes practised this session (increments each minute while running)
   const [sessionMins, setSessionMins] = useState(0);
@@ -452,6 +499,8 @@ export default function SattvicModePage() {
     if (!running) { fadeOutAmbient(); return; }
     if (ambientId === 'bowl') playBowlAmbient(0.06);
     else if (ambientId === 'om') playOmAmbient(0.07);
+    else if (ambientId === 'tanpura') playTanpuraAmbient(0.08);
+    else if (ambientId === 'inst') playInstrumentalAmbient(0.06);
     else fadeOutAmbient();
     return () => { if (!running) fadeOutAmbient(); };
   }, [running, ambientId]);
@@ -655,7 +704,7 @@ export default function SattvicModePage() {
         <p className="text-[10px] mt-3 mb-2" style={{ color: textMuted }}>Ambient sound</p>
         <div className="flex gap-2">
           {AMBIENT_OPTIONS.map(opt => (
-            <button key={opt.id} onClick={() => setAmbient(opt.id)}
+            <button key={opt.id} onClick={() => { setAmbient(opt.id); localStorage.setItem(STORAGE_ZEN_SOUND, opt.id); }}
               className="flex-1 rounded-full py-1.5 text-xs font-medium transition-all"
               style={ambientId === opt.id
                 ? { background: pillBgAct, color: textPrimary, border: `1px solid ${pillBdrAct}` }

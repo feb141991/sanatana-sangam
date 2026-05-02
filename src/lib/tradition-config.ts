@@ -76,6 +76,9 @@ export interface TraditionMeta {
     label: string;
     items: string[];
   };
+  vocabulary: Record<string, string>;
+  morningGreeting: string;
+  morningAllDoneMsg: string;
 }
 
 export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
@@ -115,6 +118,16 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
       label: 'Visit rhythm',
       items: ['Darshan', 'Aarti', 'Temple hours'],
     },
+    vocabulary: {
+      dharma: 'Dharma',
+      sangam: 'Sangam',
+      mandir: 'Mandir',
+      shloka: 'Shloka',
+      karma:  'Karma',
+      shakti: 'Shakti',
+    },
+    morningGreeting: 'Suprabhat 🌅',
+    morningAllDoneMsg: 'Hari Om! Your morning sadhana is complete. The divine sees your devotion. 🙏',
   },
 
   sikh: {
@@ -152,6 +165,16 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
       label: 'Sangat rhythm',
       items: ['Darshan', 'Langar', 'Paath'],
     },
+    vocabulary: {
+      dharma: 'Gurmat',
+      sangam: 'Sangat',
+      mandir: 'Gurudwara',
+      shloka: 'Shabad',
+      karma:  'Karma',
+      shakti: 'Shakti',
+    },
+    morningGreeting: 'Sat Sri Akal ☬',
+    morningAllDoneMsg: 'Waheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh! Nitnem complete. ☬',
   },
 
   buddhist: {
@@ -189,6 +212,16 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
       label: 'Dhamma rhythm',
       items: ['Meditation', 'Chanting', 'Mindfulness'],
     },
+    vocabulary: {
+      dharma: 'Dhamma',
+      sangam: 'Sangha',
+      mandir: 'Vihara',
+      shloka: 'Verse',
+      karma:  'Kamma',
+      shakti: 'Prajna',
+    },
+    morningGreeting: 'Namo Buddhaya ☸️',
+    morningAllDoneMsg: 'Sadhu sadhu sadhu. Your morning practice is complete. May all beings be happy. ☸️',
   },
 
   jain: {
@@ -226,6 +259,16 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
       label: 'Sadhana rhythm',
       items: ['Pooja', 'Darshan', 'Meditation'],
     },
+    vocabulary: {
+      dharma: 'Jain Dharma',
+      sangam: 'Sangha',
+      mandir: 'Derasar',
+      shloka: 'Sutra',
+      karma:  'Karma',
+      shakti: 'Ananta Virya',
+    },
+    morningGreeting: 'Jai Jinendra 🤲',
+    morningAllDoneMsg: 'Jai Jinendra! Samayika complete. Ahimsa and equanimity guide your day. 🤲',
   },
 
   other: {
@@ -263,6 +306,16 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
       label: 'Daily rhythm',
       items: ['Stillness', 'Reflection'],
     },
+    vocabulary: {
+      dharma: 'Dharma',
+      sangam: 'Sangam',
+      mandir: 'Sacred place',
+      shloka: 'Wisdom',
+      karma:  'Karma',
+      shakti: 'Power',
+    },
+    morningGreeting: 'Pranam ✨',
+    morningAllDoneMsg: 'Your morning practice is complete. May your day be filled with peace and wisdom. ✨',
   },
 
 };

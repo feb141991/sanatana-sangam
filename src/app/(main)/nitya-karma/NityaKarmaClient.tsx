@@ -37,14 +37,10 @@ import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import NityaHeroBanner from '@/components/nitya/NityaHeroBanner';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import type { NityaSequenceStep, NityaKarmaStreak } from '@sangam/sadhana-engine';
+import { useVocabulary } from '@/hooks/useVocabulary';
 
 // ── Tradition greetings ─────────────────────────────────────────────────────────
-const TRADITION_MORNING: Record<string, { greeting: string; allDoneMsg: string }> = {
-  hindu:    { greeting: 'Suprabhat 🌅', allDoneMsg: 'Hari Om! Your morning sadhana is complete. The divine sees your devotion. 🙏' },
-  sikh:     { greeting: 'Sat Sri Akal ☬', allDoneMsg: 'Waheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh! Nitnem complete. ☬' },
-  buddhist: { greeting: 'Namo Buddhaya ☸️', allDoneMsg: 'Sadhu sadhu sadhu. Your morning practice is complete. May all beings be happy. ☸️' },
-  jain:     { greeting: 'Jai Jinendra 🤲', allDoneMsg: 'Jai Jinendra! Samayika complete. Ahimsa and equanimity guide your day. 🤲' },
-};
+// TRADITION_MORNING moved to TRADITION_CONFIG
 
 // ── Step-specific motivational messages ──────────────────────────────────────────
 const STEP_MESSAGES: Record<string, string[]> = {
@@ -770,9 +766,9 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
   const supabase            = useRef(createClient()).current;
   const { engine, isReady } = useEngine();
   const meta                = getTraditionMeta(tradition);
-  const morning             = TRADITION_MORNING[tradition] ?? TRADITION_MORNING.hindu;
   const accent              = meta.accentColour;
   const isPro               = usePremium();
+  const { term }            = useVocabulary(tradition);
 
   const [steps,         setSteps]        = useState<NityaSequenceStep[]>([]);
   const [greeting,      setGreeting]     = useState('');
@@ -893,7 +889,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
       if (cancelled) return;
       const base   = getDefaultSteps(tradition);
       const merged = await loadTodayLog(base);
-      if (!cancelled) { setSteps(merged); setGreeting(morning.greeting); setLoading(false); }
+      if (!cancelled) { setSteps(merged); setGreeting(meta.morningGreeting); setLoading(false); }
     }, 4000);
 
     if (!isReady || !engine) return () => { cancelled = true; clearTimeout(fallbackTimer); };
@@ -907,7 +903,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
         const merged = await loadTodayLog(seq.sequence);
         if (!cancelled) {
           setSteps(merged);
-          setGreeting(seq.greeting || morning.greeting);
+          setGreeting(seq.greeting || meta.morningGreeting);
           setPanchang(seq.panchang_context);
           setStreak(str);
         }
@@ -916,7 +912,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
         const merged = await loadTodayLog(base);
         if (!cancelled) {
           setSteps(merged);
-          setGreeting(morning.greeting);
+          setGreeting(meta.morningGreeting);
           try { const str = await engine!.nityaKarma.getStreak(userId); if (!cancelled) setStreak(str); } catch { /* silent */ }
         }
       } finally {
@@ -927,7 +923,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
 
     load();
     return () => { cancelled = true; clearTimeout(fallbackTimer); };
-  }, [isReady, engine, userId, tradition, morning.greeting, supabase, spiritualToday]);
+  }, [isReady, engine, userId, tradition, meta.morningGreeting, supabase, spiritualToday]);
 
   // ── Mark a step — try-finally ensures busySteps always clears ─────────────
   async function markStep(stepId: string, done: boolean) {
@@ -983,7 +979,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
         confettiFired.current = true;
         await hapticSuccess();
         setShowConfetti(true);
-        toast.success(morning.allDoneMsg, { duration: 5000 });
+        toast.success(meta.morningAllDoneMsg, { duration: 5000 });
         if (engine) {
           try { const str = await engine.nityaKarma.getStreak(userId); setStreak(str); } catch { /* silent */ }
         }
@@ -1161,7 +1157,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
 
             {/* Hero banner */}
             <NityaHeroBanner
-              greeting={greeting || morning.greeting}
+              greeting={greeting || meta.morningGreeting}
               userName={userName}
               completedCount={completedCount}
               totalSteps={totalSteps}

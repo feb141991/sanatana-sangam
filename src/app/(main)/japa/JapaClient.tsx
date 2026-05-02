@@ -36,6 +36,7 @@ const SUMERU_R = 16;        // ↑ bigger sumeru bead (was 11)
 const STORAGE_MALA   = 'ss-japa-mala';
 const STORAGE_MANTRA = 'ss-japa-mantra';
 const STORAGE_BG     = 'ss-japa-bg';
+const STORAGE_SOUND  = 'ss-japa-sound';
 
 // ── Mala definitions ───────────────────────────────────────────────────────────
 const MALAS = [
@@ -1471,7 +1472,10 @@ export default function JapaClient({
   const [paused,       setPaused]       = useState(false);
   const [showComplete, setShowComplete] = useState(false);
   const [showStopSheet, setShowStopSheet] = useState(false);
-  const [soundId,      setSoundId]      = useState<SoundId>('silence');
+  const [soundId,      setSoundId]      = useState<SoundId>(() => {
+    if (typeof window === 'undefined') return 'silence';
+    return (localStorage.getItem(STORAGE_SOUND) as SoundId) || 'silence';
+  });
   const [streak,       setStreak]       = useState(currentStreak);
   const [saved,        setSaved]        = useState(false);
   const [savingSession, setSavingSession] = useState(false);
@@ -1538,6 +1542,7 @@ export default function JapaClient({
   // ── Handle sound selection (called from PracticeSettingsSheet — user gesture) ──
   function handleSoundSelect(id: SoundId) {
     setSoundId(id);
+    localStorage.setItem(STORAGE_SOUND, id);
     startJapaAmbient(id);
     // Don't close settings here — let user continue adjusting; sheet has its own close
   }
