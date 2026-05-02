@@ -2,7 +2,6 @@ import { Bookmark, Download, Share2, X, Flame } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import InteractiveAarti from '@/components/darshan/InteractiveAarti';
-import { useUserPreferences } from '@/providers/UserPreferencesProvider';
 
 const DARSHAN_CARDS = [
   {
@@ -73,15 +72,13 @@ function buildWallpaperSvg(card: typeof DARSHAN_CARDS[number]) {
 </svg>`;
 }
 
-export default function DailyDarshanClient() {
-  const { preferences } = useUserPreferences();
+export default function DailyDarshanClient({ tradition }: { tradition: string }) {
   const [saved, setSaved] = useState<Set<string>>(new Set());
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
   const [showAartiMode, setShowAartiMode] = useState(false);
 
-  const userTradition = preferences.tradition || 'Shaiva';
   const displayedCards = DARSHAN_CARDS.filter(
-    c => c.tradition.toLowerCase() === userTradition.toLowerCase()
+    c => c.tradition.toLowerCase() === tradition.toLowerCase()
   );
   const finalCards = displayedCards.length > 0 ? displayedCards : DARSHAN_CARDS;
 
