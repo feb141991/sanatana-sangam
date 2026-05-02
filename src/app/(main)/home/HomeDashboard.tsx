@@ -1316,7 +1316,7 @@ export default function HomeDashboard({
     {
       title: 'Daily Darshan',
       description: 'Get divine blessings every day',
-      onClick: handleOpenDarshan,
+      href: '/daily-darshan',
       icon: Sparkles,
     },
     {
