@@ -9,9 +9,12 @@ export default async function DailyDarshanPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('tradition')
+    .select('tradition, sampradaya')
     .eq('id', user.id)
     .single();
 
-  return <DailyDarshanClient tradition={profile?.tradition ?? 'Shaiva'} />;
+  return <DailyDarshanClient 
+    tradition={profile?.tradition ?? 'hindu'} 
+    sampradaya={profile?.sampradaya ?? null} 
+  />;
 }

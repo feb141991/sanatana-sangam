@@ -75,14 +75,27 @@ function buildWallpaperSvg(card: typeof DARSHAN_CARDS[number]) {
 </svg>`;
 }
 
-export default function DailyDarshanClient({ tradition }: { tradition: string }) {
+export default function DailyDarshanClient({ tradition, sampradaya }: { tradition: string; sampradaya?: string | null }) {
   const [saved, setSaved] = useState<Set<string>>(new Set());
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
   const [showAartiMode, setShowAartiMode] = useState(false);
 
-  const displayedCards = DARSHAN_CARDS.filter(
-    c => c.tradition.toLowerCase() === tradition.toLowerCase()
-  );
+  const userTrad = tradition.toLowerCase();
+  const userSamp = sampradaya?.toLowerCase();
+
+  const displayedCards = DARSHAN_CARDS.filter(c => {
+    const cardTrad = c.tradition.toLowerCase();
+    if (cardTrad === userTrad) return true;
+    
+    if (userTrad === 'hindu') {
+      if (userSamp && userSamp !== 'smarta') {
+        return cardTrad === userSamp || cardTrad === 'bhakti'; // allow generic bhakti
+      }
+      return ['shaiva', 'vaishnava', 'shakta', 'bhakti'].includes(cardTrad);
+    }
+    return false;
+  });
+
   const finalCards = displayedCards.length > 0 ? displayedCards : DARSHAN_CARDS;
 
   async function shareCard(card: typeof DARSHAN_CARDS[number]) {
