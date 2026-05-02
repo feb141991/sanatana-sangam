@@ -193,7 +193,7 @@ body {
   --divine-border: #E8DCCB;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   padding: 2px 0 10px;
   color: var(--divine-text);
 }
@@ -299,13 +299,14 @@ body {
 
 .divine-hero {
   position: relative;
-  min-height: clamp(480px, 100vw, 560px);
+  min-height: clamp(450px, 106vw, 590px);
   overflow: hidden;
   background: var(--divine-bg);
   margin-left: -1rem;
   margin-right: -1rem;
   display: flex;
   flex-direction: column;
+  isolation: isolate;
 }
 
 @media (min-width: 640px) {
@@ -328,14 +329,14 @@ body {
 }
 
 .divine-hero-image {
-  filter: saturate(0.82) contrast(0.88) brightness(1.08);
+  filter: saturate(0.80) contrast(0.84) brightness(1.10);
   transform: scale(1.01);
-  animation: hero-pan 20s ease-in-out infinite alternate;
+  animation: hero-pan 26s cubic-bezier(0.22, 1, 0.36, 1) infinite alternate;
 }
 
 @keyframes hero-pan {
-  0%   { transform: scale(1.0); object-position: center; }
-  100% { transform: scale(1.1); object-position: 50% 40%; }
+  0%   { transform: scale(1.01) translate3d(0, 0, 0); }
+  100% { transform: scale(1.075) translate3d(0, -10px, 0); }
 }
 
 :root[data-theme='dark'] .divine-hero-image {
@@ -382,9 +383,10 @@ body {
   z-index: 1;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.2) 30%,
-    rgba(0, 0, 0, 0.65) 100%
+    rgba(250, 246, 239, 0.04) 0%,
+    rgba(250, 246, 239, 0.10) 38%,
+    rgba(250, 246, 239, 0.70) 78%,
+    var(--divine-bg) 100%
   );
   pointer-events: none;
 }
@@ -392,44 +394,106 @@ body {
 :root[data-theme='dark'] .divine-hero-overlay {
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.2) 40%,
-    rgba(0, 0, 0, 0.6) 100%
+    rgba(28, 28, 26, 0.02) 0%,
+    rgba(28, 28, 26, 0.16) 38%,
+    rgba(28, 28, 26, 0.74) 78%,
+    var(--divine-bg) 100%
   );
 }
 
-.divine-mandala {
+.divine-hero-readability {
   position: absolute;
-  right: -58px;
-  top: -42px;
+  inset: auto 0 0;
+  z-index: 2;
+  height: 58%;
+  background:
+    radial-gradient(ellipse at 50% 82%, rgba(255, 253, 249, 0.92), rgba(255, 253, 249, 0.55) 38%, transparent 72%),
+    linear-gradient(180deg, transparent 0%, rgba(255, 253, 249, 0.45) 38%, var(--divine-bg) 100%);
+  pointer-events: none;
+}
+
+:root[data-theme='dark'] .divine-hero-readability {
+  background:
+    radial-gradient(ellipse at 50% 82%, rgba(28, 28, 26, 0.90), rgba(28, 28, 26, 0.62) 40%, transparent 72%),
+    linear-gradient(180deg, transparent 0%, rgba(28, 28, 26, 0.50) 38%, var(--divine-bg) 100%);
+}
+
+.divine-poster-motif {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.divine-poster-motif-om {
+  right: clamp(22px, 8vw, 54px);
+  top: clamp(62px, 18vw, 110px);
+  font-family: Georgia, serif;
+  font-size: clamp(4rem, 18vw, 7.4rem);
+  line-height: 1;
+  color: rgba(201, 163, 91, 0.14);
+}
+
+.divine-poster-motif-mandala {
+  left: -70px;
+  top: 22%;
   width: 220px;
   height: 220px;
   border-radius: 999px;
-  border: 1px solid rgba(201, 163, 91, 0.30);
-  box-shadow: inset 0 0 0 18px rgba(201, 163, 91, 0.05), inset 0 0 0 42px rgba(216, 138, 28, 0.04);
+  border: 1px solid rgba(201, 163, 91, 0.16);
+  box-shadow:
+    inset 0 0 0 18px rgba(201, 163, 91, 0.04),
+    inset 0 0 0 46px rgba(216, 138, 28, 0.025);
 }
 
-.divine-om {
+.divine-poster-motif-lotus {
+  right: 20px;
+  bottom: 84px;
+  width: 112px;
+  height: 112px;
+  overflow: hidden;
+  color: transparent;
+  opacity: 0.16;
+}
+
+.divine-poster-motif-lotus::before,
+.divine-poster-motif-lotus::after {
+  content: "";
   position: absolute;
-  right: 31px;
-  top: 42px;
-  z-index: 2;
-  font-family: Georgia, serif;
-  font-size: 4.4rem;
-  line-height: 1;
-  color: rgba(201, 163, 91, 0.18);
+  inset: 18px;
+  border: 1px solid rgba(133, 79, 11, 0.50);
+  border-radius: 70% 70% 20% 20%;
+  transform: rotate(45deg);
+}
+
+.divine-poster-motif-lotus::after {
+  transform: rotate(-45deg);
 }
 
 .divine-hero-content {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   height: 100%;
   display: flex;
-  min-height: clamp(440px, 95vw, 520px);
+  min-height: clamp(450px, 106vw, 590px);
   flex-direction: column;
   justify-content: space-between;
   gap: 0;
-  padding: 24px 0 0;
+  padding: 18px 20px 0;
+}
+
+.divine-hero-topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  min-height: 48px;
+}
+
+.divine-hero-bottom {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 13px;
+  padding-bottom: clamp(28px, 8vw, 46px);
 }
 
 .divine-mood-chip-immersive {
@@ -438,14 +502,14 @@ body {
   gap: 8px;
   border-radius: 999px;
   padding: 8px 14px;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #fff;
+  background: rgba(255, 253, 249, 0.34);
+  backdrop-filter: blur(14px) saturate(125%);
+  -webkit-backdrop-filter: blur(14px) saturate(125%);
+  border: 1px solid rgba(255, 253, 249, 0.38);
+  color: var(--divine-text);
   font-size: 12px;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-weight: 500;
+  box-shadow: 0 8px 22px rgba(62, 42, 31, 0.08);
 }
 
 .divine-greeting-left {
@@ -489,21 +553,58 @@ body {
 }
 
 .divine-shloka-card-v2 {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 2.5rem 1.5rem 3.5rem;
+  position: relative;
+  width: 100%;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  z-index: 10;
+  align-items: flex-start;
+  gap: 8px;
+  text-align: left;
   background: transparent;
+  border: 0;
 }
 
-.divine-card-cream-overlay {
-  display: none;
+.divine-greeting-poster {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: rgba(255, 253, 249, 0.44);
+  border: 1px solid rgba(232, 220, 203, 0.58);
+  color: var(--divine-text);
+  font-family: var(--font-serif);
+  font-size: clamp(1.32rem, 6vw, 1.85rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  box-shadow: 0 12px 30px rgba(62, 42, 31, 0.08);
+}
+
+:root[data-theme='dark'] .divine-greeting-poster,
+:root[data-theme='dark'] .divine-mood-chip-immersive {
+  background: rgba(28, 28, 26, 0.34);
+  border-color: rgba(250, 238, 218, 0.16);
+  color: var(--divine-text);
+}
+
+.divine-poster-label {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: rgba(250, 238, 218, 0.82);
+  color: #854F0B;
+  font-family: var(--font-inter);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  border: 1px solid rgba(201, 163, 91, 0.25);
 }
 
 .divine-chip-saffron {
@@ -521,23 +622,29 @@ body {
 
 .divine-sanskrit-immersive-dark {
   font-family: Georgia, 'Noto Serif Devanagari', serif;
-  font-size: clamp(1.5rem, 6vw, 1.85rem);
+  font-size: clamp(1.42rem, 6.2vw, 2rem);
   font-weight: 600;
-  line-height: 1.4;
-  color: #FCF8EE;
-  text-shadow: 0 2px 14px rgba(0,0,0,0.5), 0 0 30px rgba(0,0,0,0.3);
+  line-height: 1.42;
+  color: var(--divine-text);
+  text-shadow: 0 1px 18px rgba(255, 253, 249, 0.42);
 }
 
 .divine-meaning-dark {
   font-family: var(--font-inter);
   font-size: 14px;
-  font-weight: 500;
-  color: rgba(252, 248, 238, 0.85);
-  margin-top: 8px;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
-  max-width: 85%;
-  margin-left: auto;
-  margin-right: auto;
+  font-weight: 400;
+  line-height: 1.52;
+  color: var(--divine-muted);
+  max-width: 92%;
+}
+
+:root[data-theme='dark'] .divine-sanskrit-immersive-dark {
+  color: #f0ede6;
+  text-shadow: 0 2px 22px rgba(0, 0, 0, 0.55);
+}
+
+:root[data-theme='dark'] .divine-meaning-dark {
+  color: rgba(240, 237, 230, 0.78);
 }
 
 .divine-feature-card,

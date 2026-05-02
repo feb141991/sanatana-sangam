@@ -1424,11 +1424,14 @@ export default function HomeDashboard({
             </div>
           )}
           <div className="divine-hero-overlay" aria-hidden="true" />
+          <div className="divine-hero-readability" aria-hidden="true" />
+          <div className="divine-poster-motif divine-poster-motif-om" aria-hidden="true">{heroFallback.mark}</div>
+          <div className="divine-poster-motif divine-poster-motif-mandala" aria-hidden="true" />
+          <div className="divine-poster-motif divine-poster-motif-lotus" aria-hidden="true"> lotus </div>
 
           <div className="divine-hero-content">
-            {/* Top row: Mood chip */}
-            <div className="p-6 pb-0">
-              <Link href="/discover" className="divine-mood-chip-immersive motion-press">
+            <div className="divine-hero-topline">
+              <Link href="/discover" className="divine-mood-chip-immersive motion-press" aria-label="Open mood discovery">
                 {moodToday ? (
                   <>
                     <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={16} />
@@ -1443,24 +1446,26 @@ export default function HomeDashboard({
               </Link>
             </div>
 
-            <div className="flex-1 flex flex-col justify-center px-6">
-              {/* Spacer - moves content down */}
-            </div>
+            <div className="divine-hero-bottom">
+              <button
+                type="button"
+                onClick={() => setGreetingSheetOpen(true)}
+                className="divine-greeting-poster motion-press"
+              >
+                <span>{stripGreetingIcon(greeting)}, {userName.split(' ')[0]}</span>
+                <Pencil size={14} />
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setShlokaModalOpen(true)}
-              className="divine-shloka-card-v2 motion-press"
-            >
-              <div className="divine-card-cream-overlay" />
-              <div className="relative z-10 w-full">
-                <div className="flex flex-col items-center justify-center w-full mb-2">
-                  <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">{sacredTextMeta.label}</span>
-                </div>
-                <p className="divine-sanskrit-immersive-dark line-clamp-2">{dailyTextLine}</p>
-                <p className="divine-meaning-dark line-clamp-1">{dailyText.meaning}</p>
-              </div>
-            </button>
+              <button
+                type="button"
+                onClick={() => setShlokaModalOpen(true)}
+                className="divine-shloka-card-v2 motion-press"
+              >
+                <span className="divine-poster-label">{dailyText.label}</span>
+                <p className="divine-sanskrit-immersive-dark line-clamp-3">{dailyTextLine}</p>
+                <p className="divine-meaning-dark line-clamp-2">{dailyText.meaning}</p>
+              </button>
+            </div>
           </div>
         </div>
 
