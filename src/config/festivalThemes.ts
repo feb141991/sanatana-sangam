@@ -41,7 +41,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
   {
     id: 'shaiva-default',
     label: 'Shaiva default',
-    heroImage: '/images/heroes/shiv-default.webp',
+    heroImage: '/assets/images/heroes/hindu/shiva-default.webp',
     heroAlt: 'Soft devotional Shiva artwork',
     objectPosition: '58% 18%',
     traditions: ['hindu'],
@@ -52,7 +52,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
   {
     id: 'maha-shivaratri',
     label: 'Maha Shivaratri',
-    heroImage: '/images/heroes/shiv-default.webp',
+    heroImage: '/assets/images/heroes/hindu/mahashivratri.webp',
     heroAlt: 'Soft Shiva artwork for Maha Shivaratri',
     objectPosition: '58% 18%',
     traditions: ['hindu'],
@@ -62,7 +62,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
   {
     id: 'sikh-default',
     label: 'Sikh default',
-    heroImage: '/images/heroes/guru-nanak-default.webp',
+    heroImage: '/assets/images/heroes/sikh/default.webp',
     heroAlt: 'Soft devotional Guru Nanak Dev Ji artwork',
     objectPosition: 'center 18%',
     traditions: ['sikh'],
@@ -72,7 +72,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
   {
     id: 'guru-nanak-jayanti',
     label: 'Guru Nanak Jayanti',
-    heroImage: '/images/heroes/guru-nanak-default.webp',
+    heroImage: '/assets/images/heroes/sikh/gurpurab.webp',
     heroAlt: 'Soft Guru Nanak Dev Ji artwork for Gurpurab',
     objectPosition: 'center 18%',
     traditions: ['sikh'],
@@ -82,7 +82,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
   {
     id: 'buddhist-default',
     label: 'Buddhist default',
-    heroImage: '/images/heroes/buddha-default.webp',
+    heroImage: '/assets/images/heroes/buddhist/default.webp',
     heroAlt: 'Soft devotional Buddha artwork',
     objectPosition: 'center 18%',
     traditions: ['buddhist'],
@@ -92,7 +92,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
   {
     id: 'buddha-purnima',
     label: 'Buddha Purnima',
-    heroImage: '/images/heroes/buddha-default.webp',
+    heroImage: '/assets/images/heroes/buddhist/vesak.webp',
     heroAlt: 'Soft Buddha artwork for Buddha Purnima',
     objectPosition: 'center 18%',
     traditions: ['buddhist'],
@@ -102,7 +102,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
   {
     id: 'jain-default',
     label: 'Jain default',
-    heroImage: '/images/heroes/mahavir-default.webp',
+    heroImage: '/assets/images/heroes/jain/default.webp',
     heroAlt: 'Soft devotional Bhagwan Mahavir artwork',
     objectPosition: 'center 18%',
     traditions: ['jain'],
@@ -112,7 +112,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
   {
     id: 'mahavir-jayanti',
     label: 'Mahavir Jayanti',
-    heroImage: '/images/heroes/mahavir-default.webp',
+    heroImage: '/assets/images/heroes/jain/mahavir-jayanti.webp',
     heroAlt: 'Soft Bhagwan Mahavir artwork for Mahavir Jayanti',
     objectPosition: 'center 18%',
     traditions: ['jain'],
@@ -122,7 +122,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
   {
     id: 'global-default',
     label: 'Global default',
-    heroImage: '/images/heroes/shiv-default.webp',
+    heroImage: '/assets/images/heroes/all/default.webp',
     heroAlt: 'Soft devotional Shiva artwork',
     objectPosition: 'center 18%',
     priority: 0,

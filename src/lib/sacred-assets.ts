@@ -24,9 +24,9 @@ const FALLBACK_SOUND = '/sounds/temple_bell.mp3';
  * Structure: /assets/[type]/[tradition]/[occasion|deity].ext
  */
 export const SACRED_ASSETS = {
-  getHero: (tradition: TraditionKey, occasion?: string) => {
-    if (occasion) return `/assets/images/heroes/${tradition}/${occasion}.jpg`;
-    return `/assets/images/heroes/${tradition}/default.jpg`;
+  getHero: (tradition: TraditionKey, occasion?: string, ext: 'jpg' | 'webp' | 'png' = 'jpg') => {
+    const filename = occasion || 'default';
+    return `/assets/images/heroes/${tradition}/${filename}.${ext}`;
   },
 
   getDarshan: (deity: string) => {
