@@ -1468,12 +1468,6 @@ export default function HomeDashboard({
           onDismiss={handleDismissPrompt}
         />
 
-        <DarshanOverlay 
-          darshans={DARSHAN_REGISTRY}
-          initialIndex={initialDarshanIndex >= 0 ? initialDarshanIndex : 0}
-          isOpen={darshanOpen}
-          onClose={() => setDarshanOpen(false)}
-        />
 
         <MotionStagger className="divine-feature-grid" delay={0.08}>
           {divineFeatureCards.map((item) => {
@@ -1518,6 +1512,14 @@ export default function HomeDashboard({
           <span className="divine-seva-cta">Donate Now</span>
         </Link>
       </motion.section>
+
+      {/* Daily Darshan Fullscreen Overlay */}
+      <DarshanOverlay 
+        darshans={DARSHAN_REGISTRY}
+        initialIndex={initialDarshanIndex >= 0 ? initialDarshanIndex : 0}
+        isOpen={darshanOpen}
+        onClose={() => setDarshanOpen(false)}
+      />
 
       {/* ── Shloka fullscreen modal ── */}
       <AnimatePresence>
