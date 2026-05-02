@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/navigation';
+import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 // Initialize Supabase with Service Role Key to bypass RLS for background jobs
