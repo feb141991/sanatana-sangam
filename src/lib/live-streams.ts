@@ -13,13 +13,13 @@ export interface LiveStream {
 
 export const LIVE_STREAMS: LiveStream[] = [
   {
-    id: 'vaishno-devi-live',
-    title: 'Vaishno Devi Temple',
-    location: 'Katra, Jammu & Kashmir',
-    schedule: 'Aarti: 6:20-8:00 AM & PM',
+    id: 'krishna-janmabhoomi',
+    title: 'Shri Krishna Janmabhoomi',
+    location: 'Mathura, UP',
+    schedule: 'Live Darshan',
     category: 'mandir',
     tradition: 'hindu',
-    youtubeVideoId: 'tqa2NcqPvR8', // Verified Vaishno Devi
+    youtubeVideoId: 'ZCXCu9_K0lY', // Verified Mathura Janmabhoomi
   },
   {
     id: 'mahakaleshwar-ujjain',
@@ -29,15 +29,6 @@ export const LIVE_STREAMS: LiveStream[] = [
     category: 'mandir',
     tradition: 'hindu',
     youtubeVideoId: 'XonAtRkvqgo', // Verified Mahakaleshwar
-  },
-  {
-    id: 'krishna-janmabhoomi',
-    title: 'Shri Krishna Janmabhoomi',
-    location: 'Mathura, UP',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    youtubeVideoId: 'ZCXCu9_K0lY', // Verified Mathura Janmabhoomi
   },
   {
     id: 'takhat-hazur-sahib',
