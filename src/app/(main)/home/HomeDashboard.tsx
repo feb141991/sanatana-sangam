@@ -43,8 +43,9 @@ import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives'
 import MoodGlyph from '@/components/ui/MoodGlyph';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { getTraditionMeta } from '@/lib/tradition-config';
-import { getDailyDarshan } from '@/lib/darshan-registry';
+import { getDailyDarshan, DARSHAN_REGISTRY } from '@/lib/darshan-registry';
 import DarshanOverlay from '@/components/home/DarshanOverlay';
+import DarshanPrompt from '@/components/home/DarshanPrompt';
 
 interface Panchang {
   tithi:     string;
@@ -967,23 +968,35 @@ export default function HomeDashboard({
 
   // Daily Darshan Logic
   const [darshanOpen, setDarshanOpen] = useState(false);
-  const [darshanAutoOpened, setDarshanAutoOpened] = useState(false);
+  const [darshanPromptVisible, setDarshanPromptVisible] = useState(false);
   const dailyDarshan = getDailyDarshan(tradition);
+  const initialDarshanIndex = DARSHAN_REGISTRY.findIndex(d => d.id === dailyDarshan.id);
 
   useEffect(() => {
     const lastDarshanDate = localStorage.getItem('last_darshan_date');
     const todayStr = new Date().toISOString().split('T')[0];
 
     if (lastDarshanDate !== todayStr) {
-      // Auto open after a short delay
+      // Show prompt after a short delay instead of full screen
       const timer = setTimeout(() => {
-        setDarshanOpen(true);
-        setDarshanAutoOpened(true);
-        localStorage.setItem('last_darshan_date', todayStr);
-      }, 1500);
+        setDarshanPromptVisible(true);
+      }, 2500);
       return () => clearTimeout(timer);
     }
   }, [tradition]);
+
+  const handleOpenDarshan = () => {
+    setDarshanOpen(true);
+    setDarshanPromptVisible(false);
+    const todayStr = new Date().toISOString().split('T')[0];
+    localStorage.setItem('last_darshan_date', todayStr);
+  };
+
+  const handleDismissPrompt = () => {
+    setDarshanPromptVisible(false);
+    const todayStr = new Date().toISOString().split('T')[0];
+    localStorage.setItem('last_darshan_date', todayStr);
+  };
   // Personalised content — load from cache immediately, refresh in background
   const PERSONAL_CACHE_KEY = 'ss-personal-content';
   const PERSONAL_CACHE_DATE_KEY = 'ss-personal-content-date';
@@ -1516,12 +1529,19 @@ export default function HomeDashboard({
           </div>
         </div>
 
-        {/* Daily Darshan Overlay */}
-        <DarshanOverlay 
+        {/* Daily Darshan System */}
+        <DarshanPrompt
           darshan={dailyDarshan}
+          isVisible={darshanPromptVisible}
+          onOpen={handleOpenDarshan}
+          onDismiss={handleDismissPrompt}
+        />
+
+        <DarshanOverlay 
+          darshans={DARSHAN_REGISTRY}
+          initialIndex={initialDarshanIndex >= 0 ? initialDarshanIndex : 0}
           isOpen={darshanOpen}
           onClose={() => setDarshanOpen(false)}
-          autoOpened={darshanAutoOpened}
         />
 
         <MotionStagger className="divine-feature-grid" delay={0.08}>
