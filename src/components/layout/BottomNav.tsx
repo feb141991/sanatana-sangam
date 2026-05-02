@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Heart, MessageCircle, Sun, Users } from 'lucide-react';
+import { Heart, MessageCircle, Sun, Users, Radio } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 
@@ -152,6 +152,7 @@ export default function BottomNav({
   }, [quickOpen]);
 
   const memberNavItems = [
+    { href: '/live-darshan', label: 'Darshan', mobileLabel: 'Darshan', icon: Radio         },
     { href: '/nitya-karma', label: 'Nitya',    mobileLabel: 'Nitya',    icon: Sun           },
     { href: '/bhakti',      label: 'Bhakti',   mobileLabel: 'Bhakti',   icon: Heart         },
     { href: '/kul',         label: 'Kul',      mobileLabel: 'Kul',      icon: Users         },

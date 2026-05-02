@@ -26283,8 +26283,8 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/live-darshan/page.tsx",
       "source_location": "L10",
       "weight": 1.0,
-      "_src": "page_livedarshanpage",
-      "_tgt": "mandaliclient_select",
+      "_src": "mandaliclient_select",
+      "_tgt": "page_livedarshanpage",
       "source": "mandaliclient_select",
       "target": "page_livedarshanpage"
     },
