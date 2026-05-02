@@ -478,6 +478,16 @@ body {
   margin-top: 4px;
 }
 
+.divine-location-v2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #8E8E7A;
+  font-size: 10px;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
 .divine-shloka-card-v2 {
   position: absolute;
   bottom: 0;

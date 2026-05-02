@@ -1427,12 +1427,22 @@ export default function HomeDashboard({
                 onClick={() => setGreetingSheetOpen(true)}
                 className="divine-greeting-left motion-press"
               >
-                <h1 className="divine-greeting-title">
-                  {stripGreetingIcon(greeting)}, {userName.split(' ')[0]}
-                </h1>
-                <div className="divine-greeting-badge">
-                  <Pencil size={10} />
-                  <span>Personalize</span>
+                <div className="flex items-center gap-2">
+                  <h1 className="divine-greeting-title">
+                    {stripGreetingIcon(greeting)}, {userName.split(' ')[0]}
+                  </h1>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="divine-greeting-badge">
+                    <Pencil size={9} />
+                    <span>Personalize</span>
+                  </div>
+                  {displayCity && (
+                    <span className="divine-location-v2">
+                      <MapPin size={10} />
+                      {displayCity}
+                    </span>
+                  )}
                 </div>
               </button>
             </div>
@@ -1470,12 +1480,19 @@ export default function HomeDashboard({
           <div className="divine-hero-content">
             {/* Top row: Mood chip */}
             <div className="p-6 pb-0">
-              {moodToday && (
-                <Link href="/discover" className="divine-mood-chip-immersive motion-press">
-                  <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={16} />
-                  <span>Feeling {moodToday.label}</span>
-                </Link>
-              )}
+              <Link href="/discover" className="divine-mood-chip-immersive motion-press">
+                {moodToday ? (
+                  <>
+                    <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={16} />
+                    <span>Feeling {moodToday.label}</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={14} className="text-white/60" />
+                    <span>How are you feeling?</span>
+                  </>
+                )}
+              </Link>
             </div>
 
             <div className="flex-1 flex flex-col justify-center px-6">
