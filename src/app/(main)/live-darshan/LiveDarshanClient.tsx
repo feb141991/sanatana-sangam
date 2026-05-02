@@ -92,7 +92,7 @@ export default function LiveDarshanClient({ tradition, userId }: LiveDarshanClie
                         <iframe
                           width="100%"
                           height="100%"
-                          src={`https://www.youtube.com/embed/live_stream?channel=${stream.youtubeChannelId}&autoplay=1&mute=1&controls=1`}
+                          src={`https://www.youtube.com/embed/${stream.youtubeVideoId}?autoplay=1&mute=1&controls=1`}
                           title={`${stream.title} Live Stream`}
                           frameBorder="0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
