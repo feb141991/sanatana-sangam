@@ -1,15 +1,16 @@
 'use client';
 
 import { useMemo } from 'react';
-import { calculatePanchang } from '@/lib/panchang';
+import { useSacredCalendar } from '@/hooks/useSacredCalendar';
 
 interface Props {
   lat?: number;
   lon?: number;
+  tradition?: string;
 }
 
-export default function PanchangWidget({ lat = 51.5074, lon = -0.1278 }: Props) {
-  const p = useMemo(() => calculatePanchang(new Date(), lat, lon), [lat, lon]);
+export default function PanchangWidget({ lat = 51.5074, lon = -0.1278, tradition = 'hindu' }: Props) {
+  const p = useSacredCalendar(new Date(), lat, lon, tradition);
   const mood = {
     shell: 'linear-gradient(180deg, rgba(51, 51, 48, 0.985) 0%, rgba(43, 43, 40, 0.97) 56%, rgba(34, 34, 31, 0.98) 100%)',
     glow: 'radial-gradient(circle at top, rgba(212, 166, 70, 0.12), transparent 58%)',

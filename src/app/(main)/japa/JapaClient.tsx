@@ -23,6 +23,7 @@ import { buildMalaSessionInsert } from '@/lib/mala-sessions';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import Link from 'next/link';
+import { getTraditionMeta } from '@/lib/tradition-config';
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 const TOTAL_BEADS = 108;
@@ -147,7 +148,7 @@ const MANTRAS = [
 type MantraId = typeof MANTRAS[number]['id'];
 
 // ── Sound definitions ──────────────────────────────────────────────────────────
-type SoundId = 'silence' | 'om' | 'bowl' | 'rain' | 'river' | 'bells' | 'forest';
+type SoundId = 'silence' | 'om' | 'bowl' | 'rain' | 'river' | 'bells' | 'forest' | 'dilruba' | 'dhamma' | 'stavan';
 const SOUNDS: { id: SoundId; label: string; emoji: string }[] = [
   { id: 'silence', label: 'Silence',      emoji: '🤫' },
   { id: 'om',      label: 'Om Chant',     emoji: '🕉' },
@@ -156,6 +157,9 @@ const SOUNDS: { id: SoundId; label: string; emoji: string }[] = [
   { id: 'river',   label: 'River',        emoji: '🌊' },
   { id: 'bells',   label: 'Temple Bells', emoji: '🔔' },
   { id: 'forest',  label: 'Forest',       emoji: '🌿' },
+  { id: 'dilruba', label: 'Dilruba',      emoji: '🎻' },
+  { id: 'dhamma',  label: 'Dhamma Chant', emoji: '☸️' },
+  { id: 'stavan',  label: 'Jain Chime',   emoji: '✨' },
 ];
 
 // ── Background scenes ──────────────────────────────────────────────────────────
@@ -376,17 +380,114 @@ function _startForest(ctx: AudioContext) {
   };
 }
 
+function _startDilruba(ctx: AudioContext) {
+  // Sikh classical string drone (Dilruba/Taus style)
+  const osc1 = ctx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.value = 146.83; // D3
+  const osc2 = ctx.createOscillator(); osc2.type = 'sawtooth'; osc2.frequency.value = 147.50; // Detuned D3 for richness
+  const osc3 = ctx.createOscillator(); osc3.type = 'sine'; osc3.frequency.value = 73.42;    // D2 sub
+
+  // LFO for slow bowing effect
+  const lfo = ctx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 0.2;
+  const lfoG = ctx.createGain(); lfoG.gain.value = 15;
+  lfo.connect(lfoG);
+  lfoG.connect(osc1.frequency); lfoG.connect(osc2.frequency);
+
+  const filt = ctx.createBiquadFilter(); filt.type = 'bandpass'; filt.frequency.value = 800; filt.Q.value = 1.2;
+  
+  const g = ctx.createGain(); g.gain.setValueAtTime(0, ctx.currentTime);
+  g.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 3);
+
+  osc1.connect(filt); osc2.connect(filt); osc3.connect(filt);
+  filt.connect(g); g.connect(ctx.destination);
+
+  osc1.start(); osc2.start(); osc3.start(); lfo.start();
+  return () => {
+    g.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.5);
+    setTimeout(() => { try { osc1.stop(); osc2.stop(); osc3.stop(); lfo.stop(); } catch {} }, 1600);
+  };
+}
+
+function _startDhamma(ctx: AudioContext) {
+  // Buddhist deep throat chanting (monk style drone)
+  const osc = ctx.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = 65.41; // C2 deep fundamental
+  
+  // Strong vocal formants
+  const filt1 = ctx.createBiquadFilter(); filt1.type = 'bandpass'; filt1.frequency.value = 400; filt1.Q.value = 4;
+  const filt2 = ctx.createBiquadFilter(); filt2.type = 'bandpass'; filt2.frequency.value = 1200; filt2.Q.value = 4;
+  
+  // Slow breath rhythm LFO
+  const lfo = ctx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 0.1;
+  const lfoG = ctx.createGain(); lfoG.gain.value = 0.05;
+  lfo.connect(lfoG);
+
+  const g1 = ctx.createGain(); g1.gain.value = 0.6;
+  const g2 = ctx.createGain(); g2.gain.value = 0.4;
+  
+  osc.connect(filt1); osc.connect(filt2);
+  filt1.connect(g1); filt2.connect(g2);
+  
+  const master = ctx.createGain(); master.gain.setValueAtTime(0, ctx.currentTime);
+  master.gain.linearRampToValueAtTime(0.12, ctx.currentTime + 4);
+  lfoG.connect(master.gain);
+  
+  g1.connect(master); g2.connect(master); master.connect(ctx.destination);
+  
+  osc.start(); lfo.start();
+  return () => {
+    master.gain.linearRampToValueAtTime(0, ctx.currentTime + 2);
+    setTimeout(() => { try { osc.stop(); lfo.stop(); } catch {} }, 2100);
+  };
+}
+
+function _startStavan(ctx: AudioContext) {
+  // Jain Stavan style bell-chime sequence with soft organ drone
+  let active = true;
+  
+  // Soft drone
+  const drone = ctx.createOscillator(); drone.type = 'sine'; drone.frequency.value = 220; // A3
+  const droneG = ctx.createGain(); droneG.gain.setValueAtTime(0, ctx.currentTime);
+  droneG.gain.linearRampToValueAtTime(0.04, ctx.currentTime + 3);
+  drone.connect(droneG); droneG.connect(ctx.destination);
+  drone.start();
+
+  function chime() {
+    if (!active) return;
+    const t0 = ctx.currentTime;
+    [554.37, 659.25, 830.61].forEach((freq, i) => { // C#5, E5, G#5
+      const osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.value = freq;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0, t0 + i * 0.15);
+      g.gain.linearRampToValueAtTime(0.08, t0 + i * 0.15 + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + i * 0.15 + 3.0);
+      osc.connect(g); g.connect(ctx.destination);
+      osc.start(t0 + i * 0.15); osc.stop(t0 + i * 0.15 + 3.2);
+    });
+    const delay = 12000 + Math.random() * 6000;
+    setTimeout(() => { if (active) chime(); }, delay);
+  }
+  chime();
+  
+  return () => {
+    active = false;
+    droneG.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.5);
+    setTimeout(() => { try { drone.stop(); } catch {} }, 1600);
+  };
+}
+
 function startJapaAmbient(id: SoundId) {
   const ctx = _getCtx();
   if (!ctx) return;
   stopJapaAmbient();
   if (id === 'silence') return;
-  const fn = id === 'rain'   ? _startRain(ctx)
-           : id === 'river'  ? _startRiver(ctx)
-           : id === 'bells'  ? _startBells(ctx)
-           : id === 'forest' ? _startForest(ctx)
-           : id === 'om'     ? _startOm(ctx)
-           : id === 'bowl'   ? _startBowl(ctx)
+  const fn = id === 'rain'    ? _startRain(ctx)
+           : id === 'river'   ? _startRiver(ctx)
+           : id === 'bells'   ? _startBells(ctx)
+           : id === 'forest'  ? _startForest(ctx)
+           : id === 'om'      ? _startOm(ctx)
+           : id === 'bowl'    ? _startBowl(ctx)
+           : id === 'dilruba' ? _startDilruba(ctx)
+           : id === 'dhamma'  ? _startDhamma(ctx)
+           : id === 'stavan'  ? _startStavan(ctx)
            : null;
   if (fn) _japaStopFns.push(fn);
 }
@@ -648,8 +749,8 @@ function ChooseMalaScreen({
 
   return (
     <motion.div
-      className="flex flex-col"
-      style={{ background: bg, minHeight: '100dvh', marginLeft: '-0.75rem', marginRight: '-0.75rem', marginTop: '-0.5rem' }}
+      className="flex flex-col fixed inset-0 z-[100] overflow-y-auto"
+      style={{ background: bg }}
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
@@ -796,8 +897,8 @@ function ChooseMantraScreen({
 
   return (
     <motion.div
-      className="flex flex-col"
-      style={{ background: bg, minHeight: '100dvh', marginLeft: '-0.75rem', marginRight: '-0.75rem', marginTop: '-0.5rem' }}
+      className="flex flex-col fixed inset-0 z-[100] overflow-y-auto"
+      style={{ background: bg }}
       initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -40, opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
@@ -1304,9 +1405,8 @@ export default function JapaClient({
   const isDark = resolvedTheme === 'dark';
   const engine = useEngine();
 
-  const defaultMantraId: MantraId = tradition === 'sikh'     ? 'waheguru'
-    : tradition === 'buddhist' ? 'om_mani'
-    : 'gayatri';
+  const meta = getTraditionMeta(tradition);
+  const defaultMantraId: MantraId = meta.japaDefaultMantra as MantraId;
 
   // ── Screen + selection state ─────────────────────────────────────────────
   const [screen,    setScreen]    = useState<Screen>('chooseMala');
@@ -1645,8 +1745,8 @@ export default function JapaClient({
     setShowSettings(false);
     setShowComplete(false);
     setPaused(false);
-    setScreen('chooseMala');
-  }, []);
+    router.back();
+  }, [router]);
 
   const handleSaveAndStop = async () => {
     await saveSession(roundsDone, beadCount);

@@ -299,25 +299,25 @@ body {
 
 .divine-hero {
   position: relative;
-  min-height: clamp(380px, 80vw, 440px);
+  min-height: clamp(420px, 90vw, 480px);
   overflow: hidden;
   background: var(--divine-bg);
-  margin-left: -0.75rem;
-  margin-right: -0.75rem;
+  margin-left: -1rem;
+  margin-right: -1rem;
 }
 
 @media (min-width: 640px) {
   .divine-hero {
-    margin-left: -1rem;
-    margin-right: -1rem;
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
   }
 }
 
 @media (min-width: 768px) {
   .divine-hero {
-    margin-left: 0;
-    margin-right: 0;
-    border-radius: 28px;
+    margin-left: -2rem;
+    margin-right: -2rem;
+    border-radius: 0;
   }
 }
 
@@ -456,11 +456,20 @@ body {
   display: flex;
   width: 100%;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   text-align: left;
-  background: transparent;
-  border: none;
-  box-shadow: none;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+:root[data-theme='dark'] .divine-shloka-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .divine-chip {

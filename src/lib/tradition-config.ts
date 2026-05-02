@@ -46,6 +46,25 @@ export interface TraditionMeta {
   devataLabel:      string;
   /** Which tradition's festivals to prioritise on the home screen */
   festivalPriority: TraditionKey;
+  /** Default mantra for Japa mala */
+  japaDefaultMantra: string;
+  /** Title for the Nitya Karma section */
+  nityaKarmaTitle:  string;
+  /** Vocabulary word for scriptures in Pathshala */
+  pathshalaVocabulary: string;
+  /** Map pin emoji for Tirtha map */
+  mapPinEmoji:      string;
+  /** Greeting on the Bhakti dashboard */
+  bhaktiGreeting:   string;
+  /** Preferred order of deities in Bhakti browse */
+  bhaktiDeityOrder: string[];
+  /** Theme to use for home screen sacred text */
+  homeSacredTextTheme: 'pathshala' | 'bhakti';
+  heroFallback: {
+    title: string;
+    subtitle: string;
+    mark: string;
+  };
 }
 
 export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
@@ -66,6 +85,14 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     sampradayaLabel:      'Sampradaya',
     devataLabel:          'Ishta Devata',
     festivalPriority:     'hindu',
+    japaDefaultMantra:    'gayatri',
+    nityaKarmaTitle:      'Nitya Karma',
+    pathshalaVocabulary:  'Scriptures',
+    mapPinEmoji:          '🛕',
+    bhaktiGreeting:       'Hari Om',
+    bhaktiDeityOrder:     ['shiva', 'krishna', 'rama', 'hanuman', 'devi', 'ganesha'],
+    homeSacredTextTheme:  'pathshala',
+    heroFallback: { title: 'Sanatan Universe', subtitle: 'A calm sacred space', mark: 'ॐ' },
   },
 
   sikh: {
@@ -84,6 +111,14 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     sampradayaLabel:      'Sikh Panth',
     devataLabel:          'Simran Focus',
     festivalPriority:     'sikh',
+    japaDefaultMantra:    'waheguru',
+    nityaKarmaTitle:      'Nitnem',
+    pathshalaVocabulary:  'Gurbani',
+    mapPinEmoji:          '☬',
+    bhaktiGreeting:       'Sat Sri Akal',
+    bhaktiDeityOrder:     ['guru_nanak', 'guru_gobind'],
+    homeSacredTextTheme:  'bhakti',
+    heroFallback: { title: 'Guru Nanak Dev Ji', subtitle: 'Sat Sri Akal', mark: '☬' },
   },
 
   buddhist: {
@@ -102,6 +137,14 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     sampradayaLabel:      'Buddhist School',
     devataLabel:          'Bodhisattva / Buddha',
     festivalPriority:     'buddhist',
+    japaDefaultMantra:    'om_mani',
+    nityaKarmaTitle:      'Morning Practice',
+    pathshalaVocabulary:  'Dhamma',
+    mapPinEmoji:          '☸️',
+    bhaktiGreeting:       'Namo Buddhaya',
+    bhaktiDeityOrder:     ['buddha', 'tara', 'avalokiteshvara'],
+    homeSacredTextTheme:  'bhakti',
+    heroFallback: { title: 'Dharma refuge', subtitle: 'Namo Buddhaya', mark: '☸' },
   },
 
   jain: {
@@ -120,6 +163,14 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     sampradayaLabel:      'Jain Sect',
     devataLabel:          'Tirthankar Devotion',
     festivalPriority:     'jain',
+    japaDefaultMantra:    'gayatri', // Or a Jain specific default like navkar if added later
+    nityaKarmaTitle:      'Pratikramana / Sadhana',
+    pathshalaVocabulary:  'Agamas',
+    mapPinEmoji:          '🤲',
+    bhaktiGreeting:       'Jai Jinendra',
+    bhaktiDeityOrder:     ['mahavir', 'parshvanath'],
+    homeSacredTextTheme:  'bhakti',
+    heroFallback: { title: 'Jain dharma', subtitle: 'Jai Jinendra', mark: 'अहिंसा' },
   },
 
   other: {
@@ -138,6 +189,14 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     sampradayaLabel:      'Tradition / Path',
     devataLabel:          'Spiritual Guide',
     festivalPriority:     'hindu',
+    japaDefaultMantra:    'gayatri',
+    nityaKarmaTitle:      'Daily Practice',
+    pathshalaVocabulary:  'Wisdom',
+    mapPinEmoji:          '✨',
+    bhaktiGreeting:       'Pranam',
+    bhaktiDeityOrder:     [],
+    homeSacredTextTheme:  'pathshala',
+    heroFallback: { title: 'Sanatan Universe', subtitle: 'A calm sacred space', mark: 'ॐ' },
   },
 
 };

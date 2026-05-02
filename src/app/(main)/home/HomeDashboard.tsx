@@ -334,18 +334,7 @@ function formatTraditionGreetingLabel(tradition: string | null, sampradaya: stri
     .join(' ');
 }
 
-function getTraditionHeroFallback(tradition: string | null) {
-  switch (tradition) {
-    case 'sikh':
-      return { title: 'Guru Nanak Dev Ji', subtitle: 'Sat Sri Akal', mark: '☬' };
-    case 'buddhist':
-      return { title: 'Dharma refuge', subtitle: 'Namo Buddhaya', mark: '☸' };
-    case 'jain':
-      return { title: 'Jain dharma', subtitle: 'Jai Jinendra', mark: 'अहिंसा' };
-    default:
-      return { title: 'Sanatan Universe', subtitle: 'A calm sacred space', mark: 'ॐ' };
-  }
-}
+// tradition hero fallback is now in TRADITION_CONFIG
 
 function stripGreetingIcon(greeting: string) {
   return greeting
@@ -1274,7 +1263,8 @@ export default function HomeDashboard({
 
   const homeHeroTheme = HOME_THEMES.pathshala;
   const panchangTheme = HOME_THEMES.panchang;
-  const sacredTextTheme = tradition === 'hindu' ? HOME_THEMES.pathshala : HOME_THEMES.bhakti;
+  const meta = getTraditionMeta(tradition);
+  const sacredTextTheme = meta.homeSacredTextTheme === 'pathshala' ? HOME_THEMES.pathshala : HOME_THEMES.bhakti;
   const dailyText = {
     label: sacredTextMeta.label,
     icon: sacredTextMeta.icon,
@@ -1341,7 +1331,7 @@ export default function HomeDashboard({
     festival,
     dbThemes: heroThemes,
   });
-  const heroFallback = getTraditionHeroFallback(tradition);
+  const heroFallback = meta.heroFallback;
 
   useEffect(() => {
     setHeroImageFailed(false);
@@ -1467,9 +1457,12 @@ export default function HomeDashboard({
               onClick={() => setShlokaModalOpen(true)}
               className="divine-shloka-card motion-press"
             >
-              <span className="divine-chip">{dailyText.source}</span>
-              <span className="divine-sanskrit">{dailyTextLine}</span>
-              <span className="divine-card-copy">{dailyText.meaning}</span>
+              <div className="flex items-center justify-between gap-3 w-full">
+                <span className="divine-chip">{dailyText.source}</span>
+                <span className="text-[10px] text-white/40 font-medium uppercase tracking-widest">Read More →</span>
+              </div>
+              <span className="divine-sanskrit line-clamp-2">{dailyTextLine}</span>
+              <span className="divine-card-copy line-clamp-1">{dailyText.meaning}</span>
             </button>
           </div>
         </div>

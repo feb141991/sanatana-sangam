@@ -515,6 +515,8 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
               ? 'ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ, ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਹਿ'
               : tradition === 'buddhist'
               ? 'Appamādo amatapadaṃ — Diligence is the path to the deathless.'
+              : tradition === 'jain'
+              ? 'णमो अरहंताणं'
               : 'यदा यदा हि धर्मस्य ग्लानिर्भवति भारत'}
           </p>
         </div>
@@ -524,6 +526,8 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
               ? 'The Khalsa belongs to Waheguru, and victory belongs to Waheguru.'
               : tradition === 'buddhist'
               ? 'Dhammapada 21 — The Buddha\'s teaching on mindful effort.'
+              : tradition === 'jain'
+              ? 'Navkar Mantra — I bow to the Arihants (conquerors).'
               : 'Bhagavad Gita 4.7 — Whenever there is a decline in righteousness…'}
           </p>
           <p className="text-xs mt-2" style={{ color: meta.accentColour }}>

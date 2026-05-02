@@ -8,14 +8,7 @@ import { ChevronLeft, BarChart2, ChevronRight } from 'lucide-react';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import type { Shloka } from '@/lib/shlokas';
 import { DEITY_META, MOOD_META } from '@/lib/stotrams';
-
-// ─── Tradition-aware greeting ─────────────────────────────────────────────────
-const TRADITION_GREETINGS: Record<string, string> = {
-  hindu:    'Jai Shri Ram 🙏',
-  sikh:     'Waheguru Ji Ka Khalsa 🙏',
-  buddhist: 'Namo Buddhaya 🙏',
-  jain:     'Jai Jinendra 🙏',
-};
+import { getTraditionMeta } from '@/lib/tradition-config';
 
 // ─── Animated diya flame ──────────────────────────────────────────────────────
 function DiyaFlame() {
@@ -74,12 +67,7 @@ interface Props {
 }
 
 // ─── Deity cards data ─────────────────────────────────────────────────────────
-const DEITY_ORDER: Record<string, string[]> = {
-  hindu:    ['ganesha', 'shiva', 'vishnu', 'devi', 'hanuman', 'surya'],
-  sikh:     ['universal', 'ganesha', 'shiva', 'vishnu', 'devi', 'hanuman'],
-  buddhist: ['universal', 'ganesha', 'shiva', 'vishnu', 'devi', 'hanuman'],
-  jain:     ['universal', 'ganesha', 'shiva', 'vishnu', 'devi', 'hanuman'],
-};
+// Orders are now managed in TRADITION_CONFIG
 
 export default function BhaktiClient({
   shloka, tradition, userName, japaStreak,
@@ -103,8 +91,13 @@ export default function BhaktiClient({
   const dimClr   = isDark ? 'rgba(245,210,130,0.35)' : 'rgba(100,55,10,0.40)';
   const amber    = '#C8924A';
 
-  const greeting = TRADITION_GREETINGS[tradition] ?? TRADITION_GREETINGS.hindu;
-  const deityOrder = DEITY_ORDER[tradition] ?? DEITY_ORDER.hindu;
+  const meta = getTraditionMeta(tradition);
+  const greeting = meta.bhaktiGreeting + ' 🙏';
+  
+  // If the tradition doesn't specify a deity order, or if it's short, we fill it with defaults
+  const baseOrder = meta.bhaktiDeityOrder.length > 0 ? meta.bhaktiDeityOrder : ['universal'];
+  const fullOrder = Array.from(new Set([...baseOrder, 'ganesha', 'shiva', 'vishnu', 'devi', 'hanuman', 'surya']));
+  const deityOrder = fullOrder.slice(0, 6);
 
   // ── Practice portal cards ───────────────────────────────────────────────────
   const PORTALS = [

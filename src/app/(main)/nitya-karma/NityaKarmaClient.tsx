@@ -1142,7 +1142,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
               <div className="flex-1">
                 <h1 className="font-bold text-lg text-[color:var(--brand-ink)]">My Sadhana Path</h1>
                 <p className="text-xs text-[color:var(--brand-muted)]">
-                  {meta.symbol} {tradition === 'sikh' ? 'Nitnem' : tradition === 'buddhist' ? 'Morning Practice' : 'Nitya Karma'} · personalised for you
+                  {meta.symbol} {meta.nityaKarmaTitle} · personalised for you
                 </p>
               </div>
               {isPro ? (
@@ -1326,7 +1326,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
             transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
           >
             <SubHeader
-              title={tradition === 'sikh' ? 'Nitnem' : tradition === 'buddhist' ? 'Morning Practice' : 'Dincharya'}
+              title={meta.nityaKarmaTitle}
               subtitle={`${meta.symbol} Your 7-step morning sequence`}
               onBack={() => setNityaScreen('hub')}
             />

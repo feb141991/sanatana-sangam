@@ -4,8 +4,8 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ArrowLeft, Share2 } from 'lucide-react';
+import { useSacredCalendar, type SacredCalendarData } from '@/hooks/useSacredCalendar';
 import { calculatePanchang } from '@/lib/panchang';
-import type { PanchangData } from '@/lib/panchang';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface Props {
@@ -217,10 +217,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
   const [viewYear,   setViewYear]  = useState(today.getFullYear());
   const [viewMonth,  setViewMonth] = useState(today.getMonth());
 
-  const p: PanchangData = useMemo(
-    () => calculatePanchang(selected, lat, lon),
-    [selected, lat, lon]
-  );
+  const p: SacredCalendarData = useSacredCalendar(selected, lat, lon, tradition);
 
   // ── Compute sky phase ────────────────────────────────────────────────────────
   const skyPhase = useMemo(() => {
@@ -385,7 +382,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
               if (!date) return <div key={`e-${i}`} />;
               const isSelected    = isSameDay(date, selected);
               const isCurrentDay  = isSameDay(date, today);
-              const dayP          = calculatePanchang(date, lat, lon);
+              const dayP = calculatePanchang(date, lat, lon);
               return (
                 <motion.button
                   key={date.toISOString()}

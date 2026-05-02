@@ -7,6 +7,7 @@ import { Search, Navigation, Info, Clock, ChevronLeft } from 'lucide-react';
 import { fetchNearbyTemples, geocodeCity, type Temple } from '@/lib/overpass';
 import { useLocation } from '@/lib/LocationContext';
 import { API, MAP, MANDIR } from '@/lib/config';
+import { getTraditionMeta } from '@/lib/tradition-config';
 
 // Load map with no SSR
 const TirthaMapComponent = dynamic(
@@ -363,9 +364,7 @@ export default function TirthaMapPage() {
                     {/* Icon — tradition-aware */}
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
                       style={{ background: 'var(--brand-primary-soft)' }}>
-                      {temple.tradition === 'sikh' ? '☬' :
-                       temple.tradition === 'buddhist' ? '☸️' :
-                       temple.tradition === 'jain' ? '🤲' : '🛕'}
+                      {getTraditionMeta(temple.tradition).mapPinEmoji}
                     </div>
 
                     {/* Info */}
