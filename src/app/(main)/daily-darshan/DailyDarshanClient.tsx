@@ -144,51 +144,54 @@ export default function DailyDarshanClient() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed inset-0 z-[100] bg-[var(--divine-bg)] overflow-y-auto flex flex-col items-center justify-center p-4 md:p-8"
+            className="fixed inset-0 z-[100] bg-[var(--divine-bg)] overflow-y-auto"
           >
             {/* Close Button */}
             <button 
               onClick={() => setActiveCardId(null)}
-              className="absolute top-4 right-4 z-50 p-2.5 rounded-full bg-[var(--divine-surface)] shadow-md border border-[var(--divine-border)] text-[var(--divine-text)] active:scale-95 transition-transform"
+              className="fixed top-4 right-4 z-50 p-2.5 rounded-full bg-[var(--divine-surface)] shadow-md border border-[var(--divine-border)] text-[var(--divine-text)] active:scale-95 transition-transform"
             >
               <X size={20} />
             </button>
 
-            <div className="flex-1 w-full flex flex-col items-center justify-center min-h-full py-12">
-              {/* Immersive Card */}
-              <div className="w-full max-w-sm h-auto relative rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(62,42,31,0.15)] border border-[var(--divine-border)] bg-[var(--divine-surface)] flex flex-col items-center justify-center p-6 text-center shrink-0">
-                <span className="divine-card-motif divine-card-motif-large opacity-50" aria-hidden="true" />
-                <div className="text-[90px] font-serif text-[var(--divine-saffron)] leading-none mb-4">
-                  {activeCard.symbol}
-                </div>
-                <span className="px-3 py-1 rounded-full border border-[var(--divine-gold)]/30 text-[var(--divine-gold)] text-[10px] font-bold uppercase tracking-widest mb-3">
-                  {activeCard.tradition}
-                </span>
-                <h1 className="font-serif text-2xl font-bold text-[var(--divine-text)] mb-2">
-                  {activeCard.title}
-                </h1>
-                <p className="text-[var(--divine-muted)] text-sm leading-relaxed italic px-2 mb-5">
-                  &ldquo;{activeCard.blessing}&rdquo;
-                </p>
+            <div className="min-h-[100dvh] flex flex-col items-center py-20 px-4 w-full">
+              {/* Immersive Card Wrapper (centers vertically if space allows) */}
+              <div className="my-auto w-full max-w-sm flex flex-col items-center">
                 
-                {/* Offer Aarti Button */}
-                <button
-                  onClick={() => setShowAartiMode(true)}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm tracking-wide active:scale-95 transition-transform shadow-lg"
-                  style={{ background: 'linear-gradient(135deg, var(--divine-saffron) 0%, #D4784A 100%)', color: '#1c1c1a' }}
-                >
-                  <Flame size={16} />
-                  Offer {activeCard.tradition.toLowerCase() === 'sikh' ? 'Ardas' : 'Aarti'}
-                </button>
-              </div>
+                {/* Immersive Card */}
+                <div className="w-full relative rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(62,42,31,0.15)] border border-[var(--divine-border)] bg-[var(--divine-surface)] flex flex-col items-center justify-center p-6 text-center">
+                  <span className="divine-card-motif divine-card-motif-large opacity-50" aria-hidden="true" />
+                  <div className="text-[90px] font-serif text-[var(--divine-saffron)] leading-none mb-4">
+                    {activeCard.symbol}
+                  </div>
+                  <span className="px-3 py-1 rounded-full border border-[var(--divine-gold)]/30 text-[var(--divine-gold)] text-[10px] font-bold uppercase tracking-widest mb-3">
+                    {activeCard.tradition}
+                  </span>
+                  <h1 className="font-serif text-2xl font-bold text-[var(--divine-text)] mb-2">
+                    {activeCard.title}
+                  </h1>
+                  <p className="text-[var(--divine-muted)] text-sm leading-relaxed italic px-2 mb-5">
+                    &ldquo;{activeCard.blessing}&rdquo;
+                  </p>
+                  
+                  {/* Offer Aarti Button */}
+                  <button
+                    onClick={() => setShowAartiMode(true)}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm tracking-wide active:scale-95 transition-transform shadow-lg"
+                    style={{ background: 'linear-gradient(135deg, var(--divine-saffron) 0%, #D4784A 100%)', color: '#1c1c1a' }}
+                  >
+                    <Flame size={16} />
+                    Offer {activeCard.tradition.toLowerCase() === 'sikh' ? 'Ardas' : 'Aarti'}
+                  </button>
+                </div>
 
-              {/* Action Bar */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
-                className="mt-6 flex items-center justify-center gap-4 z-20 shrink-0"
-              >
+                {/* Action Bar */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="mt-6 flex items-center justify-center gap-4 z-20"
+                >
               <button
                 onClick={() => saveCard(activeCard)}
                 className="p-3.5 rounded-full bg-[var(--divine-surface)] border border-[var(--divine-border)] text-[var(--divine-text)] shadow-sm active:scale-95 transition-transform"
