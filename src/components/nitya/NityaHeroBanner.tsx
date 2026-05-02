@@ -372,7 +372,7 @@ export default function NityaHeroBanner({
       `}</style>
 
       <div
-        className="relative -mx-3 mb-5 min-h-[355px] overflow-hidden sm:-mx-4"
+        className="relative -mx-3 min-h-[355px] overflow-hidden sm:-mx-4"
         style={{ isolation: 'isolate' }}
       >
         {/* ── Animated sky background ── */}
@@ -432,28 +432,22 @@ export default function NityaHeroBanner({
         <div className="relative z-10 flex min-h-[355px] flex-col justify-end px-5 pb-7 pt-14">
           {/* Phase label */}
           <div
-            className="mb-3 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5"
+            className="mb-3 inline-flex w-fit items-center gap-2 rounded-full px-4 py-2"
             style={{
-              background: 'rgba(255,255,255,0.10)',
-              border: '1px solid rgba(255,255,255,0.14)',
-              backdropFilter: 'blur(14px)',
-              WebkitBackdropFilter: 'blur(14px)',
+              background: 'rgba(255,255,255,0.12)',
+              border: '1px solid rgba(255,255,255,0.18)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
             }}
           >
-            <span className="h-1.5 w-1.5 rounded-full" style={{ background: config.accentColor }} />
-            <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: config.accentColor, opacity: 0.92 }}>
+            <span className="h-2 w-2 rounded-full" style={{ background: config.accentColor }} />
+            <h2 className="text-[14px] font-bold uppercase tracking-widest" style={{ color: config.accentColor, opacity: 0.95 }}>
               {config.label}
-            </span>
+            </h2>
           </div>
 
-          <p style={{ color: config.textColor, opacity: 0.82 }} className="text-[15px] font-medium leading-relaxed">
-            {greeting}
-          </p>
-          <p
-            style={{ color: config.textColor, fontFamily: 'var(--font-serif)' }}
-            className="mt-0.5 text-[2.2rem] font-semibold leading-[0.98] tracking-[-0.03em]"
-          >
-            {userName}
+          <p style={{ color: config.textColor, opacity: 0.90 }} className="text-[13px] font-medium leading-relaxed max-w-[240px]">
+            The atmosphere of {config.label.toLowerCase()} is perfect for deep contemplation and steady practice.
           </p>
 
           {/* Streak — only if active */}

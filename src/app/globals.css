@@ -193,6 +193,7 @@ body {
   --divine-border: #E8DCCB;
   display: flex;
   flex-direction: column;
+  position: relative;
   gap: 0;
   padding: 0;
   color: var(--divine-text);
@@ -215,6 +216,20 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+}
+
+.divine-topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 1.5rem 1rem 0;
+  pointer-events: none;
+}
+
+.divine-topbar > * {
+  pointer-events: auto;
 }
 
 .divine-brand {
@@ -299,7 +314,7 @@ body {
 
 .divine-hero {
   position: relative;
-  min-height: clamp(450px, 106vw, 590px);
+  min-height: clamp(480px, 112vw, 620px);
   overflow: hidden;
   background: var(--divine-bg);
   margin-left: -1rem;
@@ -474,11 +489,11 @@ body {
   z-index: 3;
   height: 100%;
   display: flex;
-  min-height: clamp(450px, 106vw, 590px);
+  min-height: clamp(480px, 112vw, 620px);
   flex-direction: column;
   justify-content: space-between;
   gap: 0;
-  padding: 0 20px 0;
+  padding: 120px 20px 0;
 }
 
 .divine-hero-topline {

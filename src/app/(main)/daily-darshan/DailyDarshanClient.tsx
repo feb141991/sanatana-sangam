@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Bookmark, Download, Share2 } from 'lucide-react';
+import { Bookmark, Download, Share2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const DARSHAN_CARDS = [
   {
@@ -75,6 +76,7 @@ function buildWallpaperSvg(card: typeof DARSHAN_CARDS[number]) {
 
 export default function DailyDarshanClient() {
   const [saved, setSaved] = useState<Set<string>>(new Set());
+  const [activeCardId, setActiveCardId] = useState<string | null>(null);
 
   async function shareCard(card: typeof DARSHAN_CARDS[number]) {
     const text = `${card.title}\n\n${card.blessing}\n\nShared via Sanatan Universe`;
@@ -103,6 +105,8 @@ export default function DailyDarshanClient() {
     toast.success('Wallpaper artwork downloaded');
   }
 
+  const activeCard = DARSHAN_CARDS.find(c => c.id === activeCardId);
+
   return (
     <main className="divine-home-shell pb-28">
       <section className="divine-topbar">
@@ -112,9 +116,13 @@ export default function DailyDarshanClient() {
         </div>
       </section>
 
-      <div className="grid gap-4">
+      <div className="grid gap-4 pt-[100px] px-4">
         {DARSHAN_CARDS.map((card) => (
-          <article key={card.id} className="divine-darshan-card">
+          <article 
+            key={card.id} 
+            className="divine-darshan-card cursor-pointer active:scale-[0.98] transition-transform"
+            onClick={() => setActiveCardId(card.id)}
+          >
             <span className="divine-card-motif divine-card-motif-large" aria-hidden="true" />
             <div className="divine-darshan-art" aria-hidden="true">
               <span>{card.symbol}</span>
@@ -122,25 +130,74 @@ export default function DailyDarshanClient() {
             <div>
               <span className="divine-chip">{card.tradition}</span>
               <h1 className="divine-darshan-title">{card.title}</h1>
-              <p className="divine-card-copy mt-2">{card.blessing}</p>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              <button type="button" onClick={() => shareCard(card)} className="divine-darshan-action">
-                <Share2 size={15} />
-                Share
-              </button>
-              <button type="button" onClick={() => saveCard(card)} className="divine-darshan-action">
-                <Bookmark size={15} fill={saved.has(card.id) ? 'currentColor' : 'none'} />
-                {saved.has(card.id) ? 'Saved' : 'Save'}
-              </button>
-              <button type="button" onClick={() => downloadWallpaper(card)} className="divine-darshan-action">
-                <Download size={15} />
-                Wallpaper
-              </button>
+              <p className="divine-card-copy mt-2 line-clamp-2">{card.blessing}</p>
             </div>
           </article>
         ))}
       </div>
+
+      <AnimatePresence>
+        {activeCard && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed inset-0 z-[100] bg-[var(--divine-bg)] flex flex-col items-center justify-center p-4 md:p-8 touch-none overflow-hidden"
+          >
+            {/* Close Button */}
+            <button 
+              onClick={() => setActiveCardId(null)}
+              className="absolute top-6 right-6 z-50 p-3 rounded-full bg-[var(--divine-surface)] shadow-md border border-[var(--divine-border)] text-[var(--divine-text)] active:scale-95 transition-transform"
+            >
+              <X size={24} />
+            </button>
+
+            {/* Immersive Card */}
+            <div className="w-full max-w-sm aspect-[9/16] max-h-[75vh] relative rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(62,42,31,0.15)] border border-[var(--divine-border)] bg-[var(--divine-surface)] flex flex-col items-center justify-center p-8 text-center">
+              <span className="divine-card-motif divine-card-motif-large opacity-50" aria-hidden="true" />
+              <div className="text-[140px] font-serif text-[var(--divine-saffron)] leading-none mb-8">
+                {activeCard.symbol}
+              </div>
+              <span className="px-4 py-1.5 rounded-full border border-[var(--divine-gold)]/30 text-[var(--divine-gold)] text-[10px] font-bold uppercase tracking-widest mb-6">
+                {activeCard.tradition}
+              </span>
+              <h1 className="font-serif text-3xl font-bold text-[var(--divine-text)] mb-4">
+                {activeCard.title}
+              </h1>
+              <p className="text-[var(--divine-muted)] text-lg leading-relaxed italic px-4">
+                &ldquo;{activeCard.blessing}&rdquo;
+              </p>
+            </div>
+
+            {/* Action Bar */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="mt-8 flex items-center justify-center gap-6 z-20"
+            >
+              <button
+                onClick={() => saveCard(activeCard)}
+                className="p-4 rounded-full bg-[var(--divine-surface)] border border-[var(--divine-border)] text-[var(--divine-text)] shadow-sm active:scale-95 transition-transform"
+              >
+                <Bookmark size={22} fill={saved.has(activeCard.id) ? 'currentColor' : 'none'} />
+              </button>
+              <button
+                onClick={() => shareCard(activeCard)}
+                className="p-4 rounded-full bg-[var(--divine-surface)] border border-[var(--divine-border)] text-[var(--divine-text)] shadow-sm active:scale-95 transition-transform"
+              >
+                <Share2 size={22} />
+              </button>
+              <button
+                onClick={() => downloadWallpaper(activeCard)}
+                className="p-4 rounded-full bg-[var(--divine-surface)] border border-[var(--divine-border)] text-[var(--divine-text)] shadow-sm active:scale-95 transition-transform"
+              >
+                <Download size={22} />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

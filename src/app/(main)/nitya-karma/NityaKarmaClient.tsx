@@ -1169,8 +1169,8 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
             />
 
             <div
-              className="relative z-20 -mt-10 px-4 pt-8 space-y-3"
-              style={{ background: 'linear-gradient(180deg, transparent 0%, var(--surface-base) 54px)' }}
+              className="relative z-20 -mt-16 px-4 pt-10 space-y-3"
+              style={{ background: 'linear-gradient(180deg, transparent 0%, var(--surface-base) 64px)' }}
             >
               {/* Vrat alert */}
               {vataDays && (
