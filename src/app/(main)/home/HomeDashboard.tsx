@@ -43,6 +43,8 @@ import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives'
 import MoodGlyph from '@/components/ui/MoodGlyph';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import { getDailyDarshan } from '@/lib/darshan-registry';
+import DarshanOverlay from '@/components/home/DarshanOverlay';
 
 interface Panchang {
   tithi:     string;
@@ -962,6 +964,26 @@ export default function HomeDashboard({
     return lastShlokaDate === today;
   });
   const [editHomeOpen,     setEditHomeOpen]     = useState(false);
+
+  // Daily Darshan Logic
+  const [darshanOpen, setDarshanOpen] = useState(false);
+  const [darshanAutoOpened, setDarshanAutoOpened] = useState(false);
+  const dailyDarshan = getDailyDarshan(tradition);
+
+  useEffect(() => {
+    const lastDarshanDate = localStorage.getItem('last_darshan_date');
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    if (lastDarshanDate !== todayStr) {
+      // Auto open after a short delay
+      const timer = setTimeout(() => {
+        setDarshanOpen(true);
+        setDarshanAutoOpened(true);
+        localStorage.setItem('last_darshan_date', todayStr);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [tradition]);
   // Personalised content — load from cache immediately, refresh in background
   const PERSONAL_CACHE_KEY = 'ss-personal-content';
   const PERSONAL_CACHE_DATE_KEY = 'ss-personal-content-date';
@@ -1320,6 +1342,35 @@ export default function HomeDashboard({
             href: '/pathshala',
             onClick: undefined,
           };
+  const nityaDoneToday = nityaProgress?.length === meta.defaultRitualTimes.length;
+  const quickAction = !readToday 
+    ? {
+        label: 'Read today\'s sacred text',
+        detail: 'Connect with divine wisdom.',
+        href: null,
+        onClick: () => setShlokaModalOpen(true),
+      }
+    : !japaAlreadyDoneToday
+      ? {
+          label: 'Start your mala',
+          detail: 'Chant your ishta mantra.',
+          href: '/bhakti/mala',
+          onClick: undefined,
+        }
+      : !nityaDoneToday
+        ? {
+            label: 'Continue nitya karma',
+            detail: 'Finish the daily practice loop.',
+            href: '/nitya-karma',
+            onClick: undefined,
+          }
+        : {
+            label: 'Continue Pathshala',
+            detail: 'Move into study with a calm base.',
+            href: '/pathshala',
+            onClick: undefined,
+          };
+
   const practiceStatus = [
     { label: 'Text', value: readToday ? 'complete' : 'read', active: readToday, href: null, onClick: () => setShlokaModalOpen(true) },
     { label: 'Mala', value: japaAlreadyDoneToday ? 'complete' : 'start', active: japaAlreadyDoneToday, href: '/bhakti/mala', onClick: undefined },
@@ -1342,7 +1393,10 @@ export default function HomeDashboard({
     {
       title: 'Daily Darshan',
       description: 'Get divine blessings every day',
-      href: '/daily-darshan',
+      onClick: () => {
+        setDarshanOpen(true);
+        setDarshanAutoOpened(false);
+      },
       icon: Sparkles,
     },
     {
@@ -1483,18 +1537,42 @@ export default function HomeDashboard({
           </div>
         </div>
 
+        {/* Daily Darshan Overlay */}
+        <DarshanOverlay 
+          darshan={dailyDarshan}
+          isOpen={darshanOpen}
+          onClose={() => setDarshanOpen(false)}
+          autoOpened={darshanAutoOpened}
+        />
+
         <MotionStagger className="divine-feature-grid" delay={0.08}>
           {divineFeatureCards.map((item) => {
             const Icon = item.icon;
+            const content = (
+              <div className="divine-feature-card motion-lift">
+                <span className="divine-card-motif" aria-hidden="true" />
+                <span className="divine-feature-icon">
+                  <Icon size={20} strokeWidth={1.8} />
+                </span>
+                <span className="divine-feature-title">{item.title}</span>
+                <span className="divine-feature-copy">{item.description}</span>
+              </div>
+            );
+
+            if (item.onClick) {
+              return (
+                <MotionItem key={item.title}>
+                  <button onClick={item.onClick} className="w-full text-left">
+                    {content}
+                  </button>
+                </MotionItem>
+              );
+            }
+
             return (
               <MotionItem key={item.href}>
-                <Link href={item.href} className="divine-feature-card motion-lift">
-                  <span className="divine-card-motif" aria-hidden="true" />
-                  <span className="divine-feature-icon">
-                    <Icon size={20} strokeWidth={1.8} />
-                  </span>
-                  <span className="divine-feature-title">{item.title}</span>
-                  <span className="divine-feature-copy">{item.description}</span>
+                <Link href={item.href!}>
+                  {content}
                 </Link>
               </MotionItem>
             );
