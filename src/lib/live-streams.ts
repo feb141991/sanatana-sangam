@@ -157,4 +157,49 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     youtubeVideoId: '3oJdFVXsC-o', // Verified Kedarnath Live
   },
+  {
+    id: 'badrinath-temple',
+    title: 'Shri Badrinath Temple',
+    location: 'Chamoli, Uttarakhand',
+    schedule: 'Abhishek Puja: 4:30 AM',
+    category: 'mandir',
+    tradition: 'hindu',
+    youtubeVideoId: 'yGELQ2Ch-q4', // Verified Badrinath Live
+  },
+  {
+    id: 'somnath-temple',
+    title: 'Shri Somnath Temple',
+    location: 'Junagadh, Gujarat',
+    schedule: 'Aarti: 7:00 AM, 12:00 PM, 7:00 PM',
+    category: 'mandir',
+    tradition: 'hindu',
+    youtubeVideoId: 'J4z7CIrvsuw', // Verified Somnath Live
+  },
+  {
+    id: 'swaminarayan-kundaldham',
+    title: 'Swaminarayan Kundaldham',
+    location: 'Rajkot, Gujarat',
+    schedule: 'Live Satsang 24/7',
+    category: 'satsang',
+    tradition: 'hindu',
+    youtubeVideoId: 'u9SEkGgmEbo', // Verified Swaminarayan Kundaldham
+  },
+  {
+    id: 'hazoori-ragi-kirtan',
+    title: 'Hazoori Ragi Gurbani Kirtan',
+    location: 'Punjab',
+    schedule: 'Akhand Kirtan 24/7',
+    category: 'satsang',
+    tradition: 'sikh',
+    youtubeVideoId: 'SfkiRiVr3wc', // Verified Hazoori Ragi
+  },
+  {
+    id: 'nathdwara-shrinathji',
+    title: 'Nathdwara Shrinathji',
+    location: 'Nathdwara, Rajasthan',
+    schedule: 'Jhanki Darshan',
+    category: 'mandir',
+    tradition: 'hindu',
+    youtubeVideoId: 'jpTOa9PVaTc', // Verified Nathdwara
+  },
 ];
