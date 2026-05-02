@@ -1322,7 +1322,7 @@ export default function HomeDashboard({
     {
       title: 'Daily Darshan',
       description: 'Get divine blessings every day',
-      href: '/daily-darshan',
+      onClick: handleOpenDarshan,
       icon: Sparkles,
     },
     {

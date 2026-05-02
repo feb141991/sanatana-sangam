@@ -3,9 +3,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
-import { X, Share2, Download, Maximize2, Volume2, VolumeX, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, Share2, Download, Maximize2, Volume2, VolumeX, ChevronLeft, ChevronRight, Flame } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { Darshan } from '@/lib/darshan-registry';
+import InteractiveAarti from '@/components/darshan/InteractiveAarti';
 
 interface DarshanOverlayProps {
   darshans: Darshan[];
@@ -18,6 +19,7 @@ export default function DarshanOverlay({ darshans, initialIndex, isOpen, onClose
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isCleanView, setIsCleanView] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [showAartiMode, setShowAartiMode] = useState(false);
   const [portalTarget, setPortalTarget] = useState<Element | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -158,7 +160,7 @@ export default function DarshanOverlay({ darshans, initialIndex, isOpen, onClose
                     </p>
                     
                     {darshan.mantra && (
-                      <div className="flex flex-col items-center gap-1.5">
+                      <div className="flex flex-col items-center gap-1.5 mb-5">
                         <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">
                           Sacred Mantra
                         </span>
@@ -167,6 +169,16 @@ export default function DarshanOverlay({ darshans, initialIndex, isOpen, onClose
                         </p>
                       </div>
                     )}
+                    
+                    {/* Offer Aarti Button */}
+                    <button
+                      onClick={() => setShowAartiMode(true)}
+                      className="flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm tracking-wide active:scale-95 transition-transform shadow-[0_4px_20px_rgba(200,146,74,0.3)] mt-2"
+                      style={{ background: 'linear-gradient(135deg, var(--divine-saffron) 0%, #D4784A 100%)', color: '#1c1c1a' }}
+                    >
+                      <Flame size={16} />
+                      Offer {darshan.tradition?.toLowerCase() === 'sikh' ? 'Ardas' : 'Aarti'}
+                    </button>
                   </div>
                 </div>
               )}
@@ -244,6 +256,22 @@ export default function DarshanOverlay({ darshans, initialIndex, isOpen, onClose
               onClick={() => setIsCleanView(false)}
             />
           )}
+
+          {/* Aarti Mode Overlay */}
+          <AnimatePresence>
+            {showAartiMode && (
+              <InteractiveAarti 
+                card={{
+                  id: darshan.id,
+                  tradition: darshan.tradition || 'hindu',
+                  title: darshan.deity,
+                  symbol: darshan.tradition?.toLowerCase() === 'sikh' ? '☬' : 'ॐ',
+                  blessing: darshan.blessing
+                }} 
+                onClose={() => setShowAartiMode(false)} 
+              />
+            )}
+          </AnimatePresence>
         </motion.div>
       )}
     </AnimatePresence>,
