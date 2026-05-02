@@ -46,7 +46,7 @@ export default async function HomePage() {
   // Tradition-aware daily sacred text.
   // Explicit Hindu uses shlokas.ts; Sikh/Buddhist/Jain/exploring use sacred-texts.ts.
   const shloka     = getTodayShloka(profile?.timezone ?? undefined);
-  const sacredText = getDailySacredText(tradition === 'hindu' ? 'hindu' : (tradition ?? 'other'), dayIndex);
+  const sacredText = getDailySacredText(tradition, dayIndex);
 
   const calendarFromDb = ((calendarRows ?? []) as Pick<Database['public']['Tables']['festivals']['Row'], 'name' | 'date' | 'emoji' | 'description' | 'type' | 'tradition' | 'source_name' | 'source_kind' | 'review_status'>[])
     .map((row) => attachFestivalTrust(row));

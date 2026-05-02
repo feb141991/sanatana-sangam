@@ -65,6 +65,17 @@ export interface TraditionMeta {
     subtitle: string;
     mark: string;
   };
+  dailyVersePrompt: {
+    verse: string;
+    meaning: string;
+  };
+  defaultRitualTimes: string[];
+  placeLabel: string;
+  badgeLabel: string;
+  visitRhythm: {
+    label: string;
+    items: string[];
+  };
 }
 
 export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
@@ -93,6 +104,17 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     bhaktiDeityOrder:     ['shiva', 'krishna', 'rama', 'hanuman', 'devi', 'ganesha'],
     homeSacredTextTheme:  'pathshala',
     heroFallback: { title: 'Sanatan Universe', subtitle: 'A calm sacred space', mark: 'ॐ' },
+    dailyVersePrompt: {
+      verse: 'यदा यदा हि धर्मस्य ग्लानिर्भवति भारत',
+      meaning: 'Bhagavad Gita 4.7 — Whenever there is a decline in righteousness…',
+    },
+    defaultRitualTimes: ['Mangala Aarti', 'Shringar Aarti', 'Sandhya Aarti', 'Shayan Aarti'],
+    placeLabel: 'mandirs',
+    badgeLabel: 'Mandir',
+    visitRhythm: {
+      label: 'Visit rhythm',
+      items: ['Darshan', 'Aarti', 'Temple hours'],
+    },
   },
 
   sikh: {
@@ -119,6 +141,17 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     bhaktiDeityOrder:     ['guru_nanak', 'guru_gobind'],
     homeSacredTextTheme:  'bhakti',
     heroFallback: { title: 'Guru Nanak Dev Ji', subtitle: 'Sat Sri Akal', mark: '☬' },
+    dailyVersePrompt: {
+      verse: 'ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ, ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਹਿ',
+      meaning: 'The Khalsa belongs to Waheguru, and victory belongs to Waheguru.',
+    },
+    defaultRitualTimes: ['Amrit Vela', 'Rehras Sahib', 'Sohila Sahib'],
+    placeLabel: 'gurudwaras',
+    badgeLabel: 'Gurudwara',
+    visitRhythm: {
+      label: 'Sangat rhythm',
+      items: ['Darshan', 'Langar', 'Paath'],
+    },
   },
 
   buddhist: {
@@ -145,6 +178,17 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     bhaktiDeityOrder:     ['buddha', 'tara', 'avalokiteshvara'],
     homeSacredTextTheme:  'bhakti',
     heroFallback: { title: 'Dharma refuge', subtitle: 'Namo Buddhaya', mark: '☸' },
+    dailyVersePrompt: {
+      verse: 'Appamādo amatapadaṃ — Diligence is the path to the deathless.',
+      meaning: 'Dhammapada 21 — The Buddha\'s teaching on mindful effort.',
+    },
+    defaultRitualTimes: ['Morning Chanting', 'Evening Meditation'],
+    placeLabel: 'viharas & stupas',
+    badgeLabel: 'Vihara',
+    visitRhythm: {
+      label: 'Dhamma rhythm',
+      items: ['Meditation', 'Chanting', 'Mindfulness'],
+    },
   },
 
   jain: {
@@ -171,6 +215,17 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     bhaktiDeityOrder:     ['mahavir', 'parshvanath'],
     homeSacredTextTheme:  'bhakti',
     heroFallback: { title: 'Jain dharma', subtitle: 'Jai Jinendra', mark: 'अहिंसा' },
+    dailyVersePrompt: {
+      verse: 'णमो अरहंताणं',
+      meaning: 'Navkar Mantra — I bow to the Arihants (conquerors).',
+    },
+    defaultRitualTimes: ['Pratikramana', 'Samayika'],
+    placeLabel: 'Jain temples',
+    badgeLabel: 'Jain derasar',
+    visitRhythm: {
+      label: 'Sadhana rhythm',
+      items: ['Pooja', 'Darshan', 'Meditation'],
+    },
   },
 
   other: {
@@ -197,6 +252,17 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     bhaktiDeityOrder:     [],
     homeSacredTextTheme:  'pathshala',
     heroFallback: { title: 'Sanatan Universe', subtitle: 'A calm sacred space', mark: 'ॐ' },
+    dailyVersePrompt: {
+      verse: 'यदा यदा हि धर्मस्य ग्लानिर्भवति भारत',
+      meaning: 'Whenever there is a decline in righteousness…',
+    },
+    defaultRitualTimes: ['Daily Meditation'],
+    placeLabel: 'sacred places',
+    badgeLabel: 'Sacred place',
+    visitRhythm: {
+      label: 'Daily rhythm',
+      items: ['Stillness', 'Reflection'],
+    },
   },
 
 };

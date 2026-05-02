@@ -31,11 +31,7 @@ const TRADITION_FILTERS = [
   { label: 'Jain',     value: 'jain',     emoji: '🤲'  },
 ];
 
-const TRADITION_PLACE_LABEL: Record<string, string> = {
-  all: 'sacred places', hindu: 'mandirs', sikh: 'gurudwaras',
-  buddhist: 'viharas & stupas', jain: 'Jain temples',
-};
-
+// RADIUS_OPTIONS
 const RADIUS_OPTIONS = [
   { label: '3 mi',  value: 5000  },
   { label: '6 mi',  value: 10000 },
@@ -43,39 +39,7 @@ const RADIUS_OPTIONS = [
   { label: '30 mi', value: 50000 },
 ];
 
-// Aarti times — configured in @/lib/config.ts → MANDIR.DEFAULT_AARTI_TIMES
-const AARTI_TIMES = MANDIR.DEFAULT_AARTI_TIMES;
-
-const TRADITION_BADGE_LABEL: Record<Temple['tradition'], string> = {
-  hindu: 'Mandir',
-  sikh: 'Gurudwara',
-  buddhist: 'Vihara',
-  jain: 'Jain derasar',
-  other: 'Sacred place',
-};
-
-const VISIT_CUES: Record<Temple['tradition'], { label: string; items: string[] }> = {
-  hindu: {
-    label: 'Visit rhythm',
-    items: ['Darshan', 'Aarti', 'Temple hours'],
-  },
-  sikh: {
-    label: 'What to look for',
-    items: ['Darbar Sahib', 'Langar', 'Diwan schedule'],
-  },
-  buddhist: {
-    label: 'What to look for',
-    items: ['Meditation hall', 'Prayer times', 'Teaching schedule'],
-  },
-  jain: {
-    label: 'What to look for',
-    items: ['Darshan', 'Pratikraman', 'Temple hours'],
-  },
-  other: {
-    label: 'Visit rhythm',
-    items: ['Opening hours', 'Contact', 'Directions'],
-  },
-};
+// VISIT_CUES moved to TRADITION_CONFIG
 
 function kmToMiles(km: number) {
   return (km * 0.621371).toFixed(1);
@@ -115,8 +79,7 @@ function getDistanceLabel(center: [number, number], temple: Temple) {
 }
 
 function getTraditionSummary(temple: Temple) {
-  const tradition = temple.tradition ?? 'other';
-  return VISIT_CUES[tradition] ?? VISIT_CUES.other;
+  return getTraditionMeta(temple.tradition).visitRhythm;
 }
 
 export default function TirthaMapPage() {
@@ -212,7 +175,7 @@ export default function TirthaMapPage() {
     ? temples
     : temples.filter((t) => t.tradition === tradFilter);
 
-  const placeLabel = TRADITION_PLACE_LABEL[tradFilter] ?? 'sacred places';
+  const placeLabel = tradFilter === 'all' ? 'sacred places' : getTraditionMeta(tradFilter).placeLabel;
   const activeCityLabel = cityInput.trim() || liveCity || 'your area';
   return (
     <div className="space-y-3 fade-in">
@@ -349,7 +312,7 @@ export default function TirthaMapPage() {
             const open     = isOpen(temple);
             const isExpanded = selected?.id === temple.id;
             const traditionSummary = getTraditionSummary(temple);
-            const traditionBadge = TRADITION_BADGE_LABEL[temple.tradition ?? 'other'];
+            const traditionBadge = getTraditionMeta(temple.tradition).badgeLabel;
 
             return (
               <div
@@ -418,8 +381,8 @@ export default function TirthaMapPage() {
                               {item}
                             </span>
                           ))}
-                          {temple.tradition === 'hindu' && !temple.opening &&
-                            AARTI_TIMES.map((t) => (
+                          {!temple.opening &&
+                            getTraditionMeta(temple.tradition).defaultRitualTimes.map((t) => (
                               <span key={t} className="text-xs bg-[color:var(--brand-primary-soft)] text-[color:var(--brand-primary)] px-2 py-0.5 rounded-full border border-[color:var(--brand-primary-soft)]">
                                 {t}
                               </span>

@@ -511,24 +511,12 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
             {meta.sacredTextLabel} · Today
           </p>
           <p className="font-[family:var(--font-deva)] font-semibold text-base leading-relaxed" style={{ color: primaryText }}>
-            {tradition === 'sikh'
-              ? 'ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ, ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਹਿ'
-              : tradition === 'buddhist'
-              ? 'Appamādo amatapadaṃ — Diligence is the path to the deathless.'
-              : tradition === 'jain'
-              ? 'णमो अरहंताणं'
-              : 'यदा यदा हि धर्मस्य ग्लानिर्भवति भारत'}
+            {meta.dailyVersePrompt.verse}
           </p>
         </div>
         <div className="p-4" style={{ borderTop: `1px solid ${glassBorder}`, background: isDark ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.38)' }}>
           <p className="text-sm leading-relaxed" style={{ color: secondaryText }}>
-            {tradition === 'sikh'
-              ? 'The Khalsa belongs to Waheguru, and victory belongs to Waheguru.'
-              : tradition === 'buddhist'
-              ? 'Dhammapada 21 — The Buddha\'s teaching on mindful effort.'
-              : tradition === 'jain'
-              ? 'Navkar Mantra — I bow to the Arihants (conquerors).'
-              : 'Bhagavad Gita 4.7 — Whenever there is a decline in righteousness…'}
+            {meta.dailyVersePrompt.meaning}
           </p>
           <p className="text-xs mt-2" style={{ color: meta.accentColour }}>
             Explore {meta.navLibraryLabel} →
