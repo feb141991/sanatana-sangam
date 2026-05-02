@@ -1445,25 +1445,33 @@ export default function HomeDashboard({
           <div className="divine-om" aria-hidden="true">{heroFallback.mark}</div>
 
           <div className="divine-hero-content">
-            <button
-              type="button"
-              onClick={() => setGreetingSheetOpen(true)}
-              className="divine-greeting motion-press"
-            >
-              <span>{stripGreetingIcon(greeting)}, {userName.split(' ')[0]}</span>
-              <Pencil size={15} />
-            </button>
+            <div className="flex-1 flex flex-col items-center justify-center text-center">
+              <button
+                type="button"
+                onClick={() => setGreetingSheetOpen(true)}
+                className="divine-greeting-immersive motion-press"
+              >
+                <h1 className="divine-greeting-main">
+                  {stripGreetingIcon(greeting)}, {userName.split(' ')[0]}
+                </h1>
+                <div className="divine-greeting-edit">
+                  <Pencil size={14} />
+                  <span>Personalize greeting</span>
+                </div>
+              </button>
+            </div>
+
             <button
               type="button"
               onClick={() => setShlokaModalOpen(true)}
-              className="divine-shloka-card motion-press"
+              className="divine-shloka-card-seamless motion-press"
             >
-              <div className="flex items-center justify-between gap-3 w-full">
-                <span className="divine-chip">{dailyText.source}</span>
-                <span className="text-[10px] text-white/40 font-medium uppercase tracking-widest">Read More →</span>
+              <div className="flex items-center justify-between gap-3 w-full mb-1">
+                <span className="divine-chip-glass">{dailyText.source}</span>
+                <span className="text-[10px] text-white/50 font-medium uppercase tracking-widest">Aaj Ka Shloka →</span>
               </div>
-              <span className="divine-sanskrit line-clamp-2">{dailyTextLine}</span>
-              <span className="divine-card-copy line-clamp-1">{dailyText.meaning}</span>
+              <p className="divine-sanskrit-immersive line-clamp-2">{dailyTextLine}</p>
+              <p className="divine-meaning-subtle line-clamp-1">{dailyText.meaning}</p>
             </button>
           </div>
         </div>
