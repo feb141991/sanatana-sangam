@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { Play, MapPin, Clock, Bell, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LIVE_STREAMS, LiveStream, LiveStreamCategory } from '@/lib/live-streams';
-import TopBar from '@/components/layout/TopBar';
 
 interface LiveDarshanClientProps {
   tradition: string;
@@ -24,9 +23,7 @@ export default function LiveDarshanClient({ tradition, userId }: LiveDarshanClie
 
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] flex flex-col pb-28">
-      <TopBar userId={userId} tradition={tradition} />
-
-      <main className="flex-1 px-4 pt-20 max-w-2xl mx-auto w-full">
+      <main className="flex-1 px-4 pt-8 max-w-2xl mx-auto w-full">
         {/* Header Section */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-[28px] font-serif font-bold text-[var(--divine-text)]">Live Darshan</h1>
@@ -108,11 +105,10 @@ export default function LiveDarshanClient({ tradition, userId }: LiveDarshanClie
                       </div>
                     ) : (
                       <div className="w-full h-full relative cursor-pointer group" onClick={() => setActivePlayer(stream.id)}>
-                        <Image 
-                          src={stream.thumbnailUrl} 
-                          alt={stream.title} 
-                          fill 
-                          className="object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
+                        <img 
+                          src={`https://i.ytimg.com/vi/${stream.youtubeVideoId}/hqdefault.jpg`}
+                          alt={stream.title}
+                          className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
                         />
                         <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
                         
