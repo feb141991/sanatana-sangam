@@ -50,6 +50,11 @@ function ensureMockProfile(userId: string): Profile {
       notification_quiet_hours_start: 22,
       notification_quiet_hours_end: 7,
       is_admin: false,
+      is_pro: false,
+      life_stage: 'grihastha',
+      life_stage_locked: false,
+      gender_context: 'general',
+      date_of_birth: null,
     });
   }
 

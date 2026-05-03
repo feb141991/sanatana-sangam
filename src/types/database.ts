@@ -45,6 +45,11 @@ export interface Database {
           notification_quiet_hours_start: number | null;
           notification_quiet_hours_end: number | null;
           is_admin: boolean;
+          is_pro: boolean;
+          life_stage: string | null;
+          life_stage_locked: boolean;
+          gender_context: string | null;
+          date_of_birth: string | null;
         };
         Insert: Omit<Database['public']['Tables']['profiles']['Row'], 'created_at' | 'updated_at' | 'seva_score'>;
         Update: Partial<Database['public']['Tables']['profiles']['Insert']>;

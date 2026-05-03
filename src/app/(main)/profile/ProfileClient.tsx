@@ -17,6 +17,7 @@ import { useLanguage } from '@/lib/i18n/LanguageContext';
 import type { AppLang } from '@/lib/i18n/translations';
 import { getPlayerId, getPermissionState, logoutFromOneSignal } from '@/lib/onesignal';
 import type { Profile } from '@/types/database';
+import { ageToAshrama, ageFromDob, getAshramaMeta, type LifeStage, type GenderContext } from '@/lib/ashrama';
 import { MetricTile, SurfaceSection } from '@/components/ui';
 import CircularProgress from '@/components/ui/CircularProgress';
 import { useProfileQuery, useUpdateProfileMutation } from '@/hooks/useProfile';
@@ -26,6 +27,32 @@ import type { ProfileUpdate } from '@/lib/api/profile';
 import { usePremium } from '@/hooks/usePremium';
 import { THEME_OPTIONS, type ThemePreference } from '@/lib/theme-preferences';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+
+// ── Practice path options per tradition (mirrors OnboardingClient) ─────────────
+function getPracticePathOptions(tradition: TraditionKey | '') {
+  switch (tradition) {
+    case 'sikh':
+      return [
+        { key: 'general' as GenderContext, icon: '☬', label: 'Sangat path', sub: 'Nitnem, simran, seva and sangat' },
+        { key: 'female'  as GenderContext, icon: '🌸', label: 'Kaur path', sub: 'Life-stage guidance with Sikh context' },
+      ];
+    case 'buddhist':
+      return [
+        { key: 'general' as GenderContext, icon: '☸️', label: 'Dharma path', sub: 'Refuge, mindfulness and daily practice' },
+        { key: 'female'  as GenderContext, icon: '🪷', label: 'Householder path', sub: 'Life-stage guidance with Buddhist context' },
+      ];
+    case 'jain':
+      return [
+        { key: 'general' as GenderContext, icon: '🤲', label: 'Jain path', sub: 'Ahimsa, svadhyaya and daily reflection' },
+        { key: 'female'  as GenderContext, icon: '🌸', label: 'Shravika path', sub: 'Life-stage guidance with Jain context' },
+      ];
+    default:
+      return [
+        { key: 'general' as GenderContext, icon: '🌿', label: 'General path', sub: 'Traditional practice for all' },
+        { key: 'female'  as GenderContext, icon: '🌸', label: 'Stridharma path', sub: "Women’s tradition-specific duties" },
+      ];
+  }
+}
 
 // ── Profile Completion ────────────────────────────────────────────────────────
 const COMPLETION_FIELDS: { key: keyof Profile | string; label: string }[] = [
@@ -37,6 +64,7 @@ const COMPLETION_FIELDS: { key: keyof Profile | string; label: string }[] = [
   { key: 'sampradaya',   label: 'Sampradaya'   },
   { key: 'ishta_devata', label: 'Ishta Devata' },
   { key: 'home_town',    label: 'Home Town'    },
+  { key: 'date_of_birth', label: 'Date of Birth' },
 ];
 
 function calcCompletion(profile: Profile | null): { pct: number; missing: string[] } {
@@ -150,6 +178,8 @@ export default function ProfileClient({
     scripture_script: (liveProfile as any)?.scripture_script ?? 'original',
     show_transliteration: (liveProfile as any)?.show_transliteration ?? true,
     meaning_language: (liveProfile as any)?.meaning_language ?? 'en',
+    date_of_birth:    (liveProfile as any)?.date_of_birth    ?? '',
+    gender_context:   ((liveProfile as any)?.gender_context  ?? 'general') as GenderContext,
   });
 
   const activeTradition = (form.tradition || 'hindu') as TraditionKey;
@@ -249,7 +279,12 @@ export default function ProfileClient({
   async function saveProfile() {
     setSaving(true);
     // tradition is locked at signup — never include it in updates
-    const { tradition: _locked, ...formToSave } = form;
+    // date_of_birth: empty string → null (date column rejects empty strings)
+    const { tradition: _locked, date_of_birth, ...rest } = form;
+    const formToSave = {
+      ...rest,
+      date_of_birth: date_of_birth || null,
+    };
     try {
       await updateProfileMutation.mutateAsync(formToSave);
       toast.success('Profile updated 🙏');
@@ -959,6 +994,74 @@ export default function ProfileClient({
               ))}
             </>
           )}
+
+          {/* ── My Stage — DOB + practice path ── */}
+          <div className="space-y-3">
+            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My stage</p>
+
+            {/* Date of birth */}
+            <div>
+              <label className="block text-sm font-medium theme-muted mb-1.5">Date of birth</label>
+              <input
+                type="date"
+                value={form.date_of_birth}
+                max={new Date().toISOString().split('T')[0]}
+                onChange={(e) => {
+                  const dob = e.target.value;
+                  setForm(prev => {
+                    const next = { ...prev, date_of_birth: dob };
+                    return next;
+                  });
+                }}
+                className="surface-input px-4 py-2.5 outline-none text-sm"
+              />
+              {/* Auto-show suggested ashrama when DOB is set */}
+              {form.date_of_birth && (() => {
+                const suggested = ageToAshrama(form.date_of_birth);
+                const age       = ageFromDob(form.date_of_birth);
+                const meta      = getAshramaMeta(
+                  activeTradition,
+                  suggested as LifeStage,
+                  form.gender_context,
+                );
+                return (
+                  <p className="text-xs mt-1.5" style={{ color: 'var(--text-dim)' }}>
+                    {meta.icon} Age {age} — suggested stage:{' '}
+                    <span style={{ color: meta.accent, fontWeight: 600 }}>{meta.label}</span>
+                  </p>
+                );
+              })()}
+            </div>
+
+            {/* Practice path (gender context) */}
+            <div>
+              <label className="block text-sm font-medium theme-muted mb-1.5">Practice path</label>
+              <div className="grid grid-cols-2 gap-2">
+                {getPracticePathOptions(activeTradition).map(opt => {
+                  const sel = form.gender_context === opt.key;
+                  return (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      onClick={() => setForm({ ...form, gender_context: opt.key })}
+                      className="rounded-2xl border px-3 py-3 text-left transition"
+                      style={{
+                        background:   sel ? 'rgba(200,146,74,0.14)' : 'var(--card-bg)',
+                        borderColor:  sel ? 'rgba(200,146,74,0.32)' : 'rgba(255,255,255,0.08)',
+                      }}
+                    >
+                      <div className="text-xl mb-1">{opt.icon}</div>
+                      <p className="text-sm font-semibold theme-ink leading-tight">{opt.label}</p>
+                      <p className="text-[11px] theme-dim mt-0.5 leading-snug">{opt.sub}</p>
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-xs theme-dim mt-1.5">
+                Affects your Nitya Karma duties and life-stage content.
+              </p>
+            </div>
+          </div>
 
           <div className="space-y-3">
             <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My place</p>
