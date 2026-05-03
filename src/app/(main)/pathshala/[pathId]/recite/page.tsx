@@ -34,6 +34,17 @@ export default async function RecitePage({
     redirect('/pathshala');
   }
 
+  const transliterationLanguage = (profile as any)?.transliteration_language ?? 'en';
+  let hindiMeanings: Record<string, string> = {};
+  if (transliterationLanguage === 'hi') {
+    const { data: hmRows } = await supabase
+      .from('hindi_meanings')
+      .select('entry_id, meaning_hi');
+    if (hmRows) {
+      for (const row of hmRows) hindiMeanings[row.entry_id] = row.meaning_hi;
+    }
+  }
+
   return (
     <ReciteClient
       userId={user.id}
@@ -41,7 +52,8 @@ export default async function RecitePage({
       tradition={tradition}
       accentColour={meta.accentColour}
       currentLesson={(enrollment as any).current_lesson ?? 0}
-      transliterationLanguage={(profile as any)?.transliteration_language ?? 'en'}
+      transliterationLanguage={transliterationLanguage}
+      hindiMeanings={hindiMeanings}
     />
   );
 }

@@ -34,6 +34,18 @@ export default async function LessonPage({
     redirect('/pathshala');
   }
 
+  // Fetch Hindi meanings if user prefers Hindi
+  const transliterationLanguage = (profile as any)?.transliteration_language ?? 'en';
+  let hindiMeanings: Record<string, string> = {};
+  if (transliterationLanguage === 'hi') {
+    const { data: hmRows } = await supabase
+      .from('hindi_meanings')
+      .select('entry_id, meaning_hi');
+    if (hmRows) {
+      for (const row of hmRows) hindiMeanings[row.entry_id] = row.meaning_hi;
+    }
+  }
+
   return (
     <LessonClient
       userId={user.id}
@@ -42,7 +54,8 @@ export default async function LessonPage({
       accentColour={meta.accentColour}
       currentLesson={(enrollment as any).current_lesson ?? 0}
       completedLessons={((enrollment as any).completed_lessons as number[]) ?? []}
-      transliterationLanguage={(profile as any)?.transliteration_language ?? 'en'}
+      transliterationLanguage={transliterationLanguage}
+      hindiMeanings={hindiMeanings}
     />
   );
 }

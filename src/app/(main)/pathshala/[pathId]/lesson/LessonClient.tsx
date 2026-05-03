@@ -156,6 +156,7 @@ function VerseCard({
   onCopy,
   onSpeak,
   transliterationLanguage,
+  hindiMeanings,
 }: {
   entry: LibraryEntry;
   accentColour: string;
@@ -168,6 +169,7 @@ function VerseCard({
   onCopy: (entry: LibraryEntry) => void;
   onSpeak: (entry: LibraryEntry) => void;
   transliterationLanguage?: string;
+  hindiMeanings?: Record<string, string>;
 }) {
   const [expanded, setExpanded] = useState(true); // all verses open by default
   const [overflowOpen, setOverflowOpen] = useState(false);
@@ -283,11 +285,13 @@ function VerseCard({
                 </div>
               )}
 
-              {/* Meaning */}
+              {/* Meaning — Hindi if available and user prefers Hindi */}
               <div className="px-4 py-4">
-                <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.7 }}>Meaning</p>
+                <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.7 }}>
+                  {transliterationLanguage === 'hi' ? 'अर्थ' : 'Meaning'}
+                </p>
                 <p className="leading-relaxed font-medium" style={{ color: 'var(--brand-ink)', fontSize: `${fontScale * 1.0}rem`, lineHeight: 1.75 }}>
-                  {entry.meaning}
+                  {(transliterationLanguage === 'hi' && hindiMeanings?.[entry.id]) || entry.meaning}
                 </p>
               </div>
             </div>
@@ -307,6 +311,7 @@ interface Props {
   currentLesson: number;
   completedLessons: number[];
   transliterationLanguage?: string;
+  hindiMeanings?: Record<string, string>;
 }
 
 // ─── Main Component ────────────────────────────────────────────────────────────
@@ -318,6 +323,7 @@ export default function LessonClient({
   currentLesson: initialLesson,
   completedLessons: initialCompleted,
   transliterationLanguage,
+  hindiMeanings,
 }: Props) {
   const router  = useRouter();
   const engine  = useSadhana();
@@ -600,6 +606,7 @@ export default function LessonClient({
               onCopy={copyEntry}
               onSpeak={speakEntry}
               transliterationLanguage={transliterationLanguage}
+              hindiMeanings={hindiMeanings}
             />
           ))
         )}

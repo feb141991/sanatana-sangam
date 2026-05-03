@@ -168,6 +168,7 @@ interface Props {
   accentColour: string;
   currentLesson: number;
   transliterationLanguage?: string;
+  hindiMeanings?: Record<string, string>;
 }
 
 // ─── Mode types ────────────────────────────────────────────────────────────────
@@ -181,6 +182,7 @@ export default function ReciteClient({
   accentColour,
   currentLesson,
   transliterationLanguage,
+  hindiMeanings,
 }: Props) {
   const router    = useRouter();
   const pathshala = usePathshala();
@@ -747,7 +749,7 @@ export default function ReciteClient({
                       )}
                       {verse.meaning && (
                         <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed">
-                          {verse.meaning}
+                          {(transliterationLanguage === 'hi' && hindiMeanings?.[verse.id]) || verse.meaning}
                         </p>
                       )}
                     </motion.div>

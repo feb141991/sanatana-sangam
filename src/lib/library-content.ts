@@ -24,6 +24,7 @@ export interface LibraryEntry {
   original:         string;
   transliteration:  string;
   meaning:          string;
+  meaning_hi?:      string; // Hindi meaning — populated from src/lib/i18n/hindi-meanings.ts
   tradition:        LibraryTradition;
   category:         LibraryCategory;
   tags:             string[];
