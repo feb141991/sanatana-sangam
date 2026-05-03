@@ -1404,7 +1404,7 @@ export default function HomeDashboard({
               >
                 <div className="flex items-center gap-2">
                   <h1 className="divine-greeting-title">
-                    {stripGreetingIcon(greeting)}
+                    {stripGreetingIcon(greeting)}, {userName.split(' ')[0]}
                   </h1>
                 </div>
                 <div className="flex items-center gap-3">
