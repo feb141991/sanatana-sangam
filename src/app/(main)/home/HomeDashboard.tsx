@@ -1082,9 +1082,34 @@ export default function HomeDashboard({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tradition]);
 
-  function handleQuizAnswer(idx: number) {
+  async function handleQuizAnswer(idx: number) {
+    if (quizAnswered !== null || quiz === 'loading' || quiz === 'error') return;
+
     setQuizAnswered(idx);
     localStorage.setItem(QUIZ_ANSWERED_KEY, String(idx));
+
+    // Celebration
+    if (idx === quiz.answerIndex) {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 4000);
+    }
+
+    // Persist to DB
+    try {
+      await fetch('/api/quiz/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question: quiz.question,
+          chosen_index: idx,
+          correct_index: quiz.answerIndex,
+          is_correct: idx === quiz.answerIndex,
+          tradition: tradition ?? 'hindu'
+        })
+      });
+    } catch (err) {
+      console.error('Failed to persist quiz answer:', err);
+    }
   }
 
   // Confetti
@@ -1732,6 +1757,9 @@ export default function HomeDashboard({
               {/* Header */}
               <div className="quiz-spark-header">
                 <span className="quiz-spark-kicker">🧠 Do You Know?</span>
+                <Link href="/quiz" className="quiz-spark-history-link hover:underline transition">
+                  History →
+                </Link>
                 <span className="quiz-spark-source">{quiz.source}</span>
               </div>
 

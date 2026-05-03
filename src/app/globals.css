@@ -1195,6 +1195,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 0.75rem;
 }
 
 .quiz-spark-kicker {
@@ -1203,6 +1204,16 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: #9898dd;
+}
+
+.quiz-spark-history-link {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--brand-gold, #cfa86e);
+  margin-left: auto;
+  margin-right: 0.75rem;
 }
 
 .quiz-spark-source {
