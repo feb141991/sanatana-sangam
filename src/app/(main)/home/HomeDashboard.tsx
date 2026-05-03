@@ -1083,7 +1083,7 @@ export default function HomeDashboard({
   }, [tradition]);
 
   async function handleQuizAnswer(idx: number) {
-    if (quizAnswered !== null || quiz === 'loading' || quiz === 'error') return;
+    if (!quiz || quiz === 'loading' || quiz === 'error' || quizAnswered !== null) return;
 
     setQuizAnswered(idx);
     localStorage.setItem(QUIZ_ANSWERED_KEY, String(idx));
