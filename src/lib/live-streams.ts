@@ -46,6 +46,8 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Live Gurbani 24/7',
     category: 'mandir',
     tradition: 'sikh',
+    state: 'Maharashtra',
+    collections: ['Panj Takht'],
     youtubeVideoId: 'YsI5XOB4z7g', // Verified Sikh Darshan
   },
   {
@@ -146,6 +148,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     category: 'mandir',
     tradition: 'sikh',
     state: 'Punjab',
+    collections: ['Panj Takht'],
     youtubeVideoId: '8GTgg2TmRLQ', // Verified SGPC Official
   },
   {
@@ -226,6 +229,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     category: 'satsang',
     tradition: 'sikh',
     state: 'Punjab',
+    collections: ['Gurbani Kirtan'],
     youtubeVideoId: 'SfkiRiVr3wc', // Verified Hazoori Ragi
   },
   {
@@ -270,6 +274,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     category: 'satsang',
     tradition: 'sikh',
     state: 'Punjab',
+    collections: ['Gurbani Kirtan'],
     youtubeVideoId: 'YlnQ2apbtuQ', // Verified Sikh Kirtan
   },
   {
@@ -346,6 +351,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     category: 'mandir',
     tradition: 'sikh',
     state: 'Bihar',
+    collections: ['Panj Takht'],
     youtubeVideoId: '2VoKxEz6sSc',
   },
   {
@@ -356,6 +362,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     category: 'satsang',
     tradition: 'jain',
     state: 'India',
+    collections: ['Jain Path'],
     youtubeVideoId: '7Ulm6UNZ578',
   },
   {
@@ -366,6 +373,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     category: 'satsang',
     tradition: 'jain',
     state: 'India',
+    collections: ['Jain Path'],
     youtubeVideoId: 'K1rbZLQ2GbQ',
   },
   {
@@ -386,6 +394,8 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Pravachan & Aarti 24/7',
     category: 'satsang',
     tradition: 'jain',
+    state: 'India',
+    collections: ['Jain Path'],
     youtubeVideoId: 'cDzIiI0kvNg', // Verified Jain Channel
   },
   {

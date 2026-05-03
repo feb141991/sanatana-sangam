@@ -36,17 +36,28 @@ export default function LiveDarshanClient({ tradition, userId, streams }: LiveDa
   const [activePlayer, setActivePlayer]       = useState<string | null>(null);
   const [search, setSearch]                   = useState('');
   const [showFilters, setShowFilters]         = useState(false);
+  const [activeCollection, setActiveCollection] = useState<string | null>(null);
   const [activeIshta, setActiveIshta]         = useState<string>('all');
   const [activeState, setActiveState]         = useState<string>('all');
-  const [activeCollection, setActiveCollection] = useState<string | null>(null);
 
-  const FEATURED_COLLECTIONS = [
-    { id: 'Char Dham',     label: 'Char Dham',    emoji: '🏔️', color: '#FF9933', desc: 'The 4 holy abodes' },
-    { id: 'Jyotirlinga',   label: 'Jyotirlinga',  emoji: '🔱', color: '#660000', desc: '12 Radiant Lingas' },
-    { id: 'Rivers',        label: 'Holy Rivers',  emoji: '🌊', color: '#0066CC', desc: 'Ganga & Yamuna Aarti' },
-    { id: 'Saptapuri',     label: 'Saptapuri',    emoji: '🕍', color: '#CC9900', desc: '7 Ancient Holy Cities' },
-    { id: 'Shaktipeeth',   label: 'Shaktipeeth',  emoji: '🪔', color: '#FF3300', desc: 'Seats of the Goddess' },
+  const ALL_COLLECTIONS = [
+    { id: 'Char Dham',     label: 'Char Dham',    emoji: '🏔️', color: '#FF9933', desc: 'The 4 holy abodes', trad: 'hindu' },
+    { id: 'Jyotirlinga',   label: 'Jyotirlinga',  emoji: '🔱', color: '#660000', desc: '12 Radiant Lingas', trad: 'hindu' },
+    { id: 'Rivers',        label: 'Holy Rivers',  emoji: '🌊', color: '#0066CC', desc: 'Ganga & Yamuna Aarti', trad: 'hindu' },
+    { id: 'Panj Takht',    label: 'Panj Takht',   emoji: '☬',  color: '#FFCC00', desc: '5 Sikh Thrones',      trad: 'sikh'  },
+    { id: 'Gurbani Kirtan',label: 'Kirtan',       emoji: '🎶', color: '#336600', desc: 'Akhand Gurbani',      trad: 'sikh'  },
+    { id: 'Jain Path',     label: 'Jain Path',    emoji: '🙏', color: '#FF6666', desc: 'Tirthankar Bhakti',   trad: 'jain'  },
+    { id: 'Bodhi Path',    label: 'Bodhi Path',   emoji: '☸️', color: '#9933CC', desc: 'Peace of Buddha',      trad: 'buddhist' },
+    { id: 'Saptapuri',     label: 'Saptapuri',    emoji: '🕍', color: '#CC9900', desc: '7 Ancient Holy Cities', trad: 'hindu' },
+    { id: 'Shaktipeeth',   label: 'Shaktipeeth',  emoji: '🪔', color: '#FF3300', desc: 'Seats of the Goddess', trad: 'hindu' },
   ];
+
+  // Sort collections to show user's tradition first
+  const FEATURED_COLLECTIONS = [...ALL_COLLECTIONS].sort((a, b) => {
+    if (a.trad === tradition && b.trad !== tradition) return -1;
+    if (a.trad !== tradition && b.trad === tradition) return 1;
+    return 0;
+  });
 
   // Dynamically extract unique options from streams
   const ishtaOptions = ['all', ...Array.from(new Set(streams.map(s => s.ishtaDevata).filter(Boolean)))];
