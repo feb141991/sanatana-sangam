@@ -605,7 +605,16 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
     }
   }
 
-  // ── Your Seat — full-width hero card ────────────────────────────────────────
+  // ── Tradition-specific seat vocabulary ───────────────────────────────────────
+  const TRADITION_SEAT: Record<string, { scriptWord: string; eyebrow: string }> = {
+    hindu:    { scriptWord: 'गुरुकुल',   eyebrow: 'Your Seat · Gurukul' },
+    sikh:     { scriptWord: 'ਪਾਠਸ਼ਾਲਾ', eyebrow: 'Your Seat · Pathshala' },
+    buddhist: { scriptWord: 'धम्म',     eyebrow: 'Your Seat · Dhamma Path' },
+    jain:     { scriptWord: 'ज्ञान',    eyebrow: 'Your Seat · Svadhyaya' },
+  };
+  const seatMeta = TRADITION_SEAT[tradition] ?? { scriptWord: 'गुरुकुल', eyebrow: 'Your Seat · Learning' };
+
+  // ── Your Seat — seamless full-bleed immersive hero ────────────────────────────
   function ContinueLearningHero() {
     if (activePaths.length === 0) return null;
     const enrollment = activePaths[0];
@@ -618,102 +627,102 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
       : 0;
     const resumeLesson = enrollment.current_lesson ?? 0;
     const lessonLabel  = resumeLesson > 0 ? `Lesson ${resumeLesson + 1}` : 'Begin';
-    // Mastery signal — how many unique lessons completed
     const masterySignal = doneLessons > 0
-      ? `${doneLessons} lesson${doneLessons === 1 ? '' : 's'} mastered`
+      ? `${doneLessons} ${meta.vocabulary?.shloka ?? 'lesson'}${doneLessons === 1 ? '' : 's'} mastered`
       : `${path.total_lessons} lessons ahead`;
 
     return (
       <motion.div
-        className="rounded-[2rem] overflow-hidden relative mb-2"
-        style={{
-          background: isDark
-            ? `linear-gradient(160deg, rgba(30,18,8,0.98) 0%, rgba(20,12,5,0.99) 100%)`
-            : `linear-gradient(160deg, rgba(255,248,235,0.99) 0%, rgba(250,238,210,0.99) 100%)`,
-          boxShadow: `0 12px 48px ${meta.accentColour}18, inset 0 1px 0 ${meta.accentColour}18`,
-          border: `1px solid ${meta.accentColour}28`,
-        }}
-        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 18 }}
-        animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        // bleed to full width — no card border, merges with page
+        className="relative -mx-4 overflow-hidden mb-1"
+        initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+        animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* Decorative Sanskrit watermark */}
-        <div className="absolute top-3 right-4 select-none pointer-events-none"
-          style={{ fontFamily: 'var(--font-deva, serif)', fontSize: '7rem', lineHeight: 1,
-            color: meta.accentColour, opacity: isDark ? 0.04 : 0.06 }}>
-          ॐ
+        {/* Full-width ambient glow — radiates from centre-top */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          background: `radial-gradient(ellipse 80% 60% at 50% -10%, ${meta.accentColour}28, transparent 72%)`,
+        }} />
+
+        {/* Tradition mark — large faint watermark behind content */}
+        <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none overflow-hidden">
+          <span style={{
+            fontFamily: 'var(--font-deva, serif)',
+            fontSize: '14rem',
+            lineHeight: 1,
+            color: meta.accentColour,
+            opacity: isDark ? 0.03 : 0.045,
+            letterSpacing: '-0.02em',
+          }}>
+            {meta.heroFallback.mark}
+          </span>
         </div>
 
-        {/* Ambient glow */}
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: `radial-gradient(ellipse at 30% 0%, ${meta.accentColour}10, transparent 65%)` }} />
-
-        {/* Hero body */}
-        <div className="relative z-10 p-5 pb-4">
+        {/* Content */}
+        <div className="relative z-10 px-6 pt-2 pb-5 text-center">
           {/* Eyebrow */}
-          <div className="flex items-center gap-2 mb-3">
-            <span className="w-1.5 h-1.5 rounded-full" style={{ background: meta.accentColour }} />
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: meta.accentColour }}>
-              Your Seat · Active Path
-            </p>
-          </div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-4"
+            style={{ color: meta.accentColour, opacity: 0.7 }}>
+            {seatMeta.eyebrow}
+          </p>
 
-          {/* Title row */}
-          <div className="flex items-start gap-4 mb-4">
+          {/* Progress ring — centre stage */}
+          <div className="flex justify-center mb-4">
             <CircularProgress
               pct={progressPct}
               accent={meta.accentColour}
-              size={80}
+              size={96}
               strokeWidth={5}
               label={
                 <div className="text-center leading-none">
-                  <div className="text-[1.15rem] font-bold" style={{ color: meta.accentColour }}>{progressPct}%</div>
+                  <div className="text-[1.35rem] font-bold" style={{ color: meta.accentColour }}>{progressPct}%</div>
                   <div className="text-[7px] mt-0.5 uppercase tracking-wider" style={{ color: tertiaryText }}>done</div>
                 </div>
               }
             />
-            <div className="flex-1 min-w-0 pt-1">
-              <h2 className="font-bold text-xl leading-snug mb-1"
-                style={{ fontFamily: 'var(--font-serif)', color: primaryText }}>
-                {path.title}
-              </h2>
-              <p className="text-xs leading-relaxed mb-1" style={{ color: secondaryText }}>
-                {path.description}
-              </p>
-              <p className="text-[10px] font-semibold" style={{ color: meta.accentColour, opacity: 0.75 }}>
-                {masterySignal} · {path.duration_days}-day journey
-              </p>
-            </div>
           </div>
 
-          {/* Continue CTA — full width, prominent */}
+          {/* Path title */}
+          <h2 className="font-bold text-2xl leading-tight mb-1"
+            style={{ fontFamily: 'var(--font-serif)', color: primaryText }}>
+            {path.title}
+          </h2>
+          <p className="text-xs mb-1 mx-auto max-w-[220px]" style={{ color: secondaryText }}>
+            {path.description}
+          </p>
+          <p className="text-[10px] font-semibold mb-5" style={{ color: meta.accentColour, opacity: 0.7 }}>
+            {masterySignal} · {path.duration_days}-day journey
+          </p>
+
+          {/* Animated progress bar */}
+          <div className="h-[3px] rounded-full mx-auto max-w-[200px] mb-5 overflow-hidden"
+            style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)' }}>
+            <motion.div
+              className="h-full rounded-full"
+              style={{ background: `linear-gradient(to right, ${meta.accentColour}88, ${meta.accentColour})` }}
+              initial={{ width: 0 }}
+              animate={{ width: `${progressPct}%` }}
+              transition={{ duration: 0.9, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            />
+          </div>
+
+          {/* CTA */}
           <Link
             href={`/pathshala/${enrollment.path_id}/lesson`}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-sm text-[#1c1c1a] shadow-lg transition-transform active:scale-[0.98]"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm text-[#1c1c1a] transition-transform active:scale-[0.97]"
             style={{
               background: `linear-gradient(135deg, ${meta.accentColour}, ${meta.accentColour}cc)`,
-              boxShadow: `0 6px 24px ${meta.accentColour}38`,
+              boxShadow: `0 8px 28px ${meta.accentColour}40`,
             }}
           >
-            <Play size={15} fill="currentColor" />
+            <Play size={14} fill="currentColor" />
             {lessonLabel === 'Begin' ? 'Begin First Lesson' : `Resume · ${lessonLabel}`}
           </Link>
         </div>
 
-        {/* Progress bar strip */}
-        <div className="relative z-10 h-1 mx-5 mb-4 rounded-full overflow-hidden"
-          style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}>
-          <motion.div
-            className="h-full rounded-full"
-            style={{ background: `linear-gradient(to right, ${meta.accentColour}99, ${meta.accentColour})` }}
-            initial={{ width: 0 }}
-            animate={{ width: `${progressPct}%` }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          />
-        </div>
-
-        {/* Quick actions strip */}
-        <div className="relative z-10 flex divide-x" style={{ borderTop: `1px solid ${glassBorder}` }}>
+        {/* Quick actions strip — floats below, no hard border-top on left/right */}
+        <div className="relative z-10 flex mx-4 rounded-[1.4rem] overflow-hidden mb-2"
+          style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)', border: `1px solid ${glassBorder}` }}>
           <Link
             href={`/pathshala/${enrollment.path_id}/recite`}
             className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold transition-all hover:bg-white/4"
@@ -721,6 +730,7 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
           >
             <Mic size={12} /> Recite
           </Link>
+          <div className="w-px self-stretch" style={{ background: glassBorder }} />
           <button
             onClick={() => startOver(enrollment.path_id, path.title)}
             className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold transition-all hover:bg-white/4"
@@ -728,6 +738,7 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
           >
             <Trophy size={12} /> Start over
           </button>
+          <div className="w-px self-stretch" style={{ background: glassBorder }} />
           <button
             onClick={() => unenroll(enrollment.path_id, path.title)}
             className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold transition-all hover:bg-white/4"
@@ -736,6 +747,10 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
             <X size={12} /> Leave
           </button>
         </div>
+
+        {/* Bottom fade — seamlessly dissolves into page */}
+        <div className="absolute bottom-0 left-0 right-0 h-6 pointer-events-none"
+          style={{ background: `linear-gradient(to bottom, transparent, ${pageBg.includes('#') ? pageBg.split(',')[0].replace('linear-gradient(180deg,','').trim() : 'transparent'})` }} />
       </motion.div>
     );
   }
@@ -998,37 +1013,48 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
             <>
               {activePaths.length === 0 ? (
                 <>
-                  {/* Gurukul invitation card */}
+                  {/* Tradition-aware invitation — seamless, full-bleed */}
                   <motion.div
-                    className="rounded-[2rem] overflow-hidden relative text-center"
-                    style={{
-                      background: isDark
-                        ? `linear-gradient(160deg, rgba(28,18,8,0.97) 0%, rgba(18,12,5,0.99) 100%)`
-                        : `linear-gradient(160deg, rgba(255,248,235,0.99) 0%, rgba(250,238,210,0.99) 100%)`,
-                      border: `1px solid ${meta.accentColour}22`,
-                      boxShadow: `0 8px 32px ${meta.accentColour}10`,
-                    }}
-                    initial={prefersReducedMotion ? undefined : { opacity: 0, y: 14 }}
-                    animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-                    transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                    className="relative -mx-4 overflow-hidden text-center"
+                    initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+                    animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                   >
+                    {/* Wide ambient glow */}
                     <div className="absolute inset-0 pointer-events-none"
-                      style={{ background: `radial-gradient(ellipse at 50% 0%, ${meta.accentColour}08, transparent 65%)` }} />
-                    <div className="relative z-10 px-6 py-8">
-                      <p className="text-[4rem] mb-3 leading-none" style={{ fontFamily: 'var(--font-deva, serif)', color: meta.accentColour, opacity: 0.6 }}>
-                        गुरुकुल
+                      style={{ background: `radial-gradient(ellipse 80% 55% at 50% -10%, ${meta.accentColour}22, transparent 70%)` }} />
+                    {/* Tradition mark watermark */}
+                    <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none overflow-hidden">
+                      <span style={{
+                        fontFamily: 'var(--font-deva, serif)',
+                        fontSize: '13rem',
+                        lineHeight: 1,
+                        color: meta.accentColour,
+                        opacity: isDark ? 0.035 : 0.05,
+                      }}>
+                        {meta.heroFallback.mark}
+                      </span>
+                    </div>
+                    <div className="relative z-10 px-6 pt-4 pb-6">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-4"
+                        style={{ color: meta.accentColour, opacity: 0.65 }}>
+                        {meta.symbol} {meta.label} · {meta.navLibraryLabel}
                       </p>
-                      <p className="font-bold text-base mb-1" style={{ fontFamily: 'var(--font-serif)', color: primaryText }}>
+                      <p className="text-[2.8rem] leading-none mb-3 font-medium"
+                        style={{ fontFamily: 'var(--font-deva, serif)', color: meta.accentColour, opacity: 0.55 }}>
+                        {seatMeta.scriptWord}
+                      </p>
+                      <p className="font-bold text-xl mb-1" style={{ fontFamily: 'var(--font-serif)', color: primaryText }}>
                         Your seat awaits
                       </p>
-                      <p className="text-sm leading-relaxed mb-5" style={{ color: secondaryText }}>
-                        Choose a learning path and begin your study of the sacred texts.
+                      <p className="text-sm leading-relaxed mb-5 mx-auto max-w-[240px]" style={{ color: secondaryText }}>
+                        Begin your study of {meta.pathshalaVocabulary} — one lesson at a time.
                       </p>
                       <button onClick={() => setTab('explore')}
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-[#1c1c1a] font-bold text-sm shadow-lg"
+                        className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl text-[#1c1c1a] font-bold text-sm"
                         style={{
                           background: `linear-gradient(135deg, ${meta.accentColour}, ${meta.accentColour}cc)`,
-                          boxShadow: `0 6px 20px ${meta.accentColour}33`,
+                          boxShadow: `0 8px 24px ${meta.accentColour}38`,
                         }}>
                         <GraduationCap size={15} /> Choose a Path
                       </button>
