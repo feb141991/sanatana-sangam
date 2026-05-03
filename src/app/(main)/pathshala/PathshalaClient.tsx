@@ -57,7 +57,9 @@ const SECTIONS_BY_TRADITION: Record<string, string[]> = {
   sikh:     ['gurbani'],
   buddhist: ['dhammapada'],
   jain:     ['jain'],
-  other:    ['gita','bhagavatam','ramayana','upanishad','gurbani','dhammapada','jain'],
+  other:    ['gita','bhagavatam','vishnu_sahasranama','ramayana','ramcharitmanas',
+             'upanishad','veda','yoga_sutra','chanakya','shiva_purana','shakta','stotra',
+             'gurbani','dhammapada','jain'],
 };
 
 // ── Static seed paths — sourced from shared lib so server components can import too ──
@@ -403,10 +405,28 @@ function ScriptureTab({
       )}
 
       {/* Entries / Epic Viewer */}
-      {selectedSection === 'ramayana' ? (
-        <EpicViewer structure={RAMAYANA_STRUCTURE} accentColour={accentColour} />
-      ) : selectedSection === 'bhagavatam' ? (
-        <EpicViewer structure={BHAGAVATAM_STRUCTURE} accentColour={accentColour} />
+      {selectedSection === 'ramayana' || selectedSection === 'bhagavatam' ? (
+        <div className="space-y-10">
+          <EpicViewer 
+            structure={selectedSection === 'ramayana' ? RAMAYANA_STRUCTURE : BHAGAVATAM_STRUCTURE} 
+            accentColour={accentColour} 
+          />
+          
+          {entries.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-4 px-2">
+                <div className="h-px flex-1 bg-white/5" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Featured Passages</span>
+                <div className="h-px flex-1 bg-white/5" />
+              </div>
+              <div className="grid gap-3">
+                {entries.map(e => (
+                  <EntryCard key={e.id} entry={e} accentColour={accentColour} />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       ) : entries.length === 0 ? (
         <div className="text-center py-10">
           <p className="text-sm text-[color:var(--brand-muted)]">No results for &ldquo;{query}&rdquo;</p>

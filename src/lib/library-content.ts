@@ -768,6 +768,39 @@ export const VISHNU_SAHASRANAMA_ENTRIES: LibraryEntry[] = [
     tradition: 'hindu', category: 'vishnu_sahasranama',
     tags: ['vishnu', 'sahasranama', 'liberation', 'remembrance', 'bhishma'],
   },
+  {
+    id: 'v-s-167',
+    title: 'Nāma 167: Mādhava',
+    source: 'Vishnu Sahasranama',
+    original: 'माधवः',
+    transliteration: 'mādhavaḥ',
+    meaning: 'The Lord of Knowledge (Ma = knowledge, dhava = Lord), or the consort of Lakshmi (Ma).',
+    tradition: 'hindu',
+    category: 'vishnu_sahasranama',
+    tags: ['Vishnu', 'Lakshmi'],
+  },
+  {
+    id: 'v-s-187',
+    title: 'Nāma 187: Govinda',
+    source: 'Vishnu Sahasranama',
+    original: 'गोविन्दः',
+    transliteration: 'govindaḥ',
+    meaning: 'The Lord of the cows or the one who is attained through speech (Veda).',
+    tradition: 'hindu',
+    category: 'vishnu_sahasranama',
+    tags: ['Vishnu', 'Krishna'],
+  },
+  {
+    id: 'v-s-1001',
+    title: 'Nāma 2: Vishnuh',
+    source: 'Vishnu Sahasranama',
+    original: 'विष्णुः',
+    transliteration: 'viṣṇuḥ',
+    meaning: 'He who pervades everything (from the root \'vish\').',
+    tradition: 'hindu',
+    category: 'vishnu_sahasranama',
+    tags: ['Vishnu', 'All-pervading'],
+  },
 ];
 
 // ─── RAMCHARITMANAS ───────────────────────────────────────────────────────────
@@ -1513,12 +1546,6 @@ export const LIBRARY_SECTIONS: LibrarySection[] = [
   // ── Yoga & Niti ───────────────────────────────────────────────────────────────
   { id: 'yoga_sutra',         title: 'Yoga Sutras',           emoji: '🧘', tradition: 'hindu',    category: 'yoga_sutra',         desc: 'Patanjali\'s 196 sutras — the science of the mind and liberation',         count: YOGA_SUTRA_ENTRIES.length },
   { id: 'chanakya',           title: 'Chanakya Niti',         emoji: '⚖️', tradition: 'hindu',    category: 'chanakya',           desc: 'Ancient wisdom on governance, ethics & practical living',                   count: CHANAKYA_ENTRIES.length },
-  // ── Sikh ───────────────────────────────────────────────────────────────────
-  { id: 'gurbani',            title: 'Nitnem & Gurbani',      emoji: '⚔️', tradition: 'sikh',     category: 'gurbani',            desc: 'The sacred hymns of the Guru Granth Sahib — Japji, Anand & more',           count: GURBANI_ENTRIES.length },
-  // ── Buddhist ───────────────────────────────────────────────────────────────
-  { id: 'dhammapada',         title: 'Dhammapada',            emoji: '☸️', tradition: 'buddhist', category: 'dhammapada',         desc: 'The path of the Buddha — 423 verses of psychological wisdom',              count: BUDDHIST_ENTRIES.length },
-  // ── Jain ───────────────────────────────────────────────────────────────────
-  { id: 'jain_mantra',        title: 'Jain Sutras',           emoji: '🙏', tradition: 'jain',     category: 'jain_mantra',        desc: 'Namokar Mantra and the essential teachings of the Tirthankaras',           count: JAIN_ENTRIES.length },
   // ── Shaiva ───────────────────────────────────────────────────────────────────
   { id: 'shiva_purana',       title: 'Shaiva Scriptures',     emoji: '🌙', tradition: 'hindu',    category: 'shiva_purana',       desc: 'Rudrashtakam, Lingashtakam, Mahimna Stotram & Panchakshara',               count: SHAIVA_ENTRIES.length },
   // ── Shakta ───────────────────────────────────────────────────────────────────
@@ -1526,9 +1553,9 @@ export const LIBRARY_SECTIONS: LibrarySection[] = [
   // ── Mixed Stotras ─────────────────────────────────────────────────────────────
   { id: 'stotra',             title: 'Stotras & Mantras',     emoji: '🕉️', tradition: 'hindu',    category: 'stotra',             desc: 'Gayatri, Mahamrityunjaya, Hanuman Chalisa & universal mantras',            count: STOTRA_ENTRIES.length },
   // ── Sikh ─────────────────────────────────────────────────────────────────────
-  { id: 'gurbani',            title: 'Gurbani',               emoji: '☬',  tradition: 'sikh',     category: 'gurbani',            desc: 'Sri Guru Granth Sahib — Japji, Anand Sahib, Sukhmani & Rehras',            count: GURBANI_ENTRIES.length + NITNEM_ENTRIES.length },
+  { id: 'gurbani',            title: 'Nitnem & Gurbani',      emoji: '☬', tradition: 'sikh',     category: 'gurbani',            desc: 'The sacred hymns of the Guru Granth Sahib — Japji, Anand & daily Nitnem', count: GURBANI_ENTRIES.length + NITNEM_ENTRIES.length },
   // ── Buddhist ─────────────────────────────────────────────────────────────────
-  { id: 'dhammapada',         title: 'Buddhist Suttas',       emoji: '☸️', tradition: 'buddhist', category: 'dhammapada',         desc: 'Dhammapada, Heart Sutra, Metta Sutta & the Four Noble Truths',             count: BUDDHIST_ENTRIES.length + BUDDHIST_ADDITIONAL_ENTRIES.length },
+  { id: 'dhammapada',         title: 'Buddhist Suttas',       emoji: '☸️', tradition: 'buddhist', category: 'buddhist_foundations', desc: 'Dhammapada, Heart Sutra, Metta Sutta & early Dhamma teachings',           count: BUDDHIST_ENTRIES.length + BUDDHIST_ADDITIONAL_ENTRIES.length },
   // ── Jain ─────────────────────────────────────────────────────────────────────
   { id: 'jain',               title: 'Jain Agamas',           emoji: '🤲', tradition: 'jain',     category: 'jain_scripture',     desc: 'Navkar Mantra, Tattvartha Sutra, Samayasara & Mahavir\'s teachings',       count: JAIN_ENTRIES.length + JAIN_ADDITIONAL_ENTRIES.length },
 ];
