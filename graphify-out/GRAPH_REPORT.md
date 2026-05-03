@@ -1,7 +1,7 @@
 # Graph Report - /Users/Business(C)/Sanatan Sangam/Sanatan_Sangam  (2026-05-03)
 
 ## Corpus Check
-- 333 files · ~1,190,658 words
+- 333 files · ~1,190,664 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -1041,11 +1041,11 @@ Nodes (0):
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `select()` connect `Community 0` to `Community 1`, `Community 2`, `Community 4`, `Community 5`, `Community 6`, `Community 8`, `Community 9`, `Community 11`, `Community 12`, `Community 13`, `Community 16`, `Community 17`, `Community 18`, `Community 19`, `Community 23`, `Community 24`, `Community 27`, `Community 28`, `Community 32`, `Community 37`?**
-  _High betweenness centrality (0.254) - this node is a cross-community bridge._
+  _High betweenness centrality (0.271) - this node is a cross-community bridge._
 - **Why does `GET()` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 11`, `Community 12`, `Community 13`, `Community 15`, `Community 16`, `Community 20`, `Community 25`, `Community 26`?**
-  _High betweenness centrality (0.227) - this node is a cross-community bridge._
-- **Why does `String()` connect `Community 7` to `Community 1`, `Community 2`, `Community 5`, `Community 6`, `Community 8`, `Community 15`, `Community 18`?**
-  _High betweenness centrality (0.062) - this node is a cross-community bridge._
+  _High betweenness centrality (0.268) - this node is a cross-community bridge._
+- **Why does `POST()` connect `Community 5` to `Community 0`, `Community 1`, `Community 2`, `Community 4`, `Community 6`, `Community 7`, `Community 11`?**
+  _High betweenness centrality (0.068) - this node is a cross-community bridge._
 - **Are the 163 inferred relationships involving `select()` (e.g. with `.listTexts()` and `.listChapters()`) actually correct?**
   _`select()` has 163 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 55 inferred relationships involving `GET()` (e.g. with `parseVersesFromHtml()` and `.listTexts()`) actually correct?**
