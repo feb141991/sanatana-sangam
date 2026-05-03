@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase-server';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import QuizDashboardClient from './QuizDashboardClient';
 
@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 export default async function QuizPage() {
-  const supabase = createClient();
+  const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {

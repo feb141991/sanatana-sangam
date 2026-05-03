@@ -177,7 +177,7 @@ export default function QuizDashboardClient({ userName, tradition, initialHistor
               </div>
               <h3 className="text-xl font-bold mb-2">Practice Mode</h3>
               <p className="text-xs text-[color:var(--brand-muted)] leading-relaxed mb-6">
-                Don't wait for the daily spark. Unlock 10 fresh AI questions whenever you want to test your knowledge.
+                Don&apos;t wait for the daily spark. Unlock 10 fresh AI questions whenever you want to test your knowledge.
               </p>
               <button 
                 className="w-full py-3 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
