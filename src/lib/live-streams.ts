@@ -202,4 +202,40 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     youtubeVideoId: 'jpTOa9PVaTc', // Verified Nathdwara
   },
+  {
+    id: 'iskcon-vrindavan',
+    title: 'ISKCON Vrindavan',
+    location: 'Vrindavan, UP',
+    schedule: 'Mangal Aarti: 4:30 AM',
+    category: 'mandir',
+    tradition: 'hindu',
+    youtubeVideoId: 'zs6j9YPeaec', // Verified ISKCON Vrindavan
+  },
+  {
+    id: 'srisailam-temple',
+    title: 'Srisailam Shaktipeeth',
+    location: 'Andhra Pradesh',
+    schedule: 'Live Darshan & Aarti',
+    category: 'mandir',
+    tradition: 'hindu',
+    youtubeVideoId: 'zc3tcDcD9Ig', // Verified Srisailam
+  },
+  {
+    id: 'guru-granth-sahib-live',
+    title: 'Sri Guru Granth Sahib Kirtan',
+    location: 'Punjab / Global',
+    schedule: 'Live Gurbani 24/7',
+    category: 'satsang',
+    tradition: 'sikh',
+    youtubeVideoId: 'YlnQ2apbtuQ', // Verified Sikh Kirtan
+  },
+  {
+    id: 'paras-jain-tv',
+    title: 'Paras TV (Jain Channel)',
+    location: 'India',
+    schedule: 'Pravachan & Aarti 24/7',
+    category: 'satsang',
+    tradition: 'jain',
+    youtubeVideoId: 'cDzIiI0kvNg', // Verified Jain Channel
+  },
 ];
