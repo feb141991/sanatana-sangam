@@ -8,7 +8,9 @@ export interface LiveStream {
   category: LiveStreamCategory;
   tradition: string;
   youtubeVideoId: string;
-  thumbnailUrl?: string; // Kept for backwards compatibility, but we use ytimg dynamically now
+  ishtaDevata?: string;
+  state?: string;
+  thumbnailUrl?: string;
 }
 
 export const LIVE_STREAMS: LiveStream[] = [
@@ -19,6 +21,8 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Live Darshan',
     category: 'mandir',
     tradition: 'hindu',
+    ishtaDevata: 'Krishna',
+    state: 'Uttar Pradesh',
     youtubeVideoId: 'ZCXCu9_K0lY', // Verified Mathura Janmabhoomi
   },
   {
@@ -28,6 +32,8 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Bhasma Aarti: 4:00 AM',
     category: 'mandir',
     tradition: 'hindu',
+    ishtaDevata: 'Shiva',
+    state: 'Madhya Pradesh',
     youtubeVideoId: 'XonAtRkvqgo', // Verified Mahakaleshwar
   },
   {
@@ -101,6 +107,8 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Suprabhata Seva: 3:00 AM',
     category: 'mandir',
     tradition: 'hindu',
+    ishtaDevata: 'Vishnu',
+    state: 'Andhra Pradesh',
     youtubeVideoId: 'oWFK4tgjAGM', // Verified Tirupati Balaji
   },
   {
@@ -110,6 +118,8 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Aarti: 6:00 AM & 7:30 PM',
     category: 'mandir',
     tradition: 'hindu',
+    ishtaDevata: 'Ganesha',
+    state: 'Maharashtra',
     youtubeVideoId: 'SIqmLnMj0Ow', // Verified Siddhivinayak
   },
   {
@@ -119,6 +129,8 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Mangala Aarti: 3:00 AM',
     category: 'mandir',
     tradition: 'hindu',
+    ishtaDevata: 'Shiva',
+    state: 'Uttar Pradesh',
     youtubeVideoId: 'CxXJsVLDJko', // Verified Kashi Vishwanath
   },
   {
@@ -128,6 +140,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Live Gurbani Kirtan 24/7',
     category: 'mandir',
     tradition: 'sikh',
+    state: 'Punjab',
     youtubeVideoId: '8GTgg2TmRLQ', // Verified SGPC Official
   },
   {
@@ -137,6 +150,8 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Live Darshan 24/7',
     category: 'mandir',
     tradition: 'hindu',
+    ishtaDevata: 'Sai Baba',
+    state: 'Maharashtra',
     youtubeVideoId: 'HbVd7a7esgA', // Verified Shirdi Darshan
   },
   {
@@ -146,6 +161,8 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Live Darshan from Puri Dham',
     category: 'mandir',
     tradition: 'hindu',
+    ishtaDevata: 'Jagannath',
+    state: 'Odisha',
     youtubeVideoId: '_pplsMPNVmQ', // Verified Jay Jagannath TV
   },
   {
@@ -155,6 +172,8 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Sandhya Aarti: 6:00 PM',
     category: 'mandir',
     tradition: 'hindu',
+    ishtaDevata: 'Shiva',
+    state: 'Uttarakhand',
     youtubeVideoId: '3oJdFVXsC-o', // Verified Kedarnath Live
   },
   {
@@ -164,6 +183,8 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Abhishek Puja: 4:30 AM',
     category: 'mandir',
     tradition: 'hindu',
+    ishtaDevata: 'Vishnu',
+    state: 'Uttarakhand',
     youtubeVideoId: 'yGELQ2Ch-q4', // Verified Badrinath Live
   },
   {
@@ -173,6 +194,8 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Aarti: 7:00 AM, 12:00 PM, 7:00 PM',
     category: 'mandir',
     tradition: 'hindu',
+    ishtaDevata: 'Shiva',
+    state: 'Gujarat',
     youtubeVideoId: 'J4z7CIrvsuw', // Verified Somnath Live
   },
   {
@@ -182,6 +205,8 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Live Satsang 24/7',
     category: 'satsang',
     tradition: 'hindu',
+    ishtaDevata: 'Swaminarayan',
+    state: 'Gujarat',
     youtubeVideoId: 'u9SEkGgmEbo', // Verified Swaminarayan Kundaldham
   },
   {
@@ -191,6 +216,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Akhand Kirtan 24/7',
     category: 'satsang',
     tradition: 'sikh',
+    state: 'Punjab',
     youtubeVideoId: 'SfkiRiVr3wc', // Verified Hazoori Ragi
   },
   {
@@ -200,6 +226,8 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Jhanki Darshan',
     category: 'mandir',
     tradition: 'hindu',
+    ishtaDevata: 'Krishna',
+    state: 'Rajasthan',
     youtubeVideoId: 'jpTOa9PVaTc', // Verified Nathdwara
   },
   {
@@ -209,6 +237,8 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Mangal Aarti: 4:30 AM',
     category: 'mandir',
     tradition: 'hindu',
+    ishtaDevata: 'Krishna',
+    state: 'Uttar Pradesh',
     youtubeVideoId: 'zs6j9YPeaec', // Verified ISKCON Vrindavan
   },
   {
@@ -218,6 +248,8 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Live Darshan & Aarti',
     category: 'mandir',
     tradition: 'hindu',
+    ishtaDevata: 'Shakti',
+    state: 'Andhra Pradesh',
     youtubeVideoId: 'zc3tcDcD9Ig', // Verified Srisailam
   },
   {
@@ -227,6 +259,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Live Gurbani 24/7',
     category: 'satsang',
     tradition: 'sikh',
+    state: 'Punjab',
     youtubeVideoId: 'YlnQ2apbtuQ', // Verified Sikh Kirtan
   },
   {

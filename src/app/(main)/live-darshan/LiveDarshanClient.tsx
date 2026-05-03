@@ -36,11 +36,19 @@ export default function LiveDarshanClient({ tradition, userId, streams }: LiveDa
   const [activePlayer, setActivePlayer]       = useState<string | null>(null);
   const [search, setSearch]                   = useState('');
   const [showFilters, setShowFilters]         = useState(false);
+  const [activeIshta, setActiveIshta]         = useState<string>('all');
+  const [activeState, setActiveState]         = useState<string>('all');
+
+  // Dynamically extract unique options from streams
+  const ishtaOptions = ['all', ...Array.from(new Set(streams.map(s => s.ishtaDevata).filter(Boolean)))];
+  const stateOptions = ['all', ...Array.from(new Set(streams.map(s => s.state).filter(Boolean)))];
 
   const filtered = streams
     .filter(s => {
       if (activeTradition !== 'all' && s.tradition !== activeTradition) return false;
       if (activeCategory  !== 'all' && s.category  !== activeCategory)  return false;
+      if (activeIshta     !== 'all' && s.ishtaDevata !== activeIshta)   return false;
+      if (activeState     !== 'all' && s.state       !== activeState)   return false;
       if (search && !s.title.toLowerCase().includes(search.toLowerCase()) &&
           !s.location.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
@@ -83,13 +91,13 @@ export default function LiveDarshanClient({ tradition, userId, streams }: LiveDa
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={`p-2.5 rounded-full border transition-all flex items-center gap-2 ${
-              showFilters || activeTradition !== 'all' || activeCategory !== 'all'
+              showFilters || activeTradition !== 'all' || activeCategory !== 'all' || activeIshta !== 'all' || activeState !== 'all'
                 ? 'bg-[var(--divine-saffron)]/10 border-[var(--divine-saffron)]/30 text-[var(--divine-saffron)]'
                 : 'bg-[var(--divine-surface)] border-[var(--divine-border)] text-[var(--divine-muted)]'
             }`}
           >
             <SlidersHorizontal size={18} />
-            {(activeTradition !== 'all' || activeCategory !== 'all') && !showFilters && (
+            {(activeTradition !== 'all' || activeCategory !== 'all' || activeIshta !== 'all' || activeState !== 'all') && !showFilters && (
               <span className="text-[10px] font-bold uppercase tracking-wider pr-1">Active</span>
             )}
           </button>
@@ -136,6 +144,40 @@ export default function LiveDarshanClient({ tradition, userId, streams }: LiveDa
                     }`}
                   >
                     {CATEGORY_LABELS[c]}
+                  </button>
+                ))}
+              </div>
+
+              {/* Ishta Devata filter */}
+              <div className="flex gap-2 overflow-x-auto no-scrollbar pb-0.5">
+                {ishtaOptions.map(opt => (
+                  <button
+                    key={opt}
+                    onClick={() => setActiveIshta(opt as string)}
+                    className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border capitalize ${
+                      activeIshta === opt
+                        ? 'bg-[var(--divine-text)] text-[var(--divine-bg)] border-transparent'
+                        : 'bg-transparent text-[var(--divine-muted)] border-[var(--divine-border)]'
+                    }`}
+                  >
+                    {opt === 'all' ? 'All Deities' : opt}
+                  </button>
+                ))}
+              </div>
+
+              {/* State filter */}
+              <div className="flex gap-2 overflow-x-auto no-scrollbar pb-0.5">
+                {stateOptions.map(opt => (
+                  <button
+                    key={opt}
+                    onClick={() => setActiveState(opt as string)}
+                    className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border capitalize ${
+                      activeState === opt
+                        ? 'bg-[var(--divine-text)] text-[var(--divine-bg)] border-transparent'
+                        : 'bg-transparent text-[var(--divine-muted)] border-[var(--divine-border)]'
+                    }`}
+                  >
+                    {opt === 'all' ? 'All Locations' : opt}
                   </button>
                 ))}
               </div>
