@@ -13,6 +13,7 @@ import {
 import { mapHeroAssetToTheme, type HeroAssetRow, type HomeHeroTheme } from '@/config/festivalThemes';
 import { getDailySacredText, getDayOfYear } from '@/lib/sacred-texts';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import { LIVE_STREAMS } from '@/lib/live-streams';
 import type { GuidedPathProgressRow } from '@/lib/guided-paths';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { Database } from '@/types/database';
@@ -103,7 +104,23 @@ export default async function HomePage() {
       .eq('user_id', user.id)
       .gte('log_date', historyFrom)
       .lte('log_date', today),
+    supabase
+      .from('live_darshans')
+      .select('*')
+      .eq('is_active', true),
   ]);
+
+  const dbStreams = (liveDarshanData ?? []).map(row => ({
+    id: row.id,
+    title: row.title,
+    location: row.location,
+    schedule: row.schedule,
+    category: row.category as any,
+    tradition: row.tradition as any,
+    youtubeVideoId: row.current_video_id || '',
+  }));
+
+  const allStreams = dbStreams.length > 0 ? dbStreams : LIVE_STREAMS;
 
   // Build nitya set (dates with any log entry = done)
   const nityaDates = new Set((nityaHistory ?? []).map(r => r.log_date));
@@ -164,6 +181,7 @@ export default async function HomePage() {
       japaAlreadyDoneToday={todaySadhana?.japa_done ?? false}
       nityaDoneToday={nityaDates.has(today)}
       practiceHistory={practiceHistory}
+      liveStreams={allStreams}
     />
   );
 }

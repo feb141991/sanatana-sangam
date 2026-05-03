@@ -37,13 +37,20 @@ export default function LiveDarshanClient({ tradition, userId, streams }: LiveDa
   const [search, setSearch]                   = useState('');
   const [showFilters, setShowFilters]         = useState(false);
 
-  const filtered = streams.filter(s => {
-    if (activeTradition !== 'all' && s.tradition !== activeTradition) return false;
-    if (activeCategory  !== 'all' && s.category  !== activeCategory)  return false;
-    if (search && !s.title.toLowerCase().includes(search.toLowerCase()) &&
-        !s.location.toLowerCase().includes(search.toLowerCase())) return false;
-    return true;
-  });
+  const filtered = streams
+    .filter(s => {
+      if (activeTradition !== 'all' && s.tradition !== activeTradition) return false;
+      if (activeCategory  !== 'all' && s.category  !== activeCategory)  return false;
+      if (search && !s.title.toLowerCase().includes(search.toLowerCase()) &&
+          !s.location.toLowerCase().includes(search.toLowerCase())) return false;
+      return true;
+    })
+    .sort((a, b) => {
+      // Prioritize user's tradition if we are in 'all' view or if multiple match
+      if (a.tradition === tradition && b.tradition !== tradition) return -1;
+      if (a.tradition !== tradition && b.tradition === tradition) return 1;
+      return 0;
+    });
 
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] flex flex-col pb-28">

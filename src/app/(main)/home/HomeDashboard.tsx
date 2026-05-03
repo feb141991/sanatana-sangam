@@ -102,8 +102,9 @@ interface Props {
   showFirstTimeGuidance: boolean;
   japaStreak?:          number;
   japaAlreadyDoneToday?: boolean;
-  nityaDoneToday?:       boolean;
-  practiceHistory?:      { date: string; japa: boolean; nitya: boolean }[];
+  nityaDoneToday:      boolean;
+  practiceHistory:     { date: string; japa: boolean; nitya: boolean }[];
+  liveStreams:         any[];
 }
 
 const DEFAULT_QUICK_ACCESS = [
@@ -935,8 +936,9 @@ export default function HomeDashboard({
   showFirstTimeGuidance,
   japaStreak = 0,
   japaAlreadyDoneToday = false,
-  nityaDoneToday = false,
-  practiceHistory = [],
+  nityaDoneToday,
+  practiceHistory,
+  liveStreams,
 }: Props) {
   const supabase = createClient();
   const router   = useRouter();
@@ -965,11 +967,23 @@ export default function HomeDashboard({
   });
   const [editHomeOpen,     setEditHomeOpen]     = useState(false);
 
-  // Daily Darshan Logic
+  // Daily Darshan Logic — Tradition Based
   const [darshanOpen, setDarshanOpen] = useState(false);
   const [darshanPromptVisible, setDarshanPromptVisible] = useState(false);
+  
+  // Find a live stream that matches the user's tradition
+  const traditionLiveStream = liveStreams.find(s => s.tradition === tradition) || liveStreams[0];
+  
   const dailyDarshan = getDailyDarshan(tradition);
   const initialDarshanIndex = DARSHAN_REGISTRY.findIndex(d => d.id === dailyDarshan.id);
+
+  // Combine static darshan with live info for the prompt
+  const displayDarshan = {
+    ...dailyDarshan,
+    liveTitle: traditionLiveStream?.title,
+    liveLocation: traditionLiveStream?.location,
+    liveId: traditionLiveStream?.id
+  };
 
   useEffect(() => {
     const lastDarshanDate = localStorage.getItem('last_darshan_date');
@@ -1417,10 +1431,10 @@ export default function HomeDashboard({
           </Link>
         </div>
         
-        {/* Daily Darshan System — Moved to top for better visibility */}
+        {/* Daily Darshan System — Tradition Based */}
         <div className="px-4 pt-2">
           <DarshanPrompt
-            darshan={dailyDarshan}
+            darshan={displayDarshan as any}
             isVisible={darshanPromptVisible}
             onOpen={handleOpenDarshan}
             onDismiss={handleDismissPrompt}

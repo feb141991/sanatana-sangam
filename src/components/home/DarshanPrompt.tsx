@@ -18,12 +18,12 @@ export default function DarshanPrompt({ darshan, isVisible, onOpen, onDismiss }:
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          initial={{ y: 50, opacity: 0, scale: 0.9 }}
-          animate={{ y: 0, opacity: 1, scale: 1 }}
-          exit={{ y: 50, opacity: 0, scale: 0.9 }}
-          className="fixed bottom-24 left-4 right-4 z-[90] md:left-auto md:right-8 md:w-80"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          className="w-full"
         >
-          <div className="relative group overflow-hidden rounded-3xl bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-white/20">
+          <div className="relative group overflow-hidden rounded-3xl bg-[var(--divine-surface)] shadow-sm border border-[var(--divine-border)]">
             {/* Background Blur Image */}
             <div className="absolute inset-0 opacity-10 blur-xl scale-110 pointer-events-none">
               <Image src={darshan.imageUrl} alt="" fill className="object-cover" />
@@ -38,13 +38,20 @@ export default function DarshanPrompt({ darshan, isVisible, onOpen, onDismiss }:
               {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 mb-0.5">
-                  <Sparkles size={12} className="text-[#C8924A]" />
-                  <span className="text-[10px] font-bold text-[#C8924A] uppercase tracking-wider">Daily Darshan</span>
+                  <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-red-600">
+                    <span className="w-1 h-1 rounded-full bg-white animate-pulse" />
+                    <span className="text-[8px] font-black text-white uppercase tracking-widest">Live</span>
+                  </span>
+                  <span className="text-[10px] font-bold text-[var(--divine-saffron)] uppercase tracking-wider">
+                    {darshan.tradition === 'sikh' ? 'Gurdwara' : 'Darshan'}
+                  </span>
                 </div>
-                <h3 className="text-[#2A1B0A] font-serif font-bold text-sm truncate">
-                  Blessings from {darshan.deity}
+                <h3 className="text-[var(--divine-text)] font-serif font-bold text-sm truncate">
+                  {(darshan as any).liveTitle || `Blessings from ${darshan.deity}`}
                 </h3>
-                <p className="text-[#2A1B0A]/50 text-[11px] font-medium">Accept today&apos;s grace</p>
+                <p className="text-[var(--divine-muted)] text-[11px] font-medium truncate">
+                  {(darshan as any).liveLocation || "Accept today's grace"}
+                </p>
               </div>
 
               {/* Action */}
