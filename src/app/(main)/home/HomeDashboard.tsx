@@ -1416,6 +1416,16 @@ export default function HomeDashboard({
             )}
           </Link>
         </div>
+        
+        {/* Daily Darshan System — Moved to top for better visibility */}
+        <div className="px-4 pt-2">
+          <DarshanPrompt
+            darshan={dailyDarshan}
+            isVisible={darshanPromptVisible}
+            onOpen={handleOpenDarshan}
+            onDismiss={handleDismissPrompt}
+          />
+        </div>
 
         <div className="divine-hero">
           {!heroImageFailed ? (
@@ -1444,6 +1454,18 @@ export default function HomeDashboard({
 
           <div className="divine-hero-content">
             <div className="divine-hero-topline">
+              <button
+                type="button"
+                onClick={() => setShlokaModalOpen(true)}
+                className="divine-shloka-card-v2 motion-press"
+              >
+                <span className="divine-poster-label">{dailyText.label}</span>
+                <p className="divine-sanskrit-immersive-dark line-clamp-3">{dailyTextLine}</p>
+                <p className="divine-meaning-dark line-clamp-2">{dailyText.meaning}</p>
+              </button>
+            </div>
+
+            <div className="divine-hero-bottom">
               <Link href="/discover" className="divine-mood-chip-immersive motion-press" aria-label="Open mood discovery">
                 {moodToday ? (
                   <>
@@ -1458,28 +1480,9 @@ export default function HomeDashboard({
                 )}
               </Link>
             </div>
-
-            <div className="divine-hero-bottom">
-              <button
-                type="button"
-                onClick={() => setShlokaModalOpen(true)}
-                className="divine-shloka-card-v2 motion-press"
-              >
-                <span className="divine-poster-label">{dailyText.label}</span>
-                <p className="divine-sanskrit-immersive-dark line-clamp-3">{dailyTextLine}</p>
-                <p className="divine-meaning-dark line-clamp-2">{dailyText.meaning}</p>
-              </button>
-            </div>
           </div>
         </div>
 
-        {/* Daily Darshan System */}
-        <DarshanPrompt
-          darshan={dailyDarshan}
-          isVisible={darshanPromptVisible}
-          onOpen={handleOpenDarshan}
-          onDismiss={handleDismissPrompt}
-        />
 
 
         <MotionStagger className="divine-feature-grid" delay={0.08}>
