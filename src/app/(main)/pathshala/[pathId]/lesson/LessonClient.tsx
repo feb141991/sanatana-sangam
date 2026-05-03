@@ -666,7 +666,7 @@ export default function LessonClient({
                             className="rounded-xl px-4 py-3"
                             style={{ background: `${accentColour}10`, border: `1px solid ${accentColour}22` }}
                           >
-                            <p className="text-[9px] font-bold uppercase tracking-widest mb-1.5" style={{ color: accentColour }}>Today's Practice</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest mb-1.5" style={{ color: accentColour }}>Today&apos;s Practice</p>
                             <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed">{explainResult.explanation.daily_application}</p>
                           </div>
                         )}
