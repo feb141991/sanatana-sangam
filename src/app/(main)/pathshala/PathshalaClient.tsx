@@ -910,23 +910,33 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
         </Link>
       </div>
 
-      {/* Tab bar */}
-      <div className="px-4 mb-4">
-        <div className="flex rounded-2xl p-1 shadow-sm gap-0.5" style={cardStyle}>
+      {/* Floating Navigation Chips */}
+      <div className="px-4 mb-6">
+        <div className="flex flex-wrap gap-2 items-center">
           {TABS.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)}
-              className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all relative ${
-                tab === t.id ? 'text-[#1c1c1a] shadow-sm' : ''
+            <motion.button
+              key={t.id}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setTab(t.id)}
+              className={`px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all border shadow-sm flex items-center gap-1.5 ${
+                tab === t.id
+                  ? 'border-white/20 text-[#1c1c1a]'
+                  : 'bg-white/5 border-white/5 text-[color:var(--brand-muted)] hover:bg-white/8 hover:border-white/10'
               }`}
-              style={tab === t.id ? { background: meta.accentColour } : { color: secondaryText }}
+              style={tab === t.id ? { 
+                background: meta.accentColour,
+                boxShadow: `0 4px 12px ${meta.accentColour}33`
+              } : {}}
             >
               {t.label}
               {t.count !== undefined && t.count > 0 && (
-                <span className="ml-1 text-[10px]" style={{ color: tab === t.id ? 'rgba(28,28,26,0.62)' : tertiaryText }}>
-                  ({t.count})
+                <span className={`px-1.5 py-0.5 rounded-full text-[9px] ${
+                  tab === t.id ? 'bg-black/10 text-black/60' : 'bg-white/5 text-[color:var(--brand-muted)]'
+                }`}>
+                  {t.count}
                 </span>
               )}
-            </button>
+            </motion.button>
           ))}
         </div>
       </div>
