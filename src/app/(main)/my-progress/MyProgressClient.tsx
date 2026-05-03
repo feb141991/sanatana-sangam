@@ -1159,6 +1159,56 @@ export default function MyProgressClient({
             </div>
           </motion.section>
 
+          {/* ── Quiz Mastery ── */}
+          <motion.section
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
+            className="mb-8"
+          >
+            <Link href="/quiz">
+              <div className="rounded-[1.8rem] p-5 relative overflow-hidden group" 
+                style={{ 
+                  background: isDark ? 'rgba(126, 87, 194, 0.08)' : 'rgba(126, 87, 194, 0.05)',
+                  border: `1px solid ${isDark ? 'rgba(126, 87, 194, 0.2)' : 'rgba(126, 87, 194, 0.15)'}`,
+                  boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.35)' : '0 2px 16px rgba(0,0,0,0.07)'
+                }}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: '#9575cd' }}>
+                      🧠 Quiz Mastery
+                    </p>
+                    <p className="text-[13px] font-bold mt-0.5" style={{ color: h1 }}>
+                      Track your spiritual knowledge
+                    </p>
+                  </div>
+                  <ChevronRight size={18} style={{ color: '#9575cd' }} />
+                </div>
+                
+                <div className="flex gap-4">
+                  <div className="flex-1 rounded-xl p-3 bg-white/5 border border-white/5">
+                    <p className="text-[10px] text-[color:var(--brand-muted)] mb-1">Knowledge Hub</p>
+                    <p className="text-sm font-bold flex items-center gap-1.5">
+                      <Target size={14} style={{ color: '#9575cd' }} />
+                      View Stats
+                    </p>
+                  </div>
+                  <div className="flex-1 rounded-xl p-3 bg-white/5 border border-white/5">
+                    <p className="text-[10px] text-[color:var(--brand-muted)] mb-1">Streak</p>
+                    <p className="text-sm font-bold flex items-center gap-1.5">
+                      <Flame size={14} className="text-orange-500" />
+                      Historical log
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Ambient glow */}
+                <div className="absolute -bottom-8 -right-8 w-24 h-24 blur-[40px] rounded-full opacity-20 group-hover:opacity-40 transition-opacity"
+                  style={{ background: '#7e57c2' }}
+                />
+              </div>
+            </Link>
+          </motion.section>
+
           {/* ── Achievement Shields (compact preview → full page) ── */}
           <motion.section
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.20 }}>
