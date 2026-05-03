@@ -11,11 +11,11 @@ export type LibraryTradition = 'hindu' | 'sikh' | 'buddhist' | 'jain';
 export type LibraryCategory =
   | 'gita' | 'ramayana' | 'upanishad' | 'stotra' | 'mantra' | 'veda'
   | 'bhagavatam' | 'ramcharitmanas' | 'vishnu_sahasranama'
-  | 'shiva_purana' | 'shakta'
+  | 'shiva_purana' | 'shakta' | 'purana'
   | 'yoga_sutra' | 'chanakya'
   | 'gurbani' | 'nitnem'
   | 'dhammapada' | 'sutra'
-  | 'jain_scripture';
+  | 'jain_scripture' | 'jain_mantra';
 
 export interface LibraryEntry {
   id:               string;
