@@ -10,6 +10,7 @@
     { "path": "/api/cron/sattvic-reminder",   "schedule": "0 11 * * *"  },
     { "path": "/api/cron/guided-plan-reminder","schedule": "0 7 * * *"   },
     { "path": "/api/cron/mood-reminder",       "schedule": "30 6 * * *"  },
-    { "path": "/api/cron/sync-live-darshans",  "schedule": "0 5 * * *"   }
+    { "path": "/api/cron/sync-live-darshans",  "schedule": "0 5 * * *"   },
+    { "path": "/api/cron/calendar-health",     "schedule": "0 9 1 11 *"  }
   ]
 }

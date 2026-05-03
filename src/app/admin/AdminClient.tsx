@@ -76,7 +76,7 @@ function StatCard({ label, value, emoji, sub, onClick }: { label: string; value:
 }
 
 // ── Dashboard Tab ─────────────────────────────────────────────────────────────
-type TabKey = 'dashboard' | 'moderation' | 'users' | 'posts' | 'hero-assets' | 'notifications' | 'broadcast';
+type TabKey = 'dashboard' | 'moderation' | 'users' | 'posts' | 'hero-assets' | 'notifications' | 'broadcast' | 'festivals';
 
 function DashboardTab({ users, reports, kuls, mandalis, onTabChange }: { users: UserRow[]; reports: ReportRow[]; kuls: KulRow[]; mandalis: MandaliRow[]; onTabChange: (tab: TabKey) => void }) {
   const pendingReports = reports.filter(r => r.status === 'pending').length;
@@ -722,6 +722,179 @@ function NotificationsTab() {
   );
 }
 
+// ── Festivals Tab ─────────────────────────────────────────────────────────────
+type FestivalRow = { id: string; name: string; date: string; emoji: string; description: string; type: string; tradition: string };
+
+const TRADITION_OPTIONS = ['hindu', 'sikh', 'buddhist', 'jain', 'all'] as const;
+const TYPE_OPTIONS      = ['major', 'vrat', 'regional'] as const;
+
+function FestivalsTab() {
+  const [festivals,    setFestivals]    = useState<FestivalRow[]>([]);
+  const [loading,      setLoading]      = useState(true);
+  const [saving,       setSaving]       = useState(false);
+  const [deletingId,   setDeletingId]   = useState<string | null>(null);
+  const [showForm,     setShowForm]     = useState(false);
+  const [filterTrad,   setFilterTrad]   = useState<string>('all');
+  const [form, setForm] = useState({
+    name: '', date: '', emoji: '🪔', description: '', type: 'major', tradition: 'hindu',
+  });
+
+  // Calendar health: how many festivals remain from today?
+  const today = new Date().toISOString().split('T')[0];
+  const upcoming = festivals.filter(f => f.date >= today);
+  const calendarHealthy = upcoming.length >= 30;
+
+  async function load() {
+    setLoading(true);
+    try {
+      const res  = await fetch('/api/admin/festivals');
+      const data = await res.json();
+      setFestivals(data.festivals ?? []);
+    } catch { toast.error('Could not load festivals'); }
+    finally  { setLoading(false); }
+  }
+
+  useState(() => { load(); });
+
+  async function addFestival(e: FormEvent) {
+    e.preventDefault();
+    if (!form.name || !form.date) { toast.error('Name and date are required'); return; }
+    setSaving(true);
+    try {
+      await requestJson('/api/admin/festivals', {
+        method: 'POST',
+        body: JSON.stringify(form),
+      });
+      toast.success('Festival added ✅');
+      setForm({ name: '', date: '', emoji: '🪔', description: '', type: 'major', tradition: 'hindu' });
+      setShowForm(false);
+      await load();
+    } catch (err: any) { toast.error(err.message ?? 'Failed'); }
+    finally { setSaving(false); }
+  }
+
+  async function deleteFestival(id: string, name: string) {
+    if (!confirm(`Delete "${name}"?`)) return;
+    setDeletingId(id);
+    try {
+      await requestJson(`/api/admin/festivals?id=${id}`, { method: 'DELETE' });
+      toast.success('Deleted');
+      setFestivals(prev => prev.filter(f => f.id !== id));
+    } catch (err: any) { toast.error(err.message ?? 'Failed'); }
+    finally { setDeletingId(null); }
+  }
+
+  const visible = filterTrad === 'all'
+    ? festivals
+    : festivals.filter(f => f.tradition === filterTrad);
+
+  return (
+    <div className="space-y-4 pb-8">
+      {/* Calendar health banner */}
+      {!loading && !calendarHealthy && (
+        <div className="rounded-2xl border border-amber-400/40 bg-amber-400/8 px-4 py-3 flex items-start gap-3">
+          <span className="text-xl">⚠️</span>
+          <div>
+            <p className="font-semibold text-sm text-amber-400">Calendar running low</p>
+            <p className="text-xs text-[color:var(--text-dim)] mt-0.5">
+              Only <strong>{upcoming.length}</strong> upcoming festivals remain. Add next year&apos;s entries before the year ends so reminders and countdowns keep working.
+            </p>
+          </div>
+        </div>
+      )}
+      {!loading && calendarHealthy && (
+        <div className="rounded-2xl border border-green-500/20 bg-green-500/5 px-4 py-3 flex items-center gap-3">
+          <span className="text-lg">✅</span>
+          <p className="text-xs text-[color:var(--text-dim)]">
+            <strong className="text-green-400">{upcoming.length}</strong> upcoming festivals — calendar is healthy.
+          </p>
+        </div>
+      )}
+
+      {/* Controls */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {(['all', ...TRADITION_OPTIONS] as string[]).map(t => (
+          <button key={t} onClick={() => setFilterTrad(t)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-all ${
+              filterTrad === t
+                ? 'border-[#7B1A1A] bg-[#7B1A1A]/10 text-[#C8924A]'
+                : 'border-white/10 text-[color:var(--text-dim)]'
+            }`}
+          >
+            {TRADITION_EMOJI[t] ?? '🌐'} {t}
+          </button>
+        ))}
+        <button
+          onClick={() => setShowForm(v => !v)}
+          className="ml-auto px-3 py-1.5 rounded-xl text-xs font-semibold border border-[#7B1A1A]/40 text-[#C8924A] hover:bg-[#7B1A1A]/8 transition-all"
+        >
+          {showForm ? '✕ Cancel' : '+ Add festival'}
+        </button>
+      </div>
+
+      {/* Add form */}
+      {showForm && (
+        <form onSubmit={addFestival} className="glass-panel rounded-2xl p-4 space-y-3">
+          <p className="font-semibold text-sm text-[color:var(--text-cream)]">New Festival</p>
+          <div className="grid grid-cols-2 gap-3">
+            <input required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+              placeholder="Name" className="col-span-2 input-field text-sm" />
+            <input required type="date" value={form.date} onChange={e => setForm(p => ({ ...p, date: e.target.value }))}
+              className="input-field text-sm" />
+            <input value={form.emoji} onChange={e => setForm(p => ({ ...p, emoji: e.target.value }))}
+              placeholder="Emoji" className="input-field text-sm" maxLength={4} />
+            <select value={form.tradition} onChange={e => setForm(p => ({ ...p, tradition: e.target.value }))}
+              className="input-field text-sm">
+              {TRADITION_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+            <select value={form.type} onChange={e => setForm(p => ({ ...p, type: e.target.value }))}
+              className="input-field text-sm">
+              {TYPE_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+            <textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
+              placeholder="Description" rows={2} className="col-span-2 input-field text-sm resize-none" />
+          </div>
+          <button type="submit" disabled={saving}
+            className="w-full py-2.5 rounded-xl text-sm font-semibold bg-[#7B1A1A] text-white disabled:opacity-50">
+            {saving ? 'Saving…' : 'Add Festival'}
+          </button>
+        </form>
+      )}
+
+      {/* Festival list */}
+      {loading ? (
+        <p className="text-xs text-[color:var(--text-dim)] text-center py-8">Loading…</p>
+      ) : visible.length === 0 ? (
+        <p className="text-xs text-[color:var(--text-dim)] text-center py-8">No festivals found.</p>
+      ) : (
+        <div className="space-y-2">
+          {visible.map(f => (
+            <div key={f.id}
+              className={`glass-panel rounded-2xl px-4 py-3 flex items-center gap-3 ${f.date < today ? 'opacity-50' : ''}`}>
+              <span className="text-xl shrink-0">{f.emoji}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="font-semibold text-sm text-[color:var(--text-cream)] truncate">{f.name}</p>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full border"
+                    style={{ borderColor: 'rgba(200,146,74,0.3)', color: '#C8924A', background: 'rgba(200,146,74,0.08)' }}>
+                    {f.tradition}
+                  </span>
+                  <span className="text-[10px] text-[color:var(--text-dim)]">{f.type}</span>
+                </div>
+                <p className="text-xs text-[color:var(--text-dim)] mt-0.5">{f.date}</p>
+              </div>
+              <button onClick={() => deleteFestival(f.id, f.name)} disabled={deletingId === f.id}
+                className="shrink-0 p-1.5 rounded-lg hover:bg-red-500/10 text-red-400/60 hover:text-red-400 transition-all disabled:opacity-40">
+                <Trash2 size={14} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main Admin Component ──────────────────────────────────────────────────────
 export default function AdminClient({ adminName, users, reports, posts, kuls, mandalis, heroAssets }: Props) {
   const [activeTab, setActiveTab] = useState<TabKey>('dashboard');
@@ -735,6 +908,7 @@ export default function AdminClient({ adminName, users, reports, posts, kuls, ma
     { key: 'hero-assets',   label: 'Hero assets',    icon: <ImageIcon size={14} />, badge: heroAssets.length || undefined },
     { key: 'notifications', label: 'Notifications',  icon: <CheckCircle size={14} /> },
     { key: 'broadcast',     label: 'Broadcast',      icon: <Send size={14} /> },
+    { key: 'festivals',     label: 'Festivals',      icon: <span className="text-xs">🪔</span> },
   ];
 
   return (
@@ -797,6 +971,7 @@ export default function AdminClient({ adminName, users, reports, posts, kuls, ma
         {activeTab === 'hero-assets'   && <HeroAssetsTab    assets={heroAssets} />}
         {activeTab === 'notifications' && <NotificationsTab />}
         {activeTab === 'broadcast'     && <BroadcastTab     userCount={users.length} />}
+        {activeTab === 'festivals'     && <FestivalsTab />}
       </div>
     </div>
   );
