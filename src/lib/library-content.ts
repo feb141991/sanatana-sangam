@@ -14,8 +14,8 @@ export type LibraryCategory =
   | 'shiva_purana' | 'shakta' | 'purana'
   | 'yoga_sutra' | 'chanakya'
   | 'gurbani' | 'nitnem'
-  | 'dhammapada' | 'sutra'
-  | 'jain_scripture' | 'jain_mantra';
+  | 'dhammapada' | 'sutra' | 'buddhist_foundations'
+  | 'jain_scripture' | 'jain_mantra' | 'jain_foundations';
 
 export interface LibraryEntry {
   id:               string;
