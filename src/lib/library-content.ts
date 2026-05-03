@@ -651,6 +651,50 @@ export const BHAGAVATAM_ENTRIES: LibraryEntry[] = [
   },
 ];
 
+// ─── MAHAPURANAS ─────────────────────────────────────────────────────────────
+export const PURANA_ENTRIES: LibraryEntry[] = [
+  {
+    id: 'shiva-purana-linga',
+    title: 'The Great Pillar of Light (Jyotirlinga)',
+    source: 'Shiva Purana — Vidyeshvara Samhita 9',
+    original: 'आकाशं लिङ्गमित्याहुः पृथ्वी तस्य पीठिका ।\nआलयः सर्वदेवानां लयनाल्लिङ्गमुच्यते ॥',
+    transliteration: 'ākāśaṃ liṅgamityāhuḥ pṛthvī tasya pīṭhikā\nālayaḥ sarvadevānāṃ layanālliṅgamucyate',
+    meaning: 'The sky is the Linga and the earth is its pedestal. It is the abode of all gods; it is called Linga because all beings dissolve (laya) into it. A profound definition of the Shiva Linga as the cosmic origin and end.',
+    tradition: 'hindu', category: 'purana',
+    tags: ['shiva', 'linga', 'cosmology', 'creation', 'purana'],
+  },
+  {
+    id: 'vishnu-purana-shakti',
+    title: 'The Three-fold Power of Vishnu',
+    source: 'Vishnu Purana 6.7.61',
+    original: 'विष्णुशक्तिः परा प्रोक्ता क्षेत्रज्ञाख्या तथापरा ।\nअविद्या कर्मसंज्ञाान्या तृतीया शक्तिरिष्यते ॥',
+    transliteration: 'viṣṇuśaktiḥ parā proktā kṣetrajñākhyā tathāparā\navidyā karmasaṃjñānyā tṛtīyā śaktiriṣyate',
+    meaning: 'The energy of Vishnu is three-fold: the Superior (Para/Spiritual), the Marginal (Kshetrajna/Living beings), and the Inferior (Avidya/Material energy). A foundational verse for understanding the relationship between God, the soul, and matter.',
+    tradition: 'hindu', category: 'purana',
+    tags: ['vishnu', 'shakti', 'philosophy', 'soul', 'matter'],
+  },
+  {
+    id: 'devi-mahatmyam-shakti',
+    title: 'To the Devi as Shakti',
+    source: 'Markandeya Purana — Devi Mahatmyam 5.34',
+    original: 'या देवी सर्वभूतेषु शक्तिरूपेण संस्थिता ।\nनमस्तस्यै नमस्तस्यै नमस्तस्यै नमो नमः ॥',
+    transliteration: 'yā devī sarvabhūteṣu śaktirūpeṇa saṃsthitā\nnamastasyai namastasyai namastasyai namo namaḥ',
+    meaning: 'To that Devi who is present in all beings in the form of Power (Shakti), salutations to Her, salutations to Her, salutations to Her, salutations again and again. One of the most recited verses in worship of the Divine Mother.',
+    tradition: 'hindu', category: 'purana',
+    tags: ['durga', 'shakti', 'devi', 'divine-mother', 'power'],
+  },
+  {
+    id: 'garuda-purana-liberation',
+    title: 'The Rare Human Birth',
+    source: 'Garuda Purana',
+    original: 'दुर्लभो मानुषो देहो देहिनां क्षणभङ्गुरः ।\nतत्रापि दुर्लभं मन्ये वैकुण्ठप्रियदर्शनम् ॥',
+    transliteration: 'durlabho mānuṣो deho dehināṃ kṣaṇabhaṅguraḥ\ntatrāpi durlabhaṃ manye vaikuṇṭhapriyadarśanam',
+    meaning: 'A human body is very difficult to obtain and is extremely fragile. Even rarer is the vision of those who are dear to the Lord. A teaching emphasizing the preciousness of life and the value of saintly company.',
+    tradition: 'hindu', category: 'purana',
+    tags: ['garuda-purana', 'life', 'wisdom', 'devotion', 'birth'],
+  },
+];
+
 // ─── VISHNU SAHASRANAMA ───────────────────────────────────────────────────────
 export const VISHNU_SAHASRANAMA_ENTRIES: LibraryEntry[] = [
   {
@@ -1457,6 +1501,7 @@ export const LIBRARY_SECTIONS: LibrarySection[] = [
   // ── Vaishnava ────────────────────────────────────────────────────────────────
   { id: 'gita',               title: 'Bhagavad Gita',         emoji: '🦚', tradition: 'hindu',    category: 'gita',               desc: 'Krishna\'s eternal teachings to Arjuna on dharma, yoga & liberation',       count: GITA_ENTRIES.length },
   { id: 'bhagavatam',         title: 'Srimad Bhagavatam',     emoji: '🌸', tradition: 'hindu',    category: 'bhagavatam',         desc: 'The great Purana of devotion — Krishna, Vishnu & the nature of reality',   count: BHAGAVATAM_ENTRIES.length },
+  { id: 'puranas',            title: 'Mahapuranas',           emoji: '🔱', tradition: 'hindu',    category: 'purana',             desc: 'Wisdom from Shiva, Vishnu, and Devi Puranas',   count: PURANA_ENTRIES.length },
   { id: 'vishnu_sahasranama', title: 'Vishnu Sahasranama',    emoji: '🔱', tradition: 'hindu',    category: 'vishnu_sahasranama', desc: 'The thousand names of Vishnu — from the Mahabharata',                      count: VISHNU_SAHASRANAMA_ENTRIES.length },
   // ── Epic ─────────────────────────────────────────────────────────────────────
   { id: 'ramayana',           title: 'Valmiki Ramayana',      emoji: '🏹', tradition: 'hindu',    category: 'ramayana',           desc: 'Valmiki\'s epic — the ideal life of Shri Rama',                            count: RAMAYANA_ENTRIES.length },
