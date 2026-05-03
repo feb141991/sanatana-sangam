@@ -67,6 +67,21 @@ const MASA_NAMES = [
   'Ashwin', 'Kartika', 'Margashirsha', 'Pausha', 'Magha', 'Phalguna',
 ];
 
+const NANAKSHAHI_MONTHS = [
+  { name: 'Chet',     startMonth: 2, startDay: 14 }, // March 14
+  { name: 'Vaisakh',  startMonth: 3, startDay: 14 }, // April 14
+  { name: 'Jeth',     startMonth: 4, startDay: 15 }, // May 15
+  { name: 'Harh',     startMonth: 5, startDay: 15 }, // June 15
+  { name: 'Sawan',    startMonth: 6, startDay: 16 }, // July 16
+  { name: 'Bhadon',   startMonth: 7, startDay: 16 }, // August 16
+  { name: 'Assu',     startMonth: 8, startDay: 15 }, // September 15
+  { name: 'Katik',    startMonth: 9, startDay: 15 }, // October 15
+  { name: 'Maghar',   startMonth: 10, startDay: 14 }, // November 14
+  { name: 'Poh',      startMonth: 11, startDay: 14 }, // December 14
+  { name: 'Magh',     startMonth: 0, startDay: 13 }, // January 13
+  { name: 'Phagun',   startMonth: 1, startDay: 12 }, // February 12
+];
+
 const SAMVAT_NAMES = [
   'Prabhava', 'Vibhava', 'Shukla', 'Pramoda', 'Prajapati', 'Angirasa', 'Shrimukha', 'Bhava',
   'Yuva', 'Dhatri', 'Ishvara', 'Bahudhanya', 'Pramathi', 'Vikrama', 'Vrisha', 'Chitrabhanu',
@@ -526,6 +541,86 @@ export function getTithiReminder(
       title: '🕉️ Masik Shivaratri Today',
       body:  'Monthly Shivaratri — a powerful night for Shiva worship, night vigil, and Panchabhishek.',
     };
+  }
+
+  return null;
+}
+
+// ─── getTodaySpiritualPulse ───────────────────────────────────────────────────
+// The "Heartbeat" engine — identifies if today is a sacred rhythm day for the
+// user's tradition. Used to drive the Pathshala home screen and daily guidance.
+export type SpiritualPulse = {
+  label: string;
+  emoji: string;
+  description: string;
+  intensity: 'low' | 'medium' | 'high';
+};
+
+export function getTodaySpiritualPulse(
+  tithiIndex: number,
+  tradition: string | null | undefined,
+  date: Date = new Date(),
+): SpiritualPulse | null {
+  const t = tradition ?? 'hindu';
+
+  // 1. Hindu / Vaishnava / Shaiva Pulse
+  if (t === 'hindu' || t === 'vaishnava' || t === 'shaiva') {
+    if (tithiIndex === 11 || tithiIndex === 26) {
+      return { label: 'Ekadashi', emoji: '🌿', description: 'Sacred day for fasting and deep bhajan.', intensity: 'high' };
+    }
+    if (tithiIndex === 15) {
+      return { label: 'Purnima', emoji: '🌕', description: 'Full moon — clarity and community worship.', intensity: 'medium' };
+    }
+    if (tithiIndex === 30) {
+      return { label: 'Amavasya', emoji: '🌑', description: 'New moon — ancestor remembrance and stillness.', intensity: 'medium' };
+    }
+    if (tithiIndex === 13 || tithiIndex === 28) {
+      return { label: 'Pradosh', emoji: '🕉️', description: 'Twilight worship of Lord Shiva.', intensity: 'low' };
+    }
+    if (tithiIndex === 29) {
+      return { label: 'Masik Shivaratri', emoji: '🌙', description: 'Night of Shiva — vigil and devotion.', intensity: 'medium' };
+    }
+  }
+
+  // 2. Sikh Pulse (Sangrand Awareness)
+  if (t === 'sikh') {
+    const day = date.getDate();
+    const month = date.getMonth();
+    const currentMonth = NANAKSHAHI_MONTHS.find(m => m.startMonth === month && m.startDay === day);
+    
+    if (currentMonth) {
+      return {
+        label: `Sangrand (${currentMonth.name})`,
+        emoji: '☬',
+        description: `The 1st of ${currentMonth.name} — a day for new beginnings and special shabads.`,
+        intensity: 'high',
+      };
+    }
+    if (tithiIndex === 15) {
+      return { label: 'Puranmashi', emoji: '🌕', description: 'Full moon — gathering for kirtan and sangat.', intensity: 'medium' };
+    }
+  }
+
+  // 3. Buddhist Pulse (Uposatha Awareness)
+  if (t === 'buddhist') {
+    if (tithiIndex === 15 || tithiIndex === 30) {
+      return {
+        label: 'Uposatha',
+        emoji: '☸️',
+        description: 'Lunar observance — a day for deeper practice and the Eight Precepts.',
+        intensity: 'high',
+      };
+    }
+  }
+
+  // 4. Jain Pulse (Tithi-based observances)
+  if (t === 'jain') {
+    if (tithiIndex === 8 || tithiIndex === 14 || tithiIndex === 23 || tithiIndex === 29) {
+      return { label: 'Ashtami/Chaturdashi', emoji: '🤲', description: 'Auspicious day for fasting and Tattvartha study.', intensity: 'medium' };
+    }
+    if (tithiIndex === 15) {
+      return { label: 'Purnima', emoji: '🌕', description: 'Full moon — remembrance of the Tirthankaras.', intensity: 'medium' };
+    }
   }
 
   return null;

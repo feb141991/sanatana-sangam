@@ -25,6 +25,8 @@ import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { usePremium } from '@/hooks/usePremium';
+import { calculatePanchang, getTodaySpiritualPulse, type SpiritualPulse } from '@/lib/panchang';
+import { useLocation } from '@/lib/LocationContext';
 import CircularProgress from '@/components/ui/CircularProgress';
 import {
   ALL_LIBRARY_ENTRIES, LIBRARY_SECTIONS,
@@ -443,10 +445,16 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
   const isPro     = usePremium();
   const prefersReducedMotion = useReducedMotion();
 
+  const { latitude: lat, longitude: lon } = useLocation();
   const [activePaths, setActive]    = useState<ActiveEnrollment[]>([]);
   const [loading,     setLoading]   = useState(true);
   const [enrolling,   setEnrolling] = useState<string | null>(null);
   const [isDark,      setIsDark]    = useState(true);
+  
+  const pulse = useMemo(() => {
+    const p = calculatePanchang(new Date(), lat ?? undefined, lon ?? undefined);
+    return getTodaySpiritualPulse(p.tithiIndex, tradition);
+  }, [tradition, lat, lon]);
 
   // Tab: 'learn' | 'scripture' | 'explore'
   const [tab, setTab] = useState<'learn' | 'scripture' | 'explore'>(initialTab ?? 'learn');
@@ -762,6 +770,14 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
       <Link href="/pathshala?tab=explore" className="block rounded-[1.8rem] overflow-hidden mb-4 motion-press"
         style={cardStyle}>
         <div className="p-5" style={{ background: `linear-gradient(135deg, ${meta.accentColour}12 0%, transparent 100%)` }}>
+          {pulse && (
+            <div className="flex items-center gap-2 mb-3 bg-white/5 w-max px-2 py-0.5 rounded-full border border-white/5">
+              <span className="text-[10px]">{pulse.emoji}</span>
+              <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: meta.accentColour }}>
+                Today is {pulse.label}
+              </span>
+            </div>
+          )}
           <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color: tertiaryText }}>
             {meta.sacredTextLabel} · Today
           </p>
@@ -771,8 +787,13 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
         </div>
         <div className="p-4" style={{ borderTop: `1px solid ${glassBorder}`, background: isDark ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.38)' }}>
           <p className="text-sm leading-relaxed" style={{ color: secondaryText }}>
-            {meta.dailyVersePrompt.meaning}
+            {pulse ? pulse.description : meta.dailyVersePrompt.meaning}
           </p>
+          {!pulse && (
+            <p className="text-sm mt-2" style={{ color: secondaryText }}>
+              {meta.dailyVersePrompt.meaning}
+            </p>
+          )}
           <p className="text-xs mt-2" style={{ color: meta.accentColour }}>
             Explore {meta.navLibraryLabel} →
           </p>
