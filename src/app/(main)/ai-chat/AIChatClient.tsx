@@ -6,6 +6,7 @@ import { Send, Sparkles, RotateCcw, ChevronDown, BookOpen, ChevronLeft } from 'l
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useEngine } from '@/contexts/EngineContext';
+import { getTransliteration } from '@/lib/transliteration';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface ScriptureRef {
@@ -40,6 +41,7 @@ interface Props {
   initialPrompt?: string;
   /** Short context label shown in header (e.g. "From Pathshala") */
   contextLabel?:  string;
+  transliterationLanguage?: string;
 }
 
 // ─── Tradition-aware suggestions ──────────────────────────────────────────────
@@ -132,7 +134,13 @@ function MessageBubble({ msg }: { msg: Message }) {
           {/* ── Scripture sources (RAG only) ── */}
           {!isUser && msg.verses && msg.verses.length > 0 && (
             <div className="mt-4 space-y-2">
-              {msg.verses.map((v, i) => <VerseChip key={i} verse={v} />)}
+              {msg.verses.map((v, i) => (
+                <VerseChip
+                  key={i}
+                  verse={v}
+                  transliterationLanguage={(msg as any).transliterationLanguage}
+                />
+              ))}
             </div>
           )}
         </div>
@@ -211,7 +219,7 @@ function formatVerseLabel(v: ScriptureRef): string {
 }
 
 // ─── Scripture Verse Chip ─────────────────────────────────────────────────────
-function VerseChip({ verse }: { verse: ScriptureRef }) {
+function VerseChip({ verse, transliterationLanguage }: { verse: ScriptureRef; transliterationLanguage?: string }) {
   const [open, setOpen] = useState(false);
   const label = formatVerseLabel(verse);
   return (
@@ -230,8 +238,10 @@ function VerseChip({ verse }: { verse: ScriptureRef }) {
           <p className="font-[family:var(--font-deva)] font-medium leading-relaxed" style={{ color: 'var(--text-cream)' }}>
             {verse.sanskrit}
           </p>
-          {verse.transliteration && (
-            <p className="text-[color:var(--brand-muted)] italic">{verse.transliteration}</p>
+          {getTransliteration(verse.sanskrit || '', verse.transliteration || '', transliterationLanguage ?? 'en') !== verse.sanskrit && (
+            <p className="text-[color:var(--brand-muted)] italic">
+              {getTransliteration(verse.sanskrit || '', verse.transliteration || '', transliterationLanguage ?? 'en')}
+            </p>
           )}
         </div>
       )}
@@ -240,7 +250,18 @@ function VerseChip({ verse }: { verse: ScriptureRef }) {
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function AIChatClient({ userId, userName, tradition, sampradaya, city, country, seeking, initialPrompt, contextLabel }: Props) {
+export default function AIChatClient({
+  userId,
+  userName,
+  tradition,
+  sampradaya,
+  city,
+  country,
+  seeking,
+  initialPrompt,
+  contextLabel,
+  transliterationLanguage,
+}: Props) {
   const router = useRouter();
   const [messages,   setMessages]   = useState<Message[]>([]);
   const [input,      setInput]      = useState(initialPrompt ?? '');
@@ -305,7 +326,8 @@ export default function AIChatClient({ userId, userName, tradition, sampradaya, 
               // source_label left undefined so formatVerseLabel() handles it
             })),
             fromRag: true,
-          };
+            transliterationLanguage: transliterationLanguage, // pass to bubble for chips
+          } as any;
           setMessages(prev => [...prev, modelMsg]);
           setLoading(false);
           return;

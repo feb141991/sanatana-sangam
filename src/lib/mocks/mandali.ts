@@ -43,6 +43,7 @@ const baseProfile: MandaliProfile = {
   tradition: 'hindu',
   custom_greeting: null,
   app_language: 'en',
+  transliteration_language: 'en',
   scripture_script: 'original',
   show_transliteration: true,
   meaning_language: 'en',

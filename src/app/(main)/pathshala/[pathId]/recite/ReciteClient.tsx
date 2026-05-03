@@ -24,6 +24,7 @@ import type { LibraryEntry } from '@/lib/library-content';
 import type { RecitationResult } from '@sangam/pathshala-engine';
 import CircularProgress from '@/components/ui/CircularProgress';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
+import { getTransliteration } from '@/lib/transliteration';
 
 // ─── Pick recite content for a path ────────────────────────────────────────────
 function getReciteVerses(pathId: string, lessonIndex: number): LibraryEntry[] {
@@ -166,6 +167,7 @@ interface Props {
   tradition: string;
   accentColour: string;
   currentLesson: number;
+  transliterationLanguage?: string;
 }
 
 // ─── Mode types ────────────────────────────────────────────────────────────────
@@ -178,6 +180,7 @@ export default function ReciteClient({
   tradition: _tradition,
   accentColour,
   currentLesson,
+  transliterationLanguage,
 }: Props) {
   const router    = useRouter();
   const pathshala = usePathshala();
@@ -737,9 +740,9 @@ export default function ReciteClient({
                       exit={{ height: 0, opacity: 0 }}
                       className="overflow-hidden space-y-2"
                     >
-                      {verse.transliteration && (
+                      {getTransliteration(verse.original, verse.transliteration, transliterationLanguage ?? 'en') !== verse.original && (
                         <p className="text-sm italic text-[color:var(--brand-muted)] leading-relaxed">
-                          {verse.transliteration}
+                          {getTransliteration(verse.original, verse.transliteration, transliterationLanguage ?? 'en')}
                         </p>
                       )}
                       {verse.meaning && (

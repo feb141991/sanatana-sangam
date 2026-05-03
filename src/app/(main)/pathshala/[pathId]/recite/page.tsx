@@ -15,7 +15,7 @@ export default async function RecitePage({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('tradition, full_name')
+    .select('tradition, full_name, transliteration_language')
     .eq('id', user.id)
     .single();
 
@@ -41,6 +41,7 @@ export default async function RecitePage({
       tradition={tradition}
       accentColour={meta.accentColour}
       currentLesson={(enrollment as any).current_lesson ?? 0}
+      transliterationLanguage={(profile as any)?.transliteration_language ?? 'en'}
     />
   );
 }

@@ -35,6 +35,7 @@ export interface Database {
           tradition: string | null;
           custom_greeting: string | null;
           app_language: string;
+          transliteration_language: string;
           scripture_script: string;
           show_transliteration: boolean;
           meaning_language: string;

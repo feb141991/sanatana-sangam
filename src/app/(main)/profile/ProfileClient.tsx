@@ -10,7 +10,7 @@ import { APP } from '@/lib/config';
 import { createClient } from '@/lib/supabase';
 import type { HiddenContentSummary, SafetyProfileSummary } from '@/lib/user-safety';
 import { getInitials, TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getIshtaDevataLabel, getSampradayaLabel } from '@/lib/utils';
-import { APP_LANGUAGES, MEANING_LANGUAGE_OPTIONS, SCRIPTURE_SCRIPT_OPTIONS } from '@/lib/language-preferences';
+import { APP_LANGUAGES, MEANING_LANGUAGE_OPTIONS, SCRIPTURE_SCRIPT_OPTIONS, TRANSLITERATION_LANGUAGE_OPTIONS } from '@/lib/language-preferences';
 import type { TraditionKey } from '@/lib/traditions';
 import { useLocation } from '@/lib/LocationContext';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
@@ -178,6 +178,7 @@ export default function ProfileClient({
     scripture_script: (liveProfile as any)?.scripture_script ?? 'original',
     show_transliteration: (liveProfile as any)?.show_transliteration ?? true,
     meaning_language: (liveProfile as any)?.meaning_language ?? 'en',
+    transliteration_language: (liveProfile as any)?.transliteration_language ?? 'en',
     date_of_birth:    (liveProfile as any)?.date_of_birth    ?? '',
     gender_context:   ((liveProfile as any)?.gender_context  ?? 'general') as GenderContext,
   });
@@ -717,6 +718,37 @@ export default function ProfileClient({
                 );
               })}
             </div>
+          </div>
+
+          <div>
+            <p className="type-card-label mb-2">Transliteration script</p>
+            <div className="flex gap-2">
+              {TRANSLITERATION_LANGUAGE_OPTIONS.map((opt) => {
+                const active = (form.transliteration_language ?? 'en') === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    onClick={() => {
+                      setForm({ ...form, transliteration_language: opt.value });
+                      patchProfile({ transliteration_language: opt.value }, `Transliteration set to ${opt.label}`);
+                    }}
+                    className="flex-1 rounded-xl border py-2 text-sm font-medium transition"
+                    style={active ? {
+                      background: 'var(--brand-primary)',
+                      color: '#1c1c1a',
+                      borderColor: 'transparent',
+                    } : {
+                      background: 'var(--card-bg)',
+                      color: 'var(--text-muted-warm)',
+                      borderColor: 'rgba(255,255,255,0.08)',
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="type-micro mt-2">Script used for shlokas and sacred chants.</p>
           </div>
 
           <div className="rounded-2xl surface-input border px-4 py-4 space-y-3">

@@ -23,6 +23,7 @@ import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { SEED_PATHS } from '@/app/(main)/pathshala/PathshalaClient';
 import { useSadhana } from '@/contexts/EngineContext';
 import { getAIChatHref } from '@/lib/pathshala-links';
+import { getTransliteration } from '@/lib/transliteration';
 import type { LibraryEntry } from '@/lib/library-content';
 import type { LibraryTradition } from '@/lib/library-content';
 
@@ -154,6 +155,7 @@ function VerseCard({
   onBookmark,
   onCopy,
   onSpeak,
+  transliterationLanguage,
 }: {
   entry: LibraryEntry;
   accentColour: string;
@@ -165,6 +167,7 @@ function VerseCard({
   onBookmark: (entry: LibraryEntry) => void;
   onCopy: (entry: LibraryEntry) => void;
   onSpeak: (entry: LibraryEntry) => void;
+  transliterationLanguage?: string;
 }) {
   const [expanded, setExpanded] = useState(true); // all verses open by default
   const [overflowOpen, setOverflowOpen] = useState(false);
@@ -271,11 +274,11 @@ function VerseCard({
             <div className="mx-5 mb-5 rounded-[1.1rem] overflow-hidden"
               style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.16)' }}>
               {/* Transliteration */}
-              {entry.transliteration && (
+              {getTransliteration(entry.original, entry.transliteration, transliterationLanguage ?? 'en') !== entry.original && (
                 <div className="px-4 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(200,146,74,0.12)' }}>
                   <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.6 }}>Transliteration</p>
                   <p className="italic leading-relaxed" style={{ color: 'var(--brand-muted)', fontSize: `${fontScale * 0.9}rem` }}>
-                    {entry.transliteration}
+                    {getTransliteration(entry.original, entry.transliteration, transliterationLanguage ?? 'en')}
                   </p>
                 </div>
               )}
@@ -303,6 +306,7 @@ interface Props {
   accentColour: string;
   currentLesson: number;
   completedLessons: number[];
+  transliterationLanguage?: string;
 }
 
 // ─── Main Component ────────────────────────────────────────────────────────────
@@ -313,6 +317,7 @@ export default function LessonClient({
   accentColour,
   currentLesson: initialLesson,
   completedLessons: initialCompleted,
+  transliterationLanguage,
 }: Props) {
   const router  = useRouter();
   const engine  = useSadhana();
@@ -594,6 +599,7 @@ export default function LessonClient({
               onBookmark={toggleBookmark}
               onCopy={copyEntry}
               onSpeak={speakEntry}
+              transliterationLanguage={transliterationLanguage}
             />
           ))
         )}

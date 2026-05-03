@@ -184,6 +184,7 @@ export default async function HomePage() {
       japaAlreadyDoneToday={todaySadhana?.japa_done ?? false}
       nityaDoneToday={nityaDates.has(today)}
       practiceHistory={practiceHistory}
+      transliterationLanguage={(profile as any)?.transliteration_language ?? 'en'}
       liveStreams={allStreams}
     />
   );

@@ -15,7 +15,7 @@ export default async function LessonPage({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('tradition, full_name, username')
+    .select('tradition, full_name, username, transliteration_language')
     .eq('id', user.id)
     .single();
 
@@ -42,6 +42,7 @@ export default async function LessonPage({
       accentColour={meta.accentColour}
       currentLesson={(enrollment as any).current_lesson ?? 0}
       completedLessons={((enrollment as any).completed_lessons as number[]) ?? []}
+      transliterationLanguage={(profile as any)?.transliteration_language ?? 'en'}
     />
   );
 }

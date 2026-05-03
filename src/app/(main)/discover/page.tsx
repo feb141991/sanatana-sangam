@@ -11,7 +11,7 @@ export default async function DiscoverPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('tradition, spiritual_level')
+    .select('tradition, spiritual_level, transliteration_language')
     .eq('id', user.id)
     .maybeSingle();
 
@@ -19,6 +19,7 @@ export default async function DiscoverPage() {
     <DiscoverClient
       tradition={profile?.tradition ?? null}
       spiritualLevel={profile?.spiritual_level ?? null}
+      transliterationLanguage={(profile as any)?.transliteration_language ?? 'en'}
     />
   );
 }

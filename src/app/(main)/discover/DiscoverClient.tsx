@@ -7,10 +7,12 @@ import { ChevronLeft, Sparkles, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 import type { LibraryEntry } from '@/lib/library-content';
 import MoodGlyph from '@/components/ui/MoodGlyph';
+import { getTransliteration } from '@/lib/transliteration';
 
 interface Props {
   tradition:     string | null;
   spiritualLevel: string | null;
+  transliterationLanguage?: string;
 }
 
 // ── Mood palette ──────────────────────────────────────────────────────────────
@@ -33,7 +35,17 @@ interface DiscoverResult {
 }
 
 // ── Verse card ────────────────────────────────────────────────────────────────
-function VerseCard({ result, index, accentColour }: { result: DiscoverResult; index: number; accentColour: string }) {
+function VerseCard({
+  result,
+  index,
+  accentColour,
+  transliterationLanguage
+}: {
+  result: DiscoverResult;
+  index: number;
+  accentColour: string;
+  transliterationLanguage?: string;
+}) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -86,11 +98,13 @@ function VerseCard({ result, index, accentColour }: { result: DiscoverResult; in
       </p>
 
       {/* Transliteration — clearly secondary */}
-      <p className="relative italic text-[11px] mb-3 leading-relaxed"
-        style={{ color: 'rgba(200,160,100,0.55)', letterSpacing: '0.01em' }}
-      >
-        {(result.entry.transliteration ?? '').split('|')[0].trim()}
-      </p>
+      {getTransliteration(result.entry.original, result.entry.transliteration, transliterationLanguage ?? 'en') !== result.entry.original && (
+        <p className="relative italic text-[11px] mb-3 leading-relaxed"
+          style={{ color: 'rgba(200,160,100,0.55)', letterSpacing: '0.01em' }}
+        >
+          {getTransliteration(result.entry.original, result.entry.transliteration, transliterationLanguage ?? 'en')}
+        </p>
+      )}
 
       {/* AI insight */}
       {result.insight && (
@@ -130,7 +144,7 @@ function VerseCard({ result, index, accentColour }: { result: DiscoverResult; in
 }
 
 // ── Main client ───────────────────────────────────────────────────────────────
-export default function DiscoverClient({ tradition }: Props) {
+export default function DiscoverClient({ tradition, transliterationLanguage }: Props) {
   const router = useRouter();
   const prefersReducedMotion = useReducedMotion();
 
@@ -328,6 +342,7 @@ export default function DiscoverClient({ tradition }: Props) {
                 result={result}
                 index={i}
                 accentColour={activeMood.colour}
+                transliterationLanguage={transliterationLanguage}
               />
             ))}
 

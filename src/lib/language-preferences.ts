@@ -16,6 +16,11 @@ export const MEANING_LANGUAGE_OPTIONS = [
   { value: 'pa', label: 'Punjabi meaning later' },
 ] as const;
 
+export const TRANSLITERATION_LANGUAGE_OPTIONS = [
+  { value: 'en', label: 'English (Roman)' },
+  { value: 'hi', label: 'Hindi (Devanagari)' },
+] as const;
+
 export function getLanguageLabel(options: readonly { value: string; label: string }[], value?: string | null) {
   return options.find((option) => option.value === value)?.label ?? options[0].label;
 }

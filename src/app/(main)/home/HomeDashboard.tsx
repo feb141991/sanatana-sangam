@@ -49,6 +49,7 @@ import { getTraditionMeta } from '@/lib/tradition-config';
 import { getDailyDarshan, DARSHAN_REGISTRY } from '@/lib/darshan-registry';
 import DarshanOverlay from '@/components/home/DarshanOverlay';
 import DarshanPrompt from '@/components/home/DarshanPrompt';
+import { getTransliteration } from '@/lib/transliteration';
 
 interface Panchang {
   tithi:      string;
@@ -97,6 +98,7 @@ interface Props {
   tradition:         string | null;
   sampradaya:        string | null;
   ishtaDevata:       string | null;
+  transliterationLanguage?: string;
   spiritualLevel:    string | null;
   seeking:           string[];
   lifeStage:         string | null;
@@ -951,6 +953,7 @@ export default function HomeDashboard({
   nityaDoneToday,
   practiceHistory,
   liveStreams,
+  transliterationLanguage,
 }: Props) {
   const supabase = createClient();
   const router   = useRouter();
@@ -1083,7 +1086,7 @@ export default function HomeDashboard({
   }, [tradition]);
 
   async function handleQuizAnswer(idx: number) {
-    if (!quiz || quiz === 'loading' || quiz === 'error' || quizAnswered !== null) return;
+    if (!quiz || typeof quiz === 'string' || quizAnswered !== null) return;
 
     setQuizAnswered(idx);
     localStorage.setItem(QUIZ_ANSWERED_KEY, String(idx));
@@ -1343,7 +1346,11 @@ export default function HomeDashboard({
     shareLabel: sacredTextMeta.shareLabel,
     source: sacredText ? sacredText.source : shloka.source,
     original: sacredText ? sacredText.original : shloka.sanskrit,
-    transliteration: sacredText ? sacredText.transliteration : shloka.transliteration,
+    transliteration: getTransliteration(
+      sacredText ? sacredText.original : shloka.sanskrit,
+      sacredText ? sacredText.transliteration : shloka.transliteration,
+      transliterationLanguage ?? 'en'
+    ),
     meaning: sacredText ? sacredText.meaning : shloka.meaning,
     actionLabel: sacredText
       ? sacredTextMeta.label.toLowerCase().replace(/^aaj ka\s+/i, "today’s ")
@@ -1972,9 +1979,11 @@ export default function HomeDashboard({
               </motion.div>
 
               {/* Transliteration */}
-              <p className="italic leading-snug" style={{ color: 'var(--text-muted-warm)', fontSize: '0.78rem' }}>
-                {dailyText.transliteration}
-              </p>
+              {dailyText.transliteration && dailyText.transliteration !== dailyText.original && (
+                <p className="italic leading-snug" style={{ color: 'var(--text-muted-warm)', fontSize: '0.78rem' }}>
+                  {dailyText.transliteration}
+                </p>
+              )}
 
               {/* Meaning */}
               <div className="rounded-[1.2rem] px-3 py-2.5" style={{
@@ -2154,8 +2163,10 @@ export default function HomeDashboard({
                     Sacred Verse
                   </p>
                   <p className="festival-story-verse">{festivalStory.shloka.text}</p>
-                  {festivalStory.shloka.transliteration && (
-                    <p className="festival-story-transliteration">{festivalStory.shloka.transliteration}</p>
+                  {getTransliteration(festivalStory.shloka.text, festivalStory.shloka.transliteration || '', transliterationLanguage ?? 'en') !== festivalStory.shloka.text && (
+                    <p className="festival-story-transliteration">
+                      {getTransliteration(festivalStory.shloka.text, festivalStory.shloka.transliteration || '', transliterationLanguage ?? 'en')}
+                    </p>
                   )}
                   <p className="festival-story-prose mt-3 italic">&ldquo;{festivalStory.shloka.translation}&rdquo;</p>
                   <p className="text-[10px] mt-2" style={{ color: 'var(--text-dim)' }}>

@@ -2207,7 +2207,7 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
                 </div>
               </div>
               <h4 className="text-lg font-bold theme-ink">A Vansh yet to be written</h4>
-              <p className="text-xs mt-2 theme-muted max-w-xs mx-auto">Add your parents, grandparents, and ancestors to create your family's spiritual map.</p>
+              <p className="text-xs mt-2 theme-muted max-w-xs mx-auto">Add your parents, grandparents, and ancestors to create your family&apos;s spiritual map.</p>
             </div>
           )}
           {generations.map(gen => (
