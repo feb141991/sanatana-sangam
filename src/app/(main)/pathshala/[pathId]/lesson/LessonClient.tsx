@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronRight, CheckCircle2,
   BookOpen, Mic, Sparkles, ChevronDown, ChevronUp,
-  Copy, Loader2, Bookmark, Volume2, VolumeX, ZoomIn, ZoomOut, Maximize2,
+  Copy, Loader2, Bookmark, Volume2, VolumeX,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
@@ -167,6 +167,7 @@ function VerseCard({
   onSpeak: (entry: LibraryEntry) => void;
 }) {
   const [expanded, setExpanded] = useState(true); // all verses open by default
+  const [overflowOpen, setOverflowOpen] = useState(false);
   const askHref = getAIChatHref(
     `Explain this Pathshala verse in simple Hindi and English, with practical learning guidance: ${entry.title}`,
     getEntryText(entry)
@@ -210,8 +211,8 @@ function VerseCard({
         </p>
       </div>
 
-      {/* Action strip */}
-      <div className="px-5 pb-4 flex gap-2 overflow-x-auto no-scrollbar">
+      {/* Action strip — 2 primary + overflow */}
+      <div className="px-5 pb-4 flex gap-2 items-center">
         <button onClick={() => onSpeak(entry)}
           className="shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold motion-press"
           style={{ color: accentColour, background: `${accentColour}12`, border: `1px solid ${accentColour}24` }}>
@@ -223,16 +224,38 @@ function VerseCard({
           style={{ color: bookmarked ? '#1c1c1a' : accentColour, background: bookmarked ? accentColour : `${accentColour}12`, border: `1px solid ${accentColour}24` }}>
           <Bookmark size={12} className={bookmarked ? 'fill-current' : ''} /> {bookmarked ? 'Saved' : 'Save'}
         </button>
-        <button onClick={() => onCopy(entry)}
-          className="shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold motion-press"
-          style={{ color: 'var(--brand-muted)', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,74,0.14)' }}>
-          <Copy size={12} /> Copy
-        </button>
-        <Link href={askHref}
-          className="shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold motion-press"
-          style={{ color: accentColour, background: `${accentColour}12`, border: `1px solid ${accentColour}24` }}>
-          <Sparkles size={12} /> Ask AI
-        </Link>
+
+        {/* Overflow — Copy + Ask AI */}
+        <div className="relative ml-auto">
+          <button
+            onClick={() => setOverflowOpen(o => !o)}
+            className="w-7 h-7 rounded-full inline-flex items-center justify-center text-[color:var(--brand-muted)] motion-press"
+            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,74,0.14)' }}
+          >
+            ···
+          </button>
+          {overflowOpen && (
+            <div
+              className="absolute right-0 top-9 z-20 rounded-2xl shadow-xl overflow-hidden flex flex-col"
+              style={{ background: 'var(--brand-background)', border: '1px solid rgba(200,146,74,0.18)', minWidth: '120px' }}
+            >
+              <button
+                onClick={() => { onCopy(entry); setOverflowOpen(false); }}
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition"
+              >
+                <Copy size={12} /> Copy
+              </button>
+              <Link
+                href={askHref}
+                onClick={() => setOverflowOpen(false)}
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-t border-white/6"
+                style={{ color: accentColour }}
+              >
+                <Sparkles size={12} /> Ask AI
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Expanded: transliteration + meaning */}
@@ -413,39 +436,6 @@ export default function LessonClient({
     toast.success(next ? 'Saved for later' : 'Removed from saved');
   }
 
-  async function saveSelectedText() {
-    const text = window.getSelection()?.toString().trim();
-    if (!text) {
-      toast('Select a line first, then tap Save selection.');
-      return;
-    }
-    const key = `pathshala_saved_selection_${userId}`;
-    const payload = {
-      text,
-      pathId,
-      lesson: lessonIndex,
-      title: lesson.title,
-      savedAt: new Date().toISOString(),
-    };
-    try {
-      const existing = JSON.parse(localStorage.getItem(key) ?? '[]') as unknown[];
-      localStorage.setItem(key, JSON.stringify([payload, ...existing].slice(0, 50)));
-      toast.success('Selection saved on this device');
-    } catch {
-      toast.error('Could not save selection');
-    }
-  }
-
-  async function enterFullscreen() {
-    try {
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
-      }
-    } catch {
-      toast('Fullscreen is blocked by this browser. Reader mode is still active.');
-    }
-  }
-
   async function markComplete() {
     if (isCompleted || saving) return;
     setSaving(true);
@@ -546,22 +536,15 @@ export default function LessonClient({
             </span>
           </div>
 
-          {/* Font size controls */}
-          <div className="flex items-center gap-1 shrink-0 rounded-xl px-1 py-1"
-            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(200,146,74,0.1)' }}>
-            <button onClick={() => setFontStep(step => Math.max(0, step - 1))}
-              className="w-7 h-7 rounded-lg flex items-center justify-center motion-press"
-              style={{ color: 'var(--brand-muted)' }}
-              aria-label="Decrease text size">
-              <ZoomOut size={13} />
-            </button>
-            <button onClick={() => setFontStep(step => Math.min(READER_FONT_STEPS.length - 1, step + 1))}
-              className="w-7 h-7 rounded-lg flex items-center justify-center motion-press"
-              style={{ color: accentColour }}
-              aria-label="Increase text size">
-              <ZoomIn size={13} />
-            </button>
-          </div>
+          {/* Font size — tap to cycle */}
+          <button
+            onClick={() => setFontStep(step => (step + 1) % READER_FONT_STEPS.length)}
+            className="shrink-0 px-2 py-1 rounded-lg text-[11px] font-bold motion-press"
+            style={{ background: 'rgba(255,255,255,0.06)', color: accentColour, border: '1px solid rgba(200,146,74,0.14)' }}
+            aria-label="Cycle text size"
+          >
+            Aa
+          </button>
 
           <Link
             href={`/pathshala/${pathId}/recite`}

@@ -188,8 +188,7 @@ export default function ReciteClient({
 
   const [verseIndex,   setVerseIndex]   = useState(0);
   const [mode,         setMode]         = useState<ReciteMode>('read');
-  const [showTranslit, setShowTranslit] = useState(true);
-  const [showMeaning,  setShowMeaning]  = useState(false);
+  const [showExplan,   setShowExplan]   = useState(false);
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
   const [completed,    setCompleted]    = useState<number[]>([]);
@@ -666,24 +665,20 @@ export default function ReciteClient({
               </button>
             </div>
 
-            {/* Speed selector + auto-play toggle */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[10px] text-[color:var(--brand-muted)] uppercase tracking-wider font-medium">Speed</span>
-                {([0.5, 0.75, 1, 1.25] as const).map(rate => (
-                  <button
-                    key={rate}
-                    onClick={() => setTtsRate(rate)}
-                    className="px-2 py-0.5 rounded-full text-[10px] font-bold transition-all"
-                    style={{
-                      background: ttsRate === rate ? accentColour : 'rgba(255,255,255,0.08)',
-                      color: ttsRate === rate ? '#1c1c1a' : 'var(--brand-muted)',
-                    }}
-                  >
-                    {rate}×
-                  </button>
-                ))}
-              </div>
+            {/* Speed selector — compact tap cycle */}
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-[color:var(--brand-muted)] uppercase tracking-wider font-medium">Speed</span>
+              <button
+                onClick={() => {
+                  const steps: (0.5 | 0.75 | 1 | 1.25)[] = [0.5, 0.75, 1, 1.25];
+                  const next = steps[(steps.indexOf(ttsRate) + 1) % steps.length];
+                  setTtsRate(next);
+                }}
+                className="px-3 py-0.5 rounded-full text-[10px] font-bold transition-all"
+                style={{ background: `${accentColour}18`, color: accentColour, border: `1px solid ${accentColour}30` }}
+              >
+                {ttsRate}×
+              </button>
               <button
                 onClick={() => setAutoPlay(a => !a)}
                 className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold transition-all ml-auto"
@@ -724,53 +719,39 @@ export default function ReciteClient({
               </div>
             )}
 
-            {/* Transliteration toggle */}
+            {/* Translation accordion — transliteration + meaning in one toggle */}
             {mode !== 'hidden' && (
               <div>
                 <button
-                  onClick={() => setShowTranslit(s => !s)}
+                  onClick={() => setShowExplan(s => !s)}
                   className="flex items-center gap-1.5 text-xs text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition mb-2"
                 >
-                  {showTranslit ? <EyeOff size={12} /> : <Eye size={12} />}
-                  {showTranslit ? 'Hide' : 'Show'} transliteration
+                  {showExplan ? <EyeOff size={12} /> : <Eye size={12} />}
+                  {showExplan ? 'Hide' : 'Show'} translation
                 </button>
                 <AnimatePresence>
-                  {showTranslit && verse.transliteration && (
-                    <motion.p
+                  {showExplan && (
+                    <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      className="text-sm italic text-[color:var(--brand-muted)] leading-relaxed overflow-hidden"
+                      className="overflow-hidden space-y-2"
                     >
-                      {verse.transliteration}
-                    </motion.p>
+                      {verse.transliteration && (
+                        <p className="text-sm italic text-[color:var(--brand-muted)] leading-relaxed">
+                          {verse.transliteration}
+                        </p>
+                      )}
+                      {verse.meaning && (
+                        <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed">
+                          {verse.meaning}
+                        </p>
+                      )}
+                    </motion.div>
                   )}
                 </AnimatePresence>
               </div>
             )}
-
-            {/* Meaning toggle */}
-            <div>
-              <button
-                onClick={() => setShowMeaning(s => !s)}
-                className="flex items-center gap-1.5 text-xs text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition mb-2"
-              >
-                {showMeaning ? <EyeOff size={12} /> : <Eye size={12} />}
-                {showMeaning ? 'Hide' : 'Show'} meaning
-              </button>
-              <AnimatePresence>
-                {showMeaning && (
-                  <motion.p
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="text-sm text-[color:var(--brand-ink)] leading-relaxed overflow-hidden"
-                  >
-                    {verse.meaning}
-                  </motion.p>
-                )}
-              </AnimatePresence>
-            </div>
 
             {/* ── Explain button ───────────────────────────────────────────────── */}
             <div className="pt-1 border-t border-white/6">
@@ -824,18 +805,6 @@ export default function ReciteClient({
                 </button>
               </div>
 
-              {/* Word by word */}
-              {explainResult.explanation.word_by_word && (
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: accentColour + '88' }}>
-                    Word by Word
-                  </p>
-                  <p className="text-xs text-[color:var(--brand-muted)] leading-relaxed italic">
-                    {explainResult.explanation.word_by_word}
-                  </p>
-                </div>
-              )}
-
               {/* Meaning */}
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: accentColour + '88' }}>
@@ -874,13 +843,6 @@ export default function ReciteClient({
               {explainResult.explanation.contemplation && (
                 <p className="text-sm text-center italic text-[color:var(--brand-muted)] border-t border-white/6 pt-3 leading-relaxed">
                   &ldquo;{explainResult.explanation.contemplation}&rdquo;
-                </p>
-              )}
-
-              {/* Related text */}
-              {explainResult.explanation.related_text && (
-                <p className="text-[10px] text-[color:var(--brand-muted)] text-right">
-                  Also explore: {explainResult.explanation.related_text}
                 </p>
               )}
             </motion.div>
@@ -1044,22 +1006,6 @@ export default function ReciteClient({
             <ChevronRight size={18} />
           </button>
         </div>
-
-        {/* Session stats */}
-        {completed.length > 0 && (
-          <div className="grid grid-cols-3 gap-2 pt-1">
-            {[
-              { label: 'Practiced', value: completed.length },
-              { label: 'Remaining', value: verses.length - completed.length },
-              { label: 'Session',   value: formatTime(timerSeconds) },
-            ].map(stat => (
-              <div key={stat.label} className="glass-panel rounded-xl border border-white/6 py-2.5 text-center">
-                <p className="text-sm font-bold text-[color:var(--brand-ink)]">{stat.value}</p>
-                <p className="text-[10px] text-[color:var(--brand-muted)] mt-0.5">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        )}
 
         {/* Dharma Mitra link */}
         <Link
