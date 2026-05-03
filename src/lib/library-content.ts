@@ -1512,6 +1512,12 @@ export const LIBRARY_SECTIONS: LibrarySection[] = [
   // ── Yoga & Niti ───────────────────────────────────────────────────────────────
   { id: 'yoga_sutra',         title: 'Yoga Sutras',           emoji: '🧘', tradition: 'hindu',    category: 'yoga_sutra',         desc: 'Patanjali\'s 196 sutras — the science of the mind and liberation',         count: YOGA_SUTRA_ENTRIES.length },
   { id: 'chanakya',           title: 'Chanakya Niti',         emoji: '⚖️', tradition: 'hindu',    category: 'chanakya',           desc: 'Ancient wisdom on governance, ethics & practical living',                   count: CHANAKYA_ENTRIES.length },
+  // ── Sikh ───────────────────────────────────────────────────────────────────
+  { id: 'gurbani',            title: 'Nitnem & Gurbani',      emoji: '⚔️', tradition: 'sikh',     category: 'gurbani',            desc: 'The sacred hymns of the Guru Granth Sahib — Japji, Anand & more',           count: GURBANI_ENTRIES.length },
+  // ── Buddhist ───────────────────────────────────────────────────────────────
+  { id: 'dhammapada',         title: 'Dhammapada',            emoji: '☸️', tradition: 'buddhist', category: 'dhammapada',         desc: 'The path of the Buddha — 423 verses of psychological wisdom',              count: BUDDHIST_ENTRIES.length },
+  // ── Jain ───────────────────────────────────────────────────────────────────
+  { id: 'jain_mantra',        title: 'Jain Sutras',           emoji: '🙏', tradition: 'jain',     category: 'jain_mantra',        desc: 'Namokar Mantra and the essential teachings of the Tirthankaras',           count: JAIN_ENTRIES.length },
   // ── Shaiva ───────────────────────────────────────────────────────────────────
   { id: 'shiva_purana',       title: 'Shaiva Scriptures',     emoji: '🌙', tradition: 'hindu',    category: 'shiva_purana',       desc: 'Rudrashtakam, Lingashtakam, Mahimna Stotram & Panchakshara',               count: SHAIVA_ENTRIES.length },
   // ── Shakta ───────────────────────────────────────────────────────────────────
