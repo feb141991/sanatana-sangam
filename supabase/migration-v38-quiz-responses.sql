@@ -26,3 +26,15 @@ CREATE POLICY "Users can insert own quiz responses" ON public.quiz_responses
 
 -- Performance Index
 CREATE INDEX IF NOT EXISTS idx_quiz_responses_user_date ON public.quiz_responses(user_id, date);
+
+-- Unique constraint: one response per user per day (prevents double-save on refresh/multi-device)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'quiz_responses_user_date_unique'
+  ) THEN
+    ALTER TABLE public.quiz_responses
+      ADD CONSTRAINT quiz_responses_user_date_unique UNIQUE (user_id, date);
+  END IF;
+END $$;

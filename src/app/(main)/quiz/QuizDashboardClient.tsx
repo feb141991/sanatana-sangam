@@ -36,20 +36,42 @@ export default function QuizDashboardClient({ userName, tradition, initialHistor
     const total = history.length;
     const correct = history.filter(h => h.is_correct).length;
     const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
-    
-    // Calculate current streak
+
+    // Daily streak — consecutive days answered (regardless of correct/wrong)
+    // Deduplicate by date, sort descending
+    const uniqueDates = [...new Set(history.map(h => h.date))].sort((a, b) => b.localeCompare(a));
     let streak = 0;
-    const sorted = [...history].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    
-    for (let i = 0; i < sorted.length; i++) {
-      if (sorted[i].is_correct) {
+    const today = new Date().toISOString().split('T')[0];
+    let expected = today;
+    for (const d of uniqueDates) {
+      if (d === expected) {
         streak++;
+        const prev = new Date(expected);
+        prev.setDate(prev.getDate() - 1);
+        expected = prev.toISOString().split('T')[0];
       } else {
         break;
       }
     }
 
-    return { total, correct, accuracy, streak };
+    // Tradition rank by accuracy + volume
+    let rank = 'Seeker';
+    if (total >= 30 && accuracy >= 80) rank = 'Pandit';
+    else if (total >= 15 && accuracy >= 65) rank = 'Gyani';
+    else if (total >= 7 && accuracy >= 50) rank = 'Shishya';
+    else if (total >= 1) rank = 'Jigyasu';
+
+    return { total, correct, accuracy, streak, rank };
+  }, [history]);
+
+  // Build a 28-day activity grid from real history
+  const activityGrid = useMemo(() => {
+    const dateSet = new Set(history.map(h => h.date));
+    return Array.from({ length: 28 }, (_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (27 - i));
+      return dateSet.has(d.toISOString().split('T')[0]);
+    });
   }, [history]);
 
   const glassStyle = {
@@ -77,7 +99,7 @@ export default function QuizDashboardClient({ userName, tradition, initialHistor
           { label: 'Current Streak', value: stats.streak, icon: Flame, color: '#ff7043' },
           { label: 'Accuracy', value: `${stats.accuracy}%`, icon: Target, color: meta.accentColour },
           { label: 'Total Answered', value: stats.total, icon: Trophy, color: '#ffca28' },
-          { label: 'Tradition Rank', value: 'Seeker', icon: GraduationCap, color: '#7e57c2' },
+          { label: 'Tradition Rank', value: stats.rank, icon: GraduationCap, color: '#7e57c2' },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -200,12 +222,13 @@ export default function QuizDashboardClient({ userName, tradition, initialHistor
               Consistency
             </h3>
             <div className="grid grid-cols-7 gap-1.5">
-              {Array.from({ length: 28 }).map((_, i) => (
-                <div 
-                  key={i} 
+              {activityGrid.map((active, i) => (
+                <div
+                  key={i}
                   className={`aspect-square rounded-[4px] border ${
-                    i % 3 === 0 ? 'bg-green-500/20 border-green-500/30' : 'bg-white/5 border-white/5'
-                  }`} 
+                    active ? 'border-green-500/30' : 'bg-white/5 border-white/5'
+                  }`}
+                  style={active ? { background: `${meta.accentColour}30`, borderColor: `${meta.accentColour}50` } : {}}
                 />
               ))}
             </div>

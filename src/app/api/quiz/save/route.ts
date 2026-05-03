@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
     const { error } = await supabase
       .from('quiz_responses')
-      .insert({
+      .upsert({
         user_id: user.id,
         question,
         chosen_index,
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
         is_correct,
         tradition,
         date: new Date().toISOString().split('T')[0]
-      });
+      }, { onConflict: 'user_id,date', ignoreDuplicates: true });
 
     if (error) throw error;
 
