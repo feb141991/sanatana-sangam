@@ -31,6 +31,10 @@ import {
   type LibraryEntry,
 } from '@/lib/library-content';
 import { SEED_PATHS as SEED_PATHS_LIB, PATHSHALA_PATH_IDS } from '@/lib/pathshala-paths';
+import {
+  RAMAYANA_STRUCTURE, BHAGAVATAM_STRUCTURE,
+  type EpicStructure, type EpicKanda, type EpicChapter, type EpicVerse
+} from '@/lib/epics-registry';
 
 // ── Difficulty badges — inline styles so they read clearly on any bg ──────────
 const DIFF_STYLE: Record<string, { bg: string; text: string; border: string; label: string }> = {
@@ -72,72 +76,171 @@ async function shareEntry(entry: LibraryEntry) {
 }
 
 // ── Scripture Entry Card ───────────────────────────────────────────────────────
-function EntryCard({ entry, accentColour }: { entry: LibraryEntry; accentColour: string }) {
-  const [expanded, setExpanded] = useState(false);
-  return (
-    <div className="rounded-[1.45rem] overflow-hidden" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
-      <button
-        className="w-full text-left px-4 py-4"
-        onClick={() => setExpanded(e => !e)}
-      >
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold text-[color:var(--brand-ink)] text-sm">{entry.title}</p>
-            <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">{entry.source}</p>
-          </div>
-          {expanded
-            ? <ChevronUp size={16} className="text-[color:var(--brand-muted)] shrink-0 mt-0.5" />
-            : <ChevronDown size={16} className="text-[color:var(--brand-muted)] shrink-0 mt-0.5" />
-          }
+    <button
+      className="w-full text-left p-4 rounded-[1.45rem] transition-all active:scale-[0.98]"
+      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
+      onClick={() => window.dispatchEvent(new CustomEvent('open-reader', { detail: { entry } }))}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <p className="font-bold text-[color:var(--brand-ink)] text-sm leading-tight">{entry.title}</p>
+          <p className="text-[10px] text-[color:var(--brand-muted)] mt-1 uppercase tracking-wider">{entry.source}</p>
         </div>
-        {/* Original text preview */}
-        <p className="mt-2 text-sm font-[family:var(--font-deva)] leading-relaxed"
-          style={{ color: accentColour }}>
-          {entry.original.split('\n')[0]}
-          {entry.original.includes('\n') && !expanded ? '…' : ''}
-        </p>
-      </button>
+        <BookOpen size={14} className="text-[color:var(--brand-muted)] shrink-0 mt-0.5" />
+      </div>
+      <p className="mt-3 text-sm font-[family:var(--font-deva)] leading-relaxed line-clamp-1"
+        style={{ color: accentColour }}>
+        {entry.original.split('\n')[0]}
+      </p>
+    </button>
+  );
+}
 
-      {expanded && (
-        <div className="px-4 pb-4 space-y-3 border-t border-white/6">
-          {/* Full original */}
-          <div className="pt-3">
-            <p className="text-xs font-medium text-[color:var(--brand-muted)] mb-1 uppercase tracking-wide">Original</p>
-            <p className="text-sm font-[family:var(--font-deva)] leading-relaxed whitespace-pre-line"
-              style={{ color: accentColour }}>
-              {entry.original}
-            </p>
-          </div>
-          {/* Transliteration */}
-          <div>
-            <p className="text-xs font-medium text-[color:var(--brand-muted)] mb-1 uppercase tracking-wide">Transliteration</p>
-            <p className="text-sm text-[color:var(--brand-muted)] italic leading-relaxed">{entry.transliteration}</p>
-          </div>
-          {/* Meaning */}
-          <div>
-            <p className="text-xs font-medium text-[color:var(--brand-muted)] mb-1 uppercase tracking-wide">Meaning</p>
-            <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed">{entry.meaning}</p>
-          </div>
-          {/* Tags + Share */}
-          <div className="flex items-center justify-between flex-wrap gap-2 pt-1">
-            <div className="flex flex-wrap gap-1">
-              {entry.tags.slice(0, 4).map(tag => (
-                <span key={tag}
-                  className="text-[10px] rounded-full px-2 py-0.5 font-medium"
-                  style={{ background: `${accentColour}20`, color: accentColour }}>
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <button
-              onClick={e => { e.stopPropagation(); shareEntry(entry); }}
-              className="flex items-center gap-1 text-xs text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition"
-            >
-              <Share2 size={13} /> Share
-            </button>
-          </div>
+// ── Immersive Reader ─────────────────────────────────────────────────────────
+function ScriptureReader({
+  entry, chapter, onClose, accentColour
+}: {
+  entry?: LibraryEntry;
+  chapter?: EpicChapter & { kandaTitle?: string };
+  onClose: () => void;
+  accentColour: string;
+}) {
+  const content = entry ? {
+    title: entry.title,
+    source: entry.source,
+    verses: [{ original: entry.original, transliteration: entry.transliteration, meaning: entry.meaning }]
+  } : {
+    title: chapter?.title,
+    source: `${chapter?.kandaTitle} · Chapter ${chapter?.chapterNumber}`,
+    verses: chapter?.verses?.map(v => ({ original: v.original, transliteration: v.transliteration, meaning: v.meaning })) || []
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      className="fixed inset-0 z-[100] overflow-y-auto"
+      style={{ background: 'var(--brand-background)' }}
+    >
+      <div className="sticky top-0 z-20 flex items-center gap-3 p-4 bg-[var(--brand-background)]/80 backdrop-blur-xl border-b border-white/5">
+        <button onClick={onClose} className="p-2 rounded-full bg-white/5">
+          <X size={20} style={{ color: accentColour }} />
+        </button>
+        <div className="flex-1 min-w-0">
+          <h2 className="font-bold text-sm truncate">{content.title}</h2>
+          <p className="text-[10px] text-[color:var(--brand-muted)] uppercase tracking-wider">{content.source}</p>
         </div>
-      )}
+        <button onClick={() => entry && shareEntry(entry)} className="p-2 rounded-full bg-white/5">
+          <Share2 size={16} className="text-[color:var(--brand-muted)]" />
+        </button>
+      </div>
+
+      <div className="max-w-2xl mx-auto p-6 space-y-10 pb-32">
+        {content.verses.length > 0 ? (
+          content.verses.map((v, i) => (
+            <div key={i} className="space-y-4">
+              {content.verses.length > 1 && <p className="text-[10px] font-mono opacity-30">Verse {i + 1}</p>}
+              <p className="text-xl md:text-2xl font-[family:var(--font-deva)] leading-loose text-center py-4"
+                style={{ color: accentColour }}>
+                {v.original}
+              </p>
+              <div className="space-y-4 pt-4 border-t border-white/5">
+                <div>
+                  <p className="text-[10px] font-bold text-[color:var(--brand-muted)] uppercase tracking-[0.2em] mb-2">Transliteration</p>
+                  <p className="text-sm text-[color:var(--brand-muted)] italic leading-relaxed">{v.transliteration}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-[color:var(--brand-muted)] uppercase tracking-[0.2em] mb-2">Meaning</p>
+                  <p className="text-base text-[color:var(--brand-ink)] leading-relaxed">{v.meaning}</p>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-20">
+            <Loader2 className="animate-spin mx-auto mb-4" style={{ color: accentColour }} />
+            <p className="text-sm text-[color:var(--brand-muted)]">Unrolling sacred verses…</p>
+          </div>
+        )}
+      </div>
+
+      <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[var(--brand-background)] to-transparent pointer-events-none">
+        <button
+          onClick={onClose}
+          className="pointer-events-auto w-full py-4 rounded-2xl font-bold text-sm shadow-xl"
+          style={{ background: accentColour, color: '#1c1c1a' }}
+        >
+          Close Reader
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Epic Viewer — for massive texts ───────────────────────────────────────────
+function EpicViewer({ structure, accentColour }: { structure: EpicStructure; accentColour: string }) {
+  const [selectedKanda, setKanda] = useState<EpicKanda>(structure.kandas[0]);
+
+  const handleOpenChapter = async (c: EpicChapter) => {
+    let verses: EpicVerse[] = [];
+    if (c.id === 'ram-bal-1') {
+      const { RAMAYANA_BAL_KANDA_1 } = await import('@/lib/data/ramayana-bal-kanda-1');
+      verses = RAMAYANA_BAL_KANDA_1.verses || [];
+    }
+    window.dispatchEvent(new CustomEvent('open-reader', { 
+      detail: { chapter: { ...c, kandaTitle: selectedKanda.title, verses } } 
+    }));
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Kanda Selector - Small chips */}
+      <div className="flex overflow-x-auto no-scrollbar gap-1.5 pb-1">
+        {structure.kandas.map(k => (
+          <button
+            key={k.id}
+            onClick={() => setKanda(k)}
+            className={`px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap transition-all border ${
+              selectedKanda.id === k.id
+                ? 'bg-white/10 border-white/20'
+                : 'bg-white/5 border-white/5 text-[color:var(--brand-muted)] hover:bg-white/8'
+            }`}
+            style={selectedKanda.id === k.id ? { color: accentColour } : {}}
+          >
+            {k.title}
+          </button>
+        ))}
+      </div>
+
+      <p className="text-xs text-[color:var(--brand-muted)] px-1">{selectedKanda.description}</p>
+
+      {/* Chapter List */}
+      <div className="grid gap-2">
+        {selectedKanda.chapters.length > 0 ? (
+          selectedKanda.chapters.map(c => (
+            <button
+              key={c.id}
+              onClick={() => handleOpenChapter(c)}
+              className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition text-left group"
+            >
+              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 text-[10px] font-bold text-[color:var(--brand-muted)] group-hover:scale-110 transition">
+                {c.chapterNumber}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-semibold truncate">{c.title}</h4>
+                <p className="text-xs text-[color:var(--brand-muted)] truncate">{c.summary}</p>
+              </div>
+              <Play size={14} className="opacity-0 group-hover:opacity-100 transition" style={{ color: accentColour }} />
+            </button>
+          ))
+        ) : (
+          <div className="py-12 text-center opacity-40">
+            <Loader2 className="mx-auto mb-2 animate-spin-slow" />
+            <p className="text-xs italic">Compiling chapters for {selectedKanda.title}…</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -174,13 +277,10 @@ function ScriptureTab({
         <div className="flex-1 overflow-x-auto no-scrollbar">
           <div className="flex gap-2 pb-1" style={{ width: 'max-content' }}>
             {sections.map(s => (
-              <button
-                key={s.id}
-                onClick={() => { setSection(s.id); setQuery(''); }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap transition-all ${
                   selectedSection === s.id
                     ? 'text-[#1c1c1a] shadow-sm'
-                    : 'bg-white/8 text-[color:var(--brand-muted)] hover:bg-white/12'
+                    : 'bg-white/5 text-[color:var(--brand-muted)] hover:bg-white/8 border border-white/5'
                 }`}
                 style={selectedSection === s.id ? { background: accentColour } : {}}
               >
@@ -220,8 +320,12 @@ function ScriptureTab({
         </p>
       )}
 
-      {/* Entries */}
-      {entries.length === 0 ? (
+      {/* Entries / Epic Viewer */}
+      {selectedSection === 'ramayana' ? (
+        <EpicViewer structure={RAMAYANA_STRUCTURE} accentColour={accentColour} />
+      ) : selectedSection === 'bhagavatam' ? (
+        <EpicViewer structure={BHAGAVATAM_STRUCTURE} accentColour={accentColour} />
+      ) : entries.length === 0 ? (
         <div className="text-center py-10">
           <p className="text-sm text-[color:var(--brand-muted)]">No results for &ldquo;{query}&rdquo;</p>
         </div>
@@ -293,6 +397,19 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
     ? '0 4px 24px rgba(200,146,74,0.05), inset 0 1px 0 rgba(255,255,255,0.04)'
     : '0 4px 24px rgba(180,110,30,0.06), inset 0 1px 0 rgba(255,255,255,0.6)';
     
+  // ── Modal state for immersive reading ──────────────────────────────────────────
+  const [readingEntry, setReadingEntry] = useState<LibraryEntry | undefined>();
+  const [readingChapter, setReadingChapter] = useState<(EpicChapter & { kandaTitle?: string }) | undefined>();
+
+  useEffect(() => {
+    const handleOpen = (e: any) => {
+      if (e.detail.entry) setReadingEntry(e.detail.entry);
+      if (e.detail.chapter) setReadingChapter(e.detail.chapter);
+    };
+    window.addEventListener('open-reader', handleOpen);
+    return () => window.removeEventListener('open-reader', handleOpen);
+  }, []);
+
   const cardStyle = {
     background: glassSurface,
     border: `1px solid ${glassBorder}`,
@@ -824,6 +941,16 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
           )}
 
         </div>
+      )}
+
+      {/* Immersive Reader Overlay */}
+      {(readingEntry || readingChapter) && (
+        <ScriptureReader
+          entry={readingEntry}
+          chapter={readingChapter}
+          accentColour={meta.accentColour}
+          onClose={() => { setReadingEntry(undefined); setReadingChapter(undefined); }}
+        />
       )}
     </div>
   );

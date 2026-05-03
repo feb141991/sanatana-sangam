@@ -162,6 +162,26 @@ export const RAMAYANA_ENTRIES: LibraryEntry[] = [
     tradition: 'hindu', category: 'ramayana',
     tags: ['ram-rajya', 'dharma', 'ideal', 'governance'],
   },
+  {
+    id: 'ramayana-truth',
+    title: 'Truth is the Highest Reality',
+    source: 'Valmiki Ramayana — Ayodhya Kanda 2.14.7',
+    original: 'सत्यमेकपद्मं ब्रह्म सत्ये धर्मः प्रतिष्ठितः ।\nसत्यमेवाक्षया वेदाः सत्येनैवाप्यते परम् ॥',
+    transliteration: 'satyamekapadaṃ brahma satye dharmaḥ pratiṣṭhitaḥ\nsatyamevākṣayā vedāḥ satyenaivāpyate param',
+    meaning: 'Truth is the singular foundation of Brahman (Ultimate Reality), and Dharma is established in Truth. The Vedas are eternal because of Truth, and through Truth alone is the Highest State attained.',
+    tradition: 'hindu', category: 'ramayana',
+    tags: ['truth', 'satya', 'dharma', 'brahman', 'valmiki'],
+  },
+  {
+    id: 'ramayana-motherland',
+    title: 'Mother and Motherland',
+    source: 'Valmiki Ramayana',
+    original: 'अपि स्वर्णमयी लङ्का न मे लक्ष्मण रोचते ।\nजननी जन्मभूमिश्च स्वर्गादपि गरीयसी ॥',
+    transliteration: 'api svarṇamayī laṅkā na me lakṣmaṇa rocate\njananī janmabhūmiśca svargādapi garīyasī',
+    meaning: 'O Lakshmana, even this golden city of Lanka does not appeal to me. One\'s mother and one\'s motherland are greater even than heaven. (Shri Rama\'s famous declaration after the victory in Lanka).',
+    tradition: 'hindu', category: 'ramayana',
+    tags: ['patriotism', 'mother', 'motherland', 'heaven', 'rama'],
+  },
 ];
 
 // ─── UPANISHADS ───────────────────────────────────────────────────────────────
@@ -599,6 +619,26 @@ export const BHAGAVATAM_ENTRIES: LibraryEntry[] = [
     tradition: 'hindu', category: 'bhagavatam',
     tags: ['bhagavatam', 'purana', 'knowledge', 'liberation', 'vaishnavas'],
   },
+  {
+    id: 'bhag-chatushloki-1',
+    title: 'Chatushloki Bhagavatam — The Primal Existence',
+    source: 'Srimad Bhagavatam 2.9.33',
+    original: 'अहमेवासमेवाग्रे नान्यद्यत्सदसत्परम् ।\nपश्चादहं यदेतच्च योऽवशिष्येत सोऽस्म्यहम् ॥',
+    transliteration: 'aham evāsam evāgre nānyad yat sad-asat param\npaścād ahaṃ yad etac ca yo \'vaśiṣyeta so \'smy aham',
+    meaning: 'Prior to this creation, I alone existed. There was nothing else—neither the cause nor the effect, nor the unmanifest. After creation, it is I who am all that exists, and what remains after the dissolution is also I. (The first of four verses summarizing the entire 18,000 verses of the Bhagavatam).',
+    tradition: 'hindu', category: 'bhagavatam',
+    tags: ['essence', 'brahman', 'creation', 'krishna', 'philosophy'],
+  },
+  {
+    id: 'bhag-chatushloki-3',
+    title: 'The Divine Presence',
+    source: 'Srimad Bhagavatam 2.9.35',
+    original: 'यथा महांति भूतानि भूतेषूच्चावचेष्वनु ।\nप्रविष्टान्यप्रविष्टानि तथा तेषु न तेष्वहम् ॥',
+    transliteration: 'yathā mahānti bhūtāni bhūteṣūccāvaceṣv anu\npraviṣṭāny apraviṣṭāni tathā teṣu na teṣv aham',
+    meaning: 'Just as the great elements (earth, water, fire, etc.) enter into all beings and yet remain distinct from them, so do I exist within everything created and yet I am simultaneously outside of everything.',
+    tradition: 'hindu', category: 'bhagavatam',
+    tags: ['presence', 'elements', 'omnipresence', 'krishna'],
+  },
 ];
 
 // ─── VISHNU SAHASRANAMA ───────────────────────────────────────────────────────
@@ -871,6 +911,50 @@ export const VEDA_ENTRIES: LibraryEntry[] = [
   },
 ];
 
+// ─── CORE MANTRAS ─────────────────────────────────────────────────────────────
+export const STOTRA_ENTRIES: LibraryEntry[] = [
+  {
+    id: 'mantra-gayatri',
+    title: 'Gayatri Mantra — The Mother of Vedas',
+    source: 'Rig Veda 3.62.10',
+    original: 'ॐ भूर्भुवः स्वः ।\nतत्सवितुर्वरेण्यं भर्गो देवस्य धीमहि ।\nधियो यो नः प्रचोदयात् ॥',
+    transliteration: 'oṃ bhūr bhuvaḥ svaḥ\ntat savitur vareṇyaṃ bhargo devasya dhīmahi\ndhiyo yo naḥ pracodáyāt',
+    meaning: 'We meditate upon the radiant divine light of that adorable Sun (the source of all existence). May that Divine Light illuminate our intellect and guide us toward the path of righteousness and wisdom.',
+    tradition: 'hindu', category: 'stotra',
+    tags: ['gayatri', 'rigveda', 'wisdom', 'sun', 'enlightenment'],
+  },
+  {
+    id: 'mantra-maha-mrityunjaya',
+    title: 'Maha Mrityunjaya — Victory Over Death',
+    source: 'Rig Veda 7.59.12',
+    original: 'ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम् ।\nउर्वारुकमिव बन्धनान्मृत्योर्मुक्षीय मामृतात् ॥',
+    transliteration: 'oṃ tryambakaṃ yajāmahe sugandhiṃ puṣṭivardhanam\nurvārukamiva bandhanānmṛtyormukṣīya māmṛtāt',
+    meaning: 'We worship the Three-Eyed Lord Shiva, who is fragrant and nourishes all beings. Just as a ripe cucumber is freed from its stem, may He liberate us from death and suffering, and lead us to immortality.',
+    tradition: 'hindu', category: 'stotra',
+    tags: ['shiva', 'protection', 'immortality', 'healing', 'rigveda'],
+  },
+  {
+    id: 'mantra-ganesh',
+    title: 'Ganesha Invocation',
+    source: 'Traditional',
+    original: 'वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ ।\nनिर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥',
+    transliteration: 'vakratuṇḍa mahākāya sūryakoṭi samaprabha\nnirvighnaṃ kuru me deva sarvakāryeṣu sarvadā',
+    meaning: 'O Lord with the curved trunk and massive body, whose brilliance equals ten million suns, please make all my endeavors free of obstacles, always.',
+    tradition: 'hindu', category: 'stotra',
+    tags: ['ganesha', 'beginnings', 'obstacles', 'success'],
+  },
+  {
+    id: 'mantra-durga',
+    title: 'The Auspiciousness of All',
+    source: 'Devi Mahatmyam',
+    original: 'सर्वमङ्गलमङ्गल्ये शिवे सर्वार्थसाधिके ।\nशरण्ये त्र्यम्बके गौरि नारायणि नमोऽस्तु ते ॥',
+    transliteration: 'sarvamaṅgalamāṅgalye śive sarvārthasādhike\nśaraṇye tryambake gauri nārāyaṇi namo’stu te',
+    meaning: 'O Auspiciousness of all Auspiciousness, the Consort of Shiva, the fulfiller of all aims, the refuge, the three-eyed Gauri, Narayani, we bow to you.',
+    tradition: 'hindu', category: 'stotra',
+    tags: ['durga', 'shakti', 'auspicious', 'divine-mother'],
+  },
+];
+
 // ─── YOGA SUTRAS ──────────────────────────────────────────────────────────────
 export const YOGA_SUTRA_ENTRIES: LibraryEntry[] = [
   {
@@ -1056,6 +1140,26 @@ export const CHANAKYA_ENTRIES: LibraryEntry[] = [
     meaning: 'Fire is the guru of the twice-born; the brahmin is the guru of the varnas; the husband is the guru for the wife; and the guest is the guru for all. — Chanakya articulates the living forms through which knowledge and grace flow to each person in their station.',
     tradition: 'hindu', category: 'chanakya',
     tags: ['chanakya', 'guru', 'teacher', 'fire', 'wisdom'],
+  },
+  {
+    id: 'chanakya-living-present',
+    title: 'Live in the Present',
+    source: 'Chanakya Neeti',
+    original: 'गते शोको न कर्तव्यो भविष्यं नैव चिन्तयेत् ।\nवर्तमानेन कालेन वर्तयन्ति विचक्षणाः ॥',
+    transliteration: 'gate śoko na kartavyo bhaviṣyaṃ naiva cintayet\nvartamānena kālena वर्तयन्ति vicakṣaṇāḥ',
+    meaning: 'One should not grieve for the past nor worry about the future; the wise spend their lives attending to the present moment.',
+    tradition: 'hindu', category: 'chanakya',
+    tags: ['chanakya', 'mindfulness', 'wisdom', 'present'],
+  },
+  {
+    id: 'chanakya-secrecy',
+    title: 'The Power of Secrecy',
+    source: 'Chanakya Neeti',
+    original: 'मनसा चिन्तितं कार्यं वाचा नैव प्रकाशयेत् ।\nमन्त्रेण रक्षयेद् गूढं कार्यं चापि नियोजयेत् ॥',
+    transliteration: 'manasā cintitaṃ kāryaṃ vācā naiva prakāśayet\nmantreṇa rakṣayed gūḍhaṃ kāryaṃ cāpi niyojayet',
+    meaning: 'A work thought of in the mind should not be revealed by speech. It should be kept secret like a mantra and put into action silently. Success comes to those who act without premature announcement.',
+    tradition: 'hindu', category: 'chanakya',
+    tags: ['chanakya', 'success', 'strategy', 'focus'],
   },
 ];
 
