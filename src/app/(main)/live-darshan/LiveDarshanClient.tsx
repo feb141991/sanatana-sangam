@@ -47,8 +47,8 @@ export default function LiveDarshanClient({ tradition, userId, streams }: LiveDa
 
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] flex flex-col pb-28">
-      {/* ── Sticky Header ── */}
-      <div className="sticky top-0 z-30 bg-[var(--divine-bg)]/95 backdrop-blur-xl border-b border-[var(--divine-border)] px-4 pt-6 pb-3 space-y-3">
+      {/* ── Header ── */}
+      <div className="bg-[var(--divine-bg)] border-b border-[var(--divine-border)] px-4 pt-6 pb-3 space-y-3">
         {/* Title row */}
         <div className="flex items-center justify-between">
           <div>
