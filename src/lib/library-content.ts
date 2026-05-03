@@ -293,6 +293,16 @@ export const STOTRA_ENTRIES: LibraryEntry[] = [
     tradition: 'hindu', category: 'stotra',
     tags: ['vishnu', 'krishna', 'rama', 'names', 'kirtan', 'devotion'],
   },
+  {
+    id: 'stotra-durga-sarva-mangala',
+    title: 'The Auspiciousness of All (Durga Mantra)',
+    source: 'Devi Mahatmyam',
+    original: 'सर्वमङ्गलमङ्गल्ये शिवे सर्वार्थसाधिके ।\nशरण्ये त्र्यम्बके गौरि नारायणि नमोऽस्तु ते ॥',
+    transliteration: 'sarvamaṅgalamāṅgalye śive sarvārthasādhike\nśaraṇye tryambake gauri nārāyaṇi namo’stu te',
+    meaning: 'O Auspiciousness of all Auspiciousness, the Consort of Shiva, the fulfiller of all aims, the refuge, the three-eyed Gauri, Narayani, we bow to you.',
+    tradition: 'hindu', category: 'stotra',
+    tags: ['durga', 'shakti', 'auspicious', 'divine-mother'],
+  },
 ];
 
 // ─── SIKH GURBANI ─────────────────────────────────────────────────────────────
@@ -911,49 +921,7 @@ export const VEDA_ENTRIES: LibraryEntry[] = [
   },
 ];
 
-// ─── CORE MANTRAS ─────────────────────────────────────────────────────────────
-export const STOTRA_ENTRIES: LibraryEntry[] = [
-  {
-    id: 'mantra-gayatri',
-    title: 'Gayatri Mantra — The Mother of Vedas',
-    source: 'Rig Veda 3.62.10',
-    original: 'ॐ भूर्भुवः स्वः ।\nतत्सवितुर्वरेण्यं भर्गो देवस्य धीमहि ।\nधियो यो नः प्रचोदयात् ॥',
-    transliteration: 'oṃ bhūr bhuvaḥ svaḥ\ntat savitur vareṇyaṃ bhargo devasya dhīmahi\ndhiyo yo naḥ pracodáyāt',
-    meaning: 'We meditate upon the radiant divine light of that adorable Sun (the source of all existence). May that Divine Light illuminate our intellect and guide us toward the path of righteousness and wisdom.',
-    tradition: 'hindu', category: 'stotra',
-    tags: ['gayatri', 'rigveda', 'wisdom', 'sun', 'enlightenment'],
-  },
-  {
-    id: 'mantra-maha-mrityunjaya',
-    title: 'Maha Mrityunjaya — Victory Over Death',
-    source: 'Rig Veda 7.59.12',
-    original: 'ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम् ।\nउर्वारुकमिव बन्धनान्मृत्योर्मुक्षीय मामृतात् ॥',
-    transliteration: 'oṃ tryambakaṃ yajāmahe sugandhiṃ puṣṭivardhanam\nurvārukamiva bandhanānmṛtyormukṣīya māmṛtāt',
-    meaning: 'We worship the Three-Eyed Lord Shiva, who is fragrant and nourishes all beings. Just as a ripe cucumber is freed from its stem, may He liberate us from death and suffering, and lead us to immortality.',
-    tradition: 'hindu', category: 'stotra',
-    tags: ['shiva', 'protection', 'immortality', 'healing', 'rigveda'],
-  },
-  {
-    id: 'mantra-ganesh',
-    title: 'Ganesha Invocation',
-    source: 'Traditional',
-    original: 'वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ ।\nनिर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥',
-    transliteration: 'vakratuṇḍa mahākāya sūryakoṭi samaprabha\nnirvighnaṃ kuru me deva sarvakāryeṣu sarvadā',
-    meaning: 'O Lord with the curved trunk and massive body, whose brilliance equals ten million suns, please make all my endeavors free of obstacles, always.',
-    tradition: 'hindu', category: 'stotra',
-    tags: ['ganesha', 'beginnings', 'obstacles', 'success'],
-  },
-  {
-    id: 'mantra-durga',
-    title: 'The Auspiciousness of All',
-    source: 'Devi Mahatmyam',
-    original: 'सर्वमङ्गलमङ्गल्ये शिवे सर्वार्थसाधिके ।\nशरण्ये त्र्यम्बके गौरि नारायणि नमोऽस्तु ते ॥',
-    transliteration: 'sarvamaṅgalamāṅgalye śive sarvārthasādhike\nśaraṇye tryambake gauri nārāyaṇi namo’stu te',
-    meaning: 'O Auspiciousness of all Auspiciousness, the Consort of Shiva, the fulfiller of all aims, the refuge, the three-eyed Gauri, Narayani, we bow to you.',
-    tradition: 'hindu', category: 'stotra',
-    tags: ['durga', 'shakti', 'auspicious', 'divine-mother'],
-  },
-];
+
 
 // ─── YOGA SUTRAS ──────────────────────────────────────────────────────────────
 export const YOGA_SUTRA_ENTRIES: LibraryEntry[] = [
