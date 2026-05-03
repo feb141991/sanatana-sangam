@@ -38,6 +38,15 @@ export default function LiveDarshanClient({ tradition, userId, streams }: LiveDa
   const [showFilters, setShowFilters]         = useState(false);
   const [activeIshta, setActiveIshta]         = useState<string>('all');
   const [activeState, setActiveState]         = useState<string>('all');
+  const [activeCollection, setActiveCollection] = useState<string | null>(null);
+
+  const FEATURED_COLLECTIONS = [
+    { id: 'Char Dham',     label: 'Char Dham',    emoji: '🏔️', color: '#FF9933', desc: 'The 4 holy abodes' },
+    { id: 'Jyotirlinga',   label: 'Jyotirlinga',  emoji: '🔱', color: '#660000', desc: '12 Radiant Lingas' },
+    { id: 'Rivers',        label: 'Holy Rivers',  emoji: '🌊', color: '#0066CC', desc: 'Ganga & Yamuna Aarti' },
+    { id: 'Saptapuri',     label: 'Saptapuri',    emoji: '🕍', color: '#CC9900', desc: '7 Ancient Holy Cities' },
+    { id: 'Shaktipeeth',   label: 'Shaktipeeth',  emoji: '🪔', color: '#FF3300', desc: 'Seats of the Goddess' },
+  ];
 
   // Dynamically extract unique options from streams
   const ishtaOptions = ['all', ...Array.from(new Set(streams.map(s => s.ishtaDevata).filter(Boolean)))];
@@ -49,6 +58,7 @@ export default function LiveDarshanClient({ tradition, userId, streams }: LiveDa
       if (activeCategory  !== 'all' && s.category  !== activeCategory)  return false;
       if (activeIshta     !== 'all' && s.ishtaDevata !== activeIshta)   return false;
       if (activeState     !== 'all' && s.state       !== activeState)   return false;
+      if (activeCollection && !s.collections?.includes(activeCollection)) return false;
       if (search && !s.title.toLowerCase().includes(search.toLowerCase()) &&
           !s.location.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
@@ -62,8 +72,7 @@ export default function LiveDarshanClient({ tradition, userId, streams }: LiveDa
 
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] flex flex-col pb-28">
-      {/* ── Header ── */}
-      <div className="bg-[var(--divine-bg)] border-b border-[var(--divine-border)] px-4 pt-6 pb-3 space-y-3">
+      <div className="bg-[var(--divine-bg)] border-b border-[var(--divine-border)] px-4 pt-6 pb-3 space-y-4">
         {/* Title row */}
         <div className="flex items-center justify-between">
           <div>
@@ -74,6 +83,48 @@ export default function LiveDarshanClient({ tradition, userId, streams }: LiveDa
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
             <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Live</span>
           </div>
+        </div>
+        {/* Collections Scroll */}
+        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1 px-1">
+          <button
+            onClick={() => setActiveCollection(null)}
+            className={`flex-shrink-0 flex flex-col items-center justify-center w-20 h-20 rounded-2xl border transition-all ${
+              !activeCollection 
+                ? 'bg-[var(--divine-saffron)]/10 border-[var(--divine-saffron)] text-[var(--divine-saffron)]'
+                : 'bg-[var(--divine-surface)] border-[var(--divine-border)] text-[var(--divine-muted)]'
+            }`}
+          >
+            <span className="text-xl mb-1">🕉️</span>
+            <span className="text-[10px] font-bold">Explore</span>
+          </button>
+          
+          {FEATURED_COLLECTIONS.map(col => (
+            <button
+              key={col.id}
+              onClick={() => setActiveCollection(col.id === activeCollection ? null : col.id)}
+              className={`flex-shrink-0 flex flex-col justify-between w-32 h-20 p-2.5 rounded-2xl border transition-all relative overflow-hidden ${
+                activeCollection === col.id
+                  ? 'border-transparent text-white shadow-lg'
+                  : 'bg-[var(--divine-surface)] border-[var(--divine-border)] text-[var(--divine-text)]'
+              }`}
+              style={activeCollection === col.id ? { backgroundColor: col.color } : {}}
+            >
+              <div className="flex justify-between items-start">
+                <span className="text-lg">{col.emoji}</span>
+                {activeCollection === col.id && (
+                  <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                )}
+              </div>
+              <div className="text-left">
+                <p className={`text-[10px] font-black uppercase tracking-wider leading-none mb-0.5 ${activeCollection === col.id ? 'text-white/90' : 'text-[var(--divine-text)]'}`}>
+                  {col.label}
+                </p>
+                <p className={`text-[8px] font-medium leading-none ${activeCollection === col.id ? 'text-white/70' : 'text-[var(--divine-muted)]'}`}>
+                  {col.desc}
+                </p>
+              </div>
+            </button>
+          ))}
         </div>
 
         {/* Search & Filter Toggle */}

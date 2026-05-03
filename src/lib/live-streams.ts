@@ -10,6 +10,7 @@ export interface LiveStream {
   youtubeVideoId: string;
   ishtaDevata?: string;
   state?: string;
+  collections?: string[];
   thumbnailUrl?: string;
 }
 
@@ -23,6 +24,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     ishtaDevata: 'Krishna',
     state: 'Uttar Pradesh',
+    collections: ['Saptapuri'],
     youtubeVideoId: 'ZCXCu9_K0lY', // Verified Mathura Janmabhoomi
   },
   {
@@ -34,6 +36,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     ishtaDevata: 'Shiva',
     state: 'Madhya Pradesh',
+    collections: ['Jyotirlinga', 'Saptapuri'],
     youtubeVideoId: 'XonAtRkvqgo', // Verified Mahakaleshwar
   },
   {
@@ -109,6 +112,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     ishtaDevata: 'Vishnu',
     state: 'Andhra Pradesh',
+    collections: ['Char Dham'],
     youtubeVideoId: 'oWFK4tgjAGM', // Verified Tirupati Balaji
   },
   {
@@ -131,6 +135,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     ishtaDevata: 'Shiva',
     state: 'Uttar Pradesh',
+    collections: ['Jyotirlinga', 'Saptapuri', 'Rivers'],
     youtubeVideoId: 'CxXJsVLDJko', // Verified Kashi Vishwanath
   },
   {
@@ -163,6 +168,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     ishtaDevata: 'Jagannath',
     state: 'Odisha',
+    collections: ['Char Dham', 'Shaktipeeth'],
     youtubeVideoId: '_pplsMPNVmQ', // Verified Jay Jagannath TV
   },
   {
@@ -174,6 +180,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     ishtaDevata: 'Shiva',
     state: 'Uttarakhand',
+    collections: ['Jyotirlinga', 'Chota Char Dham'],
     youtubeVideoId: '3oJdFVXsC-o', // Verified Kedarnath Live
   },
   {
@@ -185,6 +192,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     ishtaDevata: 'Vishnu',
     state: 'Uttarakhand',
+    collections: ['Char Dham', 'Chota Char Dham'],
     youtubeVideoId: 'yGELQ2Ch-q4', // Verified Badrinath Live
   },
   {
@@ -196,6 +204,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     ishtaDevata: 'Shiva',
     state: 'Gujarat',
+    collections: ['Jyotirlinga'],
     youtubeVideoId: 'J4z7CIrvsuw', // Verified Somnath Live
   },
   {
@@ -250,6 +259,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     ishtaDevata: 'Shakti',
     state: 'Andhra Pradesh',
+    collections: ['Jyotirlinga', 'Shaktipeeth'],
     youtubeVideoId: 'zc3tcDcD9Ig', // Verified Srisailam
   },
   {
@@ -377,5 +387,40 @@ export const LIVE_STREAMS: LiveStream[] = [
     category: 'satsang',
     tradition: 'jain',
     youtubeVideoId: 'cDzIiI0kvNg', // Verified Jain Channel
+  },
+  {
+    id: 'dwarkadhish-temple',
+    title: 'Shri Dwarkadhish Mandir',
+    location: 'Dwarka, Gujarat',
+    schedule: 'Live Darshan',
+    category: 'mandir',
+    tradition: 'hindu',
+    ishtaDevata: 'Krishna',
+    state: 'Gujarat',
+    collections: ['Char Dham', 'Saptapuri'],
+    youtubeVideoId: 'rWlOF2WGiTA',
+  },
+  {
+    id: 'ayodhya-ram-mandir',
+    title: 'Ayodhya Ram Mandir',
+    location: 'Ayodhya, UP',
+    schedule: 'Live Darshan',
+    category: 'mandir',
+    tradition: 'hindu',
+    ishtaDevata: 'Rama',
+    state: 'Uttar Pradesh',
+    collections: ['Saptapuri'],
+    youtubeVideoId: 'eIPYl54lAJU',
+  },
+  {
+    id: 'ram-katha-live',
+    title: 'Ram Katha (Morari Bapu)',
+    location: 'Global',
+    schedule: 'Live Katha 24/7',
+    category: 'katha',
+    tradition: 'hindu',
+    ishtaDevata: 'Rama',
+    collections: ['Katha'],
+    youtubeVideoId: 'Yv2D6cWWTq8',
   },
 ];
