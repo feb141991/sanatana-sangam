@@ -327,6 +327,26 @@ export const GURBANI_ENTRIES: LibraryEntry[] = [
     tradition: 'sikh', category: 'gurbani',
     tags: ['sukhmani', 'peace', 'simran', 'guru-arjan-dev', 'meditation'],
   },
+  {
+    id: 'sikh-chaupai-1',
+    title: 'Chaupai Sahib — Protection Prayer',
+    source: 'Sri Dasam Granth — Guru Gobind Singh',
+    original: 'ਹਮਰੀ ਕਰੋ ਹਾਥ ਦੈ ਰੱਛਾ ॥ ਪੂਰਨ ਹੋਇ ਚਿੱਤ ਕੀ ਇੱਛਾ ॥\nਤਵ ਚਰਨਨ ਮਨ ਰਹੈ ਹਮਾਰਾ ॥ ਅਪਨਾ ਜਾਨ ਕਰੋ ਪ੍ਰਤਿਪਾਰਾ ॥',
+    transliteration: 'Hamrī karo hāth dai racchā. Pūran hoi citt kī icchā.\nTav carnan man rahai hamārā. Apnā jān karo pratipārā.',
+    meaning: 'O God, protect me with Your Hand. May the desires of my heart be fulfilled. May my mind remain attached to Your Feet. Consider me Your own and nourish me. — The opening of the Chaupai Sahib, a powerful prayer for protection and strength.',
+    tradition: 'sikh', category: 'nitnem',
+    tags: ['chaupai-sahib', 'protection', 'guru-gobind-singh', 'daily', 'strength'],
+  },
+  {
+    id: 'sikh-deh-shiva',
+    title: 'Deh Shiva Bar Mohe — The Warrior\'s Prayer',
+    source: 'Sri Dasam Granth — Guru Gobind Singh',
+    original: 'ਦੇਹਿ ਸਿਵਾ ਬਰੁ ਮੋਹਿ ਇਹੈ ਸੁਭ ਕਰਮਨ ਤੇ ਕਬਹੂੰ ਨ ਟਰੋਂ ॥\nਨ ਡਰੋਂ ਅਰਿ ਸੋਂ ਜਬ ਜਾਇ ਲਰੋਂ ਨਿਸਚੈ ਕਰਿ ਅਪੁਨੀ ਜੀਤ ਕਰੋਂ ॥',
+    transliteration: 'Deh sivā baru mohi ihai subha karaman te kabahūṅ na ṭaroṅ.\nNa ḍaroṅ ari soṅ jaba jāi laroṅ nisacai kari apunī jīta karoṅ.',
+    meaning: 'O Almighty, grant me this boon, that I may never turn away from performing righteous deeds. May I have no fear of the enemy when I go to battle, and with determination, may I secure my victory. A famous composition by the tenth Guru, instilling courage and commitment to dharma.',
+    tradition: 'sikh', category: 'gurbani',
+    tags: ['guru-gobind-singh', 'warrior', 'prayer', 'victory', 'dharma', 'courage'],
+  },
 ];
 
 // ─── BUDDHIST SCRIPTURES ──────────────────────────────────────────────────────
@@ -391,6 +411,36 @@ export const BUDDHIST_ENTRIES: LibraryEntry[] = [
     tradition: 'buddhist', category: 'dhammapada',
     tags: ['four-noble-truths', 'dukkha', 'nirvana', 'eightfold-path', 'first-sermon'],
   },
+  {
+    id: 'dham-5',
+    title: 'Hatred is Appeased by Love',
+    source: 'Dhammapada — Verse 5',
+    original: 'Na hi verena verāni, sammantīdha kudācanaṃ\nAverena ca sammanti, esa dhammo sanantano',
+    transliteration: 'na hi verena verāni sammantīdha kudācanaṃ\naverena ca sammanti esa dhammo sanantano',
+    meaning: 'Hatred is never appeased by hatred in this world. By non-hatred (love) alone is hatred appeased. This is an eternal law. One of the most famous verses of the Buddha, teaching the power of compassion over retaliation.',
+    tradition: 'buddhist', category: 'dhammapada',
+    tags: ['love', 'compassion', 'law', 'hatred', 'peace'],
+  },
+  {
+    id: 'dham-183',
+    title: 'The Teaching of all Buddhas',
+    source: 'Dhammapada — Verse 183',
+    original: 'Sabbapāpassa akaraṇaṃ, kusalassa upasampadā\nSacittapariyodapanaṃ, etaṃ buddhāna sāsanaṃ',
+    transliteration: 'sabbapāpassa akaraṇaṃ kusalassa upasampadā\nsacittapariyodapanaṃ etaṃ buddhāna sāsanaṃ',
+    meaning: 'To avoid all evil, to cultivate good, and to cleanse one\'s own mind — this is the teaching of the Buddhas. A summary of the entire Buddhist path in a single verse.',
+    tradition: 'buddhist', category: 'dhammapada',
+    tags: ['summary', 'mind', 'ethics', 'goodness'],
+  },
+  {
+    id: 'dham-273',
+    title: 'The Best of Paths',
+    source: 'Dhammapada — Verse 273',
+    original: 'Maggānaṭṭhaṅgiko seṭṭho, saccānaṃ caturo padā\nVirāgo seṭṭho dhammānaṃ, dvipadānañca cakkhumā',
+    transliteration: 'maggānaṭṭhaṅgiko seṭṭho saccānaṃ caturo padā\nvirāgo seṭṭho dhammānaṃ dvipadānañca cakkhumā',
+    meaning: 'Of paths, the Eightfold Path is the best; of truths, the Four Noble Truths are the best; of states, the passionless state (Nirvana) is the best; and of humans, the Seeing One (the Buddha) is the best.',
+    tradition: 'buddhist', category: 'dhammapada',
+    tags: ['eightfold-path', 'truths', 'nirvana', 'buddha'],
+  },
 ];
 
 // ─── JAIN SCRIPTURES ──────────────────────────────────────────────────────────
@@ -434,6 +484,26 @@ export const JAIN_ENTRIES: LibraryEntry[] = [
     meaning: 'Maybe it is; maybe it is not; maybe it both is and is not; maybe it is indescribable. — The Syadvada doctrine of Jainism teaches that truth is multi-faceted. No single viewpoint captures absolute truth. Intellectual humility and openness to multiple perspectives is the Jain approach to knowledge.',
     tradition: 'jain', category: 'jain_scripture',
     tags: ['anekantavada', 'syadvada', 'philosophy', 'truth', 'humility'],
+  },
+  {
+    id: 'jain-bhaktamar-1',
+    title: 'Bhaktamar Stotra — Verse 1',
+    source: 'Bhaktamar Stotra — Acharya Manatunga',
+    original: 'भक्तामर-प्रणत-मौलि-मणि-प्रभाणा-मुद्योतकं दलित-पाप-तमो-वितानम् ।\nसम्यक्-प्रणम्य जिन-पाद-युगं युगादा-वालम्बनं भव-जले पततां जनानाम् ॥',
+    transliteration: 'bhaktāmara-praṇata-mauli-maṇi-prabhāṇā-mudyotakaṃ dalita-pāpa-tamo-vitānam\nsamyak-praṇamya jina-pāda-yugaṃ yugādā-vālambanaṃ bhava-jale patatāṃ janānām',
+    meaning: 'I bow to the feet of the Jina (Lord Adinath), which illuminate the jewels in the crowns of bowing devotees and destroy the darkness of sins. These feet are the only support for those drowning in the ocean of worldly existence. The most famous Jain hymn, often recited for health and protection.',
+    tradition: 'jain', category: 'jain_scripture',
+    tags: ['bhaktamar', 'stotra', 'adinath', 'protection', 'devotion'],
+  },
+  {
+    id: 'jain-samaysara-1',
+    title: 'Samaysara — The Essence of the Soul',
+    source: 'Samaysara — Acharya Kundakunda, Verse 1',
+    original: 'वंदित्तु सव्वसिद्धे धुवमचलमणोवमं गदिं पत्ते ।\nवोच्छामि समयपाहुडममिणमो सुदकेवलीभणिदं ॥',
+    transliteration: 'vandittu savvasiddhe dhuvamacalamaṇovamaṃ gadiṃ patte\nvocchāmi samayapāhuḍamamiṇamo sudakevalībhaṇidaṃ',
+    meaning: 'I bow to all the Siddhas (liberated souls) who have attained the permanent, immutable, and incomparable state of liberation. I shall now expound upon the Samayaprabhrita (The Nature of the Soul) as taught by the omniscient masters. The opening verse of the most important text in Jain philosophy.',
+    tradition: 'jain', category: 'jain_scripture',
+    tags: ['soul', 'siddha', 'liberation', 'kundakunda', 'philosophy'],
   },
 ];
 
