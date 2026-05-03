@@ -106,10 +106,11 @@ export default function LiveDarshanClient({ tradition, userId, streams }: LiveDa
                       </div>
                     ) : (
                       <div className="w-full h-full relative cursor-pointer group" onClick={() => setActivePlayer(stream.id)}>
-                        <img 
+                        <Image 
                           src={`https://i.ytimg.com/vi/${stream.youtubeVideoId}/hqdefault.jpg`}
                           alt={stream.title}
-                          className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
+                          fill
+                          className="object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
                         />
                         <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
                         
