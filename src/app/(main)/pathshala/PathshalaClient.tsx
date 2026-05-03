@@ -279,6 +279,9 @@ function ScriptureTab({
         <div className="flex-1 overflow-x-auto no-scrollbar">
           <div className="flex gap-2 pb-1" style={{ width: 'max-content' }}>
             {sections.map(s => (
+              <button
+                key={s.id}
+                onClick={() => { setSection(s.id); setQuery(''); }}
                 className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap transition-all ${
                   selectedSection === s.id
                     ? 'text-[#1c1c1a] shadow-sm'
