@@ -19,6 +19,7 @@ import {
   ChevronLeft, BookOpen, Mic, Trophy,
   Loader2, Play, Star, Plus, Search, X,
   Share2, ChevronDown, ChevronUp, GraduationCap, Lock, Sparkles, BarChart2,
+  ChevronRight
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
@@ -78,23 +79,48 @@ async function shareEntry(entry: LibraryEntry) {
 // ── Scripture Entry Card ───────────────────────────────────────────────────────
 function EntryCard({ entry, accentColour }: { entry: LibraryEntry; accentColour: string }) {
   return (
-    <button
-      className="w-full text-left p-4 rounded-[1.45rem] transition-all active:scale-[0.98]"
-      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
+    <motion.button
+      whileHover={{ scale: 1.01, translateY: -2 }}
+      whileTap={{ scale: 0.98 }}
+      className="w-full text-left p-5 rounded-[2rem] transition-all relative overflow-hidden group"
+      style={{ 
+        background: 'rgba(255,255,255,0.02)', 
+        border: '1px solid rgba(255,255,255,0.06)',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+      }}
       onClick={() => window.dispatchEvent(new CustomEvent('open-reader', { detail: { entry } }))}
     >
-      <div className="flex items-start justify-between gap-3">
+      {/* Decorative Gradient Background */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{ background: `radial-gradient(circle at top right, ${accentColour}08, transparent 70%)` }} />
+      
+      <div className="relative z-10 flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <p className="font-bold text-[color:var(--brand-ink)] text-sm leading-tight">{entry.title}</p>
-          <p className="text-[10px] text-[color:var(--brand-muted)] mt-1 uppercase tracking-wider">{entry.source}</p>
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: accentColour }} />
+            <p className="text-[10px] text-[color:var(--brand-muted)] uppercase tracking-[0.2em] font-bold">{entry.source}</p>
+          </div>
+          <h3 className="font-bold text-[color:var(--brand-ink)] text-base md:text-lg leading-tight mb-3 group-hover:text-[var(--brand-ink)] transition-colors">
+            {entry.title}
+          </h3>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5 group-hover:border-white/10 transition-colors">
+            <BookOpen size={12} style={{ color: accentColour }} />
+            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: accentColour }}>Begin Reading</span>
+          </div>
         </div>
-        <BookOpen size={14} className="text-[color:var(--brand-muted)] shrink-0 mt-0.5" />
+        
+        <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-white/5 border border-white/5 group-hover:scale-110 transition-transform duration-500">
+          <Sparkles size={18} style={{ color: accentColour }} className="opacity-40" />
+        </div>
       </div>
-      <p className="mt-3 text-sm font-[family:var(--font-deva)] leading-relaxed line-clamp-1"
-        style={{ color: accentColour }}>
-        {entry.original.split('\n')[0]}
-      </p>
-    </button>
+
+      <div className="mt-5 pt-4 border-t border-white/5 relative">
+        <p className="text-sm font-[family:var(--font-deva)] leading-relaxed line-clamp-1 opacity-60 italic"
+          style={{ color: accentColour }}>
+          {entry.original.split('\n')[0]}
+        </p>
+      </div>
+    </motion.button>
   );
 }
 
@@ -125,56 +151,88 @@ function ScriptureReader({
       className="fixed inset-0 z-[100] overflow-y-auto"
       style={{ background: 'var(--brand-background)' }}
     >
-      <div className="sticky top-0 z-20 flex items-center gap-3 p-4 bg-[var(--brand-background)]/80 backdrop-blur-xl border-b border-white/5">
-        <button onClick={onClose} className="p-2 rounded-full bg-white/5">
-          <X size={20} style={{ color: accentColour }} />
+      <div className="sticky top-0 z-20 flex items-center gap-4 p-4 md:p-6 bg-[var(--brand-background)]/80 backdrop-blur-2xl border-b border-white/5">
+        <button onClick={onClose} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors">
+          <ChevronLeft size={22} style={{ color: accentColour }} />
         </button>
         <div className="flex-1 min-w-0">
-          <h2 className="font-bold text-sm truncate">{content.title}</h2>
-          <p className="text-[10px] text-[color:var(--brand-muted)] uppercase tracking-wider">{content.source}</p>
+          <h2 className="font-bold text-base md:text-lg truncate tracking-tight">{content.title}</h2>
+          <p className="text-[10px] md:text-xs text-[color:var(--brand-muted)] uppercase tracking-[0.2em] font-bold">{content.source}</p>
         </div>
-        <button onClick={() => entry && shareEntry(entry)} className="p-2 rounded-full bg-white/5">
-          <Share2 size={16} className="text-[color:var(--brand-muted)]" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => entry && shareEntry(entry)} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors">
+            <Share2 size={18} className="text-[color:var(--brand-muted)]" />
+          </button>
+        </div>
       </div>
 
-      <div className="max-w-2xl mx-auto p-6 space-y-10 pb-32">
+      <div className="max-w-3xl mx-auto p-6 md:p-12 space-y-16 pb-40">
         {content.verses.length > 0 ? (
           content.verses.map((v, i) => (
-            <div key={i} className="space-y-4">
-              {content.verses.length > 1 && <p className="text-[10px] font-mono opacity-30">Verse {i + 1}</p>}
-              <p className="text-xl md:text-2xl font-[family:var(--font-deva)] leading-loose text-center py-4"
+            <motion.div 
+              key={i} 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="flex items-center gap-4 mb-8">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/5" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-30">Verse {i + 1}</span>
+                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/5" />
+              </div>
+
+              <p className="text-2xl md:text-4xl font-[family:var(--font-deva)] leading-[1.8] text-center mb-12 drop-shadow-sm px-4"
                 style={{ color: accentColour }}>
                 {v.original}
               </p>
-              <div className="space-y-4 pt-4 border-t border-white/5">
-                <div>
-                  <p className="text-[10px] font-bold text-[color:var(--brand-muted)] uppercase tracking-[0.2em] mb-2">Transliteration</p>
-                  <p className="text-sm text-[color:var(--brand-muted)] italic leading-relaxed">{v.transliteration}</p>
+
+              <div className="grid md:grid-cols-2 gap-8 pt-8">
+                <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5">
+                  <p className="text-[10px] font-bold text-[color:var(--brand-muted)] uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                    <span className="w-1 h-1 rounded-full bg-[color:var(--brand-muted)]" />
+                    Transliteration
+                  </p>
+                  <p className="text-sm md:text-base text-[color:var(--brand-muted)] italic leading-relaxed font-serif">
+                    {v.transliteration}
+                  </p>
                 </div>
-                <div>
-                  <p className="text-[10px] font-bold text-[color:var(--brand-muted)] uppercase tracking-[0.2em] mb-2">Meaning</p>
-                  <p className="text-base text-[color:var(--brand-ink)] leading-relaxed">{v.meaning}</p>
+                <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5">
+                  <p className="text-[10px] font-bold text-[color:var(--brand-muted)] uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                    <span className="w-1 h-1 rounded-full" style={{ background: accentColour }} />
+                    Divine Meaning
+                  </p>
+                  <p className="text-base md:text-lg text-[color:var(--brand-ink)] leading-relaxed font-medium">
+                    {v.meaning}
+                  </p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))
         ) : (
-          <div className="text-center py-20">
-            <Loader2 className="animate-spin mx-auto mb-4" style={{ color: accentColour }} />
-            <p className="text-sm text-[color:var(--brand-muted)]">Unrolling sacred verses…</p>
+          <div className="text-center py-32">
+            <Loader2 className="animate-spin mx-auto mb-6 opacity-20" size={40} style={{ color: accentColour }} />
+            <p className="text-sm font-bold uppercase tracking-widest opacity-40">Unrolling sacred manuscript…</p>
           </div>
         )}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[var(--brand-background)] to-transparent pointer-events-none">
-        <button
-          onClick={onClose}
-          className="pointer-events-auto w-full py-4 rounded-2xl font-bold text-sm shadow-xl"
-          style={{ background: accentColour, color: '#1c1c1a' }}
-        >
-          Close Reader
-        </button>
+      <div className="fixed bottom-0 left-0 right-0 p-6 md:p-8 bg-gradient-to-t from-[var(--brand-background)] via-[var(--brand-background)]/95 to-transparent">
+        <div className="max-w-2xl mx-auto">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={onClose}
+            className="w-full py-4 rounded-2xl font-bold text-sm shadow-2xl transition-all"
+            style={{ 
+              background: `linear-gradient(135deg, ${accentColour}, ${accentColour}cc)`,
+              color: '#1c1c1a',
+              boxShadow: `0 10px 40px ${accentColour}33`
+            }}
+          >
+            Conclude Path
+          </motion.button>
+        </div>
       </div>
     </motion.div>
   );
@@ -196,50 +254,67 @@ function EpicViewer({ structure, accentColour }: { structure: EpicStructure; acc
   };
 
   return (
-    <div className="space-y-4">
-      {/* Kanda Selector - Small chips */}
-      <div className="flex overflow-x-auto no-scrollbar gap-1.5 pb-1">
-        {structure.kandas.map(k => (
-          <button
-            key={k.id}
-            onClick={() => setKanda(k)}
-            className={`px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap transition-all border ${
-              selectedKanda.id === k.id
-                ? 'bg-white/10 border-white/20'
-                : 'bg-white/5 border-white/5 text-[color:var(--brand-muted)] hover:bg-white/8'
-            }`}
-            style={selectedKanda.id === k.id ? { color: accentColour } : {}}
-          >
-            {k.title}
-          </button>
-        ))}
+    <div className="space-y-6">
+      {/* Kanda Selector - Premium Horizontal Scroll */}
+      <div className="relative -mx-4 px-4">
+        <div className="flex overflow-x-auto no-scrollbar gap-2 pb-1">
+          {structure.kandas.map(k => (
+            <button
+              key={k.id}
+              onClick={() => setKanda(k)}
+              className={`px-4 py-2 rounded-2xl text-[10px] font-bold whitespace-nowrap transition-all border ${
+                selectedKanda.id === k.id
+                  ? 'bg-white/10 border-white/20'
+                  : 'bg-white/5 border-white/5 text-[color:var(--brand-muted)] hover:bg-white/8'
+              }`}
+              style={selectedKanda.id === k.id ? { color: accentColour, boxShadow: `0 4px 15px ${accentColour}10` } : {}}
+            >
+              {k.title}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <p className="text-xs text-[color:var(--brand-muted)] px-1">{selectedKanda.description}</p>
+      <div className="p-5 rounded-[2rem] bg-white/5 border border-white/10 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-4 opacity-10">
+          <BookOpen size={60} style={{ color: accentColour }} />
+        </div>
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: accentColour }}>Current Kanda</p>
+        <h3 className="text-xl font-bold mb-2">{selectedKanda.title}</h3>
+        <p className="text-xs text-[color:var(--brand-muted)] leading-relaxed max-w-[80%]">{selectedKanda.description}</p>
+      </div>
 
-      {/* Chapter List */}
-      <div className="grid gap-2">
+      {/* Chapter List - Step Journey Design */}
+      <div className="grid gap-3 relative">
+        {/* Journey Line */}
+        <div className="absolute left-[2.25rem] top-6 bottom-6 w-px bg-white/5" />
+        
         {selectedKanda.chapters.length > 0 ? (
           selectedKanda.chapters.map(c => (
-            <button
+            <motion.button
               key={c.id}
+              whileHover={{ x: 4 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => handleOpenChapter(c)}
-              className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition text-left group"
+              className="flex items-center gap-4 p-4 rounded-[1.8rem] bg-white/5 border border-white/5 hover:bg-white/10 transition-all text-left relative z-10 group"
             >
-              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 text-[10px] font-bold text-[color:var(--brand-muted)] group-hover:scale-110 transition">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#1c1c1a] border border-white/10 text-xs font-bold transition-all group-hover:border-white/20 group-hover:scale-110 shadow-lg"
+                style={{ color: accentColour }}>
                 {c.chapterNumber}
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-semibold truncate">{c.title}</h4>
-                <p className="text-xs text-[color:var(--brand-muted)] truncate">{c.summary}</p>
+                <div className="flex items-center justify-between gap-2">
+                  <h4 className="text-sm font-bold truncate group-hover:text-[var(--brand-ink)] transition-colors">{c.title}</h4>
+                  <ChevronRight size={14} className="opacity-0 group-hover:opacity-40 transition-opacity" />
+                </div>
+                <p className="text-[10px] text-[color:var(--brand-muted)] truncate mt-0.5">{c.summary}</p>
               </div>
-              <Play size={14} className="opacity-0 group-hover:opacity-100 transition" style={{ color: accentColour }} />
-            </button>
+            </motion.button>
           ))
         ) : (
-          <div className="py-12 text-center opacity-40">
-            <Loader2 className="mx-auto mb-2 animate-spin-slow" />
-            <p className="text-xs italic">Compiling chapters for {selectedKanda.title}…</p>
+          <div className="py-20 text-center rounded-[2rem] border border-dashed border-white/10 bg-white/2">
+            <Loader2 className="mx-auto mb-3 animate-spin-slow opacity-20" size={32} />
+            <p className="text-xs font-medium tracking-wide opacity-40 uppercase">Compiling chapters for the Path…</p>
           </div>
         )}
       </div>
