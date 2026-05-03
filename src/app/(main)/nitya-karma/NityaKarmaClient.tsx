@@ -32,6 +32,7 @@ import { hapticLight, hapticSuccess } from '@/lib/platform';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { getAshramaDuties, getAshramaMeta, type LifeStage, type GenderContext } from '@/lib/ashrama';
 import { localSpiritualDate, buildSpiritualDateRange } from '@/lib/sacred-time';
+import { calculatePanchang, getTodaySpiritualPulse } from '@/lib/panchang';
 import { usePremium } from '@/hooks/usePremium';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import NityaHeroBanner from '@/components/nitya/NityaHeroBanner';
@@ -1044,6 +1045,15 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
   const allDone        = completedCount === totalSteps && totalSteps > 0;
   const vataDays       = panchang?.vrata ?? null;
 
+  // ── Sacred Day Pulse (tradition-aware, computed from live astronomy) ────────
+  // Calculate once from the astronomy engine — tithiIndex drives all traditions.
+  const sacredPulse = (() => {
+    try {
+      const p = calculatePanchang(new Date());
+      return getTodaySpiritualPulse(p.tithiIndex, tradition, new Date());
+    } catch { return null; }
+  })();
+
   // ── Hoisted Ashrama derived values (used by tab badge + tab 2 content) ────
   const _gc        = (localGenderCtx as GenderContext | null);
   const _stageMeta = localLifeStage
@@ -1184,6 +1194,38 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                     </p>
                   </div>
                 </div>
+              )}
+
+              {/* Sacred Day Pulse — tradition-aware nudge above practice cards */}
+              {sacredPulse && !vataDays && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  className="rounded-2xl border px-4 py-3 flex items-start gap-3"
+                  style={{ background: `${accent}0D`, borderColor: `${accent}28` }}
+                >
+                  <span className="text-2xl shrink-0">{sacredPulse.emoji}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold" style={{ color: accent }}>
+                      {sacredPulse.label} Today
+                    </p>
+                    <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-relaxed">
+                      {sacredPulse.description}
+                    </p>
+                  </div>
+                  <span
+                    className="w-2 h-2 rounded-full mt-1 shrink-0"
+                    style={{
+                      background: sacredPulse.intensity === 'high'
+                        ? accent
+                        : sacredPulse.intensity === 'medium'
+                          ? `${accent}99`
+                          : `${accent}55`,
+                      boxShadow: sacredPulse.intensity === 'high' ? `0 0 6px ${accent}80` : 'none',
+                    }}
+                  />
+                </motion.div>
               )}
 
               {/* 3 practice mode cards */}

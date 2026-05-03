@@ -812,6 +812,88 @@ body {
   font-weight: 600;
 }
 
+/* ── Sacred Day Pulse Banner ──────────────────────────────────────────────── */
+.sacred-pulse-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 16px 14px;
+  padding: 13px 16px;
+  border-radius: 14px;
+  background: rgba(200, 146, 74, 0.10);
+  border: 1px solid rgba(200, 146, 74, 0.22);
+  position: relative;
+  overflow: hidden;
+}
+
+:root[data-theme='dark'] .sacred-pulse-banner {
+  background: rgba(200, 146, 74, 0.08);
+  border-color: rgba(200, 146, 74, 0.18);
+}
+
+:root[data-theme='light'] .sacred-pulse-banner {
+  background: rgba(200, 146, 74, 0.09);
+  border-color: rgba(200, 146, 74, 0.28);
+}
+
+.sacred-pulse-emoji {
+  font-size: 26px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.sacred-pulse-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sacred-pulse-label {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--brand-primary);
+}
+
+:root[data-theme='light'] .sacred-pulse-label {
+  color: #A0622A;
+}
+
+.sacred-pulse-desc {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-muted-warm, rgba(242, 234, 214, 0.70));
+}
+
+:root[data-theme='light'] .sacred-pulse-desc {
+  color: rgba(60, 45, 28, 0.70);
+}
+
+/* Intensity dot — right edge */
+.sacred-pulse-intensity {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: rgba(200, 146, 74, 0.35);
+}
+
+.sacred-pulse-intensity[data-intensity='high'] {
+  background: #C8924A;
+  box-shadow: 0 0 7px rgba(200, 146, 74, 0.60);
+}
+
+.sacred-pulse-intensity[data-intensity='medium'] {
+  background: rgba(200, 146, 74, 0.65);
+}
+
+.sacred-pulse-intensity[data-intensity='low'] {
+  background: rgba(200, 146, 74, 0.35);
+}
+
 .divine-feature-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

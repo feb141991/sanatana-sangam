@@ -32,7 +32,7 @@ import {
 import type { Shloka } from '@/lib/shlokas';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { DailySacredText } from '@/lib/sacred-texts';
-import { calculatePanchang, PANCHANG_TRUST_META } from '@/lib/panchang';
+import { calculatePanchang, PANCHANG_TRUST_META, getTodaySpiritualPulse } from '@/lib/panchang';
 import { getGreeting, getGreetingPool, isGreetingCompatibleWithTradition } from '@/lib/traditions';
 import type { GuidedPathProgressRow } from '@/lib/guided-paths';
 import { useLocation } from '@/lib/LocationContext';
@@ -49,12 +49,13 @@ import DarshanOverlay from '@/components/home/DarshanOverlay';
 import DarshanPrompt from '@/components/home/DarshanPrompt';
 
 interface Panchang {
-  tithi:     string;
-  nakshatra: string;
-  yoga:      string;
-  sunrise:   string;
-  sunset:    string;
-  rahuKaal:  string;
+  tithi:      string;
+  nakshatra:  string;
+  yoga:       string;
+  sunrise:    string;
+  sunset:     string;
+  rahuKaal:   string;
+  tithiIndex: number;
 }
 
 interface SacredTextMeta {
@@ -1068,12 +1069,13 @@ export default function HomeDashboard({
   useEffect(() => {
     const p = calculatePanchang(selectedDate, lat, lon);
     setPanchang({
-      tithi:     p.tithi,
-      nakshatra: p.nakshatra,
-      yoga:      p.yoga,
-      sunrise:   p.sunrise,
-      sunset:    p.sunset,
-      rahuKaal:  p.rahuKaal,
+      tithi:      p.tithi,
+      nakshatra:  p.nakshatra,
+      yoga:       p.yoga,
+      sunrise:    p.sunrise,
+      sunset:     p.sunset,
+      rahuKaal:   p.rahuKaal,
+      tithiIndex: p.tithiIndex,
     });
   }, [selectedDate, lat, lon]);
 
@@ -1314,6 +1316,12 @@ export default function HomeDashboard({
     { label: 'Mala', value: japaAlreadyDoneToday ? 'complete' : 'start', active: japaAlreadyDoneToday, href: '/bhakti/mala', onClick: undefined },
     { label: 'Nitya', value: nityaDoneToday ? 'complete' : 'continue', active: nityaDoneToday, href: '/nitya-karma', onClick: undefined },
   ];
+  // ── Sacred Day Pulse ────────────────────────────────────────────────────────
+  // Only show when viewing today (not a past/future panchang date).
+  const sacredPulse = isToday
+    ? getTodaySpiritualPulse(panchang.tithiIndex, tradition, selectedDate)
+    : null;
+
   const heroTheme = resolveHomeHeroTheme({
     tradition,
     sampradaya,
@@ -1498,6 +1506,33 @@ export default function HomeDashboard({
         </div>
 
 
+
+        {/* ── Sacred Day Pulse Banner ─────────────────────────────────────────── */}
+        <AnimatePresence>
+          {sacredPulse && (
+            <motion.div
+              key="sacred-pulse"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="sacred-pulse-banner"
+              role="status"
+              aria-live="polite"
+            >
+              <span className="sacred-pulse-emoji" aria-hidden="true">{sacredPulse.emoji}</span>
+              <div className="sacred-pulse-body">
+                <span className="sacred-pulse-label">{sacredPulse.label} Today</span>
+                <span className="sacred-pulse-desc">{sacredPulse.description}</span>
+              </div>
+              <span
+                className="sacred-pulse-intensity"
+                data-intensity={sacredPulse.intensity}
+                aria-label={`${sacredPulse.intensity} intensity`}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <MotionStagger className="divine-feature-grid" delay={0.08}>
           {divineFeatureCards.map((item) => {

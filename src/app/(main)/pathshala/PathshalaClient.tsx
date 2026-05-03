@@ -445,7 +445,9 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
   const isPro     = usePremium();
   const prefersReducedMotion = useReducedMotion();
 
-  const { latitude: lat, longitude: lon } = useLocation();
+  const { coords: _pathCoords } = useLocation();
+  const lat = _pathCoords?.lat ?? undefined;
+  const lon = _pathCoords?.lon ?? undefined;
   const [activePaths, setActive]    = useState<ActiveEnrollment[]>([]);
   const [loading,     setLoading]   = useState(true);
   const [enrolling,   setEnrolling] = useState<string | null>(null);
