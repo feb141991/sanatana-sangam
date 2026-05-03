@@ -15,9 +15,9 @@ interface Props {
 // ── Quick Actions ──────────────────────────────────────────────────────────────
 const QUICK_ACTIONS = [
   { icon: '📿', label: 'Japa Mala', href: '/japa'          },
+  { icon: '🧠', label: 'Quiz Mastery', href: '/quiz'        },
   { icon: '📖', label: 'Pathshala', href: '/pathshala'      },
   { icon: '🤝', label: 'Seva Hub',  href: '/seva'          },
-  { icon: '🛕', label: 'Tirtha Map',href: '/tirtha-map'    },
   { icon: '📊', label: 'My Progress', href: '/my-progress'   },
 ];
 const GUEST_QUICK_ACTIONS = [
