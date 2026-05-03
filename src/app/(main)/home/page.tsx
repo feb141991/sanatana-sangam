@@ -91,7 +91,7 @@ export default async function HomePage() {
   twentyEightDaysAgo.setDate(twentyEightDaysAgo.getDate() - 27);
   const historyFrom = twentyEightDaysAgo.toISOString().slice(0, 10);
 
-  const [{ data: sadhanaHistory }, { data: nityaHistory }] = await Promise.all([
+  const [{ data: sadhanaHistory }, { data: nityaHistory }, { data: liveDarshanData }] = await Promise.all([
     supabase
       .from('daily_sadhana')
       .select('date, japa_done')
