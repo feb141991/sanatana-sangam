@@ -1,18 +1,17 @@
 'use client';
 
-// ─── Pathshala Lesson Viewer ──────────────────────────────────────────────────
-// Displays scripture lessons grouped by chapter/section.
-// Free: read + expand + mark complete.
-// Pro (future): AI explanation, voice scoring, flashcards.
+// ─── Pathshala Lesson Reader — ground-up rewrite ──────────────────────────────
+// One verse at a time, focused e-reader layout.
+// All features visible and reachable without hunting: listen, save, copy, AI,
+// font size, progress, lesson nav, mark complete.
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ChevronLeft, ChevronRight, CheckCircle2,
-  BookOpen, Mic, Sparkles, ChevronDown, ChevronUp,
-  Copy, Loader2, Bookmark, Volume2, VolumeX,
+  ChevronLeft, ChevronRight, CheckCircle2, BookOpen, Mic,
+  Sparkles, Copy, Loader2, Bookmark, Volume2, VolumeX, EyeOff,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
@@ -24,15 +23,13 @@ import { SEED_PATHS } from '@/app/(main)/pathshala/PathshalaClient';
 import { useSadhana } from '@/contexts/EngineContext';
 import { getAIChatHref } from '@/lib/pathshala-links';
 import { getTransliteration } from '@/lib/transliteration';
-import type { LibraryEntry } from '@/lib/library-content';
-import type { LibraryTradition } from '@/lib/library-content';
+import type { LibraryEntry, LibraryTradition } from '@/lib/library-content';
 
-// ─── Lesson content builder ────────────────────────────────────────────────────
-// Groups library entries into paginated lessons (~4 entries each)
+// ─── Font steps — generous range for all ages ─────────────────────────────────
+const READER_FONT_STEPS = [1.0, 1.15, 1.32, 1.5, 1.7] as const;
 const ENTRIES_PER_LESSON = 4;
-// Starts at a comfortable reading size; users can increase further
-const READER_FONT_STEPS = [1.1, 1.25, 1.4, 1.58, 1.78] as const;
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 function getEntryText(entry: LibraryEntry) {
   return [
     `${entry.title} — ${entry.source}`,
@@ -41,33 +38,27 @@ function getEntryText(entry: LibraryEntry) {
   ].filter(Boolean).join('\n\n');
 }
 
+// ─── Lesson content builder ────────────────────────────────────────────────────
 function getPathLessons(pathId: string): { title: string; entries: LibraryEntry[] }[] {
   let entries: LibraryEntry[] = [];
 
   switch (pathId) {
     case 'bhagavad-gita-intro': {
-      // Group by chapter — one lesson per chapter
       const chapters = Array.from({ length: 18 }, (_, i) => i + 1);
       return chapters.map(ch => {
         const tag = `chapter-${ch}`;
         const chEntries = GITA_FULL_DATA.filter(e => (e.tags as readonly string[]).includes(tag));
-        // Limit to first 8 verses per chapter to keep lessons digestible
-        return {
-          title: `Chapter ${ch}`,
-          entries: chEntries.slice(0, 8) as unknown as LibraryEntry[],
-        };
+        return { title: `Chapter ${ch}`, entries: chEntries.slice(0, 8) as unknown as LibraryEntry[] };
       }).filter(l => l.entries.length > 0);
     }
 
     case 'upanishads-core': {
-      // Core four Upanishads: Isha, Kena, Katha, Mandukya
       const upanishads = ['isha', 'kena', 'katha', 'mandukya'];
       const result: { title: string; entries: LibraryEntry[] }[] = [];
       for (const name of upanishads) {
         const uEntries = ALL_LIBRARY_ENTRIES.filter(e =>
           e.category === 'upanishad' && e.tags.some(t => t.includes(name))
         );
-        // Chunk into groups
         for (let i = 0; i < uEntries.length; i += ENTRIES_PER_LESSON) {
           result.push({
             title: `${name.charAt(0).toUpperCase() + name.slice(1)} Upanishad — Part ${Math.floor(i / ENTRIES_PER_LESSON) + 1}`,
@@ -82,10 +73,7 @@ function getPathLessons(pathId: string): { title: string; entries: LibraryEntry[
       const stotraEntries = ALL_LIBRARY_ENTRIES.filter(e => e.category === 'stotra');
       const result: { title: string; entries: LibraryEntry[] }[] = [];
       for (let i = 0; i < stotraEntries.length; i += ENTRIES_PER_LESSON) {
-        result.push({
-          title: `Stotra Session ${Math.floor(i / ENTRIES_PER_LESSON) + 1}`,
-          entries: stotraEntries.slice(i, i + ENTRIES_PER_LESSON),
-        });
+        result.push({ title: `Stotra Session ${Math.floor(i / ENTRIES_PER_LESSON) + 1}`, entries: stotraEntries.slice(i, i + ENTRIES_PER_LESSON) });
       }
       return result.length > 0 ? result : [{ title: 'Daily Stotras', entries: stotraEntries.slice(0, 4) }];
     }
@@ -93,7 +81,6 @@ function getPathLessons(pathId: string): { title: string; entries: LibraryEntry[
     case 'yoga-sutras': {
       const yogaEntries = ALL_LIBRARY_ENTRIES.filter(e => e.category === 'yoga_sutra');
       const result: { title: string; entries: LibraryEntry[] }[] = [];
-      // Group by chapter
       const yogaChapters = ['samadhi', 'sadhana', 'vibhuti', 'kaivalya'];
       for (const chapter of yogaChapters) {
         const cEntries = yogaEntries.filter(e => e.tags.some(t => t.includes(chapter)));
@@ -111,10 +98,7 @@ function getPathLessons(pathId: string): { title: string; entries: LibraryEntry[
       const gurbaniEntries = ALL_LIBRARY_ENTRIES.filter(e => e.category === 'gurbani' || e.category === 'nitnem');
       const result: { title: string; entries: LibraryEntry[] }[] = [];
       for (let i = 0; i < gurbaniEntries.length; i += ENTRIES_PER_LESSON) {
-        result.push({
-          title: `Nitnem Session ${Math.floor(i / ENTRIES_PER_LESSON) + 1}`,
-          entries: gurbaniEntries.slice(i, i + ENTRIES_PER_LESSON),
-        });
+        result.push({ title: `Nitnem Session ${Math.floor(i / ENTRIES_PER_LESSON) + 1}`, entries: gurbaniEntries.slice(i, i + ENTRIES_PER_LESSON) });
       }
       return result.length > 0 ? result : [{ title: 'Nitnem Banis', entries: gurbaniEntries.slice(0, 4) }];
     }
@@ -123,16 +107,12 @@ function getPathLessons(pathId: string): { title: string; entries: LibraryEntry[
       const dhamma = ALL_LIBRARY_ENTRIES.filter(e => e.category === 'dhammapada');
       const result: { title: string; entries: LibraryEntry[] }[] = [];
       for (let i = 0; i < dhamma.length; i += ENTRIES_PER_LESSON) {
-        result.push({
-          title: `Chapter ${Math.floor(i / ENTRIES_PER_LESSON) + 1} — Dhammapada`,
-          entries: dhamma.slice(i, i + ENTRIES_PER_LESSON),
-        });
+        result.push({ title: `Chapter ${Math.floor(i / ENTRIES_PER_LESSON) + 1} — Dhammapada`, entries: dhamma.slice(i, i + ENTRIES_PER_LESSON) });
       }
       return result.length > 0 ? result : [{ title: 'Dhammapada', entries: dhamma.slice(0, 4) }];
     }
 
     default: {
-      // Fallback: first 30 Gita verses split into groups
       entries = GITA_FULL_DATA.slice(0, 30) as unknown as LibraryEntry[];
       const result: { title: string; entries: LibraryEntry[] }[] = [];
       for (let i = 0; i < entries.length; i += ENTRIES_PER_LESSON) {
@@ -143,164 +123,17 @@ function getPathLessons(pathId: string): { title: string; entries: LibraryEntry[
   }
 }
 
-// ─── Entry Card ────────────────────────────────────────────────────────────────
-function VerseCard({
-  entry,
-  accentColour,
-  index,
-  fontScale,
-  bookmarked,
-  speaking,
-  ttsLoading,
-  onBookmark,
-  onCopy,
-  onSpeak,
-  transliterationLanguage,
-  hindiMeanings,
-}: {
-  entry: LibraryEntry;
-  accentColour: string;
-  index: number;
-  fontScale: number;
-  bookmarked: boolean;
-  speaking: boolean;
-  ttsLoading: boolean;
-  onBookmark: (entry: LibraryEntry) => void;
-  onCopy: (entry: LibraryEntry) => void;
-  onSpeak: (entry: LibraryEntry) => void;
-  transliterationLanguage?: string;
-  hindiMeanings?: Record<string, string>;
-}) {
-  const [expanded, setExpanded] = useState(true); // all verses open by default
-  const [overflowOpen, setOverflowOpen] = useState(false);
-  const askHref = getAIChatHref(
-    `Explain this Pathshala verse in simple Hindi and English, with practical learning guidance: ${entry.title}`,
-    getEntryText(entry)
-  );
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.06 }}
-      className="pathshala-glass-card rounded-[1.6rem] overflow-hidden"
-    >
-      {/* Verse header — tap to collapse */}
-      <button className="w-full text-left px-5 pt-5 pb-3" onClick={() => setExpanded(e => !e)}>
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-0.5">
-              <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: accentColour }} />
-              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[color:var(--brand-muted)]">{entry.source}</p>
-            </div>
-            <p className="font-semibold text-base text-[color:var(--brand-ink)] leading-snug">{entry.title}</p>
-          </div>
-          <span className="shrink-0 opacity-40 mt-0.5">
-            {expanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
-          </span>
-        </div>
-      </button>
-
-      {/* Devanagari — always visible, large and readable */}
-      <div className="px-5 pb-4">
-        <p
-          className="leading-[1.75] font-medium whitespace-pre-line text-center"
-          style={{
-            color: accentColour,
-            fontFamily: 'var(--font-deva, serif)',
-            fontSize: `${fontScale * 1.55}rem`,
-            textShadow: `0 0 28px ${accentColour}22`,
-          }}
-        >
-          {entry.original}
-        </p>
-      </div>
-
-      {/* Action strip — 2 primary + overflow */}
-      <div className="px-5 pb-4 flex gap-2 items-center">
-        <button onClick={() => onSpeak(entry)}
-          className="shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold motion-press"
-          style={{ color: accentColour, background: `${accentColour}12`, border: `1px solid ${accentColour}24` }}>
-          {ttsLoading ? <Loader2 size={12} className="animate-spin" /> : speaking ? <VolumeX size={12} /> : <Volume2 size={12} />}
-          {speaking ? 'Stop' : 'Listen'}
-        </button>
-        <button onClick={() => onBookmark(entry)}
-          className="shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold motion-press"
-          style={{ color: bookmarked ? '#1c1c1a' : accentColour, background: bookmarked ? accentColour : `${accentColour}12`, border: `1px solid ${accentColour}24` }}>
-          <Bookmark size={12} className={bookmarked ? 'fill-current' : ''} /> {bookmarked ? 'Saved' : 'Save'}
-        </button>
-
-        {/* Overflow — Copy + Ask AI */}
-        <div className="relative ml-auto">
-          <button
-            onClick={() => setOverflowOpen(o => !o)}
-            className="w-7 h-7 rounded-full inline-flex items-center justify-center text-[color:var(--brand-muted)] motion-press"
-            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,74,0.14)' }}
-          >
-            ···
-          </button>
-          {overflowOpen && (
-            <div
-              className="absolute right-0 top-9 z-20 rounded-2xl shadow-xl overflow-hidden flex flex-col"
-              style={{ background: 'var(--brand-background)', border: '1px solid rgba(200,146,74,0.18)', minWidth: '120px' }}
-            >
-              <button
-                onClick={() => { onCopy(entry); setOverflowOpen(false); }}
-                className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition"
-              >
-                <Copy size={12} /> Copy
-              </button>
-              <Link
-                href={askHref}
-                onClick={() => setOverflowOpen(false)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-t border-white/6"
-                style={{ color: accentColour }}
-              >
-                <Sparkles size={12} /> Ask AI
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Expanded: transliteration + meaning */}
-      <AnimatePresence initial={false}>
-        {expanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.24 }}
-            className="overflow-hidden"
-          >
-            <div className="mx-5 mb-5 rounded-[1.1rem] overflow-hidden"
-              style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.16)' }}>
-              {/* Transliteration */}
-              {getTransliteration(entry.original, entry.transliteration, transliterationLanguage ?? 'en') !== entry.original && (
-                <div className="px-4 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(200,146,74,0.12)' }}>
-                  <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.6 }}>Transliteration</p>
-                  <p className="italic leading-relaxed" style={{ color: 'var(--brand-muted)', fontSize: `${fontScale * 1.0}rem` }}>
-                    {getTransliteration(entry.original, entry.transliteration, transliterationLanguage ?? 'en')}
-                  </p>
-                </div>
-              )}
-
-              {/* Meaning — Hindi if available and user prefers Hindi */}
-              <div className="px-4 py-4">
-                <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.7 }}>
-                  {transliterationLanguage === 'hi' ? 'अर्थ' : 'Meaning'}
-                </p>
-                <p className="leading-relaxed font-medium" style={{ color: 'var(--brand-ink)', fontSize: `${fontScale * 1.1}rem`, lineHeight: 1.8 }}>
-                  {(transliterationLanguage === 'hi' && hindiMeanings?.[entry.id]) || entry.meaning}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
+// ─── Explain result type ───────────────────────────────────────────────────────
+type ExplainResult = {
+  explanation: {
+    meaning: string;
+    commentary: string;
+    daily_application: string;
+    contemplation: string;
+  };
+  tradition: string;
+  teacher: string;
+};
 
 // ─── Props ─────────────────────────────────────────────────────────────────────
 interface Props {
@@ -325,161 +158,219 @@ export default function LessonClient({
   transliterationLanguage,
   hindiMeanings,
 }: Props) {
-  const router  = useRouter();
-  const engine  = useSadhana();
+  const router   = useRouter();
+  const engine   = useSadhana();
   const supabase = useRef(createClient()).current;
 
-  const path = SEED_PATHS.find(p => p.id === pathId);
-  const lessons = useMemo(() => getPathLessons(pathId), [pathId]);
+  const path        = SEED_PATHS.find(p => p.id === pathId);
+  const lessons     = useMemo(() => getPathLessons(pathId), [pathId]);
   const totalLessons = lessons.length;
 
+  // ── Lesson navigation ──────────────────────────────────────────────────────
   const [lessonIndex, setLessonIndex] = useState(initialLesson ?? 0);
-  const [completed, setCompleted] = useState<number[]>(initialCompleted ?? []);
-  const [saving, setSaving] = useState(false);
+  const [completed,   setCompleted]   = useState<number[]>(initialCompleted ?? []);
+  const [saving,      setSaving]      = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
-  const [fontStep, setFontStep] = useState(2); // default 1.4rem — comfortable for all ages
-  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
-  const [ttsLoadingId, setTtsLoadingId] = useState<string | null>(null);
-  const [speakingId, setSpeakingId] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const lesson = lessons[lessonIndex];
-  const isCompleted = completed.includes(lessonIndex);
-  const progressPct = totalLessons > 0 ? Math.round((completed.length / totalLessons) * 100) : 0;
+  // ── Verse navigation within a lesson ──────────────────────────────────────
+  const [verseIndex, setVerseIndex] = useState(0);
+  const [slideDir,   setSlideDir]   = useState<1 | -1>(1);
+
+  // ── Reader settings ────────────────────────────────────────────────────────
+  const [fontStep, setFontStep] = useState(2); // 1.32rem — readable default
   const fontScale = READER_FONT_STEPS[fontStep];
 
+  // ── Bookmarks ──────────────────────────────────────────────────────────────
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
+
+  // ── TTS ────────────────────────────────────────────────────────────────────
+  const [ttsLoadingId, setTtsLoadingId] = useState<string | null>(null);
+  const [speakingId,   setSpeakingId]   = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // ── AI Explain ─────────────────────────────────────────────────────────────
+  const [showExplain,   setShowExplain]   = useState(false);
+  const [explainLoading, setExplainLoading] = useState(false);
+  const [explainResult,  setExplainResult]  = useState<ExplainResult | null>(null);
+
+  // ── Derived ────────────────────────────────────────────────────────────────
+  const lesson      = lessons[lessonIndex];
+  const entry       = lesson?.entries[verseIndex];
+  const totalVerses = lesson?.entries.length ?? 0;
+  const isLastVerse = verseIndex === totalVerses - 1;
+  const isCompleted = completed.includes(lessonIndex);
+  const progressPct = totalLessons > 0 ? Math.round((completed.length / totalLessons) * 100) : 0;
+
+  const translitText = entry
+    ? getTransliteration(entry.original, entry.transliteration, transliterationLanguage ?? 'en')
+    : '';
+  const showTranslit = translitText && translitText !== entry?.original;
+
+  const meaningText = entry
+    ? (transliterationLanguage === 'hi' && hindiMeanings?.[entry.id]) || entry.meaning
+    : '';
+
+  const askHref = entry
+    ? getAIChatHref(
+        `Explain this scripture verse in simple language with practical guidance: ${entry.title}`,
+        getEntryText(entry)
+      )
+    : '/ai-chat';
+
+  // ── Reset verse when lesson changes ───────────────────────────────────────
   useEffect(() => {
-    if (!userId || lesson.entries.length === 0) return;
+    setVerseIndex(0);
+    setSlideDir(1);
+    setShowExplain(false);
+    setExplainResult(null);
+    stopTTS();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lessonIndex]);
+
+  // ── Stop TTS when verse changes ───────────────────────────────────────────
+  useEffect(() => { stopTTS(); }, [verseIndex]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Load bookmarks for current lesson ─────────────────────────────────────
+  useEffect(() => {
+    if (!userId || !lesson?.entries.length) return;
     let cancelled = false;
-    async function loadBookmarks() {
-      const ids = lesson.entries.map(entry => entry.id);
+    async function load() {
+      const ids = lesson.entries.map(e => e.id);
       const { data } = await supabase
         .from('pathshala_user_state')
         .select('entry_id, bookmarked_at')
         .eq('user_id', userId)
         .in('entry_id', ids);
       if (cancelled) return;
-      setBookmarkedIds(new Set((data ?? []).filter(row => row.bookmarked_at).map(row => row.entry_id)));
+      setBookmarkedIds(new Set((data ?? []).filter(r => r.bookmarked_at).map(r => r.entry_id)));
     }
-    loadBookmarks();
+    load();
     return () => { cancelled = true; };
-  }, [lesson.entries, supabase, userId]);
+  }, [lesson?.entries, supabase, userId]);
 
+  // ── TTS ────────────────────────────────────────────────────────────────────
   const stopTTS = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = '';
-    }
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current.src = ''; }
     setSpeakingId(null);
     setTtsLoadingId(null);
   }, []);
 
   useEffect(() => () => stopTTS(), [stopTTS]);
 
-  async function copyEntry(entry: LibraryEntry) {
-    try {
-      await navigator.clipboard.writeText(getEntryText(entry));
-      toast.success('Copied to clipboard');
-    } catch {
-      toast.error('Copy unavailable');
-    }
-  }
-
-  async function speakEntry(entry: LibraryEntry) {
-    if (speakingId === entry.id || ttsLoadingId === entry.id) {
-      stopTTS();
-      return;
-    }
-
+  async function speakEntry(e: LibraryEntry) {
+    if (speakingId === e.id || ttsLoadingId === e.id) { stopTTS(); return; }
     stopTTS();
-    setTtsLoadingId(entry.id);
+    setTtsLoadingId(e.id);
     try {
       const res = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: entry.original, rate: 0.78 }),
+        body: JSON.stringify({ text: e.original, rate: 0.78 }),
       });
       if (!res.ok) throw new Error('TTS failed');
       const { audioContent } = await res.json() as { audioContent: string };
       const bytes = Uint8Array.from(atob(audioContent), c => c.charCodeAt(0));
-      const blob = new Blob([bytes], { type: 'audio/mpeg' });
-      const url = URL.createObjectURL(blob);
+      const blob  = new Blob([bytes], { type: 'audio/mpeg' });
+      const url   = URL.createObjectURL(blob);
       const audio = new Audio(url);
       audioRef.current = audio;
       audio.onended = () => { setSpeakingId(null); URL.revokeObjectURL(url); };
       audio.onerror = () => { setSpeakingId(null); URL.revokeObjectURL(url); };
       await audio.play();
-      setSpeakingId(entry.id);
+      setSpeakingId(e.id);
     } catch {
-      toast.error('Audio is unavailable right now');
+      toast.error('Audio unavailable right now');
     } finally {
       setTtsLoadingId(null);
     }
   }
 
-  async function toggleBookmark(entry: LibraryEntry) {
-    const next = !bookmarkedIds.has(entry.id);
-    const timestamp = new Date().toISOString();
-    const previous = new Set(bookmarkedIds);
-    setBookmarkedIds(prev => {
-      const clone = new Set(prev);
-      if (next) clone.add(entry.id); else clone.delete(entry.id);
-      return clone;
-    });
+  // ── Bookmark ───────────────────────────────────────────────────────────────
+  async function toggleBookmark(e: LibraryEntry) {
+    const next = !bookmarkedIds.has(e.id);
+    const prev  = new Set(bookmarkedIds);
+    const ts    = new Date().toISOString();
+    setBookmarkedIds(s => { const c = new Set(s); if (next) c.add(e.id); else c.delete(e.id); return c; });
 
     const { error } = await supabase
       .from('pathshala_user_state')
       .upsert({
         user_id: userId,
         tradition: tradition as LibraryTradition,
-        section_id: entry.category,
-        entry_id: entry.id,
-        last_opened_at: timestamp,
-        bookmarked_at: next ? timestamp : null,
+        section_id: e.category,
+        entry_id: e.id,
+        last_opened_at: ts,
+        bookmarked_at: next ? ts : null,
       }, { onConflict: 'user_id,entry_id' });
 
-    if (error) {
-      setBookmarkedIds(previous);
-      toast.error(error.message);
-      return;
-    }
-
+    if (error) { setBookmarkedIds(prev); toast.error(error.message); return; }
     toast.success(next ? 'Saved for later' : 'Removed from saved');
   }
 
+  // ── Copy ───────────────────────────────────────────────────────────────────
+  async function copyEntry(e: LibraryEntry) {
+    try {
+      await navigator.clipboard.writeText(getEntryText(e));
+      toast.success('Copied');
+    } catch {
+      toast.error('Copy unavailable');
+    }
+  }
+
+  // ── AI Explain ─────────────────────────────────────────────────────────────
+  async function explainVerse() {
+    if (!entry || explainLoading) return;
+    setExplainResult(null);
+    setExplainLoading(true);
+    try {
+      const res = await fetch('/api/pathshala/explain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sanskrit:        entry.original,
+          transliteration: entry.transliteration,
+          translation:     entry.meaning,
+          source:          entry.source,
+          title:           entry.title,
+          tradition,
+          language:        'en',
+        }),
+      });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? `Error ${res.status}`);
+      setExplainResult(await res.json());
+    } catch (err: any) {
+      toast.error(err?.message ?? 'Could not generate explanation');
+    } finally {
+      setExplainLoading(false);
+    }
+  }
+
+  // ── Mark lesson complete ───────────────────────────────────────────────────
   async function markComplete() {
     if (isCompleted || saving) return;
     setSaving(true);
     const newCompleted = [...completed, lessonIndex];
-    const nextLesson = Math.min(lessonIndex + 1, totalLessons - 1);
-
+    const nextLesson   = Math.min(lessonIndex + 1, totalLessons - 1);
     try {
       const { error } = await supabase
         .from('guided_path_progress')
         .update({
-          current_lesson: nextLesson,
+          current_lesson:    nextLesson,
           completed_lessons: newCompleted,
           ...(newCompleted.length === totalLessons ? { status: 'completed', completed_at: new Date().toISOString() } : {}),
         })
         .eq('user_id', userId)
         .eq('path_id', pathId);
-
       if (error) throw error;
-
       setCompleted(newCompleted);
       const isPathDone = newCompleted.length === totalLessons;
       toast.success(isPathDone ? 'Path completed! 🎉 Jai Ho!' : 'Lesson complete 🙏');
       if (isPathDone) setShowConfetti(true);
-
-      // Fire-and-forget engine tracking (don't block UI)
       if (engine) {
         engine.tracker.trackShlokaRead(pathId, lessonIndex, 0, 0).catch(() => {});
         engine.streaks.markDone(userId, 'shloka').catch(() => {});
       }
-
-      if (newCompleted.length < totalLessons) {
-        setLessonIndex(nextLesson);
-      }
+      if (newCompleted.length < totalLessons) goToLesson(nextLesson);
     } catch (err: any) {
       toast.error(err?.message ?? 'Could not save progress');
     } finally {
@@ -487,13 +378,33 @@ export default function LessonClient({
     }
   }
 
-  function goTo(index: number) {
+  // ── Navigation helpers ─────────────────────────────────────────────────────
+  function goNextVerse() {
+    if (verseIndex < totalVerses - 1) {
+      setSlideDir(1);
+      setVerseIndex(v => v + 1);
+      setShowExplain(false);
+      setExplainResult(null);
+    }
+  }
+
+  function goPrevVerse() {
+    if (verseIndex > 0) {
+      setSlideDir(-1);
+      setVerseIndex(v => v - 1);
+      setShowExplain(false);
+      setExplainResult(null);
+    }
+  }
+
+  function goToLesson(index: number) {
     if (index < 0 || index >= totalLessons) return;
     setLessonIndex(index);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  if (!lesson) {
+  // ── Empty state ────────────────────────────────────────────────────────────
+  if (!lesson || !entry) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-4">
         <BookOpen size={40} className="text-[color:var(--brand-muted)]" />
@@ -505,183 +416,413 @@ export default function LessonClient({
     );
   }
 
-  return (
-    <div className="min-h-dvh pb-28">
+  // ── CTA text & action ──────────────────────────────────────────────────────
+  const ctaAction = isLastVerse
+    ? isCompleted
+      ? () => goToLesson(lessonIndex + 1)
+      : markComplete
+    : goNextVerse;
 
-      {/* Sacred confetti on path completion */}
+  const ctaDisabled = isLastVerse && isCompleted && lessonIndex === totalLessons - 1;
+
+  const ctaLabel = isLastVerse
+    ? isCompleted
+      ? <><span>Next Lesson</span> <ChevronRight size={15} /></>
+      : saving
+        ? <Loader2 size={15} className="animate-spin" />
+        : <><CheckCircle2 size={15} /> <span>Mark Lesson Complete</span></>
+    : <><span>Next Verse</span> <ChevronRight size={15} /></>;
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+  return (
+    <div className="min-h-dvh flex flex-col" style={{ background: 'var(--brand-background)' }}>
       <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
 
-      {/* Header — clean, uncluttered, solid so it's always readable */}
-      <div className="sticky top-0 z-30 px-4 py-3"
-        style={{
-          background: 'var(--brand-background)',
-          borderBottom: '1px solid rgba(200,146,74,0.15)',
-        }}>
-        <div className="flex items-center gap-3 max-w-2xl mx-auto">
-          <button
-            onClick={() => router.push('/pathshala')}
-            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 motion-press"
-            style={{ background: `${accentColour}14`, border: `1px solid ${accentColour}20` }}
-          >
-            <ChevronLeft size={18} style={{ color: accentColour }} />
-          </button>
+      {/* ════════════════════ HEADER ════════════════════════════════════════ */}
+      <header
+        className="sticky top-0 z-30 px-4 py-3 flex items-center gap-3"
+        style={{ background: 'var(--brand-background)', borderBottom: '1px solid rgba(200,146,74,0.12)' }}
+      >
+        {/* Back */}
+        <button
+          onClick={() => router.push('/pathshala')}
+          className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 motion-press"
+          style={{ background: `${accentColour}14`, border: `1px solid ${accentColour}22` }}
+        >
+          <ChevronLeft size={18} style={{ color: accentColour }} />
+        </button>
 
-          <div className="flex-1 min-w-0">
-            <p className="text-[10px] text-[color:var(--brand-muted)] truncate font-medium">{path?.title ?? pathId}</p>
-            <p className="text-sm font-bold text-[color:var(--brand-ink)] truncate">
-              {lesson.title}
-            </p>
-          </div>
+        {/* Titles */}
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] text-[color:var(--brand-muted)] truncate font-medium">{path?.title ?? pathId}</p>
+          <p className="text-sm font-bold text-[color:var(--brand-ink)] truncate">{lesson.title}</p>
+        </div>
 
-          {/* Progress pill */}
-          <div className="flex items-center gap-2 shrink-0">
-            <CircularProgress
-              pct={progressPct}
-              accent={accentColour}
-              size={32}
-              strokeWidth={3}
-              label={<span className="text-[8px] font-bold" style={{ color: accentColour }}>{progressPct}%</span>}
-            />
-            <span className="text-[10px] text-[color:var(--brand-muted)] hidden sm:block">
-              {completed.length}/{totalLessons}
+        {/* Progress ring */}
+        <CircularProgress
+          pct={progressPct}
+          accent={accentColour}
+          size={32}
+          strokeWidth={3}
+          label={<span className="text-[8px] font-bold" style={{ color: accentColour }}>{progressPct}%</span>}
+        />
+
+        {/* Font size cycle */}
+        <button
+          onClick={() => setFontStep(s => (s + 1) % READER_FONT_STEPS.length)}
+          className="px-2 py-1 rounded-lg text-[11px] font-bold shrink-0 motion-press"
+          style={{ background: 'rgba(255,255,255,0.06)', color: accentColour, border: '1px solid rgba(200,146,74,0.14)' }}
+          aria-label="Increase text size"
+        >
+          Aa
+        </button>
+
+        {/* Recite shortcut */}
+        <Link
+          href={`/pathshala/${pathId}/recite`}
+          className="hidden sm:flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 motion-press"
+          style={{ color: accentColour, background: `${accentColour}10`, border: `1px solid ${accentColour}22` }}
+        >
+          <Mic size={12} /> Recite
+        </Link>
+      </header>
+
+      {/* ════════════════════ SCROLLABLE CONTENT ════════════════════════════ */}
+      <div className="flex-1 overflow-auto overscroll-contain">
+        <div className="max-w-xl mx-auto px-5 pt-8 pb-48">
+
+          {/* ── Verse progress dots ──────────────────────────────────────── */}
+          <div className="flex items-center justify-center gap-2 mb-10">
+            {lesson.entries.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => { setSlideDir(i > verseIndex ? 1 : -1); setVerseIndex(i); setShowExplain(false); setExplainResult(null); }}
+                aria-label={`Go to verse ${i + 1}`}
+                style={{
+                  height: '8px',
+                  borderRadius: '4px',
+                  transition: 'all 0.25s ease',
+                  width: i === verseIndex ? '28px' : '8px',
+                  background: i === verseIndex ? accentColour : `${accentColour}30`,
+                }}
+              />
+            ))}
+            <span className="ml-2 text-[10px] font-bold" style={{ color: `${accentColour}70` }}>
+              {verseIndex + 1}/{totalVerses}
             </span>
           </div>
 
-          {/* Font size — tap to cycle */}
-          <button
-            onClick={() => setFontStep(step => (step + 1) % READER_FONT_STEPS.length)}
-            className="shrink-0 px-2 py-1 rounded-lg text-[11px] font-bold motion-press"
-            style={{ background: 'rgba(255,255,255,0.06)', color: accentColour, border: '1px solid rgba(200,146,74,0.14)' }}
-            aria-label="Cycle text size"
-          >
-            Aa
-          </button>
+          {/* ── Animated verse panel ─────────────────────────────────────── */}
+          <AnimatePresence mode="wait" custom={slideDir}>
+            <motion.div
+              key={`${lessonIndex}-${verseIndex}`}
+              custom={slideDir}
+              initial={{ opacity: 0, x: slideDir * 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: slideDir * -40 }}
+              transition={{ duration: 0.22, ease: 'easeOut' }}
+            >
+              {/* Source chip + title */}
+              <div className="text-center mb-8">
+                <div
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full mb-4"
+                  style={{ background: `${accentColour}12`, border: `1px solid ${accentColour}22` }}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: accentColour }} />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: accentColour }}>
+                    {entry.source}
+                  </span>
+                </div>
+                <h2
+                  className="font-bold leading-snug"
+                  style={{ color: 'var(--brand-ink)', fontFamily: 'var(--font-serif)', fontSize: `${fontScale * 1.05}rem` }}
+                >
+                  {entry.title}
+                </h2>
+              </div>
 
-          <Link
-            href={`/pathshala/${pathId}/recite`}
-            className="hidden sm:flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-full motion-press shrink-0"
-            style={{ color: accentColour, background: `${accentColour}10`, border: '1px solid rgba(200,146,74,0.16)' }}
-          >
-            <Mic size={12} /> Recite
-          </Link>
+              {/* OM ornament */}
+              <div className="text-center mb-7">
+                <span
+                  className="text-4xl"
+                  style={{ color: accentColour, opacity: 0.18, fontFamily: 'var(--font-deva, serif)' }}
+                >
+                  ॐ
+                </span>
+              </div>
+
+              {/* ── Devanagari — the centrepiece ──────────────────────────── */}
+              <div className="text-center mb-8 px-2">
+                <p
+                  className="leading-[1.9] font-medium whitespace-pre-line"
+                  style={{
+                    color:       accentColour,
+                    fontFamily:  'var(--font-deva, serif)',
+                    fontSize:    `${fontScale * 1.62}rem`,
+                    textShadow:  `0 0 40px ${accentColour}20`,
+                  }}
+                >
+                  {entry.original}
+                </p>
+              </div>
+
+              {/* ── Transliteration ──────────────────────────────────────── */}
+              {showTranslit && (
+                <p
+                  className="text-center italic mb-8 leading-relaxed px-3"
+                  style={{ color: 'var(--brand-muted)', fontSize: `${fontScale * 1.0}rem` }}
+                >
+                  {translitText}
+                </p>
+              )}
+
+              {/* ── Meaning card ─────────────────────────────────────────── */}
+              {meaningText ? (
+                <div
+                  className="rounded-2xl p-5 mb-6"
+                  style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.15)' }}
+                >
+                  <p
+                    className="text-[9px] font-bold uppercase tracking-[0.24em] mb-3"
+                    style={{ color: accentColour, opacity: 0.65 }}
+                  >
+                    {transliterationLanguage === 'hi' ? 'अर्थ' : 'Meaning'}
+                  </p>
+                  <p
+                    className="font-medium"
+                    style={{ color: 'var(--brand-ink)', fontSize: `${fontScale * 1.1}rem`, lineHeight: 1.85 }}
+                  >
+                    {meaningText}
+                  </p>
+                </div>
+              ) : null}
+
+              {/* ── AI Explain ───────────────────────────────────────────── */}
+              <div className="mb-2">
+                <button
+                  onClick={() => {
+                    if (!showExplain && !explainResult) explainVerse();
+                    setShowExplain(s => !s);
+                  }}
+                  disabled={explainLoading}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold transition-all motion-press"
+                  style={{
+                    background: showExplain ? `${accentColour}15` : 'rgba(255,255,255,0.05)',
+                    color:      explainLoading ? 'var(--brand-muted)' : accentColour,
+                    border:     `1px solid ${showExplain ? accentColour + '35' : 'rgba(200,146,74,0.16)'}`,
+                  }}
+                >
+                  {explainLoading
+                    ? <><Loader2 size={14} className="animate-spin" /> Asking teacher…</>
+                    : showExplain
+                      ? <><EyeOff size={14} /> Hide explanation</>
+                      : <><Sparkles size={14} /> Explain this verse</>
+                  }
+                </button>
+
+                <AnimatePresence>
+                  {showExplain && explainResult && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.26 }}
+                      className="overflow-hidden"
+                    >
+                      <div
+                        className="mt-3 rounded-2xl p-5 space-y-4"
+                        style={{ background: `linear-gradient(135deg, ${accentColour}08, rgba(255,255,255,0.02))`, border: `1px solid ${accentColour}20` }}
+                      >
+                        {/* Teacher attribution */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">🪔</span>
+                          <div>
+                            <p className="text-[9px] font-bold uppercase tracking-widest" style={{ color: accentColour + 'aa' }}>
+                              {explainResult.tradition}
+                            </p>
+                            <p className="text-xs text-[color:var(--brand-muted)]">In the spirit of {explainResult.teacher}</p>
+                          </div>
+                        </div>
+
+                        {/* Meaning */}
+                        {explainResult.explanation.meaning && (
+                          <div>
+                            <p className="text-[9px] font-bold uppercase tracking-widest mb-2" style={{ color: accentColour + '88' }}>Meaning</p>
+                            <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed">{explainResult.explanation.meaning}</p>
+                          </div>
+                        )}
+
+                        {/* Commentary */}
+                        {explainResult.explanation.commentary && (
+                          <div>
+                            <p className="text-[9px] font-bold uppercase tracking-widest mb-2" style={{ color: accentColour + '88' }}>Commentary</p>
+                            <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">{explainResult.explanation.commentary}</p>
+                          </div>
+                        )}
+
+                        {/* Today's practice */}
+                        {explainResult.explanation.daily_application && (
+                          <div
+                            className="rounded-xl px-4 py-3"
+                            style={{ background: `${accentColour}10`, border: `1px solid ${accentColour}22` }}
+                          >
+                            <p className="text-[9px] font-bold uppercase tracking-widest mb-1.5" style={{ color: accentColour }}>Today's Practice</p>
+                            <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed">{explainResult.explanation.daily_application}</p>
+                          </div>
+                        )}
+
+                        {/* Contemplation */}
+                        {explainResult.explanation.contemplation && (
+                          <p className="text-sm text-center italic text-[color:var(--brand-muted)] border-t border-white/6 pt-3 leading-relaxed">
+                            &ldquo;{explainResult.explanation.contemplation}&rdquo;
+                          </p>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* ── Jump to lesson ───────────────────────────────────────────── */}
+          {totalLessons > 1 && (
+            <div className="mt-12 pt-6" style={{ borderTop: '1px solid rgba(200,146,74,0.12)' }}>
+              <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-3" style={{ color: `${accentColour}55` }}>
+                Lessons
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {lessons.map((l, i) => {
+                  const done    = completed.includes(i);
+                  const current = i === lessonIndex;
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => goToLesson(i)}
+                      className="w-9 h-9 rounded-full text-xs font-semibold flex items-center justify-center transition-all"
+                      style={{
+                        background: current ? accentColour : done ? `${accentColour}20` : 'rgba(255,255,255,0.06)',
+                        color:      current ? '#1c1c1a' : done ? accentColour : 'var(--brand-muted)',
+                        border:     current ? 'none' : `1px solid ${done ? `${accentColour}30` : 'rgba(255,255,255,0.08)'}`,
+                      }}
+                      title={l.title}
+                    >
+                      {done && !current ? <CheckCircle2 size={13} /> : i + 1}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Lesson content */}
-      <div className="px-4 pt-5 space-y-4 max-w-2xl mx-auto">
+      {/* ════════════════════ FIXED BOTTOM BAR ══════════════════════════════ */}
+      <div
+        className="fixed bottom-0 inset-x-0 z-40"
+        style={{ background: 'var(--brand-background)', borderTop: '1px solid rgba(200,146,74,0.14)' }}
+      >
+        {/* ── Quick actions ──────────────────────────────────────────────── */}
+        <div className="flex items-center justify-around px-4 pt-3 pb-1 max-w-xl mx-auto">
 
-        {/* ── Ritual opening ─────────────────────────────────────────────────── */}
-        <div className="text-center pb-2">
-          <p className="text-[2.4rem] mb-2 opacity-80" style={{ fontFamily: 'var(--font-deva, serif)', color: accentColour, textShadow: `0 0 32px ${accentColour}44` }}>ॐ</p>
-          <h2 className="font-bold text-lg leading-tight" style={{ fontFamily: 'var(--font-serif)', color: 'var(--brand-ink)' }}>
-            {lesson.title}
-          </h2>
-          <p className="text-xs text-[color:var(--brand-muted)] mt-1">
-            Lesson {lessonIndex + 1} of {totalLessons} · {lesson.entries.length} {lesson.entries.length === 1 ? 'verse' : 'verses'}
-          </p>
-          <div className="flex items-center gap-3 justify-center mt-3">
-            <div className="h-px flex-1 max-w-[60px]" style={{ background: `linear-gradient(to right, transparent, ${accentColour}30)` }} />
-            <span className="text-[10px] font-bold uppercase tracking-[0.22em] opacity-40" style={{ color: accentColour }}>Begin</span>
-            <div className="h-px flex-1 max-w-[60px]" style={{ background: `linear-gradient(to left, transparent, ${accentColour}30)` }} />
-          </div>
-        </div>
-
-        {lesson.entries.length === 0 ? (
-          <div className="text-center py-16">
-            <BookOpen size={36} className="mx-auto mb-3 text-[color:var(--brand-muted)]" />
-            <p className="text-sm text-[color:var(--brand-muted)]">Content for this lesson is coming soon.</p>
-          </div>
-        ) : (
-          lesson.entries.map((entry, i) => (
-            <VerseCard
-              key={entry.id}
-              entry={entry}
-              accentColour={accentColour}
-              index={i}
-              fontScale={fontScale}
-              bookmarked={bookmarkedIds.has(entry.id)}
-              speaking={speakingId === entry.id}
-              ttsLoading={ttsLoadingId === entry.id}
-              onBookmark={toggleBookmark}
-              onCopy={copyEntry}
-              onSpeak={speakEntry}
-              transliterationLanguage={transliterationLanguage}
-              hindiMeanings={hindiMeanings}
-            />
-          ))
-        )}
-
-        {/* ── Ritual divider before completion ──────────────────────────── */}
-        <div className="flex items-center gap-3 py-2">
-          <div className="h-px flex-1" style={{ background: `linear-gradient(to right, transparent, ${accentColour}20)` }} />
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-30" style={{ color: accentColour }}>
-            {isCompleted ? 'completed' : 'complete the lesson'}
-          </span>
-          <div className="h-px flex-1" style={{ background: `linear-gradient(to left, transparent, ${accentColour}20)` }} />
-        </div>
-
-        {/* Navigation */}
-        <div className="flex gap-3">
+          {/* Listen */}
           <button
-            onClick={() => goTo(lessonIndex - 1)}
-            disabled={lessonIndex === 0}
-            className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-sm font-semibold text-[color:var(--brand-muted)] disabled:opacity-30 transition-opacity motion-press"
-            style={{ border: '1px solid rgba(200,146,74,0.16)', background: 'rgba(255,255,255,0.04)' }}
+            onClick={() => speakEntry(entry)}
+            className="flex flex-col items-center gap-1 min-w-[52px] motion-press"
           >
-            <ChevronLeft size={16} />
+            <div
+              className="w-11 h-11 rounded-full flex items-center justify-center"
+              style={{
+                background: speakingId === entry.id ? `${accentColour}22` : 'rgba(255,255,255,0.06)',
+                border:     `1px solid ${speakingId === entry.id ? accentColour + '40' : 'rgba(200,146,74,0.14)'}`,
+              }}
+            >
+              {ttsLoadingId === entry.id
+                ? <Loader2 size={17} className="animate-spin" style={{ color: accentColour }} />
+                : speakingId === entry.id
+                  ? <VolumeX size={17} style={{ color: accentColour }} />
+                  : <Volume2 size={17} style={{ color: accentColour }} />
+              }
+            </div>
+            <span className="text-[9px] font-semibold" style={{ color: 'var(--brand-muted)' }}>
+              {speakingId === entry.id ? 'Stop' : 'Listen'}
+            </span>
           </button>
 
-          {isCompleted ? (
-            <button
-              onClick={() => goTo(lessonIndex + 1)}
-              disabled={lessonIndex === totalLessons - 1}
-              className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold text-[#1c1c1a] disabled:opacity-40 transition-opacity shadow-lg"
-              style={{ background: accentColour, boxShadow: `0 6px 20px ${accentColour}33` }}
+          {/* Save / Bookmark */}
+          <button
+            onClick={() => toggleBookmark(entry)}
+            className="flex flex-col items-center gap-1 min-w-[52px] motion-press"
+          >
+            <div
+              className="w-11 h-11 rounded-full flex items-center justify-center"
+              style={{
+                background: bookmarkedIds.has(entry.id) ? accentColour : 'rgba(255,255,255,0.06)',
+                border:     `1px solid ${bookmarkedIds.has(entry.id) ? accentColour : 'rgba(200,146,74,0.14)'}`,
+              }}
             >
-              Next Lesson <ChevronRight size={16} />
-            </button>
-          ) : (
-            <button
-              onClick={markComplete}
-              disabled={saving}
-              className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold text-[#1c1c1a] disabled:opacity-60 transition-all shadow-lg"
-              style={{ background: accentColour, boxShadow: `0 6px 20px ${accentColour}33` }}
+              <Bookmark
+                size={17}
+                style={{ color: bookmarkedIds.has(entry.id) ? '#1c1c1a' : accentColour }}
+                className={bookmarkedIds.has(entry.id) ? 'fill-current' : ''}
+              />
+            </div>
+            <span className="text-[9px] font-semibold" style={{ color: 'var(--brand-muted)' }}>
+              {bookmarkedIds.has(entry.id) ? 'Saved' : 'Save'}
+            </span>
+          </button>
+
+          {/* Copy */}
+          <button
+            onClick={() => copyEntry(entry)}
+            className="flex flex-col items-center gap-1 min-w-[52px] motion-press"
+          >
+            <div
+              className="w-11 h-11 rounded-full flex items-center justify-center"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,74,0.14)' }}
             >
-              {saving
-                ? <Loader2 size={15} className="animate-spin" />
-                : <><CheckCircle2 size={15} /> Mark Complete</>
-              }
-            </button>
-          )}
+              <Copy size={17} style={{ color: accentColour }} />
+            </div>
+            <span className="text-[9px] font-semibold" style={{ color: 'var(--brand-muted)' }}>Copy</span>
+          </button>
+
+          {/* Ask AI */}
+          <Link
+            href={askHref}
+            className="flex flex-col items-center gap-1 min-w-[52px] motion-press"
+          >
+            <div
+              className="w-11 h-11 rounded-full flex items-center justify-center"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,74,0.14)' }}
+            >
+              <Sparkles size={17} style={{ color: accentColour }} />
+            </div>
+            <span className="text-[9px] font-semibold" style={{ color: 'var(--brand-muted)' }}>Ask AI</span>
+          </Link>
         </div>
 
-        {/* Lesson index */}
-        {totalLessons <= 30 && (
-          <div className="pt-2">
-            <p className="text-xs text-[color:var(--brand-muted)] mb-2">Jump to lesson</p>
-            <div className="flex flex-wrap gap-1.5">
-              {lessons.map((l, i) => {
-                const done = completed.includes(i);
-                const current = i === lessonIndex;
-                return (
-                  <button
-                    key={i}
-                    onClick={() => goTo(i)}
-                    className="w-8 h-8 rounded-full text-xs font-semibold transition-all flex items-center justify-center"
-                    style={{
-                      background: current ? accentColour : done ? `${accentColour}20` : 'rgba(255,255,255,0.06)',
-                      color: current ? '#1c1c1a' : done ? accentColour : 'var(--brand-muted)',
-                      border: current ? 'none' : `1px solid ${done ? `${accentColour}30` : 'rgba(255,255,255,0.08)'}`,
-                    }}
-                    title={l.title}
-                  >
-                    {done && !current ? <CheckCircle2 size={12} /> : i + 1}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        {/* ── Navigation row ────────────────────────────────────────────── */}
+        <div className="flex gap-2.5 px-4 pt-2 pb-5 max-w-xl mx-auto">
+          {/* Prev */}
+          <button
+            onClick={goPrevVerse}
+            disabled={verseIndex === 0}
+            className="w-12 h-13 flex items-center justify-center rounded-2xl disabled:opacity-25 transition-opacity motion-press"
+            style={{ border: '1px solid rgba(200,146,74,0.18)', background: 'rgba(255,255,255,0.04)', height: '52px' }}
+          >
+            <ChevronLeft size={20} style={{ color: 'var(--brand-muted)' }} />
+          </button>
+
+          {/* Main CTA */}
+          <button
+            onClick={ctaAction}
+            disabled={ctaDisabled || saving}
+            className="flex-1 flex items-center justify-center gap-2 rounded-2xl text-sm font-bold text-[#1c1c1a] disabled:opacity-40 transition-all motion-press shadow-lg"
+            style={{ background: accentColour, boxShadow: `0 6px 20px ${accentColour}30`, height: '52px' }}
+          >
+            {ctaLabel}
+          </button>
+        </div>
       </div>
     </div>
   );
