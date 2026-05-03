@@ -246,13 +246,12 @@ function VerseCard({
             className="overflow-hidden"
           >
             <div className="mx-5 mb-5 rounded-[1.1rem] overflow-hidden"
-              style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(200,146,74,0.1)' }}>
+              style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.16)' }}>
               {/* Transliteration */}
               {entry.transliteration && (
-                <div className="px-4 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(200,146,74,0.08)' }}>
-                  <p className="text-[9px] font-bold text-[color:var(--brand-muted)] uppercase tracking-[0.22em] mb-2">Transliteration</p>
-                  <p className="italic text-[color:var(--brand-muted)] leading-relaxed"
-                    style={{ fontSize: `${fontScale * 0.9}rem` }}>
+                <div className="px-4 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(200,146,74,0.12)' }}>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.6 }}>Transliteration</p>
+                  <p className="italic leading-relaxed" style={{ color: 'var(--brand-muted)', fontSize: `${fontScale * 0.9}rem` }}>
                     {entry.transliteration}
                   </p>
                 </div>
@@ -261,8 +260,7 @@ function VerseCard({
               {/* Meaning */}
               <div className="px-4 py-4">
                 <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.7 }}>Meaning</p>
-                <p className="text-[color:var(--brand-ink)] leading-relaxed font-medium"
-                  style={{ fontSize: `${fontScale * 1.0}rem`, lineHeight: 1.7 }}>
+                <p className="leading-relaxed font-medium" style={{ color: 'var(--brand-ink)', fontSize: `${fontScale * 1.0}rem`, lineHeight: 1.75 }}>
                   {entry.meaning}
                 </p>
               </div>
@@ -512,13 +510,11 @@ export default function LessonClient({
       {/* Sacred confetti on path completion */}
       <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
 
-      {/* Header — clean, uncluttered */}
+      {/* Header — clean, uncluttered, solid so it's always readable */}
       <div className="sticky top-0 z-30 px-4 py-3"
         style={{
-          background: 'var(--card-bg)',
-          borderBottom: '1px solid rgba(200,146,74,0.12)',
-          backdropFilter: 'blur(20px) saturate(130%)',
-          WebkitBackdropFilter: 'blur(20px) saturate(130%)',
+          background: 'var(--brand-background)',
+          borderBottom: '1px solid rgba(200,146,74,0.15)',
         }}>
         <div className="flex items-center gap-3 max-w-2xl mx-auto">
           <button
