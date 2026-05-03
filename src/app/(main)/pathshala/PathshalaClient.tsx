@@ -76,6 +76,8 @@ async function shareEntry(entry: LibraryEntry) {
 }
 
 // ── Scripture Entry Card ───────────────────────────────────────────────────────
+function EntryCard({ entry, accentColour }: { entry: LibraryEntry; accentColour: string }) {
+  return (
     <button
       className="w-full text-left p-4 rounded-[1.45rem] transition-all active:scale-[0.98]"
       style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
