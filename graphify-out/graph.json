@@ -20568,8 +20568,8 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/lesson/LessonClient.tsx",
       "source_location": "L245",
       "weight": 1.0,
-      "_src": "lessonclient_load",
-      "_tgt": "mantra_library_mantralibrary_filter",
+      "_src": "mantra_library_mantralibrary_filter",
+      "_tgt": "lessonclient_load",
       "source": "mantra_library_mantralibrary_filter",
       "target": "lessonclient_load"
     },

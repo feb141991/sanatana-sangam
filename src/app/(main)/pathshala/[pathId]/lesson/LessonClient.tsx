@@ -471,7 +471,7 @@ export default function LessonClient({
         <button
           onClick={() => setFontStep(s => (s + 1) % READER_FONT_STEPS.length)}
           className="px-2 py-1 rounded-lg text-[11px] font-bold shrink-0 motion-press"
-          style={{ background: 'rgba(255,255,255,0.06)', color: accentColour, border: '1px solid rgba(200,146,74,0.14)' }}
+          style={{ background: `${accentColour}18`, color: accentColour, border: `1px solid ${accentColour}45` }}
           aria-label="Increase text size"
         >
           Aa
@@ -489,7 +489,7 @@ export default function LessonClient({
 
       {/* ════════════════════ SCROLLABLE CONTENT ════════════════════════════ */}
       <div className="flex-1 overflow-auto overscroll-contain">
-        <div className="max-w-xl mx-auto px-5 pt-8 pb-48">
+        <div className="max-w-xl mx-auto px-5 pt-8 pb-52">
 
           {/* ── Verse progress dots ──────────────────────────────────────── */}
           <div className="flex items-center justify-center gap-2 mb-10">
@@ -503,11 +503,11 @@ export default function LessonClient({
                   borderRadius: '4px',
                   transition: 'all 0.25s ease',
                   width: i === verseIndex ? '28px' : '8px',
-                  background: i === verseIndex ? accentColour : `${accentColour}30`,
+                  background: i === verseIndex ? accentColour : `${accentColour}55`,
                 }}
               />
             ))}
-            <span className="ml-2 text-[10px] font-bold" style={{ color: `${accentColour}70` }}>
+            <span className="ml-2 text-[11px] font-bold" style={{ color: accentColour }}>
               {verseIndex + 1}/{totalVerses}
             </span>
           </div>
@@ -526,16 +526,16 @@ export default function LessonClient({
               <div className="text-center mb-8">
                 <div
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full mb-4"
-                  style={{ background: `${accentColour}12`, border: `1px solid ${accentColour}22` }}
+                  style={{ background: `${accentColour}25`, border: `1px solid ${accentColour}55` }}
                 >
                   <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: accentColour }} />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: accentColour }}>
+                  <span className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: accentColour }}>
                     {entry.source}
                   </span>
                 </div>
                 <h2
                   className="font-bold leading-snug"
-                  style={{ color: 'var(--brand-ink)', fontFamily: 'var(--font-serif)', fontSize: `${fontScale * 1.05}rem` }}
+                  style={{ color: 'var(--brand-ink)', fontFamily: 'var(--font-serif)', fontSize: `${fontScale * 1.1}rem` }}
                 >
                   {entry.title}
                 </h2>
@@ -545,7 +545,7 @@ export default function LessonClient({
               <div className="text-center mb-7">
                 <span
                   className="text-4xl"
-                  style={{ color: accentColour, opacity: 0.18, fontFamily: 'var(--font-deva, serif)' }}
+                  style={{ color: accentColour, opacity: 0.45, fontFamily: 'var(--font-deva, serif)' }}
                 >
                   ॐ
                 </span>
@@ -554,12 +554,11 @@ export default function LessonClient({
               {/* ── Devanagari — the centrepiece ──────────────────────────── */}
               <div className="text-center mb-8 px-2">
                 <p
-                  className="leading-[1.9] font-medium whitespace-pre-line"
+                  className="leading-[1.9] font-semibold whitespace-pre-line"
                   style={{
-                    color:       accentColour,
-                    fontFamily:  'var(--font-deva, serif)',
-                    fontSize:    `${fontScale * 1.62}rem`,
-                    textShadow:  `0 0 40px ${accentColour}20`,
+                    color:      accentColour,
+                    fontFamily: 'var(--font-deva, serif)',
+                    fontSize:   `${fontScale * 1.62}rem`,
                   }}
                 >
                   {entry.original}
@@ -570,7 +569,7 @@ export default function LessonClient({
               {showTranslit && (
                 <p
                   className="text-center italic mb-8 leading-relaxed px-3"
-                  style={{ color: 'var(--brand-muted)', fontSize: `${fontScale * 1.0}rem` }}
+                  style={{ color: 'var(--brand-ink)', opacity: 0.72, fontSize: `${fontScale * 1.0}rem` }}
                 >
                   {translitText}
                 </p>
@@ -579,12 +578,12 @@ export default function LessonClient({
               {/* ── Meaning card ─────────────────────────────────────────── */}
               {meaningText ? (
                 <div
-                  className="rounded-2xl p-5 mb-6"
-                  style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.15)' }}
+                  className="rounded-2xl p-5 mb-5"
+                  style={{ background: `${accentColour}18`, border: `1px solid ${accentColour}45` }}
                 >
                   <p
-                    className="text-[9px] font-bold uppercase tracking-[0.24em] mb-3"
-                    style={{ color: accentColour, opacity: 0.65 }}
+                    className="text-[10px] font-bold uppercase tracking-[0.22em] mb-3"
+                    style={{ color: accentColour }}
                   >
                     {transliterationLanguage === 'hi' ? 'अर्थ' : 'Meaning'}
                   </p>
@@ -607,9 +606,9 @@ export default function LessonClient({
                   disabled={explainLoading}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold transition-all motion-press"
                   style={{
-                    background: showExplain ? `${accentColour}15` : 'rgba(255,255,255,0.05)',
+                    background: showExplain ? `${accentColour}25` : `${accentColour}14`,
                     color:      explainLoading ? 'var(--brand-muted)' : accentColour,
-                    border:     `1px solid ${showExplain ? accentColour + '35' : 'rgba(200,146,74,0.16)'}`,
+                    border:     `1px solid ${accentColour}45`,
                   }}
                 >
                   {explainLoading
@@ -631,32 +630,32 @@ export default function LessonClient({
                     >
                       <div
                         className="mt-3 rounded-2xl p-5 space-y-4"
-                        style={{ background: `linear-gradient(135deg, ${accentColour}08, rgba(255,255,255,0.02))`, border: `1px solid ${accentColour}20` }}
+                        style={{ background: `${accentColour}14`, border: `1px solid ${accentColour}40` }}
                       >
                         {/* Teacher attribution */}
                         <div className="flex items-center gap-2">
                           <span className="text-xl">🪔</span>
                           <div>
-                            <p className="text-[9px] font-bold uppercase tracking-widest" style={{ color: accentColour + 'aa' }}>
+                            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: accentColour }}>
                               {explainResult.tradition}
                             </p>
-                            <p className="text-xs text-[color:var(--brand-muted)]">In the spirit of {explainResult.teacher}</p>
+                            <p className="text-xs font-medium" style={{ color: 'var(--brand-ink)', opacity: 0.7 }}>In the spirit of {explainResult.teacher}</p>
                           </div>
                         </div>
 
                         {/* Meaning */}
                         {explainResult.explanation.meaning && (
                           <div>
-                            <p className="text-[9px] font-bold uppercase tracking-widest mb-2" style={{ color: accentColour + '88' }}>Meaning</p>
-                            <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed">{explainResult.explanation.meaning}</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: accentColour }}>Meaning</p>
+                            <p className="text-sm leading-relaxed" style={{ color: 'var(--brand-ink)' }}>{explainResult.explanation.meaning}</p>
                           </div>
                         )}
 
                         {/* Commentary */}
                         {explainResult.explanation.commentary && (
                           <div>
-                            <p className="text-[9px] font-bold uppercase tracking-widest mb-2" style={{ color: accentColour + '88' }}>Commentary</p>
-                            <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">{explainResult.explanation.commentary}</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: accentColour }}>Commentary</p>
+                            <p className="text-sm leading-relaxed" style={{ color: 'var(--brand-ink)', opacity: 0.82 }}>{explainResult.explanation.commentary}</p>
                           </div>
                         )}
 
@@ -664,16 +663,16 @@ export default function LessonClient({
                         {explainResult.explanation.daily_application && (
                           <div
                             className="rounded-xl px-4 py-3"
-                            style={{ background: `${accentColour}10`, border: `1px solid ${accentColour}22` }}
+                            style={{ background: `${accentColour}22`, border: `1px solid ${accentColour}50` }}
                           >
-                            <p className="text-[9px] font-bold uppercase tracking-widest mb-1.5" style={{ color: accentColour }}>Today&apos;s Practice</p>
-                            <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed">{explainResult.explanation.daily_application}</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: accentColour }}>Today&apos;s Practice</p>
+                            <p className="text-sm leading-relaxed" style={{ color: 'var(--brand-ink)' }}>{explainResult.explanation.daily_application}</p>
                           </div>
                         )}
 
                         {/* Contemplation */}
                         {explainResult.explanation.contemplation && (
-                          <p className="text-sm text-center italic text-[color:var(--brand-muted)] border-t border-white/6 pt-3 leading-relaxed">
+                          <p className="text-sm text-center italic leading-relaxed pt-3" style={{ color: 'var(--brand-ink)', opacity: 0.8, borderTop: `1px solid ${accentColour}25` }}>
                             &ldquo;{explainResult.explanation.contemplation}&rdquo;
                           </p>
                         )}
@@ -687,8 +686,8 @@ export default function LessonClient({
 
           {/* ── Jump to lesson ───────────────────────────────────────────── */}
           {totalLessons > 1 && (
-            <div className="mt-12 pt-6" style={{ borderTop: '1px solid rgba(200,146,74,0.12)' }}>
-              <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-3" style={{ color: `${accentColour}55` }}>
+            <div className="mt-12 pt-6" style={{ borderTop: `1px solid ${accentColour}30` }}>
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] mb-3" style={{ color: accentColour }}>
                 Lessons
               </p>
               <div className="flex flex-wrap gap-2">
@@ -701,9 +700,9 @@ export default function LessonClient({
                       onClick={() => goToLesson(i)}
                       className="w-9 h-9 rounded-full text-xs font-semibold flex items-center justify-center transition-all"
                       style={{
-                        background: current ? accentColour : done ? `${accentColour}20` : 'rgba(255,255,255,0.06)',
-                        color:      current ? '#1c1c1a' : done ? accentColour : 'var(--brand-muted)',
-                        border:     current ? 'none' : `1px solid ${done ? `${accentColour}30` : 'rgba(255,255,255,0.08)'}`,
+                        background: current ? accentColour : done ? `${accentColour}30` : `${accentColour}14`,
+                        color:      current ? '#1c1c1a' : done ? accentColour : 'var(--brand-ink)',
+                        border:     current ? 'none' : `1px solid ${done ? `${accentColour}55` : `${accentColour}30`}`,
                       }}
                       title={l.title}
                     >
@@ -720,7 +719,11 @@ export default function LessonClient({
       {/* ════════════════════ FIXED BOTTOM BAR ══════════════════════════════ */}
       <div
         className="fixed bottom-0 inset-x-0 z-40"
-        style={{ background: 'var(--brand-background)', borderTop: '1px solid rgba(200,146,74,0.14)' }}
+        style={{
+          background:    'var(--brand-background)',
+          borderTop:     `1px solid ${accentColour}35`,
+          backdropFilter: 'blur(24px)',
+        }}
       >
         {/* ── Quick actions ──────────────────────────────────────────────── */}
         <div className="flex items-center justify-around px-4 pt-3 pb-1 max-w-xl mx-auto">
@@ -733,8 +736,8 @@ export default function LessonClient({
             <div
               className="w-11 h-11 rounded-full flex items-center justify-center"
               style={{
-                background: speakingId === entry.id ? `${accentColour}22` : 'rgba(255,255,255,0.06)',
-                border:     `1px solid ${speakingId === entry.id ? accentColour + '40' : 'rgba(200,146,74,0.14)'}`,
+                background: speakingId === entry.id ? `${accentColour}35` : `${accentColour}18`,
+                border:     `1px solid ${speakingId === entry.id ? accentColour : `${accentColour}50`}`,
               }}
             >
               {ttsLoadingId === entry.id
@@ -744,7 +747,7 @@ export default function LessonClient({
                   : <Volume2 size={17} style={{ color: accentColour }} />
               }
             </div>
-            <span className="text-[9px] font-semibold" style={{ color: 'var(--brand-muted)' }}>
+            <span className="text-[10px] font-semibold" style={{ color: 'var(--brand-ink)' }}>
               {speakingId === entry.id ? 'Stop' : 'Listen'}
             </span>
           </button>
@@ -757,8 +760,8 @@ export default function LessonClient({
             <div
               className="w-11 h-11 rounded-full flex items-center justify-center"
               style={{
-                background: bookmarkedIds.has(entry.id) ? accentColour : 'rgba(255,255,255,0.06)',
-                border:     `1px solid ${bookmarkedIds.has(entry.id) ? accentColour : 'rgba(200,146,74,0.14)'}`,
+                background: bookmarkedIds.has(entry.id) ? accentColour : `${accentColour}18`,
+                border:     `1px solid ${bookmarkedIds.has(entry.id) ? accentColour : `${accentColour}50`}`,
               }}
             >
               <Bookmark
@@ -767,7 +770,7 @@ export default function LessonClient({
                 className={bookmarkedIds.has(entry.id) ? 'fill-current' : ''}
               />
             </div>
-            <span className="text-[9px] font-semibold" style={{ color: 'var(--brand-muted)' }}>
+            <span className="text-[10px] font-semibold" style={{ color: 'var(--brand-ink)' }}>
               {bookmarkedIds.has(entry.id) ? 'Saved' : 'Save'}
             </span>
           </button>
@@ -779,11 +782,11 @@ export default function LessonClient({
           >
             <div
               className="w-11 h-11 rounded-full flex items-center justify-center"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,74,0.14)' }}
+              style={{ background: `${accentColour}18`, border: `1px solid ${accentColour}50` }}
             >
               <Copy size={17} style={{ color: accentColour }} />
             </div>
-            <span className="text-[9px] font-semibold" style={{ color: 'var(--brand-muted)' }}>Copy</span>
+            <span className="text-[10px] font-semibold" style={{ color: 'var(--brand-ink)' }}>Copy</span>
           </button>
 
           {/* Ask AI */}
@@ -793,11 +796,11 @@ export default function LessonClient({
           >
             <div
               className="w-11 h-11 rounded-full flex items-center justify-center"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,74,0.14)' }}
+              style={{ background: `${accentColour}18`, border: `1px solid ${accentColour}50` }}
             >
               <Sparkles size={17} style={{ color: accentColour }} />
             </div>
-            <span className="text-[9px] font-semibold" style={{ color: 'var(--brand-muted)' }}>Ask AI</span>
+            <span className="text-[10px] font-semibold" style={{ color: 'var(--brand-ink)' }}>Ask AI</span>
           </Link>
         </div>
 
@@ -807,10 +810,10 @@ export default function LessonClient({
           <button
             onClick={goPrevVerse}
             disabled={verseIndex === 0}
-            className="w-12 h-13 flex items-center justify-center rounded-2xl disabled:opacity-25 transition-opacity motion-press"
-            style={{ border: '1px solid rgba(200,146,74,0.18)', background: 'rgba(255,255,255,0.04)', height: '52px' }}
+            className="w-12 flex items-center justify-center rounded-2xl disabled:opacity-30 transition-opacity motion-press"
+            style={{ border: `1px solid ${accentColour}45`, background: `${accentColour}14`, height: '52px' }}
           >
-            <ChevronLeft size={20} style={{ color: 'var(--brand-muted)' }} />
+            <ChevronLeft size={20} style={{ color: accentColour }} />
           </button>
 
           {/* Main CTA */}
@@ -818,7 +821,7 @@ export default function LessonClient({
             onClick={ctaAction}
             disabled={ctaDisabled || saving}
             className="flex-1 flex items-center justify-center gap-2 rounded-2xl text-sm font-bold text-[#1c1c1a] disabled:opacity-40 transition-all motion-press shadow-lg"
-            style={{ background: accentColour, boxShadow: `0 6px 20px ${accentColour}30`, height: '52px' }}
+            style={{ background: accentColour, boxShadow: `0 6px 20px ${accentColour}40`, height: '52px' }}
           >
             {ctaLabel}
           </button>
