@@ -29,7 +29,8 @@ import type { LibraryTradition } from '@/lib/library-content';
 // ─── Lesson content builder ────────────────────────────────────────────────────
 // Groups library entries into paginated lessons (~4 entries each)
 const ENTRIES_PER_LESSON = 4;
-const READER_FONT_STEPS = [0.92, 1, 1.12, 1.24, 1.38] as const;
+// Starts at a comfortable reading size; users can increase further
+const READER_FONT_STEPS = [1.1, 1.25, 1.4, 1.58, 1.78] as const;
 
 function getEntryText(entry: LibraryEntry) {
   return [
@@ -165,7 +166,7 @@ function VerseCard({
   onCopy: (entry: LibraryEntry) => void;
   onSpeak: (entry: LibraryEntry) => void;
 }) {
-  const [expanded, setExpanded] = useState(index === 0); // first verse auto-opens
+  const [expanded, setExpanded] = useState(true); // all verses open by default
   const askHref = getAIChatHref(
     `Explain this Pathshala verse in simple Hindi and English, with practical learning guidance: ${entry.title}`,
     getEntryText(entry)
@@ -176,89 +177,94 @@ function VerseCard({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
-      className="pathshala-glass-card rounded-[1.45rem] overflow-hidden"
+      className="pathshala-glass-card rounded-[1.6rem] overflow-hidden"
     >
-      <button className="w-full text-left p-4" onClick={() => setExpanded(e => !e)}>
-        <div className="flex items-start justify-between gap-2">
+      {/* Verse header — tap to collapse */}
+      <button className="w-full text-left px-5 pt-5 pb-3" onClick={() => setExpanded(e => !e)}>
+        <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-sm text-[color:var(--brand-ink)]">{entry.title}</p>
-            <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">{entry.source}</p>
+            <div className="flex items-center gap-2 mb-0.5">
+              <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: accentColour }} />
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[color:var(--brand-muted)]">{entry.source}</p>
+            </div>
+            <p className="font-semibold text-sm text-[color:var(--brand-ink)] leading-snug">{entry.title}</p>
           </div>
-          {expanded
-            ? <ChevronUp size={15} className="text-[color:var(--brand-muted)] shrink-0 mt-0.5" />
-            : <ChevronDown size={15} className="text-[color:var(--brand-muted)] shrink-0 mt-0.5" />
-          }
+          <span className="shrink-0 opacity-40 mt-0.5">
+            {expanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+          </span>
         </div>
-        <p
-          className="mt-2.5 text-base leading-relaxed font-medium"
-          style={{ color: accentColour, fontFamily: 'var(--font-deva, serif)', fontSize: `${1.05 * fontScale}rem` }}
-        >
-          {entry.original.split('\n')[0]}
-          {entry.original.includes('\n') && !expanded ? '…' : ''}
-        </p>
       </button>
 
-      <div className="px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar">
+      {/* Devanagari — always visible, large and readable */}
+      <div className="px-5 pb-4">
+        <p
+          className="leading-[1.75] font-medium whitespace-pre-line text-center"
+          style={{
+            color: accentColour,
+            fontFamily: 'var(--font-deva, serif)',
+            fontSize: `${fontScale * 1.55}rem`,
+            textShadow: `0 0 28px ${accentColour}22`,
+          }}
+        >
+          {entry.original}
+        </p>
+      </div>
+
+      {/* Action strip */}
+      <div className="px-5 pb-4 flex gap-2 overflow-x-auto no-scrollbar">
         <button onClick={() => onSpeak(entry)}
-          className="shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold motion-press"
+          className="shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold motion-press"
           style={{ color: accentColour, background: `${accentColour}12`, border: `1px solid ${accentColour}24` }}>
-          {ttsLoading ? <Loader2 size={13} className="animate-spin" /> : speaking ? <VolumeX size={13} /> : <Volume2 size={13} />}
+          {ttsLoading ? <Loader2 size={12} className="animate-spin" /> : speaking ? <VolumeX size={12} /> : <Volume2 size={12} />}
           {speaking ? 'Stop' : 'Listen'}
         </button>
-        <button onClick={() => onCopy(entry)}
-          className="shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold motion-press"
-          style={{ color: 'var(--brand-muted)', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,74,0.14)' }}>
-          <Copy size={13} /> Copy
-        </button>
         <button onClick={() => onBookmark(entry)}
-          className="shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold motion-press"
+          className="shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold motion-press"
           style={{ color: bookmarked ? '#1c1c1a' : accentColour, background: bookmarked ? accentColour : `${accentColour}12`, border: `1px solid ${accentColour}24` }}>
-          <Bookmark size={13} className={bookmarked ? 'fill-current' : ''} /> {bookmarked ? 'Saved' : 'Save'}
+          <Bookmark size={12} className={bookmarked ? 'fill-current' : ''} /> {bookmarked ? 'Saved' : 'Save'}
+        </button>
+        <button onClick={() => onCopy(entry)}
+          className="shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold motion-press"
+          style={{ color: 'var(--brand-muted)', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,74,0.14)' }}>
+          <Copy size={12} /> Copy
         </button>
         <Link href={askHref}
-          className="shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold motion-press"
+          className="shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold motion-press"
           style={{ color: accentColour, background: `${accentColour}12`, border: `1px solid ${accentColour}24` }}>
-          <Sparkles size={13} /> Ask AI
+          <Sparkles size={12} /> Ask AI
         </Link>
       </div>
 
-      <AnimatePresence>
+      {/* Expanded: transliteration + meaning */}
+      <AnimatePresence initial={false}>
         {expanded && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22 }}
+            transition={{ duration: 0.24 }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 space-y-3 pt-3" style={{ borderTop: '1px solid rgba(200,146,74,0.14)' }}>
-              {/* Full original */}
-              {entry.original.includes('\n') && (
-                <div>
-                  <p className="text-[10px] font-semibold text-[color:var(--brand-muted)] uppercase tracking-wider mb-1.5">Original</p>
-                  <p
-                    className="text-sm leading-relaxed whitespace-pre-line"
-                    style={{ color: accentColour, fontFamily: 'var(--font-deva, serif)', fontSize: `${0.95 * fontScale}rem` }}
-                  >
-                    {entry.original}
-                  </p>
-                </div>
-              )}
-
+            <div className="mx-5 mb-5 rounded-[1.1rem] overflow-hidden"
+              style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(200,146,74,0.1)' }}>
               {/* Transliteration */}
               {entry.transliteration && (
-                <div>
-                  <p className="text-[10px] font-semibold text-[color:var(--brand-muted)] uppercase tracking-wider mb-1.5">Hindi learning guide</p>
-                  <p className="text-sm italic text-[color:var(--brand-muted)] leading-relaxed">
+                <div className="px-4 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(200,146,74,0.08)' }}>
+                  <p className="text-[9px] font-bold text-[color:var(--brand-muted)] uppercase tracking-[0.22em] mb-2">Transliteration</p>
+                  <p className="italic text-[color:var(--brand-muted)] leading-relaxed"
+                    style={{ fontSize: `${fontScale * 0.9}rem` }}>
                     {entry.transliteration}
                   </p>
                 </div>
               )}
 
               {/* Meaning */}
-              <div>
-                <p className="text-[10px] font-semibold text-[color:var(--brand-muted)] uppercase tracking-wider mb-1.5">Meaning</p>
-                <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed" style={{ fontSize: `${0.92 * fontScale}rem` }}>{entry.meaning}</p>
+              <div className="px-4 py-4">
+                <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.7 }}>Meaning</p>
+                <p className="text-[color:var(--brand-ink)] leading-relaxed font-medium"
+                  style={{ fontSize: `${fontScale * 1.0}rem`, lineHeight: 1.7 }}>
+                  {entry.meaning}
+                </p>
               </div>
             </div>
           </motion.div>
@@ -506,80 +512,90 @@ export default function LessonClient({
       {/* Sacred confetti on path completion */}
       <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
 
-      {/* Header */}
-      <div className="sticky top-0 z-30 px-4 py-2"
+      {/* Header — clean, uncluttered */}
+      <div className="sticky top-0 z-30 px-4 py-3"
         style={{
           background: 'var(--card-bg)',
-          borderBottom: '1px solid rgba(200,146,74,0.14)',
-          backdropFilter: 'blur(18px) saturate(125%)',
-          WebkitBackdropFilter: 'blur(18px) saturate(125%)',
+          borderBottom: '1px solid rgba(200,146,74,0.12)',
+          backdropFilter: 'blur(20px) saturate(130%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(130%)',
         }}>
         <div className="flex items-center gap-3 max-w-2xl mx-auto">
           <button
             onClick={() => router.push('/pathshala')}
-            className="w-9 h-9 rounded-full flex items-center justify-center motion-press"
-            style={{ background: `${accentColour}14` }}
+            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 motion-press"
+            style={{ background: `${accentColour}14`, border: `1px solid ${accentColour}20` }}
           >
             <ChevronLeft size={18} style={{ color: accentColour }} />
           </button>
+
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] text-[color:var(--brand-muted)] truncate">{path?.title ?? pathId}</p>
-            <p className="text-sm font-semibold text-[color:var(--brand-ink)]">
+            <p className="text-[10px] text-[color:var(--brand-muted)] truncate font-medium">{path?.title ?? pathId}</p>
+            <p className="text-sm font-bold text-[color:var(--brand-ink)] truncate">
               {lesson.title}
-              <span className="text-xs font-normal text-[color:var(--brand-muted)] ml-2">
-                {lessonIndex + 1} / {totalLessons}
-              </span>
             </p>
           </div>
-          <Link
-            href={`/pathshala/${pathId}/recite`}
-            className="hidden sm:flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-full motion-press"
-            style={{ color: accentColour, background: `${accentColour}10`, border: '1px solid rgba(200,146,74,0.16)' }}
-          >
-            <Mic size={13} /> Recite
-          </Link>
-        </div>
 
-        <div className="mt-2 max-w-2xl mx-auto flex items-center gap-2">
-          <CircularProgress
-            pct={progressPct}
-            accent={accentColour}
-            size={34}
-            strokeWidth={3.5}
-            label={<span className="text-[9px] font-bold" style={{ color: accentColour }}>{progressPct}%</span>}
-          />
-          <p className="text-[10px] text-[color:var(--brand-muted)] flex-1">{completed.length}/{totalLessons} lessons complete</p>
-          <div className="flex items-center gap-1">
+          {/* Progress pill */}
+          <div className="flex items-center gap-2 shrink-0">
+            <CircularProgress
+              pct={progressPct}
+              accent={accentColour}
+              size={32}
+              strokeWidth={3}
+              label={<span className="text-[8px] font-bold" style={{ color: accentColour }}>{progressPct}%</span>}
+            />
+            <span className="text-[10px] text-[color:var(--brand-muted)] hidden sm:block">
+              {completed.length}/{totalLessons}
+            </span>
+          </div>
+
+          {/* Font size controls */}
+          <div className="flex items-center gap-1 shrink-0 rounded-xl px-1 py-1"
+            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(200,146,74,0.1)' }}>
             <button onClick={() => setFontStep(step => Math.max(0, step - 1))}
-              className="w-8 h-8 rounded-full flex items-center justify-center motion-press"
-              style={{ color: 'var(--brand-muted)', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,74,0.12)' }}
+              className="w-7 h-7 rounded-lg flex items-center justify-center motion-press"
+              style={{ color: 'var(--brand-muted)' }}
               aria-label="Decrease text size">
-              <ZoomOut size={14} />
+              <ZoomOut size={13} />
             </button>
             <button onClick={() => setFontStep(step => Math.min(READER_FONT_STEPS.length - 1, step + 1))}
-              className="w-8 h-8 rounded-full flex items-center justify-center motion-press"
-              style={{ color: accentColour, background: `${accentColour}12`, border: `1px solid ${accentColour}24` }}
+              className="w-7 h-7 rounded-lg flex items-center justify-center motion-press"
+              style={{ color: accentColour }}
               aria-label="Increase text size">
-              <ZoomIn size={14} />
-            </button>
-            <button onClick={saveSelectedText}
-              className="w-8 h-8 rounded-full flex items-center justify-center motion-press"
-              style={{ color: accentColour, background: `${accentColour}12`, border: `1px solid ${accentColour}24` }}
-              aria-label="Save selected text">
-              <Bookmark size={14} />
-            </button>
-            <button onClick={enterFullscreen}
-              className="w-8 h-8 rounded-full flex items-center justify-center motion-press"
-              style={{ color: 'var(--brand-muted)', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,74,0.12)' }}
-              aria-label="Enter fullscreen">
-              <Maximize2 size={14} />
+              <ZoomIn size={13} />
             </button>
           </div>
+
+          <Link
+            href={`/pathshala/${pathId}/recite`}
+            className="hidden sm:flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-full motion-press shrink-0"
+            style={{ color: accentColour, background: `${accentColour}10`, border: '1px solid rgba(200,146,74,0.16)' }}
+          >
+            <Mic size={12} /> Recite
+          </Link>
         </div>
       </div>
 
       {/* Lesson content */}
-      <div className="px-4 pt-4 space-y-3">
+      <div className="px-4 pt-5 space-y-4 max-w-2xl mx-auto">
+
+        {/* ── Ritual opening ─────────────────────────────────────────────────── */}
+        <div className="text-center pb-2">
+          <p className="text-[2.4rem] mb-2 opacity-80" style={{ fontFamily: 'var(--font-deva, serif)', color: accentColour, textShadow: `0 0 32px ${accentColour}44` }}>ॐ</p>
+          <h2 className="font-bold text-lg leading-tight" style={{ fontFamily: 'var(--font-serif)', color: 'var(--brand-ink)' }}>
+            {lesson.title}
+          </h2>
+          <p className="text-xs text-[color:var(--brand-muted)] mt-1">
+            Lesson {lessonIndex + 1} of {totalLessons} · {lesson.entries.length} {lesson.entries.length === 1 ? 'verse' : 'verses'}
+          </p>
+          <div className="flex items-center gap-3 justify-center mt-3">
+            <div className="h-px flex-1 max-w-[60px]" style={{ background: `linear-gradient(to right, transparent, ${accentColour}30)` }} />
+            <span className="text-[10px] font-bold uppercase tracking-[0.22em] opacity-40" style={{ color: accentColour }}>Begin</span>
+            <div className="h-px flex-1 max-w-[60px]" style={{ background: `linear-gradient(to left, transparent, ${accentColour}30)` }} />
+          </div>
+        </div>
+
         {lesson.entries.length === 0 ? (
           <div className="text-center py-16">
             <BookOpen size={36} className="mx-auto mb-3 text-[color:var(--brand-muted)]" />
@@ -603,32 +619,41 @@ export default function LessonClient({
           ))
         )}
 
+        {/* ── Ritual divider before completion ──────────────────────────── */}
+        <div className="flex items-center gap-3 py-2">
+          <div className="h-px flex-1" style={{ background: `linear-gradient(to right, transparent, ${accentColour}20)` }} />
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-30" style={{ color: accentColour }}>
+            {isCompleted ? 'completed' : 'complete the lesson'}
+          </span>
+          <div className="h-px flex-1" style={{ background: `linear-gradient(to left, transparent, ${accentColour}20)` }} />
+        </div>
+
         {/* Navigation */}
-        <div className="flex gap-3 pt-2">
+        <div className="flex gap-3">
           <button
             onClick={() => goTo(lessonIndex - 1)}
             disabled={lessonIndex === 0}
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold text-[color:var(--brand-muted)] disabled:opacity-30 transition-opacity motion-press"
+            className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-sm font-semibold text-[color:var(--brand-muted)] disabled:opacity-30 transition-opacity motion-press"
             style={{ border: '1px solid rgba(200,146,74,0.16)', background: 'rgba(255,255,255,0.04)' }}
           >
-            <ChevronLeft size={16} /> Previous
+            <ChevronLeft size={16} />
           </button>
 
           {isCompleted ? (
             <button
               onClick={() => goTo(lessonIndex + 1)}
               disabled={lessonIndex === totalLessons - 1}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold text-[#1c1c1a] disabled:opacity-40 transition-opacity"
-              style={{ background: accentColour }}
+              className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold text-[#1c1c1a] disabled:opacity-40 transition-opacity shadow-lg"
+              style={{ background: accentColour, boxShadow: `0 6px 20px ${accentColour}33` }}
             >
-              Next <ChevronRight size={16} />
+              Next Lesson <ChevronRight size={16} />
             </button>
           ) : (
             <button
               onClick={markComplete}
               disabled={saving}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold text-[#1c1c1a] disabled:opacity-60 transition-all"
-              style={{ background: accentColour }}
+              className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold text-[#1c1c1a] disabled:opacity-60 transition-all shadow-lg"
+              style={{ background: accentColour, boxShadow: `0 6px 20px ${accentColour}33` }}
             >
               {saving
                 ? <Loader2 size={15} className="animate-spin" />

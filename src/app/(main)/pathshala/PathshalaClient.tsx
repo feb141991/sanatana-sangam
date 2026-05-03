@@ -605,8 +605,7 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
     }
   }
 
-  // ── Continue Learning hero card ──────────────────────────────────────────────
-  // Shows the most recently enrolled (first in list) active path as a top hero card
+  // ── Your Seat — full-width hero card ────────────────────────────────────────
   function ContinueLearningHero() {
     if (activePaths.length === 0) return null;
     const enrollment = activePaths[0];
@@ -618,79 +617,123 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
       ? Math.round((doneLessons / path.total_lessons) * 100)
       : 0;
     const resumeLesson = enrollment.current_lesson ?? 0;
-    const lessonLabel  = resumeLesson > 0 ? `Lesson ${resumeLesson + 1}` : 'First Lesson';
+    const lessonLabel  = resumeLesson > 0 ? `Lesson ${resumeLesson + 1}` : 'Begin';
+    // Mastery signal — how many unique lessons completed
+    const masterySignal = doneLessons > 0
+      ? `${doneLessons} lesson${doneLessons === 1 ? '' : 's'} mastered`
+      : `${path.total_lessons} lessons ahead`;
 
     return (
       <motion.div
-        className="rounded-[1.8rem] overflow-hidden mb-1"
+        className="rounded-[2rem] overflow-hidden relative mb-2"
         style={{
-          ...cardStyle,
           background: isDark
-            ? `linear-gradient(135deg, rgba(28,20,12,0.96) 0%, rgba(18,12,8,0.98) 100%)`
-            : `linear-gradient(135deg, rgba(255,244,228,0.98) 0%, rgba(250,235,210,0.99) 100%)`,
-          boxShadow: `0 8px 32px ${meta.accentColour}15`,
-          border: `1px solid ${meta.accentColour}25`
+            ? `linear-gradient(160deg, rgba(30,18,8,0.98) 0%, rgba(20,12,5,0.99) 100%)`
+            : `linear-gradient(160deg, rgba(255,248,235,0.99) 0%, rgba(250,238,210,0.99) 100%)`,
+          boxShadow: `0 12px 48px ${meta.accentColour}18, inset 0 1px 0 ${meta.accentColour}18`,
+          border: `1px solid ${meta.accentColour}28`,
         }}
-        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 14 }}
+        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 18 }}
         animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="p-5">
-          <p className="text-[10px] font-bold uppercase tracking-widest mb-2"
-            style={{ color: meta.accentColour }}>
-            Continue Learning
-          </p>
-          <div className="flex items-center gap-4">
-            {/* Big progress ring */}
+        {/* Decorative Sanskrit watermark */}
+        <div className="absolute top-3 right-4 select-none pointer-events-none"
+          style={{ fontFamily: 'var(--font-deva, serif)', fontSize: '7rem', lineHeight: 1,
+            color: meta.accentColour, opacity: isDark ? 0.04 : 0.06 }}>
+          ॐ
+        </div>
+
+        {/* Ambient glow */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: `radial-gradient(ellipse at 30% 0%, ${meta.accentColour}10, transparent 65%)` }} />
+
+        {/* Hero body */}
+        <div className="relative z-10 p-5 pb-4">
+          {/* Eyebrow */}
+          <div className="flex items-center gap-2 mb-3">
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: meta.accentColour }} />
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: meta.accentColour }}>
+              Your Seat · Active Path
+            </p>
+          </div>
+
+          {/* Title row */}
+          <div className="flex items-start gap-4 mb-4">
             <CircularProgress
               pct={progressPct}
               accent={meta.accentColour}
-              size={72}
+              size={80}
               strokeWidth={5}
               label={
-                <div className="text-center">
-                  <div className="text-base font-bold" style={{ color: meta.accentColour }}>{progressPct}%</div>
-                  <div className="text-[8px] leading-none" style={{ color: tertiaryText }}>done</div>
+                <div className="text-center leading-none">
+                  <div className="text-[1.15rem] font-bold" style={{ color: meta.accentColour }}>{progressPct}%</div>
+                  <div className="text-[7px] mt-0.5 uppercase tracking-wider" style={{ color: tertiaryText }}>done</div>
                 </div>
               }
             />
-            <div className="flex-1 min-w-0">
-              <h2 className="font-semibold text-base leading-snug" style={{ color: primaryText }}>{path.title}</h2>
-              <p className="text-xs mt-1" style={{ color: secondaryText }}>
-                {doneLessons} of {path.total_lessons} lessons · Up next: {lessonLabel}
+            <div className="flex-1 min-w-0 pt-1">
+              <h2 className="font-bold text-xl leading-snug mb-1"
+                style={{ fontFamily: 'var(--font-serif)', color: primaryText }}>
+                {path.title}
+              </h2>
+              <p className="text-xs leading-relaxed mb-1" style={{ color: secondaryText }}>
+                {path.description}
               </p>
-              <Link
-                href={`/pathshala/${enrollment.path_id}/lesson`}
-                className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[#1c1c1a] text-sm font-bold shadow-sm"
-                style={{ background: meta.accentColour }}
-              >
-                <Play size={13} /> Resume
-              </Link>
+              <p className="text-[10px] font-semibold" style={{ color: meta.accentColour, opacity: 0.75 }}>
+                {masterySignal} · {path.duration_days}-day journey
+              </p>
             </div>
           </div>
+
+          {/* Continue CTA — full width, prominent */}
+          <Link
+            href={`/pathshala/${enrollment.path_id}/lesson`}
+            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-sm text-[#1c1c1a] shadow-lg transition-transform active:scale-[0.98]"
+            style={{
+              background: `linear-gradient(135deg, ${meta.accentColour}, ${meta.accentColour}cc)`,
+              boxShadow: `0 6px 24px ${meta.accentColour}38`,
+            }}
+          >
+            <Play size={15} fill="currentColor" />
+            {lessonLabel === 'Begin' ? 'Begin First Lesson' : `Resume · ${lessonLabel}`}
+          </Link>
         </div>
+
+        {/* Progress bar strip */}
+        <div className="relative z-10 h-1 mx-5 mb-4 rounded-full overflow-hidden"
+          style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}>
+          <motion.div
+            className="h-full rounded-full"
+            style={{ background: `linear-gradient(to right, ${meta.accentColour}99, ${meta.accentColour})` }}
+            initial={{ width: 0 }}
+            animate={{ width: `${progressPct}%` }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          />
+        </div>
+
         {/* Quick actions strip */}
-        <div className="flex divide-x" style={{ borderTop: `1px solid ${glassBorder}`, borderColor: glassBorder }}>
+        <div className="relative z-10 flex divide-x" style={{ borderTop: `1px solid ${glassBorder}` }}>
           <Link
             href={`/pathshala/${enrollment.path_id}/recite`}
             className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold transition-all hover:bg-white/4"
             style={{ color: meta.accentColour }}
           >
-            <Mic size={13} /> Recite
+            <Mic size={12} /> Recite
           </Link>
           <button
             onClick={() => startOver(enrollment.path_id, path.title)}
             className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold transition-all hover:bg-white/4"
             style={{ color: secondaryText }}
           >
-            <Trophy size={13} /> Start over
+            <Trophy size={12} /> Start over
           </button>
           <button
             onClick={() => unenroll(enrollment.path_id, path.title)}
             className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold transition-all hover:bg-white/4"
             style={{ color: secondaryText }}
           >
-            <X size={13} /> Leave
+            <X size={12} /> Leave
           </button>
         </div>
       </motion.div>
@@ -955,17 +998,43 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
             <>
               {activePaths.length === 0 ? (
                 <>
+                  {/* Gurukul invitation card */}
+                  <motion.div
+                    className="rounded-[2rem] overflow-hidden relative text-center"
+                    style={{
+                      background: isDark
+                        ? `linear-gradient(160deg, rgba(28,18,8,0.97) 0%, rgba(18,12,5,0.99) 100%)`
+                        : `linear-gradient(160deg, rgba(255,248,235,0.99) 0%, rgba(250,238,210,0.99) 100%)`,
+                      border: `1px solid ${meta.accentColour}22`,
+                      boxShadow: `0 8px 32px ${meta.accentColour}10`,
+                    }}
+                    initial={prefersReducedMotion ? undefined : { opacity: 0, y: 14 }}
+                    animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <div className="absolute inset-0 pointer-events-none"
+                      style={{ background: `radial-gradient(ellipse at 50% 0%, ${meta.accentColour}08, transparent 65%)` }} />
+                    <div className="relative z-10 px-6 py-8">
+                      <p className="text-[4rem] mb-3 leading-none" style={{ fontFamily: 'var(--font-deva, serif)', color: meta.accentColour, opacity: 0.6 }}>
+                        गुरुकुल
+                      </p>
+                      <p className="font-bold text-base mb-1" style={{ fontFamily: 'var(--font-serif)', color: primaryText }}>
+                        Your seat awaits
+                      </p>
+                      <p className="text-sm leading-relaxed mb-5" style={{ color: secondaryText }}>
+                        Choose a learning path and begin your study of the sacred texts.
+                      </p>
+                      <button onClick={() => setTab('explore')}
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-[#1c1c1a] font-bold text-sm shadow-lg"
+                        style={{
+                          background: `linear-gradient(135deg, ${meta.accentColour}, ${meta.accentColour}cc)`,
+                          boxShadow: `0 6px 20px ${meta.accentColour}33`,
+                        }}>
+                        <GraduationCap size={15} /> Choose a Path
+                      </button>
+                    </div>
+                  </motion.div>
                   <DailyVersePrompt />
-                  <div className="pathshala-glass-card rounded-[1.8rem] text-center py-10 px-5">
-                    <GraduationCap size={44} className="mx-auto mb-3" style={{ color: `${meta.accentColour}88` }} />
-                    <p className="font-semibold" style={{ color: primaryText }}>No active learning paths</p>
-                    <p className="text-sm mt-1" style={{ color: secondaryText }}>Enroll in a path to begin your journey</p>
-                    <button onClick={() => setTab('explore')}
-                      className="mt-4 px-6 py-2.5 rounded-xl text-[#1c1c1a] font-semibold text-sm"
-                      style={{ background: meta.accentColour }}>
-                      Explore Paths
-                    </button>
-                  </div>
                 </>
               ) : (
                 <>
@@ -973,9 +1042,16 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
                   <ContinueLearningHero />
 
                   {/* Additional active paths (Pro only gets multiple) */}
-                  {activePaths.slice(1).map(e => (
-                    <ActivePathCard key={e.path_id} enrollment={e} />
-                  ))}
+                  {activePaths.slice(1).length > 0 && (
+                    <>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] px-1 pt-1" style={{ color: tertiaryText }}>
+                        Also enrolled
+                      </p>
+                      {activePaths.slice(1).map(e => (
+                        <ActivePathCard key={e.path_id} enrollment={e} />
+                      ))}
+                    </>
+                  )}
 
                   {/* Daily verse prompt below paths */}
                   <DailyVersePrompt />
@@ -1015,15 +1091,22 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
           {/* ── Explore Paths ────────────────────────────────────────────────── */}
           {tab === 'explore' && (
             <>
-              <div className="flex items-center justify-between pb-1">
-                <p className="text-xs" style={{ color: secondaryText }}>
-                  {allPaths.length} paths available for {meta.label}
-                </p>
+              <div className="flex items-center gap-3 pb-1">
+                <div className="flex-1">
+                  <p className="font-semibold text-sm" style={{ fontFamily: 'var(--font-serif)', color: primaryText }}>
+                    Sacred Learning Paths
+                  </p>
+                  <p className="text-[10px] mt-0.5" style={{ color: secondaryText }}>
+                    {allPaths.length} paths · {meta.label} tradition
+                    {!isPro && <span style={{ color: meta.accentColour }}> · 1 active (free)</span>}
+                  </p>
+                </div>
                 {!isPro && (
-                  <span className="text-[10px] font-semibold rounded-full px-2 py-0.5 flex items-center gap-1"
-                    style={{ background: `${meta.accentColour}15`, color: meta.accentColour }}>
-                    <Lock size={9} /> Pro: unlimited
-                  </span>
+                  <Link href="/profile"
+                    className="text-[10px] font-bold rounded-full px-3 py-1.5 flex items-center gap-1 shrink-0"
+                    style={{ background: `${meta.accentColour}15`, color: meta.accentColour, border: `1px solid ${meta.accentColour}20` }}>
+                    <Sparkles size={9} /> Unlock All
+                  </Link>
                 )}
               </div>
               {allPaths.map(p => <BrowsePathCard key={p.id} path={p} />)}
