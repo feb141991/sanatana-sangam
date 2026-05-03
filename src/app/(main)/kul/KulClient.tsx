@@ -218,42 +218,74 @@ function FamilyProfileSheet({
 
 function FamilyKeepsakeStage({ member }: { member: FamilyMember }) {
   const initials = getInitials(member.name || '?');
+  
+  // Traditional Sacred Colors
+  const terracotta = 'rgba(195, 82, 45,'; // Sindoor/Terracotta
+  const sandalwood = 'rgba(240, 220, 180,'; // Chandan/Sandalwood
+  const ash        = 'rgba(120, 115, 110,'; // Bhasma/Ash
+  
   const medallionRing = member.is_alive
-    ? 'linear-gradient(145deg, rgba(31, 107, 114, 0.22), rgba(195, 135, 47, 0.26))'
-    : 'linear-gradient(145deg, rgba(95, 82, 72, 0.16), rgba(125, 138, 139, 0.22))';
+    ? `linear-gradient(145deg, ${terracotta} 0.22), ${sandalwood} 0.26))`
+    : `linear-gradient(145deg, ${ash} 0.16), rgba(125, 138, 139, 0.22))`;
+    
   const medallionFill = member.is_alive
-    ? 'linear-gradient(145deg, rgba(247, 243, 235, 0.98), rgba(226, 239, 239, 0.96))'
-    : 'linear-gradient(145deg, rgba(242, 238, 233, 0.98), rgba(230, 235, 235, 0.96))';
+    ? 'linear-gradient(145deg, #fdfaf5, #f5f0e5)'
+    : 'linear-gradient(145deg, #f2eee9, #e6ebeb)';
+    
   const statusTone = member.is_alive ? 'var(--brand-primary-strong)' : 'var(--brand-earth)';
   const railTone = member.is_alive ? 'rgba(22, 77, 84, 0.72)' : 'rgba(95, 82, 72, 0.72)';
   const branchLabel = member.parent_id ? 'Linked branch' : 'Root branch';
 
   return (
-    <div className="clay-portrait-stage">
+    <div className="clay-portrait-stage relative group">
+      {/* Decorative Aura / Halo */}
+      <div className={`absolute inset-0 rounded-full blur-[12px] opacity-20 group-hover:opacity-40 transition-opacity ${member.is_alive ? 'bg-orange-200' : 'bg-slate-200'}`} />
+      
       <div className="clay-memory-orbit" />
       <div className="clay-memory-medallion" style={{ background: medallionRing }}>
-        <div className="clay-memory-medallion-inner relative overflow-hidden" style={{ background: medallionFill }}>
+        <div className="clay-memory-medallion-inner relative overflow-hidden flex items-center justify-center" style={{ background: medallionFill }}>
+          {/* Subtle Clay Texture Overlay */}
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
+          
           {member.photo_url ? (
             <Image
               src={member.photo_url}
               alt={`${member.name} keepsake`}
               fill
               sizes="160px"
-              className="object-cover rounded-[1.2rem]"
+              className="object-cover rounded-[1.2rem] filter sepia-[0.1] contrast-[1.05]"
             />
           ) : (
-            <span className="font-display text-lg font-bold tracking-[0.16em]" style={{ color: statusTone }}>
-              {initials}
-            </span>
+            <div className="flex flex-col items-center">
+              <span className="font-display text-lg font-bold tracking-[0.16em]" style={{ color: statusTone }}>
+                {initials}
+              </span>
+              {/* Sacred Symbol placeholder */}
+              <span className="text-[10px] opacity-40 mt-1">
+                {member.is_alive ? '🕉️' : '🪷'}
+              </span>
+            </div>
           )}
         </div>
       </div>
-      <div className="clay-memory-badge" style={{ color: statusTone }}>
+      
+      {/* Ritual Seal - Bottom Right overlay */}
+      <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full shadow-lg flex items-center justify-center text-[10px] border border-white/20"
+        style={{ 
+          background: member.is_alive ? 'var(--brand-primary)' : 'var(--brand-earth)',
+          color: 'white',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
+        }}>
+        {member.is_alive ? 'ॐ' : '🪷'}
+      </div>
+
+      <div className="clay-memory-badge" style={{ color: statusTone, fontStyle: 'italic' }}>
         {member.is_alive ? 'Living memory' : 'In remembrance'}
       </div>
+      
       <div className="absolute inset-x-3 bottom-2 flex items-center justify-between text-[10px] font-medium" style={{ color: railTone }}>
-        <span>{branchLabel}</span>
-        <span>{member.generation ? `Gen ${member.generation}` : 'Kul'}</span>
+        <span className="opacity-60">{branchLabel}</span>
+        <span className="font-bold">{member.generation ? `Gen ${member.generation}` : 'Kul'}</span>
       </div>
     </div>
   );
@@ -286,58 +318,66 @@ function FamilyLineageSheet({
 
   return (
     <div className="fixed inset-0 z-[70] bg-black/45 backdrop-blur-sm px-4 pb-6 pt-24 sm:py-6 flex items-end sm:items-center justify-center" onClick={onClose}>
-      <div className="w-full max-w-lg clay-card rounded-[2rem] p-5 space-y-4 max-h-[calc(100vh-7rem)] sm:max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-20 flex-shrink-0">
+      <div className="w-full max-w-lg clay-card rounded-[2.5rem] p-6 space-y-5 max-h-[calc(100vh-7rem)] sm:max-h-[85vh] overflow-y-auto" 
+        style={{ background: 'linear-gradient(150deg, #fdfcf9 0%, #f7f3ed 100%)' }}
+        onClick={(e) => e.stopPropagation()}>
+        
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-4 min-w-0">
+            <div className="w-24 flex-shrink-0">
               <FamilyKeepsakeStage member={member} />
             </div>
             <div className="min-w-0">
-              <h2 className="text-lg font-bold text-[color:var(--brand-ink)] leading-tight">{member.name}</h2>
-              <p className="text-sm text-[color:var(--brand-muted)] mt-1">
-                {member.role || 'Family member'}
-                {member.generation ? ` · Generation ${member.generation}` : ''}
+              <h2 className="text-2xl font-bold theme-ink leading-tight premium-serif">{member.name}</h2>
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] mt-1" style={{ color: 'var(--brand-primary-strong)' }}>
+                {member.role || 'Family Member'}
+                {member.generation ? ` · Gen ${member.generation}` : ''}
               </p>
-              <p className="text-xs text-[color:var(--brand-muted)]/70 mt-1">{lifeLabel}</p>
+              <p className="text-xs theme-muted mt-2 font-medium italic opacity-80">{lifeLabel}</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="w-9 h-9 rounded-full glass-panel border border-white/10 flex items-center justify-center text-[color:var(--brand-muted)]"
+            className="w-10 h-10 rounded-full border border-black/[0.05] bg-white shadow-sm flex items-center justify-center text-[color:var(--brand-muted)] transition-all active:scale-90"
             aria-label="Close lineage profile"
           >
-            <X size={16} />
+            <X size={18} strokeWidth={2.5} />
           </button>
         </div>
 
-        <div className="glass-panel rounded-[1.5rem] p-4 space-y-3">
-          <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-[color:var(--brand-muted)]">Lineage snapshot</p>
-          <div className="space-y-2 text-sm text-[color:var(--brand-ink)]">
-            {parent ? <p><span className="font-semibold text-[color:var(--brand-ink)]">Parent:</span> {parent.name}</p> : null}
-            {spouse ? <p><span className="font-semibold text-[color:var(--brand-ink)]">Spouse:</span> {spouse.name}</p> : null}
-            {member.birth_date ? <p><span className="font-semibold text-[color:var(--brand-ink)]">Birth date:</span> {new Date(member.birth_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p> : null}
-            {member.marriage_date ? <p><span className="font-semibold text-[color:var(--brand-ink)]">Marriage:</span> {new Date(member.marriage_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p> : null}
-            {member.death_date ? <p><span className="font-semibold text-[color:var(--brand-ink)]">In remembrance:</span> {new Date(member.death_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p> : null}
+        <div className="rounded-[1.8rem] p-5 space-y-4 border border-black/[0.03]" 
+          style={{ background: 'rgba(200, 146, 74, 0.04)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)' }}>
+          <p className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-40">Heritage Snapshot</p>
+          <div className="space-y-2.5 text-sm theme-ink">
+            {parent ? <p className="flex justify-between"><span>Parent</span> <span className="font-bold">{parent.name}</span></p> : null}
+            {spouse ? <p className="flex justify-between"><span>Spouse</span> <span className="font-bold">{spouse.name}</span></p> : null}
+            {member.birth_date ? <p className="flex justify-between"><span>Birth Date</span> <span className="font-bold">{new Date(member.birth_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span></p> : null}
+            {member.marriage_date ? <p className="flex justify-between"><span>Vivaha</span> <span className="font-bold">{new Date(member.marriage_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span></p> : null}
+            {member.death_date ? <p className="flex justify-between"><span>Remembrance</span> <span className="font-bold">{new Date(member.death_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span></p> : null}
           </div>
-          <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">
-            {member.notes?.trim() || 'No family note has been added yet. This is a good place later for stories, values, and memories that make the Vansh feel alive.'}
-          </p>
+          
+          <div className="pt-3 border-t border-black/[0.03]">
+            <p className="text-xs theme-muted leading-relaxed italic">
+              {member.notes?.trim() || 'A sacred space for stories, values, and memories that keep the Vansh alive.'}
+            </p>
+          </div>
         </div>
 
-        <div className="glass-panel rounded-[1.5rem] border border-white/8 p-4">
-          <p className="text-[10px] uppercase tracking-[0.16em] font-semibold text-[color:var(--brand-muted)] mb-3">Family dates</p>
+        <div className="rounded-[1.8rem] p-5 border border-black/[0.03]" style={{ background: 'rgba(255,255,255,0.4)' }}>
+          <p className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-40 mb-4">Vansh Dates</p>
           {relatedEvents.length > 0 ? (
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               {relatedEvents.slice(0, 3).map((event) => (
-                <div key={event.id} className="flex items-center justify-between gap-3 rounded-2xl border border-white/8 px-3 py-2">
-                  <div>
-                    <p className="text-sm font-medium text-[color:var(--brand-ink)]">{event.title}</p>
-                    <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">
-                      {EVENT_EMOJI[event.event_type] ?? '📅'} {event.event_type.replace('_', ' ')}
-                    </p>
+                <div key={event.id} className="flex items-center justify-between gap-3 rounded-2xl border border-black/[0.03] px-4 py-3 bg-white/60 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg">{EVENT_EMOJI[event.event_type] ?? '📅'}</span>
+                    <div>
+                      <p className="text-sm font-bold theme-ink">{event.title}</p>
+                      <p className="text-[10px] theme-muted font-medium uppercase tracking-wider mt-0.5">{event.event_type.replace('_', ' ')}</p>
+                    </div>
                   </div>
-                  <span className="text-xs font-semibold" style={{ color: 'var(--brand-primary)' }}>
+                  <span className="text-xs font-bold px-3 py-1 rounded-full bg-[var(--brand-primary)]/10" style={{ color: 'var(--brand-primary-strong)' }}>
                     {event.daysUntil === 0 ? 'Today' : `In ${event.daysUntil}d`}
                   </span>
                 </div>
@@ -519,48 +559,63 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
       </div>
 
       {/* Kul header card */}
-      <div className="rounded-2xl p-5 text-[color:var(--text-cream)]" style={{ background: 'linear-gradient(135deg, var(--card-bg), var(--card-bg))', border: '1px solid rgba(200,146,74,0.16)' }}>
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl bg-white/10">
+      <div className="clay-card rounded-[2.2rem] p-6 relative overflow-hidden" 
+        style={{ background: 'linear-gradient(150deg, #fdfcf9 0%, #f7f3ed 100%)' }}>
+        
+        {/* Subtle Background Mark */}
+        <div className="absolute -bottom-6 -right-6 text-6xl opacity-[0.03] select-none pointer-events-none">
+          {kul.avatar_emoji}
+        </div>
+
+        <div className="flex items-center gap-4 mb-6 relative z-10">
+          <div className="w-16 h-16 rounded-[1.8rem] flex items-center justify-center text-4xl shadow-inner border border-black/[0.03]"
+            style={{ background: 'rgba(200, 146, 74, 0.08)', boxShadow: 'inset 0 4px 8px rgba(0,0,0,0.05)' }}>
             {kul.avatar_emoji}
           </div>
           <div className="flex-1">
-            <h2 className="type-card-heading">{kul.name}</h2>
-            <p className="type-micro mt-0.5">{members.length} member{members.length !== 1 ? 's' : ''} · {myRole === 'guardian' ? 'Guardian' : 'Sadhak'}</p>
+            <h2 className="text-2xl font-bold theme-ink premium-serif">{kul.name}</h2>
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] mt-1" style={{ color: 'var(--brand-primary-strong)', opacity: 0.7 }}>
+              {members.length} Member{members.length !== 1 ? 's' : ''} · {myRole === 'guardian' ? 'Guardian' : 'Sadhak'}
+            </p>
           </div>
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-3 relative z-10">
           {[
             { label: 'Members', value: members.length, emoji: '👨‍👩‍👧‍👦' },
             { label: 'Kul Streak', value: totalStreak, emoji: '🔥' },
             { label: 'Tasks Due', value: pendingTasks, emoji: '📋' },
           ].map(({ label, value, emoji }) => (
-            <div key={label} className="rounded-xl px-3 py-2 text-center" style={{ background: 'rgba(255,255,255,0.12)' }}>
-              <div className="text-lg">{emoji}</div>
-              <div className="type-metric">{value}</div>
-              <div className="type-card-label">{label}</div>
+            <div key={label} className="rounded-2xl px-3 py-3 text-center border border-black/[0.03]" 
+              style={{ background: 'rgba(255,255,255,0.4)', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+              <div className="text-xl mb-1">{emoji}</div>
+              <div className="text-xl font-bold theme-ink leading-none">{value}</div>
+              <div className="text-[9px] uppercase font-bold tracking-widest theme-muted mt-2">{label}</div>
             </div>
           ))}
         </div>
 
         {/* Invite row */}
-        <div className="mt-3 space-y-2">
+        <div className="mt-6 space-y-3 relative z-10">
           <div className="flex items-center gap-2">
-            <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.12)' }}>
-              <span className="type-micro">Code:</span>
-              <span className="type-card-heading tracking-widest">{kul.invite_code}</span>
+            <div className="flex-1 flex items-center gap-2 px-4 py-3 rounded-2xl border border-black/[0.04]" 
+              style={{ background: 'rgba(0,0,0,0.02)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
+              <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">Code:</span>
+              <span className="text-lg font-bold tracking-[0.25em] theme-ink">{kul.invite_code}</span>
             </div>
-            <button onClick={copyCode} className="w-9 h-9 rounded-xl flex items-center justify-center transition" style={{ background: 'rgba(255,255,255,0.18)' }}><Copy size={14} color="white" /></button>
-            <button onClick={shareKul} className="w-9 h-9 rounded-xl flex items-center justify-center transition" style={{ background: 'rgba(255,255,255,0.18)' }}><Share2 size={14} color="white" /></button>
+            <button onClick={copyCode} className="w-12 h-12 rounded-2xl flex items-center justify-center transition-all bg-white shadow-sm border border-black/[0.05] hover:scale-105 active:scale-95">
+              <Copy size={16} style={{ color: 'var(--brand-primary-strong)' }} />
+            </button>
           </div>
+          
           <button
             onClick={() => setShowInviteSearch(true)}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition border"
-            style={{ background: 'rgba(200,146,74,0.10)', borderColor: 'rgba(200,146,74,0.25)', color: 'var(--brand-primary-strong)' }}
+            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold transition-all border border-[var(--brand-primary)]/20 shadow-sm active:scale-[0.98]"
+            style={{ background: 'rgba(200, 146, 74, 0.08)', color: 'var(--brand-primary-strong)' }}
           >
-            <UserPlus size={15} /> Invite a Member by Name
+            <UserPlus size={16} strokeWidth={2.5} />
+            Invite Member by Name
           </button>
         </div>
       </div>
@@ -607,28 +662,35 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
 
       {/* Pending tasks summary */}
       {pendingTasks > 0 && (
-        <div>
-          <div className="mb-2 flex items-center justify-between gap-3">
-            <p className="text-xs text-[color:var(--brand-muted)] font-medium uppercase tracking-wider">Pending Tasks</p>
-            <Link href="/kul/tasks" className="text-xs font-semibold text-[color:var(--brand-primary)]">Tasks</Link>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-3 px-1">
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--brand-primary-strong)', opacity: 0.7 }}>
+              Kul Seva — कुल सेवा
+            </p>
+            <Link href="/kul/tasks" className="text-xs font-bold text-[color:var(--brand-primary-strong)]">View All</Link>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {tasks.filter(t => !t.completed).slice(0, 3).map(task => (
-              <Link key={task.id} href="/kul/tasks" className="glass-panel rounded-2xl border border-white/8 p-3 flex items-center gap-3 transition hover:border-[color:var(--brand-primary-soft)]">
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base flex-shrink-0" style={{ background: 'rgba(200,146,74,0.12)' }}>
+              <Link key={task.id} href="/kul/tasks" 
+                className="clay-card rounded-[1.8rem] p-3.5 flex items-center gap-4 transition-all hover:scale-[1.01] active:scale-[0.99]"
+                style={{ background: 'linear-gradient(150deg, #fdfcf9 0%, #f7f3ed 100%)' }}>
+                <div className="w-10 h-10 rounded-[1.2rem] flex items-center justify-center text-xl shadow-inner" 
+                  style={{ background: 'rgba(200, 146, 74, 0.08)', border: '1px solid rgba(0,0,0,0.03)' }}>
                   {TASK_TYPES[task.task_type]?.emoji ?? '📌'}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[color:var(--brand-ink)] truncate">{task.title}</p>
-                  <p className="text-xs text-[color:var(--brand-muted)] truncate">
-                    → {task.assigned_to_profile?.full_name || task.assigned_to_profile?.username}
-                    {task.due_date && ` · due ${new Date(task.due_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`}
+                  <p className="text-sm font-bold theme-ink truncate tracking-tight">{task.title}</p>
+                  <p className="text-[11px] font-medium text-[color:var(--brand-muted)] truncate mt-0.5">
+                    For {task.assigned_to_profile?.full_name || task.assigned_to_profile?.username}
+                    {task.due_date && ` · ${new Date(task.due_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`}
                   </p>
                 </div>
               </Link>
             ))}
             {pendingTasks > 3 && (
-              <Link href="/kul/tasks" className="block text-xs text-center text-[color:var(--brand-primary)]">+{pendingTasks - 3} more tasks</Link>
+              <Link href="/kul/tasks" className="block text-[11px] font-bold text-center py-1 opacity-60" style={{ color: 'var(--brand-primary-strong)' }}>
+                +{pendingTasks - 3} more seva tasks
+              </Link>
             )}
           </div>
         </div>
@@ -668,46 +730,57 @@ function MembersTab({ members, userId, myRole, kul }: {
       {selectedMember ? (
         <FamilyProfileSheet member={selectedMember} onClose={() => setSelectedMember(null)} />
       ) : null}
-      <div className="space-y-2">
+      <div className="space-y-3">
       {members.map(m => {
         const p     = m.profiles;
         const isMe  = m.user_id === userId;
         const name  = p?.full_name || p?.username || 'Member';
         return (
-          <div key={m.id} className={`glass-panel rounded-2xl border border-white/8 p-3 flex items-center gap-3 ${isMe ? 'border-[color:var(--brand-primary)]/30' : 'border-white/8'}`}>
+          <div key={m.id} 
+            className={`clay-card rounded-[1.8rem] p-3 flex items-center gap-4 transition-all hover:scale-[1.01] active:scale-[0.99] ${isMe ? 'ring-2 ring-[var(--brand-primary)]/20' : ''}`}
+            style={{ background: 'linear-gradient(150deg, #fdfcf9 0%, #f7f3ed 100%)' }}>
+            
             <button
               type="button"
               onClick={() => setSelectedMember(m)}
-              className="flex flex-1 items-center gap-3 min-w-0 text-left"
+              className="flex flex-1 items-center gap-4 min-w-0 text-left"
             >
-            <Avatar name={name} url={p?.avatar_url} size={11}
-              gradient={isMe ? 'var(--brand-primary-strong)' : 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))'} />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5">
-                <p className="text-sm font-semibold text-[color:var(--brand-ink)] truncate">{name}</p>
-                {m.role === 'guardian' && <Crown size={12} className="flex-shrink-0" style={{ color: 'var(--brand-primary-strong)' }} />}
-                {isMe && <span className="text-[10px] text-[color:var(--brand-primary-strong)] font-medium">(you)</span>}
+              <div className="relative">
+                <Avatar name={name} url={p?.avatar_url} size={12}
+                  gradient={isMe ? 'var(--brand-primary-strong)' : 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))'} />
+                {isMe && (
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-[var(--brand-primary)] rounded-full border-2 border-white flex items-center justify-center shadow-sm">
+                    <Check size={10} color="white" strokeWidth={4} />
+                  </div>
+                )}
               </div>
-              <p className="text-xs text-[color:var(--brand-muted)]">
-                {m.role === 'guardian' ? '👑 Guardian' : '🙏 Sadhak'}
-                {p?.tradition && ` · ${TRADITION_EMOJI[p.tradition] ?? ''}`}
-                {p?.shloka_streak ? ` · 🔥 ${p.shloka_streak}` : ''}
-              </p>
-            </div>
+              
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <p className="text-base font-bold theme-ink truncate">{name}</p>
+                  {m.role === 'guardian' && <Crown size={14} className="flex-shrink-0" style={{ color: 'var(--brand-primary-strong)' }} />}
+                </div>
+                <p className="text-[11px] font-semibold text-[color:var(--brand-muted)] flex items-center gap-1.5 mt-0.5">
+                  <span className="uppercase tracking-widest">{m.role === 'guardian' ? 'Guardian' : 'Sadhak'}</span>
+                  {p?.tradition && <span>· {TRADITION_EMOJI[p.tradition] ?? '🙏'}</span>}
+                  {p?.shloka_streak ? <span className="text-[var(--brand-primary-strong)]">· 🔥 {p.shloka_streak}</span> : ''}
+                </p>
+              </div>
             </button>
+
             {/* Guardian actions */}
             {myRole === 'guardian' && !isMe && (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2 pr-1">
                 {m.role === 'sadhak' && (
                   <button onClick={() => promote(m.id, kul.id)}
-                    className="min-h-9 px-3 py-1 text-xs font-medium rounded-lg transition"
-                    style={{ border: '1px solid rgba(200,146,74,0.18)', color: 'var(--brand-primary-strong)', background: 'rgba(200,146,74,0.08)' }}>
+                    className="h-10 px-4 text-xs font-bold rounded-2xl transition-all shadow-sm border border-[var(--brand-primary)]/10 hover:bg-white active:scale-95"
+                    style={{ color: 'var(--brand-primary-strong)', background: 'rgba(200,146,74,0.06)' }}>
                     Promote
                   </button>
                 )}
                 <button onClick={() => remove(m.id, name)}
-                  className="w-10 h-10 rounded-lg flex items-center justify-center border border-white/10 text-[color:var(--brand-muted)] hover:text-red-400 hover:border-red-300 transition">
-                  <X size={12} />
+                  className="w-10 h-10 rounded-2xl flex items-center justify-center border border-black/[0.04] text-[color:var(--brand-muted)] hover:bg-red-50 hover:text-red-500 transition-all active:scale-90">
+                  <X size={16} strokeWidth={2.5} />
                 </button>
               </div>
             )}
@@ -2086,43 +2159,55 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
       {/* ── Tree View ── */}
       {activeView === 'tree' && (
         <div className="space-y-6">
-        <div className="clay-card rounded-[1.8rem] p-4 decorative-orbit">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(22, 77, 84, 0.72)' }}>
-              Family keepsakes
-            </p>
-            <h3 className="font-display text-lg font-bold theme-ink mt-1">Hold your Vansh like a keepsake wall, not just a tree</h3>
-            <p className="text-sm theme-muted mt-2 leading-relaxed">
-              Each lineage card keeps the structure readable, but now feels calmer and more polished. This is the visual base for the future family memory vault.
-            </p>
+          <div className="relative clay-card rounded-[2.2rem] p-6 overflow-hidden">
+            {/* Traditional Heritage Background Accents */}
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[var(--brand-primary)] opacity-[0.04] blur-[60px]" />
+            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-[var(--brand-earth)] opacity-[0.06] blur-[40px] rounded-full" />
+            
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center text-lg" 
+                  style={{ background: 'rgba(200, 146, 74, 0.12)', border: '1px solid rgba(200, 146, 74, 0.2)' }}>
+                  🌳
+                </div>
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--brand-primary-strong)' }}>
+                    Kul Vriksha — कुल वृक्ष
+                  </p>
+                  <h3 className="font-display text-xl font-bold theme-ink mt-0.5">The Living Vansh Lineage</h3>
+                </div>
+              </div>
+              
+              <p className="text-sm theme-muted leading-relaxed max-w-xl">
+                Your family heritage is a sacred thread connecting past, present, and future. 
+                Hold your lineage like a wall of keepsakes—each card a living memory of those who paved the path.
+              </p>
+            </div>
           </div>
 
           {members.length === 0 && !showAdd && (
-            <div className="clay-card rounded-[1.8rem] text-center py-12 px-6 text-[color:var(--brand-muted)]">
-              <div className="mx-auto max-w-[10rem]">
+            <div className="clay-card rounded-[2.2rem] text-center py-16 px-6 text-[color:var(--brand-muted)] border-dashed border-2 border-black/[0.04]">
+              <div className="mx-auto max-w-[12rem] mb-6">
                 <div className="clay-portrait-stage">
-                  <div className="clay-memory-orbit" />
+                  <div className="clay-memory-orbit scale-110" />
                   <div
                     className="clay-memory-medallion"
-                    style={{ background: 'linear-gradient(145deg, rgba(31, 107, 114, 0.18), rgba(195, 135, 47, 0.22))' }}>
+                    style={{ background: 'linear-gradient(145deg, rgba(200, 146, 74, 0.18), rgba(122, 26, 26, 0.12))' }}>
                     <div
                       className="clay-memory-medallion-inner"
-                      style={{ background: 'linear-gradient(145deg, rgba(247, 243, 235, 0.98), rgba(226, 239, 239, 0.96))' }}>
-                      <span className="font-display text-xl font-bold" style={{ color: 'var(--brand-primary-strong)' }}>
+                      style={{ background: 'linear-gradient(145deg, #fdfaf5, #f5f0e5)' }}>
+                      <span className="font-display text-2xl font-bold" style={{ color: 'var(--brand-primary-strong)' }}>
                         वं
                       </span>
                     </div>
                   </div>
-                  <div className="clay-memory-badge" style={{ color: 'var(--brand-primary-strong)' }}>
-                    Ready for first lineage
-                  </div>
-                  <div className="absolute inset-x-3 bottom-2 flex items-center justify-between text-[10px] font-medium" style={{ color: 'rgba(22, 77, 84, 0.72)' }}>
-                    <span>Family roots</span>
-                    <span>Kul</span>
+                  <div className="clay-memory-badge mt-4" style={{ color: 'var(--brand-primary-strong)' }}>
+                    Begin your heritage wall
                   </div>
                 </div>
               </div>
-              <p className="text-sm font-medium theme-muted">Start your Vansh tree</p>
-              <p className="text-xs mt-1">Add family members to preserve your lineage</p>
+              <h4 className="text-lg font-bold theme-ink">A Vansh yet to be written</h4>
+              <p className="text-xs mt-2 theme-muted max-w-xs mx-auto">Add your parents, grandparents, and ancestors to create your family's spiritual map.</p>
             </div>
           )}
           {generations.map(gen => (
@@ -2149,19 +2234,45 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
                       }}
                       role="button"
                       tabIndex={0}
-                      className="clay-portrait-card flex-shrink-0 w-40 rounded-[1.7rem] p-3 text-center relative transition hover:-translate-y-0.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
+                      className="clay-portrait-card flex-shrink-0 w-[10.5rem] rounded-[2rem] p-4 text-center relative transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
+                      style={{
+                        background: 'linear-gradient(150deg, #fdfcf9 0%, #f7f3ed 100%)',
+                        boxShadow: '0 8px 24px rgba(60, 45, 30, 0.08), inset 0 2px 4px rgba(255,255,255,0.8)'
+                      }}
                     >
                       <FamilyKeepsakeStage member={m} />
-                      <p className="text-xs font-bold theme-ink leading-tight mt-3">{m.name}</p>
-                      {m.role && <p className="text-[10px] mt-0.5" style={{ color: 'var(--brand-primary)' }}>{m.role}</p>}
-                      <div className="text-[10px] theme-dim mt-1.5 space-y-0.5 leading-relaxed">
-                        {age !== null && <p>{m.is_alive ? `Age ${age}` : `${m.birth_year ?? new Date(m.birth_date!).getFullYear()} – ${m.death_year ?? new Date(m.death_date!).getFullYear()}`}</p>}
-                        {spouse && <p>💍 {spouse.name}</p>}
-                        {parent && <p>↑ {parent.name}</p>}
+                      
+                      <div className="mt-4 space-y-1">
+                        <p className="text-[13px] font-bold theme-ink leading-tight tracking-tight">{m.name}</p>
+                        {m.role && (
+                          <p className="text-[10px] font-bold uppercase tracking-[0.1em]" style={{ color: 'var(--brand-primary)' }}>
+                            {m.role}
+                          </p>
+                        )}
                       </div>
-                      <p className="text-[10px] mt-2 font-semibold" style={{ color: 'var(--brand-primary-strong)' }}>
-                        Open lineage
-                      </p>
+
+                      {/* Tactile divider */}
+                      <div className="w-8 h-[1px] mx-auto my-3 opacity-20" style={{ background: 'var(--brand-primary)' }} />
+
+                      <div className="text-[10px] theme-dim space-y-1 leading-relaxed italic">
+                        {age !== null && (
+                          <p className="font-medium">
+                            {m.is_alive 
+                              ? `Ayush: ${age}y` 
+                              : `${m.birth_year ?? '—'} ~ ${m.death_year ?? '—'}`}
+                          </p>
+                        )}
+                        {spouse && <p className="truncate px-1">💍 {spouse.name}</p>}
+                      </div>
+                      
+                      {/* Pressed-clay footer marker */}
+                      <div className="mt-4 pt-3 border-t border-black/[0.03] flex items-center justify-center gap-1.5">
+                        <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--brand-primary)', opacity: 0.3 }} />
+                        <span className="text-[9px] font-extrabold uppercase tracking-widest" style={{ color: 'var(--brand-primary-strong)', opacity: 0.6 }}>
+                          Vansh
+                        </span>
+                        <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--brand-primary)', opacity: 0.3 }} />
+                      </div>
                       {/* Edit button */}
                       {canManageVansh && (
                         <div className="flex gap-1 mt-2 justify-center">
