@@ -894,6 +894,431 @@ body {
   background: rgba(200, 146, 74, 0.35);
 }
 
+/* ── Pitru Paksha Banner ─────────────────────────────────────────────────── */
+.pitru-paksha-banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 16px 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(70, 60, 90, 0.18);
+  border: 1px solid rgba(130, 100, 160, 0.28);
+}
+
+.pitru-paksha-banner.mahalaya {
+  background: rgba(200, 146, 74, 0.12);
+  border-color: rgba(200, 146, 74, 0.28);
+}
+
+:root[data-theme='light'] .pitru-paksha-banner {
+  background: rgba(80, 60, 100, 0.09);
+  border-color: rgba(100, 70, 140, 0.22);
+}
+
+.pitru-paksha-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pitru-paksha-emoji {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.pitru-paksha-title {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-cream);
+  margin-bottom: 3px;
+}
+
+:root[data-theme='light'] .pitru-paksha-title {
+  color: #1e1428;
+}
+
+.pitru-paksha-sub {
+  display: block;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted-warm);
+}
+
+:root[data-theme='light'] .pitru-paksha-sub {
+  color: rgba(40, 28, 60, 0.68);
+}
+
+.pitru-paksha-day-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(160, 130, 200, 0.85);
+  border: 1px solid rgba(130, 100, 160, 0.28);
+  border-radius: 20px;
+  padding: 3px 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.pitru-paksha-banner.mahalaya .pitru-paksha-day-badge {
+  color: var(--brand-primary);
+  border-color: rgba(200, 146, 74, 0.28);
+}
+
+/* ── Mood Check-In Card ──────────────────────────────────────────────────── */
+.mood-checkin-card {
+  margin: 0 16px 14px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(122, 171, 122, 0.09);
+  border: 1px solid rgba(100, 140, 100, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+:root[data-theme='light'] .mood-checkin-card {
+  background: rgba(122, 171, 122, 0.08);
+  border-color: rgba(80, 120, 80, 0.22);
+}
+
+.mood-checkin-prompt {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-cream);
+  text-align: center;
+}
+
+:root[data-theme='light'] .mood-checkin-prompt {
+  color: #1e2e1e;
+}
+
+.mood-checkin-options {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.mood-checkin-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  flex: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+:root[data-theme='light'] .mood-checkin-option {
+  background: rgba(255, 255, 255, 0.55);
+  border-color: rgba(100, 140, 100, 0.18);
+}
+
+.mood-checkin-option:active {
+  background: rgba(122, 171, 122, 0.18);
+  border-color: rgba(100, 160, 100, 0.36);
+}
+
+.mood-checkin-emoji {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.mood-checkin-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted-warm);
+  text-align: center;
+}
+
+:root[data-theme='light'] .mood-checkin-label {
+  color: rgba(40, 55, 40, 0.70);
+}
+
+.mood-checkin-skip {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-align: center;
+  text-decoration: none;
+}
+
+.mood-checkin-skip:hover {
+  color: var(--text-muted-warm);
+}
+
+/* ── Festival Story Card (home teaser) ───────────────────────────────────── */
+.festival-story-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 16px 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(200, 146, 74, 0.12) 0%, rgba(212, 120, 74, 0.07) 100%);
+  border: 1px solid rgba(200, 146, 74, 0.24);
+  text-align: left;
+  width: calc(100% - 32px);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root[data-theme='light'] .festival-story-card {
+  background: linear-gradient(135deg, rgba(200, 146, 74, 0.11) 0%, rgba(212, 120, 74, 0.06) 100%);
+  border-color: rgba(200, 146, 74, 0.30);
+}
+
+.festival-story-emoji {
+  font-size: 30px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.festival-story-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.festival-story-kicker {
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: var(--brand-primary);
+}
+
+.festival-story-title {
+  font-family: var(--font-serif);
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--text-cream);
+  line-height: 1.2;
+}
+
+:root[data-theme='light'] .festival-story-title {
+  color: #2a1e0e;
+}
+
+.festival-story-teaser {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-muted-warm);
+  margin-top: 2px;
+}
+
+:root[data-theme='light'] .festival-story-teaser {
+  color: rgba(60, 45, 28, 0.68);
+}
+
+.festival-story-chevron {
+  color: var(--brand-primary);
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+/* ── Festival Story Sheet (bottom sheet content) ─────────────────────────── */
+.festival-story-section-label {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--brand-primary);
+  margin-bottom: 8px;
+}
+
+.festival-story-prose {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--text-muted-warm);
+}
+
+:root[data-theme='light'] .festival-story-prose {
+  color: rgba(50, 38, 22, 0.78);
+}
+
+.festival-story-verse {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.7;
+  color: var(--text-cream);
+  white-space: pre-line;
+}
+
+:root[data-theme='light'] .festival-story-verse {
+  color: #1e160a;
+}
+
+.festival-story-transliteration {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 6px;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
+/* ── Daily Quiz Spark Card ───────────────────────────────────────────────── */
+.quiz-spark-card {
+  margin: 0 16px 14px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(140, 140, 220, 0.09);
+  border: 1px solid rgba(140, 140, 200, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+:root[data-theme='light'] .quiz-spark-card {
+  background: rgba(140, 140, 220, 0.07);
+  border-color: rgba(100, 100, 180, 0.22);
+}
+
+.quiz-spark-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.quiz-spark-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #9898dd;
+}
+
+.quiz-spark-source {
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+.quiz-spark-question {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--text-cream);
+}
+
+:root[data-theme='light'] .quiz-spark-question {
+  color: #1a1428;
+}
+
+.quiz-spark-options {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.quiz-spark-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(140, 140, 200, 0.16);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root[data-theme='light'] .quiz-spark-option {
+  background: rgba(255, 255, 255, 0.55);
+  border-color: rgba(120, 120, 200, 0.18);
+}
+
+.quiz-spark-option:not([disabled]):active {
+  background: rgba(140, 140, 220, 0.22);
+}
+
+.quiz-spark-option.correct {
+  background: rgba(100, 160, 100, 0.20);
+  border-color: rgba(100, 160, 100, 0.40);
+}
+
+.quiz-spark-option.wrong {
+  background: rgba(180, 80, 80, 0.15);
+  border-color: rgba(180, 80, 80, 0.30);
+}
+
+.quiz-option-letter {
+  font-size: 11px;
+  font-weight: 700;
+  color: #9898dd;
+  min-width: 16px;
+}
+
+.quiz-option-text {
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--text-muted-warm);
+  flex: 1;
+}
+
+:root[data-theme='light'] .quiz-option-text {
+  color: rgba(40, 32, 60, 0.80);
+}
+
+.quiz-option-tick {
+  color: #6ab26a;
+  font-size: 14px;
+  font-weight: 700;
+  margin-left: auto;
+}
+
+.quiz-option-cross {
+  color: #c06060;
+  font-size: 14px;
+  font-weight: 700;
+  margin-left: auto;
+}
+
+.quiz-spark-fact {
+  overflow: hidden;
+  border-radius: 12px;
+  background: rgba(140, 140, 220, 0.10);
+  border: 1px solid rgba(140, 140, 200, 0.18);
+  padding: 12px;
+}
+
+.quiz-fact-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #9898dd;
+  margin-bottom: 6px;
+}
+
+.quiz-fact-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-muted-warm);
+}
+
+:root[data-theme='light'] .quiz-fact-text {
+  color: rgba(40, 32, 60, 0.75);
+}
+
 .divine-feature-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

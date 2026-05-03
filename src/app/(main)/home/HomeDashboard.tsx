@@ -33,6 +33,8 @@ import type { Shloka } from '@/lib/shlokas';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { DailySacredText } from '@/lib/sacred-texts';
 import { calculatePanchang, PANCHANG_TRUST_META, getTodaySpiritualPulse } from '@/lib/panchang';
+import { getFestivalStory, type FestivalStory } from '@/lib/festival-stories';
+import { getPitruPakshaDay, getPitruPakshaBannerCopy } from '@/lib/pitru-paksha';
 import { getGreeting, getGreetingPool, isGreetingCompatibleWithTradition } from '@/lib/traditions';
 import type { GuidedPathProgressRow } from '@/lib/guided-paths';
 import { useLocation } from '@/lib/LocationContext';
@@ -118,6 +120,15 @@ const DEFAULT_QUICK_ACCESS = [
   { label: 'Panchang',   icon: '📅', href: '/panchang',       desc: 'Today\'s tithi & muhurta',       theme: 'panchang'  },
 ];
 // Mood quick-lookup (mirrors DiscoverClient MOODS)
+
+// Five moods surfaced in the home card (subset of MOOD_QUICK_MAP)
+const MOOD_CARD_OPTIONS = [
+  { key: 'grateful',    emoji: '🙏', label: 'Grateful' },
+  { key: 'seeking',     emoji: '🔍', label: 'Seeking'  },
+  { key: 'anxious',     emoji: '😔', label: 'Anxious'  },
+  { key: 'joyful',      emoji: '😊', label: 'Joyful'   },
+  { key: 'scattered',   emoji: '🌀', label: 'Scattered' },
+] as const;
 
 // Mood quick-lookup (mirrors DiscoverClient MOODS)
 const MOOD_QUICK_MAP: Record<string, { key: string; label: string; colour: string }> = {
@@ -967,6 +978,13 @@ export default function HomeDashboard({
     return lastShlokaDate === today;
   });
   const [editHomeOpen,     setEditHomeOpen]     = useState(false);
+  const [storySheetOpen,   setStorySheetOpen]   = useState(false);
+
+  // ── Daily Quiz state ──────────────────────────────────────────────────────
+  const [quiz, setQuiz]               = useState<{
+    question: string; options: string[]; answerIndex: number; fact: string; source: string;
+  } | null | 'loading' | 'error'>(null);
+  const [quizAnswered, setQuizAnswered] = useState<number | null>(null); // index of chosen option
 
   // Daily Darshan Logic — Tradition Based
   const [darshanOpen, setDarshanOpen] = useState(false);
@@ -1030,6 +1048,44 @@ export default function HomeDashboard({
     } catch { /* silent */ }
     return null;
   });
+
+  // ── Daily Quiz — load from localStorage cache or fetch fresh ──────────────
+  const QUIZ_CACHE_KEY      = 'ss-quiz-daily';
+  const QUIZ_CACHE_DATE_KEY = 'ss-quiz-daily-date';
+  const QUIZ_ANSWERED_KEY   = 'ss-quiz-daily-answered';
+
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    try {
+      // Check cache first
+      const cachedDate = localStorage.getItem(QUIZ_CACHE_DATE_KEY);
+      const cachedRaw  = localStorage.getItem(QUIZ_CACHE_KEY);
+      if (cachedDate === today && cachedRaw) {
+        setQuiz(JSON.parse(cachedRaw));
+        const answered = localStorage.getItem(QUIZ_ANSWERED_KEY);
+        if (answered !== null) setQuizAnswered(Number(answered));
+        return;
+      }
+    } catch { /* ignore */ }
+
+    // Fetch fresh
+    setQuiz('loading');
+    const trad = tradition ?? 'hindu';
+    fetch(`/api/quiz/daily?tradition=${trad}&date=${today}`)
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(data => {
+        setQuiz(data);
+        localStorage.setItem(QUIZ_CACHE_KEY,      JSON.stringify(data));
+        localStorage.setItem(QUIZ_CACHE_DATE_KEY, today);
+      })
+      .catch(() => setQuiz('error'));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tradition]);
+
+  function handleQuizAnswer(idx: number) {
+    setQuizAnswered(idx);
+    localStorage.setItem(QUIZ_ANSWERED_KEY, String(idx));
+  }
 
   // Confetti
   const [showConfetti, setShowConfetti] = useState(false);
@@ -1322,6 +1378,39 @@ export default function HomeDashboard({
     ? getTodaySpiritualPulse(panchang.tithiIndex, tradition, selectedDate)
     : null;
 
+  // ── Mood check-in card ───────────────────────────────────────────────────────
+  // Visible from 5 AM to 1 PM local if the user hasn't set a mood today.
+  const showMoodCard = (() => {
+    if (moodToday !== null) return false; // already set or still loading
+    const h = new Date().getHours();
+    return h >= 5 && h < 13;
+  })();
+
+  function handleMoodCardPick(moodKey: string) {
+    const today = new Date().toISOString().split('T')[0];
+    localStorage.setItem('home_mood_date', today);
+    localStorage.setItem('home_mood_key', moodKey);
+    if (MOOD_QUICK_MAP[moodKey]) setMoodToday(MOOD_QUICK_MAP[moodKey]);
+    router.push(`/discover?mood=${moodKey}`);
+  }
+
+  // ── Pitru Paksha ────────────────────────────────────────────────────────────
+  // Only Hindu (and 'all') tradition users see this — Buddhist/Jain/Sikh have
+  // their own ancestor-remembrance traditions handled elsewhere.
+  const pitruPakshaDay = (() => {
+    if (tradition && tradition !== 'hindu' && tradition !== 'all') return null;
+    return getPitruPakshaDay(selectedDate);
+  })();
+  const pitruPakshaCopy = pitruPakshaDay ? getPitruPakshaBannerCopy(pitruPakshaDay) : null;
+
+  // ── Festival Story ───────────────────────────────────────────────────────────
+  // Show a "read the story" card when we are ≤ 7 days from a festival AND we
+  // have handcrafted content for it.
+  const festivalStory: FestivalStory | null =
+    festival && daysUntilFestival !== null && daysUntilFestival <= 7
+      ? getFestivalStory(festival.name)
+      : null;
+
   const heroTheme = resolveHomeHeroTheme({
     tradition,
     sampradaya,
@@ -1530,6 +1619,168 @@ export default function HomeDashboard({
                 data-intensity={sacredPulse.intensity}
                 aria-label={`${sacredPulse.intensity} intensity`}
               />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── Pitru Paksha Banner ─────────────────────────────────────────── */}
+        <AnimatePresence>
+          {pitruPakshaDay && pitruPakshaCopy && (
+            <motion.div
+              key="pitru-paksha-banner"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className={`pitru-paksha-banner${pitruPakshaDay.isMahalaya ? ' mahalaya' : ''}`}
+              role="status"
+              aria-live="polite"
+            >
+              <div className="pitru-paksha-left">
+                <span className="pitru-paksha-emoji" aria-hidden="true">
+                  {pitruPakshaDay.isMahalaya ? '🪔' : '☽'}
+                </span>
+                <div>
+                  <span className="pitru-paksha-title">{pitruPakshaCopy.title}</span>
+                  <span className="pitru-paksha-sub">{pitruPakshaCopy.subtitle}</span>
+                </div>
+              </div>
+              <span className="pitru-paksha-day-badge" aria-label={`Day ${pitruPakshaDay.day} of ${pitruPakshaDay.totalDays}`}>
+                {pitruPakshaDay.day}/{pitruPakshaDay.totalDays}
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── Mood Check-In Card ───────────────────────────────────────────── */}
+        <AnimatePresence>
+          {showMoodCard && (
+            <motion.div
+              key="mood-checkin-card"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 6, scale: 0.97 }}
+              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+              className="mood-checkin-card"
+              role="group"
+              aria-label="Morning mood check-in"
+            >
+              <p className="mood-checkin-prompt">How are you feeling this morning?</p>
+              <div className="mood-checkin-options" role="list">
+                {MOOD_CARD_OPTIONS.map(m => (
+                  <button
+                    key={m.key}
+                    type="button"
+                    onClick={() => handleMoodCardPick(m.key)}
+                    className="mood-checkin-option motion-press"
+                    role="listitem"
+                    aria-label={m.label}
+                  >
+                    <span className="mood-checkin-emoji" aria-hidden="true">{m.emoji}</span>
+                    <span className="mood-checkin-label">{m.label}</span>
+                  </button>
+                ))}
+              </div>
+              <Link href="/discover" className="mood-checkin-skip">
+                More moods →
+              </Link>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── Festival Story Card ──────────────────────────────────────────── */}
+        <AnimatePresence>
+          {festivalStory && (
+            <motion.button
+              key="festival-story-card"
+              type="button"
+              onClick={() => setStorySheetOpen(true)}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 6 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="festival-story-card motion-press"
+              aria-label={`Read the story of ${festival?.name}`}
+            >
+              <span className="festival-story-emoji" aria-hidden="true">{festivalStory.emoji}</span>
+              <div className="festival-story-body">
+                <span className="festival-story-kicker">
+                  {daysUntilFestival === 0 ? 'Today' : `In ${daysUntilFestival} day${daysUntilFestival === 1 ? '' : 's'}`}
+                  {' · '}Festival Story
+                </span>
+                <span className="festival-story-title">{festival?.name}</span>
+                <span className="festival-story-teaser line-clamp-2">{festivalStory.significance}</span>
+              </div>
+              <ChevronRight size={16} className="festival-story-chevron" aria-hidden="true" />
+            </motion.button>
+          )}
+        </AnimatePresence>
+
+        {/* ── Do You Know? Daily Quiz Spark ────────────────────────────────── */}
+        <AnimatePresence>
+          {quiz && quiz !== 'loading' && quiz !== 'error' && (
+            <motion.div
+              key="quiz-spark-card"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+              className="quiz-spark-card"
+              role="group"
+              aria-label="Do You Know? daily quiz"
+            >
+              {/* Header */}
+              <div className="quiz-spark-header">
+                <span className="quiz-spark-kicker">🧠 Do You Know?</span>
+                <span className="quiz-spark-source">{quiz.source}</span>
+              </div>
+
+              {/* Question */}
+              <p className="quiz-spark-question">{quiz.question}</p>
+
+              {/* Options */}
+              <div className="quiz-spark-options" role="group" aria-label="Answer options">
+                {quiz.options.map((opt, i) => {
+                  const isAnswered   = quizAnswered !== null;
+                  const isChosen     = quizAnswered === i;
+                  const isCorrect    = i === quiz.answerIndex;
+                  const showResult   = isAnswered && (isChosen || isCorrect);
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      disabled={isAnswered}
+                      onClick={() => handleQuizAnswer(i)}
+                      className={`quiz-spark-option motion-press${isAnswered ? ' answered' : ''}${showResult ? (isCorrect ? ' correct' : ' wrong') : ''}`}
+                      aria-pressed={isAnswered && isChosen}
+                    >
+                      <span className="quiz-option-letter">{String.fromCharCode(65 + i)}</span>
+                      <span className="quiz-option-text">{opt}</span>
+                      {isAnswered && isCorrect && (
+                        <span className="quiz-option-tick" aria-hidden="true">✓</span>
+                      )}
+                      {isAnswered && isChosen && !isCorrect && (
+                        <span className="quiz-option-cross" aria-hidden="true">✗</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Revealed fact */}
+              {quizAnswered !== null && (
+                <motion.div
+                  className="quiz-spark-fact"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  transition={{ duration: 0.35 }}
+                >
+                  <span className="quiz-fact-label">
+                    {quizAnswered === quiz.answerIndex ? '✨ Correct!' : `The answer is: ${quiz.options[quiz.answerIndex]}`}
+                  </span>
+                  <p className="quiz-fact-text">{quiz.fact}</p>
+                </motion.div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -1794,6 +2045,123 @@ export default function HomeDashboard({
       <AnimatePresence>
         {inviteOpen && (
           <InviteModal userId={userId} onClose={() => setInviteOpen(false)} />
+        )}
+      </AnimatePresence>
+
+      {/* ── Festival Story Sheet ───────────────────────────────────────────── */}
+      <AnimatePresence>
+        {storySheetOpen && festivalStory && (
+          <motion.div
+            className="fixed inset-0 z-50 flex flex-col justify-end"
+            onClick={() => setStorySheetOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ background: 'rgba(0,0,0,0.62)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }}
+          >
+            <motion.div
+              className="relative w-full overflow-y-auto rounded-t-[2rem] pb-10"
+              style={{
+                maxHeight: '88dvh',
+                background: 'linear-gradient(180deg, var(--surface-raised) 0%, var(--card-bg) 100%)',
+                borderTop: '1px solid rgba(200, 146, 74, 0.22)',
+                boxShadow: '0 -24px 60px rgba(0,0,0,0.28)',
+              }}
+              onClick={e => e.stopPropagation()}
+              initial={{ y: 56, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 32, opacity: 0 }}
+              transition={{ duration: 0.34, ease: [0.34, 1.26, 0.64, 1] }}
+            >
+              {/* Drag handle */}
+              <div className="sticky top-0 flex justify-center pt-3 pb-2 z-10"
+                style={{ background: 'var(--surface-raised)' }}>
+                <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(200,146,74,0.30)' }} />
+              </div>
+
+              {/* Header */}
+              <div className="flex items-start justify-between px-6 pt-1 pb-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-4xl" aria-hidden="true">{festivalStory.emoji}</span>
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em]"
+                      style={{ color: 'var(--brand-primary)', marginBottom: '2px' }}>
+                      {daysUntilFestival === 0 ? 'Today' : `In ${daysUntilFestival} day${daysUntilFestival === 1 ? '' : 's'}`}
+                    </p>
+                    <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.45rem', fontWeight: 700, color: 'var(--text-cream)', lineHeight: 1.2 }}>
+                      {festival?.name}
+                    </h2>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setStorySheetOpen(false)}
+                  className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 mt-1"
+                  style={{ background: 'rgba(200,146,74,0.10)' }}
+                  aria-label="Close"
+                >
+                  <X size={16} style={{ color: 'var(--text-muted-warm)' }} />
+                </button>
+              </div>
+
+              <div className="px-6 space-y-6 pb-4">
+                {/* Origin */}
+                <section>
+                  <h3 className="festival-story-section-label">Origin</h3>
+                  <p className="festival-story-prose">{festivalStory.origin}</p>
+                </section>
+
+                {/* Significance */}
+                <section>
+                  <h3 className="festival-story-section-label">Spiritual Significance</h3>
+                  <p className="festival-story-prose">{festivalStory.significance}</p>
+                </section>
+
+                {/* Shloka block */}
+                <section
+                  className="rounded-[1.4rem] p-5"
+                  style={{ background: 'rgba(200,146,74,0.09)', border: '1px solid rgba(200,146,74,0.18)' }}
+                >
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] mb-3"
+                    style={{ color: 'var(--brand-primary)' }}>
+                    Sacred Verse
+                  </p>
+                  <p className="festival-story-verse">{festivalStory.shloka.text}</p>
+                  {festivalStory.shloka.transliteration && (
+                    <p className="festival-story-transliteration">{festivalStory.shloka.transliteration}</p>
+                  )}
+                  <p className="festival-story-prose mt-3 italic">&ldquo;{festivalStory.shloka.translation}&rdquo;</p>
+                  <p className="text-[10px] mt-2" style={{ color: 'var(--text-dim)' }}>
+                    — {festivalStory.shloka.source}
+                  </p>
+                </section>
+
+                {/* Rituals */}
+                <section>
+                  <h3 className="festival-story-section-label">How to Observe</h3>
+                  <ul className="space-y-2 mt-1">
+                    {festivalStory.rituals.map((ritual, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span style={{ color: 'var(--brand-primary)', fontSize: '0.8rem', marginTop: '2px' }}>🪔</span>
+                        <p className="festival-story-prose" style={{ margin: 0 }}>{ritual}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+
+                {/* Practice CTA */}
+                <section
+                  className="rounded-[1.4rem] p-5"
+                  style={{ background: 'rgba(212,120,74,0.10)', border: '1px solid rgba(212,120,74,0.20)' }}
+                >
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] mb-2"
+                    style={{ color: 'var(--brand-primary-strong)' }}>
+                    Your Practice Today
+                  </p>
+                  <p className="festival-story-prose">{festivalStory.practice}</p>
+                </section>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 

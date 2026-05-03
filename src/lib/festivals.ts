@@ -65,6 +65,7 @@ export const FESTIVALS_2026: Festival[] = [
   { name: 'Krishna Janmashtami',  date: '2026-08-19', emoji: '🦚', description: 'Celebration of the birth of Lord Krishna at midnight',               type: 'major',    tradition: 'hindu' },
   { name: 'Ganesh Chaturthi',     date: '2026-08-23', emoji: '🐘', description: '10-day festival celebrating the birth of Lord Ganesha',              type: 'major',    tradition: 'hindu' },
   { name: 'Onam',                 date: '2026-09-05', emoji: '🌺', description: 'Harvest festival of Kerala celebrating King Mahabali\'s return',      type: 'regional', tradition: 'hindu' },
+  { name: 'Hartalika Teej',        date: '2026-09-02', emoji: '🌿', description: 'Vrat observed by Hindu women for marital bliss — a fast for Shiva and Parvati, welcoming the monsoon', type: 'vrat', tradition: 'hindu' },
   { name: 'Mahalaya Amavasya',    date: '2026-09-19', emoji: '☽',  description: 'Day to offer prayers to ancestors (Pitru Paksha ends)',              type: 'vrat',     tradition: 'hindu' },
   { name: 'Navratri begins',      date: '2026-09-20', emoji: '🪔', description: 'Nine nights of worship of Goddess Durga, Lakshmi and Saraswati',     type: 'major',    tradition: 'hindu' },
   { name: 'Dussehra',             date: '2026-09-29', emoji: '🎇', description: 'Victory of Rama over Ravana — triumph of good over evil',            type: 'major',    tradition: 'hindu' },
