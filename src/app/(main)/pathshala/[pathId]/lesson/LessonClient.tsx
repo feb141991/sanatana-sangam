@@ -191,9 +191,9 @@ function VerseCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-0.5">
               <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: accentColour }} />
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[color:var(--brand-muted)]">{entry.source}</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[color:var(--brand-muted)]">{entry.source}</p>
             </div>
-            <p className="font-semibold text-sm text-[color:var(--brand-ink)] leading-snug">{entry.title}</p>
+            <p className="font-semibold text-base text-[color:var(--brand-ink)] leading-snug">{entry.title}</p>
           </div>
           <span className="shrink-0 opacity-40 mt-0.5">
             {expanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
@@ -279,7 +279,7 @@ function VerseCard({
               {getTransliteration(entry.original, entry.transliteration, transliterationLanguage ?? 'en') !== entry.original && (
                 <div className="px-4 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(200,146,74,0.12)' }}>
                   <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.6 }}>Transliteration</p>
-                  <p className="italic leading-relaxed" style={{ color: 'var(--brand-muted)', fontSize: `${fontScale * 0.9}rem` }}>
+                  <p className="italic leading-relaxed" style={{ color: 'var(--brand-muted)', fontSize: `${fontScale * 1.0}rem` }}>
                     {getTransliteration(entry.original, entry.transliteration, transliterationLanguage ?? 'en')}
                   </p>
                 </div>
@@ -290,7 +290,7 @@ function VerseCard({
                 <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.7 }}>
                   {transliterationLanguage === 'hi' ? 'अर्थ' : 'Meaning'}
                 </p>
-                <p className="leading-relaxed font-medium" style={{ color: 'var(--brand-ink)', fontSize: `${fontScale * 1.0}rem`, lineHeight: 1.75 }}>
+                <p className="leading-relaxed font-medium" style={{ color: 'var(--brand-ink)', fontSize: `${fontScale * 1.1}rem`, lineHeight: 1.8 }}>
                   {(transliterationLanguage === 'hi' && hindiMeanings?.[entry.id]) || entry.meaning}
                 </p>
               </div>
@@ -337,7 +337,7 @@ export default function LessonClient({
   const [completed, setCompleted] = useState<number[]>(initialCompleted ?? []);
   const [saving, setSaving] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
-  const [fontStep, setFontStep] = useState(1);
+  const [fontStep, setFontStep] = useState(2); // default 1.4rem — comfortable for all ages
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
   const [ttsLoadingId, setTtsLoadingId] = useState<string | null>(null);
   const [speakingId, setSpeakingId] = useState<string | null>(null);

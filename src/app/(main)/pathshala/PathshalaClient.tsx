@@ -769,7 +769,7 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
   // (Engine shloka-of-day wired separately; show a motivational prompt for now)
   function DailyVersePrompt() {
     return (
-      <Link href="/pathshala?tab=explore" className="block rounded-[1.8rem] overflow-hidden mb-4 motion-press"
+      <Link href="/discover" className="block rounded-[1.8rem] overflow-hidden mb-4 motion-press"
         style={cardStyle}>
         <div className="p-5" style={{ background: `linear-gradient(135deg, ${meta.accentColour}12 0%, transparent 100%)` }}>
           {pulse && (
@@ -791,11 +791,6 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
           <p className="text-sm leading-relaxed" style={{ color: secondaryText }}>
             {pulse ? pulse.description : meta.dailyVersePrompt.meaning}
           </p>
-          {!pulse && (
-            <p className="text-sm mt-2" style={{ color: secondaryText }}>
-              {meta.dailyVersePrompt.meaning}
-            </p>
-          )}
           <p className="text-xs mt-2" style={{ color: meta.accentColour }}>
             Explore {meta.navLibraryLabel} →
           </p>

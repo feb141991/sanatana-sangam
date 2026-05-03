@@ -26,6 +26,9 @@ import CircularProgress from '@/components/ui/CircularProgress';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { getTransliteration } from '@/lib/transliteration';
 
+// ─── Font size steps (same scale as LessonClient) ─────────────────────────────
+const READER_FONT_STEPS = [1.1, 1.25, 1.4, 1.58, 1.78] as const;
+
 // ─── Pick recite content for a path ────────────────────────────────────────────
 function getReciteVerses(pathId: string, lessonIndex: number): LibraryEntry[] {
   const ENTRIES_PER_LESSON = 4;
@@ -193,6 +196,8 @@ export default function ReciteClient({
 
   const [verseIndex,   setVerseIndex]   = useState(0);
   const [mode,         setMode]         = useState<ReciteMode>('read');
+  const [fontStep,     setFontStep]     = useState(2); // 1.4rem default — comfortable for all ages
+  const fontScale = READER_FONT_STEPS[fontStep];
   const [showExplan,   setShowExplan]   = useState(false);
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
@@ -535,6 +540,16 @@ export default function ReciteClient({
             </p>
           </div>
 
+          {/* Font size — tap to cycle */}
+          <button
+            onClick={() => setFontStep(step => (step + 1) % READER_FONT_STEPS.length)}
+            className="shrink-0 px-2 py-1 rounded-lg text-[11px] font-bold"
+            style={{ background: 'rgba(255,255,255,0.06)', color: accentColour, border: '1px solid rgba(200,146,74,0.14)' }}
+            aria-label="Cycle text size"
+          >
+            Aa
+          </button>
+
           {/* Timer */}
           <button
             onClick={() => setTimerRunning(r => !r)}
@@ -700,8 +715,13 @@ export default function ReciteClient({
             {/* Original script — hidden in 'from memory' mode */}
             {mode !== 'hidden' && (
               <div
-                className="text-center py-2 text-xl leading-loose font-medium"
-                style={{ color: accentColour, fontFamily: 'var(--font-deva, serif)' }}
+                className="text-center py-4 leading-[1.8] font-medium"
+                style={{
+                  color: accentColour,
+                  fontFamily: 'var(--font-deva, serif)',
+                  fontSize: `${fontScale * 1.6}rem`,
+                  textShadow: `0 0 28px ${accentColour}22`,
+                }}
               >
                 {verse.original}
               </div>
@@ -740,17 +760,26 @@ export default function ReciteClient({
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden space-y-2"
+                      className="overflow-hidden rounded-2xl overflow-hidden"
+                      style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.16)' }}
                     >
                       {getTransliteration(verse.original, verse.transliteration, transliterationLanguage ?? 'en') !== verse.original && (
-                        <p className="text-sm italic text-[color:var(--brand-muted)] leading-relaxed">
-                          {getTransliteration(verse.original, verse.transliteration, transliterationLanguage ?? 'en')}
-                        </p>
+                        <div className="px-4 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(200,146,74,0.12)' }}>
+                          <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.6 }}>Transliteration</p>
+                          <p className="italic leading-relaxed" style={{ color: 'var(--brand-muted)', fontSize: `${fontScale * 0.95}rem` }}>
+                            {getTransliteration(verse.original, verse.transliteration, transliterationLanguage ?? 'en')}
+                          </p>
+                        </div>
                       )}
                       {verse.meaning && (
-                        <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed">
-                          {(transliterationLanguage === 'hi' && hindiMeanings?.[verse.id]) || verse.meaning}
-                        </p>
+                        <div className="px-4 py-4">
+                          <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.7 }}>
+                            {transliterationLanguage === 'hi' ? 'अर्थ' : 'Meaning'}
+                          </p>
+                          <p className="leading-relaxed font-medium" style={{ color: 'var(--brand-ink)', fontSize: `${fontScale * 1.05}rem`, lineHeight: 1.75 }}>
+                            {(transliterationLanguage === 'hi' && hindiMeanings?.[verse.id]) || verse.meaning}
+                          </p>
+                        </div>
                       )}
                     </motion.div>
                   )}
