@@ -1523,7 +1523,7 @@ export default function HomeDashboard({
   ];
 
   return (
-    <div className="divine-home-shell min-h-screen bg-[#FAF6EF] dark:bg-[#1c1c1a] -mx-3 -mt-2 sm:-mx-4 relative selection:bg-[#C5A059]/30">
+    <div className="divine-home-shell min-h-screen bg-[#FAF6EF] dark:bg-[#FAF6EF] -mx-3 -mt-2 sm:-mx-4 relative selection:bg-[#C5A059]/30">
       <div className="relative">
 
       {/* ── Sacred confetti celebration ── */}
@@ -1581,7 +1581,7 @@ export default function HomeDashboard({
 
               <div className="flex items-center gap-3">
                 <motion.div
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/5 backdrop-blur-md"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/20 border border-white/10 backdrop-blur-md shadow-sm"
                   whileHover={{ rotateX: 5, rotateY: -5, scale: 1.02 }}
                   style={{ perspective: 500 }}
                 >
@@ -1624,29 +1624,29 @@ export default function HomeDashboard({
                 {/* Branding and CTA removed for ultra-minimalist Zenith feel */}
               </div>
 
-              {/* Shloka at the bottom of the hero */}
-              <div className="divine-hero-bottom mt-auto">
+              {/* Shloka at the bottom of the hero — positioned to be the transition */}
+              <div className="absolute left-0 right-0 bottom-[-24px] px-5 z-20">
                 <motion.button
                   type="button"
                   onClick={() => setShlokaModalOpen(true)}
-                  className="divine-shloka-card-v2 motion-press cursor-pointer w-full text-left"
+                  className="divine-shloka-card-v2 motion-press cursor-pointer w-full text-left bg-white/40 dark:bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-6 shadow-xl"
                   whileHover={prefersReducedMotion ? {} : {
                     scale: 1.012,
                     rotateX: -1,
                     rotateY: 1,
-                    boxShadow: "0 15px 35px rgba(0,0,0,0.3)",
+                    boxShadow: "0 15px 35px rgba(0,0,0,0.15)",
                     transition: { duration: 0.4, ease: "easeOut" }
                   }}
                   whileTap={prefersReducedMotion ? {} : { scale: 0.985 }}
                   style={{ perspective: 800 }}
                 >
-                  <span className="divine-poster-label">{dailyText.label}</span>
-                  <p className="divine-sanskrit-immersive-dark line-clamp-3">
+                  <span className="divine-poster-label mb-2 inline-block">{dailyText.label}</span>
+                  <p className="divine-sanskrit-immersive-dark line-clamp-3 text-[#2C1A0E] dark:text-[#FDFCF8]">
                     <span style={{ opacity: 0.55, marginRight: '0.3em', fontWeight: 400 }}>॥</span>
                     {dailyTextLine}
                     <span style={{ opacity: 0.55, marginLeft: '0.3em', fontWeight: 400 }}>॥</span>
                   </p>
-                  <p className="divine-meaning-dark line-clamp-2">{dailyText.meaning}</p>
+                  <p className="divine-meaning-dark line-clamp-2 text-[#2C1A0E]/70 dark:text-[#FDFCF8]/70 mt-1">{dailyText.meaning}</p>
                 </motion.button>
               </div>
             </div>
