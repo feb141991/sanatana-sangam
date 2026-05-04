@@ -234,7 +234,9 @@ function ScriptureReader({
         original: v.original,
         transliteration: v.transliteration,
         meaning: v.meaning,
-        category: 'scripture'
+        category: 'scripture' as LibraryEntry['category'],
+        tradition: tradition as LibraryEntry['tradition'],
+        tags: [] as string[],
       })) || [];
 
   const activeVerse = verses[verseIndex];
@@ -461,7 +463,7 @@ function ScriptureReader({
           </button>
 
           {/* Copy */}
-          <button onClick={() => { navigator.clipboard.writeText(getEntryText(activeVerse)); toast.success('Copied'); }} className="flex flex-col items-center gap-1 min-w-[52px]">
+          <button onClick={() => { if (activeVerse) { navigator.clipboard.writeText(getEntryText(activeVerse)); toast.success('Copied'); } }} className="flex flex-col items-center gap-1 min-w-[52px]">
             <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: P.accentBg, border: `1px solid ${P.border}` }}>
               <Copy size={17} style={{ color: P.accentDeep }} />
             </div>

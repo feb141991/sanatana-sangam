@@ -16050,8 +16050,8 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/pathshala/PathshalaClient.tsx",
       "source_location": "L109",
       "weight": 1.0,
-      "_src": "pathshalaclient_getentrytext",
-      "_tgt": "study_circle_studycirclemanager_join",
+      "_src": "study_circle_studycirclemanager_join",
+      "_tgt": "pathshalaclient_getentrytext",
       "source": "study_circle_studycirclemanager_join",
       "target": "pathshalaclient_getentrytext"
     },
@@ -20502,8 +20502,8 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/pathshala/PathshalaClient.tsx",
       "source_location": "L109",
       "weight": 1.0,
-      "_src": "pathshalaclient_getentrytext",
-      "_tgt": "mantra_library_mantralibrary_filter",
+      "_src": "mantra_library_mantralibrary_filter",
+      "_tgt": "pathshalaclient_getentrytext",
       "source": "mantra_library_mantralibrary_filter",
       "target": "pathshalaclient_getentrytext"
     },
