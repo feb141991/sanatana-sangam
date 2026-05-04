@@ -314,7 +314,7 @@ body {
 
 .divine-hero {
   position: relative;
-  min-height: clamp(480px, 112vw, 620px);
+  min-height: clamp(380px, 92vw, 480px);
   overflow: hidden;
   background: var(--divine-bg, #FAF6EF);
   margin: 0;
@@ -492,7 +492,7 @@ body {
   flex-direction: column;
   justify-content: space-between;
   gap: 0;
-  padding: 160px 20px 0;
+  padding: 120px 20px 0;
 }
 
 .divine-hero-topline {
@@ -829,7 +829,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 0 16px 14px;
+  margin: 0 16px 10px;
   padding: 13px 16px;
   border-radius: 14px;
   background: rgba(200, 146, 74, 0.10);
@@ -912,7 +912,7 @@ body {
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  margin: 0 16px 14px;
+  margin: 0 16px 10px;
   padding: 14px 16px;
   border-radius: 14px;
   background: rgba(70, 60, 90, 0.18);
@@ -987,7 +987,7 @@ body {
 
 /* ── Mood Check-In Card ──────────────────────────────────────────────────── */
 .mood-checkin-card {
-  margin: 0 16px 14px;
+  margin: 0 16px 10px;
   padding: 16px;
   border-radius: 18px;
   background: rgba(122, 171, 122, 0.09);
@@ -1077,7 +1077,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 0 16px 14px;
+  margin: 0 16px 10px;
   padding: 14px 16px;
   border-radius: 16px;
   background: linear-gradient(135deg, rgba(200, 146, 74, 0.12) 0%, rgba(212, 120, 74, 0.07) 100%);
@@ -1188,7 +1188,7 @@ body {
 
 /* ── Daily Quiz Spark Card ───────────────────────────────────────────────── */
 .quiz-spark-card {
-  margin: 0 16px 14px;
+  margin: 0 16px 10px;
   padding: 16px;
   border-radius: 18px;
   background: rgba(140, 140, 220, 0.09);

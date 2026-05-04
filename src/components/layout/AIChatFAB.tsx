@@ -12,46 +12,12 @@ import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
 import { X, Send, RotateCcw, BookOpen, ChevronDown } from 'lucide-react';
 
 // ── Shankha (Conch Shell) SVG Icon ────────────────────────────────────────────
-function ShankhaIcon({ size = 22, color = 'currentColor', opacity = 1 }: { size?: number; color?: string; opacity?: number }) {
+function ZenithMitraLogo({ size = 22, color = 'currentColor' }: { size?: number; color?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ opacity }}>
-      {/* Main conch body */}
-      <path
-        d="M5.8 15.8C4.3 13.9 4.1 11.3 5.2 9C6.4 6.3 9.1 4.6 12.1 5C15.1 5.4 17.4 7.9 17.2 11C17 14 14.6 16.6 11.5 17.3C9.4 17.8 7.2 17.2 5.8 15.8Z"
-        fill={color}
-      />
-      {/* Pointed spire protruding upper-right */}
-      <path
-        d="M12.1 5C13.3 3.3 15.6 1.9 17.2 2.5C18.8 3.1 18.3 5.8 16.4 7.1C15.2 7.9 13.2 8.2 12 7.2"
-        fill={color}
-        opacity="0.85"
-      />
-      {/* Mouth / opening - small flare */}
-      <path
-        d="M5.8 15.8L3.5 19.8"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        fill="none"
-      />
-      {/* Inner spiral groove */}
-      <path
-        d="M11 13C10.2 11.3 11.1 9.2 13.1 9.7C15 10.2 14.8 12.8 13 13.2"
-        stroke="white"
-        strokeWidth="0.9"
-        strokeOpacity="0.50"
-        fill="none"
-        strokeLinecap="round"
-      />
-      {/* Second subtle groove */}
-      <path
-        d="M9.5 11.5C9 10 9.8 8.5 11.2 8.5"
-        stroke="white"
-        strokeWidth="0.7"
-        strokeOpacity="0.28"
-        fill="none"
-        strokeLinecap="round"
-      />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 3L14.5 9.5L21 12L14.5 14.5L12 21L9.5 14.5L3 12L9.5 9.5L12 3Z" fill={color} />
+      <path d="M18 6L19 9L22 10L19 11L18 14L17 11L14 10L17 9L18 6Z" fill={color} opacity="0.6" />
+      <path d="M7 16L8 18L10 19L8 20L7 22L6 20L4 19L6 18L7 16Z" fill={color} opacity="0.4" />
     </svg>
   );
 }
@@ -137,7 +103,7 @@ function MessageBubble({ msg }: { msg: Message }) {
     <div className={`flex gap-2 mb-3 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
       <div className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs ${isUser ? 'bg-[#7B1A1A] text-white' : ''}`}
         style={!isUser ? { background: 'linear-gradient(135deg, #c8920a 0%, #d4a818 100%)' } : undefined}>
-        {isUser ? '🙏' : <ShankhaIcon size={16} color="#1c1c1a" />}
+        {isUser ? '🙏' : <ZenithMitraLogo size={16} color="#1c1c1a" />}
       </div>
       <div className={`max-w-[82%] ${isUser ? 'items-end' : 'items-start'} flex flex-col gap-0.5`}>
         <div className={`px-3 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${isUser ? 'bg-[#7B1A1A] text-white rounded-tr-sm' : 'rounded-tl-sm border'}`}
@@ -161,7 +127,7 @@ function TypingIndicator() {
     <div className="flex gap-2 mb-3">
       <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center"
         style={{ background: 'linear-gradient(135deg, #c8920a 0%, #d4a818 100%)' }}>
-        <ShankhaIcon size={15} color="#1c1c1a" />
+        <ZenithMitraLogo size={15} color="#1c1c1a" />
       </div>
       <div className="border rounded-2xl rounded-tl-sm px-3 py-2.5" style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.16)' }}>
         <div className="flex gap-1 items-center h-4">
@@ -327,7 +293,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-2xl flex items-center justify-center"
                   style={{ background: 'linear-gradient(135deg, #c8920a22, #d4a81822)', border: '1px solid rgba(200,146,74,0.22)' }}>
-                  <ShankhaIcon size={20} color="rgba(200,146,74,0.90)" />
+                  <ZenithMitraLogo size={20} color="rgba(200,146,74,0.90)" />
                 </div>
                 <div>
                   <h2 className="font-display font-bold text-[color:var(--text-cream)] text-base leading-tight">Dharma Mitra</h2>
@@ -459,19 +425,32 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
         <motion.div
           className="w-full h-full rounded-full flex items-center justify-center shadow-lg select-none relative overflow-hidden"
           style={{
-            background:  'linear-gradient(135deg, #c8920a 0%, #d4a818 50%, #b07a08 100%)',
-            boxShadow:   '0 4px 20px rgba(212,166,70,0.45)',
+            background:  'linear-gradient(135deg, #2A1B0A 0%, #1c1c1a 100%)',
+            border:      '1px solid rgba(200,146,74,0.22)',
+            boxShadow:   '0 8px 32px rgba(0,0,0,0.4)',
+          }}
+          animate={!fabHidden ? {
+            y: [0, -6, 0],
+          } : {}}
+          transition={{
+            y: { duration: 3, repeat: Infinity, ease: 'easeInOut' }
           }}
           whileTap={{ scale: 0.9 }}
         >
+          {/* Shimmering effect */}
+          <motion.span
+            className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent"
+            animate={{ x: ['-100%', '100%'] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'linear', delay: 1 }}
+          />
           {/* Animated glow ring */}
           <motion.span
             className="absolute inset-0 rounded-full"
-            style={{ border: '1.5px solid rgba(255,230,140,0.55)' }}
-            animate={{ scale: [1, 1.22, 1], opacity: [0.7, 0, 0.7] }}
-            transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
+            style={{ border: '1.5px solid rgba(200,146,74,0.45)' }}
+            animate={{ scale: [1, 1.3, 1], opacity: [0.6, 0, 0.6] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
           />
-          <ShankhaIcon size={22} color="#1c1c1a" />
+          <ZenithMitraLogo size={22} color="#C5A059" />
         </motion.div>
       </motion.div>
 

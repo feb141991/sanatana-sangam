@@ -118,7 +118,7 @@ export default function BhaktiClient({
       <AmbientParticles />
 
       {/* Header Area */}
-      <div className="px-6 pt-10 pb-6 flex items-center justify-between">
+      <div className="px-6 pt-12 pb-6 flex items-center justify-between">
         <button 
           onClick={() => router.back()}
           className="w-12 h-12 rounded-full flex items-center justify-center bg-white/50 dark:bg-black/20 border border-[#C5A059]/10 shadow-sm backdrop-blur-md active:scale-95 transition-all"

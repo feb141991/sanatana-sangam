@@ -55,7 +55,7 @@ import DarshanPrompt from '@/components/home/DarshanPrompt';
 import { getTransliteration } from '@/lib/transliteration';
 // DivineDiya removed — Prāthanā card removed from home
 import BottomNav from '@/components/layout/BottomNav';
-import AIChatFAB from '@/components/layout/AIChatFAB';
+
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 interface Panchang {
@@ -1523,7 +1523,7 @@ export default function HomeDashboard({
   ];
 
   return (
-    <div className="divine-home-shell min-h-screen bg-[#FAF6EF] dark:bg-[#FAF6EF] -mx-3 -mt-2 sm:-mx-4 relative selection:bg-[#C5A059]/30">
+    <div className="divine-home-shell min-h-screen bg-[#FAF6EF] dark:bg-[#FAF6EF] -mx-3 sm:-mx-4 relative selection:bg-[#C5A059]/30">
       <div className="relative">
 
       {/* ── Sacred confetti celebration ── */}
@@ -1533,7 +1533,7 @@ export default function HomeDashboard({
         <div className="relative">
           <motion.div
             className="divine-hero cursor-pointer"
-            style={{ perspective: 1000, minHeight: '580px', margin: 0 }}
+            style={{ perspective: 1000, minHeight: '420px', margin: 0 }}
             whileHover={prefersReducedMotion ? {} : {
               scale: 1.005,
               transition: { duration: 0.4, ease: "easeOut" }
@@ -1567,7 +1567,7 @@ export default function HomeDashboard({
           {/* Transparent Header Overlay — two-row layout */}
           <div
             className="absolute top-0 left-0 right-0 z-50 pointer-events-none"
-            style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}
+            style={{ paddingTop: 'max(env(safe-area-inset-top), 8px)' }}
           >
             {/* Row 1: Bell (left) | Mood (center) | Avatar (right) */}
             <div className="px-5 flex items-center justify-between">
@@ -2283,11 +2283,7 @@ export default function HomeDashboard({
         )}
       </AnimatePresence>
 
-      <AIChatFAB 
-        userId={userId} 
-        tradition={tradition || 'hindu'} 
-        userName={userName} 
-      />
+
       <BottomNav />
     </div>
   );

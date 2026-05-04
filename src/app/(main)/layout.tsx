@@ -54,7 +54,7 @@ export default async function MainLayout({
   return (
     <LanguageProvider lang={appLanguage}>
       <div className="min-h-screen flex flex-col">
-        <main className="flex-1 max-w-2xl mx-auto w-full px-3 pt-2 pb-28 sm:px-4">
+        <main className="flex-1 max-w-2xl mx-auto w-full px-3 pt-0 pb-28 sm:px-4">
           <EngineProvider userId={userId || null} tradition={tradition}>
             <LocationProvider
               savedLat={savedLat}
