@@ -1232,58 +1232,58 @@ export default function MyProgressClient({
                 </>
               )}
             </motion.div>
-                </>
-              )}
-            </div>
 
-            {/* Nitya Karma card */}
-            <div className="rounded-[1.8rem] p-5" style={{ background: cardNityaBg, border: `1px solid ${cardNityaBdr}`, boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.35)' : '0 2px 16px rgba(0,0,0,0.07)' }}>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">🌅</span>
+            {/* Nitya Karma card — Premium Revamp */}
+            <motion.div 
+              className="rounded-[2.2rem] p-6 divine-glass-card-premium" 
+              style={{ background: cardNityaBg, border: `1px solid ${cardNityaBdr}`, boxShadow: '0 20px 40px rgba(0,0,0,0.35)', perspective: 1000 }}
+              whileHover={{ rotateX: 1, rotateY: -1, scale: 1.01 }}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">🌅</span>
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: muted }}>Nitya Karma</p>
-                    <p className="text-xs" style={{ color: dimText }}>Daily practices</p>
+                    <h2 className="text-[11px] font-bold uppercase tracking-widest text-green-500/70">Nitya Karma</h2>
+                    <p className="text-[10px] text-white/30 uppercase tracking-tight">Daily Dharma</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Link href="/nitya-karma/insights"
-                    className="rounded-full px-3 py-1.5 text-[11px] font-semibold"
-                    style={{ background: 'rgba(140,180,100,0.10)', color: 'rgba(100,160,70,0.80)', border: '1px solid rgba(140,180,100,0.18)' }}>
+                    className="rounded-full px-3 py-1.5 text-[11px] font-bold bg-green-500/10 border border-green-500/20 text-green-500">
                     Insights
                   </Link>
                   <Link href="/nitya-karma"
-                    className="rounded-full px-3 py-1.5 text-[11px] font-semibold"
-                    style={{ background: 'rgba(140,180,100,0.12)', color: 'rgba(100,160,70,0.90)', border: '1px solid rgba(140,180,100,0.22)' }}>
+                    className="rounded-full px-4 py-1.5 text-[11px] font-bold bg-green-500 text-black">
                     Open →
                   </Link>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-2 mb-4">
+              
+              <div className="grid grid-cols-3 gap-3 mb-6">
                 {[
-                  { val: String(nitya30dDays), sub: 'days done' },
+                  { val: String(nitya30dDays), sub: 'completed' },
                   { val: `${nityaRate}%`,      sub: 'rate'      },
-                  { val: `${30 - nitya30dDays}`, sub: 'missed'  },
+                  { val: `${30 - nitya30dDays}`, sub: 'remaining' },
                 ].map(({ val, sub: s }) => (
-                  <div key={s} className="text-center rounded-xl py-2" style={{ background: isDark ? 'rgba(140,180,100,0.07)' : 'rgba(140,180,100,0.06)' }}>
-                    <p className="text-[16px] font-bold" style={{ color: h1 }}>{val}</p>
-                    <p className="text-[9px] mt-0.5" style={{ color: muted }}>{s}</p>
+                  <div key={s} className="text-center rounded-2xl py-3 bg-white/5 border border-white/5">
+                    <p className="text-xl font-bold" style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{val}</p>
+                    <p className="text-[9px] mt-1 font-bold uppercase tracking-tighter text-white/30">{s}</p>
                   </div>
                 ))}
               </div>
-              <div className="flex justify-between mb-1">
-                <span className="text-[10px]" style={{ color: muted }}>Completion rate</span>
-                <span className="text-[10px] font-semibold" style={{ color: 'rgba(100,160,70,0.85)' }}>{nityaRate}%</span>
+
+              <div className="flex justify-between mb-2">
+                <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Momentum</span>
+                <span className="text-[10px] font-bold text-green-500">{nityaRate}%</span>
               </div>
-              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}>
+              <div className="h-2 rounded-full overflow-hidden bg-white/5">
                 <motion.div
-                  className="h-full rounded-full"
-                  style={{ background: 'linear-gradient(90deg,rgba(140,180,100,0.75),rgba(90,150,60,0.85))' }}
+                  className="h-full rounded-full bg-gradient-to-r from-green-600 to-green-400"
                   initial={{ width: 0 }} animate={{ width: `${nityaRate}%` }}
-                  transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+                  transition={{ duration: 1.2, ease: "easeOut", delay: 0.1 }}
                 />
               </div>
-            </div>
+            </motion.div>
 
             {/* Pathshala + Bhakti mini cards */}
             <div className="grid grid-cols-2 gap-3">
