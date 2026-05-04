@@ -6,6 +6,9 @@ import { Send, Sparkles, RotateCcw, ChevronDown, BookOpen, ChevronLeft } from 'l
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useEngine } from '@/contexts/EngineContext';
+import { usePremium } from '@/hooks/usePremium';
+import { useProfile } from '@/hooks/useProfile';
+import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import { getTransliteration } from '@/lib/transliteration';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -270,6 +273,8 @@ export default function AIChatClient({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef       = useRef<HTMLTextAreaElement>(null);
   const { engine, isReady } = useEngine();
+  const isPro = usePremium();
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   // Tradition-aware content
   const suggestions = SUGGESTIONS_BY_TRADITION[tradition ?? 'hindu'] ?? SUGGESTIONS_BY_TRADITION.hindu;
@@ -356,6 +361,9 @@ export default function AIChatClient({
         }),
       });
       const data = await res.json();
+      if (data.limitReached && !data.isPro) {
+        setShowPremiumModal(true);
+      }
       if (!res.ok) {
         toast.error(data.error ?? 'Something went wrong');
         setLoading(false);
@@ -413,7 +421,14 @@ export default function AIChatClient({
             ✨
           </div>
           <div>
-            <h1 className="font-display font-bold text-[color:var(--text-cream)] text-lg leading-tight">Dharma Mitra</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="font-display font-bold text-[color:var(--text-cream)] text-lg leading-tight">Dharma Mitra</h1>
+              {isPro && (
+                <span className="px-1.5 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wider bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg shadow-orange-500/20">
+                  Pro
+                </span>
+              )}
+            </div>
             {contextLabel ? (
               <p className="text-[10px] font-medium px-2 py-0.5 rounded-full inline-block mt-0.5"
                 style={{ background: 'rgba(200,146,74,0.14)', color: 'rgba(200,146,74,0.85)' }}>
@@ -521,6 +536,8 @@ export default function AIChatClient({
           Dharma Mitra can make mistakes. Verify important information.
         </p>
       </div>
+
+      <PremiumActivateModal open={showPremiumModal} onClose={() => setShowPremiumModal(false)} />
     </div>
   );
 }

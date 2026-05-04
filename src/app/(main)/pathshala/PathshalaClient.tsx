@@ -137,6 +137,35 @@ function ScriptureReader({
   onClose: () => void;
   accentColour: string;
 }) {
+  const isPro = usePremium();
+  const [sattvaMode, setSattvaMode] = useState(false);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (sattvaMode) {
+      // High-quality ambient loop (Sattvic drone / temple bells)
+      audioRef.current = new Audio('https://f005.backblazeb2.com/file/sangam-assets/audio/sattva_ambient_loop.mp3');
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.4;
+      audioRef.current.play().catch(() => {});
+    } else {
+      audioRef.current?.pause();
+      audioRef.current = null;
+    }
+    return () => { audioRef.current?.pause(); };
+  }, [sattvaMode]);
+
+  const toggleSattva = () => {
+    if (!isPro) {
+      setShowPremiumModal(true);
+      return;
+    }
+    setSattvaMode(!sattvaMode);
+    if (!sattvaMode) {
+      toast('Sattva Mode active ✦ Deep immersion enabled', { icon: '✨' });
+    }
+  };
   const content = entry ? {
     title: entry.title,
     source: entry.source,
@@ -153,8 +182,14 @@ function ScriptureReader({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       className="fixed inset-0 z-[100] overflow-y-auto"
-      style={{ background: 'var(--brand-background)' }}
+      style={{ 
+        background: sattvaMode 
+          ? 'radial-gradient(circle at center, #1a1208 0%, #0a0806 100%)' 
+          : 'var(--brand-background)',
+        transition: 'background 1.5s ease-in-out'
+      }}
     >
+      <PremiumActivateModal open={showPremiumModal} onClose={() => setShowPremiumModal(false)} />
       <div className="sticky top-0 z-20 flex items-center gap-4 p-4 md:p-6 bg-[var(--brand-background)]/80 backdrop-blur-2xl border-b border-white/5">
         <button onClick={onClose} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors">
           <ChevronLeft size={22} style={{ color: accentColour }} />
@@ -164,6 +199,15 @@ function ScriptureReader({
           <p className="text-[10px] md:text-xs text-[color:var(--brand-muted)] uppercase tracking-[0.2em] font-bold">{content.source}</p>
         </div>
         <div className="flex items-center gap-2">
+          <button 
+            onClick={toggleSattva}
+            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all ${
+              sattvaMode ? 'bg-amber-500/20 shadow-lg shadow-amber-500/10' : 'bg-white/5'
+            }`}
+            title="Sattva Mode (Premium)"
+          >
+            <Sparkles size={18} style={{ color: sattvaMode ? '#f59e0b' : 'rgba(255,255,255,0.4)' }} />
+          </button>
           <button onClick={() => entry && shareEntry(entry)} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors">
             <Share2 size={18} className="text-[color:var(--brand-muted)]" />
           </button>
@@ -186,8 +230,12 @@ function ScriptureReader({
                 <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/5" />
               </div>
 
-              <p className="text-2xl md:text-4xl font-[family:var(--font-deva)] leading-[1.8] text-center mb-12 drop-shadow-sm px-4"
-                style={{ color: accentColour }}>
+              <p 
+                className={`text-2xl md:text-4xl font-[family:var(--font-deva)] leading-[1.8] text-center mb-12 px-4 transition-all duration-1000 ${
+                  sattvaMode ? 'drop-shadow-[0_0_15px_rgba(245,158,11,0.4)] scale-[1.02]' : 'drop-shadow-sm'
+                }`}
+                style={{ color: sattvaMode ? '#fef3c7' : accentColour }}
+              >
                 {v.original}
               </p>
 

@@ -26,12 +26,15 @@ function geminiUrl(model: string) {
 //
 // Uses the sadhana_events table to count AI chat requests today.
 // If the sadhana_events table isn't available, it fails open (no block).
-const DAILY_LIMIT_PER_USER = 30; // 30 Dharma Mitra messages per user per day
+const FREE_DAILY_LIMIT = 5;
+const PRO_DAILY_LIMIT  = 100;
 
 async function isDailyLimitReached(
   supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
-  userId: string
+  userId: string,
+  isPro: boolean
 ): Promise<boolean> {
+  const limit = isPro ? PRO_DAILY_LIMIT : FREE_DAILY_LIMIT;
   try {
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
@@ -44,7 +47,7 @@ async function isDailyLimitReached(
       .gte('created_at', todayStart.toISOString());
 
     if (error) return false; // fail open — don't block on DB error
-    return (count ?? 0) >= DAILY_LIMIT_PER_USER;
+    return (count ?? 0) >= limit;
   } catch {
     return false; // fail open
   }
@@ -229,10 +232,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorised' }, { status: 401 });
   }
 
+  // Fetch user profile to check Pro status
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('is_pro')
+    .eq('id', user.id)
+    .single();
+  const isPro = profile?.is_pro ?? false;
+
   // Daily limit check (Supabase-backed, survives cold starts)
-  if (await isDailyLimitReached(supabase, user.id)) {
+  if (await isDailyLimitReached(supabase, user.id, isPro)) {
+    const limitMsg = isPro
+      ? "🙏 You've had a rich conversation with Dharma Mitra today! Your daily limit (100 messages) has been reached. Come back tomorrow for more guidance."
+      : "🙏 You've used your 5 free messages for today. Upgrade to Sangam Pro for 100+ daily messages and deeper guidance!";
+    
     return NextResponse.json({
-      reply: `🙏 You've had a rich conversation with Dharma Mitra today! Come back tomorrow for more guidance. Daily limit: ${DAILY_LIMIT_PER_USER} messages per day.`,
+      reply: limitMsg,
+      limitReached: true,
+      isPro
     });
   }
 

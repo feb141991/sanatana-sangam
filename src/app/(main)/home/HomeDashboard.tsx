@@ -39,6 +39,7 @@ import { getGreeting, getGreetingPool, isGreetingCompatibleWithTradition } from 
 import type { GuidedPathProgressRow } from '@/lib/guided-paths';
 import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
+import { usePremium } from '@/hooks/usePremium';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { APP } from '@/lib/config';
 import { resolveHomeHeroTheme, type HomeHeroTheme } from '@/config/festivalThemes';
@@ -1535,6 +1536,11 @@ export default function HomeDashboard({
                   <h1 className="divine-greeting-title">
                     {stripGreetingIcon(greeting)}, {userName.split(' ')[0]}
                   </h1>
+                  {isPro && (
+                    <span className="px-1.5 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wider bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg shadow-orange-500/20">
+                      Pro
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="divine-greeting-badge">
@@ -1570,7 +1576,17 @@ export default function HomeDashboard({
           />
         </div>
 
-        <div className="divine-hero">
+        <motion.div
+          className="divine-hero cursor-pointer"
+          whileHover={prefersReducedMotion ? {} : {
+            scale: 1.015,
+            rotateX: 1,
+            rotateY: -1.5,
+            transition: { duration: 0.4, ease: "easeOut" }
+          }}
+          whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
+          style={{ perspective: 1000 }}
+        >
           {!heroImageFailed ? (
             <Image
               src={heroTheme.heroImage}
@@ -1613,18 +1629,27 @@ export default function HomeDashboard({
             </div>
 
             <div className="divine-hero-bottom">
-              <button
+              <motion.button
                 type="button"
                 onClick={() => setShlokaModalOpen(true)}
-                className="divine-shloka-card-v2 motion-press"
+                className="divine-shloka-card-v2 motion-press cursor-pointer w-full text-left"
+                whileHover={prefersReducedMotion ? {} : {
+                  scale: 1.012,
+                  rotateX: -1,
+                  rotateY: 1,
+                  boxShadow: "0 15px 35px rgba(0,0,0,0.3)",
+                  transition: { duration: 0.4, ease: "easeOut" }
+                }}
+                whileTap={prefersReducedMotion ? {} : { scale: 0.985 }}
+                style={{ perspective: 800 }}
               >
                 <span className="divine-poster-label">{dailyText.label}</span>
                 <p className="divine-sanskrit-immersive-dark line-clamp-3">{dailyTextLine}</p>
                 <p className="divine-meaning-dark line-clamp-2">{dailyText.meaning}</p>
-              </button>
+              </motion.button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
 
 
