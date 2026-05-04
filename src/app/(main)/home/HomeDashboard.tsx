@@ -961,6 +961,7 @@ export default function HomeDashboard({
   const router   = useRouter();
   const prefersReducedMotion = useReducedMotion();
   const searchParams = useSearchParams();
+  const isPro = usePremium();
   const shlokaRef = useRef<HTMLDivElement | null>(null);
   const festivalsRef = useRef<HTMLDivElement | null>(null);
 
