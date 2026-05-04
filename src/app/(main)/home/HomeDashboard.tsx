@@ -1637,14 +1637,14 @@ export default function HomeDashboard({
                   whileHover={{ x: 5 }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleOpenHeroDetail();
+                    setShlokaModalOpen(true);
                   }}
                   className="mt-6 flex items-center gap-3 text-white group"
                 >
                   <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center group-hover:bg-[#C5A059] transition-colors duration-500">
                     <BookOpen size={18} />
                   </div>
-                  <span className="text-xs font-bold uppercase tracking-[0.2em]">{heroFallback.cta}</span>
+                  <span className="text-xs font-bold uppercase tracking-[0.2em]">Explore Today</span>
                 </motion.button>
               </div>
             </div>
