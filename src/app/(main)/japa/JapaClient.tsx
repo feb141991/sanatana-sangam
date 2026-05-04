@@ -1469,7 +1469,7 @@ export default function JapaClient({
       if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current);
     }
     return () => { if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current); };
-  }, [screen]); 
+  }, [screen, showControlsBriefly]); 
 
   // ── Per-bead flash animation state ──────────────────────────────────────
   const [flashBeadIdx, setFlashBeadIdx] = useState(-1);

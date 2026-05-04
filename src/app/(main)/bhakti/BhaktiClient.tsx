@@ -262,7 +262,7 @@ export default function BhaktiClient({
             </div>
           </div>
           <p className="text-xl font-serif text-[#2A1B0A] dark:text-[#FDFCF8] leading-relaxed italic text-center">
-            "{shloka.sanskrit}"
+            &quot;{shloka.sanskrit}&quot;
           </p>
           <AnimatePresence>
             {showShloka && (
