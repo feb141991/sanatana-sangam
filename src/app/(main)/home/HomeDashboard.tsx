@@ -1588,18 +1588,18 @@ export default function HomeDashboard({
           />
         </div>
 
-        {/* ── Divine Hero ──────────────────────────────────────────────────────── */}
-        <motion.div
-          className="divine-hero cursor-pointer"
-          whileHover={prefersReducedMotion ? {} : {
-            scale: 1.015,
-            rotateX: 1,
-            rotateY: -1.5,
-            transition: { duration: 0.4, ease: "easeOut" }
-          }}
-          whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
-          style={{ perspective: 1000 }}
-        >
+        <div className="px-4 mb-10">
+          <motion.div
+            className="divine-hero cursor-pointer rounded-[2.5rem] overflow-hidden shadow-sm border border-[#C5A059]/10"
+            style={{ perspective: 1000, margin: 0, minHeight: '460px' }}
+            whileHover={prefersReducedMotion ? {} : {
+              scale: 1.01,
+              rotateX: 1,
+              rotateY: -1.5,
+              transition: { duration: 0.4, ease: "easeOut" }
+            }}
+            whileTap={prefersReducedMotion ? {} : { scale: 0.985 }}
+          >
           {!heroImageFailed ? (
             <Image
               src={heroTheme.heroImage}
@@ -1712,6 +1712,7 @@ export default function HomeDashboard({
             </div>
           </div>
         </motion.div>
+      </div>
 
 
         {/* ── Sacred Day Pulse Banner ─────────────────────────────────────────── */}
