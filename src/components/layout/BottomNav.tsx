@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Heart, MessageCircle, Sun, Users, Radio } from 'lucide-react';
+import { Heart, MessageCircle, Sun, Users, Radio, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 
@@ -18,7 +18,7 @@ const QUICK_ACTIONS = [
   { icon: '🧠', label: 'Quiz Mastery', href: '/quiz'        },
   { icon: '📖', label: 'Pathshala', href: '/pathshala'      },
   { icon: '🤝', label: 'Seva Hub',  href: '/seva'          },
-  { icon: '📊', label: 'My Progress', href: '/my-progress'   },
+  { icon: '📊', label: 'Sadhana Pulse', href: '/my-progress' },
 ];
 const GUEST_QUICK_ACTIONS = [
   { icon: '✨', label: 'Join',    href: '/signup'        },
@@ -152,11 +152,11 @@ export default function BottomNav({
   }, [quickOpen]);
 
   const memberNavItems = [
-    { href: '/live-darshan', label: 'Darshan', mobileLabel: 'Darshan', icon: Radio         },
-    { href: '/nitya-karma', label: 'Nitya',    mobileLabel: 'Nitya',    icon: Sun           },
-    { href: '/bhakti',      label: 'Bhakti',   mobileLabel: 'Bhakti',   icon: Heart         },
-    { href: '/kul',         label: 'Kul',      mobileLabel: 'Kul',      icon: Users         },
-    { href: '/mandali',     label: 'Mandali',  mobileLabel: 'Mandali',  icon: MessageCircle },
+    { href: '/pathshala',   label: 'Pathshala', mobileLabel: 'Study',    icon: BookOpen      },
+    { href: '/nitya-karma', label: 'Nitya',     mobileLabel: 'Nitya',    icon: Sun           },
+    { href: '/bhakti',      label: 'Bhakti',    mobileLabel: 'Bhakti',   icon: Heart         },
+    { href: '/kul',         label: 'Kul',       mobileLabel: 'Kul',      icon: Users         },
+    { href: '/mandali',     label: 'Mandali',   mobileLabel: 'Mandali',  icon: MessageCircle },
   ];
   const guestNavItems = [
     { href: '/vichaar-sabha', label: 'Vichaar', mobileLabel: 'Vichaar', icon: MessageCircle },

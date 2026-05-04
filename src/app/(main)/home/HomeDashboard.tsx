@@ -1492,7 +1492,7 @@ export default function HomeDashboard({
     },
     {
       title: 'Sadhana Pulse',
-      description: 'Your 7d & 9d spiritual trajectory',
+      description: 'Track your sacred momentum and daily spiritual consistency',
       href: '/my-progress',
       icon: BarChart2,
     },
