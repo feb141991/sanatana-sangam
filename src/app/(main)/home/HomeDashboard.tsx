@@ -1620,35 +1620,6 @@ export default function HomeDashboard({
                 </motion.div>
               </div>
 
-              <div className="mt-8">
-                {/* Branding and CTA removed for ultra-minimalist Zenith feel */}
-              </div>
-
-              {/* Shloka at the bottom of the hero — positioned to be the transition */}
-              <div className="absolute left-0 right-0 bottom-[-24px] px-5 z-20">
-                <motion.button
-                  type="button"
-                  onClick={() => setShlokaModalOpen(true)}
-                  className="divine-shloka-card-v2 motion-press cursor-pointer w-full text-left bg-white/40 dark:bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-6 shadow-xl"
-                  whileHover={prefersReducedMotion ? {} : {
-                    scale: 1.012,
-                    rotateX: -1,
-                    rotateY: 1,
-                    boxShadow: "0 15px 35px rgba(0,0,0,0.15)",
-                    transition: { duration: 0.4, ease: "easeOut" }
-                  }}
-                  whileTap={prefersReducedMotion ? {} : { scale: 0.985 }}
-                  style={{ perspective: 800 }}
-                >
-                  <span className="divine-poster-label mb-2 inline-block">{dailyText.label}</span>
-                  <p className="divine-sanskrit-immersive-dark line-clamp-3 text-[#2C1A0E] dark:text-[#FDFCF8]">
-                    <span style={{ opacity: 0.55, marginRight: '0.3em', fontWeight: 400 }}>॥</span>
-                    {dailyTextLine}
-                    <span style={{ opacity: 0.55, marginLeft: '0.3em', fontWeight: 400 }}>॥</span>
-                  </p>
-                  <p className="divine-meaning-dark line-clamp-2 text-[#2C1A0E]/70 dark:text-[#FDFCF8]/70 mt-1">{dailyText.meaning}</p>
-                </motion.button>
-              </div>
             </div>
           </motion.div>
 
@@ -1737,6 +1708,29 @@ export default function HomeDashboard({
               </motion.h1>
             </div>
           </div>
+        </div>
+        
+        {/* ── Zenith Transitional Shloka ── */}
+        <div className="px-5 -mt-8 relative z-20">
+          <motion.button
+            type="button"
+            onClick={() => setShlokaModalOpen(true)}
+            className="w-full text-center py-4 cursor-pointer"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+          >
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C5A059] opacity-80 mb-2 block">
+              {dailyText.label}
+            </span>
+            <p className="font-serif text-lg md:text-xl text-[#2C1A0E] dark:text-[#2C1A0E] leading-relaxed italic px-4">
+              “{dailyTextLine}”
+            </p>
+            <p className="text-xs text-[#2C1A0E]/60 mt-2 px-8 line-clamp-1">
+              {dailyText.meaning}
+            </p>
+          </motion.button>
         </div>
 
         {/* Daily Darshan System — Tradition Based */}
