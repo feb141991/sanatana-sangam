@@ -376,7 +376,7 @@ const SESSION_SHIELDS = [
   { threshold: 21,   name: 'Abhyāsa',  emoji: '⚡', desc: '21 sessions'   },
   { threshold: 40,   name: 'Tapas',    emoji: '🔆', desc: '40 sessions'   },
   { threshold: 108,  name: 'Mālā',     emoji: '📿', desc: '108 sessions'  },
-  { threshold: 365,  name: 'Varshika', emoji: '🌕', desc: '365 sessions'  },
+{ threshold: 365,  name: 'Varshika', emoji: '🌕', desc: '365 sessions'  },
   { threshold: 1000, name: 'Sahasra',  emoji: '💎', desc: '1000 sessions' },
 ];
 
@@ -402,52 +402,55 @@ function ShieldBadgesPreview({
   const nextSession = SESSION_SHIELDS.find(s => totalSessions < s.threshold);
 
   return (
-    <div className="rounded-[1.8rem] p-5" style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.38)' : '0 2px 16px rgba(0,0,0,0.07)' }}>
-      <div className="flex items-center justify-between mb-4">
+    <motion.div 
+      className="rounded-[2.2rem] p-6 divine-glass-card-premium" 
+      style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: '0 20px 40px rgba(0,0,0,0.4)', perspective: 1000 }}
+      whileHover={{ rotateX: 1, rotateY: -1, scale: 1.005 }}
+    >
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'rgba(200,146,74,0.70)' }}>
-            🏅 Achievement Shields
+          <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-amber-500/70">
+            Achievement Shields
           </p>
-          <p className="text-[13px] font-bold mt-0.5" style={{ color: h1 }}>
-            {totalEarned} / {totalShields} <span className="text-[10px] font-normal" style={{ color: muted }}>earned</span>
+          <p className="text-xl font-bold mt-1" style={{ fontFamily: 'var(--font-serif)', color: h1 }}>
+            {totalEarned} / {totalShields} <span className="text-[10px] font-normal opacity-40">earned</span>
           </p>
         </div>
         <Link href="/my-progress/shields"
-          className="rounded-full px-3.5 py-1.5 text-[11px] font-semibold flex items-center gap-1"
-          style={{ background: 'rgba(200,146,74,0.12)', color: 'rgba(200,146,74,0.90)', border: '1px solid rgba(200,146,74,0.22)' }}>
-          See all →
+          className="rounded-full px-4 py-2 text-[11px] font-bold bg-amber-500/10 border border-amber-500/20 text-amber-500">
+          Shields →
         </Link>
       </div>
 
-      {/* Mini shields row — show the 6 streak shields */}
-      <div className="flex gap-2 mb-4">
+      {/* Mini shields row — Premium Revamp */}
+      <div className="flex gap-2.5 mb-6">
         {STREAK_SHIELDS.map(shield => {
           const earned = streak >= shield.threshold;
           const isMilestone = shield.threshold === 7 || shield.threshold === 9;
           return (
-            <div key={shield.threshold} className="flex-1 flex flex-col items-center gap-1">
+            <div key={shield.threshold} className="flex-1 flex flex-col items-center gap-1.5">
               <motion.div
-                className="w-full aspect-square rounded-xl flex items-center justify-center text-[16px] relative"
+                className="w-full aspect-square rounded-2xl flex items-center justify-center text-xl relative overflow-hidden"
                 initial={false}
                 animate={{ 
                   scale: earned ? 1 : 0.95,
-                  boxShadow: earned && isMilestone ? '0 0 12px rgba(251, 191, 36, 0.4)' : 'none'
+                  boxShadow: earned && isMilestone ? '0 0 15px rgba(251, 191, 36, 0.4)' : 'none'
                 }}
                 style={{
                   background: earned
-                    ? isDark ? 'rgba(200,146,74,0.22)' : 'rgba(200,146,74,0.14)'
-                    : isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+                    ? isDark ? 'rgba(251,191,36,0.15)' : 'rgba(251,191,36,0.1)'
+                    : 'rgba(255,255,255,0.03)',
                   border: earned
-                    ? `1px solid ${isMilestone ? '#f59e0b' : 'rgba(200,146,74,0.40)'}`
-                    : `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)'}`,
-                  filter: earned ? 'none' : 'grayscale(1) opacity(0.25)',
+                    ? `1px solid ${isMilestone ? '#f59e0b' : 'rgba(251,191,36,0.25)'}`
+                    : '1px solid rgba(255,255,255,0.05)',
+                  filter: earned ? 'none' : 'grayscale(1) opacity(0.2)',
                 }}
               >
                 {shield.emoji}
                 {earned && isMilestone && (
                   <motion.div 
-                    className="absolute inset-0 rounded-xl"
-                    animate={{ opacity: [0, 0.4, 0] }}
+                    className="absolute inset-0"
+                    animate={{ opacity: [0, 0.3, 0] }}
                     transition={{ duration: 2, repeat: Infinity }}
                     style={{ background: 'white' }}
                   />
@@ -464,13 +467,12 @@ function ShieldBadgesPreview({
         const val  = nextStreak ? streak : totalSessions;
         const pct  = Math.min(100, Math.round((val / next.threshold) * 100));
         return (
-          <div>
-            <div className="flex justify-between mb-1.5">
-              <span className="text-[10px]" style={{ color: muted }}>
-                Next: <span style={{ color: h1, fontWeight: 600 }}>{next.emoji} {next.name}</span>
-                <span style={{ color: muted }}> · {next.desc}</span>
+          <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+            <div className="flex justify-between mb-2">
+              <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                Target: <span className="text-amber-500">{next.name}</span>
               </span>
-              <span className="text-[10px] font-semibold" style={{ color: 'rgba(200,146,74,0.85)' }}>
+              <span className="text-[10px] font-bold text-white/40">
                 {val}/{next.threshold}
               </span>
             </div>
@@ -712,14 +714,27 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
                   Most chanted: <span style={{ color: h1 }}>{report.topMantra}</span>
                 </p>
               )}
-              {/* AI explanation */}
+              {/* AI explanation — Premium Revamp */}
               <AnimatePresence>
                 {(japaAi.loading || japaAi.text) && (
-                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                    className="mt-3 pt-3" style={{ borderTop: `1px solid ${border}` }}>
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }} 
+                    animate={{ opacity: 1, scale: 1 }} 
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="mt-4 p-4 rounded-[1.5rem]" 
+                    style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.15)' }}
+                  >
                     {japaAi.loading
-                      ? <div className="flex items-center gap-2"><motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}><Sparkles size={12} style={{ color: 'rgba(200,146,74,0.6)' }} /></motion.div><span className="text-[11px]" style={{ color: muted }}>Interpreting your practice…</span></div>
-                      : <p className="text-[12px] leading-relaxed italic" style={{ color: isDark ? 'rgba(245,215,160,0.80)' : '#3a1a06' }}>{japaAi.text}</p>
+                      ? <div className="flex items-center gap-2">
+                          <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}>
+                            <Sparkles size={14} className="text-amber-500" />
+                          </motion.div>
+                          <span className="text-[11px] font-bold text-amber-500/70">Consulting Divine Wisdom…</span>
+                        </div>
+                      : <div className="relative">
+                          <Sparkles size={12} className="absolute -top-1 -left-1 text-amber-500/40" />
+                          <p className="text-[13px] leading-relaxed italic" style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{japaAi.text}</p>
+                        </div>
                     }
                   </motion.div>
                 )}
@@ -743,18 +758,42 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
               </div>
               <div className="flex items-end gap-4">
                 <div>
-                  <p className="text-3xl font-bold" style={{ fontFamily: 'var(--font-serif)', color: h1 }}>{nityaRate}%</p>
+                  <p className="text-3xl font-bold font-serif" style={{ color: h1 }}>{nityaRate}%</p>
                   <p className="text-[10px] mt-0.5" style={{ color: muted }}>Completion rate</p>
                 </div>
                 <div>
-                  <p className="text-lg font-bold" style={{ color: h1 }}>{report.curNityaDays}</p>
+                  <p className="text-lg font-bold font-serif" style={{ color: h1 }}>{report.curNityaDays}</p>
                   <p className="text-[10px] mt-0.5" style={{ color: muted }}>Days completed</p>
                 </div>
                 <div className="flex-1 text-right">
                   <p className="text-xs" style={{ color: muted }}>of {report.curDaysElapsed} days elapsed</p>
                 </div>
               </div>
-              <div className="mt-3 h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}>
+              <AnimatePresence>
+                {(nityaAi.loading || nityaAi.text) && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }} 
+                    animate={{ opacity: 1, scale: 1 }} 
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="mt-4 p-4 rounded-[2.2rem]" 
+                    style={{ background: 'rgba(140,180,100,0.08)', border: '1px solid rgba(140,180,100,0.15)' }}
+                  >
+                    {nityaAi.loading
+                      ? <div className="flex items-center gap-2">
+                          <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}>
+                            <Sparkles size={14} className="text-green-500" />
+                          </motion.div>
+                          <span className="text-[11px] font-bold text-green-500/70">Analyzing Dharmic Rhythm…</span>
+                        </div>
+                      : <div className="relative">
+                          <Sparkles size={12} className="absolute -top-1 -left-1 text-green-500/40" />
+                          <p className="text-[13px] leading-relaxed italic" style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{nityaAi.text}</p>
+                        </div>
+                    }
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <div className="mt-4 h-2 rounded-full overflow-hidden bg-white/5">
                 <motion.div className="h-full rounded-full"
                   style={{ background: 'linear-gradient(90deg,rgba(140,180,100,0.8),rgba(100,160,70,0.9))' }}
                   initial={{ width: 0 }} animate={{ width: `${nityaRate}%` }}
@@ -908,28 +947,140 @@ export default function MyProgressClient({
         {/* Safe area */}
         <div style={{ height: 'max(env(safe-area-inset-top,0px),16px)' }} />
 
-        {/* ── Top bar ── */}
-        <div className="flex items-center gap-3 px-4 pb-4">
-          <button onClick={() => router.back()}
-            className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.18)' }}>
-            <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.85)' }} />
-          </button>
-          <div className="flex-1">
-            <p className="text-[10px] tracking-[0.18em] uppercase font-medium" style={{ color: muted }}>My Progress</p>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.35rem', fontWeight: 700, color: h1, lineHeight: 1.1 }}>
-              {userName}&apos;s Sādhana
-            </h1>
+        {/* ── Top bar — Premium Revamp ── */}
+        <div className="relative overflow-hidden pt-8 pb-12 px-6">
+          {/* 3D Background Pulse */}
+          <div className="absolute inset-0 pointer-events-none opacity-40">
+            <motion.div 
+              className="absolute -top-24 -left-24 w-64 h-64 rounded-full"
+              animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+              style={{ background: 'radial-gradient(circle, rgba(251,191,36,0.15) 0%, transparent 70%)' }}
+            />
           </div>
+
+          <div className="relative flex flex-col items-center text-center">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="mb-6 relative"
+            >
+              {/* The 9D Sadhana Sphere */}
+              <motion.div
+                className="w-32 h-32 rounded-full relative z-10"
+                style={{
+                  background: 'radial-gradient(circle at 30% 30%, #fcd34d 0%, #d97706 50%, #78350f 100%)',
+                  boxShadow: '0 0 40px rgba(251, 191, 36, 0.3), inset -10px -10px 30px rgba(0,0,0,0.5)',
+                }}
+                animate={streak >= 9 ? {
+                  rotateY: 360,
+                  scale: [1, 1.05, 1],
+                  boxShadow: '0 0 60px rgba(251, 191, 36, 0.5), inset -10px -10px 30px rgba(0,0,0,0.5)'
+                } : { rotateY: 360 }}
+                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+              />
+              {/* Outer Rings */}
+              <motion.div 
+                className="absolute inset-0 -m-4 border border-amber-500/20 rounded-full"
+                animate={{ rotate: -360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              />
+              <motion.div 
+                className="absolute inset-0 -m-8 border border-amber-500/10 rounded-full"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+              />
+            </motion.div>
+
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <p className="text-[11px] tracking-[0.25em] uppercase font-bold text-amber-500/60 mb-2">Sādhana Trajectory</p>
+              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.2rem', fontWeight: 800, color: h1, letterSpacing: '-0.02em' }}>
+                {userName}
+              </h1>
+              <div className="flex items-center justify-center gap-4 mt-4">
+                <div className="text-center">
+                  <p className="text-2xl font-black text-amber-500" style={{ fontFamily: 'var(--font-serif)' }}>{streak}</p>
+                  <p className="text-[9px] uppercase tracking-widest text-white/30 font-bold">Streak</p>
+                </div>
+                <div className="w-px h-8 bg-white/10" />
+                <div className="text-center">
+                  <p className="text-2xl font-black text-amber-200" style={{ fontFamily: 'var(--font-serif)' }}>{Math.floor(streak / 9)}</p>
+                  <p className="text-[9px] uppercase tracking-widest text-white/30 font-bold">Navarātri</p>
+                </div>
+                <div className="w-px h-8 bg-white/10" />
+                <div className="text-center">
+                  <p className="text-2xl font-black text-slate-300" style={{ fontFamily: 'var(--font-serif)' }}>{Math.floor(streak / 7)}</p>
+                  <p className="text-[9px] uppercase tracking-widest text-white/30 font-bold">Saptāha</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          <button onClick={() => router.back()}
+            className="absolute top-8 left-6 w-10 h-10 rounded-full flex items-center justify-center bg-white/5 border border-white/10 backdrop-blur-xl">
+            <ChevronLeft size={20} className="text-amber-500" />
+          </button>
         </div>
 
         <div className="px-4 space-y-4">
 
-          {/* ── Activity Calendar — compact, calendar-first ── */}
+          {/* ── 9-Day Rhythm Card — Premium Addition ── */}
           <motion.section
-            initial={{ opacity: 0, y: -14 }} animate={{ opacity: 1, y: 0 }}
-            className="rounded-[2rem] p-4"
-            style={{ background: cardCalBg, border: `1px solid ${cardCalBdr}`, boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.38)' : '0 2px 20px rgba(0,0,0,0.07)' }}>
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="rounded-[2.2rem] p-6 divine-glass-card-premium"
+            style={{ 
+              background: 'linear-gradient(135deg, rgba(251,191,36,0.08) 0%, rgba(0,0,0,0) 100%)',
+              border: '1px solid rgba(251,191,36,0.15)',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+              perspective: 1000
+            }}
+            whileHover={{ rotateX: 2, rotateY: -2, scale: 1.01 }}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-[11px] uppercase tracking-[0.2em] font-bold text-amber-500/70">9-Day Rhythm</h2>
+                <p className="text-xl font-bold mt-1" style={{ fontFamily: 'var(--font-serif)', color: h1 }}>Navarātri Readiness</p>
+              </div>
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                <Sparkles size={24} className="text-amber-500" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              {[
+                { label: 'Current Cycle', val: `${(streak % 9) + 1}/9`, icon: '🕉️' },
+                { label: 'Intensity', val: streak > 40 ? 'High' : 'Steady', icon: '🔥' },
+                { label: 'Focus', val: 'Devotion', icon: '🙏' },
+              ].map(item => (
+                <div key={item.label} className="text-center">
+                  <p className="text-xl mb-1">{item.icon}</p>
+                  <p className="text-lg font-bold" style={{ color: h1 }}>{item.val}</p>
+                  <p className="text-[9px] uppercase tracking-tighter text-white/30 font-bold">{item.label}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+              <p className="text-[12px] leading-relaxed italic text-amber-200/80">
+                &ldquo;{streak >= 9 ? 'You have completed a full Navarātri cycle. Your spirit is attuned to the divine rhythm.' : 'You are approaching your first Navarātri milestone. Every breath is a step toward liberation.'}&rdquo;
+              </p>
+            </div>
+          </motion.section>
+
+          {/* ── Activity Calendar ── */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            className="rounded-[2.2rem] p-6 divine-glass-card-premium"
+            style={{ background: cardCalBg, border: `1px solid ${cardCalBdr}`, boxShadow: '0 20px 50px rgba(0,0,0,0.5)', perspective: 1000 }}
+            whileHover={{ scale: 1.005 }}
+          >
+            {/* ... calendar content ... */}
 
             {/* Compact header: title + streak pill + stats + toggle */}
             <div className="flex items-center gap-2 mb-3">
@@ -998,106 +1149,75 @@ export default function MyProgressClient({
             </AnimatePresence>
           </motion.section>
 
-          {/* ── Practice pillars — full-width cards ── */}
+          {/* ── Practice pillars ── */}
           <motion.section
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.10 }}
-            className="space-y-3"
+            className="space-y-4"
           >
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] px-1" style={{ color: muted }}>
-              Practice Pillars · last 30 days
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] px-2 text-amber-500/50">
+              Practice Pillars · 30 Days
             </p>
 
-            {/* Japa card — full width with rich stats */}
-            <div className="rounded-[1.8rem] p-5" style={{ background: cardJapaBg, border: `1px solid ${cardJapaBdr}`, boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.35)' : '0 2px 16px rgba(0,0,0,0.07)' }}>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">🪷</span>
+            {/* Japa card — Premium Revamp */}
+            <motion.div 
+              className="rounded-[2.2rem] p-6 divine-glass-card-premium" 
+              style={{ background: cardJapaBg, border: `1px solid ${cardJapaBdr}`, boxShadow: '0 20px 40px rgba(0,0,0,0.35)', perspective: 1000 }}
+              whileHover={{ rotateX: 1, rotateY: 1, scale: 1.01 }}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">🪷</span>
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: muted }}>Japa</p>
-                    <p className="text-xs" style={{ color: dimText }}>
-                      {hasOlderSessions ? 'Mantra repetition · older sessions exist' : 'Mantra repetition · 30 days'}
-                    </p>
+                    <h2 className="text-[11px] font-bold uppercase tracking-widest text-amber-500/70">Japa</h2>
+                    <p className="text-[10px] text-white/30 uppercase tracking-tight">Mantra Repetition</p>
                   </div>
                 </div>
                 <Link href="/bhakti/mala/insights"
-                  className="rounded-full px-3.5 py-1.5 text-[11px] font-semibold"
-                  style={{ background: 'rgba(200,146,74,0.12)', color: 'rgba(200,146,74,0.90)', border: '1px solid rgba(200,146,74,0.22)' }}>
+                  className="rounded-full px-4 py-2 text-[11px] font-bold bg-amber-500/10 border border-amber-500/20 text-amber-500">
                   Insights →
                 </Link>
               </div>
 
               {japa30dSessions === 0 ? (
-                /* ── No sessions in last 30 days ── */
-                <div className="text-center py-4">
-                  <p className="text-2xl mb-2">{hasOlderSessions ? '📿' : '🪷'}</p>
-                  {hasOlderSessions ? (
-                    <>
-                      <p className="text-sm font-medium" style={{ color: h1 }}>No sessions in the last 30 days</p>
-                      <p className="text-[11px] mt-1" style={{ color: muted }}>
-                        You have {totalJapaSessions} session{totalJapaSessions !== 1 ? 's' : ''} in your history — view them in Insights.
-                      </p>
-                      <div className="flex items-center justify-center gap-2 mt-3">
-                        <Link href="/bhakti/mala/insights"
-                          className="inline-flex items-center rounded-full px-4 py-1.5 text-[11px] font-semibold"
-                          style={{ background: 'rgba(200,146,74,0.14)', color: 'rgba(200,146,74,0.90)', border: '1px solid rgba(200,146,74,0.25)' }}>
-                          View Insights →
-                        </Link>
-                        <Link href="/bhakti/mala"
-                          className="inline-flex items-center rounded-full px-4 py-1.5 text-[11px] font-semibold"
-                          style={{ background: 'rgba(200,146,74,0.07)', color: 'rgba(200,146,74,0.75)', border: '1px solid rgba(200,146,74,0.18)' }}>
-                          Resume Japa
-                        </Link>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <p className="text-sm font-medium" style={{ color: h1 }}>No sessions yet</p>
-                      <p className="text-[11px] mt-1" style={{ color: muted }}>
-                        Start your first Japa session to see stats here.
-                      </p>
-                      <Link href="/bhakti/mala"
-                        className="inline-flex items-center mt-3 rounded-full px-4 py-1.5 text-[11px] font-semibold"
-                        style={{ background: 'rgba(200,146,74,0.14)', color: 'rgba(200,146,74,0.90)', border: '1px solid rgba(200,146,74,0.25)' }}>
-                        Begin Japa →
-                      </Link>
-                    </>
-                  )}
+                <div className="text-center py-6">
+                  <p className="text-3xl mb-3">📿</p>
+                  <p className="text-sm font-bold" style={{ color: h1 }}>No sessions this cycle</p>
+                  <Link href="/bhakti/mala"
+                    className="inline-flex items-center mt-4 rounded-full px-6 py-2 text-[11px] font-bold bg-amber-500 text-black">
+                    Begin Japa →
+                  </Link>
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-4 gap-3">
                     {[
                       { val: String(japa30dSessions), sub: 'sessions' },
                       { val: fmt(japa30dBeads),       sub: 'beads'    },
                       { val: japa30dRounds > 0 ? String(japa30dRounds) : '—', sub: 'rounds' },
-                      { val: japa30dMins > 0 ? `${japa30dMins}m` : '—',       sub: 'sat'   },
+                      { val: japa30dMins > 0 ? `${japa30dMins}m` : '—',       sub: 'time'   },
                     ].map(({ val, sub: s }) => (
-                      <div key={s} className="text-center rounded-xl py-2" style={{ background: isDark ? 'rgba(200,146,74,0.07)' : 'rgba(200,146,74,0.06)' }}>
-                        <p className="text-[16px] font-bold" style={{ color: h1 }}>{val}</p>
-                        <p className="text-[9px] mt-0.5" style={{ color: muted }}>{s}</p>
+                      <div key={s} className="text-center rounded-2xl py-3 bg-white/5 border border-white/5">
+                        <p className="text-xl font-bold" style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{val}</p>
+                        <p className="text-[9px] mt-1 font-bold uppercase tracking-tighter text-white/30">{s}</p>
                       </div>
                     ))}
                   </div>
-                  {/* Consistency bar — only shown when there are actual sessions */}
-                  <div className="mt-4">
-                    <div className="flex justify-between mb-1">
-                      <span className="text-[10px]" style={{ color: muted }}>Consistency</span>
-                      <span className="text-[10px] font-semibold" style={{ color: 'rgba(200,146,74,0.85)' }}>{japaRate}%</span>
+                  <div className="mt-6">
+                    <div className="flex justify-between mb-2">
+                      <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Consistency</span>
+                      <span className="text-[10px] font-bold text-amber-500">{japaRate}%</span>
                     </div>
-                    <div className="h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}>
+                    <div className="h-2 rounded-full overflow-hidden bg-white/5">
                       <motion.div
-                        className="h-full rounded-full"
-                        style={{ background: 'linear-gradient(90deg,rgba(200,146,74,0.75),rgba(212,100,20,0.85))' }}
+                        className="h-full rounded-full bg-gradient-to-r from-amber-600 to-amber-400"
                         initial={{ width: 0 }} animate={{ width: `${japaRate}%` }}
-                        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{ duration: 1.2, ease: "easeOut" }}
                       />
                     </div>
                   </div>
-                  {topMantra && (
-                    <p className="text-[11px] mt-3 pt-3" style={{ color: muted, borderTop: `1px solid ${cardJapaBdr}` }}>
-                      Most chanted: <span style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{topMantra}</span>
-                    </p>
-                  )}
+                </>
+              )}
+            </motion.div>
                 </>
               )}
             </div>

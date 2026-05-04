@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
+import PremiumActivateModal from "@/components/premium/PremiumActivateModal";
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { usePremium } from '@/hooks/usePremium';
 import { calculatePanchang, getTodaySpiritualPulse, type SpiritualPulse } from '@/lib/panchang';
