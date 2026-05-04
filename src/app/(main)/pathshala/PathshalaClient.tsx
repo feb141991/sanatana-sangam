@@ -14,12 +14,12 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, BookOpen, Mic, Trophy,
   Loader2, Play, Star, Plus, Search, X,
   Share2, ChevronDown, ChevronUp, GraduationCap, Lock, Sparkles, BarChart2,
-  ChevronRight
+  ChevronRight, Volume2, VolumeX, Bookmark, Copy, EyeOff, CheckCircle2
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
@@ -63,6 +63,55 @@ const SECTIONS_BY_TRADITION: Record<string, string[]> = {
              'upanishad','veda','yoga_sutra','chanakya','shiva_purana','shakta','stotra',
              'gurbani','dhammapada','jain'],
 };
+
+// ─── Reader Themes ───────────────────────────────────────────────────────────
+function getReaderPalette(tradition: string, accent: string) {
+  // Default: Warm Parchment (Hindu/General)
+  const base = {
+    bg:          '#F7EDD8',
+    bgCard:      '#FFFDF6',
+    bgAccent:    '#FFF4E0',
+    border:      '#DEC89A',
+    borderSoft:  '#EAD9B5',
+    ink:         '#2C1A0E',
+    inkMuted:    '#7A5C3A',
+    sanskrit:    '#8B3A0F',
+    accent:      accent,
+    accentDeep:  '#9B6B2A',
+    accentBg:    '#F2D9A8',
+    white:       '#FFFDF6',
+    btnText:     '#FFFDF6',
+  };
+
+  if (tradition === 'sikh') {
+    return {
+      ...base,
+      bg:         '#F0F4F8', // Cool paper
+      bgCard:     '#F8FBFF',
+      bgAccent:   '#EBF3FF',
+      border:     '#C2D4E5',
+      borderSoft: '#D6E4F0',
+      ink:        '#0F172A', // Deep navy ink
+      inkMuted:   '#475569',
+      sanskrit:   '#1E40AF', // Blue Gurmukhi text
+      accent:     '#2563EB', // Blue
+      accentDeep: '#1E3A8A',
+      accentBg:   '#DBEAFE',
+    };
+  }
+
+  return base;
+}
+
+const READER_FONT_STEPS = [1.0, 1.15, 1.32, 1.5, 1.7] as const;
+
+function getEntryText(entry: LibraryEntry) {
+  return [
+    `${entry.title} — ${entry.source}`,
+    entry.original,
+    entry.meaning ? `Meaning: ${entry.meaning}` : '',
+  ].filter(Boolean).join('\n\n');
+}
 
 // ── Static seed paths — sourced from shared lib so server components can import too ──
 export const SEED_PATHS = SEED_PATHS_LIB as unknown as {
@@ -114,12 +163,10 @@ function EntryCard({ entry, accentColour }: { entry: LibraryEntry; accentColour:
             <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: accentColour }}>Begin Reading</span>
           </div>
         </div>
-        
         <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-white/5 border border-white/5 group-hover:scale-110 transition-transform duration-500">
           <Sparkles size={18} style={{ color: accentColour }} className="opacity-40" />
         </div>
       </div>
-
       <div className="mt-5 pt-4 border-t border-white/5 relative">
         <p className="text-sm font-[family:var(--font-deva)] leading-relaxed line-clamp-1 opacity-60 italic"
           style={{ color: accentColour }}>
@@ -130,23 +177,71 @@ function EntryCard({ entry, accentColour }: { entry: LibraryEntry; accentColour:
   );
 }
 
-// ── Immersive Reader ─────────────────────────────────────────────────────────
+// ─── Explain result type ───────────────────────────────────────────────────────
+type ExplainResult = {
+  explanation: {
+    meaning: string;
+    commentary: string;
+    daily_application: string;
+    contemplation: string;
+  };
+  tradition: string;
+  teacher: string;
+};
+
+// ─── Immersive Reader ─────────────────────────────────────────────────────────
 function ScriptureReader({
-  entry, chapter, onClose, accentColour
+  entry: initialEntry, chapter, onClose, accentColour: _accentColour, userId, tradition
 }: {
   entry?: LibraryEntry;
   chapter?: EpicChapter & { kandaTitle?: string };
   onClose: () => void;
   accentColour: string;
+  userId: string;
+  tradition: string;
 }) {
   const isPro = usePremium();
+  const supabase = useRef(createClient()).current;
   const [sattvaMode, setSattvaMode] = useState(false);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const P = getReaderPalette(tradition, _accentColour);
+
+  // ── Reader settings ────────────────────────────────────────────────────────
+  const [fontStep, setFontStep] = useState(2);
+  const fontScale = READER_FONT_STEPS[fontStep];
+  const [verseIndex, setVerseIndex] = useState(0);
+
+  // ── Bookmarks ──────────────────────────────────────────────────────────────
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
+
+  // ── TTS ────────────────────────────────────────────────────────────────────
+  const [ttsLoadingId, setTtsLoadingId] = useState<string | null>(null);
+  const [speakingId,   setSpeakingId]   = useState<string | null>(null);
+
+  // ── AI Explain ─────────────────────────────────────────────────────────────
+  const [showExplain,    setShowExplain]    = useState(false);
+  const [explainLoading, setExplainLoading] = useState(false);
+  const [explainResult,  setExplainResult]  = useState<ExplainResult | null>(null);
+
+  const verses = initialEntry 
+    ? [{ ...initialEntry }] 
+    : chapter?.verses?.map(v => ({ 
+        id: `${chapter.id}-v${v.verseNumber}`,
+        title: chapter.title,
+        source: `${chapter.kandaTitle} · Chapter ${chapter.chapterNumber}`,
+        original: v.original,
+        transliteration: v.transliteration,
+        meaning: v.meaning,
+        category: 'scripture'
+      })) || [];
+
+  const activeVerse = verses[verseIndex];
+  const totalVerses = verses.length;
+
   useEffect(() => {
     if (sattvaMode) {
-      // High-quality ambient loop (Sattvic drone / temple bells)
       audioRef.current = new Audio('https://f005.backblazeb2.com/file/sangam-assets/audio/sattva_ambient_loop.mp3');
       audioRef.current.loop = true;
       audioRef.current.volume = 0.4;
@@ -159,24 +254,75 @@ function ScriptureReader({
   }, [sattvaMode]);
 
   const toggleSattva = () => {
-    if (!isPro) {
-      setShowPremiumModal(true);
-      return;
-    }
+    if (!isPro) { setShowPremiumModal(true); return; }
     setSattvaMode(!sattvaMode);
-    if (!sattvaMode) {
-      toast('Sattva Mode active ✦ Deep immersion enabled', { icon: '✨' });
-    }
+    if (!sattvaMode) toast('Sattva Mode active ✦ Deep immersion enabled', { icon: '✨' });
   };
-  const content = entry ? {
-    title: entry.title,
-    source: entry.source,
-    verses: [{ original: entry.original, transliteration: entry.transliteration, meaning: entry.meaning }]
-  } : {
-    title: chapter?.title,
-    source: `${chapter?.kandaTitle} · Chapter ${chapter?.chapterNumber}`,
-    verses: chapter?.verses?.map(v => ({ original: v.original, transliteration: v.transliteration, meaning: v.meaning })) || []
-  };
+
+  const stopTTS = useCallback(() => {
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current.src = ''; }
+    setSpeakingId(null);
+    setTtsLoadingId(null);
+  }, []);
+
+  useEffect(() => () => stopTTS(), [stopTTS]);
+
+  async function speakEntry(v: any) {
+    if (speakingId === v.id || ttsLoadingId === v.id) { stopTTS(); return; }
+    stopTTS();
+    setTtsLoadingId(v.id);
+    try {
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: v.original, rate: 0.78 }),
+      });
+      const { audioContent } = await res.json();
+      const bytes = Uint8Array.from(atob(audioContent), c => c.charCodeAt(0));
+      const url = URL.createObjectURL(new Blob([bytes], { type: 'audio/mpeg' }));
+      const audio = new Audio(url);
+      audioRef.current = audio;
+      audio.onended = () => { setSpeakingId(null); URL.revokeObjectURL(url); };
+      await audio.play();
+      setSpeakingId(v.id);
+    } catch { toast.error('Audio unavailable'); } finally { setTtsLoadingId(null); }
+  }
+
+  async function toggleBookmark(v: any) {
+    const next = !bookmarkedIds.has(v.id);
+    const prev = new Set(bookmarkedIds);
+    setBookmarkedIds(s => { const c = new Set(s); if (next) c.add(v.id); else c.delete(v.id); return c; });
+    const { error } = await supabase
+      .from('pathshala_user_state')
+      .upsert({
+        user_id: userId,
+        entry_id: v.id,
+        bookmarked_at: next ? new Date().toISOString() : null,
+      }, { onConflict: 'user_id,entry_id' });
+    if (error) { setBookmarkedIds(prev); toast.error(error.message); return; }
+    toast.success(next ? 'Saved for later' : 'Removed from saved');
+  }
+
+  async function explainVerse() {
+    if (!activeVerse || explainLoading) return;
+    setExplainLoading(true);
+    try {
+      const res = await fetch('/api/pathshala/explain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sanskrit: activeVerse.original,
+          transliteration: activeVerse.transliteration,
+          translation: activeVerse.meaning,
+          source: activeVerse.source,
+          title: activeVerse.title,
+          tradition,
+          language: 'en',
+        }),
+      });
+      setExplainResult(await res.json());
+    } catch { toast.error('Could not generate explanation'); } finally { setExplainLoading(false); }
+  }
 
   return (
     <motion.div
@@ -184,108 +330,156 @@ function ScriptureReader({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       className="fixed inset-0 z-[999] overflow-y-auto"
-      style={{ 
-        background: sattvaMode 
-          ? 'radial-gradient(circle at center, #1a1208 0%, #0a0806 100%)' 
-          : 'var(--brand-background)',
-        transition: 'background 1.5s ease-in-out'
-      }}
+      style={{ background: P.bg }}
     >
       <PremiumActivateModal open={showPremiumModal} onClose={() => setShowPremiumModal(false)} />
-      <div className="sticky top-0 z-20 flex items-center gap-4 p-4 md:p-6 bg-[var(--brand-background)]/80 backdrop-blur-2xl border-b border-white/5">
-        <button onClick={onClose} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors">
-          <ChevronLeft size={22} style={{ color: accentColour }} />
+      
+      <header
+        className="sticky top-0 z-30 px-4 py-3 flex items-center gap-3"
+        style={{ background: P.bgCard, borderBottom: `1px solid ${P.border}` }}
+      >
+        <button onClick={onClose} className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+          style={{ background: P.accentBg, border: `1px solid ${P.border}` }}>
+          <ChevronLeft size={18} style={{ color: P.accentDeep }} />
         </button>
         <div className="flex-1 min-w-0">
-          <h2 className="font-bold text-base md:text-lg truncate tracking-tight">{content.title}</h2>
-          <p className="text-[10px] md:text-xs text-[color:var(--brand-muted)] uppercase tracking-[0.2em] font-bold">{content.source}</p>
+          <h2 className="font-bold text-sm truncate" style={{ color: P.ink }}>{activeVerse?.title}</h2>
+          <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: P.inkMuted }}>{activeVerse?.source}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={toggleSattva}
-            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all ${
-              sattvaMode ? 'bg-amber-500/20 shadow-lg shadow-amber-500/10' : 'bg-white/5'
-            }`}
-            title="Sattva Mode (Premium)"
-          >
-            <Sparkles size={18} style={{ color: sattvaMode ? '#f59e0b' : 'rgba(255,255,255,0.4)' }} />
-          </button>
-          <button onClick={() => entry && shareEntry(entry)} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors">
-            <Share2 size={18} className="text-[color:var(--brand-muted)]" />
-          </button>
-        </div>
-      </div>
+        <button 
+          onClick={toggleSattva}
+          className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${sattvaMode ? 'bg-amber-500/20' : 'bg-white/5'}`}
+        >
+          <Sparkles size={16} style={{ color: sattvaMode ? '#f59e0b' : P.accentDeep }} />
+        </button>
+        <button
+          onClick={() => setFontStep(s => (s + 1) % READER_FONT_STEPS.length)}
+          className="px-2 py-1 rounded-lg text-[11px] font-bold"
+          style={{ background: P.accentBg, color: P.accentDeep, border: `1px solid ${P.border}` }}
+        >
+          Aa
+        </button>
+      </header>
 
-      <div className="max-w-3xl mx-auto p-6 md:p-12 space-y-16 pb-40">
-        {content.verses.length > 0 ? (
-          content.verses.map((v, i) => (
-            <motion.div 
-              key={i} 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              <div className="flex items-center gap-4 mb-8">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/5" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-30">Verse {i + 1}</span>
-                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/5" />
-              </div>
-
-              <p 
-                className={`text-2xl md:text-4xl font-[family:var(--font-deva)] leading-[1.8] text-center mb-12 px-4 transition-all duration-1000 ${
-                  sattvaMode ? 'drop-shadow-[0_0_15px_rgba(245,158,11,0.4)] scale-[1.02]' : 'drop-shadow-sm'
-                }`}
-                style={{ color: sattvaMode ? '#fef3c7' : accentColour }}
-              >
-                {v.original}
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8">
-                <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5">
-                  <p className="text-[10px] font-bold text-[color:var(--brand-muted)] uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
-                    <span className="w-1 h-1 rounded-full bg-[color:var(--brand-muted)]" />
-                    Transliteration
-                  </p>
-                  <p className="text-sm md:text-base text-[color:var(--brand-muted)] italic leading-relaxed font-serif break-words">
-                    {v.transliteration}
-                  </p>
-                </div>
-                <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5">
-                  <p className="text-[10px] font-bold text-[color:var(--brand-muted)] uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
-                    <span className="w-1 h-1 rounded-full" style={{ background: accentColour }} />
-                    Divine Meaning
-                  </p>
-                  <p className="text-base md:text-lg text-[color:var(--brand-ink)] leading-relaxed font-medium break-words">
-                    {v.meaning}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          ))
-        ) : (
-          <div className="text-center py-32">
-            <Loader2 className="animate-spin mx-auto mb-6 opacity-20" size={40} style={{ color: accentColour }} />
-            <p className="text-sm font-bold uppercase tracking-widest opacity-40">Unrolling sacred manuscript…</p>
+      <div className="max-w-xl mx-auto px-5 pt-8 pb-56">
+        {totalVerses > 1 && (
+          <div className="flex items-center justify-center gap-1.5 mb-8">
+            {verses.map((_, i) => (
+              <div key={i} className="h-1 rounded-full transition-all" 
+                style={{ 
+                  width: i === verseIndex ? '20px' : '6px', 
+                  background: i === verseIndex ? P.accent : P.borderSoft 
+                }} />
+            ))}
           </div>
         )}
+
+        <motion.div
+          key={verseIndex}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="text-center mb-6">
+            <span className="text-4xl" style={{ color: P.accent, fontFamily: 'var(--font-deva, serif)' }}>ॐ</span>
+          </div>
+
+          <div className="rounded-2xl p-6 mb-6 text-center" style={{ background: P.bgCard, border: `1px solid ${P.border}` }}>
+            <p className="leading-[2] font-semibold whitespace-pre-line" 
+              style={{ color: P.sanskrit, fontFamily: 'var(--font-deva, serif)', fontSize: `${fontScale * 1.5}rem` }}>
+              {activeVerse?.original}
+            </p>
+          </div>
+
+          {activeVerse?.transliteration && (
+            <div className="rounded-xl px-5 py-4 mb-5 text-center" style={{ background: P.bgAccent, border: `1px solid ${P.borderSoft}` }}>
+              <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: P.inkMuted }}>Transliteration</p>
+              <p className="italic leading-relaxed break-words" style={{ color: P.ink, fontSize: `${fontScale * 0.9}rem` }}>
+                {activeVerse.transliteration}
+              </p>
+            </div>
+          )}
+
+          {activeVerse?.meaning && (
+            <div className="rounded-2xl p-5 mb-5" style={{ background: P.bgCard, border: `1px solid ${P.border}` }}>
+              <p className="text-[10px] font-bold uppercase tracking-wider mb-3" style={{ color: P.accent }}>Meaning</p>
+              <p className="font-medium leading-relaxed break-words" style={{ color: P.ink, fontSize: `${fontScale * 1.0}rem`, lineHeight: 1.8 }}>
+                {activeVerse.meaning}
+              </p>
+            </div>
+          )}
+
+          <div className="mb-2">
+            <button
+              onClick={() => { if (!showExplain && !explainResult) explainVerse(); setShowExplain(s => !s); }}
+              disabled={explainLoading}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold transition-all"
+              style={{ background: showExplain ? P.accentBg : P.bgCard, color: P.accentDeep, border: `1.5px solid ${P.border}` }}
+            >
+              {explainLoading ? <Loader2 size={14} className="animate-spin" /> : showExplain ? <EyeOff size={14} /> : <Sparkles size={14} />}
+              {explainLoading ? 'Asking teacher…' : showExplain ? 'Hide explanation' : 'Explain this verse'}
+            </button>
+
+            <AnimatePresence>
+              {showExplain && explainResult && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="overflow-hidden">
+                  <div className="mt-3 rounded-2xl p-5 space-y-4" style={{ background: P.bgCard, border: `1px solid ${P.border}` }}>
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: P.accent }}>Deep Meaning</p>
+                        <p className="text-sm leading-relaxed" style={{ color: P.ink }}>{explainResult.explanation.meaning}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: P.accent }}>Daily Application</p>
+                        <p className="text-sm leading-relaxed italic" style={{ color: P.inkMuted }}>{explainResult.explanation.daily_application}</p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-6 md:p-8 bg-gradient-to-t from-[var(--brand-background)] via-[var(--brand-background)]/95 to-transparent z-[1001] safe-area-pb">
-        <div className="max-w-2xl mx-auto">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={onClose}
-            className="w-full py-4 rounded-2xl font-bold text-sm shadow-2xl transition-all"
-            style={{ 
-              background: `linear-gradient(135deg, ${accentColour}, ${accentColour}cc)`,
-              color: '#1c1c1a',
-              boxShadow: `0 10px 40px ${accentColour}33`
-            }}
-          >
-            Conclude Path
-          </motion.button>
+      <div className="fixed bottom-0 inset-x-0 z-[1000]" style={{ background: P.bgCard, borderTop: `1.5px solid ${P.border}` }}>
+        <div className="flex items-center justify-around px-4 pt-3 pb-4 max-w-xl mx-auto">
+          {/* Listen */}
+          <button onClick={() => speakEntry(activeVerse)} className="flex flex-col items-center gap-1 min-w-[52px]">
+            <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: speakingId === activeVerse?.id ? P.accent : P.accentBg, border: `1px solid ${P.border}` }}>
+              {ttsLoadingId === activeVerse?.id ? <Loader2 size={17} className="animate-spin" /> : speakingId === activeVerse?.id ? <VolumeX size={17} /> : <Volume2 size={17} />}
+            </div>
+            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{speakingId === activeVerse?.id ? 'Stop' : 'Listen'}</span>
+          </button>
+
+          {/* Save */}
+          <button onClick={() => toggleBookmark(activeVerse)} className="flex flex-col items-center gap-1 min-w-[52px]">
+            <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: bookmarkedIds.has(activeVerse?.id) ? P.accent : P.accentBg, border: `1px solid ${P.border}` }}>
+              <Bookmark size={17} style={{ color: bookmarkedIds.has(activeVerse?.id) ? P.btnText : P.accentDeep }} className={bookmarkedIds.has(activeVerse?.id) ? 'fill-current' : ''} />
+            </div>
+            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{bookmarkedIds.has(activeVerse?.id) ? 'Saved' : 'Save'}</span>
+          </button>
+
+          {/* Copy */}
+          <button onClick={() => { navigator.clipboard.writeText(getEntryText(activeVerse)); toast.success('Copied'); }} className="flex flex-col items-center gap-1 min-w-[52px]">
+            <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: P.accentBg, border: `1px solid ${P.border}` }}>
+              <Copy size={17} style={{ color: P.accentDeep }} />
+            </div>
+            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>Copy</span>
+          </button>
+
+          {/* Ask AI */}
+          <Link href="/ai-chat" className="flex flex-col items-center gap-1 min-w-[52px]">
+            <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: P.accentBg, border: `1px solid ${P.border}` }}>
+              <Sparkles size={17} style={{ color: P.accentDeep }} />
+            </div>
+            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>Ask AI</span>
+          </Link>
+
+          {/* Conclude */}
+          <button onClick={onClose} className="px-5 h-11 rounded-2xl font-bold text-xs flex items-center justify-center shadow-lg transition-transform active:scale-95" style={{ background: P.accent, color: P.btnText }}>
+            Conclude
+          </button>
         </div>
       </div>
     </motion.div>
@@ -604,7 +798,26 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
       }
     }
     loadEnrollments();
-  }, [userId, supabase]);
+  }, [userId, supabase, PATHSHALA_PATH_IDS]);
+
+  // ── Render Reader Modal ──
+  const ReaderModal = () => {
+    if (!readingEntry && !readingChapter) return null;
+    return (
+      <AnimatePresence>
+        {(readingEntry || readingChapter) && (
+          <ScriptureReader
+            entry={readingEntry}
+            chapter={readingChapter}
+            userId={userId}
+            tradition={tradition}
+            onClose={() => { setReadingEntry(undefined); setReadingChapter(undefined); }}
+            accentColour={meta.accentColour}
+          />
+        )}
+      </AnimatePresence>
+    );
+  };
 
   // ── Enroll — uses guided_path_progress directly ──────────────────────────────
   const FREE_PATH_LIMIT = 1;
@@ -1243,6 +1456,8 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
           entry={readingEntry}
           chapter={readingChapter}
           accentColour={meta.accentColour}
+          userId={userId}
+          tradition={tradition}
           onClose={() => { setReadingEntry(undefined); setReadingChapter(undefined); }}
         />
       )}
