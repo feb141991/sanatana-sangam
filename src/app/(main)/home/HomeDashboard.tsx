@@ -1524,7 +1524,7 @@ export default function HomeDashboard({
 
   return (
     <div className="min-h-screen bg-[#FDFCF8] dark:bg-[#1A1A18] relative selection:bg-[#C5A059]/30">
-      <div className="relative pb-32">
+      <div className="relative">
 
       {/* ── Sacred confetti celebration ── */}
       <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
@@ -1641,24 +1641,28 @@ export default function HomeDashboard({
                   style={{ perspective: 800 }}
                 >
                   <span className="divine-poster-label">{dailyText.label}</span>
-                  <p className="divine-sanskrit-immersive-dark line-clamp-3 text-[#FDFCF8]">{dailyTextLine}</p>
-                  <p className="divine-meaning-dark line-clamp-2 text-[#FDFCF8]/70">{dailyText.meaning}</p>
+                  <p className="divine-sanskrit-immersive-dark line-clamp-3">
+                    <span style={{ opacity: 0.55, marginRight: '0.3em', fontWeight: 400 }}>॥</span>
+                    {dailyTextLine}
+                    <span style={{ opacity: 0.55, marginLeft: '0.3em', fontWeight: 400 }}>॥</span>
+                  </p>
+                  <p className="divine-meaning-dark line-clamp-2">{dailyText.meaning}</p>
                 </motion.button>
               </div>
             </div>
           </motion.div>
 
           {/* Transparent Header Overlay */}
-          <div className="absolute top-0 left-0 right-0 z-50 px-6 pt-7 pb-4 flex items-end justify-between pointer-events-none">
+          <div className="absolute top-0 left-0 right-0 z-50 px-5 pt-14 pb-4 flex items-end justify-between pointer-events-none">
             <div className="flex-1 pointer-events-auto">
               {displayCity && (
                 <motion.p
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-1 text-[8px] font-bold uppercase tracking-[0.25em] text-white/90 mb-0.5"
-                  style={{ textShadow: '0 1px 4px rgba(0,0,0,0.3)' }}
+                  className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.20em] text-white mb-1"
+                  style={{ textShadow: '0 1px 6px rgba(0,0,0,0.55)' }}
                 >
-                  <MapPin size={9} strokeWidth={2.5} />
+                  <MapPin size={10} strokeWidth={2.5} />
                   {displayCity}
                 </motion.p>
               )}
@@ -1666,39 +1670,65 @@ export default function HomeDashboard({
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-lg md:text-xl font-serif text-white leading-none"
-                style={{ textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}
+                className="text-xl font-serif text-white leading-tight"
+                style={{ textShadow: '0 2px 12px rgba(0,0,0,0.55)' }}
               >
                 {stripGreetingIcon(greeting)},&nbsp;
-                <span className="opacity-80">{userName.split(' ')[0]}</span>
+                <span style={{ color: 'rgba(255,240,200,0.92)' }}>{userName.split(' ')[0]}</span>
               </motion.h1>
             </div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="pointer-events-auto"
-            >
-              <Link href="/profile" className="relative group">
-                <div className="w-14 h-14 rounded-full border-2 border-white/20 p-1 transition-all duration-500 group-hover:border-white/40">
-                  <div className="w-full h-full rounded-full overflow-hidden relative bg-white/10 backdrop-blur-sm shadow-inner">
-                    {avatarUrl ? (
-                      <Image src={avatarUrl} alt={userName} fill className="object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center font-serif text-xl text-white">
-                        {userName.charAt(0)}
-                      </div>
-                    )}
+            <div className="flex items-center gap-3 pointer-events-auto">
+              {/* Notification bell */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.15 }}
+              >
+                <Link
+                  href="/profile"
+                  className="w-10 h-10 rounded-full flex items-center justify-center"
+                  style={{
+                    background: 'rgba(255,255,255,0.14)',
+                    border: '1px solid rgba(255,255,255,0.22)',
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)',
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.25)',
+                  }}
+                  aria-label="Notifications"
+                >
+                  <Bell size={17} strokeWidth={1.8} style={{ color: 'rgba(255,240,200,0.95)', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.4))' }} />
+                </Link>
+              </motion.div>
+
+              {/* Profile avatar */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                <Link href="/profile" className="relative group">
+                  <div className="w-12 h-12 rounded-full border-2 border-white/25 p-0.5 transition-all duration-500 group-hover:border-white/45"
+                    style={{ boxShadow: '0 4px 14px rgba(0,0,0,0.35)' }}>
+                    <div className="w-full h-full rounded-full overflow-hidden relative bg-white/10 backdrop-blur-sm">
+                      {avatarUrl ? (
+                        <Image src={avatarUrl} alt={userName} fill className="object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center font-serif text-lg text-white"
+                          style={{ textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>
+                          {userName.charAt(0)}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-                {isPro && (
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#C5A059] rounded-full flex items-center justify-center shadow-lg border-2 border-white/20">
-                    <Sparkles size={10} className="text-white" />
-                  </div>
-                )}
-              </Link>
-            </motion.div>
+                  {isPro && (
+                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#C5A059] rounded-full flex items-center justify-center shadow-lg border-2 border-white/20">
+                      <Sparkles size={10} className="text-white" />
+                    </div>
+                  )}
+                </Link>
+              </motion.div>
+            </div>
           </div>
         </div>
 
