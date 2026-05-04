@@ -29,109 +29,74 @@ export default function DivineDiya({ isLitInitial = false, onLight }: DivineDiya
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center p-8 group">
+    <div className="relative flex flex-col items-center justify-center p-6 group">
       {/* ── Lamp Base (3D Glassmorphism) ── */}
       <motion.div
         className="relative cursor-pointer"
-        whileHover={{ scale: 1.05, rotateY: 10, rotateX: -5 }}
+        whileHover={{ scale: 1.02 }}
         onClick={handleLight}
         style={{ perspective: '1000px' }}
       >
         {/* The Wick (Batti) */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-3 bg-[#3e2216] rounded-full z-10" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1.5px] h-3 bg-[#2A1D0E] rounded-full z-10 opacity-60" />
         
-        {/* The Body */}
+        {/* The Body - More Minimalist & Elegant */}
         <div 
-          className="w-24 h-12 rounded-b-full rounded-t-[10%] relative overflow-hidden"
+          className="w-20 h-10 rounded-b-full rounded-t-[15%] relative overflow-hidden"
           style={{ 
-            background: 'linear-gradient(135deg, rgba(200,146,74,0.4) 0%, rgba(200,146,74,0.1) 100%)',
-            border: '1px solid rgba(200,146,74,0.3)',
-            backdropFilter: 'blur(10px)',
-            boxShadow: isLit ? '0 10px 40px rgba(212,120,20,0.4)' : '0 10px 20px rgba(0,0,0,0.2)'
+            background: 'linear-gradient(135deg, rgba(197,160,89,0.15) 0%, rgba(197,160,89,0.05) 100%)',
+            border: '1px solid rgba(197,160,89,0.2)',
+            backdropFilter: 'blur(12px)',
+            boxShadow: isLit ? '0 15px 45px rgba(197,160,89,0.2)' : '0 10px 30px rgba(0,0,0,0.1)'
           }}
         >
           {/* Internal Glow (Oil/Ghee) */}
-          <div className="absolute inset-0 bg-amber-500/10" />
+          <div className="absolute inset-0 bg-amber-500/5" />
         </div>
 
-        {/* ── The Flame ── */}
+        {/* ── The Flame - Refined & Subtle ── */}
         <AnimatePresence>
           {isLit && (
             <motion.div
-              initial={{ scale: 0, opacity: 0, y: 10 }}
-              animate={{ scale: 1, opacity: 1, y: -15 }}
+              initial={{ scale: 0, opacity: 0, y: 5 }}
+              animate={{ scale: 1, opacity: 1, y: -12 }}
               exit={{ scale: 0, opacity: 0 }}
-              className="absolute left-1/2 -translate-x-1/2 -top-12 pointer-events-none"
+              className="absolute left-1/2 -translate-x-1/2 -top-10 pointer-events-none"
             >
-              {/* Outer Glow */}
-              <motion.div 
-                className="absolute inset-0 w-12 h-16 rounded-full blur-2xl"
-                style={{ background: 'rgba(255, 120, 0, 0.4)' }}
-                animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-              
-              {/* Main Flame Core */}
+              {/* Refined Flame Core */}
               <div className="relative">
-                {/* Layer 1: Orange Outer */}
+                {/* Layer 1: Sacred Gold Outer */}
                 <motion.div 
-                  className="w-8 h-12 bg-orange-500 rounded-full blur-[2px]"
+                  className="w-6 h-10 bg-[#C5A059] rounded-full blur-[2px] opacity-80"
                   style={{ borderRadius: '50% 50% 50% 50% / 60% 60% 40% 40%' }}
                   animate={{ 
-                    scaleX: [1, 0.9, 1.1, 1],
-                    scaleY: [1, 1.1, 0.9, 1],
-                    skewX: [0, 2, -2, 0]
+                    scaleX: [1, 0.95, 1.05, 1],
+                    scaleY: [1, 1.05, 0.95, 1],
                   }}
-                  transition={{ duration: 0.6, repeat: Infinity }}
+                  transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
                 />
                 
-                {/* Layer 2: Yellow Inner */}
+                {/* Layer 2: White Core */}
                 <motion.div 
-                  className="absolute top-2 left-1/2 -translate-x-1/2 w-4 h-8 bg-amber-300 rounded-full blur-[1px]"
+                  className="absolute top-2 left-1/2 -translate-x-1/2 w-2 h-5 bg-white rounded-full blur-[1px] opacity-90"
                   animate={{ 
-                    scaleX: [1, 1.2, 0.8, 1],
-                    scaleY: [1, 0.8, 1.2, 1]
+                    scaleX: [1, 1.1, 0.9, 1],
+                    scaleY: [1, 0.9, 1.1, 1]
                   }}
-                  transition={{ duration: 0.4, repeat: Infinity }}
+                  transition={{ duration: 0.8, repeat: Infinity }}
                 />
-                
-                {/* Layer 3: White Core */}
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 w-2 h-4 bg-white rounded-full blur-[0.5px]" />
-              </div>
-
-              {/* Heat Distortion (SVG Filter based ripple) */}
-              <div className="absolute -inset-4 pointer-events-none">
-                <svg width="0" height="0">
-                  <filter id="flame-distortion">
-                    <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" result="noise" />
-                    <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" />
-                  </filter>
-                </svg>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </motion.div>
 
-      {/* ── Call to Action ── */}
-      <div className="mt-6 text-center">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: isLit ? '#C8924A' : 'rgba(200,146,74,0.4)' }}>
-          {isLit ? 'Sanctuary Lit' : 'Light the Sanctuary'}
-        </p>
-        <p className="text-[11px] mt-1 opacity-40 max-w-[120px]">
-          {isLit ? 'Atmospheric drone active' : 'Tap to begin your ritual'}
+      {/* ── Call to Action - Subtle ── */}
+      <div className="mt-5 text-center">
+        <p className="text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: isLit ? '#C5A059' : 'rgba(197,160,89,0.4)' }}>
+          {isLit ? 'Sanctuary Lit' : 'Invoke Light'}
         </p>
       </div>
-
-      {!isLit && (
-        <motion.div 
-          className="absolute -top-2 right-4 text-amber-400"
-          animate={{ y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <Sparkles size={12} />
-        </motion.div>
-      )}
     </div>
   );
 }

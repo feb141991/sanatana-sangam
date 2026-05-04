@@ -17,12 +17,13 @@ import {
   MapPin,
   Pencil,
   Share2,
-  Sparkles,
   Users,
   X,
   Radio,
   BarChart2,
 } from 'lucide-react';
+import DigitalDeeksha from '@/components/onboarding/DigitalDeeksha';
+import { Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
 import {
@@ -986,6 +987,18 @@ export default function HomeDashboard({
   });
   const [editHomeOpen,     setEditHomeOpen]     = useState(false);
   const [storySheetOpen,   setStorySheetOpen]   = useState(false);
+  const [showDeeksha,      setShowDeeksha]      = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !localStorage.getItem('deeksha_completed')) {
+      setShowDeeksha(true);
+    }
+  }, []);
+
+  const handleDeekshaComplete = () => {
+    localStorage.setItem('deeksha_completed', 'true');
+    setShowDeeksha(false);
+  };
 
   // ── Daily Quiz state ──────────────────────────────────────────────────────
   const [quiz, setQuiz]               = useState<{
@@ -1518,7 +1531,20 @@ export default function HomeDashboard({
   ];
 
   return (
-    <div className="space-y-4 pb-2 fade-in">
+    <div className="min-h-screen bg-[#0A0A0A]">
+      <AnimatePresence>
+        {showDeeksha && (
+          <motion.div 
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100]"
+          >
+            <DigitalDeeksha onComplete={handleDeekshaComplete} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="relative pb-32">
 
       {/* ── Sacred confetti celebration ── */}
       <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
@@ -1585,18 +1611,29 @@ export default function HomeDashboard({
           />
         </div>
 
-        {/* ── Daily Ritual: Divine Diya ── */}
-        <div className="px-4 py-2">
-          <div 
-            className="rounded-[2.2rem] overflow-hidden border backdrop-blur-md relative"
+        {/* ── Daily Ritual: Prāthanā ── */}
+        <div className="px-4 py-3">
+          <motion.div 
+            whileHover={{ scale: 1.01 }}
+            className="rounded-[2.5rem] p-6 flex items-center justify-between overflow-hidden border backdrop-blur-xl relative"
             style={{ 
-              background: 'rgba(255,255,255,0.015)', 
-              borderColor: 'rgba(200,146,74,0.12)',
-              boxShadow: 'inset 0 0 20px rgba(200,146,74,0.03)'
+              background: 'rgba(255,255,255,0.02)', 
+              borderColor: 'rgba(197,160,89,0.12)',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.1)'
             }}
           >
-            <DivineDiya />
-          </div>
+            <div className="relative z-10">
+              <h3 className="text-sm font-bold uppercase tracking-[0.2em]" style={{ color: '#C5A059' }}>Prāthanā</h3>
+              <p className="text-[10px] mt-1 opacity-50 max-w-[150px]">Begin your day with the sacred flame.</p>
+            </div>
+            <div className="relative z-10 scale-90 -mr-4">
+              <DivineDiya />
+            </div>
+            
+            {/* Ambient Background Glow */}
+            <div className="absolute top-0 right-0 w-32 h-32 pointer-events-none"
+              style={{ background: 'radial-gradient(circle at top right, rgba(197,160,89,0.08), transparent 70%)' }} />
+          </motion.div>
         </div>
 
         <motion.div
@@ -2320,6 +2357,7 @@ export default function HomeDashboard({
         )}
       </AnimatePresence>
 
+    </div>
     </div>
   );
 }

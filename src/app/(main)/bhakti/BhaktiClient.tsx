@@ -9,6 +9,8 @@ import { useThemePreference } from '@/components/providers/ThemeProvider';
 import type { Shloka } from '@/lib/shlokas';
 import { DEITY_META, MOOD_META } from '@/lib/stotrams';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import { CURATED_SOUNDS, BHAKTI_COLLECTIONS } from '@/lib/curated-bhakti';
+import { Sparkles } from 'lucide-react';
 
 // ─── Animated diya flame ──────────────────────────────────────────────────────
 function DiyaFlame() {
@@ -78,18 +80,13 @@ export default function BhaktiClient({
   const isDark = resolvedTheme === 'dark';
   const [showShloka, setShowShloka] = useState(false);
 
-  // ── Theme tokens ────────────────────────────────────────────────────────────
-  const pageBg   = isDark ? 'linear-gradient(180deg,#1a0d0d 0%,#20130e 40%,#1a1208 100%)' : 'linear-gradient(180deg,#fdf6ee 0%,#f7ede0 40%,#f2e8d5 100%)';
-  const heroBg   = isDark ? 'linear-gradient(180deg,rgba(60,22,10,0.92),rgba(28,14,8,0.96))' : 'linear-gradient(180deg,rgba(255,240,220,0.96),rgba(255,230,200,0.98))';
-  const heroBdr  = isDark ? 'rgba(200,146,74,0.18)' : 'rgba(160,90,30,0.18)';
-  const cardBg   = isDark ? 'linear-gradient(140deg,rgba(28,20,12,0.92),rgba(18,12,8,0.96))' : 'linear-gradient(140deg,rgba(255,244,228,0.96),rgba(250,235,210,0.98))';
-  const cardBdr  = isDark ? 'rgba(200,146,74,0.14)' : 'rgba(180,110,30,0.14)';
-  const sectBg   = isDark ? 'rgba(18,12,8,0.9)' : 'rgba(255,245,230,0.95)';
-  const sectBdr  = isDark ? 'rgba(200,146,74,0.10)' : 'rgba(180,110,30,0.15)';
-  const headClr  = isDark ? '#f5dfa0' : '#2a1002';
-  const subClr   = isDark ? 'rgba(245,210,130,0.50)' : 'rgba(120,65,10,0.55)';
-  const dimClr   = isDark ? 'rgba(245,210,130,0.35)' : 'rgba(100,55,10,0.40)';
-  const amber    = '#C8924A';
+  // ── Premium Theme Tokens (Sattvic Ivory & Sacred Gold) ──────────────────────
+  const pageBg   = isDark ? '#0A0A0A' : '#FDFCF8';
+  const glassBg  = isDark ? 'rgba(25,25,25,0.7)' : 'rgba(255,255,255,0.6)';
+  const glassBdr = isDark ? 'rgba(200,160,80,0.1)' : 'rgba(200,160,80,0.2)';
+  const gold     = '#C5A059';
+  const textMain = isDark ? '#F5F5F5' : '#1A1A1A';
+  const textDim  = isDark ? 'rgba(245,245,245,0.5)' : 'rgba(26,26,26,0.5)';
 
   const meta = getTraditionMeta(tradition);
   const greeting = meta.bhaktiGreeting + ' 🙏';
@@ -166,133 +163,199 @@ export default function BhaktiClient({
 
       <div className="relative space-y-4 px-4 pb-28">
 
-        {/* ── Hero ─────────────────────────────────────────────────────────── */}
+        {/* ── Sacred Altar (Hero) ── */}
         <motion.section
-          initial={{ opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="relative overflow-hidden rounded-[2.8rem] px-5 pb-7 pt-10 text-center"
-          style={{ background: heroBg, border: `1px solid ${heroBdr}` }}>
-
-          {/* Streak badge */}
-          {japaStreak > 0 && (
-            <div className="absolute top-4 right-4 flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-bold"
-              style={{ background: 'rgba(220,100,20,0.15)', border: '1px solid rgba(220,100,20,0.25)', color: '#f0a040' }}>
-              🔥 Day {japaStreak}
-            </div>
-          )}
-
-          <div className="relative space-y-3">
-            <div className="flex justify-center"><DiyaFlame /></div>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
-              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem,6vw,2.2rem)', fontWeight: 600, color: headClr, lineHeight: 1.1 }}>
-                Bhakti
-              </h1>
-              <p className="text-sm tracking-widest mt-1" style={{ color: subClr }}>भक्ति — the path of devotion</p>
-              <p className="text-xs mt-2 font-medium" style={{ color: amber }}>{greeting}, {userName.split(' ')[0]}</p>
-            </motion.div>
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="relative rounded-[3rem] px-6 py-12 text-center overflow-hidden"
+          style={{ background: glassBg, border: `1px solid ${glassBdr}` }}>
+          <div className="absolute inset-0 pointer-events-none opacity-20"
+            style={{ background: `radial-gradient(circle at 50% 0%, ${gold}, transparent 70%)` }} />
+          
+          <div className="relative z-10 flex flex-col items-center">
+            <div className="mb-4 scale-75 opacity-80"><DiyaFlame /></div>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.4rem', color: textMain, fontWeight: 500 }}>
+              The Altar
+            </h1>
+            <p className="text-[10px] uppercase tracking-[0.3em] mt-2" style={{ color: gold }}>
+              Sanatana Sanctuary
+            </p>
           </div>
         </motion.section>
 
-        {/* ── 2×2 Practice cards ───────────────────────────────────────────── */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25, duration: 0.6 }}
+        {/* ── Sound Sanctuary (High Research Content) ── */}
+        <section className="space-y-5">
+          <div className="flex items-center justify-between px-2">
+            <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: textMain }}>Sound Sanctuary</h2>
+            <Link href="/bhakti/sounds" className="text-[10px] font-bold" style={{ color: gold }}>Explore All</Link>
+          </div>
+          
+          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none px-1">
+            {BHAKTI_COLLECTIONS.map((collection, idx) => (
+              <motion.div key={idx} whileTap={{ scale: 0.98 }}
+                className="flex-shrink-0 w-72 rounded-[2.5rem] p-6 relative overflow-hidden"
+                style={{ background: glassBg, border: `1px solid ${glassBdr}` }}>
+                <div className="relative z-10">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: gold }}>Collection</p>
+                  <p className="text-sm font-bold mb-1" style={{ color: textMain }}>{collection.title}</p>
+                  <p className="text-[10px] opacity-60 leading-relaxed mb-4" style={{ color: textDim }}>{collection.description}</p>
+                  <div className="flex items-center gap-2">
+                    <button className="flex-1 py-2.5 rounded-full text-[10px] font-bold bg-[#C5A059] text-white">Play All</button>
+                  </div>
+                </div>
+                {/* Decorative Pattern */}
+                <div className="absolute -bottom-4 -right-4 w-24 h-24 opacity-10" style={{ color: gold }}>
+                   <Sparkles size={80} />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="space-y-3 px-1">
+            <p className="text-[10px] font-bold uppercase tracking-widest px-2 opacity-50">Featured Mantras</p>
+            <div className="grid grid-cols-1 gap-2">
+              {CURATED_SOUNDS.slice(0, 3).map(sound => (
+                <motion.div key={sound.id} whileTap={{ scale: 0.99 }}
+                  className="rounded-3xl p-4 flex items-center gap-4 transition-all"
+                  style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: `1px solid ${glassBdr}` }}>
+                  <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-lg" style={{ background: glassBg }}>
+                    {sound.type === 'mantra' ? '🕉️' : sound.type === 'chant' ? '📿' : '🪕'}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[12px] font-bold truncate" style={{ color: textMain }}>{sound.title}</p>
+                    <p className="text-[10px] opacity-50 truncate" style={{ color: textDim }}>{sound.artist}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[9px] opacity-40">{sound.duration}</span>
+                    {sound.isPremium && (
+                      <span className="px-1.5 py-0.5 rounded-md text-[8px] font-bold bg-amber-500/10 text-amber-500 uppercase">Pro</span>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Guided Sadhana (High Revenue / Premium Only) ── */}
+        <section className="space-y-4">
+          <h2 className="text-sm font-bold uppercase tracking-widest px-2" style={{ color: textMain }}>Guided Sadhana</h2>
+          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-none px-2">
+            {[
+              { title: '21 Days of Ganesh Bhakti', author: 'Swami Haridas', duration: '21 days', price: 'Premium' },
+              { title: 'The Path of Shiva', author: 'Ma Ananda', duration: '14 days', price: 'Premium' },
+            ].map((path, i) => (
+              <div key={i} className="flex-shrink-0 w-64 rounded-[2.5rem] p-6 relative overflow-hidden"
+                style={{ background: 'linear-gradient(135deg, #1A1A1A, #000)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div className="absolute top-0 right-0 p-4">
+                  <span className="px-2 py-1 rounded-md text-[8px] font-bold bg-amber-500/20 text-amber-500 uppercase tracking-tighter">Premium</span>
+                </div>
+                <p className="text-xs font-bold text-white mb-1">{path.title}</p>
+                <p className="text-[10px] text-white/50 mb-4">{path.author}</p>
+                <div className="flex items-center justify-between mt-auto">
+                  <span className="text-[9px] text-white/40">{path.duration}</span>
+                  <button className="px-4 py-1.5 rounded-full text-[10px] font-bold bg-white text-black">Start Journey</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Practice Portals ── */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }}
           className="grid grid-cols-2 gap-3">
           {PORTALS.map((p, i) => (
-            <motion.div key={p.href} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 + i * 0.08 }}>
+            <motion.div key={p.href} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + i * 0.05 }}>
               <Link href={p.href}
-                className="group flex flex-col rounded-[1.5rem] p-4 h-full relative overflow-hidden"
-                style={{ background: cardBg, border: `1px solid ${p.bdr}`, boxShadow: `0 4px 24px ${p.glow}` }}>
-                <div className="absolute top-0 right-0 w-16 h-16 pointer-events-none"
-                  style={{ background: `radial-gradient(circle at top right,${p.glow},transparent 70%)` }} />
-                <span className="text-2xl mb-2">{p.emoji}</span>
-                <p className="text-sm font-semibold leading-tight" style={{ color: headClr }}>{p.title}</p>
-                <p className="text-[10px] mt-0.5 font-medium" style={{ color: p.accent }}>{p.sub}</p>
-                <p className="text-[11px] mt-1.5 leading-relaxed flex-1" style={{ color: dimClr }}>{p.desc}</p>
-                <div className="mt-3 flex items-center justify-end text-[11px] font-semibold" style={{ color: p.accent }}>
-                  Enter <ChevronRight size={12} className="ml-0.5" />
+                className="group flex flex-col rounded-[2rem] p-5 h-full relative overflow-hidden"
+                style={{ background: glassBg, border: `1px solid ${glassBdr}` }}>
+                <span className="text-2xl mb-3">{p.emoji}</span>
+                <p className="text-[13px] font-bold" style={{ color: textMain }}>{p.title}</p>
+                <p className="text-[9px] mt-0.5 font-bold uppercase tracking-wider" style={{ color: gold }}>{p.sub}</p>
+                <p className="text-[10px] mt-2 leading-relaxed flex-1" style={{ color: textDim }}>{p.desc}</p>
+                <div className="mt-4 flex items-center justify-end text-[10px] font-bold" style={{ color: gold }}>
+                  Enter <ChevronRight size={10} className="ml-1" />
                 </div>
               </Link>
             </motion.div>
           ))}
         </motion.div>
 
-        {/* ── Browse by Deity ───────────────────────────────────────────────── */}
-        <motion.section initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-          className="rounded-[1.8rem] p-4" style={{ background: sectBg, border: `1px solid ${sectBdr}` }}>
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: subClr }}>By Deity</p>
-            <Link href="/bhakti/browse" className="text-[11px] font-semibold" style={{ color: amber }}>Browse all →</Link>
+        {/* ── Browse by Deity ── */}
+        <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+          className="rounded-[2.5rem] p-5" style={{ background: glassBg, border: `1px solid ${glassBdr}` }}>
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: textDim }}>By Deity</p>
+            <Link href="/bhakti/browse" className="text-[10px] font-bold" style={{ color: gold }}>Browse All</Link>
           </div>
-          <div className="flex gap-2.5 overflow-x-auto pb-1 scrollbar-none">
+          <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-none">
             {deityOrder.map((deity) => {
               const meta = DEITY_META[deity];
               if (!meta) return null;
               return (
                 <Link key={deity} href={`/bhakti/browse?deity=${deity}`}
-                  className="flex-shrink-0 flex flex-col items-center gap-1.5 rounded-2xl px-3.5 py-3 transition-all hover:scale-[1.03]"
-                  style={{ background: isDark ? 'rgba(28,18,10,0.7)' : 'rgba(240,220,190,0.8)', border: `1px solid ${meta.color}28`, minWidth: 64 }}>
+                  className="flex-shrink-0 flex flex-col items-center gap-2 rounded-2xl px-4 py-4 transition-all hover:scale-[1.03]"
+                  style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: `1px solid ${glassBdr}`, minWidth: 70 }}>
                   <span className="text-2xl">{meta.emoji}</span>
-                  <span className="text-[10px] font-semibold" style={{ color: meta.color }}>{meta.label}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-tighter" style={{ color: textMain }}>{meta.label}</span>
                 </Link>
               );
             })}
           </div>
         </motion.section>
 
-        {/* ── Browse by Mood ────────────────────────────────────────────────── */}
-        <motion.section initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
-          className="rounded-[1.8rem] p-4" style={{ background: sectBg, border: `1px solid ${sectBdr}` }}>
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] mb-3" style={{ color: subClr }}>By Mood</p>
+        {/* ── Browse by Mood ── */}
+        <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
+          className="rounded-[2.5rem] p-5" style={{ background: glassBg, border: `1px solid ${glassBdr}` }}>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-4" style={{ color: textDim }}>By Mood</p>
           <div className="grid grid-cols-2 gap-2">
             {Object.entries(MOOD_META).map(([mood, meta]) => (
               <Link key={mood} href={`/bhakti/browse?mood=${mood}`}
-                className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 transition-all hover:scale-[1.01]"
-                style={{ background: isDark ? 'rgba(28,18,10,0.7)' : 'rgba(240,220,190,0.75)', border: `1px solid ${sectBdr}` }}>
+                className="flex items-center gap-3 rounded-2xl px-4 py-3 transition-all hover:scale-[1.01]"
+                style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: `1px solid ${glassBdr}` }}>
                 <span className="text-xl">{meta.emoji}</span>
                 <div className="min-w-0">
-                  <p className="text-[11px] font-semibold leading-tight truncate" style={{ color: headClr }}>{meta.label}</p>
-                  <p className="text-[9px] mt-0.5 leading-tight" style={{ color: dimClr }}>{meta.desc}</p>
+                  <p className="text-[11px] font-bold leading-tight truncate" style={{ color: textMain }}>{meta.label}</p>
+                  <p className="text-[9px] mt-0.5 leading-tight" style={{ color: textDim }}>{meta.desc}</p>
                 </div>
               </Link>
             ))}
           </div>
         </motion.section>
 
-        {/* ── Guided Aarti CTA ──────────────────────────────────────────────── */}
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
+        {/* ── Guided Aarti CTA ── */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
           <Link href="/bhakti/aarti"
-            className="flex items-center justify-between rounded-[1.8rem] px-5 py-4 relative overflow-hidden"
-            style={{ background: isDark ? 'linear-gradient(135deg,rgba(60,30,10,0.9),rgba(30,15,5,0.95))' : 'linear-gradient(135deg,rgba(255,235,200,0.98),rgba(255,220,170,0.98))', border: '1px solid rgba(212,166,70,0.20)' }}>
-            <div className="absolute top-0 right-0 w-32 h-32 pointer-events-none"
-              style={{ background: 'radial-gradient(circle at top right,rgba(212,140,20,0.15),transparent 70%)' }} />
+            className="flex items-center justify-between rounded-[2.5rem] px-6 py-5 relative overflow-hidden"
+            style={{ background: 'linear-gradient(135deg, #1A1A1A, #000)', border: '1px solid rgba(255,255,255,0.1)' }}>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-1" style={{ color: 'rgba(200,146,74,0.6)' }}>New</p>
-              <p className="font-semibold text-sm" style={{ color: headClr }}>🪔 Guided Aarti Ceremony</p>
-              <p className="text-[11px] mt-0.5" style={{ color: dimClr }}>Bell → diya → flowers → namaskar — step by step</p>
+              <p className="text-[8px] font-bold uppercase tracking-[0.3em] mb-1" style={{ color: gold }}>Sacred Ritual</p>
+              <p className="font-bold text-sm text-white">🪔 Guided Aarti Ceremony</p>
+              <p className="text-[10px] mt-1 text-white/50">Experience the complete ritual step-by-step</p>
             </div>
-            <ChevronRight size={18} style={{ color: amber, flexShrink: 0 }} />
+            <ChevronRight size={16} className="text-white" />
           </Link>
         </motion.div>
 
-        {/* ── Daily Shloka ──────────────────────────────────────────────────── */}
+        {/* ── Daily Shloka ── */}
         <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.85 }}
-          className="rounded-[1.8rem] px-5 py-5"
-          style={{ background: isDark ? 'rgba(12,8,4,0.8)' : 'rgba(255,245,228,0.95)', border: `1px solid ${sectBdr}` }}>
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: 'rgba(200,146,74,0.45)' }}>Verse of the day</p>
-            <button onClick={() => setShowShloka(v => !v)} className="text-[10px] font-semibold" style={{ color: amber }}>
-              {showShloka ? 'Less' : 'Read more'}
+          className="rounded-[2.5rem] px-6 py-6"
+          style={{ background: glassBg, border: `1px solid ${glassBdr}` }}>
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-[10px] uppercase tracking-[0.2em]" style={{ color: textDim }}>Verse of the Day</p>
+            <button onClick={() => setShowShloka(v => !v)} className="text-[10px] font-bold" style={{ color: gold }}>
+              {showShloka ? 'Close' : 'Reflection'}
             </button>
           </div>
-          <p className="text-base leading-relaxed italic" style={{ fontFamily: 'var(--font-serif)', color: isDark ? 'rgba(245,220,150,0.75)' : 'rgba(60,30,5,0.80)' }}>
+          <p className="text-lg leading-relaxed italic" style={{ fontFamily: 'var(--font-serif)', color: textMain }}>
             &ldquo;{shloka.sanskrit}&rdquo;
           </p>
           <AnimatePresence>
             {showShloka && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                <p className="text-sm mt-3 leading-relaxed" style={{ color: dimClr }}>&ldquo;{shloka.meaning}&rdquo;</p>
-                <p className="text-xs mt-2" style={{ color: 'rgba(200,146,74,0.35)' }}>{shloka.source}</p>
+                <p className="text-sm mt-4 leading-relaxed" style={{ color: textDim }}>{shloka.meaning}</p>
+                <p className="text-[10px] mt-3 font-bold uppercase tracking-wider" style={{ color: gold }}>{shloka.source}</p>
               </motion.div>
             )}
           </AnimatePresence>

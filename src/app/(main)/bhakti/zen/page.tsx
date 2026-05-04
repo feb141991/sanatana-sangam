@@ -21,19 +21,19 @@ type Phase = keyof typeof BREATH_PHASES;
 
 // ─── Phase colours ─────────────────────────────────────────────────────────
 const PHASE_COLOURS: Record<Phase, { primary: string; glow: string; ring: string }> = {
-  inhale: { primary: '#f5dfa0', glow: 'rgba(200,146,74,',  ring: 'rgba(200,146,74,0.55)'  },
-  hold:   { primary: '#ffffff', glow: 'rgba(255,255,255,', ring: 'rgba(255,255,255,0.4)'  },
-  exhale: { primary: '#b4c8ff', glow: 'rgba(130,160,255,', ring: 'rgba(120,150,255,0.45)' },
+  inhale: { primary: '#C5A059', glow: 'rgba(197,160,89,',  ring: 'rgba(197,160,89,0.45)'  },
+  hold:   { primary: '#FFFFFF', glow: 'rgba(255,255,255,', ring: 'rgba(255,255,255,0.3)'  },
+  exhale: { primary: '#D4B483', glow: 'rgba(212,180,131,', ring: 'rgba(212,180,131,0.4)' },
 };
 
 // ─── Environments ───────────────────────────────────────────────────────────
 type EnvId = 'temple' | 'mountains' | 'forest' | 'river' | 'night';
 const ENVIRONMENTS: Record<EnvId, { label: string; emoji: string; bg: string; glowColor: string; particleColor: string }> = {
-  temple:    { label: 'Temple Dawn',  emoji: '🪔', bg: 'linear-gradient(180deg,#1a0d08 0%,#2e1710 40%,#3e2216 100%)', glowColor: 'rgba(212,120,20,',  particleColor: 'rgba(255,190,60,'  },
-  mountains: { label: 'Snow Peaks',   emoji: '🏔️', bg: 'linear-gradient(180deg,#10141c 0%,#182030 40%,#1e2c3c 100%)', glowColor: 'rgba(140,180,255,', particleColor: 'rgba(220,235,255,' },
-  forest:    { label: 'Forest Still', emoji: '🌿', bg: 'linear-gradient(180deg,#0c1610 0%,#142018 40%,#1c2c1e 100%)', glowColor: 'rgba(60,180,80,',   particleColor: 'rgba(100,220,120,' },
-  river:     { label: 'Sacred River', emoji: '🌊', bg: 'linear-gradient(180deg,#0a1218 0%,#101c2a 40%,#162436 100%)', glowColor: 'rgba(40,140,200,',  particleColor: 'rgba(80,180,220,'  },
-  night:     { label: 'Night Sky',    emoji: '✨', bg: 'linear-gradient(180deg,#04060e 0%,#0a0e1c 40%,#0e1226 100%)', glowColor: 'rgba(160,140,255,', particleColor: 'rgba(220,210,255,' },
+  temple:    { label: 'Temple Dawn',  emoji: '🪔', bg: 'linear-gradient(180deg, #0A0A0A 0%, #1A1208 100%)', glowColor: 'rgba(197,160,89,',  particleColor: 'rgba(255,245,220,'  },
+  mountains: { label: 'Snow Peaks',   emoji: '🏔️', bg: 'linear-gradient(180deg, #0F172A 0%, #1E293B 100%)', glowColor: 'rgba(148,163,184,', particleColor: 'rgba(241,245,249,' },
+  forest:    { label: 'Forest Still', emoji: '🌿', bg: 'linear-gradient(180deg, #064E3B 0%, #065F46 100%)', glowColor: 'rgba(52,211,153,',  particleColor: 'rgba(209,250,229,' },
+  river:     { label: 'Sacred River', emoji: '🌊', bg: 'linear-gradient(180deg, #0C4A6E 0%, #075985 100%)', glowColor: 'rgba(56,189,248,',  particleColor: 'rgba(224,242,254,'  },
+  night:     { label: 'Night Sky',    emoji: '✨', bg: 'linear-gradient(180deg, #0F172A 0%, #020617 100%)', glowColor: 'rgba(139,92,246,', particleColor: 'rgba(237,233,254,' },
 };
 
 // ─── Modes ──────────────────────────────────────────────────────────────────
@@ -358,6 +358,45 @@ function LotusParticles() {
   );
 }
 
+function NightStars() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {Array.from({ length: 40 }).map((_, i) => (
+        <motion.div key={`star-${i}`} className="absolute rounded-full bg-white"
+          style={{ 
+            width: Math.random() * 2, 
+            height: Math.random() * 2, 
+            left: `${Math.random() * 100}%`, 
+            top: `${Math.random() * 100}%` 
+          }}
+          animate={{ opacity: [0.2, 0.8, 0.2] }}
+          transition={{ duration: 2 + Math.random() * 3, repeat: Infinity, delay: Math.random() * 5 }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function RiverRipples() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {Array.from({ length: 10 }).map((_, i) => (
+        <motion.div key={`ripple-${i}`} className="absolute rounded-full border border-blue-400/20"
+          style={{ 
+            width: 100, 
+            height: 40, 
+            left: `${Math.random() * 80}%`, 
+            top: `${Math.random() * 80}%` 
+          }}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: [1, 2], opacity: [0, 0.3, 0] }}
+          transition={{ duration: 4, repeat: Infinity, delay: i * 0.8 }}
+        />
+      ))}
+    </div>
+  );
+}
+
 function EnvParticles({ env }: { env: EnvId }) {
   if (env === 'mountains') return <SnowParticles />;
   if (env === 'forest')    return <FireflyParticles />;
@@ -373,27 +412,30 @@ export default function SattvicModePage() {
   const isDark = resolvedTheme === 'dark';
   const { playHaptic, setIsMuted } = useZenithSensory();
 
-  // ── Theme tokens ───────────────────────────────────────────────────────
-  const mainCardBg   = isDark ? 'linear-gradient(160deg,rgba(26,14,8,0.97) 0%,rgba(14,8,4,0.99) 100%)' : 'linear-gradient(160deg,rgba(255,245,230,0.98) 0%,rgba(250,235,210,0.99) 100%)';
-  const mainCardBdr  = isDark ? 'rgba(200,146,74,0.16)' : 'rgba(160,100,30,0.18)';
-  const sectionBg    = isDark ? 'rgba(12,8,4,0.9)' : 'rgba(255,245,230,0.95)';
-  const sectionBdr   = isDark ? 'rgba(200,146,74,0.09)' : 'rgba(180,110,30,0.14)';
-  const pillBgInact  = isDark ? 'rgba(28,18,10,0.6)' : 'rgba(235,215,185,0.7)';
-  const pillBdrInact = isDark ? 'rgba(200,146,74,0.10)' : 'rgba(180,120,40,0.18)';
-  const pillBgAct    = isDark ? 'rgba(200,146,74,0.16)' : 'rgba(200,146,74,0.14)';
-  const pillBdrAct   = isDark ? 'rgba(200,146,74,0.38)' : 'rgba(200,146,74,0.40)';
-  const textPrimary  = isDark ? '#f5dfa0' : '#2a1002';
-  const textSecond   = isDark ? 'rgba(245,210,130,0.45)' : 'rgba(100,55,10,0.50)';
-  const textMuted    = isDark ? 'rgba(245,210,130,0.35)' : 'rgba(120,70,15,0.40)';
-  const inputBg      = isDark ? 'rgba(18,12,8,0.9)' : 'rgba(240,225,200,0.9)';
-  const inputBdr     = isDark ? 'rgba(200,146,74,0.18)' : 'rgba(180,120,40,0.22)';
-  const progressBg   = isDark ? 'rgba(200,146,74,0.1)' : 'rgba(200,146,74,0.12)';
-  const chantPickerBg= isDark ? 'rgba(28,18,10,0.8)' : 'rgba(240,225,200,0.85)';
-  const chantPickerBdr = isDark ? 'rgba(200,146,74,0.14)' : 'rgba(180,120,40,0.18)';
-  const sattvaBg     = isDark ? 'rgba(12,8,4,0.9)' : 'rgba(255,245,230,0.95)';
-  const sattvaText   = isDark ? 'rgba(220,195,145,0.60)' : 'rgba(70,35,5,0.65)';
-  const sattvaLabel  = isDark ? 'rgba(200,146,74,0.5)' : 'rgba(160,90,20,0.55)';
-  const sattvaHints  = isDark ? 'rgba(200,175,120,0.45)' : 'rgba(110,65,15,0.50)';
+  // ── Premium Theme Tokens (Sattvic Ivory) ───────────────────────────
+  const mainCardBg   = isDark ? '#121212' : '#FFFFFF';
+  const mainCardBdr  = isDark ? 'rgba(197,160,89,0.1)' : 'rgba(197,160,89,0.2)';
+  const sectionBg    = isDark ? '#1A1A1A' : '#FDFCF8';
+  const sectionBdr   = isDark ? 'rgba(197,160,89,0.05)' : 'rgba(197,160,89,0.15)';
+  const gold         = '#C5A059';
+  const textPrimary  = isDark ? '#F5F5F5' : '#1A1A1A';
+  const textSecond   = isDark ? 'rgba(245,245,245,0.5)' : 'rgba(26,26,26,0.5)';
+  const textMuted    = isDark ? 'rgba(245,245,245,0.3)' : 'rgba(26,26,26,0.3)';
+  const pillBgInact  = isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)';
+  const pillBdrInact = isDark ? 'rgba(197,160,89,0.05)' : 'rgba(197,160,89,0.1)';
+  const pillBgAct    = isDark ? 'rgba(197,160,89,0.1)' : 'rgba(197,160,89,0.08)';
+  const pillBdrAct   = isDark ? 'rgba(197,160,89,0.3)' : 'rgba(197,160,89,0.4)';
+  const inputBg      = isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)';
+  const inputBdr     = isDark ? 'rgba(197,160,89,0.1)' : 'rgba(197,160,89,0.15)';
+  const progressBg   = isDark ? 'rgba(197,160,89,0.1)' : 'rgba(197,160,89,0.05)';
+  const chantPickerBg = isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)';
+  const chantPickerBdr = isDark ? 'rgba(197,160,89,0.1)' : 'rgba(197,160,89,0.15)';
+  const glassBg      = isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)';
+  const textDim      = textSecond;
+  const sattvaBg     = glassBg;
+  const sattvaText   = textDim;
+  const sattvaLabel  = gold;
+  const sattvaHints  = textMuted;
 
   const [mode,       setMode]     = useState<'reading' | 'breath' | 'chant'>('breath');
   const [duration,   setDuration] = useState(24);

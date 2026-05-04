@@ -1902,6 +1902,7 @@ export default function JapaClient({
                   {streak > 0 ? `${streak} day streak` : 'Start your streak'}
                 </span>
               </div>
+              <Link
                 href="/bhakti/mala/insights"
                 className="flex items-center gap-1"
                 onClick={e => e.stopPropagation()}

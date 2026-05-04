@@ -1143,7 +1143,8 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
 
   async function toggleUpvote(postId: string) {
     try {
-      const nextState = await mandaliMutations.toggleUpvote.mutateAsync({ postId, isUpvoted });
+      const isCurrentlyUpvoted = upvoted.has(postId);
+      const nextState = await mandaliMutations.toggleUpvote.mutateAsync({ postId, isUpvoted: isCurrentlyUpvoted });
       playHaptic('light');
       setUpvoted((current) => {
         const next = new Set(current);

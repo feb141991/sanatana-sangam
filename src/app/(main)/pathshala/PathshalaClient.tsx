@@ -24,8 +24,9 @@ import {
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import PremiumActivateModal from "@/components/premium/PremiumActivateModal";
+import { usePremium } from '@/hooks/usePremium';
 import { getTraditionMeta } from '@/lib/tradition-config';
-import { useLocation } from '@/lib/locationContext';
+import { useLocation } from '@/lib/LocationContext';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import CircularProgress from '@/components/ui/CircularProgress';
 import {
@@ -38,6 +39,7 @@ import {
   RAMAYANA_STRUCTURE, BHAGAVATAM_STRUCTURE,
   type EpicStructure, type EpicKanda, type EpicChapter, type EpicVerse
 } from '@/lib/epics-registry';
+import { calculatePanchang, getTodaySpiritualPulse } from '@/lib/panchang';
 
 // ── Difficulty badges — inline styles so they read clearly on any bg ──────────
 const DIFF_STYLE: Record<string, { bg: string; text: string; border: string; label: string }> = {
