@@ -23,7 +23,7 @@ import {
   BarChart2,
 } from 'lucide-react';
 import DigitalDeeksha from '@/components/onboarding/DigitalDeeksha';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Play, Search, Bell, Settings, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
 import {
@@ -54,6 +54,9 @@ import DarshanOverlay from '@/components/home/DarshanOverlay';
 import DarshanPrompt from '@/components/home/DarshanPrompt';
 import { getTransliteration } from '@/lib/transliteration';
 import DivineDiya from '@/components/bhakti/DivineDiya';
+import BottomNav from '@/components/layout/BottomNav';
+import AIChatFAB from '@/components/layout/AIChatFAB';
+import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 interface Panchang {
   tithi:      string;
@@ -1531,7 +1534,7 @@ export default function HomeDashboard({
   ];
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
+    <div className="min-h-screen bg-[#FDFCF8] dark:bg-[#1A1A18] relative selection:bg-[#C5A059]/30">
       <AnimatePresence>
         {showDeeksha && (
           <motion.div 
@@ -1549,60 +1552,55 @@ export default function HomeDashboard({
       {/* ── Sacred confetti celebration ── */}
       <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
 
-      {/* ── Divine Minimalist home concept ── */}
-      <motion.section
-        className="divine-home-shell"
-        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 18 }}
-        animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-      >
-        <div className="divine-topbar">
-          <Link href="/profile" className="divine-icon-button" aria-label="Open notifications">
-            <Bell size={19} />
-          </Link>
-          <div className="min-w-0 flex-1">
-            <div className="divine-topbar-meta">
-              <button
-                type="button"
-                onClick={() => setGreetingSheetOpen(true)}
-                className="divine-greeting-left motion-press"
-              >
-                <div className="flex items-center gap-2">
-                  <h1 className="divine-greeting-title">
-                    {stripGreetingIcon(greeting)}, {userName.split(' ')[0]}
-                  </h1>
-                  {isPro && (
-                    <span className="px-1.5 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wider bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg shadow-orange-500/20">
-                      Pro
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="divine-greeting-badge">
-                    <Pencil size={9} />
-                    <span>Personalize</span>
+      {/* ── Premium Minimalist Header ── */}
+      <div className="px-6 pt-10 pb-8 flex items-end justify-between">
+        <div className="flex-1">
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C5A059] mb-2"
+          >
+            {displayCity ? `Sanctuary in ${displayCity}` : 'Divine Sanctuary'}
+          </motion.p>
+          <motion.h1 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl md:text-5xl font-serif text-[#2A1B0A] leading-tight"
+          >
+            {stripGreetingIcon(greeting)}, <br/>
+            <span className="opacity-60">{userName.split(' ')[0]}</span>
+          </motion.h1>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Link href="/profile" className="relative group">
+            <div className="w-14 h-14 rounded-full border-2 border-[#C5A059]/20 p-1 transition-all duration-500 group-hover:border-[#C5A059]/40">
+              <div className="w-full h-full rounded-full overflow-hidden relative bg-[#FDFCF8] shadow-inner">
+                {avatarUrl ? (
+                  <Image src={avatarUrl} alt={userName} fill className="object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center font-serif text-xl text-[#C5A059]">
+                    {userName.charAt(0)}
                   </div>
-                  {displayCity && (
-                    <span className="divine-location-v2">
-                      <MapPin size={10} />
-                      {displayCity}
-                    </span>
-                  )}
-                </div>
-              </button>
+                )}
+              </div>
             </div>
-          </div>
-          <Link href="/profile" className="divine-profile-link" aria-label="Open profile">
-            {avatarUrl ? (
-              <Image src={avatarUrl} alt={`${userName}'s profile photo`} fill sizes="44px" className="object-cover" />
-            ) : (
-              <span>{userName.trim().charAt(0).toUpperCase() || 'S'}</span>
+            {isPro && (
+              <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#C5A059] rounded-full flex items-center justify-center shadow-lg border-2 border-[#FDFCF8]">
+                <Sparkles size={10} className="text-white" />
+              </div>
             )}
           </Link>
-        </div>
-        
+        </motion.div>
+      </div>
+
         {/* Daily Darshan System — Tradition Based */}
-        <div className="px-4 pt-2">
+        <div className="px-6 pb-2">
           <DarshanPrompt
             darshan={displayDarshan as any}
             isVisible={darshanPromptVisible}
@@ -1611,28 +1609,48 @@ export default function HomeDashboard({
           />
         </div>
 
-        {/* ── Daily Ritual: Prāthanā ── */}
-        <div className="px-4 py-3">
+        {/* ── The Centerpiece: Prāthanā Ritual ── */}
+        <div className="px-6 mb-8">
           <motion.div 
-            whileHover={{ scale: 1.01 }}
-            className="rounded-[2.5rem] p-6 flex items-center justify-between overflow-hidden border backdrop-blur-xl relative"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+            className="group relative rounded-[3rem] p-10 flex flex-col items-center text-center overflow-hidden border-0 transition-all duration-700 hover:shadow-2xl hover:shadow-[#C5A059]/10"
             style={{ 
-              background: 'rgba(255,255,255,0.02)', 
-              borderColor: 'rgba(197,160,89,0.12)',
-              boxShadow: '0 10px 40px rgba(0,0,0,0.1)'
+              background: 'linear-gradient(165deg, #FFFEFC 0%, #FDFCF8 100%)',
+              boxShadow: '0 20px 60px rgba(197,160,89,0.08)'
             }}
           >
-            <div className="relative z-10">
-              <h3 className="text-sm font-bold uppercase tracking-[0.2em]" style={{ color: '#C5A059' }}>Prāthanā</h3>
-              <p className="text-[10px] mt-1 opacity-50 max-w-[150px]">Begin your day with the sacred flame.</p>
+            {/* Soft Champagne Glow Background */}
+            <div className="absolute inset-0 opacity-40 transition-opacity duration-700 group-hover:opacity-60"
+              style={{ background: 'radial-gradient(circle at center, #FFF4E0 0%, transparent 70%)' }} />
+            
+            <div className="relative z-10 mb-8">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#C5A059]/5 border border-[#C5A059]/10 mb-4"
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-[#C5A059] animate-pulse" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C5A059]">Prāthanā</span>
+              </motion.div>
+              <h2 className="text-2xl font-serif text-[#2A1B0A]">Daily Ritual</h2>
+              <p className="text-xs text-[#8E8E7A] mt-2 max-w-[200px] leading-relaxed">
+                Connect with the divine through the sacred flame.
+              </p>
             </div>
-            <div className="relative z-10 scale-90 -mr-4">
+
+            <div className="relative z-10 py-4 transition-transform duration-500 group-hover:scale-110">
               <DivineDiya />
             </div>
-            
-            {/* Ambient Background Glow */}
-            <div className="absolute top-0 right-0 w-32 h-32 pointer-events-none"
-              style={{ background: 'radial-gradient(circle at top right, rgba(197,160,89,0.08), transparent 70%)' }} />
+
+            {/* Decorative Corner Motifs */}
+            <div className="absolute top-0 left-0 w-24 h-24 opacity-[0.03] pointer-events-none">
+              <svg viewBox="0 0 100 100" className="w-full h-full fill-[#C5A059]">
+                <path d="M0,0 Q50,0 50,50 Q50,100 100,100 L0,100 Z" />
+              </svg>
+            </div>
           </motion.div>
         </div>
 
@@ -2015,7 +2033,6 @@ export default function HomeDashboard({
           </span>
           <span className="divine-seva-cta">Donate Now</span>
         </Link>
-      </motion.section>
 
       {/* Daily Darshan Fullscreen Overlay */}
       <DarshanOverlay 
@@ -2357,6 +2374,12 @@ export default function HomeDashboard({
         )}
       </AnimatePresence>
 
+      <AIChatFAB 
+        userId={userId} 
+        tradition={tradition || 'hindu'} 
+        userName={userName} 
+      />
+      <BottomNav />
     </div>
     </div>
   );

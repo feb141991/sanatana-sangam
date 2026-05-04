@@ -29,7 +29,7 @@ export default function DivineDiya({ isLitInitial = false, onLight }: DivineDiya
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center p-6 group">
+    <div className="relative flex flex-col items-center justify-center group">
       {/* ── Lamp Base (3D Glassmorphism) ── */}
       <motion.div
         className="relative cursor-pointer"
