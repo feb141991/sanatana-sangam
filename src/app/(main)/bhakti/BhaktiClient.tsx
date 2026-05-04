@@ -158,6 +158,96 @@ export default function BhaktiClient({
           </div>
         </motion.section>
 
+        {/* ── Prāthanā — Morning Ritual Invocation ──────────────────────── */}
+        <motion.section
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="relative rounded-[2.5rem] overflow-hidden"
+          style={{
+            background: 'radial-gradient(ellipse at 50% 0%, rgba(80,36,4,0.96) 0%, rgba(20,10,2,0.98) 65%, rgba(10,5,1,1) 100%)',
+            border: '1px solid rgba(200,146,74,0.18)',
+          }}
+        >
+          {/* ambient particles */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {[...Array(8)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute rounded-full"
+                style={{
+                  width: 1 + (i % 2),
+                  height: 1 + (i % 2),
+                  left: `${(i * 12.5 + 6) % 92}%`,
+                  top: `${(i * 11.3 + 8) % 78}%`,
+                  background: i % 2 === 0 ? 'rgba(200,146,74,0.6)' : 'rgba(255,220,140,0.4)',
+                }}
+                animate={{ opacity: [0.05, 0.5, 0.05], y: [0, -5, 0] }}
+                transition={{ duration: 3 + i * 0.4, repeat: Infinity, delay: i * 0.3, ease: 'easeInOut' }}
+              />
+            ))}
+          </div>
+
+          <div className="relative z-10 px-7 pt-7 pb-8 flex flex-col items-center text-center gap-5">
+            {/* Diya flame */}
+            <div className="relative flex items-center justify-center" style={{ width: 72, height: 72 }}>
+              <motion.div
+                className="absolute rounded-full"
+                style={{ inset: 0, background: 'radial-gradient(circle, rgba(200,120,24,0.22) 0%, transparent 70%)' }}
+                animate={{ scale: [1, 1.25, 1], opacity: [0.35, 0.65, 0.35] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              <motion.div
+                style={{
+                  width: 12, height: 20,
+                  background: 'linear-gradient(180deg, #fffde0 0%, #ffc040 40%, #ff7020 75%, #cc3010 100%)',
+                  borderRadius: '50% 50% 50% 50% / 36% 36% 64% 64%',
+                  boxShadow: '0 0 14px rgba(255,140,20,0.9)',
+                  position: 'relative', top: -8,
+                }}
+                animate={{ scaleX: [1, 1.1, 0.92, 1.08, 1], scaleY: [1, 0.94, 1.06, 0.96, 1], rotate: [-2, 3, -3, 2, -2] }}
+                transition={{ duration: 0.85, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              <div style={{
+                position: 'absolute', top: '56%', width: 28, height: 8,
+                background: 'linear-gradient(90deg, #6b3412 0%, #b86c28 50%, #6b3412 100%)',
+                borderRadius: '2px 2px 50% 50% / 2px 2px 80% 80%',
+              }} />
+            </div>
+
+            <div className="space-y-1.5">
+              <p className="text-[9px] font-bold uppercase tracking-[0.28em]" style={{ color: 'rgba(200,146,74,0.5)' }}>
+                Prāthanā
+              </p>
+              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 600, color: '#f0e0b8', lineHeight: 1.2 }}>
+                Morning Invocation
+              </h3>
+            </div>
+
+            <p style={{ fontSize: '1.05rem', color: '#f5dfa0', fontFamily: 'var(--font-deva, serif)', lineHeight: 1.55, letterSpacing: '0.02em' }}>
+              ॐ असतो मा सद्गमय<br />
+              तमसो मा ज्योतिर्गमय<br />
+              मृत्योर्मा अमृतं गमय
+            </p>
+            <p className="text-xs leading-relaxed px-2" style={{ color: 'rgba(220,190,130,0.45)' }}>
+              Lead me from untruth to truth · from darkness to light · from mortality to immortality
+            </p>
+
+            <motion.button
+              className="px-7 py-3 rounded-full text-[11px] font-bold uppercase tracking-widest"
+              style={{
+                background: 'linear-gradient(135deg, rgba(200,120,24,0.9), rgba(200,146,74,0.8))',
+                color: '#1a0c04',
+                boxShadow: '0 4px 20px rgba(200,120,24,0.30)',
+              }}
+              whileTap={{ scale: 0.96 }}
+              whileHover={{ scale: 1.03 }}
+            >
+              🪔 Begin Prāthanā
+            </motion.button>
+          </div>
+        </motion.section>
+
         {/* ── Guided Sadhana: Premium Experiences ── */}
         <section>
           <div className="flex items-center justify-between mb-6">

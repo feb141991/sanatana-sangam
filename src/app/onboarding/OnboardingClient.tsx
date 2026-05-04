@@ -14,7 +14,7 @@ import toast from 'react-hot-toast';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type TraditionKey = 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'other';
-type Step = 1 | 2 | 3 | 4 | 5 | 6;
+type Step = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 const GOALS = [
   { id: 'japa',      emoji: '📿', label: 'Daily Japa',      desc: 'Mantra practice & mala' },
@@ -58,6 +58,7 @@ const SCREEN_BG: Record<number, string> = {
   4: 'radial-gradient(ellipse at 40% 60%, rgba(24,20,40,0.96) 0%, rgba(10,8,18,0.98) 55%, rgba(8,6,14,1) 100%)',
   5: 'radial-gradient(ellipse at 55% 35%, rgba(8,24,32,0.96) 0%, rgba(6,12,20,0.98) 55%, rgba(4,8,14,1) 100%)',
   6: 'radial-gradient(ellipse at 45% 45%, rgba(28,16,8,0.96) 0%, rgba(12,8,4,0.98) 55%, rgba(8,5,3,1) 100%)',
+  7: 'radial-gradient(ellipse at 50% 38%, rgba(80,40,6,0.97) 0%, rgba(32,14,2,0.99) 45%, rgba(10,5,1,1) 100%)',
 };
 
 // ─── Ambient sacred glow — diya flame ────────────────────────────────────────
@@ -288,6 +289,7 @@ export default function OnboardingClient({ userId, hasTradition, hasLifeStage, h
 
   function advance() {
     if (step < 6) navigateTo((step + 1) as Step);
+    else if (step === 6) navigateTo(7);
     else finish();
   }
 
@@ -321,7 +323,7 @@ export default function OnboardingClient({ userId, hasTradition, hasLifeStage, h
 
           {/* Progress pills */}
           <div className="mb-8">
-            <ProgressPills step={step} total={6} />
+            <ProgressPills step={step} total={7} />
           </div>
 
           {/* ── Screens ── */}
@@ -951,6 +953,81 @@ export default function OnboardingClient({ userId, hasTradition, hasLifeStage, h
                 </motion.div>
               )}
 
+              {/* ── Screen 7 — Digital Deeksha ───────────────────────────── */}
+              {step === 7 && (() => {
+                const deekshaContent: Record<string, { mark: string; mantra: string; meaning: string; welcome: string }> = {
+                  sikh:     { mark: '☬',  mantra: 'ਵਾਹਿਗੁਰੂ',                    meaning: 'Wondrous Guru — the Divine name',            welcome: 'Sat Sri Akal, saathee' },
+                  buddhist: { mark: '☸️', mantra: 'बुद्धं शरणं गच्छामि',           meaning: 'I take refuge in the Buddha',               welcome: 'Welcome to the Sangha' },
+                  jain:     { mark: '🤲', mantra: 'णमो अरिहंताणं',                 meaning: 'I bow to the perfected souls',              welcome: 'Jai Jinendra, sadhak' },
+                  other:    { mark: '🕊️', mantra: 'ॐ',                            meaning: 'The primordial sound of all creation',      welcome: 'Welcome, seeker of truth' },
+                  hindu:    { mark: '🕉️', mantra: 'ॐ असतो मा सद्गमय',              meaning: 'Lead me from untruth to truth',             welcome: 'Jai Shri Ram, saadhak' },
+                };
+                const d = deekshaContent[tradition || 'hindu'] ?? deekshaContent.hindu;
+                return (
+                  <motion.div
+                    key="s7"
+                    {...(prefersReducedMotion ? {} : slide)}
+                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    className="flex flex-col items-center text-center space-y-8 pt-4"
+                  >
+                    {/* Sacred flame */}
+                    <motion.div
+                      initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.7 }}
+                      animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.15, duration: 0.7, ease: [0.34, 1.26, 0.64, 1] }}
+                    >
+                      <SacredFlame />
+                    </motion.div>
+
+                    {/* Tradition mark */}
+                    <motion.div
+                      initial={prefersReducedMotion ? undefined : { opacity: 0, y: 12 }}
+                      animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3, duration: 0.5 }}
+                      className="space-y-3"
+                    >
+                      <p className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: 'rgba(200,146,74,0.5)' }}>
+                        Digital Deeksha
+                      </p>
+                      <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.55rem', fontWeight: 600, color: '#f0e2c0', lineHeight: 1.2 }}>
+                        {d.welcome}
+                      </h2>
+                    </motion.div>
+
+                    {/* Sacred mantra card */}
+                    <motion.div
+                      initial={prefersReducedMotion ? undefined : { opacity: 0, y: 16 }}
+                      animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                      transition={{ delay: 0.45, duration: 0.5 }}
+                      className="w-full rounded-2xl px-6 py-5 space-y-2"
+                      style={{
+                        background: 'rgba(200,146,74,0.08)',
+                        border: '1px solid rgba(200,146,74,0.20)',
+                        backdropFilter: 'blur(12px)',
+                      }}
+                    >
+                      <p className="text-2xl font-semibold leading-relaxed" style={{ color: '#f5dfa0', fontFamily: 'var(--font-deva, serif)' }}>
+                        {d.mantra}
+                      </p>
+                      <p className="text-xs leading-relaxed" style={{ color: 'rgba(220,190,130,0.55)' }}>
+                        {d.meaning}
+                      </p>
+                    </motion.div>
+
+                    {/* Blessing text */}
+                    <motion.p
+                      initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+                      animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+                      transition={{ delay: 0.65, duration: 0.6 }}
+                      className="text-sm leading-relaxed px-2"
+                      style={{ color: 'rgba(220,190,130,0.45)' }}
+                    >
+                      You have set your intention. The Sangam holds space for your dharmic journey — every day, at your own pace.
+                    </motion.p>
+                  </motion.div>
+                );
+              })()}
+
             </AnimatePresence>
           </div>
 
@@ -974,8 +1051,8 @@ export default function OnboardingClient({ userId, hasTradition, hasLifeStage, h
               >
                 {saving
                   ? <><Loader2 size={15} className="animate-spin" /> Saving…</>
-                  : step === 6
-                    ? '🙏 Enter Sanatana Sangam'
+                  : step === 7
+                    ? '🪔 Enter the Sangam'
                     : <>Continue <ChevronRight size={15} /></>}
               </motion.button>
             )}
@@ -997,8 +1074,8 @@ export default function OnboardingClient({ userId, hasTradition, hasLifeStage, h
               </motion.button>
             )}
 
-            {/* Back */}
-            {step > 1 && (
+            {/* Back — hidden on Deeksha step */}
+            {step > 1 && step < 7 && (
               <button
                 onClick={() => navigateTo((step - 1) as Step)}
                 className="w-full text-center text-xs py-2"

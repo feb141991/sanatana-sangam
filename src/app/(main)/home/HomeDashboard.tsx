@@ -1532,20 +1532,23 @@ export default function HomeDashboard({
       {/* ── Premium Minimalist Header ── */}
       <div className="px-6 pt-10 pb-8 flex items-end justify-between">
         <div className="flex-1">
-          <motion.p 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C5A059] mb-2"
-          >
-            {displayCity ? `Sanctuary in ${displayCity}` : 'Divine Sanctuary'}
-          </motion.p>
-          <motion.h1 
+          {displayCity && (
+            <motion.p
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#C5A059]/70 mb-1.5"
+            >
+              <MapPin size={9} strokeWidth={2.5} />
+              {displayCity}
+            </motion.p>
+          )}
+          <motion.h1
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl md:text-5xl font-serif text-[#2A1B0A] leading-tight"
+            className="text-2xl md:text-3xl font-serif text-[#2A1B0A] dark:text-[#F0E6D3] leading-snug"
           >
-            {stripGreetingIcon(greeting)}, <br/>
+            {stripGreetingIcon(greeting)},&nbsp;
             <span className="opacity-60">{userName.split(' ')[0]}</span>
           </motion.h1>
         </div>
