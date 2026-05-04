@@ -11,7 +11,7 @@
 // pathshala.enrollment which requires a learning_paths table not yet seeded).
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, useReducedMotion, AnimatePresence } from 'framer-motion';
@@ -798,7 +798,7 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
       }
     }
     loadEnrollments();
-  }, [userId, supabase, PATHSHALA_PATH_IDS]);
+  }, [userId, supabase]);
 
   // ── Render Reader Modal ──
   const ReaderModal = () => {
