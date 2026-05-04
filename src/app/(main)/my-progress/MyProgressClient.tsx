@@ -499,7 +499,7 @@ function ShieldBadgesPreview({
           सर्वसिद्धि — All shields earned! 🙏
         </p>
       )}
-    </div>
+    </motion.div>
   );
 }
 
