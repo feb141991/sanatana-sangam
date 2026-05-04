@@ -316,7 +316,7 @@ body {
   position: relative;
   min-height: clamp(480px, 112vw, 620px);
   overflow: hidden;
-  background: var(--divine-bg);
+  background: #FDFCF8;
   margin: 0;
   padding: 0;
   display: flex;
@@ -398,8 +398,8 @@ body {
   z-index: 1;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.4) 0%,
-    rgba(250, 246, 239, 0.1) 30%,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(250, 246, 239, 0.05) 30%,
     rgba(250, 246, 239, 0.6) 70%,
     var(--divine-bg) 100%
   );
@@ -409,8 +409,8 @@ body {
 :root[data-theme='dark'] .divine-hero-overlay {
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.6) 0%,
-    rgba(28, 28, 26, 0.1) 40%,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(28, 28, 26, 0.05) 40%,
     rgba(28, 28, 26, 0.7) 80%,
     var(--divine-bg) 100%
   );
@@ -641,8 +641,8 @@ body {
   font-size: clamp(1.42rem, 6.2vw, 2rem);
   font-weight: 600;
   line-height: 1.42;
-  color: var(--divine-text);
-  text-shadow: 0 1px 18px rgba(255, 253, 249, 0.42);
+  color: #FDFCF8;
+  text-shadow: 0 1px 18px rgba(0, 0, 0, 0.3);
 }
 
 .divine-meaning-dark {

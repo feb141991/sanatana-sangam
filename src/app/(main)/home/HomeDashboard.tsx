@@ -1559,7 +1559,6 @@ export default function HomeDashboard({
               </div>
             )}
             <div className="divine-hero-overlay" aria-hidden="true" />
-            <div className="absolute inset-0 z-[2] bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none" aria-hidden="true" />
             <div className="divine-hero-readability" aria-hidden="true" />
             <div className="divine-poster-motif divine-poster-motif-om" aria-hidden="true">{heroFallback.mark}</div>
             
@@ -1619,34 +1618,10 @@ export default function HomeDashboard({
                   </div>
                   <span className="text-[10px] font-bold text-white/90 tracking-widest uppercase ml-1">Practice</span>
                 </motion.div>
-                
-                <Link href="/sadhana" className="divine-action-pill-immersive motion-press">
-                  View Path
-                </Link>
               </div>
 
               <div className="mt-8">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-[1px] w-8 bg-[#C5A059]/40" />
-                  <span className="text-[10px] font-bold text-[#C5A059] uppercase tracking-[0.4em]">{heroFallback.subtitle}</span>
-                </div>
-                <h2 className="text-4xl md:text-5xl font-serif text-white leading-tight max-w-md drop-shadow-sm">
-                  {heroFallback.title}
-                </h2>
-                
-                <motion.button
-                  whileHover={{ x: 5 }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShlokaModalOpen(true);
-                  }}
-                  className="mt-6 flex items-center gap-3 text-white group"
-                >
-                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center group-hover:bg-[#C5A059] transition-colors duration-500">
-                    <BookOpen size={18} />
-                  </div>
-                  <span className="text-xs font-bold uppercase tracking-[0.2em]">Explore Today</span>
-                </motion.button>
+                {/* Branding and CTA removed for ultra-minimalist Zenith feel */}
               </div>
 
               {/* Shloka at the bottom of the hero */}
@@ -1666,8 +1641,8 @@ export default function HomeDashboard({
                   style={{ perspective: 800 }}
                 >
                   <span className="divine-poster-label">{dailyText.label}</span>
-                  <p className="divine-sanskrit-immersive-dark line-clamp-3 text-white">{dailyTextLine}</p>
-                  <p className="divine-meaning-dark line-clamp-2 text-white/80">{dailyText.meaning}</p>
+                  <p className="divine-sanskrit-immersive-dark line-clamp-3 text-[#FDFCF8]">{dailyTextLine}</p>
+                  <p className="divine-meaning-dark line-clamp-2 text-[#FDFCF8]/70">{dailyText.meaning}</p>
                 </motion.button>
               </div>
             </div>
@@ -1680,7 +1655,8 @@ export default function HomeDashboard({
                 <motion.p
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-1 text-[8px] font-bold uppercase tracking-[0.25em] text-white/70 mb-0.5"
+                  className="flex items-center gap-1 text-[8px] font-bold uppercase tracking-[0.25em] text-white/90 mb-0.5"
+                  style={{ textShadow: '0 1px 4px rgba(0,0,0,0.3)' }}
                 >
                   <MapPin size={9} strokeWidth={2.5} />
                   {displayCity}
@@ -1691,9 +1667,10 @@ export default function HomeDashboard({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
                 className="text-lg md:text-xl font-serif text-white leading-none"
+                style={{ textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}
               >
                 {stripGreetingIcon(greeting)},&nbsp;
-                <span className="opacity-60">{userName.split(' ')[0]}</span>
+                <span className="opacity-80">{userName.split(' ')[0]}</span>
               </motion.h1>
             </div>
 
