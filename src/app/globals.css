@@ -492,7 +492,7 @@ body {
   flex-direction: column;
   justify-content: space-between;
   gap: 0;
-  padding: 120px 20px 0;
+  padding: 160px 20px 0;
 }
 
 .divine-hero-topline {
@@ -508,7 +508,7 @@ body {
   justify-content: flex-end;
   align-items: center;
   gap: 13px;
-  padding-bottom: clamp(32px, 10vw, 54px);
+  padding-bottom: clamp(4px, 2vw, 8px);
   text-align: center;
 }
 

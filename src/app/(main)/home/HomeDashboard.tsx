@@ -1523,7 +1523,7 @@ export default function HomeDashboard({
   ];
 
   return (
-    <div className="min-h-screen bg-[#FDFCF8] dark:bg-[#1A1A18] relative selection:bg-[#C5A059]/30">
+    <div className="min-h-screen bg-[#FAF6EF] dark:bg-[#1c1c1a] relative selection:bg-[#C5A059]/30">
       <div className="relative">
 
       {/* ── Sacred confetti celebration ── */}
@@ -1652,9 +1652,68 @@ export default function HomeDashboard({
             </div>
           </motion.div>
 
-          {/* Transparent Header Overlay */}
-          <div className="absolute top-0 left-0 right-0 z-50 px-5 pt-14 pb-4 flex items-end justify-between pointer-events-none">
-            <div className="flex-1 pointer-events-auto">
+          {/* Transparent Header Overlay — two-row layout */}
+          <div
+            className="absolute top-0 left-0 right-0 z-50 pointer-events-none"
+            style={{ paddingTop: 'max(env(safe-area-inset-top), 44px)' }}
+          >
+            {/* Row 1: Bell (left) | Avatar (right) */}
+            <div className="px-5 flex items-center justify-between">
+              {/* Notification bell — left */}
+              <motion.div
+                className="pointer-events-auto"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.15 }}
+              >
+                <Link
+                  href="/profile"
+                  className="w-10 h-10 rounded-full flex items-center justify-center"
+                  style={{
+                    background: 'rgba(0,0,0,0.22)',
+                    border: '1px solid rgba(255,255,255,0.18)',
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.25)',
+                  }}
+                  aria-label="Notifications"
+                >
+                  <Bell size={17} strokeWidth={1.8} style={{ color: 'rgba(255,240,200,0.95)', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.4))' }} />
+                </Link>
+              </motion.div>
+
+              {/* Profile avatar — right */}
+              <motion.div
+                className="pointer-events-auto"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                <Link href="/profile" className="relative group">
+                  <div className="w-11 h-11 rounded-full border-2 border-white/25 p-0.5 transition-all duration-500 group-hover:border-white/45"
+                    style={{ boxShadow: '0 4px 14px rgba(0,0,0,0.35)' }}>
+                    <div className="w-full h-full rounded-full overflow-hidden relative bg-white/10 backdrop-blur-sm">
+                      {avatarUrl ? (
+                        <Image src={avatarUrl} alt={userName} fill className="object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center font-serif text-lg text-white"
+                          style={{ textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>
+                          {userName.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {isPro && (
+                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#C5A059] rounded-full flex items-center justify-center shadow-lg border-2 border-white/20">
+                      <Sparkles size={10} className="text-white" />
+                    </div>
+                  )}
+                </Link>
+              </motion.div>
+            </div>
+
+            {/* Row 2: City + Greeting */}
+            <div className="px-5 mt-3 pointer-events-auto">
               {displayCity && (
                 <motion.p
                   initial={{ opacity: 0, y: 4 }}
@@ -1676,58 +1735,6 @@ export default function HomeDashboard({
                 {stripGreetingIcon(greeting)},&nbsp;
                 <span style={{ color: 'rgba(255,240,200,0.92)' }}>{userName.split(' ')[0]}</span>
               </motion.h1>
-            </div>
-
-            <div className="flex items-center gap-3 pointer-events-auto">
-              {/* Notification bell */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.15 }}
-              >
-                <Link
-                  href="/profile"
-                  className="w-10 h-10 rounded-full flex items-center justify-center"
-                  style={{
-                    background: 'rgba(255,255,255,0.14)',
-                    border: '1px solid rgba(255,255,255,0.22)',
-                    backdropFilter: 'blur(10px)',
-                    WebkitBackdropFilter: 'blur(10px)',
-                    boxShadow: '0 2px 10px rgba(0,0,0,0.25)',
-                  }}
-                  aria-label="Notifications"
-                >
-                  <Bell size={17} strokeWidth={1.8} style={{ color: 'rgba(255,240,200,0.95)', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.4))' }} />
-                </Link>
-              </motion.div>
-
-              {/* Profile avatar */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                <Link href="/profile" className="relative group">
-                  <div className="w-12 h-12 rounded-full border-2 border-white/25 p-0.5 transition-all duration-500 group-hover:border-white/45"
-                    style={{ boxShadow: '0 4px 14px rgba(0,0,0,0.35)' }}>
-                    <div className="w-full h-full rounded-full overflow-hidden relative bg-white/10 backdrop-blur-sm">
-                      {avatarUrl ? (
-                        <Image src={avatarUrl} alt={userName} fill className="object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center font-serif text-lg text-white"
-                          style={{ textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>
-                          {userName.charAt(0)}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  {isPro && (
-                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#C5A059] rounded-full flex items-center justify-center shadow-lg border-2 border-white/20">
-                      <Sparkles size={10} className="text-white" />
-                    </div>
-                  )}
-                </Link>
-              </motion.div>
             </div>
           </div>
         </div>
