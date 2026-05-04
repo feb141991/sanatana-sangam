@@ -20637,8 +20637,8 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/pathshala-lessons.ts",
       "source_location": "L20",
       "weight": 1.0,
-      "_src": "pathshala_lessons_getpathlessons",
-      "_tgt": "mantra_library_mantralibrary_filter",
+      "_src": "mantra_library_mantralibrary_filter",
+      "_tgt": "pathshala_lessons_getpathlessons",
       "source": "mantra_library_mantralibrary_filter",
       "target": "pathshala_lessons_getpathlessons"
     },

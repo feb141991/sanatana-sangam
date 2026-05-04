@@ -4,7 +4,7 @@
 // Solid warm-cream theme — no opacity tricks, readable for all ages.
 // One verse at a time, full-screen, all features always visible.
 
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -41,7 +41,6 @@ const P = {
 
 // ─── Font steps — generous range for all ages ─────────────────────────────────
 const READER_FONT_STEPS = [1.0, 1.15, 1.32, 1.5, 1.7] as const;
-const ENTRIES_PER_LESSON = 4;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function getEntryText(entry: LibraryEntry) {
@@ -75,8 +74,10 @@ type ExplainResult = {
 interface Props {
   userId: string;
   pathId: string;
+  pathTitle: string;
   tradition: string;
   accentColour: string;
+  lessons: Lesson[];
   currentLesson: number;
   completedLessons: number[];
   transliterationLanguage?: string;
@@ -87,8 +88,10 @@ interface Props {
 export default function LessonClient({
   userId,
   pathId,
+  pathTitle,
   tradition,
   accentColour: _accentColour, // kept in props for compat, we use P palette
+  lessons,
   currentLesson: initialLesson,
   completedLessons: initialCompleted,
   transliterationLanguage,
@@ -98,8 +101,6 @@ export default function LessonClient({
   const engine   = useSadhana();
   const supabase = useRef(createClient()).current;
 
-  const path        = SEED_PATHS.find(p => p.id === pathId);
-  const lessons     = useMemo(() => getPathLessons(pathId), [pathId]);
   const totalLessons = lessons.length;
 
   // ── Lesson navigation ──────────────────────────────────────────────────────
@@ -391,7 +392,7 @@ export default function LessonClient({
 
         {/* Titles */}
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] truncate font-medium" style={{ color: P.inkMuted }}>{path?.title ?? pathId}</p>
+          <p className="text-[10px] truncate font-medium" style={{ color: P.inkMuted }}>{pathTitle}</p>
           <p className="text-sm font-bold truncate" style={{ color: P.ink }}>{lesson.title}</p>
         </div>
 
