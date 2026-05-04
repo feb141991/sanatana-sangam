@@ -75,10 +75,10 @@ function FloatingQuickMenu({
             {reversed.map((action, i) => {
               const delay = prefersReducedMotion ? 0 : i * 0.042;
               return (
-                <motion.button
+                        <motion.button
                   key={action.href}
                   onClick={() => { onClose(); router.push(action.href); }}
-                  className="flex items-center gap-3 rounded-full px-4 py-2.5 cursor-pointer"
+                  className="flex items-center gap-3 rounded-full px-5 py-3 cursor-pointer"
                   style={{
                     background:          GLASS.bg,
                     border:              `1px solid ${GLASS.border}`,
@@ -86,13 +86,14 @@ function FloatingQuickMenu({
                     WebkitBackdropFilter: GLASS.blur,
                     boxShadow:           GLASS.shadow,
                   }}
+                  whileTap={{ scale: 0.94 }}
                   initial={prefersReducedMotion ? undefined : { opacity: 0, y: 12, scale: 0.94 }}
                   animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0,  scale: 1    }}
                   exit={prefersReducedMotion    ? undefined : { opacity: 0, y: 8,  scale: 0.96 }}
                   transition={{ duration: 0.26, delay, ease: menuEase }}
                 >
-                  <span className="text-[1.7rem] leading-none">{action.icon}</span>
-                  <span className="text-[13px] font-semibold"
+                  <span className="text-[1.5rem] leading-none">{action.icon}</span>
+                  <span className="text-[14px] font-bold"
                     style={{ color: labelColor, letterSpacing: '-0.01em' }}>
                     {action.label}
                   </span>
@@ -215,23 +216,27 @@ export default function BottomNav({
             <div className="pl-2 flex-shrink-0">
               <Link href={anchorHref}
                 aria-label={activeItem && scrolled ? activeItem.label : 'Home'}
-                className="relative w-[52px] h-[52px] rounded-full flex items-center justify-center transition-all"
-                style={{
-                  background: anchorActive
-                    ? 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))'
-                    : 'rgba(200,146,74,0.10)',
-                  border:     anchorActive ? 'none' : '1px solid rgba(200,146,74,0.20)',
-                  boxShadow:  anchorActive ? '0 2px 12px rgba(200,146,74,0.20)' : 'none',
-                }}
               >
-                {AnchorIcon}
-                {anchorActive && !prefRM && (
-                  <motion.span className="absolute inset-0 rounded-full"
-                    style={{ border: '1.5px solid rgba(200,146,74,0.35)' }}
-                    animate={{ scale: [1, 1.18, 1], opacity: [0.6, 0, 0.6] }}
-                    transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
-                  />
-                )}
+                <motion.div
+                  className="relative w-[52px] h-[52px] rounded-full flex items-center justify-center transition-all"
+                  whileTap={{ scale: 0.9 }}
+                  style={{
+                    background: anchorActive
+                      ? 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))'
+                      : 'rgba(200,146,74,0.12)',
+                    border:     anchorActive ? 'none' : '1px solid rgba(200,146,74,0.24)',
+                    boxShadow:  anchorActive ? '0 4px 14px rgba(200,146,74,0.30)' : 'none',
+                  }}
+                >
+                  {AnchorIcon}
+                  {anchorActive && !prefRM && (
+                    <motion.span className="absolute inset-0 rounded-full"
+                      style={{ border: '1.5px solid rgba(200,146,74,0.40)' }}
+                      animate={{ scale: [1, 1.2, 1], opacity: [0.6, 0, 0.6] }}
+                      transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
+                    />
+                  )}
+                </motion.div>
               </Link>
             </div>
 
@@ -245,31 +250,41 @@ export default function BottomNav({
               {navItems.map(({ href, label, mobileLabel, icon: Icon }) => {
                 const active = pathname === href || (href !== '/home' && pathname.startsWith(href));
                 return (
-                  <Link key={href} href={href}
-                    className={cn(
-                      'relative flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all',
-                      active ? 'text-[color:var(--brand-primary)]' : 'text-[color:var(--brand-muted)]'
-                    )}>
-                    {active && (
-                      <motion.span
-                        layoutId="bottom-nav-active-shell"
-                        className="absolute inset-0 rounded-[1rem]"
-                        style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.12)' }}
-                        transition={prefRM ? { duration: 0 } : { duration: 0.3, ease }}
-                      />
-                    )}
-                    <div className="relative z-10 w-10 h-10 flex items-center justify-center">
-                      <motion.div animate={prefRM ? undefined : { scale: active ? 1.08 : 1 }}
-                        transition={{ duration: dur, ease }}>
-                        <Icon size={26} strokeWidth={active ? 2.2 : 1.8}
-                          style={{ color: active ? 'var(--brand-primary)' : 'var(--text-dim)' }} />
-                      </motion.div>
-                    </div>
-                    <span className="type-tab relative z-10 text-[11px]"
-                      style={{ color: active ? 'var(--brand-primary)' : 'var(--text-dim)' }}>
-                      <span className="sm:hidden">{mobileLabel ?? label}</span>
-                      <span className="hidden sm:inline">{label}</span>
-                    </span>
+                  <Link key={href} href={href} className="relative group">
+                    <motion.div
+                      whileTap={{ scale: 0.9 }}
+                      className={cn(
+                        'relative flex flex-col items-center gap-0.5 px-3 py-2 rounded-2xl transition-all',
+                        active ? 'text-[color:var(--brand-primary)]' : 'text-[color:var(--brand-muted)]'
+                      )}
+                    >
+                      {active && (
+                        <motion.span
+                          layoutId="bottom-nav-active-shell"
+                          className="absolute inset-0 rounded-[1rem]"
+                          style={{ background: 'rgba(200,146,74,0.14)', border: '1px solid rgba(200,146,74,0.22)' }}
+                          transition={prefRM ? { duration: 0 } : { duration: 0.3, ease }}
+                        />
+                      )}
+                      <div className="relative z-10 w-10 h-10 flex items-center justify-center">
+                        <motion.div animate={prefRM ? undefined : { scale: active ? 1.12 : 1 }}
+                          transition={{ duration: dur, ease }}>
+                          <Icon size={26} strokeWidth={active ? 2.4 : 1.8}
+                            style={{ color: active ? 'var(--brand-primary)' : 'var(--text-dim)' }} />
+                        </motion.div>
+                      </div>
+                      <span className="type-tab relative z-10 text-[10.5px] font-bold"
+                        style={{ color: active ? 'var(--brand-primary)' : 'var(--text-dim)' }}>
+                        <span className="sm:hidden">{mobileLabel ?? label}</span>
+                        <span className="hidden sm:inline">{label}</span>
+                      </span>
+                      {active && (
+                        <motion.div 
+                          layoutId="active-dot"
+                          className="absolute -bottom-1 w-1 h-1 rounded-full bg-[color:var(--brand-primary)]" 
+                        />
+                      )}
+                    </motion.div>
                   </Link>
                 );
               })}
@@ -280,23 +295,24 @@ export default function BottomNav({
               animate={{ x: scrolled ? 28 : 0, opacity: scrolled ? 0 : 1 }}
               transition={{ duration: dur, ease }}
               style={{ pointerEvents: scrolled ? 'none' : 'auto' }}>
-              <button
+              <motion.button
                 onClick={() => setQuickOpen(v => !v)}
                 aria-label="Quick actions"
+                whileTap={{ scale: 0.9 }}
                 className="w-[52px] h-[52px] rounded-full flex items-center justify-center transition-all"
                 style={{
-                  background: quickOpen ? 'rgba(200,146,74,0.18)' : 'rgba(200,146,74,0.10)',
-                  border:     '1px solid rgba(200,146,74,0.24)',
-                  boxShadow:  quickOpen ? '0 0 0 4px rgba(200,146,74,0.10)' : 'none',
+                  background: quickOpen ? 'rgba(200,146,74,0.22)' : 'rgba(200,146,74,0.12)',
+                  border:     '1px solid rgba(200,146,74,0.30)',
+                  boxShadow:  quickOpen ? '0 0 0 4px rgba(200,146,74,0.12)' : 'none',
                 }}>
                 <motion.svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                  stroke="rgba(200,146,74,0.90)" strokeWidth="2.2" strokeLinecap="round"
+                  stroke="rgba(200,146,74,0.95)" strokeWidth="2.4" strokeLinecap="round"
                   animate={quickOpen ? { rotate: 45 } : { rotate: 0 }}
                   transition={{ duration: dur, ease }}>
                   <line x1="12" y1="5" x2="12" y2="19" />
                   <line x1="5"  y1="12" x2="19" y2="12" />
                 </motion.svg>
-              </button>
+              </motion.button>
             </motion.div>
 
           </motion.div>

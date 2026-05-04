@@ -1697,7 +1697,7 @@ export default function HomeDashboard({
         </div>
 
         {/* Daily Darshan System — Tradition Based */}
-        <div className="px-6 pb-2">
+        <div className="px-6 pb-2 scroll-mt-24" id="darshan-section">
           <DarshanPrompt
             darshan={displayDarshan as any}
             isVisible={darshanPromptVisible}
@@ -1900,14 +1900,14 @@ export default function HomeDashboard({
           )}
         </AnimatePresence>
 
-        <MotionStagger className="divine-feature-grid" delay={0.08}>
+        <MotionStagger className="divine-feature-grid scroll-mt-24" id="features-section" delay={0.08}>
           {divineFeatureCards.map((item) => {
             const Icon = item.icon;
             const content = (
               <div className="divine-feature-card motion-lift">
                 <span className="divine-card-motif" aria-hidden="true" />
                 <span className="divine-feature-icon">
-                  <Icon size={20} strokeWidth={1.8} />
+                  <Icon size={20} strokeWidth={2.2} />
                 </span>
                 <span className="divine-feature-title">{item.title}</span>
                 <span className="divine-feature-copy">{item.description}</span>
@@ -1917,7 +1917,13 @@ export default function HomeDashboard({
             if (item.onClick) {
               return (
                 <MotionItem key={item.title}>
-                  <button onClick={item.onClick} className="w-full text-left">
+                  <button 
+                    onClick={() => {
+                      playHaptic('light');
+                      item.onClick!();
+                    }} 
+                    className="w-full text-left"
+                  >
                     {content}
                   </button>
                 </MotionItem>
@@ -1926,7 +1932,10 @@ export default function HomeDashboard({
 
             return (
               <MotionItem key={item.href}>
-                <Link href={item.href!}>
+                <Link 
+                  href={item.href!}
+                  onClick={() => playHaptic('light')}
+                >
                   {content}
                 </Link>
               </MotionItem>
