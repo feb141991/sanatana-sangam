@@ -363,6 +363,7 @@ function Trend({ cur, prev }: { cur: number; prev: number }) {
 // ── Achievement Shields ───────────────────────────────────────────────────────
 const STREAK_SHIELDS = [
   { threshold: 7,   name: 'Saptāha',    emoji: '🔥', desc: '7-day streak'    },
+  { threshold: 9,   name: 'Navarātri',  emoji: '🪔', desc: '9-day streak'    },
   { threshold: 21,  name: 'Niyama',     emoji: '🕯️',  desc: '21-day streak'   },
   { threshold: 40,  name: 'Chālisā',   emoji: '🌟', desc: '40-day streak'   },
   { threshold: 54,  name: 'Ardha Mālā',emoji: '📿', desc: '54-day streak'   },
@@ -422,22 +423,36 @@ function ShieldBadgesPreview({
       <div className="flex gap-2 mb-4">
         {STREAK_SHIELDS.map(shield => {
           const earned = streak >= shield.threshold;
+          const isMilestone = shield.threshold === 7 || shield.threshold === 9;
           return (
             <div key={shield.threshold} className="flex-1 flex flex-col items-center gap-1">
-              <div
-                className="w-full aspect-square rounded-xl flex items-center justify-center text-[16px]"
+              <motion.div
+                className="w-full aspect-square rounded-xl flex items-center justify-center text-[16px] relative"
+                initial={false}
+                animate={{ 
+                  scale: earned ? 1 : 0.95,
+                  boxShadow: earned && isMilestone ? '0 0 12px rgba(251, 191, 36, 0.4)' : 'none'
+                }}
                 style={{
                   background: earned
                     ? isDark ? 'rgba(200,146,74,0.22)' : 'rgba(200,146,74,0.14)'
                     : isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
                   border: earned
-                    ? '1px solid rgba(200,146,74,0.40)'
+                    ? `1px solid ${isMilestone ? '#f59e0b' : 'rgba(200,146,74,0.40)'}`
                     : `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)'}`,
                   filter: earned ? 'none' : 'grayscale(1) opacity(0.25)',
                 }}
               >
                 {shield.emoji}
-              </div>
+                {earned && isMilestone && (
+                  <motion.div 
+                    className="absolute inset-0 rounded-xl"
+                    animate={{ opacity: [0, 0.4, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    style={{ background: 'white' }}
+                  />
+                )}
+              </motion.div>
             </div>
           );
         })}

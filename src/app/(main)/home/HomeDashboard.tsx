@@ -1483,6 +1483,12 @@ export default function HomeDashboard({
       icon: CalendarDays,
     },
     {
+      title: 'Sadhana Pulse',
+      description: 'Your 7d & 9d spiritual trajectory',
+      href: '/my-progress',
+      icon: BarChart2,
+    },
+    {
       title: 'Bhakti',
       description: 'Mala, zen, aarti and sacred practice',
       href: '/bhakti',
@@ -1626,6 +1632,59 @@ export default function HomeDashboard({
                   </>
                 )}
               </Link>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/5 backdrop-blur-md">
+                <div className="flex gap-1">
+                  {[...Array(9)].map((_, i) => {
+                    const dayOffset = 8 - i;
+                    const dateStr = new Date(Date.now() - dayOffset * 86400000).toISOString().split('T')[0];
+                    const entry = practiceHistory?.find(h => h.date === dateStr);
+                    const done = entry?.nitya || entry?.japa || (i === 8 && (nityaDoneToday || japaAlreadyDoneToday));
+                    
+                    // Specific effects for 7th (index 6) and 9th (index 8) dots
+                    const isSaptaha = i === 6;
+                    const isNavratri = i === 8;
+                    
+                    let dotColor = 'rgba(255, 255, 255, 0.15)';
+                    let glowColor = 'none';
+                    let size = isSaptaha || isNavratri ? 8 : 6;
+
+                    if (done) {
+                      if (isNavratri) {
+                        dotColor = '#f59e0b';
+                        glowColor = '0 0 15px #f59e0b';
+                      } else if (isSaptaha) {
+                        dotColor = '#e2e8f0';
+                        glowColor = '0 0 12px #e2e8f0';
+                      } else {
+                        dotColor = '#fbbf24';
+                        glowColor = '0 0 8px #fbbf24';
+                      }
+                    }
+
+                    return (
+                      <motion.div
+                        key={i}
+                        initial={false}
+                        animate={{ 
+                          scale: done ? (isNavratri ? 1.4 : isSaptaha ? 1.25 : 1) : 0.8,
+                          backgroundColor: dotColor,
+                          boxShadow: glowColor
+                        }}
+                        className="rounded-full"
+                        style={{ width: size, height: size }}
+                        whileHover={{ scale: 1.6, y: -2 }}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="flex flex-col ml-1.5 leading-none">
+                  <span className="text-[7px] font-bold uppercase tracking-widest text-white/40">7D 9D</span>
+                  <span className="text-[9px] font-bold uppercase tracking-tight text-white/60">Pulse</span>
+                </div>
+              </div>
             </div>
 
             <div className="divine-hero-bottom">
