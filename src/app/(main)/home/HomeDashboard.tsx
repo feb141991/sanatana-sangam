@@ -1529,54 +1529,178 @@ export default function HomeDashboard({
       {/* ── Sacred confetti celebration ── */}
       <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
 
-      {/* ── Premium Minimalist Header ── */}
-      <div className="px-6 pt-7 pb-4 flex items-end justify-between">
-        <div className="flex-1">
-          {displayCity && (
-            <motion.p
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-[8px] font-bold uppercase tracking-[0.25em] text-[#C5A059]/60 mb-0.5"
-            >
-              {displayCity}
-            </motion.p>
-          )}
-          <motion.h1
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-lg md:text-xl font-serif text-[#2A1B0A] dark:text-[#F0E6D3] leading-none"
+        {/* ── Seamless Divine Hero & Header ────────────────────────────────────────── */}
+        <div className="relative">
+          <motion.div
+            className="divine-hero cursor-pointer"
+            style={{ perspective: 1000, minHeight: '580px', margin: 0 }}
+            whileHover={prefersReducedMotion ? {} : {
+              scale: 1.005,
+              transition: { duration: 0.4, ease: "easeOut" }
+            }}
+            whileTap={prefersReducedMotion ? {} : { scale: 0.995 }}
           >
-            {stripGreetingIcon(greeting)},&nbsp;
-            <span className="opacity-40">{userName.split(' ')[0]}</span>
-          </motion.h1>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Link href="/profile" className="relative group">
-            <div className="w-14 h-14 rounded-full border-2 border-[#C5A059]/20 p-1 transition-all duration-500 group-hover:border-[#C5A059]/40">
-              <div className="w-full h-full rounded-full overflow-hidden relative bg-[#FDFCF8] shadow-inner">
-                {avatarUrl ? (
-                  <Image src={avatarUrl} alt={userName} fill className="object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center font-serif text-xl text-[#C5A059]">
-                    {userName.charAt(0)}
-                  </div>
-                )}
-              </div>
-            </div>
-            {isPro && (
-              <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#C5A059] rounded-full flex items-center justify-center shadow-lg border-2 border-[#FDFCF8]">
-                <Sparkles size={10} className="text-white" />
+            {!heroImageFailed ? (
+              <Image
+                src={heroTheme.heroImage}
+                alt={heroTheme.heroAlt}
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover object-center divine-hero-image"
+                style={{ objectPosition: heroTheme.objectPosition }}
+                onError={() => setHeroImageFailed(true)}
+              />
+            ) : (
+              <div className="divine-hero-fallback" aria-hidden="true">
+                <span>{heroFallback.mark}</span>
+                <strong>{heroFallback.title}</strong>
+                <small>{heroFallback.subtitle}</small>
               </div>
             )}
-          </Link>
-        </motion.div>
-      </div>
+            <div className="divine-hero-overlay" aria-hidden="true" />
+            <div className="divine-hero-readability" aria-hidden="true" />
+            <div className="divine-poster-motif divine-poster-motif-om" aria-hidden="true">{heroFallback.mark}</div>
+            
+            <div className="divine-hero-content">
+              <div className="divine-hero-topline">
+                <Link href="/discover" className="divine-mood-chip-immersive motion-press" aria-label="Open mood discovery">
+                  {moodToday ? (
+                    <>
+                      <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={16} />
+                      <span>Feeling {moodToday.label}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={14} className="text-white/60" />
+                      <span>How are you feeling?</span>
+                    </>
+                  )}
+                </Link>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <motion.div
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/5 backdrop-blur-md"
+                  whileHover={{ rotateX: 5, rotateY: -5, scale: 1.02 }}
+                  style={{ perspective: 500 }}
+                >
+                  <div className="flex gap-1">
+                    {[...Array(9)].map((_, i) => {
+                      const dayOffset = 8 - i;
+                      const dateStr = new Date(Date.now() - dayOffset * 86400000).toISOString().split('T')[0];
+                      const entry = practiceHistory?.find(h => h.date === dateStr);
+                      const done = entry?.nitya || entry?.japa || (i === 8 && (nityaDoneToday || japaAlreadyDoneToday));
+                      const isSaptaha = i === 6;
+                      const isNavratri = i === 8;
+                      let dotColor = 'rgba(255, 255, 255, 0.15)';
+                      let glowColor = 'none';
+                      const size = isSaptaha || isNavratri ? 8 : 6;
+                      if (done) {
+                        if (isNavratri) { dotColor = '#f59e0b'; glowColor = '0 0 15px #f59e0b'; }
+                        else if (isSaptaha) { dotColor = '#e2e8f0'; glowColor = '0 0 12px #e2e8f0'; }
+                        else { dotColor = '#fbbf24'; glowColor = '0 0 8px #fbbf24'; }
+                      }
+                      return (
+                        <motion.div
+                          key={i}
+                          initial={false}
+                          animate={{
+                            scale: done ? (isNavratri ? 1.4 : isSaptaha ? 1.25 : 1) : 0.8,
+                            backgroundColor: dotColor,
+                            boxShadow: glowColor
+                          }}
+                          className="rounded-full"
+                          style={{ width: size, height: size }}
+                        />
+                      );
+                    })}
+                  </div>
+                  <span className="text-[10px] font-bold text-white/90 tracking-widest uppercase ml-1">Practice</span>
+                </motion.div>
+                
+                <Link href="/sadhana" className="divine-action-pill-immersive motion-press">
+                  View Path
+                </Link>
+              </div>
+
+              <div className="mt-8">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="h-[1px] w-8 bg-[#C5A059]/40" />
+                  <span className="text-[10px] font-bold text-[#C5A059] uppercase tracking-[0.4em]">{heroFallback.subtitle}</span>
+                </div>
+                <h2 className="text-4xl md:text-5xl font-serif text-white leading-tight max-w-md drop-shadow-sm">
+                  {heroFallback.title}
+                </h2>
+                
+                <motion.button
+                  whileHover={{ x: 5 }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleOpenHeroDetail();
+                  }}
+                  className="mt-6 flex items-center gap-3 text-white group"
+                >
+                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center group-hover:bg-[#C5A059] transition-colors duration-500">
+                    <BookOpen size={18} />
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-[0.2em]">{heroFallback.cta}</span>
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Transparent Header Overlay */}
+          <div className="absolute top-0 left-0 right-0 z-50 px-6 pt-7 pb-4 flex items-end justify-between pointer-events-none">
+            <div className="flex-1 pointer-events-auto">
+              {displayCity && (
+                <motion.p
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-1 text-[8px] font-bold uppercase tracking-[0.25em] text-white/70 mb-0.5"
+                >
+                  <MapPin size={9} strokeWidth={2.5} />
+                  {displayCity}
+                </motion.p>
+              )}
+              <motion.h1
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-lg md:text-xl font-serif text-white leading-none"
+              >
+                {stripGreetingIcon(greeting)},&nbsp;
+                <span className="opacity-60">{userName.split(' ')[0]}</span>
+              </motion.h1>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="pointer-events-auto"
+            >
+              <Link href="/profile" className="relative group">
+                <div className="w-14 h-14 rounded-full border-2 border-white/20 p-1 transition-all duration-500 group-hover:border-white/40">
+                  <div className="w-full h-full rounded-full overflow-hidden relative bg-white/10 backdrop-blur-sm shadow-inner">
+                    {avatarUrl ? (
+                      <Image src={avatarUrl} alt={userName} fill className="object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center font-serif text-xl text-white">
+                        {userName.charAt(0)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {isPro && (
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#C5A059] rounded-full flex items-center justify-center shadow-lg border-2 border-white/20">
+                    <Sparkles size={10} className="text-white" />
+                  </div>
+                )}
+              </Link>
+            </motion.div>
+          </div>
+        </div>
 
         {/* Daily Darshan System — Tradition Based */}
         <div className="px-6 pb-2">
@@ -1587,131 +1711,6 @@ export default function HomeDashboard({
             onDismiss={handleDismissPrompt}
           />
         </div>
-
-        <div className="px-4 mb-10">
-          <motion.div
-            className="divine-hero cursor-pointer rounded-[2.5rem] overflow-hidden shadow-sm border border-[#C5A059]/10"
-            style={{ perspective: 1000, margin: 0, minHeight: '460px' }}
-            whileHover={prefersReducedMotion ? {} : {
-              scale: 1.01,
-              rotateX: 1,
-              rotateY: -1.5,
-              transition: { duration: 0.4, ease: "easeOut" }
-            }}
-            whileTap={prefersReducedMotion ? {} : { scale: 0.985 }}
-          >
-          {!heroImageFailed ? (
-            <Image
-              src={heroTheme.heroImage}
-              alt={heroTheme.heroAlt}
-              fill
-              priority
-              sizes="(max-width: 768px) 100vw, 760px"
-              className="object-cover object-center divine-hero-image"
-              style={{ objectPosition: heroTheme.objectPosition }}
-              onError={() => setHeroImageFailed(true)}
-            />
-          ) : (
-            <div className="divine-hero-fallback" aria-hidden="true">
-              <span>{heroFallback.mark}</span>
-              <strong>{heroFallback.title}</strong>
-              <small>{heroFallback.subtitle}</small>
-            </div>
-          )}
-          <div className="divine-hero-overlay" aria-hidden="true" />
-          <div className="divine-hero-readability" aria-hidden="true" />
-          <div className="divine-poster-motif divine-poster-motif-om" aria-hidden="true">{heroFallback.mark}</div>
-          <div className="divine-poster-motif divine-poster-motif-mandala" aria-hidden="true" />
-          <div className="divine-poster-motif divine-poster-motif-lotus" aria-hidden="true" />
-
-          <div className="divine-hero-content">
-            <div className="divine-hero-topline">
-              <Link href="/discover" className="divine-mood-chip-immersive motion-press" aria-label="Open mood discovery">
-                {moodToday ? (
-                  <>
-                    <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={16} />
-                    <span>Feeling {moodToday.label}</span>
-                  </>
-                ) : (
-                  <>
-                    <Sparkles size={14} className="text-white/60" />
-                    <span>How are you feeling?</span>
-                  </>
-                )}
-              </Link>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <motion.div
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/5 backdrop-blur-md"
-                whileHover={{ rotateX: 5, rotateY: -5, scale: 1.02 }}
-                style={{ perspective: 500 }}
-              >
-                <div className="flex gap-1">
-                  {[...Array(9)].map((_, i) => {
-                    const dayOffset = 8 - i;
-                    const dateStr = new Date(Date.now() - dayOffset * 86400000).toISOString().split('T')[0];
-                    const entry = practiceHistory?.find(h => h.date === dateStr);
-                    const done = entry?.nitya || entry?.japa || (i === 8 && (nityaDoneToday || japaAlreadyDoneToday));
-                    const isSaptaha = i === 6;
-                    const isNavratri = i === 8;
-                    let dotColor = 'rgba(255, 255, 255, 0.15)';
-                    let glowColor = 'none';
-                    const size = isSaptaha || isNavratri ? 8 : 6;
-                    if (done) {
-                      if (isNavratri) { dotColor = '#f59e0b'; glowColor = '0 0 15px #f59e0b'; }
-                      else if (isSaptaha) { dotColor = '#e2e8f0'; glowColor = '0 0 12px #e2e8f0'; }
-                      else { dotColor = '#fbbf24'; glowColor = '0 0 8px #fbbf24'; }
-                    }
-                    return (
-                      <motion.div
-                        key={i}
-                        initial={false}
-                        animate={{
-                          scale: done ? (isNavratri ? 1.4 : isSaptaha ? 1.25 : 1) : 0.8,
-                          backgroundColor: dotColor,
-                          boxShadow: glowColor
-                        }}
-                        className="rounded-full"
-                        style={{ width: size, height: size }}
-                        whileHover={isNavratri ? {
-                          scale: 2.2, y: -6, transition: { type: 'spring', stiffness: 500, damping: 10 }
-                        } : isSaptaha ? {
-                          scale: 1.8, y: -4, transition: { type: 'spring', stiffness: 400 }
-                        } : { scale: 1.6, y: -2 }}
-                      />
-                    );
-                  })}
-                </div>
-                <div className="flex flex-col ml-1.5 leading-none">
-                  <span className="text-[7px] font-bold uppercase tracking-widest text-white/40">7D 9D</span>
-                  <span className="text-[9px] font-bold uppercase tracking-tight text-white/60">Pulse</span>
-                </div>
-              </motion.div>
-            </div>
-
-            <div className="divine-hero-bottom">
-              <motion.button
-                type="button"
-                onClick={() => setShlokaModalOpen(true)}
-                className="divine-shloka-card-v2 motion-press cursor-pointer w-full text-left"
-                whileHover={prefersReducedMotion ? {} : {
-                  scale: 1.012,
-                  rotateX: -1,
-                  rotateY: 1,
-                  boxShadow: "0 15px 35px rgba(0,0,0,0.3)",
-                  transition: { duration: 0.4, ease: "easeOut" }
-                }}
-                whileTap={prefersReducedMotion ? {} : { scale: 0.985 }}
-                style={{ perspective: 800 }}
-              >
-                <span className="divine-poster-label">{dailyText.label}</span>
-                <p className="divine-sanskrit-immersive-dark line-clamp-3">{dailyTextLine}</p>
-                <p className="divine-meaning-dark line-clamp-2">{dailyText.meaning}</p>
-              </motion.button>
-            </div>
-          </div>
-        </motion.div>
       </div>
 
 
@@ -2296,7 +2295,6 @@ export default function HomeDashboard({
         userName={userName} 
       />
       <BottomNav />
-    </div>
     </div>
   );
 }
