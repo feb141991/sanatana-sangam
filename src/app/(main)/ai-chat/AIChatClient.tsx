@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useEngine } from '@/contexts/EngineContext';
 import { usePremium } from '@/hooks/usePremium';
-import { useProfile } from '@/hooks/useProfile';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import { getTransliteration } from '@/lib/transliteration';
 
