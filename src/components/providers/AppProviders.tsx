@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 import { ThemeProvider } from './ThemeProvider';
+import { ZenithSensoryProvider } from '@/contexts/ZenithSensoryContext';
 
 export default function AppProviders({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -25,7 +26,11 @@ export default function AppProviders({ children }: { children: React.ReactNode }
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>{children}</ThemeProvider>
+      <ThemeProvider>
+        <ZenithSensoryProvider>
+          {children}
+        </ZenithSensoryProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

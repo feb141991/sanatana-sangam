@@ -8,6 +8,7 @@ import { BHAKTI_MANTRAS } from '@/lib/bhakti-practice';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
+import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 
 // ─── Timing ──────────────────────────────────────────────────────────────────
 const PRESET_DURATIONS = [12, 24, 48];
@@ -326,62 +327,41 @@ function FireflyParticles() {
     </div>
   );
 }
-function TempleParticles() {
+function LotusParticles() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {Array.from({ length: 18 }).map((_, i) => (
-        <motion.div key={`lamp-${i}`} className="absolute rounded-full"
-          style={{ width: 1.5 + (i % 3) * 0.5, height: 1.5 + (i % 3) * 0.5, left: `${10 + (i * 5.3) % 80}%`, bottom: `${5 + (i % 4) * 3}%`, background: i % 3 === 0 ? 'rgba(255,200,60,0.9)' : 'rgba(255,150,30,0.8)', boxShadow: `0 0 ${3 + (i % 3) * 2}px rgba(255,170,40,0.6)` }}
-          animate={{ y: [0, -(50 + i * 12)], x: [0, (i % 2 === 0 ? 1 : -1) * (4 + i % 5)], opacity: [0, 0.8, 0.5, 0], scale: [0.4, 1.2, 0.6, 0] }}
-          transition={{ duration: 3.5 + i * 0.4, repeat: Infinity, delay: i * 0.65, ease: 'easeOut' }}
-        />
+      {Array.from({ length: 15 }).map((_, i) => (
+        <motion.div key={`lotus-${i}`} className="absolute"
+          style={{ 
+            left: `${(i * 7.7) % 95}%`, 
+            top: `-20px`,
+            color: i % 2 === 0 ? 'rgba(255, 182, 193, 0.4)' : 'rgba(255, 215, 0, 0.3)' 
+          }}
+          initial={{ y: -20, rotate: 0, opacity: 0 }}
+          animate={{ 
+            y: '110vh', 
+            rotate: [0, 45, -45, 90],
+            x: [0, (i % 2 === 0 ? 20 : -20), 0],
+            opacity: [0, 0.8, 0.8, 0] 
+          }}
+          transition={{ 
+            duration: 10 + (i % 5) * 2, 
+            repeat: Infinity, 
+            delay: i * 0.8, 
+            ease: 'linear' 
+          }}
+        >
+          <span className="text-xl">🪷</span>
+        </motion.div>
       ))}
-      <motion.div className="absolute left-1/2 bottom-[10%] -translate-x-1/2 rounded-full"
-        style={{ width: 80, height: 80, background: 'radial-gradient(circle, rgba(255,160,30,0.14) 0%, transparent 70%)' }}
-        animate={{ opacity: [0.6, 1, 0.6], scale: [0.9, 1.1, 0.9] }}
-        transition={{ duration: 2.5, repeat: Infinity }}
-      />
     </div>
   );
 }
-function NightStars() {
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {Array.from({ length: 50 }).map((_, i) => (
-        <motion.div key={`star-${i}`} className="absolute rounded-full"
-          style={{ width: i % 8 === 0 ? 2 : 1, height: i % 8 === 0 ? 2 : 1, left: `${(i * 2.1) % 100}%`, top: `${(i * 2.7) % 75}%`, background: 'white', boxShadow: i % 8 === 0 ? '0 0 4px rgba(200,200,255,0.8)' : 'none' }}
-          animate={{ opacity: [0.15, i % 3 === 0 ? 0.9 : 0.5, 0.15], scale: [0.8, i % 5 === 0 ? 1.8 : 1.2, 0.8] }}
-          transition={{ duration: 1.5 + (i % 5) * 0.7, repeat: Infinity, delay: i * 0.18 }}
-        />
-      ))}
-      <motion.div className="absolute inset-0"
-        style={{ background: 'linear-gradient(135deg, transparent 0%, rgba(150,130,255,0.05) 40%, transparent 70%)' }}
-        animate={{ opacity: [0.3, 0.8, 0.3] }} transition={{ duration: 12, repeat: Infinity }}
-      />
-    </div>
-  );
-}
-function RiverRipples() {
-  return (
-    <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-1/2 overflow-hidden">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <motion.div key={`ripple-${i}`} className="absolute left-1/2 rounded-full"
-          style={{ width: 40 + i * 60, height: 40 + i * 60, bottom: -20 - i * 18, marginLeft: -(20 + i * 30), border: `1px solid rgba(80,160,220,${0.25 - i * 0.03})` }}
-          animate={{ scale: [1, 1.3, 1], opacity: [0.12, 0.35, 0.12] }}
-          transition={{ duration: 4 + i * 1.5, repeat: Infinity, delay: i * 0.8 }}
-        />
-      ))}
-      <motion.div className="absolute bottom-0 left-0 right-0 h-24"
-        style={{ background: 'linear-gradient(0deg, rgba(20,80,140,0.18) 0%, transparent 100%)' }}
-        animate={{ opacity: [0.5, 0.9, 0.5] }} transition={{ duration: 3.5, repeat: Infinity }}
-      />
-    </div>
-  );
-}
+
 function EnvParticles({ env }: { env: EnvId }) {
   if (env === 'mountains') return <SnowParticles />;
   if (env === 'forest')    return <FireflyParticles />;
-  if (env === 'temple')    return <TempleParticles />;
+  if (env === 'temple')    return <LotusParticles />; // Bhakti/Temple uses Lotus
   if (env === 'night')     return <NightStars />;
   if (env === 'river')     return <RiverRipples />;
   return null;
@@ -391,6 +371,7 @@ function EnvParticles({ env }: { env: EnvId }) {
 export default function SattvicModePage() {
   const { resolvedTheme } = useThemePreference();
   const isDark = resolvedTheme === 'dark';
+  const { playHaptic, setIsMuted } = useZenithSensory();
 
   // ── Theme tokens ───────────────────────────────────────────────────────
   const mainCardBg   = isDark ? 'linear-gradient(160deg,rgba(26,14,8,0.97) 0%,rgba(14,8,4,0.99) 100%)' : 'linear-gradient(160deg,rgba(255,245,230,0.98) 0%,rgba(250,235,210,0.99) 100%)';
@@ -484,6 +465,7 @@ export default function SattvicModePage() {
     if (!running || mode !== 'breath') return;
     function cyclePhase(current: Phase) {
       hapticPhase(current);
+      playHaptic(current === 'hold' ? 'light' : 'medium'); // Zenith Haptic
       if (current === 'inhale') playBell(432, 0.8, 0.12);
       if (current === 'exhale') playBell(528, 1.2, 0.1);
       setPhase(current);
@@ -492,7 +474,7 @@ export default function SattvicModePage() {
     }
     cyclePhase('inhale');
     return () => { if (phaseTimeout.current) clearTimeout(phaseTimeout.current); };
-  }, [running, mode]);
+  }, [running, mode, playHaptic]);
 
   // Ambient
   useEffect(() => {

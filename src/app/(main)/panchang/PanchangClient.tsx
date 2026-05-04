@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, ArrowLeft, Share2 } from 'lucide-react';
 import { useSacredCalendar, type SacredCalendarData } from '@/hooks/useSacredCalendar';
 import { calculatePanchang } from '@/lib/panchang';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 
 interface Props {
   lat:       number;
@@ -51,13 +52,13 @@ function getSkyPhase(nowMin: number, sunriseMin: number, sunsetMin: number): Sky
 }
 
 const SKY_GRADIENTS: Record<SkyPhase, string> = {
-  night:     'linear-gradient(180deg, #0a0a1a 0%, #0f0f2e 40%, #1a0f2e 100%)',
-  predawn:   'linear-gradient(180deg, #0d0d28 0%, #1a0f35 50%, #2d1045 100%)',
+  night:     'linear-gradient(180deg, #050508 0%, #0a0a1a 40%, #080812 100%)', // Deeper Obsidian
+  predawn:   'linear-gradient(180deg, #080812 0%, #0f0a20 50%, #1a0830 100%)',
   dawn:      'linear-gradient(180deg, #1a0a28 0%, #5c1f3a 35%, #c45c2a 70%, #e8a060 100%)',
   morning:   'linear-gradient(180deg, #1e4a8a 0%, #3a7ab8 35%, #d4885a 70%, #f0b870 100%)',
   afternoon: 'linear-gradient(180deg, #1a3a6e 0%, #2d5a9e 40%, #4a7ac0 100%)',
   dusk:      'linear-gradient(180deg, #1a1030 0%, #5c1a1a 30%, #c44820 60%, #e87040 100%)',
-  evening:   'linear-gradient(180deg, #0f0820 0%, #2a1040 40%, #4a1a30 100%)',
+  evening:   'linear-gradient(180deg, #080512 0%, #1a0828 40%, #2a0a1a 100%)',
 };
 
 const SKY_ORB: Record<SkyPhase, { color: string; size: string; opacity: number }> = {
@@ -211,6 +212,7 @@ function Stars({ count = 28 }: { count?: number }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: Props) {
   const { t } = useLanguage();
+  const { playHaptic, setTheme } = useZenithSensory();
   const tradMeta = TRADITION_META[tradition] ?? TRADITION_META.hindu;
   const today    = useMemo(() => new Date(), []);
   const [selected,   setSelected]  = useState<Date>(today);
@@ -386,11 +388,14 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
               return (
                 <motion.button
                   key={date.toISOString()}
-                  onClick={() => setSelected(date)}
+                  onClick={() => { 
+                    setSelected(date);
+                    playHaptic('medium'); // Tactile time-shift
+                  }}
                   whileTap={{ scale: 0.88 }}
                   className="relative flex flex-col items-center justify-center rounded-xl py-1.5 transition-all"
                   style={
-                    isSelected    ? { background: tradMeta.accent, border: 'none' }
+                    isSelected    ? { background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }
                     : isCurrentDay ? { border: `1px solid ${tradMeta.accent}`, background: `${tradMeta.accent}20` }
                     : { background: 'transparent' }
                   }>

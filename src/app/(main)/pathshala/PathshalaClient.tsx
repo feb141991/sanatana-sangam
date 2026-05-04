@@ -25,9 +25,8 @@ import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import PremiumActivateModal from "@/components/premium/PremiumActivateModal";
 import { getTraditionMeta } from '@/lib/tradition-config';
-import { usePremium } from '@/hooks/usePremium';
-import { calculatePanchang, getTodaySpiritualPulse, type SpiritualPulse } from '@/lib/panchang';
-import { useLocation } from '@/lib/LocationContext';
+import { useLocation } from '@/lib/locationContext';
+import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import CircularProgress from '@/components/ui/CircularProgress';
 import {
   ALL_LIBRARY_ENTRIES, LIBRARY_SECTIONS,
@@ -513,6 +512,7 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
   const meta      = getTraditionMeta(tradition);
   const isPro     = usePremium();
   const prefersReducedMotion = useReducedMotion();
+  const { playHaptic } = useZenithSensory();
 
   const { coords: _pathCoords } = useLocation();
   const lat = _pathCoords?.lat ?? undefined;
@@ -527,8 +527,11 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
     return getTodaySpiritualPulse(p.tithiIndex, tradition);
   }, [tradition, lat, lon]);
 
-  // Tab: 'learn' | 'scripture' | 'explore'
   const [tab, setTab] = useState<'learn' | 'scripture' | 'explore'>(initialTab ?? 'learn');
+  const switchTab = (t: 'learn' | 'scripture' | 'explore') => {
+    setTab(t);
+    playHaptic('medium');
+  };
 
   // Filter paths to those relevant to this tradition
   const traditionPaths = useMemo(() => {
@@ -617,6 +620,7 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
     }
 
     setEnrolling(pathId);
+    playHaptic('medium');
     try {
       const { error } = await supabase
         .from('guided_path_progress')
@@ -649,6 +653,7 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
   // ── Unenroll (leave path) ─────────────────────────────────────────────────────
   async function unenroll(pathId: string, pathTitle: string) {
     if (!confirm(`Leave "${pathTitle}"? Your progress will be saved and you can re-enroll anytime.`)) return;
+    playHaptic('medium');
     try {
       const { error } = await supabase
         .from('guided_path_progress')
@@ -666,6 +671,7 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
   // ── Start Over — resets lesson progress but keeps enrollment active ──────────
   async function startOver(pathId: string, pathTitle: string) {
     if (!confirm(`Start "${pathTitle}" from the beginning? This will reset your lesson progress.`)) return;
+    playHaptic('medium');
     try {
       const { error } = await supabase
         .from('guided_path_progress')

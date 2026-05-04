@@ -52,6 +52,7 @@ import { getDailyDarshan, DARSHAN_REGISTRY } from '@/lib/darshan-registry';
 import DarshanOverlay from '@/components/home/DarshanOverlay';
 import DarshanPrompt from '@/components/home/DarshanPrompt';
 import { getTransliteration } from '@/lib/transliteration';
+import DivineDiya from '@/components/bhakti/DivineDiya';
 
 interface Panchang {
   tithi:      string;
@@ -1582,6 +1583,20 @@ export default function HomeDashboard({
             onOpen={handleOpenDarshan}
             onDismiss={handleDismissPrompt}
           />
+        </div>
+
+        {/* ── Daily Ritual: Divine Diya ── */}
+        <div className="px-4 py-2">
+          <div 
+            className="rounded-[2.2rem] overflow-hidden border backdrop-blur-md relative"
+            style={{ 
+              background: 'rgba(255,255,255,0.015)', 
+              borderColor: 'rgba(200,146,74,0.12)',
+              boxShadow: 'inset 0 0 20px rgba(200,146,74,0.03)'
+            }}
+          >
+            <DivineDiya />
+          </div>
         </div>
 
         <motion.div

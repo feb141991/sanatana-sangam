@@ -14,6 +14,7 @@ import type { Profile, PostWithAuthor, PostCommentWithAuthor, EventRsvp } from '
 import { AsyncStateCard, EmptyState } from '@/components/ui';
 import { useMandaliMutations, useMandaliQuery } from '@/hooks/useMandali';
 import { usePremium } from '@/hooks/usePremium';
+import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 
 type MemberRow = Pick<Profile, 'id' | 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'ishta_devata' | 'spiritual_level' | 'city' | 'seva_score'>;
 
@@ -996,6 +997,7 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
 export default function MandaliClient({ profile, posts: initialPosts, comments: initialComments, rsvps: initialRsvps, members, userId, blendedPosts = [] }: Props) {
   const isPro = usePremium();
   const router = useRouter();
+  const { playHaptic } = useZenithSensory();
   const mandaliQuery = useMandaliQuery(userId, {
     profile,
     posts: initialPosts,
@@ -1019,6 +1021,10 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
   const [activeTab,       setActiveTab]       = useState<'members' | 'events' | 'vichaar'>(
     initialVichaarCount > 0 ? 'vichaar' : initialEventCount > 0 ? 'events' : 'members'
   );
+  const switchTab = (t: 'members' | 'events' | 'vichaar') => {
+    setActiveTab(t);
+    playHaptic('light');
+  };
   const [showSearch,      setShowSearch]      = useState(false);
   const [showCompose,     setShowCompose]     = useState(false);
   const [showMandaliMenu, setShowMandaliMenu] = useState(false);
@@ -1137,8 +1143,8 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
 
   async function toggleUpvote(postId: string) {
     try {
-      const isUpvoted = upvoted.has(postId);
       const nextState = await mandaliMutations.toggleUpvote.mutateAsync({ postId, isUpvoted });
+      playHaptic('light');
       setUpvoted((current) => {
         const next = new Set(current);
         if (nextState) {

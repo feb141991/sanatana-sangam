@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useEngine } from '@/contexts/EngineContext';
 import { usePremium } from '@/hooks/usePremium';
+import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import { getTransliteration } from '@/lib/transliteration';
 
@@ -273,6 +274,7 @@ export default function AIChatClient({
   const inputRef       = useRef<HTMLTextAreaElement>(null);
   const { engine, isReady } = useEngine();
   const isPro = usePremium();
+  const { playHaptic } = useZenithSensory();
   const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   // Tradition-aware content
@@ -303,6 +305,7 @@ export default function AIChatClient({
     const userMsg: Message = { id: newId(), role: 'user', text: msgText, timestamp: new Date() };
     setMessages(prev => [...prev, userMsg]);
     setLoading(true);
+    playHaptic('light');
 
     // ── Path A: RAG via engine.search.ask() ──────────────────────────────────
     // Uses pgvector to find relevant scripture chunks, then Gemini explains them.
@@ -334,6 +337,7 @@ export default function AIChatClient({
           } as any;
           setMessages(prev => [...prev, modelMsg]);
           setLoading(false);
+          playHaptic('medium');
           return;
         }
       } catch (ragErr) {
@@ -376,6 +380,7 @@ export default function AIChatClient({
         fromRag:   false,
       };
       setMessages(prev => [...prev, modelMsg]);
+      playHaptic('medium');
     } catch {
       toast.error('Network error — please try again');
     } finally {

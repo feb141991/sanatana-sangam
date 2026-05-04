@@ -24,6 +24,7 @@ import { useThemePreference } from '@/components/providers/ThemeProvider';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import Link from 'next/link';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 const TOTAL_BEADS = 108;
@@ -210,6 +211,37 @@ const BG_SCENES = [
 ] as const;
 
 type BgSceneId = typeof BG_SCENES[number]['id'];
+
+function LotusParticles() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {Array.from({ length: 15 }).map((_, i) => (
+        <motion.div key={`lotus-${i}`} className="absolute"
+          style={{ 
+            left: `${(i * 7.7) % 95}%`, 
+            top: `-20px`,
+            color: i % 2 === 0 ? 'rgba(255, 182, 193, 0.4)' : 'rgba(255, 215, 0, 0.3)' 
+          }}
+          initial={{ y: -20, rotate: 0, opacity: 0 }}
+          animate={{ 
+            y: '110vh', 
+            rotate: [0, 45, -45, 90],
+            x: [0, (i % 2 === 0 ? 20 : -20), 0],
+            opacity: [0, 0.8, 0.8, 0] 
+          }}
+          transition={{ 
+            duration: 10 + (i % 5) * 2, 
+            repeat: Infinity, 
+            delay: i * 0.8, 
+            ease: 'linear' 
+          }}
+        >
+          <span className="text-xl">🪷</span>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
 
 // ── Web Audio ambient engine (no external URLs — works offline + no CORS) ──────
 let _japaCtx: AudioContext | null = null;
@@ -513,6 +545,7 @@ function MalaSVG({
   malaId: MalaId; beadCount: number; isDark: boolean; pulsing: boolean;
   flashBeadIdx: number; flashKey: number;
 }) {
+  const { playHaptic } = useZenithSensory();
   const mala = MALAS.find(m => m.id === malaId) ?? MALAS[0];
   const c = isDark ? mala.dark : mala.light;
   const currentBeadIdx = beadCount % TOTAL_BEADS;
@@ -1387,7 +1420,7 @@ function PracticeSettingsSheet({
 }
 
 // ── Main JapaClient ────────────────────────────────────────────────────────────
-type Screen = 'chooseMala' | 'chooseMantra' | 'japa';
+type Screen = 'chooseMala' | 'chooseMantra' | 'practice';
 
 interface Props {
   userId: string;
@@ -1404,7 +1437,7 @@ export default function JapaClient({
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
   const isDark = resolvedTheme === 'dark';
-  const engine = useEngine();
+  const { playHaptic } = useZenithSensory();
 
   const meta = getTraditionMeta(tradition);
   const defaultMantraId: MantraId = meta.japaDefaultMantra as MantraId;
@@ -1415,7 +1448,6 @@ export default function JapaClient({
   const [mantraId,  setMantraId]  = useState<MantraId>(defaultMantraId);
   const [bgSceneId, setBgSceneId] = useState<BgSceneId>('midnight');
   const [targetRounds, setTargetRounds] = useState(1);
-  // Ref so countBead callback always reads the latest targetRounds without stale closure
   const targetRoundsRef = useRef(1);
   useEffect(() => { targetRoundsRef.current = targetRounds; }, [targetRounds]);
 
@@ -1429,16 +1461,15 @@ export default function JapaClient({
     controlsTimerRef.current = setTimeout(() => setControlsVisible(false), 4000);
   }, []);
 
-  // Show controls on entering japa screen, hide after 4s
   useEffect(() => {
-    if (screen === 'japa') {
+    if (screen === 'practice') {
       showControlsBriefly();
     } else {
       setControlsVisible(true);
       if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current);
     }
     return () => { if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current); };
-  }, [screen]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [screen]); 
 
   // ── Per-bead flash animation state ──────────────────────────────────────
   const [flashBeadIdx, setFlashBeadIdx] = useState(-1);
@@ -1446,12 +1477,9 @@ export default function JapaClient({
   const flashTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
   const beadCountRef   = useRef(0);
 
-  // ── Floating "+1" particles — one per bead tap ────────────────────────
-  interface FloatParticle { id: number }
-  const [floatParticles, setFloatParticles] = useState<FloatParticle[]>([]);
+  const [floatParticles, setFloatParticles] = useState<{id: number}[]>([]);
   const floatIdRef = useRef(0);
 
-  // ── Settings sheet state ─────────────────────────────────────────────
   const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
@@ -1465,7 +1493,6 @@ export default function JapaClient({
     } catch { /* ok */ }
   }, []);
 
-  // ── Japa state ───────────────────────────────────────────────────────────
   const [beadCount,    setBeadCount]    = useState(0);
   const [roundsDone,   setRoundsDone]   = useState(0);
   const [totalBeads,   setTotalBeads]   = useState(0);
@@ -1481,54 +1508,20 @@ export default function JapaClient({
   const [savingSession, setSavingSession] = useState(false);
   const [pulsing,      setPulsing]      = useState(false);
 
-  // Keep beadCountRef in sync so countBead can read current value without closure staleness
   useEffect(() => { beadCountRef.current = beadCount; }, [beadCount]);
 
-  // Timer
   const [duration, setDuration] = useState(0);
   const timerRef   = useRef<ReturnType<typeof setInterval> | null>(null);
   const startedAt  = useRef<number | null>(null);
 
   useEffect(() => {
-    if (screen !== 'japa' || paused || showComplete) return;
+    if (screen !== 'practice' || paused || showComplete) return;
     if (!startedAt.current) startedAt.current = Date.now();
     timerRef.current = setInterval(() => setDuration(s => s + 1), 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [screen, paused, showComplete]);
 
-  // ── Audio — Web Audio API (no CORS, no external URLs) ───────────────────
-  // Cleanup on unmount
   useEffect(() => () => { stopJapaAmbient(); }, []);
-
-  // Pause/resume: Web Audio context suspend/resume
-  useEffect(() => {
-    if (!_japaCtx) return;
-    if (paused) {
-      _japaCtx.suspend().catch(() => {});
-    } else {
-      _japaCtx.resume().catch(() => {});
-    }
-  }, [paused]);
-
-  // Stop audio when leaving japa screen
-  useEffect(() => {
-    if (screen !== 'japa') {
-      stopJapaAmbient();
-      setSoundId('silence');
-    }
-  }, [screen]);
-
-  // Full-screen exit when leaving practice. Entry is requested inside the start
-  // click handler because browsers require a direct user gesture.
-  useEffect(() => {
-    if (screen !== 'japa') {
-      try {
-        if (document.fullscreenElement) {
-          document.exitFullscreen().catch(() => {});
-        }
-      } catch { /* ok */ }
-    }
-  }, [screen]);
 
   const enterBrowserFullscreen = useCallback(() => {
     try {
@@ -1536,33 +1529,27 @@ export default function JapaClient({
       if (el.requestFullscreen && !document.fullscreenElement) {
         el.requestFullscreen().catch(() => {});
       }
-    } catch { /* ok — fixed viewport remains the fallback */ }
+    } catch { /* ok */ }
   }, []);
 
-  // ── Handle sound selection (called from PracticeSettingsSheet — user gesture) ──
   function handleSoundSelect(id: SoundId) {
     setSoundId(id);
     localStorage.setItem(STORAGE_SOUND, id);
     startJapaAmbient(id);
-    // Don't close settings here — let user continue adjusting; sheet has its own close
   }
 
-  // ── Count bead ───────────────────────────────────────────────────────────
   const countBead = useCallback(() => {
     if (paused || showComplete) return;
-    hapticLight();
+    playHaptic('light');
     setPulsing(true);
     setTimeout(() => setPulsing(false), 120);
 
-    // Show controls briefly on any tap, reset auto-hide timer
     showControlsBriefly();
 
-    // Spawn a floating "+1" particle from the mala center
     const pid = ++floatIdRef.current;
     setFloatParticles(prev => [...prev.slice(-5), { id: pid }]);
     setTimeout(() => setFloatParticles(prev => prev.filter(p => p.id !== pid)), 800);
 
-    // Flash ripple on the bead we're about to count
     const countingIdx = beadCountRef.current % TOTAL_BEADS;
     setFlashBeadIdx(countingIdx);
     setFlashKey(k => k + 1);
@@ -1576,9 +1563,8 @@ export default function JapaClient({
         setRoundsDone(r => {
           const newRounds = r + 1;
           setTotalBeads(t => t + next);
-          // Only auto-complete when the user has hit their target rounds
           if (newRounds >= targetRoundsRef.current) {
-            stopJapaAmbient();   // silence the ambient sound when sadhana is done
+            stopJapaAmbient();
             setTimeout(() => setShowComplete(true), 300);
           }
           return newRounds;
@@ -1588,13 +1574,8 @@ export default function JapaClient({
       setTotalBeads(t => t + 1);
       return next;
     });
-  }, [paused, showComplete, showControlsBriefly]);
+  }, [paused, showComplete, showControlsBriefly, playHaptic]);
 
-  // ── Milestone thresholds ─────────────────────────────────────────────────
-  const STREAK_MILESTONES  = [7, 21, 40, 54, 108, 365];
-  const SESSION_MILESTONES = [7, 21, 40, 108, 365, 1000];
-
-  // ── Save session ─────────────────────────────────────────────────────────
   const saveSession = useCallback(async (completedRounds: number, partialBeads = 0) => {
     if (saved || savingSession || (completedRounds === 0 && partialBeads === 0)) return false;
     setSavingSession(true);
@@ -1603,8 +1584,6 @@ export default function JapaClient({
       const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
       const today = localSpiritualDate(tz, 4);
 
-      // Persist through the canonical Mala schema. Compatibility alias columns
-      // are included only so deployments that already added v30 fields stay in sync.
       const totalBeads = completedRounds * TOTAL_BEADS + partialBeads;
       const completedAt = new Date().toISOString();
       const malaSessionRow = buildMalaSessionInsert({
@@ -1622,8 +1601,6 @@ export default function JapaClient({
       const primaryInsert = await supabase.from('mala_sessions').insert(malaSessionRow);
 
       if (primaryInsert.error) {
-        // Some environments may not have compatibility alias columns yet.
-        console.warn('[Mala] full insert failed, trying canonical columns only:', primaryInsert.error.message);
         const {
           date: _date,
           rounds: _rounds,
@@ -1635,10 +1612,7 @@ export default function JapaClient({
           ...canonicalRow
         } = malaSessionRow;
         const fallback = await supabase.from('mala_sessions').insert(canonicalRow);
-        if (fallback.error) {
-          console.error('[Mala] mala_sessions insert failed:', fallback.error);
-          throw fallback.error;
-        }
+        if (fallback.error) throw fallback.error;
       }
 
       const { count: newTotalSessions } = await supabase
@@ -1646,7 +1620,6 @@ export default function JapaClient({
         .select('*', { count: 'exact', head: true })
         .eq('user_id', userId);
 
-      // Streak: look at yesterday's record to build a consecutive-day count
       const yesterdayObj = new Date(today + 'T12:00:00Z');
       yesterdayObj.setUTCDate(yesterdayObj.getUTCDate() - 1);
       const yesterday = yesterdayObj.toISOString().slice(0, 10);
@@ -1654,7 +1627,6 @@ export default function JapaClient({
         supabase.from('daily_sadhana').select('streak_count, japa_done').eq('user_id', userId).eq('date', today).maybeSingle(),
         supabase.from('daily_sadhana').select('streak_count, japa_done').eq('user_id', userId).eq('date', yesterday).maybeSingle(),
       ]);
-      // If today already has a streak count (edge case), keep it; otherwise derive from yesterday
       const newStreak = todayRow?.streak_count
         ? todayRow.streak_count
         : (yesterdayRow?.japa_done ? (yesterdayRow.streak_count ?? 0) + 1 : 1);
@@ -1663,35 +1635,14 @@ export default function JapaClient({
       }, { onConflict: 'user_id,date' });
       setStreak(newStreak);
       setSaved(true);
-
-      // ── Fire milestone notifications (fire-and-forget) ──────────────────
-      const milestonePayloads: { type: 'streak' | 'session'; threshold: number }[] = [];
-
-      if (STREAK_MILESTONES.includes(newStreak)) {
-        milestonePayloads.push({ type: 'streak', threshold: newStreak });
-      }
-      const total = newTotalSessions ?? 0;
-      if (SESSION_MILESTONES.includes(total)) {
-        milestonePayloads.push({ type: 'session', threshold: total });
-      }
-
-      for (const payload of milestonePayloads) {
-        fetch('/api/notifications/milestone', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        }).catch(() => { /* best-effort */ });
-      }
       return true;
     } catch (err) {
-      console.error('[Japa] saveSession error:', err);
       return false;
     } finally {
       setSavingSession(false);
     }
-  }, [saved, savingSession, userId, mantraId, malaId, bgSceneId, duration]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [saved, savingSession, userId, mantraId, malaId, bgSceneId, duration]);
 
-  // ── Handlers ─────────────────────────────────────────────────────────────
   const handleBgSceneSelect = (id: BgSceneId) => {
     setBgSceneId(id);
     try { localStorage.setItem(STORAGE_BG, id); } catch { /* ok */ }
@@ -1705,7 +1656,7 @@ export default function JapaClient({
   const handleConfirmMantra = () => {
     try { localStorage.setItem(STORAGE_MANTRA, mantraId); } catch { /* ok */ }
     enterBrowserFullscreen();
-    setScreen('japa');
+    setScreen('practice');
   };
 
   const handleReset = () => {
@@ -1782,22 +1733,18 @@ export default function JapaClient({
   const currentBgScene = BG_SCENES.find(s => s.id === bgSceneId) ?? BG_SCENES[0];
   const bgC = isDark ? currentBgScene.dark : currentBgScene.light;
 
-  // Theme tokens for japa screen
   const bg      = bgC.bg;
   const text     = isDark ? 'rgba(245,225,185,0.97)' : '#2D1F0E';
   const sub      = isDark ? 'rgba(200,146,74,0.60)'  : 'rgba(100,65,25,0.60)';
   const amber    = isDark ? '#C8924A' : '#7A4A1E';
   const cardBg   = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
 
-  // Progress toward target
-  // For multi-round targets: full rounds completed / target; for single mala: bead count / 108
   const progressPct = targetRounds > 1
     ? Math.min(100, (roundsDone / targetRounds) * 100)
     : Math.min(100, (beadCount / 108) * 100);
 
   return (
     <AnimatePresence mode="wait">
-
       {screen === 'chooseMala' && (
         <ChooseMalaScreen
           key="chooseMala"
@@ -1822,16 +1769,16 @@ export default function JapaClient({
         />
       )}
 
-      {screen === 'japa' && (
+      {screen === 'practice' && (
         <motion.div
-          key="japa"
+          key="practice"
           className="flex flex-col"
           style={{
             position: 'fixed',
             inset: 0,
             zIndex: 100,
             background: bg,
-            overflow: 'hidden',   // no scroll — this is a full-screen immersive view
+            overflow: 'hidden',
           }}
           initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
@@ -1841,14 +1788,13 @@ export default function JapaClient({
             countBead();
           }}
         >
-          {/* ── Atmospheric bg overlay ─────────────────────────────────────── */}
           {bgC.overlay !== 'none' && (
             <div style={{
               position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
               background: bgC.overlay,
             }} />
           )}
-          {/* ── Top bar — auto-hides after 4s of no tap ─────────────────── */}
+
           <motion.div
             animate={{ opacity: controlsVisible ? 1 : 0 }}
             transition={{ duration: 0.5, ease: 'easeInOut' }}
@@ -1857,13 +1803,10 @@ export default function JapaClient({
           <div className="flex items-center justify-between px-5 pt-14 pb-2">
             <button
               onClick={() => setShowStopSheet(true)}
-              aria-label="Stop or exit mala"
               className="w-9 h-9 rounded-full flex items-center justify-center"
               style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
               <X size={17} style={{ color: amber }} />
             </button>
-
-            {/* Mantra name + tradition */}
             <div className="text-center flex-1 px-3">
               <p className="text-[10px] tracking-widest uppercase font-semibold" style={{ color: sub }}>
                 {currentMantra.tradition}
@@ -1872,10 +1815,7 @@ export default function JapaClient({
                 {currentMantra.name}
               </p>
             </div>
-
-            {/* Right controls */}
             <div className="flex items-center gap-2">
-              {/* Sound quick-toggle */}
               <button
                 onClick={() => setShowSettings(true)}
                 className="w-9 h-9 rounded-full flex items-center justify-center"
@@ -1884,7 +1824,6 @@ export default function JapaClient({
                   ? <VolumeX size={15} style={{ color: amber }} />
                   : <Volume2 size={15} style={{ color: amber }} />}
               </button>
-              {/* Settings — opens in-screen sheet, does NOT exit fullscreen */}
               <button
                 onClick={() => setShowSettings(true)}
                 className="w-9 h-9 rounded-full flex items-center justify-center"
@@ -1893,8 +1832,6 @@ export default function JapaClient({
               </button>
             </div>
           </div>
-
-          {/* ── Mantra devanagari ─────────────────────────────────────────── */}
           <div className="text-center px-6 pb-2">
             <p style={{
               fontFamily: 'var(--font-devanagari), "Noto Sans Devanagari", sans-serif',
@@ -1906,8 +1843,6 @@ export default function JapaClient({
               {currentMantra.devanagari}
             </p>
           </div>
-
-          {/* ── Progress bar + compact target indicator ───────────────────── */}
           <div className="px-8 pb-2">
             <div className="h-1.5 rounded-full overflow-hidden" style={{ background: `${amber}18` }}>
               <motion.div
@@ -1923,7 +1858,6 @@ export default function JapaClient({
                   ? `${roundsDone}/${targetRounds} malas`
                   : `${beadCount}/108 beads`}
               </p>
-              {/* Tap to open settings sheet */}
               <button
                 onClick={() => setShowSettings(true)}
                 className="text-[10px] font-semibold flex items-center gap-1 px-2 py-0.5 rounded-full border"
@@ -1932,92 +1866,35 @@ export default function JapaClient({
               </button>
             </div>
           </div>
+          </motion.div>
 
-          </motion.div>{/* end auto-hide controls wrapper */}
-
-          {/* ── SVG Mala + floating +1 particles ─────────────────────────── */}
-          <div className="flex-1 flex flex-col items-center justify-center px-2 gap-2" style={{ position: 'relative', zIndex: 1, minHeight: 0 }}>
-
-            {/* Floating +1 particles (rendered absolute over the mala area) */}
-            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 20 }}>
-              <AnimatePresence>
-                {floatParticles.map(p => (
-                  <motion.div
-                    key={p.id}
-                    style={{
-                      position: 'absolute',
-                      left: '50%',
-                      top: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      fontSize: '1.4rem',
-                      fontWeight: 800,
-                      fontFamily: 'system-ui, -apple-system, sans-serif',
-                      color: amber,
-                      pointerEvents: 'none',
-                      letterSpacing: '-0.02em',
-                      textShadow: isDark ? `0 0 12px ${amber}80` : 'none',
-                    }}
-                    initial={{ opacity: 1, y: 0, scale: 1.1 }}
-                    animate={{ opacity: 0, y: -72, scale: 0.85 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.75, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  >
-                    +1
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-
-            {/* Mala SVG — fills available space, max-height constrained */}
-            <motion.div
-              className="w-full flex items-center justify-center"
-              animate={pulsing ? { scale: [1, 0.980, 1.005, 1] } : {}}
-              transition={{ duration: 0.15 }}
-              style={{ maxWidth: 420, maxHeight: 'calc(100vh - 26rem)', aspectRatio: '1 / 1' }}
-            >
-              <MalaSVG
-                malaId={malaId}
-                beadCount={beadCount + roundsDone * TOTAL_BEADS}
-                isDark={isDark}
-                pulsing={pulsing}
-                flashBeadIdx={flashBeadIdx}
-                flashKey={flashKey}
-              />
-            </motion.div>
-
-            {/* Round indicator dots */}
-            <div className="flex items-center gap-1.5">
-              {Array.from({ length: Math.max(targetRounds, roundsDone + 1) }, (_, i) => (
-                <div
-                  key={i}
-                  className="rounded-full transition-all"
-                  style={{
-                    width: i === roundsDone ? 22 : 7,
-                    height: 7,
-                    background: i < roundsDone
-                      ? amber
-                      : i === roundsDone
-                      ? `${amber}85`
-                      : `${amber}22`,
-                  }}
+          <div className="flex-1 flex flex-col items-center justify-center relative">
+            <LotusParticles />
+            <div className="relative z-10 w-full max-w-sm px-6">
+              <motion.div
+                className="w-full flex items-center justify-center"
+                animate={pulsing ? { scale: [1, 0.980, 1.005, 1] } : {}}
+                transition={{ duration: 0.15 }}
+                style={{ maxWidth: 420, maxHeight: 'calc(100vh - 26rem)', aspectRatio: '1 / 1' }}
+              >
+                <MalaSVG
+                  malaId={malaId}
+                  beadCount={beadCount + roundsDone * TOTAL_BEADS}
+                  isDark={isDark}
+                  pulsing={pulsing}
+                  flashBeadIdx={flashBeadIdx}
+                  flashKey={flashKey}
                 />
-              ))}
-              {roundsDone > 0 && (
-                <p className="text-[11px] font-semibold ml-1" style={{ color: sub }}>
-                  Round {roundsDone + 1}
-                </p>
-              )}
+              </motion.div>
             </div>
           </div>
 
-          {/* ── Bottom controls — auto-hides ─────────────────────────────── */}
           <motion.div
             animate={{ opacity: controlsVisible ? 1 : 0 }}
             transition={{ duration: 0.5, ease: 'easeInOut' }}
             style={{ pointerEvents: controlsVisible ? 'auto' : 'none', position: 'relative', zIndex: 10 }}
           >
           <div className="px-5 space-y-3" style={{ paddingBottom: 'max(5.5rem, calc(env(safe-area-inset-bottom, 0px) + 4.5rem))' }}>
-            {/* Streak + insights row */}
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-1.5">
                 <Flame size={15} style={{ color: streak > 0 ? amber : `${amber}40` }} />
@@ -2025,7 +1902,6 @@ export default function JapaClient({
                   {streak > 0 ? `${streak} day streak` : 'Start your streak'}
                 </span>
               </div>
-              <Link
                 href="/bhakti/mala/insights"
                 className="flex items-center gap-1"
                 onClick={e => e.stopPropagation()}
