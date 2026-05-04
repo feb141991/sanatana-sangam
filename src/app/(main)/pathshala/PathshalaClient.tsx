@@ -299,6 +299,7 @@ function ScriptureReader({
       .upsert({
         user_id: userId,
         entry_id: v.id,
+        tradition: v.tradition ?? tradition,
         bookmarked_at: next ? new Date().toISOString() : null,
       }, { onConflict: 'user_id,entry_id' });
     if (error) { setBookmarkedIds(prev); toast.error(error.message); return; }
@@ -448,16 +449,16 @@ function ScriptureReader({
         <div className="flex items-center justify-around px-4 pt-3 pb-4 max-w-xl mx-auto">
           {/* Listen */}
           <button onClick={() => speakEntry(activeVerse)} className="flex flex-col items-center gap-1 min-w-[52px]">
-            <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: speakingId === activeVerse?.id ? P.accent : P.accentBg, border: `1px solid ${P.border}` }}>
-              {ttsLoadingId === activeVerse?.id ? <Loader2 size={17} className="animate-spin" /> : speakingId === activeVerse?.id ? <VolumeX size={17} /> : <Volume2 size={17} />}
+            <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: speakingId === activeVerse?.id ? '#2563EB' : P.accentBg, border: `1px solid ${P.border}` }}>
+              {ttsLoadingId === activeVerse?.id ? <Loader2 size={17} className="animate-spin" style={{ color: speakingId === activeVerse?.id ? '#fff' : P.accentDeep }} /> : speakingId === activeVerse?.id ? <VolumeX size={17} style={{ color: '#fff' }} /> : <Volume2 size={17} style={{ color: P.accentDeep }} />}
             </div>
             <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{speakingId === activeVerse?.id ? 'Stop' : 'Listen'}</span>
           </button>
 
           {/* Save */}
           <button onClick={() => toggleBookmark(activeVerse)} className="flex flex-col items-center gap-1 min-w-[52px]">
-            <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: bookmarkedIds.has(activeVerse?.id) ? P.accent : P.accentBg, border: `1px solid ${P.border}` }}>
-              <Bookmark size={17} style={{ color: bookmarkedIds.has(activeVerse?.id) ? P.btnText : P.accentDeep }} className={bookmarkedIds.has(activeVerse?.id) ? 'fill-current' : ''} />
+            <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: bookmarkedIds.has(activeVerse?.id) ? '#2563EB' : P.accentBg, border: `1px solid ${P.border}` }}>
+              <Bookmark size={17} style={{ color: bookmarkedIds.has(activeVerse?.id) ? '#fff' : P.accentDeep }} className={bookmarkedIds.has(activeVerse?.id) ? 'fill-current' : ''} />
             </div>
             <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{bookmarkedIds.has(activeVerse?.id) ? 'Saved' : 'Save'}</span>
           </button>
