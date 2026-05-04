@@ -316,7 +316,7 @@ body {
   position: relative;
   min-height: clamp(480px, 112vw, 620px);
   overflow: hidden;
-  background: #FDFCF8;
+  background: var(--divine-bg, #FAF6EF);
   margin: 0;
   padding: 0;
   display: flex;
@@ -418,9 +418,9 @@ body {
 
 .divine-hero-readability {
   position: absolute;
-  inset: auto 0 -40%;
+  inset: auto 0 0;
   z-index: 2;
-  height: 40%;
+  height: 42%;
   background:
     linear-gradient(to bottom, transparent 0%, rgba(250, 246, 239, 0.6) 30%, rgba(250, 246, 239, 0.95) 60%, var(--divine-bg) 100%);
   pointer-events: none;

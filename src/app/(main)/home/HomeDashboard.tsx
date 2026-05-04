@@ -1523,7 +1523,7 @@ export default function HomeDashboard({
   ];
 
   return (
-    <div className="min-h-screen bg-[#FAF6EF] dark:bg-[#1c1c1a] relative selection:bg-[#C5A059]/30">
+    <div className="divine-home-shell min-h-screen bg-[#FAF6EF] dark:bg-[#1c1c1a] -mx-3 -mt-2 sm:-mx-4 relative selection:bg-[#C5A059]/30">
       <div className="relative">
 
       {/* ── Sacred confetti celebration ── */}
