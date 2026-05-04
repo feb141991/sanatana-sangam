@@ -21,6 +21,7 @@ import {
   Users,
   X,
   Radio,
+  BarChart2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
