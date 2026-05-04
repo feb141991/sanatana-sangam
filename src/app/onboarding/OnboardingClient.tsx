@@ -182,14 +182,15 @@ const slide = {
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 interface Props {
-  userId:        string;
-  hasTradition:  boolean;
-  hasLifeStage:  boolean;
-  hasCity:       boolean;
-  hasLanguage:   boolean;
+  userId:          string;
+  traditionValue?: string;
+  hasTradition:    boolean;
+  hasLifeStage:    boolean;
+  hasCity:         boolean;
+  hasLanguage:     boolean;
 }
 
-export default function OnboardingClient({ userId, hasTradition, hasLifeStage, hasCity, hasLanguage }: Props) {
+export default function OnboardingClient({ userId, traditionValue = '', hasTradition, hasLifeStage, hasCity, hasLanguage }: Props) {
   const router   = useRouter();
   const supabase = createClient();
   const prefersReducedMotion = useReducedMotion();
@@ -201,7 +202,7 @@ export default function OnboardingClient({ userId, hasTradition, hasLifeStage, h
 
   const [saving,     setSaving]     = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
-  const [tradition,  setTradition]  = useState<TraditionKey | ''>('');
+  const [tradition,  setTradition]  = useState<TraditionKey | ''>(traditionValue as TraditionKey | '');
   const [dob,          setDob]          = useState('');
   const [lifeStage,    setLifeStage]    = useState<LifeStage | ''>('');
   const [lifeStageOverridden, setLifeStageOverridden] = useState(false);
@@ -331,7 +332,18 @@ export default function OnboardingClient({ userId, hasTradition, hasLifeStage, h
             <AnimatePresence mode="wait">
 
               {/* ── Screen 1 — Sanctuary Welcome ─────────────────────── */}
-              {step === 1 && (
+              {step === 1 && (() => {
+                // Tradition-aware welcome greeting (resolved at render time from tradition state)
+                const WELCOME: Record<string, { script: string; roman: string; note: string }> = {
+                  sikh:     { script: 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ', roman: 'Sat Sri Akal',        note: 'Eternal truth is the Timeless One' },
+                  buddhist: { script: 'बुद्धं शरणं',    roman: 'Buddham Sharanam',     note: 'I take refuge in the Buddha' },
+                  jain:     { script: 'जय जिनेन्द्र',   roman: 'Jai Jinendra',          note: 'Victory to the conqueror of the self' },
+                  other:    { script: 'नमस्ते',          roman: 'Namaste',               note: 'The divine in me bows to the divine in you' },
+                  hindu:    { script: 'जय श्री राम',     roman: 'Jai Shri Ram',          note: 'Salutations to the eternal Sri Ram' },
+                  '':       { script: 'जय श्री राम',     roman: 'Jai Shri Ram',          note: 'Salutations to the eternal Sri Ram' },
+                };
+                const wg = WELCOME[tradition] ?? WELCOME[''];
+                return (
                 <motion.div
                   key="s1"
                   {...(prefersReducedMotion ? {} : slide)}
@@ -348,7 +360,28 @@ export default function OnboardingClient({ userId, hasTradition, hasLifeStage, h
                   </motion.div>
 
                   <div className="space-y-4">
-                    {/* Sanskrit */}
+                    {/* Tradition-aware greeting */}
+                    <motion.div
+                      initial={prefersReducedMotion ? undefined : { opacity: 0, y: -6 }}
+                      animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                      transition={{ delay: 0.28, duration: 0.5 }}
+                      className="space-y-0.5"
+                    >
+                      <p
+                        className="text-[1.35rem] font-semibold tracking-wide leading-tight"
+                        style={{ color: 'rgba(200,146,74,0.90)', fontFamily: 'var(--font-devanagari)' }}
+                      >
+                        {wg.script}
+                      </p>
+                      <p
+                        className="text-[10px] font-medium tracking-[0.22em] uppercase"
+                        style={{ color: 'rgba(200,146,74,0.38)' }}
+                      >
+                        {wg.roman}
+                      </p>
+                    </motion.div>
+
+                    {/* Sanskrit sub-label */}
                     <motion.p
                       initial={prefersReducedMotion ? undefined : { opacity: 0 }}
                       animate={prefersReducedMotion ? undefined : { opacity: 1 }}
@@ -412,7 +445,8 @@ export default function OnboardingClient({ userId, hasTradition, hasLifeStage, h
                     ))}
                   </motion.div>
                 </motion.div>
-              )}
+                );
+              })()}
 
               {/* ── Screen 2 — Your Tradition ─────────────────────────── */}
               {step === 2 && (

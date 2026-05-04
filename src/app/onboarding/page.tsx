@@ -21,6 +21,7 @@ export default async function OnboardingPage() {
   return (
     <OnboardingClient
       userId={user.id}
+      traditionValue={profile?.tradition ?? ''}
       hasTradition={Boolean(profile?.tradition)}
       hasLifeStage={Boolean(profile?.life_stage)}
       hasCity={Boolean(profile?.city)}
