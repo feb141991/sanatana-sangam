@@ -183,7 +183,7 @@ function ScriptureReader({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
-      className="fixed inset-0 z-[100] overflow-y-auto"
+      className="fixed inset-0 z-[999] overflow-y-auto"
       style={{ 
         background: sattvaMode 
           ? 'radial-gradient(circle at center, #1a1208 0%, #0a0806 100%)' 
@@ -241,13 +241,13 @@ function ScriptureReader({
                 {v.original}
               </p>
 
-              <div className="grid md:grid-cols-2 gap-8 pt-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8">
                 <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5">
                   <p className="text-[10px] font-bold text-[color:var(--brand-muted)] uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
                     <span className="w-1 h-1 rounded-full bg-[color:var(--brand-muted)]" />
                     Transliteration
                   </p>
-                  <p className="text-sm md:text-base text-[color:var(--brand-muted)] italic leading-relaxed font-serif">
+                  <p className="text-sm md:text-base text-[color:var(--brand-muted)] italic leading-relaxed font-serif break-words">
                     {v.transliteration}
                   </p>
                 </div>
@@ -256,7 +256,7 @@ function ScriptureReader({
                     <span className="w-1 h-1 rounded-full" style={{ background: accentColour }} />
                     Divine Meaning
                   </p>
-                  <p className="text-base md:text-lg text-[color:var(--brand-ink)] leading-relaxed font-medium">
+                  <p className="text-base md:text-lg text-[color:var(--brand-ink)] leading-relaxed font-medium break-words">
                     {v.meaning}
                   </p>
                 </div>
@@ -271,7 +271,7 @@ function ScriptureReader({
         )}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-6 md:p-8 bg-gradient-to-t from-[var(--brand-background)] via-[var(--brand-background)]/95 to-transparent">
+      <div className="fixed bottom-0 left-0 right-0 p-6 md:p-8 bg-gradient-to-t from-[var(--brand-background)] via-[var(--brand-background)]/95 to-transparent z-[1001] safe-area-pb">
         <div className="max-w-2xl mx-auto">
           <motion.button
             whileHover={{ scale: 1.02 }}
