@@ -1562,73 +1562,14 @@ export default function HomeDashboard({
             <div className="divine-hero-readability" aria-hidden="true" />
             <div className="divine-poster-motif divine-poster-motif-om" aria-hidden="true">{heroFallback.mark}</div>
             
-            <div className="divine-hero-content">
-              <div className="divine-hero-topline">
-                <Link href="/discover" className="divine-mood-chip-immersive motion-press" aria-label="Open mood discovery">
-                  {moodToday ? (
-                    <>
-                      <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={16} />
-                      <span>Feeling {moodToday.label}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles size={14} className="text-white/60" />
-                      <span>How are you feeling?</span>
-                    </>
-                  )}
-                </Link>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <motion.div
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/20 border border-white/10 backdrop-blur-md shadow-sm"
-                  whileHover={{ rotateX: 5, rotateY: -5, scale: 1.02 }}
-                  style={{ perspective: 500 }}
-                >
-                  <div className="flex gap-1">
-                    {[...Array(9)].map((_, i) => {
-                      const dayOffset = 8 - i;
-                      const dateStr = new Date(Date.now() - dayOffset * 86400000).toISOString().split('T')[0];
-                      const entry = practiceHistory?.find(h => h.date === dateStr);
-                      const done = entry?.nitya || entry?.japa || (i === 8 && (nityaDoneToday || japaAlreadyDoneToday));
-                      const isSaptaha = i === 6;
-                      const isNavratri = i === 8;
-                      let dotColor = 'rgba(255, 255, 255, 0.15)';
-                      let glowColor = 'none';
-                      const size = isSaptaha || isNavratri ? 8 : 6;
-                      if (done) {
-                        if (isNavratri) { dotColor = '#f59e0b'; glowColor = '0 0 15px #f59e0b'; }
-                        else if (isSaptaha) { dotColor = '#e2e8f0'; glowColor = '0 0 12px #e2e8f0'; }
-                        else { dotColor = '#fbbf24'; glowColor = '0 0 8px #fbbf24'; }
-                      }
-                      return (
-                        <motion.div
-                          key={i}
-                          initial={false}
-                          animate={{
-                            scale: done ? (isNavratri ? 1.4 : isSaptaha ? 1.25 : 1) : 0.8,
-                            backgroundColor: dotColor,
-                            boxShadow: glowColor
-                          }}
-                          className="rounded-full"
-                          style={{ width: size, height: size }}
-                        />
-                      );
-                    })}
-                  </div>
-                  <span className="text-[10px] font-bold text-white/90 tracking-widest uppercase ml-1">Practice</span>
-                </motion.div>
-              </div>
-
-            </div>
           </motion.div>
 
           {/* Transparent Header Overlay — two-row layout */}
           <div
             className="absolute top-0 left-0 right-0 z-50 pointer-events-none"
-            style={{ paddingTop: 'max(env(safe-area-inset-top), 44px)' }}
+            style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}
           >
-            {/* Row 1: Bell (left) | Avatar (right) */}
+            {/* Row 1: Bell (left) | Mood (center) | Avatar (right) */}
             <div className="px-5 flex items-center justify-between">
               {/* Notification bell — left */}
               <motion.div
@@ -1650,6 +1591,28 @@ export default function HomeDashboard({
                   aria-label="Notifications"
                 >
                   <Bell size={17} strokeWidth={1.8} style={{ color: 'rgba(255,240,200,0.95)', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.4))' }} />
+                </Link>
+              </motion.div>
+
+              {/* Mood chip — center */}
+              <motion.div
+                className="pointer-events-auto"
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.18 }}
+              >
+                <Link href="/discover" className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/15 border border-white/10 backdrop-blur-md shadow-lg" aria-label="Open mood discovery">
+                  {moodToday ? (
+                    <>
+                      <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={14} />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-white/90">Feeling {moodToday.label}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={12} className="text-white/60" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">Mood</span>
+                    </>
+                  )}
                 </Link>
               </motion.div>
 
