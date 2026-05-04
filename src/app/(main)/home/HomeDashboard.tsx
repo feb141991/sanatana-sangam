@@ -1635,7 +1635,11 @@ export default function HomeDashboard({
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/5 backdrop-blur-md">
+              <motion.div 
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/5 backdrop-blur-md"
+                whileHover={{ rotateX: 5, rotateY: -5, scale: 1.02 }}
+                style={{ perspective: 500 }}
+              >
                 <div className="flex gap-1">
                   {[...Array(9)].map((_, i) => {
                     const dayOffset = 8 - i;
@@ -1675,7 +1679,18 @@ export default function HomeDashboard({
                         }}
                         className="rounded-full"
                         style={{ width: size, height: size }}
-                        whileHover={{ scale: 1.6, y: -2 }}
+                        whileHover={isNavratri ? {
+                          scale: 2.2,
+                          y: -6,
+                          transition: { type: 'spring', stiffness: 500, damping: 10 }
+                        } : isSaptaha ? {
+                          scale: 1.8,
+                          y: -4,
+                          transition: { type: 'spring', stiffness: 400 }
+                        } : {
+                          scale: 1.6,
+                          y: -2
+                        }}
                       />
                     );
                   })}
@@ -1684,7 +1699,7 @@ export default function HomeDashboard({
                   <span className="text-[7px] font-bold uppercase tracking-widest text-white/40">7D 9D</span>
                   <span className="text-[9px] font-bold uppercase tracking-tight text-white/60">Pulse</span>
                 </div>
-              </div>
+              </motion.div>
             </div>
 
             <div className="divine-hero-bottom">

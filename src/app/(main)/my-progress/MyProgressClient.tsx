@@ -436,6 +436,15 @@ function ShieldBadgesPreview({
                   scale: earned ? 1 : 0.95,
                   boxShadow: earned && isMilestone ? '0 0 15px rgba(251, 191, 36, 0.4)' : 'none'
                 }}
+                whileHover={shield.threshold === 9 ? {
+                  scale: 2.2,
+                  rotate: [0, -10, 10, -5, 5, 0],
+                  transition: { type: 'spring', stiffness: 600, damping: 12 }
+                } : shield.threshold === 7 ? {
+                  scale: 1.8,
+                  y: -5,
+                  transition: { type: 'spring', stiffness: 500 }
+                } : { scale: 1.1 }}
                 style={{
                   background: earned
                     ? isDark ? 'rgba(251,191,36,0.15)' : 'rgba(251,191,36,0.1)'
@@ -971,6 +980,11 @@ export default function MyProgressClient({
                 style={{
                   background: 'radial-gradient(circle at 30% 30%, #fcd34d 0%, #d97706 50%, #78350f 100%)',
                   boxShadow: '0 0 40px rgba(251, 191, 36, 0.3), inset -10px -10px 30px rgba(0,0,0,0.5)',
+                }}
+                whileHover={{ 
+                  scale: 1.15, 
+                  rotateY: 720,
+                  transition: { duration: 1.2, ease: "easeOut" }
                 }}
                 animate={streak >= 9 ? {
                   rotateY: 360,
