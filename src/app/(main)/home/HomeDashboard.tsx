@@ -1559,6 +1559,7 @@ export default function HomeDashboard({
               </div>
             )}
             <div className="divine-hero-overlay" aria-hidden="true" />
+            <div className="absolute inset-0 z-[2] bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none" aria-hidden="true" />
             <div className="divine-hero-readability" aria-hidden="true" />
             <div className="divine-poster-motif divine-poster-motif-om" aria-hidden="true">{heroFallback.mark}</div>
             
@@ -1645,6 +1646,28 @@ export default function HomeDashboard({
                     <BookOpen size={18} />
                   </div>
                   <span className="text-xs font-bold uppercase tracking-[0.2em]">Explore Today</span>
+                </motion.button>
+              </div>
+
+              {/* Shloka at the bottom of the hero */}
+              <div className="divine-hero-bottom mt-auto">
+                <motion.button
+                  type="button"
+                  onClick={() => setShlokaModalOpen(true)}
+                  className="divine-shloka-card-v2 motion-press cursor-pointer w-full text-left"
+                  whileHover={prefersReducedMotion ? {} : {
+                    scale: 1.012,
+                    rotateX: -1,
+                    rotateY: 1,
+                    boxShadow: "0 15px 35px rgba(0,0,0,0.3)",
+                    transition: { duration: 0.4, ease: "easeOut" }
+                  }}
+                  whileTap={prefersReducedMotion ? {} : { scale: 0.985 }}
+                  style={{ perspective: 800 }}
+                >
+                  <span className="divine-poster-label">{dailyText.label}</span>
+                  <p className="divine-sanskrit-immersive-dark line-clamp-3 text-white">{dailyTextLine}</p>
+                  <p className="divine-meaning-dark line-clamp-2 text-white/80">{dailyText.meaning}</p>
                 </motion.button>
               </div>
             </div>
