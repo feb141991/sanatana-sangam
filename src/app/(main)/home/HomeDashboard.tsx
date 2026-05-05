@@ -1475,12 +1475,8 @@ export default function HomeDashboard({
     onClick?: () => void;
     icon: React.ElementType;
   }> = [
-    {
-      title: 'Daily Darshan',
-      description: 'Get divine blessings every day',
-      onClick: handleOpenDarshan,
-      icon: Sparkles,
-    },
+    // Daily Darshan hidden until content is fully prepared
+    // { title: 'Daily Darshan', description: 'Get divine blessings every day', onClick: handleOpenDarshan, icon: Sparkles },
     {
       title: 'Live Darshan',
       description: '24/7 Temple live streams',
@@ -1700,15 +1696,7 @@ export default function HomeDashboard({
           </motion.button>
         </div>
 
-        {/* Daily Darshan System — Tradition Based */}
-        <div className="px-6 pb-2 scroll-mt-24" id="darshan-section">
-          <DarshanPrompt
-            darshan={displayDarshan as any}
-            isVisible={darshanPromptVisible}
-            onOpen={handleOpenDarshan}
-            onDismiss={handleDismissPrompt}
-          />
-        </div>
+        {/* Daily Darshan — hidden until content is fully prepared */}
       </div>
 
 
@@ -1958,13 +1946,7 @@ export default function HomeDashboard({
           <span className="divine-seva-cta">Donate Now</span>
         </Link>
 
-      {/* Daily Darshan Fullscreen Overlay */}
-      <DarshanOverlay 
-        darshans={DARSHAN_REGISTRY}
-        initialIndex={initialDarshanIndex >= 0 ? initialDarshanIndex : 0}
-        isOpen={darshanOpen}
-        onClose={() => setDarshanOpen(false)}
-      />
+      {/* Daily Darshan Overlay — hidden until content is fully prepared */}
 
       {/* ── Shloka fullscreen modal ── */}
       <AnimatePresence>
