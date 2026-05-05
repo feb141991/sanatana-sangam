@@ -36,6 +36,7 @@ import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { DailySacredText } from '@/lib/sacred-texts';
 import { calculatePanchang, PANCHANG_TRUST_META, getTodaySpiritualPulse } from '@/lib/panchang';
 import { getFestivalStory, type FestivalStory } from '@/lib/festival-stories';
+import { getDharmVeerOfTheDay, TRADITION_META, type DharmVeer } from '@/lib/dharm-veer';
 import { getPitruPakshaDay, getPitruPakshaBannerCopy } from '@/lib/pitru-paksha';
 import { getGreeting, getGreetingPool, isGreetingCompatibleWithTradition } from '@/lib/traditions';
 import type { GuidedPathProgressRow } from '@/lib/guided-paths';
@@ -993,6 +994,7 @@ export default function HomeDashboard({
   });
   const [editHomeOpen,     setEditHomeOpen]     = useState(false);
   const [storySheetOpen,   setStorySheetOpen]   = useState(false);
+  const [dharmVeerSheetOpen, setDharmVeerSheetOpen] = useState(false);
   // showDeeksha / handleDeekshaComplete removed
 
   // ── Daily Quiz state ──────────────────────────────────────────────────────
@@ -1455,6 +1457,12 @@ export default function HomeDashboard({
       ? getFestivalStory(festival.name)
       : null;
 
+  // ── Dharm Veer ───────────────────────────────────────────────────────────────
+  // Always shown on home — a forgotten/underappreciated hero of Dharma, rotating
+  // every 3 days, tradition-weighted for the user's sampradaya.
+  const dharmVeer: DharmVeer = getDharmVeerOfTheDay(tradition);
+  const dharmVeerTradMeta = TRADITION_META[dharmVeer.tradition] ?? TRADITION_META['hindu'];
+
   const heroTheme = resolveHomeHeroTheme({
     tradition,
     sampradaya,
@@ -1819,6 +1827,29 @@ export default function HomeDashboard({
             </motion.button>
           )}
         </AnimatePresence>
+
+        {/* ── Dharm Veer Card ──────────────────────────────────────────────── */}
+        <motion.button
+          key="dharm-veer-card"
+          type="button"
+          onClick={() => setDharmVeerSheetOpen(true)}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+          className="festival-story-card motion-press"
+          aria-label={`Read the story of ${dharmVeer.name}`}
+          style={{ borderColor: 'rgba(157,100,60,0.30)' }}
+        >
+          <span className="festival-story-emoji" aria-hidden="true">{dharmVeer.emoji}</span>
+          <div className="festival-story-body">
+            <span className="festival-story-kicker" style={{ color: 'rgba(200,140,80,0.85)' }}>
+              ⚔️ Dharm Veer · {dharmVeerTradMeta.label}
+            </span>
+            <span className="festival-story-title">{dharmVeer.name}</span>
+            <span className="festival-story-teaser line-clamp-2">{dharmVeer.tagline}</span>
+          </div>
+          <ChevronRight size={16} className="festival-story-chevron" aria-hidden="true" />
+        </motion.button>
 
         {/* ── Do You Know? Daily Quiz Spark ────────────────────────────────── */}
         <AnimatePresence>
@@ -2280,6 +2311,144 @@ export default function HomeDashboard({
         )}
       </AnimatePresence>
 
+
+      {/* ── Dharm Veer Sheet ──────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {dharmVeerSheetOpen && (
+          <motion.div
+            className="fixed inset-0 z-50 flex flex-col justify-end"
+            onClick={() => setDharmVeerSheetOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}
+          >
+            <motion.div
+              className="relative w-full overflow-y-auto rounded-t-[2rem] pb-12"
+              style={{
+                maxHeight: '92dvh',
+                background: 'linear-gradient(180deg, rgba(28,22,16,0.99) 0%, var(--card-bg) 100%)',
+                borderTop: '1px solid rgba(200,140,80,0.24)',
+                boxShadow: '0 -24px 64px rgba(0,0,0,0.32)',
+              }}
+              onClick={e => e.stopPropagation()}
+              initial={{ y: 60, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 36, opacity: 0 }}
+              transition={{ duration: 0.34, ease: [0.34, 1.26, 0.64, 1] }}
+            >
+              {/* Drag handle */}
+              <div className="sticky top-0 flex justify-center pt-3 pb-2 z-10"
+                style={{ background: 'rgba(28,22,16,0.97)' }}>
+                <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(200,140,80,0.28)' }} />
+              </div>
+
+              {/* Header */}
+              <div className="flex items-start justify-between px-6 pt-2 pb-5">
+                <div className="flex items-center gap-3">
+                  <span className="text-4xl" aria-hidden="true">{dharmVeer.emoji}</span>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span
+                        className="text-[10px] font-semibold uppercase tracking-[0.14em] px-2 py-0.5 rounded-full"
+                        style={{
+                          background: dharmVeerTradMeta.color,
+                          color: 'var(--brand-primary)',
+                          border: '1px solid rgba(200,140,80,0.18)',
+                        }}
+                      >
+                        {dharmVeerTradMeta.emoji} {dharmVeerTradMeta.label}
+                      </span>
+                      <span className="text-[10px]" style={{ color: 'var(--text-dim)' }}>{dharmVeer.era}</span>
+                    </div>
+                    <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-cream)', lineHeight: 1.15 }}>
+                      {dharmVeer.name}
+                    </h2>
+                    <p className="text-[0.78rem] mt-1 leading-snug" style={{ color: 'var(--text-muted-warm)' }}>
+                      {dharmVeer.region}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setDharmVeerSheetOpen(false)}
+                  className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 mt-1"
+                  style={{ background: 'rgba(200,140,80,0.10)' }}
+                  aria-label="Close"
+                >
+                  <X size={16} style={{ color: 'var(--text-muted-warm)' }} />
+                </button>
+              </div>
+
+              {/* Tagline */}
+              <div className="mx-6 mb-5 rounded-[1.2rem] px-4 py-3"
+                style={{ background: 'rgba(200,140,80,0.08)', border: '1px solid rgba(200,140,80,0.15)' }}>
+                <p className="text-sm leading-relaxed italic" style={{ color: 'var(--brand-primary)', fontFamily: 'var(--font-serif)' }}>
+                  &ldquo;{dharmVeer.tagline}&rdquo;
+                </p>
+              </div>
+
+              <div className="px-6 space-y-6">
+                {/* Journey */}
+                <section>
+                  <h3 className="festival-story-section-label">The Journey</h3>
+                  {dharmVeer.journey.split('\n\n').map((para, i) => (
+                    <p key={i} className="festival-story-prose" style={{ marginTop: i > 0 ? '0.75rem' : 0 }}>{para}</p>
+                  ))}
+                </section>
+
+                {/* Trial */}
+                <section
+                  className="rounded-[1.4rem] p-5"
+                  style={{ background: 'rgba(157,80,50,0.12)', border: '1px solid rgba(200,100,60,0.22)' }}
+                >
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] mb-3"
+                    style={{ color: 'rgba(220,130,80,0.95)' }}>
+                    ⚔️ The Trial
+                  </p>
+                  <p className="festival-story-prose">{dharmVeer.trial}</p>
+                </section>
+
+                {/* Teaching */}
+                <section>
+                  <h3 className="festival-story-section-label">The Teaching</h3>
+                  <p className="festival-story-prose">{dharmVeer.teaching}</p>
+                </section>
+
+                {/* Quote */}
+                {dharmVeer.quote && (
+                  <section
+                    className="rounded-[1.4rem] p-5"
+                    style={{ background: 'rgba(200,146,74,0.09)', border: '1px solid rgba(200,146,74,0.20)' }}
+                  >
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] mb-3"
+                      style={{ color: 'var(--brand-primary)' }}>
+                      In Their Words
+                    </p>
+                    <p style={{ fontFamily: 'var(--font-serif)', fontSize: '0.95rem', fontStyle: 'italic', lineHeight: 1.65, color: 'var(--text-cream)' }}>
+                      &ldquo;{dharmVeer.quote.text}&rdquo;
+                    </p>
+                    <p className="text-[11px] mt-2 leading-snug" style={{ color: 'var(--text-dim)' }}>
+                      — {dharmVeer.quote.attribution}
+                    </p>
+                  </section>
+                )}
+
+                {/* Moral */}
+                <section
+                  className="rounded-[1.4rem] p-5"
+                  style={{ background: 'rgba(100,140,100,0.10)', border: '1px solid rgba(100,160,100,0.22)' }}
+                >
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] mb-2"
+                    style={{ color: 'rgba(140,200,140,0.90)' }}>
+                    🌿 Moral for the Modern Seeker
+                  </p>
+                  <p className="festival-story-prose">{dharmVeer.moral}</p>
+                </section>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <BottomNav />
     </div>
