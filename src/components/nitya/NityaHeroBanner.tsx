@@ -391,11 +391,11 @@ export default function NityaHeroBanner({
         {/* ── Frameless fade: no hard card edge, just atmosphere dissolving into page ── */}
         <div
           className="absolute inset-x-0 top-0 h-24 pointer-events-none"
-          style={{ background: 'linear-gradient(180deg, var(--surface-base), transparent)' }}
+          style={{ background: 'linear-gradient(180deg, var(--divine-bg), transparent)' }}
         />
         <div
           className="absolute inset-x-0 bottom-0 h-44 pointer-events-none"
-          style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(12,10,7,0.36) 38%, var(--surface-base) 100%)' }}
+          style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(28, 28, 26, 0.36) 38%, var(--divine-bg) 100%)' }}
         />
         <div
           className="absolute inset-0 pointer-events-none"

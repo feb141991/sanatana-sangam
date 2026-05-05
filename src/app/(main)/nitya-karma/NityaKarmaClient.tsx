@@ -1139,30 +1139,31 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.22 }}
           >
-            {/* Header */}
-            <div className="flex items-center gap-3 px-4 pt-4 pb-3">
+            {/* Header Overlay */}
+            <div className="absolute top-0 left-0 right-0 z-30 flex items-center gap-3 px-4 pt-4 pb-3 pointer-events-none">
               <button onClick={() => router.back()}
-                className="w-9 h-9 rounded-full glass-panel border border-white/10 flex items-center justify-center">
-                <ChevronLeft size={20} style={{ color: accent }} />
+                className="w-9 h-9 rounded-full glass-panel border border-white/10 flex items-center justify-center pointer-events-auto">
+                <ChevronLeft size={20} style={{ color: 'white' }} />
               </button>
               <div className="flex-1">
-                <h1 className="font-bold text-lg text-[color:var(--brand-ink)]">My Sadhana Path</h1>
-                <p className="text-xs text-[color:var(--brand-muted)]">
-                  {meta.symbol} {meta.nityaKarmaTitle} · personalised for you
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
+                  {meta.symbol} {meta.nityaKarmaTitle}
                 </p>
               </div>
-              {isPro ? (
-                <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-amber-400/30 bg-amber-400/10">
-                  <Star size={12} className="text-amber-400 fill-amber-400" />
-                  <span className="text-[10px] font-bold text-amber-400">PRO</span>
-                </div>
-              ) : (
-                <button onClick={() => setShowProSheet(true)}
-                  className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-amber-400/20 bg-amber-400/8">
-                  <Star size={11} className="text-amber-400/70" />
-                  <span className="text-[10px] font-semibold text-amber-400/70">Pro</span>
-                </button>
-              )}
+              <div className="pointer-events-auto">
+                {isPro ? (
+                  <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-white/20 bg-white/10 backdrop-blur-md">
+                    <Star size={12} className="text-white fill-white" />
+                    <span className="text-[10px] font-bold text-white">PRO</span>
+                  </div>
+                ) : (
+                  <button onClick={() => setShowProSheet(true)}
+                    className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-white/20 bg-white/10 backdrop-blur-md">
+                    <Star size={11} className="text-white/80" />
+                    <span className="text-[10px] font-semibold text-white/80">Pro</span>
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Hero banner */}
@@ -1180,7 +1181,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
 
             <div
               className="relative z-20 -mt-16 px-4 pt-10 space-y-3"
-              style={{ background: 'linear-gradient(180deg, transparent 0%, var(--surface-base) 64px)' }}
+              style={{ background: 'linear-gradient(180deg, transparent 0%, var(--divine-bg) 64px)' }}
             >
               {/* Vrat alert */}
               {vataDays && (
