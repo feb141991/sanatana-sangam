@@ -57,6 +57,7 @@ import { getTransliteration } from '@/lib/transliteration';
 import BottomNav from '@/components/layout/BottomNav';
 
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 
 interface Panchang {
   tithi:      string;
@@ -967,6 +968,7 @@ export default function HomeDashboard({
   const prefersReducedMotion = useReducedMotion();
   const searchParams = useSearchParams();
   const isPro = usePremium();
+  const { playHaptic } = useZenithSensory();
   const shlokaRef = useRef<HTMLDivElement | null>(null);
   const festivalsRef = useRef<HTMLDivElement | null>(null);
 
