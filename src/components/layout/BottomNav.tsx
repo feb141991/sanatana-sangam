@@ -16,6 +16,7 @@ interface Props {
 const QUICK_ACTIONS = [
   { icon: '📿', label: 'Japa Mala', href: '/japa'          },
   { icon: '🧠', label: 'Quiz Mastery', href: '/quiz'        },
+  { icon: '💬', label: 'Vichaar',    href: '/vichaar-sabha' },
   { icon: '🤝', label: 'Seva Hub',  href: '/seva'          },
   { icon: '🔆', label: 'Sadhana Pulse', href: '/my-progress' },
 ];

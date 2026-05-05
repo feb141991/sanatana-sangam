@@ -4,7 +4,8 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, Monitor, Moon, Sun, Star } from 'lucide-react';
+import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, Monitor, Moon, Sun, Star, MessageSquare, MessageCircle } from 'lucide-react';
+import Link from 'next/link';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { APP } from '@/lib/config';
 import { createClient } from '@/lib/supabase';
@@ -565,12 +566,22 @@ export default function ProfileClient({
             >
               <ChevronLeft size={20} className="text-white" />
             </button>
-            <button 
-              onClick={() => setEditing(!editing)}
-              className="w-10 h-10 rounded-full glass-panel border border-white/10 flex items-center justify-center pointer-events-auto transition-transform active:scale-90"
-            >
-              <Edit3 size={18} className="text-white" />
-            </button>
+            <div className="flex items-center gap-2 pointer-events-auto">
+              <Link
+                href="/messages"
+                className="w-10 h-10 rounded-full glass-panel border border-white/10 flex items-center justify-center transition-transform active:scale-90"
+                title="Direct Messages"
+              >
+                <MessageSquare size={18} className="text-white" />
+              </Link>
+              <button 
+                onClick={() => setEditing(!editing)}
+                className="w-10 h-10 rounded-full glass-panel border border-white/10 flex items-center justify-center transition-transform active:scale-90"
+                title="Edit Profile"
+              >
+                <Edit3 size={18} className="text-white" />
+              </button>
+            </div>
           </div>
 
           {/* Hero Content */}
@@ -1146,6 +1157,26 @@ export default function ProfileClient({
               >
                 <LogOut size={15} /> Sign out
               </button>
+            </div>
+            {/* ── Footer Info ── */}
+            <div className="mt-8 mb-4 px-6 text-center space-y-4">
+              <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+                {[
+                  { href: '/about',      label: 'About'      },
+                  { href: '/privacy',    label: 'Privacy'    },
+                  { href: '/terms',      label: 'Terms'      },
+                  { href: '/guidelines', label: 'Guidelines' },
+                  { href: '/contact',    label: 'Contact'    },
+                ].map(l => (
+                  <Link key={l.href} href={l.href}
+                    className="text-[11px] font-medium text-white/30 hover:text-white/60 transition-colors uppercase tracking-widest">
+                    {l.label}
+                  </Link>
+                ))}
+              </div>
+              <p className="text-[10px] text-white/20">
+                Built with 🙏 for the global Sanatani community
+              </p>
             </div>
           </div>
 

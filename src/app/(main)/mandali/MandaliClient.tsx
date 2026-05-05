@@ -5,7 +5,8 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown, ChevronLeft, CornerDownRight, MoreHorizontal } from 'lucide-react';
+import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown, ChevronLeft, CornerDownRight, MoreHorizontal, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase';
 import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
 import { formatRelativeTime, getInitials, ISHTA_DEVATAS } from '@/lib/utils';
@@ -1018,10 +1019,10 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
   const initialEventCount = initialPosts.filter((post) => post.type === 'event').length;
   const initialVichaarCount = initialPosts.filter((post) => post.type !== 'event').length;
 
-  const [activeTab,       setActiveTab]       = useState<'members' | 'events' | 'vichaar'>(
-    initialVichaarCount > 0 ? 'vichaar' : initialEventCount > 0 ? 'events' : 'members'
+  const [activeTab,       setActiveTab]       = useState<'members' | 'events' | 'local' | 'global'>(
+    initialVichaarCount > 0 ? 'local' : initialEventCount > 0 ? 'events' : 'members'
   );
-  const switchTab = (t: 'members' | 'events' | 'vichaar') => {
+  const switchTab = (t: 'members' | 'events' | 'local' | 'global') => {
     setActiveTab(t);
     playHaptic('light');
   };
@@ -1087,9 +1088,9 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
         }
       : vichaarCount > 0
         ? {
-            label: 'Join today’s Vichaar',
+            label: 'Join today’s Neighborhood Feed',
             hint: `${vichaarCount} local conversation${vichaarCount === 1 ? '' : 's'}`,
-            onClick: () => setActiveTab('vichaar' as const),
+            onClick: () => setActiveTab('local' as const),
             icon: <MessageSquare size={16} className="text-[color:var(--brand-muted)]" />,
           }
         : {
@@ -1185,9 +1186,10 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
   }
 
   const tabs = [
-    { key: 'members', label: 'Members', count: visibleMembers.length },
-    { key: 'events',  label: 'Events',  count: eventCount },
-    { key: 'vichaar', label: 'Vichaar', count: posts.filter(p => p.type !== 'event').length },
+    { key: 'local',   label: 'Neighborhood', count: posts.filter(p => p.type !== 'event').length },
+    { key: 'global',  label: 'Global Sabha', count: 0 },
+    { key: 'members', label: 'Members',      count: visibleMembers.length },
+    { key: 'events',  label: 'Events',       count: eventCount },
   ] as const;
 
   return (
@@ -1374,7 +1376,36 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
       {activeTab === 'events' && (
         <EventsTab posts={posts} rsvps={rsvps} userId={userId} onRsvp={updateRsvp} />
       )}
-      {activeTab === 'vichaar' && (
+      {activeTab === 'global' && (
+        <div className="space-y-4 fade-in">
+          {/* High-Engagement Bridge Card */}
+          <div className="glass-panel-gold rounded-[1.8rem] p-6 text-center border-[#C5A059]/20 decorative-orbit">
+            <Globe className="mx-auto mb-3 text-[#C5A059]" size={32} />
+            <h2 className="font-display font-bold text-xl text-white">The Global Vichaar Sabha</h2>
+            <p className="text-sm text-amber-100/60 mt-2 mb-6 leading-relaxed max-w-sm mx-auto">
+              Step out of the neighborhood and join the worldwide Sangam dialogue.
+              Discuss scripture, philosophy, and sadhana with Sanatanis everywhere.
+            </p>
+
+            <Link href="/vichaar-sabha"
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-[#d4a645] to-[#a07830] text-[#1c1008] font-bold rounded-2xl shadow-lg active:scale-95 transition">
+              Enter Global Sabha <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          <div className="px-1">
+            <p className="text-[10px] uppercase tracking-widest text-amber-100/40 font-bold mb-3">
+              Sangam-Wide Connection
+            </p>
+            <div className="glass-panel rounded-2xl p-4 border-white/5 bg-white/[0.02]">
+              <p className="text-xs text-amber-100/50 leading-relaxed">
+                The Vichaar Sabha is our collective digital heart. Your local Mandali is for neighbors; the Sabha is for the entire tradition. Seek wisdom, offer guidance, and grow together.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      {activeTab === 'local' && (
         <>
           <VichaarTab
             posts={posts}

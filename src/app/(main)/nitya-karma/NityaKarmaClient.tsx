@@ -23,7 +23,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronDown, Flame, CheckCircle2, Circle, Loader2,
-  Info, Lock, Trophy, Sunrise, Star, X, Settings2, Plus, Bell,
+  Info, Lock, Trophy, Sunrise, Star, X, Settings2, Plus, Bell, BarChart2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
@@ -1099,6 +1099,13 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
           )}
           {isPro ? (
             <>
+              <Link href="/nitya-karma/insights"
+                className="w-9 h-9 rounded-full flex items-center justify-center border border-white/10"
+                style={{ background: `${accent}14` }}
+                title="Sadhana Insights"
+              >
+                <BarChart2 size={16} style={{ color: accent }} />
+              </Link>
               {nityaScreen === 'dincharya' && (
                 <button onClick={() => setShowCustom(true)}
                   className="w-9 h-9 rounded-full flex items-center justify-center border border-white/10"
