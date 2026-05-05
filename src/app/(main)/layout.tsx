@@ -29,9 +29,14 @@ export default async function MainLayout({
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('latitude, longitude, city, country, country_code, tradition, full_name, username, onboarding_completed, app_language')
+      .select('latitude, longitude, city, country, country_code, tradition, full_name, username, onboarding_completed, app_language, is_banned')
       .eq('id', user.id)
       .single();
+
+    // Enforce suspension
+    if (profile?.is_banned) {
+      redirect('/banned');
+    }
 
     // New users who haven't completed onboarding go there first
     if (profile && !profile.onboarding_completed) {

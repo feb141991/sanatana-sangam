@@ -10,16 +10,21 @@ export async function PATCH(
   const { userId } = await params;
 
   const body = await request.json().catch(() => null);
-  if (typeof body?.isAdmin !== 'boolean') {
-    return NextResponse.json({ error: 'isAdmin must be a boolean' }, { status: 400 });
-  }
+  
+  const updateData: any = {};
+  if (typeof body?.isAdmin === 'boolean') updateData.is_admin = body.isAdmin;
+  if (typeof body?.isBanned === 'boolean') updateData.is_banned = body.isBanned;
+  if (body?.banReason) updateData.ban_reason = body.banReason;
 
+  if (Object.keys(updateData).length === 0) {
+    return NextResponse.json({ error: 'No valid update fields provided' }, { status: 400 });
+  }
 
   const { data, error } = await admin.supabase
     .from('profiles')
-    .update({ is_admin: body.isAdmin })
+    .update(updateData)
     .eq('id', userId)
-    .select('id, is_admin')
+    .select('id, is_admin, is_banned, ban_reason')
     .single();
 
   if (error) {

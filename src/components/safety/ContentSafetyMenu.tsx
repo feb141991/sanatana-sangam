@@ -134,6 +134,7 @@ export default function ContentSafetyMenu({
       .from('content_reports')
       .insert({
         reported_by: userId,
+        content_author_id: authorId,
         content_type: contentType,
         content_id: contentId,
         reason,

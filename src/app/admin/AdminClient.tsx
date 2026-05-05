@@ -10,8 +10,8 @@ import {
 } from 'lucide-react';
 
 // ── Types ────────────────────────────────────────────────────────────────────
-type UserRow    = { id: string; full_name: string | null; username: string | null; email?: string | null; tradition: string | null; city: string | null; country: string | null; shloka_streak: number | null; seva_score: number | null; is_admin: boolean | null; created_at: string };
-type ReportRow  = { id: string; content_type: string; content_id: string; reason: string; status: string; admin_note: string | null; created_at: string; reported_by: string; reporter: { full_name: string | null; username: string | null } | null };
+type UserRow    = { id: string; full_name: string | null; username: string | null; email?: string | null; tradition: string | null; city: string | null; country: string | null; shloka_streak: number | null; seva_score: number | null; is_admin: boolean | null; is_banned: boolean | null; ban_reason: string | null; created_at: string };
+type ReportRow  = { id: string; content_type: string; content_id: string; content_author_id: string; reason: string; status: string; admin_note: string | null; created_at: string; reported_by: string; reporter: { full_name: string | null; username: string | null } | null };
 type PostRow    = { id: string; content: string; type: string; created_at: string; mandali_id: string | null; author_id: string; profiles: { full_name: string | null; username: string | null } | null };
 type KulRow     = { id: string; name: string; invite_code: string; avatar_emoji: string; created_at: string; created_by: string };
 type MandaliRow = { id: string; name: string; city: string; country: string; member_count: number };
@@ -171,6 +171,23 @@ function ModerationTab({ reports: initialReports }: { reports: ReportRow[] }) {
     }
   }
 
+  async function warnUser(userId: string, name: string) {
+    const reason = prompt(`Issue official warning to ${name}:`, 'Inappropriate behavior in Mandali');
+    if (!reason) return;
+    setBusyId(userId);
+    try {
+      await requestJson(`/api/admin/users/${userId}/warn`, {
+        method: 'POST',
+        body: JSON.stringify({ reason }),
+      });
+      toast.success(`Warning sent to ${name} ⚠️`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Unable to warn user');
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   async function deleteContent(report: ReportRow) {
     if (!confirm(`Delete this ${report.content_type}? This cannot be undone.`)) return;
     setBusyId(report.id);
@@ -264,6 +281,11 @@ function ModerationTab({ reports: initialReports }: { reports: ReportRow[] }) {
                 className="flex-1 py-2 rounded-xl text-xs font-medium bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition flex items-center justify-center gap-1">
                 <Trash2 size={11} /> Remove Content
               </button>
+              <button onClick={() => warnUser(report.content_author_id, 'Author')}
+                disabled={busyId === report.id || !report.content_author_id}
+                className="w-full py-2 rounded-xl text-xs font-medium border border-amber-200 text-amber-600 hover:bg-amber-50 transition flex items-center justify-center gap-1">
+                <AlertTriangle size={11} /> Warn Author
+              </button>
             </div>
           )}
         </div>
@@ -303,15 +325,67 @@ function UsersTab({ users: initialUsers }: { users: UserRow[] }) {
     }
   }
 
-  async function banUser(userId: string, name: string) {
-    if (!confirm(`Ban ${name}? This will delete their profile data.`)) return;
+  async function toggleBan(userId: string, name: string, current: boolean) {
+    if (current) {
+      if (!confirm(`Unban ${name}?`)) return;
+      setBusyId(userId);
+      try {
+        const payload = await requestJson<{ user: { is_banned: boolean } }>(`/api/admin/users/${userId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ isBanned: false }),
+        });
+        setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_banned: payload.user.is_banned } : u));
+        toast.success(`${name} unbanned`);
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Unable to unban user');
+      } finally {
+        setBusyId(null);
+      }
+    } else {
+      const reason = prompt(`Ban ${name}? Enter reason for suspension:`, 'Violating community guidelines');
+      if (reason === null) return;
+      setBusyId(userId);
+      try {
+        const payload = await requestJson<{ user: { is_banned: boolean } }>(`/api/admin/users/${userId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ isBanned: true, banReason: reason }),
+        });
+        setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_banned: payload.user.is_banned } : u));
+        toast.success(`${name} banned`);
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Unable to ban user');
+      } finally {
+        setBusyId(null);
+      }
+    }
+  }
+
+  async function warnUser(userId: string, name: string) {
+    const reason = prompt(`Issue official warning to ${name}:`, 'Inappropriate behavior in Mandali');
+    if (!reason) return;
+    setBusyId(userId);
+    try {
+      await requestJson(`/api/admin/users/${userId}/warn`, {
+        method: 'POST',
+        body: JSON.stringify({ reason }),
+      });
+      toast.success(`Warning sent to ${name} ⚠️`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Unable to warn user');
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function deleteUser(userId: string, name: string) {
+    if (!confirm(`PERMANENTLY DELETE ${name}? This will remove them from Auth and DB. Only use for bots/spam.`)) return;
     setBusyId(userId);
     try {
       await requestJson(`/api/admin/users/${userId}`, { method: 'DELETE' });
       setUsers(prev => prev.filter(u => u.id !== userId));
-      toast.success(`${name} banned and removed`);
+      toast.success(`${name} permanently removed`);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Unable to ban user');
+      toast.error(error instanceof Error ? error.message : 'Unable to delete user');
     } finally {
       setBusyId(null);
     }
@@ -345,6 +419,7 @@ function UsersTab({ users: initialUsers }: { users: UserRow[] }) {
               <div className="flex items-center gap-1.5">
                 <p className="text-sm font-semibold text-[color:var(--text-cream)] truncate">{u.full_name || u.username}</p>
                 {u.is_admin && <Shield size={11} className="text-[#7B1A1A] flex-shrink-0" />}
+                {u.is_banned && <ShieldBan size={11} className="text-red-500 flex-shrink-0" />}
               </div>
               <p className="text-xs text-[color:var(--text-dim)] truncate">
                 {u.username && `@${u.username}`}
@@ -354,17 +429,29 @@ function UsersTab({ users: initialUsers }: { users: UserRow[] }) {
               </p>
             </div>
             <div className="flex items-center gap-1">
+              <button onClick={() => warnUser(u.id, u.full_name || u.username || 'User')}
+                disabled={busyId === u.id}
+                className="w-7 h-7 rounded-lg flex items-center justify-center border border-gray-200 text-[color:var(--text-dim)] hover:text-amber-500 hover:border-amber-200 transition"
+                title="Send warning">
+                <AlertTriangle size={12} />
+              </button>
               <button onClick={() => toggleAdmin(u.id, u.is_admin ?? false)}
                 disabled={busyId === u.id}
                 className="w-7 h-7 rounded-lg flex items-center justify-center border border-gray-200 text-[color:var(--text-dim)] hover:text-[#7B1A1A] hover:border-[#7B1A1A]/30 transition"
                 title={u.is_admin ? 'Remove admin' : 'Make admin'}>
                 <Shield size={12} />
               </button>
-              <button onClick={() => banUser(u.id, u.full_name || u.username || 'User')}
+              <button onClick={() => toggleBan(u.id, u.full_name || u.username || 'User', u.is_banned ?? false)}
                 disabled={busyId === u.id}
-                className="w-7 h-7 rounded-lg flex items-center justify-center border border-gray-200 text-[color:var(--text-dim)] hover:text-red-500 hover:border-red-200 transition"
-                title="Ban user">
-                <XCircle size={12} />
+                className={`w-7 h-7 rounded-lg flex items-center justify-center border border-gray-200 transition ${u.is_banned ? 'bg-red-500 text-white border-red-500' : 'text-[color:var(--text-dim)] hover:text-red-500 hover:border-red-200'}`}
+                title={u.is_banned ? 'Unban user' : 'Ban user'}>
+                <ShieldBan size={12} />
+              </button>
+              <button onClick={() => deleteUser(u.id, u.full_name || u.username || 'User')}
+                disabled={busyId === u.id}
+                className="w-7 h-7 rounded-lg flex items-center justify-center border border-gray-200 text-[color:var(--text-dim)] hover:text-red-600 hover:border-red-300 transition"
+                title="Permanently delete (Auth)">
+                <Trash2 size={12} />
               </button>
             </div>
           </div>

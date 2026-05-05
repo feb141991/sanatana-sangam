@@ -51,6 +51,8 @@ export interface Database {
           life_stage_locked: boolean;
           gender_context: string | null;
           date_of_birth: string | null;
+          is_banned: boolean;
+          ban_reason: string | null;
         };
         Insert: Omit<Database['public']['Tables']['profiles']['Row'], 'created_at' | 'updated_at' | 'seva_score'>;
         Update: Partial<Database['public']['Tables']['profiles']['Insert']>;
@@ -187,6 +189,7 @@ export interface Database {
         Row: {
           id: string;
           reported_by: string;
+          content_author_id: string;
           content_type: string;
           content_id: string;
           reason: string;
@@ -308,6 +311,18 @@ export interface Database {
           bookmarked_at?: string | null;
         };
         Update: Partial<Database['public']['Tables']['pathshala_user_state']['Insert']>;
+      };
+      user_warnings: {
+        Row: {
+          id: string;
+          user_id: string;
+          admin_id: string | null;
+          reason: string;
+          admin_note: string | null;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['user_warnings']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['user_warnings']['Insert']>;
       };
     };
     Views: Record<string, never>;
