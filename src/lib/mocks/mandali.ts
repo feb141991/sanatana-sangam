@@ -54,6 +54,8 @@ const baseProfile: MandaliProfile = {
   notification_quiet_hours_start: 22,
   notification_quiet_hours_end: 7,
   is_admin: false,
+  is_banned: false,
+  ban_reason: null,
   is_pro: false,
   life_stage: 'grihastha',
   life_stage_locked: false,

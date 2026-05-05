@@ -51,6 +51,8 @@ const baseMembers: KulMemberRow[] = [
       home_town: 'Mathura',
       gotra: 'Bharadwaj',
       kul_devata: 'Radha Krishna',
+      is_banned: false,
+      ban_reason: null,
     },
   },
   {
@@ -73,6 +75,8 @@ const baseMembers: KulMemberRow[] = [
       home_town: 'Mathura',
       gotra: 'Bharadwaj',
       kul_devata: 'Radha Krishna',
+      is_banned: false,
+      ban_reason: null,
     },
   },
 ];
