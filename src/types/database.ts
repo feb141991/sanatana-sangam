@@ -316,7 +316,7 @@ export interface Database {
         Row: {
           id: string;
           user_id: string;
-          admin_id: string | null;
+          admin_name: string | null;
           reason: string;
           admin_note: string | null;
           created_at: string;

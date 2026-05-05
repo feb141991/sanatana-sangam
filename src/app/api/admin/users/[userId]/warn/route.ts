@@ -19,7 +19,7 @@ export async function POST(
     .from('user_warnings')
     .insert({
       user_id: userId,
-      admin_id: admin.user.id,
+      admin_name: admin.username,
       reason: body.reason,
       admin_note: body.note ?? null,
     });

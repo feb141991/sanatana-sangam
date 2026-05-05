@@ -26,7 +26,7 @@ ADD COLUMN IF NOT EXISTS content_author_id UUID REFERENCES public.profiles(id) O
 CREATE TABLE IF NOT EXISTS public.user_warnings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-    admin_id UUID REFERENCES public.profiles(id),
+    admin_name TEXT,
     reason TEXT NOT NULL,
     admin_note TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
