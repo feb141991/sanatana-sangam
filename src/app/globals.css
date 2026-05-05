@@ -433,8 +433,8 @@ body {
 
 :root[data-theme='dark'] .divine-hero-readability {
   background:
-    radial-gradient(ellipse at 50% 90%, rgba(18, 18, 16, 0.75), transparent 75%),
-    linear-gradient(180deg, transparent 0%, rgba(18, 18, 16, 0.35) 45%, var(--divine-bg) 100%);
+    radial-gradient(ellipse at 50% 90%, rgba(28, 28, 26, 0.75), transparent 75%),
+    linear-gradient(180deg, transparent 0%, rgba(28, 28, 26, 0.35) 45%, var(--divine-bg) 100%);
 }
 
 .divine-poster-motif {
