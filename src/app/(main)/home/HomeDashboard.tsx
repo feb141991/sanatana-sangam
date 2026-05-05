@@ -928,115 +928,6 @@ function SkyBackground({ hour }: { hour: number }) {
   );
 }
 
-// ─── Zenith Divine Entrance ────────────────────────────────────────────────
-function ZenithEntrance({ tradition }: { tradition: string }) {
-  const [show, setShow] = useState(true);
-  const { playHaptic } = useZenithSensory();
-  const prefersReducedMotion = useReducedMotion();
-
-  useEffect(() => {
-    // Only show once per session to keep it special
-    const seen = sessionStorage.getItem('ss-entrance-seen');
-    if (seen) {
-      setShow(false);
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      setShow(false);
-      sessionStorage.setItem('ss-entrance-seen', 'true');
-    }, 4500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (prefersReducedMotion || !show) return null;
-
-  return (
-    <AnimatePresence>
-      {show && (
-        <motion.div 
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 1.2, ease: "easeInOut" } }}
-          className="fixed inset-0 z-[1000] pointer-events-none flex items-center justify-center overflow-hidden"
-        >
-          {/* 1. The Atmospheric Veil — Deep, sacred darkness */}
-          <motion.div 
-            initial={{ opacity: 1 }}
-            animate={{ opacity: 0 }}
-            transition={{ duration: 1.8, delay: 2.8, ease: "easeInOut" }}
-            className="absolute inset-0 bg-[var(--divine-bg)]"
-          />
-
-          {/* 2. The Sacred Bloom — Lotus Architecture */}
-          <div className="relative z-10 scale-[1.2] sm:scale-[1.8]">
-            {/* Petitioner Rays */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: [0, 0.6, 0], scale: [1, 3] }}
-              transition={{ duration: 3.5, delay: 0.5, ease: "easeOut" }}
-              className="absolute inset-0 rounded-full bg-gradient-to-t from-[#C5A059]/20 to-transparent blur-3xl"
-            />
-
-            {/* Petal Cluster */}
-            {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
-              <motion.div
-                key={angle}
-                initial={{ opacity: 0, scale: 0, rotate: angle, y: 10 }}
-                animate={{ 
-                  opacity: [0, 1, 0.8], 
-                  scale: [0, 1.1, 1],
-                  y: [10, -5, 0]
-                }}
-                transition={{ 
-                  duration: 3, 
-                  delay: 0.4 + (i * 0.08),
-                  ease: [0.22, 1, 0.36, 1]
-                }}
-                className="absolute origin-bottom"
-                style={{ bottom: '50%' }}
-              >
-                <svg width="44" height="64" viewBox="0 0 44 64" fill="none">
-                  <path 
-                    d="M22 0C22 0 44 28 44 44C44 58 22 64 22 64C22 64 0 58 0 44C0 28 22 0 22 0Z" 
-                    fill="url(#zenith-petal-grad)"
-                  />
-                  <defs>
-                    <linearGradient id="zenith-petal-grad" x1="22" y1="0" x2="22" y2="64" gradientUnits="userSpaceOnUse">
-                      <stop stopColor="#D4784A" stopOpacity="0.9" />
-                      <stop offset="0.6" stopColor="#C5A059" stopOpacity="0.4" />
-                      <stop offset="1" stopColor="#C5A059" stopOpacity="0.05" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </motion.div>
-            ))}
-
-            {/* Central Bindu / Source Light */}
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ 
-                scale: [0, 1.2, 25], 
-                opacity: [0, 1, 0] 
-              }}
-              onAnimationComplete={() => playHaptic('medium')}
-              transition={{ duration: 3.2, delay: 1.8, ease: [0.4, 0, 0.2, 1] }}
-              className="w-6 h-6 bg-[#FFF9F0] rounded-full blur-[2px] relative z-20"
-              style={{ boxShadow: '0 0 60px 30px #C5A059' }}
-            />
-          </div>
-
-          {/* 3. Global Light Sweep */}
-          <motion.div
-            initial={{ x: '-150%', skewX: -20 }}
-            animate={{ x: '250%' }}
-            transition={{ duration: 2.8, delay: 1.5, ease: "easeInOut" }}
-            className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-white/10 to-transparent z-30"
-          />
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
 
 // ── Main Dashboard ────────────────────────────────────────────────────────────
 export default function HomeDashboard({
@@ -1672,7 +1563,7 @@ export default function HomeDashboard({
             )}
             <div className="divine-hero-overlay" aria-hidden="true" />
             <div className="divine-hero-readability" aria-hidden="true" />
-            <ZenithEntrance tradition={tradition || 'hindu'} />
+
             <div className="divine-poster-motif divine-poster-motif-om" aria-hidden="true">{heroFallback.mark}</div>
             
           </motion.div>

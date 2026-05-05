@@ -1190,9 +1190,10 @@ export default function ProfileClient({
           );
         })()}
       </AnimatePresence>
-
     </div>
-  );
+  </div>
+</div>
+);
 }
 
 function SafetyProfileRow({

@@ -27,8 +27,18 @@ const AMBIANCE_MAP: Record<SensoryTheme, string | null> = {
 export function ZenithSensoryProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [theme, setTheme] = useState<SensoryTheme>('none');
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('ss-sensory-muted') === 'true';
+    }
+    return false;
+  });
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Persist mute state
+  useEffect(() => {
+    localStorage.setItem('ss-sensory-muted', String(isMuted));
+  }, [isMuted]);
 
   // Automatically switch theme based on route
   useEffect(() => {

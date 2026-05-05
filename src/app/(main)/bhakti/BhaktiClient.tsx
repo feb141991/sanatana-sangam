@@ -4,7 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, BarChart2, ChevronRight, Sparkles, Play, Music, Mic2, Heart, BookOpen, Sun, Moon, Wind } from 'lucide-react';
+import { ChevronLeft, BarChart2, ChevronRight, Sparkles, Play, Music, Mic2, Heart, BookOpen, Sun, Moon, Wind, Volume2, VolumeX } from 'lucide-react';
+import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import type { Shloka } from '@/lib/shlokas';
 import { DEITY_META, MOOD_META } from '@/lib/stotrams';
@@ -63,6 +64,7 @@ export default function BhaktiClient({
 }: Props) {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
+  const { isMuted, setIsMuted } = useZenithSensory();
   const isDark = resolvedTheme === 'dark';
   const [showShloka, setShowShloka] = useState(false);
 
@@ -129,9 +131,18 @@ export default function BhaktiClient({
           <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C5A059] mb-1">{greeting}</p>
           <h2 className="text-xl font-serif text-[#2A1B0A] dark:text-[#FDFCF8]">Bhakti Yoga</h2>
         </div>
-        <Link href="/bhakti/insights" className="w-12 h-12 rounded-full flex items-center justify-center bg-white/50 dark:bg-black/20 border border-[#C5A059]/10 shadow-sm backdrop-blur-md active:scale-95 transition-all">
-          <BarChart2 size={20} className="text-[#C5A059]" />
-        </Link>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => setIsMuted(!isMuted)}
+            className="w-12 h-12 rounded-full flex items-center justify-center bg-white/50 dark:bg-black/20 border border-[#C5A059]/10 shadow-sm backdrop-blur-md active:scale-95 transition-all"
+            title={isMuted ? "Unmute" : "Mute"}
+          >
+            {isMuted ? <VolumeX size={20} className="text-[#C5A059]" /> : <Volume2 size={20} className="text-[#C5A059]" />}
+          </button>
+          <Link href="/bhakti/insights" className="w-12 h-12 rounded-full flex items-center justify-center bg-white/50 dark:bg-black/20 border border-[#C5A059]/10 shadow-sm backdrop-blur-md active:scale-95 transition-all">
+            <BarChart2 size={20} className="text-[#C5A059]" />
+          </Link>
+        </div>
       </div>
 
       <div className="px-6 space-y-12 pb-32">
