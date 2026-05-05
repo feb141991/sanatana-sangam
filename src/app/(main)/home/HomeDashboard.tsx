@@ -1900,7 +1900,8 @@ export default function HomeDashboard({
           )}
         </AnimatePresence>
 
-        <MotionStagger className="divine-feature-grid scroll-mt-24" id="features-section" delay={0.08}>
+        <div id="features-section" className="scroll-mt-24">
+          <MotionStagger className="divine-feature-grid" delay={0.08}>
           {divineFeatureCards.map((item) => {
             const Icon = item.icon;
             const content = (
@@ -1942,6 +1943,7 @@ export default function HomeDashboard({
             );
           })}
         </MotionStagger>
+      </div>
 
         <Link href="/seva" className="divine-seva-card motion-lift">
           <span className="divine-card-motif divine-card-motif-large" aria-hidden="true" />

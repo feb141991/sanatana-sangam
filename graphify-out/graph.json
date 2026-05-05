@@ -8575,7 +8575,7 @@
       "label": "onScroll()",
       "file_type": "code",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/layout/BottomNav.tsx",
-      "source_location": "L125",
+      "source_location": "L126",
       "id": "bottomnav_onscroll",
       "community": 54,
       "norm_label": "onscroll()"
@@ -30987,7 +30987,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/layout/BottomNav.tsx",
-      "source_location": "L125",
+      "source_location": "L126",
       "weight": 1.0,
       "_src": "users_business_c_sanatan_sangam_sanatan_sangam_src_components_layout_bottomnav_tsx",
       "_tgt": "bottomnav_onscroll",
