@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, Monitor, Moon, Sun } from 'lucide-react';
+import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, Monitor, Moon, Sun, Star } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { APP } from '@/lib/config';
 import { createClient } from '@/lib/supabase';
@@ -529,7 +529,6 @@ export default function ProfileClient({
       .eq('user_id', userId)
       .eq('content_type', contentType)
       .eq('content_id', contentId);
-
     setSafetyBusyKey(null);
 
     if (error) {
@@ -549,724 +548,643 @@ export default function ProfileClient({
   } satisfies Record<ThemePreference, typeof Monitor>;
 
   return (
-    <div className="space-y-4 fade-in">
+    <div className="divine-home-shell min-h-screen bg-[var(--divine-bg)] -mx-3 sm:-mx-4 relative selection:bg-[#C5A059]/30">
+      <div className="relative pb-24">
+        
+        {/* ── Zenith Profile Hero ────────────────────────────────────────────── */}
+        <div className="relative min-h-[300px] overflow-hidden">
+          {/* Atmospheric background (matches home hero vibe) */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1c1c1a] via-[#2c1a0e] to-[#1c1c1a] opacity-40 dark:opacity-60" />
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--divine-bg)] to-transparent z-10" />
+          
+          {/* Header Controls Overlay */}
+          <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 pt-5 pointer-events-none">
+            <button
+              onClick={() => router.back()}
+              className="w-10 h-10 rounded-full glass-panel border border-white/10 flex items-center justify-center pointer-events-auto transition-transform active:scale-90"
+            >
+              <ChevronLeft size={20} className="text-white" />
+            </button>
+            <button 
+              onClick={() => setEditing(!editing)}
+              className="w-10 h-10 rounded-full glass-panel border border-white/10 flex items-center justify-center pointer-events-auto transition-transform active:scale-90"
+            >
+              <Edit3 size={18} className="text-white" />
+            </button>
+          </div>
 
-      {/* Back button */}
-      <div className="flex items-center gap-3 px-1 pt-1">
-        <button
-          onClick={() => router.back()}
-          aria-label="Go back"
-          className="w-9 h-9 rounded-full flex items-center justify-center transition-all flex-shrink-0"
-          style={{
-            background: 'rgba(200,146,74,0.10)',
-            border: '1px solid rgba(200,146,74,0.20)',
-          }}
-        >
-          <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.80)' }} />
-        </button>
-      </div>
-
-      {showAvatarPreview && avatarUrl && (
-        <AvatarPreviewModal
-          avatarUrl={avatarUrl}
-          fullName={profile?.full_name ?? profile?.username ?? 'Profile photo'}
-          onClose={() => setShowAvatarPreview(false)}
-        />
-      )}
-
-      {/* ── Profile Completion Bar ── */}
-      <CompletionBar profile={liveProfile} onEdit={() => setEditing(true)} />
-
-      {/* ── Hero Card ── */}
-      <div className="glass-panel rounded-2xl p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            {/* Avatar with upload — label approach works on iOS Safari */}
-            <div className="relative">
-              <button
+          {/* Hero Content */}
+          <div className="relative z-20 flex flex-col items-center pt-16 pb-8 px-5">
+            {/* Avatar Cluster */}
+            <div className="relative mb-5">
+              <motion.button
                 type="button"
                 onClick={() => avatarUrl && setShowAvatarPreview(true)}
                 disabled={!avatarUrl}
-                className={`relative w-16 h-16 rounded-full bg-[color:var(--brand-primary-soft)] border border-[rgba(200,146,74,0.16)] flex items-center justify-center text-[color:var(--brand-primary-strong)] text-xl font-medium overflow-hidden ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
-                title={avatarUrl ? 'View profile photo' : 'No profile photo yet'}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className={`relative w-28 h-28 rounded-full bg-white/10 border-2 border-white/20 p-1 flex items-center justify-center overflow-hidden shadow-2xl ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
               >
-                {avatarUrl
-                  ? <Image src={avatarUrl} alt="avatar" fill sizes="64px" className="object-cover" />
-                  : initials}
-              </button>
+                <div className="relative w-full h-full rounded-full overflow-hidden bg-white/5">
+                  {avatarUrl
+                    ? <Image src={avatarUrl} alt="avatar" fill sizes="112px" className="object-cover" />
+                    : <span className="text-4xl font-serif text-white">{initials}</span>}
+                </div>
+              </motion.button>
+              
               <label
                 htmlFor="avatar-upload"
-                className={`absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border border-[rgba(200,146,74,0.16)] bg-[color:var(--surface-soft)] shadow-md ${uploading ? 'opacity-60' : 'cursor-pointer'}`}
-                title="Change photo"
+                className={`absolute bottom-1 right-1 flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-[#C5A059] shadow-lg transition-transform active:scale-75 ${uploading ? 'opacity-60' : 'cursor-pointer'}`}
               >
                 {uploading
-                  ? <span className="w-3 h-3 border-2 border-[color:var(--brand-primary)] border-t-transparent rounded-full animate-spin" />
-                  : <Camera size={12} className="text-[color:var(--brand-primary)]" />}
+                  ? <Loader2 size={14} className="text-white animate-spin" />
+                  : <Camera size={14} className="text-white" />}
               </label>
-              <input
-                id="avatar-upload"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                disabled={uploading}
-                onChange={uploadAvatar}
-              />
+              <input id="avatar-upload" type="file" accept="image/*" className="hidden" disabled={uploading} onChange={uploadAvatar} />
             </div>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="type-screen-title">{liveProfile?.full_name}</h1>
+
+            <motion.div 
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="text-center"
+            >
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <h1 className="text-2xl font-serif text-white leading-tight drop-shadow-md">
+                  {liveProfile?.full_name}
+                </h1>
                 {isPro && (
-                  <span
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide flex-shrink-0"
-                    style={{
-                      background: 'linear-gradient(135deg, #d4a818 0%, #c8920a 60%, #b07a08 100%)',
-                      color: '#1c1c1a',
-                      boxShadow: '0 0 8px rgba(200,146,74,0.35)',
-                    }}
-                  >
-                    ✦ SANGAM PRO
-                  </span>
+                  <div className="px-2 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center gap-1">
+                    <Star size={10} className="text-amber-400 fill-amber-400" />
+                    <span className="text-[9px] font-bold text-amber-400 uppercase tracking-wider">Pro</span>
+                  </div>
                 )}
               </div>
-              <p className="type-body">@{liveProfile?.username}</p>
+              <p className="text-sm text-white/60 mb-2 font-medium">@{liveProfile?.username}</p>
+              
               {(liveProfile?.city || liveProfile?.country) && (
-                <p className="type-micro mt-0.5 flex items-center gap-1">
-                  <MapPin size={10} />
+                <div className="flex items-center justify-center gap-1.5 text-[11px] font-semibold text-[#C5A059] uppercase tracking-widest">
+                  <MapPin size={10} strokeWidth={2.5} />
                   {[liveProfile?.city, liveProfile?.country].filter(Boolean).join(', ')}
-                </p>
+                </div>
               )}
-            </div>
+            </motion.div>
           </div>
-          <button onClick={() => setEditing(!editing)}
-            className="rounded-xl bg-[color:var(--brand-primary-soft)] p-2 text-[color:var(--brand-primary-strong)] transition hover:bg-[color:var(--brand-accent-soft)]">
-            <Edit3 size={16} />
-          </button>
         </div>
 
-        <div className="grid grid-cols-3 gap-2">
-          <MetricTile label="Threads" value={threadCount} className="bg-white/8 border-white/10" />
-          <MetricTile label="Posts" value={postCount} className="bg-white/8 border-white/10" />
-          {isPro ? (
-            <MetricTile label="Streak" value={`${streak}🔥`} className="bg-white/8 border-white/10" />
-          ) : (
-            <MetricTile
-              label="Streak"
-              value="🔒 Pro"
-              className="bg-white/8 border-white/10 opacity-50 cursor-pointer"
+        <div className="px-5 -mt-8 space-y-4 relative z-30">
+          {/* Metric Row */}
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { label: 'Threads', value: threadCount },
+              { label: 'Posts', value: postCount },
+              { label: 'Streak', value: isPro ? `${streak}🔥` : '🔒' }
+            ].map((m, i) => (
+              <motion.div
+                key={m.label}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 + (i * 0.05) }}
+                className="glass-panel border border-white/10 rounded-2xl p-3 text-center"
+              >
+                <p className="text-[10px] font-bold text-[#C5A059] uppercase tracking-widest mb-1 opacity-70">{m.label}</p>
+                <p className="text-lg font-serif text-[var(--divine-text)] dark:text-white">{m.value}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          {showAvatarPreview && avatarUrl && (
+            <AvatarPreviewModal
+              avatarUrl={avatarUrl}
+              fullName={profile?.full_name ?? profile?.username ?? 'Profile photo'}
+              onClose={() => setShowAvatarPreview(false)}
             />
           )}
-        </div>
-      </div>
 
-      <SurfaceSection
-        eyebrow="Settings"
-        title="App preferences"
-        description="Only the choices needed for daily use."
-      >
-        <div className="space-y-5">
-          <div>
-            <p className="type-card-label mb-2">Theme</p>
-            <div className="grid grid-cols-3 gap-2">
-              {THEME_OPTIONS.map((option) => {
-                const active = themePreference === option.value;
-                const Icon = themeIconMap[option.value];
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => setThemePreference(option.value)}
-                    className="rounded-2xl border px-3 py-3 text-left transition motion-press"
-                    style={{
-                      background: active ? 'rgba(200,146,74,0.14)' : 'var(--card-bg)',
-                      borderColor: active ? 'rgba(200,146,74,0.32)' : 'rgba(255,255,255,0.08)',
-                    }}
-                  >
-                    <Icon size={16} style={{ color: active ? 'var(--brand-primary-strong)' : 'var(--text-dim)' }} />
-                    <p className="mt-2 text-sm font-medium theme-ink">{option.label}</p>
-                  </button>
-                );
-              })}
-            </div>
-            <p className="type-micro mt-2">Current surface: {resolvedTheme}</p>
-          </div>
+          <CompletionBar profile={liveProfile} onEdit={() => setEditing(true)} />
 
-          <div>
-            <p className="type-card-label mb-2">App language</p>
-            <div className="flex gap-2">
-              {APP_LANGUAGES.map((lang) => {
-                const active = ((liveProfile as any)?.app_language ?? 'en') === lang.value;
-                return (
-                  <button
-                    key={lang.value}
-                    onClick={() => {
-                      setLang(lang.value as AppLang);
-                      patchProfile({ app_language: lang.value }, `Language set to ${lang.label}`);
-                    }}
-                    className="flex-1 rounded-xl border py-2 text-sm font-medium transition"
-                    style={active ? {
-                      background: 'var(--brand-primary)',
-                      color: '#1c1c1a',
-                      borderColor: 'transparent',
-                    } : {
-                      background: 'var(--card-bg)',
-                      color: 'var(--text-muted-warm)',
-                      borderColor: 'rgba(255,255,255,0.08)',
-                    }}
-                  >
-                    {lang.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div>
-            <p className="type-card-label mb-2">Transliteration script</p>
-            <div className="flex gap-2">
-              {TRANSLITERATION_LANGUAGE_OPTIONS.map((opt) => {
-                const active = (form.transliteration_language ?? 'en') === opt.value;
-                return (
-                  <button
-                    key={opt.value}
-                    onClick={() => {
-                      setForm({ ...form, transliteration_language: opt.value });
-                      patchProfile({ transliteration_language: opt.value }, `Transliteration set to ${opt.label}`);
-                    }}
-                    className="flex-1 rounded-xl border py-2 text-sm font-medium transition"
-                    style={active ? {
-                      background: 'var(--brand-primary)',
-                      color: '#1c1c1a',
-                      borderColor: 'transparent',
-                    } : {
-                      background: 'var(--card-bg)',
-                      color: 'var(--text-muted-warm)',
-                      borderColor: 'rgba(255,255,255,0.08)',
-                    }}
-                  >
-                    {opt.label}
-                  </button>
-                );
-              })}
-            </div>
-            <p className="type-micro mt-2">Script used for shlokas and sacred chants.</p>
-          </div>
-
-          <div className="rounded-2xl surface-input border px-4 py-4 space-y-3">
-            <button
-              type="button"
-              onClick={() => setShowNotificationAdvanced((current) => !current)}
-              className="flex w-full items-center justify-between gap-3 text-left"
-            >
+          <SurfaceSection
+            eyebrow="Settings"
+            title="App preferences"
+            description="Only the choices needed for daily use."
+          >
+            <div className="space-y-5">
               <div>
-                <p className="text-sm font-medium theme-ink">Notifications</p>
-                <p className="text-xs theme-dim mt-1">Daily, festival, community, and family reminders.</p>
-              </div>
-              <span className="type-chip rounded-full surface-input border px-3 py-1 text-[color:var(--text-cream)]">
-                {showNotificationAdvanced ? 'Hide' : 'Show'}
-              </span>
-            </button>
-            {showNotificationAdvanced ? (
-              <div className="space-y-3">
-                {[
-                  { key: 'wants_shloka_reminders', title: 'Daily shloka' },
-                  { key: 'wants_festival_reminders', title: 'Festival reminders' },
-                  { key: 'wants_community_notifications', title: 'Community updates' },
-                  { key: 'wants_family_notifications', title: 'Family updates' },
-                ].map((item) => {
-                  const checked = notificationPrefs[item.key as keyof typeof notificationPrefs] as boolean;
-                  return (
-                    <label key={item.key} className="flex items-center justify-between gap-4 rounded-xl border border-white/6 bg-white/[0.03] px-3 py-2.5 cursor-pointer">
-                      <span className="text-sm theme-ink">{item.title}</span>
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={(e) => setNotificationPrefs((current) => ({ ...current, [item.key]: e.target.checked }))}
-                        className="h-4 w-4 rounded"
-                        style={{ accentColor: 'var(--brand-primary)' }}
-                      />
-                    </label>
-                  );
-                })}
-                <div className="rounded-2xl border border-white/6 bg-white/[0.03] px-4 py-4 space-y-3">
-                  <div>
-                    <p className="text-sm font-medium theme-ink">Quiet hours</p>
-                    <p className="text-xs theme-dim mt-1">
-                      Reminders skip this local window.
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-medium theme-dim mb-1.5">Start</label>
-                      <select
-                        value={notificationPrefs.notification_quiet_hours_start}
-                        onChange={(e) => setNotificationPrefs((current) => ({ ...current, notification_quiet_hours_start: Number(e.target.value) }))}
-                        className="surface-select px-3 py-2.5 outline-none text-sm"
-                      >
-                        {Array.from({ length: 24 }).map((_, hour) => (
-                          <option key={`start-${hour}`} value={hour}>{String(hour).padStart(2, '0')}:00</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium theme-dim mb-1.5">End</label>
-                      <select
-                        value={notificationPrefs.notification_quiet_hours_end}
-                        onChange={(e) => setNotificationPrefs((current) => ({ ...current, notification_quiet_hours_end: Number(e.target.value) }))}
-                        className="surface-select px-3 py-2.5 outline-none text-sm"
-                      >
-                        {Array.from({ length: 24 }).map((_, hour) => (
-                          <option key={`end-${hour}`} value={hour}>{String(hour).padStart(2, '0')}:00</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  <p className="text-xs theme-dim">
-                    Local time zone: {profileTimezone ?? 'UTC fallback until your browser reports a timezone'}
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={saveNotificationPreferences}
-                    disabled={savingNotificationPrefs}
-                    className="glass-button-primary inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium disabled:opacity-60"
-                  >
-                    {savingNotificationPrefs ? 'Saving...' : 'Save notifications'}
-                  </button>
-                  <button
-                    onClick={sendTestNotification}
-                    disabled={sendingTestNotification}
-                    className="glass-button-secondary inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium disabled:opacity-60"
-                    style={{ color: 'var(--text-cream)' }}
-                  >
-                    {sendingTestNotification ? 'Testing...' : 'Test'}
-                  </button>
-                </div>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      </SurfaceSection>
-
-      {hasSafetyItems ? (
-        <SurfaceSection
-          eyebrow="Safety"
-          title="Visibility and boundaries"
-          description="Manage hidden, muted, and blocked activity."
-        >
-          <div className="space-y-4">
-            {blockedProfiles.length > 0 && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-semibold theme-ink">
-                  <ShieldBan size={15} className="text-red-500" />
-                  Blocked people
-                </div>
-                {blockedProfiles.map((item) => {
-                  const busy = safetyBusyKey === `block:${item.id}`;
-                  return (
-                    <SafetyProfileRow
-                      key={`blocked-${item.id}`}
-                      profile={item}
-                      actionLabel={busy ? 'Updating…' : 'Unblock'}
-                      disabled={busy}
-                      onAction={() => unblockProfile(item.id)}
-                    />
-                  );
-                })}
-              </div>
-            )}
-
-            {mutedProfiles.length > 0 && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-semibold theme-ink">
-                  <BellOff size={15} className="text-[color:var(--brand-primary)]" />
-                  Muted people
-                </div>
-                {mutedProfiles.map((item) => {
-                  const busy = safetyBusyKey === `mute:${item.id}`;
-                  return (
-                    <SafetyProfileRow
-                      key={`muted-${item.id}`}
-                      profile={item}
-                      actionLabel={busy ? 'Updating…' : 'Unmute'}
-                      disabled={busy}
-                      onAction={() => unmuteProfile(item.id)}
-                    />
-                  );
-                })}
-              </div>
-            )}
-
-            {hiddenItems.length > 0 && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-semibold theme-ink">
-                  <EyeOff size={15} className="text-[color:var(--brand-primary)]" />
-                  Hidden content
-                </div>
-                {hiddenItems.map((item) => {
-                  const busy = safetyBusyKey === `hide:${item.content_type}:${item.content_id}`;
-                  return (
-                    <div key={`${item.content_type}:${item.content_id}`} className="rounded-2xl surface-input border px-3 py-3 flex items-center gap-3">
-                      <div
-                        className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
-                        style={{ background: 'rgba(124, 58, 45, 0.08)', color: 'var(--brand-primary)' }}
-                      >
-                        <EyeOff size={16} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium theme-ink truncate">{item.title}</p>
-                        <p className="text-xs theme-dim">{item.subtitle}</p>
-                      </div>
+                <p className="type-card-label mb-2">Theme</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {THEME_OPTIONS.map((option) => {
+                    const active = themePreference === option.value;
+                    const Icon = themeIconMap[option.value];
+                    return (
                       <button
-                        onClick={() => unhideContent(item.content_type, item.content_id)}
-                        disabled={busy}
-                        className="px-3 py-1.5 rounded-full text-xs font-semibold transition disabled:opacity-60"
+                        key={option.value}
+                        type="button"
+                        onClick={() => setThemePreference(option.value)}
+                        className="rounded-2xl border px-3 py-3 text-left transition motion-press"
                         style={{
-                          border: '1px solid rgba(124, 58, 45, 0.18)',
-                          color: 'var(--brand-primary)',
-                          background: 'var(--card-bg)',
+                          background: active ? 'rgba(200,146,74,0.14)' : 'var(--card-bg)',
+                          borderColor: active ? 'rgba(200,146,74,0.32)' : 'rgba(255,255,255,0.08)',
                         }}
                       >
-                        {busy ? 'Updating…' : 'Unhide'}
+                        <Icon size={16} style={{ color: active ? 'var(--brand-primary-strong)' : 'var(--text-dim)' }} />
+                        <p className="mt-2 text-sm font-medium theme-ink">{option.label}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="type-micro mt-2">Current surface: {resolvedTheme}</p>
+              </div>
+
+              <div>
+                <p className="type-card-label mb-2">App language</p>
+                <div className="flex gap-2">
+                  {APP_LANGUAGES.map((lang) => {
+                    const active = ((liveProfile as any)?.app_language ?? 'en') === lang.value;
+                    return (
+                      <button
+                        key={lang.value}
+                        onClick={() => {
+                          setLang(lang.value as AppLang);
+                          patchProfile({ app_language: lang.value }, `Language set to ${lang.label}`);
+                        }}
+                        className="flex-1 rounded-xl border py-2 text-sm font-medium transition"
+                        style={active ? {
+                          background: 'var(--brand-primary)',
+                          color: '#1c1c1a',
+                          borderColor: 'transparent',
+                        } : {
+                          background: 'var(--card-bg)',
+                          color: 'var(--text-muted-warm)',
+                          borderColor: 'rgba(255,255,255,0.08)',
+                        }}
+                      >
+                        {lang.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div>
+                <p className="type-card-label mb-2">Transliteration script</p>
+                <div className="flex gap-2">
+                  {TRANSLITERATION_LANGUAGE_OPTIONS.map((opt) => {
+                    const active = (form.transliteration_language ?? 'en') === opt.value;
+                    return (
+                      <button
+                        key={opt.value}
+                        onClick={() => {
+                          setForm({ ...form, transliteration_language: opt.value });
+                          patchProfile({ transliteration_language: opt.value }, `Transliteration set to ${opt.label}`);
+                        }}
+                        className="flex-1 rounded-xl border py-2 text-sm font-medium transition"
+                        style={active ? {
+                          background: 'var(--brand-primary)',
+                          color: '#1c1c1a',
+                          borderColor: 'transparent',
+                        } : {
+                          background: 'var(--card-bg)',
+                          color: 'var(--text-muted-warm)',
+                          borderColor: 'rgba(255,255,255,0.08)',
+                        }}
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="type-micro mt-2">Script used for shlokas and sacred chants.</p>
+              </div>
+
+              <div className="rounded-2xl surface-input border px-4 py-4 space-y-3">
+                <button
+                  type="button"
+                  onClick={() => setShowNotificationAdvanced((current) => !current)}
+                  className="flex w-full items-center justify-between gap-3 text-left"
+                >
+                  <div>
+                    <p className="text-sm font-medium theme-ink">Notifications</p>
+                    <p className="text-xs theme-dim mt-1">Daily, festival, community, and family reminders.</p>
+                  </div>
+                  <span className="type-chip rounded-full surface-input border px-3 py-1 text-[color:var(--text-cream)]">
+                    {showNotificationAdvanced ? 'Hide' : 'Show'}
+                  </span>
+                </button>
+                {showNotificationAdvanced ? (
+                  <div className="space-y-3">
+                    {[
+                      { key: 'wants_shloka_reminders', title: 'Daily shloka' },
+                      { key: 'wants_festival_reminders', title: 'Festival reminders' },
+                      { key: 'wants_community_notifications', title: 'Community updates' },
+                      { key: 'wants_family_notifications', title: 'Family updates' },
+                    ].map((item) => {
+                      const checked = notificationPrefs[item.key as keyof typeof notificationPrefs] as boolean;
+                      return (
+                        <label key={item.key} className="flex items-center justify-between gap-4 rounded-xl border border-white/6 bg-white/[0.03] px-3 py-2.5 cursor-pointer">
+                          <span className="text-sm theme-ink">{item.title}</span>
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={(e) => setNotificationPrefs((current) => ({ ...current, [item.key]: e.target.checked }))}
+                            className="h-4 w-4 rounded"
+                            style={{ accentColor: 'var(--brand-primary)' }}
+                          />
+                        </label>
+                      );
+                    })}
+                    <div className="rounded-2xl border border-white/6 bg-white/[0.03] px-4 py-4 space-y-3">
+                      <div>
+                        <p className="text-sm font-medium theme-ink">Quiet hours</p>
+                        <p className="text-xs theme-dim mt-1">
+                          Reminders skip this local window.
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium theme-dim mb-1.5">Start</label>
+                          <select
+                            value={notificationPrefs.notification_quiet_hours_start}
+                            onChange={(e) => setNotificationPrefs((current) => ({ ...current, notification_quiet_hours_start: Number(e.target.value) }))}
+                            className="surface-select px-3 py-2.5 outline-none text-sm"
+                          >
+                            {Array.from({ length: 24 }).map((_, hour) => (
+                              <option key={`start-${hour}`} value={hour}>{String(hour).padStart(2, '0')}:00</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium theme-dim mb-1.5">End</label>
+                          <select
+                            value={notificationPrefs.notification_quiet_hours_end}
+                            onChange={(e) => setNotificationPrefs((current) => ({ ...current, notification_quiet_hours_end: Number(e.target.value) }))}
+                            className="surface-select px-3 py-2.5 outline-none text-sm"
+                          >
+                            {Array.from({ length: 24 }).map((_, hour) => (
+                              <option key={`end-${hour}`} value={hour}>{String(hour).padStart(2, '0')}:00</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      <p className="text-xs theme-dim">
+                        Local time zone: {profileTimezone ?? 'UTC fallback until your browser reports a timezone'}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={saveNotificationPreferences}
+                        disabled={savingNotificationPrefs}
+                        className="glass-button-primary inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium disabled:opacity-60"
+                      >
+                        {savingNotificationPrefs ? 'Saving...' : 'Save notifications'}
+                      </button>
+                      <button
+                        onClick={sendTestNotification}
+                        disabled={sendingTestNotification}
+                        className="glass-button-secondary inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium disabled:opacity-60"
+                        style={{ color: 'var(--text-cream)' }}
+                      >
+                        {sendingTestNotification ? 'Testing...' : 'Test'}
                       </button>
                     </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </SurfaceSection>
-      ) : null}
-
-      {/* ── Edit Form ── */}
-      {editing && (
-        <div className="surface-sheet rounded-2xl p-5 space-y-4 fade-in">
-          <h2 className="font-display font-semibold text-lg theme-ink">Edit Profile</h2>
-
-          {/* ── Tradition — locked at signup, not editable ── */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium theme-muted">Tradition</label>
-              <span className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full"
-                style={{ background: 'rgba(200,146,74,0.12)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(200,146,74,0.2)' }}>
-                <Lock size={9} /> Set at signup
-              </span>
-            </div>
-            {(() => {
-              const t = TRADITIONS.find(t => t.value === form.tradition);
-              return t ? (
-                <div className="flex items-center gap-3 px-4 py-3 rounded-xl surface-input border">
-                  <span className="text-2xl">{t.emoji}</span>
-                  <div>
-                    <p className="font-semibold text-sm theme-ink">{t.label}</p>
-                    <p className="text-xs theme-dim mt-0.5">{t.desc}</p>
                   </div>
-                </div>
-              ) : (
-                <p className="text-sm theme-dim italic">No tradition set — contact support to update.</p>
-              );
-            })()}
-          </div>
-
-          <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My path</p>
-            {[
-              { label: 'Full Name', key: 'full_name', placeholder: 'Your full name' },
-              { label: 'Home Town', key: 'home_town', placeholder: 'Where you are from' },
-            ].map(({ label, key, placeholder }) => (
-              <div key={key}>
-                <label className="block text-sm font-medium theme-muted mb-1.5">{label}</label>
-                <input type="text" placeholder={placeholder}
-                  value={(form as Record<string, string>)[key]}
-                  onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                  className="surface-input px-4 py-2.5 outline-none text-sm"
-                />
+                ) : null}
               </div>
-            ))}
-          </div>
-
-          <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My practice</p>
-            <div>
-              <label className="block text-sm font-medium theme-muted mb-1.5">{sampradayaLabel}</label>
-              <select value={form.sampradaya}
-                onChange={(e) => setForm({ ...form, sampradaya: e.target.value })}
-                className="surface-select px-4 py-2.5 outline-none text-sm">
-                <option value="">Select {sampradayaLabel.toLowerCase()}</option>
-                {sampradayaOptions.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-              </select>
             </div>
+          </SurfaceSection>
 
-            <div>
-              <label className="block text-sm font-medium theme-muted mb-1.5">{ishtaDevataLabel}</label>
-              <select value={form.ishta_devata}
-                onChange={(e) => setForm({ ...form, ishta_devata: e.target.value })}
-                className="surface-select px-4 py-2.5 outline-none text-sm">
-                <option value="">Select {ishtaDevataLabel.toLowerCase()}</option>
-                {ishtaDevataOptions.map((d) => <option key={d.value} value={d.value}>{d.emoji} {d.label}</option>)}
-              </select>
-            </div>
-          </div>
+          {hasSafetyItems ? (
+            <SurfaceSection
+              eyebrow="Safety"
+              title="Visibility and boundaries"
+              description="Manage hidden, muted, and blocked activity."
+            >
+              <div className="space-y-4">
+                {blockedProfiles.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold theme-ink">
+                      <ShieldBan size={15} className="text-red-500" />
+                      Blocked people
+                    </div>
+                    {blockedProfiles.map((item) => {
+                      const busy = safetyBusyKey === `block:${item.id}`;
+                      return (
+                        <SafetyProfileRow
+                          key={`blocked-${item.id}`}
+                          profile={item}
+                          actionLabel={busy ? 'Updating…' : 'Unblock'}
+                          disabled={busy}
+                          onAction={() => unblockProfile(item.id)}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
 
-          {/* ── Hindu-specific fields ── */}
-          {(activeTradition === 'hindu') && (
-            <>
-              {[
-                { label: 'Gotra',      key: 'gotra',      placeholder: 'e.g. Kashyapa'     },
-                { label: 'Kul Devata', key: 'kul_devata', placeholder: 'e.g. Shiva, Durga' },
-                { label: 'Kul',        key: 'kul',        placeholder: 'Family lineage'    },
-              ].map(({ label, key, placeholder }) => (
-                <div key={key}>
-                  <label className="block text-sm font-medium theme-muted mb-1.5">{label}</label>
-                  <input type="text" placeholder={placeholder}
-                    value={(form as Record<string, string>)[key]}
-                    onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                {mutedProfiles.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold theme-ink">
+                      <BellOff size={15} className="text-[color:var(--brand-primary)]" />
+                      Muted people
+                    </div>
+                    {mutedProfiles.map((item) => {
+                      const busy = safetyBusyKey === `mute:${item.id}`;
+                      return (
+                        <SafetyProfileRow
+                          key={`muted-${item.id}`}
+                          profile={item}
+                          actionLabel={busy ? 'Updating…' : 'Unmute'}
+                          disabled={busy}
+                          onAction={() => unmuteProfile(item.id)}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
+
+                {hiddenItems.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold theme-ink">
+                      <EyeOff size={15} className="text-[color:var(--brand-primary)]" />
+                      Hidden content
+                    </div>
+                    {hiddenItems.map((item) => {
+                      const busy = safetyBusyKey === `hide:${item.content_type}:${item.content_id}`;
+                      return (
+                        <div key={`${item.content_type}:${item.content_id}`} className="rounded-2xl surface-input border px-3 py-3 flex items-center gap-3">
+                          <div
+                            className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
+                            style={{ background: 'rgba(124, 58, 45, 0.08)', color: 'var(--brand-primary)' }}
+                          >
+                            <EyeOff size={16} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium theme-ink truncate">{item.title}</p>
+                            <p className="text-xs theme-dim">{item.subtitle}</p>
+                          </div>
+                          <button
+                            onClick={() => unhideContent(item.content_type, item.content_id)}
+                            disabled={busy}
+                            className="px-3 py-1.5 rounded-full text-xs font-semibold transition disabled:opacity-60"
+                            style={{
+                              border: '1px solid rgba(124, 58, 45, 0.18)',
+                              color: 'var(--brand-primary)',
+                              background: 'var(--card-bg)',
+                            }}
+                          >
+                            {busy ? 'Updating…' : 'Unhide'}
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </SurfaceSection>
+          ) : null}
+
+          {/* ── Edit Form ── */}
+          {editing && (
+            <div className="surface-sheet rounded-2xl p-5 space-y-4 fade-in">
+              <h2 className="font-display font-semibold text-lg theme-ink">Edit Profile</h2>
+
+              {/* ── Tradition — locked at signup, not editable ── */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-medium theme-muted">Tradition</label>
+                  <span className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full"
+                    style={{ background: 'rgba(200,146,74,0.12)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(200,146,74,0.2)' }}>
+                    <Lock size={9} /> Set at signup
+                  </span>
+                </div>
+                {(() => {
+                  const t = TRADITIONS.find(t => t.value === form.tradition);
+                  return t ? (
+                    <div className="flex items-center gap-3 px-4 py-3 rounded-xl surface-input border">
+                      <span className="text-2xl">{t.emoji}</span>
+                      <div>
+                        <p className="font-semibold text-sm theme-ink">{t.label}</p>
+                        <p className="text-xs theme-dim mt-0.5">{t.desc}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm theme-dim italic">No tradition set — contact support to update.</p>
+                  );
+                })()}
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My details</p>
+                {[
+                  { label: 'Full Name', key: 'full_name', placeholder: 'Your full name' },
+                  { label: 'Home Town', key: 'home_town', placeholder: 'Where you are from' },
+                ].map(({ label, key, placeholder }) => (
+                  <div key={key}>
+                    <label className="block text-sm font-medium theme-muted mb-1.5">{label}</label>
+                    <input type="text" placeholder={placeholder}
+                      value={(form as Record<string, string>)[key]}
+                      onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                      className="surface-input px-4 py-2.5 outline-none text-sm"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My practice</p>
+                <div>
+                  <label className="block text-sm font-medium theme-muted mb-1.5">{sampradayaLabel}</label>
+                  <select value={form.sampradaya}
+                    onChange={(e) => setForm({ ...form, sampradaya: e.target.value })}
+                    className="surface-select px-4 py-2.5 outline-none text-sm">
+                    <option value="">Select {sampradayaLabel.toLowerCase()}</option>
+                    {sampradayaOptions.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium theme-muted mb-1.5">{ishtaDevataLabel}</label>
+                  <select value={form.ishta_devata}
+                    onChange={(e) => setForm({ ...form, ishta_devata: e.target.value })}
+                    className="surface-select px-4 py-2.5 outline-none text-sm">
+                    <option value="">Select {ishtaDevataLabel.toLowerCase()}</option>
+                    {ishtaDevataOptions.map((d) => <option key={d.value} value={d.value}>{d.emoji} {d.label}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              {/* ── Hindu-specific fields ── */}
+              {(activeTradition === 'hindu') && (
+                <>
+                  {[
+                    { label: 'Gotra',      key: 'gotra',      placeholder: 'e.g. Kashyapa'     },
+                    { label: 'Kul Devata', key: 'kul_devata', placeholder: 'e.g. Shiva, Durga' },
+                    { label: 'Kul',        key: 'kul',        placeholder: 'Family lineage'    },
+                  ].map(({ label, key, placeholder }) => (
+                    <div key={key}>
+                      <label className="block text-sm font-medium theme-muted mb-1.5">{label}</label>
+                      <input type="text" placeholder={placeholder}
+                        value={(form as Record<string, string>)[key]}
+                        onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                        className="surface-input px-4 py-2.5 outline-none text-sm"
+                      />
+                    </div>
+                  ))}
+                </>
+              )}
+
+              {/* ── My Stage — DOB + practice path ── */}
+              <div className="space-y-3">
+                <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My stage</p>
+
+                {/* Date of birth */}
+                <div>
+                  <label className="block text-sm font-medium theme-muted mb-1.5">Date of birth</label>
+                  <input
+                    type="date"
+                    value={form.date_of_birth}
+                    max={new Date().toISOString().split('T')[0]}
+                    onChange={(e) => {
+                      const dob = e.target.value;
+                      setForm(prev => ({ ...prev, date_of_birth: dob }));
+                    }}
                     className="surface-input px-4 py-2.5 outline-none text-sm"
                   />
+                  {form.date_of_birth && (() => {
+                    const suggested = ageToAshrama(form.date_of_birth);
+                    const age       = ageFromDob(form.date_of_birth);
+                    const meta      = getAshramaMeta(activeTradition, suggested as LifeStage, form.gender_context);
+                    return (
+                      <p className="text-xs mt-1.5 text-white/50">
+                        {meta.icon} Age {age} — suggested stage:{' '}
+                        <span style={{ color: meta.accent, fontWeight: 600 }}>{meta.label}</span>
+                      </p>
+                    );
+                  })()}
                 </div>
-              ))}
-            </>
+
+                {/* Practice path (gender context) */}
+                <div>
+                  <label className="block text-sm font-medium theme-muted mb-1.5">Practice path</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {getPracticePathOptions(activeTradition).map(opt => {
+                      const sel = form.gender_context === opt.key;
+                      return (
+                        <button
+                          key={opt.key}
+                          type="button"
+                          onClick={() => setForm({ ...form, gender_context: opt.key })}
+                          className="rounded-2xl border px-3 py-3 text-left transition"
+                          style={{
+                            background:   sel ? 'rgba(200,146,74,0.14)' : 'var(--card-bg)',
+                            borderColor:  sel ? 'rgba(200,146,74,0.32)' : 'rgba(255,255,255,0.08)',
+                          }}
+                        >
+                          <div className="text-xl mb-1">{opt.icon}</div>
+                          <p className="text-sm font-semibold theme-ink leading-tight">{opt.label}</p>
+                          <p className="text-[11px] theme-dim mt-0.5 leading-snug">{opt.sub}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My voice</p>
+                <div>
+                  <label className="block text-sm font-medium theme-muted mb-1.5">Bio</label>
+                  <textarea placeholder="Share a little about your spiritual journey…"
+                    value={form.bio}
+                    onChange={(e) => setForm({ ...form, bio: e.target.value })}
+                    rows={3}
+                    className="surface-input px-4 py-2.5 outline-none resize-none text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button onClick={() => setEditing(false)}
+                  className="flex-1 py-3 rounded-xl text-sm font-medium theme-muted border border-white/10 hover:bg-white/5 transition">
+                  Cancel
+                </button>
+                <button onClick={saveProfile} disabled={saving}
+                  className="flex-1 py-3 text-[#1c1c1a] font-semibold rounded-xl text-sm hover:opacity-90 disabled:opacity-50"
+                  style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}>
+                  {saving ? 'Saving…' : 'Save Changes'}
+                </button>
+              </div>
+            </div>
           )}
 
-          {/* ── My Stage — DOB + practice path ── */}
-          <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My stage</p>
-
-            {/* Date of birth */}
+          {/* ── Account ── */}
+          <div className="surface-card rounded-2xl p-4 space-y-3">
             <div>
-              <label className="block text-sm font-medium theme-muted mb-1.5">Date of birth</label>
-              <input
-                type="date"
-                value={form.date_of_birth}
-                max={new Date().toISOString().split('T')[0]}
-                onChange={(e) => {
-                  const dob = e.target.value;
-                  setForm(prev => {
-                    const next = { ...prev, date_of_birth: dob };
-                    return next;
-                  });
-                }}
-                className="surface-input px-4 py-2.5 outline-none text-sm"
-              />
-              {/* Auto-show suggested ashrama when DOB is set */}
-              {form.date_of_birth && (() => {
-                const suggested = ageToAshrama(form.date_of_birth);
-                const age       = ageFromDob(form.date_of_birth);
-                const meta      = getAshramaMeta(
-                  activeTradition,
-                  suggested as LifeStage,
-                  form.gender_context,
-                );
-                return (
-                  <p className="text-xs mt-1.5" style={{ color: 'var(--text-dim)' }}>
-                    {meta.icon} Age {age} — suggested stage:{' '}
-                    <span style={{ color: meta.accent, fontWeight: 600 }}>{meta.label}</span>
-                  </p>
-                );
-              })()}
+              <p className="type-card-heading">Account</p>
+              <p className="type-micro mt-1">Signed in as {userEmail}</p>
             </div>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+              <button
+                onClick={() => setInviteOpen(true)}
+                className="glass-button-secondary inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium"
+                style={{ color: 'var(--text-cream)' }}
+              >
+                Invite family
+              </button>
+              <button
+                onClick={downloadReport}
+                disabled={reportLoading}
+                className="glass-button-secondary inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium disabled:opacity-60"
+                style={{ color: 'var(--text-cream)' }}
+              >
+                {reportLoading ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
+                Report
+              </button>
+              <button
+                onClick={signOut}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition"
+                style={{ borderColor: 'rgba(220,80,80,0.20)', color: 'rgba(220,80,80,0.82)' }}
+              >
+                <LogOut size={15} /> Sign out
+              </button>
+            </div>
+          </div>
 
-            {/* Practice path (gender context) */}
-            <div>
-              <label className="block text-sm font-medium theme-muted mb-1.5">Practice path</label>
-              <div className="grid grid-cols-2 gap-2">
-                {getPracticePathOptions(activeTradition).map(opt => {
-                  const sel = form.gender_context === opt.key;
-                  return (
-                    <button
-                      key={opt.key}
-                      type="button"
-                      onClick={() => setForm({ ...form, gender_context: opt.key })}
-                      className="rounded-2xl border px-3 py-3 text-left transition"
-                      style={{
-                        background:   sel ? 'rgba(200,146,74,0.14)' : 'var(--card-bg)',
-                        borderColor:  sel ? 'rgba(200,146,74,0.32)' : 'rgba(255,255,255,0.08)',
-                      }}
-                    >
-                      <div className="text-xl mb-1">{opt.icon}</div>
-                      <p className="text-sm font-semibold theme-ink leading-tight">{opt.label}</p>
-                      <p className="text-[11px] theme-dim mt-0.5 leading-snug">{opt.sub}</p>
+          {/* ── Invite Modal ── */}
+          <AnimatePresence>
+            {inviteOpen && (() => {
+              const code = generateInviteCode(userId);
+              const baseUrl = typeof window !== 'undefined' ? window.location.origin : APP.BASE_URL;
+              const link = `${baseUrl}/join?ref=${code}`;
+              async function share() {
+                const shareText = `Join me on Sanatana Sangam — your dharmic home.\n\nInvite code: ${code}\n${link}`;
+                if (typeof navigator !== 'undefined' && navigator.share) {
+                  try { await navigator.share({ title: 'Join Sanatana Sangam 🙏', text: shareText, url: link }); return; } catch {}
+                }
+                try { await navigator.clipboard.writeText(shareText); toast.success('Invite link copied! 🙏'); } catch { window.prompt('Copy your invite link:', link); }
+              }
+              return (
+                <motion.div className="fixed inset-0 z-50 flex items-end" onClick={() => setInviteOpen(false)}
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                  <motion.div className="w-full rounded-t-[2rem] p-6 space-y-5" onClick={e => e.stopPropagation()}
+                    style={{ background: 'linear-gradient(180deg, var(--surface-raised), rgba(34,30,22,0.99))', borderTop: '1px solid rgba(200,146,74,0.20)', boxShadow: '0 -20px 48px rgba(0,0,0,0.38)' }}
+                    initial={{ y: 32, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}
+                    transition={{ duration: 0.32, ease: [0.34, 1.26, 0.64, 1] }}>
+                    <div className="w-10 h-1 rounded-full mx-auto mb-1" style={{ background: 'rgba(200,146,74,0.28)' }} />
+                    <div className="flex items-center justify-between">
+                      <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-cream)' }}>Invite Friends &amp; Family</h3>
+                      <button onClick={() => setInviteOpen(false)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(200,146,74,0.10)' }}>
+                        <X size={15} style={{ color: 'var(--text-muted-warm)' }} />
+                      </button>
+                    </div>
+                    <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>Share Sanatana Sangam with your family and friends using your personal invite code.</p>
+                    <div className="rounded-[1.4rem] p-5 text-center border" style={{ background: 'rgba(200,146,74,0.08)', borderColor: 'rgba(200,146,74,0.18)' }}>
+                      <p className="text-[10px] mb-2 font-semibold uppercase tracking-[0.16em]" style={{ color: 'var(--text-dim)' }}>Your Invite Code</p>
+                      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', fontWeight: 700, letterSpacing: '0.18em', color: 'var(--brand-primary)' }}>{code}</p>
+                      <p className="text-[11px] mt-2" style={{ color: 'var(--text-dim)' }}>{link}</p>
+                    </div>
+                    <button onClick={share} className="w-full py-3.5 rounded-2xl font-semibold text-sm" style={{ background: 'var(--brand-primary)', color: '#1a1610' }}>
+                      🙏 Share invite
                     </button>
-                  );
-                })}
-              </div>
-              <p className="text-xs theme-dim mt-1.5">
-                Affects your Nitya Karma duties and life-stage content.
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My place</p>
-            {[
-              { label: 'City', key: 'city', placeholder: 'Current city' },
-              { label: 'Country', key: 'country', placeholder: 'Country' },
-            ].map(({ label, key, placeholder }) => (
-              <div key={key}>
-                <label className="block text-sm font-medium theme-muted mb-1.5">{label}</label>
-                <input type="text" placeholder={placeholder}
-                  value={(form as Record<string, string>)[key]}
-                  onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                  className="surface-input px-4 py-2.5 outline-none text-sm"
-                />
-              </div>
-            ))}
-          </div>
-
-          <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My voice</p>
-            <div>
-              <label className="block text-sm font-medium theme-muted mb-1.5">Custom Greeting (optional)</label>
-              <input type="text" placeholder="e.g. Waheguru Ji Ka Khalsa, Namo Buddhaya…"
-                value={form.custom_greeting}
-                onChange={(e) => setForm({ ...form, custom_greeting: e.target.value })}
-                className="surface-input px-4 py-2.5 outline-none text-sm"
-              />
-              <p className="text-xs theme-dim mt-1">Overrides the auto greeting on your home screen</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium theme-muted mb-1.5">Bio</label>
-              <textarea placeholder="Share a little about your spiritual journey…"
-                value={form.bio}
-                onChange={(e) => setForm({ ...form, bio: e.target.value })}
-                rows={3}
-                className="surface-input px-4 py-2.5 outline-none resize-none text-sm"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">Language and script</p>
-            <div>
-              <label className="block text-sm font-medium theme-muted mb-1.5">App language</label>
-              <select
-                value={form.app_language}
-                onChange={(e) => setForm({ ...form, app_language: e.target.value })}
-                className="surface-select px-4 py-2.5 outline-none text-sm"
-              >
-                {APP_LANGUAGES.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium theme-muted mb-1.5">Scripture view</label>
-              <select
-                value={form.scripture_script}
-                onChange={(e) => setForm({ ...form, scripture_script: e.target.value })}
-                className="surface-select px-4 py-2.5 outline-none text-sm"
-              >
-                {SCRIPTURE_SCRIPT_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="flex items-start justify-between gap-4 rounded-2xl surface-input border px-4 py-3 cursor-pointer">
-                <div>
-                  <p className="text-sm font-medium theme-ink">Show transliteration</p>
-                  <p className="text-xs theme-dim mt-1 leading-relaxed">Keep Roman transliteration visible when available.</p>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={Boolean(form.show_transliteration)}
-                  onChange={(e) => setForm({ ...form, show_transliteration: e.target.checked })}
-                  className="mt-1 h-4 w-4 rounded"
-                  style={{ accentColor: 'var(--brand-primary)' }}
-                />
-              </label>
-            </div>
-            <div>
-              <label className="block text-sm font-medium theme-muted mb-1.5">Meaning language</label>
-              <select
-                value={form.meaning_language}
-                onChange={(e) => setForm({ ...form, meaning_language: e.target.value })}
-                className="surface-select px-4 py-2.5 outline-none text-sm"
-              >
-                {MEANING_LANGUAGE_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-              </select>
-            </div>
-          </div>
-
-          <div className="flex gap-3">
-            <button onClick={() => setEditing(false)}
-              className="flex-1 py-3 rounded-xl text-sm font-medium theme-muted border border-white/10 hover:bg-white/5 transition">
-              Cancel
-            </button>
-            <button onClick={saveProfile} disabled={saving}
-              className="flex-1 py-3 text-[#1c1c1a] font-semibold rounded-xl text-sm hover:opacity-90 disabled:opacity-50"
-              style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}>
-              {saving ? 'Saving…' : 'Save Changes'}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ── Account ── */}
-      <div className="surface-card rounded-2xl p-4 space-y-3">
-        <div>
-          <p className="type-card-heading">Account</p>
-          <p className="type-micro mt-1">Signed in as {userEmail}</p>
-        </div>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-          <button
-            onClick={() => setInviteOpen(true)}
-            className="glass-button-secondary inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium"
-            style={{ color: 'var(--text-cream)' }}
-          >
-            Invite family
-          </button>
-          <button
-            onClick={downloadReport}
-            disabled={reportLoading}
-            className="glass-button-secondary inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium disabled:opacity-60"
-            style={{ color: 'var(--text-cream)' }}
-          >
-            {reportLoading ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
-            Report
-          </button>
-          <button
-            onClick={signOut}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition"
-            style={{ borderColor: 'rgba(220,80,80,0.20)', color: 'rgba(220,80,80,0.82)' }}
-          >
-            <LogOut size={15} /> Sign out
-          </button>
-        </div>
-      </div>
-
-      {/* ── Invite Modal ── */}
-      <AnimatePresence>
-        {inviteOpen && (() => {
-          const code = generateInviteCode(userId);
-          const baseUrl = typeof window !== 'undefined' ? window.location.origin : APP.BASE_URL;
-          const link = `${baseUrl}/join?ref=${code}`;
-          async function share() {
-            const shareText = `Join me on Sanatana Sangam — your dharmic home.\n\nInvite code: ${code}\n${link}`;
-            if (typeof navigator !== 'undefined' && navigator.share) {
-              try { await navigator.share({ title: 'Join Sanatana Sangam 🙏', text: shareText, url: link }); return; } catch {}
-            }
-            try { await navigator.clipboard.writeText(shareText); toast.success('Invite link copied! 🙏'); } catch { window.prompt('Copy your invite link:', link); }
-          }
-          return (
-            <motion.div className="fixed inset-0 z-50 flex items-end" onClick={() => setInviteOpen(false)}
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <motion.div className="w-full rounded-t-[2rem] p-6 space-y-5" onClick={e => e.stopPropagation()}
-                style={{ background: 'linear-gradient(180deg, var(--surface-raised), rgba(34,30,22,0.99))', borderTop: '1px solid rgba(200,146,74,0.20)', boxShadow: '0 -20px 48px rgba(0,0,0,0.38)' }}
-                initial={{ y: 32, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}
-                transition={{ duration: 0.32, ease: [0.34, 1.26, 0.64, 1] }}>
-                <div className="w-10 h-1 rounded-full mx-auto mb-1" style={{ background: 'rgba(200,146,74,0.28)' }} />
-                <div className="flex items-center justify-between">
-                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-cream)' }}>Invite Friends &amp; Family</h3>
-                  <button onClick={() => setInviteOpen(false)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(200,146,74,0.10)' }}>
-                    <X size={15} style={{ color: 'var(--text-muted-warm)' }} />
-                  </button>
-                </div>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>Share Sanatana Sangam with your family and friends using your personal invite code.</p>
-                <div className="rounded-[1.4rem] p-5 text-center border" style={{ background: 'rgba(200,146,74,0.08)', borderColor: 'rgba(200,146,74,0.18)' }}>
-                  <p className="text-[10px] mb-2 font-semibold uppercase tracking-[0.16em]" style={{ color: 'var(--text-dim)' }}>Your Invite Code</p>
-                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', fontWeight: 700, letterSpacing: '0.18em', color: 'var(--brand-primary)' }}>{code}</p>
-                  <p className="text-[11px] mt-2" style={{ color: 'var(--text-dim)' }}>{link}</p>
-                </div>
-                <button onClick={share} className="w-full py-3.5 rounded-2xl font-semibold text-sm" style={{ background: 'var(--brand-primary)', color: '#1a1610' }}>
-                  🙏 Share invite
-                </button>
               </motion.div>
             </motion.div>
           );

@@ -1124,7 +1124,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
   }
 
   return (
-    <div className="min-h-screen pb-28">
+    <div className="divine-home-shell min-h-screen pb-28 bg-[var(--divine-bg)] -mx-3 sm:-mx-4 relative selection:bg-[#C5A059]/30">
 
       <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
 
