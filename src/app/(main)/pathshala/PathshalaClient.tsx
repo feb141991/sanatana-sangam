@@ -22,6 +22,7 @@ import {
   ChevronRight, Volume2, VolumeX, Bookmark, Copy, EyeOff, CheckCircle2
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { createClient } from '@/lib/supabase';
 import PremiumActivateModal from "@/components/premium/PremiumActivateModal";
 import { usePremium } from '@/hooks/usePremium';
@@ -720,6 +721,7 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
   const [loading,     setLoading]   = useState(true);
   const [enrolling,   setEnrolling] = useState<string | null>(null);
   const [isDark,      setIsDark]    = useState(true);
+  const [showConfetti, setShowConfetti] = useState(false);
   
   const pulse = useMemo(() => {
     const p = calculatePanchang(new Date(), lat ?? undefined, lon ?? undefined);
@@ -1172,6 +1174,7 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
         </div>
       </motion.div>
     );
+  }
   // ── Browse Path Card ──────────────────────────────────────────
   function BrowsePathCard({ path }: { path: typeof SEED_PATHS[0] }) {
     const isEnrolled = activePaths.some(e => e.path_id === path.id);
