@@ -5,7 +5,7 @@ import type { FormEvent } from 'react';
 import toast from 'react-hot-toast';
 import {
   Users, Flag, MessageSquare, Home, BarChart2,
-  CheckCircle, XCircle, Shield, AlertTriangle,
+  CheckCircle, XCircle, Shield, AlertTriangle, ShieldBan,
   Trash2, Crown, Send, LogOut, Image as ImageIcon, UploadCloud,
 } from 'lucide-react';
 
