@@ -1800,10 +1800,10 @@ export default function HomeDashboard({
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C5A059] opacity-80 mb-2 block">
               {dailyText.label}
             </span>
-            <p className="font-serif text-lg md:text-xl text-[#2C1A0E] dark:text-[#2C1A0E] leading-relaxed italic px-4">
+            <p className="font-serif text-lg md:text-xl text-[var(--divine-text)] dark:text-white leading-relaxed italic px-4">
               “{dailyTextLine}”
             </p>
-            <p className="text-xs text-[#2C1A0E]/60 mt-2 px-8 line-clamp-1">
+            <p className="text-xs text-[var(--divine-text)]/60 dark:text-white/60 mt-2 px-8 line-clamp-1">
               {dailyText.meaning}
             </p>
           </motion.button>

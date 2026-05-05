@@ -14493,8 +14493,8 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/home/HomeDashboard.tsx",
       "source_location": "L1375",
       "weight": 1.0,
-      "_src": "homedashboard_savegreeting",
-      "_tgt": "progress_progress_update",
+      "_src": "progress_progress_update",
+      "_tgt": "homedashboard_savegreeting",
       "source": "progress_progress_update",
       "target": "homedashboard_savegreeting"
     },
@@ -14505,8 +14505,8 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/home/HomeDashboard.tsx",
       "source_location": "L1400",
       "weight": 1.0,
-      "_src": "homedashboard_markshlokaread",
-      "_tgt": "progress_progress_update",
+      "_src": "progress_progress_update",
+      "_tgt": "homedashboard_markshlokaread",
       "source": "progress_progress_update",
       "target": "homedashboard_markshlokaread"
     },
