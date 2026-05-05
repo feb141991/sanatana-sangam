@@ -182,6 +182,8 @@ export async function fetchMockKulData(userId: string): Promise<KulData> {
           sampradaya: self.profiles.sampradaya,
           shloka_streak: self.profiles.shloka_streak,
           spiritual_level: self.profiles.spiritual_level,
+          is_banned: self.profiles.is_banned,
+          ban_reason: self.profiles.ban_reason,
         }
       : null,
     kul: clone(state.kul),
