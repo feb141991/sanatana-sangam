@@ -964,7 +964,7 @@ function ZenithEntrance({ tradition }: { tradition: string }) {
             initial={{ opacity: 1 }}
             animate={{ opacity: 0 }}
             transition={{ duration: 1.8, delay: 2.8, ease: "easeInOut" }}
-            className="absolute inset-0 bg-[#0C0A07]"
+            className="absolute inset-0 bg-[var(--divine-bg)]"
           />
 
           {/* 2. The Sacred Bloom — Lotus Architecture */}
@@ -1635,7 +1635,7 @@ export default function HomeDashboard({
   ];
 
   return (
-    <div className="divine-home-shell min-h-screen bg-[#FAF6EF] dark:bg-[#1c1c1a] -mx-3 sm:-mx-4 relative selection:bg-[#C5A059]/30">
+    <div className="divine-home-shell min-h-screen bg-[var(--divine-bg)] -mx-3 sm:-mx-4 relative selection:bg-[#C5A059]/30">
       <div className="relative">
 
       {/* ── Sacred confetti celebration ── */}
