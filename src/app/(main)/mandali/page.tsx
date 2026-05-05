@@ -13,10 +13,10 @@ export default async function MandaliPage() {
   // Mandali requires auth — guests redirected to signup
   if (!user) redirect('/signup');
 
-  // Fetch profile with mandali + neighbourhood fields
+  // Fetch profile with mandali + neighbourhood fields + tradition (for Sabha default tab)
   const { data: profile } = await supabase
     .from('profiles')
-    .select('*, mandalis(*)')
+    .select('*, mandalis(*), tradition')
     .eq('id', user.id)
     .single();
 
@@ -79,6 +79,16 @@ export default async function MandaliPage() {
     blendedPosts = filterAuthoredItems(data ?? [], 'mandali_post', safetyState);
   }
 
+  // Fetch forum threads for the Sabha scope
+  const { data: threadsRaw } = await supabase
+    .from('forum_threads')
+    .select('*, profiles!forum_threads_author_id_fkey(full_name, username, avatar_url, sampradaya)')
+    .order('is_pinned', { ascending: false })
+    .order('updated_at', { ascending: false })
+    .limit(60);
+  const threads = filterAuthoredItems(threadsRaw ?? [], 'thread', safetyState);
+  const userTradition: string | null = (profile as any)?.tradition ?? null;
+
   return (
     <MandaliClient
       profile={profile}
@@ -88,6 +98,8 @@ export default async function MandaliPage() {
       members={members}
       userId={user.id}
       blendedPosts={blendedPosts}
+      threads={threads}
+      userTradition={userTradition}
     />
   );
 }

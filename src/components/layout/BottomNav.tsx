@@ -16,14 +16,14 @@ interface Props {
 const QUICK_ACTIONS = [
   { icon: '📿', label: 'Japa Mala', href: '/japa'          },
   { icon: '🧠', label: 'Quiz Mastery', href: '/quiz'        },
-  { icon: '💬', label: 'Vichaar',    href: '/vichaar-sabha' },
+  { icon: '💬', label: 'Vichaar',    href: '/mandali'       },
   { icon: '🤝', label: 'Seva Hub',  href: '/seva'          },
   { icon: '🔆', label: 'Sadhana Pulse', href: '/my-progress' },
 ];
 const GUEST_QUICK_ACTIONS = [
   { icon: '✨', label: 'Join',    href: '/signup'        },
   { icon: '🔍', label: 'Explore', href: '/guest'         },
-  { icon: '💬', label: 'Vichaar', href: '/vichaar-sabha' },
+  { icon: '💬', label: 'Sabha',   href: '/mandali'       },
 ];
 
 // Glass tokens — computed per-theme inside the component (see useGlass below)

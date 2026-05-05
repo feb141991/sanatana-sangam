@@ -49,10 +49,13 @@ export default function VichaarClient({
   threads: initialThreads,
   userId,
   userTradition,
+  embedded = false,
 }: {
   threads: ThreadWithAuthor[];
   userId: string;
   userTradition?: string | null;
+  /** When true, strips the page header/hero and renders inline inside Mandali */
+  embedded?: boolean;
 }) {
   const isGuest = !userId;
   const supabase = useMemo(() => createClient(), []);
@@ -258,74 +261,95 @@ export default function VichaarClient({
   }
 
   return (
-    <div className="space-y-4 fade-in">
+    <div className={embedded ? 'space-y-3' : 'space-y-4 fade-in'}>
 
-      {/* Header */}
-      <div className="glass-panel rounded-[1.8rem] px-5 py-5 space-y-4">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--brand-primary)]">
-              Wisdom space
-            </p>
-            <h1 className="font-display font-bold text-xl text-[color:var(--text-cream)] mt-1">Vichaar Sabha</h1>
-            <p className="text-sm text-[color:var(--brand-muted)] mt-2 leading-relaxed max-w-2xl">
-              Ask, reflect, and explore dharma together. The goal here is thoughtful clarity, not fast feed posting.
-            </p>
+      {/* ── Full header — only when standalone page ── */}
+      {!embedded && (
+        <div className="glass-panel rounded-[1.8rem] px-5 py-5 space-y-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--brand-primary)]">
+                Wisdom space
+              </p>
+              <h1 className="font-display font-bold text-xl text-[color:var(--text-cream)] mt-1">Vichaar Sabha</h1>
+              <p className="text-sm text-[color:var(--brand-muted)] mt-2 leading-relaxed max-w-2xl">
+                Ask, reflect, and explore dharma together. The goal here is thoughtful clarity, not fast feed posting.
+              </p>
+            </div>
+            {isGuest ? (
+              <Link
+                href="/signup"
+                className="flex items-center gap-1.5 px-4 py-2 bg-gradient-sacred text-white text-sm font-semibold rounded-full shadow-sacred hover:opacity-90 transition flex-shrink-0"
+              >
+                Join to Post
+              </Link>
+            ) : (
+              <button
+                onClick={() => setShowCompose(true)}
+                className="flex items-center gap-1.5 px-4 py-2 bg-gradient-sacred text-white text-sm font-semibold rounded-full shadow-sacred hover:opacity-90 transition flex-shrink-0"
+              >
+                <Plus size={15} />
+                <span>New Thread</span>
+              </button>
+            )}
           </div>
-          {isGuest ? (
-            <Link
-              href="/signup"
-              className="flex items-center gap-1.5 px-4 py-2 bg-gradient-sacred text-white text-sm font-semibold rounded-full shadow-sacred hover:opacity-90 transition flex-shrink-0"
-            >
-              Join to Post
-            </Link>
-          ) : (
+
+          <div className="grid gap-3 sm:grid-cols-[1.25fr_0.95fr]">
             <button
-              onClick={() => setShowCompose(true)}
-              className="flex items-center gap-1.5 px-4 py-2 bg-gradient-sacred text-white text-sm font-semibold rounded-full shadow-sacred hover:opacity-90 transition flex-shrink-0"
+              type="button"
+              onClick={primaryVichaarAction.onClick}
+              disabled={isGuest && visibleThreads.length === 0}
+              className="clay-card rounded-[1.6rem] p-4 text-left disabled:opacity-80"
             >
-              <Plus size={15} />
-              <span>New Thread</span>
-            </button>
-          )}
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-[1.25fr_0.95fr]">
-          <button
-            type="button"
-            onClick={primaryVichaarAction.onClick}
-            disabled={isGuest && visibleThreads.length === 0}
-            className="clay-card rounded-[1.6rem] p-4 text-left disabled:opacity-80"
-          >
-            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{primaryVichaarAction.eyebrow}</p>
-            <div className="flex items-start justify-between gap-3 mt-3">
-              <div>
-                <p className="text-sm font-semibold text-[color:var(--text-cream)]">{primaryVichaarAction.title}</p>
-                <p className="text-sm text-[color:var(--brand-muted)] mt-2 leading-relaxed">{primaryVichaarAction.description}</p>
-              </div>
-              <div className="clay-icon-well flex-shrink-0">{primaryVichaarAction.icon}</div>
-            </div>
-          </button>
-
-          <div className="glass-panel rounded-[1.6rem] p-4">
-            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--text-dim)]">Sabha pulse</p>
-            <div className="grid grid-cols-3 gap-2 mt-3">
-              {[
-                { label: 'Visible', value: visibleThreads.length },
-                { label: 'Quality', value: qualityCount },
-                { label: 'No reply', value: visibleUnansweredCount },
-              ].map((item) => (
-                <div key={item.label} className="rounded-[1.05rem] bg-white/72 border border-white/80 px-3 py-3 text-center">
-                  <p className="font-display font-bold text-xl" style={{ color: 'var(--brand-primary-strong)' }}>{item.value}</p>
-                  <p className="text-[10px] uppercase tracking-[0.16em] text-[color:var(--text-dim)] font-semibold mt-1">{item.label}</p>
+              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{primaryVichaarAction.eyebrow}</p>
+              <div className="flex items-start justify-between gap-3 mt-3">
+                <div>
+                  <p className="text-sm font-semibold text-[color:var(--text-cream)]">{primaryVichaarAction.title}</p>
+                  <p className="text-sm text-[color:var(--brand-muted)] mt-2 leading-relaxed">{primaryVichaarAction.description}</p>
                 </div>
-              ))}
+                <div className="clay-icon-well flex-shrink-0">{primaryVichaarAction.icon}</div>
+              </div>
+            </button>
+
+            <div className="glass-panel rounded-[1.6rem] p-4">
+              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--text-dim)]">Sabha pulse</p>
+              <div className="grid grid-cols-3 gap-2 mt-3">
+                {[
+                  { label: 'Visible', value: visibleThreads.length },
+                  { label: 'Quality', value: qualityCount },
+                  { label: 'No reply', value: visibleUnansweredCount },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-[1.05rem] bg-white/72 border border-white/80 px-3 py-3 text-center">
+                    <p className="font-display font-bold text-xl" style={{ color: 'var(--brand-primary-strong)' }}>{item.value}</p>
+                    <p className="text-[10px] uppercase tracking-[0.16em] text-[color:var(--text-dim)] font-semibold mt-1">{item.label}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {isGuest && (
+      {/* ── Compact compose bar — only when embedded and signed-in ── */}
+      {embedded && !isGuest && (
+        <button
+          onClick={() => setShowCompose(true)}
+          className="w-full flex items-center gap-3 rounded-2xl border border-dashed px-4 py-3 text-sm text-[color:var(--brand-muted)] transition hover:bg-white/[0.04]"
+          style={{ borderColor: 'rgba(200,146,74,0.30)' }}
+        >
+          <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{ background: 'var(--brand-primary-soft)' }}>
+            <Plus size={15} style={{ color: 'var(--brand-primary-strong)' }} />
+          </div>
+          <span>Start a Sabha thread…</span>
+          <span className="ml-auto text-xs" style={{ color: 'var(--brand-primary)' }}>
+            {visibleThreads.length} threads
+          </span>
+        </button>
+      )}
+
+      {/* ── Guest banner — standalone page only ── */}
+      {!embedded && isGuest && (
         <div className="glass-panel rounded-[1.6rem] px-4 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
             <p className="text-sm font-semibold text-[color:var(--text-cream)]">You&apos;re browsing in guest mode</p>
@@ -344,56 +368,37 @@ export default function VichaarClient({
         </div>
       )}
 
-      <div className="glass-panel rounded-[1.6rem] px-4 py-4 space-y-3">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-semibold text-[color:var(--text-cream)]">Structured for discovery, not noise</p>
-            <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">
-              Browse by category, search existing threads, and surface unanswered questions before starting a new one.
-            </p>
+      {/* ── Search + filters — card when standalone, inline when embedded ── */}
+      {!embedded ? (
+        <div className="glass-panel rounded-[1.6rem] px-4 py-4 space-y-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-[color:var(--text-cream)]">Structured for discovery, not noise</p>
+              <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">
+                Browse by category, search existing threads, and surface unanswered questions before starting a new one.
+              </p>
+            </div>
+            <div className="flex gap-3 text-xs text-[color:var(--brand-muted)]">
+              <span>{visibleThreads.length} visible</span>
+              <span>{visibleUnansweredCount} unanswered</span>
+            </div>
           </div>
-          <div className="flex gap-3 text-xs text-[color:var(--brand-muted)]">
-            <span>{visibleThreads.length} visible</span>
-            <span>{visibleUnansweredCount} unanswered</span>
-          </div>
-        </div>
-
-        <div className="relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--text-dim)]" />
-          <input
-            type="search"
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Search threads, tags, or themes"
-            className="glass-input w-full rounded-xl pl-10 pr-4 py-3 text-sm outline-none focus:border-[color:var(--brand-primary)]"
+          <SearchAndFilters
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            feedFilter={feedFilter}
+            setFeedFilter={setFeedFilter}
           />
         </div>
-
-        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-          {FEED_FILTERS.map((filter) => {
-            const isActive = feedFilter === filter.value;
-            const isQuality = filter.value === 'quality';
-            return (
-              <button
-                key={filter.value}
-                onClick={() => setFeedFilter(filter.value)}
-                title={filter.desc}
-                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition ${
-                  isActive
-                    ? isQuality
-                      ? 'bg-amber-600 text-white'
-                      : 'bg-[#7B1A1A] text-white'
-                    : isQuality
-                      ? 'bg-[rgba(200,146,74,0.08)] text-[color:var(--brand-primary)] border border-[rgba(200,146,74,0.2)] hover:border-[rgba(200,146,74,0.35)]'
-                      : 'border border-white/10 text-[color:var(--brand-muted)] hover:border-[rgba(200,146,74,0.25)] hover:text-[color:var(--brand-ink)]'
-                }`}
-              >
-                {filter.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      ) : (
+        <SearchAndFilters
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          feedFilter={feedFilter}
+          setFeedFilter={setFeedFilter}
+          compact
+        />
+      )}
 
       {/* Tradition-aware default tab hint */}
       {defaultTab !== 'all' && activeTab === defaultTab && (
@@ -473,6 +478,62 @@ export default function VichaarClient({
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Shared search + filter chips ──────────────────────────────────
+function SearchAndFilters({
+  searchQuery,
+  setSearchQuery,
+  feedFilter,
+  setFeedFilter,
+  compact = false,
+}: {
+  searchQuery: string;
+  setSearchQuery: (v: string) => void;
+  feedFilter: FeedFilter;
+  setFeedFilter: (v: FeedFilter) => void;
+  compact?: boolean;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="relative">
+        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--text-dim)]" />
+        <input
+          type="search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search threads, tags, or themes…"
+          className={`w-full rounded-xl pl-10 pr-4 text-sm outline-none focus:border-[color:var(--brand-primary)] ${
+            compact ? 'py-2.5 glass-input' : 'py-3 glass-input'
+          }`}
+        />
+      </div>
+      <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+        {FEED_FILTERS.map((filter) => {
+          const isActive = feedFilter === filter.value;
+          const isQuality = filter.value === 'quality';
+          return (
+            <button
+              key={filter.value}
+              onClick={() => setFeedFilter(filter.value)}
+              title={filter.desc}
+              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition ${
+                isActive
+                  ? isQuality
+                    ? 'bg-amber-600 text-white'
+                    : 'bg-[#7B1A1A] text-white'
+                  : isQuality
+                    ? 'bg-[rgba(200,146,74,0.08)] text-[color:var(--brand-primary)] border border-[rgba(200,146,74,0.2)] hover:border-[rgba(200,146,74,0.35)]'
+                    : 'border border-white/10 text-[color:var(--brand-muted)] hover:border-[rgba(200,146,74,0.25)] hover:text-[color:var(--brand-ink)]'
+              }`}
+            >
+              {filter.label}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

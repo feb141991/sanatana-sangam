@@ -5,13 +5,14 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown, ChevronLeft, CornerDownRight, MoreHorizontal, ArrowRight } from 'lucide-react';
+import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown, ChevronLeft, CornerDownRight, MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase';
 import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
 import { formatRelativeTime, getInitials, ISHTA_DEVATAS } from '@/lib/utils';
 import { useLocation } from '@/lib/LocationContext';
-import type { Profile, PostWithAuthor, PostCommentWithAuthor, EventRsvp } from '@/types/database';
+import type { Profile, PostWithAuthor, PostCommentWithAuthor, EventRsvp, ThreadWithAuthor } from '@/types/database';
+import VichaarClient from '../vichaar-sabha/VichaarClient';
 import { AsyncStateCard, EmptyState } from '@/components/ui';
 import { useMandaliMutations, useMandaliQuery } from '@/hooks/useMandali';
 import { usePremium } from '@/hooks/usePremium';
@@ -28,7 +29,14 @@ type Props = {
   userId:       string;
   /** Posts from other Mandalis shown when local Mandali has < 5 members */
   blendedPosts?: PostWithAuthor[];
+  /** Forum threads for the Sabha scope */
+  threads?:     ThreadWithAuthor[];
+  /** User's tradition for Sabha smart-tab default */
+  userTradition?: string | null;
 };
+
+type Scope = 'nearby' | 'sabha';
+type NearbyTab = 'feed' | 'events' | 'members';
 
 type RsvpStatus = 'going' | 'interested' | 'not_going';
 
@@ -592,7 +600,7 @@ function EventRsvpBar({
         {[
           { value: 'going', label: 'Going', count: counts.going },
           { value: 'interested', label: 'Interested', count: counts.interested },
-          { value: 'not_going', label: 'Can’t make it', count: counts.not_going },
+          { value: 'not_going', label: "Can't make it", count: counts.not_going },
         ].map((item) => (
           <button
             key={item.value}
@@ -684,6 +692,7 @@ function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upv
   const [eventDate,  setEventDate]  = useState('');
   const [eventLoc,   setEventLoc]   = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const nonEvents = posts.filter((p) => p.type !== 'event');
 
@@ -731,6 +740,7 @@ function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upv
           onClose={() => setShowCompose(false)}
           onPost={handleComposePost}
           isPro={isPro}
+          textareaRef={textareaRef}
         />
       )}
 
@@ -759,9 +769,33 @@ function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upv
   );
 }
 
-function ComposePanel({ postType, setPostType, content, setContent, eventDate, setEventDate, eventLoc, setEventLoc, submitting, onClose, onPost, isPro }: any) {
+// ── Dharmic emoji palette for compose bar ────────────────────────
+const QUICK_EMOJIS = [
+  '🙏', '🕉️', '🪔', '🌸', '✨', '❤️', '🌿', '🌊', '☬', '☸️',
+  '😊', '🤗', '💛', '🌼', '🏵️', '📿', '📖', '🌙', '⭐', '🔥',
+  '👍', '🙌', '💪', '✅', '❓', '💡', '🤝', '🌺', '😇', '🤲',
+];
+
+function ComposePanel({ postType, setPostType, content, setContent, eventDate, setEventDate, eventLoc, setEventLoc, submitting, onClose, onPost, isPro, textareaRef }: any) {
+  function insertEmoji(emoji: string) {
+    const el = textareaRef?.current as HTMLTextAreaElement | null;
+    if (!el) {
+      setContent((prev: string) => prev + emoji);
+      return;
+    }
+    const start = el.selectionStart ?? el.value.length;
+    const end = el.selectionEnd ?? el.value.length;
+    const newVal = el.value.slice(0, start) + emoji + el.value.slice(end);
+    setContent(newVal);
+    requestAnimationFrame(() => {
+      el.selectionStart = el.selectionEnd = start + emoji.length;
+      el.focus();
+    });
+  }
+
   return (
     <div className="glass-panel rounded-2xl border border-white/70 p-4 shadow-card space-y-3 fade-in">
+      {/* Post type selector */}
       <div className="flex gap-2 flex-wrap">
         {POST_TYPES.map((t) => {
           const isProOnly = t.value === 'announcement';
@@ -782,10 +816,35 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
           );
         })}
       </div>
-      <textarea placeholder={postType === 'event' ? 'Describe your event…' : 'Share with your Mandali…'}
-        value={content} onChange={(e) => setContent(e.target.value)} rows={3}
+
+      {/* Textarea */}
+      <textarea
+        ref={textareaRef}
+        placeholder={postType === 'event' ? 'Describe your event…' : 'Share with your Mandali…'}
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        rows={3}
         className="w-full px-4 py-3 rounded-xl border border-white/10 outline-none resize-none text-sm"
-        style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }} />
+        style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }}
+      />
+
+      {/* Emoji row */}
+      <div className="overflow-x-auto no-scrollbar -mx-1 px-1">
+        <div className="flex gap-0.5 py-0.5">
+          {QUICK_EMOJIS.map(emoji => (
+            <button
+              key={emoji}
+              type="button"
+              onClick={() => insertEmoji(emoji)}
+              className="text-[1.25rem] leading-none p-1.5 rounded-xl hover:bg-white/10 flex-shrink-0 transition active:scale-90"
+              title={emoji}
+            >
+              {emoji}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {postType === 'event' && (
         <div className="grid grid-cols-2 gap-3">
           <input type="datetime-local" value={eventDate} onChange={(e) => setEventDate(e.target.value)}
@@ -995,7 +1054,7 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
 }
 
 // ─── Main Component ──────────────────────────────────────────────
-export default function MandaliClient({ profile, posts: initialPosts, comments: initialComments, rsvps: initialRsvps, members, userId, blendedPosts = [] }: Props) {
+export default function MandaliClient({ profile, posts: initialPosts, comments: initialComments, rsvps: initialRsvps, members, userId, blendedPosts = [], threads = [], userTradition }: Props) {
   const isPro = usePremium();
   const router = useRouter();
   const { playHaptic } = useZenithSensory();
@@ -1019,13 +1078,14 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
   const initialEventCount = initialPosts.filter((post) => post.type === 'event').length;
   const initialVichaarCount = initialPosts.filter((post) => post.type !== 'event').length;
 
-  const [activeTab,       setActiveTab]       = useState<'members' | 'events' | 'local' | 'global'>(
-    initialVichaarCount > 0 ? 'local' : initialEventCount > 0 ? 'events' : 'members'
+  // ── Scope + sub-tab state ──────────────────────────────────────
+  const [scope,      setScope]      = useState<Scope>('nearby');
+  const [nearbyTab,  setNearbyTab]  = useState<NearbyTab>(
+    initialVichaarCount > 0 ? 'feed' : initialEventCount > 0 ? 'events' : 'members'
   );
-  const switchTab = (t: 'members' | 'events' | 'local' | 'global') => {
-    setActiveTab(t);
-    playHaptic('light');
-  };
+  const switchScope = (s: Scope) => { setScope(s); playHaptic('light'); };
+  const switchNearbyTab = (t: NearbyTab) => { setNearbyTab(t); playHaptic('light'); };
+
   const [showSearch,      setShowSearch]      = useState(false);
   const [showCompose,     setShowCompose]     = useState(false);
   const [showMandaliMenu, setShowMandaliMenu] = useState(false);
@@ -1083,20 +1143,20 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
       ? {
           label: 'See upcoming events',
           hint: `${eventCount} local event${eventCount === 1 ? '' : 's'} waiting`,
-          onClick: () => setActiveTab('events' as const),
+          onClick: () => { setScope('nearby'); setNearbyTab('events'); },
           icon: <Calendar size={16} className="text-[color:var(--brand-muted)]" />,
         }
       : vichaarCount > 0
         ? {
-            label: 'Join today’s Neighborhood Feed',
+            label: "Join today's Neighborhood Feed",
             hint: `${vichaarCount} local conversation${vichaarCount === 1 ? '' : 's'}`,
-            onClick: () => setActiveTab('local' as const),
+            onClick: () => { setScope('nearby'); setNearbyTab('feed'); },
             icon: <MessageSquare size={16} className="text-[color:var(--brand-muted)]" />,
           }
         : {
             label: 'Meet your Mandali',
             hint: `${visibleMembers.length} member${visibleMembers.length === 1 ? '' : 's'} nearby`,
-            onClick: () => setActiveTab('members' as const),
+            onClick: () => { setScope('nearby'); setNearbyTab('members'); },
             icon: <Users size={16} className="text-[color:var(--brand-muted)]" />,
           };
 
@@ -1185,12 +1245,11 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
     }
   }
 
-  const tabs = [
-    { key: 'local',   label: 'Neighborhood', count: posts.filter(p => p.type !== 'event').length },
-    { key: 'global',  label: 'Global Sabha', count: 0 },
-    { key: 'members', label: 'Members',      count: visibleMembers.length },
-    { key: 'events',  label: 'Events',       count: eventCount },
-  ] as const;
+  const nearbyTabs: Array<{ key: NearbyTab; label: string; icon: string; count: number }> = [
+    { key: 'feed',    label: 'Feed',    icon: '💬', count: posts.filter(p => p.type !== 'event').length },
+    { key: 'events',  label: 'Events',  icon: '📅', count: eventCount },
+    { key: 'members', label: 'Members', icon: '👥', count: visibleMembers.length },
+  ];
 
   return (
     <div className="space-y-4 fade-in">
@@ -1346,112 +1405,120 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
         portalTarget
       )}
 
-      {/* ── Tabs ── */}
-      <div className="surface-tabbar flex rounded-2xl p-1">
-        {tabs.map(({ key, label, count }) => (
+      {/* ── Scope Toggle: Nearby | Sabha ── */}
+      <div className="relative flex rounded-2xl p-1 gap-1"
+        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(200,146,74,0.12)' }}>
+        {([
+          { key: 'nearby' as Scope, label: 'Nearby',  icon: <MapPin size={13} strokeWidth={2.2} /> },
+          { key: 'sabha'  as Scope, label: 'Sabha',   icon: <Globe  size={13} strokeWidth={2.2} /> },
+        ] as const).map(({ key, label, icon }) => (
           <button
             key={key}
-            onClick={() => setActiveTab(key)}
-            className={`flex-1 rounded-xl py-2 type-body transition-all ${
-              activeTab === key
-                ? 'surface-tab-active'
-                : 'text-[color:var(--text-dim)] hover:text-[color:var(--text-muted-warm)]'
-            }`}
-            style={activeTab === key ? { color: 'var(--text-cream)' } : undefined}
+            onClick={() => switchScope(key)}
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-semibold transition-all"
+            style={scope === key ? {
+              background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))',
+              color: '#fff',
+              boxShadow: '0 2px 10px rgba(200,146,74,0.25)',
+            } : {
+              color: 'var(--text-dim)',
+            }}
           >
+            {icon}
             {label}
-            {count > 0 && (
-              <span className="ml-1 text-xs" style={activeTab === key ? { color: 'var(--text-dim)' } : undefined}>
-                ({count})
-              </span>
-            )}
           </button>
         ))}
       </div>
 
-      {/* ── Tab Content ── */}
-      {activeTab === 'members' && (
-        <MembersTab members={visibleMembers} userId={userId} />
-      )}
-      {activeTab === 'events' && (
-        <EventsTab posts={posts} rsvps={rsvps} userId={userId} onRsvp={updateRsvp} />
-      )}
-      {activeTab === 'global' && (
-        <div className="space-y-4 fade-in">
-          {/* High-Engagement Bridge Card */}
-          <div className="glass-panel-gold rounded-[1.8rem] p-6 text-center border-[#C5A059]/20 decorative-orbit">
-            <Globe className="mx-auto mb-3 text-[#C5A059]" size={32} />
-            <h2 className="font-display font-bold text-xl text-white">The Global Vichaar Sabha</h2>
-            <p className="text-sm text-amber-100/60 mt-2 mb-6 leading-relaxed max-w-sm mx-auto">
-              Step out of the neighborhood and join the worldwide Sangam dialogue.
-              Discuss scripture, philosophy, and sadhana with Sanatanis everywhere.
-            </p>
-
-            <Link href="/vichaar-sabha"
-              className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-[#d4a645] to-[#a07830] text-[#1c1008] font-bold rounded-2xl shadow-lg active:scale-95 transition">
-              Enter Global Sabha <ArrowRight size={16} />
-            </Link>
-          </div>
-
-          <div className="px-1">
-            <p className="text-[10px] uppercase tracking-widest text-amber-100/40 font-bold mb-3">
-              Sangam-Wide Connection
-            </p>
-            <div className="glass-panel rounded-2xl p-4 border-white/5 bg-white/[0.02]">
-              <p className="text-xs text-amber-100/50 leading-relaxed">
-                The Vichaar Sabha is our collective digital heart. Your local Mandali is for neighbors; the Sabha is for the entire tradition. Seek wisdom, offer guidance, and grow together.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-      {activeTab === 'local' && (
+      {/* ── Nearby scope ── */}
+      {scope === 'nearby' && (
         <>
-          <VichaarTab
-            posts={posts}
-            userId={userId}
-            comments={comments}
-            onAddComment={addComment}
-            onToggleUpvote={toggleUpvote}
-            upvoted={upvoted}
-            onCompose={submitPost}
-            showCompose={showCompose}
-            setShowCompose={setShowCompose}
-            onHideContent={hideContentFromView}
-            onHideAuthor={hideAuthorFromView}
-            isPro={isPro}
-          />
-          {/* "Don't feel alone" — blended Sangam posts when local Mandali is small */}
-          {widerPosts.length > 0 && (
-            <div className="space-y-3 mt-2">
-              <div className="flex items-center gap-2">
-                <div className="flex-1 h-px" style={{ background: 'rgba(200, 127, 146, 0.18)' }} />
-                <span className="text-xs theme-dim font-medium px-2">
-                  🌸 Wisdom from the wider Sangam
-                </span>
-                <div className="flex-1 h-px" style={{ background: 'rgba(200, 127, 146, 0.18)' }} />
-              </div>
-              <p className="text-[11px] theme-dim text-center -mt-1">
-                Your Mandali is growing — here are voices from our broader community
-              </p>
+          {/* Nearby sub-tabs */}
+          <div className="surface-tabbar flex rounded-2xl p-1 gap-0.5">
+            {nearbyTabs.map(({ key, label, icon, count }) => (
+              <button
+                key={key}
+                onClick={() => switchNearbyTab(key)}
+                className={`flex-1 flex items-center justify-center gap-1 rounded-xl py-2 text-xs font-semibold transition-all ${
+                  nearbyTab === key
+                    ? 'surface-tab-active'
+                    : 'text-[color:var(--text-dim)] hover:text-[color:var(--text-muted-warm)]'
+                }`}
+                style={nearbyTab === key ? { color: 'var(--text-cream)' } : undefined}
+              >
+                <span>{icon}</span>
+                <span>{label}</span>
+                {count > 0 && (
+                  <span className="text-[10px] opacity-60">({count})</span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Nearby tab content */}
+          {nearbyTab === 'members' && (
+            <MembersTab members={visibleMembers} userId={userId} />
+          )}
+          {nearbyTab === 'events' && (
+            <EventsTab posts={posts} rsvps={rsvps} userId={userId} onRsvp={updateRsvp} />
+          )}
+          {nearbyTab === 'feed' && (
+            <>
               <VichaarTab
-                posts={widerPosts}
+                posts={posts}
                 userId={userId}
                 comments={comments}
                 onAddComment={addComment}
                 onToggleUpvote={toggleUpvote}
                 upvoted={upvoted}
                 onCompose={submitPost}
-                showCompose={false}
-                setShowCompose={() => {}}
+                showCompose={showCompose}
+                setShowCompose={setShowCompose}
                 onHideContent={hideContentFromView}
                 onHideAuthor={hideAuthorFromView}
-                allowCompose={false}
                 isPro={isPro}
               />
-            </div>
+              {/* "Don't feel alone" blended posts */}
+              {widerPosts.length > 0 && (
+                <div className="space-y-3 mt-2">
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-px" style={{ background: 'rgba(200,127,146,0.18)' }} />
+                    <span className="text-xs theme-dim font-medium px-2">🌸 Wider Sangam</span>
+                    <div className="flex-1 h-px" style={{ background: 'rgba(200,127,146,0.18)' }} />
+                  </div>
+                  <p className="text-[11px] theme-dim text-center -mt-1">
+                    Your Mandali is growing — voices from our broader community
+                  </p>
+                  <VichaarTab
+                    posts={widerPosts}
+                    userId={userId}
+                    comments={comments}
+                    onAddComment={addComment}
+                    onToggleUpvote={toggleUpvote}
+                    upvoted={upvoted}
+                    onCompose={submitPost}
+                    showCompose={false}
+                    setShowCompose={() => {}}
+                    onHideContent={hideContentFromView}
+                    onHideAuthor={hideAuthorFromView}
+                    allowCompose={false}
+                    isPro={isPro}
+                  />
+                </div>
+              )}
+            </>
           )}
         </>
+      )}
+
+      {/* ── Sabha scope — embeds full VichaarClient ── */}
+      {scope === 'sabha' && (
+        <VichaarClient
+          threads={threads}
+          userId={userId}
+          userTradition={userTradition}
+          embedded
+        />
       )}
     </div>
   );
