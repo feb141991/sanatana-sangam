@@ -1,8 +1,9 @@
 -- Migration: Add user moderation fields and warnings table
 -- 014_user_moderation.sql
 
--- 1. Add is_banned and ban_reason to profiles
+-- 1. Add moderation and admin fields to profiles
 ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE,
 ADD COLUMN IF NOT EXISTS is_banned BOOLEAN DEFAULT FALSE,
 ADD COLUMN IF NOT EXISTS ban_reason TEXT;
 
