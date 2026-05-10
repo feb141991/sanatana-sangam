@@ -71,12 +71,28 @@ nav {
 #splash-title em { color:#D88A1C;font-style:italic; }
 #splash-sub { font-size:clamp(11px,1.6vw,14px);color:rgba(255,254,248,0.35);letter-spacing:0.10em;margin-bottom:32px;font-weight:300; }
 #splash-trads { display:flex;gap:24px;justify-content:center;align-items:center; }
-.s-trad { font-size:24px;opacity:0.50; }
+.s-trad { font-size:24px; }
 .s-trad.hindu { font-family:var(--fh);color:#D88A1C; }
 .s-trad.sikh  { font-family:var(--fg);color:#5BA4D4; }
 .s-trad.bud   { font-family:'Segoe UI Symbol','Apple Symbols',system-ui;color:#E08090; }
 .s-trad.jain  { color:#3D8A60; }
 .s-trad.jain svg { display:block; }
+/* tradition pulse — each glows in turn, 8 s cycle, 2 s stagger */
+@keyframes tradPulse {
+  0%,20%,100% { opacity:0.45; filter:none; }
+  25%,45%     { opacity:0.95; filter:drop-shadow(0 0 8px currentColor); }
+}
+.s-trad.hindu { animation:tradPulse 8s 0s   ease-in-out infinite; }
+.s-trad.sikh  { animation:tradPulse 8s 2s   ease-in-out infinite; }
+.s-trad.bud   { animation:tradPulse 8s 4s   ease-in-out infinite; }
+.s-trad.jain  { animation:tradPulse 8s 6s   ease-in-out infinite; }
+/* dharmic verse */
+#splash-verse { font-family:var(--fh);font-size:clamp(11px,1.6vw,14px);color:rgba(255,254,248,0.30);letter-spacing:0.08em;margin-top:10px;min-height:1.6em;transition:opacity 1.5s ease; }
+/* audio toggle */
+#audio-btn { position:absolute;top:20px;right:20px;z-index:3;background:rgba(255,255,255,0.04);border:1px solid rgba(255,254,248,0.12);color:rgba(255,254,248,0.38);font-size:15px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.25s;padding:0;line-height:1; }
+#audio-btn:hover { background:rgba(216,138,28,0.12);border-color:rgba(216,138,28,0.32);color:rgba(216,138,28,0.82); }
+#audio-btn.playing { border-color:rgba(216,138,28,0.45);color:rgba(216,138,28,0.92);animation:audioGlow 2.5s ease-in-out infinite; }
+@keyframes audioGlow { 0%,100%{box-shadow:0 0 0 0 rgba(216,138,28,0)} 50%{box-shadow:0 0 14px rgba(216,138,28,0.22)} }
 #splash-countdown { display:flex;gap:20px;justify-content:center;align-items:flex-start;margin:20px 0 28px; }
 .scd-unit { display:flex;flex-direction:column;align-items:center;gap:4px; }
 .scd-num  { font-family:var(--fd);font-size:clamp(24px,4vw,42px);font-weight:200;color:rgba(255,254,248,0.88);letter-spacing:-0.02em;line-height:1; }
@@ -473,6 +489,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
     </div>
     <p id="splash-sub">Launching &nbsp;·&nbsp; June 17, 2026</p>
     <div id="splash-countdown">
+
       <div class="scd-unit"><span class="scd-num" id="scd-d">--</span><span class="scd-lbl">Days</span></div>
       <span class="scd-sep">·</span>
       <div class="scd-unit"><span class="scd-num" id="scd-h">--</span><span class="scd-lbl">Hours</span></div>
@@ -481,7 +498,9 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
       <span class="scd-sep">·</span>
       <div class="scd-unit"><span class="scd-num" id="scd-s">--</span><span class="scd-lbl">Sec</span></div>
     </div>
+    <p id="splash-verse">सर्वे भवन्तु सुखिनः · सर्वे सन्तु निरामयाः</p>
   </div>
+  <button id="audio-btn" title="Om ambient drone (108 Hz)">🔇</button>
   <button id="explore-btn">Enter the Sangam &nbsp;↓</button>
 </div>
 
@@ -1451,14 +1470,17 @@ window.switchTrad       = switchTrad;
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SKY CANVAS — splash entry animation
-   Stars · 3 celestial bands · 12 Rashi ticks · 27 Nakshatras · Mandala · Floaters
+   Nebula wisps · Stars · Shooting stars · 3 bands · Rashi · 27 Nakshatras
+   Dual mandala · Floaters · Mouse parallax · Mobile-aware
 ═══════════════════════════════════════════════════════════════════════════ */
 (function () {
   const cv  = document.getElementById('sky-canvas');
   if (!cv) return;
   const ctx = cv.getContext('2d');
-  let W, H, cx, cy, maxR, mAng = 0, t = 0;
-  let stars = [], naks = [], floaters = [];
+  let W, H, cx, cy, maxR, mAng = 0, t = 0, lastT = 0;
+  let stars = [], naks = [], floaters = [], meteors = [];
+  let mx = 0, my = 0, rawMX = 0, rawMY = 0; // parallax
+  let nextMeteorIn = 10 + Math.random() * 6;
 
   const NAKS = ['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra',
     'Punarvasu','Pushya','Ashlesha','Magha','P.Phalguni','U.Phalguni',
@@ -1467,14 +1489,13 @@ window.switchTrad       = switchTrad;
     'Shatabhisha','P.Bhadra','U.Bhadra','Revati'];
   const RASHI = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
   const GPOOL = [
-    { ch:'ॐ',  fam:"'Noto Serif Devanagari',serif",                             col:'#E8A030' },
-    { ch:'ੴ',  fam:"'Noto Sans Gurmukhi',sans-serif",                          col:'#5BA4D4' },
+    { ch:'ॐ',  fam:"'Noto Serif Devanagari',serif",                              col:'#E8A030' },
+    { ch:'ੴ',  fam:"'Noto Sans Gurmukhi',sans-serif",                            col:'#5BA4D4' },
     { ch:'☸',  fam:"'Segoe UI Symbol','Apple Symbols','Noto Sans Symbols',serif", col:'#E08090' },
-    { ch:'ॐ',  fam:"'Noto Serif Devanagari',serif",                             col:'#C89040' },
+    { ch:'ॐ',  fam:"'Noto Serif Devanagari',serif",                              col:'#C89040' },
     { ch:'☸',  fam:"'Segoe UI Symbol','Apple Symbols','Noto Sans Symbols',serif", col:'#60B890' },
   ];
 
-  /* seeded pseudo-random — stable across resizes */
   function sr(s) { const x = Math.sin(s * 9301 + 49297) * 233280; return x - Math.floor(x); }
 
   function resize() {
@@ -1487,7 +1508,9 @@ window.switchTrad       = switchTrad;
 
   function buildStars() {
     stars = [];
-    const n = Math.min(360, Math.floor(W * H / 4200) + 80);
+    const mobile = W < 600;
+    const n = mobile ? Math.min(120, Math.floor(W * H / 5500) + 40)
+                     : Math.min(380, Math.floor(W * H / 4000) + 90);
     for (let i = 0; i < n; i++) {
       stars.push({
         x: Math.random() * W, y: Math.random() * H,
@@ -1495,6 +1518,7 @@ window.switchTrad       = switchTrad;
         base: 0.15 + Math.random() * 0.65,
         freq: 0.3 + Math.random() * 1.2, ph: Math.random() * Math.PI * 2,
         col: Math.random() < 0.78 ? '#FFFEF8' : (Math.random() < 0.5 ? '#FFD28A' : '#AACEFF'),
+        depth: 0.3 + Math.random() * 0.7, // parallax depth layer
       });
     }
   }
@@ -1522,7 +1546,8 @@ window.switchTrad       = switchTrad;
 
   function buildFloaters() {
     floaters = [];
-    for (let i = 0; i < 20; i++) {
+    const n = W < 600 ? 10 : 20;
+    for (let i = 0; i < n; i++) {
       const g = GPOOL[i % GPOOL.length];
       floaters.push({
         ch: g.ch, fam: g.fam, col: g.col,
@@ -1536,6 +1561,19 @@ window.switchTrad       = switchTrad;
     }
   }
 
+  function spawnMeteor() {
+    const ang = Math.PI / 4 + (Math.random() - 0.5) * 0.45;
+    const speed = 260 + Math.random() * 240;
+    meteors.push({
+      x: W * (0.25 + Math.random() * 0.75),
+      y: H * Math.random() * 0.35,
+      vx: -Math.cos(ang) * speed,
+      vy:  Math.sin(ang) * speed,
+      len: 65 + Math.random() * 120,
+      life: 1.0,
+    });
+  }
+
   function petal(r) {
     ctx.beginPath();
     ctx.moveTo(0, 0);
@@ -1544,12 +1582,57 @@ window.switchTrad       = switchTrad;
     ctx.closePath();
   }
 
+  /* ── Nebula wisps ─────────────────────────────────────────────── */
+  function drawNebula() {
+    [
+      [cx * 0.55, cy * 0.65, maxR * 0.62, '80,35,120', 0.055],
+      [cx * 1.55, cy * 1.30, maxR * 0.52, '20,55,115', 0.045],
+      [cx * 0.80, cy * 1.68, maxR * 0.46, '100,40,70', 0.038],
+    ].forEach(([nx, ny, nr, rgb, op]) => {
+      const g = ctx.createRadialGradient(nx, ny, 0, nx, ny, nr);
+      g.addColorStop(0,   `rgba(${rgb},${op})`);
+      g.addColorStop(0.5, `rgba(${rgb},${(op * 0.35).toFixed(3)})`);
+      g.addColorStop(1,   `rgba(${rgb},0)`);
+      ctx.globalAlpha = 1; ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+    });
+  }
+
+  /* ── Stars with parallax ─────────────────────────────────────── */
   function drawStars(ts) {
     for (const s of stars) {
       const tw = Math.sin(ts * s.freq + s.ph) * 0.30 + 0.70;
       ctx.globalAlpha = s.base * tw;
       ctx.fillStyle   = s.col;
-      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath();
+      ctx.arc(s.x + mx * 22 * s.depth, s.y + my * 16 * s.depth, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  /* ── Shooting stars ──────────────────────────────────────────── */
+  function drawMeteors(dt) {
+    for (let i = meteors.length - 1; i >= 0; i--) {
+      const m = meteors[i];
+      m.x += m.vx * dt;
+      m.y += m.vy * dt;
+      m.life -= dt * 1.25;
+      if (m.life <= 0 || m.x < -150 || m.y > H + 100) { meteors.splice(i, 1); continue; }
+      const ang = Math.atan2(m.vy, m.vx);
+      const tx  = m.x - m.len * Math.cos(ang);
+      const ty  = m.y - m.len * Math.sin(ang);
+      const grad = ctx.createLinearGradient(m.x, m.y, tx, ty);
+      grad.addColorStop(0,   `rgba(255,254,248,${(m.life * 0.92).toFixed(3)})`);
+      grad.addColorStop(0.3, `rgba(255,238,190,${(m.life * 0.42).toFixed(3)})`);
+      grad.addColorStop(1,   'rgba(255,254,248,0)');
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = Math.max(0.4, 1.8 * m.life);
+      ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(tx, ty); ctx.stroke();
+      // head glow
+      ctx.globalAlpha = m.life * 0.55;
+      ctx.fillStyle = '#FFFEF8';
+      ctx.beginPath(); ctx.arc(m.x, m.y, 1.6 * m.life, 0, Math.PI * 2); ctx.fill();
     }
   }
 
@@ -1568,13 +1651,11 @@ window.switchTrad       = switchTrad;
     RASHI.forEach((sym, i) => {
       const ang = (i / 12) * Math.PI * 2 - Math.PI / 2;
       const ca  = Math.cos(ang), sa = Math.sin(ang);
-      /* major tick */
       ctx.globalAlpha = 0.50; ctx.strokeStyle = '#D4A050'; ctx.lineWidth = 1.0;
       ctx.beginPath();
       ctx.moveTo(cx + (R - 11) * ca, cy + (R - 11) * sa);
       ctx.lineTo(cx + (R + 11) * ca, cy + (R + 11) * sa);
       ctx.stroke();
-      /* minor ticks */
       for (let j = 1; j < 3; j++) {
         const a2 = ang + (j / 3) * (Math.PI * 2 / 12);
         const c2 = Math.cos(a2), s2 = Math.sin(a2);
@@ -1584,7 +1665,6 @@ window.switchTrad       = switchTrad;
         ctx.lineTo(cx + (R + 5) * c2, cy + (R + 5) * s2);
         ctx.stroke();
       }
-      /* symbol */
       ctx.globalAlpha = 0.60; ctx.fillStyle = '#D4A850';
       ctx.font = '13px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(sym, cx + (R + 24) * ca, cy + (R + 24) * sa);
@@ -1596,22 +1676,20 @@ window.switchTrad       = switchTrad;
     for (const n of naks) {
       const bx = cx + n.R * Math.cos(n.ang);
       const by = cy + n.R * Math.sin(n.ang);
-      /* constellation lines */
       if (n.pts.length >= 2) {
         ctx.globalAlpha = 0.18; ctx.strokeStyle = '#C8E0FF';
         ctx.beginPath(); ctx.moveTo(bx + n.pts[0].dx, by + n.pts[0].dy);
         for (let i = 1; i < n.pts.length; i++) ctx.lineTo(bx + n.pts[i].dx, by + n.pts[i].dy);
         ctx.stroke();
       }
-      /* star dots */
       for (const s of n.pts) {
         const tw = Math.sin(ts * s.freq + s.ph) * 0.25 + 0.75;
         ctx.globalAlpha = s.base * tw;
         ctx.fillStyle   = '#FFFEF8';
         ctx.beginPath(); ctx.arc(bx + s.dx, by + s.dy, s.r * 1.2, 0, Math.PI * 2); ctx.fill();
       }
-      /* nakshatra label */
-      if (maxR > 160) {
+      // labels hidden on mobile / small radius
+      if (maxR > 160 && W > 520) {
         const fs = Math.max(7, Math.min(9, maxR / 50));
         ctx.globalAlpha = 0.24; ctx.fillStyle = '#C8A870';
         ctx.font = `${fs}px system-ui`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -1620,8 +1698,9 @@ window.switchTrad       = switchTrad;
     }
   }
 
+  /* ── Mandala with mild parallax ──────────────────────────────── */
   function drawMandala(R, ang) {
-    ctx.save(); ctx.translate(cx, cy); ctx.rotate(ang);
+    ctx.save(); ctx.translate(cx + mx * 10, cy + my * 8); ctx.rotate(ang);
     ctx.strokeStyle = '#D88A1C'; ctx.fillStyle = '#D88A1C';
 
     ctx.globalAlpha = 0.22; ctx.lineWidth = 0.8;
@@ -1641,7 +1720,6 @@ window.switchTrad       = switchTrad;
       ctx.save(); ctx.rotate(i * Math.PI / 4 + Math.PI / 16); ctx.translate(0, -R * 0.43);
       petal(R * 0.16); ctx.stroke(); ctx.restore();
     }
-
     ctx.globalAlpha = 0.08; ctx.lineWidth = 0.4;
     for (let i = 0; i < 24; i++) {
       const a = i * Math.PI / 12;
@@ -1650,7 +1728,6 @@ window.switchTrad       = switchTrad;
       ctx.lineTo(Math.cos(a) * R * 0.60, Math.sin(a) * R * 0.60);
       ctx.stroke();
     }
-
     ctx.globalAlpha = 0.25;
     for (let i = 0; i < 16; i++) {
       const a = i * Math.PI / 8;
@@ -1680,8 +1757,21 @@ window.switchTrad       = switchTrad;
   let rafId;
   function frame(ts) {
     t = ts / 1000;
+    const dt = Math.min(t - lastT, 0.05);
+    lastT = t;
+
+    // smooth parallax interpolation
+    mx += (rawMX - mx) * 0.04;
+    my += (rawMY - my) * 0.04;
+
+    // meteor spawn timer
+    nextMeteorIn -= dt;
+    if (nextMeteorIn <= 0) { spawnMeteor(); nextMeteorIn = 9 + Math.random() * 8; }
+
     ctx.clearRect(0, 0, W, H);
+    drawNebula();
     drawStars(t);
+    drawMeteors(dt);
     drawBands();
     drawRashi();
     drawNakshatras(t);
@@ -1696,6 +1786,10 @@ window.switchTrad       = switchTrad;
   resize();
   rafId = requestAnimationFrame(frame);
   window.addEventListener('resize', resize);
+  window.addEventListener('mousemove', e => {
+    rawMX = (e.clientX - W / 2) / W;
+    rawMY = (e.clientY - H / 2) / H;
+  });
   window._stopSkyCanvas = () => { cancelAnimationFrame(rafId); };
 })();
 
@@ -1717,6 +1811,66 @@ window.switchTrad       = switchTrad;
   }
   tick();
   setInterval(tick, 1000);
+})();
+
+/* ─── DHARMIC VERSE CYCLE ───────────────────────────────────────────────── */
+(function () {
+  const verses = [
+    'सर्वे भवन्तु सुखिनः · सर्वे सन्तु निरामयाः',     // May all be happy · may all be free from illness
+    'एकं सत् विप्राः बहुधा वदन्ति',                   // Truth is one — the wise call it by many names
+    'अहिंसा परमो धर्मः',                               // Non-violence is the highest dharma
+    'वसुधैव कुटुम्बकम्',                               // The whole world is one family
+    'ੴ ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ',                          // One God, true name, creator of all
+    'Buddham Sharanam Gacchami',                        // I take refuge in the Buddha
+    'Parasparopagraho Jīvānām',                        // Souls render service to one another (Jain)
+  ];
+  let idx = 0;
+  const el = document.getElementById('splash-verse');
+  if (!el) return;
+  el.style.opacity = '1';
+  setInterval(() => {
+    el.style.opacity = '0';
+    setTimeout(() => {
+      idx = (idx + 1) % verses.length;
+      el.textContent = verses[idx];
+      el.style.opacity = '1';
+    }, 1500);
+  }, 9000);
+})();
+
+/* ─── OM AMBIENT DRONE (108 Hz · Web Audio API) ─────────────────────────── */
+(function () {
+  let actx, masterGain, running = false;
+  const btn = document.getElementById('audio-btn');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    if (!actx) {
+      actx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = actx.createGain();
+      masterGain.gain.value = 0;
+      masterGain.connect(actx.destination);
+      // 108 Hz fundamental + harmonics for a warm drone
+      [[108, 1.00], [216, 0.26], [324, 0.10], [432, 0.06], [54, 0.16]].forEach(([freq, amp]) => {
+        const osc = actx.createOscillator();
+        const g   = actx.createGain();
+        const lpf = actx.createBiquadFilter();
+        lpf.type = 'lowpass'; lpf.frequency.value = 900; lpf.Q.value = 0.8;
+        osc.type = 'sine'; osc.frequency.value = freq;
+        g.gain.value = amp;
+        osc.connect(lpf); lpf.connect(g); g.connect(masterGain);
+        osc.start();
+      });
+    }
+    if (running) {
+      masterGain.gain.setTargetAtTime(0, actx.currentTime, 0.9);
+      btn.classList.remove('playing'); btn.textContent = '🔇';
+    } else {
+      actx.resume();
+      masterGain.gain.setTargetAtTime(0.11, actx.currentTime, 2.0); // slow swell
+      btn.classList.add('playing'); btn.textContent = '🔊';
+    }
+    running = !running;
+  });
 })();
 
 /* ─── EXPLORE BUTTON — transition from splash to main page ──────────────── */
