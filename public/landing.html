@@ -62,6 +62,24 @@ nav {
 .nav-cta { background:var(--saffron); color:#fff; font-size:13px; font-weight:600; padding:9px 22px; border-radius:100px; border:none; cursor:pointer; letter-spacing:0.02em; transition:opacity 0.2s, transform 0.15s; }
 .nav-cta:hover { opacity:0.9; transform:translateY(-1px); }
 
+/* ── SPLASH ENTRY ─────────────────────────────────────────────────────── */
+#splash { position:fixed;inset:0;z-index:9999;overflow:hidden; background:radial-gradient(ellipse 90% 110% at 50% 60%,#0D0928 0%,#070418 50%,#020108 100%); display:flex;flex-direction:column;align-items:center;justify-content:center; }
+#sky-canvas { position:absolute;inset:0;width:100%;height:100%;pointer-events:none; }
+#splash-content { position:relative;z-index:2;text-align:center;padding:0 40px;pointer-events:none; }
+#splash-deva { font-family:var(--fh);font-size:clamp(16px,2.2vw,26px);color:rgba(216,138,28,0.60);letter-spacing:0.15em;margin-bottom:16px; }
+#splash-title { font-family:var(--fd);font-size:clamp(38px,7vw,82px);font-weight:300;color:#FFFEF8;line-height:1.04;letter-spacing:-0.02em;margin-bottom:12px; }
+#splash-title em { color:#D88A1C;font-style:italic; }
+#splash-sub { font-size:clamp(11px,1.6vw,14px);color:rgba(255,254,248,0.35);letter-spacing:0.10em;margin-bottom:32px;font-weight:300; }
+#splash-trads { display:flex;gap:24px;justify-content:center;align-items:center; }
+.s-trad { font-size:24px;opacity:0.50; }
+.s-trad.hindu { font-family:var(--fh);color:#D88A1C; }
+.s-trad.sikh  { font-family:var(--fg);color:#5BA4D4; }
+.s-trad.bud   { font-family:'Segoe UI Symbol','Apple Symbols',system-ui;color:#E08090; }
+#explore-btn { position:absolute;bottom:48px;left:50%;transform:translateX(-50%); background:transparent;border:1px solid rgba(216,138,28,0.38);color:rgba(216,138,28,0.80);font-family:var(--fb);font-size:12px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;padding:13px 40px;border-radius:100px;cursor:pointer;animation:pulseGlow 3s ease-in-out infinite;transition:all 0.25s;white-space:nowrap; }
+#explore-btn:hover { background:rgba(216,138,28,0.10);border-color:rgba(216,138,28,0.70);color:#E8A030; }
+@keyframes pulseGlow { 0%,100%{box-shadow:0 0 0 0 rgba(216,138,28,0)} 50%{box-shadow:0 0 24px rgba(216,138,28,0.10)} }
+#main-page { min-height:100vh; }
+
 /* ── HERO ─────────────────────────────────────────────────────────────── */
 .hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden; padding:120px 40px 80px; text-align:center; }
 .hero-glow { position:absolute; inset:0; pointer-events:none; background: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(216,138,28,0.10) 0%, transparent 65%), radial-gradient(ellipse 55% 40% at 15% 85%, rgba(216,138,28,0.06) 0%, transparent 60%), radial-gradient(ellipse 50% 50% at 85% 70%, rgba(192,96,122,0.05) 0%, transparent 60%); }
@@ -408,6 +426,25 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 </style>
 </head>
 <body>
+
+<!-- ══ SPLASH ENTRY ══════════════════════════════════════════════ -->
+<div id="splash">
+  <canvas id="sky-canvas"></canvas>
+  <div id="splash-content">
+    <div id="splash-deva">सनातन संगम</div>
+    <h1 id="splash-title">One <em>eternal</em> dharma,<br>one global sangam.</h1>
+    <p id="splash-sub">Hindu &nbsp;·&nbsp; Sikh &nbsp;·&nbsp; Buddhist &nbsp;·&nbsp; Jain &nbsp;·&nbsp; Launching June 17, 2026</p>
+    <div id="splash-trads">
+      <span class="s-trad hindu">ॐ</span>
+      <span class="s-trad sikh">ੴ</span>
+      <span class="s-trad bud">☸</span>
+    </div>
+  </div>
+  <button id="explore-btn">Enter the Sangam &nbsp;↓</button>
+</div>
+
+<!-- ══ MAIN PAGE (revealed on Explore click) ═════════════════════ -->
+<div id="main-page" style="display:none;">
 <div id="glyph-layer"></div>
 
 <!-- ── NAV ──────────────────────────────────────────────────────── -->
@@ -1056,13 +1093,16 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
     <div class="footer-copy">© 2026 Sanatan Sangam · Made with 🙏 in Bharat</div>
   </div>
 </footer>
+</div><!-- /#main-page -->
 
 <script>
 /* ─── CONFIG ─────────────────────────────────────────────────────────────── */
-// If landing.html is served from the same Vercel domain as the Next.js app,
-// leave API_BASE empty (relative URL). If hosting separately, set your domain:
-// const API_BASE = 'https://your-app.vercel.app';
 const API_BASE = '';
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MAIN PAGE INIT — called once after splash fade-out
+══════════════════════════════════════════════════════════════════════════ */
+function initMainPage() {
 
 /* ─── MANDALA CANVAS + PARTICLES ─────────────────────────────────────────── */
 (function() {
@@ -1175,18 +1215,18 @@ const API_BASE = '';
   const pool = [
     { ch: 'ॐ',  fam: "'Noto Serif Devanagari',serif",       col: '#D88A1C' },
     { ch: 'ੴ',  fam: "'Noto Sans Gurmukhi',sans-serif",     col: '#1B5E8B' },
-    { ch: '☸',  fam: "system-ui,sans-serif",                col: '#8B2D3E' },
+    { ch: '☸',  fam: "'Segoe UI Symbol','Apple Symbols','Noto Sans Symbols',serif", col: '#8B2D3E' },
     { ch: 'ॐ',  fam: "'Noto Serif Devanagari',serif",       col: '#9F6314' },
     { ch: 'ੴ',  fam: "'Noto Sans Gurmukhi',sans-serif",     col: '#1B5E8B' },
-    { ch: '☸',  fam: "system-ui,sans-serif",                col: '#2A6B4A' },
+    { ch: '☸',  fam: "'Segoe UI Symbol','Apple Symbols','Noto Sans Symbols',serif", col: '#2A6B4A' },
     { ch: 'ॐ',  fam: "'Noto Serif Devanagari',serif",       col: '#D88A1C' },
-    { ch: '☸',  fam: "system-ui,sans-serif",                col: '#8B2D3E' },
+    { ch: '☸',  fam: "'Segoe UI Symbol','Apple Symbols','Noto Sans Symbols',serif", col: '#8B2D3E' },
   ];
   const COUNT = 26;
   for (let i = 0; i < COUNT; i++) {
     const g    = pool[i % pool.length];
-    const size = 14 + Math.random() * 46;
-    const op   = 0.022 + Math.random() * 0.052;
+    const size = 20 + Math.random() * 60;
+    const op   = 0.055 + Math.random() * 0.075;
     const dur  = 16 + Math.random() * 24;
     const delay = -(Math.random() * dur);
     const dx   = (Math.random() - 0.5) * 64;
@@ -1356,6 +1396,294 @@ function scrollToCta() {
   document.getElementById('cta-section').scrollIntoView({ behavior: 'smooth' });
   setTimeout(() => document.getElementById('cta-email').focus(), 600);
 }
+
+/* expose onclick handlers to global scope */
+window.scrollToCta      = scrollToCta;
+window.handleHeroSignup = handleHeroSignup;
+window.selectHeroTrad   = selectHeroTrad;
+window.handleCtaSignup  = handleCtaSignup;
+window.selectCtaTrad    = selectCtaTrad;
+window.switchTrad       = switchTrad;
+
+} // ── end initMainPage ──────────────────────────────────────────────────────
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SKY CANVAS — splash entry animation
+   Stars · 3 celestial bands · 12 Rashi ticks · 27 Nakshatras · Mandala · Floaters
+═══════════════════════════════════════════════════════════════════════════ */
+(function () {
+  const cv  = document.getElementById('sky-canvas');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  let W, H, cx, cy, maxR, mAng = 0, t = 0;
+  let stars = [], naks = [], floaters = [];
+
+  const NAKS = ['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra',
+    'Punarvasu','Pushya','Ashlesha','Magha','P.Phalguni','U.Phalguni',
+    'Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha',
+    'Mula','P.Ashadha','U.Ashadha','Shravana','Dhanishtha',
+    'Shatabhisha','P.Bhadra','U.Bhadra','Revati'];
+  const RASHI = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+  const GPOOL = [
+    { ch:'ॐ',  fam:"'Noto Serif Devanagari',serif",                             col:'#E8A030' },
+    { ch:'ੴ',  fam:"'Noto Sans Gurmukhi',sans-serif",                          col:'#5BA4D4' },
+    { ch:'☸',  fam:"'Segoe UI Symbol','Apple Symbols','Noto Sans Symbols',serif", col:'#E08090' },
+    { ch:'ॐ',  fam:"'Noto Serif Devanagari',serif",                             col:'#C89040' },
+    { ch:'☸',  fam:"'Segoe UI Symbol','Apple Symbols','Noto Sans Symbols',serif", col:'#60B890' },
+  ];
+
+  /* seeded pseudo-random — stable across resizes */
+  function sr(s) { const x = Math.sin(s * 9301 + 49297) * 233280; return x - Math.floor(x); }
+
+  function resize() {
+    W = cv.width  = window.innerWidth;
+    H = cv.height = window.innerHeight;
+    cx = W / 2; cy = H / 2;
+    maxR = Math.min(W, H) * 0.43;
+    buildStars(); buildNaks(); buildFloaters();
+  }
+
+  function buildStars() {
+    stars = [];
+    const n = Math.min(360, Math.floor(W * H / 4200) + 80);
+    for (let i = 0; i < n; i++) {
+      stars.push({
+        x: Math.random() * W, y: Math.random() * H,
+        r: Math.random() < 0.72 ? 0.4 + Math.random() * 0.8 : 1 + Math.random() * 1.8,
+        base: 0.15 + Math.random() * 0.65,
+        freq: 0.3 + Math.random() * 1.2, ph: Math.random() * Math.PI * 2,
+        col: Math.random() < 0.78 ? '#FFFEF8' : (Math.random() < 0.5 ? '#FFD28A' : '#AACEFF'),
+      });
+    }
+  }
+
+  function buildNaks() {
+    naks = [];
+    const R = maxR * 0.86;
+    for (let i = 0; i < 27; i++) {
+      const ang = (i / 27) * Math.PI * 2 - Math.PI / 2;
+      const nc  = 2 + Math.floor(sr(i * 5) * 3);
+      const pts = [];
+      for (let j = 0; j < nc; j++) {
+        pts.push({
+          dx:   (sr(i * 11 + j * 3)     - 0.5) * 28,
+          dy:   (sr(i * 11 + j * 3 + 1) - 0.5) * 28,
+          r:    0.8  + sr(i * 11 + j * 3 + 2) * 1.4,
+          base: 0.45 + sr(i * 11 + j * 3 + 3) * 0.45,
+          freq: 0.4  + sr(i * 11 + j * 3 + 4) * 0.9,
+          ph:         sr(i * 11 + j * 3 + 5) * Math.PI * 2,
+        });
+      }
+      naks.push({ ang, R, pts, name: NAKS[i] });
+    }
+  }
+
+  function buildFloaters() {
+    floaters = [];
+    for (let i = 0; i < 20; i++) {
+      const g = GPOOL[i % GPOOL.length];
+      floaters.push({
+        ch: g.ch, fam: g.fam, col: g.col,
+        x: Math.random() * W, y: Math.random() * H,
+        sz: 30 + Math.random() * 62,
+        vy: 0.12 + Math.random() * 0.28,
+        vx: (Math.random() - 0.5) * 0.14,
+        maxOp: 0.12 + Math.random() * 0.22,
+        ph: Math.random() * Math.PI * 2,
+      });
+    }
+  }
+
+  function petal(r) {
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.bezierCurveTo( r*0.44, -r*0.55,  r*0.60, -r*0.87, 0, -r);
+    ctx.bezierCurveTo(-r*0.60, -r*0.87, -r*0.44, -r*0.55, 0,  0);
+    ctx.closePath();
+  }
+
+  function drawStars(ts) {
+    for (const s of stars) {
+      const tw = Math.sin(ts * s.freq + s.ph) * 0.30 + 0.70;
+      ctx.globalAlpha = s.base * tw;
+      ctx.fillStyle   = s.col;
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  function drawBands() {
+    [[maxR * 0.32, 0.28], [maxR * 0.62, 0.20], [maxR * 0.88, 0.14]].forEach(([R, op]) => {
+      ctx.globalAlpha = op; ctx.strokeStyle = '#D88A1C'; ctx.lineWidth = 0.8;
+      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.stroke();
+      ctx.globalAlpha = op * 0.35; ctx.lineWidth = 0.35;
+      ctx.beginPath(); ctx.arc(cx, cy, R - 7, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, R + 7, 0, Math.PI * 2); ctx.stroke();
+    });
+  }
+
+  function drawRashi() {
+    const R = maxR * 0.62;
+    RASHI.forEach((sym, i) => {
+      const ang = (i / 12) * Math.PI * 2 - Math.PI / 2;
+      const ca  = Math.cos(ang), sa = Math.sin(ang);
+      /* major tick */
+      ctx.globalAlpha = 0.50; ctx.strokeStyle = '#D4A050'; ctx.lineWidth = 1.0;
+      ctx.beginPath();
+      ctx.moveTo(cx + (R - 11) * ca, cy + (R - 11) * sa);
+      ctx.lineTo(cx + (R + 11) * ca, cy + (R + 11) * sa);
+      ctx.stroke();
+      /* minor ticks */
+      for (let j = 1; j < 3; j++) {
+        const a2 = ang + (j / 3) * (Math.PI * 2 / 12);
+        const c2 = Math.cos(a2), s2 = Math.sin(a2);
+        ctx.globalAlpha = 0.22; ctx.lineWidth = 0.45;
+        ctx.beginPath();
+        ctx.moveTo(cx + (R - 5) * c2, cy + (R - 5) * s2);
+        ctx.lineTo(cx + (R + 5) * c2, cy + (R + 5) * s2);
+        ctx.stroke();
+      }
+      /* symbol */
+      ctx.globalAlpha = 0.60; ctx.fillStyle = '#D4A850';
+      ctx.font = '13px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(sym, cx + (R + 24) * ca, cy + (R + 24) * sa);
+    });
+  }
+
+  function drawNakshatras(ts) {
+    ctx.lineWidth = 0.5;
+    for (const n of naks) {
+      const bx = cx + n.R * Math.cos(n.ang);
+      const by = cy + n.R * Math.sin(n.ang);
+      /* constellation lines */
+      if (n.pts.length >= 2) {
+        ctx.globalAlpha = 0.18; ctx.strokeStyle = '#C8E0FF';
+        ctx.beginPath(); ctx.moveTo(bx + n.pts[0].dx, by + n.pts[0].dy);
+        for (let i = 1; i < n.pts.length; i++) ctx.lineTo(bx + n.pts[i].dx, by + n.pts[i].dy);
+        ctx.stroke();
+      }
+      /* star dots */
+      for (const s of n.pts) {
+        const tw = Math.sin(ts * s.freq + s.ph) * 0.25 + 0.75;
+        ctx.globalAlpha = s.base * tw;
+        ctx.fillStyle   = '#FFFEF8';
+        ctx.beginPath(); ctx.arc(bx + s.dx, by + s.dy, s.r * 1.2, 0, Math.PI * 2); ctx.fill();
+      }
+      /* nakshatra label */
+      if (maxR > 160) {
+        const fs = Math.max(7, Math.min(9, maxR / 50));
+        ctx.globalAlpha = 0.24; ctx.fillStyle = '#C8A870';
+        ctx.font = `${fs}px system-ui`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(n.name, cx + (n.R + 22) * Math.cos(n.ang), cy + (n.R + 22) * Math.sin(n.ang));
+      }
+    }
+  }
+
+  function drawMandala(R, ang) {
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(ang);
+    ctx.strokeStyle = '#D88A1C'; ctx.fillStyle = '#D88A1C';
+
+    ctx.globalAlpha = 0.22; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI * 2); ctx.stroke();
+    ctx.globalAlpha = 0.15;
+    ctx.beginPath(); ctx.arc(0, 0, R * 0.60, 0, Math.PI * 2); ctx.stroke();
+    ctx.globalAlpha = 0.12;
+    ctx.beginPath(); ctx.arc(0, 0, R * 0.27, 0, Math.PI * 2); ctx.stroke();
+
+    ctx.globalAlpha = 0.20;
+    for (let i = 0; i < 16; i++) {
+      ctx.save(); ctx.rotate(i * Math.PI / 8); ctx.translate(0, -R * 0.80);
+      petal(R * 0.24); ctx.stroke(); ctx.restore();
+    }
+    ctx.globalAlpha = 0.12;
+    for (let i = 0; i < 8; i++) {
+      ctx.save(); ctx.rotate(i * Math.PI / 4 + Math.PI / 16); ctx.translate(0, -R * 0.43);
+      petal(R * 0.16); ctx.stroke(); ctx.restore();
+    }
+
+    ctx.globalAlpha = 0.08; ctx.lineWidth = 0.4;
+    for (let i = 0; i < 24; i++) {
+      const a = i * Math.PI / 12;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a) * R * 0.27, Math.sin(a) * R * 0.27);
+      ctx.lineTo(Math.cos(a) * R * 0.60, Math.sin(a) * R * 0.60);
+      ctx.stroke();
+    }
+
+    ctx.globalAlpha = 0.25;
+    for (let i = 0; i < 16; i++) {
+      const a = i * Math.PI / 8;
+      ctx.beginPath();
+      ctx.arc(Math.cos(a) * R * 0.60, Math.sin(a) * R * 0.60, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 0.80;
+    ctx.beginPath(); ctx.arc(0, 0, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  function drawFloaters(ts) {
+    for (const f of floaters) {
+      const op = f.maxOp * (0.55 + 0.45 * Math.sin(ts * 0.28 + f.ph));
+      ctx.globalAlpha = op;
+      ctx.fillStyle   = f.col;
+      ctx.font = `${f.sz}px ${f.fam}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(f.ch, f.x, f.y);
+      f.y -= f.vy; f.x += f.vx;
+      if (f.y < -f.sz) { f.y = H + f.sz; }
+      if (f.x < -80)   { f.x = W + 80; }
+      if (f.x > W + 80) { f.x = -80; }
+    }
+  }
+
+  let rafId;
+  function frame(ts) {
+    t = ts / 1000;
+    ctx.clearRect(0, 0, W, H);
+    drawStars(t);
+    drawBands();
+    drawRashi();
+    drawNakshatras(t);
+    drawMandala(maxR * 0.27, mAng);
+    drawMandala(maxR * 0.15, -mAng * 1.7);
+    drawFloaters(t);
+    ctx.globalAlpha = 1;
+    mAng += 0.00085;
+    rafId = requestAnimationFrame(frame);
+  }
+
+  resize();
+  rafId = requestAnimationFrame(frame);
+  window.addEventListener('resize', resize);
+  window._stopSkyCanvas = () => { cancelAnimationFrame(rafId); };
+})();
+
+/* ─── EXPLORE BUTTON — transition from splash to main page ──────────────── */
+document.getElementById('explore-btn').addEventListener('click', function () {
+  const splash = document.getElementById('splash');
+  const main   = document.getElementById('main-page');
+  this.style.pointerEvents = 'none';
+
+  /* fade out splash */
+  splash.style.transition   = 'opacity 1.2s ease';
+  splash.style.opacity      = '0';
+  splash.style.pointerEvents = 'none';
+
+  /* reveal main page */
+  main.style.display    = 'block';
+  main.style.opacity    = '0';
+  main.style.transition = 'opacity 1.2s ease 0.3s';
+  requestAnimationFrame(() => { main.style.opacity = '1'; });
+
+  /* init main page canvas/observers after display:block */
+  initMainPage();
+
+  /* clean up splash after transition */
+  setTimeout(() => {
+    splash.style.display = 'none';
+    main.style.transition = '';
+    if (window._stopSkyCanvas) window._stopSkyCanvas();
+  }, 1600);
+});
 </script>
 </body>
 </html>
