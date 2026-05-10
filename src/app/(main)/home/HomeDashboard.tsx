@@ -999,7 +999,7 @@ export default function HomeDashboard({
 
   // ── Daily Quiz state ──────────────────────────────────────────────────────
   const [quiz, setQuiz]               = useState<{
-    question: string; options: string[]; answerIndex: number; fact: string; source: string;
+    question: string; options: string[]; answerIndex: number; explanation?: string; fact: string; source: string;
   } | null | 'loading' | 'error'>(null);
   const [quizAnswered, setQuizAnswered] = useState<number | null>(null); // index of chosen option
 
@@ -1117,11 +1117,12 @@ export default function HomeDashboard({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          question: quiz.question,
-          chosen_index: idx,
+          question:      quiz.question,
+          chosen_index:  idx,
           correct_index: quiz.answerIndex,
-          is_correct: idx === quiz.answerIndex,
-          tradition: tradition ?? 'hindu'
+          is_correct:    idx === quiz.answerIndex,
+          tradition:     tradition ?? 'hindu',
+          explanation:   quiz.explanation ?? null,
         })
       });
     } catch (err) {
@@ -1905,7 +1906,7 @@ export default function HomeDashboard({
                 })}
               </div>
 
-              {/* Revealed fact */}
+              {/* Revealed explanation + fact */}
               {quizAnswered !== null && (
                 <motion.div
                   className="quiz-spark-fact"
@@ -1916,6 +1917,12 @@ export default function HomeDashboard({
                   <span className="quiz-fact-label">
                     {quizAnswered === quiz.answerIndex ? '✨ Correct!' : `The answer is: ${quiz.options[quiz.answerIndex]}`}
                   </span>
+                  {/* Show explanation only on wrong answer */}
+                  {quizAnswered !== quiz.answerIndex && quiz.explanation && (
+                    <p className="quiz-fact-text" style={{ marginBottom: '8px', borderBottom: '1px solid rgba(140,140,200,0.15)', paddingBottom: '8px' }}>
+                      {quiz.explanation}
+                    </p>
+                  )}
                   <p className="quiz-fact-text">{quiz.fact}</p>
                 </motion.div>
               )}

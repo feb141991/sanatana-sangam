@@ -43,6 +43,7 @@ Rules:
 - Difficulty: intermediate (not a trivial or famous fact, but not academic specialist level)
 - Use exactly 4 answer options
 - Exactly one option is correct
+- The "explanation" field explains in 2-3 sentences WHY the correct answer is correct — useful for learners who chose wrong
 - The "fact" field adds a short, fascinating extra detail (1-2 sentences) that enriches the answer
 - No markdown in any field — plain text only
 - Keep all fields concise
@@ -54,6 +55,7 @@ Respond ONLY with valid JSON matching this schema exactly:
   "question": "<the question>",
   "options": ["<option A>", "<option B>", "<option C>", "<option D>"],
   "answerIndex": <0-3>,
+  "explanation": "<why the correct answer is correct — 2-3 sentences>",
   "fact": "<interesting follow-up fact>",
   "source": "<scripture, text, or tradition — e.g. 'Rigveda 10.129' or 'Sikh tradition'>"
 }`;
@@ -100,7 +102,7 @@ export async function GET(req: NextRequest) {
   // Strip markdown code fences if Gemini wraps the JSON
   const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
 
-  let quiz: { question: string; options: string[]; answerIndex: number; fact: string; source: string };
+  let quiz: { question: string; options: string[]; answerIndex: number; explanation: string; fact: string; source: string };
   try {
     quiz = JSON.parse(cleaned);
   } catch {
