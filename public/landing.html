@@ -75,6 +75,14 @@ nav {
 .s-trad.hindu { font-family:var(--fh);color:#D88A1C; }
 .s-trad.sikh  { font-family:var(--fg);color:#5BA4D4; }
 .s-trad.bud   { font-family:'Segoe UI Symbol','Apple Symbols',system-ui;color:#E08090; }
+.s-trad.jain  { color:#3D8A60; }
+.s-trad.jain svg { display:block; }
+#splash-countdown { display:flex;gap:20px;justify-content:center;align-items:flex-start;margin:20px 0 28px; }
+.scd-unit { display:flex;flex-direction:column;align-items:center;gap:4px; }
+.scd-num  { font-family:var(--fd);font-size:clamp(24px,4vw,42px);font-weight:200;color:rgba(255,254,248,0.88);letter-spacing:-0.02em;line-height:1; }
+.scd-lbl  { font-size:10px;color:rgba(255,254,248,0.30);letter-spacing:0.12em;text-transform:uppercase; }
+.scd-sep  { font-family:var(--fd);font-size:clamp(20px,3vw,36px);font-weight:100;color:rgba(216,138,28,0.40);margin-top:4px; }
+#splash-sub { font-size:clamp(11px,1.6vw,14px);color:rgba(255,254,248,0.30);letter-spacing:0.12em;margin-bottom:4px;font-weight:300;text-transform:uppercase; }
 #explore-btn { position:absolute;bottom:48px;left:50%;transform:translateX(-50%); background:transparent;border:1px solid rgba(216,138,28,0.38);color:rgba(216,138,28,0.80);font-family:var(--fb);font-size:12px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;padding:13px 40px;border-radius:100px;cursor:pointer;animation:pulseGlow 3s ease-in-out infinite;transition:all 0.25s;white-space:nowrap; }
 #explore-btn:hover { background:rgba(216,138,28,0.10);border-color:rgba(216,138,28,0.70);color:#E8A030; }
 @keyframes pulseGlow { 0%,100%{box-shadow:0 0 0 0 rgba(216,138,28,0)} 50%{box-shadow:0 0 24px rgba(216,138,28,0.10)} }
@@ -433,11 +441,45 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
   <div id="splash-content">
     <div id="splash-deva">सनातन संगम</div>
     <h1 id="splash-title">One <em>eternal</em> dharma,<br>one global sangam.</h1>
-    <p id="splash-sub">Hindu &nbsp;·&nbsp; Sikh &nbsp;·&nbsp; Buddhist &nbsp;·&nbsp; Jain &nbsp;·&nbsp; Launching June 17, 2026</p>
     <div id="splash-trads">
-      <span class="s-trad hindu">ॐ</span>
-      <span class="s-trad sikh">ੴ</span>
-      <span class="s-trad bud">☸</span>
+      <span class="s-trad hindu" title="Hindu">ॐ</span>
+      <span class="s-trad sikh"  title="Sikh">ੴ</span>
+      <span class="s-trad bud"   title="Buddhist">☸</span>
+      <span class="s-trad jain"  title="Jain"><!-- Jain Ahimsa hand -->
+        <svg width="28" height="28" viewBox="0 0 36 40" fill="none" xmlns="http://www.w3.org/2000/svg" opacity="0.85">
+          <!-- hand outline -->
+          <path d="M18 38C10 38 5 31 5 24V13C5 11.3 6.3 10 8 10C9.7 10 11 11.3 11 13V19
+                   C11 17.3 12.3 16 14 16C15.7 16 17 17.3 17 19V18C17 16.3 18.3 15 20 15
+                   C21.7 15 23 16.3 23 18V19C23 17.3 24.3 16 26 16C27.7 16 29 17.3 29 19V26
+                   C29 33 24.3 38 18 38Z"
+                stroke="#3D8A60" stroke-width="1.6" stroke-linejoin="round"/>
+          <!-- Ahimsa wheel in palm -->
+          <circle cx="18" cy="28" r="5" stroke="#3D8A60" stroke-width="1.2"/>
+          <circle cx="18" cy="28" r="1.5" fill="#3D8A60"/>
+          <!-- 8 spokes -->
+          <line x1="18" y1="23.2" x2="18" y2="24.5" stroke="#3D8A60" stroke-width="0.9"/>
+          <line x1="18" y1="31.5" x2="18" y2="32.8" stroke="#3D8A60" stroke-width="0.9"/>
+          <line x1="13.2" y1="28" x2="14.5" y2="28" stroke="#3D8A60" stroke-width="0.9"/>
+          <line x1="21.5" y1="28" x2="22.8" y2="28" stroke="#3D8A60" stroke-width="0.9"/>
+          <line x1="14.7" y1="24.7" x2="15.7" y2="25.7" stroke="#3D8A60" stroke-width="0.7"/>
+          <line x1="20.3" y1="30.3" x2="21.3" y2="31.3" stroke="#3D8A60" stroke-width="0.7"/>
+          <line x1="21.3" y1="24.7" x2="20.3" y2="25.7" stroke="#3D8A60" stroke-width="0.7"/>
+          <line x1="15.7" y1="30.3" x2="14.7" y2="31.3" stroke="#3D8A60" stroke-width="0.7"/>
+          <!-- crescent + dot above (liberation symbol) -->
+          <path d="M13 6C13 3.8 15.2 2 18 2C20.8 2 23 3.8 23 6C23 3.8 20.8 2.8 18 2.8C15.2 2.8 13 3.8 13 6Z" fill="#3D8A60" opacity="0.7"/>
+          <circle cx="18" cy="1" r="1.2" fill="#3D8A60" opacity="0.7"/>
+        </svg>
+      </span>
+    </div>
+    <p id="splash-sub">Launching &nbsp;·&nbsp; June 17, 2026</p>
+    <div id="splash-countdown">
+      <div class="scd-unit"><span class="scd-num" id="scd-d">--</span><span class="scd-lbl">Days</span></div>
+      <span class="scd-sep">·</span>
+      <div class="scd-unit"><span class="scd-num" id="scd-h">--</span><span class="scd-lbl">Hours</span></div>
+      <span class="scd-sep">·</span>
+      <div class="scd-unit"><span class="scd-num" id="scd-m">--</span><span class="scd-lbl">Min</span></div>
+      <span class="scd-sep">·</span>
+      <div class="scd-unit"><span class="scd-num" id="scd-s">--</span><span class="scd-lbl">Sec</span></div>
     </div>
   </div>
   <button id="explore-btn">Enter the Sangam &nbsp;↓</button>
@@ -1655,6 +1697,26 @@ window.switchTrad       = switchTrad;
   rafId = requestAnimationFrame(frame);
   window.addEventListener('resize', resize);
   window._stopSkyCanvas = () => { cancelAnimationFrame(rafId); };
+})();
+
+/* ─── SPLASH COUNTDOWN ──────────────────────────────────────────────────── */
+(function () {
+  const LAUNCH = new Date('2026-06-17T00:00:00+05:30');
+  const fmt = n => String(n).padStart(2, '0');
+  function tick() {
+    const diff = LAUNCH - Date.now();
+    if (diff <= 0) { document.getElementById('splash-countdown').innerHTML = '<span style="color:#D88A1C;font-family:var(--fd);font-size:clamp(14px,2vw,20px)">🎉 We are live!</span>'; return; }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000)  / 60000);
+    const s = Math.floor((diff % 60000)    / 1000);
+    const sd = document.getElementById('scd-d'); if (sd) sd.textContent = d;
+    const sh = document.getElementById('scd-h'); if (sh) sh.textContent = fmt(h);
+    const sm = document.getElementById('scd-m'); if (sm) sm.textContent = fmt(m);
+    const ss = document.getElementById('scd-s'); if (ss) ss.textContent = fmt(s);
+  }
+  tick();
+  setInterval(tick, 1000);
 })();
 
 /* ─── EXPLORE BUTTON — transition from splash to main page ──────────────── */
