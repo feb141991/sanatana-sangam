@@ -25,6 +25,8 @@ import type { RecitationResult } from '@sangam/pathshala-engine';
 import CircularProgress from '@/components/ui/CircularProgress';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { getTransliteration } from '@/lib/transliteration';
+import { getMeaningLabel, resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
+import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 
 // ─── Font size steps (same scale as LessonClient) ─────────────────────────────
 const READER_FONT_STEPS = [1.1, 1.25, 1.4, 1.58, 1.78] as const;
@@ -170,7 +172,10 @@ interface Props {
   tradition: string;
   accentColour: string;
   currentLesson: number;
+  appLanguage?: string;
+  meaningLanguage?: string;
   transliterationLanguage?: string;
+  showTransliteration?: boolean;
   hindiMeanings?: Record<string, string>;
 }
 
@@ -184,7 +189,10 @@ export default function ReciteClient({
   tradition: _tradition,
   accentColour,
   currentLesson,
+  appLanguage,
+  meaningLanguage,
   transliterationLanguage,
+  showTransliteration = true,
   hindiMeanings,
 }: Props) {
   const router    = useRouter();
@@ -236,7 +244,7 @@ export default function ReciteClient({
           source:         verse.source,
           title:          verse.title,
           tradition:      _tradition,
-          language:       'en',
+          language:       effectiveMeaningLanguage,
         }),
       });
       if (!res.ok) {
@@ -269,6 +277,19 @@ export default function ReciteClient({
   const chunksRef      = useRef<Blob[]>([]);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const verse = verses[verseIndex];
+  const effectiveMeaningLanguage = resolveEffectiveMeaningLanguage(appLanguage, meaningLanguage);
+  const reviewedMeaning = effectiveMeaningLanguage === 'hi' ? hindiMeanings?.[verse?.id] : undefined;
+  const localizedMeaning = useLocalizedMeaning({
+    entryId: verse?.id,
+    sourceMeaning: verse?.meaning,
+    sourceLabel: verse?.source,
+    targetLanguage: effectiveMeaningLanguage,
+    providedMeaning: reviewedMeaning,
+  });
+  const verseTransliteration = verse
+    ? getTransliteration(verse.original, verse.transliteration, transliterationLanguage ?? 'en')
+    : '';
+  const showVerseTransliteration = showTransliteration && verseTransliteration !== verse?.original;
 
   // Engine timeout — if pathshala isn't ready after ENGINE_TIMEOUT_MS, unlock mic anyway
   useEffect(() => {
@@ -763,21 +784,21 @@ export default function ReciteClient({
                       className="overflow-hidden rounded-2xl overflow-hidden"
                       style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.16)' }}
                     >
-                      {getTransliteration(verse.original, verse.transliteration, transliterationLanguage ?? 'en') !== verse.original && (
+                      {showVerseTransliteration && (
                         <div className="px-4 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(200,146,74,0.12)' }}>
                           <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.6 }}>Transliteration</p>
                           <p className="italic leading-relaxed" style={{ color: 'var(--brand-muted)', fontSize: `${fontScale * 0.95}rem` }}>
-                            {getTransliteration(verse.original, verse.transliteration, transliterationLanguage ?? 'en')}
+                            {verseTransliteration}
                           </p>
                         </div>
                       )}
                       {verse.meaning && (
                         <div className="px-4 py-4">
                           <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.7 }}>
-                            {transliterationLanguage === 'hi' ? 'अर्थ' : 'Meaning'}
+                            {getMeaningLabel(effectiveMeaningLanguage)}
                           </p>
                           <p className="leading-relaxed font-medium" style={{ color: 'var(--brand-ink)', fontSize: `${fontScale * 1.05}rem`, lineHeight: 1.75 }}>
-                            {(transliterationLanguage === 'hi' && hindiMeanings?.[verse.id]) || verse.meaning}
+                            {localizedMeaning.meaning}
                           </p>
                         </div>
                       )}

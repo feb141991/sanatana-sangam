@@ -19,6 +19,8 @@ import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { useSadhana } from '@/contexts/EngineContext';
 import { getAIChatHref } from '@/lib/pathshala-links';
 import { getTransliteration } from '@/lib/transliteration';
+import { getMeaningLabel, resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
+import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import type { LibraryEntry, LibraryTradition } from '@/lib/library-content';
 import type { Lesson } from '@/lib/pathshala-lessons';
 
@@ -80,7 +82,10 @@ interface Props {
   lessons: Lesson[];
   currentLesson: number;
   completedLessons: number[];
+  appLanguage?: string;
+  meaningLanguage?: string;
   transliterationLanguage?: string;
+  showTransliteration?: boolean;
   hindiMeanings?: Record<string, string>;
 }
 
@@ -94,7 +99,10 @@ export default function LessonClient({
   lessons,
   currentLesson: initialLesson,
   completedLessons: initialCompleted,
+  appLanguage,
+  meaningLanguage,
   transliterationLanguage,
+  showTransliteration = true,
   hindiMeanings,
 }: Props) {
   const router   = useRouter();
@@ -141,11 +149,19 @@ export default function LessonClient({
   const translitText = entry
     ? getTransliteration(entry.original, entry.transliteration, transliterationLanguage ?? 'en')
     : '';
-  const showTranslit = translitText && translitText !== entry?.original;
+  const showTranslit = showTransliteration && translitText && translitText !== entry?.original;
 
-  const meaningText = entry
-    ? (transliterationLanguage === 'hi' && hindiMeanings?.[entry.id]) || entry.meaning
-    : '';
+  const effectiveMeaningLanguage = resolveEffectiveMeaningLanguage(appLanguage, meaningLanguage);
+  const reviewedMeaning = entry && effectiveMeaningLanguage === 'hi' ? hindiMeanings?.[entry.id] : undefined;
+  const localizedMeaning = useLocalizedMeaning({
+    entryId: entry?.id,
+    sourceMeaning: entry?.meaning,
+    sourceLabel: entry?.source,
+    targetLanguage: effectiveMeaningLanguage,
+    providedMeaning: reviewedMeaning,
+  });
+  const meaningText = entry ? localizedMeaning.meaning : '';
+  const meaningLabel = getMeaningLabel(effectiveMeaningLanguage);
 
   const askHref = entry
     ? getAIChatHref(
@@ -270,7 +286,7 @@ export default function LessonClient({
           source:          entry.source,
           title:           entry.title,
           tradition,
-          language:        'en',
+          language:        effectiveMeaningLanguage,
         }),
       });
       if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? `Error ${res.status}`);
@@ -546,7 +562,7 @@ export default function LessonClient({
                     className="text-[10px] font-bold uppercase tracking-[0.22em] mb-3"
                     style={{ color: P.accent }}
                   >
-                    {transliterationLanguage === 'hi' ? 'अर्थ' : 'Meaning'}
+                    {meaningLabel}
                   </p>
                   <p
                     className="font-medium leading-relaxed"

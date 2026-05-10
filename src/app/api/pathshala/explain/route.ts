@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getLanguageInstruction } from '@/lib/language-runtime';
 
 // POST /api/pathshala/explain
 // Body: { sanskrit, transliteration, translation, source, title, tradition, language? }
@@ -69,11 +70,7 @@ export async function POST(req: Request) {
 
   const c = getCommentary(tradition);
 
-  const langNote = language === 'hi'
-    ? 'Respond in simple Hindi (हिंदी).'
-    : language === 'ta'
-    ? 'Respond in Tamil (தமிழ்).'
-    : 'Respond in clear, warm English.';
+  const langNote = getLanguageInstruction(language);
 
   const prompt = `You are a wise ${c.school} teacher explaining a scripture verse to a sincere practitioner.
 

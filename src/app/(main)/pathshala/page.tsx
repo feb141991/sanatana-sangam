@@ -13,7 +13,7 @@ export default async function PathshalaPage({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, tradition')
+    .select('full_name, username, tradition, app_language, meaning_language, transliteration_language, show_transliteration')
     .eq('id', user.id)
     .single();
 
@@ -30,6 +30,10 @@ export default async function PathshalaPage({
       userName={profile?.full_name ?? profile?.username ?? 'Sadhak'}
       tradition={profile?.tradition ?? 'hindu'}
       initialTab={initialTab}
+      appLanguage={(profile as any)?.app_language ?? 'en'}
+      meaningLanguage={(profile as any)?.meaning_language ?? 'en'}
+      transliterationLanguage={(profile as any)?.transliteration_language ?? 'en'}
+      showTransliteration={(profile as any)?.show_transliteration ?? true}
     />
   );
 }

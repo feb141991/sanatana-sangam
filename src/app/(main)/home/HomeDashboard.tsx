@@ -54,6 +54,8 @@ import { getDailyDarshan, DARSHAN_REGISTRY } from '@/lib/darshan-registry';
 import DarshanOverlay from '@/components/home/DarshanOverlay';
 import DarshanPrompt from '@/components/home/DarshanPrompt';
 import { getTransliteration } from '@/lib/transliteration';
+import { resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
+import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 // DivineDiya removed — Prāthanā card removed from home
 import BottomNav from '@/components/layout/BottomNav';
 
@@ -107,7 +109,10 @@ interface Props {
   tradition:         string | null;
   sampradaya:        string | null;
   ishtaDevata:       string | null;
+  appLanguage?:      string;
+  meaningLanguage?:  string;
   transliterationLanguage?: string;
+  showTransliteration?: boolean;
   spiritualLevel:    string | null;
   seeking:           string[];
   lifeStage:         string | null;
@@ -952,6 +957,8 @@ export default function HomeDashboard({
   tradition,
   sampradaya,
   ishtaDevata,
+  appLanguage,
+  meaningLanguage,
   spiritualLevel,
   seeking,
   lifeStage,
@@ -964,6 +971,7 @@ export default function HomeDashboard({
   practiceHistory,
   liveStreams,
   transliterationLanguage,
+  showTransliteration = true,
 }: Props) {
   const supabase = createClient();
   const router   = useRouter();
@@ -1336,7 +1344,7 @@ export default function HomeDashboard({
 
   function shareShloka() {
     shareContent(dailyText.shareLabel,
-      `${dailyText.icon} ${dailyText.label} — ${dailyText.source}\n\n${dailyText.original}\n\n${dailyText.transliteration}\n\nMeaning: ${dailyText.meaning}\n\n— Shared via Sanatana Sangam`
+      `${dailyText.icon} ${dailyText.label} — ${dailyText.source}\n\n${dailyText.original}\n\n${dailyText.transliteration ? `${dailyText.transliteration}\n\n` : ''}${dailyText.meaningLabel}: ${dailyText.meaning}\n\n— Shared via Sanatana Sangam`
     );
   }
 
@@ -1355,7 +1363,8 @@ export default function HomeDashboard({
   const panchangTheme = HOME_THEMES.panchang;
   const meta = getTraditionMeta(tradition);
   const sacredTextTheme = meta.homeSacredTextTheme === 'pathshala' ? HOME_THEMES.pathshala : HOME_THEMES.bhakti;
-  const dailyText = {
+  const effectiveMeaningLanguage = resolveEffectiveMeaningLanguage(appLanguage, meaningLanguage);
+  const dailyTextBase = {
     label: sacredTextMeta.label,
     icon: sacredTextMeta.icon,
     shareLabel: sacredTextMeta.shareLabel,
@@ -1371,6 +1380,18 @@ export default function HomeDashboard({
       ? sacredTextMeta.label.toLowerCase().replace(/^aaj ka\s+/i, "today’s ")
       : "today’s shloka",
     streakLabel: sacredText ? 'sacred text streak' : 'shloka streak',
+  };
+  const localizedDailyMeaning = useLocalizedMeaning({
+    entryId: `home:${tradition ?? 'other'}:${dailyTextBase.source}:${dailyTextBase.original.slice(0, 48)}`,
+    sourceMeaning: dailyTextBase.meaning,
+    sourceLabel: dailyTextBase.source,
+    targetLanguage: effectiveMeaningLanguage,
+  });
+  const dailyText = {
+    ...dailyTextBase,
+    transliteration: showTransliteration ? dailyTextBase.transliteration : '',
+    meaning: localizedDailyMeaning.meaning,
+    meaningLabel: localizedDailyMeaning.label,
   };
   const heroPrimaryText = isDark ? 'var(--text-cream)' : '#211B14';
   const heroSecondaryText = isDark ? 'var(--text-muted-warm)' : '#4D4035';
@@ -2107,7 +2128,7 @@ export default function HomeDashboard({
                 WebkitBackdropFilter: 'blur(14px) saturate(120%)',
               }}>
                 <p className="text-[9px] font-semibold uppercase tracking-[0.16em] mb-1" style={{ color: 'rgba(200,146,74,0.65)' }}>
-                  Meaning
+                  {dailyText.meaningLabel}
                 </p>
                 <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>
                   {dailyText.meaning}

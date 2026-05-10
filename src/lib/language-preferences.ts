@@ -12,8 +12,8 @@ export const SCRIPTURE_SCRIPT_OPTIONS = [
 
 export const MEANING_LANGUAGE_OPTIONS = [
   { value: 'en', label: 'English meaning' },
-  { value: 'hi', label: 'Hindi meaning later' },
-  { value: 'pa', label: 'Punjabi meaning later' },
+  { value: 'hi', label: 'Hindi meaning' },
+  { value: 'pa', label: 'Punjabi meaning' },
 ] as const;
 
 export const TRANSLITERATION_LANGUAGE_OPTIONS = [

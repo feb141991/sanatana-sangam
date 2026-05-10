@@ -1,6 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import { resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
 import ReciteClient from './ReciteClient';
 
 export default async function RecitePage({
@@ -15,7 +16,7 @@ export default async function RecitePage({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('tradition, full_name, transliteration_language')
+    .select('tradition, full_name, app_language, meaning_language, transliteration_language, show_transliteration')
     .eq('id', user.id)
     .single();
 
@@ -34,9 +35,12 @@ export default async function RecitePage({
     redirect('/pathshala');
   }
 
+  const appLanguage = (profile as any)?.app_language ?? 'en';
+  const meaningLanguage = (profile as any)?.meaning_language ?? 'en';
   const transliterationLanguage = (profile as any)?.transliteration_language ?? 'en';
+  const effectiveMeaningLanguage = resolveEffectiveMeaningLanguage(appLanguage, meaningLanguage);
   let hindiMeanings: Record<string, string> = {};
-  if (transliterationLanguage === 'hi') {
+  if (effectiveMeaningLanguage === 'hi') {
     const { data: hmRows } = await supabase
       .from('hindi_meanings')
       .select('entry_id, meaning_hi');
@@ -52,7 +56,10 @@ export default async function RecitePage({
       tradition={tradition}
       accentColour={meta.accentColour}
       currentLesson={(enrollment as any).current_lesson ?? 0}
+      appLanguage={appLanguage}
+      meaningLanguage={meaningLanguage}
       transliterationLanguage={transliterationLanguage}
+      showTransliteration={(profile as any)?.show_transliteration ?? true}
       hindiMeanings={hindiMeanings}
     />
   );

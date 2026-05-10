@@ -26,7 +26,7 @@ export default async function HomePage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, avatar_url, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, ishta_devata, tradition, spiritual_level, seeking, custom_greeting, life_stage, timezone')
+    .select('full_name, username, avatar_url, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, ishta_devata, tradition, spiritual_level, seeking, custom_greeting, life_stage, timezone, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script')
     .eq('id', user.id)
     .single();
 
@@ -184,7 +184,10 @@ export default async function HomePage() {
       japaAlreadyDoneToday={todaySadhana?.japa_done ?? false}
       nityaDoneToday={nityaDates.has(today)}
       practiceHistory={practiceHistory}
+      appLanguage={(profile as any)?.app_language ?? 'en'}
+      meaningLanguage={(profile as any)?.meaning_language ?? 'en'}
       transliterationLanguage={(profile as any)?.transliteration_language ?? 'en'}
+      showTransliteration={(profile as any)?.show_transliteration ?? true}
       liveStreams={allStreams}
     />
   );

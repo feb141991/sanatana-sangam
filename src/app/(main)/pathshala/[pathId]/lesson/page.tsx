@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { getPathLessons } from '@/lib/pathshala-lessons';
 import { SEED_PATHS } from '@/lib/pathshala-paths';
+import { resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
 import LessonClient from './LessonClient';
 
 export default async function LessonPage({
@@ -20,7 +21,7 @@ export default async function LessonPage({
   const [{ data: profile }, { data: enrollment }] = await Promise.all([
     supabase
       .from('profiles')
-      .select('tradition, full_name, username, transliteration_language')
+      .select('tradition, full_name, username, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script')
       .eq('id', user.id)
       .single(),
     supabase
@@ -37,11 +38,14 @@ export default async function LessonPage({
 
   const tradition = profile?.tradition ?? 'hindu';
   const meta = getTraditionMeta(tradition);
+  const appLanguage = (profile as any)?.app_language ?? 'en';
+  const meaningLanguage = (profile as any)?.meaning_language ?? 'en';
   const transliterationLanguage = (profile as any)?.transliteration_language ?? 'en';
+  const effectiveMeaningLanguage = resolveEffectiveMeaningLanguage(appLanguage, meaningLanguage);
 
-  // ── Hindi meanings (only for Hindi users) ────────────────────────────────
+  // ── Reviewed Hindi meanings cache. Punjabi currently falls back to runtime localization.
   let hindiMeanings: Record<string, string> = {};
-  if (transliterationLanguage === 'hi') {
+  if (effectiveMeaningLanguage === 'hi') {
     const { data: hmRows } = await supabase
       .from('hindi_meanings')
       .select('entry_id, meaning_hi');
@@ -65,7 +69,10 @@ export default async function LessonPage({
       lessons={lessons}
       currentLesson={(enrollment as any).current_lesson ?? 0}
       completedLessons={((enrollment as any).completed_lessons as number[]) ?? []}
+      appLanguage={appLanguage}
+      meaningLanguage={meaningLanguage}
       transliterationLanguage={transliterationLanguage}
+      showTransliteration={(profile as any)?.show_transliteration ?? true}
       hindiMeanings={hindiMeanings}
     />
   );

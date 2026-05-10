@@ -715,8 +715,17 @@ export default function ProfileClient({
                       <button
                         key={lang.value}
                         onClick={() => {
+                          const nextMeaningLanguage = lang.value === 'hi' || lang.value === 'pa' ? lang.value : 'en';
                           setLang(lang.value as AppLang);
-                          patchProfile({ app_language: lang.value }, `Language set to ${lang.label}`);
+                          setForm({
+                            ...form,
+                            app_language: lang.value,
+                            meaning_language: nextMeaningLanguage,
+                          });
+                          patchProfile({
+                            app_language: lang.value,
+                            meaning_language: nextMeaningLanguage,
+                          }, `Language set to ${lang.label}`);
                         }}
                         className="flex-1 rounded-xl border py-2 text-sm font-medium transition"
                         style={active ? {
@@ -734,6 +743,37 @@ export default function ProfileClient({
                     );
                   })}
                 </div>
+              </div>
+
+              <div>
+                <p className="type-card-label mb-2">Meaning language</p>
+                <div className="flex gap-2">
+                  {MEANING_LANGUAGE_OPTIONS.map((opt) => {
+                    const active = (form.meaning_language ?? 'en') === opt.value;
+                    return (
+                      <button
+                        key={opt.value}
+                        onClick={() => {
+                          setForm({ ...form, meaning_language: opt.value });
+                          patchProfile({ meaning_language: opt.value }, `Meanings set to ${opt.label}`);
+                        }}
+                        className="flex-1 rounded-xl border py-2 text-sm font-medium transition"
+                        style={active ? {
+                          background: 'var(--brand-primary)',
+                          color: '#1c1c1a',
+                          borderColor: 'transparent',
+                        } : {
+                          background: 'var(--card-bg)',
+                          color: 'var(--text-muted-warm)',
+                          borderColor: 'rgba(255,255,255,0.08)',
+                        }}
+                      >
+                        {opt.label.replace(' meaning', '')}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="type-micro mt-2">This controls translations and explanations. Transliteration remains separate.</p>
               </div>
 
               <div>

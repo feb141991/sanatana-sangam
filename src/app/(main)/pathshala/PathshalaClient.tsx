@@ -41,6 +41,9 @@ import {
   type EpicStructure, type EpicKanda, type EpicChapter, type EpicVerse
 } from '@/lib/epics-registry';
 import { calculatePanchang, getTodaySpiritualPulse } from '@/lib/panchang';
+import { getMeaningLabel, resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
+import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
+import { getTransliteration } from '@/lib/transliteration';
 
 // ── Difficulty badges — inline styles so they read clearly on any bg ──────────
 const DIFF_STYLE: Record<string, { bg: string; text: string; border: string; label: string }> = {
@@ -192,7 +195,8 @@ type ExplainResult = {
 
 // ─── Immersive Reader ─────────────────────────────────────────────────────────
 function ScriptureReader({
-  entry: initialEntry, chapter, onClose, accentColour: _accentColour, userId, tradition
+  entry: initialEntry, chapter, onClose, accentColour: _accentColour, userId, tradition,
+  appLanguage, meaningLanguage, transliterationLanguage, showTransliteration = true,
 }: {
   entry?: LibraryEntry;
   chapter?: EpicChapter & { kandaTitle?: string };
@@ -200,6 +204,10 @@ function ScriptureReader({
   accentColour: string;
   userId: string;
   tradition: string;
+  appLanguage?: string;
+  meaningLanguage?: string;
+  transliterationLanguage?: string;
+  showTransliteration?: boolean;
 }) {
   const isPro = usePremium();
   const supabase = useRef(createClient()).current;
@@ -242,6 +250,17 @@ function ScriptureReader({
 
   const activeVerse = verses[verseIndex];
   const totalVerses = verses.length;
+  const effectiveMeaningLanguage = resolveEffectiveMeaningLanguage(appLanguage, meaningLanguage);
+  const localizedMeaning = useLocalizedMeaning({
+    entryId: activeVerse?.id,
+    sourceMeaning: activeVerse?.meaning,
+    sourceLabel: activeVerse?.source,
+    targetLanguage: effectiveMeaningLanguage,
+  });
+  const activeTransliteration = activeVerse
+    ? getTransliteration(activeVerse.original, activeVerse.transliteration, transliterationLanguage ?? 'en')
+    : '';
+  const showActiveTransliteration = showTransliteration && activeTransliteration && activeTransliteration !== activeVerse?.original;
 
   useEffect(() => {
     if (sattvaMode) {
@@ -321,7 +340,7 @@ function ScriptureReader({
           source: activeVerse.source,
           title: activeVerse.title,
           tradition,
-          language: 'en',
+          language: effectiveMeaningLanguage,
         }),
       });
       setExplainResult(await res.json());
@@ -395,20 +414,20 @@ function ScriptureReader({
             </p>
           </div>
 
-          {activeVerse?.transliteration && (
+          {showActiveTransliteration && (
             <div className="rounded-xl px-5 py-4 mb-5 text-center" style={{ background: P.bgAccent, border: `1px solid ${P.borderSoft}` }}>
               <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: P.inkMuted }}>Transliteration</p>
               <p className="italic leading-relaxed break-words" style={{ color: P.ink, fontSize: `${fontScale * 0.9}rem` }}>
-                {activeVerse.transliteration}
+                {activeTransliteration}
               </p>
             </div>
           )}
 
           {activeVerse?.meaning && (
             <div className="rounded-2xl p-5 mb-5" style={{ background: P.bgCard, border: `1px solid ${P.border}` }}>
-              <p className="text-[10px] font-bold uppercase tracking-wider mb-3" style={{ color: P.accent }}>Meaning</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider mb-3" style={{ color: P.accent }}>{getMeaningLabel(effectiveMeaningLanguage)}</p>
               <p className="font-medium leading-relaxed break-words" style={{ color: P.ink, fontSize: `${fontScale * 1.0}rem`, lineHeight: 1.8 }}>
-                {activeVerse.meaning}
+                {localizedMeaning.meaning}
               </p>
             </div>
           )}
@@ -694,6 +713,10 @@ interface Props {
   userName:    string;
   tradition:   string;
   initialTab?: 'learn' | 'scripture' | 'explore';
+  appLanguage?: string;
+  meaningLanguage?: string;
+  transliterationLanguage?: string;
+  showTransliteration?: boolean;
 }
 
 // ── Active enrollment record ───────────────────────────────────────────────────
@@ -706,7 +729,16 @@ interface ActiveEnrollment {
 }
 
 // ── Main Component ─────────────────────────────────────────────────────────────
-export default function PathshalaClient({ userId, userName, tradition, initialTab }: Props) {
+export default function PathshalaClient({
+  userId,
+  userName,
+  tradition,
+  initialTab,
+  appLanguage,
+  meaningLanguage,
+  transliterationLanguage,
+  showTransliteration = true,
+}: Props) {
   const router    = useRouter();
   const supabase  = useRef(createClient()).current;
   const meta      = getTraditionMeta(tradition);
@@ -816,6 +848,10 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
             chapter={readingChapter}
             userId={userId}
             tradition={tradition}
+            appLanguage={appLanguage}
+            meaningLanguage={meaningLanguage}
+            transliterationLanguage={transliterationLanguage}
+            showTransliteration={showTransliteration}
             onClose={() => { setReadingEntry(undefined); setReadingChapter(undefined); }}
             accentColour={meta.accentColour}
           />
@@ -1443,6 +1479,10 @@ export default function PathshalaClient({ userId, userName, tradition, initialTa
             accentColour={meta.accentColour}
             userId={userId}
             tradition={tradition}
+            appLanguage={appLanguage}
+            meaningLanguage={meaningLanguage}
+            transliterationLanguage={transliterationLanguage}
+            showTransliteration={showTransliteration}
             onClose={() => { setReadingEntry(undefined); setReadingChapter(undefined); }}
           />
         )}
