@@ -10,7 +10,7 @@ export const metadata = {
 export default async function PracticePage({
   searchParams,
 }: {
-  searchParams: { topic?: string; difficulty?: string };
+  searchParams: Promise<{ topic?: string; difficulty?: string }>;
 }) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -27,12 +27,14 @@ export default async function PracticePage({
     redirect('/quiz?upgrade=1');
   }
 
+  const { topic, difficulty } = await searchParams;
+
   return (
     <PracticeClient
       userId={user.id}
       tradition={profile.tradition ?? 'hindu'}
-      initialTopic={searchParams.topic ?? null}
-      initialDifficulty={searchParams.difficulty ?? null}
+      initialTopic={topic ?? null}
+      initialDifficulty={difficulty ?? null}
     />
   );
 }
