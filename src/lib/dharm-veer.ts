@@ -383,6 +383,7 @@ export const DHARM_VEERS: DharmVeer[] = [
     region: 'Rajouri, Kashmir',
     emoji: '⚔️',
     tagline: 'A hermit turned warrior who abolished feudal slavery in Punjab — in 1710.',
+    taglineLocal: 'ਇੱਕ ਤਪੱਸਵੀ ਤੋਂ ਯੋਧਾ ਬਣੇ, ਜਿਨ੍ਹਾਂ ਨੇ 1710 ਵਿੱਚ ਪੰਜਾਬ ਵਿੱਚ ਜਗੀਰਦਾਰੀ ਗੁਲਾਮੀ ਦਾ ਅੰਤ ਕੀਤਾ।',
     journey:
       'Madho Das was a wandering Hindu ascetic who had spent years in the jungles practicing Shaivite austerities. In 1708, Guru Gobind Singh arrived at his ashram in Nanded. Madho Das woke from sleep and found the Guru sitting on his bed. He tried every sidhi he possessed to move him. Nothing worked. He walked to the Guru and said: I am your banda — your slave. Guru Gobind Singh made him Banda Singh Bahadur and gave him five arrows from his own quiver.\n\nBanda marched to Punjab with a small force. Within two years he had dismantled the Mughal and Afghan feudal structure of the entire region. At the Battle of Chappar Chiri in 1710, he defeated Wazir Khan — the governor who had ordered the murder of Guru Gobind Singh\'s two younger sons, bricked alive in a wall. More remarkably, he issued orders abolishing the zamindari system: for the first time in Punjab\'s recorded history, the farmers who tilled the land owned it. This was 1710.',
     trial:
@@ -407,6 +408,7 @@ export const DHARM_VEERS: DharmVeer[] = [
     region: 'Jhabal Kalan, Punjab',
     emoji: '🌊',
     tagline: 'When 40 Sikhs deserted the Guru, she shamed them home — and led them into battle herself.',
+    taglineLocal: 'ਜਦੋਂ 40 ਸਿੱਖਾਂ ਨੇ ਗੁਰੂ ਦਾ ਸਾਥ ਛੱਡ ਦਿੱਤਾ, ਤਾਂ ਉਨ੍ਹਾਂ ਨੇ ਉਨ੍ਹਾਂ ਨੂੰ ਵਾਪਸ ਜਾਣ ਲਈ ਪ੍ਰੇਰਿਤ ਕੀਤਾ ਅਤੇ ਖੁਦ ਲੜਾਈ ਦੀ ਅਗਵਾਈ ਕੀਤੀ।',
     journey:
       'In 1704, the Mughal siege of Anandpur was so brutal that forty Sikhs, starving and exhausted, signed a "bedawa" — a letter disowning Guru Gobind Singh, releasing him from any obligation to them and themselves from any obligation to him — and went home to their villages. Bhag Kaur, a woman from Jhabal Kalan, heard them returning. She confronted them in the street: you call yourselves Singhs — lions — and you signed a paper saying your Guru is not your Guru? You think God will accept you in your homes while your Guru fights alone?\n\nShe dressed in the clothes of a Sikh warrior, picked up a sword, and announced she was going back to the Guru. One by one, the forty Sikhs followed her. They caught up with Guru Gobind Singh at Khidrana — a dried lake bed. The Mughals arrived at the same time. The forty Sikhs fought alongside Guru Gobind Singh in what became known as the Battle of Muktsar. All forty were killed. Guru Gobind Singh walked the battlefield after and tore up their bedawa in front of their bodies, calling them the forty muktas — the forty liberated ones.',
     trial:
@@ -431,6 +433,7 @@ export const DHARM_VEERS: DharmVeer[] = [
     region: 'Sodhara, Punjab',
     emoji: '💧',
     tagline: 'He gave water to wounded enemy soldiers on the battlefield — and the Guru called it perfect Sikhism.',
+    taglineLocal: 'ਉਨ੍ਹਾਂ ਨੇ ਜੰਗ ਦੇ ਮੈਦਾਨ ਵਿੱਚ ਜ਼ਖਮੀ ਦੁਸ਼ਮਣ ਸਿਪਾਹੀਆਂ ਨੂੰ ਪਾਣੀ ਪਿਲਾਇਆ — ਅਤੇ ਗੁਰੂ ਜੀ ਨੇ ਇਸ ਨੂੰ ਸੰਪੂਰਨ ਸਿੱਖੀ ਕਿਹਾ।',
     journey:
       'Bhai Ghanaya served in the Sikh armies under Guru Gobind Singh during the battles against the Mughal forces. His role on the battlefield was to carry water to the wounded and dying. This was already an act of courage — battlefields were not safe places for the unarmed. But Bhai Ghanaya went further: he gave water to wounded enemy soldiers as well.\n\nSikh soldiers reported this to Guru Gobind Singh, expecting him to rebuke Ghanaya. The Guru summoned him. Ghanaya came before the Guru and was asked: is it true you give water to our enemies? Yes, said Ghanaya. Why? Because I see no enemy, Guru ji. I see only your face in all faces.\n\nGuru Gobind Singh turned to his soldiers and said: this man has understood the teaching. He not only did not rebuke Ghanaya — he gave him ointment to apply to the wounds of those he was tending, effectively appointing him as a medic. The tradition of the Khalsa langar, the free communal kitchen that serves anyone regardless of faith, has its spirit in this moment.',
     trial:
@@ -518,11 +521,11 @@ export const DHARM_VEERS: DharmVeer[] = [
 
 // ── Tradition Metadata ─────────────────────────────────────────────────────
 
-export const TRADITION_META: Record<string, { label: string; emoji: string; color: string }> = {
-  hindu:    { label: 'Sanatan Dharma', emoji: '🕉️', color: 'rgba(255, 120, 0, 0.12)' },
-  sikh:     { label: 'Sikhi',          emoji: '☬', color: 'rgba(0, 100, 255, 0.12)' },
-  buddhist: { label: 'Buddha Dhamma',  emoji: '☸️', color: 'rgba(255, 200, 0, 0.12)' },
-  jain:     { label: 'Jain Dharma',    emoji: '🤲', color: 'rgba(0, 200, 50, 0.12)' },
+export const TRADITION_META: Record<string, { label: string; labelLocal: string; dharmVeerLocal: string; emoji: string; color: string }> = {
+  hindu:    { label: 'Sanatan Dharma', labelLocal: 'सनातन धर्म', dharmVeerLocal: 'धर्म वीर', emoji: '🕉️', color: 'rgba(255, 120, 0, 0.12)' },
+  sikh:     { label: 'Sikhi',          labelLocal: 'ਸਿੱਖੀ',     dharmVeerLocal: 'ਧਰਮ ਵੀਰ', emoji: '☬', color: 'rgba(0, 100, 255, 0.12)' },
+  buddhist: { label: 'Buddha Dhamma',  labelLocal: 'बुद्ध धम्म', dharmVeerLocal: 'धर्म वीर', emoji: '☸️', color: 'rgba(255, 200, 0, 0.12)' },
+  jain:     { label: 'Jain Dharma',    labelLocal: 'जैन धर्म',   dharmVeerLocal: 'धर्म वीर', emoji: '🤲', color: 'rgba(0, 200, 50, 0.12)' },
 };
 
 // ── Rotation logic ─────────────────────────────────────────────────────────
@@ -546,7 +549,12 @@ export function getDharmVeerOfTheDay(userTradition?: string | null): DharmVeer {
   // Build a weighted pool: same-tradition heroes appear twice
   const same  = DHARM_VEERS.filter(h => h.tradition === userTradition);
   const other = DHARM_VEERS.filter(h => h.tradition !== userTradition);
-  const pool  = [...same, ...same, ...other];
+  
+  // If user has a tradition, strictly cycle through their own heroes
+  // This ensures they don't see another tradition's hero on their dashboard
+  if (same.length > 0) {
+    return same[slot % same.length];
+  }
 
-  return pool[slot % pool.length];
+  return DHARM_VEERS[slot % DHARM_VEERS.length];
 }
