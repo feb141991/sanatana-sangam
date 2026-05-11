@@ -168,6 +168,13 @@ body.landing-entered #explore-btn {
 .sj-share-wa:hover  { border-color:rgba(37,211,102,0.45);color:#25d366; }
 .sj-share-tw:hover  { border-color:rgba(100,200,255,0.40);color:rgba(100,200,255,0.9); }
 .sj-share-copy:hover { border-color:rgba(216,138,28,0.45);color:var(--saffron); }
+.share-copy-text { max-width:520px;margin:0 auto 12px;padding:12px 14px;border-radius:14px;border:1px solid rgba(216,138,28,0.22);background:rgba(255,254,248,0.07);color:rgba(255,254,248,0.76);font-size:12px;line-height:1.6;text-align:left; }
+.registration-feedback { margin:10px auto 14px;color:rgba(255,254,248,0.66);font-size:12px;line-height:1.5; }
+.cta-share-copy { background:rgba(255,253,249,0.94);color:rgba(62,42,31,0.72);border-color:rgba(216,138,28,0.24); }
+.cta-registration-feedback { color:rgba(62,42,31,0.62); }
+.cta-reveal-card { background:rgba(255,253,249,0.94);border:1px solid rgba(216,138,28,0.32);border-radius:16px;padding:24px 32px;margin-bottom:16px;display:inline-block;box-shadow:0 18px 45px rgba(62,42,31,0.08); }
+.cta-reveal-label { font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(62,42,31,0.45);margin-bottom:8px; }
+.cta-reveal-sub { font-size:12px;color:rgba(62,42,31,0.54);margin-top:8px; }
 @keyframes pulseGlow { 0%,100%{box-shadow:0 0 0 0 rgba(216,138,28,0)} 50%{box-shadow:0 0 24px rgba(216,138,28,0.10)} }
 #main-page { min-height:100vh; }
 
@@ -777,6 +784,8 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
           <div id="sj-badge-num">#<span id="sj-num">—</span></div>
           <div id="sj-badge-sub">You helped lay the first stone. <em>Jai ho.</em></div>
         </div>
+        <p id="sj-registration-feedback" class="registration-feedback"></p>
+        <p id="sj-share-copy" class="share-copy-text"></p>
         <div id="sj-share-row">
           <button class="sj-share-btn sj-share-wa"  onclick="splashShareWhatsApp()">📲 WhatsApp</button>
           <button class="sj-share-btn sj-share-tw"  onclick="splashShareTwitter()">🐦 X / Twitter</button>
@@ -1447,13 +1456,20 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 
     <!-- CTA Step 3: Founding number reveal -->
     <div id="cta-reveal" style="display:none;text-align:center">
-      <div style="background:rgba(216,138,28,0.12);border:1px solid rgba(216,138,28,0.35);border-radius:16px;padding:24px 32px;margin-bottom:16px;display:inline-block">
-        <div style="font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:8px">Your Founding Number</div>
+      <div class="cta-reveal-card">
+        <div class="cta-reveal-label">Your Founding Number</div>
         <div id="cta-found-num" style="font-family:var(--fd);font-size:52px;font-weight:700;color:#D88A1C;line-height:1">#—</div>
-        <div style="font-size:12px;color:rgba(255,255,255,0.50);margin-top:8px">Sthapaka · स्थापक</div>
+        <div class="cta-reveal-sub">Sthapaka · स्थापक</div>
       </div>
       <div id="cta-success" class="success-msg" style="display:block;margin-bottom:12px"></div>
-      <p style="font-size:12px;color:rgba(255,255,255,0.38);margin-top:8px">A welcome email with your perks is on its way 🪔</p>
+      <p id="cta-registration-feedback" class="registration-feedback cta-registration-feedback"></p>
+      <p id="cta-share-copy" class="share-copy-text cta-share-copy"></p>
+      <div id="cta-share-row" class="sj-share-row" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+        <button class="sj-share-btn cta-share-copy" onclick="ctaShareWhatsApp()">📲 WhatsApp</button>
+        <button class="sj-share-btn cta-share-copy" onclick="ctaShareTwitter()">🐦 X / Twitter</button>
+        <button class="sj-share-btn cta-share-copy" onclick="ctaCopyLink()">🔗 Copy Link</button>
+      </div>
+      <p style="font-size:12px;color:rgba(62,42,31,0.48);margin-top:12px">A welcome email with your perks is on its way 🪔</p>
     </div>
 
     <p class="cta-note" id="cta-note">Founding spots are limited · No spam, ever</p>
@@ -1880,7 +1896,74 @@ if (tradBar) {
 
 
 /* ─── CTA SIGNUP — 3-stage flow mirroring splash ─────────────────────────── */
-let ctaEmail = '', ctaFoundingNum = 0;
+let ctaEmail = '', ctaTrad = '', ctaFoundingNum = 0, ctaAlreadyRegistered = false;
+
+function landingShareUrl() {
+  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+    return window.location.origin;
+  }
+  return 'https://sanatansangam.app';
+}
+
+function buildSthapakaShareText(num, trad) {
+  const number = num ? `#${num}` : 'a founding member';
+  const tradLabel = {
+    hindu: 'Hindu',
+    sikh: 'Sikh',
+    buddhist: 'Buddhist',
+    jain: 'Jain',
+  }[trad] || 'dharma';
+  return `I just became Sthapaka ${number} of Sanatan Sangam — a home for Hindu, Sikh, Buddhist and Jain dharma. My path: ${tradLabel}. Join the founding members: ${landingShareUrl()}`;
+}
+
+async function postWaitlist(payload) {
+  const res = await fetch('/api/waitlist', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || data.error) {
+    throw new Error(data.error || 'Could not save registration. Please try again.');
+  }
+  return data;
+}
+
+function writeText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+
+function setShareCopy(prefix, num, trad) {
+  writeText(`${prefix}-share-copy`, buildSthapakaShareText(num, trad));
+}
+
+function setRegistrationFeedback(prefix, alreadyRegistered, num) {
+  const copy = alreadyRegistered
+    ? `This email is already registered. Your Sthapaka number remains #${num || '—'}.`
+    : `Registration saved. Your Sthapaka number is #${num || '—'}.`;
+  writeText(`${prefix}-registration-feedback`, copy);
+}
+
+async function copyShareText(text, buttonSelector, resetText) {
+  try {
+    await navigator.clipboard?.writeText(text);
+  } catch {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.style.position = 'fixed';
+    area.style.left = '-9999px';
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    document.body.removeChild(area);
+  }
+  const btn = document.querySelector(buttonSelector);
+  if (btn) {
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = resetText; }, 2000);
+  }
+}
 
 async function handleCtaSignup(e) {
   e.preventDefault();
@@ -1889,42 +1972,52 @@ async function handleCtaSignup(e) {
   btn.textContent = '…'; btn.disabled = true;
   try {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const res = await fetch('/api/waitlist', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: ctaEmail, source: 'cta', timezone: tz }),
-    });
-    const data = await res.json();
+    const data = await postWaitlist({ email: ctaEmail, source: 'cta', timezone: tz });
     ctaFoundingNum = data.foundingNumber ?? 0;
+    ctaAlreadyRegistered = !!data.alreadyRegistered;
     document.getElementById('cta-email-wrap').style.display = 'none';
     document.getElementById('cta-step2').style.display      = 'block';
-  } catch {
+  } catch (err) {
+    document.getElementById('cta-note').textContent = err.message || 'Could not save registration. Please try again.';
     btn.textContent = 'Claim Sthapaka Spot'; btn.disabled = false;
   }
 }
 
 async function selectCtaTrad(pill) {
   const trad = pill.dataset.t;
+  ctaTrad = trad;
   document.querySelectorAll('#cta-step2 .cta-trad-pill').forEach(p => p.classList.remove('chosen'));
   pill.classList.add('chosen');
   document.querySelectorAll('#cta-step2 .cta-trad-pill').forEach(p => p.style.pointerEvents = 'none');
   try {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const res = await fetch('/api/waitlist', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: ctaEmail, tradition: trad, source: 'cta', timezone: tz }),
-    });
-    const data = await res.json();
+    const data = await postWaitlist({ email: ctaEmail, tradition: trad, source: 'cta', timezone: tz });
     if (data.foundingNumber) ctaFoundingNum = data.foundingNumber;
+    ctaAlreadyRegistered = !!data.alreadyRegistered;
   } catch { /* non-blocking */ }
   const labels = { hindu:'Hindu Sadhaka', sikh:'Sikh Sevak', buddhist:'Buddhist Practitioner', jain:'Jain Sadhak' };
   document.getElementById('cta-step2').style.display  = 'none';
   document.getElementById('cta-reveal').style.display = 'block';
   document.getElementById('cta-found-num').textContent = ctaFoundingNum ? `#${ctaFoundingNum}` : '#—';
-  document.getElementById('cta-success').textContent  = `🙏 Welcome, ${labels[trad] ?? 'Founding Member'}. Jai ho!`;
+  document.getElementById('cta-success').textContent  = `Welcome, ${labels[trad] ?? 'Founding Member'}. Jai ho!`;
+  setRegistrationFeedback('cta', ctaAlreadyRegistered, ctaFoundingNum);
+  setShareCopy('cta', ctaFoundingNum, trad);
   document.getElementById('cta-note').style.display   = 'none';
   _updateFoundingCount(ctaFoundingNum);
+}
+
+function ctaShareWhatsApp() {
+  const text = encodeURIComponent(buildSthapakaShareText(ctaFoundingNum, ctaTrad));
+  window.open(`https://wa.me/?text=${text}`, '_blank');
+}
+
+function ctaShareTwitter() {
+  const text = encodeURIComponent(buildSthapakaShareText(ctaFoundingNum, ctaTrad));
+  window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+}
+
+function ctaCopyLink() {
+  copyShareText(buildSthapakaShareText(ctaFoundingNum, ctaTrad), '#cta-share-row .sj-share-btn:last-child', '🔗 Copy Link');
 }
 
 /* ─── SCROLL TO CTA ──────────────────────────────────────────────────────── */
@@ -2043,6 +2136,9 @@ startShlokProgress();
 window.scrollToCta     = scrollToCta;
 window.handleCtaSignup = handleCtaSignup;
 window.selectCtaTrad   = selectCtaTrad;
+window.ctaShareWhatsApp = ctaShareWhatsApp;
+window.ctaShareTwitter  = ctaShareTwitter;
+window.ctaCopyLink      = ctaCopyLink;
 window.switchTrad      = switchTrad;
 window.switchShloka    = switchShloka;
 
@@ -2553,8 +2649,76 @@ window.switchShloka    = switchShloka;
   });
 })();
 
+/* ─── Shared waitlist helpers for splash flow ─────────────────────────────── */
+function landingShareUrl() {
+  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+    return window.location.origin;
+  }
+  return 'https://sanatansangam.app';
+}
+
+function buildSthapakaShareText(num, trad) {
+  const number = num ? `#${num}` : 'a founding member';
+  const tradLabel = {
+    hindu: 'Hindu',
+    sikh: 'Sikh',
+    buddhist: 'Buddhist',
+    jain: 'Jain',
+  }[trad] || 'dharma';
+  return `I just became Sthapaka ${number} of Sanatan Sangam — a home for Hindu, Sikh, Buddhist and Jain dharma. My path: ${tradLabel}. Join the founding members: ${landingShareUrl()}`;
+}
+
+async function postWaitlist(payload) {
+  const res = await fetch('/api/waitlist', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || data.error) {
+    throw new Error(data.error || 'Could not save registration. Please try again.');
+  }
+  return data;
+}
+
+function writeText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+
+function setShareCopy(prefix, num, trad) {
+  writeText(`${prefix}-share-copy`, buildSthapakaShareText(num, trad));
+}
+
+function setRegistrationFeedback(prefix, alreadyRegistered, num) {
+  const copy = alreadyRegistered
+    ? `This email is already registered. Your Sthapaka number remains #${num || '—'}.`
+    : `Registration saved. Your Sthapaka number is #${num || '—'}.`;
+  writeText(`${prefix}-registration-feedback`, copy);
+}
+
+async function copyShareText(text, buttonSelector, resetText) {
+  try {
+    await navigator.clipboard?.writeText(text);
+  } catch {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.style.position = 'fixed';
+    area.style.left = '-9999px';
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    document.body.removeChild(area);
+  }
+  const btn = document.querySelector(buttonSelector);
+  if (btn) {
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = resetText; }, 2000);
+  }
+}
+
 /* ─── SPLASH JOIN FLOW ────────────────────────────────────────────────────── */
-let _sjEmail = '', _sjTrad = '', _sjFoundingNum = 0;
+let _sjEmail = '', _sjTrad = '', _sjFoundingNum = 0, _sjAlreadyRegistered = false;
 
 async function splashJoin(e) {
   e.preventDefault();
@@ -2563,17 +2727,14 @@ async function splashJoin(e) {
   btn.textContent = '…'; btn.disabled = true;
   try {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const res = await fetch('/api/waitlist', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: _sjEmail, source: 'splash', timezone: tz }),
-    });
-    const data = await res.json();
+    const data = await postWaitlist({ email: _sjEmail, source: 'splash', timezone: tz });
     _sjFoundingNum = data.foundingNumber ?? 0;
+    _sjAlreadyRegistered = !!data.alreadyRegistered;
     // Move to tradition select
     document.getElementById('sj-email-wrap').style.display = 'none';
     document.getElementById('sj-trad-wrap').style.display  = 'block';
-  } catch {
+  } catch (err) {
+    document.getElementById('sj-note').textContent = err.message || 'Could not save registration. Please try again.';
     btn.textContent = 'Join as Sthapaka'; btn.disabled = false;
   }
 }
@@ -2583,18 +2744,16 @@ async function splashTradSelect(trad) {
   document.querySelectorAll('.sj-trad-btn').forEach(b => b.disabled = true);
   try {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const res = await fetch('/api/waitlist', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: _sjEmail, tradition: trad, source: 'splash', timezone: tz }),
-    });
-    const data = await res.json();
+    const data = await postWaitlist({ email: _sjEmail, tradition: trad, source: 'splash', timezone: tz });
     if (data.foundingNumber) _sjFoundingNum = data.foundingNumber;
+    _sjAlreadyRegistered = !!data.alreadyRegistered;
   } catch { /* non-blocking */ }
   // Show reveal
   document.getElementById('sj-trad-wrap').style.display = 'none';
   document.getElementById('sj-reveal').style.display    = 'block';
   document.getElementById('sj-num').textContent = _sjFoundingNum || '—';
+  setRegistrationFeedback('sj', _sjAlreadyRegistered, _sjFoundingNum);
+  setShareCopy('sj', _sjFoundingNum, _sjTrad);
   // Update live count in stats band
   _updateFoundingCount(_sjFoundingNum);
 }
@@ -2606,20 +2765,15 @@ function _updateFoundingCount(n) {
 }
 
 function splashShareWhatsApp() {
-  const text = encodeURIComponent(`I'm Sthapaka #${_sjFoundingNum} of Sanatan Sangam — a home for Hindu, Sikh, Buddhist & Jain dharma. Join the founding members before June 17, 2026: https://sanatansangam.app`);
+  const text = encodeURIComponent(buildSthapakaShareText(_sjFoundingNum, _sjTrad));
   window.open(`https://wa.me/?text=${text}`, '_blank');
 }
 function splashShareTwitter() {
-  const text = encodeURIComponent(`I'm Sthapaka #${_sjFoundingNum} of @SanatanSangam — one eternal dharma, one global sangam. Hindu · Sikh · Buddhist · Jain. Launching June 17, 2026.`);
-  const url  = encodeURIComponent('https://sanatansangam.app');
-  window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+  const text = encodeURIComponent(buildSthapakaShareText(_sjFoundingNum, _sjTrad));
+  window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
 }
 function splashCopyLink() {
-  const txt = `Sthapaka #${_sjFoundingNum} — Sanatan Sangam launching June 17, 2026. Join the founding members: https://sanatansangam.app`;
-  navigator.clipboard?.writeText(txt).then(() => {
-    const btn = document.querySelector('.sj-share-copy');
-    if (btn) { btn.textContent = '✓ Copied!'; setTimeout(() => { btn.textContent = '🔗 Copy Link'; }, 2000); }
-  });
+  copyShareText(buildSthapakaShareText(_sjFoundingNum, _sjTrad), '.sj-share-copy', '🔗 Copy Link');
 }
 
 /* ─── Live waitlist count ─────────────────────────────────────────────────── */
