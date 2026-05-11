@@ -87,8 +87,35 @@ nav {
 .s-trad.sikh  { animation:tradPulse 8s 2s   ease-in-out infinite; }
 .s-trad.bud   { animation:tradPulse 8s 4s   ease-in-out infinite; }
 .s-trad.jain  { animation:tradPulse 8s 6s   ease-in-out infinite; }
-/* dharmic verse */
-#splash-verse { font-family:var(--fh);font-size:clamp(15px,2.2vw,22px);color:rgba(255,254,248,0.42);letter-spacing:0.06em;margin-top:14px;min-height:1.8em;transition:opacity 1.5s ease; }
+/* dharmic verse marquee */
+#splash-verse {
+  width:min(92vw, 980px);
+  overflow:hidden;
+  margin:18px auto 0;
+  color:rgba(255,254,248,0.62);
+  -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+          mask-image:linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+}
+.splash-verse-track {
+  display:inline-flex;
+  align-items:center;
+  gap:34px;
+  min-width:max-content;
+  font-family:var(--fh);
+  font-size:clamp(22px,3.1vw,38px);
+  line-height:1.35;
+  letter-spacing:0.045em;
+  white-space:nowrap;
+  animation:splashVerseMarquee 42s linear infinite;
+}
+.splash-verse-track span { opacity:0.86; }
+.splash-verse-track .gurmukhi { font-family:var(--fg); }
+.splash-verse-track .roman { font-family:var(--fd); font-style:italic; letter-spacing:0.02em; }
+.splash-verse-track .dot { color:rgba(216,138,28,0.72); font-size:0.78em; }
+@keyframes splashVerseMarquee {
+  from { transform:translateX(0); }
+  to   { transform:translateX(-50%); }
+}
 /* audio toggle */
 #audio-btn { position:absolute;top:20px;right:20px;z-index:3;background:rgba(255,255,255,0.04);border:1px solid rgba(255,254,248,0.12);color:rgba(255,254,248,0.38);font-size:15px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.25s;padding:0;line-height:1; }
 #audio-btn:hover { background:rgba(216,138,28,0.12);border-color:rgba(216,138,28,0.32);color:rgba(216,138,28,0.82); }
@@ -704,7 +731,24 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
       <span class="scd-sep">·</span>
       <div class="scd-unit"><span class="scd-num" id="scd-s">--</span><span class="scd-lbl">Sec</span></div>
     </div>
-    <p id="splash-verse">सर्वे भवन्तु सुखिनः · सर्वे सन्तु निरामयाः</p>
+    <div id="splash-verse" aria-label="Dharmic verses across traditions">
+      <div class="splash-verse-track" aria-hidden="true">
+        <span>सर्वे भवन्तु सुखिनः</span><span class="dot">•</span>
+        <span class="gurmukhi">ੴ ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ</span><span class="dot">•</span>
+        <span class="roman">Buddham sharanam gacchami</span><span class="dot">•</span>
+        <span>अहिंसा परमो धर्मः</span><span class="dot">•</span>
+        <span>वसुधैव कुटुम्बकम्</span><span class="dot">•</span>
+        <span class="roman">Parasparopagraho jīvānām</span><span class="dot">•</span>
+        <span>एकं सत् विप्राः बहुधा वदन्ति</span><span class="dot">•</span>
+        <span>सर्वे भवन्तु सुखिनः</span><span class="dot">•</span>
+        <span class="gurmukhi">ੴ ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ</span><span class="dot">•</span>
+        <span class="roman">Buddham sharanam gacchami</span><span class="dot">•</span>
+        <span>अहिंसा परमो धर्मः</span><span class="dot">•</span>
+        <span>वसुधैव कुटुम्बकम्</span><span class="dot">•</span>
+        <span class="roman">Parasparopagraho jīvānām</span><span class="dot">•</span>
+        <span>एकं सत् विप्राः बहुधा वदन्ति</span><span class="dot">•</span>
+      </div>
+    </div>
 
     <!-- ── Founding Member Join ─────────────────────────────────────── -->
     <div id="splash-join">
@@ -2472,31 +2516,6 @@ window.switchShloka    = switchShloka;
   }
   tick();
   setInterval(tick, 1000);
-})();
-
-/* ─── DHARMIC VERSE CYCLE ───────────────────────────────────────────────── */
-(function () {
-  const verses = [
-    'सर्वे भवन्तु सुखिनः · सर्वे सन्तु निरामयाः',     // May all be happy · may all be free from illness
-    'एकं सत् विप्राः बहुधा वदन्ति',                   // Truth is one — the wise call it by many names
-    'अहिंसा परमो धर्मः',                               // Non-violence is the highest dharma
-    'वसुधैव कुटुम्बकम्',                               // The whole world is one family
-    'ੴ ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ',                          // One God, true name, creator of all
-    'Buddham Sharanam Gacchami',                        // I take refuge in the Buddha
-    'Parasparopagraho Jīvānām',                        // Souls render service to one another (Jain)
-  ];
-  let idx = 0;
-  const el = document.getElementById('splash-verse');
-  if (!el) return;
-  el.style.opacity = '1';
-  setInterval(() => {
-    el.style.opacity = '0';
-    setTimeout(() => {
-      idx = (idx + 1) % verses.length;
-      el.textContent = verses[idx];
-      el.style.opacity = '1';
-    }, 1500);
-  }, 9000);
 })();
 
 /* ─── OM AMBIENT DRONE (108 Hz · Web Audio API) ─────────────────────────── */
