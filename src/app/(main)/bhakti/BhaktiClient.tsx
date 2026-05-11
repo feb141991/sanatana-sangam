@@ -124,7 +124,7 @@ export default function BhaktiClient({
           <div className="glass-panel border-white/10 rounded-[2.5rem] p-6 flex items-center gap-5 bg-amber-500/5">
             <span className="text-4xl">{dailyStotramDeityEmoji}</span>
             <div className="flex-1">
-              <span className="text-[9px] font-bold text-amber-500/80 uppercase tracking-widest block mb-1">Today's Sacred Stotram</span>
+              <span className="text-[9px] font-bold text-amber-500/80 uppercase tracking-widest block mb-1">Today&apos;s Sacred Stotram</span>
               <h4 className="text-white font-bold">{dailyStotramTitle}</h4>
             </div>
             <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
