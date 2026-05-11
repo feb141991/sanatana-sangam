@@ -1,52 +1,21 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, BarChart2, ChevronRight, Sparkles, Play, Music, Mic2, Heart, BookOpen, Sun, Moon, Wind, Volume2, VolumeX } from 'lucide-react';
+import { 
+  ChevronLeft, BarChart2, Play, Music, Heart, 
+  Settings, CheckCircle2, Circle, Clock, Sun, 
+  Moon, Volume2, VolumeX, Share2, Info
+} from 'lucide-react';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import type { Shloka } from '@/lib/shlokas';
-import { DEITY_META, MOOD_META } from '@/lib/stotrams';
-import { getTraditionMeta } from '@/lib/tradition-config';
-import { CURATED_SOUNDS, BHAKTI_COLLECTIONS } from '@/lib/curated-bhakti';
-import DivineDiya from '@/components/bhakti/DivineDiya';
+import { DEITY_META } from '@/lib/stotrams';
+import { CURATED_SOUNDS } from '@/lib/curated-bhakti';
 import Image from 'next/image';
+import Link from 'next/link';
 
-// ─── Ambient Particles ────────────────────────────────────────────────────────
-function AmbientParticles() {
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {Array.from({ length: 15 }).map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full"
-          style={{ 
-            width: Math.random() * 2 + 1, 
-            height: Math.random() * 2 + 1, 
-            left: `${Math.random() * 100}%`, 
-            top: `${Math.random() * 100}%`, 
-            background: '#C5A059',
-            opacity: 0.2
-          }}
-          animate={{ 
-            opacity: [0.1, 0.4, 0.1], 
-            y: [0, -30, 0],
-            x: [0, (Math.random() - 0.5) * 20, 0]
-          }}
-          transition={{ 
-            duration: 4 + Math.random() * 4, 
-            repeat: Infinity, 
-            delay: Math.random() * 5 
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-// ─── Props ────────────────────────────────────────────────────────────────────
 interface Props {
   shloka: Shloka;
   tradition: string;
@@ -59,328 +28,226 @@ interface Props {
 }
 
 export default function BhaktiClient({
-  shloka, tradition, userName, japaStreak,
-  sessionCountToday, dailyStotramId, dailyStotramTitle, dailyStotramDeityEmoji,
+  shloka, tradition, userName, japaStreak, sessionCountToday,
+  dailyStotramId, dailyStotramTitle, dailyStotramDeityEmoji
 }: Props) {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
-  const { isMuted, setIsMuted } = useZenithSensory();
+  const { isMuted, setIsMuted, playHaptic } = useZenithSensory();
   const isDark = resolvedTheme === 'dark';
-  const [showShloka, setShowShloka] = useState(false);
 
-  // ── Premium Theme Tokens (Sattvic Ivory & Sacred Gold) ──────────────────────
-  const pageBg   = isDark ? '#1A1A18' : '#FDFCF8';
-  const glassBg  = isDark ? 'rgba(42,42,40,0.8)' : 'rgba(255,254,252,0.9)';
-  const glassBdr = isDark ? 'rgba(197,160,89,0.15)' : 'rgba(197,160,89,0.12)';
-  const gold     = '#C5A059';
-  const textMain = isDark ? '#FDFCF8' : '#2A1B0A';
-  const textDim  = isDark ? '#8E8E7A' : '#8E8E7A';
+  const [activeSound, setActiveSound] = useState(CURATED_SOUNDS[0]);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [checklist, setChecklist] = useState([
+    { id: 'morning-prayer', label: 'Morning Prayer', done: false },
+    { id: 'japa-session', label: '108 Japa Counts', done: false },
+    { id: 'daily-shloka', label: 'Daily Shloka Reflection', done: false },
+  ]);
 
-  const meta = getTraditionMeta(tradition);
-  const greeting = meta.bhaktiGreeting + ' 🙏';
-  
-  // Manage Deity Order
-  const baseOrder = meta.bhaktiDeityOrder.length > 0 ? meta.bhaktiDeityOrder : ['universal'];
-  const fullOrder = Array.from(new Set([...baseOrder, 'ganesha', 'shiva', 'vishnu', 'devi', 'hanuman', 'surya']));
-  const deityOrder = fullOrder.slice(0, 6);
-
-  const PORTALS = [
-    {
-      href: '/bhakti/mala',
-      icon: '📿',
-      title: 'Japa Mala',
-      sub: japaStreak > 0 ? `🔥 ${japaStreak}-day streak` : 'Start today',
-      desc: 'Sacred chanting rhythm',
-    },
-    {
-      href: '/bhakti/zen',
-      icon: '🧘',
-      title: 'Sattvic Mode',
-      sub: 'Enter Stillness',
-      desc: 'Meditative focus',
-    },
-    {
-      href: `/bhakti/stotram/${dailyStotramId}`,
-      icon: dailyStotramDeityEmoji,
-      title: 'Daily Stotram',
-      sub: dailyStotramTitle,
-      desc: 'Sacred recitation',
-    },
-    {
-      href: '/bhakti/aarti',
-      icon: '🪔',
-      title: 'Guided Aarti',
-      sub: 'Ritual Ceremony',
-      desc: 'Step-by-step devotion',
-    },
-  ];
+  const toggleCheck = (id: string) => {
+    playHaptic('light');
+    setChecklist(prev => prev.map(item => item.id === id ? { ...item, done: !item.done } : item));
+  };
 
   return (
-    <div className="relative min-h-screen selection:bg-[#C5A059]/30 overflow-x-hidden" style={{ background: pageBg }}>
-      <AmbientParticles />
-
-      {/* Header Area */}
-      <div className="px-6 pt-12 pb-6 flex items-center justify-between">
-        <button 
-          onClick={() => router.back()}
-          className="w-12 h-12 rounded-full flex items-center justify-center bg-white/50 dark:bg-black/20 border border-[#C5A059]/10 shadow-sm backdrop-blur-md active:scale-95 transition-all"
-        >
-          <ChevronLeft size={24} className="text-[#C5A059]" />
-        </button>
-        <div className="text-center">
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C5A059] mb-1">{greeting}</p>
-          <h2 className="text-xl font-serif text-[#2A1B0A] dark:text-[#FDFCF8]">Bhakti Yoga</h2>
-        </div>
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={() => setIsMuted(!isMuted)}
-            className="w-12 h-12 rounded-full flex items-center justify-center bg-white/50 dark:bg-black/20 border border-[#C5A059]/10 shadow-sm backdrop-blur-md active:scale-95 transition-all"
-            title={isMuted ? "Unmute" : "Mute"}
-          >
-            {isMuted ? <VolumeX size={20} className="text-[#C5A059]" /> : <Volume2 size={20} className="text-[#C5A059]" />}
-          </button>
-          <Link href="/bhakti/insights" className="w-12 h-12 rounded-full flex items-center justify-center bg-white/50 dark:bg-black/20 border border-[#C5A059]/10 shadow-sm backdrop-blur-md active:scale-95 transition-all">
-            <BarChart2 size={20} className="text-[#C5A059]" />
-          </Link>
-        </div>
-      </div>
-
-      <div className="px-6 space-y-12 pb-32">
+    <div className="relative min-h-screen pb-32 overflow-x-hidden bg-[#0C0A07]">
+      {/* ── 1. Cosmic Hero Section ────────────────────────────────────────── */}
+      <section className="relative h-[65vh] w-full overflow-hidden">
+        <Image 
+          src="/images/bhakti-hero.png"
+          alt="Cosmic Temple"
+          fill
+          className="object-cover opacity-80"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-[#0C0A07]" />
         
-        {/* ── Sacred Altar: The Spiritual Center ── */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative rounded-[3.5rem] p-12 text-center overflow-hidden border-0 transition-all duration-700 hover:shadow-2xl hover:shadow-[#C5A059]/10"
+        {/* Navigation Overlays */}
+        <div className="absolute top-12 inset-x-6 flex items-center justify-between z-20">
+          <button 
+            onClick={() => router.back()}
+            className="w-11 h-11 rounded-full flex items-center justify-center glass-panel border-white/10"
+          >
+            <ChevronLeft size={22} className="text-white" />
+          </button>
+          <div className="text-center">
+            <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-amber-400/80">
+              Devotional Sanctuary
+            </span>
+          </div>
+          <button className="w-11 h-11 rounded-full flex items-center justify-center glass-panel border-white/10">
+            <Share2 size={18} className="text-white" />
+          </button>
+        </div>
+
+        {/* Hero Content: The Auspicious Pulse */}
+        <div className="absolute bottom-12 inset-x-6 z-20 space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-2"
+          >
+            <h1 className="text-4xl font-bold premium-serif text-white tracking-tight leading-tight">
+              Auspicious <br/>Beginnings
+            </h1>
+            <p className="text-white/60 text-sm font-medium">
+              Today is Ekadashi · {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+            </p>
+          </motion.div>
+
+          <div className="flex gap-3">
+            <div className="flex-1 glass-panel border-white/5 p-4 rounded-3xl backdrop-blur-2xl">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-amber-400/60 block mb-1">Amrit Kaal</span>
+              <span className="text-lg font-bold text-white">09:12 — 10:45</span>
+            </div>
+            <div className="flex-1 glass-panel border-white/5 p-4 rounded-3xl backdrop-blur-2xl">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-white/40 block mb-1">Brahma Muhurta</span>
+              <span className="text-lg font-bold text-white">04:22 AM</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Animated Background Pulse */}
+        <motion.div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] pointer-events-none"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}
           style={{ 
-            background: 'linear-gradient(165deg, #FFFEFC 0%, #FDFCF8 100%)',
-            boxShadow: '0 20px 80px rgba(197,160,89,0.08)'
+            background: 'radial-gradient(circle, rgba(197,160,89,0.03) 0%, transparent 70%)',
           }}
-        >
-          <div className="absolute inset-0 opacity-30 transition-opacity duration-700 group-hover:opacity-50"
-            style={{ background: 'radial-gradient(circle at center, #FFF4E0 0%, transparent 70%)' }} />
-          
-          <div className="relative z-10">
-            <div className="mb-10 transform scale-110">
-              <DivineDiya />
+        />
+      </section>
+
+      {/* ── Daily Stotram Highlight ─────────────────────────────────────── */}
+      <section className="px-6 mt-8">
+        <Link href={`/bhakti/stotram/${dailyStotramId}`}>
+          <div className="glass-panel border-white/10 rounded-[2.5rem] p-6 flex items-center gap-5 bg-amber-500/5">
+            <span className="text-4xl">{dailyStotramDeityEmoji}</span>
+            <div className="flex-1">
+              <span className="text-[9px] font-bold text-amber-500/80 uppercase tracking-widest block mb-1">Today's Sacred Stotram</span>
+              <h4 className="text-white font-bold">{dailyStotramTitle}</h4>
             </div>
-            <h1 className="text-3xl font-serif text-[#2A1B0A] mb-2">Personal Altar</h1>
-            <p className="text-xs text-[#8E8E7A] uppercase tracking-[0.2em]">Your Sacred Connection</p>
-          </div>
-        </motion.section>
-
-        {/* ── Prāthanā — Morning Ritual Invocation ──────────────────────── */}
-        <motion.section
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="relative rounded-[2.5rem] overflow-hidden"
-          style={{
-            background: 'radial-gradient(ellipse at 50% 0%, rgba(80,36,4,0.96) 0%, rgba(20,10,2,0.98) 65%, rgba(10,5,1,1) 100%)',
-            border: '1px solid rgba(200,146,74,0.18)',
-          }}
-        >
-          {/* ambient particles */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            {[...Array(8)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute rounded-full"
-                style={{
-                  width: 1 + (i % 2),
-                  height: 1 + (i % 2),
-                  left: `${(i * 12.5 + 6) % 92}%`,
-                  top: `${(i * 11.3 + 8) % 78}%`,
-                  background: i % 2 === 0 ? 'rgba(200,146,74,0.6)' : 'rgba(255,220,140,0.4)',
-                }}
-                animate={{ opacity: [0.05, 0.5, 0.05], y: [0, -5, 0] }}
-                transition={{ duration: 3 + i * 0.4, repeat: Infinity, delay: i * 0.3, ease: 'easeInOut' }}
-              />
-            ))}
-          </div>
-
-          <div className="relative z-10 px-7 pt-7 pb-8 flex flex-col items-center text-center gap-5">
-            {/* Diya flame */}
-            <div className="relative flex items-center justify-center" style={{ width: 72, height: 72 }}>
-              <motion.div
-                className="absolute rounded-full"
-                style={{ inset: 0, background: 'radial-gradient(circle, rgba(200,120,24,0.22) 0%, transparent 70%)' }}
-                animate={{ scale: [1, 1.25, 1], opacity: [0.35, 0.65, 0.35] }}
-                transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-              />
-              <motion.div
-                style={{
-                  width: 12, height: 20,
-                  background: 'linear-gradient(180deg, #fffde0 0%, #ffc040 40%, #ff7020 75%, #cc3010 100%)',
-                  borderRadius: '50% 50% 50% 50% / 36% 36% 64% 64%',
-                  boxShadow: '0 0 14px rgba(255,140,20,0.9)',
-                  position: 'relative', top: -8,
-                }}
-                animate={{ scaleX: [1, 1.1, 0.92, 1.08, 1], scaleY: [1, 0.94, 1.06, 0.96, 1], rotate: [-2, 3, -3, 2, -2] }}
-                transition={{ duration: 0.85, repeat: Infinity, ease: 'easeInOut' }}
-              />
-              <div style={{
-                position: 'absolute', top: '56%', width: 28, height: 8,
-                background: 'linear-gradient(90deg, #6b3412 0%, #b86c28 50%, #6b3412 100%)',
-                borderRadius: '2px 2px 50% 50% / 2px 2px 80% 80%',
-              }} />
+            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+              <Play size={16} className="text-white" />
             </div>
-
-            <div className="space-y-1.5">
-              <p className="text-[9px] font-bold uppercase tracking-[0.28em]" style={{ color: 'rgba(200,146,74,0.5)' }}>
-                Prāthanā
-              </p>
-              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 600, color: '#f0e0b8', lineHeight: 1.2 }}>
-                Morning Invocation
-              </h3>
-            </div>
-
-            <p style={{ fontSize: '1.05rem', color: '#f5dfa0', fontFamily: 'var(--font-deva, serif)', lineHeight: 1.55, letterSpacing: '0.02em' }}>
-              ॐ असतो मा सद्गमय<br />
-              तमसो मा ज्योतिर्गमय<br />
-              मृत्योर्मा अमृतं गमय
-            </p>
-            <p className="text-xs leading-relaxed px-2" style={{ color: 'rgba(220,190,130,0.45)' }}>
-              Lead me from untruth to truth · from darkness to light · from mortality to immortality
-            </p>
-
-            <motion.button
-              className="px-7 py-3 rounded-full text-[11px] font-bold uppercase tracking-widest"
-              style={{
-                background: 'linear-gradient(135deg, rgba(200,120,24,0.9), rgba(200,146,74,0.8))',
-                color: '#1a0c04',
-                boxShadow: '0 4px 20px rgba(200,120,24,0.30)',
-              }}
-              whileTap={{ scale: 0.96 }}
-              whileHover={{ scale: 1.03 }}
-            >
-              🪔 Begin Prāthanā
-            </motion.button>
           </div>
-        </motion.section>
+        </Link>
+      </section>
 
-        {/* ── Guided Sadhana: Premium Experiences ── */}
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-serif text-[#2A1B0A] dark:text-[#FDFCF8]">Guided Sadhana</h3>
-            <span className="text-[10px] font-bold text-[#C5A059] uppercase tracking-wider">Premium Paths</span>
-          </div>
-          <div className="grid grid-cols-1 gap-6">
-            <div className="group relative rounded-[2.5rem] p-8 overflow-hidden bg-[#2A1B0A] text-white shadow-xl shadow-[#2A1B0A]/20 transition-all hover:-translate-y-1 active:scale-[0.98]">
-              <div className="absolute top-0 right-0 w-48 h-48 bg-[#C5A059]/10 rounded-full blur-3xl -mr-16 -mt-16" />
-              <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="px-3 py-1 rounded-full bg-[#C5A059] text-[9px] font-bold uppercase tracking-widest">Intensive</span>
-                  <span className="text-xs text-white/50">21 Days</span>
+      {/* ── 2. Sound Sanctuary (Refined Player) ───────────────────────────── */}
+      <section className="px-6 -mt-8 relative z-30">
+        <div className="clay-card rounded-[2.5rem] bg-[#1A1814] border border-amber-900/20 p-8 shadow-2xl">
+          <div className="flex items-center gap-6">
+            <div className="relative w-20 h-20 rounded-2xl overflow-hidden shadow-lg border border-white/5">
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-purple-500/20" />
+              <div className="absolute inset-0 flex items-center justify-center text-3xl">🕉️</div>
+              {isPlaying && (
+                <div className="absolute inset-x-0 bottom-0 h-1 bg-amber-500 flex gap-0.5 px-1 items-end py-0.5">
+                  {[1, 2, 3, 4].map(i => (
+                    <motion.div 
+                      key={i}
+                      className="flex-1 bg-white"
+                      animate={{ height: ['20%', '100%', '40%', '80%', '20%'] }}
+                      transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.1 }}
+                    />
+                  ))}
                 </div>
-                <h4 className="text-xl font-serif mb-2">The Mahamantra Journey</h4>
-                <p className="text-xs text-white/60 leading-relaxed mb-6 max-w-[240px]">Master the sacred vibrations with expert-led daily practices and deep meditation.</p>
-                <button className="px-6 py-3 rounded-full bg-[#C5A059] text-white text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-[#C5A059]/20 transition-all hover:bg-[#D4AF37]">
-                  Begin Initiation
-                </button>
-              </div>
+              )}
             </div>
+            <div className="flex-1 min-w-0">
+              <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-1 block">Now Playing</span>
+              <h3 className="text-lg font-bold text-white truncate">{activeSound.title}</h3>
+              <p className="text-xs text-white/40 truncate">{activeSound.artist}</p>
+            </div>
+            <button 
+              onClick={() => {
+                playHaptic('medium');
+                setIsPlaying(!isPlaying);
+              }}
+              className="w-14 h-14 rounded-full bg-amber-500 flex items-center justify-center text-black shadow-lg shadow-amber-500/20 active:scale-95 transition"
+            >
+              {isPlaying ? <VolumeX size={24} /> : <Play size={24} className="ml-1" />}
+            </button>
           </div>
-        </section>
 
-        {/* ── Practice Portals: Core Tools ── */}
-        <section className="grid grid-cols-2 gap-4">
-          {PORTALS.map((portal, i) => (
-            <Link key={portal.href} href={portal.href}>
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * i }}
-                className="h-full p-6 rounded-[2.5rem] bg-white/40 dark:bg-black/20 border border-[#C5A059]/10 hover:border-[#C5A059]/30 transition-all flex flex-col items-center text-center group"
-              >
-                <div className="text-3xl mb-4 group-hover:scale-110 transition-transform">{portal.icon}</div>
-                <h4 className="text-sm font-bold text-[#2A1B0A] dark:text-[#FDFCF8] mb-1">{portal.title}</h4>
-                <p className="text-[9px] font-bold text-[#C5A059] uppercase tracking-wider mb-2">{portal.sub}</p>
-                <p className="text-[10px] text-[#8E8E7A] leading-relaxed">{portal.desc}</p>
-              </motion.div>
+          <div className="mt-8 flex items-center justify-between border-t border-white/5 pt-6">
+            <div className="flex gap-6">
+              <button className="flex flex-col items-center gap-1 opacity-60 hover:opacity-100 transition">
+                <Music size={18} className="text-white" />
+                <span className="text-[8px] font-bold uppercase text-white">Radio</span>
+              </button>
+              <button className="flex flex-col items-center gap-1 opacity-60 hover:opacity-100 transition">
+                <Clock size={18} className="text-white" />
+                <span className="text-[8px] font-bold uppercase text-white">Timer</span>
+              </button>
+            </div>
+            <Link href="/bhakti/browse" className="text-[10px] font-bold text-amber-500 uppercase tracking-widest border-b border-amber-500/30 pb-0.5">
+              Browse All →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 3. Daily Sadhana Checklist ────────────────────────────────────── */}
+      <section className="px-6 mt-12 space-y-6">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-serif text-white">Daily Sadhana</h3>
+          <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">{checklist.filter(c => c.done).length}/{checklist.length} Complete</span>
+        </div>
+        <div className="space-y-3">
+          {checklist.map(item => (
+            <button 
+              key={item.id}
+              onClick={() => toggleCheck(item.id)}
+              className={`w-full flex items-center gap-4 p-5 rounded-[2rem] border transition-all ${item.done ? 'bg-amber-500/10 border-amber-500/30' : 'bg-white/5 border-white/5'}`}
+            >
+              {item.done ? (
+                <CheckCircle2 size={22} className="text-amber-500" />
+              ) : (
+                <Circle size={22} className="text-white/20" />
+              )}
+              <span className={`text-sm font-medium ${item.done ? 'text-white' : 'text-white/60'}`}>{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* ── 4. Sacred Verse ──────────────────────────────────────────────── */}
+      <section className="px-6 mt-12">
+        <div className="rounded-[3rem] p-10 bg-gradient-to-br from-[#1A1814] to-[#0C0A07] border border-white/5 text-center space-y-6">
+          <span className="text-[10px] font-bold text-amber-500 uppercase tracking-[0.3em]">Sacred Reflection</span>
+          <p className="text-2xl font-serif text-white leading-relaxed italic">
+            &ldquo;{shloka.sanskrit}&rdquo;
+          </p>
+          <div className="pt-4 opacity-40">
+            <div className="w-12 h-[1px] bg-white mx-auto mb-4" />
+            <p className="text-xs text-white uppercase tracking-widest">— {shloka.source}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 5. Deity Portals (Horizontal Scroll) ─────────────────────────── */}
+      <section className="mt-12">
+        <div className="px-6 flex items-center justify-between mb-6">
+          <h3 className="text-lg font-serif text-white">Divine Portals</h3>
+          <Link href="/bhakti/browse" className="text-[10px] font-bold text-white/40 uppercase tracking-widest">See All</Link>
+        </div>
+        <div className="flex gap-4 overflow-x-auto px-6 pb-4 scrollbar-none">
+          {['shiva', 'vishnu', 'devi', 'hanuman', 'ganesha', 'surya'].map((deity) => (
+            <Link 
+              key={deity}
+              href={`/bhakti/browse?deity=${deity}`}
+              className="flex-shrink-0 w-24 h-32 rounded-[2rem] bg-white/5 border border-white/5 flex flex-col items-center justify-center gap-3 active:scale-95 transition"
+            >
+              <span className="text-3xl">{(DEITY_META as any)[deity]?.emoji || '🕉️'}</span>
+              <span className="text-[10px] font-bold uppercase text-white/60">{(DEITY_META as any)[deity]?.label}</span>
             </Link>
           ))}
-        </section>
+        </div>
+      </section>
 
-        {/* ── Browse by Deity ── */}
-        <section className="rounded-[2.5rem] p-8 bg-white/40 dark:bg-black/20 border border-[#C5A059]/10">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-sm font-bold text-[#C5A059] uppercase tracking-widest">Deity Portals</h3>
-            <Link href="/bhakti/browse" className="text-[10px] font-bold text-[#C5A059] underline">See All</Link>
-          </div>
-          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none">
-            {deityOrder.map((deity) => {
-              const dMeta = DEITY_META[deity];
-              if (!dMeta) return null;
-              return (
-                <Link key={deity} href={`/bhakti/browse?deity=${deity}`} className="flex-shrink-0 flex flex-col items-center gap-2 group">
-                  <div className="w-14 h-14 rounded-full bg-white/50 dark:bg-white/5 flex items-center justify-center text-2xl shadow-sm border border-[#C5A059]/5 group-hover:scale-110 transition-transform">
-                    {dMeta.emoji}
-                  </div>
-                  <span className="text-[9px] font-bold uppercase tracking-tighter text-[#2A1B0A] dark:text-[#FDFCF8]">{dMeta.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* ── Sound Sanctuary: Mantras & Bhajans ── */}
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-serif text-[#2A1B0A] dark:text-[#FDFCF8]">Sound Sanctuary</h3>
-            <Link href="/bhakti/sounds" className="text-[10px] font-bold text-[#C5A059] uppercase tracking-wider">Explore All</Link>
-          </div>
-          <div className="space-y-4">
-            {CURATED_SOUNDS.slice(0, 3).map((sound, i) => (
-              <motion.div 
-                key={sound.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 * i }}
-                className="group flex items-center gap-4 p-4 rounded-[2rem] bg-white/40 dark:bg-black/20 border border-[#C5A059]/5 hover:border-[#C5A059]/20 transition-all active:scale-[0.99]"
-              >
-                <div className="w-12 h-12 rounded-2xl bg-[#C5A059]/10 flex items-center justify-center text-xl group-hover:bg-[#C5A059]/20 transition-colors">
-                  {sound.type === 'mantra' ? '🕉️' : '📿'}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h5 className="text-sm font-bold text-[#2A1B0A] dark:text-[#FDFCF8] truncate">{sound.title}</h5>
-                  <p className="text-[10px] text-[#8E8E7A] uppercase tracking-wider truncate">{sound.artist}</p>
-                </div>
-                <button className="w-10 h-10 rounded-full flex items-center justify-center bg-[#C5A059] text-white shadow-lg shadow-[#C5A059]/10">
-                  <Play size={16} className="ml-1" />
-                </button>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* ── Verse of the Day ── */}
-        <section className="rounded-[3rem] p-8 bg-[#FDFCF8] dark:bg-[#1A1A18] border border-[#C5A059]/20 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <span className="text-[9px] font-bold text-[#C5A059] uppercase tracking-[0.2em]">Verse of the Day</span>
-            <div className="flex gap-2">
-              <button onClick={() => setShowShloka(!showShloka)} className="text-[9px] font-bold text-[#8E8E7A] uppercase">{showShloka ? 'Collapse' : 'Meaning'}</button>
-            </div>
-          </div>
-          <p className="text-xl font-serif text-[#2A1B0A] dark:text-[#FDFCF8] leading-relaxed italic text-center">
-            &quot;{shloka.sanskrit}&quot;
-          </p>
-          <AnimatePresence>
-            {showShloka && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mt-6 pt-6 border-t border-[#C5A059]/10"
-              >
-                <p className="text-sm text-[#8E8E7A] leading-relaxed">{shloka.meaning}</p>
-                <p className="text-[10px] font-bold text-[#C5A059] uppercase tracking-widest mt-4">— {shloka.source}</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </section>
-
-      </div>
+      {/* Ambient Lighting Bottom */}
+      <div className="fixed bottom-0 inset-x-0 h-64 bg-gradient-to-t from-amber-500/5 to-transparent pointer-events-none" />
     </div>
   );
 }
