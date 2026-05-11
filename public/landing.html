@@ -87,7 +87,7 @@ nav {
 .s-trad.bud   { animation:tradPulse 8s 4s   ease-in-out infinite; }
 .s-trad.jain  { animation:tradPulse 8s 6s   ease-in-out infinite; }
 /* dharmic verse */
-#splash-verse { font-family:var(--fh);font-size:clamp(11px,1.6vw,14px);color:rgba(255,254,248,0.30);letter-spacing:0.08em;margin-top:10px;min-height:1.6em;transition:opacity 1.5s ease; }
+#splash-verse { font-family:var(--fh);font-size:clamp(15px,2.2vw,22px);color:rgba(255,254,248,0.42);letter-spacing:0.06em;margin-top:14px;min-height:1.8em;transition:opacity 1.5s ease; }
 /* audio toggle */
 #audio-btn { position:absolute;top:20px;right:20px;z-index:3;background:rgba(255,255,255,0.04);border:1px solid rgba(255,254,248,0.12);color:rgba(255,254,248,0.38);font-size:15px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.25s;padding:0;line-height:1; }
 #audio-btn:hover { background:rgba(216,138,28,0.12);border-color:rgba(216,138,28,0.32);color:rgba(216,138,28,0.82); }
@@ -1480,7 +1480,7 @@ window.switchTrad       = switchTrad;
   let W, H, cx, cy, maxR, mAng = 0, t = 0, lastT = 0;
   let stars = [], naks = [], floaters = [], meteors = [];
   let mx = 0, my = 0, rawMX = 0, rawMY = 0; // parallax
-  let nextMeteorIn = 10 + Math.random() * 6;
+  let nextMeteorIn = 3 + Math.random() * 3;
 
   const NAKS = ['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra',
     'Punarvasu','Pushya','Ashlesha','Magha','P.Phalguni','U.Phalguni',
@@ -1562,14 +1562,16 @@ window.switchTrad       = switchTrad;
   }
 
   function spawnMeteor() {
-    const ang = Math.PI / 4 + (Math.random() - 0.5) * 0.45;
-    const speed = 260 + Math.random() * 240;
+    if (meteors.length >= 5) return; // max 5 concurrent
+    const ang = Math.PI / 4 + (Math.random() - 0.5) * 0.50;
+    const speed = 320 + Math.random() * 300;
     meteors.push({
-      x: W * (0.25 + Math.random() * 0.75),
-      y: H * Math.random() * 0.35,
+      x: W * (0.15 + Math.random() * 0.85),
+      y: H * Math.random() * 0.40,
       vx: -Math.cos(ang) * speed,
       vy:  Math.sin(ang) * speed,
-      len: 65 + Math.random() * 120,
+      len: 120 + Math.random() * 180,  // longer trails
+      width: 1.4 + Math.random() * 1.4, // variable thickness
       life: 1.0,
     });
   }
@@ -1627,12 +1629,15 @@ window.switchTrad       = switchTrad;
       grad.addColorStop(1,   'rgba(255,254,248,0)');
       ctx.globalAlpha = 1;
       ctx.strokeStyle = grad;
-      ctx.lineWidth = Math.max(0.4, 1.8 * m.life);
+      ctx.lineWidth = Math.max(0.6, (m.width || 1.8) * m.life);
       ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(tx, ty); ctx.stroke();
-      // head glow
-      ctx.globalAlpha = m.life * 0.55;
+      // head glow — bigger
+      ctx.globalAlpha = m.life * 0.70;
       ctx.fillStyle = '#FFFEF8';
-      ctx.beginPath(); ctx.arc(m.x, m.y, 1.6 * m.life, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(m.x, m.y, 2.8 * m.life, 0, Math.PI * 2); ctx.fill();
+      // soft outer halo
+      ctx.globalAlpha = m.life * 0.20;
+      ctx.beginPath(); ctx.arc(m.x, m.y, 5.5 * m.life, 0, Math.PI * 2); ctx.fill();
     }
   }
 
@@ -1766,7 +1771,7 @@ window.switchTrad       = switchTrad;
 
     // meteor spawn timer
     nextMeteorIn -= dt;
-    if (nextMeteorIn <= 0) { spawnMeteor(); nextMeteorIn = 9 + Math.random() * 8; }
+    if (nextMeteorIn <= 0) { spawnMeteor(); nextMeteorIn = 2.5 + Math.random() * 3.5; }
 
     ctx.clearRect(0, 0, W, H);
     drawNebula();
