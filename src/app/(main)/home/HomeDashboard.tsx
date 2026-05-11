@@ -1545,7 +1545,7 @@ export default function HomeDashboard({
       icon: Users,
     },
     {
-      title: 'Reflections',
+      title: 'Reflections (Feed)',
       description: 'Shared moments of contemplation',
       href: '/reflections',
       icon: MessageCircle,
