@@ -66,7 +66,8 @@ nav {
 /* ── SPLASH ENTRY ─────────────────────────────────────────────────────── */
 #splash { position:fixed;inset:0;z-index:9999;overflow:hidden; background:radial-gradient(ellipse 90% 110% at 50% 60%,#0D0928 0%,#070418 50%,#020108 100%); display:flex;flex-direction:column;align-items:center;justify-content:center; min-height:100svh; }
 #sky-canvas { position:absolute;inset:0;width:100%;height:100%;pointer-events:none; }
-#splash-content { position:relative;z-index:2;text-align:center;padding:0 40px;pointer-events:auto; }
+#celebration-layer { position:fixed;inset:0;z-index:10020;pointer-events:none;overflow:hidden; }
+#splash-content { position:relative;z-index:2;text-align:center;padding:0 40px;pointer-events:auto;width:100%;max-width:1060px;margin:0 auto; }
 #splash-deva { font-family:var(--fh);font-size:clamp(16px,2.2vw,26px);color:rgba(216,138,28,0.60);letter-spacing:0.15em;margin-bottom:16px; }
 #splash-title { font-family:var(--fd);font-size:clamp(38px,7vw,82px);font-weight:300;color:#FFFEF8;line-height:1.04;letter-spacing:-0.02em;margin-bottom:12px; }
 #splash-title em { color:#D88A1C;font-style:italic; }
@@ -141,8 +142,8 @@ body.landing-entered #explore-btn {
 }
 
 /* ── Splash Join Form ──────────────────────────────────────────────────── */
-#splash-join { margin-top:28px; width:100%; max-width:460px; }
-#sj-form { display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center; }
+#splash-join { margin:28px auto 0; width:min(100%, 500px); max-width:500px; padding:12px; border:1px solid rgba(216,138,28,0.16); border-radius:999px; background:rgba(255,254,248,0.045); box-shadow:0 18px 80px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,254,248,0.08); backdrop-filter:blur(16px); }
+#sj-form { display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%; }
 #sj-email { flex:1;min-width:200px;background:rgba(255,254,248,0.07);border:1px solid rgba(216,138,28,0.35);border-radius:100px;padding:12px 20px;color:#FAF6EF;font-size:14px;font-family:var(--fb);outline:none;transition:border-color 0.25s; }
 #sj-email::placeholder { color:rgba(255,254,248,0.32); }
 #sj-email:focus { border-color:rgba(216,138,28,0.65); }
@@ -175,6 +176,12 @@ body.landing-entered #explore-btn {
 .cta-reveal-card { background:rgba(255,253,249,0.94);border:1px solid rgba(216,138,28,0.32);border-radius:16px;padding:24px 32px;margin-bottom:16px;display:inline-block;box-shadow:0 18px 45px rgba(62,42,31,0.08); }
 .cta-reveal-label { font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(62,42,31,0.45);margin-bottom:8px; }
 .cta-reveal-sub { font-size:12px;color:rgba(62,42,31,0.54);margin-top:8px; }
+.celebration-ring { position:absolute;left:var(--x);top:var(--y);width:16px;height:16px;margin:-8px 0 0 -8px;border:1px solid rgba(250,199,117,0.78);border-radius:50%;animation:celebrationRing 900ms cubic-bezier(0.22,1,0.36,1) forwards;filter:drop-shadow(0 0 10px rgba(216,138,28,0.35)); }
+.celebration-spark { position:absolute;left:var(--x);top:var(--y);width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;background:var(--c);box-shadow:0 0 14px var(--c);animation:celebrationSpark var(--d) cubic-bezier(0.22,1,0.36,1) forwards; }
+.celebration-ray { position:absolute;left:var(--x);top:var(--y);width:1px;height:var(--h);margin-top:calc(var(--h) / -2);background:linear-gradient(180deg, transparent, rgba(250,199,117,0.92), transparent);transform:rotate(var(--r));animation:celebrationRay 820ms cubic-bezier(0.22,1,0.36,1) forwards;transform-origin:center; }
+@keyframes celebrationRing { to { opacity:0; transform:scale(9); } }
+@keyframes celebrationSpark { 0% { opacity:0; transform:translate(0,0) scale(0.65); } 12% { opacity:1; } 100% { opacity:0; transform:translate(var(--dx), var(--dy)) scale(0.22); } }
+@keyframes celebrationRay { 0% { opacity:0; transform:rotate(var(--r)) scaleY(0.15); } 22% { opacity:0.85; } 100% { opacity:0; transform:rotate(var(--r)) scaleY(1.9); } }
 @keyframes pulseGlow { 0%,100%{box-shadow:0 0 0 0 rgba(216,138,28,0)} 50%{box-shadow:0 0 24px rgba(216,138,28,0.10)} }
 #main-page { min-height:100vh; }
 
@@ -694,6 +701,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 <!-- ══ SPLASH ENTRY ══════════════════════════════════════════════ -->
 <div id="splash">
   <canvas id="sky-canvas"></canvas>
+  <div id="celebration-layer" aria-hidden="true"></div>
   <div id="splash-content">
     <div id="splash-deva">सनातन संगम</div>
     <h1 id="splash-title">One <em>eternal</em> dharma,<br>one global sangam.</h1>
@@ -2002,6 +2010,7 @@ async function selectCtaTrad(pill) {
   document.getElementById('cta-success').textContent  = `Welcome, ${labels[trad] ?? 'Founding Member'}. Jai ho!`;
   setRegistrationFeedback('cta', ctaAlreadyRegistered, ctaFoundingNum);
   setShareCopy('cta', ctaFoundingNum, trad);
+  triggerSthapakaCelebration('cta-reveal');
   document.getElementById('cta-note').style.display   = 'none';
   _updateFoundingCount(ctaFoundingNum);
 }
@@ -2154,9 +2163,9 @@ window.switchShloka    = switchShloka;
   if (!cv) return;
   const ctx = cv.getContext('2d');
   let W, H, cx, cy, maxR, mAng = 0, t = 0, lastT = 0;
-  let stars = [], glowStars = [], planets = [], naks = [], floaters = [], meteors = [];
+  let stars = [], glowStars = [], planets = [], naks = [], floaters = [], meteors = [], orbitMeteors = [], galaxyDust = [];
   let mx = 0, my = 0, rawMX = 0, rawMY = 0; // parallax
-  let nextMeteorIn = 2 + Math.random() * 2;
+  let nextMeteorIn = 0.35 + Math.random() * 0.9;
 
   const NAKS = ['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra',
     'Punarvasu','Pushya','Ashlesha','Magha','P.Phalguni','U.Phalguni',
@@ -2179,7 +2188,7 @@ window.switchShloka    = switchShloka;
     H = cv.height = window.innerHeight;
     cx = W / 2; cy = H / 2;
     maxR = Math.min(W, H) * 0.43;
-    buildStars(); buildGlowStars(); buildPlanets(); buildNaks(); buildFloaters();
+    buildStars(); buildGlowStars(); buildPlanets(); buildNaks(); buildFloaters(); buildOrbitMeteors(); buildGalaxyDust();
   }
 
   function buildStars() {
@@ -2254,6 +2263,38 @@ window.switchShloka    = switchShloka;
     }
   }
 
+  function buildGalaxyDust() {
+    galaxyDust = [];
+    const n = W < 600 ? 160 : 360;
+    for (let i = 0; i < n; i++) {
+      const along = (Math.random() - 0.5) * W * 1.55;
+      const across = (Math.random() - 0.5) * Math.min(W, H) * 0.28;
+      galaxyDust.push({
+        along,
+        across,
+        r: 0.35 + Math.random() * 1.25,
+        op: 0.05 + Math.random() * 0.18,
+        ph: Math.random() * Math.PI * 2,
+        drift: 0.15 + Math.random() * 0.35,
+        col: Math.random() < 0.10 ? '#FFD28A' : '#FFFEF8',
+      });
+    }
+  }
+
+  function buildOrbitMeteors() {
+    orbitMeteors = [];
+    const count = W < 600 ? 3 : 5;
+    for (let i = 0; i < count; i++) {
+      orbitMeteors.push({
+        a: (i / count) * Math.PI * 2,
+        speed: 0.08 + sr(i + 411) * 0.12,
+        r: maxR * (0.42 + sr(i + 421) * 0.44),
+        len: 34 + sr(i + 431) * 72,
+        op: 0.18 + sr(i + 441) * 0.24,
+      });
+    }
+  }
+
   function buildPlanets() {
     planets = [
       // amber/golden — Jupiter-like, large
@@ -2272,12 +2313,12 @@ window.switchShloka    = switchShloka;
   }
 
   function spawnMeteor() {
-    if (meteors.length >= 6) return;
+    if (meteors.length >= 14) return;
     // always start from the right half, near the top — sweep across full width
     const startX = W * (0.45 + Math.random() * 0.55);
-    const startY = H * (Math.random() * 0.45);
+    const startY = H * (Math.random() * 0.58);
     const ang = Math.PI / 4 + (Math.random() - 0.5) * 0.40; // ~45° downward-left
-    const speed = 400 + Math.random() * 350;
+    const speed = 520 + Math.random() * 420;
     const screenSpan = W * (0.55 + Math.random() * 0.35); // trail spans 55–90% of screen
     meteors.push({
       x: startX, y: startY,
@@ -2378,6 +2419,34 @@ window.switchShloka    = switchShloka;
     });
   }
 
+  function drawMilkyWay(ts) {
+    ctx.save();
+    ctx.translate(cx + mx * 8, cy + my * 5);
+    ctx.rotate(-0.42);
+
+    const bandW = W * 1.55;
+    const bandH = Math.min(W, H) * 0.32;
+    const g = ctx.createLinearGradient(0, -bandH / 2, 0, bandH / 2);
+    g.addColorStop(0, 'rgba(255,254,248,0)');
+    g.addColorStop(0.20, 'rgba(120,95,190,0.035)');
+    g.addColorStop(0.48, 'rgba(255,236,190,0.105)');
+    g.addColorStop(0.62, 'rgba(150,185,255,0.055)');
+    g.addColorStop(1, 'rgba(255,254,248,0)');
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = g;
+    ctx.fillRect(-bandW / 2, -bandH / 2, bandW, bandH);
+
+    for (const d of galaxyDust) {
+      const tw = 0.65 + Math.sin(ts * d.drift + d.ph) * 0.35;
+      ctx.globalAlpha = d.op * tw;
+      ctx.fillStyle = d.col;
+      ctx.beginPath();
+      ctx.arc(d.along, d.across + Math.sin(ts * 0.08 + d.ph) * 2, d.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
   /* ── Stars with parallax ─────────────────────────────────────── */
   function drawStars(ts) {
     for (const s of stars) {
@@ -2431,6 +2500,34 @@ window.switchShloka    = switchShloka;
       headGrd.addColorStop(1,   'rgba(255,200,100,0)');
       ctx.globalAlpha = 1; ctx.fillStyle = headGrd;
       ctx.beginPath(); ctx.arc(m.x, m.y, 9 * m.life, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.lineCap = 'butt';
+  }
+
+  function drawOrbitMeteors(ts) {
+    for (const m of orbitMeteors) {
+      const a = m.a + ts * m.speed;
+      const wobble = Math.sin(ts * 0.34 + m.a) * maxR * 0.025;
+      const r = m.r + wobble;
+      const x = cx + Math.cos(a) * r + mx * 12;
+      const y = cy + Math.sin(a) * r + my * 9;
+      const tailA = a - 0.34;
+      const tx = x - Math.cos(tailA) * m.len;
+      const ty = y - Math.sin(tailA) * m.len;
+
+      const trail = ctx.createLinearGradient(x, y, tx, ty);
+      trail.addColorStop(0, `rgba(255,245,214,${m.op.toFixed(3)})`);
+      trail.addColorStop(0.35, `rgba(250,199,117,${(m.op * 0.45).toFixed(3)})`);
+      trail.addColorStop(1, 'rgba(250,199,117,0)');
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = trail;
+      ctx.lineWidth = 1.15;
+      ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(tx, ty); ctx.stroke();
+
+      ctx.globalAlpha = m.op * 1.45;
+      ctx.fillStyle = '#FFF6D9';
+      ctx.beginPath(); ctx.arc(x, y, 1.7, 0, Math.PI * 2); ctx.fill();
     }
     ctx.lineCap = 'butt';
   }
@@ -2565,14 +2662,20 @@ window.switchShloka    = switchShloka;
 
     // meteor spawn timer
     nextMeteorIn -= dt;
-    if (nextMeteorIn <= 0) { spawnMeteor(); nextMeteorIn = 2.5 + Math.random() * 3.5; }
+    if (nextMeteorIn <= 0) {
+      const burst = Math.random() < 0.32 ? 2 + Math.floor(Math.random() * 3) : 1;
+      for (let i = 0; i < burst; i++) spawnMeteor();
+      nextMeteorIn = 0.65 + Math.random() * 1.25;
+    }
 
     ctx.clearRect(0, 0, W, H);
     drawNebula();
+    drawMilkyWay(t);
     drawPlanets(t);
     drawStars(t);
     drawGlowStars(t);
     drawMeteors(dt);
+    drawOrbitMeteors(t);
     drawBands();
     drawRashi();
     drawNakshatras(t);
@@ -2717,6 +2820,61 @@ async function copyShareText(text, buttonSelector, resetText) {
   }
 }
 
+function triggerSthapakaCelebration(targetId = 'sj-badge') {
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+
+  const layer = document.getElementById('celebration-layer');
+  const target = document.getElementById(targetId);
+  if (!layer || !target) return;
+
+  const rect = target.getBoundingClientRect();
+  const x = rect.left + rect.width / 2;
+  const y = rect.top + rect.height * 0.42;
+  const colors = ['#FFF6D9', '#FAC775', '#EF9F27', '#D88A1C', '#FFFEF8'];
+  const pieces = [];
+
+  for (let i = 0; i < 3; i++) {
+    const ring = document.createElement('i');
+    ring.className = 'celebration-ring';
+    ring.style.setProperty('--x', `${x}px`);
+    ring.style.setProperty('--y', `${y}px`);
+    ring.style.animationDelay = `${i * 70}ms`;
+    layer.appendChild(ring);
+    pieces.push(ring);
+  }
+
+  for (let i = 0; i < 20; i++) {
+    const ray = document.createElement('i');
+    ray.className = 'celebration-ray';
+    ray.style.setProperty('--x', `${x}px`);
+    ray.style.setProperty('--y', `${y}px`);
+    ray.style.setProperty('--r', `${(360 / 20) * i + Math.random() * 8}deg`);
+    ray.style.setProperty('--h', `${32 + Math.random() * 48}px`);
+    layer.appendChild(ray);
+    pieces.push(ray);
+  }
+
+  for (let i = 0; i < 78; i++) {
+    const spark = document.createElement('i');
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 70 + Math.random() * 240;
+    const lift = 18 + Math.random() * 70;
+    spark.className = 'celebration-spark';
+    spark.style.setProperty('--x', `${x}px`);
+    spark.style.setProperty('--y', `${y}px`);
+    spark.style.setProperty('--dx', `${Math.cos(angle) * distance}px`);
+    spark.style.setProperty('--dy', `${Math.sin(angle) * distance - lift}px`);
+    spark.style.setProperty('--s', `${2 + Math.random() * 4}px`);
+    spark.style.setProperty('--d', `${820 + Math.random() * 780}ms`);
+    spark.style.setProperty('--c', colors[i % colors.length]);
+    spark.style.animationDelay = `${Math.random() * 120}ms`;
+    layer.appendChild(spark);
+    pieces.push(spark);
+  }
+
+  window.setTimeout(() => pieces.forEach(el => el.remove()), 1900);
+}
+
 /* ─── SPLASH JOIN FLOW ────────────────────────────────────────────────────── */
 let _sjEmail = '', _sjTrad = '', _sjFoundingNum = 0, _sjAlreadyRegistered = false;
 
@@ -2754,6 +2912,7 @@ async function splashTradSelect(trad) {
   document.getElementById('sj-num').textContent = _sjFoundingNum || '—';
   setRegistrationFeedback('sj', _sjAlreadyRegistered, _sjFoundingNum);
   setShareCopy('sj', _sjFoundingNum, _sjTrad);
+  triggerSthapakaCelebration('sj-badge');
   // Update live count in stats band
   _updateFoundingCount(_sjFoundingNum);
 }
