@@ -1541,9 +1541,16 @@ function initMainPage() {
 const LAUNCH = new Date('2026-06-17T00:00:00+05:30'); // IST midnight
 
 function updateCountdown() {
+  const daysEl = document.getElementById('cd-days');
+  const hrsEl  = document.getElementById('cd-hrs');
+  const minEl  = document.getElementById('cd-min');
+  const secEl  = document.getElementById('cd-sec');
+  if (!daysEl || !hrsEl || !minEl || !secEl) return;
+
   const diff = LAUNCH - Date.now();
   if (diff <= 0) {
-    document.querySelector('.countdown-wrap').innerHTML = '<div style="font-family:var(--fd);font-size:36px;color:var(--saffron)">🎉 We are live!</div>';
+    const wrap = document.querySelector('.countdown-wrap');
+    if (wrap) wrap.innerHTML = '<div style="font-family:var(--fd);font-size:36px;color:var(--saffron)">🎉 We are live!</div>';
     return;
   }
   const d  = Math.floor(diff / 86400000);
@@ -1551,10 +1558,10 @@ function updateCountdown() {
   const m  = Math.floor((diff % 3600000)  / 60000);
   const s  = Math.floor((diff % 60000)    / 1000);
   const fmt = n => String(n).padStart(2, '0');
-  document.getElementById('cd-days').textContent = fmt(d);
-  document.getElementById('cd-hrs' ).textContent = fmt(h);
-  document.getElementById('cd-min' ).textContent = fmt(m);
-  document.getElementById('cd-sec' ).textContent = fmt(s);
+  daysEl.textContent = fmt(d);
+  hrsEl.textContent  = fmt(h);
+  minEl.textContent  = fmt(m);
+  secEl.textContent  = fmt(s);
 }
 updateCountdown();
 setInterval(updateCountdown, 1000);
@@ -2545,7 +2552,12 @@ document.getElementById('explore-btn').addEventListener('click', function () {
   // then start the opacity transition and initialise all JS (observers, tab positions, etc.)
   requestAnimationFrame(() => {
     main.style.opacity = '1';
-    initMainPage();
+    try {
+      initMainPage();
+    } catch (err) {
+      console.error('[landing] initMainPage failed', err);
+      document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+    }
   });
 
   setTimeout(() => {
