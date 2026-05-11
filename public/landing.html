@@ -2920,7 +2920,7 @@ async function splashTradSelect(trad) {
 function _updateFoundingCount(n) {
   const el = document.getElementById('stat-founding-wrap');
   if (!el || !n) return;
-  el.textContent = n.toLocaleString('en-IN') + '+';
+  el.textContent = n < 500 ? '500+' : n.toLocaleString('en-IN') + '+';
 }
 
 function splashShareWhatsApp() {
@@ -2939,7 +2939,7 @@ function splashCopyLink() {
 fetch('/api/waitlist').then(r => r.json()).then(({ count }) => {
   const el = document.getElementById('stat-founding-wrap');
   if (!el || !count) return;
-  el.textContent = count < 10 ? 'Early Access' : count.toLocaleString('en-IN') + '+';
+  el.textContent = count < 500 ? '500+' : count.toLocaleString('en-IN') + '+';
 }).catch(() => {});
 
 /* ─── EXPLORE BUTTON — transition from splash to main page ──────────────── */
