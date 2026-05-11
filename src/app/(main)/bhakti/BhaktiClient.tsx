@@ -36,6 +36,7 @@ export default function BhaktiClient({
   const { isMuted, setIsMuted, playHaptic } = useZenithSensory();
   const isDark = resolvedTheme === 'dark';
 
+  const [activeDeity, setActiveDeity] = useState('shiva');
   const [activeSound, setActiveSound] = useState(CURATED_SOUNDS[0]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [checklist, setChecklist] = useState([
@@ -52,15 +53,31 @@ export default function BhaktiClient({
   return (
     <div className="relative min-h-screen pb-32 overflow-x-hidden bg-[#0C0A07]">
       {/* ── 1. Cosmic Hero Section ────────────────────────────────────────── */}
-      <section className="relative h-[65vh] w-full overflow-hidden">
-        <Image 
-          src="/images/bhakti-hero.png"
-          alt="Cosmic Temple"
-          fill
-          className="object-cover opacity-80"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-[#0C0A07]" />
+      <section className="relative h-[70vh] w-full overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeDeity}
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.5 }}
+            className="absolute inset-0"
+          >
+            <Image 
+              src={`/images/deities/${activeDeity}-bg.png`}
+              alt={activeDeity}
+              fill
+              className="object-cover opacity-60"
+              priority
+              onError={(e) => {
+                // Fallback if image doesn't exist
+                (e.target as any).src = '/images/bhakti-hero.png';
+              }}
+            />
+          </motion.div>
+        </AnimatePresence>
+        
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-[#0C0A07]" />
         
         {/* Navigation Overlays */}
         <div className="absolute top-12 inset-x-6 flex items-center justify-between z-20">
@@ -72,7 +89,7 @@ export default function BhaktiClient({
           </button>
           <div className="text-center">
             <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-amber-400/80">
-              Devotional Sanctuary
+              Sacred Sanctuary
             </span>
           </div>
           <button className="w-11 h-11 rounded-full flex items-center justify-center glass-panel border-white/10">
@@ -80,137 +97,198 @@ export default function BhaktiClient({
           </button>
         </div>
 
+        {/* Deity Selector (The "1 to 5" Divine Portals in Hero) */}
+        <div className="absolute top-32 inset-x-6 z-20 flex justify-center gap-4">
+          {['shiva', 'vishnu', 'devi', 'hanuman', 'ganesha'].map((deity) => (
+            <motion.button
+              key={deity}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => {
+                setActiveDeity(deity);
+                playHaptic('medium');
+              }}
+              className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                activeDeity === deity 
+                  ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20 scale-110' 
+                  : 'glass-panel text-white/40 border-white/5'
+              }`}
+            >
+              <span className="text-xl">{(DEITY_META as any)[deity]?.emoji || '🕉️'}</span>
+            </motion.button>
+          ))}
+        </div>
+
         {/* Hero Content: The Auspicious Pulse */}
         <div className="absolute bottom-12 inset-x-6 z-20 space-y-6">
           <motion.div 
+            key={activeDeity}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-2"
+            className="space-y-1"
           >
-            <h1 className="text-4xl font-bold premium-serif text-white tracking-tight leading-tight">
-              Auspicious <br/>Beginnings
+            <h1 className="text-5xl font-bold premium-serif text-white tracking-tight leading-tight">
+              {activeDeity.charAt(0).toUpperCase() + activeDeity.slice(1)} <br/>
+              <span className="text-amber-400/90 text-4xl">Dhyanam</span>
             </h1>
-            <p className="text-white/60 text-sm font-medium">
+            <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest pt-2">
               Today is Ekadashi · {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
             </p>
           </motion.div>
 
           <div className="flex gap-3">
-            <div className="flex-1 glass-panel border-white/5 p-4 rounded-3xl backdrop-blur-2xl">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-amber-400/60 block mb-1">Amrit Kaal</span>
-              <span className="text-lg font-bold text-white">09:12 — 10:45</span>
+            <div className="flex-1 glass-panel border-white/5 p-5 rounded-[2rem] backdrop-blur-3xl bg-white/5">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[9px] font-bold uppercase tracking-widest text-amber-400/60">Amrit Kaal</span>
+                <Clock size={10} className="text-amber-400/60" />
+              </div>
+              <span className="text-xl font-bold text-white">09:12 — 10:45</span>
             </div>
-            <div className="flex-1 glass-panel border-white/5 p-4 rounded-3xl backdrop-blur-2xl">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-white/40 block mb-1">Brahma Muhurta</span>
-              <span className="text-lg font-bold text-white">04:22 AM</span>
+            <div className="flex-1 glass-panel border-white/5 p-5 rounded-[2rem] backdrop-blur-3xl bg-white/5">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[9px] font-bold uppercase tracking-widest text-white/40">Brahma Muhurta</span>
+                <Sun size={10} className="text-white/40" />
+              </div>
+              <span className="text-xl font-bold text-white">04:22 AM</span>
             </div>
           </div>
         </div>
 
         {/* Animated Background Pulse */}
         <motion.div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] pointer-events-none"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] pointer-events-none opacity-20"
           animate={{ rotate: 360 }}
           transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}
           style={{ 
-            background: 'radial-gradient(circle, rgba(197,160,89,0.03) 0%, transparent 70%)',
+            background: 'conic-gradient(from 0deg, transparent, rgba(197,160,89,0.1), transparent)',
           }}
         />
       </section>
 
       {/* ── Daily Stotram Highlight ─────────────────────────────────────── */}
-      <section className="px-6 mt-8">
+      <section className="px-6 -mt-10 relative z-40">
         <Link href={`/bhakti/stotram/${dailyStotramId}`}>
-          <div className="glass-panel border-white/10 rounded-[2.5rem] p-6 flex items-center gap-5 bg-amber-500/5">
-            <span className="text-4xl">{dailyStotramDeityEmoji}</span>
-            <div className="flex-1">
-              <span className="text-[9px] font-bold text-amber-500/80 uppercase tracking-widest block mb-1">Today&apos;s Sacred Stotram</span>
-              <h4 className="text-white font-bold">{dailyStotramTitle}</h4>
+          <div className="glass-panel border-white/10 rounded-[2.5rem] p-6 flex items-center gap-5 bg-amber-500/10 shadow-2xl backdrop-blur-2xl">
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/20 flex items-center justify-center text-3xl shadow-inner">
+              {dailyStotramDeityEmoji}
             </div>
-            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
-              <Play size={16} className="text-white" />
+            <div className="flex-1">
+              <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest block mb-1">Recommended for You</span>
+              <h4 className="text-white font-bold text-lg">{dailyStotramTitle}</h4>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-black">
+              <Play size={20} fill="currentColor" />
             </div>
           </div>
         </Link>
       </section>
 
       {/* ── 2. Sound Sanctuary (Refined Player) ───────────────────────────── */}
-      <section className="px-6 -mt-8 relative z-30">
-        <div className="clay-card rounded-[2.5rem] bg-[#1A1814] border border-amber-900/20 p-8 shadow-2xl">
+      <section className="px-6 mt-10 relative z-30">
+        <div className="clay-card rounded-[3rem] bg-[#14120F] border border-white/5 p-8 shadow-2xl overflow-hidden relative">
+          {/* Subtle Ambient Background */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 blur-[50px] rounded-full -translate-y-1/2 translate-x-1/2" />
+          
           <div className="flex items-center gap-6">
-            <div className="relative w-20 h-20 rounded-2xl overflow-hidden shadow-lg border border-white/5">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-purple-500/20" />
-              <div className="absolute inset-0 flex items-center justify-center text-3xl">🕉️</div>
+            <div className="relative w-24 h-24 rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+              <Image 
+                src={activeSound.cover || '/images/sound-placeholder.png'} 
+                alt={activeSound.title}
+                fill
+                className="object-cover"
+              />
               {isPlaying && (
-                <div className="absolute inset-x-0 bottom-0 h-1 bg-amber-500 flex gap-0.5 px-1 items-end py-0.5">
-                  {[1, 2, 3, 4].map(i => (
-                    <motion.div 
-                      key={i}
-                      className="flex-1 bg-white"
-                      animate={{ height: ['20%', '100%', '40%', '80%', '20%'] }}
-                      transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.1 }}
-                    />
-                  ))}
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                  <div className="flex gap-1 items-end h-6">
+                    {[1, 2, 3, 4].map(i => (
+                      <motion.div 
+                        key={i}
+                        className="w-1 bg-amber-500 rounded-full"
+                        animate={{ height: ['20%', '100%', '40%', '80%', '20%'] }}
+                        transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.1 }}
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-1 block">Now Playing</span>
-              <h3 className="text-lg font-bold text-white truncate">{activeSound.title}</h3>
-              <p className="text-xs text-white/40 truncate">{activeSound.artist}</p>
+              <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-1 block">Sound Sanctuary</span>
+              <h3 className="text-xl font-bold text-white truncate">{activeSound.title}</h3>
+              <p className="text-sm text-white/40 truncate">{activeSound.artist}</p>
             </div>
             <button 
               onClick={() => {
                 playHaptic('medium');
                 setIsPlaying(!isPlaying);
               }}
-              className="w-14 h-14 rounded-full bg-amber-500 flex items-center justify-center text-black shadow-lg shadow-amber-500/20 active:scale-95 transition"
+              className="w-16 h-16 rounded-full bg-white text-black flex items-center justify-center shadow-xl active:scale-95 transition"
             >
-              {isPlaying ? <VolumeX size={24} /> : <Play size={24} className="ml-1" />}
+              {isPlaying ? <VolumeX size={28} /> : <Play size={28} className="ml-1" fill="currentColor" />}
             </button>
           </div>
 
           <div className="mt-8 flex items-center justify-between border-t border-white/5 pt-6">
-            <div className="flex gap-6">
-              <button className="flex flex-col items-center gap-1 opacity-60 hover:opacity-100 transition">
-                <Music size={18} className="text-white" />
-                <span className="text-[8px] font-bold uppercase text-white">Radio</span>
+            <div className="flex gap-8">
+              <button className="flex flex-col items-center gap-2 group transition">
+                <Music size={20} className="text-white/40 group-hover:text-amber-500 transition" />
+                <span className="text-[9px] font-bold uppercase text-white/30 group-hover:text-white transition">Library</span>
               </button>
-              <button className="flex flex-col items-center gap-1 opacity-60 hover:opacity-100 transition">
-                <Clock size={18} className="text-white" />
-                <span className="text-[8px] font-bold uppercase text-white">Timer</span>
+              <button className="flex flex-col items-center gap-2 group transition">
+                <Clock size={20} className="text-white/40 group-hover:text-amber-500 transition" />
+                <span className="text-[9px] font-bold uppercase text-white/30 group-hover:text-white transition">Timer</span>
+              </button>
+              <button className="flex flex-col items-center gap-2 group transition">
+                <Volume2 size={20} className="text-white/40 group-hover:text-amber-500 transition" />
+                <span className="text-[9px] font-bold uppercase text-white/30 group-hover:text-white transition">Mixer</span>
               </button>
             </div>
-            <Link href="/bhakti/browse" className="text-[10px] font-bold text-amber-500 uppercase tracking-widest border-b border-amber-500/30 pb-0.5">
-              Browse All →
+            <Link href="/bhakti/browse" className="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full text-[10px] font-bold text-amber-500 uppercase tracking-widest transition">
+              Explore →
             </Link>
           </div>
         </div>
       </section>
 
       {/* ── 3. Daily Sadhana Checklist ────────────────────────────────────── */}
-      <section className="px-6 mt-12 space-y-6">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-serif text-white">Daily Sadhana</h3>
-          <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">{checklist.filter(c => c.done).length}/{checklist.length} Complete</span>
+      <section className="px-6 mt-14 space-y-8">
+        <div className="flex items-end justify-between">
+          <div className="space-y-1">
+            <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">Sadhana Tracker</span>
+            <h3 className="text-2xl font-serif text-white">Daily Rituals</h3>
+          </div>
+          <div className="flex flex-col items-end">
+            <span className="text-3xl font-bold text-white">{Math.round((checklist.filter(c => c.done).length / checklist.length) * 100)}%</span>
+            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Progress</span>
+          </div>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-4">
           {checklist.map(item => (
             <button 
               key={item.id}
               onClick={() => toggleCheck(item.id)}
-              className={`w-full flex items-center gap-4 p-5 rounded-[2rem] border transition-all ${item.done ? 'bg-amber-500/10 border-amber-500/30' : 'bg-white/5 border-white/5'}`}
+              className={`w-full flex items-center gap-5 p-6 rounded-[2.5rem] border transition-all duration-500 relative overflow-hidden group ${
+                item.done ? 'bg-amber-500/10 border-amber-500/20 shadow-lg shadow-amber-500/5' : 'bg-white/5 border-white/5 hover:border-white/10'
+              }`}
             >
-              {item.done ? (
-                <CheckCircle2 size={22} className="text-amber-500" />
-              ) : (
-                <Circle size={22} className="text-white/20" />
+              {item.done && (
+                <motion.div 
+                  layoutId={`check-bg-${item.id}`}
+                  className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-transparent pointer-events-none" 
+                />
               )}
-              <span className={`text-sm font-medium ${item.done ? 'text-white' : 'text-white/60'}`}>{item.label}</span>
+              <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${
+                item.done ? 'bg-amber-500 border-amber-500 text-black' : 'border-white/10 text-transparent group-hover:border-white/30'
+              }`}>
+                <CheckCircle2 size={16} />
+              </div>
+              <span className={`text-base font-medium transition-all ${item.done ? 'text-white' : 'text-white/50'}`}>
+                {item.label}
+              </span>
             </button>
           ))}
         </div>
       </section>
+
 
       {/* ── 4. Sacred Verse ──────────────────────────────────────────────── */}
       <section className="px-6 mt-12">
