@@ -15,20 +15,30 @@ export interface DharmVeer {
   name: string;
   nameLocal?: string; // e.g. in Hindi/Gurmukhi/etc.
   era: string;
+  eraLocal?: string;
   tradition: 'hindu' | 'sikh' | 'buddhist' | 'jain';
   region: string;
+  regionLocal?: string;
   emoji: string;
   tagline: string;
   taglineLocal?: string;
   /** 2–3 paragraph account of their life and mission */
   journey: string;
+  journeyLocal?: string;
   /** The defining test, sacrifice, or trial they endured */
   trial: string;
+  trialLocal?: string;
   /** Their core teaching in plain language */
   teaching: string;
+  teachingLocal?: string;
   /** The moral for a modern seeker */
   moral: string;
+  moralLocal?: string;
   quote?: {
+    text: string;
+    attribution: string;
+  };
+  quoteLocal?: {
     text: string;
     attribution: string;
   };
@@ -379,22 +389,34 @@ export const DHARM_VEERS: DharmVeer[] = [
     name: 'Banda Singh Bahadur',
     nameLocal: 'ਬੰਦਾ ਸਿੰਘ ਬਹਾਦਰ',
     era: '1670–1716 CE',
+    eraLocal: '1670–1716 ਈਸਵੀ',
     tradition: 'sikh',
     region: 'Rajouri, Kashmir',
+    regionLocal: 'ਰਾਜੌਰੀ, ਕਸ਼ਮੀਰ',
     emoji: '⚔️',
     tagline: 'A hermit turned warrior who abolished feudal slavery in Punjab — in 1710.',
     taglineLocal: 'ਇੱਕ ਤਪੱਸਵੀ ਤੋਂ ਯੋਧਾ ਬਣੇ, ਜਿਨ੍ਹਾਂ ਨੇ 1710 ਵਿੱਚ ਪੰਜਾਬ ਵਿੱਚ ਜਗੀਰਦਾਰੀ ਗੁਲਾਮੀ ਦਾ ਅੰਤ ਕੀਤਾ।',
     journey:
       'Madho Das was a wandering Hindu ascetic who had spent years in the jungles practicing Shaivite austerities. In 1708, Guru Gobind Singh arrived at his ashram in Nanded. Madho Das woke from sleep and found the Guru sitting on his bed. He tried every sidhi he possessed to move him. Nothing worked. He walked to the Guru and said: I am your banda — your slave. Guru Gobind Singh made him Banda Singh Bahadur and gave him five arrows from his own quiver.\n\nBanda marched to Punjab with a small force. Within two years he had dismantled the Mughal and Afghan feudal structure of the entire region. At the Battle of Chappar Chiri in 1710, he defeated Wazir Khan — the governor who had ordered the murder of Guru Gobind Singh\'s two younger sons, bricked alive in a wall. More remarkably, he issued orders abolishing the zamindari system: for the first time in Punjab\'s recorded history, the farmers who tilled the land owned it. This was 1710.',
+    journeyLocal:
+      'ਮਾਧੋ ਦਾਸ ਇੱਕ ਭਟਕਦਾ ਤਪੱਸਵੀ ਸੀ ਜਿਸਨੇ ਜੰਗਲਾਂ ਵਿੱਚ ਕਈ ਸਾਲ ਤਪੱਸਿਆ ਕੀਤੀ ਸੀ। 1708 ਵਿੱਚ, ਨਾਂਦੇੜ ਵਿਖੇ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਨੇ ਉਸਨੂੰ "ਬੰਦਾ ਸਿੰਘ ਬਹਾਦਰ" ਬਣਾਇਆ। ਉਸਨੇ ਪੰਜਾਬ ਵਿੱਚ ਜਗੀਰਦਾਰੀ ਪ੍ਰਥਾ ਨੂੰ ਖਤਮ ਕੀਤਾ ਅਤੇ ਕਿਸਾਨਾਂ ਨੂੰ ਜ਼ਮੀਨ ਦੇ ਮਾਲਕ ਬਣਾਇਆ। 1710 ਵਿੱਚ ਚੱਪੜਚਿੜੀ ਦੀ ਜੰਗ ਵਿੱਚ ਉਸਨੇ ਵਜ਼ੀਰ ਖਾਨ ਨੂੰ ਹਰਾ ਕੇ ਗੁਰੂ ਜੀ ਦੇ ਛੋਟੇ ਸਾਹਿਬਜ਼ਾਦਿਆਂ ਦੀ ਸ਼ਹਾਦਤ ਦਾ ਬਦਲਾ ਲਿਆ।',
     trial:
       'Banda was captured in 1716 after a prolonged siege. The Mughal emperor Farrukhsiyar had him paraded through Delhi in an iron cage. He was given a choice: convert to Islam and live. He refused. Over the following days, his infant son was placed in his lap and executed with a sword, his heart placed in Banda\'s mouth. Then 700 of his Sikhs were beheaded before him. Then, finally, his own eyes were torn out, his limbs cut off one by one. He did not recant.',
+    trialLocal:
+      '1716 ਵਿੱਚ ਬੰਦਾ ਸਿੰਘ ਬਹਾਦਰ ਨੂੰ ਗ੍ਰਿਫਤਾਰ ਕਰ ਲਿਆ ਗਿਆ। ਦਿੱਲੀ ਵਿੱਚ ਉਨ੍ਹਾਂ ਦੇ ਸਾਹਮਣੇ ਉਨ੍ਹਾਂ ਦੇ ਛੋਟੇ ਬੇਟੇ ਦਾ ਕਤਲ ਕਰ ਦਿੱਤਾ ਗਿਆ ਅਤੇ ਉਨ੍ਹਾਂ ਦੀਆਂ ਅੱਖਾਂ ਕੱਢ ਦਿੱਤੀਆਂ ਗਈਆਂ। ਉਨ੍ਹਾਂ ਦਾ ਅੰਗ-ਅੰਗ ਕੱਟ ਦਿੱਤਾ ਗਿਆ, ਪਰ ਉਨ੍ਹਾਂ ਨੇ ਧਰਮ ਨਹੀਂ ਛੱਡਿਆ।',
     teaching:
       'Dharma is not just personal liberation. It is justice — for the farmer, for the laborer, for the person who has no power. The Guru\'s arrow points outward as much as inward.',
+    teachingLocal: 'ਧਰਮ ਸਿਰਫ਼ ਨਿੱਜੀ ਮੁਕਤੀ ਨਹੀਂ ਹੈ, ਇਹ ਇਨਸਾਫ਼ ਹੈ — ਕਿਸਾਨ ਲਈ, ਮਜ਼ਦੂਰ ਲਈ ਅਤੇ ਉਸ ਲਈ ਜਿਸ ਕੋਲ ਕੋਈ ਸ਼ਕਤੀ ਨਹੀਂ ਹੈ।',
     moral:
       'A hermit became the first person to abolish serfdom in South Asia because he finally turned his spiritual power into service. Practice that stays private eventually turns inward and stagnates.',
+    moralLocal: 'ਇੱਕ ਤਪੱਸਵੀ ਦੱਖਣੀ ਏਸ਼ੀਆ ਵਿੱਚ ਗੁਲਾਮੀ ਨੂੰ ਖਤਮ ਕਰਨ ਵਾਲਾ ਪਹਿਲਾ ਵਿਅਕਤੀ ਬਣਿਆ ਕਿਉਂਕਿ ਉਸਨੇ ਆਪਣੀ ਅਧਿਆਤਮਿਕ ਸ਼ਕਤੀ ਨੂੰ ਸੇਵਾ ਵਿੱਚ ਬਦਲ ਦਿੱਤਾ।',
     quote: {
       text: 'I have received the five arrows of the Guru. With them I fear neither man nor devil.',
       attribution: 'Banda Singh Bahadur',
+    },
+    quoteLocal: {
+      text: 'ਮੈਨੂੰ ਗੁਰੂ ਦੇ ਪੰਜ ਤੀਰ ਮਿਲੇ ਹਨ। ਉਨ੍ਹਾਂ ਨਾਲ ਮੈਨੂੰ ਨਾ ਕਿਸੇ ਮਨੁੱਖ ਦਾ ਡਰ ਹੈ ਅਤੇ ਨਾ ਹੀ ਕਿਸੇ ਸ਼ੈਤਾਨ ਦਾ।',
+      attribution: 'ਬੰਦਾ ਸਿੰਘ ਬਹਾਦਰ',
     },
   },
 
@@ -404,22 +426,34 @@ export const DHARM_VEERS: DharmVeer[] = [
     name: 'Mata Bhag Kaur',
     nameLocal: 'ਮਾਤਾ ਭਾਗ ਕੌਰ',
     era: '1670–1740s CE',
+    eraLocal: '1670–1740 ਈਸਵੀ',
     tradition: 'sikh',
     region: 'Jhabal Kalan, Punjab',
+    regionLocal: 'ਝਬਾਲ ਕਲਾਂ, ਪੰਜਾਬ',
     emoji: '🌊',
     tagline: 'When 40 Sikhs deserted the Guru, she shamed them home — and led them into battle herself.',
     taglineLocal: 'ਜਦੋਂ 40 ਸਿੱਖਾਂ ਨੇ ਗੁਰੂ ਦਾ ਸਾਥ ਛੱਡ ਦਿੱਤਾ, ਤਾਂ ਉਨ੍ਹਾਂ ਨੇ ਉਨ੍ਹਾਂ ਨੂੰ ਵਾਪਸ ਜਾਣ ਲਈ ਪ੍ਰੇਰਿਤ ਕੀਤਾ ਅਤੇ ਖੁਦ ਲੜਾਈ ਦੀ ਅਗਵਾਈ ਕੀਤੀ।',
     journey:
       'In 1704, the Mughal siege of Anandpur was so brutal that forty Sikhs, starving and exhausted, signed a "bedawa" — a letter disowning Guru Gobind Singh, releasing him from any obligation to them and themselves from any obligation to him — and went home to their villages. Bhag Kaur, a woman from Jhabal Kalan, heard them returning. She confronted them in the street: you call yourselves Singhs — lions — and you signed a paper saying your Guru is not your Guru? You think God will accept you in your homes while your Guru fights alone?\n\nShe dressed in the clothes of a Sikh warrior, picked up a sword, and announced she was going back to the Guru. One by one, the forty Sikhs followed her. They caught up with Guru Gobind Singh at Khidrana — a dried lake bed. The Mughals arrived at the same time. The forty Sikhs fought alongside Guru Gobind Singh in what became known as the Battle of Muktsar. All forty were killed. Guru Gobind Singh walked the battlefield after and tore up their bedawa in front of their bodies, calling them the forty muktas — the forty liberated ones.',
+    journeyLocal:
+      '1704 ਵਿੱਚ, ਅਨੰਦਪੁਰ ਦੀ ਘੇਰਾਬੰਦੀ ਇੰਨੀ ਭਿਆਨਕ ਸੀ ਕਿ ਚਾਲੀ ਸਿੱਖਾਂ ਨੇ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਨੂੰ "ਬੇਦਾਵਾ" ਲਿਖ ਕੇ ਦੇ ਦਿੱਤਾ ਅਤੇ ਆਪਣੇ ਪਿੰਡਾਂ ਨੂੰ ਵਾਪਸ ਚਲੇ ਗਏ। ਝਬਾਲ ਕਲਾਂ ਦੀ ਮਾਈ ਭਾਗੋ ਨੇ ਜਦੋਂ ਇਹ ਸੁਣਿਆ ਤਾਂ ਉਨ੍ਹਾਂ ਨੇ ਉਨ੍ਹਾਂ ਨੂੰ ਲਲਕਾਰਿਆ: ਤੁਸੀਂ ਆਪਣੇ ਆਪ ਨੂੰ ਸਿੰਘ ਕਹਿੰਦੇ ਹੋ? ਕੀ ਤੁਹਾਨੂੰ ਲੱਗਦਾ ਹੈ ਕਿ ਜਦੋਂ ਤੁਹਾਡਾ ਗੁਰੂ ਇਕੱਲਾ ਲੜ ਰਿਹਾ ਹੈ, ਤਾਂ ਰੱਬ ਤੁਹਾਨੂੰ ਸਵੀਕਾਰ ਕਰੇਗਾ?\n\nਉਸਨੇ ਯੋਧੇ ਦੇ ਕੱਪੜੇ ਪਾਏ, ਤਲਵਾਰ ਚੁੱਕੀ ਅਤੇ ਵਾਪਸ ਜਾਣ ਦਾ ਐਲਾਨ ਕੀਤਾ। ਇੱਕ-ਇੱਕ ਕਰਕੇ, ਚਾਲੀ ਸਿੱਖ ਉਸਦੇ ਪਿੱਛੇ ਚੱਲ ਪਏ। ਉਨ੍ਹਾਂ ਨੇ ਮੁਕਤਸਰ ਦੀ ਜੰਗ ਵਿੱਚ ਗੁਰੂ ਜੀ ਦਾ ਸਾਥ ਦਿੱਤਾ। ਸਾਰੇ ਚਾਲੀ ਸ਼ਹੀਦ ਹੋ ਗਏ ਅਤੇ ਗੁਰੂ ਜੀ ਨੇ ਉਨ੍ਹਾਂ ਦਾ ਬੇਦਾਵਾ ਪਾੜ ਕੇ ਉਨ੍ਹਾਂ ਨੂੰ "ਚਾਲੀ ਮੁਕਤੇ" ਕਹਿ ਕੇ ਨਿਵਾਜਿਆ।',
     trial:
       'Bhag Kaur survived the battle and lived for decades afterward. She spent her later years in meditation and service. But her moment of trial was not the battle — it was the confrontation in the village, armed with nothing but righteous fury, facing men who had chosen to go home. The courage to tell the truth to people who do not want to hear it is its own form of battle.',
+    trialLocal:
+      'ਮਾਈ ਭਾਗੋ ਜੰਗ ਵਿੱਚ ਬਚ ਗਈ ਪਰ ਉਸਦਾ ਅਸਲ ਇਮਤਿਹਾਨ ਜੰਗ ਦਾ ਮੈਦਾਨ ਨਹੀਂ ਸੀ — ਬਲਕਿ ਪਿੰਡ ਵਿੱਚ ਉਨ੍ਹਾਂ ਮਰਦਾਂ ਦਾ ਸਾਹਮਣਾ ਕਰਨਾ ਸੀ ਜੋ ਘਰ ਚਲੇ ਗਏ ਸਨ। ਉਨ੍ਹਾਂ ਲੋਕਾਂ ਨੂੰ ਸੱਚ ਬੋਲਣ ਦੀ ਹਿੰਮਤ ਰੱਖਣੀ ਜੋ ਸੱਚ ਨਹੀਂ ਸੁਣਨਾ ਚਾਹੁੰਦੇ, ਆਪਣੇ ਆਪ ਵਿੱਚ ਇੱਕ ਵੱਡੀ ਜੰਗ ਹੈ।',
     teaching:
       'Liberation is not earned through safety. It is earned through showing up when it costs something to show up.',
+    teachingLocal: 'ਮੁਕਤੀ ਸੁਰੱਖਿਆ ਨਾਲ ਨਹੀਂ ਮਿਲਦੀ। ਇਹ ਉਦੋਂ ਮਿਲਦੀ ਹੈ ਜਦੋਂ ਤੁਸੀਂ ਹਾਜ਼ਰ ਹੁੰਦੇ ਹੋ ਭਾਵੇਂ ਇਸਦੀ ਕੋਈ ਵੀ ਕੀਮਤ ਹੋਵੇ।',
     moral:
       'One woman with moral clarity turned forty deserters into forty martyrs. You do not need an army. You need to be willing to say the true thing out loud.',
+    moralLocal: 'ਇੱਕ ਔਰਤ ਦੀ ਨੈਤਿਕ ਸਪੱਸ਼ਟਤਾ ਨੇ ਚਾਲੀ ਭਗੌੜਿਆਂ ਨੂੰ ਚਾਲੀ ਮੁਕਤਿਆਂ ਵਿੱਚ ਬਦਲ ਦਿੱਤਾ। ਤੁਹਾਨੂੰ ਫੌਜ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ, ਤੁਹਾਨੂੰ ਸਿਰਫ ਸੱਚ ਬੋਲਣ ਦੀ ਇੱਛਾ ਚਾਹੀਦੀ ਹੈ।',
     quote: {
       text: 'You have given up the Guru. If you will not go back, then I will go and die in your place.',
       attribution: 'Mata Bhag Kaur, traditional account',
+    },
+    quoteLocal: {
+      text: 'ਤੁਸੀਂ ਗੁਰੂ ਦਾ ਸਾਥ ਛੱਡ ਦਿੱਤਾ ਹੈ। ਜੇ ਤੁਸੀਂ ਵਾਪਸ ਨਹੀਂ ਜਾਓਗੇ, ਤਾਂ ਮੈਂ ਜਾਵਾਂਗੀ ਅਤੇ ਤੁਹਾਡੀ ਜਗ੍ਹਾ ਸ਼ਹੀਦ ਹੋਵਾਂਗੀ।',
+      attribution: 'ਮਾਤਾ ਭਾਗ ਕੌਰ',
     },
   },
 

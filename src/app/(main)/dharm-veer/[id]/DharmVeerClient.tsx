@@ -177,7 +177,7 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
               {lang === 'local' && hero.nameLocal ? hero.nameLocal : hero.name}
             </h1>
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-[var(--brand-primary)]">
-              {hero.era} · {hero.region}
+              {lang === 'local' && hero.eraLocal ? hero.eraLocal : hero.era} · {lang === 'local' && hero.regionLocal ? hero.regionLocal : hero.region}
             </p>
           </div>
 
@@ -194,7 +194,7 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
               <Book size={14} /> The Journey
             </div>
             <p className={`${fontStyles[fontSize]} whitespace-pre-wrap`}>
-              {hero.journey}
+              {lang === 'local' && hero.journeyLocal ? hero.journeyLocal : hero.journey}
             </p>
           </div>
 
@@ -204,7 +204,7 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
               <Shield size={14} /> The Test of Dharma
             </div>
             <p className={`${fontStyles[fontSize]} font-medium italic`}>
-              {hero.trial}
+              {lang === 'local' && hero.trialLocal ? hero.trialLocal : hero.trial}
             </p>
           </div>
 
@@ -214,7 +214,7 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
               <Lightbulb size={14} /> Wisdom
             </div>
             <p className={`${fontStyles[fontSize]}`}>
-              {hero.teaching}
+              {lang === 'local' && hero.teachingLocal ? hero.teachingLocal : hero.teaching}
             </p>
           </div>
 
@@ -223,10 +223,10 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
             <div className="py-8 border-y border-white/5 text-center space-y-4">
               <Quote size={32} className="mx-auto opacity-20 text-[var(--brand-primary)]" />
               <p className="text-xl font-bold premium-serif italic px-6">
-                {hero.quote.text}
+                {lang === 'local' && hero.quoteLocal ? hero.quoteLocal.text : hero.quote.text}
               </p>
               <p className="text-[10px] uppercase font-bold tracking-widest opacity-60">
-                — {hero.quote.attribution}
+                — {lang === 'local' && hero.quoteLocal ? hero.quoteLocal.attribution : hero.quote.attribution}
               </p>
             </div>
           )}
@@ -235,7 +235,7 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
           <div className="text-center pt-8">
             <p className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-40 mb-4">Essence</p>
             <p className="text-lg font-bold leading-relaxed max-w-sm mx-auto">
-              {hero.moral}
+              {lang === 'local' && hero.moralLocal ? hero.moralLocal : hero.moral}
             </p>
           </div>
         </section>
