@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sanatan Sangam — Launching June 17, 2026</title>
-<meta name="description" content="One eternal dharma, one global sangam. Hindu · Sikh · Buddhist · Jain. Launching June 17, 2026.">
-<meta property="og:title" content="Sanatan Sangam — Launching June 17, 2026">
-<meta property="og:description" content="One eternal dharma, one global sangam. Join 12,000+ on the founding waitlist.">
+<title>Sanatan Sangam — One Dharma, One Sangam</title>
+<meta name="description" content="One eternal dharma, one global sangam. Hindu · Sikh · Buddhist · Jain — united in practice, wisdom, and community.">
+<meta property="og:title" content="Sanatan Sangam — One Dharma, One Sangam">
+<meta property="og:description" content="One eternal dharma, one global sangam. Join the founding members of Hindu, Sikh, Buddhist &amp; Jain wisdom in one living community.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Inter:wght@300;400;500;600&family=Noto+Serif+Devanagari:wght@400;600&family=Noto+Sans+Gurmukhi:wght@400;600&display=swap" rel="stylesheet">
@@ -36,6 +36,7 @@
   --c-sikh:     #1B5E8B; --c-sikh-bg:     rgba(27,94,139,0.10);
   --c-buddhist: #8B2D3E; --c-buddhist-bg: rgba(139,45,62,0.10);
   --c-jain:     #2A6B4A; --c-jain-bg:     rgba(42,107,74,0.10);
+  --peacock:    #1A7B82; /* teal-blue community accent */
 }
 
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
@@ -99,8 +100,37 @@ nav {
 .scd-lbl  { font-size:10px;color:rgba(255,254,248,0.30);letter-spacing:0.12em;text-transform:uppercase; }
 .scd-sep  { font-family:var(--fd);font-size:clamp(20px,3vw,36px);font-weight:100;color:rgba(216,138,28,0.40);margin-top:4px; }
 #splash-sub { font-size:clamp(11px,1.6vw,14px);color:rgba(255,254,248,0.30);letter-spacing:0.12em;margin-bottom:4px;font-weight:300;text-transform:uppercase; }
-#explore-btn { position:absolute;bottom:48px;left:50%;transform:translateX(-50%); background:transparent;border:1px solid rgba(216,138,28,0.38);color:rgba(216,138,28,0.80);font-family:var(--fb);font-size:12px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;padding:13px 40px;border-radius:100px;cursor:pointer;animation:pulseGlow 3s ease-in-out infinite;transition:all 0.25s;white-space:nowrap; }
+#explore-btn { position:absolute;bottom:36px;left:50%;transform:translateX(-50%); background:transparent;border:1px solid rgba(216,138,28,0.38);color:rgba(216,138,28,0.80);font-family:var(--fb);font-size:12px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;padding:13px 40px;border-radius:100px;cursor:pointer;animation:pulseGlow 3s ease-in-out infinite;transition:all 0.25s;white-space:nowrap; }
 #explore-btn:hover { background:rgba(216,138,28,0.10);border-color:rgba(216,138,28,0.70);color:#E8A030; }
+
+/* ── Splash Join Form ──────────────────────────────────────────────────── */
+#splash-join { margin-top:28px; width:100%; max-width:460px; }
+#sj-form { display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center; }
+#sj-email { flex:1;min-width:200px;background:rgba(255,254,248,0.07);border:1px solid rgba(216,138,28,0.35);border-radius:100px;padding:12px 20px;color:#FAF6EF;font-size:14px;font-family:var(--fb);outline:none;transition:border-color 0.25s; }
+#sj-email::placeholder { color:rgba(255,254,248,0.32); }
+#sj-email:focus { border-color:rgba(216,138,28,0.65); }
+#sj-submit { background:var(--saffron);color:#1C0F06;border:none;border-radius:100px;padding:12px 24px;font-family:var(--fb);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:opacity 0.2s;letter-spacing:0.02em; }
+#sj-submit:hover { opacity:0.88; }
+#sj-note { font-size:11px;color:rgba(255,254,248,0.30);margin-top:10px;letter-spacing:0.03em; }
+/* Stage 2 — tradition pills */
+#sj-trad-wrap { animation:tradIn 0.4s ease; }
+#sj-trad-prompt { font-size:13px;color:rgba(255,254,248,0.60);margin-bottom:12px;letter-spacing:0.04em; }
+#sj-trad-grid { display:flex;gap:8px;flex-wrap:wrap;justify-content:center; }
+.sj-trad-btn { background:rgba(255,254,248,0.06);border:1px solid rgba(255,254,248,0.14);color:rgba(255,254,248,0.75);border-radius:100px;padding:9px 20px;font-size:13px;font-family:var(--fb);cursor:pointer;transition:all 0.22s;letter-spacing:0.03em; }
+.sj-trad-btn span { font-size:15px;margin-right:5px; }
+.sj-trad-btn:hover { background:rgba(216,138,28,0.14);border-color:rgba(216,138,28,0.45);color:#FAF6EF; }
+/* Stage 3 — founding number badge */
+#sj-reveal { animation:tradIn 0.5s ease; }
+#sj-badge { background:rgba(216,138,28,0.10);border:1px solid rgba(216,138,28,0.30);border-radius:16px;padding:24px 32px;margin-bottom:16px;text-align:center; }
+#sj-badge-label { font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,254,248,0.42);margin-bottom:8px; }
+#sj-badge-num { font-family:var(--fd);font-size:52px;font-weight:700;color:#D88A1C;line-height:1; }
+#sj-badge-sub { font-size:12px;color:rgba(255,254,248,0.52);margin-top:8px;font-style:italic; }
+#sj-share-row { display:flex;gap:8px;flex-wrap:wrap;justify-content:center; }
+.sj-share-btn { border:1px solid rgba(255,254,248,0.16);background:rgba(255,254,248,0.06);color:rgba(255,254,248,0.75);border-radius:100px;padding:9px 18px;font-size:12px;font-family:var(--fb);cursor:pointer;transition:all 0.2s;letter-spacing:0.02em; }
+.sj-share-btn:hover { background:rgba(255,254,248,0.12);color:#FAF6EF; }
+.sj-share-wa:hover  { border-color:rgba(37,211,102,0.45);color:#25d366; }
+.sj-share-tw:hover  { border-color:rgba(100,200,255,0.40);color:rgba(100,200,255,0.9); }
+.sj-share-copy:hover { border-color:rgba(216,138,28,0.45);color:var(--saffron); }
 @keyframes pulseGlow { 0%,100%{box-shadow:0 0 0 0 rgba(216,138,28,0)} 50%{box-shadow:0 0 24px rgba(216,138,28,0.10)} }
 #main-page { min-height:100vh; }
 
@@ -198,14 +228,53 @@ nav {
 
 /* ── TRADITION TABS ──────────────────────────────────────────────────── */
 .traditions-section { padding:100px 80px; }
-.trad-tabs-bar { display:flex; gap:6px; margin:0 auto 56px; background:rgba(255,253,249,0.96); border:1px solid rgba(200,160,110,0.22); border-radius:100px; padding:5px; width:fit-content; }
-.trad-tab { padding:10px 36px; border-radius:100px; border:none; background:transparent; color:rgba(62,42,31,0.55); font-family:var(--fb); font-size:14px; font-weight:500; cursor:pointer; transition:all 0.3s ease; letter-spacing:0.02em; white-space:nowrap; }
-.trad-tab:hover:not(.active) { color:rgba(62,42,31,0.78); }
-.trad-tab.active { font-weight:600; }
-.trad-tab[data-trad="hindu"].active    { background:var(--saffron); color:var(--ink); }
-.trad-tab[data-trad="sikh"].active     { background:#1B5E8B; color:#fff; }
-.trad-tab[data-trad="buddhist"].active { background:#7B2D3E; color:#fff; }
-.trad-tab[data-trad="jain"].active     { background:#2A5C45; color:#fff; }
+/* wrap holds both the bar and the progress line */
+.trad-tabs-wrap { position:relative; width:fit-content; margin:0 auto 56px; }
+/* glassmorphic bar */
+.trad-tabs-bar {
+  position:relative; display:flex; gap:0;
+  background:rgba(250,246,239,0.50);
+  backdrop-filter:blur(28px) saturate(1.7);
+  -webkit-backdrop-filter:blur(28px) saturate(1.7);
+  border:1px solid rgba(200,160,110,0.28);
+  border-radius:100px; padding:5px;
+  box-shadow:0 8px 32px rgba(100,60,20,0.08), inset 0 1px 0 rgba(255,255,255,0.72);
+}
+/* sliding pill — the actual indicator */
+#trad-indicator {
+  position:absolute; top:5px; left:0;
+  height:calc(100% - 10px);
+  border-radius:100px;
+  background:var(--saffron);
+  box-shadow:0 2px 14px rgba(216,138,28,0.38);
+  pointer-events:none;
+  will-change:transform,width;
+  transition:transform 0.44s cubic-bezier(0.34,1.45,0.64,1),
+             width 0.44s cubic-bezier(0.34,1.45,0.64,1),
+             background 0.32s ease,
+             box-shadow 0.32s ease;
+}
+/* tabs sit above the indicator via z-index */
+.trad-tab {
+  position:relative; z-index:1;
+  padding:10px 36px; border-radius:100px; border:none; background:transparent;
+  color:rgba(62,42,31,0.48); font-family:var(--fb); font-size:14px; font-weight:500;
+  cursor:pointer; transition:color 0.28s ease; letter-spacing:0.02em; white-space:nowrap;
+}
+.trad-tab:hover:not(.active) { color:rgba(62,42,31,0.82); }
+.trad-tab.active { color:var(--ink); font-weight:600; }
+/* progress line — animates under the bar showing time to next auto-switch */
+#trad-progress {
+  position:absolute; bottom:-7px; left:0; right:0;
+  height:2px; border-radius:2px;
+  background:rgba(200,155,100,0.18);
+  overflow:hidden;
+}
+#trad-progress-fill {
+  height:100%; width:0%; border-radius:2px;
+  background:var(--saffron);
+  transition:background 0.32s ease;
+}
 
 .trad-panels { min-height:420px; }
 .trad-panel { display:none; grid-template-columns:1fr 1.3fr; gap:80px; align-items:center; }
@@ -261,13 +330,89 @@ nav {
 #panel-jain   .trad-feat        { background:var(--c-jain-bg); border-color:rgba(106,185,154,0.3); color:var(--c-jain); }
 
 /* ── SHLOKA ──────────────────────────────────────────────────────────── */
-.shloka-card { background:rgba(255,253,249,0.96); border:1px solid rgba(216,138,28,0.12); border-radius:24px; padding:56px 64px; position:relative; overflow:hidden; max-width:820px; margin:0 auto; text-align:center; }
-.shloka-card::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 80% 80% at 50% 0%, rgba(200,160,110,0.18), transparent 65%); pointer-events:none; }
-.shloka-day { font-size:11px; font-weight:500; letter-spacing:0.2em; text-transform:uppercase; color:rgba(62,42,31,0.45); margin-bottom:32px; }
-.shloka-sanskrit { font-family:var(--fh); font-size:24px; line-height:1.8; color:var(--saffron); margin-bottom:28px; letter-spacing:0.04em; }
-.shloka-divider { width:40px; height:1px; background:rgba(216,138,28,0.28); margin:0 auto 28px; }
+.shloka-card {
+  background:rgba(255,253,249,0.96); border:1px solid rgba(216,138,28,0.12);
+  border-radius:24px; padding:56px 64px; position:relative; overflow:hidden;
+  max-width:820px; margin:0 auto; text-align:center;
+  box-shadow:0 12px 48px rgba(100,60,20,0.07);
+}
+.shloka-card::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 80% 80% at 50% 0%, rgba(200,160,110,0.14), transparent 65%); pointer-events:none; }
+/* coloured top-bar accent, slides per tradition */
+.shloka-card::after { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:0; transition:background 0.42s ease; }
+.shlok-panel[data-t="hindu"]    .shloka-card::after { background:linear-gradient(90deg, var(--c-hindu), rgba(216,138,28,0)); }
+.shlok-panel[data-t="sikh"]     .shloka-card::after { background:linear-gradient(90deg, var(--c-sikh), rgba(27,94,139,0)); }
+.shlok-panel[data-t="buddhist"] .shloka-card::after { background:linear-gradient(90deg, var(--c-buddhist), rgba(123,45,62,0)); }
+.shlok-panel[data-t="jain"]     .shloka-card::after { background:linear-gradient(90deg, var(--c-jain), rgba(42,107,74,0)); }
+
+.shloka-trad-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:11px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase;
+  padding:5px 16px; border-radius:100px; margin-bottom:28px;
+  transition:background 0.32s ease, color 0.32s ease;
+}
+.shlok-panel[data-t="hindu"]    .shloka-trad-badge { background:rgba(216,138,28,0.12); color:var(--c-hindu); }
+.shlok-panel[data-t="sikh"]     .shloka-trad-badge { background:rgba(27,94,139,0.12);  color:var(--c-sikh); }
+.shlok-panel[data-t="buddhist"] .shloka-trad-badge { background:rgba(123,45,62,0.12);  color:var(--c-buddhist); }
+.shlok-panel[data-t="jain"]     .shloka-trad-badge { background:rgba(42,107,74,0.12);  color:var(--c-jain); }
+.shloka-trad-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+
+.shloka-day { font-size:11px; font-weight:500; letter-spacing:0.2em; text-transform:uppercase; color:rgba(62,42,31,0.40); margin-bottom:32px; }
+.shloka-sanskrit {
+  font-family:var(--fh); font-size:24px; line-height:1.8;
+  margin-bottom:28px; letter-spacing:0.04em;
+  transition:color 0.4s ease;
+}
+.shlok-panel[data-t="hindu"]    .shloka-sanskrit { color:var(--c-hindu); }
+.shlok-panel[data-t="sikh"]     .shloka-sanskrit { color:var(--c-sikh);     font-family:var(--fg); font-size:21px; }
+.shlok-panel[data-t="buddhist"] .shloka-sanskrit { color:var(--c-buddhist); font-family:'Noto Serif',Georgia,serif; font-style:italic; }
+.shlok-panel[data-t="jain"]     .shloka-sanskrit { color:var(--c-jain); }
+
+.shloka-divider { width:40px; height:1px; margin:0 auto 28px; transition:background 0.4s ease; }
+.shlok-panel[data-t="hindu"]    .shloka-divider { background:rgba(216,138,28,0.35); }
+.shlok-panel[data-t="sikh"]     .shloka-divider { background:rgba(27,94,139,0.35); }
+.shlok-panel[data-t="buddhist"] .shloka-divider { background:rgba(123,45,62,0.35); }
+.shlok-panel[data-t="jain"]     .shloka-divider { background:rgba(42,107,74,0.35); }
+
 .shloka-english { font-family:var(--fd); font-size:26px; font-style:italic; font-weight:300; line-height:1.55; color:rgba(62,42,31,0.88); margin-bottom:24px; }
 .shloka-source { font-size:12px; color:rgba(62,42,31,0.45); letter-spacing:0.1em; }
+
+/* ── SHLOKA TABS ─────────────────────────────────────────────────────── */
+.shlok-tabs-wrap { position:relative; width:fit-content; margin:0 auto 44px; }
+.shlok-tabs-bar {
+  position:relative; display:flex; gap:0;
+  background:rgba(250,246,239,0.50);
+  backdrop-filter:blur(28px) saturate(1.7);
+  -webkit-backdrop-filter:blur(28px) saturate(1.7);
+  border:1px solid rgba(200,160,110,0.28);
+  border-radius:100px; padding:5px;
+  box-shadow:0 8px 32px rgba(100,60,20,0.08), inset 0 1px 0 rgba(255,255,255,0.72);
+}
+#shlok-indicator {
+  position:absolute; top:5px; left:0;
+  height:calc(100% - 10px); border-radius:100px;
+  background:var(--saffron);
+  box-shadow:0 2px 14px rgba(216,138,28,0.38);
+  pointer-events:none; will-change:transform,width;
+  transition:transform 0.44s cubic-bezier(0.34,1.45,0.64,1),
+             width 0.44s cubic-bezier(0.34,1.45,0.64,1),
+             background 0.32s ease, box-shadow 0.32s ease;
+}
+.shlok-tab {
+  position:relative; z-index:1;
+  padding:10px 30px; border-radius:100px; border:none; background:transparent;
+  color:rgba(62,42,31,0.48); font-family:var(--fb); font-size:14px; font-weight:500;
+  cursor:pointer; transition:color 0.28s ease; letter-spacing:0.02em; white-space:nowrap;
+}
+.shlok-tab:hover:not(.active) { color:rgba(62,42,31,0.82); }
+.shlok-tab.active { color:var(--ink); font-weight:600; }
+#shlok-progress {
+  position:absolute; bottom:-7px; left:0; right:0;
+  height:2px; border-radius:2px;
+  background:rgba(200,155,100,0.18); overflow:hidden;
+}
+#shlok-progress-fill { height:100%; width:0%; border-radius:2px; background:var(--saffron); transition:background 0.32s ease; }
+.shlok-panel { display:none; }
+.shlok-panel.active { display:block; animation:tradIn 0.45s ease forwards; }
 
 /* ── FESTIVALS ───────────────────────────────────────────────────────── */
 .festivals-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
@@ -321,13 +466,19 @@ nav {
 
 /* ── FEATURES ────────────────────────────────────────────────────────── */
 .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:rgba(200,160,110,0.15); border:1px solid rgba(200,160,110,0.25); border-radius:24px; overflow:hidden; }
-.feature-card { padding:40px 36px; background:var(--warm-white); transition:background 0.25s; }
-.feature-card:hover { background:#FAF6EF; }
+.feature-card { padding:36px 32px; background:var(--warm-white); transition:background 0.25s, transform 0.22s; }
+.feature-card:hover { background:#FAF6EF; transform:translateY(-2px); }
+.feature-card-link { text-decoration:none; color:inherit; display:block; }
 .feature-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:20px; }
+.fi-ja { background:rgba(155,111,181,0.10); }
+.fi-ai { background:rgba(91,143,185,0.10); }
+.fi-kl { background:rgba(122,81,38,0.10); }
+.fi-vs { background:rgba(107,142,90,0.10); }
 .fi-s{background:rgba(200,160,110,0.24)} .fi-k{background:rgba(212,120,74,0.15)} .fi-p{background:rgba(157,122,80,0.15)} .fi-l{background:rgba(212,130,122,0.15)} .fi-g{background:rgba(200,160,110,0.18)} .fi-w{background:rgba(62,42,31,0.06)}
 .feature-name { font-family:var(--fd); font-size:22px; font-weight:600; color:var(--ink); margin-bottom:10px; line-height:1.2; }
 .feature-desc { font-size:13px; color:rgba(62,42,31,0.58); line-height:1.65; }
 .feature-coming { display:inline-block; margin-top:14px; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:4px 10px; border-radius:100px; background:rgba(200,160,110,0.24); color:var(--saffron); border:1px solid rgba(200,146,74,0.2); }
+.feature-live   { display:inline-block; margin-top:14px; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:4px 10px; border-radius:100px; background:rgba(42,107,74,0.12); color:var(--c-jain); border:1px solid rgba(42,107,74,0.25); }
 
 /* ── APP DOWNLOAD ────────────────────────────────────────────────────── */
 .download-section { padding:100px 80px; text-align:center; position:relative; overflow:hidden; }
@@ -499,6 +650,41 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
       <div class="scd-unit"><span class="scd-num" id="scd-s">--</span><span class="scd-lbl">Sec</span></div>
     </div>
     <p id="splash-verse">सर्वे भवन्तु सुखिनः · सर्वे सन्तु निरामयाः</p>
+
+    <!-- ── Founding Member Join ─────────────────────────────────────── -->
+    <div id="splash-join">
+      <!-- Stage 1: email -->
+      <div id="sj-email-wrap">
+        <form id="sj-form" onsubmit="splashJoin(event)">
+          <input id="sj-email" type="email" placeholder="your@email.com" required autocomplete="email">
+          <button type="submit" id="sj-submit">Join as Sthapaka</button>
+        </form>
+        <p id="sj-note">Be among the founding 1,000. No spam, ever. 🙏</p>
+      </div>
+      <!-- Stage 2: tradition selection -->
+      <div id="sj-trad-wrap" style="display:none">
+        <p id="sj-trad-prompt">🙏 Which tradition do you follow?</p>
+        <div id="sj-trad-grid">
+          <button class="sj-trad-btn" onclick="splashTradSelect('hindu')"><span>ॐ</span> Hindu</button>
+          <button class="sj-trad-btn" onclick="splashTradSelect('sikh')"><span>ੴ</span> Sikh</button>
+          <button class="sj-trad-btn" onclick="splashTradSelect('buddhist')"><span>☸</span> Buddhist</button>
+          <button class="sj-trad-btn" onclick="splashTradSelect('jain')"><span>☮</span> Jain</button>
+        </div>
+      </div>
+      <!-- Stage 3: founding number reveal -->
+      <div id="sj-reveal" style="display:none">
+        <div id="sj-badge">
+          <div id="sj-badge-label">Sthapaka · स्थापक</div>
+          <div id="sj-badge-num">#<span id="sj-num">—</span></div>
+          <div id="sj-badge-sub">You helped lay the first stone. <em>Jai ho.</em></div>
+        </div>
+        <div id="sj-share-row">
+          <button class="sj-share-btn sj-share-wa"  onclick="splashShareWhatsApp()">📲 WhatsApp</button>
+          <button class="sj-share-btn sj-share-tw"  onclick="splashShareTwitter()">🐦 X / Twitter</button>
+          <button class="sj-share-btn sj-share-copy" onclick="splashCopyLink()">🔗 Copy Link</button>
+        </div>
+      </div>
+    </div>
   </div>
   <button id="audio-btn" title="Om ambient drone (108 Hz)">🔇</button>
   <button id="explore-btn">Enter the Sangam &nbsp;↓</button>
@@ -535,78 +721,12 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
   <button class="nav-cta" onclick="scrollToCta()">Get Early Access</button>
 </nav>
 
-<!-- ── HERO ─────────────────────────────────────────────────────── -->
-<section class="hero" id="hero">
-  <div class="hero-glow"></div>
-
-  <canvas id="mandala-canvas"></canvas>
-
-  <div class="hero-content">
-    <div class="hero-pill">
-      <div class="hero-pill-dot"></div>
-      Launching June 17, 2026
-    </div>
-
-    <div class="hero-deva">सनातन संगम</div>
-
-    <h1 class="hero-h1">
-      One <em>eternal</em> dharma,<br>
-      <span class="hero-brand">One global sangam.</span>
-    </h1>
-
-    <p class="hero-tagline">
-      A student in <strong>London</strong> connects with a devotee in <strong>Delhi</strong>.<br>
-      Ancient wisdom. Modern community. One timeless platform.
-    </p>
-
-    <!-- Tradition badges -->
-    <div class="tradition-badges">
-      <span class="trad-badge tb-hindu">ॐ Hindu</span>
-      <span class="trad-badge tb-sikh">ੴ Sikh</span>
-      <span class="trad-badge tb-buddhist">☸ Buddhist</span>
-      <span class="trad-badge tb-jain">☮ Jain</span>
-    </div>
-
-    <!-- Countdown -->
-    <div class="countdown-wrap">
-      <div class="countdown-tile"><span class="countdown-num" id="cd-days">38</span><span class="countdown-lbl">Days</span></div>
-      <div class="countdown-sep">:</div>
-      <div class="countdown-tile"><span class="countdown-num" id="cd-hrs">14</span><span class="countdown-lbl">Hours</span></div>
-      <div class="countdown-sep">:</div>
-      <div class="countdown-tile"><span class="countdown-num" id="cd-min">22</span><span class="countdown-lbl">Min</span></div>
-      <div class="countdown-sep">:</div>
-      <div class="countdown-tile"><span class="countdown-num" id="cd-sec">07</span><span class="countdown-lbl">Sec</span></div>
-    </div>
-    <div class="countdown-date">June 17, 2026 · 12:00 AM IST</div>
-
-    <!-- Step 1: email -->
-    <form class="signup-form" id="hero-form" onsubmit="handleHeroSignup(event)">
-      <input class="signup-input" id="hero-email" type="email" placeholder="Enter your email address" required>
-      <button class="signup-btn" type="submit">Notify Me</button>
-    </form>
-
-    <!-- Step 2: tradition -->
-    <div class="signup-step2" id="hero-step2">
-      <p class="step2-prompt">🙏 Welcome! Which tradition do you follow?</p>
-      <div class="trad-sel-grid">
-        <div class="trad-sel-pill" data-t="hindu"    onclick="selectHeroTrad(this)"><span class="tsp-icon">ॐ</span> Hindu</div>
-        <div class="trad-sel-pill" data-t="sikh"     onclick="selectHeroTrad(this)"><span class="tsp-icon">ੴ</span> Sikh</div>
-        <div class="trad-sel-pill" data-t="buddhist" onclick="selectHeroTrad(this)"><span class="tsp-icon">☸</span> Buddhist</div>
-        <div class="trad-sel-pill" data-t="jain"     onclick="selectHeroTrad(this)"><span class="tsp-icon">☮</span> Jain</div>
-      </div>
-    </div>
-
-    <div id="hero-success" class="success-msg"></div>
-    <p class="signup-note">No spam — just a launch notification. 🙏</p>
-  </div>
-
-  <div class="scroll-cue"><span>Explore</span><div class="scroll-arrow"></div></div>
-</section>
+<!-- Hero section removed — signup is now in the splash entry screen -->
 
 <!-- ── STATS ─────────────────────────────────────────────────────── -->
 <div class="stats-band reveal">
-  <div class="stat-item"><div class="stat-num"><span class="count-num" data-target="12">0</span><span>K+</span></div><div class="stat-label">Founding Members</div></div>
-  <div class="stat-item"><div class="stat-num"><span class="count-num" data-target="48">0</span></div><div class="stat-label">Countries Represented</div></div>
+  <div class="stat-item"><div class="stat-num" id="stat-founding-wrap">—</div><div class="stat-label">Founding Members</div></div>
+  <div class="stat-item"><div class="stat-num"><span class="count-num" data-target="38">0</span></div><div class="stat-label">Countries Represented</div></div>
   <div class="stat-item"><div class="stat-num"><span class="count-num" data-target="4">0</span></div><div class="stat-label">Dharmic Traditions</div></div>
   <div class="stat-item"><div class="stat-num"><span class="count-num" data-target="700">0</span><span>+</span></div><div class="stat-label">Sacred Texts Indexed</div></div>
 </div>
@@ -619,11 +739,15 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
     <p class="s-sub" style="margin:0 auto 40px; text-align:center">Sanatan Sangam honours the full breadth of dharmic wisdom — Hindu, Sikh, Buddhist, and Jain. Each tradition has its own dedicated experience within one shared community.</p>
   </div>
 
-  <div class="trad-tabs-bar reveal">
-    <button class="trad-tab active" data-trad="hindu"    onclick="switchTrad('hindu')">🕉 Hindu</button>
-    <button class="trad-tab"        data-trad="sikh"     onclick="switchTrad('sikh')">ੴ Sikh</button>
-    <button class="trad-tab"        data-trad="buddhist" onclick="switchTrad('buddhist')">☸ Buddhist</button>
-    <button class="trad-tab"        data-trad="jain"     onclick="switchTrad('jain')">☮ Jain</button>
+  <div class="trad-tabs-wrap reveal">
+    <div class="trad-tabs-bar">
+      <span id="trad-indicator"></span>
+      <button class="trad-tab active" data-trad="hindu"    onclick="switchTrad('hindu')">🕉 Hindu</button>
+      <button class="trad-tab"        data-trad="sikh"     onclick="switchTrad('sikh')">ੴ Sikh</button>
+      <button class="trad-tab"        data-trad="buddhist" onclick="switchTrad('buddhist')">☸ Buddhist</button>
+      <button class="trad-tab"        data-trad="jain"     onclick="switchTrad('jain')">☮ Jain</button>
+    </div>
+    <div id="trad-progress"><div id="trad-progress-fill"></div></div>
   </div>
 
   <div class="trad-panels">
@@ -783,21 +907,96 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 <!-- ── SHLOKA OF THE DAY ──────────────────────────────────────────── -->
 <section class="section" id="shloka">
   <div class="s-label reveal">Daily Wisdom</div>
-  <div class="s-title reveal">Shloka of the Day</div>
-  <div class="s-sub reveal">Begin each day with the Gita. One verse, one reflection, one step closer to dharma.</div>
+  <div class="s-title reveal">Verse of the Day</div>
+  <div class="s-sub reveal">From Gita to Granth, Dhammapada to Tattvartha — one verse each day from every path of dharma.</div>
 
-  <div class="shloka-card reveal">
-    <div class="shloka-day">Sunday · Vaishakha, Shukla Tritiya · Vikrama 2083</div>
-    <div class="shloka-sanskrit">
-      यदा यदा हि धर्मस्य ग्लानिर्भवति भारत।<br>
-      अभ्युत्थानमधर्मस्य तदात्मानं सृजाम्यहम्॥
+  <!-- Glassmorphic tradition selector -->
+  <div class="shlok-tabs-wrap reveal">
+    <div class="shlok-tabs-bar">
+      <span id="shlok-indicator"></span>
+      <button class="shlok-tab active" data-s="hindu"    onclick="switchShloka('hindu')">🕉 Hindu</button>
+      <button class="shlok-tab"        data-s="sikh"     onclick="switchShloka('sikh')">ੴ Sikh</button>
+      <button class="shlok-tab"        data-s="buddhist" onclick="switchShloka('buddhist')">☸ Buddhist</button>
+      <button class="shlok-tab"        data-s="jain"     onclick="switchShloka('jain')">☮ Jain</button>
     </div>
-    <div class="shloka-divider"></div>
-    <div class="shloka-english">
-      "Whenever righteousness declines and unrighteousness rises,<br>
-      I manifest myself anew."
+    <div id="shlok-progress"><div id="shlok-progress-fill"></div></div>
+  </div>
+
+  <!-- Hindu — Bhagavad Gita -->
+  <div class="shlok-panel active" data-t="hindu">
+    <div class="shloka-card reveal">
+      <div class="shloka-trad-badge">
+        <span class="shloka-trad-dot" style="background:var(--c-hindu)"></span>
+        Hindu · Bhagavad Gita
+      </div>
+      <div class="shloka-day">Vaishakha, Shukla Tritiya · Vikrama 2083</div>
+      <div class="shloka-sanskrit">
+        यदा यदा हि धर्मस्य ग्लानिर्भवति भारत।<br>
+        अभ्युत्थानमधर्मस्य तदात्मानं सृजाम्यहम्॥
+      </div>
+      <div class="shloka-divider"></div>
+      <div class="shloka-english">
+        "Whenever righteousness declines and unrighteousness rises,<br>I manifest myself anew."
+      </div>
+      <div class="shloka-source">Bhagavad Gita · Chapter 4, Verse 7</div>
     </div>
-    <div class="shloka-source">Bhagavad Gita · Chapter 4, Verse 7</div>
+  </div>
+
+  <!-- Sikh — Guru Granth Sahib -->
+  <div class="shlok-panel" data-t="sikh">
+    <div class="shloka-card reveal">
+      <div class="shloka-trad-badge">
+        <span class="shloka-trad-dot" style="background:var(--c-sikh)"></span>
+        Sikh · Guru Granth Sahib Ji
+      </div>
+      <div class="shloka-day">Vaishakha, Shukla Tritiya · Nanakshahi 558</div>
+      <div class="shloka-sanskrit">
+        ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ ॥
+      </div>
+      <div class="shloka-divider"></div>
+      <div class="shloka-english">
+        "O my mind, you are the very form of Divine Light —<br>recognise your own origin."
+      </div>
+      <div class="shloka-source">Guru Granth Sahib Ji · Ang 441</div>
+    </div>
+  </div>
+
+  <!-- Buddhist — Dhammapada -->
+  <div class="shlok-panel" data-t="buddhist">
+    <div class="shloka-card reveal">
+      <div class="shloka-trad-badge">
+        <span class="shloka-trad-dot" style="background:var(--c-buddhist)"></span>
+        Buddhist · Dhammapada
+      </div>
+      <div class="shloka-day">Vaishakha, Shukla Tritiya · Buddhist Era 2569</div>
+      <div class="shloka-sanskrit">
+        Manopubbaṅgamā dhammā, manoseṭṭhā manomayā.
+      </div>
+      <div class="shloka-divider"></div>
+      <div class="shloka-english">
+        "Mind is the forerunner of all actions —<br>all things arise from mind, fashioned by mind."
+      </div>
+      <div class="shloka-source">Dhammapada · Verse 1</div>
+    </div>
+  </div>
+
+  <!-- Jain — Tattvartha Sutra -->
+  <div class="shlok-panel" data-t="jain">
+    <div class="shloka-card reveal">
+      <div class="shloka-trad-badge">
+        <span class="shloka-trad-dot" style="background:var(--c-jain)"></span>
+        Jain · Tattvartha Sutra
+      </div>
+      <div class="shloka-day">Vaishakha, Shukla Tritiya · Vira Nirvana Samvat 2552</div>
+      <div class="shloka-sanskrit">
+        परस्परोपग्रहो जीवानाम् ।
+      </div>
+      <div class="shloka-divider"></div>
+      <div class="shloka-english">
+        "The function of souls is to serve one another."
+      </div>
+      <div class="shloka-source">Tattvartha Sutra · 5.21 · Umasvati</div>
+    </div>
   </div>
 </section>
 
@@ -944,67 +1143,91 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 
 <!-- ── FEATURES ───────────────────────────────────────────────────── -->
 <section class="section" id="features">
-  <div class="s-label reveal">Platform Features</div>
-  <div class="s-title reveal">Everything your sangam needs</div>
-  <div class="s-sub reveal">Built for the global dharmic community. Tech-forward. Tradition-rooted.</div>
+  <div class="s-label reveal">The Platform</div>
+  <div class="s-title reveal">The Sangam, wherever you are</div>
+  <div class="s-sub reveal">Every feature you need — daily sadhana, community, scripture, sacred calendar. Live now.</div>
 
   <div class="features-grid reveal">
-    <div class="feature-card">
+    <a class="feature-card feature-card-link" href="/discover">
       <div class="feature-icon fi-s">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8924A" stroke-width="1.5" stroke-linecap="round"><path d="M12 2L13.8 8.2L20 8.2L14.9 11.8L16.7 18L12 14.4L7.3 18L9.1 11.8L4 8.2L10.2 8.2Z"/></svg>
       </div>
       <div class="feature-name">Daily Wisdom Feed</div>
-      <div class="feature-desc">Morning verses from Vedas, Guru Granth Sahib Ji, Dhammapada, and Agamas — curated by tradition, personalised to your practice.</div>
-      <span class="feature-coming">Launching June 2026</span>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon fi-p">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9d7a50" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="3" r="1.5"/><circle cx="12" cy="21" r="1.5"/><circle cx="3" cy="12" r="1.5"/><circle cx="21" cy="12" r="1.5"/><circle cx="5.6" cy="5.6" r="1.5"/><circle cx="18.4" cy="18.4" r="1.5"/><circle cx="18.4" cy="5.6" r="1.5"/><circle cx="5.6" cy="18.4" r="1.5"/></svg>
+      <div class="feature-desc">Morning verses from Vedas, Guru Granth Sahib Ji, Dhammapada, and Agamas — curated by tradition, personalised to your mood.</div>
+      <span class="feature-live">✦ Live Now</span>
+    </a>
+    <a class="feature-card feature-card-link" href="/japa">
+      <div class="feature-icon fi-ja">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9B6FB5" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="5" r="1.5" fill="#9B6FB5"/><circle cx="17.2" cy="8" r="1.5" fill="#9B6FB5"/><circle cx="19" cy="13.5" r="1.5" fill="#9B6FB5"/><circle cx="16" cy="18.5" r="1.5" fill="#9B6FB5"/><circle cx="12" cy="20" r="1.5" fill="#9B6FB5"/></svg>
       </div>
-      <div class="feature-name">Global Sangam Map</div>
-      <div class="feature-desc">Find practitioners in your city, join local prayer groups, and discover sangams — London to Lagos, Mumbai to Melbourne.</div>
-      <span class="feature-coming">Launching June 2026</span>
-    </div>
-    <div class="feature-card">
+      <div class="feature-name">Japa &amp; Mala Counter</div>
+      <div class="feature-desc">Mantra counter with 27/54/108-bead malas, ambient sounds, streak tracking, and session insights for your daily practice.</div>
+      <span class="feature-live">✦ Live Now</span>
+    </a>
+    <a class="feature-card feature-card-link" href="/panchang">
       <div class="feature-icon fi-k">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4784A" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
       </div>
       <div class="feature-name">Sacred Calendar</div>
-      <div class="feature-desc">Full tithi, Gurpurab, Paryushana, and Buddhist festival calendar with reminders, puja guides, and regional variations.</div>
-      <span class="feature-coming">Launching June 2026</span>
-    </div>
-    <div class="feature-card">
+      <div class="feature-desc">Live Panchang with tithi, nakshatra, rahu kalam — plus Gurpurab, Paryushana, and Buddhist festival reminders by tradition.</div>
+      <span class="feature-live">✦ Live Now</span>
+    </a>
+    <a class="feature-card feature-card-link" href="/pathshala">
       <div class="feature-icon fi-l">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C0607A" stroke-width="1.5" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       </div>
-      <div class="feature-name">Scripture Library</div>
-      <div class="feature-desc">700+ texts — Vedas, Guru Granth Sahib Ji, Pali Canon, Jain Agamas — searchable, annotatable, cross-referenced.</div>
-      <span class="feature-coming">Launching June 2026</span>
-    </div>
-    <div class="feature-card">
+      <div class="feature-name">Pathshala — Scripture</div>
+      <div class="feature-desc">700+ texts — Vedas, Guru Granth Sahib Ji, Pali Canon, Jain Agamas — with guided learning paths, audio, and reflection prompts.</div>
+      <span class="feature-live">✦ Live Now</span>
+    </a>
+    <a class="feature-card feature-card-link" href="/mandali">
+      <div class="feature-icon fi-p">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9d7a50" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="3" r="1.5"/><circle cx="12" cy="21" r="1.5"/><circle cx="3" cy="12" r="1.5"/><circle cx="21" cy="12" r="1.5"/><circle cx="5.6" cy="5.6" r="1.5"/><circle cx="18.4" cy="18.4" r="1.5"/><circle cx="18.4" cy="5.6" r="1.5"/><circle cx="5.6" cy="18.4" r="1.5"/></svg>
+      </div>
+      <div class="feature-name">Mandali &amp; Community</div>
+      <div class="feature-desc">Find practitioners in your city, join local sangats, post and discuss. London to Lagos, Mumbai to Melbourne — all in one sangam.</div>
+      <span class="feature-live">✦ Live Now</span>
+    </a>
+    <a class="feature-card feature-card-link" href="/nitya-karma">
       <div class="feature-icon fi-g">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C89B3C" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C89B3C" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
       </div>
-      <div class="feature-name">Community Forums</div>
-      <div class="feature-desc">Discuss dharma, share experiences, find local sangats. Tradition-specific spaces and open inter-faith dialogue — all moderated.</div>
-      <span class="feature-coming">Launching June 2026</span>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon fi-w">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(62,42,31,0.65)" stroke-width="1.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <div class="feature-name">Daily Sadhana</div>
+      <div class="feature-desc">Your personalised morning routine — Nitya Karma, Ashrama duties, guided sadhana plans, and dincharya tracker with streaks.</div>
+      <span class="feature-live">✦ Live Now</span>
+    </a>
+    <a class="feature-card feature-card-link" href="/kul">
+      <div class="feature-icon fi-kl">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7A5126" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       </div>
-      <div class="feature-name">Donate with Purpose</div>
-      <div class="feature-desc">Support dharmic causes globally — temple restoration, Vedic education, community kitchens. Full transparency on every rupee.</div>
-      <span class="feature-coming">Launching June 2026</span>
-    </div>
+      <div class="feature-name">Kul — Family Dharma</div>
+      <div class="feature-desc">Create your family Kul, track Vansh lineage, share Gotra, and celebrate Sanskars together across generations and continents.</div>
+      <span class="feature-live">✦ Live Now</span>
+    </a>
+    <a class="feature-card feature-card-link" href="/ai-chat">
+      <div class="feature-icon fi-ai">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5B8FB9" stroke-width="1.5" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="feature-name">Dharma AI Guide</div>
+      <div class="feature-desc">Ask anything — from scripture interpretation to daily practice guidance. Tradition-aware AI trained on Vedic, Sikh, Buddhist, and Jain thought.</div>
+      <span class="feature-live">✦ Live Now</span>
+    </a>
+    <a class="feature-card feature-card-link" href="/vichaar-sabha">
+      <div class="feature-icon fi-vs">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6B8E5A" stroke-width="1.5" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      </div>
+      <div class="feature-name">Vichaar Sabha</div>
+      <div class="feature-desc">Dharmic discourse forums — ask questions, share reflections, explore inter-tradition wisdom. Moderated, thoughtful, tradition-aware.</div>
+      <span class="feature-live">✦ Live Now</span>
+    </a>
   </div>
 </section>
 
 <!-- ── APP DOWNLOAD ───────────────────────────────────────────────── -->
 <section class="download-section" id="download">
-  <div class="s-label reveal" style="text-align:center">Coming to Your Pocket</div>
-  <div class="s-title reveal" style="text-align:center">The Sangam, wherever you are</div>
-  <p class="s-sub reveal" style="text-align:center;margin:0 auto 56px">Your daily sadhana, community, and sacred calendar — in a beautifully crafted app for iOS and Android. Launching with the platform on June 17, 2026.</p>
+  <div class="s-label reveal" style="text-align:center">Now Live on Web · Mobile Coming Soon</div>
+  <div class="s-title reveal" style="text-align:center">The Sangam in your pocket</div>
+  <p class="s-sub reveal" style="text-align:center;margin:0 auto 56px">Your daily sadhana, community, and sacred calendar — already live at <strong>sanatansangam.app</strong> and arriving on iOS &amp; Android on June 17, 2026.</p>
 
   <div class="download-phones reveal">
     <div class="phone-mockup">
@@ -1072,45 +1295,48 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
     </a>
   </div>
 
-  <p class="download-note">App launching with the platform on June 17, 2026 · <span class="download-notify-link" onclick="scrollToCta()">Pre-register above</span> to be first in line</p>
+  <p class="download-note">Mobile apps arriving June 17, 2026 · <span class="download-notify-link" onclick="scrollToCta()">Join as a founding member</span> to be first in line</p>
 </section>
 
 <!-- ── CTA / PRE-REGISTER ─────────────────────────────────────────── -->
 <section class="cta-section" id="cta-section">
   <div class="cta-bg"></div>
   <div class="reveal" style="position:relative">
-    <div class="cta-badge"><div class="hero-pill-dot"></div>Launching June 17, 2026</div>
-    <div class="founder-badge">🏆 First 5,000 registrants receive Founding Member status + 1 year premium free</div>
-    <h2 class="cta-h">Be the first to <em>join</em><br>the Sangam.</h2>
-    <p class="cta-sub">Join thousands of dharmic souls worldwide on our founding waitlist. Get early access, founding member status, and a year of premium — yours to keep forever.</p>
+    <div class="cta-badge"><div class="hero-pill-dot"></div>Founding Members — Only 1,000 Spots</div>
+    <h2 class="cta-h">Claim your place as<br>a <em>Sthapaka</em>.</h2>
+    <p class="cta-sub">The first 1,000 members receive a permanent Sthapaka badge, your founding number on your profile, and exclusive founding-member perks — forever.</p>
 
-    <!-- CTA Step 1 -->
-    <form class="cta-form" id="cta-form" onsubmit="handleCtaSignup(event)">
-      <input class="cta-input" id="cta-email" type="email" placeholder="your@email.com" required>
-      <button class="cta-btn" type="submit">Join Waitlist</button>
-    </form>
+    <!-- CTA Step 1: Email -->
+    <div id="cta-email-wrap">
+      <form class="cta-form" id="cta-form" onsubmit="handleCtaSignup(event)">
+        <input class="cta-input" id="cta-email" type="email" placeholder="your@email.com" required>
+        <button class="cta-btn" id="cta-submit-btn" type="submit">Claim Sthapaka Spot</button>
+      </form>
+    </div>
 
-    <!-- CTA Step 2 -->
-    <div class="cta-step2" id="cta-step2">
-      <p class="step2-prompt">🙏 One last thing — which tradition do you follow?</p>
+    <!-- CTA Step 2: Tradition -->
+    <div class="cta-step2" id="cta-step2" style="display:none">
+      <p class="step2-prompt">🙏 Which tradition do you follow?</p>
       <div class="cta-trad-grid">
-        <div class="cta-trad-pill" data-t="hindu"    onclick="selectCtaTrad(this)">
-          <span class="cta-pill-icon">ॐ</span>Hindu
-        </div>
-        <div class="cta-trad-pill" data-t="sikh"     onclick="selectCtaTrad(this)">
-          <span class="cta-pill-icon">ੴ</span>Sikh
-        </div>
-        <div class="cta-trad-pill" data-t="buddhist" onclick="selectCtaTrad(this)">
-          <span class="cta-pill-icon">☸</span>Buddhist
-        </div>
-        <div class="cta-trad-pill" data-t="jain"     onclick="selectCtaTrad(this)">
-          <span class="cta-pill-icon">☮</span>Jain
-        </div>
+        <div class="cta-trad-pill" data-t="hindu"    onclick="selectCtaTrad(this)"><span class="cta-pill-icon">ॐ</span>Hindu</div>
+        <div class="cta-trad-pill" data-t="sikh"     onclick="selectCtaTrad(this)"><span class="cta-pill-icon">ੴ</span>Sikh</div>
+        <div class="cta-trad-pill" data-t="buddhist" onclick="selectCtaTrad(this)"><span class="cta-pill-icon">☸</span>Buddhist</div>
+        <div class="cta-trad-pill" data-t="jain"     onclick="selectCtaTrad(this)"><span class="cta-pill-icon">☮</span>Jain</div>
       </div>
     </div>
 
-    <div id="cta-success" class="success-msg"></div>
-    <p class="cta-note">Already 12,000+ on the waitlist · No spam, ever</p>
+    <!-- CTA Step 3: Founding number reveal -->
+    <div id="cta-reveal" style="display:none;text-align:center">
+      <div style="background:rgba(216,138,28,0.12);border:1px solid rgba(216,138,28,0.35);border-radius:16px;padding:24px 32px;margin-bottom:16px;display:inline-block">
+        <div style="font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:8px">Your Founding Number</div>
+        <div id="cta-found-num" style="font-family:var(--fd);font-size:52px;font-weight:700;color:#D88A1C;line-height:1">#—</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.50);margin-top:8px">Sthapaka · स्थापक</div>
+      </div>
+      <div id="cta-success" class="success-msg" style="display:block;margin-bottom:12px"></div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.38);margin-top:8px">A welcome email with your perks is on its way 🪔</p>
+    </div>
+
+    <p class="cta-note" id="cta-note">Founding spots are limited · No spam, ever</p>
   </div>
 </section>
 
@@ -1119,10 +1345,10 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
   <div class="footer-top">
     <div class="footer-brand">Sanatan <span>Sangam</span></div>
     <div class="footer-links">
-      <a href="#">About</a>
-      <a href="#">Privacy</a>
-      <a href="#">Terms</a>
-      <a href="#">Contact</a>
+      <a href="/about">About</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+      <a href="mailto:cyber.prince@outlook.com">Contact</a>
     </div>
     <div class="footer-deva">सनातन धर्म</div>
   </div>
@@ -1334,10 +1560,29 @@ updateCountdown();
 setInterval(updateCountdown, 1000);
 
 /* ─── SCROLL REVEAL ──────────────────────────────────────────────────────── */
+// IntersectionObserver handles below-fold elements as user scrolls
 const revealObs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
-}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
+  });
+}, { threshold: 0.06 });
+
+// setTimeout guarantees the browser has fully laid out the newly-visible #main-page
+// before we check which elements are in the viewport (RAF alone is not sufficient
+// because display:none→block layout may not be committed until the next paint).
+setTimeout(() => {
+  const vh = window.innerHeight;
+  document.querySelectorAll('.reveal').forEach(el => {
+    const r = el.getBoundingClientRect();
+    if (r.bottom > 0 && r.top < vh + 80) {
+      // In or just below initial viewport — show immediately
+      el.classList.add('visible');
+    } else {
+      // Below fold — let IntersectionObserver handle it on scroll
+      revealObs.observe(el);
+    }
+  });
+}, 80);
 
 /* ─── ANIMATED COUNTERS ──────────────────────────────────────────────────── */
 function animateCounter(el, target, dur) {
@@ -1382,89 +1627,297 @@ if (d1) d1.textContent = daysUntil('2026-05-12');
 if (d2) d2.textContent = daysUntil('2026-07-10');
 if (d3) d3.textContent = daysUntil('2026-08-22');
 
-/* ─── TRADITION TABS ─────────────────────────────────────────────────────── */
-function switchTrad(trad) {
-  document.querySelectorAll('.trad-tab').forEach(t => t.classList.remove('active'));
-  document.querySelector(`[data-trad="${trad}"]`).classList.add('active');
+/* ─── TRADITION TABS — glassmorphic sliding pill + auto-cycle ────────────── */
+const TRAD_ORDER  = ['hindu','sikh','buddhist','jain'];
+const TRAD_COLORS = { hindu:'#D88A1C', sikh:'#1B5E8B', buddhist:'#7B2D3E', jain:'#2A6B4A' };
+const TRAD_SHADOW = {
+  hindu:    '0 2px 16px rgba(216,138,28,0.46)',
+  sikh:     '0 2px 16px rgba(27,94,139,0.46)',
+  buddhist: '0 2px 16px rgba(123,45,62,0.46)',
+  jain:     '0 2px 16px rgba(42,107,74,0.46)',
+};
+const TRAD_LIGHT_TEXT = new Set(['sikh','buddhist','jain']);
+const TRAD_DURATION   = 5200; // ms per tradition before auto-advance
+
+let tradIdx         = 0;
+let tradPaused      = false;
+let tradProgRaf     = null;
+let tradProgStart   = 0;
+let tradProgOffset  = 0; // elapsed ms when paused
+let tradResumeTimer = null;
+
+function positionIndicator(trad, animate) {
+  const indicator = document.getElementById('trad-indicator');
+  const tab       = document.querySelector(`[data-trad="${trad}"]`);
+  const bar       = document.querySelector('.trad-tabs-bar');
+  if (!indicator || !tab || !bar) return;
+  const barRect = bar.getBoundingClientRect();
+  const tabRect = tab.getBoundingClientRect();
+  if (!animate) {
+    indicator.style.transition = 'none';
+    requestAnimationFrame(() => { indicator.style.transition = ''; });
+  }
+  indicator.style.transform  = `translateX(${tabRect.left - barRect.left}px)`;
+  indicator.style.width      = tabRect.width + 'px';
+  indicator.style.background = TRAD_COLORS[trad];
+  indicator.style.boxShadow  = TRAD_SHADOW[trad];
+}
+
+function switchTrad(trad, fromAuto) {
+  if (!fromAuto) {
+    // Manual click — pause auto-cycle for 8s then resume
+    tradPaused = true;
+    cancelAnimationFrame(tradProgRaf);
+    tradProgOffset = 0;
+    const fill = document.getElementById('trad-progress-fill');
+    if (fill) fill.style.width = '0%';
+    clearTimeout(tradResumeTimer);
+    tradResumeTimer = setTimeout(() => {
+      tradPaused    = false;
+      tradResumeTimer = null;
+      startTradProgress();
+    }, 8000);
+  }
+
+  // Update tab active states + text colour
+  document.querySelectorAll('.trad-tab').forEach(t => {
+    const isActive = t.dataset.trad === trad;
+    t.classList.toggle('active', isActive);
+    if (isActive) {
+      t.style.color = TRAD_LIGHT_TEXT.has(trad) ? '#fff' : '#3E2A1F';
+    } else {
+      t.style.color = '';
+    }
+  });
+
+  positionIndicator(trad, true);
+
+  // Progress fill colour
+  const fill = document.getElementById('trad-progress-fill');
+  if (fill) fill.style.background = TRAD_COLORS[trad];
+
+  // Panel swap
   document.querySelectorAll('.trad-panel').forEach(p => p.classList.remove('active'));
   const next = document.getElementById(`panel-${trad}`);
   if (next) next.classList.add('active');
+
+  tradIdx = TRAD_ORDER.indexOf(trad);
 }
 
-/* ─── API CALL ───────────────────────────────────────────────────────────── */
-async function saveToWaitlist(email, tradition, source) {
+function startTradProgress() {
+  cancelAnimationFrame(tradProgRaf);
+  const fill = document.getElementById('trad-progress-fill');
+  if (!fill) return;
+  tradProgStart = performance.now() - tradProgOffset;
+
+  function step(now) {
+    if (tradPaused) return;
+    const elapsed = now - tradProgStart;
+    const pct     = Math.min(elapsed / TRAD_DURATION, 1);
+    fill.style.width = (pct * 100) + '%';
+    if (pct < 1) {
+      tradProgRaf = requestAnimationFrame(step);
+    } else {
+      // Advance to next tradition
+      fill.style.width = '0%';
+      tradProgOffset   = 0;
+      tradIdx = (tradIdx + 1) % TRAD_ORDER.length;
+      switchTrad(TRAD_ORDER[tradIdx], true);
+      if (!tradPaused) startTradProgress();
+    }
+  }
+  tradProgRaf = requestAnimationFrame(step);
+}
+
+// Init: wait for display:none→block layout to settle before measuring tab widths.
+// This avoids a zero/incorrect indicator position on first reveal.
+setTimeout(() => {
+  positionIndicator('hindu', false);
+  startTradProgress();
+}, 100);
+
+const tradBar = document.querySelector('.trad-tabs-bar');
+if (tradBar) {
+  tradBar.addEventListener('mouseenter', () => {
+    if (tradPaused) return;
+    tradPaused     = true;
+    tradProgOffset = performance.now() - tradProgStart; // save elapsed
+    cancelAnimationFrame(tradProgRaf);
+  });
+  tradBar.addEventListener('mouseleave', () => {
+    if (tradResumeTimer) return; // manual click pause in effect
+    tradPaused   = false;
+    startTradProgress();
+  });
+}
+
+
+/* ─── CTA SIGNUP — 3-stage flow mirroring splash ─────────────────────────── */
+let ctaEmail = '', ctaFoundingNum = 0;
+
+async function handleCtaSignup(e) {
+  e.preventDefault();
+  ctaEmail = document.getElementById('cta-email').value.trim();
+  const btn = document.getElementById('cta-submit-btn');
+  btn.textContent = '…'; btn.disabled = true;
   try {
-    await fetch(`${API_BASE}/api/waitlist`, {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const res = await fetch('/api/waitlist', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, tradition, source }),
+      body: JSON.stringify({ email: ctaEmail, source: 'cta', timezone: tz }),
     });
-  } catch (err) {
-    console.warn('[waitlist] API call failed (non-blocking):', err);
+    const data = await res.json();
+    ctaFoundingNum = data.foundingNumber ?? 0;
+    document.getElementById('cta-email-wrap').style.display = 'none';
+    document.getElementById('cta-step2').style.display      = 'block';
+  } catch {
+    btn.textContent = 'Claim Sthapaka Spot'; btn.disabled = false;
   }
 }
 
-/* ─── HERO SIGNUP — Step 1 ───────────────────────────────────────────────── */
-let heroEmail = '';
-function handleHeroSignup(e) {
-  e.preventDefault();
-  heroEmail = document.getElementById('hero-email').value;
-  document.getElementById('hero-form').style.display = 'none';
-  document.getElementById('hero-step2').classList.add('visible');
-  document.querySelector('.signup-note').style.display = 'none';
-}
-
-function selectHeroTrad(pill) {
-  const trad = pill.dataset.t;
-  document.querySelectorAll('#hero-step2 .trad-sel-pill').forEach(p => p.classList.remove('chosen'));
-  pill.classList.add('chosen');
-  saveToWaitlist(heroEmail, trad, 'hero');
-  setTimeout(() => {
-    document.getElementById('hero-step2').style.display = 'none';
-    const msg = document.getElementById('hero-success');
-    const labels = { hindu:'Hindu', sikh:'Sikh', buddhist:'Buddhist', jain:'Jain' };
-    msg.textContent = `🙏 You're in as a ${labels[trad]} Founding Member. Jai ho!`;
-    msg.style.display = 'block';
-  }, 600);
-}
-
-/* ─── CTA SIGNUP — Step 1 ────────────────────────────────────────────────── */
-let ctaEmail = '';
-function handleCtaSignup(e) {
-  e.preventDefault();
-  ctaEmail = document.getElementById('cta-email').value;
-  document.getElementById('cta-form').style.display = 'none';
-  document.getElementById('cta-step2').classList.add('visible');
-}
-
-function selectCtaTrad(pill) {
+async function selectCtaTrad(pill) {
   const trad = pill.dataset.t;
   document.querySelectorAll('#cta-step2 .cta-trad-pill').forEach(p => p.classList.remove('chosen'));
   pill.classList.add('chosen');
-  saveToWaitlist(ctaEmail, trad, 'cta');
-  setTimeout(() => {
-    document.getElementById('cta-step2').style.display = 'none';
-    const msg = document.getElementById('cta-success');
-    const labels = { hindu:'Hindu', sikh:'Sikh', buddhist:'Buddhist', jain:'Jain' };
-    msg.textContent = `🙏 You're registered as a ${labels[trad]} Founding Member. We'll be in touch. Jai ho!`;
-    msg.style.display = 'block';
-    document.querySelector('.cta-note').style.display = 'none';
-  }, 600);
+  document.querySelectorAll('#cta-step2 .cta-trad-pill').forEach(p => p.style.pointerEvents = 'none');
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const res = await fetch('/api/waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: ctaEmail, tradition: trad, source: 'cta', timezone: tz }),
+    });
+    const data = await res.json();
+    if (data.foundingNumber) ctaFoundingNum = data.foundingNumber;
+  } catch { /* non-blocking */ }
+  const labels = { hindu:'Hindu Sadhaka', sikh:'Sikh Sevak', buddhist:'Buddhist Practitioner', jain:'Jain Sadhak' };
+  document.getElementById('cta-step2').style.display  = 'none';
+  document.getElementById('cta-reveal').style.display = 'block';
+  document.getElementById('cta-found-num').textContent = ctaFoundingNum ? `#${ctaFoundingNum}` : '#—';
+  document.getElementById('cta-success').textContent  = `🙏 Welcome, ${labels[trad] ?? 'Founding Member'}. Jai ho!`;
+  document.getElementById('cta-note').style.display   = 'none';
+  _updateFoundingCount(ctaFoundingNum);
 }
 
 /* ─── SCROLL TO CTA ──────────────────────────────────────────────────────── */
 function scrollToCta() {
   document.getElementById('cta-section').scrollIntoView({ behavior: 'smooth' });
-  setTimeout(() => document.getElementById('cta-email').focus(), 600);
+  setTimeout(() => {
+    const el = document.getElementById('cta-email');
+    if (el && !document.getElementById('cta-reveal').style.display) el.focus();
+  }, 600);
 }
 
+/* ─── VERSE / SHLOKA TABS — independent cycle from tradition tabs ─────── */
+const SHLOK_ORDER  = ['hindu','sikh','buddhist','jain'];
+const SHLOK_COLORS = { hindu:'#D88A1C', sikh:'#1B5E8B', buddhist:'#7B2D3E', jain:'#2A6B4A' };
+const SHLOK_SHADOW = {
+  hindu:    '0 2px 16px rgba(216,138,28,0.46)',
+  sikh:     '0 2px 16px rgba(27,94,139,0.46)',
+  buddhist: '0 2px 16px rgba(123,45,62,0.46)',
+  jain:     '0 2px 16px rgba(42,107,74,0.46)',
+};
+const SHLOK_LIGHT_TEXT = new Set(['sikh','buddhist','jain']);
+const SHLOK_DURATION   = 6000;
+
+let shlokIdx         = 0;
+let shlokPaused      = false;
+let shlokProgRaf     = null;
+let shlokProgStart   = 0;
+let shlokProgOffset  = 0;
+let shlokResumeTimer = null;
+
+function positionShlokIndicator(trad, animate) {
+  const indicator = document.getElementById('shlok-indicator');
+  const tab       = document.querySelector(`[data-s="${trad}"]`);
+  const bar       = document.querySelector('.shlok-tabs-bar');
+  if (!indicator || !tab || !bar) return;
+  const barRect = bar.getBoundingClientRect();
+  const tabRect = tab.getBoundingClientRect();
+  if (!animate) {
+    indicator.style.transition = 'none';
+    requestAnimationFrame(() => { indicator.style.transition = ''; });
+  }
+  indicator.style.transform  = `translateX(${tabRect.left - barRect.left}px)`;
+  indicator.style.width      = tabRect.width + 'px';
+  indicator.style.background = SHLOK_COLORS[trad];
+  indicator.style.boxShadow  = SHLOK_SHADOW[trad];
+}
+
+function switchShloka(trad, fromAuto) {
+  if (!fromAuto) {
+    shlokPaused = true;
+    cancelAnimationFrame(shlokProgRaf);
+    shlokProgOffset = 0;
+    const fill = document.getElementById('shlok-progress-fill');
+    if (fill) fill.style.width = '0%';
+    clearTimeout(shlokResumeTimer);
+    shlokResumeTimer = setTimeout(() => {
+      shlokPaused    = false;
+      shlokResumeTimer = null;
+      startShlokProgress();
+    }, 9000);
+  }
+  document.querySelectorAll('.shlok-tab').forEach(t => {
+    const isActive = t.dataset.s === trad;
+    t.classList.toggle('active', isActive);
+    t.style.color = isActive ? (SHLOK_LIGHT_TEXT.has(trad) ? '#fff' : '#3E2A1F') : '';
+  });
+  positionShlokIndicator(trad, true);
+  const fill = document.getElementById('shlok-progress-fill');
+  if (fill) fill.style.background = SHLOK_COLORS[trad];
+  document.querySelectorAll('.shlok-panel').forEach(p => p.classList.remove('active'));
+  const next = document.querySelector(`.shlok-panel[data-t="${trad}"]`);
+  if (next) next.classList.add('active');
+  shlokIdx = SHLOK_ORDER.indexOf(trad);
+}
+
+function startShlokProgress() {
+  cancelAnimationFrame(shlokProgRaf);
+  const fill = document.getElementById('shlok-progress-fill');
+  if (!fill) return;
+  shlokProgStart = performance.now() - shlokProgOffset;
+  function step(now) {
+    if (shlokPaused) return;
+    const pct = Math.min((now - shlokProgStart) / SHLOK_DURATION, 1);
+    fill.style.width = (pct * 100) + '%';
+    if (pct < 1) {
+      shlokProgRaf = requestAnimationFrame(step);
+    } else {
+      fill.style.width = '0%';
+      shlokProgOffset  = 0;
+      shlokIdx = (shlokIdx + 1) % SHLOK_ORDER.length;
+      switchShloka(SHLOK_ORDER[shlokIdx], true);
+      if (!shlokPaused) startShlokProgress();
+    }
+  }
+  shlokProgRaf = requestAnimationFrame(step);
+}
+
+positionShlokIndicator('hindu', false);
+const shlokBar = document.querySelector('.shlok-tabs-bar');
+if (shlokBar) {
+  shlokBar.addEventListener('mouseenter', () => {
+    if (shlokPaused) return;
+    shlokPaused    = true;
+    shlokProgOffset = performance.now() - shlokProgStart;
+    cancelAnimationFrame(shlokProgRaf);
+  });
+  shlokBar.addEventListener('mouseleave', () => {
+    if (shlokResumeTimer) return;
+    shlokPaused = false;
+    startShlokProgress();
+  });
+}
+startShlokProgress();
+
 /* expose onclick handlers to global scope */
-window.scrollToCta      = scrollToCta;
-window.handleHeroSignup = handleHeroSignup;
-window.selectHeroTrad   = selectHeroTrad;
-window.handleCtaSignup  = handleCtaSignup;
-window.selectCtaTrad    = selectCtaTrad;
-window.switchTrad       = switchTrad;
+window.scrollToCta     = scrollToCta;
+window.handleCtaSignup = handleCtaSignup;
+window.selectCtaTrad   = selectCtaTrad;
+window.switchTrad      = switchTrad;
+window.switchShloka    = switchShloka;
 
 } // ── end initMainPage ──────────────────────────────────────────────────────
 
@@ -1998,35 +2451,108 @@ window.switchTrad       = switchTrad;
   });
 })();
 
+/* ─── SPLASH JOIN FLOW ────────────────────────────────────────────────────── */
+let _sjEmail = '', _sjTrad = '', _sjFoundingNum = 0;
+
+async function splashJoin(e) {
+  e.preventDefault();
+  _sjEmail = document.getElementById('sj-email').value.trim();
+  const btn = document.getElementById('sj-submit');
+  btn.textContent = '…'; btn.disabled = true;
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const res = await fetch('/api/waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: _sjEmail, source: 'splash', timezone: tz }),
+    });
+    const data = await res.json();
+    _sjFoundingNum = data.foundingNumber ?? 0;
+    // Move to tradition select
+    document.getElementById('sj-email-wrap').style.display = 'none';
+    document.getElementById('sj-trad-wrap').style.display  = 'block';
+  } catch {
+    btn.textContent = 'Join as Sthapaka'; btn.disabled = false;
+  }
+}
+
+async function splashTradSelect(trad) {
+  _sjTrad = trad;
+  document.querySelectorAll('.sj-trad-btn').forEach(b => b.disabled = true);
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const res = await fetch('/api/waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: _sjEmail, tradition: trad, source: 'splash', timezone: tz }),
+    });
+    const data = await res.json();
+    if (data.foundingNumber) _sjFoundingNum = data.foundingNumber;
+  } catch { /* non-blocking */ }
+  // Show reveal
+  document.getElementById('sj-trad-wrap').style.display = 'none';
+  document.getElementById('sj-reveal').style.display    = 'block';
+  document.getElementById('sj-num').textContent = _sjFoundingNum || '—';
+  // Update live count in stats band
+  _updateFoundingCount(_sjFoundingNum);
+}
+
+function _updateFoundingCount(n) {
+  const el = document.getElementById('stat-founding-wrap');
+  if (!el || !n) return;
+  el.textContent = n.toLocaleString('en-IN') + '+';
+}
+
+function splashShareWhatsApp() {
+  const text = encodeURIComponent(`I'm Sthapaka #${_sjFoundingNum} of Sanatan Sangam — a home for Hindu, Sikh, Buddhist & Jain dharma. Join the founding members before June 17, 2026: https://sanatansangam.app`);
+  window.open(`https://wa.me/?text=${text}`, '_blank');
+}
+function splashShareTwitter() {
+  const text = encodeURIComponent(`I'm Sthapaka #${_sjFoundingNum} of @SanatanSangam — one eternal dharma, one global sangam. Hindu · Sikh · Buddhist · Jain. Launching June 17, 2026.`);
+  const url  = encodeURIComponent('https://sanatansangam.app');
+  window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+}
+function splashCopyLink() {
+  const txt = `Sthapaka #${_sjFoundingNum} — Sanatan Sangam launching June 17, 2026. Join the founding members: https://sanatansangam.app`;
+  navigator.clipboard?.writeText(txt).then(() => {
+    const btn = document.querySelector('.sj-share-copy');
+    if (btn) { btn.textContent = '✓ Copied!'; setTimeout(() => { btn.textContent = '🔗 Copy Link'; }, 2000); }
+  });
+}
+
+/* ─── Live waitlist count ─────────────────────────────────────────────────── */
+fetch('/api/waitlist').then(r => r.json()).then(({ count }) => {
+  const el = document.getElementById('stat-founding-wrap');
+  if (!el || !count) return;
+  el.textContent = count < 10 ? 'Early Access' : count.toLocaleString('en-IN') + '+';
+}).catch(() => {});
+
 /* ─── EXPLORE BUTTON — transition from splash to main page ──────────────── */
 document.getElementById('explore-btn').addEventListener('click', function () {
   const splash = document.getElementById('splash');
   const main   = document.getElementById('main-page');
   this.style.pointerEvents = 'none';
 
-  /* fade out splash */
-  splash.style.transition   = 'opacity 1.2s ease';
-  splash.style.opacity      = '0';
+  splash.style.transition    = 'opacity 1.2s ease';
+  splash.style.opacity       = '0';
   splash.style.pointerEvents = 'none';
 
-  /* reveal main page */
   main.style.display    = 'block';
   main.style.opacity    = '0';
   main.style.transition = 'opacity 1.2s ease 0.3s';
-  requestAnimationFrame(() => { main.style.opacity = '1'; });
 
-  /* init main page canvas/observers after display:block */
-  initMainPage();
+  // Wait one frame so the browser computes layout for the newly-visible #main-page,
+  // then start the opacity transition and initialise all JS (observers, tab positions, etc.)
+  requestAnimationFrame(() => {
+    main.style.opacity = '1';
+    initMainPage();
+  });
 
-  /* clean up splash after transition, then scroll past hero */
   setTimeout(() => {
     splash.style.display = 'none';
     main.style.transition = '';
     if (window._stopSkyCanvas) window._stopSkyCanvas();
-    // Option B: skip the hero section, land on traditions/features
-    const target = document.getElementById('traditions');
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 1700);
+  }, 1400);
 });
 </script>
 </body>
