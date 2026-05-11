@@ -491,25 +491,69 @@ body.landing-entered #explore-btn {
 .feature-live   { display:inline-block; margin-top:14px; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:4px 10px; border-radius:100px; background:rgba(42,107,74,0.12); color:var(--c-jain); border:1px solid rgba(42,107,74,0.25); }
 
 /* ── APP DOWNLOAD ────────────────────────────────────────────────────── */
-.download-section { padding:100px 80px; text-align:center; position:relative; overflow:hidden; }
-.download-section::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 70% 80% at 50% 50%, rgba(200,160,110,0.14) 0%, transparent 70%); pointer-events:none; }
-.download-phones { display:flex; justify-content:center; align-items:flex-end; gap:16px; margin-bottom:56px; position:relative; z-index:1; }
+.download-section { padding:110px 80px; text-align:center; position:relative; overflow:hidden; }
+.download-section::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 68% 78% at 50% 42%, rgba(216,138,28,0.13) 0%, transparent 70%), radial-gradient(ellipse 45% 42% at 15% 18%, rgba(27,94,139,0.08) 0%, transparent 68%), radial-gradient(ellipse 45% 42% at 86% 78%, rgba(42,107,74,0.08) 0%, transparent 68%); pointer-events:none; }
+.download-phones { display:grid; grid-template-columns:repeat(3,minmax(190px,1fr)); gap:18px; max-width:860px; margin:0 auto 46px; position:relative; z-index:1; }
 .phone-mockup {
-  width:140px; height:260px;
-  background:rgba(255,253,249,0.96); border:1px solid rgba(200,160,110,0.24);
-  border-radius:28px; position:relative; overflow:hidden;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
-  transition:transform 0.3s;
+  min-height:260px;
+  background:rgba(255,253,249,0.82);
+  border:1px solid rgba(200,160,110,0.28);
+  border-radius:28px;
+  position:relative;
+  overflow:hidden;
+  padding:22px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:space-between;
+  text-align:left;
+  box-shadow:0 18px 48px rgba(100,60,20,0.08), inset 0 1px 0 rgba(255,255,255,0.78);
+  transform:translateY(0);
+  transition:transform 0.34s cubic-bezier(0.22,1,0.36,1), border-color 0.34s, box-shadow 0.34s;
 }
-.phone-mockup:hover { transform:translateY(-6px); }
-.phone-notch { position:absolute; top:10px; left:50%; transform:translateX(-50%); width:36px; height:4px; background:rgba(216,138,28,0.28); border-radius:2px; }
-.phone-icon-wrap { font-family:var(--fh); font-size:36px; }
-.phone-label { font-size:10px; color:rgba(62,42,31,0.50); letter-spacing:0.1em; text-align:center; padding:0 12px; }
-.phone-mockup.main { width:170px; height:310px; border-color:rgba(216,138,28,0.40); background:rgba(216,138,28,0.07); }
-.phone-mockup.main .phone-label { color:rgba(216,138,28,0.70); }
-.phone-screen-lines { display:flex; flex-direction:column; gap:6px; width:80%; }
-.phone-screen-line  { height:4px; background:rgba(200,160,110,0.18); border-radius:2px; }
-.phone-screen-line.accent { background:rgba(216,138,28,0.35); width:60%; }
+.phone-mockup::before {
+  content:'';
+  position:absolute;
+  inset:-35% -20% auto auto;
+  width:170px;
+  height:170px;
+  border-radius:50%;
+  background:rgba(216,138,28,0.10);
+  animation:downloadOrb 8s ease-in-out infinite;
+}
+.phone-mockup::after {
+  content:'';
+  position:absolute;
+  left:22px;
+  right:22px;
+  bottom:22px;
+  height:3px;
+  border-radius:8px;
+  background:linear-gradient(90deg,var(--saffron),rgba(216,138,28,0.08));
+  transform-origin:left;
+  animation:downloadLine 3.8s ease-in-out infinite;
+}
+.phone-mockup:hover { transform:translateY(-8px); border-color:rgba(216,138,28,0.42); box-shadow:0 26px 64px rgba(100,60,20,0.13), inset 0 1px 0 rgba(255,255,255,0.86); }
+.phone-mockup.main { min-height:300px; background:linear-gradient(160deg,rgba(255,253,249,0.96),rgba(250,238,218,0.78)); border-color:rgba(216,138,28,0.44); }
+.phone-mockup.main::before { width:220px; height:220px; background:rgba(216,138,28,0.14); }
+.phone-status { display:inline-flex; align-items:center; gap:7px; border-radius:999px; padding:6px 11px; font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:rgba(62,42,31,0.58); background:rgba(200,160,110,0.16); border:1px solid rgba(200,160,110,0.22); position:relative; z-index:1; }
+.phone-status.live { color:#2A6B4A; background:rgba(42,107,74,0.11); border-color:rgba(42,107,74,0.22); }
+.phone-status .pulse-dot { width:7px; height:7px; border-radius:50%; background:currentColor; animation:statusPulse 2s ease-in-out infinite; }
+.phone-icon-wrap { width:54px; height:54px; border-radius:18px; display:flex; align-items:center; justify-content:center; background:rgba(216,138,28,0.11); border:1px solid rgba(216,138,28,0.18); color:var(--saffron); position:relative; z-index:1; }
+.phone-mockup.sikh .phone-icon-wrap { background:rgba(27,94,139,0.10); border-color:rgba(27,94,139,0.18); color:#1B5E8B; }
+.phone-mockup.jain .phone-icon-wrap { background:rgba(42,107,74,0.10); border-color:rgba(42,107,74,0.18); color:#2A6B4A; }
+.phone-copy { position:relative; z-index:1; }
+.phone-label { font-family:var(--fd); font-size:26px; line-height:1.08; color:var(--ink); margin-bottom:8px; }
+.phone-desc { font-size:12px; line-height:1.6; color:rgba(62,42,31,0.58); }
+.phone-screen-lines { display:flex; flex-direction:column; gap:7px; width:100%; position:relative; z-index:1; }
+.phone-screen-line  { height:5px; background:rgba(200,160,110,0.18); border-radius:8px; animation:screenGlow 4.4s ease-in-out infinite; }
+.phone-screen-line.accent { background:rgba(216,138,28,0.35); width:62%; }
+.phone-screen-line:nth-child(2) { width:86%; animation-delay:0.35s; }
+.phone-screen-line:nth-child(3) { width:70%; animation-delay:0.7s; }
+@keyframes downloadOrb { 0%,100%{ transform:translate3d(0,0,0) scale(1); opacity:0.85; } 50%{ transform:translate3d(-18px,18px,0) scale(1.08); opacity:0.55; } }
+@keyframes downloadLine { 0%,100%{ transform:scaleX(0.24); opacity:0.34; } 50%{ transform:scaleX(1); opacity:0.72; } }
+@keyframes statusPulse { 0%,100%{ transform:scale(1); opacity:0.55; } 50%{ transform:scale(1.6); opacity:1; } }
+@keyframes screenGlow { 0%,100%{ opacity:0.55; } 50%{ opacity:1; } }
 
 .download-buttons { display:flex; justify-content:center; gap:14px; margin-bottom:24px; position:relative; z-index:1; flex-wrap:wrap; }
 .dl-btn {
@@ -598,9 +642,8 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
   .trad-trad-badge { font-size:10px; }
   .trad-verse-script { font-size:16px; }
   .trad-verse-trans { font-size:18px; }
-  .download-phones { gap:8px; }
-  .phone-mockup { width:110px; height:200px; }
-  .phone-mockup.main { width:130px; height:240px; }
+  .download-phones { grid-template-columns:1fr; gap:14px; max-width:360px; }
+  .phone-mockup, .phone-mockup.main { min-height:220px; }
   .cta-trad-grid { grid-template-columns:repeat(2,1fr); }
   .footer-top { flex-direction:column; gap:20px; text-align:center; }
   .footer-bottom { flex-direction:column; align-items:flex-start; }
@@ -1240,40 +1283,61 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
   <p class="s-sub reveal" style="text-align:center;margin:0 auto 56px">Your daily sadhana, community, and sacred calendar — already live at <strong>sanatansangam.app</strong> and arriving on iOS &amp; Android on June 17, 2026.</p>
 
   <div class="download-phones reveal">
-    <div class="phone-mockup">
-      <div class="phone-notch"></div>
-      <div class="phone-icon-wrap">📿</div>
-      <div class="phone-screen-lines">
-        <div class="phone-screen-line accent"></div>
-        <div class="phone-screen-line"></div>
-        <div class="phone-screen-line" style="width:75%"></div>
-      </div>
-      <div class="phone-label">Daily Japa</div>
-    </div>
     <div class="phone-mockup main">
-      <div class="phone-notch"></div>
-      <svg width="52" height="52" viewBox="0 0 32 32" fill="none">
-        <circle cx="16" cy="16" r="14" stroke="#C8924A" stroke-width="1.2"/>
-        <ellipse cx="16" cy="8" rx="4" ry="7" fill="#C8924A" opacity=".8"/>
-        <ellipse cx="16" cy="8" rx="4" ry="7" transform="rotate(60 16 16)" fill="#C8924A" opacity=".65"/>
-        <ellipse cx="16" cy="8" rx="4" ry="7" transform="rotate(120 16 16)" fill="#C8924A" opacity=".5"/>
-        <ellipse cx="16" cy="8" rx="4" ry="7" transform="rotate(180 16 16)" fill="#C8924A" opacity=".8"/>
-        <ellipse cx="16" cy="8" rx="4" ry="7" transform="rotate(240 16 16)" fill="#C8924A" opacity=".65"/>
-        <ellipse cx="16" cy="8" rx="4" ry="7" transform="rotate(300 16 16)" fill="#C8924A" opacity=".5"/>
-        <circle cx="16" cy="16" r="5" fill="#3E2A1F"/>
-        <text x="16" y="20" font-family="Noto Serif Devanagari" font-size="7" fill="#C8924A" text-anchor="middle">ॐ</text>
-      </svg>
-      <div class="phone-label">Sanatan Sangam</div>
-    </div>
-    <div class="phone-mockup">
-      <div class="phone-notch"></div>
-      <div class="phone-icon-wrap">🕉</div>
+      <span class="phone-status live"><span class="pulse-dot"></span>Live web</span>
+      <div class="phone-icon-wrap">
+        <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="11.5" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M5 16h22M16 4.5c3.2 3.2 4.8 7 4.8 11.5S19.2 24.3 16 27.5C12.8 24.3 11.2 20.5 11.2 16S12.8 7.7 16 4.5Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M8.5 8.6c2 1.4 4.5 2.1 7.5 2.1s5.5-.7 7.5-2.1M8.5 23.4c2-1.4 4.5-2.1 7.5-2.1s5.5.7 7.5 2.1" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity=".65"/>
+        </svg>
+      </div>
+      <div class="phone-copy">
+        <div class="phone-label">Use it today</div>
+        <p class="phone-desc">Open the full web app now for sadhana, Pathshala, Panchang, Mandali, and Kul.</p>
+      </div>
       <div class="phone-screen-lines">
         <div class="phone-screen-line accent"></div>
         <div class="phone-screen-line"></div>
-        <div class="phone-screen-line" style="width:80%"></div>
+        <div class="phone-screen-line"></div>
       </div>
-      <div class="phone-label">Daily Shloka</div>
+    </div>
+    <div class="phone-mockup sikh">
+      <span class="phone-status"><span class="pulse-dot"></span>iOS soon</span>
+      <div class="phone-icon-wrap">
+        <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
+          <path d="M20.5 4.5c.1 2.4-1.6 4.5-3.8 4.8-.3-2.2 1.3-4.3 3.8-4.8Z" fill="currentColor" opacity=".85"/>
+          <path d="M24.5 21.5c-.7 1.8-1.1 2.6-2.1 4.2-1.4 2.1-3.4 2.2-4.2 2.2-.9 0-1.9-.6-3.1-.6-1.3 0-2.4.6-3.2.6-1.7.1-3-1.8-4.4-4-2.4-3.8-2.6-8.3-1.1-10.6 1.1-1.7 2.8-2.7 4.6-2.7 1.1 0 2.2.7 3.4.7 1.1 0 2.7-.8 4.5-.7 1.5.1 3 .8 4 2-3.5 2.1-2.9 7.1.6 8.9Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="phone-copy">
+        <div class="phone-label">iPhone ready</div>
+        <p class="phone-desc">Native reminders, daily practice flow, and calm mobile-first rituals are being prepared.</p>
+      </div>
+      <div class="phone-screen-lines">
+        <div class="phone-screen-line accent"></div>
+        <div class="phone-screen-line"></div>
+        <div class="phone-screen-line"></div>
+      </div>
+    </div>
+    <div class="phone-mockup jain">
+      <span class="phone-status"><span class="pulse-dot"></span>Android soon</span>
+      <div class="phone-icon-wrap">
+        <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
+          <path d="M9 12.5h14v10.8c0 2.3-1.9 4.2-4.2 4.2h-5.6C10.9 27.5 9 25.6 9 23.3V12.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M12 12.5 9.5 8M20 12.5 22.5 8M12.5 17h.1M19.5 17h.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M6 15v7M26 15v7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="phone-copy">
+        <div class="phone-label">Android ready</div>
+        <p class="phone-desc">Built for fast access to mala, sacred calendar, family, and community wherever you are.</p>
+      </div>
+      <div class="phone-screen-lines">
+        <div class="phone-screen-line accent"></div>
+        <div class="phone-screen-line"></div>
+        <div class="phone-screen-line"></div>
+      </div>
     </div>
   </div>
 
