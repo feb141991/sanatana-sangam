@@ -21,6 +21,7 @@ import {
   X,
   Radio,
   BarChart2,
+  MessageCircle,
 } from 'lucide-react';
 // DigitalDeeksha removed — was overlaying home page
 import { Sparkles, Play, Search, Settings, Plus } from 'lucide-react';
