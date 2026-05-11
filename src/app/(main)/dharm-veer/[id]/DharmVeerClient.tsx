@@ -178,7 +178,7 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
           </div>
 
           <p className={`italic font-medium opacity-80 px-4 ${fontStyles[fontSize]}`}>
-            "{lang === 'local' && hero.taglineLocal ? hero.taglineLocal : hero.tagline}"
+            &ldquo;{lang === 'local' && hero.taglineLocal ? hero.taglineLocal : hero.tagline}&rdquo;
           </p>
         </section>
 
