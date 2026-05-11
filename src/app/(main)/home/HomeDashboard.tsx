@@ -1544,12 +1544,7 @@ export default function HomeDashboard({
       href: '/mandali',
       icon: Users,
     },
-    {
-      title: 'Reflections (Feed)',
-      description: 'Shared moments of contemplation',
-      href: '/reflections',
-      icon: MessageCircle,
-    },
+
     {
       title: 'Tirtha',
       description: 'Find temples near you',
