@@ -64,9 +64,9 @@ nav {
 .nav-cta:hover { opacity:0.9; transform:translateY(-1px); }
 
 /* ── SPLASH ENTRY ─────────────────────────────────────────────────────── */
-#splash { position:fixed;inset:0;z-index:9999;overflow:hidden; background:radial-gradient(ellipse 90% 110% at 50% 60%,#0D0928 0%,#070418 50%,#020108 100%); display:flex;flex-direction:column;align-items:center;justify-content:center; }
+#splash { position:fixed;inset:0;z-index:9999;overflow:hidden; background:radial-gradient(ellipse 90% 110% at 50% 60%,#0D0928 0%,#070418 50%,#020108 100%); display:flex;flex-direction:column;align-items:center;justify-content:center; min-height:100svh; }
 #sky-canvas { position:absolute;inset:0;width:100%;height:100%;pointer-events:none; }
-#splash-content { position:relative;z-index:2;text-align:center;padding:0 40px;pointer-events:none; }
+#splash-content { position:relative;z-index:2;text-align:center;padding:0 40px;pointer-events:auto; }
 #splash-deva { font-family:var(--fh);font-size:clamp(16px,2.2vw,26px);color:rgba(216,138,28,0.60);letter-spacing:0.15em;margin-bottom:16px; }
 #splash-title { font-family:var(--fd);font-size:clamp(38px,7vw,82px);font-weight:300;color:#FFFEF8;line-height:1.04;letter-spacing:-0.02em;margin-bottom:12px; }
 #splash-title em { color:#D88A1C;font-style:italic; }
@@ -102,6 +102,16 @@ nav {
 #splash-sub { font-size:clamp(11px,1.6vw,14px);color:rgba(255,254,248,0.30);letter-spacing:0.12em;margin-bottom:4px;font-weight:300;text-transform:uppercase; }
 #explore-btn { position:absolute;bottom:36px;left:50%;transform:translateX(-50%); background:transparent;border:1px solid rgba(216,138,28,0.38);color:rgba(216,138,28,0.80);font-family:var(--fb);font-size:12px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;padding:13px 40px;border-radius:100px;cursor:pointer;animation:pulseGlow 3s ease-in-out infinite;transition:all 0.25s;white-space:nowrap; }
 #explore-btn:hover { background:rgba(216,138,28,0.10);border-color:rgba(216,138,28,0.70);color:#E8A030; }
+body.landing-entered #splash {
+  position:relative;
+  inset:auto;
+  z-index:1;
+  overflow:visible;
+}
+body.landing-entered #explore-btn {
+  animation:none;
+  opacity:0.78;
+}
 
 /* ── Splash Join Form ──────────────────────────────────────────────────── */
 #splash-join { margin-top:28px; width:100%; max-width:460px; }
@@ -2535,36 +2545,32 @@ fetch('/api/waitlist').then(r => r.json()).then(({ count }) => {
 }).catch(() => {});
 
 /* ─── EXPLORE BUTTON — transition from splash to main page ──────────────── */
+let mainPageInitialised = false;
 document.getElementById('explore-btn').addEventListener('click', function () {
-  const splash = document.getElementById('splash');
   const main   = document.getElementById('main-page');
-  this.style.pointerEvents = 'none';
-
-  splash.style.transition    = 'opacity 1.2s ease';
-  splash.style.opacity       = '0';
-  splash.style.pointerEvents = 'none';
+  document.body.classList.add('landing-entered');
+  this.textContent = 'Continue below ↓';
 
   main.style.display    = 'block';
-  main.style.opacity    = '0';
-  main.style.transition = 'opacity 1.2s ease 0.3s';
+  main.style.opacity    = '1';
+  main.style.transition = '';
 
   // Wait one frame so the browser computes layout for the newly-visible #main-page,
-  // then start the opacity transition and initialise all JS (observers, tab positions, etc.)
+  // then initialise all JS and scroll into the merged page.
   requestAnimationFrame(() => {
-    main.style.opacity = '1';
-    try {
-      initMainPage();
-    } catch (err) {
-      console.error('[landing] initMainPage failed', err);
-      document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+    if (!mainPageInitialised) {
+      mainPageInitialised = true;
+      try {
+        initMainPage();
+      } catch (err) {
+        console.error('[landing] initMainPage failed', err);
+        document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+      }
     }
+    setTimeout(() => {
+      main.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 120);
   });
-
-  setTimeout(() => {
-    splash.style.display = 'none';
-    main.style.transition = '';
-    if (window._stopSkyCanvas) window._stopSkyCanvas();
-  }, 1400);
 });
 </script>
 </body>
