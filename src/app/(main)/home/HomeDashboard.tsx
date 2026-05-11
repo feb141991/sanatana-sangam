@@ -22,6 +22,7 @@ import {
   Radio,
   BarChart2,
   MessageCircle,
+  Shield,
 } from 'lucide-react';
 // DigitalDeeksha removed — was overlaying home page
 import { Sparkles, Play, Search, Settings, Plus } from 'lucide-react';
@@ -1543,6 +1544,12 @@ export default function HomeDashboard({
       description: 'Join satsang and community circles',
       href: '/mandali',
       icon: Users,
+    },
+    {
+      title: 'Kul',
+      description: 'Family, lineage and sacred sanskaras',
+      href: '/kul',
+      icon: Shield,
     },
 
     {

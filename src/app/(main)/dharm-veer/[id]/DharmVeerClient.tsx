@@ -31,10 +31,10 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
     xl: 'text-xl leading-relaxed',
   };
 
-  const themeColors: Record<ReadingTheme, { bg: string; text: string; card: string }> = {
-    light: { bg: '#FAF6EF', text: '#2A1B0A', card: 'rgba(255,255,255,0.7)' },
-    dark: { bg: '#0C0A07', text: '#F2EAD6', card: 'rgba(30,28,24,0.7)' },
-    sepia: { bg: '#F4ECD8', text: '#5B4636', card: 'rgba(255,250,230,0.6)' },
+  const themeColors: Record<ReadingTheme, { bg: string; text: string; card: string; border: string }> = {
+    light: { bg: '#FAF6EF', text: '#2A1B0A', card: '#FFFFFF', border: 'rgba(42,27,10,0.1)' },
+    dark: { bg: '#0C0A07', text: '#F2EAD6', card: '#1E1C18', border: 'rgba(242,234,214,0.15)' },
+    sepia: { bg: '#F4ECD8', text: '#5B4636', card: '#FFF9EB', border: 'rgba(91,70,54,0.1)' },
   };
 
   const activeTheme = themeColors[theme];
@@ -91,8 +91,12 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-20 right-4 z-50 w-64 clay-card p-4 space-y-6"
-            style={{ backgroundColor: activeTheme.card, border: '1px solid rgba(200,146,74,0.2)' }}
+            className="fixed top-20 right-4 z-50 w-72 rounded-[2.5rem] shadow-2xl p-6 space-y-8 backdrop-blur-2xl"
+            style={{ 
+              backgroundColor: activeTheme.card, 
+              border: `1px solid ${activeTheme.border}`,
+              color: activeTheme.text 
+            }}
           >
             {/* Theme Toggle */}
             <div>
