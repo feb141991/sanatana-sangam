@@ -273,7 +273,7 @@ export default function OnboardingClient({ userId, traditionValue = '', hasTradi
 
       const { error } = await supabase.from('profiles').update(updates).eq('id', userId);
       if (error) throw error;
-      toast.success('Welcome to Sanatana Sangam 🙏', { duration: 3000 });
+      toast.success('Welcome to Shoonaya 🙏', { duration: 3000 });
       router.replace('/home');
     } catch (err) {
       console.error(err);
@@ -741,7 +741,7 @@ export default function OnboardingClient({ userId, traditionValue = '', hasTradi
                       Your Language
                     </h2>
                     <p className="text-sm leading-relaxed" style={{ color: 'rgba(200, 170, 210, 0.48)' }}>
-                      Choose how Sanatana Sangam speaks to you. You can change this any time.
+                      Choose how Shoonaya speaks to you. You can change this any time.
                     </p>
                   </div>
 

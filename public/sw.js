@@ -1,4 +1,4 @@
-// Sanatana Sangam — Service Worker (offline caching)
+// Shoonaya — Service Worker (offline caching)
 //
 // ⚠️  DO NOT REGISTER THIS FILE directly via navigator.serviceWorker.register('/sw.js').
 //

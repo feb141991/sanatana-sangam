@@ -25,7 +25,7 @@ export default function PublicPageShell({
   intro,
   children,
   asideTitle = 'Launch Trust Layer',
-  asideBody = 'These pages define how Sanatana Sangam handles privacy, conduct, safety, and support as the product moves toward public launch.',
+  asideBody = 'These pages define how Shoonaya handles privacy, conduct, safety, and support as the product moves toward public launch.',
 }: PublicPageShellProps) {
   return (
     <main className="min-h-screen px-4 py-6 md:py-10">
@@ -34,7 +34,7 @@ export default function PublicPageShell({
           <Link href="/" className="flex items-center gap-2 text-[color:var(--text-cream)]">
             <BrandMark size="sm" />
             <span className="font-display font-bold text-lg">
-              Sanatana <span className="text-gradient">Sangam</span>
+              Shoo<span className="text-gradient">naya</span>
             </span>
           </Link>
           <div className="flex flex-wrap items-center gap-3 text-sm text-[color:var(--brand-muted)]">

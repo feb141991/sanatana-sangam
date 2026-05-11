@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "Sanatana Sangam",
-  "short_name": "Sangam",
-  "description": "The Global Home for Sanatani — community, knowledge, and bhakti.",
+  "name": "Shoonaya",
+  "short_name": "Shoonaya",
+  "description": "Find your infinite. Ancient wisdom for seekers — Hindu, Sikh, Buddhist, and Jain dharma in one sacred home.",
   "start_url": "/home",
   "scope": "/",
   "display": "standalone",

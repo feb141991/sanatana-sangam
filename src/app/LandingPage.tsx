@@ -1,6 +1,6 @@
 'use client';
 
-// ─── Sanatana Sangam — Landing Page ──────────────────────────────────────────
+// ─── Shoonaya — Landing Page ─────────────────────────────────────────────────
 // Full animation style landing — dharma first, no politics, no "free forever"
 // Framer-motion scroll reveals, ambient background, PWA install CTA.
 
@@ -79,7 +79,7 @@ const TESTIMONIALS = [
     emoji:  '🪷',
   },
   {
-    quote:  "As a second-generation Hindu in Toronto, I'd lost my connection. Sanatana Sangam brought it back.",
+    quote:  "As a second-generation Hindu in Toronto, I'd lost my connection. Shoonaya brought it back.",
     name:   'Arjun S.',
     city:   'Toronto, Canada',
     emoji:  '🦚',
@@ -229,7 +229,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-2">
             <BrandMark size="sm" />
             <span className="font-bold text-base text-amber-100">
-              Sanatana <span style={{ color: '#d4a645' }}>Sangam</span>
+              Shoo<span style={{ color: '#d4a645' }}>naya</span>
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -289,7 +289,7 @@ export default function LandingPage() {
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold mb-8 border"
               style={{ background: 'rgba(212,166,70,0.10)', borderColor: 'rgba(212,166,70,0.25)', color: '#d4a645' }}>
               <Sparkles size={13} />
-              The Global Home for Sanatani Worldwide
+              Ancient wisdom for seekers
             </div>
           </motion.div>
 
@@ -298,10 +298,10 @@ export default function LandingPage() {
             variants={fadeUp} custom={1}
             className="text-5xl md:text-7xl font-bold leading-tight mb-6 text-white"
           >
-            Your dharma deserves
+            Find your
             <br />
             <span style={{ background: 'linear-gradient(135deg, #f0c040, #d4a645, #a07830)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              a real home.
+              infinite.
             </span>
           </motion.h1>
 
@@ -310,8 +310,8 @@ export default function LandingPage() {
             variants={fadeUp} custom={2}
             className="text-lg md:text-xl text-amber-100/60 max-w-2xl mx-auto mb-8 leading-relaxed"
           >
-            A living digital sabha — where sadhana, scripture, community, and seva
-            come together for Sanatani families around the world.
+            Shoonaya is the void that holds all traditions. Hindu, Sikh, Buddhist, and Jain
+            dharma — sadhana, scripture, community, and seva — in one sacred home.
           </motion.p>
 
           {/* CTAs */}
@@ -428,10 +428,10 @@ export default function LandingPage() {
                 <Smartphone size={12} /> Install the App
               </div>
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
-                Take Sangam with you, everywhere.
+                Take Shoonaya with you, everywhere.
               </h2>
               <p className="text-amber-100/55 text-sm leading-relaxed mb-8">
-                Add Sanatana Sangam to your home screen for the full app experience —
+                Add Shoonaya to your home screen for the full app experience —
                 offline access, push notifications for Brahma Muhurta, festival reminders, and more.
               </p>
 
@@ -564,7 +564,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-amber-100/30">
           <div className="flex items-center gap-2">
             <BrandMark size="sm" />
-            <span>Sanatana Sangam — सनातन संगम</span>
+            <span>Shoonaya — शून्य</span>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-5">
             {[

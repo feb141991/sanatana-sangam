@@ -1,6 +1,6 @@
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- * Sanatana Sangam — Tradition-Aware Daily Sacred Texts
+ * Shoonaya — Tradition-Aware Daily Sacred Texts
  * ─────────────────────────────────────────────────────────────────────────────
  *
  * Shabads for Sikh · Dhamma verses for Buddhist · Sutras for Jain

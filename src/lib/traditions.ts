@@ -1,4 +1,4 @@
-// ─── Sanatana Sangam — Traditions, Sampradayas, Ishta Devatas, Greetings ──────
+// ─── Shoonaya — Traditions, Sampradayas, Ishta Devatas, Greetings ──────
 // Covers Hindu, Sikh, Buddhist, Jain — all streams of Sanatan Dharma
 
 export type TraditionKey = 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'other';

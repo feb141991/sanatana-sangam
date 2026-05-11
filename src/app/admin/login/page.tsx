@@ -51,7 +51,7 @@ export default function AdminLoginPage() {
             🕉️
           </div>
           <h1 className="text-2xl font-bold text-[color:var(--text-cream)]">Admin Portal</h1>
-          <p className="text-sm text-[color:var(--text-dim)] mt-1">Sanatana Sangam · Restricted access</p>
+          <p className="text-sm text-[color:var(--text-dim)] mt-1">Shoonaya · Restricted access</p>
         </div>
 
         {/* Card */}

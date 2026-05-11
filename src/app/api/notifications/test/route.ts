@@ -14,7 +14,7 @@ export async function POST(request: Request) {
   try {
     const serviceSupabase = createServiceRoleSupabaseClient();
     const createdAt = new Date();
-    const title = 'Test notification from Sanatana Sangam';
+    const title = 'Test notification from Shoonaya';
     const body = 'If you can see this in the bell or as a browser push, notifications are wired correctly.';
     const actionPath = '/profile';
     const actionUrl = new URL(actionPath, new URL(request.url).origin).toString();

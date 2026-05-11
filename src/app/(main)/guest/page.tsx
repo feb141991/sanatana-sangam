@@ -61,7 +61,7 @@ export default async function GuestPage() {
 
         <div className="space-y-2">
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-[color:var(--text-cream)]">
-            Explore Sanatana Sangam before you join
+            Explore Shoonaya before you join
           </h1>
           <p className="text-sm sm:text-base text-[color:var(--brand-muted)] leading-relaxed max-w-xl">
             Start with Vichaar Sabha and Tirtha Map. Join when you want to post, reply, build your Kul, or get reminders.

@@ -1,6 +1,6 @@
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- * Sanatana Sangam — Sacred Assets Manifest
+ * Shoonaya — Sacred Assets Manifest
  * ─────────────────────────────────────────────────────────────────────────────
  * Standardized utility for resolving images, audio, and text placeholders 
  * based on tradition, deity, and occasion.

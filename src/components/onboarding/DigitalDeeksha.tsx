@@ -6,7 +6,7 @@ const steps = [
   {
     title: "The Vision",
     icon: <Sunrise className="w-8 h-8 text-[#C5A059]" />,
-    description: "Welcome to Sanatan Sangam. A premium sanctuary for your spiritual journey. Transcend the digital noise and connect with your roots.",
+    description: "Find your infinite. Shoonaya is the void that holds all traditions — Hindu, Sikh, Buddhist, and Jain dharma breathing together in one sacred space.",
     accent: "from-[#C5A059]/20 to-[#D4784A]/20"
   },
   {

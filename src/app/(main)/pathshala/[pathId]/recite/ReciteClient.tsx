@@ -613,7 +613,7 @@ export default function ReciteClient({
                 key={id}
                 onClick={() => {
                   if (locked) {
-                    toast('🔒 Upgrade to Sangam Pro to unlock', {
+                    toast('🔒 Upgrade to Shoonaya Pro to unlock', {
                       style: { background: '#1c1c1a', color: 'var(--brand-ink)' },
                     });
                     return;

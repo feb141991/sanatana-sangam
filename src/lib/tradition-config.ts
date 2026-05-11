@@ -1,6 +1,6 @@
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- * Sanatana Sangam — Tradition Configuration
+ * Shoonaya — Tradition Configuration
  * ─────────────────────────────────────────────────────────────────────────────
  *
  * Central config that maps each tradition to all UI/content metadata.

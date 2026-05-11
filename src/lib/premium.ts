@@ -1,4 +1,4 @@
-// ─── Sangam Pro — Premium State ───────────────────────────────────────────────
+// ─── Shoonaya Pro — Premium State ───────────────────────────────────────────────
 // localStorage gives instant reactivity across all usePremium() hooks.
 // The DB column (profiles.is_pro) persists across devices / browser clears.
 // activatePro() writes both; the server is source of truth on page load.

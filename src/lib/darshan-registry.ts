@@ -1,6 +1,6 @@
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- * Sanatana Sangam — Daily Darshan Registry
+ * Shoonaya — Daily Darshan Registry
  * ─────────────────────────────────────────────────────────────────────────────
  * Curated high-quality images and blessings for the Daily Darshan feature.
  * ─────────────────────────────────────────────────────────────────────────────

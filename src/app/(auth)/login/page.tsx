@@ -86,7 +86,7 @@ function LoginForm() {
             <BrandMark />
           </Link>
           <h1 className="font-display text-2xl font-bold text-[color:var(--text-cream)] mt-2">Welcome back</h1>
-          <p className="text-[color:var(--brand-muted)] text-sm mt-1">Sign in to your Sangam</p>
+          <p className="text-[color:var(--brand-muted)] text-sm mt-1">Find your infinite — continue your practice</p>
         </div>
 
         <div className="hidden sm:grid gap-3 mb-4 sm:grid-cols-2">
@@ -169,7 +169,7 @@ function LoginForm() {
         </div>
 
         <p className="text-center text-sm text-[color:var(--brand-muted)] mt-6">
-          New to Sanatana Sangam?{' '}
+          New to Shoonaya?{' '}
           <Link href="/signup" className="text-[color:var(--brand-primary)] font-medium hover:underline">
             Join free
           </Link>

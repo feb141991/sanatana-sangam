@@ -16,8 +16,8 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   // ── App identity ─────────────────────────────────────────────────────────
-  appId:   'com.sanatanasangam.app',
-  appName: 'Sanatana Sangam',
+  appId:   'com.shoonaya.app',
+  appName: 'Shoonaya',
 
   // ── Web asset directory ───────────────────────────────────────────────────
   // Option A: webDir is irrelevant when server.url is set (it overrides it).

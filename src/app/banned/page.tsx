@@ -41,7 +41,7 @@ export default function BannedPage() {
       </button>
 
       <p className="text-[10px] text-gray-500 uppercase tracking-widest pt-8">
-        Sanatana Sangam Safety
+        Shoonaya Safety
       </p>
     </div>
   );

@@ -125,7 +125,7 @@ export const SEED_PATHS = SEED_PATHS_LIB as unknown as {
 
 // ── Share helper ───────────────────────────────────────────────────────────────
 async function shareEntry(entry: LibraryEntry) {
-  const text = `${entry.title} — ${entry.source}\n\n${entry.original}\n\n${entry.transliteration}\n\nMeaning: ${entry.meaning}\n\n— Shared via Sanatana Sangam`;
+  const text = `${entry.title} — ${entry.source}\n\n${entry.original}\n\n${entry.transliteration}\n\nMeaning: ${entry.meaning}\n\n— Shared via Shoonaya`;
   if (navigator.share) {
     try { await navigator.share({ title: entry.title, text }); return; } catch { /* cancelled */ }
   }
@@ -868,7 +868,7 @@ export default function PathshalaClient({
 
     // Free tier cap — max 1 active path
     if (!isPro && activePaths.length >= FREE_PATH_LIMIT) {
-      toast('🔒 Free plan supports 1 active path. Upgrade to Sangam Pro for unlimited.', {
+      toast('🔒 Free plan supports 1 active path. Upgrade to Shoonaya Pro for unlimited.', {
         duration: 4000,
         style: { background: '#1c1c1a', color: 'var(--brand-ink)' },
       });
@@ -1421,7 +1421,7 @@ export default function PathshalaClient({
                         style={{ ...cardStyle, background: isDark ? `${meta.accentColour}10` : `${meta.accentColour}12` }}>
                         <Lock size={18} style={{ color: meta.accentColour }} className="flex-shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold" style={{ color: primaryText }}>Sangam Pro — unlimited paths</p>
+                          <p className="text-xs font-semibold" style={{ color: primaryText }}>Shoonaya Pro — unlimited paths</p>
                           <p className="text-[10px] mt-0.5" style={{ color: secondaryText }}>
                             Free plan: 1 active path. Pro unlocks all paths, From Memory &amp; Timed recitation modes, and progress analytics.
                           </p>

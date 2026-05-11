@@ -256,7 +256,7 @@ interface Props {
 
 // ─── Free-tier gate ────────────────────────────────────────────────────────────
 // Garbhadhana (#1, prenatal) is free for all users.
-// All 15 remaining sanskaras require Sangam Pro.
+// All 15 remaining sanskaras require Shoonaya Pro.
 const FREE_SANSKAR_IDS = new Set(['garbhadhana']);
 
 // ─── Milestone offsets (months from conception/birth) for notifications ───────
@@ -451,7 +451,7 @@ function SanskaraCard({
         className="w-full flex items-start gap-3 px-4 py-3.5 text-left"
         onClick={() => {
           if (locked) {
-            toast('🔒 Upgrade to Sangam Pro to track all 16 Sanskaras', {
+            toast('🔒 Upgrade to Shoonaya Pro to track all 16 Sanskaras', {
               duration: 3000,
               style: { background: '#1c1208', color: '#f5dfa0', border: '1px solid rgba(200,146,74,0.3)' },
             });
@@ -683,7 +683,7 @@ function ProNudgeCard() {
         <div className="flex-1 min-w-0">
           <p className="text-xs font-semibold" style={{ color: '#d4a030' }}>Unlock all 16 Sanskaras</p>
           <p className="text-[11px] mt-0.5" style={{ color: 'rgba(245,210,130,0.5)' }}>
-            Garbhadhana is free. Upgrade to Sangam Pro to track the complete lifecycle — for you and your family.
+            Garbhadhana is free. Upgrade to Shoonaya Pro to track the complete lifecycle — for you and your family.
           </p>
         </div>
         <ChevronRight size={14} style={{ color: 'rgba(200,146,74,0.5)' }} className="flex-shrink-0" />

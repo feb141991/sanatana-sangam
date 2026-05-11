@@ -1,4 +1,4 @@
-// ─── Sanatana Sangam — UI Translation Dictionary ─────────────────────────────
+// ─── Shoonaya — UI Translation Dictionary ─────────────────────────────
 // Covers English (en), Hindi (hi), and Punjabi (pa).
 // Translations are provided for key spiritual terms and UI strings.
 // Keys follow camelCase. Values are plain strings (no JSX).
@@ -55,10 +55,10 @@ const en: TranslationMap = {
   // Bhakti
   bhakti: 'Bhakti', pathOfDevotion: 'The path of devotion', sacredSounds: 'Sacred Sounds',
   // Onboarding
-  welcomeTitle: 'Sanatana Sangam', welcomeSub: 'A home for Dharma',
+  welcomeTitle: 'Shoonaya', welcomeSub: 'A home for Dharma',
   yourTradition: 'Your Tradition', yourLanguage: 'Your Language',
   yourLocation: 'Your Location', whatBringsYou: 'What brings you here?',
-  enterApp: 'Enter Sanatana Sangam',
+  enterApp: 'Enter Shoonaya',
   // Kul
   kul: 'Kul', family: 'Family', lineage: 'Lineage', sanskara: 'Sanskara',
   // General

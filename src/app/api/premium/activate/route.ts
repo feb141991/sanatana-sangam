@@ -3,7 +3,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 
 // ─── POST /api/premium/activate ──────────────────────────────────────────────
-// Grants Sangam Pro to the authenticated user immediately (no payment yet).
+// Grants Shoonaya Pro to the authenticated user immediately (no payment yet).
 // When billing is integrated, this endpoint will be called by the payment
 // webhook instead of directly from the client.
 

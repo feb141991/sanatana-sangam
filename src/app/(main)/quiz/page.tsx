@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import QuizDashboardClient from './QuizDashboardClient';
 
 export const metadata = {
-  title: 'Quiz Mastery — Sanatan Sangam',
+  title: 'Quiz Mastery — Shoonaya',
   description: 'Deepen your knowledge of dharma, one day at a time.',
 };
 

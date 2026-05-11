@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
   const { error } = await serviceSupabase.from('notifications').insert({
     user_id:          toUserId,
     title:            `You&apos;ve been invited to join ${kulName}`,
-    body:             `Use code ${inviteCode} to join ${kulName} on Sanatana Sangam.`,
+    body:             `Use code ${inviteCode} to join ${kulName} on Shoonaya.`,
     emoji:            '🏡',
     action_url:       '/kul',
     type:             'kul_invite',

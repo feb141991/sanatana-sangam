@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import PublicPageShell from '@/components/public/PublicPageShell';
 
 export const metadata: Metadata = {
-  title: 'Contact | Sanatana Sangam',
-  description: 'Contact and support information for Sanatana Sangam.',
+  title: 'Contact | Shoonaya',
+  description: 'Contact and support information for Shoonaya.',
 };
 
 export default function ContactPage() {

@@ -387,7 +387,7 @@ async function callGemini(
     ? `Streak: ${currentStreak} days maintained.`
     : `The devotee recently missed practice days. Nudge style: ${nudgeStyle}.`;
 
-  const prompt = `You are a warm, knowledgeable Sanatani spiritual guide within the Sanatana Sangam app.
+  const prompt = `You are a warm, knowledgeable Sanatani spiritual guide within the Shoonaya app.
 
 DEVOTEE PROFILE: ${input.profileSummary}
 ${input.recentJapa}

@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import PublicPageShell from '@/components/public/PublicPageShell';
 
 export const metadata: Metadata = {
-  title: 'Community Guidelines | Sanatana Sangam',
-  description: 'Community expectations for conversations and conduct on Sanatana Sangam.',
+  title: 'Community Guidelines | Shoonaya',
+  description: 'Community expectations for conversations and conduct on Shoonaya.',
 };
 
 export default function GuidelinesPage() {
@@ -11,7 +11,7 @@ export default function GuidelinesPage() {
     <PublicPageShell
       eyebrow="Guidelines"
       title="Community should feel safe, thoughtful, and welcoming."
-      intro="Sanatana Sangam is meant to support sincere discussion, family continuity, and spiritual belonging. These guidelines define the kind of community we want to build."
+      intro="Shoonaya is meant to support sincere discussion, family continuity, and spiritual belonging. These guidelines define the kind of community we want to build."
       asideTitle="Moderation Standard"
       asideBody="Healthy communities are shaped by product design and moderation together. These guidelines should be reflected in user reporting and admin workflows."
     >

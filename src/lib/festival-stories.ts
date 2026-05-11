@@ -1,6 +1,6 @@
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- * Sanatana Sangam — Festival Stories
+ * Shoonaya — Festival Stories
  * ─────────────────────────────────────────────────────────────────────────────
  *
  * Handcrafted rich content for the top ~20 festivals across all four traditions.

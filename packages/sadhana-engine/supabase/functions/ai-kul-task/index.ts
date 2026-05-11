@@ -229,7 +229,7 @@ async function generateTaskSuggestion(opts: {
     ? `Guardian has requested: ${JSON.stringify(override)}`
     : '';
 
-  const prompt = `You are a spiritual guide (guru) within the Sanatana Sangam app, assigning a practice task to a kul member.
+  const prompt = `You are a spiritual guide (guru) within the Shoonaya app, assigning a practice task to a kul member.
 
 MEMBER PROFILE:
 - Tradition: ${p.tradition ?? 'general'}, Path: ${p.primary_path ?? 'bhakti'}, Depth: ${p.content_depth ?? 'beginner'}

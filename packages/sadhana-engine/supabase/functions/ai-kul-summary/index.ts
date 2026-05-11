@@ -209,7 +209,7 @@ async function generateWeeklyDigest(opts: {
     ? pendingTasks.map(t => `${t.title} (${t.urgency})`).join(', ')
     : 'none';
 
-  const prompt = `You are generating a weekly spiritual practice digest for the kul "${kulName}" ${kulEmoji} in the Sanatana Sangam app.
+  const prompt = `You are generating a weekly spiritual practice digest for the kul "${kulName}" ${kulEmoji} in the Shoonaya app.
 
 WEEKLY STATS:
 - Members: ${activeMembers} of ${totalMembers} practiced (${participationPct}%)

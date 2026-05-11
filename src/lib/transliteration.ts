@@ -1,6 +1,6 @@
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- * Sanatana Sangam — Script Transliteration Utility
+ * Shoonaya — Script Transliteration Utility
  * ─────────────────────────────────────────────────────────────────────────────
  */
 

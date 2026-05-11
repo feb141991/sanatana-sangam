@@ -26,16 +26,16 @@ const GUEST_QUICK_ACTIONS = [
   { icon: '💬', label: 'Sabha',   href: '/mandali'       },
 ];
 
-// Glass tokens — computed per-theme inside the component (see useGlass below)
+// Glass tokens — computed per-theme for the Shoonaya aesthetic
 function useGlass(isDark: boolean) {
   return {
-    bg:           isDark ? 'rgba(18, 14, 8, 0.72)'       : 'rgba(255, 251, 244, 0.82)',
-    border:       isDark ? 'rgba(200, 146, 74, 0.18)'    : 'rgba(160, 100, 30, 0.18)',
-    blur:         'blur(28px) saturate(180%)',
+    bg:           isDark ? 'rgba(10, 8, 6, 0.64)'        : 'rgba(255, 252, 248, 0.72)',
+    border:       isDark ? 'rgba(255, 255, 255, 0.08)'   : 'rgba(0, 0, 0, 0.04)',
+    blur:         'blur(40px) saturate(200%)',
     shadow:       isDark
-      ? '0 8px 32px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,220,140,0.06)'
-      : '0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.70)',
-    shadowSubtle: isDark ? '0 2px 8px rgba(0,0,0,0.08)' : '0 2px 8px rgba(0,0,0,0.06)',
+      ? '0 12px 48px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.05)'
+      : '0 12px 48px rgba(0,0,0,0.06), inset 0 1px 1px rgba(255,255,255,0.8)',
+    shadowSubtle: isDark ? '0 4px 12px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.04)',
   };
 }
 
@@ -156,8 +156,8 @@ export default function BottomNav({
     { href: '/pathshala',   label: 'Pathshala', mobileLabel: 'Study',    icon: BookOpen      },
     { href: '/nitya-karma', label: 'Nitya',     mobileLabel: 'Nitya',    icon: Sun           },
     { href: '/bhakti',      label: 'Bhakti',    mobileLabel: 'Bhakti',   icon: Heart         },
-    { href: '/kul',         label: 'Kul',       mobileLabel: 'Kul',      icon: Users         },
-    { href: '/mandali',     label: 'Mandali',   mobileLabel: 'Mandali',  icon: MessageCircle },
+    { href: '/reflections', label: 'Reflections', mobileLabel: 'Mirror', icon: Users         },
+    { href: '/mandali',     label: 'Mandali',   mobileLabel: 'Circle',  icon: MessageCircle },
   ];
   const guestNavItems = [
     { href: '/vichaar-sabha', label: 'Vichaar', mobileLabel: 'Vichaar', icon: MessageCircle },

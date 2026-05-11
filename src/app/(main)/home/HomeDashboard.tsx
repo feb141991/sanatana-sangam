@@ -219,11 +219,11 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
   const link    = `${baseUrl}/join?ref=${code}`;
 
   async function share() {
-    const shareText = `Join me on Sanatana Sangam — your home for dharma, Panchang, scriptures, and community.\n\nUse my invite: ${code}\n${link}`;
+    const shareText = `Join me on Shoonaya — your home for dharma, Panchang, scriptures, and community.\n\nUse my invite: ${code}\n${link}`;
     // Try Web Share API first (mobile / some desktop browsers)
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
-        await navigator.share({ title: 'Join me on Sanatana Sangam 🙏', text: shareText, url: link });
+        await navigator.share({ title: 'Join me on Shoonaya 🙏', text: shareText, url: link });
         return;
       } catch { /* user cancelled — fall through to clipboard */ }
     }
@@ -275,7 +275,7 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
         </div>
 
         <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>
-          Share Sanatana Sangam with your family and friends. They can use your invite code while joining.
+          Share Shoonaya with your family and friends. They can use your invite code while joining.
         </p>
 
         {/* Invite code display */}
@@ -1338,13 +1338,13 @@ export default function HomeDashboard({
       `🪔 Panchang — ${dateLabel}\n\n` +
       `📅 Tithi: ${panchang.tithi}\n⭐ Nakshatra: ${panchang.nakshatra}\n🕉️ Yoga: ${panchang.yoga}\n` +
       `🌅 Sunrise: ${panchang.sunrise}\n🌆 Sunset: ${panchang.sunset}\n⚠️ Rahu Kaal: ${panchang.rahuKaal}\n\n` +
-      `— Shared via Sanatana Sangam`
+      `— Shared via Shoonaya`
     );
   }
 
   function shareShloka() {
     shareContent(dailyText.shareLabel,
-      `${dailyText.icon} ${dailyText.label} — ${dailyText.source}\n\n${dailyText.original}\n\n${dailyText.transliteration ? `${dailyText.transliteration}\n\n` : ''}${dailyText.meaningLabel}: ${dailyText.meaning}\n\n— Shared via Sanatana Sangam`
+      `${dailyText.icon} ${dailyText.label} — ${dailyText.source}\n\n${dailyText.original}\n\n${dailyText.transliteration ? `${dailyText.transliteration}\n\n` : ''}${dailyText.meaningLabel}: ${dailyText.meaning}\n\n— Shared via Shoonaya`
     );
   }
 
@@ -1542,6 +1542,12 @@ export default function HomeDashboard({
       description: 'Join satsang and community circles',
       href: '/mandali',
       icon: Users,
+    },
+    {
+      title: 'Reflections',
+      description: 'Shared moments of contemplation',
+      href: '/reflections',
+      icon: MessageCircle,
     },
     {
       title: 'Tirtha',
@@ -1860,15 +1866,18 @@ export default function HomeDashboard({
           transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
           className="festival-story-card motion-press"
           aria-label={`Read the story of ${dharmVeer.name}`}
-          style={{ borderColor: 'rgba(157,100,60,0.30)' }}
+          style={{ 
+            borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(157,100,60,0.15)',
+            boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.3)' : '0 8px 32px rgba(157,100,60,0.05)'
+          }}
         >
           <span className="festival-story-emoji" aria-hidden="true">{dharmVeer.emoji}</span>
           <div className="festival-story-body">
-            <span className="festival-story-kicker" style={{ color: 'rgba(200,140,80,0.85)' }}>
-              ⚔️ Dharm Veer · {dharmVeerTradMeta.label}
+            <span className="festival-story-kicker" style={{ color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(157,100,60,0.8)' }}>
+              {dharmVeer.nameLocal ? 'धर्म वीर' : 'Dharm Veer'} · {dharmVeerTradMeta.label}
             </span>
-            <span className="festival-story-title">{dharmVeer.name}</span>
-            <span className="festival-story-teaser line-clamp-2">{dharmVeer.tagline}</span>
+            <span className="festival-story-title">{dharmVeer.nameLocal || dharmVeer.name}</span>
+            <span className="festival-story-teaser line-clamp-2">{dharmVeer.taglineLocal || dharmVeer.tagline}</span>
           </div>
           <ChevronRight size={16} className="festival-story-chevron" aria-hidden="true" />
         </motion.button>
@@ -2390,8 +2399,13 @@ export default function HomeDashboard({
                       <span className="text-[10px]" style={{ color: 'var(--text-dim)' }}>{dharmVeer.era}</span>
                     </div>
                     <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-cream)', lineHeight: 1.15 }}>
-                      {dharmVeer.name}
+                      {dharmVeer.nameLocal || dharmVeer.name}
                     </h2>
+                    {dharmVeer.nameLocal && (
+                      <p className="text-[0.7rem] uppercase tracking-widest opacity-60 mt-0.5" style={{ color: 'var(--text-cream)' }}>
+                        {dharmVeer.name}
+                      </p>
+                    )}
                     <p className="text-[0.78rem] mt-1 leading-snug" style={{ color: 'var(--text-muted-warm)' }}>
                       {dharmVeer.region}
                     </p>
@@ -2411,8 +2425,13 @@ export default function HomeDashboard({
               <div className="mx-6 mb-5 rounded-[1.2rem] px-4 py-3"
                 style={{ background: 'rgba(200,140,80,0.08)', border: '1px solid rgba(200,140,80,0.15)' }}>
                 <p className="text-sm leading-relaxed italic" style={{ color: 'var(--brand-primary)', fontFamily: 'var(--font-serif)' }}>
-                  &ldquo;{dharmVeer.tagline}&rdquo;
+                  &ldquo;{dharmVeer.taglineLocal || dharmVeer.tagline}&rdquo;
                 </p>
+                {dharmVeer.taglineLocal && (
+                  <p className="text-[0.65rem] mt-1.5 opacity-50 italic" style={{ color: 'var(--text-cream)' }}>
+                    {dharmVeer.tagline}
+                  </p>
+                )}
               </div>
 
               <div className="px-6 space-y-6">

@@ -372,7 +372,7 @@ async function generateStreakRecovery(
   const deity = profile.preferred_deity ?? 'the divine';
   const path = profile.primary_path ?? 'bhakti';
 
-  const prompt = `You are the Sanatana Sangam app sending a push notification to a devotee who missed ${daysMissed} day(s) of practice.
+  const prompt = `You are the Shoonaya app sending a push notification to a devotee who missed ${daysMissed} day(s) of practice.
 
 Devotee profile: ${tradition} tradition, ${path} path, devoted to ${deity}
 Nudge style: "${nudgeStyle}" — ${styleGuide[nudgeStyle] ?? styleGuide['gentle']}

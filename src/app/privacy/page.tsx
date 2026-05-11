@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import PublicPageShell from '@/components/public/PublicPageShell';
 
 export const metadata: Metadata = {
-  title: 'Privacy | Sanatana Sangam',
-  description: 'Privacy expectations for Sanatana Sangam users.',
+  title: 'Privacy | Shoonaya',
+  description: 'Privacy expectations for Shoonaya users.',
 };
 
 export default function PrivacyPage() {
@@ -18,7 +18,7 @@ export default function PrivacyPage() {
       <section>
         <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Information You Provide</h2>
         <p>
-          Sanatana Sangam stores account information, profile details, dharmic identity selections,
+          Shoonaya stores account information, profile details, dharmic identity selections,
           family group participation, community activity, and content you choose to post inside the app.
         </p>
       </section>

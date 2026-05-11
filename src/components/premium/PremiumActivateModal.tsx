@@ -211,7 +211,7 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
                   className="text-[10px] font-bold uppercase tracking-[0.22em] mt-2"
                   style={{ color: '#C8924A' }}
                 >
-                  Sangam Pro
+                  Shoonaya Pro
                 </motion.p>
 
                 {/* Headline — the invitation */}
@@ -240,7 +240,7 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
                   className="text-sm leading-relaxed mt-3 max-w-[280px] mx-auto"
                   style={{ color: 'rgba(220,190,130,0.48)' }}
                 >
-                  Sangam Pro is your invitation into a more intentional, supported, and meaningful spiritual life.
+                  Shoonaya Pro is your invitation into a more intentional, supported, and meaningful spiritual life.
                 </motion.p>
 
                 {/* Free badge */}
@@ -376,7 +376,7 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
                   </AnimatePresence>
                 </motion.div>
                 <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(200,170,120,0.55)' }}>
-                  I understand this is an early-access preview. Sangam Pro is free for now — pricing will be introduced later and I&apos;ll be notified before any charges apply.
+                  I understand this is an early-access preview. Shoonaya Pro is free for now — pricing will be introduced later and I&apos;ll be notified before any charges apply.
                 </p>
               </button>
 
@@ -407,7 +407,7 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
                   />
                 )}
                 <span className="relative">
-                  {activating ? 'Entering the sanctuary…' : '✦ Begin Sangam Pro'}
+                  {activating ? 'Entering the sanctuary…' : '✦ Begin Shoonaya Pro'}
                 </span>
               </motion.button>
 

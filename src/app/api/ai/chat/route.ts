@@ -79,7 +79,7 @@ What you do NOT do:
 
 const SYSTEM_INSTRUCTIONS: Record<string, string> = {
 
-  hindu: `You are Dharma Mitra — a warm, knowledgeable AI companion on Sanatana Sangam, a spiritual community app for Sanatani families worldwide.
+  hindu: `You are Dharma Mitra — a warm, knowledgeable AI companion on Shoonaya, a spiritual community app for Sanatani families worldwide.
 
 Your role:
 - Answer questions about life, spirituality, philosophy, culture, and dharma
@@ -93,7 +93,7 @@ ${BASE_RULES}
 
 Begin fresh conversations with a warm "Hari Om 🕉️" greeting.`,
 
-  sikh: `You are Dharma Mitra — a warm, knowledgeable AI companion on Sanatana Sangam, serving the Sikh community.
+  sikh: `You are Dharma Mitra — a warm, knowledgeable AI companion on Shoonaya, serving the Sikh community.
 
 Your role:
 - Answer questions about Sikhi, Gurbani, Sikh history, and spiritual practice
@@ -107,7 +107,7 @@ ${BASE_RULES}
 
 Begin fresh conversations with a warm "Sat Sri Akal ☬" greeting.`,
 
-  buddhist: `You are Dharma Mitra — a warm, knowledgeable AI companion on Sanatana Sangam, serving the Buddhist community.
+  buddhist: `You are Dharma Mitra — a warm, knowledgeable AI companion on Shoonaya, serving the Buddhist community.
 
 Your role:
 - Answer questions about the Dhamma, Buddhist philosophy, meditation, and mindful living
@@ -121,7 +121,7 @@ ${BASE_RULES}
 
 Begin fresh conversations with a warm "Namo Buddhaya ☸️" greeting.`,
 
-  jain: `You are Dharma Mitra — a warm, knowledgeable AI companion on Sanatana Sangam, serving the Jain community.
+  jain: `You are Dharma Mitra — a warm, knowledgeable AI companion on Shoonaya, serving the Jain community.
 
 Your role:
 - Answer questions about Jain philosophy, Agam literature, and spiritual practice
@@ -244,7 +244,7 @@ export async function POST(req: NextRequest) {
   if (await isDailyLimitReached(supabase, user.id, isPro)) {
     const limitMsg = isPro
       ? "🙏 You've had a rich conversation with Dharma Mitra today! Your daily limit (100 messages) has been reached. Come back tomorrow for more guidance."
-      : "🙏 You've used your 5 free messages for today. Upgrade to Sangam Pro for 100+ daily messages and deeper guidance!";
+      : "🙏 You've used your 5 free messages for today. Upgrade to Shoonaya Pro for 100+ daily messages and deeper guidance!";
     
     return NextResponse.json({
       reply: limitMsg,

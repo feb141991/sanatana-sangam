@@ -532,7 +532,7 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
   }
 
   async function shareKul() {
-    const text = `Join our Kul "${kul.name}" on Sanatana Sangam!\nUse invite code: ${kul.invite_code}`;
+    const text = `Join our Kul "${kul.name}" on Shoonaya!\nUse invite code: ${kul.invite_code}`;
     if (navigator.share) { try { await navigator.share({ title: kul.name, text }); return; } catch {} }
     await navigator.clipboard.writeText(text);
     toast.success('Invite message copied!');

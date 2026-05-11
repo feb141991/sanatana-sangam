@@ -666,7 +666,7 @@ function EventsTab({ posts, rsvps, userId, onRsvp }: { posts: PostWithAuthor[]; 
   );
 }
 
-// ─── Vichaar Tab (Posts Feed) ────────────────────────────────────
+// ─── Reflections Tab (Neighborhood Shared Contemplation) ─────────
 function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upvoted, onCompose, showCompose, setShowCompose, onHideContent, onHideAuthor, allowCompose = true, isPro = false }: {
   posts: PostWithAuthor[];
   userId: string;
@@ -803,7 +803,7 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
           return (
             <button key={t.value}
               onClick={() => locked
-                ? toast('Announcement posts are a Sangam Pro feature 🔒', { icon: '✦' })
+                ? toast('Announcement posts are a Shoonaya Pro feature 🔒', { icon: '✦' })
                 : setPostType(t.value)}
               className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
                 postType === t.value
@@ -1148,7 +1148,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
         }
       : vichaarCount > 0
         ? {
-            label: "Join today's Neighborhood Feed",
+            label: "Join today's Reflections",
             hint: `${vichaarCount} local conversation${vichaarCount === 1 ? '' : 's'}`,
             onClick: () => { setScope('nearby'); setNearbyTab('feed'); },
             icon: <MessageSquare size={16} className="text-[color:var(--brand-muted)]" />,
@@ -1246,7 +1246,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
   }
 
   const nearbyTabs: Array<{ key: NearbyTab; label: string; icon: string; count: number }> = [
-    { key: 'feed',    label: 'Feed',    icon: '💬', count: posts.filter(p => p.type !== 'event').length },
+    { key: 'feed',    label: 'Reflections', icon: '💬', count: posts.filter(p => p.type !== 'event').length },
     { key: 'events',  label: 'Events',  icon: '📅', count: eventCount },
     { key: 'members', label: 'Members', icon: '👥', count: visibleMembers.length },
   ];

@@ -1,6 +1,6 @@
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- * Sanatana Sangam — 2026 Festival Calendar
+ * Shoonaya — 2026 Festival Calendar
  * ─────────────────────────────────────────────────────────────────────────────
  *
  * Covers Hindu · Sikh · Buddhist · Jain festivals.

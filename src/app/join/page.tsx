@@ -17,11 +17,12 @@ export default async function JoinPage({
       <div className="w-full max-w-md glass-panel-strong rounded-[2rem] p-8 text-center">
         <BrandMark size="lg" className="mx-auto mb-4" />
         <p className="text-xs uppercase tracking-[0.24em] text-[#7B1A1A]/70 mb-3">Invitation</p>
-        <h1 className="font-display text-3xl font-bold text-[color:var(--text-cream)] mb-3">
-          Join Sanatana Sangam
+        <h1 className="font-display text-3xl font-bold text-[color:var(--text-cream)] mb-2">
+          Join Shoonaya
         </h1>
+        <p className="text-xs uppercase tracking-[0.16em] text-[#7B1A1A]/50 mb-3">Find your infinite</p>
         <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed mb-6">
-          A friend has invited you to explore community, scriptures, bhakti, and local sangam.
+          A friend has invited you to discover ancient wisdom for seekers — community, scripture, bhakti, and local sangam across Hindu, Sikh, Buddhist, and Jain dharma.
         </p>
 
         <div className="hidden sm:flex flex-wrap justify-center gap-2 mb-6">

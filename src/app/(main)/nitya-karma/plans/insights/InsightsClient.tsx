@@ -41,7 +41,7 @@ function ProBlur({ onUpgrade }: { onUpgrade: () => void }) {
     <div className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.4rem] z-10"
       style={{ background: 'rgba(10,7,3,0.70)', backdropFilter: 'blur(8px)' }}>
       <Lock size={22} className="text-amber-400 mb-2" />
-      <p className="text-sm font-semibold text-amber-100 mb-1">Sangam Pro</p>
+      <p className="text-sm font-semibold text-amber-100 mb-1">Shoonaya Pro</p>
       <p className="text-[11px] text-amber-200/70 text-center max-w-[160px] mb-3">
         Unlock per-plan analytics, history & consistency score
       </p>

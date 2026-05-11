@@ -40,5 +40,5 @@ export function buildMalaShareText(options: {
   const streakText = options.streak && options.streak > 0
     ? ` I am on a ${options.streak}-day return rhythm.`
     : '';
-  return `I completed ${options.count}/${options.target} japa on ${options.mantra} in Sanatana Sangam.${streakText}`;
+  return `I completed ${options.count}/${options.target} japa on ${options.mantra} in Shoonaya.${streakText}`;
 }

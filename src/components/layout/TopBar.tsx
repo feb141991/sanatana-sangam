@@ -21,7 +21,7 @@ import {
 
 const titles: Record<string, string> = {
   '/guest':         'Explore',
-  '/home':          'Sanatana Sangam',
+  '/home':          'Shoonaya',
   '/mandali':       'My Mandali',
   '/vichaar-sabha': 'Vichaar Sabha',
   '/tirtha-map':    'Tirtha Map',

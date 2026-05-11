@@ -207,7 +207,7 @@ async function generateKulNudge(opts: {
     };
   }
 
-  const prompt = `You are sending a community accountability push notification for the Sanatana Sangam app.
+  const prompt = `You are sending a community accountability push notification for the Shoonaya app.
 
 Context:
 - The user's kul "${kulName}" ${kulEmoji} has ${membersCount} member(s) who practiced today

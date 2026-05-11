@@ -260,7 +260,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
       `📅 Tithi: ${p.tithi} (${p.paksha} Paksha)\n` +
       `⭐ Nakshatra: ${p.nakshatra}\n🕉️ Yoga: ${p.yoga}\n📆 Vara: ${p.vara}\n` +
       `🌅 Sunrise: ${p.sunrise}  🌆 Sunset: ${p.sunset}\n` +
-      `⚠️ Rahu Kaal: ${p.rahuKaal}\n✨ Abhijit Muhurat: ${p.abhijitMuhurat}\n\n— Sanatana Sangam`;
+      `⚠️ Rahu Kaal: ${p.rahuKaal}\n✨ Abhijit Muhurat: ${p.abhijitMuhurat}\n\n— Shoonaya`;
     if (navigator.share) { try { await navigator.share({ title: 'Panchang', text }); return; } catch {} }
     try {
       await navigator.clipboard.writeText(text);

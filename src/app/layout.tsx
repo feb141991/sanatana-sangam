@@ -41,9 +41,9 @@ const fontVars = [
 ].join(' ');
 
 export const metadata: Metadata = {
-  title:       'Sanatana Sangam — The Global Home for Sanatani',
-  description: 'A living digital sabha — connecting Sanatani worldwide through community, knowledge, and bhakti.',
-  keywords:    ['Hindu', 'Sanatana Dharma', 'community', 'mandali', 'dharma', 'bhakti', 'temple'],
+  title:       'Shoonaya — Find your infinite.',
+  description: 'Ancient wisdom for seekers. Hindu, Sikh, Buddhist, and Jain dharma breathe together in one sacred space — community, scripture, and daily practice.',
+  keywords:    ['Hindu', 'Sikh', 'Buddhist', 'Jain', 'dharma', 'community', 'mandali', 'bhakti', 'śūnya', 'Shoonaya', 'ancient wisdom', 'seekers'],
   manifest:    '/manifest.json',
   icons: {
     icon:  '/icons/icon-192.png',
@@ -52,11 +52,11 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Sangam',
+    title: 'Shoonaya',
   },
   openGraph: {
-    title:       'Sanatana Sangam',
-    description: 'The Global Home for Sanatani — community, knowledge, and bhakti in one place.',
+    title:       'Shoonaya',
+    description: 'Find your infinite. Ancient wisdom for seekers — Hindu · Sikh · Buddhist · Jain',
     type:        'website',
     locale:      'en_GB',
   },

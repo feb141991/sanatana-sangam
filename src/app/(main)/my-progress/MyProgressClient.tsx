@@ -564,7 +564,7 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
     const nityaRate2 = report.curDaysElapsed
       ? Math.round((report.curNityaDays / report.curDaysElapsed) * 100)
       : 0;
-    const text = `🕉️ ${monthName(report.curMonthStart)} Sādhana Report\n🔥 ${streak}-day streak\n🪷 ${report.curSessions} japa sessions · ${report.curRounds} rounds\n🌅 ${nityaRate2}% Nitya Karma\nPracticed with Sanatan Sangam 🙏`;
+    const text = `🕉️ ${monthName(report.curMonthStart)} Sādhana Report\n🔥 ${streak}-day streak\n🪷 ${report.curSessions} japa sessions · ${report.curRounds} rounds\n🌅 ${nityaRate2}% Nitya Karma\nPracticed with Shoonaya 🙏`;
     if (typeof navigator !== 'undefined' && navigator.share) {
       navigator.share({ title: 'My Sadhana Report', text }).catch(() => {});
     } else if (navigator.clipboard) {
@@ -587,7 +587,7 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
             Sadhana Report
           </h2>
           <p className="mt-2 text-sm" style={{ color: muted }}>
-            A beautiful monthly summary of your entire practice — all pillars, trends, highlights — available with Sangam Pro.
+            A beautiful monthly summary of your entire practice — all pillars, trends, highlights — available with Shoonaya Pro.
           </p>
           <div className="mt-5 flex flex-col gap-2">
             <Lock size={14} className="mx-auto" style={{ color: 'rgba(200,146,74,0.6)' }} />

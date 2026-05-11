@@ -73,7 +73,7 @@ function UpgradePill({ compact, onClick }: { compact?: boolean; onClick: () => v
       }}
     >
       <Sparkles size={14} />
-      <span className="text-sm font-semibold">Unlock with Sangam Pro</span>
+      <span className="text-sm font-semibold">Unlock with Shoonaya Pro</span>
     </button>
   );
 }

@@ -1009,7 +1009,7 @@ export default function AdminClient({ adminName, users, reports, posts, kuls, ma
           </div>
           <div>
             <h1 className="font-display font-bold text-[color:var(--text-cream)] text-base">Admin Portal</h1>
-            <p className="text-xs text-[color:var(--text-dim)]">Sanatana Sangam · {adminName}</p>
+            <p className="text-xs text-[color:var(--text-dim)]">Shoonaya · {adminName}</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <a href="/home" className="text-xs text-[color:var(--text-dim)] hover:text-[color:var(--brand-muted)] flex items-center gap-1">

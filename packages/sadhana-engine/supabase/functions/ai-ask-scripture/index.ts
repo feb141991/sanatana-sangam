@@ -157,7 +157,7 @@ async function generateExplanation(
     .map(v => `${v.text_id.toUpperCase()} ${v.chapter}.${v.verse}:\n  "${v.translation}"\n  (${v.transliteration.split(' / ')[0]})`)
     .join('\n\n');
 
-  const prompt = `You are a knowledgeable and compassionate Sanatani scholar within the Sanatana Sangam spiritual app.
+  const prompt = `You are a knowledgeable and compassionate Sanatani scholar within the Shoonaya spiritual app.
 
 The devotee asked: "${question}"
 

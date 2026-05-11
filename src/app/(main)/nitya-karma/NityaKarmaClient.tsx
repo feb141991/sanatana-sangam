@@ -598,7 +598,7 @@ function ProUpgradeSheet({ onClose, accent }: { onClose: () => void; accent: str
             boxShadow: `0 4px 28px ${accent}44`,
           }}
         >
-          Upgrade to Sangam Pro →
+          Upgrade to Shoonaya Pro →
         </motion.button>
         <button onClick={onClose} className="w-full py-2 text-sm text-[color:var(--brand-muted)] text-center">
           Maybe later
@@ -1352,7 +1352,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                   Your sequence adapts to today&apos;s tithi, nakshatra, and vrat.{' '}
                   <button onClick={() => setShowProSheet(true)}
                     className="font-semibold text-[color:var(--brand-ink)] underline underline-offset-2">
-                    Sangam Pro
+                    Shoonaya Pro
                   </button>
                   {' '}unlocks AI-personalised sequences, Ashrama Dharma, and Guided Plans.
                 </p>
@@ -1740,7 +1740,7 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                   Your sequence adapts to today&apos;s tithi, nakshatra, and vrat.{' '}
                   <button onClick={() => setShowProSheet(true)}
                     className="font-semibold text-[color:var(--brand-ink)] underline underline-offset-2">
-                    Sangam Pro
+                    Shoonaya Pro
                   </button>
                   {' '}unlocks AI-personalised sequences, full analytics, and all Guided Plans.
                 </p>

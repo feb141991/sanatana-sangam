@@ -159,7 +159,7 @@ export default function SignupPage() {
 
         if (profileError) throw profileError;
 
-        toast.success('Welcome to Sanatana Sangam! 🙏');
+        toast.success('Welcome to Shoonaya! 🙏');
         router.push('/home');
         router.refresh();
       } else {
@@ -184,8 +184,8 @@ export default function SignupPage() {
           <Link href="/" className="inline-flex">
             <BrandMark />
           </Link>
-          <h1 className="font-display text-2xl font-bold text-[color:var(--text-cream)] mt-2">Join Sanatana Sangam</h1>
-          <p className="text-[color:var(--brand-muted)] text-sm mt-1">Your dharmic home awaits</p>
+          <h1 className="font-display text-2xl font-bold text-[color:var(--text-cream)] mt-2">Join Shoonaya</h1>
+          <p className="text-[color:var(--brand-muted)] text-sm mt-1">Find your infinite — ancient wisdom for seekers</p>
         </div>
 
         {inviteCode && (
@@ -452,7 +452,7 @@ export default function SignupPage() {
             <div className="space-y-5 fade-in">
               <div>
                 <h2 className="font-display font-semibold text-lg text-[color:var(--text-cream)]">What are you seeking?</h2>
-                <p className="text-sm text-[color:var(--brand-muted)] mt-0.5">Select all that apply — helps us personalise your Sangam.</p>
+                <p className="text-sm text-[color:var(--brand-muted)] mt-0.5">Select all that apply — helps us personalise your path.</p>
               </div>
 
               <div className="space-y-2">
@@ -502,7 +502,7 @@ export default function SignupPage() {
                 </button>
                 <button onClick={handleSubmit} disabled={loading || !acceptedPolicies}
                   className="flex-1 py-3 bg-gradient-sacred text-white font-semibold rounded-xl hover:opacity-90 transition flex items-center justify-center gap-2 disabled:opacity-60">
-                  {loading ? 'Joining…' : <>Enter the Sangam 🙏</>}
+                  {loading ? 'Joining…' : <>Enter Shoonaya 🙏</>}
                 </button>
               </div>
             </div>

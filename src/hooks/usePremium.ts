@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { getIsPro } from '@/lib/premium';
 
-/** Returns true if the user has activated Sangam Pro. */
+/** Returns true if the user has activated Shoonaya Pro. */
 export function usePremium(): boolean {
   const [isPro, setIsPro] = useState(false);
 
