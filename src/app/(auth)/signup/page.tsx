@@ -237,7 +237,7 @@ export default function SignupPage() {
                     {QUOTES[quoteIdx].text}
                   </h2>
                   <p className="text-lg italic font-outfit text-[var(--brand-muted)]">
-                    "{QUOTES[quoteIdx].meaning}"
+                    &quot;{QUOTES[quoteIdx].meaning}&quot;
                   </p>
                   <p className="text-xs uppercase tracking-[0.2em] text-[var(--premium-gold)] font-bold">
                     — {QUOTES[quoteIdx].author}
