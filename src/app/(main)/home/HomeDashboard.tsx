@@ -1629,17 +1629,13 @@ export default function HomeDashboard({
               >
                 <Link
                   href="/profile"
-                  className="w-10 h-10 rounded-full flex items-center justify-center"
+                  className="w-10 h-10 rounded-full flex items-center justify-center bg-black/10 dark:bg-black/22 border border-black/5 dark:border-white/18 backdrop-blur-md"
                   style={{
-                    background: 'rgba(0,0,0,0.22)',
-                    border: '1px solid rgba(255,255,255,0.18)',
-                    backdropFilter: 'blur(12px)',
-                    WebkitBackdropFilter: 'blur(12px)',
-                    boxShadow: '0 2px 10px rgba(0,0,0,0.25)',
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.15)',
                   }}
                   aria-label="Notifications"
                 >
-                  <Bell size={17} strokeWidth={1.8} style={{ color: 'rgba(255,240,200,0.95)', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.4))' }} />
+                  <Bell size={17} strokeWidth={1.8} className="text-[var(--divine-text)] dark:text-[#F2EAD6] opacity-80 dark:opacity-100" />
                 </Link>
               </motion.div>
 
@@ -1650,16 +1646,16 @@ export default function HomeDashboard({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.18 }}
               >
-                <Link href="/discover" className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/15 border border-white/10 backdrop-blur-md shadow-lg" aria-label="Open mood discovery">
+                <Link href="/discover" className="flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--surface-soft)] dark:bg-black/15 border border-black/5 dark:border-white/10 backdrop-blur-md shadow-lg" aria-label="Open mood discovery">
                   {moodToday ? (
                     <>
                       <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={14} />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-white/90">Feeling {moodToday.label}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--divine-text)] dark:text-white/90">Feeling {moodToday.label}</span>
                     </>
                   ) : (
                     <>
-                      <Sparkles size={12} className="text-white/60" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">Mood</span>
+                      <Sparkles size={12} className="text-[var(--divine-text)] dark:text-white/60 opacity-60" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--divine-text)] dark:text-white/70 opacity-60 dark:opacity-100">Mood</span>
                     </>
                   )}
                 </Link>
@@ -1679,8 +1675,7 @@ export default function HomeDashboard({
                       {avatarUrl ? (
                         <Image src={avatarUrl} alt={userName} fill className="object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center font-serif text-lg text-white"
-                          style={{ textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>
+                        <div className="w-full h-full flex items-center justify-center font-serif text-lg text-[var(--divine-text)] dark:text-white">
                           {userName.charAt(0)}
                         </div>
                       )}
@@ -1701,8 +1696,8 @@ export default function HomeDashboard({
                 <motion.p
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.20em] text-white mb-1"
-                  style={{ textShadow: '0 1px 6px rgba(0,0,0,0.55)' }}
+                  className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.20em] text-[var(--divine-text)] dark:text-white mb-1 opacity-60 dark:opacity-100"
+                  style={{ textShadow: isDark ? '0 1px 6px rgba(0,0,0,0.55)' : 'none' }}
                 >
                   <MapPin size={10} strokeWidth={2.5} />
                   {displayCity}
@@ -1712,8 +1707,8 @@ export default function HomeDashboard({
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-xl font-serif text-white leading-tight"
-                style={{ textShadow: '0 2px 12px rgba(0,0,0,0.55)' }}
+                className="text-xl font-serif text-[var(--divine-text)] dark:text-white leading-tight"
+                style={{ textShadow: isDark ? '0 2px 12px rgba(0,0,0,0.55)' : 'none' }}
               >
                 {stripGreetingIcon(greeting)},&nbsp;
                 <span style={{ color: 'rgba(255,240,200,0.92)' }}>{userName.split(' ')[0]}</span>

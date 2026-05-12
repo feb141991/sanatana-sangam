@@ -564,7 +564,7 @@ export default function ProfileClient({
               onClick={() => router.back()}
               className="w-10 h-10 rounded-full glass-panel border border-white/10 flex items-center justify-center pointer-events-auto transition-transform active:scale-90"
             >
-              <ChevronLeft size={20} className="text-white" />
+              <ChevronLeft size={20} className="text-[var(--divine-text)] dark:text-white" />
             </button>
             <div className="flex items-center gap-2 pointer-events-auto">
               <Link
@@ -572,14 +572,14 @@ export default function ProfileClient({
                 className="w-10 h-10 rounded-full glass-panel border border-white/10 flex items-center justify-center transition-transform active:scale-90"
                 title="Direct Messages"
               >
-                <MessageSquare size={18} className="text-white" />
+                <MessageSquare size={18} className="text-[var(--divine-text)] dark:text-white" />
               </Link>
               <button 
                 onClick={() => setEditing(!editing)}
                 className="w-10 h-10 rounded-full glass-panel border border-white/10 flex items-center justify-center transition-transform active:scale-90"
                 title="Edit Profile"
               >
-                <Edit3 size={18} className="text-white" />
+                <Edit3 size={18} className="text-[var(--divine-text)] dark:text-white" />
               </button>
             </div>
           </div>
@@ -599,7 +599,7 @@ export default function ProfileClient({
                 <div className="relative w-full h-full rounded-full overflow-hidden bg-white/5">
                   {avatarUrl
                     ? <Image src={avatarUrl} alt="avatar" fill sizes="112px" className="object-cover" />
-                    : <span className="text-4xl font-serif text-white">{initials}</span>}
+                    : <span className="text-4xl font-serif text-[var(--divine-text)] dark:text-white">{initials}</span>}
                 </div>
               </motion.button>
               
@@ -621,7 +621,7 @@ export default function ProfileClient({
               className="text-center"
             >
               <div className="flex items-center justify-center gap-2 mb-1">
-                <h1 className="text-2xl font-serif text-white leading-tight drop-shadow-md">
+                <h1 className="text-2xl font-serif text-[var(--divine-text)] dark:text-white leading-tight drop-shadow-md">
                   {liveProfile?.full_name}
                 </h1>
                 {isPro && (
@@ -631,7 +631,7 @@ export default function ProfileClient({
                   </div>
                 )}
               </div>
-              <p className="text-sm text-white/60 mb-2 font-medium">@{liveProfile?.username}</p>
+              <p className="text-sm text-[var(--divine-text)] dark:text-white/60 mb-2 font-medium opacity-60 dark:opacity-100">@{liveProfile?.username}</p>
               
               {(liveProfile?.city || liveProfile?.country) && (
                 <div className="flex items-center justify-center gap-1.5 text-[11px] font-semibold text-[#C5A059] uppercase tracking-widest">
