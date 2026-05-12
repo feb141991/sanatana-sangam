@@ -46,7 +46,9 @@ export type TranslationKey =
   // Reader / Bhakti / Pathshala
   | 'library' | 'timer' | 'mixer' | 'deepMeaning' | 'dailyApp' | 'listen'
   | 'copy' | 'askAI' | 'transliteration' | 'currentKanda' | 'featuredPassages'
-  | 'continueLesson' | 'viewDetails' | 'syllabus' | 'enrolled' | 'complete' | 'beginReading' | 'exploreAll';
+  | 'continueLesson' | 'viewDetails' | 'syllabus' | 'enrolled' | 'complete' | 'beginReading' | 'exploreAll'
+  // Brand
+  | 'brandTagline';
 
 type TranslationMap = Record<TranslationKey, string>;
 
@@ -117,6 +119,8 @@ const en: TranslationMap = {
   transliteration: 'Transliteration', currentKanda: 'Current Kanda', featuredPassages: 'Featured Passages',
   continueLesson: 'Continue Lesson', viewDetails: 'View Details', syllabus: 'Syllabus',
   enrolled: 'Enrolled', complete: 'Complete', beginReading: 'Begin Reading', exploreAll: 'Explore All',
+  // Brand
+  brandTagline: 'Find your infinite',
 };
 
 const hi: TranslationMap = {
@@ -185,6 +189,8 @@ const hi: TranslationMap = {
   transliteration: 'लिप्यांतरण', currentKanda: 'वर्तमान काण्ड', featuredPassages: 'प्रमुख श्लोक',
   continueLesson: 'पाठ जारी रखें', viewDetails: 'विवरण देखें', syllabus: 'पाठ्यक्रम',
   enrolled: 'नामांकित', complete: 'पूर्ण', beginReading: 'पढ़ना शुरू करें', exploreAll: 'सभी देखें',
+  // Brand
+  brandTagline: 'शून्य में अनंत',
 };
 
 const pa: TranslationMap = {
@@ -253,6 +259,8 @@ const pa: TranslationMap = {
   transliteration: 'ਲਿਪੀਅੰਤਰਨ', currentKanda: 'ਵਰਤਮਾਨ ਕਾਂਡ', featuredPassages: 'ਪ੍ਰਮੁੱਖ ਸ਼ਲੋਕ',
   continueLesson: 'ਪਾਠ ਜਾਰੀ ਰੱਖੋ', viewDetails: 'ਵੇਰਵੇ ਵੇਖੋ', syllabus: 'ਸਿਲੇਬਸ',
   enrolled: 'ਦਾਖਲ ਹੋਏ', complete: 'ਪੂਰਾ ਹੋਇਆ', beginReading: 'ਪੜ੍ਹਨਾ ਸ਼ੁਰੂ ਕਰੋ', exploreAll: 'ਸਭ ਵੇਖੋ',
+  // Brand
+  brandTagline: 'ਸੁੰਨ ਵਿੱਚ ਅਨੰਤ',
 };
 
 export const TRANSLATIONS: Record<AppLang, TranslationMap> = { en, hi, pa };
