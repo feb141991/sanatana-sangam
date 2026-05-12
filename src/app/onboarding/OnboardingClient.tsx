@@ -406,7 +406,7 @@ export default function OnboardingClient({ userId, traditionValue = '', hasTradi
                         color: '#f0e2c0',
                       }}
                     >
-                      Sanatana<br />Sangam
+                      Shoonaya
                     </motion.h1>
 
                     {/* Tagline */}
@@ -417,7 +417,7 @@ export default function OnboardingClient({ userId, traditionValue = '', hasTradi
                       className="text-sm leading-relaxed max-w-[260px] mx-auto"
                       style={{ color: 'rgba(230, 200, 140, 0.50)' }}
                     >
-                      A home for Dharma. Your daily practice,<br />your lineage, your tradition.
+                      Find your infinite — ancient wisdom for seekers.<br />Your daily practice, your lineage, your tradition.
                     </motion.p>
                   </div>
 
@@ -1056,7 +1056,7 @@ export default function OnboardingClient({ userId, traditionValue = '', hasTradi
                       className="text-sm leading-relaxed px-2"
                       style={{ color: 'rgba(220,190,130,0.45)' }}
                     >
-                      You have set your intention. The Sangam holds space for your dharmic journey — every day, at your own pace.
+                      You have set your intention. Shoonaya holds space for your dharmic journey — every day, at your own pace.
                     </motion.p>
                   </motion.div>
                 );
@@ -1086,7 +1086,7 @@ export default function OnboardingClient({ userId, traditionValue = '', hasTradi
                 {saving
                   ? <><Loader2 size={15} className="animate-spin" /> Saving…</>
                   : step === 7
-                    ? '🪔 Enter the Sangam'
+                    ? '🪔 Enter Shoonaya'
                     : <>Continue <ChevronRight size={15} /></>}
               </motion.button>
             )}

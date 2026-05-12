@@ -199,7 +199,7 @@ export default function SignupPage() {
             {
               eyebrow: 'Step 1',
               title: 'Create your account',
-              description: 'Just enough to open your Sangam safely and personally.',
+              description: 'Just enough to open your Shoonaya safely and personally.',
             },
             {
               eyebrow: 'Step 2',

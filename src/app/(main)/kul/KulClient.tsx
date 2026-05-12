@@ -2099,7 +2099,7 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
           )}
           {/* Link to existing app user */}
           <div className="space-y-1.5">
-            <p className="text-[10px] text-[color:var(--brand-muted)] uppercase tracking-wider">Link to Sangam account (optional)</p>
+            <p className="text-[10px] text-[color:var(--brand-muted)] uppercase tracking-wider">Link to Shoonaya account (optional)</p>
             {linkedUser ? (
               <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-white/10 bg-white/4">
                 <span className="text-sm flex-1 text-[color:var(--brand-ink)]">
@@ -2139,7 +2139,7 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
                   </div>
                 )}
                 {linkUserResults.length === 0 && linkUserQuery && !linkUserSearching && (
-                  <p className="text-[11px] text-[color:var(--brand-muted)] px-1">Not on Sangam yet — add them and invite later.</p>
+                  <p className="text-[11px] text-[color:var(--brand-muted)] px-1">Not on Shoonaya yet — add them and invite later.</p>
                 )}
               </div>
             )}

@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
     notifications.push({
       user_id,
       title: `🕉️ Upcoming Sanskara: ${m.name}`,
-      body: `${m.name} is due around ${eventDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}. Open Sangam to prepare and record this sacred milestone.`,
+      body: `${m.name} is due around ${eventDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}. Open Shoonaya to prepare and record this sacred milestone.`,
       send_at: reminderAt.toISOString(),
       notification_type: 'sanskar_milestone',
       metadata: {

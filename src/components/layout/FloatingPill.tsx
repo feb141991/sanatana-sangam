@@ -242,7 +242,7 @@ export default function FloatingPill({
                   </p>
                   <p className="text-xs mt-1 leading-relaxed" style={{ color: 'var(--text-dim)' }}>
                     {isIosSafariNonPwa
-                      ? 'iOS only delivers push notifications to installed apps. Tap Share → Add to Home Screen, then open Sangam from your home screen.'
+                      ? 'iOS only delivers push notifications to installed apps. Tap Share → Add to Home Screen, then open Shoonaya from your home screen.'
                       : permission === 'denied'
                         ? 'Open your browser/OS settings and allow notifications for this site.'
                         : wantsAnyNotifications
@@ -253,7 +253,7 @@ export default function FloatingPill({
                     <div className="mt-2.5 flex flex-col gap-1">
                       <p className="text-[11px]" style={{ color: 'var(--text-dim)' }}>1. Tap <span className="font-semibold" style={{ color: 'var(--text-cream)' }}>Share</span> (□↑) in Safari</p>
                       <p className="text-[11px]" style={{ color: 'var(--text-dim)' }}>2. Tap <span className="font-semibold" style={{ color: 'var(--text-cream)' }}>Add to Home Screen</span></p>
-                      <p className="text-[11px]" style={{ color: 'var(--text-dim)' }}>3. Open Sangam from Home Screen</p>
+                      <p className="text-[11px]" style={{ color: 'var(--text-dim)' }}>3. Open Shoonaya from Home Screen</p>
                       <button onClick={dismissPushPromptForNow} className="self-start text-xs font-semibold mt-1 transition" style={{ color: 'var(--text-dim)' }}>
                         Remind me later
                       </button>

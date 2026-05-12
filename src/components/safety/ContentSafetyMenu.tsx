@@ -122,7 +122,7 @@ export default function ContentSafetyMenu({
       return;
     }
 
-    toast.success('This person has been blocked from your Sangam view.');
+    toast.success('This person has been blocked from your Shoonaya view.');
     setOpen(false);
     setShowReportReasons(false);
     onHideAuthor?.(authorId, 'block');

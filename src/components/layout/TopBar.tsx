@@ -284,7 +284,7 @@ export default function TopBar({
                   </p>
                   <p className="text-xs text-[color:var(--brand-muted)] mt-1 leading-relaxed">
                     {isIosSafariNonPwa
-                      ? 'iOS only delivers push notifications to installed apps. Tap Share → Add to Home Screen, then open Sangam from your home screen.'
+                      ? 'iOS only delivers push notifications to installed apps. Tap Share → Add to Home Screen, then open Shoonaya from your home screen.'
                       : permission === 'denied'
                         ? 'Open your browser/OS settings and allow notifications for this site to receive reminders.'
                         : wantsAnyNotifications
@@ -302,7 +302,7 @@ export default function TopBar({
                         2. Tap <span className="font-semibold text-[color:var(--brand-ink)]">Add to Home Screen</span>
                       </p>
                       <p className="text-[11px] text-[color:var(--brand-muted)]">
-                        3. Open Sangam from your Home Screen — then enable notifications
+                        3. Open Shoonaya from your Home Screen — then enable notifications
                       </p>
                       <button
                         onClick={dismissPushPromptForNow}
