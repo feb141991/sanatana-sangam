@@ -91,7 +91,7 @@ export default function BhaktiClient({
           </button>
           <div className="text-center">
             <span className="text-[10px] font-bold uppercase tracking-[0.4em]" style={{ color: 'var(--brand-primary-strong)' }}>
-              Sacred Sanctuary
+              {t('sacredSanctuary')}
             </span>
           </div>
           <button className="w-11 h-11 rounded-full flex items-center justify-center glass-panel border"
@@ -234,15 +234,15 @@ export default function BhaktiClient({
             <div className="flex gap-8">
               <button className="flex flex-col items-center gap-2 group transition">
                 <Music size={20} className="text-white/40 group-hover:text-amber-500 transition" />
-                <span className="text-[9px] font-bold uppercase text-white/30 group-hover:text-white transition">Library</span>
+                <span className="text-[9px] font-bold uppercase text-white/30 group-hover:text-white transition">{t('library')}</span>
               </button>
               <button className="flex flex-col items-center gap-2 group transition">
                 <Clock size={20} className="text-white/40 group-hover:text-amber-500 transition" />
-                <span className="text-[9px] font-bold uppercase text-white/30 group-hover:text-white transition">Timer</span>
+                <span className="text-[9px] font-bold uppercase text-white/30 group-hover:text-white transition">{t('timer')}</span>
               </button>
               <button className="flex flex-col items-center gap-2 group transition">
                 <Volume2 size={20} className="text-white/40 group-hover:text-amber-500 transition" />
-                <span className="text-[9px] font-bold uppercase text-white/30 group-hover:text-white transition">Mixer</span>
+                <span className="text-[9px] font-bold uppercase text-white/30 group-hover:text-white transition">{t('mixer')}</span>
               </button>
             </div>
             <Link href="/bhakti/browse" className="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full text-[10px] font-bold text-amber-500 uppercase tracking-widest transition">

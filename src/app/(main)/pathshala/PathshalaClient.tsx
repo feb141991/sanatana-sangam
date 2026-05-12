@@ -44,6 +44,7 @@ import { calculatePanchang, getTodaySpiritualPulse } from '@/lib/panchang';
 import { getMeaningLabel, resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import { getTransliteration } from '@/lib/transliteration';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 // ── Difficulty badges — inline styles so they read clearly on any bg ──────────
 const DIFF_STYLE: Record<string, { bg: string; text: string; border: string; label: string }> = {
@@ -137,6 +138,7 @@ async function shareEntry(entry: LibraryEntry) {
 
 // ── Scripture Entry Card ───────────────────────────────────────────────────────
 function EntryCard({ entry, accentColour }: { entry: LibraryEntry; accentColour: string }) {
+  const { t } = useLanguage();
   return (
     <motion.button
       whileHover={{ scale: 1.01, translateY: -2 }}
@@ -164,7 +166,7 @@ function EntryCard({ entry, accentColour }: { entry: LibraryEntry; accentColour:
           </h3>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5 group-hover:border-white/10 transition-colors">
             <BookOpen size={12} style={{ color: accentColour }} />
-            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: accentColour }}>Begin Reading</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: accentColour }}>{t('beginReading')}</span>
           </div>
         </div>
         <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-white/5 border border-white/5 group-hover:scale-110 transition-transform duration-500">
@@ -211,6 +213,7 @@ function ScriptureReader({
 }) {
   const isPro = usePremium();
   const supabase = useRef(createClient()).current;
+  const { t } = useLanguage();
   const [sattvaMode, setSattvaMode] = useState(false);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -416,7 +419,7 @@ function ScriptureReader({
 
           {showActiveTransliteration && (
             <div className="rounded-xl px-5 py-4 mb-5 text-center" style={{ background: P.bgAccent, border: `1px solid ${P.borderSoft}` }}>
-              <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: P.inkMuted }}>Transliteration</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: P.inkMuted }}>{t('transliteration')}</p>
               <p className="italic leading-relaxed break-words" style={{ color: P.ink, fontSize: `${fontScale * 0.9}rem` }}>
                 {activeTransliteration}
               </p>
@@ -449,11 +452,11 @@ function ScriptureReader({
                   <div className="mt-3 rounded-2xl p-5 space-y-4" style={{ background: P.bgCard, border: `1px solid ${P.border}` }}>
                     <div className="space-y-3">
                       <div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: P.accent }}>Deep Meaning</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: P.accent }}>{t('deepMeaning')}</p>
                         <p className="text-sm leading-relaxed" style={{ color: P.ink }}>{explainResult.explanation.meaning}</p>
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: P.accent }}>Daily Application</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: P.accent }}>{t('dailyApp')}</p>
                         <p className="text-sm leading-relaxed italic" style={{ color: P.inkMuted }}>{explainResult.explanation.daily_application}</p>
                       </div>
                     </div>
@@ -472,7 +475,7 @@ function ScriptureReader({
             <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: speakingId === activeVerse?.id ? '#2563EB' : P.accentBg, border: `1px solid ${P.border}` }}>
               {ttsLoadingId === activeVerse?.id ? <Loader2 size={17} className="animate-spin" style={{ color: speakingId === activeVerse?.id ? '#fff' : P.accentDeep }} /> : speakingId === activeVerse?.id ? <VolumeX size={17} style={{ color: '#fff' }} /> : <Volume2 size={17} style={{ color: P.accentDeep }} />}
             </div>
-            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{speakingId === activeVerse?.id ? 'Stop' : 'Listen'}</span>
+            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{speakingId === activeVerse?.id ? t('done') : t('listen')}</span>
           </button>
 
           {/* Save */}
@@ -480,7 +483,7 @@ function ScriptureReader({
             <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: bookmarkedIds.has(activeVerse?.id) ? '#2563EB' : P.accentBg, border: `1px solid ${P.border}` }}>
               <Bookmark size={17} style={{ color: bookmarkedIds.has(activeVerse?.id) ? '#fff' : P.accentDeep }} className={bookmarkedIds.has(activeVerse?.id) ? 'fill-current' : ''} />
             </div>
-            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{bookmarkedIds.has(activeVerse?.id) ? 'Saved' : 'Save'}</span>
+            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{bookmarkedIds.has(activeVerse?.id) ? t('done') : t('save')}</span>
           </button>
 
           {/* Copy */}
@@ -488,7 +491,7 @@ function ScriptureReader({
             <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: P.accentBg, border: `1px solid ${P.border}` }}>
               <Copy size={17} style={{ color: P.accentDeep }} />
             </div>
-            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>Copy</span>
+            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{t('copy')}</span>
           </button>
 
           {/* Ask AI */}
@@ -496,12 +499,12 @@ function ScriptureReader({
             <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: P.accentBg, border: `1px solid ${P.border}` }}>
               <Sparkles size={17} style={{ color: P.accentDeep }} />
             </div>
-            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>Ask AI</span>
+            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{t('askAI')}</span>
           </Link>
 
           {/* Conclude */}
           <button onClick={onClose} className="px-5 h-11 rounded-2xl font-bold text-xs flex items-center justify-center shadow-lg transition-transform active:scale-95" style={{ background: P.accent, color: P.btnText }}>
-            Conclude
+            {t('done')}
           </button>
         </div>
       </div>
@@ -745,6 +748,7 @@ export default function PathshalaClient({
   const isPro     = usePremium();
   const prefersReducedMotion = useReducedMotion();
   const { playHaptic } = useZenithSensory();
+  const { t } = useLanguage();
 
   const { coords: _pathCoords } = useLocation();
   const lat = _pathCoords?.lat ?? undefined;
@@ -1069,7 +1073,7 @@ export default function PathshalaClient({
             className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold transition-all hover:bg-white/4"
             style={{ color: meta.accentColour }}
           >
-            <Mic size={12} /> Recite
+            <Mic size={12} /> {t('navPathshala')}
           </Link>
           <div className="w-px self-stretch" style={{ background: glassBorder }} />
           <button
@@ -1077,7 +1081,7 @@ export default function PathshalaClient({
             className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold transition-all hover:bg-white/4"
             style={{ color: secondaryText }}
           >
-            <Trophy size={12} /> Start over
+            <Trophy size={12} /> {t('back')}
           </button>
           <div className="w-px self-stretch" style={{ background: glassBorder }} />
           <button
@@ -1085,7 +1089,7 @@ export default function PathshalaClient({
             className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold transition-all hover:bg-white/4"
             style={{ color: secondaryText }}
           >
-            <X size={12} /> Leave
+            <X size={12} /> {t('skip')}
           </button>
         </div>
 
@@ -1107,12 +1111,12 @@ export default function PathshalaClient({
             <div className="flex items-center gap-2 mb-3 bg-white/5 w-max px-2 py-0.5 rounded-full border border-white/5">
               <span className="text-[10px]">{pulse.emoji}</span>
               <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: meta.accentColour }}>
-                Today is {pulse.label}
+                {t('todayIs')} {pulse.label}
               </span>
             </div>
           )}
           <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color: tertiaryText }}>
-            {meta.sacredTextLabel} · Today
+            {meta.sacredTextLabel} · {t('today')}
           </p>
           <p className="font-[family:var(--font-deva)] font-semibold text-base leading-relaxed" style={{ color: primaryText }}>
             {meta.dailyVersePrompt.verse}
@@ -1123,7 +1127,7 @@ export default function PathshalaClient({
             {pulse ? pulse.description : meta.dailyVersePrompt.meaning}
           </p>
           <p className="text-xs mt-2" style={{ color: meta.accentColour }}>
-            Explore {meta.navLibraryLabel} →
+            {t('explore')} {meta.navLibraryLabel} →
           </p>
         </div>
       </Link>
@@ -1205,7 +1209,7 @@ export default function PathshalaClient({
             className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl font-semibold text-sm"
             style={{ color: meta.accentColour, border: `1px solid ${glassBorder}`, background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.62)' }}
           >
-            <Mic size={14} /> Recite
+            <Mic size={14} /> {t('navPathshala')}
           </Link>
         </div>
       </motion.div>
@@ -1259,8 +1263,8 @@ export default function PathshalaClient({
           {enrolling === path.id
             ? <Loader2 size={14} className="animate-spin" />
             : isEnrolled
-              ? <><Star size={14} /> Enrolled</>
-              : <><Plus size={14} /> Enroll in this Path</>
+              ? <><Star size={14} /> {t('enrolled')}</>
+              : <><Plus size={14} /> {t('explore')}</>  
           }
         </button>
       </motion.div>
@@ -1289,7 +1293,7 @@ export default function PathshalaClient({
           <div className="flex-1 flex items-center gap-2">
             <span className="text-xl drop-shadow-md">{meta.symbol}</span>
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
-              Digital Gurukul · {meta.label}
+              {t('navPathshala')} · {meta.label}
             </p>
           </div>
 

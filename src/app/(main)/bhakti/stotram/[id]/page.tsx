@@ -7,6 +7,7 @@ import { ChevronLeft, Play, Pause, RotateCcw, Repeat, BookOpen } from 'lucide-re
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { getStotramById, DEITY_META } from '@/lib/stotrams';
 import { DEVOTIONAL_STARTER_TRACKS } from '@/lib/devotional-audio';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { Suspense, use } from 'react';
 
 // ─── Improved audio player with seek + loop ───────────────────────────────────
@@ -123,6 +124,7 @@ function StotramReader({ id }: { id: string }) {
   const stotram = getStotramById(id);
   const deityMeta = stotram ? (DEITY_META[stotram.deity] ?? DEITY_META.universal) : null;
   const accentColor = deityMeta?.color ?? '#C8924A';
+  const { t } = useLanguage();
 
   const [activeVerse, setActiveVerse] = useState<number | null>(null);
   const [showAll,     setShowAll]     = useState(true);
@@ -139,7 +141,7 @@ function StotramReader({ id }: { id: string }) {
     <div className="min-h-screen flex flex-col items-center justify-center gap-4">
       <p className="text-4xl">🙏</p>
       <p style={{ color: textS }}>Stotram not found</p>
-      <button onClick={() => router.back()} className="text-sm font-semibold" style={{ color: accentColor }}>Go back</button>
+      <button onClick={() => router.back()} className="text-sm font-semibold" style={{ color: accentColor }}>{t('back')}</button>
     </div>
   );
 
@@ -182,11 +184,11 @@ function StotramReader({ id }: { id: string }) {
           </div>
           <p className="text-[12px] leading-relaxed" style={{ color: textS }}>{stotram.description}</p>
           <div className="flex gap-4 mt-3 pt-3" style={{ borderTop: `1px solid ${accentColor}15` }}>
-            <div><p className="text-[9px] uppercase tracking-wide" style={{ color: textD }}>Language</p>
+            <div><p className="text-[9px] uppercase tracking-wide" style={{ color: textD }}>{t('yourLanguage')}</p>
               <p className="text-[11px] font-semibold mt-0.5" style={{ color: textS }}>{stotram.language}</p></div>
-            <div><p className="text-[9px] uppercase tracking-wide" style={{ color: textD }}>Verses</p>
+            <div><p className="text-[9px] uppercase tracking-wide" style={{ color: textD }}>{t('mantra')}</p>
               <p className="text-[11px] font-semibold mt-0.5" style={{ color: textS }}>{stotram.verses.length}</p></div>
-            <div className="flex-1"><p className="text-[9px] uppercase tracking-wide" style={{ color: textD }}>Source</p>
+            <div className="flex-1"><p className="text-[9px] uppercase tracking-wide" style={{ color: textD }}>{t('lineage')}</p>
               <p className="text-[11px] font-semibold mt-0.5 leading-tight" style={{ color: textS }}>{stotram.source}</p></div>
           </div>
         </div>
@@ -199,10 +201,10 @@ function StotramReader({ id }: { id: string }) {
         {/* Verses */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: textD }}>Verses</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: textD }}>{t('mantra')}</p>
             {stotram.verses.length > 1 && (
               <button onClick={() => setShowAll(v => !v)} className="text-[11px] font-semibold" style={{ color: accentColor }}>
-                {showAll ? 'Collapse' : 'Expand all'}
+                {showAll ? t('done') : t('explore')}
               </button>
             )}
           </div>
@@ -241,7 +243,7 @@ function StotramReader({ id }: { id: string }) {
                         <div className="px-4 pb-4 space-y-4" style={{ borderTop: `1px solid ${accentColor}12` }}>
                           {/* Sanskrit */}
                           <div className="pt-4">
-                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: `${accentColor}55` }}>Sanskrit</p>
+                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: `${accentColor}55` }}>{t('shloka')}</p>
                             <p className="text-base leading-loose whitespace-pre-line text-center"
                               style={{ fontFamily: 'var(--font-deva,serif)', color: isDark ? 'rgba(245,220,150,0.85)' : 'rgba(60,30,5,0.85)', fontSize: '1.05rem' }}>
                               {verse.sanskrit}
@@ -249,7 +251,7 @@ function StotramReader({ id }: { id: string }) {
                           </div>
                           {/* Transliteration */}
                           <div>
-                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: `${accentColor}55` }}>Transliteration</p>
+                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: `${accentColor}55` }}>{t('transliteration')}</p>
                             <p className="text-sm leading-relaxed italic whitespace-pre-line text-center"
                               style={{ color: isDark ? 'rgba(245,210,130,0.55)' : 'rgba(80,40,8,0.60)' }}>
                               {verse.transliteration}
@@ -257,7 +259,7 @@ function StotramReader({ id }: { id: string }) {
                           </div>
                           {/* Meaning */}
                           <div className="rounded-xl px-4 py-3" style={{ background: `${accentColor}08` }}>
-                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: `${accentColor}55` }}>Meaning</p>
+                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: `${accentColor}55` }}>{t('wisdom')}</p>
                             <p className="text-[12px] leading-relaxed" style={{ color: textS }}>
                               {verse.meaning}
                             </p>

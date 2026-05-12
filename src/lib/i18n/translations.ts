@@ -41,7 +41,12 @@ export type TranslationKey =
   | 'sevaHub' | 'quizMastery' | 'vichaar'
   | 'journeyLabel' | 'testOfDharma' | 'wisdom' | 'essence' | 'shareReflection'
   // General
-  | 'today' | 'yesterday' | 'thisWeek' | 'loading' | 'errorTryAgain' | 'ritualComplete';
+  | 'today' | 'yesterday' | 'thisWeek' | 'loading' | 'errorTryAgain' | 'ritualComplete'
+  | 'significance' | 'howToObserve' | 'sacredMantra' | 'shareObservance'
+  // Reader / Bhakti / Pathshala
+  | 'library' | 'timer' | 'mixer' | 'deepMeaning' | 'dailyApp' | 'listen'
+  | 'copy' | 'askAI' | 'transliteration' | 'currentKanda' | 'featuredPassages'
+  | 'continueLesson' | 'viewDetails' | 'syllabus' | 'enrolled' | 'complete' | 'beginReading';
 
 type TranslationMap = Record<TranslationKey, string>;
 
@@ -105,6 +110,13 @@ const en: TranslationMap = {
   today: 'Today', yesterday: 'Yesterday', thisWeek: 'This Week',
   loading: 'Loading…', errorTryAgain: 'Something went wrong. Please try again.',
   ritualComplete: 'Ritual Complete',
+  significance: 'Significance', howToObserve: 'How to Observe', sacredMantra: 'Sacred Mantra', shareObservance: 'Share Observance',
+  // Reader / Bhakti / Pathshala
+  library: 'Library', timer: 'Timer', mixer: 'Mixer', deepMeaning: 'Deep Meaning',
+  dailyApp: 'Daily Application', listen: 'Listen', copy: 'Copy', askAI: 'Ask AI',
+  transliteration: 'Transliteration', currentKanda: 'Current Kanda', featuredPassages: 'Featured Passages',
+  continueLesson: 'Continue Lesson', viewDetails: 'View Details', syllabus: 'Syllabus',
+  enrolled: 'Enrolled', complete: 'Complete', beginReading: 'Begin Reading',
 };
 
 const hi: TranslationMap = {
@@ -167,6 +179,12 @@ const hi: TranslationMap = {
   today: 'आज', yesterday: 'कल', thisWeek: 'इस सप्ताह',
   loading: 'लोड हो रहा है…', errorTryAgain: 'कुछ गड़बड़ हुई। कृपया फिर प्रयास करें।',
   ritualComplete: 'अनुष्ठान पूर्ण',
+  significance: 'महत्व', howToObserve: 'अनुष्ठान की विधि', sacredMantra: 'पवित्र मंत्र', shareObservance: 'इस व्रत को साझा करें',
+  library: 'पुस्तकालय', timer: 'टाइमर', mixer: 'मिक्सर', deepMeaning: 'गहन अर्थ',
+  dailyApp: 'दैनिक उपयोग', listen: 'सुनें', copy: 'कॉपी करें', askAI: 'AI से पूछें',
+  transliteration: 'लिप्यांतरण', currentKanda: 'वर्तमान काण्ड', featuredPassages: 'प्रमुख श्लोक',
+  continueLesson: 'पाठ जारी रखें', viewDetails: 'विवरण देखें', syllabus: 'पाठ्यक्रम',
+  enrolled: 'नामांकित', complete: 'पूर्ण', beginReading: 'पढ़ना शुरू करें',
 };
 
 const pa: TranslationMap = {
@@ -229,6 +247,12 @@ const pa: TranslationMap = {
   today: 'ਅੱਜ', yesterday: 'ਕੱਲ੍ਹ', thisWeek: 'ਇਸ ਹਫ਼ਤੇ',
   loading: 'ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ…', errorTryAgain: 'ਕੁਝ ਗਲਤ ਹੋਇਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।',
   ritualComplete: 'ਅਨੁਸ਼ਠਾਨ ਪੂਰਾ',
+  significance: 'ਮਹੱਤਵ', howToObserve: 'ਅਨੁਸ਼ਠਾਨ ਦੀ ਵਿਧੀ', sacredMantra: 'ਪਵਿੱਤਰ ਮੰਤਰ', shareObservance: 'ਇਸ ਵਰਤ ਨੂੰ ਸਾਂਝਾ ਕਰੋ',
+  library: 'ਪੁਸਤਕਾਲਾ', timer: 'ਟਾਈਮਰ', mixer: 'ਮਿਕਸਰ', deepMeaning: 'ਡੂੰਘਾ ਅਰਥ',
+  dailyApp: 'ਰੋਜ਼ਾਨਾ ਅਭਿਆਸ', listen: 'ਸੁਣੋ', copy: 'ਕਾਪੀ ਕਰੋ', askAI: 'AI ਨੂੰ ਪੁੱਛੋ',
+  transliteration: 'ਲਿਪੀਅੰਤਰਨ', currentKanda: 'ਵਰਤਮਾਨ ਕਾਂਡ', featuredPassages: 'ਪ੍ਰਮੁੱਖ ਸ਼ਲੋਕ',
+  continueLesson: 'ਪਾਠ ਜਾਰੀ ਰੱਖੋ', viewDetails: 'ਵੇਰਵੇ ਵੇਖੋ', syllabus: 'ਸਿਲੇਬਸ',
+  enrolled: 'ਦਾਖਲ ਹੋਏ', complete: 'ਪੂਰਾ ਹੋਇਆ', beginReading: 'ਪੜ੍ਹਨਾ ਸ਼ੁਰੂ ਕਰੋ',
 };
 
 export const TRANSLATIONS: Record<AppLang, TranslationMap> = { en, hi, pa };

@@ -10,6 +10,7 @@ import {
 import type { DharmVeer } from '@/lib/dharm-veer';
 import { TRADITION_META } from '@/lib/dharm-veer';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { t as translateFn, type AppLang } from '@/lib/i18n/translations';
 import toast from 'react-hot-toast';
 
 type ReadingTheme = 'light' | 'dark' | 'sepia';
@@ -20,9 +21,10 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
   const [theme, setTheme] = useState<ReadingTheme>('dark');
   const [fontSize, setFontSize] = useState<FontSize>('md');
   const [showSettings, setShowSettings] = useState(false);
-  const { t, lang: appLang } = useLanguage();
+  const { lang: appLang } = useLanguage();
   const [lang, setLang] = useState<'en' | 'local'>(appLang === 'en' ? 'en' : 'local');
 
+  const effectiveLang: AppLang = lang === 'en' ? 'en' : (appLang === 'en' ? 'hi' : appLang);
   const meta = TRADITION_META[hero.tradition];
 
   // Map font sizes to tailwind/css classes or styles
@@ -147,7 +149,7 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
           {/* The Journey */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-              <Book size={14} /> {t('journeyLabel')}
+              <Book size={14} /> {translateFn(effectiveLang, 'journeyLabel')}
             </div>
             <p className={`${fontStyles[fontSize]} whitespace-pre-wrap`}>
               {lang === 'local' && hero.journeyLocal ? hero.journeyLocal : hero.journey}
@@ -157,7 +159,7 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
           {/* The Trial */}
           <div className="clay-card rounded-[2rem] p-6 space-y-4" style={{ backgroundColor: 'rgba(200,146,74,0.05)', border: '1px solid rgba(200,146,74,0.1)' }}>
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--brand-primary)]">
-              <Shield size={14} /> {t('testOfDharma')}
+              <Shield size={14} /> {translateFn(effectiveLang, 'testOfDharma')}
             </div>
             <p className={`${fontStyles[fontSize]} font-medium italic`}>
               {lang === 'local' && hero.trialLocal ? hero.trialLocal : hero.trial}
@@ -167,7 +169,7 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
           {/* The Teaching */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-              <Lightbulb size={14} /> {t('wisdom')}
+              <Lightbulb size={14} /> {translateFn(effectiveLang, 'wisdom')}
             </div>
             <p className={`${fontStyles[fontSize]}`}>
               {lang === 'local' && hero.teachingLocal ? hero.teachingLocal : hero.teaching}
@@ -189,7 +191,7 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
 
           {/* Moral */}
           <div className="text-center pt-8">
-            <p className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-40 mb-4">{t('essence')}</p>
+            <p className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-40 mb-4">{translateFn(effectiveLang, 'essence')}</p>
             <p className="text-lg font-bold leading-relaxed max-w-sm mx-auto">
               {lang === 'local' && hero.moralLocal ? hero.moralLocal : hero.moral}
             </p>
@@ -203,7 +205,7 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
             className="flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--brand-primary)] text-black font-bold shadow-xl hover:scale-105 transition active:scale-95"
           >
             <Share2 size={18} />
-            {t('shareReflection')}
+            {translateFn(effectiveLang, 'shareReflection')}
           </button>
         </div>
       </main>

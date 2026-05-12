@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import type { VratData } from '@/lib/vrat-data';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { t as translateFn, type AppLang } from '@/lib/i18n/translations';
 import toast from 'react-hot-toast';
 
 type ReadingTheme = 'light' | 'dark' | 'sepia';
@@ -22,6 +23,8 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
   
   const { t, lang: appLang } = useLanguage();
   const [lang, setLang] = useState<'en' | 'local'>(appLang === 'en' ? 'en' : 'local');
+
+  const effectiveLang: AppLang = lang === 'en' ? 'en' : (appLang === 'en' ? 'hi' : appLang);
 
   const fontStyles: Record<FontSize, string> = {
     sm: 'text-sm leading-relaxed',
@@ -69,7 +72,7 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
         
         <div className="flex-1 min-w-0 flex flex-col">
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
-            {t('vrat') || 'Vrat'}
+            {translateFn(effectiveLang, 'vrat') || 'Vrat'}
           </span>
           <span className="text-xs font-bold truncate" style={{ color: 'var(--brand-primary-strong)' }}>
             {originalSlug.toUpperCase()}
@@ -141,7 +144,7 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
           {/* Significance */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-              <Book size={14} /> Significance
+              <Book size={14} /> {translateFn(effectiveLang, 'significance')}
             </div>
             <p className={`${fontStyles[fontSize]} whitespace-pre-wrap`}>
               {lang === 'local' && vrat.significanceLocal ? vrat.significanceLocal : vrat.significance}
@@ -151,7 +154,7 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
           {/* Practice */}
           <div className="rounded-[2rem] p-6 space-y-4" style={{ backgroundColor: 'rgba(200,146,74,0.05)', border: '1px solid rgba(200,146,74,0.1)' }}>
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--brand-primary-strong)]">
-              <Flame size={14} /> How to Observe
+              <Flame size={14} /> {translateFn(effectiveLang, 'howToObserve')}
             </div>
             <p className={`${fontStyles[fontSize]} font-medium italic`}>
               {lang === 'local' && vrat.practiceLocal ? vrat.practiceLocal : vrat.practice}
@@ -161,7 +164,7 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
           {/* Mantra */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-              <Info size={14} /> Sacred Mantra
+              <Info size={14} /> {translateFn(effectiveLang, 'sacredMantra')}
             </div>
             <p className={`${fontStyles[fontSize]} text-center premium-serif text-xl font-bold mt-4`}>
               {lang === 'local' && vrat.mantraLocal ? vrat.mantraLocal : vrat.mantra}
@@ -178,7 +181,7 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
             style={{ backgroundColor: 'var(--brand-primary)' }}
           >
             <Share2 size={18} />
-            Share Observance
+            {translateFn(effectiveLang, 'shareObservance')}
           </button>
         </div>
       </main>
