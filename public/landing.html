@@ -185,6 +185,35 @@ body.landing-entered #explore-btn {
 @keyframes pulseGlow { 0%,100%{box-shadow:0 0 0 0 rgba(216,138,28,0)} 50%{box-shadow:0 0 24px rgba(216,138,28,0.10)} }
 #main-page { min-height:100vh; }
 
+/* ── LOGO ANIMATION — Chakra + Infinity + Bindu ────────────────────────── */
+#logo-anim { margin-bottom:6px; display:flex; justify-content:center; align-items:center; }
+#logo-anim-svg { overflow:visible; display:block; margin:0 auto; }
+/* Dharma chakra spins continuously */
+#chakra-g {
+  transform-box:fill-box; transform-origin:50% 50%;
+  animation: chakraTurn 20s linear infinite;
+}
+@keyframes chakraTurn { to { transform:rotate(360deg); } }
+/* Infinity path glow */
+#inf-path {
+  filter: drop-shadow(0 0 10px rgba(216,138,28,0.55)) drop-shadow(0 0 24px rgba(216,138,28,0.22));
+}
+/* Bindu glow — pulsed by JS, base state */
+#inf-bindu {
+  filter: drop-shadow(0 0 6px rgba(216,138,28,0.6));
+  transition: filter 0.15s ease;
+}
+/* Infinity group scales to bindu — collapses/expands */
+#inf-g { transform-box:fill-box; transform-origin:50% 50%; }
+/* Spark lines burst at bindu moment */
+@keyframes sparkFade {
+  0%   { opacity:0.92; transform:scale(1); }
+  60%  { opacity:0.55; }
+  100% { opacity:0; transform:scale(1.7); }
+}
+/* Nav logo micro-infinity */
+.nav-logo-icon #nl-inf { filter:drop-shadow(0 0 3px rgba(200,146,74,0.6)); }
+
 /* ── HERO ─────────────────────────────────────────────────────────────── */
 .hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden; padding:120px 40px 80px; text-align:center; }
 .hero-glow { position:absolute; inset:0; pointer-events:none; background: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(216,138,28,0.10) 0%, transparent 65%), radial-gradient(ellipse 55% 40% at 15% 85%, rgba(216,138,28,0.06) 0%, transparent 60%), radial-gradient(ellipse 50% 50% at 85% 70%, rgba(192,96,122,0.05) 0%, transparent 60%); }
@@ -703,7 +732,80 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
   <canvas id="sky-canvas"></canvas>
   <div id="celebration-layer" aria-hidden="true"></div>
   <div id="splash-content">
-    <div id="splash-deva">शून्य</div>
+
+    <!-- ── Animated Infinity + Chakra Logo ─────────────────────────────── -->
+    <div id="logo-anim">
+      <svg id="logo-anim-svg" viewBox="0 0 400 280" width="min(300px,78vw)" height="auto" aria-hidden="true">
+        <defs>
+          <!-- Radial glow for bindu bloom -->
+          <radialGradient id="bindu-grd" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#FFF0B0" stop-opacity="1"/>
+            <stop offset="40%"  stop-color="#D88A1C" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#D88A1C" stop-opacity="0"/>
+          </radialGradient>
+          <!-- Subtle outer halo behind chakra -->
+          <radialGradient id="halo-grd" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#D88A1C" stop-opacity="0.08"/>
+            <stop offset="100%" stop-color="#D88A1C" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Outer halo -->
+        <circle cx="200" cy="140" r="130" fill="url(#halo-grd)"/>
+
+        <!-- ── Dharma Chakra (24-spoke Ashoka Wheel) — rotates via CSS ── -->
+        <g id="chakra-g">
+          <!-- Outer rim (double line) -->
+          <circle cx="200" cy="140" r="110" stroke="#D88A1C" stroke-width="1.8" fill="none" opacity="0.22"/>
+          <circle cx="200" cy="140" r="104" stroke="#D88A1C" stroke-width="0.6" fill="none" opacity="0.10"/>
+          <!-- Inner spoke ring -->
+          <circle cx="200" cy="140" r="88"  stroke="#D88A1C" stroke-width="0.8" fill="none" opacity="0.14"/>
+          <!-- Hub (double circle) -->
+          <circle cx="200" cy="140" r="22"  stroke="#D88A1C" stroke-width="1.6" fill="rgba(216,138,28,0.05)" opacity="0.32"/>
+          <circle cx="200" cy="140" r="15"  stroke="#D88A1C" stroke-width="0.7" fill="none" opacity="0.22"/>
+          <!-- 24 spokes injected by JS -->
+        </g>
+
+        <!-- ── Infinity lemniscate — multi-phase JS animation ── -->
+        <g id="inf-g">
+          <!-- Shadow / depth line slightly offset -->
+          <path
+            d="M 200,140 C 200,100 290,100 290,140 C 290,180 200,180 200,140 C 200,100 110,100 110,140 C 110,180 200,180 200,140"
+            fill="none" stroke="#9F6314" stroke-width="5.5"
+            stroke-linecap="round" opacity="0.18"
+          />
+          <!-- Main infinity stroke -->
+          <path id="inf-path"
+            d="M 200,140 C 200,100 290,100 290,140 C 290,180 200,180 200,140 C 200,100 110,100 110,140 C 110,180 200,180 200,140"
+            fill="none"
+            stroke="#D88A1C"
+            stroke-width="4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </g>
+
+        <!-- ── Spark lines at bindu collapse ── -->
+        <g id="inf-sparks"/>
+
+        <!-- ── Bindu — the cosmic crossing point ── -->
+        <circle id="inf-bindu-halo" cx="200" cy="140" r="24" fill="url(#bindu-grd)" opacity="0"/>
+        <circle id="inf-bindu"      cx="200" cy="140" r="4.5" fill="#D88A1C"/>
+
+        <!-- शून्य label below infinity -->
+        <text
+          x="200" y="252"
+          font-family="'Noto Serif Devanagari', serif"
+          font-size="22"
+          font-weight="400"
+          fill="rgba(216,138,28,0.72)"
+          text-anchor="middle"
+          letter-spacing="6"
+        >शून्य</text>
+      </svg>
+    </div>
+    <!-- ──────────────────────────────────────────────────────────────────── -->
+
     <h1 id="splash-title">Find your <em>infinite.</em></h1>
     <div id="splash-trads">
       <span class="s-trad hindu" title="Hindu">ॐ</span>
@@ -813,16 +915,24 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 <!-- ── NAV ──────────────────────────────────────────────────────── -->
 <nav id="nav">
   <a class="nav-logo" href="#">
-    <svg class="nav-logo-icon" viewBox="0 0 32 32" fill="none">
-      <circle cx="16" cy="16" r="14" stroke="#C8924A" stroke-width="1"/>
-      <ellipse cx="16" cy="8" rx="4" ry="7" fill="#C8924A" opacity=".8"/>
-      <ellipse cx="16" cy="8" rx="4" ry="7" transform="rotate(60 16 16)" fill="#C8924A" opacity=".65"/>
-      <ellipse cx="16" cy="8" rx="4" ry="7" transform="rotate(120 16 16)" fill="#C8924A" opacity=".5"/>
-      <ellipse cx="16" cy="8" rx="4" ry="7" transform="rotate(180 16 16)" fill="#C8924A" opacity=".8"/>
-      <ellipse cx="16" cy="8" rx="4" ry="7" transform="rotate(240 16 16)" fill="#C8924A" opacity=".65"/>
-      <ellipse cx="16" cy="8" rx="4" ry="7" transform="rotate(300 16 16)" fill="#C8924A" opacity=".5"/>
-      <circle cx="16" cy="16" r="5" fill="#3E2A1F"/>
-      <text x="16" y="20" font-family="Noto Serif Devanagari" font-size="7" fill="#C8924A" text-anchor="middle">ॐ</text>
+    <svg class="nav-logo-icon" viewBox="0 0 32 32" fill="none" style="overflow:visible;">
+      <!-- Chakra rim -->
+      <circle cx="16" cy="16" r="13.5" stroke="#C8924A" stroke-width="1.2" opacity="0.5"/>
+      <!-- 8 main spokes of the chakra -->
+      <g stroke="#C8924A" stroke-width="0.7" opacity="0.35">
+        <line x1="16" y1="5"  x2="16" y2="9.5"/>  <line x1="16" y1="22.5" x2="16" y2="27"/>
+        <line x1="5"  y1="16" x2="9.5" y2="16"/>  <line x1="22.5" y1="16" x2="27" y2="16"/>
+        <line x1="7.8" y1="7.8" x2="11" y2="11"/>  <line x1="21" y1="21" x2="24.2" y2="24.2"/>
+        <line x1="24.2" y1="7.8" x2="21" y2="11"/> <line x1="11" y1="21" x2="7.8" y2="24.2"/>
+      </g>
+      <!-- Infinity mark -->
+      <path id="nl-inf"
+        d="M 16,16 C 16,12.5 20.5,12.5 20.5,16 C 20.5,19.5 16,19.5 16,16 C 16,12.5 11.5,12.5 11.5,16 C 11.5,19.5 16,19.5 16,16"
+        stroke="#C8924A" stroke-width="2" fill="none" stroke-linecap="round"
+        style="filter:drop-shadow(0 0 3px rgba(200,146,74,0.7));"
+      />
+      <!-- Bindu -->
+      <circle cx="16" cy="16" r="1.8" fill="#C8924A"/>
     </svg>
     <span class="nav-logo-text">Shoo<span>naya</span></span>
   </a>
@@ -3113,6 +3223,140 @@ window.switchShloka    = switchShloka;
     rawMY = (e.clientY - H / 2) / H;
   });
   window._stopSkyCanvas = () => { cancelAnimationFrame(rafId); };
+})();
+
+/* ─── SPLASH LOGO — Chakra + Infinity + Bindu Animation ────────────────── */
+(function () {
+  const svg    = document.getElementById('logo-anim-svg');
+  const infG   = document.getElementById('inf-g');
+  const infP   = document.getElementById('inf-path');
+  const bindu  = document.getElementById('inf-bindu');
+  const bindoH = document.getElementById('inf-bindu-halo');
+  const sparkG = document.getElementById('inf-sparks');
+  const chakG  = document.getElementById('chakra-g');
+  if (!svg || !infP || !chakG) return;
+
+  /* ── Build 24-spoke Dharma Chakra ─────────────────────────────────────── */
+  const CX = 200, CY = 140;
+  for (let i = 0; i < 24; i++) {
+    const a = (i * 15) * Math.PI / 180;
+    const main = i % 2 === 0;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', (CX + Math.cos(a) * 22).toFixed(2));
+    line.setAttribute('y1', (CY + Math.sin(a) * 22).toFixed(2));
+    line.setAttribute('x2', (CX + Math.cos(a) * 88).toFixed(2));
+    line.setAttribute('y2', (CY + Math.sin(a) * 88).toFixed(2));
+    line.setAttribute('stroke', '#D88A1C');
+    line.setAttribute('stroke-width', main ? 1.4 : 0.65);
+    line.setAttribute('opacity',      main ? 0.27 : 0.13);
+    chakG.appendChild(line);
+    // rim bead at spoke tip
+    const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    dot.setAttribute('cx', (CX + Math.cos(a) * 88).toFixed(2));
+    dot.setAttribute('cy', (CY + Math.sin(a) * 88).toFixed(2));
+    dot.setAttribute('r', main ? 2.2 : 1.0);
+    dot.setAttribute('fill',    '#D88A1C');
+    dot.setAttribute('opacity', main ? 0.30 : 0.14);
+    chakG.appendChild(dot);
+  }
+
+  /* ── Measure true path length for dashoffset animation ─────────────────── */
+  const L = infP.getTotalLength();
+  infP.style.strokeDasharray  = L;
+  infP.style.strokeDashoffset = L;
+
+  /* ── Easing helpers ─────────────────────────────────────────────────────── */
+  function eIO(t)  { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; } // ease-in-out quad
+  function eI3(t)  { return t*t*t; }                            // ease-in cubic
+  function eO3(t)  { return 1 - Math.pow(1-t, 3); }            // ease-out cubic
+
+  /* ── Spark burst at bindu collapse ─────────────────────────────────────── */
+  let lastBinduPhase = false;
+  function sparkBurst() {
+    if (!sparkG) return;
+    sparkG.innerHTML = '';
+    for (let i = 0; i < 12; i++) {
+      const a   = (i * 30) * Math.PI / 180;
+      const len = 20 + Math.random() * 18;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', CX.toString());
+      line.setAttribute('y1', CY.toString());
+      line.setAttribute('x2', (CX + Math.cos(a) * len).toFixed(1));
+      line.setAttribute('y2', (CY + Math.sin(a) * len).toFixed(1));
+      line.setAttribute('stroke', i % 3 === 0 ? '#FFF0B0' : '#D88A1C');
+      line.setAttribute('stroke-width', (1 + Math.random()).toFixed(1));
+      line.setAttribute('opacity', '0');
+      line.style.animation = `sparkFade ${0.5 + Math.random() * 0.25}s ease ${i * 0.02}s forwards`;
+      sparkG.appendChild(line);
+    }
+  }
+
+  /* ── Main animation loop ─────────────────────────────────────────────────
+     Cycle = 9 000 ms
+     0.00–0.24 → DRAW   (dashoffset: L→0, scale 1, bindu dim)
+     0.24–0.46 → HOLD   (fully drawn, scale 1, bindu steady)
+     0.46–0.62 → COLLAPSE (scale 1→0.03, bindu blooms)
+     0.62–0.68 → BINDU   (scale 0.03, bindu peak, sparks)
+     0.68–0.82 → EXPAND  (scale 0.03→1, bindu dims)
+     0.82–0.95 → ERASE   (dashoffset: 0→L, scale 1)
+     0.95–1.00 → PAUSE
+  ─────────────────────────────────────────────────────────────────────────── */
+  const CYCLE = 9000;
+  let startT = null;
+
+  function frame(ts) {
+    if (!startT) startT = ts;
+    const p = ((ts - startT) % CYCLE) / CYCLE;
+
+    let offset, scale, bindR, bindOp, haloOp;
+    const inBindu = p >= 0.60 && p <= 0.70;
+
+    if (!lastBinduPhase && inBindu) sparkBurst();
+    lastBinduPhase = inBindu;
+
+    if (p < 0.24) {
+      const pp = eIO(p / 0.24);
+      offset = L * (1 - pp); scale = 1;
+      bindR = 4.5; bindOp = 0.65; haloOp = 0;
+    } else if (p < 0.46) {
+      offset = 0; scale = 1;
+      bindR = 4.5; bindOp = 0.72; haloOp = 0;
+    } else if (p < 0.62) {
+      const pp = eI3((p - 0.46) / 0.16);
+      offset = 0; scale = Math.max(0.025, 1 - pp * 0.975);
+      bindR = 4.5 + pp * 13; bindOp = 0.72 + pp * 0.28; haloOp = pp * 0.82;
+    } else if (p < 0.68) {
+      offset = 0; scale = 0.025;
+      bindR = 17.5; bindOp = 1; haloOp = 0.92;
+    } else if (p < 0.82) {
+      const pp = eO3((p - 0.68) / 0.14);
+      offset = 0; scale = 0.025 + pp * 0.975;
+      bindR = 17.5 - pp * 13; bindOp = 1 - pp * 0.28; haloOp = 0.92 * (1 - pp);
+    } else if (p < 0.95) {
+      const pp = eIO((p - 0.82) / 0.13);
+      offset = L * pp; scale = 1;
+      bindR = 4.5; bindOp = 0.65; haloOp = 0;
+    } else {
+      offset = L; scale = 1;
+      bindR = 4.5; bindOp = 0.3; haloOp = 0;
+    }
+
+    infP.style.strokeDashoffset = offset;
+    infG.style.transform = `scale(${scale.toFixed(4)})`;
+    bindu.setAttribute('r', bindR.toFixed(2));
+    bindu.style.opacity  = bindOp;
+    if (bindoH) bindoH.style.opacity = haloOp;
+
+    // Dynamic glow on bindu
+    const glowR = (bindR * 1.8).toFixed(0);
+    const glowI = (bindR * 0.55).toFixed(0);
+    bindu.style.filter = bindR > 8
+      ? `drop-shadow(0 0 ${glowR}px rgba(255,240,160,0.95)) drop-shadow(0 0 ${glowI}px #D88A1C)`
+      : `drop-shadow(0 0 6px rgba(216,138,28,0.55))`;
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
 })();
 
 /* ─── SPLASH COUNTDOWN ──────────────────────────────────────────────────── */
