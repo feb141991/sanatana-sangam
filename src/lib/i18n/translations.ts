@@ -46,7 +46,7 @@ export type TranslationKey =
   // Reader / Bhakti / Pathshala
   | 'library' | 'timer' | 'mixer' | 'deepMeaning' | 'dailyApp' | 'listen'
   | 'copy' | 'askAI' | 'transliteration' | 'currentKanda' | 'featuredPassages'
-  | 'continueLesson' | 'viewDetails' | 'syllabus' | 'enrolled' | 'complete' | 'beginReading';
+  | 'continueLesson' | 'viewDetails' | 'syllabus' | 'enrolled' | 'complete' | 'beginReading' | 'exploreAll';
 
 type TranslationMap = Record<TranslationKey, string>;
 
@@ -116,7 +116,7 @@ const en: TranslationMap = {
   dailyApp: 'Daily Application', listen: 'Listen', copy: 'Copy', askAI: 'Ask AI',
   transliteration: 'Transliteration', currentKanda: 'Current Kanda', featuredPassages: 'Featured Passages',
   continueLesson: 'Continue Lesson', viewDetails: 'View Details', syllabus: 'Syllabus',
-  enrolled: 'Enrolled', complete: 'Complete', beginReading: 'Begin Reading',
+  enrolled: 'Enrolled', complete: 'Complete', beginReading: 'Begin Reading', exploreAll: 'Explore All',
 };
 
 const hi: TranslationMap = {
@@ -184,7 +184,7 @@ const hi: TranslationMap = {
   dailyApp: 'दैनिक उपयोग', listen: 'सुनें', copy: 'कॉपी करें', askAI: 'AI से पूछें',
   transliteration: 'लिप्यांतरण', currentKanda: 'वर्तमान काण्ड', featuredPassages: 'प्रमुख श्लोक',
   continueLesson: 'पाठ जारी रखें', viewDetails: 'विवरण देखें', syllabus: 'पाठ्यक्रम',
-  enrolled: 'नामांकित', complete: 'पूर्ण', beginReading: 'पढ़ना शुरू करें',
+  enrolled: 'नामांकित', complete: 'पूर्ण', beginReading: 'पढ़ना शुरू करें', exploreAll: 'सभी देखें',
 };
 
 const pa: TranslationMap = {
@@ -252,7 +252,7 @@ const pa: TranslationMap = {
   dailyApp: 'ਰੋਜ਼ਾਨਾ ਅਭਿਆਸ', listen: 'ਸੁਣੋ', copy: 'ਕਾਪੀ ਕਰੋ', askAI: 'AI ਨੂੰ ਪੁੱਛੋ',
   transliteration: 'ਲਿਪੀਅੰਤਰਨ', currentKanda: 'ਵਰਤਮਾਨ ਕਾਂਡ', featuredPassages: 'ਪ੍ਰਮੁੱਖ ਸ਼ਲੋਕ',
   continueLesson: 'ਪਾਠ ਜਾਰੀ ਰੱਖੋ', viewDetails: 'ਵੇਰਵੇ ਵੇਖੋ', syllabus: 'ਸਿਲੇਬਸ',
-  enrolled: 'ਦਾਖਲ ਹੋਏ', complete: 'ਪੂਰਾ ਹੋਇਆ', beginReading: 'ਪੜ੍ਹਨਾ ਸ਼ੁਰੂ ਕਰੋ',
+  enrolled: 'ਦਾਖਲ ਹੋਏ', complete: 'ਪੂਰਾ ਹੋਇਆ', beginReading: 'ਪੜ੍ਹਨਾ ਸ਼ੁਰੂ ਕਰੋ', exploreAll: 'ਸਭ ਵੇਖੋ',
 };
 
 export const TRANSLATIONS: Record<AppLang, TranslationMap> = { en, hi, pa };
