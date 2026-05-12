@@ -152,12 +152,6 @@ After 12.5 years of this, sitting under a sala tree near the river Rijupalika, h
       attribution: 'भगवान महावीर',
     },
   },
-    quoteLocal: {
-      text: 'सभी जीवित प्राणी जीना चाहते हैं। उन्हें जीवन प्रिय है। इसलिए प्राण मत लो।',
-      attribution: 'भगवान महावीर',
-    },
-  },
-  },
 
   // ── 4. Swami Vivekananda ──────────────────────────────────────────────────
   {
@@ -186,29 +180,6 @@ In 1893 he sailed to America with almost no money, knowing no one, with a borrow
       `शिकागो जाने से पहले, विवेकानंद बोस्टन के माल गोदामों में एक खाली डिब्बे में सोए थे। उनके पास न खाना था, न पैसे। उन्हें कई दरवाजों से लौटा दिया गया था। लेकिन उन्होंने हार नहीं मानी।`,
     teaching:
       'Each soul is potentially divine. The goal is to manifest this divinity within by controlling nature — external and internal. Do this either by work, or worship, or psychic control, or philosophy — by one, or more, or all of these — and be free.',
-    teachingLocal: 'प्रत्येक आत्मा संभावित रूप से दिव्य है। लक्ष्य आंतरिक और बाहरी प्रकृति को नियंत्रित करके इस दिव्यता को प्रकट करना है।',
-    moral:
-      'A colonised country\'s most powerful export was not cotton or indigo. It was a philosophy of universal human dignity so complete that it walked into the capital of Western Christianity and was given a standing ovation.',
-    moralLocal: 'एक गुलाम देश का सबसे शक्तिशाली निर्यात कपास नहीं, बल्कि मानवीय गरिमा का दर्शन था।',
-    quote: {
-      text: 'Arise, awake, and stop not till the goal is reached.',
-      attribution: 'Swami Vivekananda (after Katha Upanishad 1.3.14)',
-    },
-    quoteLocal: {
-      text: 'उठो, जागो और तब तक मत रुको जब तक लक्ष्य प्राप्त न हो जाए।',
-      attribution: 'स्वामी विवेकानंद',
-    },
-  },
-    quoteLocal: {
-      text: 'उठो, जागो और तब तक मत रुको जब तक लक्ष्य प्राप्त न हो जाए।',
-      attribution: 'स्वामी विवेकानंद',
-    },
-  },
-    quoteLocal: {
-      text: 'किसी भी कार्य को शुरू करने से पहले स्वयं से तीन प्रश्न पूछें: मैं यह क्यों कर रहा हूँ? इसके परिणाम क्या हो सकते हैं? क्या मैं सफल होऊंगा?',
-      attribution: 'आचार्य चाणक्य',
-    },
-  },her by work, or worship, or psychic control, or philosophy — by one, or more, or all of these — and be free.',
     teachingLocal: 'प्रत्येक आत्मा संभावित रूप से दिव्य है। लक्ष्य आंतरिक और बाहरी प्रकृति को नियंत्रित करके इस दिव्यता को प्रकट करना है।',
     moral:
       'A colonised country\'s most powerful export was not cotton or indigo. It was a philosophy of universal human dignity so complete that it walked into the capital of Western Christianity and was given a standing ovation.',
@@ -262,12 +233,6 @@ In 322 BCE, Chandragupta's forces defeated the Nanda army and Chandragupta took 
       text: 'किसी भी कार्य को शुरू करने से पहले स्वयं से तीन प्रश्न पूछें: मैं यह क्यों कर रहा हूँ? इसके परिणाम क्या हो सकते हैं? क्या मैं सफल होऊंगा?',
       attribution: 'आचार्य चाणक्य',
     },
-  },
-    quoteLocal: {
-      text: 'किसी भी कार्य को शुरू करने से पहले स्वयं से तीन प्रश्न पूछें: मैं यह क्यों कर रहा हूँ? इसके परिणाम क्या हो सकते हैं? क्या मैं सफल होऊंगा?',
-      attribution: 'आचार्य चाणक्य',
-    },
-  },
   },
 
   // ── 6. Chaitanya Mahaprabhu ──────────────────────────────────────────────
