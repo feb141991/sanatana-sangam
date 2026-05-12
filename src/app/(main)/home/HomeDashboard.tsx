@@ -1148,7 +1148,10 @@ export default function HomeDashboard({
   // Light/dark theme detection — drives card surface swaps
   const [isDark, setIsDark] = useState(true);
   useEffect(() => {
-    const check = () => setIsDark(document.documentElement.dataset.theme !== 'light');
+    const check = () => {
+      const theme = document.documentElement.dataset.theme;
+      setIsDark(theme === 'dark' || !theme); // Default to dark if not set or dark
+    };
     check();
     const obs = new MutationObserver(check);
     obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
@@ -2122,7 +2125,7 @@ export default function HomeDashboard({
                   fontFamily: 'Georgia, "Noto Serif Devanagari", serif',
                   fontSize: 'clamp(0.95rem, 3.5vw, 1.25rem)',
                   lineHeight: 1.55,
-                  color: 'var(--text-cream)',
+                  color: heroPrimaryText,
                   whiteSpace: 'pre-line',
                 }}>
                   {dailyText.original}
@@ -2131,7 +2134,7 @@ export default function HomeDashboard({
 
               {/* Transliteration */}
               {dailyText.transliteration && dailyText.transliteration !== dailyText.original && (
-                <p className="italic leading-snug" style={{ color: 'var(--text-muted-warm)', fontSize: '0.78rem' }}>
+                <p className="italic leading-snug" style={{ color: heroSecondaryText, fontSize: '0.78rem' }}>
                   {dailyText.transliteration}
                 </p>
               )}
@@ -2146,7 +2149,7 @@ export default function HomeDashboard({
                 <p className="text-[9px] font-semibold uppercase tracking-[0.16em] mb-1" style={{ color: 'rgba(200,146,74,0.65)' }}>
                   {dailyText.meaningLabel}
                 </p>
-                <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>
+                <p className="text-xs leading-relaxed" style={{ color: heroSecondaryText }}>
                   {dailyText.meaning}
                 </p>
               </div>
@@ -2157,7 +2160,7 @@ export default function HomeDashboard({
                   <p className="text-[9px] font-semibold uppercase tracking-[0.12em] mb-1.5" style={{ color: 'rgba(200,146,74,0.65)' }}>
                     ✨ {personalContent.context_label ?? 'Today\'s Practice'}
                   </p>
-                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>{personalContent.suggestion}</p>
+                  <p className="text-sm leading-relaxed" style={{ color: heroSecondaryText }}>{personalContent.suggestion}</p>
                   {personalContent.nudge && <p className="text-xs mt-1.5 italic" style={{ color: 'rgba(200,146,74,0.55)' }}>{personalContent.nudge}</p>}
                 </div>
               )}
