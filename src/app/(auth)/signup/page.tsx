@@ -10,19 +10,20 @@ import toast from 'react-hot-toast';
 import { 
   ArrowRight, ArrowLeft, Eye, EyeOff, MapPin, Loader2, Lock, 
   Sparkles, Check, Heart, Globe, Users, BookOpen, Shield, 
-  MessageCircle, BarChart3, Star
+  BarChart3, Star
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
-import BrandMark from '@/components/BrandMark';
 import { TRADITIONS } from '@/lib/utils';
 import type { TraditionKey } from '@/lib/traditions';
 
 type Step = 1 | 2 | 3;
 
 const QUOTES = [
-  { text: "Dharmo rakṣati rakṣitaḥ", author: "Mahabharata", meaning: "Dharma protects those who protect it." },
-  { text: "Sarve bhavantu sukhinaḥ", author: "Rig Veda", meaning: "May everyone be happy and free from suffering." },
-  { text: "Ekaṃ sat viprā bahudhā vadanti", author: "Upanishads", meaning: "Truth is one, though the wise speak of it in many ways." }
+  { text: "Dharmo rakṣati rakṣitaḥ", author: "Mahabharata", meaning: "Dharma protects those who protect it.", tradition: 'hindu' },
+  { text: "Man jeetai jag jeet", author: "Guru Granth Sahib", meaning: "To conquer the mind is to conquer the world.", tradition: 'sikh' },
+  { text: "Attā hi attano nātho", author: "Dhammapada", meaning: "One is one's own master.", tradition: 'buddhist' },
+  { text: "Parasparopagraho Jīvānām", author: "Tattvartha Sutra", meaning: "Souls render service to one another.", tradition: 'jain' },
+  { text: "Sarve bhavantu sukhinaḥ", author: "Rig Veda", meaning: "May everyone be happy and free from suffering.", tradition: 'hindu' }
 ];
 
 const APP_FEATURES = [
@@ -63,6 +64,13 @@ const FACTS = [
   "Discover sacred Tirthas and local Mandalis near you."
 ];
 
+const TRADITION_SIGNS = [
+  { char: '🕉️', label: 'Sanatan', color: 'var(--glow-hindu)' },
+  { char: '☬', label: 'Sikh', color: 'var(--glow-sikh)' },
+  { char: '☸️', label: 'Buddhist', color: 'var(--glow-buddhist)' },
+  { char: '🤲', label: 'Jain', color: 'var(--glow-jain)' }
+];
+
 const TRADITION_COLORS: Record<TraditionKey | '', string> = {
   'hindu': 'var(--glow-hindu)',
   'sikh': 'var(--glow-sikh)',
@@ -72,38 +80,33 @@ const TRADITION_COLORS: Record<TraditionKey | '', string> = {
   '': 'rgba(216, 138, 28, 0.15)'
 };
 
-// ─── Ambient sacred glow — diya flame ────────────────────────────────────────
-function SacredFlame() {
-  const prefersReducedMotion = useReducedMotion();
+// ─── Tradition Signages Display ──────────────────────────────────────────────
+function TraditionSignages({ activeIdx }: { activeIdx: number }) {
   return (
-    <div className="relative flex items-center justify-center mx-auto" style={{ width: 180, height: 180 }}>
-      <motion.div
-        className="absolute rounded-full"
-        style={{ inset: 0, background: 'radial-gradient(circle, rgba(200,120,24,0.18) 0%, transparent 75%)' }}
-        animate={prefersReducedMotion ? {} : { scale: [1, 1.15, 1], opacity: [0.4, 0.7, 0.4] }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div
-        className="absolute rounded-full"
-        style={{ width: 100, height: 100, background: 'radial-gradient(circle, rgba(216,138,28,0.25) 0%, transparent 70%)' }}
-        animate={prefersReducedMotion ? {} : { scale: [1, 1.2, 0.95, 1], opacity: [0.5, 0.9, 0.55, 0.5] }}
-        transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div
-        style={{
-          width: 28, height: 48,
-          background: 'linear-gradient(180deg, #fffde0 0%, #ffc040 38%, #ff7020 72%, #cc3010 100%)',
-          borderRadius: '50% 50% 50% 50% / 36% 36% 64% 64%',
-          boxShadow: '0 0 25px rgba(255,140,20,0.8), 0 0 8px rgba(255,240,180,0.5)',
-          position: 'relative', top: -15,
-        }}
-        animate={prefersReducedMotion ? {} : {
-          scaleX: [1, 1.08, 0.94, 1.04, 1],
-          scaleY: [1, 0.96, 1.04, 0.98, 1],
-          rotate: [-1, 2, -1.2, 1.2, -1],
-        }}
-        transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut' }}
-      />
+    <div className="relative flex items-center justify-center gap-8 py-10">
+      {TRADITION_SIGNS.map((sign, i) => (
+        <motion.div
+          key={sign.label}
+          animate={{ 
+            scale: activeIdx === i ? 1.4 : 1,
+            opacity: activeIdx === i ? 1 : 0.4,
+            y: activeIdx === i ? -10 : 0
+          }}
+          className="flex flex-col items-center gap-3"
+        >
+          <div className="text-5xl drop-shadow-xl filter">{sign.char}</div>
+          <div className={`text-[10px] font-bold uppercase tracking-widest transition-opacity ${activeIdx === i ? 'opacity-100' : 'opacity-0'}`} style={{ color: sign.color }}>
+            {sign.label}
+          </div>
+          {activeIdx === i && (
+            <motion.div 
+              layoutId="sign-glow"
+              className="absolute inset-0 -z-10 blur-3xl opacity-30 rounded-full"
+              style={{ background: sign.color }}
+            />
+          )}
+        </motion.div>
+      ))}
     </div>
   );
 }
@@ -205,7 +208,6 @@ export default function SignupPage() {
       const normalizedEmail = form.email.trim().toLowerCase();
       const normalizedUsername = form.username.toLowerCase().trim().replace(/\s+/g, '_');
       
-      // Essential profile payload with defaults to prevent DB trigger failure
       const profilePayload = {
         full_name: form.full_name.trim(),
         username: normalizedUsername,
@@ -220,8 +222,6 @@ export default function SignupPage() {
         seeking: form.seeking,
         kul: form.kul.trim() || null,
         gotra: form.gotra.trim() || null,
-        
-        // Ensure standard settings are provided if trigger expects them
         app_language: 'en',
         transliteration_language: 'en',
         scripture_script: 'devanagari',
@@ -254,7 +254,6 @@ export default function SignupPage() {
       }
 
       if (data.session) {
-        // If auto-logged in, sync the profile table immediately
         const { error: syncError } = await supabase.from('profiles').update(profilePayload).eq('id', data.user!.id);
         if (syncError) console.error('Profile sync error:', syncError);
         toast.success('Welcome to Shoonaya! 🙏');
@@ -270,7 +269,7 @@ export default function SignupPage() {
     }
   }
 
-  const activeAuraColor = TRADITION_COLORS[hoveredTradition || form.tradition || ''];
+  const activeAuraColor = TRADITION_SIGNS[quoteIdx % TRADITION_SIGNS.length].color;
 
   return (
     <div className="min-h-screen flex bg-[var(--premium-ivory)] overflow-hidden font-outfit">
@@ -289,16 +288,18 @@ export default function SignupPage() {
           style={{ background: `radial-gradient(circle at center, ${activeAuraColor} 0%, transparent 70%)` }}
         />
 
-        {/* Top: Brand & Flame */}
+        {/* Top: Shoonaya Logo & Signs */}
         <div className="relative z-10 w-full flex flex-col items-center">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6"
+            className="mb-2 text-4xl font-serif font-bold text-[var(--brand-primary-strong)] tracking-tighter"
           >
-            <BrandMark size="lg" />
+            Shoonaya
           </motion.div>
-          <SacredFlame />
+          <div className="text-[10px] uppercase tracking-[0.4em] text-[var(--brand-muted)] font-bold mb-8">Sanatan Sangam</div>
+          
+          <TraditionSignages activeIdx={quoteIdx % TRADITION_SIGNS.length} />
         </div>
 
         {/* Middle: Interactive Content Carousel */}
@@ -376,8 +377,8 @@ export default function SignupPage() {
         
         {/* Mobile Header */}
         <div className="lg:hidden absolute top-8 left-0 right-0 flex flex-col items-center">
-          <BrandMark size="sm" />
-          <h1 className="text-xl font-poppins font-bold text-[var(--brand-primary-strong)] mt-2">Shoonaya</h1>
+          <div className="text-2xl font-serif font-bold text-[var(--brand-primary-strong)]">Shoonaya</div>
+          <h1 className="text-xs uppercase tracking-widest text-[var(--brand-muted)] mt-1">Sanatan Sangam</h1>
         </div>
 
         <motion.div 
