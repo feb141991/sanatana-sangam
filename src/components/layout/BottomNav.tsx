@@ -7,6 +7,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Heart, MessageCircle, Sun, Users, Radio, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface Props {
   isGuest?: boolean;
@@ -14,16 +15,16 @@ interface Props {
 
 // ── Quick Actions ──────────────────────────────────────────────────────────────
 const QUICK_ACTIONS = [
-  { icon: '📿', label: 'Japa Mala', href: '/japa'          },
-  { icon: '🧠', label: 'Quiz Mastery', href: '/quiz'        },
-  { icon: '💬', label: 'Vichaar',    href: '/mandali'       },
-  { icon: '🤝', label: 'Seva Hub',  href: '/seva'          },
-  { icon: '🔆', label: 'Sadhana Pulse', href: '/my-progress' },
+  { icon: '📿', label: 'japa', href: '/japa'          },
+  { icon: '🧠', label: 'quizMastery', href: '/quiz'        },
+  { icon: '💬', label: 'vichaar',    href: '/mandali'       },
+  { icon: '🤝', label: 'sevaHub',  href: '/seva'          },
+  { icon: '🔆', label: 'sadhanaPulse', href: '/my-progress' },
 ];
 const GUEST_QUICK_ACTIONS = [
-  { icon: '✨', label: 'Join',    href: '/signup'        },
-  { icon: '🔍', label: 'Explore', href: '/guest'         },
-  { icon: '💬', label: 'Sabha',   href: '/mandali'       },
+  { icon: '✨', label: 'join',    href: '/signup'        },
+  { icon: '🔍', label: 'explore', href: '/guest'         },
+  { icon: '💬', label: 'vichaar',   href: '/mandali'       },
 ];
 
 // Glass tokens — computed per-theme for the Shoonaya aesthetic
@@ -95,7 +96,7 @@ function FloatingQuickMenu({
                   <span className="text-[1.5rem] leading-none">{action.icon}</span>
                   <span className="text-[14px] font-bold"
                     style={{ color: labelColor, letterSpacing: '-0.01em' }}>
-                    {action.label}
+                    {t(action.label as any)}
                   </span>
                 </motion.button>
               );
@@ -113,6 +114,7 @@ export default function BottomNav({
 }: Props) {
   const pathname  = usePathname();
   const prefRM    = useReducedMotion();
+  const { t } = useLanguage();
   const { resolvedTheme } = useThemePreference();
   const isDark    = resolvedTheme === 'dark';
   const GLASS     = useGlass(isDark);
@@ -153,11 +155,11 @@ export default function BottomNav({
   }, [quickOpen]);
 
   const memberNavItems = [
-    { href: '/pathshala',   label: 'Pathshala', mobileLabel: 'Study',    icon: BookOpen      },
-    { href: '/nitya-karma', label: 'Nitya',     mobileLabel: 'Nitya',    icon: Sun           },
-    { href: '/bhakti',      label: 'Bhakti',    mobileLabel: 'Bhakti',   icon: Heart         },
-    { href: '/reflections', label: 'Reflections', mobileLabel: 'Mirror', icon: Users         },
-    { href: '/mandali',     label: 'Mandali',   mobileLabel: 'Circle',  icon: MessageCircle },
+    { href: '/pathshala',   label: t('navPathshala'), mobileLabel: t('study'),    icon: BookOpen      },
+    { href: '/nitya-karma', label: t('morningRoutine'), mobileLabel: 'Nitya',    icon: Sun           },
+    { href: '/bhakti',      label: t('bhakti'),    mobileLabel: 'Bhakti',   icon: Heart         },
+    { href: '/reflections', label: 'Reflections', mobileLabel: t('mirror'), icon: Users         },
+    { href: '/mandali',     label: t('navMandali'),   mobileLabel: t('circle'),  icon: MessageCircle },
   ];
   const guestNavItems = [
     { href: '/vichaar-sabha', label: 'Vichaar', mobileLabel: 'Vichaar', icon: MessageCircle },

@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import type { Shloka } from '@/lib/shlokas';
 import { DEITY_META } from '@/lib/stotrams';
 import { CURATED_SOUNDS } from '@/lib/curated-bhakti';
@@ -34,15 +35,16 @@ export default function BhaktiClient({
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
   const { isMuted, setIsMuted, playHaptic } = useZenithSensory();
+  const { t, lang } = useLanguage();
   const isDark = resolvedTheme === 'dark';
 
   const [activeDeity, setActiveDeity] = useState('shiva');
   const [activeSound, setActiveSound] = useState(CURATED_SOUNDS[0]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [checklist, setChecklist] = useState([
-    { id: 'morning-prayer', label: 'Morning Prayer', done: false },
-    { id: 'japa-session', label: '108 Japa Counts', done: false },
-    { id: 'daily-shloka', label: 'Daily Shloka Reflection', done: false },
+    { id: 'morning-prayer', label: t('morningRoutine'), done: false },
+    { id: 'japa-session', label: t('japa'), done: false },
+    { id: 'daily-shloka', label: t('dailyVerse'), done: false },
   ]);
 
   const toggleCheck = (id: string) => {
@@ -128,24 +130,24 @@ export default function BhaktiClient({
           >
             <h1 className="text-5xl font-bold premium-serif text-white tracking-tight leading-tight">
               {activeDeity.charAt(0).toUpperCase() + activeDeity.slice(1)} <br/>
-              <span className="text-amber-400/90 text-4xl">Dhyanam</span>
+              <span className="text-amber-400/90 text-4xl">{t('auspiciousBeginnings')}</span>
             </h1>
             <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest pt-2">
-              Today is Ekadashi · {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+              {t('todayIs')} · {new Date().toLocaleDateString(lang === 'en' ? 'en-IN' : lang === 'hi' ? 'hi-IN' : 'pa-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
             </p>
           </motion.div>
 
           <div className="flex gap-3">
             <div className="flex-1 glass-panel border-white/5 p-5 rounded-[2rem] backdrop-blur-3xl bg-white/5">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[9px] font-bold uppercase tracking-widest text-amber-400/60">Amrit Kaal</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-amber-400/60">{t('amritKaal')}</span>
                 <Clock size={10} className="text-amber-400/60" />
               </div>
               <span className="text-xl font-bold text-white">09:12 — 10:45</span>
             </div>
             <div className="flex-1 glass-panel border-white/5 p-5 rounded-[2rem] backdrop-blur-3xl bg-white/5">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[9px] font-bold uppercase tracking-widest text-white/40">Brahma Muhurta</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-white/40">{t('brahmaMuhurta')}</span>
                 <Sun size={10} className="text-white/40" />
               </div>
               <span className="text-xl font-bold text-white">04:22 AM</span>
@@ -172,7 +174,7 @@ export default function BhaktiClient({
               {dailyStotramDeityEmoji}
             </div>
             <div className="flex-1">
-              <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest block mb-1">Recommended for You</span>
+              <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest block mb-1">{t('recommendedForYou')}</span>
               <h4 className="text-white font-bold text-lg">{dailyStotramTitle}</h4>
             </div>
             <div className="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-black">
@@ -212,7 +214,7 @@ export default function BhaktiClient({
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-1 block">Sound Sanctuary</span>
+              <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-1 block">{t('soundSanctuary')}</span>
               <h3 className="text-xl font-bold text-white truncate">{activeSound.title}</h3>
               <p className="text-sm text-white/40 truncate">{activeSound.artist}</p>
             </div>
@@ -243,7 +245,7 @@ export default function BhaktiClient({
               </button>
             </div>
             <Link href="/bhakti/browse" className="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full text-[10px] font-bold text-amber-500 uppercase tracking-widest transition">
-              Explore →
+              {t('explore')} →
             </Link>
           </div>
         </div>
@@ -253,12 +255,12 @@ export default function BhaktiClient({
       <section className="px-6 mt-14 space-y-8">
         <div className="flex items-end justify-between">
           <div className="space-y-1">
-            <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">Sadhana Tracker</span>
-            <h3 className="text-2xl font-serif text-white">Daily Rituals</h3>
+            <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">{t('sadhanaTracker')}</span>
+            <h3 className="text-2xl font-serif text-white">{t('dailyRituals')}</h3>
           </div>
           <div className="flex flex-col items-end">
             <span className="text-3xl font-bold text-white">{Math.round((checklist.filter(c => c.done).length / checklist.length) * 100)}%</span>
-            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Progress</span>
+            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{t('ritualProgress')}</span>
           </div>
         </div>
         <div className="space-y-4">
@@ -278,22 +280,10 @@ export default function BhaktiClient({
               )}
               <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${
                 item.done ? 'bg-amber-500 border-amber-500 text-black' : 'border-white/10 text-transparent group-hover:border-white/30'
-              }`}>
-                <CheckCircle2 size={16} />
-              </div>
-              <span className={`text-base font-medium transition-all ${item.done ? 'text-white' : 'text-white/50'}`}>
-                {item.label}
-              </span>
-            </button>
-          ))}
-        </div>
-      </section>
-
-
       {/* ── 4. Sacred Verse ──────────────────────────────────────────────── */}
       <section className="px-6 mt-12">
         <div className="rounded-[3rem] p-10 bg-gradient-to-br from-[#1A1814] to-[#0C0A07] border border-white/5 text-center space-y-6">
-          <span className="text-[10px] font-bold text-amber-500 uppercase tracking-[0.3em]">Sacred Reflection</span>
+          <span className="text-[10px] font-bold text-amber-500 uppercase tracking-[0.3em]">{t('sacredReflection')}</span>
           <p className="text-2xl font-serif text-white leading-relaxed italic">
             &ldquo;{shloka.sanskrit}&rdquo;
           </p>
@@ -307,8 +297,8 @@ export default function BhaktiClient({
       {/* ── 5. Deity Portals (Horizontal Scroll) ─────────────────────────── */}
       <section className="mt-12">
         <div className="px-6 flex items-center justify-between mb-6">
-          <h3 className="text-lg font-serif text-white">Divine Portals</h3>
-          <Link href="/bhakti/browse" className="text-[10px] font-bold text-white/40 uppercase tracking-widest">See All</Link>
+          <h3 className="text-lg font-serif text-white">{t('divinePortals')}</h3>
+          <Link href="/bhakti/browse" className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{t('explore')}</Link>
         </div>
         <div className="flex gap-4 overflow-x-auto px-6 pb-4 scrollbar-none">
           {['shiva', 'vishnu', 'devi', 'hanuman', 'ganesha', 'surya'].map((deity) => (

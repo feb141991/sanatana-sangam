@@ -27,6 +27,19 @@ export type TranslationKey =
   | 'yourLocation' | 'whatBringsYou' | 'enterApp'
   // Kul
   | 'kul' | 'family' | 'lineage' | 'sanskara'
+  // Bhakti Revamp
+  | 'sacredSanctuary' | 'auspiciousBeginnings' | 'dailyRituals' | 'soundSanctuary'
+  | 'recommendedForYou' | 'explore' | 'divinePortals' | 'sacredReflection'
+  | 'todayIs' | 'amritKaal' | 'brahmaMuhurta' | 'sadhanaTracker' | 'ritualProgress'
+  // Home Features
+  | 'liveDarshan' | 'sadhanaPulse' | 'mandali' | 'tirtha'
+  | 'liveDarshanDesc' | 'panchangDesc' | 'sadhanaPulseDesc' | 'bhaktiDesc'
+  | 'pathshalaDesc' | 'mandaliDesc' | 'kulDesc' | 'tirthaDesc'
+  // Notifications & UI
+  | 'notifications' | 'markAllRead' | 'allQuiet' | 'allCaughtUp' | 'unread'
+  | 'join' | 'signIn' | 'joinFree' | 'welcome' | 'study' | 'circle' | 'mirror'
+  | 'sevaHub' | 'quizMastery' | 'vichaar'
+  | 'journeyLabel' | 'testOfDharma' | 'wisdom' | 'essence' | 'shareReflection'
   // General
   | 'today' | 'yesterday' | 'thisWeek' | 'loading' | 'errorTryAgain';
 
@@ -61,6 +74,33 @@ const en: TranslationMap = {
   enterApp: 'Enter Shoonaya',
   // Kul
   kul: 'Kul', family: 'Family', lineage: 'Lineage', sanskara: 'Sanskara',
+  // Bhakti Revamp
+  sacredSanctuary: 'Sacred Sanctuary', auspiciousBeginnings: 'Auspicious Beginnings',
+  dailyRituals: 'Daily Rituals', soundSanctuary: 'Sound Sanctuary',
+  recommendedForYou: 'Recommended for You', explore: 'Explore',
+  divinePortals: 'Divine Portals', sacredReflection: 'Sacred Reflection',
+  todayIs: 'Today is', amritKaal: 'Amrit Kaal', brahmaMuhurta: 'Brahma Muhurta',
+  sadhanaTracker: 'Sadhana Tracker', ritualProgress: 'Progress',
+  // Home Features
+  liveDarshan: 'Live Darshan', sadhanaPulse: 'Sadhana Pulse',
+  mandali: 'Mandali', tirtha: 'Tirtha',
+  liveDarshanDesc: '24/7 Temple live streams',
+  panchangDesc: 'Tithi, Nakshatra, Yoga & more',
+  sadhanaPulseDesc: 'Track your sacred momentum and daily spiritual consistency',
+  bhaktiDesc: 'Mala, zen, aarti and sacred practice',
+  pathshalaDesc: 'Study, recite and reflect daily',
+  mandaliDesc: 'Join satsang and community circles',
+  kulDesc: 'Family, lineage and sacred sanskaras',
+  tirthaDesc: 'Find temples near you',
+  // Notifications & UI
+  notifications: 'Notifications', markAllRead: 'Mark all read',
+  allQuiet: 'All quiet for now', allCaughtUp: 'All caught up',
+  unread: 'unread', join: 'Join', signIn: 'Sign in',
+  joinFree: 'Join Free', welcome: 'Welcome', study: 'Study',
+  circle: 'Circle', mirror: 'Mirror', sevaHub: 'Seva Hub',
+  quizMastery: 'Quiz Mastery', vichaar: 'Vichaar',
+  journeyLabel: 'The Journey', testOfDharma: 'The Test of Dharma',
+  wisdom: 'Wisdom', essence: 'Essence', shareReflection: 'Share this Reflection',
   // General
   today: 'Today', yesterday: 'Yesterday', thisWeek: 'This Week',
   loading: 'Loading…', errorTryAgain: 'Something went wrong. Please try again.',
@@ -95,6 +135,33 @@ const hi: TranslationMap = {
   enterApp: 'सनातन संगम में प्रवेश करें',
   // Kul
   kul: 'कुल', family: 'परिवार', lineage: 'वंश', sanskara: 'संस्कार',
+  // Bhakti Revamp
+  sacredSanctuary: 'पावन स्थल', auspiciousBeginnings: 'शुभ शुरुआत',
+  dailyRituals: 'दैनिक अनुष्ठान', soundSanctuary: 'ध्वनि केंद्र',
+  recommendedForYou: 'आपके लिए', explore: 'खोजें',
+  divinePortals: 'दिव्य द्वार', sacredReflection: 'पावन विचार',
+  todayIs: 'आज है', amritKaal: 'अमृत काल', brahmaMuhurta: 'ब्रह्म मुहूर्त',
+  sadhanaTracker: 'साधना ट्रैकर', ritualProgress: 'प्रगति',
+  // Home Features
+  liveDarshan: 'लाइव दर्शन', sadhanaPulse: 'साधना पल्स',
+  mandali: 'मंडली', tirtha: 'तीर्थ',
+  liveDarshanDesc: '24/7 मंदिर लाइव स्ट्रीम',
+  panchangDesc: 'तिथि, नक्षत्र, योग और बहुत कुछ',
+  sadhanaPulseDesc: 'अपनी आध्यात्मिक प्रगति को ट्रैक करें',
+  bhaktiDesc: 'माला, ध्यान, आरती और पवित्र अभ्यास',
+  pathshalaDesc: 'प्रतिदिन अध्ययन और चिंतन करें',
+  mandaliDesc: 'सत्संग और सामुदायिक मंडलियों में शामिल हों',
+  kulDesc: 'परिवार, वंश और संस्कार',
+  tirthaDesc: 'अपने आस-पास के मंदिर खोजें',
+  // Notifications & UI
+  notifications: 'सूचनाएं', markAllRead: 'सब पढ़ लिया गया',
+  allQuiet: 'अभी कोई सूचना नहीं है', allCaughtUp: 'सब अपडेट है',
+  unread: 'बिना पढ़े', join: 'जुड़ें', signIn: 'साइन इन',
+  joinFree: 'मुफ्त जुड़ें', welcome: 'स्वागत है', study: 'अध्ययन',
+  circle: 'मंडली', mirror: 'दर्पण', sevaHub: 'सेवा केंद्र',
+  quizMastery: 'प्रश्नोत्तरी', vichaar: 'विचार',
+  journeyLabel: 'जीवन यात्रा', testOfDharma: 'धर्म की परीक्षा',
+  wisdom: 'ज्ञान', essence: 'सार', shareReflection: 'इस विचार को साझा करें',
   // General
   today: 'आज', yesterday: 'कल', thisWeek: 'इस सप्ताह',
   loading: 'लोड हो रहा है…', errorTryAgain: 'कुछ गड़बड़ हुई। कृपया फिर प्रयास करें।',
@@ -129,6 +196,33 @@ const pa: TranslationMap = {
   enterApp: 'ਸਨਾਤਨ ਸੰਗਮ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ',
   // Kul
   kul: 'ਕੁਲ', family: 'ਪਰਿਵਾਰ', lineage: 'ਵੰਸ਼', sanskara: 'ਸੰਸਕਾਰ',
+  // Bhakti Revamp
+  sacredSanctuary: 'ਪਾਵਨ ਅਸਥਾਨ', auspiciousBeginnings: 'ਸ਼ੁਭ ਸ਼ੁਰੂਆਤ',
+  dailyRituals: 'ਰੋਜ਼ਾਨਾ ਅਨੁਸ਼ਠਾਨ', soundSanctuary: 'ਸ਼ਬਦ ਕੇਂਦਰ',
+  recommendedForYou: 'ਤੁਹਾਡੇ ਲਈ', explore: 'ਖੋਜੋ',
+  divinePortals: 'ਦਿਵਯ ਦੁਆਰ', sacredReflection: 'ਪਾਵਨ ਵਿਚਾਰ',
+  todayIs: 'ਅੱਜ ਹੈ', amritKaal: 'ਅੰਮ੍ਰਿਤ ਕਾਲ', brahmaMuhurta: 'ਬ੍ਰਹਮ ਮੁਹੂਰਤ',
+  sadhanaTracker: 'ਸਾਧਨਾ ਟ੍ਰੈਕਰ', ritualProgress: 'ਪ੍ਰਗਤੀ',
+  // Home Features
+  liveDarshan: 'ਲਾਈਵ ਦਰਸ਼ਨ', sadhanaPulse: 'ਸਾਧਨਾ ਪਲਸ',
+  mandali: 'ਮੰਡਲੀ', tirtha: 'ਤੀਰਥ',
+  liveDarshanDesc: '24/7 ਮੰਦਿਰ ਲਾਈਵ ਸਟ੍ਰੀਮ',
+  panchangDesc: 'ਤਿਥਿ, ਨਕਸ਼ਤਰ, ਯੋਗ ਅਤੇ ਹੋਰ',
+  sadhanaPulseDesc: 'ਆਪਣੀ ਅਧਿਆਤਮਿਕ ਗਤੀ ਨੂੰ ਟ੍ਰੈਕ ਕਰੋ',
+  bhaktiDesc: 'ਮਾਲਾ, ਧਿਆਨ, ਆਰਤੀ ਅਤੇ ਪਵਿੱਤਰ ਅਭਿਆਸ',
+  pathshalaDesc: 'ਰੋਜ਼ਾਨਾ ਅਧਿਐਨ ਅਤੇ ਵਿਚਾਰ ਕਰੋ',
+  mandaliDesc: 'ਸਤਿਸੰਗ ਅਤੇ ਭਾਈਚਾਰਕ ਮੰਡਲੀਆਂ ਵਿਚ ਸ਼ਾਮਲ ਹੋਵੋ',
+  kulDesc: 'ਪਰਿਵਾਰ, ਵੰਸ਼ ਅਤੇ ਸੰਸਕਾਰ',
+  tirthaDesc: 'ਆਪਣੇ ਆਲੇ ਦੁਆਲੇ ਦੇ ਮੰਦਰ ਲੱਭੋ',
+  // Notifications & UI
+  notifications: 'ਸੂਚਨਾਵਾਂ', markAllRead: 'ਸਾਰੇ ਪੜ੍ਹੋ',
+  allQuiet: 'ਕੋਈ ਸੂਚਨਾ ਨਹੀਂ ਹੈ', allCaughtUp: 'ਸਭ ਅਪਡੇਟ ਹੈ',
+  unread: 'ਅਣਪੜ੍ਹੇ', join: 'ਸ਼ਾਮਲ ਹੋਵੋ', signIn: 'ਸਾਈਨ ਇਨ',
+  joinFree: 'ਮੁਫ਼ਤ ਸ਼ਾਮਲ ਹੋਵੋ', welcome: 'ਜੀ ਆਇਆਂ ਨੂੰ', study: 'ਅਧਿਐਨ',
+  circle: 'ਮੰਡਲੀ', mirror: 'ਦਰਪਣ', sevaHub: 'ਸੇਵਾ ਕੇਂਦਰ',
+  quizMastery: 'ਕੁਇਜ਼', vichaar: 'ਵਿਚਾਰ',
+  journeyLabel: 'ਜੀਵਨ ਯਾਤਰਾ', testOfDharma: 'ਧਰਮ ਦੀ ਪ੍ਰੀਖਿਆ',
+  wisdom: 'ਗਿਆਨ', essence: 'ਸਾਰ', shareReflection: 'ਇਸ ਵਿਚਾਰ ਨੂੰ ਸਾਂਝਾ ਕਰੋ',
   // General
   today: 'ਅੱਜ', yesterday: 'ਕੱਲ੍ਹ', thisWeek: 'ਇਸ ਹਫ਼ਤੇ',
   loading: 'ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ…', errorTryAgain: 'ਕੁਝ ਗਲਤ ਹੋਇਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।',

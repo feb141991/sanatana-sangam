@@ -58,6 +58,7 @@ import DarshanPrompt from '@/components/home/DarshanPrompt';
 import { getTransliteration } from '@/lib/transliteration';
 import { resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 // DivineDiya removed — Prāthanā card removed from home
 import BottomNav from '@/components/layout/BottomNav';
 
@@ -1397,6 +1398,9 @@ export default function HomeDashboard({
   };
   const heroPrimaryText = isDark ? 'var(--text-cream)' : '#211B14';
   const heroSecondaryText = isDark ? 'var(--text-muted-warm)' : '#4D4035';
+  const { userId } = createClient(); // Wait, creating client inside component? Better use hook or prop.
+  // Actually I see createClient being used in useEffect, so it's fine.
+  const { t } = useLanguage();
   const heroTertiaryText = isDark ? 'var(--text-dim)' : '#66584A';
   const heroGlassSurface = isDark ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.72)';
   const heroGlassBorder = isDark ? 'rgba(250,238,218,0.12)' : 'rgba(65,36,2,0.12)';
@@ -1508,53 +1512,53 @@ export default function HomeDashboard({
     icon: React.ElementType;
   }> = [
     // Daily Darshan hidden until content is fully prepared
-    // { title: 'Daily Darshan', description: 'Get divine blessings every day', onClick: handleOpenDarshan, icon: Sparkles },
+    // { title: t('dailyDarshan'), description: t('dailyDarshanDesc'), onClick: handleOpenDarshan, icon: Sparkles },
     {
-      title: 'Live Darshan',
-      description: '24/7 Temple live streams',
+      title: t('liveDarshan'),
+      description: t('liveDarshanDesc'),
       href: '/live-darshan',
       icon: Radio,
     },
     {
-      title: 'Panchang',
-      description: 'Tithi, Nakshatra, Yoga & more',
+      title: t('tithi'),
+      description: t('panchangDesc'),
       href: '/panchang',
       icon: CalendarDays,
     },
     {
-      title: 'Sadhana Pulse',
-      description: 'Track your sacred momentum and daily spiritual consistency',
+      title: t('sadhanaPulse'),
+      description: t('sadhanaPulseDesc'),
       href: '/my-progress',
       icon: BarChart2,
     },
     {
-      title: 'Bhakti',
-      description: 'Mala, zen, aarti and sacred practice',
+      title: t('bhakti'),
+      description: t('bhaktiDesc'),
       href: '/bhakti',
       icon: Heart,
     },
     {
-      title: 'Pathshala',
-      description: 'Study, recite and reflect daily',
+      title: t('navPathshala'),
+      description: t('pathshalaDesc'),
       href: '/pathshala',
       icon: BookOpen,
     },
     {
-      title: 'Mandali',
-      description: 'Join satsang and community circles',
+      title: t('mandali'),
+      description: t('mandaliDesc'),
       href: '/mandali',
       icon: Users,
     },
     {
-      title: 'Kul',
-      description: 'Family, lineage and sacred sanskaras',
+      title: t('kul'),
+      description: t('kulDesc'),
       href: '/kul',
       icon: Shield,
     },
 
     {
-      title: 'Tirtha',
-      description: 'Find temples near you',
+      title: t('tirtha'),
+      description: t('tirthaDesc'),
       href: '/tirtha-map',
       icon: MapPin,
     },

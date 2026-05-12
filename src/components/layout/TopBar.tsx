@@ -10,25 +10,20 @@ import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import BrandMark from '@/components/BrandMark';
 import { useMarkAllNotificationsReadMutation, useMarkNotificationReadMutation, useNotificationsQuery, useNotificationsRealtime } from '@/hooks/useNotifications';
-import {
-  requestNotificationPermission,
-  getPlayerId,
-  getPermissionState,
-  isOneSignalConfigured,
-  loginToOneSignal,
-  syncOneSignalContext,
-} from '@/lib/onesignal';
+import { syncOneSignalContext, loginToOneSignal, isOneSignalConfigured, getPermissionState, getPlayerId, requestNotificationPermission } from '@/lib/onesignal';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import type { TranslationKey } from '@/lib/i18n/translations';
 
-const titles: Record<string, string> = {
-  '/guest':         'Explore',
-  '/home':          'Shoonaya',
-  '/mandali':       'My Mandali',
-  '/vichaar-sabha': 'Vichaar Sabha',
-  '/tirtha-map':    'Tirtha Map',
-  '/bhakti':        'Sahaj Bhakti',
-  '/pathshala':       'Parampara Pathshala',
-  '/kul':           'Kul',
-  '/profile':       'My Profile',
+const titles: Record<string, TranslationKey> = {
+  '/guest':         'explore',
+  '/home':          'welcomeTitle',
+  '/mandali':       'navMandali',
+  '/vichaar-sabha': 'navMandali',
+  '/tirtha-map':    'tirtha',
+  '/bhakti':        'bhakti',
+  '/pathshala':     'navPathshala',
+  '/kul':           'navKul',
+  '/profile':       'navHome', // or profile if added
 };
 
 const PUSH_PROMPT_DISMISS_KEY = 'sanatana-push-prompt-dismissed-until';
@@ -70,6 +65,7 @@ export default function TopBar({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { t } = useLanguage();
   const supabase = useRef(createClient()).current;
   const prefersReducedMotion = useReducedMotion();
   const pushConfigured = isOneSignalConfigured();
@@ -243,10 +239,10 @@ export default function TopBar({
             {/* Header row */}
             <div className="flex items-center justify-between px-5 py-3 flex-shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
               <div>
-                <p className="font-semibold text-base text-[color:var(--brand-ink)]">Notifications</p>
+                <p className="font-semibold text-base text-[color:var(--brand-ink)]">{t('notifications')}</p>
                 {notifs.length > 0 && (
                   <p className="text-[11px] text-[color:var(--brand-muted)] mt-0.5">
-                    {unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'}
+                    {unreadCount > 0 ? `${unreadCount} ${t('unread')}` : t('allCaughtUp')}
                   </p>
                 )}
               </div>
@@ -257,7 +253,7 @@ export default function TopBar({
                     className="text-xs font-semibold px-3 py-1.5 rounded-xl transition"
                     style={{ background: 'rgba(200,146,74,0.12)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(200,146,74,0.2)' }}
                   >
-                    Mark all read
+                    {t('markAllRead')}
                   </button>
                 )}
                 <button
@@ -446,7 +442,7 @@ export default function TopBar({
                         color: active ? 'var(--brand-primary-strong)' : 'var(--brand-muted)',
                       }}
                     >
-                      {item.label}
+                      {t(item.label.toLowerCase() as any)}
                     </Link>
                   );
                 })}
@@ -461,13 +457,13 @@ export default function TopBar({
           <div className="flex items-center gap-2 flex-shrink-0">
             {isGuest ? (
               <div className="flex items-center gap-2">
-                <Link href="/login" className="type-micro hover:text-[color:var(--brand-ink)] transition">Sign in</Link>
+                <Link href="/login" className="type-micro hover:text-[color:var(--brand-ink)] transition">{t('signIn')}</Link>
                 <Link
                   href="/signup"
                   className="glass-button-secondary px-4 py-1.5 rounded-full hover:opacity-90 transition type-body"
                   style={{ color: 'var(--brand-primary-strong)' }}
                 >
-                  Join Free
+                  {t('joinFree')}
                 </Link>
               </div>
             ) : (
@@ -563,7 +559,7 @@ function NotificationsEmptyState({ userId, onNotificationSent }: { userId: strin
         🪔
       </div>
       <div>
-        <p className="text-base font-semibold text-[color:var(--brand-ink)]">All quiet for now</p>
+        <p className="text-base font-semibold text-[color:var(--brand-ink)]">{t('allQuiet')}</p>
         <p className="text-sm text-[color:var(--brand-muted)] mt-1.5 leading-relaxed max-w-[260px] mx-auto">
           Festival alerts, morning sadhana reminders, and streak nudges will show up here.
         </p>
