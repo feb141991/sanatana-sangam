@@ -308,7 +308,7 @@ In thirty-two years of life he wrote 300 texts including commentaries on the Bra
     teachingLocal: 'ਗੁਰੂ ਜੀ ਨੇ ਹਰ ਇਨਸਾਨ ਦੀ ਧਾਰਮਿਕ ਆਜ਼ਾਦੀ ਦੇ ਹੱਕ ਲਈ ਆਪਣੀ ਜਾਨ ਦਿੱਤੀ। ਉਨ੍ਹਾਂ ਨੂੰ "ਹਿੰਦ ਦੀ ਚਾਦਰ" ਕਿਹਾ ਜਾਂਦਾ ਹੈ।',
     moral:
       'Real courage is not the absence of fear. It is remaining human — remaining soft and principled — in conditions designed to make you hard and compliant.',
-    moralLocal: 'ਅਸਲੀ ਦਲੇਰੀ ਡਰ ਦੀ ਅਣਹੋਂਦ ਨਹੀਂ ਹੈ, ਬਲਕਿ ਮੁਸ਼ਕਲ ਹਾਲਾਤਾਂ ਵਿੱਚ ਵੀ ਆਪਣੇ ਅਸੂਲਾਂ 'ਤੇ ਕਾਇਮ ਰਹਿਣਾ ਹੈ।',
+    moralLocal: "ਅਸਲੀ ਦਲੇਰੀ ਡਰ ਦੀ ਅਣਹੋਂਦ ਨਹੀਂ ਹੈ, ਬਲਕਿ ਮੁਸ਼ਕਲ ਹਾਲਾਤਾਂ ਵਿੱਚ ਵੀ ਆਪਣੇ ਅਸੂਲਾਂ 'ਤੇ ਕਾਇਮ ਰਹਿਣਾ ਹੈ।",
     quote: {
       text: 'Bhau kahu ko det neh, neh bhau manat aan.',
       attribution: 'Fear no one and frighten no one. — Guru Teg Bahadur, Sri Guru Granth Sahib',
