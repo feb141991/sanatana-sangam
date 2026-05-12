@@ -7,11 +7,14 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { ArrowRight, ArrowLeft, Eye, EyeOff, MapPin, Loader2, Lock, Sparkles, Check, Heart, Globe, Users } from 'lucide-react';
+import { 
+  ArrowRight, ArrowLeft, Eye, EyeOff, MapPin, Loader2, Lock, 
+  Sparkles, Check, Heart, Globe, Users, BookOpen, Shield, 
+  MessageCircle, BarChart3, Star
+} from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import BrandMark from '@/components/BrandMark';
-import { TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getSampradayaLabel, getIshtaDevataLabel } from '@/lib/utils';
-import { SPIRITUAL_LEVELS } from '@/lib/utils';
+import { TRADITIONS } from '@/lib/utils';
 import type { TraditionKey } from '@/lib/traditions';
 
 type Step = 1 | 2 | 3;
@@ -22,10 +25,42 @@ const QUOTES = [
   { text: "Ekaṃ sat viprā bahudhā vadanti", author: "Upanishads", meaning: "Truth is one, though the wise speak of it in many ways." }
 ];
 
-const WHY_JOIN = [
-  { title: "Join 10,000+ seekers", desc: "A global mandali of dedicated practitioners.", icon: Users },
-  { title: "Personalized Sadhana", desc: "Guidance tailored to your tradition and path.", icon: Sparkles },
-  { title: "Sacred Community", desc: "Connect with local sangams and gurus.", icon: Heart }
+const APP_FEATURES = [
+  { 
+    id: 'mandali',
+    title: "Global Mandali", 
+    desc: "Connect with seekers in your city and across the world.", 
+    icon: Users,
+    color: "var(--glow-sikh)"
+  },
+  { 
+    id: 'pathshala',
+    title: "Sacred Pathshala", 
+    desc: "Interactive library of Gita, Gurbani, Dhammapada & Agamas.", 
+    icon: BookOpen,
+    color: "var(--glow-hindu)"
+  },
+  { 
+    id: 'pulse',
+    title: "Sadhana Pulse", 
+    desc: "Track your daily rhythms, mala counts and spiritual growth.", 
+    icon: BarChart3,
+    color: "var(--glow-jain)"
+  },
+  { 
+    id: 'kul',
+    title: "Kul & Lineage", 
+    desc: "Preserve your family traditions and ancestral wisdom.", 
+    icon: Shield,
+    color: "var(--glow-buddhist)"
+  }
+];
+
+const FACTS = [
+  "Did you know? Shoonaya covers Hindu, Sikh, Buddhist, and Jain traditions.",
+  "Join over 10,000 seekers dedicated to a life of Dharma.",
+  "Access personalized Panchang and Vrat notifications for your location.",
+  "Discover sacred Tirthas and local Mandalis near you."
 ];
 
 const TRADITION_COLORS: Record<TraditionKey | '', string> = {
@@ -41,7 +76,7 @@ const TRADITION_COLORS: Record<TraditionKey | '', string> = {
 function SacredFlame() {
   const prefersReducedMotion = useReducedMotion();
   return (
-    <div className="relative flex items-center justify-center mx-auto" style={{ width: 200, height: 200 }}>
+    <div className="relative flex items-center justify-center mx-auto" style={{ width: 180, height: 180 }}>
       <motion.div
         className="absolute rounded-full"
         style={{ inset: 0, background: 'radial-gradient(circle, rgba(200,120,24,0.18) 0%, transparent 75%)' }}
@@ -50,17 +85,17 @@ function SacredFlame() {
       />
       <motion.div
         className="absolute rounded-full"
-        style={{ width: 110, height: 110, background: 'radial-gradient(circle, rgba(216,138,28,0.3) 0%, transparent 70%)' }}
+        style={{ width: 100, height: 100, background: 'radial-gradient(circle, rgba(216,138,28,0.25) 0%, transparent 70%)' }}
         animate={prefersReducedMotion ? {} : { scale: [1, 1.2, 0.95, 1], opacity: [0.5, 0.9, 0.55, 0.5] }}
         transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.div
         style={{
-          width: 32, height: 54,
+          width: 28, height: 48,
           background: 'linear-gradient(180deg, #fffde0 0%, #ffc040 38%, #ff7020 72%, #cc3010 100%)',
           borderRadius: '50% 50% 50% 50% / 36% 36% 64% 64%',
-          boxShadow: '0 0 30px rgba(255,140,20,0.8), 0 0 10px rgba(255,240,180,0.5)',
-          position: 'relative', top: -20,
+          boxShadow: '0 0 25px rgba(255,140,20,0.8), 0 0 8px rgba(255,240,180,0.5)',
+          position: 'relative', top: -15,
         }}
         animate={prefersReducedMotion ? {} : {
           scaleX: [1, 1.08, 0.94, 1.04, 1],
@@ -87,7 +122,9 @@ export default function SignupPage() {
   const [inviteCode, setInviteCode] = useState('');
   const [acceptedPolicies, setAcceptedPolicies] = useState(false);
   const [quoteIdx, setQuoteIdx] = useState(0);
+  const [factIdx, setFactIdx] = useState(0);
   const [hoveredTradition, setHoveredTradition] = useState<TraditionKey | ''>('');
+  const [activeFeature, setActiveFeature] = useState(0);
 
   const [form, setForm] = useState({
     email:          '',
@@ -113,6 +150,8 @@ export default function SignupPage() {
 
     const interval = setInterval(() => {
       setQuoteIdx(prev => (prev + 1) % QUOTES.length);
+      setFactIdx(prev => (prev + 1) % FACTS.length);
+      setActiveFeature(prev => (prev + 1) % APP_FEATURES.length);
     }, 6000);
     return () => clearInterval(interval);
   }, []);
@@ -165,6 +204,8 @@ export default function SignupPage() {
     try {
       const normalizedEmail = form.email.trim().toLowerCase();
       const normalizedUsername = form.username.toLowerCase().trim().replace(/\s+/g, '_');
+      
+      // Essential profile payload with defaults to prevent DB trigger failure
       const profilePayload = {
         full_name: form.full_name.trim(),
         username: normalizedUsername,
@@ -179,6 +220,21 @@ export default function SignupPage() {
         seeking: form.seeking,
         kul: form.kul.trim() || null,
         gotra: form.gotra.trim() || null,
+        
+        // Ensure standard settings are provided if trigger expects them
+        app_language: 'en',
+        transliteration_language: 'en',
+        scripture_script: 'devanagari',
+        show_transliteration: true,
+        meaning_language: 'en',
+        wants_festival_reminders: true,
+        wants_shloka_reminders: true,
+        wants_community_notifications: true,
+        wants_family_notifications: true,
+        is_admin: false,
+        is_pro: false,
+        life_stage_locked: false,
+        is_banned: false,
       };
 
       const { data, error } = await supabase.auth.signUp({
@@ -189,17 +245,26 @@ export default function SignupPage() {
           data: { ...profilePayload, referred_by_code: inviteCode || null },
         },
       });
-      if (error) throw error;
+
+      if (error) {
+        if (error.message.includes('unique constraint') || error.message.includes('already registered')) {
+          throw new Error('This email or username is already taken. Please try another.');
+        }
+        throw error;
+      }
+
       if (data.session) {
-        await supabase.from('profiles').update(profilePayload).eq('id', data.user!.id);
+        // If auto-logged in, sync the profile table immediately
+        const { error: syncError } = await supabase.from('profiles').update(profilePayload).eq('id', data.user!.id);
+        if (syncError) console.error('Profile sync error:', syncError);
         toast.success('Welcome to Shoonaya! 🙏');
         router.push('/home');
       } else {
-        toast.success('Check your inbox to continue.');
+        toast.success('Pranam! Please check your inbox to confirm.');
         router.push(`/login?message=check_email&email=${encodeURIComponent(normalizedEmail)}`);
       }
     } catch (err: any) {
-      toast.error(err.message || 'Something went wrong');
+      toast.error(err.message || 'Something went wrong while saving. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -208,10 +273,10 @@ export default function SignupPage() {
   const activeAuraColor = TRADITION_COLORS[hoveredTradition || form.tradition || ''];
 
   return (
-    <div className="min-h-screen flex bg-[var(--premium-ivory)] overflow-hidden">
+    <div className="min-h-screen flex bg-[var(--premium-ivory)] overflow-hidden font-outfit">
       
-      {/* ── LEFT SIDE: Immersive Visual (Split View) ─────────────────────── */}
-      <div className="hidden lg:flex w-1/2 relative flex-col items-center justify-center p-16 overflow-hidden border-r border-[var(--premium-border)]">
+      {/* ── LEFT SIDE: Immersive & Interactive (Value Section) ─────────────────────── */}
+      <div className="hidden lg:flex w-1/2 relative flex-col items-center justify-between p-16 overflow-hidden border-r border-[var(--premium-border)] bg-[#faf6ef]">
         
         {/* Dynamic Background Aura */}
         <motion.div 
@@ -224,65 +289,85 @@ export default function SignupPage() {
           style={{ background: `radial-gradient(circle at center, ${activeAuraColor} 0%, transparent 70%)` }}
         />
 
-        <div className="relative z-10 w-full max-w-lg space-y-12">
-          {/* Brand & Quote */}
-          <div className="space-y-8 text-center">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex justify-center"
-            >
-              <BrandMark size="lg" />
-            </motion.div>
+        {/* Top: Brand & Flame */}
+        <div className="relative z-10 w-full flex flex-col items-center">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6"
+          >
+            <BrandMark size="lg" />
+          </motion.div>
+          <SacredFlame />
+        </div>
 
-            <div className="h-40 flex flex-col justify-center">
-              <AnimatePresence mode="wait">
+        {/* Middle: Interactive Content Carousel */}
+        <div className="relative z-10 w-full max-w-lg space-y-12">
+          
+          {/* Why Shoonaya? Featured Apps */}
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold uppercase tracking-[0.3em] text-[var(--premium-gold)] text-center">Your Spiritual Companion</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {APP_FEATURES.map((feat, i) => (
                 <motion.div
-                  key={quoteIdx}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="space-y-4"
+                  key={feat.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ 
+                    opacity: activeFeature === i ? 1 : 0.6,
+                    scale: activeFeature === i ? 1.05 : 1,
+                    borderColor: activeFeature === i ? feat.color : 'rgba(0,0,0,0.05)'
+                  }}
+                  className="p-5 rounded-[2rem] bg-white/40 border-2 backdrop-blur-sm transition-all duration-500 cursor-default shadow-sm"
                 >
-                  <h2 className="text-3xl font-devanagari text-[var(--brand-primary-strong)] leading-relaxed">
-                    {QUOTES[quoteIdx].text}
-                  </h2>
-                  <p className="text-lg italic font-outfit text-[var(--brand-muted)]">
-                    &quot;{QUOTES[quoteIdx].meaning}&quot;
-                  </p>
-                  <p className="text-xs uppercase tracking-[0.2em] text-[var(--premium-gold)] font-bold">
-                    — {QUOTES[quoteIdx].author}
-                  </p>
+                  <div className="p-3 rounded-2xl w-fit mb-3" style={{ background: activeFeature === i ? feat.color : 'rgba(0,0,0,0.05)' }}>
+                    <feat.icon size={20} className={activeFeature === i ? "text-white" : "text-[var(--brand-muted)]"} />
+                  </div>
+                  <h4 className="font-bold text-[var(--brand-primary-strong)] text-sm">{feat.title}</h4>
+                  <p className="text-[10px] text-[var(--brand-muted)] mt-1 leading-relaxed">{feat.desc}</p>
                 </motion.div>
-              </AnimatePresence>
+              ))}
             </div>
           </div>
 
-          {/* Sacred Flame Visual */}
-          <div className="py-8">
-            <SacredFlame />
-          </div>
-
-          {/* Why Join Highlights */}
-          <div className="grid grid-cols-1 gap-6">
-            {WHY_JOIN.map((item, i) => (
+          {/* Facts & Shloka Section */}
+          <div className="h-40 flex flex-col justify-center text-center">
+            <AnimatePresence mode="wait">
               <motion.div
-                key={item.title}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 + i * 0.1 }}
-                className="flex items-start gap-4 p-5 rounded-3xl bg-white/40 border border-white/60 backdrop-blur-sm"
+                key={quoteIdx}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="space-y-4"
               >
-                <div className="p-3 rounded-2xl bg-[var(--premium-gold-soft)] text-[var(--premium-gold)]">
-                  <item.icon size={20} />
-                </div>
-                <div>
-                  <h4 className="font-bold text-[var(--brand-primary-strong)]">{item.title}</h4>
-                  <p className="text-sm text-[var(--brand-muted)] mt-1">{item.desc}</p>
+                <h2 className="text-3xl font-devanagari text-[var(--brand-primary-strong)] leading-relaxed">
+                  {QUOTES[quoteIdx].text}
+                </h2>
+                <p className="text-lg italic font-outfit text-[var(--brand-muted)]">
+                  &quot;{QUOTES[quoteIdx].meaning}&quot;
+                </p>
+                <div className="flex items-center justify-center gap-2 text-xs uppercase tracking-[0.1em] text-[var(--premium-gold)] font-bold">
+                  <Star size={12} fill="var(--premium-gold)" />
+                  {QUOTES[quoteIdx].author}
                 </div>
               </motion.div>
-            ))}
+            </AnimatePresence>
           </div>
+        </div>
+
+        {/* Bottom: "Did you know?" Bubbles */}
+        <div className="relative z-10 w-full flex justify-center">
+           <AnimatePresence mode="wait">
+            <motion.div
+              key={factIdx}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.05 }}
+              className="px-6 py-3 rounded-full bg-[var(--premium-gold-soft)] border border-[var(--premium-gold)]/20 text-[11px] font-bold text-[var(--premium-gold)] flex items-center gap-3"
+            >
+              <Sparkles size={14} />
+              {FACTS[factIdx]}
+            </motion.div>
+           </AnimatePresence>
         </div>
       </div>
 
