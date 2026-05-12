@@ -1149,25 +1149,28 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
             {/* Header Overlay */}
             <div className="absolute top-0 left-0 right-0 z-30 flex items-center gap-3 px-4 pt-4 pb-3 pointer-events-none">
               <button onClick={() => router.back()}
-                className="w-9 h-9 rounded-full glass-panel border border-white/10 flex items-center justify-center pointer-events-auto">
-                <ChevronLeft size={20} style={{ color: 'white' }} />
+                className="w-9 h-9 rounded-full glass-panel border flex items-center justify-center pointer-events-auto"
+                style={{ borderColor: 'var(--border-subtle)', color: 'var(--brand-ink)' }}>
+                <ChevronLeft size={20} />
               </button>
               <div className="flex-1">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[color:var(--brand-muted)]">
                   {meta.symbol} {meta.nityaKarmaTitle}
                 </p>
               </div>
               <div className="pointer-events-auto">
                 {isPro ? (
-                  <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-white/20 bg-white/10 backdrop-blur-md">
-                    <Star size={12} className="text-white fill-white" />
-                    <span className="text-[10px] font-bold text-white">PRO</span>
+                  <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border glass-panel backdrop-blur-md"
+                    style={{ borderColor: 'var(--border-subtle)' }}>
+                    <Star size={12} style={{ color: accent, fill: accent }} />
+                    <span className="text-[10px] font-bold" style={{ color: accent }}>PRO</span>
                   </div>
                 ) : (
                   <button onClick={() => setShowProSheet(true)}
-                    className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-white/20 bg-white/10 backdrop-blur-md">
-                    <Star size={11} className="text-white/80" />
-                    <span className="text-[10px] font-semibold text-white/80">Pro</span>
+                    className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border glass-panel backdrop-blur-md"
+                    style={{ borderColor: 'var(--border-subtle)' }}>
+                    <Star size={11} className="text-[color:var(--brand-muted)]" />
+                    <span className="text-[10px] font-semibold text-[color:var(--brand-muted)]">Pro</span>
                   </button>
                 )}
               </div>
@@ -1192,16 +1195,17 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
             >
               {/* Vrat alert */}
               {vataDays && (
-                <div className="rounded-2xl border px-4 py-3 flex items-start gap-3"
+                <Link href={`/vrat/${encodeURIComponent(vataDays)}`} className="rounded-2xl border px-4 py-3 flex items-center gap-3 relative overflow-hidden block group"
                   style={{ background: `${accent}10`, borderColor: `${accent}30` }}>
                   <span className="text-xl shrink-0">🌟</span>
-                  <div>
+                  <div className="flex-1 min-w-0 pr-6">
                     <p className="text-sm font-semibold text-[color:var(--brand-ink)]">Today is {vataDays}</p>
                     <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-relaxed">
-                      A vrat day adds extra spiritual merit. Observe nirjala or phalahar and add extended japa.
+                      A vrat day adds extra spiritual merit. Observe nirjala or phalahar and add extended japa. Tap to view significance.
                     </p>
                   </div>
-                </div>
+                  <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2" style={{ color: accent, transform: 'rotate(-90deg)', flexShrink: 0 }} />
+                </Link>
               )}
 
               {/* Sacred Day Pulse — tradition-aware nudge above practice cards */}

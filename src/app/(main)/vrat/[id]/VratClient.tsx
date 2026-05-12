@@ -1,31 +1,28 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  ChevronLeft, Settings, Type, Sun, Moon, 
-  Book, Quote, Shield, Lightbulb, Share2
+  ChevronLeft, Settings, Sun, Moon, 
+  Book, Flame, Share2, Info
 } from 'lucide-react';
-import type { DharmVeer } from '@/lib/dharm-veer';
-import { TRADITION_META } from '@/lib/dharm-veer';
+import type { VratData } from '@/lib/vrat-data';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import toast from 'react-hot-toast';
 
 type ReadingTheme = 'light' | 'dark' | 'sepia';
 type FontSize = 'sm' | 'md' | 'lg' | 'xl';
 
-export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
+export default function VratClient({ vrat, originalSlug }: { vrat: VratData, originalSlug: string }) {
   const router = useRouter();
   const [theme, setTheme] = useState<ReadingTheme>('dark');
   const [fontSize, setFontSize] = useState<FontSize>('md');
   const [showSettings, setShowSettings] = useState(false);
+  
   const { t, lang: appLang } = useLanguage();
   const [lang, setLang] = useState<'en' | 'local'>(appLang === 'en' ? 'en' : 'local');
 
-  const meta = TRADITION_META[hero.tradition];
-
-  // Map font sizes to tailwind/css classes or styles
   const fontStyles: Record<FontSize, string> = {
     sm: 'text-sm leading-relaxed',
     md: 'text-base leading-relaxed',
@@ -42,11 +39,11 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
   const activeTheme = themeColors[theme];
 
   const handleShare = () => {
-    const text = `Today's Dharm Veer: ${hero.name}\n${hero.tagline}\nRead more on Shoonaya.`;
+    const text = `Today's Sacred Observance: ${vrat.name}\\n${vrat.tagline}\\nRead more on Shoonaya.`;
     if (navigator.share) {
-      navigator.share({ title: hero.name, text, url: window.location.href }).catch(() => {});
+      navigator.share({ title: vrat.name, text, url: window.location.href }).catch(() => {});
     } else {
-      navigator.clipboard.writeText(`${text}\n${window.location.href}`);
+      navigator.clipboard.writeText(`${text}\\n${window.location.href}`);
       toast.success('Link copied to clipboard!');
     }
   };
@@ -72,10 +69,10 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
         
         <div className="flex flex-col items-center">
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
-            {meta.dharmVeerLocal || 'Dharm Veer'}
+            {t('vrat') || 'Vrat'}
           </span>
-          <span className="text-xs font-bold" style={{ color: 'var(--brand-primary)' }}>
-            {hero.tradition.toUpperCase()}
+          <span className="text-xs font-bold" style={{ color: 'var(--brand-primary-strong)' }}>
+            {originalSlug.toUpperCase()}
           </span>
         </div>
 
@@ -137,10 +134,10 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
             </div>
 
             {/* Language Toggle */}
-            {hero.nameLocal && (
+            {vrat.nameLocal && (
               <div>
                 <p className="text-[10px] uppercase font-bold tracking-widest opacity-60 mb-3">Language</p>
-                <div className="flex glass-panel rounded-xl p-1">
+                <div className="flex rounded-xl p-1" style={{ backgroundColor: activeTheme.border }}>
                   <button 
                     onClick={() => setLang('en')}
                     className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition ${lang === 'en' ? 'bg-[var(--brand-primary)] text-black' : 'opacity-60'}`}
@@ -169,96 +166,74 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
             animate={{ scale: 1, opacity: 1 }}
             className="w-24 h-24 mx-auto rounded-3xl flex items-center justify-center text-5xl shadow-2xl"
             style={{ 
-              background: `linear-gradient(135deg, ${meta.color.replace('0.12', '0.2')}, ${meta.color.replace('0.12', '0.05')})`,
-              border: `1px solid ${meta.color.replace('0.12', '0.4')}`
+              background: `linear-gradient(135deg, rgba(200,146,74,0.2), rgba(200,146,74,0.05))`,
+              border: `1px solid rgba(200,146,74,0.4)`
             }}
           >
-            {hero.emoji}
+            {vrat.emoji}
           </motion.div>
           
           <div className="space-y-1">
             <h1 className="text-3xl font-bold premium-serif tracking-tight">
-              {lang === 'local' && hero.nameLocal ? hero.nameLocal : hero.name}
+              {lang === 'local' && vrat.nameLocal ? vrat.nameLocal : vrat.name}
             </h1>
-            <p className="text-xs font-bold uppercase tracking-[0.3em] text-[var(--brand-primary)]">
-              {lang === 'local' && hero.eraLocal ? hero.eraLocal : hero.era} · {lang === 'local' && hero.regionLocal ? hero.regionLocal : hero.region}
-            </p>
           </div>
 
           <p className={`italic font-medium opacity-80 px-4 ${fontStyles[fontSize]}`}>
-            &ldquo;{lang === 'local' && hero.taglineLocal ? hero.taglineLocal : hero.tagline}&rdquo;
+            &ldquo;{lang === 'local' && vrat.taglineLocal ? vrat.taglineLocal : vrat.tagline}&rdquo;
           </p>
         </section>
 
         {/* Narrative Section */}
         <section className="space-y-8">
-          {/* The Journey */}
+          {/* Significance */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-              <Book size={14} /> {t('journeyLabel')}
+              <Book size={14} /> Significance
             </div>
             <p className={`${fontStyles[fontSize]} whitespace-pre-wrap`}>
-              {lang === 'local' && hero.journeyLocal ? hero.journeyLocal : hero.journey}
+              {lang === 'local' && vrat.significanceLocal ? vrat.significanceLocal : vrat.significance}
             </p>
           </div>
 
-          {/* The Trial */}
-          <div className="clay-card rounded-[2rem] p-6 space-y-4" style={{ backgroundColor: 'rgba(200,146,74,0.05)', border: '1px solid rgba(200,146,74,0.1)' }}>
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--brand-primary)]">
-              <Shield size={14} /> {t('testOfDharma')}
+          {/* Practice */}
+          <div className="rounded-[2rem] p-6 space-y-4" style={{ backgroundColor: 'rgba(200,146,74,0.05)', border: '1px solid rgba(200,146,74,0.1)' }}>
+            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--brand-primary-strong)]">
+              <Flame size={14} /> How to Observe
             </div>
             <p className={`${fontStyles[fontSize]} font-medium italic`}>
-              {lang === 'local' && hero.trialLocal ? hero.trialLocal : hero.trial}
+              {lang === 'local' && vrat.practiceLocal ? vrat.practiceLocal : vrat.practice}
             </p>
           </div>
 
-          {/* The Teaching */}
+          {/* Mantra */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-              <Lightbulb size={14} /> {t('wisdom')}
+              <Info size={14} /> Sacred Mantra
             </div>
-            <p className={`${fontStyles[fontSize]}`}>
-              {lang === 'local' && hero.teachingLocal ? hero.teachingLocal : hero.teaching}
+            <p className={`${fontStyles[fontSize]} text-center premium-serif text-xl font-bold mt-4`}>
+              {lang === 'local' && vrat.mantraLocal ? vrat.mantraLocal : vrat.mantra}
             </p>
           </div>
 
-          {/* Quote */}
-          {hero.quote && (
-            <div className="py-8 border-y border-white/5 text-center space-y-4">
-              <Quote size={32} className="mx-auto opacity-20 text-[var(--brand-primary)]" />
-              <p className="text-xl font-bold premium-serif italic px-6">
-                {lang === 'local' && hero.quoteLocal ? hero.quoteLocal.text : hero.quote.text}
-              </p>
-              <p className="text-[10px] uppercase font-bold tracking-widest opacity-60">
-                — {lang === 'local' && hero.quoteLocal ? hero.quoteLocal.attribution : hero.quote.attribution}
-              </p>
-            </div>
-          )}
-
-          {/* Moral */}
-          <div className="text-center pt-8">
-            <p className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-40 mb-4">{t('essence')}</p>
-            <p className="text-lg font-bold leading-relaxed max-w-sm mx-auto">
-              {lang === 'local' && hero.moralLocal ? hero.moralLocal : hero.moral}
-            </p>
-          </div>
         </section>
 
         {/* Share Button */}
         <div className="flex justify-center pt-12">
           <button 
             onClick={handleShare}
-            className="flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--brand-primary)] text-black font-bold shadow-xl hover:scale-105 transition active:scale-95"
+            className="flex items-center gap-2 px-8 py-4 rounded-full text-black font-bold shadow-xl hover:scale-105 transition active:scale-95"
+            style={{ backgroundColor: 'var(--brand-primary)' }}
           >
             <Share2 size={18} />
-            {t('shareReflection')}
+            Share Observance
           </button>
         </div>
       </main>
 
-      {/* ── Tradition Motif (Bottom) ────────────────────────────────────── */}
+      {/* ── Motif (Bottom) ────────────────────────────────────── */}
       <div className="fixed bottom-0 inset-x-0 h-32 pointer-events-none opacity-[0.03] flex items-center justify-center text-[10rem]">
-        {meta.emoji}
+        {vrat.emoji}
       </div>
     </div>
   );

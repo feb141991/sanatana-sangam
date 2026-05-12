@@ -1750,20 +1750,22 @@ export default function HomeDashboard({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="sacred-pulse-banner"
-              role="status"
-              aria-live="polite"
             >
-              <span className="sacred-pulse-emoji" aria-hidden="true">{sacredPulse.emoji}</span>
-              <div className="sacred-pulse-body">
-                <span className="sacred-pulse-label">{sacredPulse.label} Today</span>
-                <span className="sacred-pulse-desc">{sacredPulse.description}</span>
-              </div>
-              <span
-                className="sacred-pulse-intensity"
-                data-intensity={sacredPulse.intensity}
-                aria-label={`${sacredPulse.intensity} intensity`}
-              />
+              <Link 
+                href={`/vrat/${encodeURIComponent(sacredPulse.label)}`}
+                className="sacred-pulse-banner group relative hover:scale-[1.02] transition-transform duration-300 block overflow-hidden"
+                role="status"
+                aria-live="polite"
+              >
+                <div className="flex items-center gap-3 w-full pr-6">
+                  <span className="sacred-pulse-emoji" aria-hidden="true">{sacredPulse.emoji}</span>
+                  <div className="sacred-pulse-body flex-1 min-w-0">
+                    <span className="sacred-pulse-label">{sacredPulse.label} Today</span>
+                    <span className="sacred-pulse-desc">{sacredPulse.description} Tap to view significance.</span>
+                  </div>
+                  <ChevronRight size={16} className="text-amber-500/80 shrink-0" />
+                </div>
+              </Link>
             </motion.div>
           )}
         </AnimatePresence>

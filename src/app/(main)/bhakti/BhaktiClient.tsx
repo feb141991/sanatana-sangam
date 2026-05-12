@@ -53,7 +53,7 @@ export default function BhaktiClient({
   };
 
   return (
-    <div className="relative min-h-screen pb-32 overflow-x-hidden bg-[#0C0A07]">
+    <div className={`relative min-h-screen pb-32 overflow-x-hidden transition-colors duration-500 ${isDark ? 'bg-[#0C0A07]' : 'bg-[var(--card-bg)]'}`}>
       {/* ── 1. Cosmic Hero Section ────────────────────────────────────────── */}
       <section className="relative h-[70vh] w-full overflow-hidden">
         <AnimatePresence mode="wait">
@@ -69,33 +69,34 @@ export default function BhaktiClient({
               src={`/images/deities/${activeDeity}-bg.png`}
               alt={activeDeity}
               fill
-              className="object-cover opacity-60"
+              className={`object-cover ${isDark ? 'opacity-60' : 'opacity-40 mix-blend-multiply'}`}
               priority
               onError={(e) => {
-                // Fallback if image doesn't exist
                 (e.target as any).src = '/images/bhakti-hero.png';
               }}
             />
           </motion.div>
         </AnimatePresence>
         
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-[#0C0A07]" />
+        <div className={`absolute inset-0 bg-gradient-to-b ${isDark ? 'from-black/40 to-[#0C0A07]' : 'from-[#FAF6EF]/60 to-[var(--card-bg)]'} via-transparent`} />
         
         {/* Navigation Overlays */}
         <div className="absolute top-12 inset-x-6 flex items-center justify-between z-20">
           <button 
             onClick={() => router.back()}
-            className="w-11 h-11 rounded-full flex items-center justify-center glass-panel border-white/10"
+            className="w-11 h-11 rounded-full flex items-center justify-center glass-panel border"
+            style={{ borderColor: 'var(--border-subtle)', color: 'var(--brand-ink)' }}
           >
-            <ChevronLeft size={22} className="text-white" />
+            <ChevronLeft size={22} />
           </button>
           <div className="text-center">
-            <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-amber-400/80">
+            <span className="text-[10px] font-bold uppercase tracking-[0.4em]" style={{ color: 'var(--brand-primary-strong)' }}>
               Sacred Sanctuary
             </span>
           </div>
-          <button className="w-11 h-11 rounded-full flex items-center justify-center glass-panel border-white/10">
-            <Share2 size={18} className="text-white" />
+          <button className="w-11 h-11 rounded-full flex items-center justify-center glass-panel border"
+            style={{ borderColor: 'var(--border-subtle)', color: 'var(--brand-ink)' }}>
+            <Share2 size={18} />
           </button>
         </div>
 
