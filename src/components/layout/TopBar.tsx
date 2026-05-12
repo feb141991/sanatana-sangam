@@ -534,6 +534,7 @@ export default function TopBar({
 
 // ── Empty state ───────────────────────────────────────────────────────────────
 function NotificationsEmptyState({ userId, onNotificationSent }: { userId: string; onNotificationSent: () => void }) {
+  const { t } = useLanguage();
   const [sending, setSending] = useState(false);
 
   async function sendTest() {

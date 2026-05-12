@@ -45,6 +45,7 @@ function FloatingQuickMenu({
   open, onClose, isGuest, isDark,
 }: { open: boolean; onClose: () => void; isGuest: boolean; isDark: boolean }) {
   const prefersReducedMotion = useReducedMotion();
+  const { t } = useLanguage();
   const router  = useRouter();
   const actions = isGuest ? GUEST_QUICK_ACTIONS : QUICK_ACTIONS;
   const reversed = [...actions].reverse();

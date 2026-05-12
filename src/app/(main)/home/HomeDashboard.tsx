@@ -1398,8 +1398,6 @@ export default function HomeDashboard({
   };
   const heroPrimaryText = isDark ? 'var(--text-cream)' : '#211B14';
   const heroSecondaryText = isDark ? 'var(--text-muted-warm)' : '#4D4035';
-  const { userId } = createClient(); // Wait, creating client inside component? Better use hook or prop.
-  // Actually I see createClient being used in useEffect, so it's fine.
   const { t } = useLanguage();
   const heroTertiaryText = isDark ? 'var(--text-dim)' : '#66584A';
   const heroGlassSurface = isDark ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.72)';
