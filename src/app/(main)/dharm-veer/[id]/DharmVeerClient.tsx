@@ -13,6 +13,7 @@ import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { t as translateFn, type AppLang } from '@/lib/i18n/translations';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import toast from 'react-hot-toast';
+import { ReaderIntro } from '@/components/ui/ReaderIntro';
 
 type ReadingTheme = 'light' | 'dark' | 'sepia';
 type FontSize = 'sm' | 'md' | 'lg' | 'xl';
@@ -128,7 +129,7 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
           {/* Theme Toggle */}
           <button 
             onClick={() => setTheme(t => t === 'light' ? 'dark' : t === 'dark' ? 'sepia' : 'light')}
-            className="w-9 h-9 rounded-full flex items-center justify-center transition"
+            className="theme-toggle w-9 h-9 rounded-full flex items-center justify-center transition"
             style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
           >
             {theme === 'light' ? <Moon size={16} /> : theme === 'dark' ? <div className="w-4 h-4 bg-[#F4ECD8] rounded-full border border-black/10" /> : <Sun size={16} />}
@@ -137,7 +138,7 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
           {/* Font Size Toggle */}
           <button 
             onClick={() => setFontSize(s => s === 'sm' ? 'md' : s === 'md' ? 'lg' : s === 'lg' ? 'xl' : 'sm')}
-            className="w-9 h-9 rounded-full flex items-center justify-center transition text-[11px] font-bold"
+            className="font-toggle w-9 h-9 rounded-full flex items-center justify-center transition text-[11px] font-bold"
             style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
           >
             Aa
@@ -147,7 +148,7 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
           {hero.nameLocal && (
             <button 
               onClick={() => setLang(l => l === 'en' ? 'local' : 'en')}
-              className="w-9 h-9 rounded-full flex items-center justify-center transition font-[family:var(--font-deva)] text-sm font-bold"
+              className="lang-toggle w-9 h-9 rounded-full flex items-center justify-center transition font-[family:var(--font-deva)] text-sm font-bold"
               style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
             >
               {lang === 'en' ? 'अ' : 'A'}
@@ -244,7 +245,7 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
         <div className="flex justify-center pt-12">
           <button 
             onClick={handleShare}
-            className="flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--brand-primary)] text-black font-bold shadow-xl hover:scale-105 transition active:scale-95"
+            className="share-button flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--brand-primary)] text-black font-bold shadow-xl hover:scale-105 transition active:scale-95"
           >
             <Share2 size={18} />
             {translateFn(effectiveLang, 'shareReflection')}
@@ -256,6 +257,8 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
       <div className="fixed bottom-0 inset-x-0 h-32 pointer-events-none opacity-[0.03] flex items-center justify-center text-[10rem]">
         {meta.emoji}
       </div>
+
+      <ReaderIntro />
     </div>
   );
 }
