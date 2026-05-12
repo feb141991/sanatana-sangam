@@ -11,6 +11,14 @@ export const TRADITIONS: { value: TraditionKey; label: string; emoji: string; de
   { value: 'other',    label: 'Other / Exploring', emoji: '✨', desc: 'Curious — exploring Sanatan traditions' },
 ];
 
+export const TRADITION_SIGNS: Record<TraditionKey, string> = {
+  hindu: '🕉️',
+  sikh: '☬',
+  buddhist: '☸️',
+  jain: '🤲',
+  other: '✨',
+};
+
 // ─── Sampradayas by tradition ──────────────────────────────────────────────────
 export const SAMPRADAYAS_BY_TRADITION: Record<TraditionKey, { value: string; label: string }[]> = {
   hindu: [

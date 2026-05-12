@@ -30,7 +30,7 @@ export function getInitials(name: string): string {
 }
 
 // Re-export tradition-aware data from traditions.ts
-export { TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getGreeting, getIshtaDevataLabel, getSampradayaLabel } from './traditions';
+export { TRADITIONS, TRADITION_SIGNS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getGreeting, getIshtaDevataLabel, getSampradayaLabel } from './traditions';
 
 // Backward-compat flat lists (used by legacy components)
 export const SAMPRADAYAS = [
