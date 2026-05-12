@@ -849,36 +849,57 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 </div>
 
 
+
 <!-- ── GYAN CHAUPAR ───────────────────────────────────────────────── -->
 <section class="section" id="gyan-chaupar" style="background:var(--surface-soft);padding:72px 24px 80px;">
 <style>
-#gc-wrap { max-width:800px; margin:0 auto; }
-.gc-eyebrow { display:inline-block; font-size:11px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--saffron); background:var(--saffron-lt); border:1px solid rgba(216,138,28,0.25); border-radius:20px; padding:5px 14px; margin-bottom:18px; }
-.gc-title { font-family:var(--fd); font-size:clamp(2rem,5vw,2.8rem); font-weight:600; color:var(--ink); line-height:1.15; margin-bottom:10px; }
+/* ── Fullscreen wrapper ───────────────────────────────────────── */
+#gc-fs-wrap { max-width:900px; margin:0 auto; transition:background 0.3s; }
+#gc-fs-wrap.is-fullscreen { max-width:100vw; width:100vw; height:100vh; margin:0; padding:24px 32px; display:flex; flex-direction:column; background:var(--cream); overflow:auto; box-sizing:border-box; }
+/* Header row */
+.gc-top-row { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:28px; }
+.gc-top-left { text-align:left; }
+.gc-eyebrow { display:inline-block; font-size:11px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--saffron); background:var(--saffron-lt); border:1px solid rgba(216,138,28,0.25); border-radius:20px; padding:5px 14px; margin-bottom:10px; }
+.gc-title { font-family:var(--fd); font-size:clamp(1.6rem,4vw,2.6rem); font-weight:600; color:var(--ink); line-height:1.15; margin-bottom:4px; }
 .gc-title em { font-style:italic; color:var(--saffron); }
-.gc-sub { font-size:15px; color:var(--ink-soft); max-width:520px; margin:0 auto 36px; line-height:1.6; }
-.gc-layout { display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap; justify-content:center; }
+.gc-sub { font-size:13px; color:var(--ink-soft); max-width:440px; line-height:1.55; }
+/* Fullscreen button */
+#gc-fs-btn { background:none; border:1px solid var(--border); border-radius:10px; padding:8px 14px; font-size:12px; color:var(--ink-soft); cursor:pointer; display:flex; align-items:center; gap:6px; white-space:nowrap; transition:border-color 0.2s,color 0.2s; flex-shrink:0; }
+#gc-fs-btn:hover { border-color:var(--saffron); color:var(--saffron); }
+/* Layout */
+.gc-layout { display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap; justify-content:center; flex:1; }
+/* Board */
 #gc-board-wrap { position:relative; flex-shrink:0; }
-#gc-board { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; width:min(420px,94vw); background:rgba(200,146,74,0.18); border:2px solid rgba(200,146,74,0.35); border-radius:12px; padding:6px; box-shadow:0 8px 32px rgba(62,42,31,0.12); }
-.gc-sq { position:relative; aspect-ratio:1; border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2px; border:1px solid rgba(200,146,74,0.12); background:rgba(250,246,239,0.9); }
-.gc-sq.virtue  { background:rgba(42,107,74,0.13);  border-color:rgba(42,107,74,0.30); }
-.gc-sq.vice    { background:rgba(159,74,74,0.13);  border-color:rgba(159,74,74,0.30); }
-.gc-sq.moksha  { background:rgba(216,138,28,0.18); border-color:rgba(216,138,28,0.5); border-width:2px; }
-.gc-sq.active-sq { outline:2.5px solid var(--saffron); outline-offset:1px; z-index:2; }
+#gc-board { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; width:min(430px,92vw); background:rgba(200,146,74,0.18); border:2px solid rgba(200,146,74,0.35); border-radius:14px; padding:6px; box-shadow:0 8px 36px rgba(62,42,31,0.14); }
+.gc-sq { position:relative; aspect-ratio:1; border-radius:7px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2px; border:1px solid rgba(200,146,74,0.12); background:rgba(250,246,239,0.92); transition:transform 0.18s,box-shadow 0.18s; }
+.gc-sq.virtue  { background:rgba(42,107,74,0.13);  border-color:rgba(42,107,74,0.32); }
+.gc-sq.vice    { background:rgba(159,74,74,0.13);  border-color:rgba(159,74,74,0.32); }
+.gc-sq.moksha  { background:rgba(216,138,28,0.20); border-color:rgba(216,138,28,0.55); border-width:2px; }
+.gc-sq.active-sq { outline:2.5px solid var(--saffron); outline-offset:1px; z-index:2; transform:scale(1.06); box-shadow:0 4px 14px rgba(216,138,28,0.28); }
+.gc-sq.just-landed { animation:gc-bounce 0.42s cubic-bezier(.36,1.5,.4,1); }
+@keyframes gc-bounce { 0%{transform:scale(1)} 40%{transform:scale(1.18)} 70%{transform:scale(0.95)} 100%{transform:scale(1.06)} }
 .gc-sq-num { font-size:7px; font-weight:700; color:var(--ink-soft); position:absolute; top:2px; left:3px; line-height:1; }
-.gc-sq-icon { font-size:clamp(11px,2.8vw,17px); line-height:1; }
-.gc-sq-lbl { font-size:clamp(5px,1.3vw,7.5px); color:var(--ink-mid); margin-top:1px; line-height:1.1; font-weight:600; display:none; }
+.gc-sq-icon { font-size:clamp(11px,2.6vw,17px); line-height:1; }
+.gc-sq-lbl { font-size:clamp(4.5px,1.2vw,7.5px); color:var(--ink-mid); margin-top:1px; line-height:1.1; font-weight:600; display:none; }
 @media(min-width:400px){ .gc-sq-lbl { display:block; } }
-.gc-token { position:absolute; width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg,#D88A1C,#9F6314); border:2.5px solid #fff; box-shadow:0 3px 10px rgba(0,0,0,0.22); display:flex; align-items:center; justify-content:center; font-size:13px; transform:translate(-50%,-50%); transition:top 0.55s cubic-bezier(.22,1,.36,1),left 0.55s cubic-bezier(.22,1,.36,1); z-index:10; pointer-events:none; }
-#gc-panel { flex:1; min-width:200px; max-width:290px; display:flex; flex-direction:column; gap:14px; }
+/* Token */
+.gc-token { position:absolute; width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,#D88A1C,#9F6314); border:3px solid #fff; box-shadow:0 4px 12px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center; font-size:14px; transform:translate(-50%,-50%); transition:top 0.6s cubic-bezier(.22,1,.36,1),left 0.6s cubic-bezier(.22,1,.36,1); z-index:10; pointer-events:none; filter:drop-shadow(0 0 5px rgba(216,138,28,0.5)); }
+.gc-token.pop { animation:gc-token-pop 0.4s cubic-bezier(.36,1.5,.4,1); }
+@keyframes gc-token-pop { 0%{transform:translate(-50%,-50%) scale(1)} 50%{transform:translate(-50%,-80%) scale(1.4)} 100%{transform:translate(-50%,-50%) scale(1)} }
+/* Panel */
+#gc-panel { flex:1; min-width:200px; max-width:280px; display:flex; flex-direction:column; gap:14px; }
 #gc-dice-wrap { display:flex; flex-direction:column; align-items:center; gap:12px; }
-#gc-dice { width:68px; height:68px; border-radius:14px; background:var(--warm-white); border:2px solid rgba(200,146,74,0.35); box-shadow:0 4px 16px rgba(62,42,31,0.12); display:flex; align-items:center; justify-content:center; font-size:40px; cursor:pointer; user-select:none; }
-#gc-dice.rolling { animation:gc-roll 0.5s ease; }
-@keyframes gc-roll { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-18deg) scale(1.08)} 75%{transform:rotate(14deg) scale(0.95)} }
-#gc-roll-btn { background:linear-gradient(135deg,var(--saffron),var(--saffron-dk)); color:#fff; border:none; border-radius:40px; padding:13px 28px; font-size:14px; font-weight:600; cursor:pointer; letter-spacing:0.02em; transition:opacity 0.2s,transform 0.1s; box-shadow:0 4px 14px rgba(216,138,28,0.35); width:100%; }
-#gc-roll-btn:hover { opacity:0.88; } #gc-roll-btn:active { transform:scale(0.96); }
-#gc-roll-btn:disabled { opacity:0.42; cursor:not-allowed; }
-#gc-status-card { background:var(--warm-white); border:1px solid var(--border); border-radius:12px; padding:16px; font-size:13px; line-height:1.6; color:var(--ink-mid); min-height:90px; }
+#gc-dice { width:72px; height:72px; border-radius:16px; background:var(--warm-white); border:2px solid rgba(200,146,74,0.4); box-shadow:0 4px 18px rgba(62,42,31,0.13); display:flex; align-items:center; justify-content:center; font-size:42px; cursor:pointer; user-select:none; transition:box-shadow 0.2s; }
+#gc-dice.rolling { animation:gc-die-shake 0.55s ease; }
+@keyframes gc-die-shake { 0%{transform:rotate(0) scale(1)} 15%{transform:rotate(-22deg) scale(1.1)} 35%{transform:rotate(18deg) scale(0.92)} 55%{transform:rotate(-12deg) scale(1.08)} 75%{transform:rotate(8deg) scale(0.96)} 100%{transform:rotate(0) scale(1)} }
+#gc-dice.glowing { box-shadow:0 0 0 4px rgba(216,138,28,0.25),0 4px 18px rgba(62,42,31,0.13); }
+#gc-roll-btn { background:linear-gradient(135deg,var(--saffron),var(--saffron-dk)); color:#fff; border:none; border-radius:40px; padding:14px 28px; font-size:14px; font-weight:600; cursor:pointer; letter-spacing:0.02em; transition:opacity 0.2s,transform 0.12s,box-shadow 0.2s; box-shadow:0 4px 18px rgba(216,138,28,0.40); width:100%; }
+#gc-roll-btn:hover:not(:disabled) { opacity:0.88; transform:translateY(-1px); box-shadow:0 7px 22px rgba(216,138,28,0.45); }
+#gc-roll-btn:active:not(:disabled) { transform:scale(0.96) translateY(0); }
+#gc-roll-btn:disabled { opacity:0.40; cursor:not-allowed; }
+#gc-status-card { background:var(--warm-white); border:1px solid var(--border); border-radius:12px; padding:16px; font-size:13px; line-height:1.65; color:var(--ink-mid); min-height:92px; transition:background 0.4s,border-color 0.4s; }
+#gc-status-card.virtue-flash { background:rgba(42,107,74,0.08); border-color:rgba(42,107,74,0.30); }
+#gc-status-card.vice-flash   { background:rgba(159,74,74,0.08); border-color:rgba(159,74,74,0.30); }
 #gc-status-card strong { color:var(--ink); display:block; margin-bottom:4px; font-size:14px; }
 .gc-badge { display:inline-block; font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; margin-bottom:6px; letter-spacing:0.06em; }
 .gc-badge.virtue { background:rgba(42,107,74,0.14); color:#2A6B4A; }
@@ -887,20 +908,67 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 .gc-badge.moksha { background:rgba(216,138,28,0.18); color:#9F6314; }
 #gc-pos-bar { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-soft); }
 #gc-pos-fill-wrap { flex:1; height:6px; background:rgba(200,146,74,0.15); border-radius:3px; overflow:hidden; }
-#gc-pos-fill { height:100%; background:linear-gradient(90deg,var(--saffron),var(--saffron-dk)); border-radius:3px; width:0%; transition:width 0.6s cubic-bezier(.22,1,.36,1); }
+#gc-pos-fill { height:100%; background:linear-gradient(90deg,var(--saffron),var(--saffron-dk)); border-radius:3px; width:0%; transition:width 0.7s cubic-bezier(.22,1,.36,1); }
 #gc-restart-btn { background:none; border:1px solid var(--border); border-radius:40px; padding:8px 18px; font-size:12px; color:var(--ink-soft); cursor:pointer; width:100%; transition:border-color 0.2s,color 0.2s; }
 #gc-restart-btn:hover { border-color:var(--saffron); color:var(--saffron); }
 .gc-legend { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:16px; font-size:11px; color:var(--ink-soft); }
 .gc-legend-item { display:flex; align-items:center; gap:5px; }
 .gc-legend-dot { width:10px; height:10px; border-radius:2px; }
+/* ── Celebration overlay ─────────────────────────────────────── */
+#gc-celebration { display:none; position:fixed; inset:0; z-index:9000; pointer-events:none; overflow:hidden; }
+#gc-celebration.active { display:block; }
+.gc-confetti-piece { position:absolute; top:-20px; width:10px; height:10px; border-radius:2px; opacity:0; animation:gc-confetti-fall linear forwards; }
+@keyframes gc-confetti-fall {
+  0%   { transform:translateY(0)    rotate(0deg)   scale(1);   opacity:1; }
+  85%  { opacity:1; }
+  100% { transform:translateY(110vh) rotate(720deg) scale(0.6); opacity:0; }
+}
+#gc-moksha-banner { display:none; position:fixed; inset:0; z-index:9001; align-items:center; justify-content:center; pointer-events:auto; }
+#gc-moksha-banner.active { display:flex; }
+#gc-moksha-inner { background:var(--warm-white); border:2px solid rgba(216,138,28,0.4); border-radius:24px; padding:40px 48px; text-align:center; max-width:420px; box-shadow:0 24px 80px rgba(62,42,31,0.22); animation:gc-banner-in 0.55s cubic-bezier(.22,1,.36,1); }
+@keyframes gc-banner-in { 0%{transform:scale(0.7) translateY(30px);opacity:0} 100%{transform:scale(1) translateY(0);opacity:1} }
+#gc-moksha-inner .gc-moksha-emoji { font-size:56px; margin-bottom:12px; animation:gc-spin-float 3s ease-in-out infinite; }
+@keyframes gc-spin-float { 0%,100%{transform:translateY(0) rotate(0)} 50%{transform:translateY(-8px) rotate(10deg)} }
+#gc-moksha-inner h3 { font-family:var(--fd); font-size:28px; font-weight:600; color:var(--ink); margin-bottom:8px; }
+#gc-moksha-inner p { font-size:14px; color:var(--ink-soft); line-height:1.6; margin-bottom:20px; }
+#gc-moksha-inner .gc-moksha-num { font-family:var(--fd); font-size:48px; font-weight:700; color:var(--saffron); }
+#gc-moksha-close { background:linear-gradient(135deg,var(--saffron),var(--saffron-dk)); color:#fff; border:none; border-radius:40px; padding:12px 28px; font-size:14px; font-weight:600; cursor:pointer; margin-top:4px; }
+/* ── Virtue/vice flash particles ────────────────────────────── */
+.gc-spark { position:absolute; border-radius:50%; pointer-events:none; animation:gc-spark-fly 0.7s ease-out forwards; }
+@keyframes gc-spark-fly { 0%{transform:translate(0,0) scale(1);opacity:1} 100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0} }
+/* ── Roll count badge ────────────────────────────────────────── */
+#gc-roll-count { font-size:11px; color:var(--ink-soft); text-align:center; }
 </style>
 
-<div id="gc-wrap">
-  <div style="text-align:center">
-    <div class="gc-eyebrow">While you wait for the app</div>
-    <h2 class="gc-title">Play <em>Gyan Chaupar</em></h2>
-    <p class="gc-sub">The ancient Indian game of dharmic progress — roll the dice, land on virtues to rise, conquer vices before they pull you down. Reach <em>Moksha</em> to win.</p>
+<!-- Celebration layer -->
+<div id="gc-celebration"></div>
+<div id="gc-moksha-banner">
+  <div id="gc-moksha-inner">
+    <div class="gc-moksha-emoji">🕉️</div>
+    <div class="gc-moksha-num" id="gc-moksha-rolls">—</div>
+    <div style="font-size:12px;color:var(--ink-soft);margin-bottom:8px">rolls to liberation</div>
+    <h3>Moksha attained</h3>
+    <p>शून्य — the void that holds everything.<br>You have reached the Infinite.</p>
+    <button class="gc-moksha-close" onclick="gcMokshaClose()">🙏 Play Again</button>
+    <br><br>
+    <a href="#cta-section" onclick="gcMokshaClose();scrollToCta();" style="font-size:13px;color:var(--saffron);font-weight:600;text-decoration:none">→ Join Shoonaya to carry this practice further</a>
   </div>
+</div>
+
+<div id="gc-fs-wrap">
+  <!-- Top row -->
+  <div class="gc-top-row">
+    <div class="gc-top-left">
+      <div class="gc-eyebrow">While you wait for the app</div>
+      <h2 class="gc-title">Play <em>Gyan Chaupar</em></h2>
+      <p class="gc-sub">Ancient Indian game of dharmic progress — roll dice, land on virtues to ascend, conquer vices before they pull you down.</p>
+    </div>
+    <button id="gc-fs-btn" onclick="gcToggleFS()" title="Toggle fullscreen">
+      <span id="gc-fs-icon">⛶</span> <span id="gc-fs-label">Fullscreen</span>
+    </button>
+  </div>
+
+  <!-- Game layout -->
   <div class="gc-layout">
     <div id="gc-board-wrap">
       <div id="gc-board"></div>
@@ -910,205 +978,256 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
       <div id="gc-dice-wrap">
         <div id="gc-dice">⚀</div>
         <button id="gc-roll-btn" onclick="gcRoll()">🎲 Roll the Dice</button>
+        <div id="gc-roll-count">Roll 0 · Square 0 / 49</div>
       </div>
       <div id="gc-status-card">
         <strong>Your journey begins</strong>
-        Roll the dice to start your path from the earthly realm toward Moksha. Each square carries a teaching.
+        Roll the dice to start your path from the earthly realm toward Moksha. Each square holds a teaching.
       </div>
       <div id="gc-pos-bar">
-        <span style="font-size:11px;white-space:nowrap">Square <span id="gc-pos-num">0</span> / 49</span>
+        <span style="font-size:11px;white-space:nowrap">0%</span>
         <div id="gc-pos-fill-wrap"><div id="gc-pos-fill"></div></div>
         <span>🕉️</span>
       </div>
       <button id="gc-restart-btn" onclick="gcRestart()">↺ New Game</button>
     </div>
   </div>
+
   <div class="gc-legend">
-    <div class="gc-legend-item"><div class="gc-legend-dot" style="background:rgba(42,107,74,0.5)"></div>Virtue (rises)</div>
-    <div class="gc-legend-item"><div class="gc-legend-dot" style="background:rgba(159,74,74,0.5)"></div>Vice (falls)</div>
-    <div class="gc-legend-item"><div class="gc-legend-dot" style="background:rgba(216,138,28,0.45);border:1px solid rgba(216,138,28,0.6)"></div>Moksha</div>
+    <div class="gc-legend-item"><div class="gc-legend-dot" style="background:rgba(42,107,74,0.5)"></div>Virtue — ascend</div>
+    <div class="gc-legend-item"><div class="gc-legend-dot" style="background:rgba(159,74,74,0.5)"></div>Vice — descend</div>
+    <div class="gc-legend-item"><div class="gc-legend-dot" style="background:rgba(216,138,28,0.5);border:1px solid rgba(216,138,28,0.7)"></div>Moksha (sq 49)</div>
   </div>
 </div>
 
 <script>
-// ── Gyan Chaupar — global scope (no IIFE so onclick can find these) ───────────
-var GC_POS = 0, GC_ROLLING = false;
+// ── Gyan Chaupar — all functions global so onclick="" works ──────────────────
+var GC_POS = 0, GC_ROLLING = false, GC_ROLLS = 0;
 
 var GC_LADDERS = {4:22, 9:31, 17:38, 20:42, 28:47};
 var GC_SNAKES  = {26:6, 33:14, 36:12, 44:24, 48:30};
 var GC_FACES   = ['⚀','⚁','⚂','⚃','⚄','⚅'];
 var GC_SQ = {
-  1: {icon:'🌱',label:'Start',     type:'plain',   msg:'Your dharmic journey begins here. Every great path starts with a single step.',          badge:'Beginning'},
-  4: {icon:'🙏',label:'Shraddha', type:'virtue',   msg:'Shraddha — faith in the path. You rise to Viveka (square 22).',                         badge:'Virtue ↑'},
-  9: {icon:'💛',label:'Daya',     type:'virtue',   msg:'Daya — compassion for all beings. You leap to Bhakti (square 31).',                      badge:'Virtue ↑'},
- 12: {icon:'⛓️',label:'Bondage',  type:'vice',     msg:'Attachment binds the soul. This is where greed sends you — caught in samsara.',          badge:'Vice'},
- 14: {icon:'😤',label:'Suffering',type:'vice',     msg:'"From anger comes delusion; from delusion, loss of memory." — Bhagavad Gita 2.63',       badge:'Vice'},
- 17: {icon:'🔥',label:'Tapas',   type:'virtue',   msg:'Tapas — disciplined austerity. Purifying fire rises you to Dhyana (square 38).',          badge:'Virtue ↑'},
- 20: {icon:'🤲',label:'Seva',    type:'virtue',   msg:'Seva — selfless service. Karma yoga lifts you to Vairagya (square 42).',                  badge:'Virtue ↑'},
- 22: {icon:'💡',label:'Viveka',  type:'virtue',   msg:'Viveka — discrimination of the real from the unreal. A rare and precious quality.',        badge:'Virtue'},
- 24: {icon:'🔗',label:'Attachment',type:'vice',   msg:'"That which is not permanent seems permanent." — Gita 2.16',                              badge:'Vice'},
- 26: {icon:'🌊',label:'Kama',    type:'vice',     msg:'"Desire is the enemy of the wise." — Gita 3.37. You fall to square 6.',                  badge:'Vice ↓'},
- 28: {icon:'☮️',label:'Ahimsa',  type:'virtue',   msg:'Ahimsa — non-violence, the highest dharma. You soar to Samadhi (square 47).',            badge:'Virtue ↑'},
- 30: {icon:'🔄',label:'Rebirth', type:'vice',     msg:'Ahamkara — the "I-maker" — keeps you returning. The ego perpetuates samsara.',            badge:'Vice'},
- 31: {icon:'❤️',label:'Bhakti',  type:'virtue',   msg:'"Through devotion one knows Me in truth." — Bhagavata Purana.',                           badge:'Virtue'},
- 33: {icon:'😡',label:'Krodha',  type:'vice',     msg:'Anger destroys discernment. You fall to suffering (square 14).',                          badge:'Vice ↓'},
- 36: {icon:'💰',label:'Lobha',   type:'vice',     msg:'Greed clouds the mind. You slip to bondage (square 12). Release, and be free.',           badge:'Vice ↓'},
- 38: {icon:'🧘',label:'Dhyana',  type:'virtue',   msg:'Dhyana — meditation. Still the mind; witness the witness.',                               badge:'Virtue'},
- 42: {icon:'🌸',label:'Vairagya',type:'virtue',   msg:'Vairagya — non-attachment. The lotus blooms in water yet is untouched by it.',            badge:'Virtue'},
- 44: {icon:'🌫️',label:'Moha',   type:'vice',     msg:'Moha — delusion. Maya veils the Self. You fall to attachment (square 24).',               badge:'Vice ↓'},
- 47: {icon:'🌌',label:'Samadhi', type:'virtue',   msg:'Samadhi — absorption in the Infinite. The seeker and sought become one.',                 badge:'Virtue'},
- 48: {icon:'👑',label:'Ahamkara',type:'vice',     msg:'So close to liberation, yet ego pulls you back to square 30. Release the "I".',           badge:'Vice ↓'},
- 49: {icon:'🕉️',label:'Moksha', type:'moksha',   msg:'Liberation! You have reached the Infinite. शून्य — the void that holds everything.',      badge:'Moksha 🙏'},
+  1: {icon:'🌱',label:'Start',     type:'plain',  msg:'Your dharmic journey begins here. Every great path starts with a single step.',          badge:'Beginning'},
+  4: {icon:'🙏',label:'Shraddha', type:'virtue',  msg:'Shraddha — faith in the path. You rise to Viveka (square 22).',                         badge:'Virtue ↑'},
+  9: {icon:'💛',label:'Daya',     type:'virtue',  msg:'Daya — compassion for all beings. You leap to Bhakti (square 31).',                     badge:'Virtue ↑'},
+ 12: {icon:'⛓️',label:'Bondage',  type:'vice',    msg:'Attachment binds the soul. Caught in the web of samsara.',                              badge:'Vice'},
+ 14: {icon:'😤',label:'Suffering',type:'vice',    msg:'"From anger comes delusion; from delusion, loss of memory." — Gita 2.63',               badge:'Vice'},
+ 17: {icon:'🔥',label:'Tapas',   type:'virtue',  msg:'Tapas — disciplined austerity. Purifying fire rises you to Dhyana (square 38).',         badge:'Virtue ↑'},
+ 20: {icon:'🤲',label:'Seva',    type:'virtue',  msg:'Seva — selfless service. Karma yoga lifts you to Vairagya (square 42).',                 badge:'Virtue ↑'},
+ 22: {icon:'💡',label:'Viveka',  type:'virtue',  msg:'Viveka — discrimination of the real from the unreal. The rarest of human gifts.',        badge:'Virtue'},
+ 24: {icon:'🔗',label:'Attachment',type:'vice',  msg:'"That which is not permanent seems permanent." — Gita 2.16',                            badge:'Vice'},
+ 26: {icon:'🌊',label:'Kama',    type:'vice',    msg:'"Desire is the enemy of the wise." — Gita 3.37. You fall to square 6.',                 badge:'Vice ↓'},
+ 28: {icon:'☮️',label:'Ahimsa',  type:'virtue',  msg:'Ahimsa — non-violence, the highest dharma. You soar to Samadhi (square 47).',           badge:'Virtue ↑'},
+ 30: {icon:'🔄',label:'Rebirth', type:'vice',    msg:'Ahamkara — the "I-maker" perpetuates samsara. Ego keeps you returning.',                 badge:'Vice'},
+ 31: {icon:'❤️',label:'Bhakti',  type:'virtue',  msg:'"Through devotion one knows Me in truth." — Bhagavata Purana.',                          badge:'Virtue'},
+ 33: {icon:'😡',label:'Krodha',  type:'vice',    msg:'Anger destroys discernment. You fall to suffering (square 14).',                         badge:'Vice ↓'},
+ 36: {icon:'💰',label:'Lobha',   type:'vice',    msg:'Greed clouds the mind. You slip to bondage (square 12).',                                badge:'Vice ↓'},
+ 38: {icon:'🧘',label:'Dhyana',  type:'virtue',  msg:'Dhyana — meditation. Still the mind, witness the witness.',                              badge:'Virtue'},
+ 42: {icon:'🌸',label:'Vairagya',type:'virtue',  msg:'Vairagya — non-attachment. The lotus blooms untouched by water.',                       badge:'Virtue'},
+ 44: {icon:'🌫️',label:'Moha',   type:'vice',    msg:'Moha — delusion. Maya veils the Self. You fall to attachment (square 24).',              badge:'Vice ↓'},
+ 47: {icon:'🌌',label:'Samadhi', type:'virtue',  msg:'Samadhi — absorption in the Infinite. The seeker and sought become one.',                badge:'Virtue'},
+ 48: {icon:'👑',label:'Ahamkara',type:'vice',    msg:'So close to liberation yet ego pulls you back to square 30. Release the "I".',           badge:'Vice ↓'},
+ 49: {icon:'🕉️',label:'Moksha', type:'moksha',  msg:'Liberation! शून्य — the void that holds everything. You are free.',                      badge:'Moksha 🙏'},
 };
 
-function gcSqData(n) {
-  return GC_SQ[n] || {icon:'',label:'',type:'plain',msg:'Continue your journey — each step is part of the path.',badge:'Square'};
-}
+function gcSqData(n){ return GC_SQ[n]||{icon:'',label:'',type:'plain',msg:'Continue — each step is part of the path.',badge:'Square'}; }
 
-function gcBuildBoard() {
-  var board = document.getElementById('gc-board');
-  if (!board) return;
-  board.innerHTML = '';
-  for (var row = 0; row < 7; row++) {
-    var rfb = 6 - row;
-    var base = rfb * 7;
-    for (var col = 0; col < 7; col++) {
-      var n = (rfb % 2 === 0) ? (base + col + 1) : (base + (6 - col) + 1);
-      var d = gcSqData(n);
-      var isL = GC_LADDERS[n], isS = GC_SNAKES[n];
-      var type = (n === 49) ? 'moksha' : isL ? 'virtue' : isS ? 'vice' : (d.type || 'plain');
-      var icon = isL ? '🪜' : isS ? '🐍' : (d.icon || '');
-      var lbl  = d.label || '';
-      var sq = document.createElement('div');
-      sq.className = 'gc-sq ' + type;
-      sq.id = 'gcsq' + n;
-      sq.innerHTML = '<span class="gc-sq-num">' + n + '</span><span class="gc-sq-icon">' + icon + '</span><span class="gc-sq-lbl">' + lbl + '</span>';
+function gcBuildBoard(){
+  var board=document.getElementById('gc-board'); if(!board) return;
+  board.innerHTML='';
+  for(var row=0;row<7;row++){
+    var rfb=6-row, base=rfb*7;
+    for(var col=0;col<7;col++){
+      var n=(rfb%2===0)?(base+col+1):(base+(6-col)+1);
+      var d=gcSqData(n), isL=GC_LADDERS[n], isS=GC_SNAKES[n];
+      var type=(n===49)?'moksha':isL?'virtue':isS?'vice':(d.type||'plain');
+      var icon=isL?'🪜':isS?'🐍':(d.icon||'');
+      var sq=document.createElement('div');
+      sq.className='gc-sq '+type; sq.id='gcsq'+n;
+      sq.innerHTML='<span class="gc-sq-num">'+n+'</span><span class="gc-sq-icon">'+icon+'</span><span class="gc-sq-lbl">'+(d.label||'')+'</span>';
       board.appendChild(sq);
     }
   }
 }
 
-function gcPositionToken(n) {
-  var tok = document.getElementById('gc-token');
-  if (!tok) return;
-  if (n === 0) { tok.style.top = '105%'; tok.style.left = '50%'; return; }
-  var sq = document.getElementById('gcsq' + n);
-  if (!sq) return;
-  var wr = document.getElementById('gc-board-wrap').getBoundingClientRect();
-  var sr = sq.getBoundingClientRect();
-  tok.style.left = (sr.left - wr.left + sr.width / 2) + 'px';
-  tok.style.top  = (sr.top  - wr.top  + sr.height / 2) + 'px';
+function gcPositionToken(n){
+  var tok=document.getElementById('gc-token'); if(!tok) return;
+  if(n===0){tok.style.top='105%';tok.style.left='50%';return;}
+  var sq=document.getElementById('gcsq'+n); if(!sq) return;
+  var wr=document.getElementById('gc-board-wrap').getBoundingClientRect();
+  var sr=sq.getBoundingClientRect();
+  tok.style.left=(sr.left-wr.left+sr.width/2)+'px';
+  tok.style.top=(sr.top-wr.top+sr.height/2)+'px';
+  tok.classList.remove('pop'); void tok.offsetWidth; tok.classList.add('pop');
 }
 
-function gcHighlight(n) {
-  document.querySelectorAll('.gc-sq.active-sq').forEach(function(e){ e.classList.remove('active-sq'); });
-  if (n > 0) { var s = document.getElementById('gcsq' + n); if (s) s.classList.add('active-sq'); }
+function gcHighlight(n){
+  document.querySelectorAll('.gc-sq.active-sq,.gc-sq.just-landed').forEach(function(e){e.classList.remove('active-sq','just-landed');});
+  if(n>0){var s=document.getElementById('gcsq'+n);if(s){s.classList.add('active-sq');s.classList.remove('just-landed');void s.offsetWidth;s.classList.add('just-landed');}}
 }
 
-function gcUpdateStatus(n, landedOn, special) {
-  var card = document.getElementById('gc-status-card');
-  if (!card) return;
-  var d = gcSqData(n);
-  var btype = GC_LADDERS[n] ? 'virtue' : GC_SNAKES[n] ? 'vice' : (d.type || 'plain');
-  var blbl  = GC_LADDERS[n] ? ('🪜 ' + d.badge) : GC_SNAKES[n] ? ('🐍 ' + d.badge) : d.badge;
-  var extra = '';
-  if (special === 'ladder') extra = '<br><span style="color:#2A6B4A;font-weight:600">✨ Virtue! You ascend to square ' + GC_LADDERS[landedOn] + '.</span>';
-  if (special === 'snake')  extra = '<br><span style="color:#7A2A2A;font-weight:600">⚠️ Vice! You fall to square ' + GC_SNAKES[landedOn] + '.</span>';
-  if (special === 'bounce') extra = '<br><span style="color:#9F6314;font-weight:600">Need exact roll to reach Moksha.</span>';
-  card.innerHTML = '<span class="gc-badge ' + btype + '">' + blbl + '</span><strong>' + (d.label || 'Square ' + n) + '</strong>' + d.msg + extra;
-  var posEl = document.getElementById('gc-pos-num');
-  if (posEl) posEl.textContent = n;
-  var fill = document.getElementById('gc-pos-fill');
-  if (fill) fill.style.width = Math.round(n / 49 * 100) + '%';
+function gcUpdateCard(n, landedOn, special){
+  var card=document.getElementById('gc-status-card'); if(!card) return;
+  var d=gcSqData(n);
+  var btype=GC_LADDERS[n]?'virtue':GC_SNAKES[n]?'vice':(d.type||'plain');
+  var blbl=GC_LADDERS[n]?('🪜 '+d.badge):GC_SNAKES[n]?('🐍 '+d.badge):d.badge;
+  var extra='';
+  if(special==='ladder') extra='<br><span style="color:#2A6B4A;font-weight:600">✨ Virtue! You ascend to square '+GC_LADDERS[landedOn]+'.</span>';
+  if(special==='snake')  extra='<br><span style="color:#7A2A2A;font-weight:600">⚠️ Vice! You fall to square '+GC_SNAKES[landedOn]+'.</span>';
+  if(special==='bounce') extra='<br><span style="color:#9F6314;font-weight:600">Need exact roll to reach Moksha.</span>';
+  card.innerHTML='<span class="gc-badge '+btype+'">'+blbl+'</span><strong>'+(d.label||'Square '+n)+'</strong>'+d.msg+extra;
+  card.className='gc-status-card'+(btype==='virtue'?' virtue-flash':btype==='vice'?' vice-flash':'');
+  setTimeout(function(){if(card)card.className='gc-status-card';},900);
+  var pct=Math.round(n/49*100);
+  var fill=document.getElementById('gc-pos-fill'); if(fill) fill.style.width=pct+'%';
+  var pb=document.querySelector('#gc-pos-bar span'); if(pb) pb.textContent=pct+'%';
+  var rc=document.getElementById('gc-roll-count'); if(rc) rc.textContent='Roll '+GC_ROLLS+' · Square '+n+' / 49';
   gcHighlight(n);
 }
 
-function gcFinishMove() {
-  GC_ROLLING = false;
-  var btn = document.getElementById('gc-roll-btn');
-  if (btn) btn.disabled = false;
-}
-
-function gcApplyMove(rolled) {
-  var np = GC_POS + rolled, special = null;
-  if (np > 49) { np = 49 - (np - 49); special = 'bounce'; }
-  var landed = np;
-  GC_POS = np;
-
-  if (GC_LADDERS[landed]) {
-    gcPositionToken(landed); gcUpdateStatus(landed, landed, null);
-    setTimeout(function() {
-      GC_POS = GC_LADDERS[landed];
-      gcPositionToken(GC_POS); gcUpdateStatus(GC_POS, landed, 'ladder'); gcFinishMove();
-    }, 650);
-    return;
+// ── Sparks for virtue/vice ──
+function gcSparks(type){
+  var tok=document.getElementById('gc-token'); if(!tok) return;
+  var colors=type==='virtue'?['#2A6B4A','#3D9B6A','#5BC88A']:['#9F2A2A','#CC5050','#FF8080'];
+  var wrap=document.getElementById('gc-board-wrap');
+  for(var i=0;i<10;i++){
+    (function(){
+      var sp=document.createElement('div'); sp.className='gc-spark';
+      var size=4+Math.random()*6;
+      var angle=Math.random()*360, dist=30+Math.random()*50;
+      var tx=Math.cos(angle*Math.PI/180)*dist, ty=Math.sin(angle*Math.PI/180)*dist;
+      sp.style.cssText='width:'+size+'px;height:'+size+'px;background:'+colors[Math.floor(Math.random()*colors.length)]+';left:'+tok.style.left+';top:'+tok.style.top+';transform:translate(-50%,-50%);--tx:'+tx+'px;--ty:'+ty+'px;animation-duration:'+(0.5+Math.random()*0.4)+'s;animation-delay:'+(Math.random()*0.12)+'s;';
+      wrap.appendChild(sp);
+      setTimeout(function(){if(sp.parentNode)sp.parentNode.removeChild(sp);},900);
+    })();
   }
-  if (GC_SNAKES[landed]) {
-    gcPositionToken(landed); gcUpdateStatus(landed, landed, null);
-    setTimeout(function() {
-      GC_POS = GC_SNAKES[landed];
-      gcPositionToken(GC_POS); gcUpdateStatus(GC_POS, landed, 'snake'); gcFinishMove();
-    }, 650);
-    return;
+}
+
+// ── Confetti celebration ──
+function gcConfetti(){
+  var cel=document.getElementById('gc-celebration'); if(!cel) return;
+  cel.classList.add('active'); cel.innerHTML='';
+  var colors=['#D88A1C','#9F6314','#2A6B4A','#7A2A2A','#1B5E8B','#C0607A','#f5c518','#ff6b6b','#4ecdc4'];
+  for(var i=0;i<90;i++){
+    (function(i){
+      setTimeout(function(){
+        var p=document.createElement('div'); p.className='gc-confetti-piece';
+        var size=6+Math.random()*10;
+        var dur=2.2+Math.random()*2;
+        p.style.cssText='left:'+Math.random()*100+'vw;width:'+size+'px;height:'+size+'px;background:'+colors[Math.floor(Math.random()*colors.length)]+';border-radius:'+(Math.random()>0.5?'50%':'2px')+';animation-duration:'+dur+'s;animation-delay:0s;transform:rotate('+Math.random()*360+'deg);';
+        cel.appendChild(p);
+        setTimeout(function(){if(p.parentNode)p.parentNode.removeChild(p);},dur*1000+200);
+      },i*28);
+    })(i);
   }
-  gcPositionToken(GC_POS); gcUpdateStatus(GC_POS, rolled, special);
-  if (GC_POS === 49) {
-    setTimeout(function() {
-      var card = document.getElementById('gc-status-card');
-      if (card) card.innerHTML = '<span class="gc-badge moksha">🕉️ Moksha</span><strong>Liberation attained!</strong>You have reached the Infinite. शून्य — the void that holds everything. Begin again, or share this path with those you love.<br><br><a href="#cta-section" onclick="scrollToCta()" style="color:var(--saffron);font-weight:600;text-decoration:none">→ Join Shoonaya and carry this practice further</a>';
-      var btn = document.getElementById('gc-roll-btn');
-      if (btn) { btn.textContent = '✨ Play Again'; btn.disabled = false; btn.onclick = gcRestart; }
-    }, 700);
-    GC_ROLLING = false;
-    return;
-  }
-  gcFinishMove();
+  setTimeout(function(){cel.classList.remove('active');},7000);
 }
 
-function gcRoll() {
-  if (GC_ROLLING || GC_POS >= 49) return;
-  GC_ROLLING = true;
-  var btn = document.getElementById('gc-roll-btn');
-  if (btn) btn.disabled = true;
-  var dice = document.getElementById('gc-dice');
-  if (dice) dice.classList.add('rolling');
-  var rolled = Math.ceil(Math.random() * 6);
-  var ticks = 0;
-  var iv = setInterval(function() {
-    if (dice) dice.textContent = GC_FACES[Math.floor(Math.random() * 6)];
-    if (++ticks >= 8) {
-      clearInterval(iv);
-      if (dice) { dice.textContent = GC_FACES[rolled - 1]; dice.classList.remove('rolling'); }
-      setTimeout(function(){ gcApplyMove(rolled); }, 200);
-    }
-  }, 60);
+// ── Moksha win ──
+function gcShowMoksha(){
+  gcConfetti();
+  var el=document.getElementById('gc-moksha-banner'); if(el) el.classList.add('active');
+  var rn=document.getElementById('gc-moksha-rolls'); if(rn) rn.textContent=GC_ROLLS;
+}
+function gcMokshaClose(){
+  var el=document.getElementById('gc-moksha-banner'); if(el) el.classList.remove('active');
+  gcRestart();
 }
 
-function gcRestart() {
-  GC_POS = 0; GC_ROLLING = false;
-  gcPositionToken(0); gcHighlight(0);
-  var posEl = document.getElementById('gc-pos-num'); if (posEl) posEl.textContent = '0';
-  var fill = document.getElementById('gc-pos-fill'); if (fill) fill.style.width = '0%';
-  var card = document.getElementById('gc-status-card');
-  if (card) card.innerHTML = '<strong>Your journey begins</strong>Roll the dice to start your path from the earthly realm toward Moksha. Each square carries a teaching.';
-  var dice = document.getElementById('gc-dice'); if (dice) dice.textContent = '⚀';
-  var btn = document.getElementById('gc-roll-btn');
-  if (btn) { btn.textContent = '🎲 Roll the Dice'; btn.onclick = gcRoll; btn.disabled = false; }
-}
-
-// Init board when DOM is ready
-(function initGC() {
-  if (document.getElementById('gc-board')) {
-    gcBuildBoard();
-    var tok = document.getElementById('gc-token');
-    if (tok) { tok.style.top = '105%'; tok.style.left = '50%'; }
-    window.addEventListener('resize', function(){ if (GC_POS > 0) setTimeout(function(){ gcPositionToken(GC_POS); }, 60); });
+// ── Fullscreen ──
+function gcToggleFS(){
+  var wrap=document.getElementById('gc-fs-wrap');
+  if(!document.fullscreenElement){
+    wrap.requestFullscreen && wrap.requestFullscreen().catch(function(){});
   } else {
-    setTimeout(initGC, 80);
+    document.exitFullscreen && document.exitFullscreen();
   }
+}
+document.addEventListener('fullscreenchange',function(){
+  var wrap=document.getElementById('gc-fs-wrap');
+  var icon=document.getElementById('gc-fs-icon');
+  var lbl=document.getElementById('gc-fs-label');
+  if(document.fullscreenElement){
+    wrap.classList.add('is-fullscreen');
+    if(icon) icon.textContent='⛶'; if(lbl) lbl.textContent='Exit';
+  } else {
+    wrap.classList.remove('is-fullscreen');
+    if(icon) icon.textContent='⛶'; if(lbl) lbl.textContent='Fullscreen';
+  }
+  setTimeout(function(){if(GC_POS>0)gcPositionToken(GC_POS);},120);
+});
+
+// ── Core game logic ──
+function gcFinish(){ GC_ROLLING=false; var b=document.getElementById('gc-roll-btn');if(b)b.disabled=false; }
+
+function gcApplyMove(rolled){
+  var np=GC_POS+rolled, special=null;
+  if(np>49){np=49-(np-49);special='bounce';}
+  var landed=np; GC_POS=np;
+
+  if(GC_LADDERS[landed]){
+    gcPositionToken(landed); gcUpdateCard(landed,landed,null); gcSparks('virtue');
+    setTimeout(function(){
+      GC_POS=GC_LADDERS[landed];
+      gcPositionToken(GC_POS); gcUpdateCard(GC_POS,landed,'ladder'); gcSparks('virtue'); gcFinish();
+    },700);
+    return;
+  }
+  if(GC_SNAKES[landed]){
+    gcPositionToken(landed); gcUpdateCard(landed,landed,null); gcSparks('vice');
+    setTimeout(function(){
+      GC_POS=GC_SNAKES[landed];
+      gcPositionToken(GC_POS); gcUpdateCard(GC_POS,landed,'snake'); gcSparks('vice'); gcFinish();
+    },700);
+    return;
+  }
+  gcPositionToken(GC_POS); gcUpdateCard(GC_POS,rolled,special);
+  if(GC_POS===49){ GC_ROLLING=false; setTimeout(gcShowMoksha,800); return; }
+  gcFinish();
+}
+
+function gcRoll(){
+  if(GC_ROLLING||GC_POS>=49) return;
+  GC_ROLLING=true; GC_ROLLS++;
+  var btn=document.getElementById('gc-roll-btn'); if(btn) btn.disabled=true;
+  var dice=document.getElementById('gc-dice');
+  if(dice){dice.classList.remove('rolling','glowing');void dice.offsetWidth;dice.classList.add('rolling');}
+  var rolled=Math.ceil(Math.random()*6), ticks=0;
+  var iv=setInterval(function(){
+    if(dice) dice.textContent=GC_FACES[Math.floor(Math.random()*6)];
+    if(++ticks>=9){
+      clearInterval(iv);
+      if(dice){dice.textContent=GC_FACES[rolled-1];dice.classList.remove('rolling');dice.classList.add('glowing');setTimeout(function(){if(dice)dice.classList.remove('glowing');},600);}
+      setTimeout(function(){gcApplyMove(rolled);},220);
+    }
+  },55);
+}
+
+function gcRestart(){
+  GC_POS=0; GC_ROLLING=false; GC_ROLLS=0;
+  var tok=document.getElementById('gc-token');if(tok){tok.style.top='105%';tok.style.left='50%';}
+  document.querySelectorAll('.gc-sq.active-sq,.gc-sq.just-landed').forEach(function(e){e.classList.remove('active-sq','just-landed');});
+  var fill=document.getElementById('gc-pos-fill');if(fill)fill.style.width='0%';
+  var pb=document.querySelector('#gc-pos-bar span');if(pb)pb.textContent='0%';
+  var rc=document.getElementById('gc-roll-count');if(rc)rc.textContent='Roll 0 · Square 0 / 49';
+  var card=document.getElementById('gc-status-card');
+  if(card)card.innerHTML='<strong>Your journey begins</strong>Roll the dice to start your path from the earthly realm toward Moksha. Each square holds a teaching.';
+  var dice=document.getElementById('gc-dice');if(dice)dice.textContent='⚀';
+  var btn=document.getElementById('gc-roll-btn');if(btn){btn.textContent='🎲 Roll the Dice';btn.onclick=gcRoll;btn.disabled=false;}
+}
+
+// ── Init ──
+(function gcInit(){
+  if(document.getElementById('gc-board')){
+    gcBuildBoard();
+    var tok=document.getElementById('gc-token');if(tok){tok.style.top='105%';tok.style.left='50%';}
+    window.addEventListener('resize',function(){if(GC_POS>0)setTimeout(function(){gcPositionToken(GC_POS);},60);});
+  } else { setTimeout(gcInit,80); }
 })();
 </script>
 </section>
+
 
 <!-- ── TRADITION TABS ─────────────────────────────────────────────── -->
 <section class="traditions-section" id="traditions">
