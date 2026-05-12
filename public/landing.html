@@ -1435,6 +1435,311 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
   <p class="download-note">Mobile apps arriving June 17, 2026 · <span class="download-notify-link" onclick="scrollToCta()">Join as a founding member</span> to be first in line</p>
 </section>
 
+<!-- ── GYAN CHAUPAR ───────────────────────────────────────────────── -->
+<section class="section" id="gyan-chaupar" style="background:var(--surface-soft);padding:80px 24px;">
+<style>
+/* ── Gyan Chaupar game styles ─────────────────────────────────── */
+#gc-wrap { max-width:780px; margin:0 auto; }
+.gc-eyebrow { display:inline-block; font-size:11px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--saffron); background:var(--saffron-lt); border:1px solid rgba(216,138,28,0.25); border-radius:20px; padding:5px 14px; margin-bottom:20px; }
+.gc-title { font-family:var(--fd); font-size:clamp(2rem,5vw,2.8rem); font-weight:600; color:var(--ink); line-height:1.15; margin-bottom:10px; }
+.gc-title em { font-style:italic; color:var(--saffron); }
+.gc-sub { font-size:15px; color:var(--ink-soft); max-width:520px; margin:0 auto 36px; line-height:1.6; }
+.gc-layout { display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap; justify-content:center; }
+/* Board */
+#gc-board-wrap { position:relative; flex-shrink:0; }
+#gc-board { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; width:min(420px,94vw); background:rgba(200,146,74,0.18); border:2px solid rgba(200,146,74,0.35); border-radius:12px; padding:6px; box-shadow:0 8px 32px rgba(62,42,31,0.12); }
+.gc-sq { position:relative; aspect-ratio:1; border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:default; transition:transform 0.15s; font-size:clamp(8px,1.8vw,11px); text-align:center; padding:2px; border:1px solid rgba(200,146,74,0.12); background:rgba(250,246,239,0.85); }
+.gc-sq.virtue  { background:rgba(42,107,74,0.13);  border-color:rgba(42,107,74,0.30); }
+.gc-sq.vice    { background:rgba(159,74,74,0.13);  border-color:rgba(159,74,74,0.30); }
+.gc-sq.moksha  { background:linear-gradient(135deg,rgba(216,138,28,0.22),rgba(216,138,28,0.08)); border-color:var(--saffron); }
+.gc-sq-num { font-size:8px; font-weight:700; color:var(--ink-soft); line-height:1; position:absolute; top:3px; left:4px; }
+.gc-sq-icon { font-size:clamp(12px,3vw,18px); line-height:1; }
+.gc-sq-lbl { font-size:clamp(5px,1.3vw,8px); color:var(--ink-mid); margin-top:1px; line-height:1.1; font-weight:600; display:none; }
+@media(min-width:420px){ .gc-sq-lbl { display:block; } }
+/* Token */
+.gc-token { position:absolute; width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg,#D88A1C,#9F6314); border:2.5px solid #fff; box-shadow:0 3px 10px rgba(0,0,0,0.22); display:flex; align-items:center; justify-content:center; font-size:13px; transform:translate(-50%,-50%); transition:top 0.55s cubic-bezier(.22,1,.36,1),left 0.55s cubic-bezier(.22,1,.36,1); z-index:10; pointer-events:none; }
+/* Side panel */
+#gc-panel { flex:1; min-width:200px; max-width:300px; display:flex; flex-direction:column; gap:14px; }
+#gc-dice-wrap { display:flex; flex-direction:column; align-items:center; gap:12px; }
+#gc-dice { width:64px; height:64px; border-radius:14px; background:var(--warm-white); border:2px solid rgba(200,146,74,0.35); box-shadow:0 4px 16px rgba(62,42,31,0.12); display:flex; align-items:center; justify-content:center; font-size:38px; cursor:pointer; transition:transform 0.08s; user-select:none; }
+#gc-dice:active { transform:scale(0.92); }
+#gc-dice.rolling { animation:gc-roll 0.5s ease; }
+@keyframes gc-roll { 0%,100%{transform:rotate(0deg)} 25%{transform:rotate(-18deg) scale(1.08)} 75%{transform:rotate(14deg) scale(0.95)} }
+#gc-roll-btn { background:linear-gradient(135deg,var(--saffron),var(--saffron-dk)); color:#fff; border:none; border-radius:40px; padding:12px 28px; font-size:14px; font-weight:600; cursor:pointer; letter-spacing:0.02em; transition:opacity 0.2s,transform 0.1s; box-shadow:0 4px 14px rgba(216,138,28,0.35); width:100%; }
+#gc-roll-btn:hover { opacity:0.88; } #gc-roll-btn:active { transform:scale(0.96); }
+#gc-roll-btn:disabled { opacity:0.45; cursor:not-allowed; }
+#gc-status-card { background:var(--warm-white); border:1px solid var(--border); border-radius:12px; padding:16px; font-size:13px; line-height:1.6; color:var(--ink-mid); min-height:90px; }
+#gc-status-card strong { color:var(--ink); display:block; margin-bottom:4px; font-size:14px; }
+.gc-badge { display:inline-block; font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; margin-bottom:6px; letter-spacing:0.06em; }
+.gc-badge.virtue  { background:rgba(42,107,74,0.14); color:#2A6B4A; }
+.gc-badge.vice    { background:rgba(159,74,74,0.14); color:#7A2A2A; }
+.gc-badge.plain   { background:rgba(200,146,74,0.12); color:var(--saffron-dk); }
+#gc-pos-bar { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-soft); }
+#gc-pos-fill-wrap { flex:1; height:6px; background:rgba(200,146,74,0.15); border-radius:3px; overflow:hidden; }
+#gc-pos-fill { height:100%; background:linear-gradient(90deg,var(--saffron),var(--saffron-dk)); border-radius:3px; width:0%; transition:width 0.6s cubic-bezier(.22,1,.36,1); }
+#gc-restart-btn { background:none; border:1px solid var(--border); border-radius:40px; padding:8px 18px; font-size:12px; color:var(--ink-soft); cursor:pointer; width:100%; transition:border-color 0.2s,color 0.2s; }
+#gc-restart-btn:hover { border-color:var(--saffron); color:var(--saffron); }
+.gc-legend { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:14px; font-size:11px; color:var(--ink-soft); }
+.gc-legend-item { display:flex; align-items:center; gap:5px; }
+.gc-legend-dot { width:10px; height:10px; border-radius:2px; }
+</style>
+
+<div id="gc-wrap">
+  <div style="text-align:center">
+    <div class="gc-eyebrow reveal">While you wait for the app</div>
+    <h2 class="gc-title reveal">Play <em>Gyan Chaupar</em></h2>
+    <p class="gc-sub reveal">The ancient Indian game of dharmic progress — roll the dice, land on virtues to rise, conquer vices before they pull you down. Reach <em>Moksha</em> to win.</p>
+  </div>
+  <div class="gc-layout reveal">
+    <div id="gc-board-wrap">
+      <div id="gc-board"></div>
+      <div class="gc-token" id="gc-token">🪬</div>
+    </div>
+    <div id="gc-panel">
+      <div id="gc-dice-wrap">
+        <div id="gc-dice">⚀</div>
+        <button id="gc-roll-btn" onclick="gcRoll()">🎲 Roll the Dice</button>
+      </div>
+      <div id="gc-status-card">
+        <strong>Your journey begins</strong>
+        Roll the dice to start your path from the earthly realm toward Moksha. Each square carries a teaching.
+      </div>
+      <div id="gc-pos-bar">
+        <span style="font-size:11px;white-space:nowrap">Square <span id="gc-pos-num">0</span> / 49</span>
+        <div id="gc-pos-fill-wrap"><div id="gc-pos-fill"></div></div>
+        <span>🕉️</span>
+      </div>
+      <button id="gc-restart-btn" onclick="gcRestart()">↺ New Game</button>
+    </div>
+  </div>
+  <div class="gc-legend reveal" style="margin-top:20px">
+    <div class="gc-legend-item"><div class="gc-legend-dot" style="background:rgba(42,107,74,0.4)"></div>Virtue (rises)</div>
+    <div class="gc-legend-item"><div class="gc-legend-dot" style="background:rgba(159,74,74,0.4)"></div>Vice (falls)</div>
+    <div class="gc-legend-item"><div class="gc-legend-dot" style="background:rgba(216,138,28,0.4)"></div>Moksha</div>
+  </div>
+</div>
+
+<script>
+(function(){
+// ── Board data: 49 squares, numbered 1–49 ────────────────────────────────────
+// Ladders: landing on FROM sends you UP to TO (virtue)
+// Snakes:  landing on FROM sends you DOWN to TO (vice)
+const LADDERS = {
+   4: 22, // Shraddha (faith) → Viveka (discernment)
+   9: 31, // Daya (compassion) → Bhakti (devotion)
+  17: 38, // Tapas (austerity) → Dhyana (meditation)
+  20: 42, // Seva (service) → Vairagya (detachment)
+  28: 47, // Ahimsa (non-harm) → Samadhi (absorption)
+};
+const SNAKES = {
+  26:  6, // Kama (desire) → confusion
+  33: 14, // Krodha (anger) → suffering
+  36: 12, // Lobha (greed) → bondage
+  44: 24, // Moha (delusion) → attachment
+  48: 30, // Ahamkara (ego) → rebirth cycle
+};
+const SQUARE_DATA = {
+  1:  { icon:'🌱', label:'Start',        type:'plain',   msg:'Your dharmic journey begins here. Every great path starts with a single step.',              badge:'Beginning' },
+  4:  { icon:'🙏', label:'Shraddha',     type:'virtue',  msg:'Shraddha — faith and trust in the path. You rise to Viveka (Square 22).',                    badge:'Virtue ↑' },
+  9:  { icon:'💛', label:'Daya',         type:'virtue',  msg:'Daya — compassion for all beings. You leap to Bhakti (Square 31).',                          badge:'Virtue ↑' },
+  12: { icon:'⛓️', label:'Bondage',      type:'vice',    msg:'Attachment binds the soul. This is where greed sends you — caught in samsara.',              badge:'Vice' },
+  14: { icon:'😤', label:'Suffering',    type:'vice',    msg:'Anger bears bitter fruit. The Mahabharata shows this clearly in Duryodhana\'s fate.',         badge:'Vice' },
+  17: { icon:'🔥', label:'Tapas',        type:'virtue',  msg:'Tapas — disciplined austerity. Purifying fire rises you to Dhyana (Square 38).',             badge:'Virtue ↑' },
+  20: { icon:'🤲', label:'Seva',         type:'virtue',  msg:'Seva — selfless service. Karma yoga lifts you to Vairagya (Square 42).',                     badge:'Virtue ↑' },
+  22: { icon:'💡', label:'Viveka',       type:'virtue',  msg:'Viveka — discrimination of the real from the unreal. A rare and precious quality.',           badge:'Virtue' },
+  24: { icon:'🔗', label:'Attachment',   type:'vice',    msg:'Moha — the fog of attachment. "That which is not permanent seems permanent." — Gita 2.16',    badge:'Vice' },
+  26: { icon:'🌊', label:'Kama',         type:'vice',    msg:'Kama — unguarded desire. "Desire is the enemy of the wise." (Gita 3.37). You fall to 6.',    badge:'Vice ↓' },
+  28: { icon:'☮️', label:'Ahimsa',       type:'virtue',  msg:'Ahimsa — non-violence, the highest dharma. You soar to Samadhi (Square 47).',               badge:'Virtue ↑' },
+  30: { icon:'🔄', label:'Rebirth',      type:'vice',    msg:'Ego keeps you returning. Ahamkara — the "I-maker" — sends you back to this square.',         badge:'Vice' },
+  31: { icon:'❤️', label:'Bhakti',       type:'virtue',  msg:'Bhakti — devoted love. The Bhagavata says: "Through devotion one knows Me in truth."',       badge:'Virtue' },
+  33: { icon:'😡', label:'Krodha',       type:'vice',    msg:'Krodha — anger. "From anger comes delusion; from delusion, loss of memory." (Gita 2.63)',     badge:'Vice ↓' },
+  36: { icon:'💰', label:'Lobha',        type:'vice',    msg:'Lobha — greed clouds the mind. You slip to bondage (Square 12). Release, and be free.',       badge:'Vice ↓' },
+  38: { icon:'🧘', label:'Dhyana',       type:'virtue',  msg:'Dhyana — meditation. Still the mind, witness the witness.',                                   badge:'Virtue' },
+  42: { icon:'🌸', label:'Vairagya',     type:'virtue',  msg:'Vairagya — non-attachment. The lotus blooms in water but is untouched by it.',               badge:'Virtue' },
+  44: { icon:'🌫️', label:'Moha',        type:'vice',    msg:'Moha — delusion. Maya veils the Self. You fall to attachment (Square 24).',                   badge:'Vice ↓' },
+  47: { icon:'🌌', label:'Samadhi',      type:'virtue',  msg:'Samadhi — absorption in the Infinite. The seeker and the sought become one.',                 badge:'Virtue' },
+  48: { icon:'👑', label:'Ahamkara',     type:'vice',    msg:'Ahamkara — pride of the ego. So close to liberation yet pulled back to 30. Release the "I".', badge:'Vice ↓' },
+  49: { icon:'🕉️', label:'Moksha',      type:'moksha',  msg:'Moksha — Liberation! You have reached the Infinite. शून्य। The void that holds all.',         badge:'Moksha 🙏' },
+};
+const DICE_FACES = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+let pos = 0, rolling = false;
+
+function sqData(n) {
+  return SQUARE_DATA[n] || { icon:'', label:'', type:'plain', msg:'Continue your journey — each step is part of the path.', badge:'Square' };
+}
+
+// Build board — snake pattern (bottom-left = 1, top-left = 49)
+function buildBoard() {
+  const board = document.getElementById('gc-board');
+  board.innerHTML = '';
+  // Row 0 = top (squares 43–49), row 6 = bottom (squares 1–7)
+  for (let row = 0; row < 7; row++) {
+    const baseNum = (6 - row) * 7; // bottom row: 0, top row: 42
+    const nums = [];
+    for (let col = 0; col < 7; col++) {
+      // Even rows (from bottom): left→right; odd rows: right→left
+      const rowFromBottom = 6 - row;
+      const n = rowFromBottom % 2 === 0
+        ? baseNum + col + 1
+        : baseNum + (6 - col) + 1;
+      nums.push(n);
+    }
+    nums.forEach(n => {
+      const d = sqData(n);
+      const isLadderFrom = LADDERS[n];
+      const isSnakeFrom  = SNAKES[n];
+      const type = n === 49 ? 'moksha' : isLadderFrom ? 'virtue' : isSnakeFrom ? 'vice' : d.type;
+      const icon = isLadderFrom ? '🪜' : isSnakeFrom ? '🐍' : (d.icon || '');
+      const lbl  = isLadderFrom ? d.label : isSnakeFrom ? d.label : (d.label || '');
+      const sq = document.createElement('div');
+      sq.className = 'gc-sq ' + type;
+      sq.id = 'gc-sq-' + n;
+      sq.innerHTML = `<span class="gc-sq-num">${n}</span><span class="gc-sq-icon">${icon}</span><span class="gc-sq-lbl">${lbl}</span>`;
+      sq.title = d.label || ('Square ' + n);
+      board.appendChild(sq);
+    });
+  }
+}
+
+function positionToken(n) {
+  if (n === 0) {
+    // Off-board — hide below board
+    const token = document.getElementById('gc-token');
+    token.style.top = '105%'; token.style.left = '50%';
+    return;
+  }
+  const sq = document.getElementById('gc-sq-' + n);
+  if (!sq) return;
+  const board = document.getElementById('gc-board');
+  const br = board.getBoundingClientRect();
+  const sr = sq.getBoundingClientRect();
+  const token = document.getElementById('gc-token');
+  const bwrap = document.getElementById('gc-board-wrap');
+  const wr = bwrap.getBoundingClientRect();
+  token.style.left = (sr.left - wr.left + sr.width/2) + 'px';
+  token.style.top  = (sr.top  - wr.top  + sr.height/2) + 'px';
+}
+
+function updateStatus(n, rolled, special) {
+  const card = document.getElementById('gc-status-card');
+  const d = sqData(n);
+  const badge = LADDERS[n] ? 'virtue' : SNAKES[n] ? 'vice' : (d.type || 'plain');
+  const badgeLabel = LADDERS[n] ? ('🪜 ' + d.badge) : SNAKES[n] ? ('🐍 ' + d.badge) : d.badge;
+  let extra = '';
+  if (special === 'ladder') extra = `<br><span style="color:#2A6B4A;font-weight:600">✨ Virtue! You ascend to square ${LADDERS[rolled]}.</span>`;
+  if (special === 'snake')  extra = `<br><span style="color:#7A2A2A;font-weight:600">⚠️ Vice! You fall to square ${SNAKES[rolled]}.</span>`;
+  if (special === 'exact')  extra = `<br><span style="color:#9F6314;font-weight:600">Need exact roll to reach Moksha.</span>`;
+  card.innerHTML = `<span class="gc-badge ${badge}">${badgeLabel}</span><strong>${d.label || 'Square ' + n}</strong>${d.msg}${extra}`;
+  document.getElementById('gc-pos-num').textContent = n;
+  document.getElementById('gc-pos-fill').style.width = Math.round(n/49*100) + '%';
+}
+
+function gcRoll() {
+  if (rolling) return;
+  if (pos >= 49) return;
+  rolling = true;
+  const btn = document.getElementById('gc-roll-btn');
+  btn.disabled = true;
+  const dice = document.getElementById('gc-dice');
+  dice.classList.add('rolling');
+
+  // Animate dice faces
+  let ticks = 0;
+  const rolled = Math.ceil(Math.random() * 6);
+  const iv = setInterval(() => {
+    dice.textContent = DICE_FACES[Math.floor(Math.random()*6)];
+    if (++ticks >= 8) {
+      clearInterval(iv);
+      dice.textContent = DICE_FACES[rolled - 1];
+      dice.classList.remove('rolling');
+      setTimeout(() => applyMove(rolled), 200);
+    }
+  }, 60);
+}
+
+function applyMove(rolled) {
+  let newPos = pos + rolled;
+  let special = null;
+
+  if (newPos > 49) {
+    // Overshoot — bounce back
+    newPos = 49 - (newPos - 49);
+    special = 'exact';
+  }
+
+  const landedOn = newPos;
+  pos = newPos;
+
+  // Check for snake or ladder
+  if (LADDERS[landedOn]) {
+    setTimeout(() => {
+      pos = LADDERS[landedOn];
+      positionToken(pos);
+      updateStatus(pos, landedOn, 'ladder');
+      finishMove();
+    }, 600);
+    positionToken(landedOn);
+    updateStatus(landedOn, landedOn, null);
+    return;
+  }
+  if (SNAKES[landedOn]) {
+    setTimeout(() => {
+      pos = SNAKES[landedOn];
+      positionToken(pos);
+      updateStatus(pos, landedOn, 'snake');
+      finishMove();
+    }, 600);
+    positionToken(landedOn);
+    updateStatus(landedOn, landedOn, null);
+    return;
+  }
+
+  positionToken(pos);
+  updateStatus(pos, rolled, special);
+
+  if (pos === 49) {
+    // Win!
+    setTimeout(() => {
+      document.getElementById('gc-status-card').innerHTML = `<span class="gc-badge moksha">🕉️ Moksha</span><strong>Liberation attained!</strong>You have reached the Infinite. शून्य — the void that holds everything. Now begin again, and share this path with those you love. <br><br><a href="#cta-section" onclick="scrollToCta()" style="color:var(--saffron);font-weight:600;text-decoration:none">→ Join Shoonaya and carry this practice further</a>`;
+      document.getElementById('gc-roll-btn').textContent = '✨ Play Again';
+      document.getElementById('gc-roll-btn').disabled = false;
+      document.getElementById('gc-roll-btn').onclick = gcRestart;
+    }, 700);
+    rolling = false;
+    return;
+  }
+  finishMove();
+}
+
+function finishMove() {
+  rolling = false;
+  document.getElementById('gc-roll-btn').disabled = false;
+}
+
+function gcRestart() {
+  pos = 0; rolling = false;
+  positionToken(0);
+  document.getElementById('gc-pos-num').textContent = '0';
+  document.getElementById('gc-pos-fill').style.width = '0%';
+  document.getElementById('gc-status-card').innerHTML = '<strong>Your journey begins</strong>Roll the dice to start your path from the earthly realm toward Moksha. Each square carries a teaching.';
+  document.getElementById('gc-roll-btn').textContent = '🎲 Roll the Dice';
+  document.getElementById('gc-roll-btn').onclick = gcRoll;
+  document.getElementById('gc-roll-btn').disabled = false;
+  document.getElementById('gc-dice').textContent = '⚀';
+}
+
+// Init
+buildBoard();
+// Position token off-board until first roll
+const tok = document.getElementById('gc-token');
+tok.style.top = '105%'; tok.style.left = '50%';
+
+// Re-position token on resize
+window.addEventListener('resize', () => { if (pos > 0) positionToken(pos); });
+})();
+</script>
+</section>
+
 <!-- ── CTA / PRE-REGISTER ─────────────────────────────────────────── -->
 <section class="cta-section" id="cta-section">
   <div class="cta-bg"></div>
