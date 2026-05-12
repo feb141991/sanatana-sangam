@@ -1869,40 +1869,27 @@ export default function HomeDashboard({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-          className="festival-story-card motion-press p-0"
+          className="sacred-pulse-banner group relative hover:scale-[1.02] transition-transform duration-300 block overflow-hidden"
           style={{ 
             borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(157,100,60,0.15)',
             boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.3)' : '0 8px 32px rgba(157,100,60,0.05)',
-            overflow: 'hidden'
           }}
         >
           <Link 
             href={`/dharm-veer/${dharmVeer.id}`}
-            className="flex items-center gap-12 w-full p-4 text-left no-underline"
+            className="flex items-center gap-3 w-full pr-6 text-left no-underline"
             onClick={() => playHaptic('light')}
           >
-            <span className="festival-story-emoji" aria-hidden="true">{dharmVeer.emoji}</span>
-            <div className="festival-story-body">
-              <span className="festival-story-kicker" style={{ 
-                color: isDark ? 'rgba(255,255,255,0.6)' : 'var(--brand-primary-strong)',
-                letterSpacing: '0.08em',
-                fontWeight: 700
-              }}>
-                {lang !== 'en' && dharmVeerTradMeta.dharmVeerLocal ? dharmVeerTradMeta.dharmVeerLocal : t('journeyLabel')} · {lang !== 'en' && dharmVeerTradMeta.labelLocal ? dharmVeerTradMeta.labelLocal : dharmVeerTradMeta.label}
-              </span>
-              <span className="festival-story-title" style={{ 
-                color: isDark ? 'var(--text-cream)' : '#1a140e',
-                fontSize: '1.1rem'
-              }}>
+            <span className="sacred-pulse-emoji" aria-hidden="true">{dharmVeer.emoji}</span>
+            <div className="sacred-pulse-body flex-1 min-w-0">
+              <span className="sacred-pulse-label" style={{ color: isDark ? 'var(--text-cream)' : '#1a140e' }}>
                 {lang !== 'en' && dharmVeer.nameLocal ? dharmVeer.nameLocal : dharmVeer.name}
               </span>
-              <span className="festival-story-teaser line-clamp-2" style={{ 
-                color: isDark ? 'var(--text-muted-warm)' : 'rgba(26, 20, 14, 0.75)'
-              }}>
-                {lang !== 'en' && dharmVeer.taglineLocal ? dharmVeer.taglineLocal : dharmVeer.tagline}
+              <span className="sacred-pulse-desc line-clamp-1">
+                {lang !== 'en' && dharmVeerTradMeta.dharmVeerLocal ? dharmVeerTradMeta.dharmVeerLocal : t('journeyLabel')} · {lang !== 'en' && dharmVeerTradMeta.labelLocal ? dharmVeerTradMeta.labelLocal : dharmVeerTradMeta.label}
               </span>
             </div>
-            <ChevronRight size={16} className="festival-story-chevron" aria-hidden="true" />
+            <ChevronRight size={16} className="text-amber-500/80 shrink-0" aria-hidden="true" />
           </Link>
         </motion.div>
 

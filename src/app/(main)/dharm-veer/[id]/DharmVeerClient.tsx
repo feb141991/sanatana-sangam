@@ -61,104 +61,56 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
       }}
     >
       {/* ── Fixed Header ─────────────────────────────────────────────────── */}
-      <header className="fixed top-0 inset-x-0 z-50 px-4 py-4 flex items-center justify-between backdrop-blur-xl" style={{ borderBottom: `1px solid ${activeTheme.border}`, backgroundColor: `${activeTheme.bg}cc` }}>
+      <header className="fixed top-0 inset-x-0 z-50 px-4 py-3 flex items-center gap-3 backdrop-blur-xl" style={{ borderBottom: `1px solid ${activeTheme.border}`, backgroundColor: `${activeTheme.bg}cc` }}>
         <button 
           onClick={() => router.back()}
-          className="w-10 h-10 rounded-full flex items-center justify-center transition"
+          className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition"
           style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft size={18} />
         </button>
         
-        <div className="flex flex-col items-center">
+        <div className="flex-1 min-w-0 flex flex-col">
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
             {meta.dharmVeerLocal || 'Dharm Veer'}
           </span>
-          <span className="text-xs font-bold" style={{ color: 'var(--brand-primary)' }}>
+          <span className="text-xs font-bold truncate" style={{ color: 'var(--brand-primary)' }}>
             {hero.tradition.toUpperCase()}
           </span>
         </div>
 
-        <button 
-          onClick={() => setShowSettings(!showSettings)}
-          className="w-10 h-10 rounded-full flex items-center justify-center transition"
-          style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
-        >
-          <Settings size={20} />
-        </button>
-      </header>
-
-      {/* ── Settings Drawer ──────────────────────────────────────────────── */}
-      <AnimatePresence>
-        {showSettings && (
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed top-20 right-4 z-50 w-72 rounded-[2.5rem] shadow-2xl p-6 space-y-8 backdrop-blur-2xl"
-            style={{ 
-              backgroundColor: activeTheme.card, 
-              border: `1px solid ${activeTheme.border}`,
-              color: activeTheme.text 
-            }}
+        {/* ── Reading Options ── */}
+        <div className="flex items-center gap-2">
+          {/* Theme Toggle */}
+          <button 
+            onClick={() => setTheme(t => t === 'light' ? 'dark' : t === 'dark' ? 'sepia' : 'light')}
+            className="w-9 h-9 rounded-full flex items-center justify-center transition"
+            style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
           >
-            {/* Theme Toggle */}
-            <div>
-              <p className="text-[10px] uppercase font-bold tracking-widest opacity-60 mb-3">Theme</p>
-              <div className="flex gap-2">
-                {(['light', 'dark', 'sepia'] as const).map(t => (
-                  <button 
-                    key={t}
-                    onClick={() => setTheme(t)}
-                    className={`flex-1 py-2 rounded-xl border transition-all ${theme === t ? 'border-[var(--brand-primary)] bg-[var(--brand-primary)]/10' : 'border-white/10'}`}
-                  >
-                    {t === 'light' && <Sun size={16} className="mx-auto" />}
-                    {t === 'dark' && <Moon size={16} className="mx-auto" />}
-                    {t === 'sepia' && <div className="w-4 h-4 bg-[#F4ECD8] rounded-full mx-auto border border-black/10" />}
-                  </button>
-                ))}
-              </div>
-            </div>
+            {theme === 'light' ? <Moon size={16} /> : theme === 'dark' ? <div className="w-4 h-4 bg-[#F4ECD8] rounded-full border border-black/10" /> : <Sun size={16} />}
+          </button>
 
-            {/* Font Size */}
-            <div>
-              <p className="text-[10px] uppercase font-bold tracking-widest opacity-60 mb-3">Font Size</p>
-              <div className="flex gap-2">
-                {(['sm', 'md', 'lg', 'xl'] as const).map(sz => (
-                  <button 
-                    key={sz}
-                    onClick={() => setFontSize(sz)}
-                    className={`flex-1 py-2 text-xs font-bold rounded-xl border transition-all ${fontSize === sz ? 'border-[var(--brand-primary)] bg-[var(--brand-primary)]/10' : 'border-white/10'}`}
-                  >
-                    {sz.toUpperCase()}
-                  </button>
-                ))}
-              </div>
-            </div>
+          {/* Font Size Toggle */}
+          <button 
+            onClick={() => setFontSize(s => s === 'sm' ? 'md' : s === 'md' ? 'lg' : s === 'lg' ? 'xl' : 'sm')}
+            className="w-9 h-9 rounded-full flex items-center justify-center transition text-[11px] font-bold"
+            style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
+          >
+            Aa
+          </button>
 
-            {/* Language Toggle */}
-            {hero.nameLocal && (
-              <div>
-                <p className="text-[10px] uppercase font-bold tracking-widest opacity-60 mb-3">Language</p>
-                <div className="flex glass-panel rounded-xl p-1">
-                  <button 
-                    onClick={() => setLang('en')}
-                    className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition ${lang === 'en' ? 'bg-[var(--brand-primary)] text-black' : 'opacity-60'}`}
-                  >
-                    English
-                  </button>
-                  <button 
-                    onClick={() => setLang('local')}
-                    className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition ${lang === 'local' ? 'bg-[var(--brand-primary)] text-black' : 'opacity-60'}`}
-                  >
-                    Local
-                  </button>
-                </div>
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+          {/* Language Toggle */}
+          {hero.nameLocal && (
+            <button 
+              onClick={() => setLang(l => l === 'en' ? 'local' : 'en')}
+              className="w-9 h-9 rounded-full flex items-center justify-center transition font-[family:var(--font-deva)] text-sm font-bold"
+              style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
+            >
+              {lang === 'en' ? 'अ' : 'A'}
+            </button>
+          )}
+        </div>
+      </header>
 
       {/* ── Content ─────────────────────────────────────────────────────── */}
       <main className="pt-28 px-6 max-w-2xl mx-auto space-y-12">
