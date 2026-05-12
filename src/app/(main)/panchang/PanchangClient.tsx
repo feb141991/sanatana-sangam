@@ -316,7 +316,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
           </Link>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 600, color: 'var(--text-cream)', letterSpacing: '-0.01em', lineHeight: 1.2 }}>Panchang</h1>
+              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 600, color: '#F2EAD6', letterSpacing: '-0.01em', lineHeight: 1.2 }}>Panchang</h1>
               <span className="text-[10px] font-bold px-2.5 py-1 rounded-full text-white/90"
                 style={{ background: tradMeta.accent }}>
                 {tradMeta.badge}

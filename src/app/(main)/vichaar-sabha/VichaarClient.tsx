@@ -319,7 +319,7 @@ export default function VichaarClient({
                   { label: 'Quality', value: qualityCount },
                   { label: 'No reply', value: visibleUnansweredCount },
                 ].map((item) => (
-                  <div key={item.label} className="rounded-[1.05rem] bg-white/72 border border-white/80 px-3 py-3 text-center">
+                  <div key={item.label} className="rounded-[1.05rem] surface-raised border border-black/5 dark:border-white/10 px-3 py-3 text-center">
                     <p className="font-display font-bold text-xl" style={{ color: 'var(--brand-primary-strong)' }}>{item.value}</p>
                     <p className="text-[10px] uppercase tracking-[0.16em] text-[color:var(--text-dim)] font-semibold mt-1">{item.label}</p>
                   </div>
@@ -334,7 +334,7 @@ export default function VichaarClient({
       {embedded && !isGuest && (
         <button
           onClick={() => setShowCompose(true)}
-          className="w-full flex items-center gap-3 rounded-2xl border border-dashed px-4 py-3 text-sm text-[color:var(--brand-muted)] transition hover:bg-white/[0.04]"
+          className="w-full flex items-center gap-3 rounded-2xl border border-dashed px-4 py-3 text-sm text-[color:var(--brand-muted)] transition hover:bg-black/5 dark:hover:bg-white/[0.04]"
           style={{ borderColor: 'rgba(200,146,74,0.30)' }}
         >
           <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
@@ -749,7 +749,7 @@ function ThreadCard({
 
   return (
     <Link href={`/vichaar-sabha/${thread.id}`}>
-      <div className="rounded-2xl border p-4 space-y-3 card-hover cursor-pointer motion-lift" style={{ background: 'rgba(26, 22, 16, 0.95)', borderColor: 'rgba(200, 146, 74, 0.12)' }}>
+      <div className="rounded-2xl border p-4 space-y-3 card-hover cursor-pointer motion-lift surface-soft-card" style={{ borderColor: 'rgba(200, 146, 74, 0.12)' }}>
         {/* Category + answered badge */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap">

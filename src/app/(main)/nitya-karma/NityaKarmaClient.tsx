@@ -341,8 +341,8 @@ function NityaCustomSheet({
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center"
-            style={{ background: 'rgba(255,255,255,0.06)' }}
+            className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+            style={{ background: 'rgba(0,0,0,0.04)' }}
           >
             <X size={15} style={{ color: 'var(--brand-muted)' }} />
           </button>
@@ -516,7 +516,7 @@ function NityaCustomSheet({
 function StreakCard({ streak, accent }: { streak: NityaKarmaStreak; accent: string }) {
   return (
     <div
-      className="rounded-2xl px-4 py-3 flex items-center gap-3 border border-white/6"
+      className="rounded-2xl px-4 py-3 flex items-center gap-3 border border-black/5 dark:border-white/6"
       style={{ background: `${accent}08` }}
     >
       <Trophy size={18} style={{ color: accent }} />
@@ -1450,8 +1450,8 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                   )}
                 </div>
                 {step.completed
-                  ? <Lock size={16} className="text-white/20 shrink-0" />
-                  : !isBusy ? <Circle size={20} className="text-white/20 shrink-0" /> : null}
+                  ? <Lock size={16} className="text-[var(--divine-text)]/20 dark:text-white/20 shrink-0" />
+                  : !isBusy ? <Circle size={20} className="text-[var(--divine-text)]/20 dark:text-white/20 shrink-0" /> : null}
               </motion.button>
             );
           })}

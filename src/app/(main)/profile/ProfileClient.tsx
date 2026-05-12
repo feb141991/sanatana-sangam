@@ -564,7 +564,7 @@ export default function ProfileClient({
               onClick={() => router.back()}
               className="w-10 h-10 rounded-full glass-panel border border-white/10 flex items-center justify-center pointer-events-auto transition-transform active:scale-90"
             >
-              <ChevronLeft size={20} className="text-[var(--divine-text)] dark:text-white" />
+              <ChevronLeft size={20} className="text-[#F2EAD6]" />
             </button>
             <div className="flex items-center gap-2 pointer-events-auto">
               <Link
@@ -572,14 +572,14 @@ export default function ProfileClient({
                 className="w-10 h-10 rounded-full glass-panel border border-white/10 flex items-center justify-center transition-transform active:scale-90"
                 title="Direct Messages"
               >
-                <MessageSquare size={18} className="text-[var(--divine-text)] dark:text-white" />
+                <MessageSquare size={18} className="text-[#F2EAD6]" />
               </Link>
               <button 
                 onClick={() => setEditing(!editing)}
                 className="w-10 h-10 rounded-full glass-panel border border-white/10 flex items-center justify-center transition-transform active:scale-90"
                 title="Edit Profile"
               >
-                <Edit3 size={18} className="text-[var(--divine-text)] dark:text-white" />
+                <Edit3 size={18} className="text-[#F2EAD6]" />
               </button>
             </div>
           </div>
@@ -599,7 +599,7 @@ export default function ProfileClient({
                 <div className="relative w-full h-full rounded-full overflow-hidden bg-white/5">
                   {avatarUrl
                     ? <Image src={avatarUrl} alt="avatar" fill sizes="112px" className="object-cover" />
-                    : <span className="text-4xl font-serif text-[var(--divine-text)] dark:text-white">{initials}</span>}
+                    : <span className="text-4xl font-serif text-[#F2EAD6]">{initials}</span>}
                 </div>
               </motion.button>
               

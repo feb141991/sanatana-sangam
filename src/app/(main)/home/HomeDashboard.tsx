@@ -1635,7 +1635,7 @@ export default function HomeDashboard({
                   }}
                   aria-label="Notifications"
                 >
-                  <Bell size={17} strokeWidth={1.8} className="text-[var(--divine-text)] dark:text-[#F2EAD6] opacity-80 dark:opacity-100" />
+                  <Bell size={17} strokeWidth={1.8} className="text-[#F2EAD6] opacity-90" />
                 </Link>
               </motion.div>
 
@@ -1654,8 +1654,8 @@ export default function HomeDashboard({
                     </>
                   ) : (
                     <>
-                      <Sparkles size={12} className="text-[var(--divine-text)] dark:text-white/60 opacity-60" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--divine-text)] dark:text-white/70 opacity-60 dark:opacity-100">Mood</span>
+                      <Sparkles size={12} className="text-[#F2EAD6] opacity-70" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#F2EAD6] opacity-80">Mood</span>
                     </>
                   )}
                 </Link>
@@ -1675,7 +1675,7 @@ export default function HomeDashboard({
                       {avatarUrl ? (
                         <Image src={avatarUrl} alt={userName} fill className="object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center font-serif text-lg text-[var(--divine-text)] dark:text-white">
+                        <div className="w-full h-full flex items-center justify-center font-serif text-lg text-[#F2EAD6]">
                           {userName.charAt(0)}
                         </div>
                       )}

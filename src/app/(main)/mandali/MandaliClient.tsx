@@ -88,19 +88,19 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
         onClick={e => e.stopPropagation()}>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-white/8">
+        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-black/5 dark:border-white/8">
           <div>
             <h2 className="font-display font-bold theme-ink">Find Sanatani</h2>
             <p className="text-xs theme-dim mt-0.5">Search by name or username</p>
           </div>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/[0.06] flex items-center justify-center">
+            className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/[0.06] flex items-center justify-center">
             <X size={16} className="theme-dim" />
           </button>
         </div>
 
         {/* Search input */}
-        <div className="px-5 py-3 border-b border-white/8">
+        <div className="px-5 py-3 border-b border-black/5 dark:border-white/8">
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 theme-dim" />
@@ -136,7 +136,7 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
           {results.map(user => (
             <div key={user.id}
               className="surface-soft-card rounded-2xl p-3 flex items-center gap-3">
-              <div className="relative w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 overflow-hidden"
+              <div className="relative w-10 h-10 rounded-full flex items-center justify-center text-[var(--divine-text)] dark:text-white text-sm font-bold flex-shrink-0 overflow-hidden"
                 style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))' }}>
                 {user.avatar_url
                   ? <Image src={user.avatar_url} alt="" fill sizes="40px" className="object-cover" />
@@ -530,7 +530,7 @@ function MembersTab({ members, userId }: { members: MemberRow[]; userId: string 
               {idx + 1}
             </div>
             {/* Avatar */}
-            <div className="relative w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 overflow-hidden"
+            <div className="relative w-10 h-10 rounded-full flex items-center justify-center text-[var(--divine-text)] dark:text-white text-sm font-bold flex-shrink-0 overflow-hidden"
               style={{ background: isMe ? 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' : 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))' }}>
               {m.avatar_url
                 ? <Image src={m.avatar_url} alt="" fill sizes="40px" className="object-cover" />
@@ -636,9 +636,9 @@ function EventsTab({ posts, rsvps, userId, onRsvp }: { posts: PostWithAuthor[]; 
   return (
     <div className="space-y-3">
       {events.map((post) => (
-        <div key={post.id} className="glass-panel rounded-2xl border border-white/8 p-4">
+        <div key={post.id} className="glass-panel rounded-2xl border border-black/5 dark:border-white/8 p-4">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/8 flex items-center justify-center text-xl flex-shrink-0">🎉</div>
+            <div className="w-10 h-10 rounded-xl bg-black/5 dark:bg-white/8 flex items-center justify-center text-xl flex-shrink-0">🎉</div>
             <div className="flex-1">
               <p className="text-sm font-medium text-[color:var(--brand-ink)] leading-snug">{post.content}</p>
               {post.event_date && (

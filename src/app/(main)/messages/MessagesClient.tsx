@@ -24,8 +24,8 @@ function MessageBubble({ message }: { message: ThreadMessage }) {
       <div
         className={`max-w-[85%] rounded-[1.4rem] px-4 py-3 ${
           message.isCurrentUser
-            ? 'bg-[color:var(--surface-raised)] border border-white/8'
-            : 'bg-white/[0.04] border border-white/6'
+            ? 'bg-[color:var(--surface-raised)] border border-black/5 dark:border-white/8'
+            : 'bg-black/5 dark:bg-white/[0.04] border border-black/5 dark:border-white/6'
         }`}
       >
         {!message.isCurrentUser ? (
@@ -147,8 +147,8 @@ export default function MessagesClient({
                     onClick={() => setSelectedThreadId(thread.id)}
                     className={`flex w-full items-start gap-3 rounded-[1.5rem] border px-4 py-4 text-left transition ${
                       active
-                        ? 'bg-[color:var(--surface-raised)] border-white/10'
-                        : 'bg-white/[0.03] border-white/6 hover:bg-white/[0.05]'
+                        ? 'bg-[color:var(--surface-raised)] border-black/5 dark:border-white/10'
+                        : 'bg-black/5 dark:bg-white/[0.03] border-black/5 dark:border-white/6 hover:bg-black/10 dark:hover:bg-white/[0.05]'
                     }`}
                   >
                     <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-white/[0.05] text-sm font-medium theme-ink">

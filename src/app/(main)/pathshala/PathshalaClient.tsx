@@ -169,11 +169,11 @@ function EntryCard({ entry, accentColour }: { entry: LibraryEntry; accentColour:
             <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: accentColour }}>{t('beginReading')}</span>
           </div>
         </div>
-        <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-white/5 border border-white/5 group-hover:scale-110 transition-transform duration-500">
+        <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 group-hover:scale-110 transition-transform duration-500">
           <Sparkles size={18} style={{ color: accentColour }} className="opacity-40" />
         </div>
       </div>
-      <div className="mt-5 pt-4 border-t border-white/5 relative">
+      <div className="mt-5 pt-4 border-t border-black/5 dark:border-white/5 relative">
         <p className="text-sm font-[family:var(--font-deva)] leading-relaxed line-clamp-1 opacity-60 italic"
           style={{ color: accentColour }}>
           {entry.original.split('\n')[0]}
@@ -586,7 +586,7 @@ function EpicViewer({ structure, accentColour }: { structure: EpicStructure; acc
             </motion.button>
           ))
         ) : (
-          <div className="py-20 text-center rounded-[2rem] border border-dashed border-white/10 bg-white/2">
+          <div className="py-20 text-center rounded-[2rem] border border-dashed border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/2">
             <Loader2 className="mx-auto mb-3 animate-spin-slow opacity-20" size={32} />
             <p className="text-xs font-medium tracking-wide opacity-40 uppercase">Compiling chapters for the Path…</p>
           </div>
@@ -1286,13 +1286,13 @@ export default function PathshalaClient({
         {/* ── Zenith Header Overlay ─────────────────────────────────────────── */}
         <div className="absolute top-0 left-0 right-0 z-40 flex items-center gap-3 px-4 pt-5 pb-3 pointer-events-none">
           <button onClick={() => router.back()}
-            className="w-10 h-10 rounded-full glass-panel border border-white/10 flex items-center justify-center pointer-events-auto transition-transform active:scale-90">
-            <ChevronLeft size={20} className="text-white" />
+            className="w-10 h-10 rounded-full glass-panel border border-black/10 dark:border-white/10 flex items-center justify-center pointer-events-auto transition-transform active:scale-90">
+            <ChevronLeft size={20} className="text-[var(--divine-text)] dark:text-white" />
           </button>
           
           <div className="flex-1 flex items-center gap-2">
             <span className="text-xl drop-shadow-md">{meta.symbol}</span>
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--divine-text)] dark:text-white/70 opacity-70 dark:opacity-100">
               {t('navPathshala')} · {meta.label}
             </p>
           </div>
@@ -1385,13 +1385,13 @@ export default function PathshalaClient({
                           {meta.symbol} {meta.label} · {meta.navLibraryLabel}
                         </p>
                         <p className="text-[3.2rem] leading-none mb-4 font-medium"
-                          style={{ fontFamily: 'var(--font-deva, serif)', color: 'white', opacity: 0.9 }}>
+                          style={{ fontFamily: 'var(--font-deva, serif)', color: isDark ? 'white' : 'var(--divine-text)', opacity: 0.9 }}>
                           {seatMeta.scriptWord}
                         </p>
-                        <h2 className="font-bold text-2xl mb-2 text-white" style={{ fontFamily: 'var(--font-serif)' }}>
+                        <h2 className="font-bold text-2xl mb-2 text-[var(--divine-text)] dark:text-white" style={{ fontFamily: 'var(--font-serif)' }}>
                           Your seat awaits
                         </h2>
-                        <p className="text-sm leading-relaxed mb-8 mx-auto max-w-[260px] text-white/70">
+                        <p className="text-sm leading-relaxed mb-8 mx-auto max-w-[260px] text-[var(--divine-text)] dark:text-white/70 opacity-70 dark:opacity-100">
                           Begin your study of {meta.pathshalaVocabulary} — one lesson at a time.
                         </p>
                         <button onClick={() => setTab('explore')}
