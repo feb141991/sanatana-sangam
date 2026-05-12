@@ -9,10 +9,11 @@ html {
 
 :root {
   /* ── Fonts ─────────────────────────────────────────────────────────────── */
-  --font-inter:      var(--font-inter-next), Inter, system-ui, sans-serif;
-  --font-poppins:    var(--font-cormorant), 'Cormorant Garamond', Georgia, serif;
-  --font-serif:      var(--font-cormorant), 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
-  --font-devanagari: 'Noto Sans Devanagari', sans-serif;
+  --font-inter:      'Outfit', var(--font-inter-next), Inter, system-ui, sans-serif;
+  --font-poppins:    'Noto Serif Devanagari', var(--font-cormorant), 'Cormorant Garamond', Georgia, serif;
+  --font-serif:      'Noto Serif Devanagari', var(--font-cormorant), 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-devanagari: 'Noto Serif Devanagari', serif;
+  --font-outfit:     'Outfit', sans-serif;
 
   /* ── Spacing ────────────────────────────────────────────────────────────── */
   --space-1: 0.25rem;
@@ -153,6 +154,36 @@ html {
   --shadow-soft:   0 10px 24px rgba(49, 35, 20, 0.06);
   --shadow-strong: 0 16px 34px rgba(49, 35, 20, 0.10);
   --shadow-glow:   0 22px 42px rgba(49, 35, 20, 0.12);
+
+  /* Premium Light Tokens */
+  --premium-ivory: #FAF6EF;
+  --premium-gold: #D88A1C;
+  --premium-gold-soft: rgba(216, 138, 28, 0.1);
+  --premium-border: rgba(216, 138, 28, 0.15);
+  --premium-glass: rgba(255, 255, 255, 0.75);
+}
+
+/* ── Animations ────────────────────────────────────────────────────────── */
+@keyframes premium-fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes premium-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(216, 138, 28, 0.1); }
+  50% { box-shadow: 0 0 40px rgba(216, 138, 28, 0.2); }
+}
+
+.premium-fade-up {
+  animation: premium-fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Tradition-Specific Glows (Light Mode) */
+:root {
+  --glow-hindu: rgba(200, 146, 74, 0.4);
+  --glow-sikh:  rgba(91, 164, 212, 0.4);
+  --glow-buddhist: rgba(123, 45, 62, 0.4);
+  --glow-jain: rgba(42, 107, 74, 0.4);
 }
 
 /* ── Reset & base ──────────────────────────────────────────────────────────── */

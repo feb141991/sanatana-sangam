@@ -5,8 +5,9 @@ export const dynamic = 'force-dynamic';
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { ArrowRight, ArrowLeft, Eye, EyeOff, MapPin, Loader2, Lock } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Eye, EyeOff, MapPin, Loader2, Lock, Sparkles, Check, Heart, Globe, Users } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import BrandMark from '@/components/BrandMark';
 import { TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getSampradayaLabel, getIshtaDevataLabel } from '@/lib/utils';
@@ -15,18 +16,78 @@ import type { TraditionKey } from '@/lib/traditions';
 
 type Step = 1 | 2 | 3;
 
+const QUOTES = [
+  { text: "Dharmo rakṣati rakṣitaḥ", author: "Mahabharata", meaning: "Dharma protects those who protect it." },
+  { text: "Sarve bhavantu sukhinaḥ", author: "Rig Veda", meaning: "May everyone be happy and free from suffering." },
+  { text: "Ekaṃ sat viprā bahudhā vadanti", author: "Upanishads", meaning: "Truth is one, though the wise speak of it in many ways." }
+];
+
+const WHY_JOIN = [
+  { title: "Join 10,000+ seekers", desc: "A global mandali of dedicated practitioners.", icon: Users },
+  { title: "Personalized Sadhana", desc: "Guidance tailored to your tradition and path.", icon: Sparkles },
+  { title: "Sacred Community", desc: "Connect with local sangams and gurus.", icon: Heart }
+];
+
+const TRADITION_COLORS: Record<TraditionKey | '', string> = {
+  'hindu': 'var(--glow-hindu)',
+  'sikh': 'var(--glow-sikh)',
+  'buddhist': 'var(--glow-buddhist)',
+  'jain': 'var(--glow-jain)',
+  'other': 'rgba(216, 138, 28, 0.2)',
+  '': 'rgba(216, 138, 28, 0.15)'
+};
+
+// ─── Ambient sacred glow — diya flame ────────────────────────────────────────
+function SacredFlame() {
+  const prefersReducedMotion = useReducedMotion();
+  return (
+    <div className="relative flex items-center justify-center mx-auto" style={{ width: 200, height: 200 }}>
+      <motion.div
+        className="absolute rounded-full"
+        style={{ inset: 0, background: 'radial-gradient(circle, rgba(200,120,24,0.18) 0%, transparent 75%)' }}
+        animate={prefersReducedMotion ? {} : { scale: [1, 1.15, 1], opacity: [0.4, 0.7, 0.4] }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      <motion.div
+        className="absolute rounded-full"
+        style={{ width: 110, height: 110, background: 'radial-gradient(circle, rgba(216,138,28,0.3) 0%, transparent 70%)' }}
+        animate={prefersReducedMotion ? {} : { scale: [1, 1.2, 0.95, 1], opacity: [0.5, 0.9, 0.55, 0.5] }}
+        transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      <motion.div
+        style={{
+          width: 32, height: 54,
+          background: 'linear-gradient(180deg, #fffde0 0%, #ffc040 38%, #ff7020 72%, #cc3010 100%)',
+          borderRadius: '50% 50% 50% 50% / 36% 36% 64% 64%',
+          boxShadow: '0 0 30px rgba(255,140,20,0.8), 0 0 10px rgba(255,240,180,0.5)',
+          position: 'relative', top: -20,
+        }}
+        animate={prefersReducedMotion ? {} : {
+          scaleX: [1, 1.08, 0.94, 1.04, 1],
+          scaleY: [1, 0.96, 1.04, 0.98, 1],
+          rotate: [-1, 2, -1.2, 1.2, -1],
+        }}
+        transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut' }}
+      />
+    </div>
+  );
+}
+
 export default function SignupPage() {
   const router   = useRouter();
   const supabase = useMemo(() => {
     if (typeof window === 'undefined') return null;
     return createClient();
   }, []);
+
   const [step,       setStep]       = useState<Step>(1);
   const [loading,    setLoading]    = useState(false);
   const [showPass,   setShowPass]   = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
   const [inviteCode, setInviteCode] = useState('');
   const [acceptedPolicies, setAcceptedPolicies] = useState(false);
+  const [quoteIdx, setQuoteIdx] = useState(0);
+  const [hoveredTradition, setHoveredTradition] = useState<TraditionKey | ''>('');
 
   const [form, setForm] = useState({
     email:          '',
@@ -34,7 +95,6 @@ export default function SignupPage() {
     full_name:      '',
     username:       '',
     tradition:      '' as TraditionKey | '',
-    neighbourhood:  '',
     city:           '',
     country:        '',
     latitude:       null as number | null,
@@ -47,487 +107,441 @@ export default function SignupPage() {
     gotra:          '',
   });
 
-  const activeTradition   = (form.tradition || 'hindu') as TraditionKey;
-  const sampradayaOptions = SAMPRADAYAS_BY_TRADITION[activeTradition] ?? SAMPRADAYAS_BY_TRADITION['hindu'];
-  const devataOptions     = ISHTA_DEVATAS_BY_TRADITION[activeTradition] ?? ISHTA_DEVATAS_BY_TRADITION['hindu'];
-  const sampradayaLabel   = getSampradayaLabel(form.tradition);
-  const devataLabel       = getIshtaDevataLabel(form.tradition);
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setInviteCode(params.get('ref')?.trim().toUpperCase() ?? '');
+
+    const interval = setInterval(() => {
+      setQuoteIdx(prev => (prev + 1) % QUOTES.length);
+    }, 6000);
+    return () => clearInterval(interval);
   }, []);
 
-  // ── Detect location via browser geolocation + Nominatim reverse geocode ──
   async function detectLocation() {
-    if (!navigator.geolocation) { toast.error('Geolocation not supported on this device'); return; }
+    if (!navigator.geolocation) { toast.error('Geolocation not supported'); return; }
     setGeoLoading(true);
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
         try {
-          const res  = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`,
-            { headers: { 'Accept-Language': 'en' } }
-          );
+          const res  = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`, { headers: { 'Accept-Language': 'en' } });
           const data = await res.json();
           const addr = data.address ?? {};
-          const neighbourhood = addr.neighbourhood || addr.suburb || addr.quarter || addr.village || '';
-          const city          = addr.city || addr.town || addr.municipality || addr.county || '';
-          const country       = addr.country || '';
-          setForm(f => ({ ...f, neighbourhood, city, country, latitude, longitude }));
-          toast.success(`📍 ${city}${country ? ', ' + country : ''} detected!`);
+          const city = addr.city || addr.town || addr.municipality || '';
+          const country = addr.country || '';
+          setForm(f => ({ ...f, city, country, latitude, longitude }));
+          toast.success(`📍 ${city} detected!`);
         } catch {
-          toast.error('Could not look up your area — please enter manually');
+          toast.error('Location lookup failed');
         } finally {
           setGeoLoading(false);
         }
       },
-      () => { toast.error('Location access denied — please enter your city manually'); setGeoLoading(false); },
-      { timeout: 8000 }
+      () => { toast.error('Location access denied'); setGeoLoading(false); }
     );
   }
-
-  const seeking_options = [
-    { value: 'community',  label: '🤝 Local community'       },
-    { value: 'knowledge',  label: '📚 Knowledge & learning'  },
-    { value: 'events',     label: '🎉 Events & festivals'     },
-    { value: 'mentorship', label: '🙏 Spiritual mentorship'   },
-    { value: 'youth',      label: '🌱 Youth connection'       },
-  ];
 
   function toggleSeeking(value: string) {
     setForm(f => ({
       ...f,
-      seeking: f.seeking.includes(value)
-        ? f.seeking.filter(s => s !== value)
-        : [...f.seeking, value],
+      seeking: f.seeking.includes(value) ? f.seeking.filter(s => s !== value) : [...f.seeking, value],
     }));
   }
 
   async function handleSubmit() {
-    if (!supabase) {
-      toast.error('Auth is still initializing. Please try again.');
-      return;
-    }
-
-    if (!acceptedPolicies) {
-      toast.error('Please accept the Terms, Privacy Policy, and Community Guidelines');
-      return;
-    }
-
+    if (!supabase || !acceptedPolicies) return;
     setLoading(true);
     try {
       const normalizedEmail = form.email.trim().toLowerCase();
       const normalizedUsername = form.username.toLowerCase().trim().replace(/\s+/g, '_');
       const profilePayload = {
-        full_name:       form.full_name.trim(),
-        username:        normalizedUsername,
-        tradition:       form.tradition || null,
-        neighbourhood:   form.neighbourhood.trim() || null,
-        city:            form.city.trim() || null,
-        country:         form.country.trim() || null,
-        latitude:        form.latitude,
-        longitude:       form.longitude,
-        sampradaya:      form.sampradaya || null,
-        ishta_devata:    form.ishta_devata || null,
+        full_name: form.full_name.trim(),
+        username: normalizedUsername,
+        tradition: form.tradition || null,
+        city: form.city.trim() || null,
+        country: form.country.trim() || null,
+        latitude: form.latitude,
+        longitude: form.longitude,
+        sampradaya: form.sampradaya || null,
+        ishta_devata: form.ishta_devata || null,
         spiritual_level: form.spiritual_level,
-        seeking:         form.seeking,
-        kul:             form.kul.trim() || null,
-        gotra:           form.gotra.trim() || null,
+        seeking: form.seeking,
+        kul: form.kul.trim() || null,
+        gotra: form.gotra.trim() || null,
       };
 
       const { data, error } = await supabase.auth.signUp({
-        email:    normalizedEmail,
+        email: normalizedEmail,
         password: form.password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
-          data: {
-            ...profilePayload,
-            referred_by_code: inviteCode || null,
-          },
+          data: { ...profilePayload, referred_by_code: inviteCode || null },
         },
       });
       if (error) throw error;
-      if (!data.user) throw new Error('Signup failed — please try again.');
-
       if (data.session) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .update(profilePayload)
-          .eq('id', data.user.id);
-
-        if (profileError) throw profileError;
-
+        await supabase.from('profiles').update(profilePayload).eq('id', data.user!.id);
         toast.success('Welcome to Shoonaya! 🙏');
         router.push('/home');
-        router.refresh();
       } else {
-        toast.success('Check your inbox to continue. If this email already has an account, sign in, reset your password, or resend confirmation from the next screen.');
+        toast.success('Check your inbox to continue.');
         router.push(`/login?message=check_email&email=${encodeURIComponent(normalizedEmail)}`);
       }
-    } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : 'Something went wrong');
+    } catch (err: any) {
+      toast.error(err.message || 'Something went wrong');
     } finally {
       setLoading(false);
     }
   }
 
-  const progress = ((step - 1) / 2) * 100;
+  const activeAuraColor = TRADITION_COLORS[hoveredTradition || form.tradition || ''];
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex bg-[var(--premium-ivory)] overflow-hidden">
+      
+      {/* ── LEFT SIDE: Immersive Visual (Split View) ─────────────────────── */}
+      <div className="hidden lg:flex w-1/2 relative flex-col items-center justify-center p-16 overflow-hidden border-r border-[var(--premium-border)]">
+        
+        {/* Dynamic Background Aura */}
+        <motion.div 
+          animate={{ 
+            backgroundColor: activeAuraColor,
+            scale: [1, 1.1, 1],
+          }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="absolute inset-0 z-0 blur-[120px] opacity-20"
+          style={{ background: `radial-gradient(circle at center, ${activeAuraColor} 0%, transparent 70%)` }}
+        />
 
-        {/* Header */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex">
-            <BrandMark />
-          </Link>
-          <h1 className="font-display text-2xl font-bold text-[color:var(--text-cream)] mt-2">Join Shoonaya</h1>
-          <p className="text-[color:var(--brand-muted)] text-sm mt-1">Find your infinite — ancient wisdom for seekers</p>
-        </div>
+        <div className="relative z-10 w-full max-w-lg space-y-12">
+          {/* Brand & Quote */}
+          <div className="space-y-8 text-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex justify-center"
+            >
+              <BrandMark size="lg" />
+            </motion.div>
 
-        {inviteCode && (
-          <div className="glass-panel mb-5 rounded-2xl px-4 py-3 text-sm text-[color:var(--text-cream)]">
-            Joining with invite code <span className="font-semibold">{inviteCode}</span>
-          </div>
-        )}
-
-        <div className="hidden sm:grid gap-3 mb-5 sm:grid-cols-3">
-          {[
-            {
-              eyebrow: 'Step 1',
-              title: 'Create your account',
-              description: 'Just enough to open your Shoonaya safely and personally.',
-            },
-            {
-              eyebrow: 'Step 2',
-              title: 'Share your path',
-              description: 'Tradition, place, and practice help the app greet you more truthfully.',
-            },
-            {
-              eyebrow: 'Step 3',
-              title: 'Name what you seek',
-              description: 'Your first Home guidance starts from what you actually came here for.',
-            },
-          ].map((item) => (
-            <div key={item.title} className="glass-panel rounded-[1.35rem] px-4 py-4">
-              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[color:var(--brand-primary)]">{item.eyebrow}</p>
-              <p className="font-semibold text-[color:var(--text-cream)] mt-2">{item.title}</p>
-              <p className="text-sm text-[color:var(--brand-muted)] mt-2 leading-relaxed">{item.description}</p>
+            <div className="h-40 flex flex-col justify-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={quoteIdx}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="space-y-4"
+                >
+                  <h2 className="text-3xl font-devanagari text-[var(--brand-primary-strong)] leading-relaxed">
+                    {QUOTES[quoteIdx].text}
+                  </h2>
+                  <p className="text-lg italic font-outfit text-[var(--brand-muted)]">
+                    "{QUOTES[quoteIdx].meaning}"
+                  </p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-[var(--premium-gold)] font-bold">
+                    — {QUOTES[quoteIdx].author}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
             </div>
-          ))}
-        </div>
-
-        {/* Progress */}
-        <div className="mb-6">
-          <div className="flex justify-between text-xs text-[color:var(--text-dim)] mb-2">
-            <span className={step >= 1 ? 'text-[color:var(--brand-primary)] font-medium' : ''}>Account</span>
-            <span className={step >= 2 ? 'text-[color:var(--brand-primary)] font-medium' : ''}>Identity</span>
-            <span className={step >= 3 ? 'text-[color:var(--brand-primary)] font-medium' : ''}>Seeking</span>
           </div>
-          <div className="glass-panel h-1.5 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-sacred rounded-full transition-all duration-500"
-              style={{ width: `${progress}%` }} />
+
+          {/* Sacred Flame Visual */}
+          <div className="py-8">
+            <SacredFlame />
           </div>
-        </div>
 
-        <div className="glass-panel-strong rounded-[2rem] shadow-card p-6">
-
-          {/* ── STEP 1: Account ─────────────────────────────────────────────── */}
-          {step === 1 && (
-            <div className="space-y-4 fade-in">
-              <h2 className="font-display font-semibold text-lg text-[color:var(--text-cream)]">Create your account</h2>
-
-              <div>
-                <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Full Name</label>
-                <input type="text" placeholder="Arjun Sharma" value={form.full_name}
-                  onChange={e => setForm({ ...form, full_name: e.target.value })}
-                  className="glass-input w-full px-4 py-3 rounded-xl focus:border-[color:var(--brand-primary)] focus:ring-2 focus:ring-[rgba(200,146,74,0.12)] outline-none transition text-sm" />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Username</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[color:var(--text-dim)] text-sm">@</span>
-                  <input type="text" placeholder="arjun_sharma" value={form.username}
-                    onChange={e => setForm({ ...form, username: e.target.value })}
-                    className="glass-input w-full pl-8 pr-4 py-3 rounded-xl focus:border-[color:var(--brand-primary)] focus:ring-2 focus:ring-[rgba(200,146,74,0.12)] outline-none transition text-sm" />
+          {/* Why Join Highlights */}
+          <div className="grid grid-cols-1 gap-6">
+            {WHY_JOIN.map((item, i) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 + i * 0.1 }}
+                className="flex items-start gap-4 p-5 rounded-3xl bg-white/40 border border-white/60 backdrop-blur-sm"
+              >
+                <div className="p-3 rounded-2xl bg-[var(--premium-gold-soft)] text-[var(--premium-gold)]">
+                  <item.icon size={20} />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Email</label>
-                <input type="email" placeholder="arjun@email.com" value={form.email}
-                  onChange={e => setForm({ ...form, email: e.target.value })}
-                  className="glass-input w-full px-4 py-3 rounded-xl focus:border-[color:var(--brand-primary)] focus:ring-2 focus:ring-[rgba(200,146,74,0.12)] outline-none transition text-sm" />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Password</label>
-                <div className="relative">
-                  <input type={showPass ? 'text' : 'password'} placeholder="Min. 8 characters" value={form.password}
-                    onChange={e => setForm({ ...form, password: e.target.value })}
-                    className="glass-input w-full px-4 py-3 pr-12 rounded-xl focus:border-[color:var(--brand-primary)] focus:ring-2 focus:ring-[rgba(200,146,74,0.12)] outline-none transition text-sm" />
-                  <button type="button" onClick={() => setShowPass(!showPass)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[color:var(--text-dim)] hover:text-[color:var(--brand-muted)]">
-                    {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
+                <div>
+                  <h4 className="font-bold text-[var(--brand-primary-strong)]">{item.title}</h4>
+                  <p className="text-sm text-[var(--brand-muted)] mt-1">{item.desc}</p>
                 </div>
-              </div>
-
-              <button onClick={() => {
-                if (!form.full_name || !form.email || !form.password || !form.username) {
-                  toast.error('Please fill in all fields'); return;
-                }
-                if (form.password.length < 8) { toast.error('Password must be at least 8 characters'); return; }
-                setStep(2);
-              }} className="glass-button-primary w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 transition flex items-center justify-center gap-2">
-                Continue <ArrowRight size={16} />
-              </button>
-            </div>
-          )}
-
-          {/* ── STEP 2: Dharmic Identity ─────────────────────────────────────── */}
-          {step === 2 && (
-            <div className="space-y-5 fade-in">
-              <div>
-                <h2 className="font-display font-semibold text-lg text-[color:var(--text-cream)]">Your Dharmic Identity</h2>
-                <p className="text-sm text-[color:var(--brand-muted)] mt-0.5">Choose your tradition — this shapes your entire experience.</p>
-              </div>
-
-              {/* ── Tradition tile picker — LOCKED after set ─────────────── */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-semibold text-[color:var(--text-cream)]">Your Tradition</label>
-                  <span className="flex items-center gap-1 text-[10px] text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
-                    <Lock size={9} /> Set once, cannot be changed
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 gap-2">
-                  {TRADITIONS.map(t => (
-                    <button key={t.value} type="button"
-                      onClick={() => setForm({ ...form, tradition: t.value as TraditionKey, sampradaya: '', ishta_devata: '' })}
-                      className={`text-left px-4 py-3 rounded-xl border-2 transition flex items-center gap-3 ${
-                        form.tradition === t.value
-                          ? 'border-[color:var(--brand-primary)] bg-[rgba(200,146,74,0.12)]'
-                          : 'border-[rgba(200,146,74,0.12)] hover:border-[rgba(200,146,74,0.4)] bg-[rgba(48,46,42,0.6)]'
-                      }`}>
-                      <span className="text-2xl flex-shrink-0">{t.emoji}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className={`font-semibold text-sm leading-tight ${form.tradition === t.value ? 'text-[color:var(--brand-primary-strong)]' : 'text-[color:var(--text-cream)]'}`}>
-                          {t.label}
-                        </p>
-                        <p className="text-xs text-[color:var(--text-dim)] mt-0.5 leading-tight">{t.desc}</p>
-                      </div>
-                      {form.tradition === t.value && (
-                        <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                          style={{ background: '#E8640A' }}>
-                          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                            <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-                          </svg>
-                        </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* ── Only show fields after tradition is chosen ─────────────── */}
-              {form.tradition && (
-                <>
-                  {/* Location */}
-                  <div>
-                    <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-2">Your Location</label>
-                    <button type="button" onClick={detectLocation} disabled={geoLoading}
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-[rgba(200,146,74,0.3)] text-[color:var(--brand-primary)] text-sm font-medium hover:border-[color:var(--brand-primary)] hover:bg-[rgba(200,146,74,0.08)] transition disabled:opacity-60 mb-2">
-                      {geoLoading
-                        ? <><Loader2 size={15} className="animate-spin" /> Detecting…</>
-                        : <><MapPin size={15} /> Detect my location automatically</>}
-                    </button>
-                    {form.city && (
-                      <div className="mb-2 px-3 py-2 rounded-xl bg-green-50 border border-green-200 text-sm text-green-700 font-medium">
-                        📍 {[form.city, form.country].filter(Boolean).join(', ')}
-                      </div>
-                    )}
-                    <div className="grid grid-cols-2 gap-2">
-                      <input type="text" placeholder="City" value={form.city}
-                        onChange={e => setForm({ ...form, city: e.target.value })}
-                        className="w-full px-3 py-2.5 rounded-xl border border-[rgba(200,146,74,0.2)] focus:border-[color:var(--brand-primary)] outline-none transition text-sm" />
-                      <input type="text" placeholder="Country" value={form.country}
-                        onChange={e => setForm({ ...form, country: e.target.value })}
-                        className="w-full px-3 py-2.5 rounded-xl border border-[rgba(200,146,74,0.2)] focus:border-[color:var(--brand-primary)] outline-none transition text-sm" />
-                    </div>
-                  </div>
-
-                  {/* Sampradaya / Panth / School / Sect — filtered by tradition */}
-                  <div>
-                    <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-2">{sampradayaLabel}</label>
-                    <select value={form.sampradaya}
-                      onChange={e => setForm({ ...form, sampradaya: e.target.value })}
-                      className="w-full px-3 py-2.5 rounded-xl border border-[rgba(200,146,74,0.2)] focus:border-[color:var(--brand-primary)] outline-none transition text-sm bg-white">
-                      <option value="">Select {sampradayaLabel.toLowerCase()} (optional)</option>
-                      {sampradayaOptions.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
-                    </select>
-                  </div>
-
-                  {/* Ishta Devata / Simran Focus / Bodhisattva / Tirthankar — filtered */}
-                  <div>
-                    <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-2">{devataLabel} <span className="text-[color:var(--text-dim)] font-normal">(optional)</span></label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {devataOptions.map(d => (
-                        <button key={d.value} type="button"
-                          onClick={() => setForm({ ...form, ishta_devata: d.value })}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-sm transition ${
-                            form.ishta_devata === d.value
-                              ? 'border-[color:var(--brand-primary)] bg-[rgba(200,146,74,0.12)] text-[color:var(--brand-primary-strong)] font-medium'
-                              : 'border-[rgba(200,146,74,0.2)] hover:border-[rgba(200,146,74,0.4)] text-[color:var(--brand-muted)]'
-                          }`}>
-                          <span>{d.emoji}</span>
-                          <span className="truncate">{d.label}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Spiritual Level */}
-                  <div>
-                    <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-2">Where are you on the path?</label>
-                    <div className="space-y-2">
-                      {SPIRITUAL_LEVELS.map(l => (
-                        <button key={l.value} type="button"
-                          onClick={() => setForm({ ...form, spiritual_level: l.value })}
-                          className={`w-full text-left px-4 py-3 rounded-xl border transition ${
-                            form.spiritual_level === l.value
-                              ? 'border-[color:var(--brand-primary)] bg-[rgba(200,146,74,0.12)]'
-                              : 'border-[rgba(200,146,74,0.2)] hover:border-[rgba(200,146,74,0.4)]'
-                          }`}>
-                          <div className={`font-medium text-sm ${form.spiritual_level === l.value ? 'text-[color:var(--brand-primary-strong)]' : 'text-[color:var(--text-cream)]'}`}>{l.label}</div>
-                          <div className="text-xs text-[color:var(--brand-muted)] mt-0.5">{l.desc}</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Kul / Gotra — Hindu only */}
-                  {form.tradition === 'hindu' && (
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Kul / Vansh <span className="text-[color:var(--text-dim)] font-normal">(optional)</span></label>
-                        <input type="text" placeholder="e.g. Kashyap"
-                          value={form.kul}
-                          onChange={e => setForm({ ...form, kul: e.target.value })}
-                          className="w-full px-3 py-2.5 rounded-xl border border-[rgba(200,146,74,0.2)] focus:border-[color:var(--brand-primary)] outline-none transition text-sm" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Gotra <span className="text-[color:var(--text-dim)] font-normal">(optional)</span></label>
-                        <input type="text" placeholder="e.g. Bharadwaj"
-                          value={form.gotra}
-                          onChange={e => setForm({ ...form, gotra: e.target.value })}
-                          className="w-full px-3 py-2.5 rounded-xl border border-[rgba(200,146,74,0.2)] focus:border-[color:var(--brand-primary)] outline-none transition text-sm" />
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-
-              <div className="flex gap-3 pt-2">
-                <button onClick={() => setStep(1)}
-                  className="flex items-center gap-1 px-4 py-3 text-[color:var(--brand-muted)] hover:text-[color:var(--text-cream)] transition text-sm">
-                  <ArrowLeft size={16} /> Back
-                </button>
-                <button onClick={() => {
-                  if (!form.tradition) { toast.error('Please choose your tradition to continue'); return; }
-                  setStep(3);
-                }} className="flex-1 py-3 bg-gradient-sacred text-white font-semibold rounded-xl hover:opacity-90 transition flex items-center justify-center gap-2">
-                  Continue <ArrowRight size={16} />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* ── STEP 3: What are you seeking ─────────────────────────────────── */}
-          {step === 3 && (
-            <div className="space-y-5 fade-in">
-              <div>
-                <h2 className="font-display font-semibold text-lg text-[color:var(--text-cream)]">What are you seeking?</h2>
-                <p className="text-sm text-[color:var(--brand-muted)] mt-0.5">Select all that apply — helps us personalise your path.</p>
-              </div>
-
-              <div className="space-y-2">
-                {seeking_options.map(opt => (
-                  <button key={opt.value} type="button" onClick={() => toggleSeeking(opt.value)}
-                    className={`w-full text-left px-4 py-3 rounded-xl border transition text-sm font-medium ${
-                      form.seeking.includes(opt.value)
-                        ? 'border-[color:var(--brand-primary)] bg-[rgba(200,146,74,0.12)] text-[color:var(--brand-primary-strong)]'
-                        : 'border-[rgba(200,146,74,0.2)] hover:border-[rgba(200,146,74,0.4)] text-[color:var(--text-muted-warm)]'
-                    }`}>
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-
-              <div className="glass-panel rounded-2xl px-4 py-3 text-sm text-[color:var(--brand-muted)]">
-                <div className="flex items-start gap-3">
-                <input
-                  id="policy-consent"
-                  type="checkbox"
-                  checked={acceptedPolicies}
-                  onChange={(e) => setAcceptedPolicies(e.target.checked)}
-                  className="mt-1 h-4 w-4 rounded border-gray-300 text-[#7B1A1A] focus:ring-[#7B1A1A]"
-                />
-                <label htmlFor="policy-consent" className="leading-6">
-                  I agree to the{' '}
-                  <Link href="/terms" className="text-[#7B1A1A] font-semibold hover:underline">
-                    Terms
-                  </Link>
-                  ,{' '}
-                  <Link href="/privacy" className="text-[#7B1A1A] font-semibold hover:underline">
-                    Privacy Policy
-                  </Link>
-                  {' '}and{' '}
-                  <Link href="/guidelines" className="text-[#7B1A1A] font-semibold hover:underline">
-                    Community Guidelines
-                  </Link>
-                  .
-                </label>
-                </div>
-              </div>
-
-              <div className="flex gap-3 pt-2">
-                <button onClick={() => setStep(2)}
-                  className="flex items-center gap-1 px-4 py-3 text-[color:var(--brand-muted)] hover:text-[color:var(--text-cream)] transition text-sm">
-                  <ArrowLeft size={16} /> Back
-                </button>
-                <button onClick={handleSubmit} disabled={loading || !acceptedPolicies}
-                  className="flex-1 py-3 bg-gradient-sacred text-white font-semibold rounded-xl hover:opacity-90 transition flex items-center justify-center gap-2 disabled:opacity-60">
-                  {loading ? 'Joining…' : <>Enter Shoonaya 🙏</>}
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <p className="text-center text-sm text-[color:var(--brand-muted)] mt-6">
-          Already a member?{' '}
-          <Link href="/login" className="text-[color:var(--brand-primary)] font-medium hover:underline">Sign in</Link>
-        </p>
-
-        <div className="text-center mt-4">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs text-[color:var(--text-dim)]">or</span>
-            <div className="flex-1 h-px bg-gray-200" />
+              </motion.div>
+            ))}
           </div>
-          <Link href="/guest"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[rgba(200,146,74,0.2)] text-sm text-[color:var(--brand-muted)] hover:border-[rgba(200,146,74,0.4)] hover:text-[color:var(--brand-primary)] transition bg-white">
-            <span>👁️</span>
-            <span>Explore as Guest</span>
-          </Link>
-          <p className="text-xs text-[color:var(--text-dim)] mt-2">Read discussions and discover nearby sacred places without creating an account</p>
         </div>
       </div>
+
+      {/* ── RIGHT SIDE: "Cloud Glass" Signup Flow ────────────────────────── */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 relative bg-[var(--premium-ivory)]">
+        
+        {/* Mobile Header */}
+        <div className="lg:hidden absolute top-8 left-0 right-0 flex flex-col items-center">
+          <BrandMark size="sm" />
+          <h1 className="text-xl font-poppins font-bold text-[var(--brand-primary-strong)] mt-2">Shoonaya</h1>
+        </div>
+
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-md"
+        >
+          {/* Cloud Glass Card */}
+          <div className="bg-white/70 backdrop-blur-[40px] rounded-[3rem] border border-[var(--premium-border)] shadow-[0_40px_80px_rgba(142,94,42,0.1)] p-10 relative overflow-hidden">
+            
+            {/* Header */}
+            <div className="mb-10 text-center lg:text-left">
+              <h3 className="text-3xl font-poppins font-bold text-[var(--brand-primary-strong)] tracking-tight">Join the Sangam</h3>
+              <p className="text-sm text-[var(--brand-muted)] font-outfit mt-2">Your journey into the infinite begins here.</p>
+            </div>
+
+            {/* Steps Flow */}
+            <div className="relative min-h-[420px]">
+              <AnimatePresence mode="wait" initial={false}>
+                
+                {/* STEP 1: Account */}
+                {step === 1 && (
+                  <motion.div
+                    key="step1"
+                    initial={{ x: 300, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: -300, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="space-y-6"
+                  >
+                    <div className="space-y-4">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)] ml-1">Full Name</label>
+                        <input type="text" placeholder="Arjun Sharma" value={form.full_name}
+                          onChange={e => setForm({ ...form, full_name: e.target.value })}
+                          className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl px-6 py-4 text-sm font-outfit focus:border-[var(--premium-gold)] focus:ring-4 focus:ring-[var(--premium-gold-soft)] outline-none transition-all shadow-sm" />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)] ml-1">Username</label>
+                        <div className="relative">
+                          <span className="absolute left-6 top-1/2 -translate-y-1/2 text-[var(--brand-muted)] font-bold">@</span>
+                          <input type="text" placeholder="arjun_seeker" value={form.username}
+                            onChange={e => setForm({ ...form, username: e.target.value })}
+                            className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl pl-12 pr-6 py-4 text-sm font-outfit focus:border-[var(--premium-gold)] focus:ring-4 focus:ring-[var(--premium-gold-soft)] outline-none transition-all shadow-sm" />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)] ml-1">Email</label>
+                        <input type="email" placeholder="arjun@wisdom.com" value={form.email}
+                          onChange={e => setForm({ ...form, email: e.target.value })}
+                          className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl px-6 py-4 text-sm font-outfit focus:border-[var(--premium-gold)] focus:ring-4 focus:ring-[var(--premium-gold-soft)] outline-none transition-all shadow-sm" />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)] ml-1">Password</label>
+                        <div className="relative">
+                          <input type={showPass ? 'text' : 'password'} placeholder="Min. 8 characters" value={form.password}
+                            onChange={e => setForm({ ...form, password: e.target.value })}
+                            className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl px-6 py-4 text-sm font-outfit focus:border-[var(--premium-gold)] focus:ring-4 focus:ring-[var(--premium-gold-soft)] outline-none transition-all shadow-sm" />
+                          <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-6 top-1/2 -translate-y-1/2 text-[var(--brand-muted)] hover:text-[var(--premium-gold)] transition-colors">
+                            {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button 
+                      onClick={() => {
+                        if (!form.full_name || !form.email || !form.password || !form.username) return toast.error('Please fill all fields');
+                        setStep(2);
+                      }}
+                      className="w-full bg-[var(--premium-gold)] text-white py-5 rounded-2xl font-bold font-outfit shadow-[0_15px_30px_rgba(216,138,28,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-6"
+                    >
+                      Share Your Path <ArrowRight size={18} />
+                    </button>
+                  </motion.div>
+                )}
+
+                {/* STEP 2: Tradition & Identity */}
+                {step === 2 && (
+                  <motion.div
+                    key="step2"
+                    initial={{ x: 300, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: -300, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="space-y-8"
+                  >
+                    <div className="space-y-6">
+                      <div>
+                        <div className="flex items-center justify-between mb-4">
+                          <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)] ml-1">Choose Tradition</label>
+                          <span className="flex items-center gap-1 text-[9px] font-bold text-[var(--premium-gold)] bg-[var(--premium-gold-soft)] px-2.5 py-1 rounded-full border border-[var(--premium-border)]">
+                            <Lock size={10} /> CORE IDENTITY
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          {TRADITIONS.map(t => (
+                            <motion.button 
+                              key={t.value}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onMouseEnter={() => setHoveredTradition(t.value as TraditionKey)}
+                              onMouseLeave={() => setHoveredTradition('')}
+                              onClick={() => setForm({ ...form, tradition: t.value as TraditionKey })}
+                              className={`p-5 rounded-[2rem] border-2 transition-all flex flex-col items-center gap-3 relative overflow-hidden ${
+                                form.tradition === t.value 
+                                  ? "border-[var(--premium-gold)] bg-white shadow-[0_15px_30px_rgba(216,138,28,0.15)]"
+                                  : "border-[var(--premium-border)] bg-white/20 hover:border-[var(--premium-gold)] hover:bg-white/40"
+                              }`}
+                            >
+                              {form.tradition === t.value && (
+                                <motion.div layoutId="trad-glow" className="absolute inset-0 opacity-10 bg-[var(--premium-gold)]" />
+                              )}
+                              <span className="text-4xl relative z-10">{t.emoji}</span>
+                              <span className={`text-xs font-bold font-outfit relative z-10 ${form.tradition === t.value ? "text-[var(--premium-gold)]" : "text-[var(--brand-muted)]"}`}>
+                                {t.label}
+                              </span>
+                            </motion.button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {form.tradition && (
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+                          <div className="space-y-2">
+                            <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)] ml-1">Your Location</label>
+                            <div className="relative">
+                              <input type="text" placeholder="Search City" value={form.city}
+                                onChange={e => setForm({ ...form, city: e.target.value })}
+                                className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl px-6 py-4 text-sm font-outfit focus:border-[var(--premium-gold)] outline-none shadow-sm" />
+                              <button onClick={detectLocation} className="absolute right-5 top-1/2 -translate-y-1/2 text-[var(--premium-gold)] hover:scale-110 transition-transform">
+                                {geoLoading ? <Loader2 size={18} className="animate-spin" /> : <MapPin size={20} />}
+                              </button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </div>
+
+                    <div className="flex gap-4 pt-6">
+                      <button onClick={() => setStep(1)} className="p-5 rounded-2xl border-2 border-[var(--premium-border)] text-[var(--brand-muted)] font-bold hover:bg-white transition-all">
+                        <ArrowLeft size={20} />
+                      </button>
+                      <button 
+                        onClick={() => {
+                          if (!form.tradition) return toast.error('Choose a tradition');
+                          setStep(3);
+                        }}
+                        className="flex-1 bg-[var(--premium-gold)] text-white py-5 rounded-2xl font-bold font-outfit shadow-[0_15px_30px_rgba(216,138,28,0.2)] hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+                      >
+                        Last Step <ArrowRight size={18} />
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* STEP 3: Seeking */}
+                {step === 3 && (
+                  <motion.div
+                    key="step3"
+                    initial={{ x: 300, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: -300, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="space-y-8"
+                  >
+                    <div className="space-y-6">
+                      <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)] ml-1">What are you seeking?</label>
+                      <div className="grid grid-cols-1 gap-3">
+                        {[
+                          { id: 'community',  label: 'Local Sangam', icon: Users, sub: 'Connect with nearby seekers' },
+                          { id: 'knowledge',  label: 'Sacred Pathshala', icon: Globe, sub: 'Learn Shastras & Wisdom' },
+                          { id: 'events',     label: 'Auspicious Utsav', icon: Sparkles, sub: 'Festivals & Holy Days' },
+                          { id: 'mentorship', label: 'Guru Connection', icon: Heart, sub: 'Spiritual Mentorship' },
+                        ].map(opt => (
+                          <button 
+                            key={opt.id}
+                            onClick={() => toggleSeeking(opt.id)}
+                            className={`flex items-center gap-5 px-6 py-4 rounded-[2rem] border-2 transition-all group ${
+                              form.seeking.includes(opt.id)
+                                ? "border-[var(--premium-gold)] bg-white shadow-lg"
+                                : "border-[var(--premium-border)] bg-white/20 hover:border-[var(--premium-gold)] hover:bg-white/40"
+                            }`}
+                          >
+                            <div className={`p-3 rounded-2xl transition-colors ${form.seeking.includes(opt.id) ? "bg-[var(--premium-gold)] text-white" : "bg-[var(--premium-gold-soft)] text-[var(--premium-gold)] group-hover:bg-[var(--premium-gold)] group-hover:text-white"}`}>
+                              <opt.icon size={20} />
+                            </div>
+                            <div className="text-left">
+                              <span className={`block text-sm font-bold font-outfit ${form.seeking.includes(opt.id) ? "text-[var(--premium-gold)]" : "text-[var(--brand-primary-strong)]"}`}>
+                                {opt.label}
+                              </span>
+                              <span className="text-[10px] text-[var(--brand-muted)]">{opt.sub}</span>
+                            </div>
+                            {form.seeking.includes(opt.id) && <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="ml-auto"><Check size={20} className="text-[var(--premium-gold)]" /></motion.div>}
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="pt-4 flex items-start gap-4 px-2">
+                        <div className="relative mt-1">
+                          <input type="checkbox" checked={acceptedPolicies} onChange={e => setAcceptedPolicies(e.target.checked)} className="peer appearance-none w-6 h-6 border-2 border-[var(--premium-border)] rounded-lg checked:bg-[var(--premium-gold)] checked:border-transparent transition-all cursor-pointer" />
+                          <Check size={16} className="absolute left-1 top-1 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
+                        </div>
+                        <p className="text-[11px] text-[var(--brand-muted)] font-outfit leading-relaxed">
+                          I agree to the <Link href="/terms" className="text-[var(--premium-gold)] font-bold">Terms</Link> and <Link href="/privacy" className="text-[var(--premium-gold)] font-bold">Privacy Policy</Link>. I commit to maintaining the dharma of this community.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4 pt-4">
+                      <button onClick={() => setStep(2)} className="p-5 rounded-2xl border-2 border-[var(--premium-border)] text-[var(--brand-muted)] font-bold hover:bg-white transition-all">
+                        <ArrowLeft size={20} />
+                      </button>
+                      <button 
+                        onClick={handleSubmit}
+                        disabled={loading || !acceptedPolicies}
+                        className="flex-1 bg-[var(--premium-gold)] text-white py-5 rounded-2xl font-bold font-outfit shadow-[0_15px_30px_rgba(216,138,28,0.2)] hover:scale-[1.02] disabled:opacity-50 transition-all flex items-center justify-center gap-3"
+                      >
+                        {loading ? <Loader2 className="animate-spin" /> : <>Enter Shoonaya 🙏</>}
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Bottom Section */}
+            <div className="mt-10 pt-8 border-t border-[var(--premium-border)] text-center">
+              <p className="text-sm text-[var(--brand-muted)] font-outfit">
+                Already part of the mandali? {' '}
+                <Link href="/login" className="text-[var(--premium-gold)] font-bold hover:underline">Sign In</Link>
+              </p>
+            </div>
+          </div>
+          
+          {/* Social Proof & Extras */}
+          <div className="mt-10 flex flex-col items-center gap-6">
+            <div className="flex items-center gap-4 w-full">
+              <div className="h-px flex-1 bg-[var(--premium-border)]" />
+              <span className="text-[9px] font-bold text-[var(--brand-muted)] uppercase tracking-[0.3em]">Ancient Paths Modern Reach</span>
+              <div className="h-px flex-1 bg-[var(--premium-border)]" />
+            </div>
+            <Link href="/guest" className="flex items-center gap-3 px-8 py-3.5 rounded-full bg-white/40 border-2 border-[var(--premium-border)] text-[10px] font-bold text-[var(--brand-muted)] hover:border-[var(--premium-gold)] hover:text-[var(--premium-gold)] transition-all uppercase tracking-widest">
+              👁️ Explore as Guest
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+
+      <style jsx global>{`
+        body {
+          background-color: var(--premium-ivory);
+        }
+        ::placeholder {
+          color: rgba(133, 79, 11, 0.35);
+        }
+      `}</style>
     </div>
   );
 }
