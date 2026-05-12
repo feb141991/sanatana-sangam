@@ -864,8 +864,19 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 .gc-title em { font-style:italic; color:var(--saffron); }
 .gc-sub { font-size:13px; color:var(--ink-soft); max-width:440px; line-height:1.55; }
 /* Fullscreen button */
-#gc-fs-btn { background:none; border:1px solid var(--border); border-radius:10px; padding:8px 14px; font-size:12px; color:var(--ink-soft); cursor:pointer; display:flex; align-items:center; gap:6px; white-space:nowrap; transition:border-color 0.2s,color 0.2s; flex-shrink:0; }
-#gc-fs-btn:hover { border-color:var(--saffron); color:var(--saffron); }
+#gc-fs-btn, #gc-rules-btn { background:none; border:1px solid var(--border); border-radius:10px; padding:8px 14px; font-size:12px; color:var(--ink-soft); cursor:pointer; display:flex; align-items:center; gap:6px; white-space:nowrap; transition:all 0.2s; flex-shrink:0; }
+#gc-fs-btn:hover, #gc-rules-btn:hover { border-color:var(--saffron); color:var(--saffron); background:rgba(216,138,28,0.05); }
+
+/* Rules Overlay */
+#gc-rules-overlay { display:none; position:fixed; inset:0; z-index:10000; background:rgba(10,8,6,0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:24px; }
+#gc-rules-overlay.active { display:flex; animation:fadeDown 0.3s ease; }
+#gc-rules-card { background:var(--cream); border:1px solid rgba(200,160,110,0.3); border-radius:24px; padding:40px; max-width:500px; width:100%; box-shadow:0 32px 80px rgba(0,0,0,0.5); position:relative; }
+#gc-rules-card h3 { font-family:var(--fd); font-size:24px; margin-bottom:20px; color:var(--ink); }
+#gc-rules-list { text-align:left; list-style:none; padding:0; margin-bottom:30px; }
+#gc-rules-list li { margin-bottom:14px; font-size:14px; color:var(--ink-mid); line-height:1.6; display:flex; gap:12px; }
+#gc-rules-list li span { color:var(--saffron); font-weight:bold; }
+#gc-rules-close { background:var(--saffron); color:#fff; border:none; border-radius:100px; padding:12px 32px; font-weight:600; cursor:pointer; width:100%; transition:opacity 0.2s; }
+#gc-rules-close:hover { opacity:0.9; }
 /* Layout */
 .gc-layout { display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap; justify-content:center; flex:1; }
 /* Board */
@@ -940,22 +951,36 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 #gc-roll-count { font-size:11px; color:var(--ink-soft); text-align:center; }
 </style>
 
-<!-- Celebration layer -->
-<div id="gc-celebration"></div>
-<div id="gc-moksha-banner">
-  <div id="gc-moksha-inner">
-    <div class="gc-moksha-emoji">🕉️</div>
-    <div class="gc-moksha-num" id="gc-moksha-rolls">—</div>
-    <div style="font-size:12px;color:var(--ink-soft);margin-bottom:8px">rolls to liberation</div>
-    <h3>Moksha attained</h3>
-    <p>शून्य — the void that holds everything.<br>You have reached the Infinite.</p>
-    <button class="gc-moksha-close" onclick="gcMokshaClose()">🙏 Play Again</button>
-    <br><br>
-    <a href="#cta-section" onclick="gcMokshaClose();scrollToCta();" style="font-size:13px;color:var(--saffron);font-weight:600;text-decoration:none">→ Join Shoonaya to carry this practice further</a>
-  </div>
-</div>
-
 <div id="gc-fs-wrap">
+  <!-- Celebration layers -->
+  <div id="gc-celebration"></div>
+  <div id="gc-moksha-banner">
+    <div id="gc-moksha-inner">
+      <div class="gc-moksha-emoji">🕉️</div>
+      <div class="gc-moksha-num" id="gc-moksha-rolls">—</div>
+      <div style="font-size:12px;color:var(--ink-soft);margin-bottom:8px">rolls to liberation</div>
+      <h3>Moksha attained</h3>
+      <p>शून्य — the void that holds everything.<br>You have reached the Infinite.</p>
+      <button class="gc-moksha-close" onclick="gcMokshaClose()">🙏 Play Again</button>
+      <br><br>
+      <a href="#cta-section" onclick="gcMokshaClose();scrollToCta();" style="font-size:13px;color:var(--saffron);font-weight:600;text-decoration:none">→ Join Shoonaya to carry this practice further</a>
+    </div>
+  </div>
+
+  <div id="gc-rules-overlay">
+    <div id="gc-rules-card">
+      <h3>Dharma Rules</h3>
+      <ul id="gc-rules-list">
+        <li><span>1. Objective:</span> Reach Square 49 (Moksha) with an exact dice roll to attain liberation.</li>
+        <li><span>2. Virtues (Ladders):</span> Landing on a virtue square (Green 🪜) elevates your soul immediately to a higher plane.</li>
+        <li><span>3. Vices (Snakes):</span> Beware the vices (Red 🐍). They drag your soul back to lower states of being.</li>
+        <li><span>4. Rebirth:</span> If your roll exceeds what's needed for Square 49, you "bounce" back. You must land exactly on the void.</li>
+        <li><span>5. Philosophy:</span> Every square holds a teaching. Land on them to read the shastra insights.</li>
+      </ul>
+      <button id="gc-rules-close" onclick="gcToggleRules()">Got it, Jai Ho 🙏</button>
+    </div>
+  </div>
+
   <!-- Top row -->
   <div class="gc-top-row">
     <div class="gc-top-left">
@@ -963,9 +988,14 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
       <h2 class="gc-title">Play <em>Gyan Chaupar</em></h2>
       <p class="gc-sub">Ancient Indian game of dharmic progress — roll dice, land on virtues to ascend, conquer vices before they pull you down.</p>
     </div>
-    <button id="gc-fs-btn" onclick="gcToggleFS()" title="Toggle fullscreen">
-      <span id="gc-fs-icon">⛶</span> <span id="gc-fs-label">Fullscreen</span>
-    </button>
+    <div style="display:flex; gap:8px;">
+      <button id="gc-rules-btn" onclick="gcToggleRules()">
+        <span>📜</span> <span>Rules</span>
+      </button>
+      <button id="gc-fs-btn" onclick="gcToggleFS()" title="Toggle fullscreen">
+        <span id="gc-fs-icon">⛶</span> <span id="gc-fs-label">Fullscreen</span>
+      </button>
+    </div>
   </div>
 
   <!-- Game layout -->
@@ -1133,6 +1163,12 @@ function gcShowMoksha(){
 function gcMokshaClose(){
   var el=document.getElementById('gc-moksha-banner'); if(el) el.classList.remove('active');
   gcRestart();
+}
+
+function gcToggleRules(){
+  var ov = document.getElementById('gc-rules-overlay');
+  if(!ov) return;
+  ov.classList.toggle('active');
 }
 
 // ── Fullscreen ──
