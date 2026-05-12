@@ -389,7 +389,7 @@ export default function OnboardingClient({ userId, traditionValue = '', hasTradi
                       className="text-sm tracking-[0.28em] font-medium"
                       style={{ color: 'rgba(200, 146, 74, 0.50)', fontFamily: 'var(--font-devanagari)' }}
                     >
-                      सनातन संगम
+                      शून्य
                     </motion.p>
 
                     {/* Main title — serif */}

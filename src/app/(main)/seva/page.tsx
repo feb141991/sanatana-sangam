@@ -17,7 +17,7 @@ export default async function SevaPage() {
   return (
     <SevaClient 
       userId={user.id} 
-      userName={profile?.full_name ?? profile?.username ?? 'Sanatani'} 
+      userName={profile?.full_name ?? profile?.username ?? 'Seeker'}
       tradition={profile?.tradition ?? 'hindu'} 
     />
   );

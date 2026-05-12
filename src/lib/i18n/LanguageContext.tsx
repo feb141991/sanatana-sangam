@@ -15,7 +15,7 @@ const LangContext = createContext<LangContextValue>({
   t: (key) => translateFn('en', key),
 });
 
-const LANG_STORAGE_KEY = 'ss-app-lang';
+const LANG_STORAGE_KEY = 'shoonaya-app-lang';
 const VALID_LANGS: AppLang[] = ['en', 'hi', 'pa'];
 
 export function LanguageProvider({

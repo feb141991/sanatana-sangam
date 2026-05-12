@@ -1058,8 +1058,8 @@ export default function HomeDashboard({
     localStorage.setItem('last_darshan_date', todayStr);
   };
   // Personalised content
-  const PERSONAL_CACHE_KEY = 'ss-personal-content';
-  const PERSONAL_CACHE_DATE_KEY = 'ss-personal-content-date';
+  const PERSONAL_CACHE_KEY = 'shoonaya-personal-content';
+  const PERSONAL_CACHE_DATE_KEY = 'shoonaya-personal-content-date';
   const [personalContent, setPersonalContent] = useState<{
     suggestion: string;
     nudge: string | null;
@@ -1078,9 +1078,9 @@ export default function HomeDashboard({
   });
 
   // ── Daily Quiz — load from localStorage cache or fetch fresh ──────────────
-  const QUIZ_CACHE_KEY      = 'ss-quiz-daily';
-  const QUIZ_CACHE_DATE_KEY = 'ss-quiz-daily-date';
-  const QUIZ_ANSWERED_KEY   = 'ss-quiz-daily-answered';
+  const QUIZ_CACHE_KEY      = 'shoonaya-quiz-daily';
+  const QUIZ_CACHE_DATE_KEY = 'shoonaya-quiz-daily-date';
+  const QUIZ_ANSWERED_KEY   = 'shoonaya-quiz-daily-answered';
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -1398,7 +1398,7 @@ export default function HomeDashboard({
   };
   const heroPrimaryText = isDark ? 'var(--text-cream)' : '#211B14';
   const heroSecondaryText = isDark ? 'var(--text-muted-warm)' : '#4D4035';
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const heroTertiaryText = isDark ? 'var(--text-dim)' : '#66584A';
   const heroGlassSurface = isDark ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.72)';
   const heroGlassBorder = isDark ? 'rgba(250,238,218,0.12)' : 'rgba(65,36,2,0.12)';
@@ -1886,18 +1886,18 @@ export default function HomeDashboard({
                 letterSpacing: '0.08em',
                 fontWeight: 700
               }}>
-                {dharmVeerTradMeta.dharmVeerLocal} · {dharmVeerTradMeta.labelLocal}
+                {lang !== 'en' && dharmVeerTradMeta.dharmVeerLocal ? dharmVeerTradMeta.dharmVeerLocal : t('journeyLabel')} · {lang !== 'en' && dharmVeerTradMeta.labelLocal ? dharmVeerTradMeta.labelLocal : dharmVeerTradMeta.label}
               </span>
               <span className="festival-story-title" style={{ 
                 color: isDark ? 'var(--text-cream)' : '#1a140e',
                 fontSize: '1.1rem'
               }}>
-                {dharmVeer.nameLocal || dharmVeer.name}
+                {lang !== 'en' && dharmVeer.nameLocal ? dharmVeer.nameLocal : dharmVeer.name}
               </span>
               <span className="festival-story-teaser line-clamp-2" style={{ 
                 color: isDark ? 'var(--text-muted-warm)' : 'rgba(26, 20, 14, 0.75)'
               }}>
-                {dharmVeer.taglineLocal || dharmVeer.tagline}
+                {lang !== 'en' && dharmVeer.taglineLocal ? dharmVeer.taglineLocal : dharmVeer.tagline}
               </span>
             </div>
             <ChevronRight size={16} className="festival-story-chevron" aria-hidden="true" />

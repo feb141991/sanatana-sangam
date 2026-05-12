@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Heart, MessageCircle, Sun, Users, Radio, BookOpen } from 'lucide-react';
+import { Heart, MessageCircle, Sun, Users, Radio, BookOpen, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
@@ -159,11 +159,11 @@ export default function BottomNav({
     { href: '/pathshala',   label: t('navPathshala'), mobileLabel: t('study'),    icon: BookOpen      },
     { href: '/nitya-karma', label: t('morningRoutine'), mobileLabel: 'Nitya',    icon: Sun           },
     { href: '/bhakti',      label: t('bhakti'),    mobileLabel: 'Bhakti',   icon: Heart         },
-    { href: '/reflections', label: 'Reflections', mobileLabel: t('mirror'), icon: Users         },
+    { href: '/kul',         label: t('kul'),          mobileLabel: t('kul'),    icon: Shield        },
     { href: '/mandali',     label: t('navMandali'),   mobileLabel: t('circle'),  icon: MessageCircle },
   ];
   const guestNavItems = [
-    { href: '/vichaar-sabha', label: 'Vichaar', mobileLabel: 'Vichaar', icon: MessageCircle },
+    { href: '/mandali', label: 'Mandali', mobileLabel: t('circle'), icon: MessageCircle },
   ];
 
   const navItems   = isGuest ? guestNavItems : memberNavItems;

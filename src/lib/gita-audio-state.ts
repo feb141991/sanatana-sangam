@@ -2,7 +2,7 @@
 
 import type { GitaAudioTrack } from '@/lib/gita-audio';
 
-const STORAGE_KEY = 'sanatana-sangam:gita-audio-state';
+const STORAGE_KEY = 'shoonaya:gita-audio-state';
 
 export interface GitaAudioState {
   currentChapterId: string | null;

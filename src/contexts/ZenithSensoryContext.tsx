@@ -29,7 +29,7 @@ export function ZenithSensoryProvider({ children }: { children: React.ReactNode 
   const [theme, setTheme] = useState<SensoryTheme>('none');
   const [isMuted, setIsMuted] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('ss-sensory-muted') === 'true';
+      return localStorage.getItem('shoonaya-sensory-muted') === 'true';
     }
     return false;
   });
@@ -37,7 +37,7 @@ export function ZenithSensoryProvider({ children }: { children: React.ReactNode 
 
   // Persist mute state
   useEffect(() => {
-    localStorage.setItem('ss-sensory-muted', String(isMuted));
+    localStorage.setItem('shoonaya-sensory-muted', String(isMuted));
   }, [isMuted]);
 
   // Automatically switch theme based on route

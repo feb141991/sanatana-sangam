@@ -34,10 +34,10 @@ const SVG_CY = SVG_W / 2;
 const RING_R = 170;         // ↑ wider ring
 const BEAD_R = 10.5;        // ↑ significantly bigger beads (was 7.0)
 const SUMERU_R = 16;        // ↑ bigger sumeru bead (was 11)
-const STORAGE_MALA   = 'ss-japa-mala';
-const STORAGE_MANTRA = 'ss-japa-mantra';
-const STORAGE_BG     = 'ss-japa-bg';
-const STORAGE_SOUND  = 'ss-japa-sound';
+const STORAGE_MALA   = 'shoonaya-japa-mala';
+const STORAGE_MANTRA = 'shoonaya-japa-mantra';
+const STORAGE_BG     = 'shoonaya-japa-bg';
+const STORAGE_SOUND  = 'shoonaya-japa-sound';
 
 // ── Mala definitions ───────────────────────────────────────────────────────────
 const MALAS = [

@@ -52,7 +52,7 @@ const AMBIENT_OPTIONS = [
   { id: 'inst', label: 'Strings', emoji: '🎻' },
 ] as const;
 type AmbientId = typeof AMBIENT_OPTIONS[number]['id'];
-const STORAGE_ZEN_SOUND = 'ss-zen-ambient';
+const STORAGE_ZEN_SOUND = 'shoonaya-zen-ambient';
 
 // ─── WebAudio ambient ────────────────────────────────────────────────────────
 let ambientCtx: AudioContext | null = null;
