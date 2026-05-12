@@ -1147,10 +1147,14 @@ export default function HomeDashboard({
 
   // Light/dark theme detection — drives card surface swaps
   const [isDark, setIsDark] = useState(true);
-  useEffect(() => {
     const check = () => {
       const theme = document.documentElement.dataset.theme;
-      setIsDark(theme === 'dark' || !theme); // Default to dark if not set or dark
+      if (theme) {
+        setIsDark(theme === 'dark');
+      } else {
+        // Fallback to system preference if no data-theme attribute
+        setIsDark(window.matchMedia('(prefers-color-scheme: dark)').matches);
+      }
     };
     check();
     const obs = new MutationObserver(check);
@@ -1731,10 +1735,10 @@ export default function HomeDashboard({
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C5A059] opacity-80 mb-2 block">
               {dailyText.label}
             </span>
-            <p className="font-serif text-lg md:text-xl text-[var(--divine-text)] dark:text-white leading-relaxed italic px-4">
+            <p className="font-serif text-lg md:text-xl text-[var(--divine-text)] leading-relaxed italic px-4">
               “{dailyTextLine}”
             </p>
-            <p className="text-xs text-[var(--divine-text)]/60 dark:text-white/60 mt-2 px-8 line-clamp-1">
+            <p className="text-xs text-[var(--divine-text)] opacity-60 mt-2 px-8 line-clamp-1">
               {dailyText.meaning}
             </p>
           </motion.button>
