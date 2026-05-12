@@ -142,10 +142,10 @@ const hi: TranslationMap = {
   // Bhakti
   bhakti: 'भक्ति', pathOfDevotion: 'भक्ति का मार्ग', sacredSounds: 'भजन व कीर्तन',
   // Onboarding
-  welcomeTitle: 'सनातन संगम', welcomeSub: 'धर्म का घर',
+  welcomeTitle: 'Shoonaya', welcomeSub: 'धर्म का घर',
   yourTradition: 'आपकी परम्परा', yourLanguage: 'आपकी भाषा',
   yourLocation: 'आपका स्थान', whatBringsYou: 'आप यहाँ क्यों आए?',
-  enterApp: 'सनातन संगम में प्रवेश करें',
+  enterApp: 'Shoonaya में प्रवेश करें',
   // Kul
   kul: 'कुल', family: 'परिवार', lineage: 'वंश', sanskara: 'संस्कार',
   // Bhakti Revamp
@@ -210,10 +210,10 @@ const pa: TranslationMap = {
   // Bhakti
   bhakti: 'ਭਗਤੀ', pathOfDevotion: 'ਭਗਤੀ ਦਾ ਰਾਹ', sacredSounds: 'ਸ਼ਬਦ ਕੀਰਤਨ',
   // Onboarding
-  welcomeTitle: 'ਸਨਾਤਨ ਸੰਗਮ', welcomeSub: 'ਧਰਮ ਦਾ ਘਰ',
+  welcomeTitle: 'Shoonaya', welcomeSub: 'ਧਰਮ ਦਾ ਘਰ',
   yourTradition: 'ਤੁਹਾਡੀ ਪਰੰਪਰਾ', yourLanguage: 'ਤੁਹਾਡੀ ਭਾਸ਼ਾ',
   yourLocation: 'ਤੁਹਾਡੀ ਜਗ੍ਹਾ', whatBringsYou: 'ਤੁਸੀਂ ਇੱਥੇ ਕਿਉਂ ਆਏ?',
-  enterApp: 'ਸਨਾਤਨ ਸੰਗਮ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ',
+  enterApp: 'Shoonaya ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ',
   // Kul
   kul: 'ਕੁਲ', family: 'ਪਰਿਵਾਰ', lineage: 'ਵੰਸ਼', sanskara: 'ਸੰਸਕਾਰ',
   // Bhakti Revamp

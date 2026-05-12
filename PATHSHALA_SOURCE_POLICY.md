@@ -4,7 +4,7 @@ Last updated: 2026-04-09
 
 ## Purpose
 
-This document defines what Sanatan Sangam can honestly store, show, and claim inside `Parampara Pathshala`.
+This document defines what Shoonaya can honestly store, show, and claim inside `Parampara Pathshala`.
 
 This is a launch-trust document, not only an editorial note.
 

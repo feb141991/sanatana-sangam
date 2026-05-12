@@ -65,56 +65,57 @@ const SCREEN_BG: Record<number, string> = {
 function SacredFlame() {
   const prefersReducedMotion = useReducedMotion();
   return (
-    <div className="relative flex items-center justify-center mx-auto" style={{ width: 120, height: 120 }}>
-      {/* Outer breathing halo */}
+    <div className="relative flex items-center justify-center mx-auto" style={{ width: 240, height: 240 }}>
+      {/* Outer breathing halo — Aura */}
       <motion.div
         className="absolute rounded-full"
-        style={{ inset: 0, background: 'radial-gradient(circle, rgba(200,120,24,0.18) 0%, transparent 70%)' }}
-        animate={prefersReducedMotion ? {} : { scale: [1, 1.22, 1], opacity: [0.4, 0.7, 0.4] }}
+        style={{ inset: 0, background: 'radial-gradient(circle, rgba(200,120,24,0.22) 0%, transparent 75%)' }}
+        animate={prefersReducedMotion ? {} : { scale: [1, 1.15, 1], opacity: [0.5, 0.8, 0.5] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
       />
       {/* Mid glow */}
       <motion.div
         className="absolute rounded-full"
-        style={{ width: 68, height: 68, background: 'radial-gradient(circle, rgba(200,146,74,0.32) 0%, transparent 70%)' }}
-        animate={prefersReducedMotion ? {} : { scale: [1, 1.3, 0.92, 1], opacity: [0.5, 0.9, 0.55, 0.5] }}
+        style={{ width: 136, height: 136, background: 'radial-gradient(circle, rgba(200,146,74,0.38) 0%, transparent 70%)' }}
+        animate={prefersReducedMotion ? {} : { scale: [1, 1.2, 0.95, 1], opacity: [0.6, 1, 0.65, 0.6] }}
         transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
       />
       {/* Flame body */}
       <motion.div
         style={{
-          width: 18, height: 30,
+          width: 36, height: 60,
           background: 'linear-gradient(180deg, #fffde0 0%, #ffc040 38%, #ff7020 72%, #cc3010 100%)',
           borderRadius: '50% 50% 50% 50% / 36% 36% 64% 64%',
-          boxShadow: '0 0 18px rgba(255,140,20,0.85), 0 0 6px rgba(255,240,180,0.5)',
-          position: 'relative', top: -14,
+          boxShadow: '0 0 36px rgba(255,140,20,0.95), 0 0 12px rgba(255,240,180,0.6)',
+          position: 'relative', top: -28,
         }}
         animate={prefersReducedMotion ? {} : {
-          scaleX: [1, 1.12, 0.9, 1.08, 1],
-          scaleY: [1, 0.92, 1.08, 0.95, 1],
-          rotate: [-2, 4, -3, 3, -2],
+          scaleX: [1, 1.1, 0.92, 1.05, 1],
+          scaleY: [1, 0.95, 1.05, 0.98, 1],
+          rotate: [-1, 2, -1.5, 1.5, -1],
         }}
         transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut' }}
       />
       {/* Flame highlight */}
       <div style={{
-        position: 'absolute', top: '20%', width: 6, height: 12,
-        background: 'rgba(255,255,240,0.55)',
+        position: 'absolute', top: '20%', width: 12, height: 24,
+        background: 'rgba(255,255,240,0.65)',
         borderRadius: '50%',
-        filter: 'blur(2px)',
-        transform: 'translateX(-3px)',
+        filter: 'blur(3px)',
+        transform: 'translateX(-6px)',
       }} />
       {/* Diya bowl */}
       <div style={{
-        position: 'absolute', top: '53%', width: 42, height: 12,
+        position: 'absolute', top: '53%', width: 84, height: 24,
         background: 'linear-gradient(90deg, #6b3412 0%, #b86c28 48%, #6b3412 100%)',
-        borderRadius: '2px 2px 50% 50% / 2px 2px 80% 80%',
+        borderRadius: '4px 4px 50% 50% / 4px 4px 80% 80%',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
       }} />
       {/* Oil wick line */}
       <div style={{
-        position: 'absolute', top: '50%', width: 3, height: 8,
-        background: 'rgba(255,200,120,0.6)',
-        borderRadius: '2px',
+        position: 'absolute', top: '50%', width: 6, height: 16,
+        background: 'rgba(255,200,120,0.7)',
+        borderRadius: '4px',
       }} />
     </div>
   );
@@ -362,20 +363,20 @@ export default function OnboardingClient({ userId, traditionValue = '', hasTradi
                   <div className="space-y-4">
                     {/* Tradition-aware greeting */}
                     <motion.div
-                      initial={prefersReducedMotion ? undefined : { opacity: 0, y: -6 }}
-                      animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-                      transition={{ delay: 0.28, duration: 0.5 }}
-                      className="space-y-0.5"
+                      initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.8, y: -10 }}
+                      animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1, y: 0 }}
+                      transition={{ delay: 0.28, duration: 0.6, type: 'spring' }}
+                      className="space-y-1"
                     >
                       <p
-                        className="text-[1.35rem] font-semibold tracking-wide leading-tight"
-                        style={{ color: 'rgba(200,146,74,0.90)', fontFamily: 'var(--font-devanagari)' }}
+                        className="text-[2rem] font-semibold tracking-wide leading-tight"
+                        style={{ color: 'rgba(240,180,100,0.95)', fontFamily: 'var(--font-devanagari)', textShadow: '0 0 30px rgba(200,146,74,0.4)' }}
                       >
                         {wg.script}
                       </p>
                       <p
-                        className="text-[10px] font-medium tracking-[0.22em] uppercase"
-                        style={{ color: 'rgba(200,146,74,0.38)' }}
+                        className="text-[12px] font-medium tracking-[0.25em] uppercase"
+                        style={{ color: 'rgba(200,146,74,0.45)' }}
                       >
                         {wg.roman}
                       </p>
@@ -383,27 +384,28 @@ export default function OnboardingClient({ userId, traditionValue = '', hasTradi
 
                     {/* Sanskrit sub-label */}
                     <motion.p
-                      initial={prefersReducedMotion ? undefined : { opacity: 0 }}
-                      animate={prefersReducedMotion ? undefined : { opacity: 1 }}
-                      transition={{ delay: 0.35 }}
-                      className="text-sm tracking-[0.28em] font-medium"
-                      style={{ color: 'rgba(200, 146, 74, 0.50)', fontFamily: 'var(--font-devanagari)' }}
+                      initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.5 }}
+                      animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1.2 }}
+                      transition={{ delay: 0.4, duration: 0.8, type: 'spring' }}
+                      className="text-lg tracking-[0.35em] font-medium"
+                      style={{ color: 'rgba(200, 146, 74, 0.70)', fontFamily: 'var(--font-devanagari)', textShadow: '0 0 20px rgba(200,146,74,0.3)' }}
                     >
                       शून्य
                     </motion.p>
 
                     {/* Main title — serif */}
                     <motion.h1
-                      initial={prefersReducedMotion ? undefined : { opacity: 0, y: 8 }}
-                      animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-                      transition={{ delay: 0.45, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                      initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.9, y: 12 }}
+                      animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1, y: 0 }}
+                      transition={{ delay: 0.5, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                       style={{
                         fontFamily: 'var(--font-serif)',
-                        fontSize: '2.4rem',
+                        fontSize: '3.2rem',
                         fontWeight: 600,
                         lineHeight: 1.1,
                         letterSpacing: '-0.02em',
-                        color: '#f0e2c0',
+                        color: '#f5e8c0',
+                        textShadow: '0 4px 40px rgba(200,120,24,0.15)',
                       }}
                     >
                       Shoonaya
@@ -496,10 +498,19 @@ export default function OnboardingClient({ userId, traditionValue = '', hasTradi
 
                           {/* Emoji well */}
                           <div
-                            className="relative flex-shrink-0 w-11 h-11 rounded-[0.85rem] flex items-center justify-center text-2xl"
-                            style={{ background: selected ? 'rgba(200,146,74,0.18)' : 'rgba(255,255,255,0.05)' }}
+                            className="relative flex-shrink-0 w-20 h-20 rounded-[1.2rem] flex items-center justify-center text-4xl"
+                            style={{ 
+                              background: selected ? 'rgba(200,146,74,0.22)' : 'rgba(255,255,255,0.05)',
+                              boxShadow: selected ? '0 0 30px rgba(200,146,74,0.25)' : 'none'
+                            }}
                           >
-                            {t.emoji}
+                            <motion.span
+                              initial={{ scale: 0.8 }}
+                              animate={{ scale: selected ? 1.1 : 1 }}
+                              transition={{ type: 'spring', stiffness: 300 }}
+                            >
+                              {t.emoji}
+                            </motion.span>
                           </div>
 
                           <div className="flex-1 min-w-0 relative">
@@ -1030,20 +1041,21 @@ export default function OnboardingClient({ userId, traditionValue = '', hasTradi
 
                     {/* Sacred mantra card */}
                     <motion.div
-                      initial={prefersReducedMotion ? undefined : { opacity: 0, y: 16 }}
-                      animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-                      transition={{ delay: 0.45, duration: 0.5 }}
-                      className="w-full rounded-2xl px-6 py-5 space-y-2"
+                      initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.8, y: 20 }}
+                      animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1, y: 0 }}
+                      transition={{ delay: 0.45, duration: 0.6, type: 'spring' }}
+                      className="w-full rounded-2xl px-6 py-8 space-y-4"
                       style={{
-                        background: 'rgba(200,146,74,0.08)',
-                        border: '1px solid rgba(200,146,74,0.20)',
-                        backdropFilter: 'blur(12px)',
+                        background: 'rgba(200,146,74,0.12)',
+                        border: '1px solid rgba(200,146,74,0.30)',
+                        backdropFilter: 'blur(16px)',
+                        boxShadow: '0 0 50px rgba(200,146,74,0.15)',
                       }}
                     >
-                      <p className="text-2xl font-semibold leading-relaxed" style={{ color: '#f5dfa0', fontFamily: 'var(--font-deva, serif)' }}>
+                      <p className="text-4xl font-semibold leading-relaxed" style={{ color: '#f5dfa0', fontFamily: 'var(--font-deva, serif)', textShadow: '0 0 30px rgba(245,223,160,0.4)' }}>
                         {d.mantra}
                       </p>
-                      <p className="text-xs leading-relaxed" style={{ color: 'rgba(220,190,130,0.55)' }}>
+                      <p className="text-sm leading-relaxed" style={{ color: 'rgba(220,190,130,0.65)' }}>
                         {d.meaning}
                       </p>
                     </motion.div>

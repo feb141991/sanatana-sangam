@@ -68,12 +68,12 @@ nav {
 #sky-canvas { position:absolute;inset:0;width:100%;height:100%;pointer-events:none; }
 #celebration-layer { position:fixed;inset:0;z-index:10020;pointer-events:none;overflow:hidden; }
 #splash-content { position:relative;z-index:2;text-align:center;padding:0 40px;pointer-events:auto;width:100%;max-width:1060px;margin:0 auto; }
-#splash-deva { font-family:var(--fh);font-size:clamp(16px,2.2vw,26px);color:rgba(216,138,28,0.60);letter-spacing:0.15em;margin-bottom:16px; }
+#splash-deva { font-family:var(--fh);font-size:clamp(32px,4.4vw,52px);color:rgba(216,138,28,0.85);letter-spacing:0.25em;margin-bottom:24px; text-shadow: 0 0 40px rgba(216,138,28,0.4); }
 #splash-title { font-family:var(--fd);font-size:clamp(38px,7vw,82px);font-weight:300;color:#FFFEF8;line-height:1.04;letter-spacing:-0.02em;margin-bottom:12px; }
 #splash-title em { color:#D88A1C;font-style:italic; }
-#splash-sub { font-size:clamp(11px,1.6vw,14px);color:rgba(255,254,248,0.35);letter-spacing:0.10em;margin-bottom:32px;font-weight:300; }
-#splash-trads { display:flex;gap:24px;justify-content:center;align-items:center; }
-.s-trad { font-size:24px; }
+#splash-sub { font-size:clamp(22px,3.2vw,28px);color:rgba(255,254,248,0.55);letter-spacing:0.12em;margin-bottom:40px;font-weight:400; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
+#splash-trads { display:flex;gap:40px;justify-content:center;align-items:center; }
+.s-trad { font-size:56px; transition: transform 0.3s ease; }
 .s-trad.hindu { font-family:var(--fh);color:#D88A1C; }
 .s-trad.sikh  { font-family:var(--fg);color:#5BA4D4; }
 .s-trad.bud   { font-family:'Segoe UI Symbol','Apple Symbols',system-ui;color:#E08090; }
@@ -81,8 +81,8 @@ nav {
 .s-trad.jain svg { display:block; }
 /* tradition pulse — each glows in turn, 8 s cycle, 2 s stagger */
 @keyframes tradPulse {
-  0%,20%,100% { opacity:0.45; filter:none; }
-  25%,45%     { opacity:0.95; filter:drop-shadow(0 0 8px currentColor); }
+  0%,20%,100% { opacity:0.35; filter:none; transform: scale(0.85); }
+  25%,45%     { opacity:1; filter:drop-shadow(0 0 24px currentColor) drop-shadow(0 0 10px currentColor); transform: scale(1.3); }
 }
 .s-trad.hindu { animation:tradPulse 8s 0s   ease-in-out infinite; }
 .s-trad.sikh  { animation:tradPulse 8s 2s   ease-in-out infinite; }
@@ -703,14 +703,14 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
   <canvas id="sky-canvas"></canvas>
   <div id="celebration-layer" aria-hidden="true"></div>
   <div id="splash-content">
-    <div id="splash-deva">सनातन संगम</div>
+    <div id="splash-deva">शून्य</div>
     <h1 id="splash-title">Find your <em>infinite.</em></h1>
     <div id="splash-trads">
       <span class="s-trad hindu" title="Hindu">ॐ</span>
       <span class="s-trad sikh"  title="Sikh">ੴ</span>
       <span class="s-trad bud"   title="Buddhist">☸</span>
       <span class="s-trad jain"  title="Jain"><!-- Jain Ahimsa hand -->
-        <svg width="28" height="28" viewBox="0 0 36 40" fill="none" xmlns="http://www.w3.org/2000/svg" opacity="0.85">
+        <svg width="56" height="56" viewBox="0 0 36 40" fill="none" xmlns="http://www.w3.org/2000/svg" opacity="0.9">
           <!-- hand outline -->
           <path d="M18 38C10 38 5 31 5 24V13C5 11.3 6.3 10 8 10C9.7 10 11 11.3 11 13V19
                    C11 17.3 12.3 16 14 16C15.7 16 17 17.3 17 19V18C17 16.3 18.3 15 20 15
