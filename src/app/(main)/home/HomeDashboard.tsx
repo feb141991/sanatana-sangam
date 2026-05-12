@@ -1763,7 +1763,7 @@ export default function HomeDashboard({
                     <span className="sacred-pulse-label">{sacredPulse.label} Today</span>
                     <span className="sacred-pulse-desc">{sacredPulse.description} Tap to view significance.</span>
                   </div>
-                  <ChevronRight size={16} className="text-amber-500/80 shrink-0" />
+                  <ChevronRight size={16} className="text-[#A0622A]/80 shrink-0" />
                 </div>
               </Link>
             </motion.div>
@@ -1870,10 +1870,6 @@ export default function HomeDashboard({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
           className="sacred-pulse-banner group relative hover:scale-[1.02] transition-transform duration-300 block overflow-hidden"
-          style={{ 
-            borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(157,100,60,0.15)',
-            boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.3)' : '0 8px 32px rgba(157,100,60,0.05)',
-          }}
         >
           <Link 
             href={`/dharm-veer/${dharmVeer.id}`}
@@ -1882,14 +1878,14 @@ export default function HomeDashboard({
           >
             <span className="sacred-pulse-emoji" aria-hidden="true">{dharmVeer.emoji}</span>
             <div className="sacred-pulse-body flex-1 min-w-0">
-              <span className="sacred-pulse-label" style={{ color: isDark ? 'var(--text-cream)' : '#1a140e' }}>
+              <span className="sacred-pulse-label">
                 {lang !== 'en' && dharmVeer.nameLocal ? dharmVeer.nameLocal : dharmVeer.name}
               </span>
               <span className="sacred-pulse-desc line-clamp-1">
                 {lang !== 'en' && dharmVeerTradMeta.dharmVeerLocal ? dharmVeerTradMeta.dharmVeerLocal : t('journeyLabel')} · {lang !== 'en' && dharmVeerTradMeta.labelLocal ? dharmVeerTradMeta.labelLocal : dharmVeerTradMeta.label}
               </span>
             </div>
-            <ChevronRight size={16} className="text-amber-500/80 shrink-0" aria-hidden="true" />
+            <ChevronRight size={16} className="text-[#A0622A]/80 shrink-0" aria-hidden="true" />
           </Link>
         </motion.div>
 

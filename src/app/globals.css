@@ -868,20 +868,18 @@ body {
   margin: 0 16px 10px;
   padding: 13px 16px;
   border-radius: 14px;
-  background: rgba(200, 146, 74, 0.10);
-  border: 1px solid rgba(200, 146, 74, 0.22);
+  background: rgba(255, 253, 248, 0.94); /* Warm Ivory Light */
+  border: 1px solid rgba(157, 100, 60, 0.15);
+  box-shadow: 0 8px 32px rgba(157, 100, 60, 0.05);
   position: relative;
   overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 :root[data-theme='dark'] .sacred-pulse-banner {
-  background: rgba(200, 146, 74, 0.08);
-  border-color: rgba(200, 146, 74, 0.18);
-}
-
-:root[data-theme='light'] .sacred-pulse-banner {
-  background: rgba(200, 146, 74, 0.09);
-  border-color: rgba(200, 146, 74, 0.28);
+  background: rgba(255, 253, 248, 0.92);
+  border-color: rgba(200, 146, 74, 0.25);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 
 .sacred-pulse-emoji {
@@ -901,22 +899,22 @@ body {
 .sacred-pulse-label {
   font-family: var(--font-serif);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.01em;
-  color: var(--brand-primary);
-}
-
-:root[data-theme='light'] .sacred-pulse-label {
-  color: #A0622A;
+  color: #1a140e; /* Dark Brown/Black for light theme */
 }
 
 .sacred-pulse-desc {
   font-size: 12.5px;
   line-height: 1.45;
-  color: var(--text-muted-warm, rgba(242, 234, 214, 0.70));
+  color: rgba(60, 45, 28, 0.75);
 }
 
-:root[data-theme='light'] .sacred-pulse-desc {
+:root[data-theme='dark'] .sacred-pulse-label {
+  color: #1a140e;
+}
+
+:root[data-theme='dark'] .sacred-pulse-desc {
   color: rgba(60, 45, 28, 0.70);
 }
 

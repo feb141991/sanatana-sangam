@@ -243,9 +243,12 @@ export default function OnboardingClient({ userId, traditionValue = '', hasTradi
       const { latitude: lat, longitude: lon } = pos.coords;
       setLatitude(lat); setLongitude(lon);
       try {
-        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`, {
+          headers: { 'User-Agent': 'Shoonaya-App-v1' }
+        });
         const d = await r.json();
-        setCity(d.address?.city || d.address?.town || d.address?.village || d.address?.county || '');
+        const city = d.address?.city || d.address?.town || d.address?.municipality || d.address?.village || d.address?.suburb || d.address?.county || '';
+        setCity(city);
         setCountry(d.address?.country || '');
       } catch { /* silent */ }
     } catch { toast.error('Could not detect location — type your city instead'); }

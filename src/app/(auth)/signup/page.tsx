@@ -124,13 +124,24 @@ export default function SignupPage() {
       async (pos) => {
         const { latitude, longitude } = pos.coords;
         try {
-          const res  = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`, { headers: { 'Accept-Language': 'en' } });
+          const res  = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`, { 
+            headers: { 
+              'Accept-Language': 'en',
+              'User-Agent': 'Shoonaya-App-v1'
+            } 
+          });
           const data = await res.json();
           const addr = data.address ?? {};
-          const city = addr.city || addr.town || addr.municipality || '';
+          const city = addr.city || addr.town || addr.municipality || addr.village || addr.suburb || addr.county || '';
           const country = addr.country || '';
           setForm(f => ({ ...f, city, country, latitude, longitude }));
-          toast.success(`📍 ${city} detected!`);
+          if (city) {
+            toast.success(`📍 ${city} detected!`);
+          } else if (country) {
+            toast.success(`📍 Located in ${country}`);
+          } else {
+            toast.error('Could not determine exact location');
+          }
         } catch {
           toast.error('Location lookup failed');
         } finally {
