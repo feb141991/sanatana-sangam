@@ -1147,6 +1147,7 @@ export default function HomeDashboard({
 
   // Light/dark theme detection — drives card surface swaps
   const [isDark, setIsDark] = useState(true);
+  useEffect(() => {
     const check = () => {
       const theme = document.documentElement.dataset.theme;
       if (theme) {
