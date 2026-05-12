@@ -42,7 +42,7 @@ export async function GET(request: Request) {
 
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, shloka_streak, full_name, tradition, timezone, latitude, longitude, last_shloka_date, wants_shloka_reminders, notification_quiet_hours_start, notification_quiet_hours_end');
+      .select('id, shloka_streak, full_name, email, tradition, timezone, latitude, longitude, last_shloka_date, wants_shloka_reminders, notification_quiet_hours_start, notification_quiet_hours_end');
 
     if (usersError) {
       console.error('Shloka cron users query failed:', usersError);
@@ -74,6 +74,8 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'No users in the local reminder window', sent: 0 });
     }
 
+    const { sendShoonayaEmail } = await import('@/lib/email');
+
     const notifications = eligibleUsers.map((u) => {
       const timeZone  = resolveTimeZone((u as any).timezone);
       const localDate = getLocalDateIso(now, timeZone);
@@ -84,6 +86,22 @@ export async function GET(request: Request) {
         ? `Don't break your ${streak}-day streak! 🔥`
         : `Start your ${meta.vocabulary.shloka.toLowerCase()} journey today 🌱`;
 
+      // ── Trigger Email for Milestones or At-Risk Streaks ──
+      if (u.email && (streak === 6 || streak === 29 || streak === 0)) {
+        void sendShoonayaEmail({
+          to: u.email,
+          subject: streak === 0 ? 'Start Your Infinity' : 'Your Streak is Glowing!',
+          shloka: meta.vocabulary.shloka,
+          meaning: `Take a moment for today's ${meta.sacredTextLabel}.`,
+          title: streak === 0 ? 'Find Your Infinity' : 'Don\'t Let the Flame Go Out',
+          body: streak === 0 
+            ? 'Your path at Shoonaya is waiting for your first step today.' 
+            : `You have maintained your Sadhana for ${streak} days. One more step and you reach a new milestone!`,
+          ctaText: 'FIND YOUR INFINITY',
+          ctaUrl: actionUrl
+        });
+      }
+
       // Engine enrichment — mention special tithi when relevant
       let tithiSuffix = '';
       try {
@@ -92,12 +110,7 @@ export async function GET(request: Request) {
         const times = getPanchangTimes(now, lat, lon);
         const tithiReminder = getTithiReminder(times.tithiIndex, tradition);
         if (tithiReminder) {
-          // Special tithi — lead with it instead of streak (more meaningful)
           tithiSuffix = ` Today is ${times.tithi} — ${tithiReminder.emoji} an especially powerful evening for your reading.`;
-        }
-        // Skip the shloka if it's Rahu Kalam right now (rare at 7 PM but possible)
-        if (isInWindow(now, times.rahuKaalStart, times.rahuKaalEnd, 0)) {
-          tithiSuffix += ' (Avoid starting anything new during Rahu Kalam — read after it passes.)';
         }
       } catch { /* enrichment is best-effort */ }
 

@@ -18,7 +18,7 @@ const ZenithSensoryContext = createContext<ZenithSensoryContextType | undefined>
 // Ambiance URLs (High-quality placeholders)
 const AMBIANCE_MAP: Record<SensoryTheme, string | null> = {
   home:      'https://assets.mixkit.co/sfx/preview/mixkit-distant-church-bells-ringing-585.mp3', // Placeholder for temple bells
-  bhakti:    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Placeholder for meditative drone
+  bhakti:    null, // Removed per user request
   pathshala: 'https://assets.mixkit.co/sfx/preview/mixkit-wind-chimes-gentle-breeze-2718.mp3', // Placeholder for library/wind
   panchang:  'https://assets.mixkit.co/sfx/preview/mixkit-ambient-night-crickets-and-wind-2483.mp3', // Placeholder for cosmic night
   none:      null,

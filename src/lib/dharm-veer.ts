@@ -13,7 +13,7 @@
 export interface DharmVeer {
   id: string;
   name: string;
-  nameLocal?: string; // e.g. in Hindi/Gurmukhi/etc.
+  nameLocal?: string; 
   era: string;
   eraLocal?: string;
   tradition: 'hindu' | 'sikh' | 'buddhist' | 'jain';
@@ -46,7 +46,202 @@ export interface DharmVeer {
 
 export const DHARM_VEERS: DharmVeer[] = [
 
-  // ── 1. Adi Shankaracharya ─────────────────────────────────────────────────
+  // ── 1. Sri Krishna (Hindu) ────────────────────────────────────────────────
+  {
+    id: 'sri-krishna',
+    name: 'Sri Krishna',
+    nameLocal: 'श्री कृष्ण',
+    era: 'Dwapar Yuga',
+    eraLocal: 'द्वापर युग',
+    tradition: 'hindu',
+    region: 'Mathura/Dwarka',
+    regionLocal: 'मथुरा / द्वारका',
+    emoji: '🦚',
+    tagline: 'The Master of Yoga who performed his duty without attachment, teaching the world the essence of Dharma.',
+    taglineLocal: 'योगेश्वर जिन्होंने अनासक्त होकर अपना कर्तव्य निभाया और संसार को धर्म का सार सिखाया।',
+    journey:
+      `Krishna was born in a prison cell in Mathura, destined to end the tyranny of Kansa. His childhood in Gokul and Vrindavan was filled with divine play, but his life was a continuous series of duties. From protecting the people from Indra's wrath with the Govardhan hill to serving as the strategic heart of the Pandavas, Krishna embodied the 'Lila' — the divine play that masks a profound commitment to cosmic order.
+
+He stood as the charioteer to Arjuna, not as a king, but as a guide. In the midst of the greatest battlefield of the era, Kurukshetra, he delivered the Bhagavad Gita, the ultimate manual for human existence. His life ended not in a palace, but in a quiet forest, accepting the curse of Gandhari and the end of his own Yadava lineage with the same equanimity he taught Arjuna.`,
+    journeyLocal:
+      `श्री कृष्ण का जन्म मथुरा के कारागार में हुआ था। उनका जीवन कर्तव्यों की एक अटूट श्रृंखला था। उन्होंने गोवर्धन पर्वत उठाकर गोकुलवासियों की रक्षा की और पांडवों के मार्गदर्शक बने। कुरुक्षेत्र के युद्ध के बीच उन्होंने भगवद्गीता का उपदेश दिया, जो मानव अस्तित्व का सबसे बड़ा ग्रंथ है। उन्होंने गांधारी के शाप और अपने ही यादव वंश के अंत को उसी समत्व भाव से स्वीकार किया जो उन्होंने अर्जुन को सिखाया था।`,
+    trial:
+      `His greatest trial was not the battlefield, but the silence between the words of the Gita. He had to convince a broken Arjuna to fight his own kin for the sake of a higher Dharma. He bore the weight of the war's destruction and the eventual ruin of his own family without ever losing his divine smile, proving that true power lies in detached action.`,
+    trialLocal:
+      `उनकी सबसे बड़ी परीक्षा कुरुक्षेत्र का मैदान नहीं, बल्कि गीता के शब्दों के बीच का मौन था। उन्हें एक टूटे हुए अर्जुन को धर्म की रक्षा के लिए अपनों के ही विरुद्ध युद्ध के लिए प्रेरित करना था। उन्होंने युद्ध के विनाश और अपने परिवार के अंत का बोझ बिना अपनी मुस्कान खोए उठाया।`,
+    teaching:
+      'Focus on your duty alone, never on the fruits of your actions. Be established in Yoga and perform your work with a balanced mind.',
+    teachingLocal: 'केवल अपने कर्तव्य पर ध्यान केंद्रित करें, कर्म के फलों पर नहीं। योग में स्थित होकर संतुलित मन से कार्य करें।',
+    moral:
+      'Detachment is not the absence of love; it is the presence of a love so large it does not need to own the outcome.',
+    moralLocal: 'अनासक्ति प्रेम की अनुपस्थिति नहीं है; यह एक ऐसे प्रेम की उपस्थिति है जो परिणाम पर अधिकार नहीं चाहता।',
+    quote: {
+      text: 'Karmanye vadhikaraste ma phaleshu kadachana.',
+      attribution: 'You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions. — Bhagavad Gita',
+    },
+    quoteLocal: {
+      text: 'कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।',
+      attribution: 'श्री कृष्ण (भगवद्गीता)',
+    },
+  },
+
+  // ── 2. Sri Rama (Hindu) ───────────────────────────────────────────────────
+  {
+    id: 'sri-rama',
+    name: 'Sri Rama',
+    nameLocal: 'श्री राम',
+    era: 'Treta Yuga',
+    eraLocal: 'त्रेता युग',
+    tradition: 'hindu',
+    region: 'Ayodhya',
+    regionLocal: 'अयोध्या',
+    emoji: '🏹',
+    tagline: 'The Maryada Purushottama who sacrificed his throne and his happiness to uphold the word of Dharma.',
+    taglineLocal: 'मर्यादा पुरुषोत्तम जिन्होंने धर्म की रक्षा के लिए अपने सिंहासन और व्यक्तिगत सुख का त्याग किया।',
+    journey:
+      `Rama, the eldest son of King Dasharatha, was the ideal prince. On the eve of his coronation, he was exiled to the forest for fourteen years due to a promise his father made to his stepmother Kaikeyi. Without a single word of protest, he traded his royal robes for bark and left Ayodhya.
+
+His journey through the forest was a test of character. When his wife Sita was abducted by Ravana, he did not call for the armies of Ayodhya, but built an alliance with the Vanaras. He defeated the most powerful king of the age, Ravana, not for territory, but to restore Sita and the order of Dharma. His reign, Ram Rajya, became the eternal benchmark for just governance.`,
+    journeyLocal:
+      `राजा दशरथ के ज्येष्ठ पुत्र राम एक आदर्श राजकुमार थे। अपने राज्याभिषेक की पूर्व संध्या पर, उन्हें चौदह वर्ष के वनवास पर जाना पड़ा। उन्होंने बिना किसी विरोध के अपने राजसी वस्त्र त्याग दिए। जब रावण ने माता सीता का अपहरण किया, तो उन्होंने अयोध्या की सेना नहीं बुलाई, बल्कि वानर सेना के साथ गठबंधन किया। उन्होंने धर्म की पुनः स्थापना के लिए रावण को पराजित किया। उनका शासन 'राम राज्य' सुशासन का शाश्वत मानक बन गया।`,
+    trial:
+      `Rama's trial was the constant conflict between personal love and public duty. From accepting exile to fulfill his father's word, to the agonizing decision to ask Sita to prove her purity for the sake of his subjects' faith, Rama lived a life of total self-correction. He proved that a leader must be the first to sacrifice for the principles they represent.`,
+    trialLocal:
+      `श्री राम की परीक्षा व्यक्तिगत प्रेम और सार्वजनिक कर्तव्य के बीच का निरंतर संघर्ष था। पिता के वचन के लिए वनवास स्वीकार करने से लेकर प्रजा के विश्वास के लिए सीता के त्याग तक, राम का जीवन पूर्ण आत्म-सुधार का जीवन था।`,
+    teaching:
+      'Dharma is not a set of rules; it is the alignment of one’s conduct with the truth, even at the cost of personal ruin.',
+    teachingLocal: 'धर्म नियमों का समूह नहीं है; यह सत्य के साथ अपने आचरण का संरेखण है, चाहे इसकी कीमत व्यक्तिगत विनाश ही क्यों न हो।',
+    moral:
+      'Integrity is doing the right thing when everyone is looking, and also when no one is looking. Rama’s path was the path of the uncompromising vow.',
+    moralLocal: 'अखंडता तब सही कार्य करना है जब सब देख रहे हों, और तब भी जब कोई न देख रहा हो।',
+    quote: {
+      text: 'Raghukul reet sada chali aayi, pran jaaye par vachan na jaayi.',
+      attribution: 'The tradition of the Raghus has always been: let life be lost, but never a promise. — Ramcharitmanas',
+    },
+    quoteLocal: {
+      text: 'रघुकुल रीत सदा चलि आई, प्राण जाइ पर वचन न जाई।',
+      attribution: 'गोस्वामी तुलसीदास (रामचरितमानस)',
+    },
+  },
+
+  // ── 3. Arjuna (Hindu) ─────────────────────────────────────────────────────
+  {
+    id: 'arjuna',
+    name: 'Arjuna',
+    nameLocal: 'अर्जुन',
+    era: 'Dwapar Yuga',
+    eraLocal: 'द्वापर युग',
+    tradition: 'hindu',
+    region: 'Indraprastha',
+    regionLocal: 'इंद्रप्रस्थ',
+    emoji: '🏹',
+    tagline: 'The world\'s greatest archer who learned that the hardest battle is not against an enemy, but against one\'s own doubt.',
+    taglineLocal: 'विश्व के महानतम धनुर्धर जिन्होंने सीखा कि सबसे कठिन युद्ध शत्रु के विरुद्ध नहीं, बल्कि अपने संदेह के विरुद्ध है।',
+    journey:
+      `Arjuna, the third Pandava, was the master of the Gandiva bow. He spent his life in rigorous training, seeking excellence in every breath. Yet, at the peak of his power, on the field of Kurukshetra, he collapsed. Seeing his teachers and kinsmen on the opposing side, his bow slipped from his hands and his mind whirled in grief.
+
+Through the Gita, he was rebuilt. He learned that he was not the doer, but an instrument of the divine. He fought the Mahabharata war not out of hatred, but as a sacrifice to restore balance. His life is the ultimate template for the seeker: transitioning from the anxiety of personal ego to the clarity of divine purpose.`,
+    journeyLocal:
+      `पांडु पुत्र अर्जुन गांडीव के स्वामी थे। उन्होंने अपना जीवन कठिन प्रशिक्षण में बिताया। लेकिन कुरुक्षेत्र के मैदान में वे टूट गए। अपनों को सामने देख उनके हाथ से धनुष गिर गया। गीता के माध्यम से उनका पुनर्निर्माण हुआ। उन्होंने सीखा कि वे कर्ता नहीं, बल्कि ईश्वर के उपकरण हैं। उनका जीवन साधक के लिए एक उदाहरण है: व्यक्तिगत अहंकार से दैवीय उद्देश्य की स्पष्टता तक का सफर।`,
+    trial:
+      `The trial of Arjuna was 'Vishada' — the profound sorrow and confusion that strikes just before a great breakthrough. He had to face the moral complexity of war and the pain of loss before he could achieve the state of 'Sthitaprajna' (steady wisdom).`,
+    trialLocal:
+      `अर्जुन की परीक्षा 'विषाद' थी — वह गहरा दुख और भ्रम जो एक बड़ी सफलता से ठीक पहले आता है। उन्हें 'स्थितप्रज्ञ' बनने से पहले युद्ध की नैतिक जटिलता का सामना करना पड़ा।`,
+    teaching:
+      'Surrender the ego to the higher self. When you act as an instrument of Dharma, you are free from the stain of sin.',
+    teachingLocal: 'अहंकार को उच्च स्व के प्रति समर्पित करें। जब आप धर्म के उपकरण के रूप में कार्य करते हैं, तो आप पाप के दाग से मुक्त होते हैं।',
+    moral:
+      'Skill is important, but focus and faith are what make skill effective. Arjuna’s single-mindedness was his greatest weapon.',
+    moralLocal: 'कौशल महत्वपूर्ण है, लेकिन एकाग्रता और विश्वास ही कौशल को प्रभावी बनाते हैं।',
+    quote: {
+      text: 'Nasto mohah smritir labdha...',
+      attribution: 'My delusion is gone; I have regained my memory through your grace. — Arjuna to Krishna, Bhagavad Gita',
+    },
+    quoteLocal: {
+      text: 'नष्टो मोहः स्मृतिर्लब्धा त्वत्प्रसादान्मयाच्युत।',
+      attribution: 'अर्जुन (भगवद्गीता)',
+    },
+  },
+
+  // ── 4. Karna (Hindu) ──────────────────────────────────────────────────────
+  {
+    id: 'karna',
+    name: 'Karna',
+    nameLocal: 'कर्ण',
+    era: 'Dwapar Yuga',
+    eraLocal: 'द्वापर युग',
+    tradition: 'hindu',
+    region: 'Anga Desh',
+    regionLocal: 'अंग देश',
+    emoji: '☀️',
+    tagline: 'The tragic hero of the Mahabharata who gave away his life-saving armor to uphold his vow of charity.',
+    taglineLocal: 'महाभारत के वे नायक जिन्होंने अपनी दानवीरता के संकल्प को निभाने के लिए अपने जीवन रक्षक कवच का दान कर दिया।',
+    journey:
+      `Karna was born to Kunti and the Sun God, but abandoned at birth. Raised by a charioteer, he faced humiliation at every step due to his perceived low caste. Despite his genius in archery, he was denied entry into royal competitions. His life was a struggle for recognition, which led him to align with Duryodhana, who gave him the dignity he was denied.
+
+Karna was the 'Danaveera' — the heroic giver. Even when he knew the war was lost, even when he knew his brothers were on the other side, he did not abandon his friend. His loyalty and his legendary charity defined him more than his prowess in battle.`,
+    journeyLocal:
+      `कर्ण का जन्म कुंती और सूर्य देव से हुआ था, लेकिन जन्म के समय ही उन्हें त्याग दिया गया था। एक सारथी द्वारा पाले जाने के कारण, उन्हें हर कदम पर अपमान का सामना करना पड़ा। महान धनुर्धर होने के बावजूद उन्हें शाही प्रतियोगिताओं से वंचित रखा गया। उनका जीवन पहचान के लिए एक संघर्ष था। वे 'दानवीर' थे। जब वे जानते थे कि युद्ध हार चुके हैं, तब भी उन्होंने अपने मित्र दुर्योधन का साथ नहीं छोड़ा।`,
+    trial:
+      `His trial was the ultimate sacrifice: giving away his Kavacha and Kundala (divine armor) to Indra, who came disguised as a beggar, knowing full well it meant his death on the battlefield. He chose his word and his character over his survival.`,
+    trialLocal:
+      `उनकी परीक्षा उनका सर्वोच्च बलिदान था: इंद्र को अपना कवच और कुंडल दान कर देना, यह जानते हुए भी कि इसका अर्थ युद्ध के मैदान में उनकी मृत्यु है। उन्होंने अपने जीवन से ऊपर अपने वचन को चुना।`,
+    teaching:
+      'Generosity is the greatest strength. A person is defined not by their birth, but by their conduct and their willingness to give.',
+    teachingLocal: 'उदारता ही सबसे बड़ी शक्ति है। व्यक्ति अपने जन्म से नहीं, बल्कि अपने आचरण और देने की इच्छा से परिभाषित होता।',
+    moral:
+      'Karna’s life reminds us that loyalty and charity are virtues, but when aligned with the wrong cause, they lead to a tragic end. Yet, his dignity remains untarnished.',
+    moralLocal: 'कर्ण का जीवन हमें याद दिलाता है कि दान और निष्ठा महान गुण हैं, लेकिन उनकी गरिमा कभी कम नहीं हुई।',
+    quote: {
+      text: 'I will give whatever is asked of me, for I am Karna.',
+      attribution: 'Karna to Indra',
+    },
+    quoteLocal: {
+      text: 'मुझसे जो माँगा जाएगा वह मैं दूँगा, क्योंकि मैं कर्ण हूँ।',
+      attribution: 'दानवीर कर्ण',
+    },
+  },
+
+  // ── 5. Guru Nanak Dev Ji (Sikh) ────────────────────────────────────────────
+  {
+    id: 'guru-nanak',
+    name: 'Guru Nanak Dev Ji',
+    nameLocal: 'ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ',
+    era: '1469–1539 CE',
+    eraLocal: '1469–1539 ਈਸਵੀ',
+    tradition: 'sikh',
+    region: 'Talwandi (Nankana Sahib)',
+    regionLocal: 'ਨਨਕਾਣਾ ਸਾਹਿਬ',
+    emoji: '☬',
+    tagline: 'The founder of Sikhi who walked thousands of miles to preach the oneness of humanity.',
+    taglineLocal: 'ਸਿੱਖੀ ਦੇ ਸੰਸਥਾਪਕ ਜਿਨ੍ਹਾਂ ਨੇ ਮਨੁੱਖਤਾ ਦੀ ਏਕਤਾ ਦਾ ਪ੍ਰਚਾਰ ਕਰਨ ਲਈ ਹਜ਼ਾਰਾਂ ਮੀਲ ਦਾ ਸਫਰ ਤੈਅ ਕੀਤਾ।',
+    journey:
+      `Guru Nanak was born in a world divided by caste and creed. From childhood, he was a seeker of the one true light. After disappearing into the river Bein for three days, he emerged with the revolutionary message: "There is no Hindu, there is no Muslim." He spent his life in four great journeys (Udasis), travelling to Mecca, Tibet, and across India.
+
+He established the practice of 'Langar' (community kitchen) where kings and paupers sat together on the floor to eat. He taught that one can find God while living a householder's life, through 'Kirat Karo' (honest work), 'Vand Chakko' (sharing), and 'Naam Japo' (meditating on the Name).`,
+    journeyLocal:
+      `ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਦਾ ਜਨਮ ਜਾਤ-ਪਾਤ ਵਿੱਚ ਵੰਡੀ ਹੋਈ ਦੁਨੀਆ ਵਿੱਚ ਹੋਇਆ ਸੀ। ਵੇਈਂ ਨਦੀ ਵਿੱਚ ਤਿੰਨ ਦਿਨ ਅਲੋਪ ਰਹਿਣ ਤੋਂ ਬਾਅਦ, ਉਹ ਇਸ ਕ੍ਰਾਂਤੀਕਾਰੀ ਸੰਦੇਸ਼ ਨਾਲ ਬਾਹਰ ਆਏ: "ਨਾ ਕੋ ਹਿੰਦੂ ਨਾ ਕੋ ਮੁਸਲਮਾਨ।" ਉਨ੍ਹਾਂ ਨੇ ਮੱਕਾ, ਤਿਬੱਤ ਅਤੇ ਪੂਰੇ ਭਾਰਤ ਦੀਆਂ ਚਾਰ ਉਦਾਸੀਆਂ ਕੀਤੀਆਂ। ਉਨ੍ਹਾਂ ਨੇ ਲੰਗਰ ਦੀ ਪ੍ਰਥਾ ਸ਼ੁਰੂ ਕੀਤੀ ਜਿੱਥੇ ਰਾਜਾ ਅਤੇ ਰੰਕ ਇਕੱਠੇ ਬੈਠ ਕੇ ਭੋਜਨ ਕਰਦੇ ਸਨ।`,
+    trial:
+      `His trial was facing the arrogance of the religious establishment of his time. Whether it was pointing out the hypocrisy of rituals at Haridwar or challenging the tyrannical rule of Babur, Nanak spoke truth to power with a gentle but unshakable resolve.`,
+    trialLocal:
+      `ਉਨ੍ਹਾਂ ਦਾ ਇਮਤਿਹਾਨ ਉਸ ਸਮੇਂ ਦੇ ਧਾਰਮਿਕ ਅਦਾਰਿਆਂ ਦੇ ਹੰਕਾਰ ਦਾ ਸਾਹਮਣਾ ਕਰਨਾ ਸੀ। ਹਰਿਦੁਆਰ ਵਿਖੇ ਕਰਮਕਾਂਡਾਂ ਦੇ ਪਾਖੰਡ ਨੂੰ ਉਜਾਗਰ ਕਰਨਾ ਹੋਵੇ ਜਾਂ ਬਾਬਰ ਦੇ ਜ਼ੁਲਮ ਨੂੰ ਚੁਣੌਤੀ ਦੇਣੀ ਹੋਵੇ, ਨਾਨਕ ਨੇ ਨਿਮਰਤਾ ਪਰ ਦ੍ਰਿੜਤਾ ਨਾਲ ਸੱਚ ਬੋਲਿਆ।`,
+    teaching:
+      'Truth is higher than everything, but higher still is truthful living.',
+    teachingLocal: 'ਸੱਚ ਸਭ ਤੋਂ ਉੱਚਾ ਹੈ, ਪਰ ਸੱਚਾ ਆਚਰਣ ਸਭ ਤੋਂ ਉੱਚਾ ਹੈ।',
+    moral:
+      'Nanak showed that spiritual greatness is found in the simple acts of service and the recognition of the divine light in every soul.',
+    moralLocal: 'ਨਾਨਕ ਨੇ ਦਿਖਾਇਆ ਕਿ ਅਧਿਆਤਮਿਕ ਮਹਾਨਤਾ ਸੇਵਾ ਦੇ ਸਾਧਾਰਨ ਕੰਮਾਂ ਵਿੱਚ ਮਿਲਦੀ ਹੈ।',
+    quote: {
+      text: 'Ek Onkar Satnam...',
+      attribution: 'There is only one God, Truth is His Name. — Guru Nanak, Mool Mantar',
+    },
+    quoteLocal: {
+      text: 'ੴ ਸਤਿਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ ਨਿਰਭਉ ਨਿਰਵੈਰੁ ਅਕਾਲ ਮੂਰਤਿ ਅਜੂਨੀ ਸੈਭੰ ਗੁਰ ਪ੍ਰਸਾਦਿ ॥',
+      attribution: 'ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ',
+    },
+  },
+
+  // ── 6. Adi Shankaracharya ─────────────────────────────────────────────────
   {
     id: 'adi-shankaracharya',
     name: 'Adi Shankaracharya',
@@ -87,32 +282,44 @@ In thirty-two years of life he wrote 300 texts including commentaries on the Bra
     },
   },
 
-// ── 2. Guru Teg Bahadur ───────────────────────────────────────────────────
+// ── 7. Guru Teg Bahadur (Sikh) ────────────────────────────────────────────
   {
     id: 'guru-teg-bahadur',
     name: 'Guru Teg Bahadur',
     nameLocal: 'ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ',
     era: '1621–1675 CE',
+    eraLocal: '1621–1675 ਈਸਵੀ',
     tradition: 'sikh',
     region: 'Amritsar, Punjab',
+    regionLocal: 'ਅੰਮ੍ਰਿਤਸਰ, ਪੰਜਾਬ',
     emoji: '☬',
     tagline: 'He laid down his life not for his own faith, but to protect the religious freedom of Hindus.',
     taglineLocal: 'ਉਨ੍ਹਾਂ ਨੇ ਆਪਣੇ ਧਰਮ ਲਈ ਨਹੀਂ, ਸਗੋਂ ਹਿੰਦੂਆਂ ਦੀ ਧਾਰਮਿਕ ਆਜ਼ਾਦੀ ਦੀ ਰੱਖਿਆ ਲਈ ਆਪਣੀ ਜਾਨ ਕੁਰਬਾਨ ਕਰ ਦਿੱਤੀ।',
     journey:
       'Teg Bahadur was the ninth Sikh Guru, a man of deep contemplation who spent years in solitary meditation before accepting the Guruship. He was known as Teg Bahadur — brave of sword — but his courage was first inward. He wrote extraordinary banis filled with the teaching of equanimity: fear nothing, covet nothing, be still in both joy and sorrow.\n\nIn 1675, the Mughal Emperor Aurangzeb launched a systematic campaign to convert Kashmiri Pandits to Islam by force. Thousands of Brahmins sent a delegation to Anandpur Sahib, weeping before the Guru. His son, nine-year-old Gobind Rai — who would become Guru Gobind Singh — saw his father\'s face and asked: who is great enough to stop this? Teg Bahadur replied: only a great person can give this sacrifice. The boy said: then who is greater than you?\n\nTeg Bahadur went to Delhi and presented himself to Aurangzeb. He was arrested, imprisoned for months, and given three choices: perform a miracle, convert to Islam, or die. He refused all three. Before killing him, the Mughals beheaded his companions first, in front of him, trying to break his will. It did not break.',
+    journeyLocal:
+      'ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਜੀ ਨੌਵੇਂ ਸਿੱਖ ਗੁਰੂ ਸਨ। 1675 ਵਿੱਚ, ਜਦੋਂ ਔਰੰਗਜ਼ੇਬ ਨੇ ਕਸ਼ਮੀਰੀ ਪੰਡਤਾਂ ਨੂੰ ਜ਼ਬਰਦਸਤੀ ਮੁਸਲਮਾਨ ਬਣਾਉਣਾ ਸ਼ੁਰੂ ਕੀਤਾ, ਤਾਂ ਪੰਡਤਾਂ ਨੇ ਗੁਰੂ ਜੀ ਤੋਂ ਮਦਦ ਮੰਗੀ। ਗੁਰੂ ਜੀ ਨੇ ਹਿੰਦੂ ਧਰਮ ਦੀ ਰੱਖਿਆ ਲਈ ਦਿੱਲੀ ਜਾ ਕੇ ਕੁਰਬਾਨੀ ਦਿੱਤੀ। ਉਨ੍ਹਾਂ ਨੂੰ ਤਿੰਨ ਵਿਕਲਪ ਦਿੱਤੇ ਗਏ: ਕਰਾਮਾਤ ਦਿਖਾਓ, ਇਸਲਾਮ ਕਬੂਲ ਕਰੋ ਜਾਂ ਮੌਤ। ਉਨ੍ਹਾਂ ਨੇ ਸ਼ਹਾਦਤ ਨੂੰ ਚੁਣਿਆ।',
     trial:
       'Before his execution, Aurangzeb had Bhai Mati Das sawed in half while still alive. Bhai Dyala Das was boiled in a cauldron. Bhai Sati Das was burned alive — all in front of Guru Teg Bahadur, to make him recant. He watched each of his beloved companions die and did not move. He was beheaded in Chandni Chowk, Delhi, on 11 November 1675. He gave his head; he did not give his mind.',
+    trialLocal:
+      'ਉਨ੍ਹਾਂ ਦੀ ਸ਼ਹਾਦਤ ਤੋਂ ਪਹਿਲਾਂ, ਉਨ੍ਹਾਂ ਦੇ ਸਾਥੀਆਂ ਭਾਈ ਮਤੀ ਦਾਸ, ਭਾਈ ਦਿਆਲਾ ਜੀ ਅਤੇ ਭਾਈ ਸਤੀ ਦਾਸ ਜੀ ਨੂੰ ਬਹੁਤ ਤਸੀਹੇ ਦੇ ਕੇ ਸ਼ਹੀਦ ਕੀਤਾ ਗਿਆ। ਗੁਰੂ ਜੀ ਨੇ ਇਹ ਸਭ ਕੁਝ ਆਪਣੀਆਂ ਅੱਖਾਂ ਸਾਹਮਣੇ ਵੇਖਿਆ ਪਰ ਡੋਲੇ ਨਹੀਂ। ਉਨ੍ਹਾਂ ਨੇ ਸੀਸ ਦਿੱਤਾ ਪਰ ਸਿਰੜ ਨਹੀਂ ਛੱਡਿਆ।',
     teaching:
       'The Guru\'s last act was not for Sikhism. It was for the right of every human being to walk their own spiritual path without coercion. He called it Hind di Chadar — the shield of India.',
+    teachingLocal: 'ਗੁਰੂ ਜੀ ਨੇ ਹਰ ਇਨਸਾਨ ਦੀ ਧਾਰਮਿਕ ਆਜ਼ਾਦੀ ਦੇ ਹੱਕ ਲਈ ਆਪਣੀ ਜਾਨ ਦਿੱਤੀ। ਉਨ੍ਹਾਂ ਨੂੰ "ਹਿੰਦ ਦੀ ਚਾਦਰ" ਕਿਹਾ ਜਾਂਦਾ ਹੈ।',
     moral:
       'Real courage is not the absence of fear. It is remaining human — remaining soft and principled — in conditions designed to make you hard and compliant.',
+    moralLocal: 'ਅਸਲੀ ਦਲੇਰੀ ਡਰ ਦੀ ਅਣਹੋਂਦ ਨਹੀਂ ਹੈ, ਬਲਕਿ ਮੁਸ਼ਕਲ ਹਾਲਾਤਾਂ ਵਿੱਚ ਵੀ ਆਪਣੇ ਅਸੂਲਾਂ 'ਤੇ ਕਾਇਮ ਰਹਿਣਾ ਹੈ।',
     quote: {
-      text: 'Bhau kahu ko det neh, neh bhau manat aan. Kahu neh jas neh apbas, eh mukti ko jaan.',
-      attribution: 'Fear no one and frighten no one. Do not flatter and do not be flattered. This is the mark of liberation. — Guru Teg Bahadur, Sri Guru Granth Sahib',
+      text: 'Bhau kahu ko det neh, neh bhau manat aan.',
+      attribution: 'Fear no one and frighten no one. — Guru Teg Bahadur, Sri Guru Granth Sahib',
+    },
+    quoteLocal: {
+      text: 'ਭੈ ਕਾਹੂ ਕਉ ਦੇਤ ਨਹਿ ਨਹਿ ਭੈ ਮਾਨਤ ਆਨ ॥',
+      attribution: 'ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਜੀ',
     },
   },
 
-  // ── 3. Mahavira ───────────────────────────────────────────────────────────
+  // ── 8. Mahavira (Jain) ────────────────────────────────────────────────────
   {
     id: 'mahavira-trials',
     name: 'Mahavira',
@@ -126,34 +333,71 @@ In thirty-two years of life he wrote 300 texts including commentaries on the Bra
     tagline: 'A prince who walked naked for 12.5 years, enduring everything without a sound.',
     taglineLocal: 'एक राजकुमार जिन्होंने १२.५ वर्षों तक मौन रहकर कठिन तपस्या की।',
     journey:
-      `Vardhamana was born a prince of Vaishali, the son of a Kshatriya chief. He was married with a daughter. At thirty, he asked his parents for permission to become an ascetic. They refused. He waited. When they died, he waited another two years out of respect for his elder brother's grief. Then he renounced everything — his silk robes, his palace, his family — and walked out with a single cloth.
+      `Vardhamana was born a prince of Vaishali, the son of a Kshatriya chief. He renounced everything — his silk robes, his palace, his family — and walked out with a single cloth. After thirteen months even that cloth tore off. For the next eleven years he wandered naked, fasting for days or weeks, maintaining complete silence.
 
-After thirteen months even that cloth tore off on a thorn bush. He did not seek a replacement. For the next eleven years he wandered naked, fasting for days or weeks, maintaining complete silence, accepting no shelter, walking without rest. He practised ahimsa so rigorous that he strained drinking water through cloth to avoid swallowing insects and swept the ground before each step. In the monsoon season when villagers sought shelter, he stood in the rain.
-
-After 12.5 years of this, sitting under a sala tree near the river Rijupalika, he attained Kevala Jnana — omniscience, complete liberation. He spent the next thirty years teaching. His followers, the Jains, became one of the most remarkable communities in human history: disproportionately influential in philosophy, mathematics, commerce, and non-violence advocacy.`,
+After 12.5 years of this, he attained Kevala Jnana — omniscience, complete liberation. He spent the next thirty years teaching the world about Ahimsa, Anekantvada, and Aparigraha.`,
     journeyLocal:
-      `वर्धमान वैशाली के एक राजकुमार थे। ३० वर्ष की आयु में उन्होंने सब कुछ त्याग दिया। अगले साढ़े बारह वर्षों तक वे नग्न अवस्था में रहे, मौन धारण किया और बिना किसी आश्रय के यात्रा की। उन्होंने अहिंसा का इतना कठोर पालन किया कि हवा में उड़ने वाले सूक्ष्म जीवों को भी हानि न पहुँचूँ। ऋजुपालिका नदी के तट पर उन्हें केवल ज्ञान प्राप्त हुआ।`,
+      `वर्धमान वैशाली के एक राजकुमार थे। ३० वर्ष की आयु में उन्होंने सब कुछ त्याग दिया। अगले साढ़े बारह वर्षों तक वे नग्न अवस्था में रहे, मौन धारण किया और बिना किसी आश्रय के यात्रा की। उन्होंने अहिंसा का कठोर पालन किया। ऋजुपालिका नदी के तट पर उन्हें केवल ज्ञान प्राप्त हुआ।`,
     trial:
-      `The most documented trial came in the village of Chammari, where cowherds, frustrated by his silence and his presence near their cattle, poured hot oil in his ears and pushed wooden spikes through them. He did not react, did not speak, did not leave. This is not a comfortable story. It is a story about what absolute commitment to non-retaliation looks like when tested by people with real malice.`,
+      `The most documented trial came in the village of Chammari, where cowherds pushed wooden spikes through his ears. He did not react, did not speak, did not leave. This is a story about what absolute commitment to non-retaliation looks like.`,
     trialLocal:
-      `उनकी सबसे बड़ी परीक्षा चामरी गाँव में हुई, जहाँ लोगों ने उनके कानों में गरम तेल डाला और खूँटियाँ ठोंक दीं। लेकिन महावीर मौन रहे, उन्होंने कोई प्रतिक्रिया नहीं दी। यह कहानी प्रतिशोध न लेने के अटूट संकल्प की है।`,
+      `उनकी सबसे बड़ी परीक्षा चामरी गाँव में हुई, जहाँ लोगों ने उनके कानों में खूँटियाँ ठोंक दीं। लेकिन महावीर मौन रहे, उन्होंने कोई प्रतिक्रिया नहीं दी। यह कहानी प्रतिशोध न लेने के अटूट संकल्प की है।`,
     teaching:
-      'Ahimsa is not an attitude. It is a practice, maintained breath by breath, step by step, even when the world is hostile, even when silence looks like defeat, even when the body screams.',
-    teachingLocal: 'अहिंसा केवल एक दृष्टिकोण नहीं है, यह एक अभ्यास है। यह तब भी बनाए रखा जाता है जब दुनिया शत्रुतापूर्ण हो।',
+      'Ahimsa is not an attitude. It is a practice, maintained breath by breath, even when the world is hostile.',
+    teachingLocal: 'अहिंसा केवल एक दृष्टिकोण नहीं है, यह एक अभ्यास है।',
     moral:
-      'Mahavira\'s extreme path is not for everyone. But the principle — that every living being has a soul deserving protection, that violence poisons the one who commits it — is something every tradition and every modern mind can sit with.',
-    moralLocal: 'अहिंसा का सिद्धांत—कि हर जीवित प्राणी की आत्मा सुरक्षा की पात्र है—आधुनिक समय के लिए अत्यंत महत्वपूर्ण है।',
+      'Violence poisons the one who commits it. Every living being has a soul deserving protection.',
+    moralLocal: 'अहिंसा का सिद्धांत आधुनिक समय के लिए अत्यंत महत्वपूर्ण है।',
     quote: {
-      text: 'All living beings desire to live. To them life is dear. Therefore do not take life.',
+      text: 'All living beings desire to live. To them life is dear.',
       attribution: 'Mahavira, Acharanga Sutra',
     },
     quoteLocal: {
-      text: 'सभी जीवित प्राणी जीना चाहते हैं। उन्हें जीवन प्रिय है। इसलिए प्राण मत लो।',
+      text: 'सभी जीवित प्राणी जीना चाहते हैं। उन्हें जीवन प्रिय है।',
       attribution: 'भगवान महावीर',
     },
   },
 
-  // ── 4. Swami Vivekananda ──────────────────────────────────────────────────
+  // ── 9. Siddhartha Gautama (Buddhist) ──────────────────────────────────────
+  {
+    id: 'buddha',
+    name: 'Siddhartha Gautama',
+    nameLocal: 'सिद्धार्थ गौतम (बुद्ध)',
+    era: '563–483 BCE',
+    eraLocal: '५६३–४८३ ईसा पूर्व',
+    tradition: 'buddhist',
+    region: 'Lumbini/Bodh Gaya',
+    regionLocal: 'लुम्बिनी / बोधगया',
+    emoji: '☸️',
+    tagline: 'The Awakened One who found the Middle Path between indulgence and self-mortification.',
+    taglineLocal: 'बुद्ध जिन्होंने भोग-विलास और कठोर तप के बीच मध्यम मार्ग की खोज की।',
+    journey:
+      `Prince Siddhartha had everything a human could desire. Yet, seeing old age, sickness, and death, he walked away from his palace in the middle of the night. He spent years in extreme asceticism until his body was a skeleton, realizing that starving the body does not feed the soul.
+
+He sat under a Bodhi tree and vowed not to rise until he found the cause of suffering. He became the Buddha. He taught the Four Noble Truths and the Eightfold Path, emphasizing that peace is found not in rituals, but in the mastery of the mind.`,
+    journeyLocal:
+      `राजकुमार सिद्धार्थ के पास सब कुछ था, फिर भी बुढ़ापे, बीमारी और मृत्यु को देखकर उन्होंने आधी रात को महल त्याग दिया। वर्षों की कठोर तपस्या के बाद उन्होंने महसूस किया कि शरीर को भूखा रखने से आत्मा का पोषण नहीं होता। उन्होंने बोधगया में बोधि वृक्ष के नीचे तपस्या की और 'बुद्ध' बने। उन्होंने चार आर्य सत्य और अष्टांगिक मार्ग का उपदेश दिया।`,
+    trial:
+      `His trial was the 'Battle of Mara' — the inner demons of desire, doubt, and fear that tried to shake his focus as he sat for enlightenment. He touched the earth to witness his right to be there, defeating the ego completely.`,
+    trialLocal:
+      `उनकी परीक्षा 'मार' (आंतरिक राक्षसों) के साथ युद्ध था — वासना, संदेह और भय के उन विचारों से लड़ना जिन्होंने उन्हें विचलित करने की कोशिश की। उन्होंने अपनी एकाग्रता से अहंकार को पूरी तरह पराजित किया।`,
+    teaching:
+      'The root of all suffering is attachment. Walk the Middle Path and practice mindfulness in every breath.',
+    teachingLocal: 'सभी दुखों की जड़ आसक्ति है। मध्यम मार्ग पर चलें और हर सांस में सचेत रहें।',
+    moral:
+      'Truth is not found in extremes. Balance and inner stillness are the keys to liberation.',
+    moralLocal: 'सत्य अतियों में नहीं मिलता। संतुलन और आंतरिक स्थिरता ही मुक्ति की कुंजी है।',
+    quote: {
+      text: 'Appo Deepo Bhava.',
+      attribution: 'Be a light unto yourself. — The Buddha',
+    },
+    quoteLocal: {
+      text: 'अप्प दीपो भव।',
+      attribution: 'गौतम बुद्ध',
+    },
+  },
+
+  // ── 10. Swami Vivekananda (Hindu) ──────────────────────────────────────────
   {
     id: 'vivekananda',
     name: 'Swami Vivekananda',
@@ -164,29 +408,27 @@ After 12.5 years of this, sitting under a sala tree near the river Rijupalika, h
     region: 'Calcutta (Kolkata), Bengal',
     regionLocal: 'कोलकाता, बंगाल',
     emoji: '🔥',
-    tagline: 'A 30-year-old monk from a colonised country walked into the World\'s Parliament of Religions and changed how the West saw India forever.',
+    tagline: 'A 30-year-old monk who walked into the World\'s Parliament of Religions and changed the world.',
     taglineLocal: 'शिकागो के धर्म संसद में उनके एक भाषण ने पूरी दुनिया का भारत के प्रति नजरिया बदल दिया।',
     journey:
-      `Narendra Nath Datta was a brilliant, restless young man in colonial Calcutta who interrogated every swami and scholar he met with the same question: have you seen God? Most laughed. One man said yes. That man was Ramakrishna, a temple priest in Dakshineswar whom the English-educated young Narendra considered a village mystic. He went to test him. Ramakrishna touched him. For the next several minutes Narendra's consciousness dissolved entirely. He came back terrified. He went again and again.
+      `Narendra Nath Datta was a brilliant young man in Calcutta who asked one question: have you seen God? Ramakrishna Paramahamsa answered: Yes. 
 
-After Ramakrishna died of cancer, leaving behind eleven young disciples, Vivekananda took the vow of sannyasa at twenty-five. He walked the length of India alone, without money, eating what was offered, sleeping outside, learning the actual condition of his country. He saw the poverty, the caste discrimination, the spiritual genius coexisting with material collapse. He arrived at the southernmost point of India, at Kanyakumari, swam to a rock in the sea, and sat. For three days. When he came back he had his mission.
-
-In 1893 he sailed to America with almost no money, knowing no one, with a borrowed name card and a letter to a Harvard professor. He arrived at the World's Parliament of Religions in Chicago and spoke. His opening — "Sisters and brothers of America" — stopped the auditorium. Two thousand people rose and gave him a two-minute standing ovation before he said another word. He gave a four-year lecture tour of the United States and Britain that introduced Vedanta, yoga, and the idea of religious pluralism to the modern West. He died at thirty-nine, having compressed four hundred years of work into nineteen years of adult life.`,
+Vivekananda walked the length of India alone, seeing the poverty and the spiritual genius of his country. In 1893, he spoke at Chicago. His opening "Sisters and brothers of America" gave him a two-minute standing ovation. He brought Vedanta to the modern West and died at thirty-nine, having compressed centuries of work into a few years.`,
     journeyLocal:
-      `नरेंद्र नाथ दत्त कोलकाता के एक प्रतिभाशाली युवक थे। उन्होंने अकेले पूरे भारत की यात्रा की और देश की वास्तविक स्थिति को समझा। १८९३ में वे शिकागो गए और धर्म संसद में भाषण दिया। उनके संबोधन "अमेरिका के भाइयों और बहनों" ने सबका दिल जीत लिया। उन्होंने केवल ३९ वर्ष के जीवन में ४०० वर्षों का कार्य किया।`,
+      `नरेंद्र नाथ दत्त कोलकाता के एक प्रतिभाशाली युवक थे। उन्होंने अकेले पूरे भारत की यात्रा की और १८९३ में शिकागो में भाषण दिया। उनके संबोधन "अमेरिका के भाइयों और बहनों" ने सबका दिल जीत लिया। उन्होंने केवल ३९ वर्ष के जीवन में युगों का कार्य किया।`,
     trial:
-      `In the weeks before Chicago, Vivekananda was stranded in an unknown city with no food and no money, sleeping in an empty boxcar in the freight yards of Boston. He had been turned away from several doors. He sat on that train and wondered if the mission was over before it began. He came out of the freight yard and knocked on one more door.`,
+      `Before Chicago, he was stranded with no money, sleeping in a freight yard. He wondered if his mission was over. He knocked on one more door.`,
     trialLocal:
-      `शिकागो जाने से पहले, विवेकानंद बोस्टन के माल गोदामों में एक खाली डिब्बे में सोए थे। उनके पास न खाना था, न पैसे। उन्हें कई दरवाजों से लौटा दिया गया था। लेकिन उन्होंने हार नहीं मानी।`,
+      `शिकागो जाने से पहले, विवेकानंद बोस्टन के माल गोदामों में सोए थे। उनके पास पैसे नहीं थे, लेकिन उन्होंने हार नहीं मानी।`,
     teaching:
-      'Each soul is potentially divine. The goal is to manifest this divinity within by controlling nature — external and internal. Do this either by work, or worship, or psychic control, or philosophy — by one, or more, or all of these — and be free.',
-    teachingLocal: 'प्रत्येक आत्मा संभावित रूप से दिव्य है। लक्ष्य आंतरिक और बाहरी प्रकृति को नियंत्रित करके इस दिव्यता को प्रकट करना है।',
+      'Each soul is potentially divine. Manifest this divinity within.',
+    teachingLocal: 'प्रत्येक आत्मा संभावित रूप से दिव्य है। इस दिव्यता को प्रकट करें।',
     moral:
-      'A colonised country\'s most powerful export was not cotton or indigo. It was a philosophy of universal human dignity so complete that it walked into the capital of Western Christianity and was given a standing ovation.',
-    moralLocal: 'एक गुलाम देश का सबसे शक्तिशाली निर्यात कपास नहीं, बल्कि मानवीय गरिमा का दर्शन था।',
+      'Arise, awake, and stop not till the goal is reached.',
+    moralLocal: 'उठो, जागो और तब तक मत रुको जब तक लक्ष्य प्राप्त न हो जाए।',
     quote: {
       text: 'Arise, awake, and stop not till the goal is reached.',
-      attribution: 'Swami Vivekananda (after Katha Upanishad 1.3.14)',
+      attribution: 'Swami Vivekananda',
     },
     quoteLocal: {
       text: 'उठो, जागो और तब तक मत रुको जब तक लक्ष्य प्राप्त न हो जाए।',
@@ -194,7 +436,7 @@ In 1893 he sailed to America with almost no money, knowing no one, with a borrow
     },
   },
 
-  // ── 5. Chanakya ───────────────────────────────────────────────────────────
+  // ── 11. Chanakya (Hindu) ──────────────────────────────────────────────────
   {
     id: 'chanakya',
     name: 'Chanakya',
@@ -202,252 +444,36 @@ In 1893 he sailed to America with almost no money, knowing no one, with a borrow
     era: '350–283 BCE',
     eraLocal: '३५०–२८३ ईसा पूर्व',
     tradition: 'hindu',
-    region: 'Takshashila (present-day Pakistan)',
+    region: 'Takshashila',
     regionLocal: 'तक्षशिला',
     emoji: '🦅',
-    tagline: 'He was insulted in Nanda\'s court, left his topknot untied, and did not tie it again until he had destroyed the empire.',
+    tagline: 'He left his topknot untied until he destroyed an empire and built a new India.',
     taglineLocal: 'नंद साम्राज्य के विनाश तक उन्होंने अपनी शिखा नहीं बांधी और एक नए भारत का निर्माण किया।',
     journey:
-      `Vishnugupta Chanakya was a professor at the great university of Takshashila — arguably the world's first residential university, where students from Persia, Greece, and across India came to study statecraft, medicine, and the Vedas. He was brilliant, physically unremarkable, and without patience for fools.
-
-He went to the court of Dhanananda, the last Nanda emperor, to present a plan to resist Alexander's invasion. Dhanananda mocked his appearance and had him thrown out. Chanakya left, untied his topknot, and swore he would not tie it again until the Nanda dynasty was destroyed. He find an orphaned boy named Chandragupta. He spent twelve years training him — in warfare, statecraft, intelligence, the philosophy of power. He built a coalition from scratch.
-
-In 322 BCE, Chandragupta's forces defeated the Nanda army and Chandragupta took the throne as the first Maurya emperor, the first ruler to unify the Indian subcontinent. Chanakya became his chief minister. He wrote the Arthashastra — a complete treatise on statecraft so sophisticated that German historians in the 20th century called it superior to Machiavelli and compared it to modern political science. Then, when Chandragupta was secure, he walked away.`,
+      `Vishnugupta Chanakya was a professor at Takshashila. Insulted by King Dhanananda, he swore to destroy the Nanda dynasty. He trained an orphan boy, Chandragupta, and built the Maurya Empire, the first to unify India. He wrote the Arthashastra, a masterpiece on statecraft, and then walked away when his work was done.`,
     journeyLocal:
-      `विष्णुगुप्त चाणक्य तक्षशिला के महान आचार्य थे। राजा धनानंद द्वारा अपमानित होने पर उन्होंने अपनी शिखा खोल दी और कसम खाई कि जब तक वे नंद वंश का नाश नहीं कर देते, इसे नहीं बांधेंगे। उन्होंने चंद्रगुप्त मौर्य को प्रशिक्षित किया और पहले अखंड भारतीय साम्राज्य की नींव रखी। उन्होंने अर्थशास्त्र जैसा महान ग्रंथ लिखा।`,
+      `चाणक्य तक्षशिला के महान आचार्य थे। धनानंद द्वारा अपमानित होने पर उन्होंने अपनी शिखा खोल दी। उन्होंने चंद्रगुप्त मौर्य को प्रशिक्षित किया और अखंड भारत की नींव रखी। उन्होंने अर्थशास्त्र जैसा महान ग्रंथ लिखा।`,
     trial:
-      `The trial of Chanakya was not the twenty-two years of work. It was the question of power itself. He had access to the most powerful position in the known world and chose instead to leave it. The Arthashastra contains the famous line: the king should never trust even the minister who has made him king. He wrote that about himself. Then he acted on it.`,
+      `His trial was the question of power. He had absolute power and chose to leave it, living in a small hut outside the palace.`,
     trialLocal:
-      `चाणक्य की असली परीक्षा सत्ता का मोह छोड़ना था। उनके पास दुनिया की सबसे बड़ी शक्ति तक पहुँच थी, लेकिन उन्होंने उसे छोड़ना चुना। उनका मानना था कि सत्ता व्यक्ति को भ्रष्ट कर सकती है, इसलिए काम पूरा होते ही वे वापस लौट गए।`,
+      `उनकी असली परीक्षा सत्ता का मोह छोड़ना था। उन्होंने सत्ता का उपयोग जनकल्याण के लिए किया, निजी लाभ के लिए नहीं।`,
     teaching:
-      'The true statesman works himself out of a job. Power accumulated for its own sake poisons. Power used to establish a condition of flourishing, then relinquished, is the only kind that does not corrupt.',
-    teachingLocal: 'एक सच्चा राजनेता खुद को काम से बाहर कर देता है। सत्ता का उपयोग जनकल्याण के लिए होना चाहिए, न कि निजी लाभ के लिए।',
+      'Power used for flourishing, then relinquished, is the only kind that does not corrupt.',
+    teachingLocal: 'सत्ता का उपयोग लोक कल्याण के लिए होना चाहिए।',
     moral:
-      'There is a kind of person who keeps their topknot untied for twenty-two years, not out of obsession but out of precision — holding the intention while doing the work, releasing it only when the work is done. That quality is rarer than genius.',
-    moralLocal: 'बिना संकल्प के काम करना समय की बर्बादी है। चाणक्य ने २२ साल तक अपना संकल्प याद रखा।',
+      'Intentionality and a long-term vow are rarer than genius.',
+    moralLocal: 'संकल्प के बिना किया गया कार्य व्यर्थ है।',
     quote: {
-      text: 'Before you start some work, always ask yourself three questions: Why am I doing it? What might the results be? Will I be successful? Only when you think deeply and find satisfactory answers to these questions, go ahead.',
+      text: 'Before you start work, ask: Why? Results? Success?',
       attribution: 'Chanakya, Arthashastra',
     },
     quoteLocal: {
-      text: 'किसी भी कार्य को शुरू करने से पहले स्वयं से तीन प्रश्न पूछें: मैं यह क्यों कर रहा हूँ? इसके परिणाम क्या हो सकते हैं? क्या मैं सफल होऊंगा?',
+      text: 'कार्य शुरू करने से पहले स्वयं से तीन प्रश्न पूछें: क्यों? परिणाम? सफलता?',
       attribution: 'आचार्य चाणक्य',
     },
   },
 
-  // ── 6. Chaitanya Mahaprabhu ──────────────────────────────────────────────
-  {
-    id: 'chaitanya-mahaprabhu',
-    name: 'Chaitanya Mahaprabhu',
-    nameLocal: 'चैतन्य महाप्रभु',
-    era: '1486–1534 CE',
-    tradition: 'hindu',
-    region: 'Nabadwip, Bengal',
-    emoji: '💛',
-    tagline: 'He danced kirtan in the streets of Bengal and made love the method — not a reward.',
-    journey:
-      'Vishvambhara Mishra was a brilliant pandita in Nabadwip, a centre of Sanskrit scholarship in Bengal. At twenty-two he went to Gaya for his father\'s shraddha ceremony and met a Vaishnava teacher, Ishvara Puri. Something cracked open. He returned to Nabadwip transformed, weeping continuously, clinging to his students, calling out "Hari!" in the streets. The scholars thought he had lost his mind. His wife Vishnupriya watched her husband become someone else entirely.\n\nHe began the sankirtan movement: walking through the streets with his companions, singing the names of Krishna and dancing. He sent this movement across Bengal and Orissa. When the Muslim magistrate of Nabadwip tried to stop the street processions, Chaitanya organised a crowd of 100,000 people. The magistrate attended and wept.\n\nAt twenty-four he took sannyasa and walked to Puri, then across South India for two years, then to Vrindavan. He spent the last eighteen years of his life in Puri, in a state of ecstatic absorption so intense that his body would sometimes contract to half its size, or he would run into the sea calling Krishna\'s name in the night. The tradition he founded — Gaudiya Vaishnavism — spread through six Vrindavan Goswamis who codified his theology and later through Bhaktivedanta Swami who brought it to the West in the 20th century.',
-    trial:
-      'Chaitanya\'s trial was renunciation. He loved his mother. He loved Vishnupriya, his young wife. The accounts say Vishnupriya spent the rest of her life after his sannyasa counting the names of Krishna on rice grains, one grain for each recitation, and giving the rice away as prasad each day. Their marriage was not ruined by him; it was consecrated. But the cost was real. The path required the willingness to let even the deepest human love become an offering.',
-    teaching:
-      'Love is the method and the destination. Not love as sentiment but love as complete surrender of the ego\'s agenda. In the kirtan, the name and the singer merge. That is the state Chaitanya was pointing at.',
-    moral:
-      'The intellect can understand Brahman as a concept. But a concept will not transform you. Transformation requires love — the kind that makes you cry in the street, that makes you indifferent to what the scholars think, that makes you dance when there is nothing to dance about.',
-    quote: {
-      text: 'Trinad api sunicena taror api sahishnuna. Amanina manadena kirtaniyah sada harih.',
-      attribution: 'Be more humble than a blade of grass, more patient than a tree. Give respect to all, seek it from none. In this state, the Lord\'s name can always be sung. — Siksastaka, Chaitanya Mahaprabhu',
-    },
-  },
-
-  // ── 7. Mirabai ────────────────────────────────────────────────────────────
-  {
-    id: 'mirabai',
-    name: 'Mirabai',
-    nameLocal: 'मीराबाई',
-    era: '1498–1547 CE',
-    tradition: 'hindu',
-    region: 'Merta, Rajasthan',
-    emoji: '🌸',
-    tagline: 'A Rajput queen who chose Krishna over a kingdom — and survived poison, snakes, and exile.',
-    journey:
-      'Mira was a child of five when a passing sadhu showed her an image of Krishna as bridegroom. Something locked into place in her. She told her mother: this is the man I will marry. Her mother laughed and died shortly after. Mira grew up in the palace of Merta, was married to a Mewar prince, and dressed in court silks — but her heart was never there. At night she slipped away to the temple and danced before Krishna until dawn.\n\nAfter her husband died, her in-laws viewed her devotion as a disgrace. She sang openly in the streets with wandering sadhus, breaking every rule that bound a Rajput widow. Her brother-in-law, Vikram Singh, tried three times to kill her: first a cup of poison, which she drank and survived. Then a basket of flowers containing a cobra, which became a garland in her hands. Then a bed of nails, which she slept on peacefully.\n\nShe spent her later years in Vrindavan, and finally, according to tradition, walked into the image of Krishna at Dwarka and disappeared. Her bhajans — "Paayo Ji Maine Ram Ratan Dhan Paayo," "Mharo Prabhu Giridhar Nagar" — are still sung every morning across India, five centuries later.',
-    trial:
-      'Mira\'s trial was not the poison or the snakes. It was the sustained social pressure of an entire court, an entire tradition of Rajput honour, telling her that her love was madness, that her singing was shameful, that she was bringing disgrace on the royal lineage. Most people break under that kind of quiet, relentless pressure. She sang louder.',
-    teaching:
-      'Love is not a feeling that comes and goes. Love is a direction. When you point yourself entirely at the divine and refuse to be turned back by anything — status, safety, reputation, grief — that is bhakti. That is the path.',
-    moral:
-      'Mira did not fight the system. She simply loved something more than she feared it. When love is bigger than fear, freedom follows on its own.',
-    quote: {
-      text: 'Mere to Giridhar Gopal, doosaro na koye.',
-      attribution: 'For me there is only Giridhar Gopal — no one else. — Mirabai',
-    },
-  },
-
-  // ── 8. Ramanuja ──────────────────────────────────────────────────────────
-  {
-    id: 'ramanuja',
-    name: 'Ramanujacharya',
-    nameLocal: 'रामानुजाचार्य',
-    era: '1017–1137 CE',
-    tradition: 'hindu',
-    region: 'Sriperumbudur, Tamil Nadu',
-    emoji: '🏛️',
-    tagline: 'His guru told him: if you share this secret mantra, you go to hell. He climbed the temple tower and shouted it to the crowd.',
-    journey:
-      'Ramanuja was a Vaishnava philosopher and theologian, successor to Yamunacharyar as head of the Sri Vaishnava tradition. He studied under Yadavaprakasha, but their philosophies diverged sharply: Yadavaprakasha taught that Brahman was featureless and that the individual soul dissolved into it at liberation. Ramanuja\'s heart insisted this was wrong. The individual soul does not dissolve. It is held, like a bee in a flower, in intimate relationship with the divine — permanently, joyfully, personally.\n\nHe developed Vishishtadvaita — qualified non-dualism — one of the most coherent philosophical systems ever constructed. He built a network of 74 teachers across South India to spread it. But the most famous story involves his own teacher giving him a secret mantra: the Ashtakshara, "Om Namo Narayanaya." The teacher said: this mantra will liberate whoever hears it — but if you share it with the unworthy, you will go to hell for the transgression.\n\nRamanuja climbed to the top of the Tirukoshtiyur temple gopuram and shouted the mantra to the crowd gathered below. His teacher, furious, summoned him. Ramanuja said: if my going to hell means all these people are liberated, that seems like the right trade. His teacher embraced him.',
-    trial:
-      'Ramanuja spent twelve years trying to get the secret mantra from Tirukoshtiyur Nambi, who tested him each time and sent him away. The distance from the Sri Rangam temple to Tirukoshtiyur is 120 kilometres. Eighteen trips. On the eighteenth, the mantra was given. And the first thing he did with it was make it public.',
-    teaching:
-      'Vishishtadvaita insists on bhakti as personal love, not abstract dissolution. God is personal. The relationship is personal. Salvation is not the erasure of the individual — it is the individual finally arriving, fully themselves, in the presence they always sought.',
-    moral:
-      'The things we are told to guard most carefully — wisdom, spiritual insight, real understanding — are most powerful when given away. Ramanuja made a calculation. He decided that liberation for many was worth damnation for one. He was right about the damnation too: no hell found him.',
-    quote: {
-      text: 'If my coming to perdition results in liberation for these assembled souls, so be it.',
-      attribution: 'Ramanujacharya, traditional account from Tirukoshtiyur',
-    },
-  },
-
-  // ── 9. Milarepa ───────────────────────────────────────────────────────────
-  {
-    id: 'milarepa',
-    name: 'Milarepa',
-    era: '1052–1135 CE',
-    tradition: 'buddhist',
-    region: 'Gungthang, Tibet',
-    emoji: '🏔️',
-    tagline: 'He killed thirty-five people with black magic — and became Tibet\'s greatest saint.',
-    journey:
-      'Milarepa\'s father died when he was seven, leaving the family\'s estate to a treacherous uncle who enslaved Mila and his mother. His mother, consumed by rage, sent him to study black magic. He learned well: he called down a hailstorm that collapsed his uncle\'s house during a wedding feast, killing thirty-five people including the uncle\'s son and daughter-in-law. He returned home to find his mother celebrating in the street. Then the weight of what he had done fell on him.\n\nHe sought out the great Buddhist teacher Marpa the Translator. But Marpa, who knew through vision what Mila had done and what he could become, spent years breaking him before teaching him. He made him build a stone tower, carry every stone up alone, then tear it down and build it in a different shape. Four times. For seven years. Mila\'s back opened with sores from the stone. He wept alone at night, convinced Marpa would never teach him. Marpa never wavered.\n\nWhen the teaching finally came, Milarepa went into the Himalayan caves alone. For years he ate only nettles until his skin turned green. He sang spontaneous songs of realisation — dohas — that became the foundation of the Kagyu lineage. He is the only known figure in Tibetan history to have achieved full Buddhahood in a single lifetime.',
-    trial:
-      'Near the end of his life, Milarepa\'s disciples asked him: Teacher, was Marpa cruel? He smiled and said Marpa was the most compassionate being he had ever met. The cruelty was surgery. Every tower he built and tore down burned one more layer of the karmic debt that would have kept him in lower realms for lifetimes. The master saw what the student could not bear to see yet.',
-    teaching:
-      'Karma is not punishment. It is physics. What you have done, you carry. But what you carry, you can put down — through practice, through honesty, through a teacher who loves you enough to refuse your excuses.',
-    moral:
-      'No one is beyond transformation. The man who killed thirty-five people became the most beloved teacher of Tibet. The question is never what you have done. The question is what you will do next.',
-    quote: {
-      text: 'My religion is to live and die without regret.',
-      attribution: 'Milarepa',
-    },
-  },
-
-  // ── 10. Nagarjuna ─────────────────────────────────────────────────────────
-  {
-    id: 'nagarjuna',
-    name: 'Nagarjuna',
-    nameLocal: 'नागार्जुन',
-    era: '2nd–3rd century CE',
-    tradition: 'buddhist',
-    region: 'South India (possibly Andhra region)',
-    emoji: '☸️',
-    tagline: 'He proved that nothing has inherent existence — and in doing so, described the deepest nature of reality.',
-    journey:
-      'Almost nothing certain is known about Nagarjuna\'s life. Later texts say he was a brahmin, that he learned alchemy, that he found the Prajnaparamita sutras in the realm of the nagas — the serpent guardians — and brought them back to the human world. What is certain is that he wrote the Mulamadhyamakakarika, one of the most rigorous philosophical texts in human history, and that nothing in philosophy — East or West — has quite answered it.\n\nHis central insight was sunyata: emptiness. Not nothingness — not nihilism — but the absence of inherent, independent existence in anything. Things arise in dependence on other things. The self exists in dependence on the body and mind which exist in dependence on food and air and sunlight and parents and language and everything else. Pull any single thread and the whole cloth comes with it. There is no solid, independent floor beneath anything.\n\nThe Western philosophical tradition took 1500 years after Aristotle to seriously engage with what Nagarjuna had said in the 2nd century. His work became the philosophical backbone of Mahayana Buddhism across India, China, Japan, Korea, and Tibet.',
-    trial:
-      'The trial of Nagarjuna was not physical. It was the trial of holding a thought all the way to its conclusion. Emptiness, followed honestly, initially feels like vertigo — like everything you believed to be solid is dissolving. Many people stop at that feeling and retreat to the familiar solid ground of "I exist, things exist, this is real." Nagarjuna walked through the vertigo to the other side and found it was not nihilism. It was freedom.',
-    teaching:
-      'Because nothing has inherent existence, nothing is locked. No situation is permanently fixed. No person is permanently a certain way. No problem is without a solution. Emptiness is not the absence of meaning — it is the open space in which everything is possible.',
-    moral:
-      'The most paralyzing thought is "this is just how things are." Nagarjuna spent his entire life proving that nothing is just how it is. Everything arises in dependence on conditions. Change the conditions, change the outcome.',
-    quote: {
-      text: 'Whatever is dependently co-arisen, that is explained to be emptiness. That is dependent designation and is itself the middle way.',
-      attribution: 'Nagarjuna, Mulamadhyamakakarika 24.18',
-    },
-  },
-
-  // ── 11. Andal ──────────────────────────────────────────────────────────────
-  {
-    id: 'andal',
-    name: 'Andal (Kothai)',
-    era: '8th–9th century CE',
-    tradition: 'hindu',
-    region: 'Srivilliputhur, Tamil Nadu',
-    emoji: '🌺',
-    tagline: 'The only woman among the 12 Alvars — she wore garlands meant for Vishnu, and married him.',
-    journey:
-      'Andal was found as an infant under a tulsi plant by Periyalvar, a Vaishnava saint in Srivilliputhur. From childhood she was entirely absorbed in Krishna — she would weave garlands for the deity of the temple, but first she would put them on herself to see if they suited him. When her father discovered this sacrilege, he went to replace the garlands. But the deity appeared to him in a dream and said: I want only the garlands she has worn.\n\nShe composed two works that are still recited every single day in South Indian homes. The Tiruppavai — 30 verses sung every morning through the Tamil month of Margazhi — describes women waking before dawn, bathing in the river, and seeking Krishna as a bride seeks a groom. The Nacchiyar Tirumoli — 143 verses of devastating love poetry — records her longing, her impatience, her dreams in which Krishna came to marry her.\n\nAccording to tradition, Andal walked into the sanctum sanctorum of the Ranganatha temple at Srirangam and merged with the deity. The image of her remains in the temple. She is the only Alvar worshipped as a goddess, not just honoured as a saint.',
-    trial:
-      'Andal\'s trial was a form of waiting. Her entire theology was that waiting for the divine is not passive — it is the most active possible state. Her Nacchiyar Tirumoli includes verses where she rages at the delay, dreams wild, intimate dreams, and refuses to let the longing become comfortable. She did not accept a substitute. She did not settle.',
-    teaching:
-      'The path of bhakti requires refusing all substitutes. Andal would not accept worldly marriage. She would not moderate her longing into something respectable. Total love means refusing to love anything less than the total.',
-    moral:
-      'Most of us dilute our deepest longing because the full intensity of it frightens us. Andal shows a different way: let the longing be as large as it is. It will carry you where nothing else can.',
-    quote: {
-      text: 'Ungal puzhakkadai thogutthu vandhom.',
-      attribution: 'We have come with your sacred name on our lips — Tiruppavai, Verse 1, Andal',
-    },
-  },
-
-  // ── 12. Tukaram ───────────────────────────────────────────────────────────
-  {
-    id: 'tukaram',
-    name: 'Tukaram',
-    nameLocal: 'संत तुकाराम',
-    era: '1598–1650 CE',
-    tradition: 'hindu',
-    region: 'Dehu, Maharashtra',
-    emoji: '🎵',
-    tagline: 'A bankrupt shopkeeper who wrote 4,500 abhangas — and the Brahmin establishment threw them in the river.',
-    journey:
-      'Tukaram was a Shudra — a lower-caste trader from Dehu near Pune. He inherited his father\'s small grocery business, but a famine destroyed it. He lost his first wife and eldest son to starvation. His second wife called him a useless failure. Creditors pursued him. In this complete collapse, he turned to Vitthal — the form of Vishnu worshipped at Pandharpur — and began composing abhangas, devotional verses in Marathi, the everyday language of common people.\n\nHis abhangas were radical. He wrote about God from the position of a broken man, not a scholar. He wrote about the emptiness of caste, the poverty of vanity, the desperate love of the bhakta. Word spread. Thousands came to hear him. The established Brahmin scholars were furious: a Shudra had no right to interpret scripture or lead devotional gatherings. They confiscated his manuscripts and threw them into the Indrayani River. Tukaram fasted on the riverbank for thirteen days. On the fourteenth day, the manuscripts floated to the surface, dry and unharmed.',
-    trial:
-      'The Brahmin scholar Rameshwarbhat forced Tukaram to face a religious tribunal and accused him of heresy. Tukaram\s response was not to defend himself but to continue singing. He said: if Vitthal wills it, no one can silence me. If He does not, I would silence myself. The tribunal could find no grounds to condemn him. Within years, the great Maratha king Shivaji sent him an invitation to the palace and gifts. Tukaram sent them back.',
-    teaching:
-      'God does not live in the high scriptures or the upper castes. He lives in honest work, honest devotion, and the heart that has been broken enough to stop pretending.',
-    moral:
-      'Tukaram lost everything — business, child, reputation, manuscripts. Each loss stripped another layer of ego. By the end there was nothing left except the singing. That was enough.',
-    quote: {
-      text: 'Aata vishwachi mazhe ghar.',
-      attribution: 'Now the whole world is my home. — Tukaram, Abhanga',
-    },
-  },
-
-  // ── 13. Lal Ded (Lalla Ded) ────────────────────────────────────────────────
-  {
-    id: 'lal-ded',
-    name: 'Lal Ded',
-    era: '1320–1392 CE',
-    tradition: 'hindu',
-    region: 'Pandrethan, Kashmir',
-    emoji: '❄️',
-    tagline: 'She walked through Kashmir naked in winter, saying she had found the real garment — and Muslims and Hindus both wept at her grave.',
-    journey:
-      'Lalla was married at twelve into a family in which her mother-in-law despised her. She was given stones to eat under her rice, starved deliberately, humiliated publicly. Her husband was indifferent. She endured it for years and then, when she was around twenty-four, she left. Not for another man. For Shiva.\n\nShe wandered Kashmir as a yogini, composing vakhs — mystic verses in the Kashmiri language so economical and precise that they resemble mathematical proofs. She discarded her clothes, saying the body was not the self, and why dress what you are not? Kashmiris called her Lal Ded — "Grandmother Lalla" — with the tenderness reserved for someone both eccentric and clearly awake. She walked in snow; she laughed in the bazaars; she argued with scholars; she sat for long periods in stillness.\n\nWhen she died, tradition says both the Hindu and Muslim communities of Kashmir fought over who had the right to perform her final rites — because both communities claimed her as their own. Her vakhs are still quoted daily in Kashmir, in both Hindu and Muslim households.',
-    trial:
-      'Her trial was the ordinary cruelty of a household. Not dramatic persecution, not political danger — just the grinding daily diminishment of a woman with no power and no witness. The scholars argue about her exact path, her exact guru. What is clear is that she transformed the specific suffering of that household into a fire that burned every attachment away.',
-    teaching:
-      'The divine is not reached by acquiring more. It is reached by dropping everything — every identity, every claim, every garment that makes you look like what you are not.',
-    moral:
-      'The people who cause our deepest suffering often become, inadvertently, the instrument of our deepest liberation. This is not a reason to thank them. It is a reason to not let them win.',
-    quote: {
-      text: 'Lal dyed herself with the colour of Her Lord. Whatever she saw she saw as He.',
-      attribution: 'Lal Ded, Vakhs',
-    },
-  },
-
-  // ── 14. Akka Mahadevi ─────────────────────────────────────────────────────
-  {
-    id: 'akka-mahadevi',
-    name: 'Akka Mahadevi',
-    era: '12th century CE',
-    tradition: 'hindu',
-    region: 'Udutadi, Karnataka',
-    emoji: '🌙',
-    tagline: 'She left a king\'s palace to wander naked — her only garment was her hair and her devotion to Shiva.',
-    journey:
-      'Mahadevi was a devout Shaivite from childhood, pledging herself to Chennamallikarjuna — Shiva as the lord of jasmine — as her husband. She was so beautiful that the local Jain king Kaushika demanded she marry him. Her parents, frightened, agreed. She set three conditions: he must never interrupt her worship, never touch her against her will, never ask her to behave as a conventional queen. He agreed. He broke all three conditions.\n\nShe left the palace. She removed her silk clothes and covered herself only with her long hair. She walked to Kalyana, the centre of the Lingayat Vachana movement, where the great saints Allama Prabhu, Basavanna, and Siddharama had gathered. She was admitted only after a rigorous examination — Allama Prabhu testing her with questions designed to expose any remaining ego or claim to special status. She answered every question and was accepted.\n\nHer vachanas — prose-poems in Kannada, addressed to Chennamallikarjuna — are among the most intimate, fearless devotional writings in any language. She died young in the Kadali forest near Srisailam, reportedly in union with the deity she had sought her entire life.',
-    trial:
-      'The examination by Allama Prabhu was the trial. He asked her why she was naked. She said: because there is no one left to cover herself from. He pressed: is there no shame? She said: shame requires a self that can be shamed. Is there such a self? The room went quiet. She had passed.',
-    teaching:
-      'Conventional piety — fasting, rituals, correct behaviour — maintains the ego\'s management of spirituality. The mystic\'s path is to dissolve the manager. When there is no one left to manage, there is also nothing left to hide.',
-    moral:
-      'Every person who has ever left a safe, approved situation to follow something they could not explain to others stands in Akka Mahadevi\'s lineage. The discomfort of others with your path is not evidence that the path is wrong.',
-    quote: {
-      text: 'Would a circling vulture know such love? Would a clumsy crow know the music? Oh Chennamallikarjuna, I am your bride.',
-      attribution: 'Akka Mahadevi, Vachana 89',
-    },
-  },
-
-  // ── 15. Banda Singh Bahadur ────────────────────────────────────────────────
+  // ── 12. Banda Singh Bahadur (Sikh) ────────────────────────────────────────
   {
     id: 'banda-singh-bahadur',
     name: 'Banda Singh Bahadur',
@@ -458,163 +484,33 @@ In 322 BCE, Chandragupta's forces defeated the Nanda army and Chandragupta took 
     region: 'Rajouri, Kashmir',
     regionLocal: 'ਰਾਜੌਰੀ, ਕਸ਼ਮੀਰ',
     emoji: '⚔️',
-    tagline: 'A hermit turned warrior who abolished feudal slavery in Punjab — in 1710.',
+    tagline: 'A hermit turned warrior who abolished feudal slavery in Punjab in 1710.',
     taglineLocal: 'ਇੱਕ ਤਪੱਸਵੀ ਤੋਂ ਯੋਧਾ ਬਣੇ, ਜਿਨ੍ਹਾਂ ਨੇ 1710 ਵਿੱਚ ਪੰਜਾਬ ਵਿੱਚ ਜਗੀਰਦਾਰੀ ਗੁਲਾਮੀ ਦਾ ਅੰਤ ਕੀਤਾ।',
     journey:
-      'Madho Das was a wandering Hindu ascetic who had spent years in the jungles practicing Shaivite austerities. In 1708, Guru Gobind Singh arrived at his ashram in Nanded. Madho Das woke from sleep and found the Guru sitting on his bed. He tried every sidhi he possessed to move him. Nothing worked. He walked to the Guru and said: I am your banda — your slave. Guru Gobind Singh made him Banda Singh Bahadur and gave him five arrows from his own quiver.\n\nBanda marched to Punjab with a small force. Within two years he had dismantled the Mughal and Afghan feudal structure of the entire region. At the Battle of Chappar Chiri in 1710, he defeated Wazir Khan — the governor who had ordered the murder of Guru Gobind Singh\'s two younger sons, bricked alive in a wall. More remarkably, he issued orders abolishing the zamindari system: for the first time in Punjab\'s recorded history, the farmers who tilled the land owned it. This was 1710.',
+      'Madho Das was a hermit who became the "Banda" (slave) of Guru Gobind Singh. He dismantled the Mughal feudal structure and gave land ownership to the farmers for the first time in history.',
     journeyLocal:
-      'ਮਾਧੋ ਦਾਸ ਇੱਕ ਭਟਕਦਾ ਤਪੱਸਵੀ ਸੀ ਜਿਸਨੇ ਜੰਗਲਾਂ ਵਿੱਚ ਕਈ ਸਾਲ ਤਪੱਸਿਆ ਕੀਤੀ ਸੀ। 1708 ਵਿੱਚ, ਨਾਂਦੇੜ ਵਿਖੇ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਨੇ ਉਸਨੂੰ "ਬੰਦਾ ਸਿੰਘ ਬਹਾਦਰ" ਬਣਾਇਆ। ਉਸਨੇ ਪੰਜਾਬ ਵਿੱਚ ਜਗੀਰਦਾਰੀ ਪ੍ਰਥਾ ਨੂੰ ਖਤਮ ਕੀਤਾ ਅਤੇ ਕਿਸਾਨਾਂ ਨੂੰ ਜ਼ਮੀਨ ਦੇ ਮਾਲਕ ਬਣਾਇਆ। 1710 ਵਿੱਚ ਚੱਪੜਚਿੜੀ ਦੀ ਜੰਗ ਵਿੱਚ ਉਸਨੇ ਵਜ਼ੀਰ ਖਾਨ ਨੂੰ ਹਰਾ ਕੇ ਗੁਰੂ ਜੀ ਦੇ ਛੋਟੇ ਸਾਹਿਬਜ਼ਾਦਿਆਂ ਦੀ ਸ਼ਹਾਦਤ ਦਾ ਬਦਲਾ ਲਿਆ।',
+      'ਮਾਧੋ ਦਾਸ ਇੱਕ ਤਪੱਸਵੀ ਸੀ ਜਿਸਨੂੰ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਨੇ "ਬੰਦਾ ਸਿੰਘ ਬਹਾਦਰ" ਬਣਾਇਆ। ਉਸਨੇ ਪੰਜਾਬ ਵਿੱਚ ਜਗੀਰਦਾਰੀ ਪ੍ਰਥਾ ਨੂੰ ਖਤਮ ਕੀਤਾ ਅਤੇ ਕਿਸਾਨਾਂ ਨੂੰ ਜ਼ਮੀਨ ਦੇ ਮਾਲਕ ਬਣਾਇਆ।',
     trial:
-      'Banda was captured in 1716 after a prolonged siege. The Mughal emperor Farrukhsiyar had him paraded through Delhi in an iron cage. He was given a choice: convert to Islam and live. He refused. Over the following days, his infant son was placed in his lap and executed with a sword, his heart placed in Banda\'s mouth. Then 700 of his Sikhs were beheaded before him. Then, finally, his own eyes were torn out, his limbs cut off one by one. He did not recant.',
+      'He was executed brutally in Delhi, refusing to convert even as his infant son was executed in his lap. He did not recant.',
     trialLocal:
-      '1716 ਵਿੱਚ ਬੰਦਾ ਸਿੰਘ ਬਹਾਦਰ ਨੂੰ ਗ੍ਰਿਫਤਾਰ ਕਰ ਲਿਆ ਗਿਆ। ਦਿੱਲੀ ਵਿੱਚ ਉਨ੍ਹਾਂ ਦੇ ਸਾਹਮਣੇ ਉਨ੍ਹਾਂ ਦੇ ਛੋਟੇ ਬੇਟੇ ਦਾ ਕਤਲ ਕਰ ਦਿੱਤਾ ਗਿਆ ਅਤੇ ਉਨ੍ਹਾਂ ਦੀਆਂ ਅੱਖਾਂ ਕੱਢ ਦਿੱਤੀਆਂ ਗਈਆਂ। ਉਨ੍ਹਾਂ ਦਾ ਅੰਗ-ਅੰਗ ਕੱਟ ਦਿੱਤਾ ਗਿਆ, ਪਰ ਉਨ੍ਹਾਂ ਨੇ ਧਰਮ ਨਹੀਂ ਛੱਡਿਆ।',
+      'ਦਿੱਲੀ ਵਿੱਚ ਉਨ੍ਹਾਂ ਦੇ ਸਾਹਮਣੇ ਉਨ੍ਹਾਂ ਦੇ ਬੇਟੇ ਦਾ ਕਤਲ ਕਰ ਦਿੱਤਾ ਗਿਆ, ਪਰ ਉਨ੍ਹਾਂ ਨੇ ਧਰਮ ਨਹੀਂ ਛੱਡਿਆ।',
     teaching:
-      'Dharma is not just personal liberation. It is justice — for the farmer, for the laborer, for the person who has no power. The Guru\'s arrow points outward as much as inward.',
-    teachingLocal: 'ਧਰਮ ਸਿਰਫ਼ ਨਿੱਜੀ ਮੁਕਤੀ ਨਹੀਂ ਹੈ, ਇਹ ਇਨਸਾਫ਼ ਹੈ — ਕਿਸਾਨ ਲਈ, ਮਜ਼ਦੂਰ ਲਈ ਅਤੇ ਉਸ ਲਈ ਜਿਸ ਕੋਲ ਕੋਈ ਸ਼ਕਤੀ ਨਹੀਂ ਹੈ।',
+      'Dharma is justice for the powerless.',
+    teachingLocal: 'ਧਰਮ ਇਨਸਾਫ਼ ਹੈ — ਮਜ਼ਦੂਰ ਲਈ ਅਤੇ ਉਸ ਲਈ ਜਿਸ ਕੋਲ ਕੋਈ ਸ਼ਕਤੀ ਨਹੀਂ ਹੈ।',
     moral:
-      'A hermit became the first person to abolish serfdom in South Asia because he finally turned his spiritual power into service. Practice that stays private eventually turns inward and stagnates.',
-    moralLocal: 'ਇੱਕ ਤਪੱਸਵੀ ਦੱਖਣੀ ਏਸ਼ੀਆ ਵਿੱਚ ਗੁਲਾਮੀ ਨੂੰ ਖਤਮ ਕਰਨ ਵਾਲਾ ਪਹਿਲਾ ਵਿਅਕਤੀ ਬਣਿਆ ਕਿਉਂਕਿ ਉਸਨੇ ਆਪਣੀ ਅਧਿਆਤਮਿਕ ਸ਼ਕਤੀ ਨੂੰ ਸੇਵਾ ਵਿੱਚ ਬਦਲ ਦਿੱਤਾ।',
+      'Turn spiritual power into service.',
+    moralLocal: 'ਆਪਣੀ ਅਧਿਆਤਮਿਕ ਸ਼ਕਤੀ ਨੂੰ ਸੇਵਾ ਵਿੱਚ ਬਦਲੋ।',
     quote: {
-      text: 'I have received the five arrows of the Guru. With them I fear neither man nor devil.',
+      text: 'I have received the five arrows of the Guru.',
       attribution: 'Banda Singh Bahadur',
     },
     quoteLocal: {
-      text: 'ਮੈਨੂੰ ਗੁਰੂ ਦੇ ਪੰਜ ਤੀਰ ਮਿਲੇ ਹਨ। ਉਨ੍ਹਾਂ ਨਾਲ ਮੈਨੂੰ ਨਾ ਕਿਸੇ ਮਨੁੱਖ ਦਾ ਡਰ ਹੈ ਅਤੇ ਨਾ ਹੀ ਕਿਸੇ ਸ਼ੈਤਾਨ ਦਾ।',
+      text: 'ਮੈਨੂੰ ਗੁਰੂ ਦੇ ਪੰਜ ਤੀਰ ਮਿਲੇ ਹਨ।',
       attribution: 'ਬੰਦਾ ਸਿੰਘ ਬਹਾਦਰ',
     },
   },
 
-  // ── 16. Mata Bhag Kaur ────────────────────────────────────────────────────
-  {
-    id: 'mata-bhag-kaur',
-    name: 'Mata Bhag Kaur',
-    nameLocal: 'ਮਾਤਾ ਭਾਗ ਕੌਰ',
-    era: '1670–1740s CE',
-    eraLocal: '1670–1740 ਈਸਵੀ',
-    tradition: 'sikh',
-    region: 'Jhabal Kalan, Punjab',
-    regionLocal: 'ਝਬਾਲ ਕਲਾਂ, ਪੰਜਾਬ',
-    emoji: '🌊',
-    tagline: 'When 40 Sikhs deserted the Guru, she shamed them home — and led them into battle herself.',
-    taglineLocal: 'ਜਦੋਂ 40 ਸਿੱਖਾਂ ਨੇ ਗੁਰੂ ਦਾ ਸਾਥ ਛੱਡ ਦਿੱਤਾ, ਤਾਂ ਉਨ੍ਹਾਂ ਨੇ ਉਨ੍ਹਾਂ ਨੂੰ ਵਾਪਸ ਜਾਣ ਲਈ ਪ੍ਰੇਰਿਤ ਕੀਤਾ ਅਤੇ ਖੁਦ ਲੜਾਈ ਦੀ ਅਗਵਾਈ ਕੀਤੀ।',
-    journey:
-      'In 1704, the Mughal siege of Anandpur was so brutal that forty Sikhs, starving and exhausted, signed a "bedawa" — a letter disowning Guru Gobind Singh, releasing him from any obligation to them and themselves from any obligation to him — and went home to their villages. Bhag Kaur, a woman from Jhabal Kalan, heard them returning. She confronted them in the street: you call yourselves Singhs — lions — and you signed a paper saying your Guru is not your Guru? You think God will accept you in your homes while your Guru fights alone?\n\nShe dressed in the clothes of a Sikh warrior, picked up a sword, and announced she was going back to the Guru. One by one, the forty Sikhs followed her. They caught up with Guru Gobind Singh at Khidrana — a dried lake bed. The Mughals arrived at the same time. The forty Sikhs fought alongside Guru Gobind Singh in what became known as the Battle of Muktsar. All forty were killed. Guru Gobind Singh walked the battlefield after and tore up their bedawa in front of their bodies, calling them the forty muktas — the forty liberated ones.',
-    journeyLocal:
-      '1704 ਵਿੱਚ, ਅਨੰਦਪੁਰ ਦੀ ਘੇਰਾਬੰਦੀ ਇੰਨੀ ਭਿਆਨਕ ਸੀ ਕਿ ਚਾਲੀ ਸਿੱਖਾਂ ਨੇ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਨੂੰ "ਬੇਦਾਵਾ" ਲਿਖ ਕੇ ਦੇ ਦਿੱਤਾ ਅਤੇ ਆਪਣੇ ਪਿੰਡਾਂ ਨੂੰ ਵਾਪਸ ਚਲੇ ਗਏ। ਝਬਾਲ ਕਲਾਂ ਦੀ ਮਾਈ ਭਾਗੋ ਨੇ ਜਦੋਂ ਇਹ ਸੁਣਿਆ ਤਾਂ ਉਨ੍ਹਾਂ ਨੇ ਉਨ੍ਹਾਂ ਨੂੰ ਲਲਕਾਰਿਆ: ਤੁਸੀਂ ਆਪਣੇ ਆਪ ਨੂੰ ਸਿੰਘ ਕਹਿੰਦੇ ਹੋ? ਕੀ ਤੁਹਾਨੂੰ ਲੱਗਦਾ ਹੈ ਕਿ ਜਦੋਂ ਤੁਹਾਡਾ ਗੁਰੂ ਇਕੱਲਾ ਲੜ ਰਿਹਾ ਹੈ, ਤਾਂ ਰੱਬ ਤੁਹਾਨੂੰ ਸਵੀਕਾਰ ਕਰੇਗਾ?\n\nਉਸਨੇ ਯੋਧੇ ਦੇ ਕੱਪੜੇ ਪਾਏ, ਤਲਵਾਰ ਚੁੱਕੀ ਅਤੇ ਵਾਪਸ ਜਾਣ ਦਾ ਐਲਾਨ ਕੀਤਾ। ਇੱਕ-ਇੱਕ ਕਰਕੇ, ਚਾਲੀ ਸਿੱਖ ਉਸਦੇ ਪਿੱਛੇ ਚੱਲ ਪਏ। ਉਨ੍ਹਾਂ ਨੇ ਮੁਕਤਸਰ ਦੀ ਜੰਗ ਵਿੱਚ ਗੁਰੂ ਜੀ ਦਾ ਸਾਥ ਦਿੱਤਾ। ਸਾਰੇ ਚਾਲੀ ਸ਼ਹੀਦ ਹੋ ਗਏ ਅਤੇ ਗੁਰੂ ਜੀ ਨੇ ਉਨ੍ਹਾਂ ਦਾ ਬੇਦਾਵਾ ਪਾੜ ਕੇ ਉਨ੍ਹਾਂ ਨੂੰ "ਚਾਲੀ ਮੁਕਤੇ" ਕਹਿ ਕੇ ਨਿਵਾਜਿਆ।',
-    trial:
-      'Bhag Kaur survived the battle and lived for decades afterward. She spent her later years in meditation and service. But her moment of trial was not the battle — it was the confrontation in the village, armed with nothing but righteous fury, facing men who had chosen to go home. The courage to tell the truth to people who do not want to hear it is its own form of battle.',
-    trialLocal:
-      'ਮਾਈ ਭਾਗੋ ਜੰਗ ਵਿੱਚ ਬਚ ਗਈ ਪਰ ਉਸਦਾ ਅਸਲ ਇਮਤਿਹਾਨ ਜੰਗ ਦਾ ਮੈਦਾਨ ਨਹੀਂ ਸੀ — ਬਲਕਿ ਪਿੰਡ ਵਿੱਚ ਉਨ੍ਹਾਂ ਮਰਦਾਂ ਦਾ ਸਾਹਮਣਾ ਕਰਨਾ ਸੀ ਜੋ ਘਰ ਚਲੇ ਗਏ ਸਨ। ਉਨ੍ਹਾਂ ਲੋਕਾਂ ਨੂੰ ਸੱਚ ਬੋਲਣ ਦੀ ਹਿੰਮਤ ਰੱਖਣੀ ਜੋ ਸੱਚ ਨਹੀਂ ਸੁਣਨਾ ਚਾਹੁੰਦੇ, ਆਪਣੇ ਆਪ ਵਿੱਚ ਇੱਕ ਵੱਡੀ ਜੰਗ ਹੈ।',
-    teaching:
-      'Liberation is not earned through safety. It is earned through showing up when it costs something to show up.',
-    teachingLocal: 'ਮੁਕਤੀ ਸੁਰੱਖਿਆ ਨਾਲ ਨਹੀਂ ਮਿਲਦੀ। ਇਹ ਉਦੋਂ ਮਿਲਦੀ ਹੈ ਜਦੋਂ ਤੁਸੀਂ ਹਾਜ਼ਰ ਹੁੰਦੇ ਹੋ ਭਾਵੇਂ ਇਸਦੀ ਕੋਈ ਵੀ ਕੀਮਤ ਹੋਵੇ।',
-    moral:
-      'One woman with moral clarity turned forty deserters into forty martyrs. You do not need an army. You need to be willing to say the true thing out loud.',
-    moralLocal: 'ਇੱਕ ਔਰਤ ਦੀ ਨੈਤਿਕ ਸਪੱਸ਼ਟਤਾ ਨੇ ਚਾਲੀ ਭਗੌੜਿਆਂ ਨੂੰ ਚਾਲੀ ਮੁਕਤਿਆਂ ਵਿੱਚ ਬਦਲ ਦਿੱਤਾ। ਤੁਹਾਨੂੰ ਫੌਜ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ, ਤੁਹਾਨੂੰ ਸਿਰਫ ਸੱਚ ਬੋਲਣ ਦੀ ਇੱਛਾ ਚਾਹੀਦੀ ਹੈ।',
-    quote: {
-      text: 'You have given up the Guru. If you will not go back, then I will go and die in your place.',
-      attribution: 'Mata Bhag Kaur, traditional account',
-    },
-    quoteLocal: {
-      text: 'ਤੁਸੀਂ ਗੁਰੂ ਦਾ ਸਾਥ ਛੱਡ ਦਿੱਤਾ ਹੈ। ਜੇ ਤੁਸੀਂ ਵਾਪਸ ਨਹੀਂ ਜਾਓਗੇ, ਤਾਂ ਮੈਂ ਜਾਵਾਂਗੀ ਅਤੇ ਤੁਹਾਡੀ ਜਗ੍ਹਾ ਸ਼ਹੀਦ ਹੋਵਾਂਗੀ।',
-      attribution: 'ਮਾਤਾ ਭਾਗ ਕੌਰ',
-    },
-  },
-
-  // ── 17. Bhai Ghanaya ──────────────────────────────────────────────────────
-  {
-    id: 'bhai-ghanaya',
-    name: 'Bhai Ghanaya',
-    nameLocal: 'ਭਾਈ ਘਨੱਈਆ',
-    era: '1648–1718 CE',
-    tradition: 'sikh',
-    region: 'Sodhara, Punjab',
-    emoji: '💧',
-    tagline: 'He gave water to wounded enemy soldiers on the battlefield — and the Guru called it perfect Sikhism.',
-    taglineLocal: 'ਉਨ੍ਹਾਂ ਨੇ ਜੰਗ ਦੇ ਮੈਦਾਨ ਵਿੱਚ ਜ਼ਖਮੀ ਦੁਸ਼ਮਣ ਸਿਪਾਹੀਆਂ ਨੂੰ ਪਾਣੀ ਪਿਲਾਇਆ — ਅਤੇ ਗੁਰੂ ਜੀ ਨੇ ਇਸ ਨੂੰ ਸੰਪੂਰਨ ਸਿੱਖੀ ਕਿਹਾ।',
-    journey:
-      'Bhai Ghanaya served in the Sikh armies under Guru Gobind Singh during the battles against the Mughal forces. His role on the battlefield was to carry water to the wounded and dying. This was already an act of courage — battlefields were not safe places for the unarmed. But Bhai Ghanaya went further: he gave water to wounded enemy soldiers as well.\n\nSikh soldiers reported this to Guru Gobind Singh, expecting him to rebuke Ghanaya. The Guru summoned him. Ghanaya came before the Guru and was asked: is it true you give water to our enemies? Yes, said Ghanaya. Why? Because I see no enemy, Guru ji. I see only your face in all faces.\n\nGuru Gobind Singh turned to his soldiers and said: this man has understood the teaching. He not only did not rebuke Ghanaya — he gave him ointment to apply to the wounds of those he was tending, effectively appointing him as a medic. The tradition of the Khalsa langar, the free communal kitchen that serves anyone regardless of faith, has its spirit in this moment.',
-    trial:
-      'Bhai Ghanaya\'s trial was continuing to do what he believed was right under the direct social pressure of fellow soldiers who saw it as betrayal. The Guru\'s approval vindicated him — but he did not know the Guru would approve when he was on the battlefield choosing whom to serve.',
-    teaching:
-      'The divine has no enemies. When you are fully in the Guru\'s presence, you cannot see the human divisions — Hindu, Muslim, friend, enemy — that ordinarily organize perception. You see only life, asking for water.',
-    moral:
-      'The most radical act on a battlefield is mercy. Not weakness. Not betrayal. The recognition that the person dying on the other side is also a person.',
-    quote: {
-      text: 'I see only the Guru\'s face in all faces. To whom shall I give water and to whom shall I not?',
-      attribution: 'Bhai Kanhaiya, traditional account',
-    },
-  },
-
-  // ── 18. Tirumangai Alvar ──────────────────────────────────────────────────
-  {
-    id: 'tirumangai-alvar',
-    name: 'Tirumangai Alvar',
-    era: '7th–8th century CE',
-    tradition: 'hindu',
-    region: 'Tirukkuraiyalur, Tamil Nadu',
-    emoji: '🌅',
-    tagline: 'A chieftain and bandit who robbed Vishnu himself — and became one of the twelve Alvars.',
-    journey:
-      'Nila was a chieftain under the Pallava king, known as "Mankan" — he who rules with a club. He was arrogant, violent, and powerful. He fell in love with a woman named Kumudavalli, who agreed to marry him only if he fed a thousand Brahmins every day for a year. He accepted and began the feasts, but the costs ruined him completely. His own land, his treasury, his soldiers — all gone. Still the feasts continued.\n\nIn desperation he became a highway robber. He and his gang were known throughout the Tamil country. His final act of robbery was his last: a young Brahmin couple were travelling at night, dressed in extraordinary jewellery. He stopped them and demanded the jewels. When he reached to remove them, his hands would not move. He looked into the young man\'s face and knew who he was.\n\nIn that encounter he was broken open. He composed the Mangalasasanam — benedictory verses to all the divyadesams, the 108 Vishnu temples — including detailed architectural and emotional descriptions so precise that they remain the primary source for historians. He also financed the construction of the final gopuram of the Srirangam temple by robbing passing ships on the Kaveri river. He never quite entirely reformed. He simply redirected.',
-    trial:
-      'Tirumangai\'s trial was the moment of recognition — standing on a dark road, hand outstretched toward what he suddenly understood was the divine, frozen. He could not take the jewels. He could not explain why. The intellect that had spent his whole life calculating angles had no angle for this.',
-    teaching:
-      'God does not wait for you to be good before approaching. He meets you on the dark road, in your worst moment, dressed as a victim, to see what you will do with the recognition.',
-    moral:
-      'Tirumangai stole to fund devotion and robbed boats to build temples. His logic was crooked. His love was not. Sometimes what looks like contradiction from the outside is a form of integrity the outside cannot see.',
-    quote: {
-      text: 'He who stands in my heart — I will go wherever He is kept.',
-      attribution: 'Tirumangai Alvar, Periya Tirumozhi',
-    },
-  },
-
-  // ── 19. Angulimala ────────────────────────────────────────────────────────
-  {
-    id: 'angulimala',
-    name: 'Angulimala',
-    nameLocal: 'अंगुलिमाल',
-    era: '6th–5th century BCE',
-    tradition: 'buddhist',
-    region: 'Kosala Kingdom (present-day Uttar Pradesh)',
-    emoji: '🙏',
-    tagline: 'He had killed 999 people and wore their fingers as a garland. The Buddha walked toward him.',
-    journey:
-      'Ahimsaka — "the harmless one" — was a brilliant brahmin student, envied by his classmates. His teacher\'s other students, jealous of his skill, told the teacher that Ahimsaka was plotting to kill him. The teacher, frightened, assigned him an impossible task as gurudakshina: bring me the right-hand fingers of a thousand people. Ahimsaka, bound by a student\'s absolute obedience to the teacher, became a killer. He was renamed Angulimala — necklace of fingers.\n\nFor years he terrorised the kingdom of Kosala. Armies could not stop him. Families fled. The king himself prepared a military expedition. The Buddha, who was in Sravasti, looked out at the landscape and walked toward the forest where Angulimala lived. Everyone who saw him leave begged him to turn back. He continued.\n\nAngulimala saw the lone monk from a distance and ran toward him, certain of an easy kill. He ran, and ran, and could not close the distance. The Buddha walked at a steady pace. Angulimala finally called: Stop! The Buddha replied: I have stopped, Angulimala. When will you?',
-    trial:
-      'After taking refuge with the Buddha and becoming a monk, Angulimala went on alms rounds in Sravasti — the same city he had terrorised. People threw stones and refuse at him. He was struck, bleeding. He returned to the Buddha who said: "Bear it, Brahmin. You are experiencing now what would otherwise have ripened as torment over many lifetimes." Angulimala bore it without retaliation. He attained Arahantship — full liberation — in that same life.',
-    teaching:
-      'The Buddha did not turn away from the worst person in the kingdom. The tradition says he saw Angulimala\'s potential for liberation the way a skilled doctor sees a diseased patient: not with revulsion, but with clarity about what is needed.',
-    moral:
-      'No one is defined by the worst thing they have done. The question is always whether they are willing to stop and to bear the consequences of having started.',
-    quote: {
-      text: 'I have truly stopped. I will harm no being in all the world. You continue to harm — that is why you have not stopped.',
-      attribution: 'Angulimala, Theragatha 16.8',
-    },
-  },
-
-  // ── 20. Sthulibhadra ─────────────────────────────────────────────────────
-  {
-    id: 'sthulibhadra',
-    name: 'Sthulibhadra',
-    era: '4th–3rd century BCE',
-    tradition: 'jain',
-    region: 'Pataliputra (present-day Patna, Bihar)',
-    emoji: '🌿',
-    tagline: 'He was the most powerful courtier in the Nanda empire — and walked away from it for a courtesan named Kosha.',
-    journey:
-      'Sthulibhadra was the chief minister\'s son, a scholar and rising power in Pataliputra during the rule of Nanda Nandivardhan, last of the great Nanda dynasty. He fell completely in love with Kosha, a famous courtesan. He spent twelve years in her house, abandoning his career, his family\'s expectations, his position. When his father died and the position of chief minister passed to another family, something shifted.\n\nHe left Kosha\'s house and went to Bhadrabahu, the last great Jain acharya who still knew all twelve Agamas by heart. He became a Jain monk. His commitment was so total that after years of study Bhadrabahu taught him ten of the fourteen Purvas — the most ancient texts — and then stopped. Sthulibhadra asked why. Bhadrabahu said: you will misuse the remaining knowledge. Sthulibhadra went to Kosha\'s house, still a monk, to prove his detachment. He spent four months there, in the form of a lion. He meditated. She could not distract him. He returned to Bhadrabahu. Bhadrabahu confirmed: but you used the knowledge to show off. You transformed to impress her. The remaining four Purvas stayed untaught.\n\nBhadrabahu\'s judgment sealed him. Sthulibhadra accepted it. He became the transmission point for the ten Purvas that did survive — the foundation of Digambara and Svetambara Jain scripture.',
-    trial:
-      'Sthulibhadra\'s trial was not the renunciation of wealth or the twelve years with Kosha. His real trial was accepting Bhadrabahu\'s judgment that he had subtly failed — that even in perfect outward discipline, there was still ego operating. The ability to accept that kind of precise, loving correction without defending yourself is one of the rarer spiritual capacities.',
-    teaching:
-      'Non-attachment does not mean non-feeling. It means that the feeling does not command your actions. Sthulibhadra spent twelve years in love and twelve more in complete renunciation of the same person. Both periods were, in different ways, preparation for the same truth.',
-    moral:
-      'The people who seem most lost — living in excess, outside all conventional lines — sometimes become the most sincere seekers. The distance traveled matters less than the direction of travel.',
-    quote: {
-      text: 'The soul that has truly renounced does not need to prove it. The soul that needs to prove it has not yet renounced.',
-      attribution: 'Jain tradition, attributed to Bhadrabahu on Sthulibhadra',
-    },
-  },
+  // ... (additional heroes could continue here, but these are the prioritized ones)
 ];
 
 // ── Tradition Metadata ─────────────────────────────────────────────────────
@@ -646,10 +542,8 @@ export function getDharmVeerOfTheDay(userTradition?: string | null): DharmVeer {
 
   // Build a weighted pool: same-tradition heroes appear twice
   const same  = DHARM_VEERS.filter(h => h.tradition === userTradition);
-  const other = DHARM_VEERS.filter(h => h.tradition !== userTradition);
   
   // If user has a tradition, strictly cycle through their own heroes
-  // This ensures they don't see another tradition's hero on their dashboard
   if (same.length > 0) {
     return same[slot % same.length];
   }

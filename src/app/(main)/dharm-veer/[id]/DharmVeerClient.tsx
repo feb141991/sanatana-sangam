@@ -11,6 +11,7 @@ import type { DharmVeer } from '@/lib/dharm-veer';
 import { TRADITION_META } from '@/lib/dharm-veer';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { t as translateFn, type AppLang } from '@/lib/i18n/translations';
+import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import toast from 'react-hot-toast';
 
 type ReadingTheme = 'light' | 'dark' | 'sepia';
@@ -18,7 +19,7 @@ type FontSize = 'sm' | 'md' | 'lg' | 'xl';
 
 export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
   const router = useRouter();
-  const [theme, setTheme] = useState<ReadingTheme>('dark');
+  const [theme, setTheme] = useState<ReadingTheme>('light');
   const [fontSize, setFontSize] = useState<FontSize>('md');
   const [showSettings, setShowSettings] = useState(false);
   const { lang: appLang } = useLanguage();
@@ -26,6 +27,47 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
 
   const effectiveLang: AppLang = lang === 'en' ? 'en' : (appLang === 'en' ? 'hi' : appLang);
   const meta = TRADITION_META[hero.tradition];
+
+  // ── Localization ──
+  const localizedJourney = useLocalizedMeaning({
+    entryId: `dharm-veer:${hero.id}:journey`,
+    sourceMeaning: hero.journey,
+    providedMeaning: hero.journeyLocal,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
+
+  const localizedTrial = useLocalizedMeaning({
+    entryId: `dharm-veer:${hero.id}:trial`,
+    sourceMeaning: hero.trial,
+    providedMeaning: hero.trialLocal,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
+
+  const localizedTeaching = useLocalizedMeaning({
+    entryId: `dharm-veer:${hero.id}:teaching`,
+    sourceMeaning: hero.teaching,
+    providedMeaning: hero.teachingLocal,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
+
+  const localizedMoral = useLocalizedMeaning({
+    entryId: `dharm-veer:${hero.id}:moral`,
+    sourceMeaning: hero.moral,
+    providedMeaning: hero.moralLocal,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
+
+  const localizedQuote = useLocalizedMeaning({
+    entryId: `dharm-veer:${hero.id}:quote`,
+    sourceMeaning: hero.quote?.text,
+    providedMeaning: hero.quoteLocal?.text,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
 
   // Map font sizes to tailwind/css classes or styles
   const fontStyles: Record<FontSize, string> = {
@@ -151,8 +193,8 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
               <Book size={14} /> {translateFn(effectiveLang, 'journeyLabel')}
             </div>
-            <p className={`${fontStyles[fontSize]} whitespace-pre-wrap`}>
-              {lang === 'local' && hero.journeyLocal ? hero.journeyLocal : hero.journey}
+            <p className={`${fontStyles[fontSize]} whitespace-pre-wrap ${localizedJourney.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+              {lang === 'local' ? localizedJourney.meaning : hero.journey}
             </p>
           </div>
 
@@ -161,8 +203,8 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--brand-primary)]">
               <Shield size={14} /> {translateFn(effectiveLang, 'testOfDharma')}
             </div>
-            <p className={`${fontStyles[fontSize]} font-medium italic`}>
-              {lang === 'local' && hero.trialLocal ? hero.trialLocal : hero.trial}
+            <p className={`${fontStyles[fontSize]} font-medium italic ${localizedTrial.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+              {lang === 'local' ? localizedTrial.meaning : hero.trial}
             </p>
           </div>
 
@@ -171,8 +213,8 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
               <Lightbulb size={14} /> {translateFn(effectiveLang, 'wisdom')}
             </div>
-            <p className={`${fontStyles[fontSize]}`}>
-              {lang === 'local' && hero.teachingLocal ? hero.teachingLocal : hero.teaching}
+            <p className={`${fontStyles[fontSize]} ${localizedTeaching.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+              {lang === 'local' ? localizedTeaching.meaning : hero.teaching}
             </p>
           </div>
 
@@ -180,8 +222,8 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
           {hero.quote && (
             <div className="py-8 border-y border-white/5 text-center space-y-4">
               <Quote size={32} className="mx-auto opacity-20 text-[var(--brand-primary)]" />
-              <p className="text-xl font-bold premium-serif italic px-6">
-                {lang === 'local' && hero.quoteLocal ? hero.quoteLocal.text : hero.quote.text}
+              <p className={`text-xl font-bold premium-serif italic px-6 ${localizedQuote.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+                {lang === 'local' ? localizedQuote.meaning : hero.quote.text}
               </p>
               <p className="text-[10px] uppercase font-bold tracking-widest opacity-60">
                 — {lang === 'local' && hero.quoteLocal ? hero.quoteLocal.attribution : hero.quote.attribution}
@@ -192,8 +234,8 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
           {/* Moral */}
           <div className="text-center pt-8">
             <p className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-40 mb-4">{translateFn(effectiveLang, 'essence')}</p>
-            <p className="text-lg font-bold leading-relaxed max-w-sm mx-auto">
-              {lang === 'local' && hero.moralLocal ? hero.moralLocal : hero.moral}
+            <p className={`text-lg font-bold leading-relaxed max-w-sm mx-auto ${localizedMoral.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+              {lang === 'local' ? localizedMoral.meaning : hero.moral}
             </p>
           </div>
         </section>

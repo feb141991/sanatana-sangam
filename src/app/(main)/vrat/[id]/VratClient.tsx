@@ -10,6 +10,7 @@ import {
 import type { VratData } from '@/lib/vrat-data';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { t as translateFn, type AppLang } from '@/lib/i18n/translations';
+import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import toast from 'react-hot-toast';
 
 type ReadingTheme = 'light' | 'dark' | 'sepia';
@@ -17,7 +18,7 @@ type FontSize = 'sm' | 'md' | 'lg' | 'xl';
 
 export default function VratClient({ vrat, originalSlug }: { vrat: VratData, originalSlug: string }) {
   const router = useRouter();
-  const [theme, setTheme] = useState<ReadingTheme>('dark');
+  const [theme, setTheme] = useState<ReadingTheme>('light');
   const [fontSize, setFontSize] = useState<FontSize>('md');
   const [showSettings, setShowSettings] = useState(false);
   
@@ -25,6 +26,39 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
   const [lang, setLang] = useState<'en' | 'local'>(appLang === 'en' ? 'en' : 'local');
 
   const effectiveLang: AppLang = lang === 'en' ? 'en' : (appLang === 'en' ? 'hi' : appLang);
+
+  // ── Localization ──
+  const localizedSignificance = useLocalizedMeaning({
+    entryId: `vrat:${vrat.id}:significance`,
+    sourceMeaning: vrat.significance,
+    providedMeaning: vrat.significanceLocal,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
+
+  const localizedPractice = useLocalizedMeaning({
+    entryId: `vrat:${vrat.id}:practice`,
+    sourceMeaning: vrat.practice,
+    providedMeaning: vrat.practiceLocal,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
+
+  const localizedMantra = useLocalizedMeaning({
+    entryId: `vrat:${vrat.id}:mantra`,
+    sourceMeaning: vrat.mantra,
+    providedMeaning: vrat.mantraLocal,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
+
+  const localizedTagline = useLocalizedMeaning({
+    entryId: `vrat:${vrat.id}:tagline`,
+    sourceMeaning: vrat.tagline,
+    providedMeaning: vrat.taglineLocal,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
 
   const fontStyles: Record<FontSize, string> = {
     sm: 'text-sm leading-relaxed',
@@ -134,8 +168,8 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
             </h1>
           </div>
 
-          <p className={`italic font-medium opacity-80 px-4 ${fontStyles[fontSize]}`}>
-            &ldquo;{lang === 'local' && vrat.taglineLocal ? vrat.taglineLocal : vrat.tagline}&rdquo;
+          <p className={`italic font-medium opacity-80 px-4 ${fontStyles[fontSize]} ${localizedTagline.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+            &ldquo;{lang === 'local' ? localizedTagline.meaning : vrat.tagline}&rdquo;
           </p>
         </section>
 
@@ -146,8 +180,8 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
               <Book size={14} /> {translateFn(effectiveLang, 'significance')}
             </div>
-            <p className={`${fontStyles[fontSize]} whitespace-pre-wrap`}>
-              {lang === 'local' && vrat.significanceLocal ? vrat.significanceLocal : vrat.significance}
+            <p className={`${fontStyles[fontSize]} whitespace-pre-wrap ${localizedSignificance.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+              {lang === 'local' ? localizedSignificance.meaning : vrat.significance}
             </p>
           </div>
 
@@ -156,8 +190,8 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--brand-primary-strong)]">
               <Flame size={14} /> {translateFn(effectiveLang, 'howToObserve')}
             </div>
-            <p className={`${fontStyles[fontSize]} font-medium italic`}>
-              {lang === 'local' && vrat.practiceLocal ? vrat.practiceLocal : vrat.practice}
+            <p className={`${fontStyles[fontSize]} font-medium italic ${localizedPractice.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+              {lang === 'local' ? localizedPractice.meaning : vrat.practice}
             </p>
           </div>
 
@@ -166,8 +200,8 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
               <Info size={14} /> {translateFn(effectiveLang, 'sacredMantra')}
             </div>
-            <p className={`${fontStyles[fontSize]} text-center premium-serif text-xl font-bold mt-4`}>
-              {lang === 'local' && vrat.mantraLocal ? vrat.mantraLocal : vrat.mantra}
+            <p className={`${fontStyles[fontSize]} text-center premium-serif text-xl font-bold mt-4 ${localizedMantra.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+              {lang === 'local' ? localizedMantra.meaning : vrat.mantra}
             </p>
           </div>
 

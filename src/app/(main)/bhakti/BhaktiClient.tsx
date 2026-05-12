@@ -6,14 +6,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronLeft, BarChart2, Play, Music, Heart, 
   Settings, CheckCircle2, Circle, Clock, Sun, 
-  Moon, Volume2, VolumeX, Share2, Info
+  Moon, Volume2, VolumeX, Share2, Info, Sparkles
 } from 'lucide-react';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import type { Shloka } from '@/lib/shlokas';
 import { DEITY_META } from '@/lib/stotrams';
-import { CURATED_SOUNDS } from '@/lib/curated-bhakti';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -28,19 +27,27 @@ interface Props {
   dailyStotramDeityEmoji: string;
 }
 
+// ── New Color Palette ────────────────────────────────────────────────────────
+const THEME = {
+  bg: '#1A1918',
+  void: '#010101',
+  charcoal: '#2C2C2F',
+  gold: '#C09759',
+  goldMuted: 'rgba(192, 151, 89, 0.4)',
+  goldGlow: 'rgba(192, 151, 89, 0.1)',
+  textGold: '#E2C28F',
+  textMuted: 'rgba(255, 255, 255, 0.4)',
+};
+
 export default function BhaktiClient({
   shloka, tradition, userName, japaStreak, sessionCountToday,
   dailyStotramId, dailyStotramTitle, dailyStotramDeityEmoji
 }: Props) {
   const router = useRouter();
-  const { resolvedTheme } = useThemePreference();
-  const { isMuted, setIsMuted, playHaptic } = useZenithSensory();
+  const { playHaptic } = useZenithSensory();
   const { t, lang } = useLanguage();
-  const isDark = resolvedTheme === 'dark';
 
   const [activeDeity, setActiveDeity] = useState('shiva');
-  const [activeSound, setActiveSound] = useState(CURATED_SOUNDS[0]);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [checklist, setChecklist] = useState([
     { id: 'morning-prayer', label: t('morningRoutine'), done: false },
     { id: 'japa-session', label: t('japa'), done: false },
@@ -53,23 +60,25 @@ export default function BhaktiClient({
   };
 
   return (
-    <div className={`relative min-h-screen pb-32 overflow-x-hidden transition-colors duration-500 ${isDark ? 'bg-[#0C0A07]' : 'bg-[var(--card-bg)]'}`}>
-      {/* ── 1. Cosmic Hero Section ────────────────────────────────────────── */}
-      <section className="relative h-[70vh] w-full overflow-hidden">
+    <div className="relative min-h-screen pb-32 overflow-x-hidden selection:bg-[#C09759]/30" style={{ backgroundColor: THEME.bg, color: 'white' }}>
+      
+      {/* ── 1. Immersive Hero Section ────────────────────────────────────────── */}
+      <section className="relative h-[65vh] w-full overflow-hidden">
+        {/* Dynamic Background Image */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeDeity}
             initial={{ opacity: 0, scale: 1.1 }}
-            animate={{ opacity: 1, scale: 1 }}
+            animate={{ opacity: 0.5, scale: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1.5 }}
+            transition={{ duration: 1.8, ease: "easeOut" }}
             className="absolute inset-0"
           >
             <Image 
               src={`/images/deities/${activeDeity}-bg.png`}
               alt={activeDeity}
               fill
-              className={`object-cover ${isDark ? 'opacity-60' : 'opacity-40 mix-blend-multiply'}`}
+              className="object-cover grayscale contrast-125 brightness-50"
               priority
               onError={(e) => {
                 (e.target as any).src = '/images/bhakti-hero.png';
@@ -78,259 +87,226 @@ export default function BhaktiClient({
           </motion.div>
         </AnimatePresence>
         
-        <div className={`absolute inset-0 bg-gradient-to-b ${isDark ? 'from-black/40 to-[#0C0A07]' : 'from-[#FAF6EF]/60 to-[var(--card-bg)]'} via-transparent`} />
+        {/* Gradients for depth and readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#010101]/80 via-transparent to-[#1A1918]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#010101]/40 via-transparent to-transparent" />
         
         {/* Navigation Overlays */}
         <div className="absolute top-12 inset-x-6 flex items-center justify-between z-20">
           <button 
             onClick={() => router.back()}
-            className="w-11 h-11 rounded-full flex items-center justify-center glass-panel border"
-            style={{ borderColor: 'var(--border-subtle)', color: 'var(--brand-ink)' }}
+            className="w-11 h-11 rounded-full flex items-center justify-center border border-white/10 backdrop-blur-md bg-white/5 hover:bg-white/10 transition-colors"
           >
-            <ChevronLeft size={22} />
+            <ChevronLeft size={22} color={THEME.gold} />
           </button>
           <div className="text-center">
-            <span className="text-[10px] font-bold uppercase tracking-[0.4em]" style={{ color: 'var(--brand-primary-strong)' }}>
+            <span className="text-[10px] font-bold uppercase tracking-[0.6em] text-[#C09759] opacity-80">
               {t('sacredSanctuary')}
             </span>
           </div>
-          <button className="w-11 h-11 rounded-full flex items-center justify-center glass-panel border"
-            style={{ borderColor: 'var(--border-subtle)', color: 'var(--brand-ink)' }}>
-            <Share2 size={18} />
+          <button className="w-11 h-11 rounded-full flex items-center justify-center border border-white/10 backdrop-blur-md bg-white/5 hover:bg-white/10 transition-colors">
+            <Share2 size={18} color={THEME.gold} />
           </button>
         </div>
 
-        {/* Deity Selector (The "1 to 5" Divine Portals in Hero) */}
-        <div className="absolute top-32 inset-x-6 z-20 flex justify-center gap-4">
+        {/* Deity Selection Portals */}
+        <div className="absolute top-36 inset-x-6 z-20 flex justify-center gap-4">
           {['shiva', 'vishnu', 'devi', 'hanuman', 'ganesha'].map((deity) => (
             <motion.button
               key={deity}
-              whileTap={{ scale: 0.9 }}
+              whileHover={{ y: -4 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => {
                 setActiveDeity(deity);
                 playHaptic('medium');
               }}
-              className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+              className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center transition-all duration-500 border ${
                 activeDeity === deity 
-                  ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20 scale-110' 
-                  : 'glass-panel text-white/40 border-white/5'
+                  ? 'border-[#C09759] bg-[#C09759]/10 shadow-[0_0_20px_rgba(192,151,89,0.15)]' 
+                  : 'border-white/5 bg-white/5 backdrop-blur-sm grayscale opacity-40'
               }`}
             >
-              <span className="text-xl">{(DEITY_META as any)[deity]?.emoji || '🕉️'}</span>
+              <span className="text-2xl">{(DEITY_META as any)[deity]?.emoji || '🕉️'}</span>
+              <div className={`w-1 h-1 rounded-full bg-[#C09759] mt-1 transition-opacity ${activeDeity === deity ? 'opacity-100' : 'opacity-0'}`} />
             </motion.button>
           ))}
         </div>
 
-        {/* Hero Content: The Auspicious Pulse */}
-        <div className="absolute bottom-12 inset-x-6 z-20 space-y-6">
+        {/* Hero Title & Atmosphere */}
+        <div className="absolute bottom-16 inset-x-8 z-20">
           <motion.div 
             key={activeDeity}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className="space-y-1"
           >
-            <h1 className="text-5xl font-bold premium-serif text-white tracking-tight leading-tight">
+            <h1 className="text-6xl font-bold premium-serif tracking-tight leading-[1.1] text-white">
               {activeDeity.charAt(0).toUpperCase() + activeDeity.slice(1)} <br/>
-              <span className="text-amber-400/90 text-4xl">{t('auspiciousBeginnings')}</span>
+              <span style={{ color: THEME.gold }}>{t('auspiciousBeginnings')}</span>
             </h1>
-            <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest pt-2">
-              {t('todayIs')} · {new Date().toLocaleDateString(lang === 'en' ? 'en-IN' : lang === 'hi' ? 'hi-IN' : 'pa-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
-            </p>
+            <div className="flex items-center gap-3 pt-3">
+              <Sparkles size={14} color={THEME.gold} className="opacity-50" />
+              <p className="text-white/40 text-[10px] font-bold uppercase tracking-[0.2em]">
+                {t('todayIs')} · {new Date().toLocaleDateString(lang === 'en' ? 'en-IN' : lang === 'hi' ? 'hi-IN' : 'pa-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+              </p>
+            </div>
           </motion.div>
-
-          <div className="flex gap-3">
-            <div className="flex-1 glass-panel border-white/5 p-5 rounded-[2rem] backdrop-blur-3xl bg-white/5">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[9px] font-bold uppercase tracking-widest text-amber-400/60">{t('amritKaal')}</span>
-                <Clock size={10} className="text-amber-400/60" />
-              </div>
-              <span className="text-xl font-bold text-white">09:12 — 10:45</span>
-            </div>
-            <div className="flex-1 glass-panel border-white/5 p-5 rounded-[2rem] backdrop-blur-3xl bg-white/5">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[9px] font-bold uppercase tracking-widest text-white/40">{t('brahmaMuhurta')}</span>
-                <Sun size={10} className="text-white/40" />
-              </div>
-              <span className="text-xl font-bold text-white">04:22 AM</span>
-            </div>
-          </div>
         </div>
 
-        {/* Animated Background Pulse */}
+        {/* Ambient Ring */}
         <motion.div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] pointer-events-none opacity-20"
+          className="absolute -bottom-1/2 -left-1/4 w-[150%] h-[150%] pointer-events-none opacity-[0.03]"
           animate={{ rotate: 360 }}
-          transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}
+          transition={{ duration: 180, repeat: Infinity, ease: 'linear' }}
           style={{ 
-            background: 'conic-gradient(from 0deg, transparent, rgba(197,160,89,0.1), transparent)',
+            background: `conic-gradient(from 0deg, transparent, ${THEME.gold}, transparent)`,
           }}
         />
       </section>
 
-      {/* ── Daily Stotram Highlight ─────────────────────────────────────── */}
+      {/* ── 2. Recommendation Ribbon ─────────────────────────────────────── */}
       <section className="px-6 -mt-10 relative z-40">
         <Link href={`/bhakti/stotram/${dailyStotramId}`}>
-          <div className="glass-panel border-white/10 rounded-[2.5rem] p-6 flex items-center gap-5 bg-amber-500/10 shadow-2xl backdrop-blur-2xl">
-            <div className="w-14 h-14 rounded-2xl bg-amber-500/20 flex items-center justify-center text-3xl shadow-inner">
-              {dailyStotramDeityEmoji}
+          <motion.div 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="rounded-[2.5rem] p-1 border border-[#C09759]/20 shadow-2xl backdrop-blur-3xl"
+            style={{ background: `linear-gradient(135deg, ${THEME.charcoal}, ${THEME.void})` }}
+          >
+            <div className="flex items-center gap-5 p-5">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-4xl shadow-inner bg-[#C09759]/10 border border-[#C09759]/20">
+                {dailyStotramDeityEmoji}
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-[10px] font-bold text-[#C09759] uppercase tracking-[0.25em] block mb-1">{t('recommendedForYou')}</span>
+                <h4 className="text-white font-bold text-xl truncate">{dailyStotramTitle}</h4>
+              </div>
+              <div className="w-12 h-12 rounded-full flex items-center justify-center text-[#010101]" style={{ backgroundColor: THEME.gold }}>
+                <Play size={20} fill="currentColor" />
+              </div>
             </div>
-            <div className="flex-1">
-              <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest block mb-1">{t('recommendedForYou')}</span>
-              <h4 className="text-white font-bold text-lg">{dailyStotramTitle}</h4>
-            </div>
-            <div className="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-black">
-              <Play size={20} fill="currentColor" />
-            </div>
-          </div>
+          </motion.div>
         </Link>
       </section>
 
-      {/* ── 2. Sound Sanctuary (Refined Player) ───────────────────────────── */}
-      <section className="px-6 mt-10 relative z-30">
-        <div className="clay-card rounded-[3rem] bg-[#14120F] border border-white/5 p-8 shadow-2xl overflow-hidden relative">
-          {/* Subtle Ambient Background */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 blur-[50px] rounded-full -translate-y-1/2 translate-x-1/2" />
-          
-          <div className="flex items-center gap-6">
-            <div className="relative w-24 h-24 rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-              <Image 
-                src={activeSound.cover || '/images/sound-placeholder.png'} 
-                alt={activeSound.title}
-                fill
-                className="object-cover"
-              />
-              {isPlaying && (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <div className="flex gap-1 items-end h-6">
-                    {[1, 2, 3, 4].map(i => (
-                      <motion.div 
-                        key={i}
-                        className="w-1 bg-amber-500 rounded-full"
-                        animate={{ height: ['20%', '100%', '40%', '80%', '20%'] }}
-                        transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.1 }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className="flex-1 min-w-0">
-              <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-1 block">{t('soundSanctuary')}</span>
-              <h3 className="text-xl font-bold text-white truncate">{activeSound.title}</h3>
-              <p className="text-sm text-white/40 truncate">{activeSound.artist}</p>
-            </div>
-            <button 
-              onClick={() => {
-                playHaptic('medium');
-                setIsPlaying(!isPlaying);
-              }}
-              className="w-16 h-16 rounded-full bg-white text-black flex items-center justify-center shadow-xl active:scale-95 transition"
-            >
-              {isPlaying ? <VolumeX size={28} /> : <Play size={28} className="ml-1" fill="currentColor" />}
-            </button>
+      {/* ── 3. Time-Aware Rituals (The Pulse) ────────────────────────────── */}
+      <section className="px-6 mt-14 grid grid-cols-2 gap-4">
+        <div className="rounded-[2rem] p-6 border border-white/5 bg-[#2C2C2F]/30 backdrop-blur-md">
+          <div className="flex items-center gap-2 mb-2 opacity-50">
+            <Clock size={12} color={THEME.gold} />
+            <span className="text-[9px] font-bold uppercase tracking-widest">{t('amritKaal')}</span>
           </div>
-
-          <div className="mt-8 flex items-center justify-between border-t border-white/5 pt-6">
-            <div className="flex gap-8">
-              <button className="flex flex-col items-center gap-2 group transition">
-                <Music size={20} className="text-white/40 group-hover:text-amber-500 transition" />
-                <span className="text-[9px] font-bold uppercase text-white/30 group-hover:text-white transition">{t('library')}</span>
-              </button>
-              <button className="flex flex-col items-center gap-2 group transition">
-                <Clock size={20} className="text-white/40 group-hover:text-amber-500 transition" />
-                <span className="text-[9px] font-bold uppercase text-white/30 group-hover:text-white transition">{t('timer')}</span>
-              </button>
-              <button className="flex flex-col items-center gap-2 group transition">
-                <Volume2 size={20} className="text-white/40 group-hover:text-amber-500 transition" />
-                <span className="text-[9px] font-bold uppercase text-white/30 group-hover:text-white transition">{t('mixer')}</span>
-              </button>
-            </div>
-            <Link href="/bhakti/browse" className="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full text-[10px] font-bold text-amber-500 uppercase tracking-widest transition">
-              {t('explore')} →
-            </Link>
+          <span className="text-2xl font-bold tracking-tight text-white">09:12 — 10:45</span>
+        </div>
+        <div className="rounded-[2rem] p-6 border border-white/5 bg-[#2C2C2F]/30 backdrop-blur-md">
+          <div className="flex items-center gap-2 mb-2 opacity-50">
+            <Sun size={12} color={THEME.gold} />
+            <span className="text-[9px] font-bold uppercase tracking-widest">{t('brahmaMuhurta')}</span>
           </div>
+          <span className="text-2xl font-bold tracking-tight text-white">04:22 AM</span>
         </div>
       </section>
 
-      {/* ── 3. Daily Sadhana Checklist ────────────────────────────────────── */}
-      <section className="px-6 mt-14 space-y-8">
-        <div className="flex items-end justify-between">
+      {/* ── 4. Sadhana Progress ─────────────────────────────────────────── */}
+      <section className="px-6 mt-12 space-y-6">
+        <div className="flex items-end justify-between px-2">
           <div className="space-y-1">
-            <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">{t('sadhanaTracker')}</span>
-            <h3 className="text-2xl font-serif text-white">{t('dailyRituals')}</h3>
+            <span className="text-[10px] font-bold text-[#C09759] uppercase tracking-widest">{t('sadhanaTracker')}</span>
+            <h3 className="text-3xl font-serif text-white">{t('dailyRituals')}</h3>
           </div>
-          <div className="flex flex-col items-end">
-            <span className="text-3xl font-bold text-white">{Math.round((checklist.filter(c => c.done).length / checklist.length) * 100)}%</span>
-            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{t('ritualProgress')}</span>
+          <div className="text-right">
+            <span className="text-4xl font-bold text-[#C09759]">{Math.round((checklist.filter(c => c.done).length / checklist.length) * 100)}%</span>
+            <p className="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em]">{t('ritualProgress')}</p>
           </div>
         </div>
-        <div className="space-y-4">
-          {checklist.map(item => (
-            <button 
+
+        <div className="space-y-3">
+          {checklist.map((item, idx) => (
+            <motion.button 
               key={item.id}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.1 }}
               onClick={() => toggleCheck(item.id)}
-              className={`w-full flex items-center gap-5 p-6 rounded-[2.5rem] border transition-all duration-500 relative overflow-hidden group ${
-                item.done ? 'bg-amber-500/10 border-amber-500/20 shadow-lg shadow-amber-500/5' : 'bg-white/5 border-white/5 hover:border-white/10'
+              className={`w-full flex items-center gap-5 p-6 rounded-[2.5rem] border transition-all duration-500 relative overflow-hidden ${
+                item.done 
+                  ? 'border-[#C09759]/30 bg-[#C09759]/5' 
+                  : 'border-white/5 bg-[#2C2C2F]/20 hover:border-white/10'
               }`}
             >
-              {item.done && (
-                <motion.div 
-                  layoutId={`check-bg-${item.id}`}
-                  className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-transparent pointer-events-none" 
-                />
-              )}
-              <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${
-                item.done ? 'bg-amber-500 border-amber-500 text-black' : 'border-white/10 text-transparent group-hover:border-white/30'
+              <div className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all duration-500 ${
+                item.done ? 'bg-[#C09759] border-[#C09759] text-[#010101]' : 'border-white/10 text-transparent'
               }`}>
-                {item.done && <CheckCircle2 size={16} strokeWidth={4} />}
+                {item.done && <CheckCircle2 size={18} strokeWidth={3} />}
               </div>
-              <div className="flex flex-col items-start gap-0.5 text-left">
-                <span className={`font-bold transition-all duration-500 ${item.done ? 'text-white' : 'text-white/60'}`}>
+              <div className="flex-1 text-left">
+                <span className={`text-lg font-medium transition-colors ${item.done ? 'text-white' : 'text-white/50'}`}>
                   {item.label}
                 </span>
-                <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">{t('ritualComplete')}</span>
               </div>
-            </button>
+              {item.done && (
+                <div className="text-[10px] font-bold text-[#C09759] uppercase tracking-widest opacity-60">
+                  Done
+                </div>
+              )}
+            </motion.button>
           ))}
         </div>
       </section>
 
-      {/* ── 4. Sacred Verse ──────────────────────────────────────────────── */}
-      <section className="px-6 mt-12">
-        <div className="rounded-[3rem] p-10 bg-gradient-to-br from-[#1A1814] to-[#0C0A07] border border-white/5 text-center space-y-6">
-          <span className="text-[10px] font-bold text-amber-500 uppercase tracking-[0.3em]">{t('sacredReflection')}</span>
-          <p className="text-2xl font-serif text-white leading-relaxed italic">
-            &ldquo;{shloka.sanskrit}&rdquo;
-          </p>
-          <div className="pt-4 opacity-40">
-            <div className="w-12 h-[1px] bg-white mx-auto mb-4" />
-            <p className="text-xs text-white uppercase tracking-widest">— {shloka.source}</p>
+      {/* ── 5. The Sacred Verse (Redesigned) ─────────────────────────────── */}
+      <section className="px-6 mt-16">
+        <div 
+          className="rounded-[3.5rem] p-12 text-center space-y-8 relative overflow-hidden border border-white/5"
+          style={{ background: `linear-gradient(165deg, ${THEME.charcoal}, ${THEME.bg})` }}
+        >
+          {/* Decorative Glyph */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-[#C09759]/5 blur-3xl rounded-full" />
+          
+          <div className="relative space-y-6">
+            <span className="text-[11px] font-bold text-[#C09759] uppercase tracking-[0.4em]">{t('sacredReflection')}</span>
+            <p className="text-3xl font-serif text-white leading-[1.4] italic tracking-tight">
+              &ldquo;{shloka.sanskrit}&rdquo;
+            </p>
+            <div className="pt-6">
+              <div className="w-16 h-[1.5px] bg-[#C09759]/30 mx-auto mb-5" />
+              <p className="text-[10px] text-[#C09759]/80 font-bold uppercase tracking-[0.3em]">— {shloka.source}</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── 5. Deity Portals (Horizontal Scroll) ─────────────────────────── */}
-      <section className="mt-12">
-        <div className="px-6 flex items-center justify-between mb-6">
-          <h3 className="text-lg font-serif text-white">{t('divinePortals')}</h3>
-          <Link href="/bhakti/browse" className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{t('explore')}</Link>
+      {/* ── 6. Deity Portals (Horizontal Explorer) ────────────────────────── */}
+      <section className="mt-16">
+        <div className="px-8 flex items-center justify-between mb-8">
+          <h3 className="text-2xl font-serif text-white">{t('divinePortals')}</h3>
+          <Link href="/bhakti/browse" className="text-[10px] font-bold text-[#C09759] uppercase tracking-widest hover:underline transition">
+            {t('exploreAll')} →
+          </Link>
         </div>
-        <div className="flex gap-4 overflow-x-auto px-6 pb-4 scrollbar-none">
+        <div className="flex gap-5 overflow-x-auto px-8 pb-8 scrollbar-none snap-x">
           {['shiva', 'vishnu', 'devi', 'hanuman', 'ganesha', 'surya'].map((deity) => (
             <Link 
               key={deity}
               href={`/bhakti/browse?deity=${deity}`}
-              className="flex-shrink-0 w-24 h-32 rounded-[2rem] bg-white/5 border border-white/5 flex flex-col items-center justify-center gap-3 active:scale-95 transition"
+              className="flex-shrink-0 w-32 h-44 rounded-[2.5rem] border border-white/5 flex flex-col items-center justify-center gap-4 active:scale-95 transition-all snap-center group"
+              style={{ background: `linear-gradient(180deg, rgba(255,255,255,0.03), transparent)` }}
             >
-              <span className="text-3xl">{(DEITY_META as any)[deity]?.emoji || '🕉️'}</span>
-              <span className="text-[10px] font-bold uppercase text-white/60">{(DEITY_META as any)[deity]?.label}</span>
+              <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-4xl group-hover:bg-[#C09759]/10 transition-colors">
+                {(DEITY_META as any)[deity]?.emoji || '🕉️'}
+              </div>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-white/40 group-hover:text-[#C09759] transition-colors">
+                {(DEITY_META as any)[deity]?.label}
+              </span>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* Ambient Lighting Bottom */}
-      <div className="fixed bottom-0 inset-x-0 h-64 bg-gradient-to-t from-amber-500/5 to-transparent pointer-events-none" />
+      {/* Custom Zenith Background Elements */}
+      <div className="fixed bottom-0 inset-x-0 h-96 bg-gradient-to-t from-[#010101] to-transparent pointer-events-none -z-10" />
+      <div className="fixed top-0 right-0 w-96 h-96 bg-[#C09759]/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 -z-10" />
     </div>
   );
 }
