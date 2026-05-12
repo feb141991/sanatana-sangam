@@ -280,6 +280,20 @@ export default function BhaktiClient({
               )}
               <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${
                 item.done ? 'bg-amber-500 border-amber-500 text-black' : 'border-white/10 text-transparent group-hover:border-white/30'
+              }`}>
+                {item.done && <CheckCircle2 size={16} strokeWidth={4} />}
+              </div>
+              <div className="flex flex-col items-start gap-0.5 text-left">
+                <span className={`font-bold transition-all duration-500 ${item.done ? 'text-white' : 'text-white/60'}`}>
+                  {item.label}
+                </span>
+                <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">{t('ritualComplete')}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      </section>
+
       {/* ── 4. Sacred Verse ──────────────────────────────────────────────── */}
       <section className="px-6 mt-12">
         <div className="rounded-[3rem] p-10 bg-gradient-to-br from-[#1A1814] to-[#0C0A07] border border-white/5 text-center space-y-6">

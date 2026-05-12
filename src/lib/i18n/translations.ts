@@ -41,7 +41,7 @@ export type TranslationKey =
   | 'sevaHub' | 'quizMastery' | 'vichaar'
   | 'journeyLabel' | 'testOfDharma' | 'wisdom' | 'essence' | 'shareReflection'
   // General
-  | 'today' | 'yesterday' | 'thisWeek' | 'loading' | 'errorTryAgain';
+  | 'today' | 'yesterday' | 'thisWeek' | 'loading' | 'errorTryAgain' | 'ritualComplete';
 
 type TranslationMap = Record<TranslationKey, string>;
 
@@ -104,6 +104,7 @@ const en: TranslationMap = {
   // General
   today: 'Today', yesterday: 'Yesterday', thisWeek: 'This Week',
   loading: 'Loading…', errorTryAgain: 'Something went wrong. Please try again.',
+  ritualComplete: 'Ritual Complete',
 };
 
 const hi: TranslationMap = {
@@ -165,6 +166,7 @@ const hi: TranslationMap = {
   // General
   today: 'आज', yesterday: 'कल', thisWeek: 'इस सप्ताह',
   loading: 'लोड हो रहा है…', errorTryAgain: 'कुछ गड़बड़ हुई। कृपया फिर प्रयास करें।',
+  ritualComplete: 'अनुष्ठान पूर्ण',
 };
 
 const pa: TranslationMap = {
@@ -226,6 +228,7 @@ const pa: TranslationMap = {
   // General
   today: 'ਅੱਜ', yesterday: 'ਕੱਲ੍ਹ', thisWeek: 'ਇਸ ਹਫ਼ਤੇ',
   loading: 'ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ…', errorTryAgain: 'ਕੁਝ ਗਲਤ ਹੋਇਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।',
+  ritualComplete: 'ਅਨੁਸ਼ਠਾਨ ਪੂਰਾ',
 };
 
 export const TRANSLATIONS: Record<AppLang, TranslationMap> = { en, hi, pa };
