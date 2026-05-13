@@ -146,6 +146,7 @@ export default function SignupPage() {
     kul:            '',
     gotra:          '',
     gender_context: '' as 'male' | 'female' | 'other' | '',
+    phone:          '',
   });
 
   useEffect(() => {
@@ -237,6 +238,7 @@ export default function SignupPage() {
         life_stage_locked: false,
         is_banned: false,
         gender_context: form.gender_context || null,
+        phone: form.phone.trim() || null,
       };
 
       const { data, error } = await supabase.auth.signUp({
@@ -434,6 +436,20 @@ export default function SignupPage() {
                         <input type="email" placeholder="arjun@wisdom.com" value={form.email}
                           onChange={e => setForm({ ...form, email: e.target.value })}
                           className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl px-6 py-4 text-sm font-outfit focus:border-[var(--premium-gold)] focus:ring-4 focus:ring-[var(--premium-gold-soft)] outline-none transition-all shadow-sm" />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between ml-1">
+                          <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)]">Phone Number</label>
+                          <span className="text-[9px] font-bold text-[var(--brand-muted)] uppercase tracking-widest opacity-60">Optional</span>
+                        </div>
+                        <div className="relative">
+                          <span className="absolute left-6 top-1/2 -translate-y-1/2 text-[var(--brand-muted)] font-bold">+91</span>
+                          <input type="tel" placeholder="9876543210" value={form.phone}
+                            onChange={e => setForm({ ...form, phone: e.target.value })}
+                            className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl pl-16 pr-6 py-4 text-sm font-outfit focus:border-[var(--premium-gold)] focus:ring-4 focus:ring-[var(--premium-gold-soft)] outline-none transition-all shadow-sm" />
+                        </div>
+                        <p className="text-[9px] text-[var(--brand-muted)] ml-2 italic">Connect for daily WhatsApp Sadhana reminders.</p>
                       </div>
 
                       <div className="space-y-1.5">

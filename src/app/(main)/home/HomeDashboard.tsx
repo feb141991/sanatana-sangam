@@ -26,6 +26,7 @@ import {
   Play,
   Mic,
   GraduationCap,
+  ShieldAlert,
 } from 'lucide-react';
 import { SEED_PATHS } from '@/lib/pathshala-paths';
 // DigitalDeeksha removed — was overlaying home page
@@ -131,6 +132,7 @@ interface Props {
   nityaDoneToday:      boolean;
   practiceHistory:     { date: string; japa: boolean; nitya: boolean }[];
   liveStreams:         any[];
+  isAdmin?:            boolean;
 }
 
 const DEFAULT_QUICK_ACCESS = [
@@ -979,6 +981,7 @@ export default function HomeDashboard({
   liveStreams,
   transliterationLanguage,
   showTransliteration = true,
+  isAdmin = false,
 }: Props) {
   const supabase = createClient();
   const router   = useRouter();
@@ -1573,6 +1576,12 @@ export default function HomeDashboard({
       href: '/scoreboard',
       icon: Trophy,
     },
+    ...(isAdmin ? [{
+      title: 'Moderation Hub',
+      description: 'Review reports & safety',
+      href: '/admin/moderation',
+      icon: ShieldAlert,
+    }] : []),
     {
       title: t('bhakti'),
       description: t('bhaktiDesc'),

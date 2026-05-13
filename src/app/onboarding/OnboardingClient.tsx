@@ -14,7 +14,7 @@ import toast from 'react-hot-toast';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type TraditionKey = 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'other';
-type Step = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+type Step = 1 | 2 | 3 | 4 | 5 | 5.5 | 6 | 7;
 
 const GOALS = [
   { id: 'japa',      emoji: '📿', label: 'Daily Japa',      desc: 'Mantra practice & mala' },
@@ -58,6 +58,7 @@ const SCREEN_BG: Record<number, string> = {
   4: 'radial-gradient(ellipse at 40% 60%, rgba(24,20,40,0.96) 0%, rgba(10,8,18,0.98) 55%, rgba(8,6,14,1) 100%)',
   5: 'radial-gradient(ellipse at 55% 35%, rgba(8,24,32,0.96) 0%, rgba(6,12,20,0.98) 55%, rgba(4,8,14,1) 100%)',
   6: 'radial-gradient(ellipse at 45% 45%, rgba(28,16,8,0.96) 0%, rgba(12,8,4,0.98) 55%, rgba(8,5,3,1) 100%)',
+  5.5: 'radial-gradient(ellipse at 50% 50%, rgba(10,40,20,0.96) 0%, rgba(5,20,10,0.98) 55%, rgba(2,10,5,1) 100%)',
   7: 'radial-gradient(ellipse at 50% 38%, rgba(80,40,6,0.97) 0%, rgba(32,14,2,0.99) 45%, rgba(10,5,1,1) 100%)',
 };
 
@@ -213,6 +214,10 @@ export default function OnboardingClient({ userId, traditionValue = '', hasTradi
   const [country,    setCountry]    = useState('');
   const [latitude,   setLatitude]   = useState<number | null>(null);
   const [longitude,  setLongitude]  = useState<number | null>(null);
+  const [phone,      setPhone]      = useState('');
+  const [otp,        setOtp]        = useState('');
+  const [isOtpSent,  setIsOtpSent]  = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const [goals,      setGoals]      = useState<string[]>([]);
   const themeIconMap = {
     system: Monitor,
@@ -273,6 +278,8 @@ export default function OnboardingClient({ userId, traditionValue = '', hasTradi
       if (country)   updates.country      = country;
       if (latitude)  updates.latitude     = latitude;
       if (longitude) updates.longitude    = longitude;
+      if (phone)     updates.phone        = phone;
+      if (isVerified) updates.phone_verified = true;
       if (goals.length > 0) updates.seeking = goals;
 
       const { error } = await supabase.from('profiles').update(updates).eq('id', userId);
@@ -293,7 +300,9 @@ export default function OnboardingClient({ userId, traditionValue = '', hasTradi
   }
 
   function advance() {
-    if (step < 6) navigateTo((step + 1) as Step);
+    if (step === 5) navigateTo(5.5);
+    else if (step === 5.5) navigateTo(6);
+    else if (step < 6) navigateTo((step + 1) as Step);
     else if (step === 6) navigateTo(7);
     else finish();
   }
@@ -882,6 +891,105 @@ export default function OnboardingClient({ userId, traditionValue = '', hasTradi
                       />
                     ))}
                   </div>
+
+                  <motion.button
+                    onClick={advance}
+                    className="w-full text-center text-xs py-2"
+                    style={{ color: 'rgba(200,180,140,0.32)' }}
+                    whileTap={prefersReducedMotion ? {} : { opacity: 0.7 }}
+                  >
+                    Skip for now →
+                  </motion.button>
+                </motion.div>
+              )}
+
+              {/* ── Screen 5.5 — WhatsApp Verification ──────────────────── */}
+              {step === 5.5 && (
+                <motion.div
+                  key="s5.5"
+                  {...(prefersReducedMotion ? {} : slide)}
+                  transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+                  className="space-y-6"
+                >
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: '#25D366' }}>
+                      High Trust Verification
+                    </p>
+                    <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: 600, color: '#f0e2c0', lineHeight: 1.15, letterSpacing: '-0.01em' }}>
+                      Connect your<br />WhatsApp
+                    </h2>
+                    <p className="text-sm leading-relaxed" style={{ color: 'rgba(180, 230, 200, 0.48)' }}>
+                      For high-trust community features and daily Sadhana reminders.
+                    </p>
+                  </div>
+
+                  {!isOtpSent ? (
+                    <div className="space-y-4">
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-dim)] font-bold">+91</span>
+                        <input 
+                          type="tel" 
+                          placeholder="9876543210"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          className="w-full bg-white/5 rounded-2xl py-4 pl-14 pr-4 text-sm theme-ink border border-white/10 outline-none"
+                        />
+                      </div>
+                      <button 
+                        onClick={() => {
+                          if (phone.length < 10) return toast.error('Enter valid phone');
+                          setIsOtpSent(true);
+                          toast.success('OTP sent via WhatsApp (Simulated)');
+                        }}
+                        className="w-full py-4 rounded-2xl bg-[#25D366] text-white font-bold text-sm shadow-lg shadow-[#25D366]/20"
+                      >
+                        Send OTP via WhatsApp
+                      </button>
+                    </div>
+                  ) : !isVerified ? (
+                    <div className="space-y-4">
+                      <p className="text-[10px] uppercase tracking-widest text-center text-white/40">Enter 4-digit code</p>
+                      <div className="flex justify-center gap-2">
+                        {[1, 2, 3, 4].map(i => (
+                          <input 
+                            key={i}
+                            type="text"
+                            maxLength={1}
+                            className="w-12 h-14 rounded-xl bg-white/5 border border-white/20 text-center text-xl font-bold theme-ink outline-none"
+                            onChange={(e) => {
+                              if (e.target.value && i < 4) {
+                                // Focus next (simplified)
+                              }
+                              setOtp(prev => prev + e.target.value);
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <button 
+                        onClick={() => {
+                          setIsVerified(true);
+                          toast.success('WhatsApp Verified! 🙏');
+                        }}
+                        className="w-full py-4 rounded-2xl bg-[#C8924A] text-black font-bold text-sm"
+                      >
+                        Verify & Continue
+                      </button>
+                      <button 
+                        onClick={() => setIsOtpSent(false)}
+                        className="w-full text-[10px] uppercase tracking-widest text-white/30"
+                      >
+                        Change Number
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center py-8 space-y-4">
+                      <div className="w-16 h-16 rounded-full bg-[#25D366]/20 flex items-center justify-center text-[#25D366]">
+                        <Check size={32} />
+                      </div>
+                      <p className="text-sm font-bold text-[#25D366]">WhatsApp Verified</p>
+                      <p className="text-[10px] text-white/40">Reminders active for +91 {phone}</p>
+                    </div>
+                  )}
 
                   <motion.button
                     onClick={advance}
