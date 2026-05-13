@@ -1,12 +1,12 @@
 # Graph Report - /Users/Business(C)/Sanatan Sangam/Sanatan_Sangam  (2026-05-13)
 
 ## Corpus Check
-- 364 files · ~1,336,118 words
+- 365 files · ~1,336,546 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1472 nodes · 2128 edges · 175 communities detected
-- Extraction: 73% EXTRACTED · 27% INFERRED · 0% AMBIGUOUS · INFERRED: 582 edges (avg confidence: 0.8)
+- 1474 nodes · 2132 edges · 175 communities detected
+- Extraction: 73% EXTRACTED · 27% INFERRED · 0% AMBIGUOUS · INFERRED: 585 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -192,7 +192,7 @@
 3. `POST()` - 60 edges
 4. `createClient()` - 34 edges
 5. `createServerSupabaseClient()` - 33 edges
-6. `String()` - 21 edges
+6. `String()` - 22 edges
 7. `DELETE()` - 19 edges
 8. `ProfileComputer` - 18 edges
 9. `TirthaLibrary` - 17 edges
@@ -214,11 +214,11 @@
 
 ### Community 0 - "Community 0"
 Cohesion: 0.02
-Nodes (46): BadgeManager, addBurst(), Corpus, Enrollment, buildGuidedPathStatusMap(), generateInviteCode(), fetchMandaliData(), MandaliManager (+38 more)
+Nodes (48): BadgeManager, addBurst(), Corpus, Enrollment, buildGuidedPathStatusMap(), generateInviteCode(), fetchMandaliData(), MandaliManager (+40 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.03
-Nodes (32): getDailyDarshan(), getDharmVeerOfTheDay(), matches(), normalise(), resolveHomeHeroTheme(), slugifyFestivalName(), dismissPushPromptForNow(), markAllRead() (+24 more)
+Nodes (53): getDailyDarshan(), getDharmVeerOfTheDay(), matches(), normalise(), resolveHomeHeroTheme(), slugifyFestivalName(), dismissPushPromptForNow(), markAllRead() (+45 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.03
@@ -229,8 +229,8 @@ Cohesion: 0.04
 Nodes (52): adminCookieHeader(), bufToHex(), checkAdminCredentials(), createAdminToken(), encode(), hexToArrayBuffer(), hmacKey(), secretBuf() (+44 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.04
-Nodes (35): getPathshalaEngine(), getSadhanaEngine(), requireEnv(), createPathshalaEngine(), createSadhanaEngine(), assignKulTask(), completeKulTask(), createKul() (+27 more)
+Cohesion: 0.05
+Nodes (34): getPathshalaEngine(), getSadhanaEngine(), requireEnv(), createPathshalaEngine(), createSadhanaEngine(), assignKulTask(), completeKulTask(), createKul() (+26 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.03
@@ -242,7 +242,7 @@ Nodes (27): BuddhistStrategy, getPanchang(), getTithiNumber(), PlannedPanchangPr
 
 ### Community 7 - "Community 7"
 Cohesion: 0.05
-Nodes (24): adminClearCookieHeader(), getKulPageData(), useLocation(), getPlayerId(), loginToOneSignal(), logoutFromOneSignal(), requestNotificationPermission(), syncOneSignalContext() (+16 more)
+Nodes (25): adminClearCookieHeader(), formatError(), getKulPageData(), useLocation(), getPlayerId(), loginToOneSignal(), logoutFromOneSignal(), requestNotificationPermission() (+17 more)
 
 ### Community 8 - "Community 8"
 Cohesion: 0.07
@@ -250,15 +250,15 @@ Nodes (39): formatDharmaReferencePack(), getDharmaReferences(), getEntryScore(),
 
 ### Community 9 - "Community 9"
 Cohesion: 0.07
-Nodes (23): NityaKarma, customKey(), getCustom(), getDefaultSteps(), getLocalDone(), getStepMessage(), handleSave(), load() (+15 more)
+Nodes (22): NityaKarma, customKey(), getCustom(), getDefaultSteps(), getLocalDone(), handleSave(), load(), loadHistory() (+14 more)
 
 ### Community 10 - "Community 10"
-Cohesion: 0.06
-Nodes (29): getDefaultSectionForTradition(), getEntriesBySection(), getEntriesByTradition(), getLibraryEntryById(), getLibrarySectionById(), getPathshalaTrackGroups(), getRelatedEntries(), getSectionForEntry() (+21 more)
-
-### Community 11 - "Community 11"
 Cohesion: 0.08
 Nodes (4): OfflineQueue, SangamOfflineDB, SyncManager, SadhanaTracker
+
+### Community 11 - "Community 11"
+Cohesion: 0.09
+Nodes (21): getLibraryEntryById(), getLibrarySectionById(), getCanonicalChapter(), getCanonicalChaptersForSection(), getCanonicalVerseLinksForChapter(), getGitaEntriesForChapter(), getOfficialGitaAudioUrl(), getOfficialGitaBaseParams() (+13 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.1
@@ -285,20 +285,20 @@ Cohesion: 0.15
 Nodes (3): buildFallbackNudge(), buildFallbackSummary(), KulIntelligence
 
 ### Community 18 - "Community 18"
-Cohesion: 0.24
-Nodes (14): assignMockKulTask(), clone(), completeMockKulTask(), createMockKul(), deleteMockKulFamilyMember(), ensureState(), fetchMockKulData(), promoteMockKulMember() (+6 more)
-
-### Community 19 - "Community 19"
 Cohesion: 0.16
 Nodes (4): handleKeyDown(), newId(), sendMessage(), ScriptureSearch
 
-### Community 20 - "Community 20"
+### Community 19 - "Community 19"
 Cohesion: 0.16
 Nodes (3): handleContinueAfterComplete(), handleReset(), resetPracticeForNextRound()
 
-### Community 21 - "Community 21"
+### Community 20 - "Community 20"
 Cohesion: 0.14
 Nodes (0): 
+
+### Community 21 - "Community 21"
+Cohesion: 0.19
+Nodes (1): ShrutiEngine
 
 ### Community 22 - "Community 22"
 Cohesion: 0.27
@@ -390,23 +390,23 @@ Nodes (3): getAppDataRuntime(), prefersMockData(), selectRuntimeAdapter()
 
 ### Community 44 - "Community 44"
 Cohesion: 0.5
-Nodes (2): VratPage(), getVratData()
+Nodes (0): 
 
 ### Community 45 - "Community 45"
 Cohesion: 0.5
 Nodes (0): 
 
 ### Community 46 - "Community 46"
-Cohesion: 0.5
-Nodes (0): 
-
-### Community 47 - "Community 47"
 Cohesion: 0.83
 Nodes (3): closeIntro(), nextStep(), updateTargetPosition()
 
-### Community 48 - "Community 48"
+### Community 47 - "Community 47"
 Cohesion: 0.5
 Nodes (0): 
+
+### Community 48 - "Community 48"
+Cohesion: 0.5
+Nodes (2): VratPage(), getVratData()
 
 ### Community 49 - "Community 49"
 Cohesion: 0.83
@@ -1139,12 +1139,12 @@ Nodes (0):
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `select()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 7`, `Community 8`, `Community 9`, `Community 11`, `Community 12`, `Community 15`, `Community 16`, `Community 17`, `Community 19`, `Community 22`, `Community 23`, `Community 26`, `Community 31`, `Community 37`?**
-  _High betweenness centrality (0.249) - this node is a cross-community bridge._
-- **Why does `GET()` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 11`, `Community 13`, `Community 14`, `Community 15`, `Community 18`, `Community 19`, `Community 27`, `Community 28`?**
-  _High betweenness centrality (0.229) - this node is a cross-community bridge._
-- **Why does `POST()` connect `Community 3` to `Community 0`, `Community 1`, `Community 2`, `Community 4`, `Community 7`, `Community 8`?**
-  _High betweenness centrality (0.079) - this node is a cross-community bridge._
+- **Why does `select()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 12`, `Community 15`, `Community 16`, `Community 17`, `Community 18`, `Community 21`, `Community 22`, `Community 23`, `Community 26`, `Community 31`, `Community 37`?**
+  _High betweenness centrality (0.243) - this node is a cross-community bridge._
+- **Why does `GET()` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 10`, `Community 13`, `Community 14`, `Community 15`, `Community 18`, `Community 27`, `Community 28`?**
+  _High betweenness centrality (0.233) - this node is a cross-community bridge._
+- **Why does `POST()` connect `Community 3` to `Community 0`, `Community 1`, `Community 2`, `Community 4`, `Community 7`, `Community 8`, `Community 21`?**
+  _High betweenness centrality (0.070) - this node is a cross-community bridge._
 - **Are the 165 inferred relationships involving `select()` (e.g. with `.listTexts()` and `.listChapters()`) actually correct?**
   _`select()` has 165 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 57 inferred relationships involving `GET()` (e.g. with `parseVersesFromHtml()` and `.listTexts()`) actually correct?**

@@ -57,73 +57,73 @@ export default function ScoreboardClient({ initialUsers }: { initialUsers: Leade
           {/* 2nd Place */}
           {topThree[1] && (
             <div className="flex flex-col items-center">
-              <div className="relative mb-3">
-                <div className="w-16 h-16 rounded-full border-2 border-slate-300 overflow-hidden bg-[var(--surface-soft)] relative">
+              <div className="relative mb-2">
+                <div className="w-14 h-14 rounded-full border-2 border-slate-300 overflow-hidden bg-[var(--surface-soft)] relative">
                   {topThree[1].avatar_url ? (
                     <Image src={topThree[1].avatar_url} alt={topThree[1].username} fill className="object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-sm font-bold text-slate-400">
+                    <div className="w-full h-full flex items-center justify-center text-xs font-bold text-slate-400">
                       {getInitials(topThree[1].full_name || topThree[1].username)}
                     </div>
                   )}
                 </div>
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-slate-300 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm border border-white/20">
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-slate-300 text-slate-700 text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm border border-white/20">
                   2nd
                 </div>
               </div>
-              <p className="text-xs font-bold theme-ink text-center line-clamp-1 w-20">{topThree[1].full_name || topThree[1].username}</p>
-              <p className="text-[10px] text-[#C5A059] font-bold mt-0.5">{topThree[1].seva_score} pts</p>
+              <p className="text-[11px] font-bold theme-ink text-center line-clamp-1 w-16">{topThree[1].full_name || topThree[1].username}</p>
+              <p className="text-[9px] text-[#C5A059] font-bold mt-0.5">{topThree[1].seva_score} pts</p>
             </div>
           )}
 
           {/* 1st Place */}
           {topThree[0] && (
-            <div className="flex flex-col items-center scale-110 -translate-y-4">
-              <div className="relative mb-4">
+            <div className="flex flex-col items-center scale-110 -translate-y-2">
+              <div className="relative mb-3">
                 <motion.div 
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute -top-6 left-1/2 -translate-x-1/2 text-yellow-500"
+                  className="absolute -top-5 left-1/2 -translate-x-1/2 text-yellow-500"
                 >
-                  <Crown size={28} fill="currentColor" strokeWidth={1} />
+                  <Crown size={22} fill="currentColor" strokeWidth={1} />
                 </motion.div>
-                <div className="w-20 h-20 rounded-full border-4 border-yellow-500 overflow-hidden bg-[var(--surface-soft)] shadow-2xl shadow-yellow-500/20 relative">
+                <div className="w-16 h-16 rounded-full border-4 border-yellow-500 overflow-hidden bg-[var(--surface-soft)] shadow-2xl shadow-yellow-500/20 relative">
                   {topThree[0].avatar_url ? (
                     <Image src={topThree[0].avatar_url} alt={topThree[0].username} fill className="object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-lg font-bold text-yellow-600/60">
+                    <div className="w-full h-full flex items-center justify-center text-base font-bold text-yellow-600/60">
                       {getInitials(topThree[0].full_name || topThree[0].username)}
                     </div>
                   )}
                 </div>
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-yellow-500 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg">
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-yellow-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-lg">
                   1st
                 </div>
               </div>
-              <p className="text-sm font-bold theme-ink text-center line-clamp-1 w-24">{topThree[0].full_name || topThree[0].username}</p>
-              <p className="text-xs text-[#C5A059] font-bold mt-0.5">{topThree[0].seva_score} pts</p>
+              <p className="text-xs font-bold theme-ink text-center line-clamp-1 w-20">{topThree[0].full_name || topThree[0].username}</p>
+              <p className="text-[10px] text-[#C5A059] font-bold mt-0.5">{topThree[0].seva_score} pts</p>
             </div>
           )}
 
           {/* 3rd Place */}
           {topThree[2] && (
             <div className="flex flex-col items-center">
-              <div className="relative mb-3">
-                <div className="w-16 h-16 rounded-full border-2 border-amber-600 overflow-hidden bg-[var(--surface-soft)] relative">
+              <div className="relative mb-2">
+                <div className="w-14 h-14 rounded-full border-2 border-amber-600 overflow-hidden bg-[var(--surface-soft)] relative">
                   {topThree[2].avatar_url ? (
                     <Image src={topThree[2].avatar_url} alt={topThree[2].username} fill className="object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-sm font-bold text-amber-600/60">
+                    <div className="w-full h-full flex items-center justify-center text-xs font-bold text-amber-600/60">
                       {getInitials(topThree[2].full_name || topThree[2].username)}
                     </div>
                   )}
                 </div>
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-amber-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm border border-white/20">
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-amber-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm border border-white/20">
                   3rd
                 </div>
               </div>
-              <p className="text-xs font-bold theme-ink text-center line-clamp-1 w-20">{topThree[2].full_name || topThree[2].username}</p>
-              <p className="text-[10px] text-[#C5A059] font-bold mt-0.5">{topThree[2].seva_score} pts</p>
+              <p className="text-[11px] font-bold theme-ink text-center line-clamp-1 w-16">{topThree[2].full_name || topThree[2].username}</p>
+              <p className="text-[9px] text-[#C5A059] font-bold mt-0.5">{topThree[2].seva_score} pts</p>
             </div>
           )}
         </div>

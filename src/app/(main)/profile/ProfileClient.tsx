@@ -608,12 +608,12 @@ export default function ProfileClient({
                 disabled={!avatarUrl}
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className={`relative w-28 h-28 rounded-full bg-white/10 border-2 border-white/20 p-1 flex items-center justify-center overflow-hidden shadow-2xl ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
+                className={`relative w-24 h-24 rounded-full bg-white/10 border-2 border-white/20 p-1 flex items-center justify-center overflow-hidden shadow-2xl ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
               >
                 <div className="relative w-full h-full rounded-full overflow-hidden bg-white/5">
                   {avatarUrl
-                    ? <Image src={avatarUrl} alt="avatar" fill sizes="112px" className="object-cover" />
-                    : <span className="text-4xl font-serif text-[#F2EAD6]">{initials}</span>}
+                    ? <Image src={avatarUrl} alt="avatar" fill sizes="96px" className="object-cover" />
+                    : <span className="text-3xl font-serif text-[#F2EAD6]">{initials}</span>}
                 </div>
               </motion.button>
               
@@ -800,23 +800,21 @@ export default function ProfileClient({
                      </div>
                   )}
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="flex gap-4">
                   <button
                     onClick={() => {
                       setLocalAppIcon('normal');
                       localStorage.setItem('shoonaya_app_icon', 'normal');
                       toast.success('Default icon set 🙏');
                     }}
-                    className={`relative aspect-square rounded-3xl border-2 transition-all overflow-hidden p-2 group
-                      ${localAppIcon !== 'pro' ? 'border-[#C5A059] bg-[rgba(200,146,74,0.1)]' : 'border-black/5 dark:border-white/5 opacity-60 hover:opacity-100'}
+                    className={`relative w-24 flex flex-col items-center gap-2 p-1.5 rounded-2xl border transition-all
+                      ${localAppIcon !== 'pro' ? 'border-[#C5A059] bg-[rgba(200,146,74,0.1)]' : 'border-black/5 dark:border-white/5 opacity-60'}
                     `}
                   >
-                    <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-inner">
+                    <div className="relative w-full aspect-square rounded-xl overflow-hidden shadow-inner">
                       <Image src="/assets/images/logos/logo-normal.png" alt="Normal Icon" fill className="object-cover" />
                     </div>
-                    <div className="mt-2 text-center">
-                      <span className="text-[10px] font-bold uppercase tracking-widest theme-ink">Normal</span>
-                    </div>
+                    <span className="text-[9px] font-bold uppercase tracking-widest theme-ink">Normal</span>
                   </button>
 
                   <button
@@ -826,17 +824,15 @@ export default function ProfileClient({
                       localStorage.setItem('shoonaya_app_icon', 'pro');
                       toast.success('Pro icon set! ✨');
                     }}
-                    className={`relative aspect-square rounded-3xl border-2 transition-all overflow-hidden p-2 group
-                      ${localAppIcon === 'pro' ? 'border-amber-400 bg-amber-400/10 shadow-xl shadow-amber-400/10' : 'border-black/5 dark:border-white/5'}
-                      ${!isPro ? 'grayscale opacity-40 cursor-not-allowed' : 'hover:border-amber-400/50'}
+                    className={`relative w-24 flex flex-col items-center gap-2 p-1.5 rounded-2xl border transition-all
+                      ${localAppIcon === 'pro' ? 'border-amber-400 bg-amber-400/10 shadow-lg shadow-amber-400/10' : 'border-black/5 dark:border-white/5'}
+                      ${!isPro ? 'grayscale opacity-40 cursor-not-allowed' : ''}
                     `}
                   >
-                    <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-inner">
+                    <div className="relative w-full aspect-square rounded-xl overflow-hidden shadow-inner">
                       <Image src="/assets/images/logos/logo-pro.png" alt="Pro Icon" fill className="object-cover" />
                     </div>
-                    <div className="mt-2 text-center">
-                      <span className={`text-[10px] font-bold uppercase tracking-widest ${isPro ? 'text-amber-500' : 'theme-ink'}`}>Pro</span>
-                    </div>
+                    <span className={`text-[9px] font-bold uppercase tracking-widest ${isPro ? 'text-amber-500' : 'theme-ink'}`}>Pro</span>
                   </button>
                 </div>
               </div>
