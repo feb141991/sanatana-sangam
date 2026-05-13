@@ -32,7 +32,7 @@ export default async function HomePage() {
 
   const { data: guidedPathProgress } = await supabase
     .from('guided_path_progress')
-    .select('path_id, status, completed_at, updated_at')
+    .select('path_id, status, completed_at, updated_at, current_lesson, completed_lessons')
     .eq('user_id', user.id);
 
   const tradition = profile?.tradition ?? null;

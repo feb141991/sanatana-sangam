@@ -1014,7 +1014,7 @@ export default function HomeDashboard({
 
   // ── Daily Quiz state ──────────────────────────────────────────────────────
   const [quiz, setQuiz]               = useState<{
-    question: string; options: string[]; answerIndex: number; explanation?: string; fact: string; source: string;
+    type: 'fact' | 'quiz'; question: string; options?: string[]; answerIndex?: number; explanation?: string; fact: string; source: string;
   } | null | 'loading' | 'error'>(null);
   const [quizAnswered, setQuizAnswered] = useState<number | null>(null); // index of chosen option
 
@@ -2060,7 +2060,7 @@ export default function HomeDashboard({
                   transition={{ duration: 0.35 }}
                 >
                   <span className="quiz-fact-label">
-                    {quizAnswered === quiz.answerIndex ? '✨ Correct!' : `The answer is: ${quiz.options[quiz.answerIndex]}`}
+                    {quizAnswered === quiz.answerIndex ? '✨ Correct!' : `The answer is: ${quiz.options?.[quiz.answerIndex ?? 0]}`}
                   </span>
                   {/* Show explanation only on wrong answer */}
                   {quizAnswered !== quiz.answerIndex && quiz.explanation && (
