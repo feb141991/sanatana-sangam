@@ -3,31 +3,7 @@
 -- Addresses search_path, extension schemas, and permissive RLS policies.
 -- ============================================================
 
--- 1. SCHEMA HARDENING: Move extensions to a dedicated schema
--- This prevents clutter in the public schema and follows security best practices.
-CREATE SCHEMA IF NOT EXISTS extensions;
-
--- Move extensions (if they exist)
-DO $$
-BEGIN
-    IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'postgis') THEN
-        ALTER EXTENSION postgis SET SCHEMA extensions;
-    END IF;
-    IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'vector') THEN
-        ALTER EXTENSION vector SET SCHEMA extensions;
-    END IF;
-    IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_net') THEN
-        ALTER EXTENSION pg_net SET SCHEMA extensions;
-    END IF;
-END $$;
-
--- Ensure public can still use extension functions
-GRANT USAGE ON SCHEMA extensions TO public;
-GRANT USAGE ON SCHEMA extensions TO anon;
-GRANT USAGE ON SCHEMA extensions TO authenticated;
-
-
--- 2. FUNCTION HARDENING: Secure Search Path
+-- 1. FUNCTION HARDENING: Secure Search Path
 -- Prevents search_path hijacking for SECURITY DEFINER functions.
 
 -- We apply 'SET search_path = public' to all custom functions flagged by the linter.
@@ -49,7 +25,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 CREATE OR REPLACE FUNCTION public.increment_karma(p_user_id uuid, p_amount integer)
 RETURNS void AS $$
   UPDATE public.profiles
-  SET karma_score = karma_score + p_amount
+  SET seva_score = seva_score + p_amount
   WHERE id = p_user_id;
 $$ LANGUAGE sql SECURITY DEFINER SET search_path = public;
 
@@ -86,6 +62,17 @@ ALTER FUNCTION public.mark_nitya_step(uuid, date, text, boolean) SET search_path
 ALTER FUNCTION public.upsert_device_token(uuid, text, text) SET search_path = public;
 ALTER FUNCTION public.auth_kul_id() SET search_path = public;
 ALTER FUNCTION public.auth_kul_role() SET search_path = public;
+ALTER FUNCTION public.match_scriptures_text(text, integer, double precision, text[]) SET search_path = public;
+ALTER FUNCTION public.set_hero_assets_updated_at() SET search_path = public;
+ALTER FUNCTION public.update_device_token_timestamp() SET search_path = public;
+ALTER FUNCTION public.update_family_member_updated_at() SET search_path = public;
+ALTER FUNCTION public.update_guided_path_progress_timestamp() SET search_path = public;
+ALTER FUNCTION public.match_scriptures(vector, integer, double precision) SET search_path = public;
+ALTER FUNCTION public.update_kul_updated_at() SET search_path = public;
+ALTER FUNCTION public.create_kul(text, text, text) SET search_path = public;
+ALTER FUNCTION public.join_kul(text) SET search_path = public;
+ALTER FUNCTION public.leave_kul() SET search_path = public;
+ALTER FUNCTION public.rls_auto_enable() SET search_path = public;
 
 
 -- 3. RLS HARDENING: Tighten Permissive Policies
@@ -129,19 +116,22 @@ CREATE POLICY "public_waitlist_insert"
 
 -- 4. RPC SECURITY: Revoke broad execute permissions
 -- By default, functions in 'public' are executable by everyone.
--- We revoke EXECUTE from PUBLIC and then selectively grant it.
+-- We revoke EXECUTE from PUBLIC, anon, and authenticated to be absolutely certain.
 
 REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA public FROM PUBLIC;
+REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA public FROM anon;
+REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA public FROM authenticated;
 
 -- Grant EXECUTE back to authenticated users for RPCs they need
 GRANT EXECUTE ON FUNCTION public.increment_karma(uuid, integer) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.find_nearby_satsang_seekers(double precision, double precision, double precision, integer) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.find_or_create_mandali(text, text) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.join_kul(p_invite_code text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.join_kul(text) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.leave_kul() TO authenticated;
 GRANT EXECUTE ON FUNCTION public.mark_nitya_step(uuid, date, text, boolean) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.upsert_device_token(uuid, text, text) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.advance_enrollment(uuid, uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.create_kul(text, text, text) TO authenticated;
 
 -- Keep trigger functions internal (accessible to service_role and triggers only)
 -- No explicit GRANT needed for triggers if the trigger is defined on the table.

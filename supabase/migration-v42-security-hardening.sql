@@ -100,13 +100,6 @@ FROM sadhana_events WHERE event_type IN ('streak_recovered', 'notification_dismi
 GROUP BY user_id, event_data->>'nudge_style';
 
 
--- 6. FIX: RLS on spatial_ref_sys (PostGIS system table)
-ALTER TABLE public.spatial_ref_sys ENABLE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS "Public read spatial_ref_sys" ON public.spatial_ref_sys;
-CREATE POLICY "Public read spatial_ref_sys" ON public.spatial_ref_sys FOR SELECT USING (true);
-
-
--- 7. STORAGE SECURITY: Ensure buckets are protected
+-- 6. STORAGE SECURITY: Ensure buckets are protected
 -- The hero-assets bucket should be public read, but restricted write.
 -- (This is usually handled via storage policies in the Supabase dashboard)
