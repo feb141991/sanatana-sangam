@@ -9,7 +9,9 @@
 -- Joins kul_members → mala_sessions for today's date.
 -- Used by ai-kul-nudge to know who in your kul already practiced.
 
-CREATE OR REPLACE VIEW kul_practice_today AS
+CREATE OR REPLACE VIEW kul_practice_today
+WITH (security_invoker = true)
+AS
 SELECT
   km.kul_id,
   km.user_id,
@@ -28,7 +30,9 @@ GROUP BY km.kul_id, km.user_id, km.role;
 -- Aggregates the past 7 days of mala_sessions per kul.
 -- Used by ai-kul-summary for the weekly digest.
 
-CREATE OR REPLACE VIEW kul_weekly_stats AS
+CREATE OR REPLACE VIEW kul_weekly_stats
+WITH (security_invoker = true)
+AS
 SELECT
   km.kul_id,
   k.name                                        AS kul_name,
@@ -53,7 +57,9 @@ GROUP BY km.kul_id, k.name, k.avatar_emoji;
 -- Combines user_practice + kul_members + recent mala_sessions.
 -- Used by ai-kul-task when guardian asks for task suggestions.
 
-CREATE OR REPLACE VIEW kul_member_profiles AS
+CREATE OR REPLACE VIEW kul_member_profiles
+WITH (security_invoker = true)
+AS
 SELECT
   km.kul_id,
   km.user_id,
@@ -88,7 +94,9 @@ LEFT JOIN LATERAL (
 
 -- ── 4. Pending kul tasks (for dashboard + digest) ──
 
-CREATE OR REPLACE VIEW kul_pending_tasks AS
+CREATE OR REPLACE VIEW kul_pending_tasks
+WITH (security_invoker = true)
+AS
 SELECT
   kt.id,
   kt.kul_id,

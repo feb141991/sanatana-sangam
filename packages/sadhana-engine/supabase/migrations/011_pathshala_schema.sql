@@ -398,7 +398,9 @@ CREATE INDEX IF NOT EXISTS idx_pathshala_circle_members_user
 -- ============================================================
 
 -- Today's pending lessons for a user across all active enrollments
-CREATE OR REPLACE VIEW pathshala_today_lessons AS
+CREATE OR REPLACE VIEW pathshala_today_lessons
+WITH (security_invoker = true)
+AS
 SELECT
   e.user_id,
   e.id                AS enrollment_id,
@@ -434,7 +436,9 @@ WHERE e.paused = false
   AND e.completed_at IS NULL;
 
 -- Circle leaderboard: members ranked by position within their study circle
-CREATE OR REPLACE VIEW pathshala_circle_leaderboard AS
+CREATE OR REPLACE VIEW pathshala_circle_leaderboard
+WITH (security_invoker = true)
+AS
 SELECT
   cm.circle_id,
   sc_circle.kul_id,
@@ -451,7 +455,9 @@ JOIN pathshala_study_circles   sc_circle ON sc_circle.id = cm.circle_id
 JOIN pathshala_paths           p         ON p.id = sc_circle.path_id;
 
 -- Per-user recitation stats (for profile display)
-CREATE OR REPLACE VIEW pathshala_recitation_stats AS
+CREATE OR REPLACE VIEW pathshala_recitation_stats
+WITH (security_invoker = true)
+AS
 SELECT
   r.user_id,
   COUNT(*)                                          AS total_recordings,

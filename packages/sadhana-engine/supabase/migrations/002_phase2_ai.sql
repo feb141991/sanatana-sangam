@@ -125,7 +125,9 @@ CREATE INDEX IF NOT EXISTS idx_scripture_fulltext
 -- ── 4. Nudge outcome tracking view ──
 -- Shows which nudge styles work per user — used by ai-nudge Edge Function.
 
-CREATE OR REPLACE VIEW nudge_effectiveness AS
+CREATE OR REPLACE VIEW nudge_effectiveness
+WITH (security_invoker = true)
+AS
 SELECT
   user_id,
   event_data->>'nudge_style' AS style,

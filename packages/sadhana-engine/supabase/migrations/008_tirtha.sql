@@ -179,21 +179,23 @@ ON CONFLICT (slug) DO NOTHING;
 
 -- ── 10. User visit progress view ──
 
-CREATE OR REPLACE VIEW user_tirtha_progress AS
+CREATE OR REPLACE VIEW user_tirtha_progress
+WITH (security_invoker = true)
+AS
 SELECT
-  u.id                                               AS user_id,
+  p.id                                               AS user_id,
   t.tirtha_type,
   t.series_name,
   COUNT(DISTINCT t.id)                               AS total_in_series,
   COUNT(DISTINCT tv.tirtha_id)                       AS visited,
   ROUND(COUNT(DISTINCT tv.tirtha_id)::NUMERIC /
         NULLIF(COUNT(DISTINCT t.id), 0) * 100, 1)   AS pct_complete
-FROM auth.users u
+FROM public.profiles p
 CROSS JOIN (
   SELECT DISTINCT tirtha_type, series_name FROM tirthas WHERE series_name IS NOT NULL
 ) s
 JOIN tirthas t
   ON t.tirtha_type = s.tirtha_type AND t.series_name = s.series_name
 LEFT JOIN tirtha_visits tv
-  ON tv.tirtha_id = t.id AND tv.user_id = u.id
-GROUP BY u.id, t.tirtha_type, t.series_name;
+  ON tv.tirtha_id = t.id AND tv.user_id = p.id
+GROUP BY p.id, t.tirtha_type, t.series_name;
