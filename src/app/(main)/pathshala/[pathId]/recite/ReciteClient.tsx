@@ -31,40 +31,7 @@ import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 // ─── Font size steps (same scale as LessonClient) ─────────────────────────────
 const READER_FONT_STEPS = [1.1, 1.25, 1.4, 1.58, 1.78] as const;
 
-// ─── Pick recite content for a path ────────────────────────────────────────────
-function getReciteVerses(pathId: string, lessonIndex: number): LibraryEntry[] {
-  const ENTRIES_PER_LESSON = 4;
-  let pool: LibraryEntry[] = [];
-
-  switch (pathId) {
-    case 'bhagavad-gita-intro': {
-      const ch = lessonIndex + 1;
-      pool = GITA_FULL_DATA.filter(e => (e.tags as readonly string[]).includes(`chapter-${ch}`)).slice(0, 8) as unknown as LibraryEntry[];
-      break;
-    }
-    case 'stotra-path':
-      pool = ALL_LIBRARY_ENTRIES.filter(e => e.category === 'stotra');
-      break;
-    case 'nitnem-daily':
-      pool = ALL_LIBRARY_ENTRIES.filter(e => e.category === 'gurbani' || e.category === 'nitnem');
-      break;
-    case 'dhammapada-path':
-      pool = ALL_LIBRARY_ENTRIES.filter(e => e.category === 'dhammapada');
-      break;
-    case 'yoga-sutras':
-      pool = ALL_LIBRARY_ENTRIES.filter(e => e.category === 'yoga_sutra');
-      break;
-    case 'upanishads-core':
-      pool = ALL_LIBRARY_ENTRIES.filter(e => e.category === 'upanishad');
-      break;
-    default:
-      pool = GITA_FULL_DATA.slice(0, 40) as unknown as LibraryEntry[];
-  }
-
-  const start = lessonIndex * ENTRIES_PER_LESSON;
-  const slice = pool.slice(start, start + ENTRIES_PER_LESSON);
-  return slice.length > 0 ? slice : pool.slice(0, ENTRIES_PER_LESSON);
-}
+// TTS is now stateful — managed inside ReciteClient via speakCurrent/stopTTS ─
 
 // ─── TTS is now stateful — managed inside ReciteClient via speakCurrent/stopTTS ─
 
@@ -171,6 +138,7 @@ interface Props {
   pathId: string;
   tradition: string;
   accentColour: string;
+  lessons: { title: string; entries: LibraryEntry[] }[];
   currentLesson: number;
   appLanguage?: string;
   meaningLanguage?: string;
@@ -200,7 +168,7 @@ export default function ReciteClient({
   const engine    = useSadhana();
   const isPro     = usePremium();
   const path      = SEED_PATHS.find(p => p.id === pathId);
-  const verses    = useMemo(() => getReciteVerses(pathId, currentLesson), [pathId, currentLesson]);
+  const verses    = useMemo(() => lessons[currentLesson]?.entries ?? [], [lessons, currentLesson]);
 
   const [verseIndex,   setVerseIndex]   = useState(0);
   const [mode,         setMode]         = useState<ReciteMode>('read');

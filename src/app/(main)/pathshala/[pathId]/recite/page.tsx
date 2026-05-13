@@ -23,6 +23,10 @@ export default async function RecitePage({
   const tradition = profile?.tradition ?? 'hindu';
   const meta = getTraditionMeta(tradition);
 
+  // ── Fetch lessons server-side to ensure full library access ───
+  const { getPathLessons } = await import('@/lib/pathshala-lessons');
+  const lessons = getPathLessons(pathId);
+
   // Verify enrollment
   const { data: enrollment } = await supabase
     .from('guided_path_progress')
@@ -55,6 +59,7 @@ export default async function RecitePage({
       pathId={pathId}
       tradition={tradition}
       accentColour={meta.accentColour}
+      lessons={lessons}
       currentLesson={(enrollment as any).current_lesson ?? 0}
       appLanguage={appLanguage}
       meaningLanguage={meaningLanguage}

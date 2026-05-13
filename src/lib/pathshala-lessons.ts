@@ -445,12 +445,22 @@ export function getPathLessons(pathId: string): Lesson[] {
     }
 
     default: {
-      entries = GITA_FULL_DATA.slice(0, 30) as unknown as LibraryEntry[];
+      // Smarter fallback: try to find the path in SEED_PATHS to determine tradition
+      const { SEED_PATHS } = require('@/lib/pathshala-paths');
+      const pathDef = SEED_PATHS.find((p: any) => p.id === pathId);
+      const tradition = pathDef?.tradition ?? 'hindu';
+
+      const pool = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === tradition);
+      const base = pool.length > 0 ? pool : GITA_FULL_DATA.slice(0, 40) as unknown as LibraryEntry[];
+
       const result: Lesson[] = [];
-      for (let i = 0; i < entries.length; i += ENTRIES_PER_LESSON) {
-        result.push({ title: `Session ${Math.floor(i / ENTRIES_PER_LESSON) + 1}`, entries: entries.slice(i, i + ENTRIES_PER_LESSON) });
+      for (let i = 0; i < base.length; i += ENTRIES_PER_LESSON) {
+        result.push({
+          title: `Session ${Math.floor(i / ENTRIES_PER_LESSON) + 1}`,
+          entries: base.slice(i, i + ENTRIES_PER_LESSON)
+        });
       }
-      return result;
+      return result.length > 0 ? result : [{ title: 'Introductory Verses', entries: base.slice(0, 4) }];
     }
   }
 }

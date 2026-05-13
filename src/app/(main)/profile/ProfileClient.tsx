@@ -555,7 +555,7 @@ export default function ProfileClient({
         {/* ── Zenith Profile Hero ────────────────────────────────────────────── */}
         <div className="relative min-h-[300px] overflow-hidden">
           {/* Atmospheric background (matches home hero vibe) */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#1c1c1a] via-[#2c1a0e] to-[#1c1c1a] opacity-40 dark:opacity-60" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1c1c1a] via-[#2c1a0e] to-[#1c1c1a] opacity-65 dark:opacity-85" />
           <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--divine-bg)] to-transparent z-10" />
           
           {/* Header Controls Overlay */}
