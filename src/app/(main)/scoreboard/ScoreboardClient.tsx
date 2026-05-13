@@ -6,9 +6,10 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { 
   Trophy, Star, Search, 
-  Crown, ArrowLeft, X
+  Crown, ArrowLeft, X, Share2, Send
 } from 'lucide-react';
 import { getInitials } from '@/lib/utils';
+import { shareScoreToWhatsApp } from '@/lib/whatsapp';
 import BottomNav from '@/components/layout/BottomNav';
 
 type LeaderboardUser = {
@@ -21,10 +22,23 @@ type LeaderboardUser = {
   is_pro: boolean;
 };
 
-export default function ScoreboardClient({ initialUsers }: { initialUsers: LeaderboardUser[] }) {
+export default function ScoreboardClient({ initialUsers, currentUserId }: { initialUsers: LeaderboardUser[], currentUserId?: string }) {
   const [users] = useState<LeaderboardUser[]>(initialUsers);
   const [filter, setFilter] = useState<'global' | 'tradition'>('global');
   const [searchQuery, setSearchQuery] = useState('');
+
+  const currentUserData = users.find(u => u.id === currentUserId);
+  const currentUserRank = users.findIndex(u => u.id === currentUserId) + 1;
+
+  const handleShare = () => {
+    if (!currentUserData) return;
+    const link = shareScoreToWhatsApp(
+      currentUserData.full_name || currentUserData.username,
+      currentUserData.seva_score,
+      currentUserRank
+    );
+    window.open(link, '_blank');
+  };
 
   const topThree = users.slice(0, 3);
   const others = users.slice(3).filter(u => 
@@ -52,6 +66,26 @@ export default function ScoreboardClient({ initialUsers }: { initialUsers: Leade
       </div>
 
       <div className="max-w-2xl mx-auto px-6 py-8">
+        {/* Share My Rank Card (if logged in) */}
+        {currentUserData && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-8 p-4 rounded-2xl bg-gradient-to-r from-[#C5A059]/10 via-[#C5A059]/5 to-transparent border border-[#C5A059]/20 flex items-center justify-between"
+          >
+            <div>
+              <p className="text-[10px] font-bold text-[#C5A059] uppercase tracking-widest mb-1">Your Standing</p>
+              <h2 className="text-lg font-serif theme-ink">Ranked #{currentUserRank}</h2>
+            </div>
+            <button 
+              onClick={handleShare}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#25D366] text-white text-xs font-bold hover:bg-[#20ba59] transition-colors shadow-lg shadow-[#25D366]/20"
+            >
+              <Share2 size={14} />
+              Share on WhatsApp
+            </button>
+          </motion.div>
+        )}
         {/* Podium for Top 3 */}
         <div className="flex items-end justify-center gap-4 mb-12 pt-8">
           {/* 2nd Place */}

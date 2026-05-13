@@ -30,6 +30,7 @@ import { THEME_OPTIONS, type ThemePreference } from '@/lib/theme-preferences';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { updateAppIcon } from '@/lib/app-icon';
 import { formatError } from '@/lib/error-handler';
+import { inviteFriendsToWhatsApp } from '@/lib/whatsapp';
 
 // ── Practice path options per tradition (mirrors OnboardingClient) ─────────────
 function getPracticePathOptions(tradition: TraditionKey | '') {
@@ -654,6 +655,21 @@ export default function ProfileClient({
                 </div>
               )}
             </motion.div>
+
+            {/* WhatsApp Invite Button */}
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.15 }}
+              onClick={() => {
+                const link = inviteFriendsToWhatsApp(liveProfile?.full_name || liveProfile?.username || 'A friend');
+                window.open(link, '_blank');
+              }}
+              className="mt-6 flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#25D366] text-white text-xs font-bold shadow-lg shadow-[#25D366]/20 transition-transform active:scale-95"
+            >
+              <MessageCircle size={16} />
+              Invite Mandali on WhatsApp
+            </motion.button>
           </div>
         </div>
 

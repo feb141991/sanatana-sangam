@@ -15,7 +15,12 @@ export default async function ScoreboardPage() {
     console.error('Error fetching scoreboard:', error);
   }
 
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
-    <ScoreboardClient initialUsers={users || []} />
+    <ScoreboardClient 
+      initialUsers={users || []} 
+      currentUserId={user?.id}
+    />
   );
 }
