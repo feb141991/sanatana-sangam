@@ -14,11 +14,13 @@ interface ProgressRow {
 interface Props { progress: ProgressRow[]; tradition: string; }
 
 // Path metadata derived from central SEED_PATHS
-const PATH_INFO_MAP = new Map(SEED_PATHS.map(p => [p.id, { 
-  name: p.title, 
-  icon: '📖', // Default icon, can be overridden if needed
-  total_lessons: (p as any).total_lessons || 0 
-}]));
+const PATH_INFO_MAP = new Map<string, { name: string; icon: string; total_lessons: number }>(
+  SEED_PATHS.map(p => [p.id, { 
+    name: p.title, 
+    icon: '📖', 
+    total_lessons: (p as any).total_lessons || 0 
+  }])
+);
 
 function getPathInfo(id: string) {
   return PATH_INFO_MAP.get(id) ?? { 
