@@ -17,6 +17,7 @@ import type { KulSectionView } from './sections';
 import { AsyncStateCard, EmptyState } from '@/components/ui';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { useKulMutations, useKulQuery } from '@/hooks/useKul';
+import { formatError } from '@/lib/error-handler';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 type KulData   = { id: string; name: string; invite_code: string; avatar_emoji: string; created_by: string; created_at: string };
@@ -429,7 +430,7 @@ function NoKulPrompt({ userId, userName }: { userId: string; userName: string })
       await kulMutations.createKul.mutateAsync({ name: kulName.trim(), emoji });
       toast.success(`${emoji} ${kulName} created! Welcome, Guardian 🙏`);
     } catch (error: any) {
-      toast.error(error.message ?? 'Could not create the Kul right now.');
+      toast.error(formatError(error));
     }
   }
 
@@ -440,7 +441,7 @@ function NoKulPrompt({ userId, userName }: { userId: string; userName: string })
       const kul = await kulMutations.joinKul.mutateAsync(code);
       toast.success(`${kul?.avatar_emoji ?? '🏡'} Joined ${kul?.name ?? 'Kul'}! Jai Ho 🙏`);
     } catch (error: any) {
-      toast.error(error.message ?? 'Could not join that Kul right now.');
+      toast.error(formatError(error));
     }
   }
 

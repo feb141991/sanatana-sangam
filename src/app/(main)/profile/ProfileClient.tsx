@@ -29,6 +29,7 @@ import { usePremium } from '@/hooks/usePremium';
 import { THEME_OPTIONS, type ThemePreference } from '@/lib/theme-preferences';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { updateAppIcon } from '@/lib/app-icon';
+import { formatError } from '@/lib/error-handler';
 
 // ── Practice path options per tradition (mirrors OnboardingClient) ─────────────
 function getPracticePathOptions(tradition: TraditionKey | '') {
@@ -185,6 +186,19 @@ export default function ProfileClient({
     gender_context:   ((liveProfile as any)?.gender_context  ?? 'general') as GenderContext,
   });
 
+  const [localAppIcon, setLocalAppIcon] = useState<'normal' | 'pro'>('normal');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('shoonaya_app_icon') as 'normal' | 'pro';
+      if (saved) setLocalAppIcon(saved);
+    }
+  }, []);
+
+  useEffect(() => {
+    updateAppIcon(localAppIcon === 'pro');
+  }, [localAppIcon]);
+
   const activeTradition = (form.tradition || 'hindu') as TraditionKey;
   const sampradayaOptions = SAMPRADAYAS_BY_TRADITION[activeTradition] ?? SAMPRADAYAS_BY_TRADITION['hindu'];
   const ishtaDevataOptions = ISHTA_DEVATAS_BY_TRADITION[activeTradition] ?? ISHTA_DEVATAS_BY_TRADITION['hindu'];
@@ -242,11 +256,6 @@ export default function ProfileClient({
     if (!browserTimeZone || browserTimeZone === profileTimezone) return;
     supabase.from('profiles').update({ timezone: browserTimeZone }).eq('id', userId);
   }, [profileTimezone, supabase, userId]);
-  useEffect(() => {
-    if (liveProfile) {
-      updateAppIcon((liveProfile as any)?.app_icon === 'pro');
-    }
-  }, [liveProfile]);
   async function uploadAvatar(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -298,7 +307,7 @@ export default function ProfileClient({
       setEditing(false);
       router.refresh();
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(formatError(error));
     } finally {
       setSaving(false);
     }
@@ -311,7 +320,7 @@ export default function ProfileClient({
       router.refresh();
       return true;
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(formatError(error));
       return false;
     }
   }
@@ -794,11 +803,12 @@ export default function ProfileClient({
                 <div className="grid grid-cols-2 gap-4">
                   <button
                     onClick={() => {
-                      updateAppIcon(false);
-                      patchProfile({ app_icon: 'normal' } as any, 'Default icon set 🙏');
+                      setLocalAppIcon('normal');
+                      localStorage.setItem('shoonaya_app_icon', 'normal');
+                      toast.success('Default icon set 🙏');
                     }}
                     className={`relative aspect-square rounded-3xl border-2 transition-all overflow-hidden p-2 group
-                      ${(liveProfile as any)?.app_icon !== 'pro' ? 'border-[#C5A059] bg-[rgba(200,146,74,0.1)]' : 'border-black/5 dark:border-white/5 opacity-60 hover:opacity-100'}
+                      ${localAppIcon !== 'pro' ? 'border-[#C5A059] bg-[rgba(200,146,74,0.1)]' : 'border-black/5 dark:border-white/5 opacity-60 hover:opacity-100'}
                     `}
                   >
                     <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-inner">
@@ -812,11 +822,12 @@ export default function ProfileClient({
                   <button
                     disabled={!isPro}
                     onClick={() => {
-                      updateAppIcon(true);
-                      patchProfile({ app_icon: 'pro' } as any, 'Pro icon set! ✨');
+                      setLocalAppIcon('pro');
+                      localStorage.setItem('shoonaya_app_icon', 'pro');
+                      toast.success('Pro icon set! ✨');
                     }}
                     className={`relative aspect-square rounded-3xl border-2 transition-all overflow-hidden p-2 group
-                      ${(liveProfile as any)?.app_icon === 'pro' ? 'border-amber-400 bg-amber-400/10 shadow-xl shadow-amber-400/10' : 'border-black/5 dark:border-white/5'}
+                      ${localAppIcon === 'pro' ? 'border-amber-400 bg-amber-400/10 shadow-xl shadow-amber-400/10' : 'border-black/5 dark:border-white/5'}
                       ${!isPro ? 'grayscale opacity-40 cursor-not-allowed' : 'hover:border-amber-400/50'}
                     `}
                   >
