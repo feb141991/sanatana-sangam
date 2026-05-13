@@ -16,6 +16,7 @@ import {
   Heart,
   MapPin,
   Pencil,
+  Share2,
   Shield,
   Trophy,
   Users,
