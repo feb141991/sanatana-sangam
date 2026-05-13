@@ -1009,6 +1009,7 @@ export default function HomeDashboard({
   });
   const [editHomeOpen,     setEditHomeOpen]     = useState(false);
   const [storySheetOpen,   setStorySheetOpen]   = useState(false);
+  const [isQuizModalOpen,  setQuizModalOpen]    = useState(false);
 
   // showDeeksha / handleDeekshaComplete removed
 
@@ -2033,100 +2034,37 @@ export default function HomeDashboard({
         )}
 
 
-        {/* ── Do You Know? Daily Quiz Spark ────────────────────────────────── */}
+        {/* ── Do You Know? Daily Quiz Spark Teaser ─────────────────────────── */}
         <AnimatePresence>
           {quiz && quiz !== 'loading' && quiz !== 'error' && (
             <motion.div
-              key="quiz-spark-card"
+              key="quiz-spark-teaser"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-              className="quiz-spark-card"
-              role="group"
-              aria-label="Do You Know? daily quiz"
+              transition={{ duration: 0.38 }}
+              className="quiz-spark-card compact cursor-pointer group"
+              onClick={() => setQuizModalOpen(true)}
             >
-              {/* Header */}
-              <div className="quiz-spark-header">
-                <span className="quiz-spark-kicker">🧠 Do You Know?</span>
-                <Link href="/quiz" className="quiz-spark-history-link hover:underline transition">
-                  History →
-                </Link>
-                <span className="quiz-spark-source">{quiz.source}</span>
-              </div>
-
-              {/* Fact or Question */}
-              <p className="quiz-spark-question">{quiz.question}</p>
-
-              {/* ── Type: Fact ────────────────────────────────────────────────── */}
-              {quiz.type === 'fact' && (
-                <div className="mt-2 space-y-3">
-                  <p className="text-[13px] leading-relaxed text-[color:var(--brand-ink)] opacity-90">
-                    {quiz.fact}
-                  </p>
-                  <div className="pt-2 border-t border-[rgba(140,140,200,0.15)]">
-                    <p className="text-[10px] italic text-[color:var(--brand-muted)]">
-                      Reflect on this today. Wisdom is the only treasure that grows when shared.
-                    </p>
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[rgba(200,146,74,0.12)] flex items-center justify-center text-xl">
+                    🧠
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--brand-primary)] opacity-80">Do You Know?</span>
+                    <h3 className="text-sm font-bold theme-ink line-clamp-1 mt-0.5">{quiz.question}</h3>
                   </div>
                 </div>
-              )}
-
-              {/* ── Type: Quiz ────────────────────────────────────────────────── */}
-              {quiz.type === 'quiz' && (
-                <div className="quiz-spark-options" role="group" aria-label="Answer options">
-                  {quiz.options?.map((opt, i) => {
-                    const isAnswered   = quizAnswered !== null;
-                    const isChosen     = quizAnswered === i;
-                    const isCorrect    = i === quiz.answerIndex;
-                    const showResult   = isAnswered && (isChosen || isCorrect);
-                    return (
-                      <button
-                        key={i}
-                        type="button"
-                        disabled={isAnswered}
-                        onClick={() => handleQuizAnswer(i)}
-                        className={`quiz-spark-option motion-press${isAnswered ? ' answered' : ''}${showResult ? (isCorrect ? ' correct' : ' wrong') : ''}`}
-                        aria-pressed={isAnswered && isChosen}
-                      >
-                        <span className="quiz-option-letter">{String.fromCharCode(65 + i)}</span>
-                        <span className="quiz-option-text">{opt}</span>
-                        {isAnswered && isCorrect && (
-                          <span className="quiz-option-tick" aria-hidden="true">✓</span>
-                        )}
-                        {isAnswered && isChosen && !isCorrect && (
-                          <span className="quiz-option-cross" aria-hidden="true">✗</span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* Revealed explanation + fact */}
-              {quiz.type === 'quiz' && quizAnswered !== null && (
-                <motion.div
-                  className="quiz-spark-fact"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  transition={{ duration: 0.35 }}
-                >
-                  <span className="quiz-fact-label">
-                    {quizAnswered === quiz.answerIndex ? '✨ Correct!' : `The answer is: ${quiz.options?.[quiz.answerIndex ?? 0]}`}
+                <div className="flex items-center gap-2 text-[var(--brand-muted)] group-hover:text-[var(--brand-primary)] transition-colors">
+                  <span className="text-[10px] font-bold uppercase tracking-widest">
+                    {quizAnswered !== null ? 'Done ✓' : 'Play →'}
                   </span>
-                  {/* Show explanation only on wrong answer */}
-                  {quizAnswered !== quiz.answerIndex && quiz.explanation && (
-                    <p className="quiz-fact-text" style={{ marginBottom: '8px', borderBottom: '1px solid rgba(140,140,200,0.15)', paddingBottom: '8px' }}>
-                      {quiz.explanation}
-                    </p>
-                  )}
-                  <p className="quiz-fact-text">{quiz.fact}</p>
-                </motion.div>
-              )}
+                </div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
-
         <div id="features-section" className="scroll-mt-24">
           <MotionStagger className="divine-feature-grid" delay={0.08}>
           {divineFeatureCards.map((item) => {
@@ -2509,6 +2447,127 @@ export default function HomeDashboard({
                   </p>
                   <p className="festival-story-prose">{festivalStory.practice}</p>
                 </section>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Daily Quiz Modal ───────────────────────────────────────────── */}
+      <AnimatePresence>
+        {isQuizModalOpen && quiz && quiz !== 'loading' && quiz !== 'error' && (
+          <motion.div
+            className="fixed inset-0 z-50 flex flex-col justify-end"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)' }}
+            onClick={() => setQuizModalOpen(false)}
+          >
+            <motion.div
+              className="relative w-full max-h-[90dvh] rounded-t-[2.5rem] overflow-y-auto"
+              style={{
+                background: 'linear-gradient(180deg, var(--surface-raised) 0%, var(--card-bg) 100%)',
+                borderTop: '1px solid rgba(200, 146, 74, 0.25)',
+                boxShadow: '0 -24px 64px rgba(0,0,0,0.4)',
+              }}
+              onClick={e => e.stopPropagation()}
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {/* Handle */}
+              <div className="sticky top-0 z-20 flex justify-center pt-3 pb-2 bg-inherit">
+                <div className="w-12 h-1.5 rounded-full bg-[rgba(200,146,74,0.2)]" />
+              </div>
+
+              <div className="px-7 pt-2 pb-12">
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--brand-primary)]">Daily Spark</span>
+                    <h2 className="text-2xl font-bold theme-ink font-serif mt-1">Do You Know?</h2>
+                  </div>
+                  <button
+                    onClick={() => setQuizModalOpen(false)}
+                    className="w-10 h-10 rounded-full flex items-center justify-center bg-black/5 dark:bg-white/5"
+                  >
+                    <X size={20} className="text-muted-foreground" />
+                  </button>
+                </div>
+
+                <div className="space-y-8">
+                  <p className="text-xl font-medium leading-tight theme-ink">{quiz.question}</p>
+
+                  {/* Type: Fact */}
+                  {quiz.type === 'fact' && (
+                    <div className="space-y-6">
+                      <div className="p-6 rounded-3xl bg-[rgba(200,146,74,0.06)] border border-[rgba(200,146,74,0.12)]">
+                        <p className="text-base leading-relaxed theme-ink">{quiz.fact}</p>
+                      </div>
+                      <p className="text-[11px] uppercase tracking-widest text-center opacity-40">Source: {quiz.source}</p>
+                    </div>
+                  )}
+
+                  {/* Type: Quiz */}
+                  {quiz.type === 'quiz' && (
+                    <div className="space-y-4">
+                      {quiz.options?.map((opt, i) => {
+                        const isAnswered = quizAnswered !== null;
+                        const isChosen = quizAnswered === i;
+                        const isCorrect = i === quiz.answerIndex;
+                        const showResult = isAnswered && (isChosen || isCorrect);
+
+                        return (
+                          <button
+                            key={i}
+                            disabled={isAnswered}
+                            onClick={() => handleQuizAnswer(i)}
+                            className={`w-full flex items-center gap-4 p-5 rounded-2xl transition-all border text-left
+                              ${!isAnswered ? 'bg-[var(--surface-soft)] border-black/5 hover:border-[var(--brand-primary)]/30' : ''}
+                              ${isAnswered && isCorrect ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400' : ''}
+                              ${isAnswered && isChosen && !isCorrect ? 'bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400' : ''}
+                              ${isAnswered && !isChosen && !isCorrect ? 'opacity-40 grayscale-[0.5]' : ''}
+                            `}
+                          >
+                            <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs border
+                              ${!isAnswered ? 'bg-white/50 dark:bg-black/20 border-black/5' : ''}
+                              ${isAnswered && isCorrect ? 'bg-emerald-500 text-white border-emerald-500' : ''}
+                              ${isAnswered && isChosen && !isCorrect ? 'bg-rose-500 text-white border-rose-500' : ''}
+                            `}>
+                              {String.fromCharCode(65 + i)}
+                            </span>
+                            <span className="flex-1 font-medium">{opt}</span>
+                            {isAnswered && isCorrect && <span className="text-xl">✓</span>}
+                            {isAnswered && isChosen && !isCorrect && <span className="text-xl">✗</span>}
+                          </button>
+                        );
+                      })}
+
+                      {quizAnswered !== null && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mt-8 p-6 rounded-3xl bg-[var(--surface-soft)] border border-black/5"
+                        >
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--brand-primary)] block mb-3">
+                            The Wisdom Behind
+                          </span>
+                          <p className="text-sm leading-relaxed theme-ink opacity-90">{quiz.explanation}</p>
+                          <p className="text-[11px] opacity-40 mt-6 uppercase tracking-widest">Source: {quiz.source}</p>
+                        </motion.div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {quizAnswered !== null && (
+                   <div className="mt-12 text-center">
+                      <p className="text-xs text-muted-foreground">
+                        Wisdom grows when shared. Come back tomorrow for a new spark.
+                      </p>
+                   </div>
+                )}
               </div>
             </motion.div>
           </motion.div>

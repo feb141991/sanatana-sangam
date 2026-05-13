@@ -1232,6 +1232,12 @@ body {
   gap: 12px;
 }
 
+.quiz-spark-card.compact {
+  padding: 12px 16px;
+  gap: 0;
+  display: block;
+}
+
 :root[data-theme='light'] .quiz-spark-card {
   background: rgba(140, 140, 220, 0.07);
   border-color: rgba(100, 100, 180, 0.22);
