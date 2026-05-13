@@ -109,7 +109,6 @@ export default function TirthaMapComponent({ temples, center, loading }: Props) 
           <div style="font-size:11px;color:#888;margin-bottom:4px;font-style:italic">${tradLabel}</div>
           <div style="font-size:11px;color:#9f5d74;margin-bottom:4px">${TRADITION_VISIT_HINT[trad] ?? TRADITION_VISIT_HINT.other}</div>
           ${t.deity    ? `<div style="font-size:12px;color:#666;margin-bottom:2px">🙏 ${t.deity}</div>` : ''}
-          ${t.sampradaya ? `<div style="font-size:12px;color:#666;margin-bottom:2px">🏛️ ${t.sampradaya}</div>` : ''}
           ${t.address  ? `<div style="font-size:12px;color:#666;margin-bottom:2px">📍 ${t.address}</div>` : ''}
           ${t.opening  ? `<div style="font-size:12px;color:#666;margin-bottom:2px">🕐 ${t.opening}</div>` : ''}
           ${t.phone    ? `<div style="font-size:12px;color:#666;margin-bottom:2px">📞 ${t.phone}</div>` : ''}

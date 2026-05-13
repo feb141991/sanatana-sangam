@@ -22,16 +22,7 @@ const TirthaMapComponent = dynamic(
   )}
 );
 
-// Tradition-level filters (top row)
-const TRADITION_FILTERS = [
-  { label: 'All',      value: 'all',      emoji: '🙏'  },
-  { label: 'Hindu',    value: 'hindu',    emoji: '🕉️'  },
-  { label: 'Sikh',     value: 'sikh',     emoji: '☬'   },
-  { label: 'Buddhist', value: 'buddhist', emoji: '☸️'  },
-  { label: 'Jain',     value: 'jain',     emoji: '🤲'  },
-];
-
-// RADIUS_OPTIONS
+// Radius options for search range
 const RADIUS_OPTIONS = [
   { label: '3 mi',  value: 5000  },
   { label: '6 mi',  value: 10000 },
@@ -94,7 +85,6 @@ export default function TirthaMapPage() {
   const [radius,      setRadius]     = useState<number>(API.OVERPASS.DEFAULT_RADIUS_M);
   const [selected,    setSelected]   = useState<Temple | null>(null);
   const [geoError,    setGeoError]   = useState('');
-  const [tradFilter,  setTradFilter] = useState('all');
   const [locUsed,     setLocUsed]    = useState(false);
 
   // Proactively request location on page entry if we don't have it yet
@@ -170,12 +160,8 @@ export default function TirthaMapPage() {
     }
   }
 
-  // Filter by tradition
-  const filtered = tradFilter === 'all'
-    ? temples
-    : temples.filter((t) => t.tradition === tradFilter);
-
-  const placeLabel = tradFilter === 'all' ? 'sacred places' : getTraditionMeta(tradFilter).placeLabel;
+  const filtered = temples;
+  const placeLabel = 'sacred places';
   const activeCityLabel = cityInput.trim() || liveCity || 'your area';
   return (
     <div className="space-y-3 fade-in">
@@ -224,21 +210,7 @@ export default function TirthaMapPage() {
         </button>
       </div>
 
-      {/* ── Tradition filter tabs ── */}
-      <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
-        {TRADITION_FILTERS.map((f) => (
-          <button key={f.value}
-            onClick={() => setTradFilter(f.value)}
-            className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
-              tradFilter === f.value
-                ? 'text-[#1c1c1a]'
-                : 'bg-[color:var(--brand-accent)] text-[color:var(--text-dim)] border border-[rgba(200,146,74,0.14)]'
-            }`}
-            style={tradFilter === f.value ? { background: 'var(--brand-primary)' } : {}}>
-            {f.emoji} {f.label}
-          </button>
-        ))}
-      </div>
+      {/* Radius filter moved up for prominence in agnostic view */}
 
       {/* ── Radius filter ── */}
       <div className="flex items-center gap-2">
@@ -263,8 +235,8 @@ export default function TirthaMapPage() {
         <div className="grid grid-cols-3 gap-2">
           {[
             { label: 'Visible', value: filtered.length },
-            { label: 'Tradition', value: tradFilter === 'all' ? 'All' : tradFilter.slice(0, 1).toUpperCase() + tradFilter.slice(1) },
             { label: 'Radius', value: RADIUS_OPTIONS.find((option) => option.value === radius)?.label ?? '15 mi' },
+            { label: 'Places', value: 'Nearby' },
           ].map((item) => (
             <div key={item.label} className="rounded-[1.05rem] border px-3 py-3 text-center" style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.14)' }}>
               <p className="type-metric">{item.value}</p>
@@ -289,7 +261,7 @@ export default function TirthaMapPage() {
       {searched && (
         <div className="type-body flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <span>{TRADITION_FILTERS.find(f => f.value === tradFilter)?.emoji ?? '🙏'}</span>
+            <span>🙏</span>
             <span>
               {loading ? 'Searching…' : (
                 filtered.length > 0

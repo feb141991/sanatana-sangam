@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Share2 } from 'lucide-react';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+import { SEED_PATHS } from '@/lib/pathshala-paths';
 
 interface ProgressRow {
   path_id: string; status: string; completed_at: string | null;
@@ -12,18 +13,19 @@ interface ProgressRow {
 }
 interface Props { progress: ProgressRow[]; tradition: string; }
 
-// Friendly path names — must match SEED_PATHS ids in PathshalaClient.tsx
-const PATH_NAMES: Record<string, { name: string; icon: string; total_lessons: number }> = {
-  'bhagavad-gita-intro': { name: 'Bhagavad Gita — Foundations', icon: '📖', total_lessons: 30 },
-  'upanishads-core':     { name: 'Core Upanishads',              icon: '🕉️', total_lessons: 20 },
-  'stotra-path':         { name: 'Daily Stotra Practice',        icon: '🙏', total_lessons: 14 },
-  'yoga-sutras':         { name: 'Patanjali Yoga Sutras',        icon: '🧘', total_lessons: 40 },
-  'nitnem-daily':        { name: 'Nitnem — Daily Banis',         icon: '🕉️', total_lessons: 10 },
-  'dhammapada-path':     { name: 'Dhammapada — 26 Chapters',    icon: '☸️', total_lessons: 26 },
-};
+// Path metadata derived from central SEED_PATHS
+const PATH_INFO_MAP = new Map(SEED_PATHS.map(p => [p.id, { 
+  name: p.title, 
+  icon: '📖', // Default icon, can be overridden if needed
+  total_lessons: (p as any).total_lessons || 0 
+}]));
 
 function getPathInfo(id: string) {
-  return PATH_NAMES[id] ?? { name: id.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), icon: '📚', total_lessons: 0 };
+  return PATH_INFO_MAP.get(id) ?? { 
+    name: id.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), 
+    icon: '📚', 
+    total_lessons: 0 
+  };
 }
 
 // ── Stat card ─────────────────────────────────────────────────────────────────

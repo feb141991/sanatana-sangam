@@ -139,12 +139,9 @@ export default function SignupPage() {
     country:        '',
     latitude:       null as number | null,
     longitude:      null as number | null,
-    sampradaya:     '',
-    ishta_devata:   '',
-    spiritual_level:'jigyasu',
-    seeking:        [] as string[],
     kul:            '',
     gotra:          '',
+    gender_context: '' as 'male' | 'female' | 'other' | '',
   });
 
   useEffect(() => {
@@ -235,6 +232,7 @@ export default function SignupPage() {
         is_pro: false,
         life_stage_locked: false,
         is_banned: false,
+        gender_context: form.gender_context || null,
       };
 
       const { data, error } = await supabase.auth.signUp({
@@ -443,6 +441,25 @@ export default function SignupPage() {
                           <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-6 top-1/2 -translate-y-1/2 text-[var(--brand-muted)] hover:text-[var(--premium-gold)] transition-colors">
                             {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
                           </button>
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)] ml-1">Gender (for personalized reminders)</label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {['male', 'female', 'other'].map(g => (
+                            <button
+                              key={g}
+                              type="button"
+                              onClick={() => setForm({ ...form, gender_context: g as any })}
+                              className={`py-3 rounded-xl text-xs font-bold transition-all border ${
+                                form.gender_context === g
+                                  ? 'bg-[var(--premium-gold)] text-white border-transparent'
+                                  : 'bg-white/50 border-[var(--premium-border)] text-[var(--brand-muted)]'
+                              }`}
+                            >
+                              {g.charAt(0).toUpperCase() + g.slice(1)}
+                            </button>
+                          ))}
                         </div>
                       </div>
                     </div>
