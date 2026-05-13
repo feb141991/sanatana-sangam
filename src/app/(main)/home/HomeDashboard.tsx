@@ -1568,6 +1568,12 @@ export default function HomeDashboard({
       icon: BarChart2,
     },
     {
+      title: 'Mandali Ranks',
+      description: 'See the top disciples globally',
+      href: '/scoreboard',
+      icon: Trophy,
+    },
+    {
       title: t('bhakti'),
       description: t('bhaktiDesc'),
       href: '/bhakti',

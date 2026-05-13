@@ -28,6 +28,7 @@ import type { ProfileUpdate } from '@/lib/api/profile';
 import { usePremium } from '@/hooks/usePremium';
 import { THEME_OPTIONS, type ThemePreference } from '@/lib/theme-preferences';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+import { updateAppIcon } from '@/lib/app-icon';
 
 // ── Practice path options per tradition (mirrors OnboardingClient) ─────────────
 function getPracticePathOptions(tradition: TraditionKey | '') {
@@ -241,7 +242,11 @@ export default function ProfileClient({
     if (!browserTimeZone || browserTimeZone === profileTimezone) return;
     supabase.from('profiles').update({ timezone: browserTimeZone }).eq('id', userId);
   }, [profileTimezone, supabase, userId]);
-
+  useEffect(() => {
+    if (liveProfile) {
+      updateAppIcon((liveProfile as any)?.app_icon === 'pro');
+    }
+  }, [liveProfile]);
   async function uploadAvatar(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -774,6 +779,55 @@ export default function ProfileClient({
                   })}
                 </div>
                 <p className="type-micro mt-2">This controls translations and explanations. Transliteration remains separate.</p>
+              </div>
+
+              {/* App Icon Selection (Pro Only) */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="type-card-label">App Icon</p>
+                  {!isPro && (
+                     <div className="px-2 py-0.5 rounded-full bg-amber-400/10 border border-amber-400/20">
+                       <span className="text-[8px] font-bold text-amber-400 uppercase tracking-widest">Pro Only</span>
+                     </div>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    onClick={() => {
+                      updateAppIcon(false);
+                      patchProfile({ app_icon: 'normal' } as any, 'Default icon set 🙏');
+                    }}
+                    className={`relative aspect-square rounded-3xl border-2 transition-all overflow-hidden p-2 group
+                      ${(liveProfile as any)?.app_icon !== 'pro' ? 'border-[#C5A059] bg-[rgba(200,146,74,0.1)]' : 'border-black/5 dark:border-white/5 opacity-60 hover:opacity-100'}
+                    `}
+                  >
+                    <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-inner">
+                      <Image src="/assets/images/logos/logo-normal.png" alt="Normal Icon" fill className="object-cover" />
+                    </div>
+                    <div className="mt-2 text-center">
+                      <span className="text-[10px] font-bold uppercase tracking-widest theme-ink">Normal</span>
+                    </div>
+                  </button>
+
+                  <button
+                    disabled={!isPro}
+                    onClick={() => {
+                      updateAppIcon(true);
+                      patchProfile({ app_icon: 'pro' } as any, 'Pro icon set! ✨');
+                    }}
+                    className={`relative aspect-square rounded-3xl border-2 transition-all overflow-hidden p-2 group
+                      ${(liveProfile as any)?.app_icon === 'pro' ? 'border-amber-400 bg-amber-400/10 shadow-xl shadow-amber-400/10' : 'border-black/5 dark:border-white/5'}
+                      ${!isPro ? 'grayscale opacity-40 cursor-not-allowed' : 'hover:border-amber-400/50'}
+                    `}
+                  >
+                    <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-inner">
+                      <Image src="/assets/images/logos/logo-pro.png" alt="Pro Icon" fill className="object-cover" />
+                    </div>
+                    <div className="mt-2 text-center">
+                      <span className={`text-[10px] font-bold uppercase tracking-widest ${isPro ? 'text-amber-500' : 'theme-ink'}`}>Pro</span>
+                    </div>
+                  </button>
+                </div>
               </div>
 
               <div>

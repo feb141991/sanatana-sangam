@@ -1,7 +1,7 @@
 # Graph Report - /Users/Business(C)/Sanatan Sangam/Sanatan_Sangam  (2026-05-13)
 
 ## Corpus Check
-- 361 files · ~1,284,514 words
+- 361 files · ~1,284,772 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -1131,9 +1131,9 @@ Nodes (0):
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `select()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 7`, `Community 8`, `Community 10`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 16`, `Community 18`, `Community 22`, `Community 23`, `Community 25`, `Community 27`, `Community 32`, `Community 38`?**
-  _High betweenness centrality (0.269) - this node is a cross-community bridge._
+  _High betweenness centrality (0.282) - this node is a cross-community bridge._
 - **Why does `GET()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 12`, `Community 14`, `Community 17`, `Community 18`, `Community 24`, `Community 28`, `Community 29`?**
-  _High betweenness centrality (0.241) - this node is a cross-community bridge._
+  _High betweenness centrality (0.227) - this node is a cross-community bridge._
 - **Why does `POST()` connect `Community 3` to `Community 0`, `Community 1`, `Community 2`, `Community 4`, `Community 7`, `Community 8`, `Community 9`, `Community 22`?**
   _High betweenness centrality (0.078) - this node is a cross-community bridge._
 - **Are the 164 inferred relationships involving `select()` (e.g. with `.listTexts()` and `.listChapters()`) actually correct?**
