@@ -156,6 +156,7 @@ export default function ReciteClient({
   pathId,
   tradition: _tradition,
   accentColour,
+  lessons,
   currentLesson,
   appLanguage,
   meaningLanguage,
