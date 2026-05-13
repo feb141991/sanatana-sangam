@@ -31,6 +31,7 @@ import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { updateAppIcon } from '@/lib/app-icon';
 import { formatError } from '@/lib/error-handler';
 import { inviteFriendsToWhatsApp } from '@/lib/whatsapp';
+import { SACRED_RELICS, getUnlockedRelics } from '@/lib/relics';
 
 // ── Practice path options per tradition (mirrors OnboardingClient) ─────────────
 function getPracticePathOptions(tradition: TraditionKey | '') {
@@ -703,6 +704,57 @@ export default function ProfileClient({
           )}
 
           <CompletionBar profile={liveProfile} onEdit={() => setEditing(true)} />
+
+          {/* ── Sacred Kosh (Treasury) ────────────────────────────────────────── */}
+          <SurfaceSection
+            eyebrow="Sacred Collection"
+            title="Kosh"
+            description="Your treasury of divine symbols unlocked through devotion."
+          >
+            <div className="grid grid-cols-4 gap-4">
+              {SACRED_RELICS.map((relic) => {
+                const isUnlocked = getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, liveProfile?.tradition ?? 'hindu').some(r => r.id === relic.id);
+                const isActive = (liveProfile as any)?.active_symbol_id === relic.id;
+
+                return (
+                  <div key={relic.id} className="flex flex-col items-center group">
+                    <div 
+                      className={`relative w-14 h-14 rounded-full flex items-center justify-center transition-all duration-500 ${
+                        isUnlocked 
+                          ? 'bg-gradient-to-br from-[#C5A059]/20 to-[#C5A059]/5 border border-[#C5A059]/30 shadow-lg shadow-[#C5A059]/10' 
+                          : 'bg-black/5 dark:bg-white/5 border border-white/5 grayscale opacity-30'
+                      }`}
+                    >
+                      {isUnlocked && (
+                        <div className="absolute inset-0 rounded-full bg-[#C5A059]/5 animate-pulse" />
+                      )}
+                      
+                      {/* Image Placeholder - In real app, these would be the gold icons */}
+                      <div className="relative w-8 h-8 flex items-center justify-center">
+                         <span className="text-xl">{isUnlocked ? '✨' : '🔒'}</span>
+                      </div>
+
+                      {/* Active Indicator */}
+                      {isActive && (
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#C5A059] rounded-full flex items-center justify-center border-2 border-[var(--divine-bg)]">
+                          <Star size={8} className="text-black fill-black" />
+                        </div>
+                      )}
+                    </div>
+                    <p className={`text-[9px] font-bold uppercase tracking-tighter mt-2 text-center line-clamp-1 transition-opacity ${isUnlocked ? 'opacity-100' : 'opacity-40'}`}>
+                      {relic.name}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+            
+            {!SACRED_RELICS.some(r => getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, liveProfile?.tradition ?? 'hindu').some(ur => ur.id === r.id)) && (
+              <div className="mt-4 p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-dashed border-white/10 text-center">
+                <p className="text-xs text-[var(--brand-muted)]">Maintain a 3-day streak to unlock your first relic 🙏</p>
+              </div>
+            )}
+          </SurfaceSection>
 
           <SurfaceSection
             eyebrow="Settings"

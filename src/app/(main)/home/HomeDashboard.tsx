@@ -46,6 +46,7 @@ import { getFestivalStory, type FestivalStory } from '@/lib/festival-stories';
 import { getDharmVeerOfTheDay, TRADITION_META, type DharmVeer } from '@/lib/dharm-veer';
 import { getPitruPakshaDay, getPitruPakshaBannerCopy } from '@/lib/pitru-paksha';
 import { getGreeting, getGreetingPool, isGreetingCompatibleWithTradition } from '@/lib/traditions';
+import { SACRED_RELICS, getUnlockedRelics } from '@/lib/relics';
 import type { GuidedPathProgressRow } from '@/lib/guided-paths';
 import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
@@ -133,6 +134,7 @@ interface Props {
   practiceHistory:     { date: string; japa: boolean; nitya: boolean }[];
   liveStreams:         any[];
   isAdmin?:            boolean;
+  sevaScore?:          number;
 }
 
 const DEFAULT_QUICK_ACCESS = [
@@ -982,6 +984,7 @@ export default function HomeDashboard({
   transliterationLanguage,
   showTransliteration = true,
   isAdmin = false,
+  sevaScore = 0,
 }: Props) {
   const supabase = createClient();
   const router   = useRouter();
@@ -1128,11 +1131,12 @@ export default function HomeDashboard({
     // Fetch fresh
     setQuiz('loading');
     const trad = tradition ?? 'hindu';
-    fetch('/api/spark/generate')
+    fetch(`/api/quiz/daily?tradition=${trad}`)
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then(data => {
-        setQuiz(data);
-        localStorage.setItem(QUIZ_CACHE_KEY,      JSON.stringify(data));
+        const quizData = { ...data, type: 'quiz' as const };
+        setQuiz(quizData);
+        localStorage.setItem(QUIZ_CACHE_KEY,      JSON.stringify(quizData));
         localStorage.setItem(QUIZ_CACHE_DATE_KEY, today);
       })
       .catch(() => setQuiz('error'));
@@ -1368,6 +1372,16 @@ export default function HomeDashboard({
       ? ` 🏅 ${newStreak}-day milestone!`
       : newStreak === 1 ? ` First ${dailyText.actionLabel} of your streak! 🌱` : '';
     toast.success(`🔥 ${newStreak}-day streak! +5 seva points${milestoneMsg}`);
+    
+    // Check for new relics
+    const unlocked = getUnlockedRelics(newStreak, sevaScore, tradition ?? 'hindu');
+    const previouslyUnlockedCount = Number(localStorage.getItem('shoonaya_relics_count') || '0');
+    if (unlocked.length > previouslyUnlockedCount) {
+      const newest = unlocked[unlocked.length - 1];
+      toast(`✨ New Sacred Symbol Unlocked: ${newest.name}!`, { icon: '🔱', duration: 6000 });
+      localStorage.setItem('shoonaya_relics_count', unlocked.length.toString());
+    }
+
     router.refresh(); // Ensure server state syncs on next visit
   }
 
@@ -2067,7 +2081,9 @@ export default function HomeDashboard({
                     🧠
                   </div>
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--brand-primary)] opacity-80">Do You Know?</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--brand-primary)] opacity-80">
+                      {tradition ? `${tradition} Quiz` : 'Do You Know?'}
+                    </span>
                     <h3 className="text-sm font-bold theme-ink line-clamp-1 mt-0.5">{quiz.question}</h3>
                   </div>
                 </div>
@@ -2500,7 +2516,9 @@ export default function HomeDashboard({
               <div className="px-7 pt-2 pb-12">
                 <div className="flex items-center justify-between mb-8">
                   <div>
-                    <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--brand-primary)]">Daily Spark</span>
+                    <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--brand-primary)]">
+                      {tradition ? `${tradition} Spark` : 'Daily Spark'}
+                    </span>
                     <h2 className="text-2xl font-bold theme-ink font-serif mt-1">Do You Know?</h2>
                   </div>
                   <button

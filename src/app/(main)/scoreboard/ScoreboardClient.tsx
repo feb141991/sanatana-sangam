@@ -20,6 +20,7 @@ type LeaderboardUser = {
   seva_score: number;
   tradition: string | null;
   is_pro: boolean;
+  active_symbol_id?: string | null;
 };
 
 export default function ScoreboardClient({ initialUsers, currentUserId }: { initialUsers: LeaderboardUser[], currentUserId?: string }) {
@@ -225,6 +226,7 @@ export default function ScoreboardClient({ initialUsers, currentUserId }: { init
               <div className="flex-1">
                 <div className="flex items-center gap-1.5">
                   <p className="text-sm font-bold theme-ink">{user.full_name || user.username}</p>
+                  {user.active_symbol_id && <span className="text-xs" title={user.active_symbol_id}>✨</span>}
                   {user.is_pro && <Crown size={12} className="text-yellow-600/60" />}
                 </div>
                 <p className="text-[10px] text-[var(--text-muted-warm)] uppercase tracking-wider font-bold">
