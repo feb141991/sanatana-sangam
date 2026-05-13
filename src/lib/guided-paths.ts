@@ -7,6 +7,8 @@ export interface GuidedPathProgressRow {
   completed_at: string | null;
   updated_at: string;
   day_reached?: number;
+  current_lesson?: number;
+  completed_lessons?: number[];
 }
 
 export function buildGuidedPathStatusMap(rows: GuidedPathProgressRow[]) {
