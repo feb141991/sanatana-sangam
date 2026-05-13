@@ -1019,6 +1019,27 @@ export default function HomeDashboard({
   const [quizAnswered, setQuizAnswered] = useState<number | null>(null); // index of chosen option
 
   // Daily Darshan Logic — Tradition Based
+  const [customCover, setCustomCover] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const saved = localStorage.getItem('user_cover_photo');
+    if (saved) setCustomCover(saved);
+  }, []);
+
+  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const url = event.target?.result as string;
+        setCustomCover(url);
+        localStorage.setItem('user_cover_photo', url);
+        toast.success('Cover photo updated! 🙏');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const [darshanOpen, setDarshanOpen] = useState(false);
   const [darshanPromptVisible, setDarshanPromptVisible] = useState(false);
   
@@ -1594,13 +1615,13 @@ export default function HomeDashboard({
           >
             {!heroImageFailed ? (
               <Image
-                src={heroTheme.heroImage}
-                alt={heroTheme.heroAlt}
+                src={customCover || heroTheme.heroImage}
+                alt={customCover ? "Your custom cover" : heroTheme.heroAlt}
                 fill
                 priority
                 sizes="100vw"
                 className="object-cover object-center divine-hero-image"
-                style={{ objectPosition: heroTheme.objectPosition }}
+                style={{ objectPosition: customCover ? 'center' : heroTheme.objectPosition }}
                 onError={() => setHeroImageFailed(true)}
               />
             ) : (
@@ -1614,6 +1635,12 @@ export default function HomeDashboard({
             <div className="divine-hero-readability" aria-hidden="true" />
 
             <div className="divine-poster-motif divine-poster-motif-om" aria-hidden="true">{heroFallback.mark}</div>
+            
+            {/* Custom Cover Upload Button */}
+            <label className="absolute bottom-6 right-6 z-50 w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/40 transition-colors shadow-lg" aria-label="Change Cover Photo">
+              <Pencil size={16} className="text-white/90" />
+              <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
+            </label>
             
           </motion.div>
 

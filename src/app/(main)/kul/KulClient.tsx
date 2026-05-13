@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import {
   Users, MessageSquare, CheckSquare, Plus, X, Copy,
@@ -526,6 +527,27 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
   const pendingTasks   = totalTasks - completedTasks;
   const totalStreak    = members.reduce((s, m) => s + (m.profiles?.shloka_streak ?? 0), 0);
 
+  const [customCover, setCustomCover] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const saved = localStorage.getItem(`kul_cover_${kul.id}`);
+    if (saved) setCustomCover(saved);
+  }, [kul.id]);
+
+  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const url = event.target?.result as string;
+        setCustomCover(url);
+        localStorage.setItem(`kul_cover_${kul.id}`, url);
+        toast.success('Kul cover updated! 🙏');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   async function copyCode() {
     try { await navigator.clipboard.writeText(kul.invite_code); toast.success('Invite code copied!'); }
     catch { toast.error('Could not copy'); }
@@ -558,66 +580,80 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
         </button>
       </div>
 
-      {/* Kul header card */}
-      <div className="clay-card rounded-[2.2rem] p-6 relative overflow-hidden" 
-        style={{ background: 'linear-gradient(150deg, #fdfcf9 0%, #f7f3ed 100%)' }}>
-        
-        {/* Subtle Background Mark */}
-        <div className="absolute -bottom-6 -right-6 text-6xl opacity-[0.03] select-none pointer-events-none">
-          {kul.avatar_emoji}
-        </div>
-
-        <div className="flex items-center gap-4 mb-6 relative z-10">
-          <div className="w-16 h-16 rounded-[1.8rem] flex items-center justify-center text-4xl shadow-inner border border-black/[0.03]"
-            style={{ background: 'rgba(200, 146, 74, 0.08)', boxShadow: 'inset 0 4px 8px rgba(0,0,0,0.05)' }}>
-            {kul.avatar_emoji}
-          </div>
-          <div className="flex-1">
-            <h2 className="text-2xl font-bold theme-ink premium-serif">{kul.name}</h2>
-            <p className="text-[11px] font-bold uppercase tracking-[0.2em] mt-1" style={{ color: 'var(--brand-primary-strong)', opacity: 0.7 }}>
-              {members.length} Member{members.length !== 1 ? 's' : ''} · {myRole === 'guardian' ? 'Guardian' : 'Sadhak'}
-            </p>
-          </div>
-        </div>
-
-        {/* Stats row */}
-        <div className="grid grid-cols-3 gap-3 relative z-10">
-          {[
-            { label: 'Members', value: members.length, emoji: '👨‍👩‍👧‍👦' },
-            { label: 'Kul Streak', value: totalStreak, emoji: '🔥' },
-            { label: 'Tasks Due', value: pendingTasks, emoji: '📋' },
-          ].map(({ label, value, emoji }) => (
-            <div key={label} className="rounded-2xl px-3 py-3 text-center border border-black/[0.03]" 
-              style={{ background: 'rgba(255,255,255,0.4)', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
-              <div className="text-xl mb-1">{emoji}</div>
-              <div className="text-xl font-bold theme-ink leading-none">{value}</div>
-              <div className="text-[9px] uppercase font-bold tracking-widest theme-muted mt-2">{label}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Invite row */}
-        <div className="mt-6 space-y-3 relative z-10">
-          <div className="flex items-center gap-2">
-            <div className="flex-1 flex items-center gap-2 px-4 py-3 rounded-2xl border border-black/[0.04]" 
-              style={{ background: 'rgba(0,0,0,0.02)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
-              <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">Code:</span>
-              <span className="text-lg font-bold tracking-[0.25em] theme-ink">{kul.invite_code}</span>
-            </div>
-            <button onClick={copyCode} className="w-12 h-12 rounded-2xl flex items-center justify-center transition-all bg-white shadow-sm border border-black/[0.05] hover:scale-105 active:scale-95">
-              <Copy size={16} style={{ color: 'var(--brand-primary-strong)' }} />
-            </button>
-          </div>
+      {/* ── Seamless Divine Hero for Kul ────────────────────────────────────────── */}
+      <div className="relative rounded-[2.2rem] overflow-hidden" style={{ minHeight: '380px', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
+        <motion.div
+          className="absolute inset-0 cursor-pointer"
+          whileHover={{ scale: 1.01, transition: { duration: 0.4, ease: "easeOut" } }}
+        >
+          {customCover ? (
+            <Image
+              src={customCover}
+              alt="Kul Cover"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-center"
+            />
+          ) : (
+             <div className="w-full h-full bg-gradient-to-br from-[#1c1c1a] to-[#2c2c2a] flex items-center justify-center opacity-90">
+                <span className="text-9xl opacity-10 blur-sm">{kul.avatar_emoji}</span>
+             </div>
+          )}
           
-          <button
-            onClick={() => setShowInviteSearch(true)}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold transition-all border border-[var(--brand-primary)]/20 shadow-sm active:scale-[0.98]"
-            style={{ background: 'rgba(200, 146, 74, 0.08)', color: 'var(--brand-primary-strong)' }}
-          >
-            <UserPlus size={16} strokeWidth={2.5} />
-            Invite Member by Name
+          {/* Gradient overlay for readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
+          
+          {/* Edit Cover Button */}
+          {myRole === 'guardian' && (
+            <label className="absolute top-6 right-6 z-50 w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/40 transition-colors shadow-lg" aria-label="Change Kul Cover">
+              <Pencil size={16} className="text-white/90" />
+              <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
+            </label>
+          )}
+        </motion.div>
+
+        {/* Header Content */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 z-10 text-white">
+          <div className="flex items-end justify-between gap-4">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl bg-white/10 backdrop-blur-md border border-white/20 shadow-lg">
+                  {kul.avatar_emoji}
+                </div>
+                <div>
+                  <h2 className="text-3xl font-bold font-serif text-[#F2EAD6]" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>{kul.name}</h2>
+                  <p className="text-xs font-bold uppercase tracking-widest text-white/70 mt-1">
+                    {members.length} Member{members.length !== 1 ? 's' : ''} · Kul Streak {totalStreak} 🔥
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Row below Hero */}
+      <div className="flex flex-col sm:flex-row items-stretch gap-3 pb-2">
+        {/* Invite Code */}
+        <div className="flex-1 flex items-center justify-between px-5 py-4 rounded-[1.4rem] border border-[rgba(200,146,74,0.15)] bg-[var(--card-bg)] shadow-sm">
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--brand-muted)]">Code:</span>
+            <span className="text-xl font-bold tracking-[0.25em] theme-ink leading-none">{kul.invite_code}</span>
+          </div>
+          <button onClick={copyCode} className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--brand-primary)]/10 text-[var(--brand-primary-strong)] hover:bg-[var(--brand-primary)]/20 transition-colors">
+            <Copy size={16} />
           </button>
         </div>
+        
+        {/* Add Member Button */}
+        <button
+          onClick={() => setShowInviteSearch(true)}
+          className="flex-1 flex items-center justify-center gap-2 py-4 rounded-[1.4rem] text-sm font-bold transition-all border border-[var(--brand-primary)]/20 shadow-sm bg-[var(--brand-primary)]/10 text-[var(--brand-primary-strong)] hover:bg-[var(--brand-primary)]/20"
+        >
+          <UserPlus size={18} />
+          Invite Member
+        </button>
       </div>
 
       {/* Member streaks */}
