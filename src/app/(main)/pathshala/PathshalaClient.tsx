@@ -46,12 +46,15 @@ import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import { getTransliteration } from '@/lib/transliteration';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
-// ── Difficulty badges — inline styles so they read clearly on any bg ──────────
-const DIFF_STYLE: Record<string, { bg: string; text: string; border: string; label: string }> = {
-  beginner:     { bg: 'rgba(34,197,94,0.12)',  text: '#4ade80', border: 'rgba(74,222,128,0.28)',   label: 'Beginner'     },
-  intermediate: { bg: 'rgba(251,191,36,0.12)', text: '#fcd34d', border: 'rgba(252,211,77,0.28)',   label: 'Intermediate' },
-  advanced:     { bg: 'rgba(248,113,113,0.12)',text: '#f87171', border: 'rgba(248,113,113,0.28)',  label: 'Advanced'     },
-};
+// ── Difficulty badges — theme-aware so they read clearly on dark and light ─────
+function getDiffStyle(difficulty: string, isDark: boolean) {
+  const s = {
+    beginner:     { bg: isDark ? 'rgba(34,197,94,0.12)'   : 'rgba(34,197,94,0.1)',  text: isDark ? '#4ade80' : '#16a34a', border: isDark ? 'rgba(74,222,128,0.28)'  : 'rgba(34,197,94,0.35)',  label: 'Beginner'     },
+    intermediate: { bg: isDark ? 'rgba(251,191,36,0.12)'  : 'rgba(251,191,36,0.1)', text: isDark ? '#fcd34d' : '#92400e', border: isDark ? 'rgba(252,211,77,0.28)'  : 'rgba(251,191,36,0.35)', label: 'Intermediate' },
+    advanced:     { bg: isDark ? 'rgba(248,113,113,0.12)' : 'rgba(220,38,38,0.08)', text: isDark ? '#f87171' : '#b91c1c', border: isDark ? 'rgba(248,113,113,0.28)' : 'rgba(220,38,38,0.3)',   label: 'Advanced'     },
+  };
+  return s[difficulty as keyof typeof s] ?? s.beginner;
+}
 
 const TRAD_ICON: Record<string, string> = {
   hindu: '🕉️', sikh: '☬', buddhist: '☸️', jain: '🤲', all: '📖',
@@ -521,9 +524,24 @@ function EpicViewer({ structure, accentColour }: { structure: EpicStructure; acc
     if (c.id === 'ram-bal-1') {
       const { RAMAYANA_BAL_KANDA_1 } = await import('@/lib/data/ramayana-bal-kanda-1');
       verses = RAMAYANA_BAL_KANDA_1.verses || [];
+    } else if (c.id === 'bhag-1-1') {
+      const { BHAGAVATAM_CANTO_1_CH_1 } = await import('@/lib/data/bhagavatam-canto-1-ch-1');
+      verses = BHAGAVATAM_CANTO_1_CH_1.verses || [];
+    } else if (c.id === 'bhag-1-2') {
+      const { BHAGAVATAM_CANTO_1_CH_2 } = await import('@/lib/data/bhagavatam-canto-1-ch-2');
+      verses = BHAGAVATAM_CANTO_1_CH_2.verses || [];
+    } else if (c.id === 'bhag-1-3') {
+      const { BHAGAVATAM_CANTO_1_CH_3 } = await import('@/lib/data/bhagavatam-canto-1-ch-3');
+      verses = BHAGAVATAM_CANTO_1_CH_3.verses || [];
     }
-    window.dispatchEvent(new CustomEvent('open-reader', { 
-      detail: { chapter: { ...c, kandaTitle: selectedKanda.title, verses } } 
+    if (verses.length === 0) {
+      // Chapter content not yet transcribed — show a friendly toast
+      const { default: toast } = await import('react-hot-toast');
+      toast('This chapter is being transcribed. Check back soon! 🙏', { icon: '📖', duration: 3000 });
+      return;
+    }
+    window.dispatchEvent(new CustomEvent('open-reader', {
+      detail: { chapter: { ...c, kandaTitle: selectedKanda.title, verses } }
     }));
   };
 
@@ -596,21 +614,28 @@ function EpicViewer({ structure, accentColour }: { structure: EpicStructure; acc
   );
 }
 
-// ── Scripture Library Tab ──────────────────────────────────────────────────────
+// ── Scripture Library Tab — Scripture cards → drill-in view ───────────────────
 function ScriptureTab({
-  tradition, accentColour, navLabel,
+  tradition, accentColour, navLabel, isDark,
 }: {
-  tradition: string; accentColour: string; navLabel: string;
+  tradition: string; accentColour: string; navLabel: string; isDark: boolean;
 }) {
   const allowedSections = SECTIONS_BY_TRADITION[tradition] ?? SECTIONS_BY_TRADITION.other;
   const sections        = LIBRARY_SECTIONS.filter(s => allowedSections.includes(s.id));
 
-  const [selectedSection, setSection] = useState<string>(allowedSections[0] ?? 'gita');
-  const [query,           setQuery]   = useState('');
-  const [showSearch,      setSearch]  = useState(false);
+  const [drillSection, setDrillSection] = useState<string | null>(null);
+  const [query,        setQuery]        = useState('');
+  const [showSearch,   setSearch]       = useState(false);
+
+  // Theme tokens
+  const cardBg     = isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.75)';
+  const cardBorder = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.09)';
+  const inkColor   = isDark ? '#f5dfa0' : '#2a1002';
+  const mutedColor = isDark ? 'rgba(245,210,130,0.50)' : 'rgba(100,55,10,0.55)';
 
   const entries = useMemo(() => {
-    const base = getEntriesBySection(selectedSection);
+    if (!drillSection) return [];
+    const base = getEntriesBySection(drillSection);
     if (!query.trim()) return base;
     const q = query.toLowerCase().trim();
     return base.filter(e =>
@@ -619,93 +644,151 @@ function ScriptureTab({
       e.source.toLowerCase().includes(q) ||
       e.tags.some(t => t.includes(q))
     );
-  }, [selectedSection, query]);
+  }, [drillSection, query]);
 
-  return (
-    <div className="space-y-3">
-      {/* Section pills + search toggle */}
-      <div className="flex items-center gap-2">
-        <div className="flex-1 overflow-x-auto no-scrollbar">
-          <div className="flex gap-2 pb-1" style={{ width: 'max-content' }}>
-            {sections.map(s => (
-              <button
-                key={s.id}
-                onClick={() => { setSection(s.id); setQuery(''); }}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap transition-all ${
-                  selectedSection === s.id
-                    ? 'text-[#1c1c1a] shadow-sm'
-                    : 'bg-white/5 text-[color:var(--brand-muted)] hover:bg-white/8 border border-white/5'
-                }`}
-                style={selectedSection === s.id ? { background: accentColour } : {}}
-              >
-                <span>{s.emoji}</span>
-                {s.title}
-                <span className="opacity-60 font-normal">({s.count})</span>
-              </button>
-            ))}
-          </div>
-        </div>
+  // ── Drill-in view: inside a specific scripture ────────────────────────────────
+  if (drillSection) {
+    const section = sections.find(s => s.id === drillSection);
+    return (
+      <div className="space-y-4">
+        {/* Back to library */}
         <button
-          onClick={() => setSearch(s => !s)}
-          className="shrink-0 w-8 h-8 rounded-full bg-white/8 flex items-center justify-center text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition"
+          onClick={() => { setDrillSection(null); setQuery(''); setSearch(false); }}
+          className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider transition-opacity hover:opacity-70"
+          style={{ color: accentColour }}
         >
-          {showSearch ? <X size={15} /> : <Search size={15} />}
+          <ChevronLeft size={14} /> Scripture Library
         </button>
+
+        {/* Scripture header */}
+        <div className="p-5 rounded-[2rem] relative overflow-hidden"
+          style={{ background: `linear-gradient(135deg, ${accentColour}14, ${accentColour}04)`, border: `1px solid ${accentColour}22` }}>
+          <div className="absolute top-3 right-4 text-7xl opacity-[0.07] select-none pointer-events-none">{section?.emoji}</div>
+          <p className="text-3xl mb-2 leading-none">{section?.emoji}</p>
+          <h3 className="font-bold text-xl mb-1 leading-tight" style={{ color: inkColor }}>{section?.title}</h3>
+          <p className="text-xs leading-relaxed max-w-[85%] mb-3" style={{ color: mutedColor }}>{section?.desc}</p>
+          <span className="text-[10px] font-bold rounded-full px-2.5 py-1"
+            style={{ background: `${accentColour}18`, color: accentColour }}>
+            {section?.count} passages
+          </span>
+        </div>
+
+        {/* Search toggle (not for epic viewers) */}
+        {drillSection !== 'ramayana' && drillSection !== 'bhagavatam' && (
+          <div className="flex justify-end">
+            <button
+              onClick={() => setSearch(s => !s)}
+              className="w-8 h-8 rounded-full flex items-center justify-center transition"
+              style={{ background: cardBg, border: `1px solid ${cardBorder}`, color: mutedColor }}
+            >
+              {showSearch ? <X size={15} /> : <Search size={15} />}
+            </button>
+          </div>
+        )}
+
+        {/* Search box */}
+        {showSearch && (
+          <div className="relative">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--brand-muted)]" />
+            <input
+              autoFocus
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder={`Search ${section?.title ?? navLabel}…`}
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-white/10 bg-white/6 text-sm text-[color:var(--brand-ink)] placeholder:text-[color:var(--brand-muted)] focus:outline-none focus:border-white/20"
+            />
+          </div>
+        )}
+
+        {/* Content */}
+        {drillSection === 'ramayana' || drillSection === 'bhagavatam' ? (
+          <div className="space-y-10">
+            <EpicViewer
+              structure={drillSection === 'ramayana' ? RAMAYANA_STRUCTURE : BHAGAVATAM_STRUCTURE}
+              accentColour={accentColour}
+            />
+            {entries.length > 0 && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-4 px-2">
+                  <div className="h-px flex-1 bg-white/5" />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Featured Passages</span>
+                  <div className="h-px flex-1 bg-white/5" />
+                </div>
+                <div className="grid gap-3">
+                  {entries.map(e => <EntryCard key={e.id} entry={e} accentColour={accentColour} />)}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : entries.length === 0 && query ? (
+          <div className="text-center py-10">
+            <p className="text-sm text-[color:var(--brand-muted)]">No results for &ldquo;{query}&rdquo;</p>
+          </div>
+        ) : (
+          <div className="grid gap-3">
+            {entries.map(e => <EntryCard key={e.id} entry={e} accentColour={accentColour} />)}
+          </div>
+        )}
       </div>
+    );
+  }
 
-      {/* Search box */}
-      {showSearch && (
-        <div className="relative">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--brand-muted)]" />
-          <input
-            autoFocus
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder={`Search ${navLabel}…`}
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-white/10 bg-white/6 text-sm text-[color:var(--brand-ink)] placeholder:text-[color:var(--brand-muted)] focus:outline-none focus:border-white/20"
-          />
-        </div>
-      )}
+  // ── Scripture card grid ───────────────────────────────────────────────────────
+  return (
+    <div className="space-y-4">
+      <p className="text-[11px] font-semibold uppercase tracking-wider px-0.5" style={{ color: mutedColor }}>
+        {sections.length} Scriptures · {navLabel}
+      </p>
+      <div className="grid gap-3">
+        {sections.map(section => (
+          <motion.button
+            key={section.id}
+            whileHover={{ scale: 1.01, translateY: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setDrillSection(section.id)}
+            className="w-full text-left p-5 rounded-[2rem] relative overflow-hidden group transition-all"
+            style={{ background: cardBg, border: `1px solid ${cardBorder}`, boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}
+          >
+            {/* Hover glow */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-[2rem]"
+              style={{ background: `radial-gradient(circle at top right, ${accentColour}0C, transparent 70%)` }} />
 
-      {/* Section description */}
-      {!query && (
-        <p className="text-xs text-[color:var(--brand-muted)] leading-relaxed">
-          {sections.find(s => s.id === selectedSection)?.desc ?? ''}
-        </p>
-      )}
-
-      {/* Entries / Epic Viewer */}
-      {selectedSection === 'ramayana' || selectedSection === 'bhagavatam' ? (
-        <div className="space-y-10">
-          <EpicViewer 
-            structure={selectedSection === 'ramayana' ? RAMAYANA_STRUCTURE : BHAGAVATAM_STRUCTURE} 
-            accentColour={accentColour} 
-          />
-          
-          {entries.length > 0 && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-4 px-2">
-                <div className="h-px flex-1 bg-white/5" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Featured Passages</span>
-                <div className="h-px flex-1 bg-white/5" />
+            <div className="relative flex items-start gap-4">
+              {/* Emoji icon */}
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 transition-transform group-hover:scale-105 duration-300"
+                style={{ background: `${accentColour}14`, border: `1px solid ${accentColour}20` }}>
+                {section.emoji}
               </div>
-              <div className="grid gap-3">
-                {entries.map(e => (
-                  <EntryCard key={e.id} entry={e} accentColour={accentColour} />
-                ))}
+
+              {/* Text content */}
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-base mb-0.5 leading-tight" style={{ color: inkColor }}>
+                  {section.title}
+                </h3>
+                <p className="text-[11px] leading-relaxed mb-2.5 line-clamp-2" style={{ color: mutedColor }}>
+                  {section.desc}
+                </p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] font-bold rounded-full px-2.5 py-0.5"
+                    style={{ background: `${accentColour}15`, color: accentColour }}>
+                    {section.count} passages
+                  </span>
+                  {(section.id === 'ramayana' || section.id === 'bhagavatam') && (
+                    <span className="text-[10px] font-bold rounded-full px-2.5 py-0.5"
+                      style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', color: mutedColor }}>
+                      Full Text
+                    </span>
+                  )}
+                </div>
               </div>
+
+              {/* Arrow */}
+              <ChevronRight size={18} className="shrink-0 mt-1 opacity-20 group-hover:opacity-60 transition-all duration-300 group-hover:translate-x-0.5"
+                style={{ color: accentColour }} />
             </div>
-          )}
-        </div>
-      ) : entries.length === 0 ? (
-        <div className="text-center py-10">
-          <p className="text-sm text-[color:var(--brand-muted)]">No results for &ldquo;{query}&rdquo;</p>
-        </div>
-      ) : (
-        entries.map(e => (
-          <EntryCard key={e.id} entry={e} accentColour={accentColour} />
-        ))
-      )}
+          </motion.button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -770,11 +853,11 @@ export default function PathshalaClient({
     playHaptic('medium');
   };
 
-  // Filter paths to those relevant to this tradition
-  const traditionPaths = useMemo(() => {
-    return SEED_PATHS.filter(p => p.tradition === tradition || p.tradition === 'all');
-  }, [tradition]);
-  const allPaths = traditionPaths.length > 0 ? traditionPaths : SEED_PATHS;
+  // Show all 44 paths across all traditions in the Explore tab
+  const allPaths = SEED_PATHS as unknown as {
+    id: string; title: string; description: string;
+    difficulty: string; tradition: string; total_lessons: number; duration_days: number;
+  }[];
 
   useEffect(() => {
     const checkTheme = () => setIsDark(document.documentElement.dataset.theme !== 'light');
@@ -865,14 +948,14 @@ export default function PathshalaClient({
   };
 
   // ── Enroll — uses guided_path_progress directly ──────────────────────────────
-  const FREE_PATH_LIMIT = 1;
-
   async function enroll(pathId: string) {
     if (enrolling) return;
 
-    // Free tier cap — max 1 active path
-    if (!isPro && activePaths.length >= FREE_PATH_LIMIT) {
-      toast('🔒 Free plan supports 1 active path. Upgrade to Shoonaya Pro for unlimited.', {
+    const pathToEnroll = allPaths.find(p => p.id === pathId);
+
+    // Intermediate & Advanced paths require Pro
+    if (!isPro && pathToEnroll && pathToEnroll.difficulty !== 'beginner') {
+      toast('🔒 Intermediate & Advanced paths require Shoonaya Pro. Upgrade to unlock all paths.', {
         duration: 4000,
         style: { background: '#1c1c1a', color: 'var(--brand-ink)' },
       });
@@ -1138,7 +1221,7 @@ export default function PathshalaClient({
   function ActivePathCard({ enrollment }: { enrollment: ActiveEnrollment }) {
     const path = allPaths.find(p => p.id === enrollment.path_id);
     if (!path) return null;
-    const diff        = DIFF_STYLE[path.difficulty] ?? DIFF_STYLE.beginner;
+    const diff        = getDiffStyle(path.difficulty, isDark);
     const doneLessons = (enrollment.completed_lessons ?? []).length;
     const progressPct = path.total_lessons > 0
       ? Math.round((doneLessons / path.total_lessons) * 100)
@@ -1216,9 +1299,10 @@ export default function PathshalaClient({
     );
   }
   // ── Browse Path Card ──────────────────────────────────────────
-  function BrowsePathCard({ path }: { path: typeof SEED_PATHS[0] }) {
+  function BrowsePathCard({ path }: { path: typeof allPaths[0] }) {
     const isEnrolled = activePaths.some(e => e.path_id === path.id);
-    const diff       = DIFF_STYLE[path.difficulty] ?? DIFF_STYLE.beginner;
+    const isProGated = !isPro && path.difficulty !== 'beginner';
+    const diff       = getDiffStyle(path.difficulty, isDark);
     return (
       <motion.div
         className="rounded-[1.45rem] p-4"
@@ -1239,6 +1323,12 @@ export default function PathshalaClient({
                 style={{ background: diff.bg, color: diff.text, border: `1px solid ${diff.border}` }}>
                 {diff.label}
               </span>
+              {isProGated && !isEnrolled && (
+                <span className="text-[10px] font-semibold rounded-full px-2 py-0.5 flex items-center gap-0.5"
+                  style={{ background: `${meta.accentColour}15`, color: meta.accentColour, border: `1px solid ${meta.accentColour}25` }}>
+                  <Lock size={8} /> Pro
+                </span>
+              )}
             </div>
             <p className="text-xs mt-0.5 line-clamp-2" style={{ color: secondaryText }}>{path.description}</p>
             <p className="text-xs mt-1" style={{ color: tertiaryText }}>
@@ -1249,22 +1339,28 @@ export default function PathshalaClient({
         <button
           disabled={isEnrolled || enrolling !== null}
           onClick={() => enroll(path.id)}
-          className={`mt-3 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-semibold text-sm transition-all border ${
-            isEnrolled
-              ? 'border-green-800/40 text-green-400 bg-green-900/20 cursor-default'
-              : ''
-          }`}
-          style={!isEnrolled ? {
+          className={`mt-3 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-semibold text-sm transition-all border ${isEnrolled ? 'cursor-default' : ''}`}
+          style={isEnrolled ? {
+            background: isDark ? 'rgba(34,197,94,0.1)' : 'rgba(34,197,94,0.08)',
+            color: isDark ? '#4ade80' : '#16a34a',
+            border: `1px solid ${isDark ? 'rgba(74,222,128,0.2)' : 'rgba(34,197,94,0.25)'}`,
+          } : isProGated ? {
+            background: `${meta.accentColour}10`,
+            color: meta.accentColour,
+            border: `1px solid ${meta.accentColour}20`,
+          } : {
             background: `${meta.accentColour}12`,
             color: meta.accentColour,
             border: `1px solid ${glassBorder}`,
-          } : {}}
+          }}
         >
           {enrolling === path.id
             ? <Loader2 size={14} className="animate-spin" />
             : isEnrolled
               ? <><Star size={14} /> {t('enrolled')}</>
-              : <><Plus size={14} /> {t('explore')}</>  
+              : isProGated
+                ? <><Lock size={14} /> Unlock with Pro</>
+                : <><Plus size={14} /> Enroll</>
           }
         </button>
       </motion.div>
@@ -1318,7 +1414,7 @@ export default function PathshalaClient({
         {/* Tab Control Area */}
         <div className="pt-20">
           <div className="px-4 mb-6 relative z-30">
-            <div className="flex flex-wrap gap-2 items-center">
+            <div className="flex overflow-x-auto no-scrollbar gap-2 items-center pb-0.5">
               {TABS.map(t => (
                 <motion.button
                   key={t.id}
@@ -1425,9 +1521,9 @@ export default function PathshalaClient({
                         style={{ ...cardStyle, background: isDark ? `${meta.accentColour}10` : `${meta.accentColour}12` }}>
                         <Lock size={18} style={{ color: meta.accentColour }} className="flex-shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold" style={{ color: primaryText }}>Shoonaya Pro — unlimited paths</p>
+                          <p className="text-xs font-semibold" style={{ color: primaryText }}>Beginner paths are free</p>
                           <p className="text-[10px] mt-0.5" style={{ color: secondaryText }}>
-                            Free plan: 1 active path. Pro unlocks all paths, From Memory &amp; Timed recitation modes, and progress analytics.
+                            Intermediate &amp; Advanced paths require Pro. Upgrade for all 44 paths, From Memory &amp; Timed recitation, and analytics.
                           </p>
                         </div>
                         <Link href="/profile"
@@ -1447,6 +1543,7 @@ export default function PathshalaClient({
                 tradition={tradition}
                 accentColour={meta.accentColour}
                 navLabel={meta.navLibraryLabel}
+                isDark={isDark}
               />
             )}
 
@@ -1458,8 +1555,8 @@ export default function PathshalaClient({
                       Sacred Learning Paths
                     </p>
                     <p className="text-[10px] mt-0.5" style={{ color: secondaryText }}>
-                      {allPaths.length} paths · {meta.label} tradition
-                      {!isPro && <span style={{ color: meta.accentColour }}> · 1 active (free)</span>}
+                      {allPaths.length} paths across all traditions
+                      {!isPro && <span style={{ color: meta.accentColour }}> · Beginner free</span>}
                     </p>
                   </div>
                   {!isPro && (

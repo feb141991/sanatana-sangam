@@ -281,7 +281,7 @@ export default function BhaktiClient({
       <section className="mt-16">
         <div className="px-8 flex items-center justify-between mb-8">
           <h3 className="text-2xl font-serif text-white">{t('divinePortals')}</h3>
-          <Link href="/bhakti/browse" className="text-[10px] font-bold text-[#C09759] uppercase tracking-widest hover:underline transition">
+          <Link href="/bhakti/browse" className="text-[10px] font-bold text-[#C09759] uppercase tracking-widest hover:underline transition whitespace-nowrap shrink-0">
             {t('exploreAll')} →
           </Link>
         </div>
