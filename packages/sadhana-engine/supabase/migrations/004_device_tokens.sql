@@ -30,7 +30,10 @@ CREATE INDEX IF NOT EXISTS idx_device_tokens_user
 -- CREATE OR REPLACE is idempotent — safe to re-run.
 
 CREATE OR REPLACE FUNCTION update_device_token_timestamp()
-RETURNS TRIGGER LANGUAGE plpgsql AS $$
+RETURNS TRIGGER 
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public AS $$
 BEGIN
   NEW.updated_at = now();
   RETURN NEW;
@@ -75,7 +78,10 @@ CREATE OR REPLACE FUNCTION upsert_device_token(
   p_player_id text,
   p_platform  text DEFAULT 'web'
 )
-RETURNS void LANGUAGE plpgsql SECURITY DEFINER AS $$
+RETURNS void 
+LANGUAGE plpgsql 
+SECURITY DEFINER
+SET search_path = public AS $$
 BEGIN
   INSERT INTO device_tokens (user_id, player_id, platform, is_active)
   VALUES (p_user_id, p_player_id, p_platform, true)

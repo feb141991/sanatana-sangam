@@ -112,4 +112,4 @@ BEGIN
   SELECT * INTO v_row FROM nitya_karma_log WHERE user_id = p_user_id AND date = p_date;
   RETURN v_row;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;

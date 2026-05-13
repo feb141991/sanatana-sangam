@@ -4,9 +4,14 @@
 -- These tables are ADDITIVE — they don't touch existing Sangam tables
 -- ============================================================
 
--- Enable required extensions
-CREATE EXTENSION IF NOT EXISTS vector;
-CREATE EXTENSION IF NOT EXISTS pg_cron;
+-- Enable required extensions in a dedicated schema
+CREATE SCHEMA IF NOT EXISTS extensions;
+CREATE EXTENSION IF NOT EXISTS vector SCHEMA extensions;
+CREATE EXTENSION IF NOT EXISTS pg_cron SCHEMA extensions;
+
+GRANT USAGE ON SCHEMA extensions TO public;
+GRANT USAGE ON SCHEMA extensions TO anon;
+GRANT USAGE ON SCHEMA extensions TO authenticated;
 
 -- ============================================================
 -- 1. Event log — raw behavioural data
@@ -132,7 +137,7 @@ CREATE INDEX idx_scripture_text ON scripture_chunks(text_id, chapter, verse);
 -- Vector similarity search index
 CREATE INDEX idx_scripture_embedding
   ON scripture_chunks
-  USING ivfflat (embedding vector_cosine_ops)
+  USING ivfflat (embedding extensions.vector_cosine_ops)
   WITH (lists = 50);
 
 -- Public read access for scripture
@@ -232,10 +237,12 @@ BEGIN
     sc.translation,
     sc.commentary,
     sc.tags,
-    1 - (sc.embedding <=> query_embedding) AS similarity
+    1 - (sc.embedding extensions.<=> query_embedding) AS similarity
   FROM scripture_chunks sc
-  WHERE 1 - (sc.embedding <=> query_embedding) > match_threshold
-  ORDER BY sc.embedding <=> query_embedding
+  WHERE 1 - (sc.embedding extensions.<=> query_embedding) > match_threshold
+  ORDER BY sc.embedding extensions.<=> query_embedding
   LIMIT match_count;
 END;
-$$;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;

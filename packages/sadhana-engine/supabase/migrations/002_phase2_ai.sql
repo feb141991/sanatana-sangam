@@ -108,7 +108,9 @@ BEGIN
   ORDER BY similarity DESC
   LIMIT match_count;
 END;
-$$;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
 
 -- ── 3. Full-text search index on scripture_chunks ──
 -- Uses a stored generated column so the index expression is IMMUTABLE.

@@ -316,7 +316,9 @@ BEGIN
 
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
 
 DROP TRIGGER IF EXISTS trg_verse_mastery_after_review ON pathshala_recitation_reviews;
 CREATE TRIGGER trg_verse_mastery_after_review
@@ -669,7 +671,9 @@ BEGIN
     );
   END IF;
 END;
-$$;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
 
 -- Award a badge if not already earned
 CREATE OR REPLACE FUNCTION award_badge_if_earned(
@@ -692,7 +696,9 @@ BEGIN
 
   RETURN FOUND;
 END;
-$$;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
 
 -- ============================================================
 -- DONE
