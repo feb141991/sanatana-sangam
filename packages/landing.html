@@ -185,6 +185,22 @@ body.landing-entered #explore-btn {
 @keyframes pulseGlow { 0%,100%{box-shadow:0 0 0 0 rgba(216,138,28,0)} 50%{box-shadow:0 0 24px rgba(216,138,28,0.10)} }
 #main-page { min-height:100vh; }
 
+/* ── LOGO ANIMATION — Infinity + Bindu ─────────────────────────────────── */
+#logo-anim { margin-bottom:4px; display:flex; justify-content:center; align-items:center; }
+#logo-anim-svg { overflow:visible; display:block; margin:0 auto; }
+/* Infinity group scales to bindu — collapses/expands */
+#inf-g { transform-box:fill-box; transform-origin:50% 50%; }
+/* Bindu pulsed by JS */
+#inf-bindu { transition: filter 0.12s ease; }
+/* Spark lines burst at bindu moment */
+@keyframes sparkFade {
+  0%   { opacity:0.88; }
+  55%  { opacity:0.40; }
+  100% { opacity:0; transform:scale(1.6) translateY(-2px); }
+}
+/* Nav logo micro-infinity */
+.nav-logo-icon #nl-inf { filter:drop-shadow(0 0 3px rgba(200,146,74,0.6)); }
+
 /* ── HERO ─────────────────────────────────────────────────────────────── */
 .hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden; padding:120px 40px 80px; text-align:center; }
 .hero-glow { position:absolute; inset:0; pointer-events:none; background: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(216,138,28,0.10) 0%, transparent 65%), radial-gradient(ellipse 55% 40% at 15% 85%, rgba(216,138,28,0.06) 0%, transparent 60%), radial-gradient(ellipse 50% 50% at 85% 70%, rgba(192,96,122,0.05) 0%, transparent 60%); }
@@ -703,7 +719,97 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
   <canvas id="sky-canvas"></canvas>
   <div id="celebration-layer" aria-hidden="true"></div>
   <div id="splash-content">
-    <div id="splash-deva">शून्य</div>
+
+    <!-- ── Animated Infinity Logo ──────────────────────────────────────── -->
+    <div id="logo-anim">
+      <!--
+        The lemniscate path crosses at (200,140) with ~35° diagonal tangents —
+        the key that separates a proper ∞ from a figure-8.
+        Departure from centre: direction (33,-38) → upper-right at 49°
+        Arrival back at centre: mirror direction — smooth, continuous crossing.
+        Width 210px (95→305), height 82px (98→180), ratio ≈ 2.56:1.
+      -->
+      <svg id="logo-anim-svg" viewBox="60 80 280 160" width="min(340px,82vw)" height="auto" aria-hidden="true">
+        <defs>
+          <radialGradient id="bindu-grd" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#FFF5C0" stop-opacity="1"/>
+            <stop offset="35%"  stop-color="#F0A030" stop-opacity="0.85"/>
+            <stop offset="100%" stop-color="#D88A1C" stop-opacity="0"/>
+          </radialGradient>
+          <!-- Soft outer glow filter for the stroke -->
+          <filter id="inf-glow" x="-40%" y="-80%" width="180%" height="260%">
+            <feGaussianBlur stdDeviation="5"  result="b1"/>
+            <feGaussianBlur stdDeviation="14" result="b2"/>
+            <feColorMatrix in="b1" type="matrix"
+              values="1.2 0.6 0 0 0.05  0.5 0.3 0 0 0  0 0 0 0 0  0 0 0 0.55 0" result="g1"/>
+            <feColorMatrix in="b2" type="matrix"
+              values="1.0 0.5 0 0 0   0.4 0.2 0 0 0  0 0 0 0 0  0 0 0 0.22 0" result="g2"/>
+            <feMerge><feMergeNode in="g2"/><feMergeNode in="g1"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- ── Infinity lemniscate — 4-segment proper bezier crossing ── -->
+        <g id="inf-g">
+          <!-- Halo / soft depth shadow -->
+          <path
+            d="M 200,140 C 233,102 305,98  305,140
+                        C 305,182 233,178 200,140
+                        C 167,102 95,98   95,140
+                        C 95,182  167,178 200,140"
+            fill="none" stroke="#7A4800" stroke-width="10"
+            stroke-linecap="round" stroke-linejoin="round" opacity="0.14"
+          />
+          <!-- Wide amber glow layer -->
+          <path
+            d="M 200,140 C 233,102 305,98  305,140
+                        C 305,182 233,178 200,140
+                        C 167,102 95,98   95,140
+                        C 95,182  167,178 200,140"
+            fill="none" stroke="#D88A1C" stroke-width="11"
+            stroke-linecap="round" opacity="0.09"
+          />
+          <!-- Main stroke — proper lemniscate with diagonal crossing -->
+          <path id="inf-path"
+            d="M 200,140 C 233,102 305,98  305,140
+                        C 305,182 233,178 200,140
+                        C 167,102 95,98   95,140
+                        C 95,182  167,178 200,140"
+            fill="none"
+            stroke="#D88A1C"
+            stroke-width="4.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            filter="url(#inf-glow)"
+          />
+          <!-- Specular highlight — thin warm-white thread on upper edge -->
+          <path
+            d="M 200,140 C 233,102 305,98  305,140
+                        C 305,182 233,178 200,140
+                        C 167,102 95,98   95,140
+                        C 95,182  167,178 200,140"
+            fill="none" stroke="#FFE090" stroke-width="1.2"
+            stroke-linecap="round" opacity="0.45"
+            id="inf-highlight"
+          />
+        </g>
+
+        <!-- ── Spark lines at bindu collapse ── -->
+        <g id="inf-sparks"/>
+
+        <!-- ── Bindu — the cosmic crossing point ── -->
+        <circle id="inf-bindu-halo" cx="200" cy="140" r="22" fill="url(#bindu-grd)" opacity="0"/>
+        <circle id="inf-bindu"      cx="200" cy="140" r="4"  fill="#F0A030"/>
+
+        <!-- शून्य -->
+        <text x="200" y="228"
+          font-family="'Noto Serif Devanagari', serif"
+          font-size="17" font-weight="400"
+          fill="rgba(216,138,28,0.62)" text-anchor="middle" letter-spacing="5"
+        >शून्य</text>
+      </svg>
+    </div>
+    <!-- ──────────────────────────────────────────────────────────────────── -->
+
     <h1 id="splash-title">Find your <em>infinite.</em></h1>
     <div id="splash-trads">
       <span class="s-trad hindu" title="Hindu">ॐ</span>
@@ -813,16 +919,24 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 <!-- ── NAV ──────────────────────────────────────────────────────── -->
 <nav id="nav">
   <a class="nav-logo" href="#">
-    <svg class="nav-logo-icon" viewBox="0 0 32 32" fill="none">
-      <circle cx="16" cy="16" r="14" stroke="#C8924A" stroke-width="1"/>
-      <ellipse cx="16" cy="8" rx="4" ry="7" fill="#C8924A" opacity=".8"/>
-      <ellipse cx="16" cy="8" rx="4" ry="7" transform="rotate(60 16 16)" fill="#C8924A" opacity=".65"/>
-      <ellipse cx="16" cy="8" rx="4" ry="7" transform="rotate(120 16 16)" fill="#C8924A" opacity=".5"/>
-      <ellipse cx="16" cy="8" rx="4" ry="7" transform="rotate(180 16 16)" fill="#C8924A" opacity=".8"/>
-      <ellipse cx="16" cy="8" rx="4" ry="7" transform="rotate(240 16 16)" fill="#C8924A" opacity=".65"/>
-      <ellipse cx="16" cy="8" rx="4" ry="7" transform="rotate(300 16 16)" fill="#C8924A" opacity=".5"/>
-      <circle cx="16" cy="16" r="5" fill="#3E2A1F"/>
-      <text x="16" y="20" font-family="Noto Serif Devanagari" font-size="7" fill="#C8924A" text-anchor="middle">ॐ</text>
+    <svg class="nav-logo-icon" viewBox="0 0 32 32" fill="none" style="overflow:visible;">
+      <!-- Chakra rim -->
+      <circle cx="16" cy="16" r="13.5" stroke="#C8924A" stroke-width="1.2" opacity="0.5"/>
+      <!-- 8 main spokes of the chakra -->
+      <g stroke="#C8924A" stroke-width="0.7" opacity="0.35">
+        <line x1="16" y1="5"  x2="16" y2="9.5"/>  <line x1="16" y1="22.5" x2="16" y2="27"/>
+        <line x1="5"  y1="16" x2="9.5" y2="16"/>  <line x1="22.5" y1="16" x2="27" y2="16"/>
+        <line x1="7.8" y1="7.8" x2="11" y2="11"/>  <line x1="21" y1="21" x2="24.2" y2="24.2"/>
+        <line x1="24.2" y1="7.8" x2="21" y2="11"/> <line x1="11" y1="21" x2="7.8" y2="24.2"/>
+      </g>
+      <!-- Infinity mark -->
+      <path id="nl-inf"
+        d="M 16,16 C 16,12.5 20.5,12.5 20.5,16 C 20.5,19.5 16,19.5 16,16 C 16,12.5 11.5,12.5 11.5,16 C 11.5,19.5 16,19.5 16,16"
+        stroke="#C8924A" stroke-width="2" fill="none" stroke-linecap="round"
+        style="filter:drop-shadow(0 0 3px rgba(200,146,74,0.7));"
+      />
+      <!-- Bindu -->
+      <circle cx="16" cy="16" r="1.8" fill="#C8924A"/>
     </svg>
     <span class="nav-logo-text">Shoo<span>naya</span></span>
   </a>
@@ -951,7 +1065,6 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 #gc-roll-count { font-size:11px; color:var(--ink-soft); text-align:center; }
 </style>
 
-<!-- Celebration layer -->
 <div id="gc-fs-wrap">
   <!-- Celebration layers -->
   <div id="gc-celebration"></div>
@@ -3114,6 +3227,119 @@ window.switchShloka    = switchShloka;
     rawMY = (e.clientY - H / 2) / H;
   });
   window._stopSkyCanvas = () => { cancelAnimationFrame(rafId); };
+})();
+
+/* ─── SPLASH LOGO — Infinity + Bindu Animation ─────────────────────────── */
+(function () {
+  const infG   = document.getElementById('inf-g');
+  const infP   = document.getElementById('inf-path');
+  const infHL  = document.getElementById('inf-highlight');
+  const bindu  = document.getElementById('inf-bindu');
+  const bindoH = document.getElementById('inf-bindu-halo');
+  const sparkG = document.getElementById('inf-sparks');
+  if (!infP) return;
+
+  /* ── Mirror dashoffset to highlight layer too ───────────────────────────── */
+  /* ── Measure true path length for dashoffset animation ─────────────────── */
+  const L = infP.getTotalLength();
+  infP.style.strokeDasharray  = L;
+  infP.style.strokeDashoffset = L;
+  if (infHL) { infHL.style.strokeDasharray = L; infHL.style.strokeDashoffset = L; }
+
+  /* ── Easing helpers ─────────────────────────────────────────────────────── */
+  function eIO(t)  { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; } // ease-in-out quad
+  function eI3(t)  { return t*t*t; }                            // ease-in cubic
+  function eO3(t)  { return 1 - Math.pow(1-t, 3); }            // ease-out cubic
+
+  /* ── Spark burst at bindu collapse ─────────────────────────────────────── */
+  const CX = 200, CY = 140;
+  let lastBinduPhase = false;
+  function sparkBurst() {
+    if (!sparkG) return;
+    sparkG.innerHTML = '';
+    for (let i = 0; i < 12; i++) {
+      const a   = (i * 30) * Math.PI / 180;
+      const len = 16 + Math.random() * 14;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', CX.toString());
+      line.setAttribute('y1', CY.toString());
+      line.setAttribute('x2', (CX + Math.cos(a) * len).toFixed(1));
+      line.setAttribute('y2', (CY + Math.sin(a) * len).toFixed(1));
+      line.setAttribute('stroke', i % 3 === 0 ? '#FFF5C0' : '#E09030');
+      line.setAttribute('stroke-width', (0.8 + Math.random() * 0.8).toFixed(1));
+      line.setAttribute('opacity', '0');
+      line.style.animation = `sparkFade ${0.45 + Math.random() * 0.25}s ease ${i * 0.025}s forwards`;
+      sparkG.appendChild(line);
+    }
+  }
+
+  /* ── Main animation loop ─────────────────────────────────────────────────
+     Cycle = 9 000 ms
+     0.00–0.24 → DRAW   (dashoffset: L→0, scale 1, bindu dim)
+     0.24–0.46 → HOLD   (fully drawn, scale 1, bindu steady)
+     0.46–0.62 → COLLAPSE (scale 1→0.03, bindu blooms)
+     0.62–0.68 → BINDU   (scale 0.03, bindu peak, sparks)
+     0.68–0.82 → EXPAND  (scale 0.03→1, bindu dims)
+     0.82–0.95 → ERASE   (dashoffset: 0→L, scale 1)
+     0.95–1.00 → PAUSE
+  ─────────────────────────────────────────────────────────────────────────── */
+  const CYCLE = 9000;
+  let startT = null;
+
+  function frame(ts) {
+    if (!startT) startT = ts;
+    const p = ((ts - startT) % CYCLE) / CYCLE;
+
+    let offset, scale, bindR, bindOp, haloOp;
+    const inBindu = p >= 0.60 && p <= 0.70;
+
+    if (!lastBinduPhase && inBindu) sparkBurst();
+    lastBinduPhase = inBindu;
+
+    if (p < 0.24) {
+      const pp = eIO(p / 0.24);
+      offset = L * (1 - pp); scale = 1;
+      bindR = 4.5; bindOp = 0.65; haloOp = 0;
+    } else if (p < 0.46) {
+      offset = 0; scale = 1;
+      bindR = 4.5; bindOp = 0.72; haloOp = 0;
+    } else if (p < 0.62) {
+      const pp = eI3((p - 0.46) / 0.16);
+      offset = 0; scale = Math.max(0.025, 1 - pp * 0.975);
+      bindR = 4.5 + pp * 13; bindOp = 0.72 + pp * 0.28; haloOp = pp * 0.82;
+    } else if (p < 0.68) {
+      offset = 0; scale = 0.025;
+      bindR = 17.5; bindOp = 1; haloOp = 0.92;
+    } else if (p < 0.82) {
+      const pp = eO3((p - 0.68) / 0.14);
+      offset = 0; scale = 0.025 + pp * 0.975;
+      bindR = 17.5 - pp * 13; bindOp = 1 - pp * 0.28; haloOp = 0.92 * (1 - pp);
+    } else if (p < 0.95) {
+      const pp = eIO((p - 0.82) / 0.13);
+      offset = L * pp; scale = 1;
+      bindR = 4.5; bindOp = 0.65; haloOp = 0;
+    } else {
+      offset = L; scale = 1;
+      bindR = 4.5; bindOp = 0.3; haloOp = 0;
+    }
+
+    infP.style.strokeDashoffset = offset;
+    if (infHL) infHL.style.strokeDashoffset = offset;
+    infG.style.transform = `scale(${scale.toFixed(4)})`;
+    bindu.setAttribute('r', bindR.toFixed(2));
+    bindu.style.opacity  = bindOp;
+    if (bindoH) bindoH.style.opacity = haloOp;
+
+    // Dynamic glow on bindu
+    const glowR = (bindR * 1.9).toFixed(0);
+    const glowI = (bindR * 0.6).toFixed(0);
+    bindu.style.filter = bindR > 8
+      ? `drop-shadow(0 0 ${glowR}px rgba(255,240,160,0.98)) drop-shadow(0 0 ${glowI}px #E09030)`
+      : `drop-shadow(0 0 5px rgba(216,138,28,0.52))`;
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
 })();
 
 /* ─── SPLASH COUNTDOWN ──────────────────────────────────────────────────── */

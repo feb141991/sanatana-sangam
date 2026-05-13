@@ -52,9 +52,9 @@ function VerseCard({
     <motion.div
       className="rounded-[1.6rem] p-4 relative overflow-hidden border"
       style={{
-        background: 'linear-gradient(150deg, rgba(28,20,12,0.98), rgba(20,14,8,0.97))',
-        borderColor: `${accentColour}28`,
-        boxShadow: '0 12px 28px rgba(0,0,0,0.22)',
+        background: 'var(--card-bg)',
+        borderColor: 'var(--card-border)',
+        boxShadow: 'var(--shadow-soft)',
       }}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -89,7 +89,7 @@ function VerseCard({
           fontFamily: 'var(--font-devanagari), "Noto Sans Devanagari", sans-serif',
           fontSize: '1.15rem',
           fontWeight: 500,
-          color: 'rgba(245, 225, 185, 0.97)',
+          color: 'var(--divine-text)',
           lineHeight: 2,
           letterSpacing: '0.02em',
         }}
@@ -100,7 +100,7 @@ function VerseCard({
       {/* Transliteration — clearly secondary */}
       {getTransliteration(result.entry.original, result.entry.transliteration, transliterationLanguage ?? 'en') !== result.entry.original && (
         <p className="relative italic text-[11px] mb-3 leading-relaxed"
-          style={{ color: 'rgba(200,160,100,0.55)', letterSpacing: '0.01em' }}
+          style={{ color: 'var(--text-dim)', letterSpacing: '0.01em' }}
         >
           {getTransliteration(result.entry.original, result.entry.transliteration, transliterationLanguage ?? 'en')}
         </p>
@@ -200,9 +200,9 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
           onClick={() => router.back()}
           aria-label="Go back"
           className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all"
-          style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.20)' }}
+          style={{ background: 'var(--brand-primary-soft)', border: '1px solid var(--card-border)' }}
         >
-          <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.80)' }} />
+          <ChevronLeft size={18} style={{ color: 'var(--brand-primary)' }} />
         </button>
         <div className="flex-1 min-w-0">
           <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'var(--text-dim)' }}>
@@ -216,7 +216,7 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
           <button
             onClick={reset}
             className="w-8 h-8 rounded-full flex items-center justify-center"
-            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)' }}
+            style={{ background: 'var(--brand-primary-soft)', border: '1px solid var(--card-border)' }}
           >
             <RotateCcw size={13} style={{ color: 'var(--text-dim)' }} />
           </button>
@@ -243,12 +243,12 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
                 style={{
                   ['--mood-colour-soft' as string]: `${mood.colour}30`,
                   background: isActive
-                    ? `linear-gradient(145deg, ${mood.colour}2c, rgba(255,245,214,0.08))`
-                    : `linear-gradient(145deg, ${mood.colour}18, rgba(255,245,214,0.04))`,
-                  border: `1px solid ${isActive ? mood.colour + '66' : mood.colour + '32'}`,
+                    ? `linear-gradient(145deg, ${mood.colour}2c, var(--card-bg))`
+                    : `linear-gradient(145deg, ${mood.colour}12, var(--card-bg-soft))`,
+                  border: `1px solid ${isActive ? mood.colour + '66' : 'var(--card-border)'}`,
                   boxShadow: isActive
-                    ? `0 0 0 2px ${mood.colour}24, 0 14px 28px ${mood.colour}18`
-                    : `0 8px 18px ${mood.colour}0d`,
+                    ? `0 0 0 2px ${mood.colour}24, var(--shadow-soft)`
+                    : 'var(--shadow-soft)',
                   opacity: loading && !isActive ? 0.45 : 1,
                 }}
                 animate={prefersReducedMotion ? undefined : { scale: isActive ? 1.01 : 1 }}
@@ -293,7 +293,7 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
                 style={{
                   height: '120px',
                   background: 'var(--card-bg)',
-                  borderColor: 'rgba(255,255,255,0.06)',
+                  borderColor: 'var(--card-border)',
                 }}
               />
             ))}
@@ -371,8 +371,9 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
             <div
               className="rounded-[1.7rem] p-5 text-center"
               style={{
-                background: 'linear-gradient(150deg, rgba(28,20,12,0.80), rgba(20,14,8,0.70))',
-                border: '1px solid rgba(200,146,74,0.12)',
+                background: 'var(--card-bg)',
+                border: '1px solid var(--card-border)',
+                boxShadow: 'var(--shadow-soft)',
               }}
             >
               <p className="text-3xl mb-3">🌿</p>

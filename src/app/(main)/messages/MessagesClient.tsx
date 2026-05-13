@@ -12,7 +12,8 @@ import { MobileList, MobileListItem, MobileScreen, MobileScreenHeader } from '@s
 function ThreadKindPill({ kind }: { kind: MessageThread['kind'] }) {
   const label = kind === 'kul' ? 'Kul' : kind === 'mandali' ? 'Mandali' : 'Direct';
   return (
-    <span className="type-chip rounded-full border border-white/8 bg-white/[0.05] px-2.5 py-1 text-[color:var(--text-cream)]">
+    <span className="type-chip rounded-full border px-2.5 py-1 text-[color:var(--text-cream)]"
+      style={{ borderColor: 'var(--card-border)', background: 'var(--card-bg-soft)' }}>
       {label}
     </span>
   );
@@ -22,11 +23,12 @@ function MessageBubble({ message }: { message: ThreadMessage }) {
   return (
     <div className={`flex ${message.isCurrentUser ? 'justify-end' : 'justify-start'}`}>
       <div
-        className={`max-w-[85%] rounded-[1.4rem] px-4 py-3 ${
+        className={`max-w-[85%] rounded-[1.4rem] px-4 py-3 border ${
           message.isCurrentUser
-            ? 'bg-[color:var(--surface-raised)] border border-black/5 dark:border-white/8'
-            : 'bg-black/5 dark:bg-white/[0.04] border border-black/5 dark:border-white/6'
+            ? 'bg-[color:var(--surface-raised)]'
+            : 'bg-[color:var(--card-bg-soft)]'
         }`}
+        style={{ borderColor: 'var(--card-border)' }}
       >
         {!message.isCurrentUser ? (
           <p className="type-card-label mb-1 text-[color:var(--text-muted-warm)]">{message.senderName}</p>

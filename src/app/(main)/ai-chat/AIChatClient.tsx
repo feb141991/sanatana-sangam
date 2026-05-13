@@ -120,13 +120,14 @@ function MessageBubble({ msg }: { msg: Message }) {
           }`}
           style={isUser
             ? {
-                background: 'rgba(200,100,60,0.22)',
-                border: '1px solid rgba(200,100,60,0.28)',
+                background: 'var(--brand-primary-soft)',
+                border: '1px solid var(--card-border)',
+                color: 'var(--divine-text)',
               }
             : {
-                background: 'rgba(38, 30, 18, 0.85)',
-                borderColor: 'rgba(200,146,74,0.20)',
-                color: 'var(--text-cream)',
+                background: 'var(--card-bg)',
+                borderColor: 'var(--card-border)',
+                color: 'var(--divine-text)',
               }
           }
         >
@@ -157,9 +158,9 @@ function MessageBubble({ msg }: { msg: Message }) {
             <span
               className="text-[9px] rounded-full px-2 py-1 font-medium border transition-colors"
               style={{
-                background: 'rgba(200,146,74,0.12)',
-                color: 'rgba(200,146,74,0.95)',
-                borderColor: 'rgba(200,146,74,0.25)',
+                background: 'var(--brand-primary-soft)',
+                color: 'var(--brand-primary)',
+                borderColor: 'var(--card-border)',
               }}
             >
               📖 Dharma-sourced
@@ -178,7 +179,7 @@ function TypingIndicator() {
       <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-sm bg-gradient-to-br from-amber-400 to-orange-500 text-white">
         ✨
       </div>
-      <div className="border rounded-2xl rounded-tl-sm px-4 py-3" style={{ background: 'rgba(38, 30, 18, 0.95)', borderColor: 'rgba(200,146,74,0.16)' }}>
+      <div className="border rounded-2xl rounded-tl-sm px-4 py-3" style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
         <div className="flex gap-1 items-center h-5">
           <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce" style={{ animationDelay: '0ms' }} />
           <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -418,10 +419,10 @@ export default function AIChatClient({
               border: '1px solid rgba(200,146,74,0.20)',
             }}
           >
-            <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.80)' }} />
+            <ChevronLeft size={18} style={{ color: 'var(--brand-primary)' }} />
           </button>
           <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl"
-            style={{ background: 'linear-gradient(135deg, #ff770220, #d4a01720)' }}>
+            style={{ background: 'var(--brand-primary-soft)' }}>
             ✨
           </div>
           <div>
@@ -435,7 +436,7 @@ export default function AIChatClient({
             </div>
             {contextLabel ? (
               <p className="text-[10px] font-medium px-2 py-0.5 rounded-full inline-block mt-0.5"
-                style={{ background: 'rgba(200,146,74,0.14)', color: 'rgba(200,146,74,0.85)' }}>
+                style={{ background: 'var(--brand-primary-soft)', color: 'var(--brand-primary)' }}>
                 {contextLabel}
               </p>
             ) : (
@@ -446,7 +447,7 @@ export default function AIChatClient({
         {!isEmpty && (
           <button onClick={clearChat}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs border transition"
-            style={{ background: 'rgba(30,22,12,0.7)', borderColor: 'rgba(200,146,74,0.18)', color: 'rgba(200,146,74,0.6)' }}>
+            style={{ background: 'var(--surface-raised)', borderColor: 'var(--card-border)', color: 'var(--text-dim)' }}>
             <RotateCcw size={12} />
             New chat
           </button>
@@ -479,7 +480,7 @@ export default function AIChatClient({
                   {suggestions.slice(0, 4).map(s => (
                     <button key={s} onClick={() => sendMessage(s)}
                       className="text-left px-4 py-2.5 rounded-xl text-sm border transition"
-                      style={{ background: 'rgba(38,30,18,0.8)', borderColor: 'rgba(200,146,74,0.18)', color: 'rgba(240,210,160,0.75)', borderLeft: '2px solid rgba(200,146,74,0.30)' }}>
+                      style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)', color: 'var(--divine-text)', borderLeft: '2px solid var(--brand-primary)' }}>
                       {s}
                     </button>
                   ))}
@@ -510,7 +511,7 @@ export default function AIChatClient({
         )}
 
         <div className="flex items-end gap-2">
-          <div className="flex-1 rounded-2xl border transition overflow-hidden" style={{ background: 'rgba(30,22,12,0.9)', borderColor: 'rgba(200,146,74,0.2)' }}>
+          <div className="flex-1 rounded-2xl border transition overflow-hidden" style={{ background: 'var(--surface-raised)', borderColor: 'var(--card-border)' }}>
             <textarea
               ref={inputRef}
               value={input}
@@ -519,7 +520,7 @@ export default function AIChatClient({
               placeholder="Ask anything… Shift+Enter for new line"
               rows={1}
               disabled={loading}
-              style={{ resize: 'none', maxHeight: '120px', color: 'rgba(240,210,160,0.9)', background: 'transparent' }}
+              style={{ resize: 'none', maxHeight: '120px', color: 'var(--divine-text)', background: 'transparent' }}
               className="w-full px-4 py-3 text-sm outline-none disabled:opacity-60"
               onInput={e => {
                 const el = e.currentTarget;
