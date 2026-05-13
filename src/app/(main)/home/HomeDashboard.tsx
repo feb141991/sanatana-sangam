@@ -1529,11 +1529,15 @@ export default function HomeDashboard({
     festival,
     dbThemes: heroThemes,
   });
+  
+  const isFestivalTheme = Boolean(heroTheme.festivalSlugs && heroTheme.festivalSlugs.length > 0);
+  const activeCoverUrl = isFestivalTheme ? heroTheme.heroImage : (customCover || heroTheme.heroImage);
+  
   const heroFallback = meta.heroFallback;
 
   useEffect(() => {
     setHeroImageFailed(false);
-  }, [heroTheme.heroImage]);
+  }, [activeCoverUrl]);
 
   const divineFeatureCards: Array<{
     title: string;
@@ -1615,13 +1619,13 @@ export default function HomeDashboard({
           >
             {!heroImageFailed ? (
               <Image
-                src={customCover || heroTheme.heroImage}
-                alt={customCover ? "Your custom cover" : heroTheme.heroAlt}
+                src={activeCoverUrl}
+                alt={(!isFestivalTheme && customCover) ? "Your custom cover" : heroTheme.heroAlt}
                 fill
                 priority
                 sizes="100vw"
                 className="object-cover object-center divine-hero-image"
-                style={{ objectPosition: customCover ? 'center' : heroTheme.objectPosition }}
+                style={{ objectPosition: (!isFestivalTheme && customCover) ? 'center' : heroTheme.objectPosition }}
                 onError={() => setHeroImageFailed(true)}
               />
             ) : (
@@ -1637,10 +1641,31 @@ export default function HomeDashboard({
             <div className="divine-poster-motif divine-poster-motif-om" aria-hidden="true">{heroFallback.mark}</div>
             
             {/* Custom Cover Upload Button */}
-            <label className="absolute bottom-6 right-6 z-50 w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/40 transition-colors shadow-lg" aria-label="Change Cover Photo">
-              <Pencil size={16} className="text-white/90" />
-              <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
-            </label>
+            <div className="absolute bottom-6 right-6 z-50 flex gap-2">
+              {customCover && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCustomCover(null);
+                    localStorage.removeItem('user_cover_photo');
+                    toast.success('Restored default cover 🙏');
+                  }}
+                  className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/60 transition-colors shadow-lg"
+                  aria-label="Remove Custom Cover"
+                >
+                  <X size={16} className="text-white/90" />
+                </button>
+              )}
+              <label 
+                className="w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/40 transition-colors shadow-lg" 
+                aria-label="Change Cover Photo"
+                onClick={e => e.stopPropagation()}
+              >
+                <Pencil size={16} className="text-white/90" />
+                <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
+              </label>
+            </div>
             
           </motion.div>
 

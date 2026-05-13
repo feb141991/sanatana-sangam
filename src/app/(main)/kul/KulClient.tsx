@@ -606,10 +606,31 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
           
           {/* Edit Cover Button */}
           {myRole === 'guardian' && (
-            <label className="absolute top-6 right-6 z-50 w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/40 transition-colors shadow-lg" aria-label="Change Kul Cover">
-              <Pencil size={16} className="text-white/90" />
-              <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
-            </label>
+            <div className="absolute top-6 right-6 z-50 flex gap-2">
+              {customCover && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCustomCover(null);
+                    localStorage.removeItem(`kul_cover_${kul.id}`);
+                    toast.success('Restored default cover 🙏');
+                  }}
+                  className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/60 transition-colors shadow-lg"
+                  aria-label="Remove Kul Cover"
+                >
+                  <X size={16} className="text-white/90" />
+                </button>
+              )}
+              <label 
+                className="w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/40 transition-colors shadow-lg" 
+                aria-label="Change Kul Cover"
+                onClick={e => e.stopPropagation()}
+              >
+                <Pencil size={16} className="text-white/90" />
+                <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
+              </label>
+            </div>
           )}
         </motion.div>
 

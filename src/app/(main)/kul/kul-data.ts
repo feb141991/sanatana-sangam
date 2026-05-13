@@ -24,7 +24,7 @@ export async function getKulPageData() {
 
   if (kulId) {
     const [kulRes, membersRes, tasksRes, msgsRes, familyRes, eventsRes] = await Promise.all([
-      supabase.from('kuls').select('*').eq('id', kulId).single(),
+      supabase.from('kuls').select('*').eq('id', kulId).maybeSingle(),
       supabase.from('kul_members')
         .select('id, role, joined_at, user_id, profiles!kul_members_user_id_fkey(id, full_name, username, avatar_url, tradition, sampradaya, shloka_streak, spiritual_level, bio, city, country, home_town, gotra, kul_devata)')
         .eq('kul_id', kulId),
@@ -48,12 +48,18 @@ export async function getKulPageData() {
         .order('event_date', { ascending: true }),
     ]);
 
-    kul = kulRes.data;
-    members = membersRes.data ?? [];
-    tasks = tasksRes.data ?? [];
-    messages = (msgsRes.data ?? []).reverse();
-    familyMembers = familyRes.data ?? [];
-    kulEvents = eventsRes.data ?? [];
+    if (!kulRes.data && !kulRes.error) {
+      // The Kul was deleted, but profile still had kul_id. Self-heal!
+      await supabase.from('profiles').update({ kul_id: null }).eq('id', user.id);
+      await supabase.from('kul_members').delete().eq('user_id', user.id);
+    } else {
+      kul = kulRes.data;
+      members = membersRes.data ?? [];
+      tasks = tasksRes.data ?? [];
+      messages = (msgsRes.data ?? []).reverse();
+      familyMembers = familyRes.data ?? [];
+      kulEvents = eventsRes.data ?? [];
+    }
 
     const myMembership = members.find((m: any) => m.user_id === user.id);
     if (myMembership?.role === 'guardian') myRole = 'guardian';
