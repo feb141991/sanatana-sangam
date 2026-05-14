@@ -166,6 +166,8 @@ export default function ProfileClient({
   const [blockedProfiles, setBlockedProfiles] = useState(initialBlockedProfiles);
   const [mutedProfiles, setMutedProfiles] = useState(initialMutedProfiles);
   const [hiddenItems, setHiddenItems] = useState(initialHiddenItems);
+  const [isDeleting, setIsDeleting] = useState((liveProfile as any)?.is_deleting ?? false);
+  const [deletionDate, setDeletionDate] = useState((liveProfile as any)?.deletion_requested_at ?? null);
 
   const [form, setForm] = useState({
     full_name:        liveProfile?.full_name        ?? '',
@@ -557,6 +559,65 @@ export default function ProfileClient({
 
     setHiddenItems((current) => current.filter((item) => !(item.content_type === contentType && item.content_id === contentId)));
     toast.success('Content restored to your feed.');
+  }
+
+  async function requestAccountDeletion() {
+    if (!confirm('Are you sure? Your account will be hidden and scheduled for permanent deletion in 30 days.')) return;
+    
+    setSaving(true);
+    try {
+      const now = new Date().toISOString();
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          is_deleting: true, 
+          deletion_requested_at: now 
+        })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      // Create admin task
+      await supabase.from('content_reports').insert({
+        reported_by: userId,
+        content_author_id: userId,
+        content_type: 'account_deletion',
+        content_id: userId,
+        reason: 'User requested account deletion. Cool-off period started.',
+        status: 'pending'
+      });
+
+      setIsDeleting(true);
+      setDeletionDate(now);
+      toast.success('Deletion scheduled. You have 30 days to cancel.');
+    } catch (err: any) {
+      toast.error(err.message || 'Request failed');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function cancelAccountDeletion() {
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          is_deleting: false, 
+          deletion_requested_at: null 
+        })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      setIsDeleting(false);
+      setDeletionDate(null);
+      toast.success('Welcome back! Your account deletion has been cancelled 🙏');
+    } catch (err: any) {
+      toast.error(err.message || 'Cancellation failed');
+    } finally {
+      setSaving(false);
+    }
   }
 
   const hasSafetyItems = blockedProfiles.length > 0 || mutedProfiles.length > 0 || hiddenItems.length > 0;
@@ -1220,6 +1281,35 @@ export default function ProfileClient({
               </div>
             </div>
           )}
+
+          {/* Account Deletion */}
+          <div className="pt-4 border-t border-white/5">
+            <p className="text-[10px] uppercase tracking-widest font-bold text-red-500/60 mb-3">Danger Zone</p>
+            {isDeleting ? (
+              <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 space-y-3">
+                <p className="text-xs text-red-400 font-medium">
+                  Account scheduled for deletion on {new Date(new Date(deletionDate!).getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}.
+                </p>
+                <button 
+                  onClick={cancelAccountDeletion}
+                  className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white hover:bg-white/10 transition-all"
+                >
+                  Cancel Deletion Request
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={requestAccountDeletion}
+                className="w-full flex items-center justify-between p-4 rounded-2xl bg-red-500/5 border border-red-500/10 text-red-500/60 hover:bg-red-500/10 transition-all"
+              >
+                <div className="flex flex-col items-start">
+                  <span className="text-[10px] font-bold uppercase tracking-wider">Delete Account</span>
+                  <span className="text-[9px] opacity-60">30-day cool-off period applies</span>
+                </div>
+                <AlertCircle size={16} />
+              </button>
+            )}
+          </div>
         </div>
       </BottomDrawer>
 

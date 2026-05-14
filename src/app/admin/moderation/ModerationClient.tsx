@@ -178,16 +178,22 @@ export default function ModerationClient({ initialReports }: { initialReports: R
                   {/* Content & Reason */}
                   <div className="flex-1 min-w-[200px] space-y-3">
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-[9px] font-bold uppercase tracking-widest theme-ink">
-                        {report.content_type}
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest ${report.content_type === 'account_deletion' ? 'bg-red-500 text-white' : 'bg-black/5 dark:bg-white/5 theme-ink'}`}>
+                        {report.content_type.replace('_', ' ')}
                       </span>
                       <span className="text-[10px] text-[var(--text-muted-warm)]">
                         {new Date(report.created_at).toLocaleDateString()}
                       </span>
                     </div>
-                    <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/10">
-                      <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-1">Reason: {report.reason}</p>
-                      <p className="text-sm text-[var(--text-muted-warm)] italic">&quot;Content ID: {report.content_id.slice(0, 8)}...&quot;</p>
+                    <div className={`p-4 rounded-2xl border ${report.content_type === 'account_deletion' ? 'bg-red-500/5 border-red-500/20' : 'bg-amber-500/5 border-amber-500/10'}`}>
+                      <p className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${report.content_type === 'account_deletion' ? 'text-red-600' : 'text-amber-600'}`}>
+                        {report.content_type === 'account_deletion' ? 'Action Required' : `Reason: ${report.reason}`}
+                      </p>
+                      <p className="text-sm text-[var(--text-muted-warm)] italic">
+                        {report.content_type === 'account_deletion' 
+                          ? 'Seeker has requested account deletion. Cool-off period (30 days) is active.'
+                          : `"${report.reason}" · Content ID: ${report.content_id.slice(0, 8)}...`}
+                      </p>
                     </div>
                   </div>
 
