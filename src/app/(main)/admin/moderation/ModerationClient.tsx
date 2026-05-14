@@ -39,24 +39,50 @@ export default function ModerationClient({ initialReports }: { initialReports: R
   const [filter, setFilter] = useState<'all' | 'pending' | 'resolved'>('all');
   const supabase = createClient();
 
-  const handleAction = async (reportId: string, action: 'resolve' | 'dismiss' | 'delete') => {
+  const handleAction = async (report: Report, action: 'resolve' | 'dismiss' | 'delete' | 'ban') => {
     try {
       if (action === 'delete') {
-        // Here you would implement content deletion logic
-        toast.success('Content marked for deletion');
+        let table = '';
+        switch (report.content_type) {
+          case 'thread': table = 'forum_threads'; break;
+          case 'reply':  table = 'forum_replies'; break;
+          case 'mandali_post': table = 'posts'; break;
+        }
+
+        if (table) {
+          const { error: delError } = await supabase
+            .from(table)
+            .delete()
+            .eq('id', report.content_id);
+          
+          if (delError) throw delError;
+          toast.success('Content permanently removed');
+        }
+      }
+
+      if (action === 'ban') {
+        const { error: banError } = await supabase
+          .from('profiles')
+          .update({ is_banned: true })
+          .eq('id', report.content_author_id);
+        
+        if (banError) throw banError;
+        toast.success('User has been banned from Shoonaya');
       }
 
       const { error } = await supabase
         .from('content_reports')
-        .update({ status: action === 'resolve' ? 'resolved' : 'dismissed' })
-        .eq('id', reportId);
+        .update({ status: action === 'dismiss' ? 'dismissed' : 'resolved' })
+        .eq('id', report.id);
 
       if (error) throw error;
 
-      setReports(prev => prev.filter(r => r.id !== reportId));
-      toast.success(`Report ${action}d successfully`);
-    } catch (error) {
-      toast.error('Action failed');
+      setReports(prev => prev.filter(r => r.id !== report.id));
+      if (action !== 'delete' && action !== 'ban') {
+        toast.success(`Report ${action}d successfully`);
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Action failed');
     }
   };
 
@@ -168,21 +194,28 @@ export default function ModerationClient({ initialReports }: { initialReports: R
                   {/* Actions */}
                   <div className="flex items-center gap-2">
                     <button 
-                      onClick={() => handleAction(report.id, 'dismiss')}
+                      onClick={() => handleAction(report, 'dismiss')}
                       className="p-3 rounded-2xl bg-black/5 dark:bg-white/5 text-[var(--text-muted-warm)] hover:bg-green-500/10 hover:text-green-500 transition-all"
                       title="Dismiss Report"
                     >
                       <CheckCircle size={20} />
                     </button>
                     <button 
-                      onClick={() => handleAction(report.id, 'delete')}
+                      onClick={() => handleAction(report, 'delete')}
                       className="p-3 rounded-2xl bg-black/5 dark:bg-white/5 text-[var(--text-muted-warm)] hover:bg-red-500/10 hover:text-red-500 transition-all"
                       title="Remove Content"
                     >
                       <Trash2 size={20} />
                     </button>
                     <button 
-                      onClick={() => handleAction(report.id, 'resolve')}
+                      onClick={() => handleAction(report, 'ban')}
+                      className="p-3 rounded-2xl bg-black/5 dark:bg-white/5 text-[var(--text-muted-warm)] hover:bg-red-700/10 hover:text-red-700 transition-all"
+                      title="Ban Author"
+                    >
+                      <UserMinus size={20} />
+                    </button>
+                    <button 
+                      onClick={() => handleAction(report, 'resolve')}
                       className="p-3 rounded-2xl bg-amber-500 text-white shadow-lg shadow-amber-500/20 hover:scale-105 transition-all"
                       title="Mark Resolved"
                     >
