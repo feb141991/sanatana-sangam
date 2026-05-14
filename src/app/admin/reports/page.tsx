@@ -12,6 +12,20 @@ import { motion } from 'framer-motion';
 
 export default function ReportCenter() {
   const [timeframe, setTimeframe] = useState('7d');
+  const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await fetch('/api/admin/stats');
+        const data = await res.json();
+        setStats(data);
+      } catch (err) {
+        console.error('Failed to fetch report stats');
+      }
+    }
+    fetchStats();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] pb-24 font-outfit">
@@ -50,24 +64,24 @@ export default function ReportCenter() {
         {/* Growth Overview */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <GrowthCard 
-            label="New Seekers" 
-            value="+1,242" 
+            label="Total Seekers" 
+            value={stats?.totalSeekers?.toLocaleString() || '...'} 
             trend="14.2%" 
             up={true} 
             icon={Users} 
             color="blue" 
           />
           <GrowthCard 
-            label="Daily Engagements" 
-            value="42.8k" 
+            label="Active Engagement" 
+            value={stats?.activeNow?.toLocaleString() || '...'} 
             trend="8.1%" 
             up={true} 
             icon={Activity} 
             color="emerald" 
           />
           <GrowthCard 
-            label="Moderation Load" 
-            value="14" 
+            label="Pending Reports" 
+            value={stats?.pendingReports?.toLocaleString() || '...'} 
             trend="22%" 
             up={false} 
             icon={ShieldAlert} 

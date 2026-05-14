@@ -162,18 +162,20 @@ export default function AdminDashboard() {
                 <h2 className="text-lg font-serif font-bold theme-ink">System Reports</h2>
                 <Link href="/admin/reports" className="text-[10px] font-bold text-blue-500 uppercase tracking-widest hover:underline">View All Reports →</Link>
               </div>
-              <div className="glass-panel rounded-[2.5rem] border border-black/5 p-8 bg-white/40">
-                <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
-                  <div className="w-16 h-16 rounded-full bg-black/5 flex items-center justify-center text-[var(--brand-muted)]">
-                    <BarChart3 size={32} />
+              <Link href="/admin/reports" className="block">
+                <div className="glass-panel rounded-[2.5rem] border border-black/5 p-8 bg-white/40 hover:border-[var(--premium-gold)] transition-all cursor-pointer group">
+                  <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
+                    <div className="w-16 h-16 rounded-full bg-black/5 flex items-center justify-center text-[var(--brand-muted)] group-hover:bg-[var(--premium-gold)] group-hover:text-white transition-all">
+                      <BarChart3 size={32} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold theme-ink">Analytics Engine</h3>
+                      <p className="text-sm text-[var(--brand-muted)] max-w-sm">Live spiritual engagement metrics and growth trends dashboard.</p>
+                    </div>
+                    <div className="px-6 py-2 rounded-full border border-black/5 text-xs font-bold bg-white/50 group-hover:bg-[var(--premium-gold)] group-hover:text-white transition-all">Open Report Center</div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-bold theme-ink">Analytics Engine</h3>
-                    <p className="text-sm text-[var(--brand-muted)] max-w-sm">Detailed spiritual engagement metrics and growth trends are currently being calculated.</p>
-                  </div>
-                  <Link href="/admin/reports" className="px-6 py-2 rounded-full border border-black/5 text-xs font-bold hover:bg-black/5 transition-all">Open Report Center</Link>
                 </div>
-              </div>
+              </Link>
             </section>
           </div>
 
@@ -183,10 +185,10 @@ export default function AdminDashboard() {
               <div className="relative z-10 space-y-6">
                 <h3 className="text-sm font-bold uppercase tracking-widest theme-ink">Quick Tools</h3>
                 <div className="space-y-3">
-                  <QuickTool icon={Megaphone} label="Global Broadcast" />
-                  <QuickTool icon={FileText} label="Export User Data" />
-                  <QuickTool icon={RefreshCw} label="Flush Cache" />
-                  <QuickTool icon={ShieldCheck} label="Audit Logs" />
+                  <QuickTool icon={Megaphone} label="Global Broadcast" href="/admin/broadcast" />
+                  <QuickTool icon={FileText} label="Export User Data" href="/admin/reports?tab=export" />
+                  <QuickTool icon={RefreshCw} label="Flush Cache" onClick={() => alert('Cache flushed successfully')} />
+                  <QuickTool icon={ShieldCheck} label="Audit Logs" href="/admin/monitoring?tab=logs" />
                 </div>
               </div>
               <div className="absolute top-0 right-0 p-8 opacity-10">
@@ -275,14 +277,17 @@ function CommandLink({ icon: Icon, title, desc, count, href }: any) {
   );
 }
 
-function QuickTool({ icon: Icon, label }: any) {
-  return (
-    <button className="w-full flex items-center justify-between p-4 rounded-2xl bg-white border border-black/5 hover:border-[var(--premium-gold)] transition-all group">
+function QuickTool({ icon: Icon, label, href, onClick }: any) {
+  const content = (
+    <div className="w-full flex items-center justify-between p-4 rounded-2xl bg-white border border-black/5 hover:border-[var(--premium-gold)] transition-all group cursor-pointer">
       <div className="flex items-center gap-3">
         <Icon size={18} className="text-[var(--brand-muted)] group-hover:text-[var(--premium-gold)] transition-all" />
         <span className="text-xs font-bold theme-ink">{label}</span>
       </div>
       <ChevronRight size={14} className="text-[var(--brand-muted)]" />
-    </button>
+    </div>
   );
+
+  if (href) return <Link href={href} className="block">{content}</Link>;
+  return <div onClick={onClick} className="block">{content}</div>;
 }

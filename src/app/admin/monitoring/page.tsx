@@ -72,6 +72,7 @@ export default function SystemMonitoring() {
             status="Stable"
             color="amber"
             detail="P95: 142ms"
+            href="https://supabase.com/dashboard/project/_/settings/api"
           />
           <MonitoringCard 
             icon={Globe}
@@ -89,6 +90,7 @@ export default function SystemMonitoring() {
             status="2 Failures"
             color="emerald"
             detail="Last 24h"
+            href="https://supabase.com/dashboard/project/_/functions"
           />
         </div>
 
