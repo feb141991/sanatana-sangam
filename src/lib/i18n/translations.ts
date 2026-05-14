@@ -48,7 +48,16 @@ export type TranslationKey =
   | 'copy' | 'askAI' | 'transliteration' | 'currentKanda' | 'featuredPassages'
   | 'continueLesson' | 'viewDetails' | 'syllabus' | 'enrolled' | 'complete' | 'beginReading' | 'exploreAll'
   // Brand
-  | 'brandTagline';
+  | 'brandTagline'
+  // Sacred Pulse
+  | 'pulseEkadashi' | 'pulseEkadashiDesc'
+  | 'pulsePurnima' | 'pulsePurnimaDesc'
+  | 'pulseAmavasya' | 'pulseAmavasyaDesc'
+  | 'pulsePradosh' | 'pulsePradoshDesc'
+  | 'pulseShivaratri' | 'pulseShivaratriDesc'
+  | 'pulseSangrand' | 'pulseSangrandDesc'
+  | 'pulseUposatha' | 'pulseUposathaDesc'
+  | 'pulseAshtamiChaturdashi' | 'pulseAshtamiChaturdashiDesc';
 
 type TranslationMap = Record<TranslationKey, string>;
 
@@ -121,6 +130,23 @@ const en: TranslationMap = {
   enrolled: 'Enrolled', complete: 'Complete', beginReading: 'Begin Reading', exploreAll: 'Explore All',
   // Brand
   brandTagline: 'Find your infinite',
+  // Sacred Pulse
+  pulseEkadashi: 'Ekadashi',
+  pulseEkadashiDesc: 'Sacred day for fasting and deep bhajan.',
+  pulsePurnima: 'Purnima',
+  pulsePurnimaDesc: 'Full moon — clarity and community worship.',
+  pulseAmavasya: 'Amavasya',
+  pulseAmavasyaDesc: 'New moon — ancestor remembrance and stillness.',
+  pulsePradosh: 'Pradosh',
+  pulsePradoshDesc: 'Twilight worship of Lord Shiva.',
+  pulseShivaratri: 'Masik Shivaratri',
+  pulseShivaratriDesc: 'Night of Shiva — vigil and devotion.',
+  pulseSangrand: 'Sangrand',
+  pulseSangrandDesc: 'The 1st of the month — a day for new beginnings.',
+  pulseUposatha: 'Uposatha',
+  pulseUposathaDesc: 'Lunar observance — a day for deeper practice.',
+  pulseAshtamiChaturdashi: 'Ashtami/Chaturdashi',
+  pulseAshtamiChaturdashiDesc: 'Auspicious day for fasting and Tattvartha study.',
 };
 
 const hi: TranslationMap = {
@@ -191,6 +217,23 @@ const hi: TranslationMap = {
   enrolled: 'नामांकित', complete: 'पूर्ण', beginReading: 'पढ़ना शुरू करें', exploreAll: 'सभी देखें',
   // Brand
   brandTagline: 'शून्य में अनंत',
+  // Sacred Pulse
+  pulseEkadashi: 'एकादशी',
+  pulseEkadashiDesc: 'उपवास और गहन भजन के लिए पवित्र दिन।',
+  pulsePurnima: 'पूर्णिमा',
+  pulsePurnimaDesc: 'पूर्ण चंद्रमा — स्पष्टता और सामुदायिक पूजा।',
+  pulseAmavasya: 'अमावस्या',
+  pulseAmavasyaDesc: 'नया चंद्रमा — पूर्वज स्मरण और शांति।',
+  pulsePradosh: 'प्रदोष',
+  pulsePradoshDesc: 'भगवान शिव की संध्या उपासना।',
+  pulseShivaratri: 'मासिक शिवरात्रि',
+  pulseShivaratriDesc: 'शिव की रात्रि — जागरण और भक्ति।',
+  pulseSangrand: 'संग्रांद',
+  pulseSangrandDesc: 'महीने का पहला दिन — नई शुरुआत का दिन।',
+  pulseUposatha: 'उपोसथ',
+  pulseUposathaDesc: 'चंद्र अवलोकन — गहन अभ्यास का दिन।',
+  pulseAshtamiChaturdashi: 'अष्टमी/चतुर्दशी',
+  pulseAshtamiChaturdashiDesc: 'उपवास और तत्त्वार्थ अध्ययन के लिए शुभ दिन।',
 };
 
 const pa: TranslationMap = {

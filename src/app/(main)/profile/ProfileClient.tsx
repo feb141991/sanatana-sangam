@@ -713,13 +713,22 @@ export default function ProfileClient({
           >
             <div className="grid grid-cols-4 gap-4">
               {SACRED_RELICS.map((relic) => {
-                const isUnlocked = getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, liveProfile?.tradition ?? 'hindu').some(r => r.id === relic.id);
+                const unlockedRelics = getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, liveProfile?.tradition ?? 'hindu');
+                const isUnlocked = unlockedRelics.some(r => r.id === relic.id);
                 const isActive = (liveProfile as any)?.active_symbol_id === relic.id;
 
                 return (
                   <div key={relic.id} className="flex flex-col items-center group">
-                    <div 
-                      className={`relative w-14 h-14 rounded-full flex items-center justify-center transition-all duration-500 ${
+                    <button 
+                      onClick={() => {
+                        if (!isUnlocked) {
+                          toast.error(`Maintain your streak to unlock ${relic.name} 🙏`);
+                          return;
+                        }
+                        if (isActive) return;
+                        patchProfile({ active_symbol_id: relic.id } as any, `${relic.name} set as active symbol ✨`);
+                      }}
+                      className={`relative w-14 h-14 rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden ${
                         isUnlocked 
                           ? 'bg-gradient-to-br from-[#C5A059]/20 to-[#C5A059]/5 border border-[#C5A059]/30 shadow-lg shadow-[#C5A059]/10' 
                           : 'bg-black/5 dark:bg-white/5 border border-white/5 grayscale opacity-30'
@@ -729,18 +738,26 @@ export default function ProfileClient({
                         <div className="absolute inset-0 rounded-full bg-[#C5A059]/5 animate-pulse" />
                       )}
                       
-                      {/* Image Placeholder - In real app, these would be the gold icons */}
-                      <div className="relative w-8 h-8 flex items-center justify-center">
-                         <span className="text-xl">{isUnlocked ? '✨' : '🔒'}</span>
+                      <div className="relative w-10 h-10 flex items-center justify-center">
+                        {relic.imageUrl ? (
+                          <Image 
+                            src={relic.imageUrl} 
+                            alt={relic.name} 
+                            fill 
+                            className={`object-contain transition-transform duration-500 ${isUnlocked ? 'group-hover:scale-110' : ''}`}
+                          />
+                        ) : (
+                          <span className="text-xl">{isUnlocked ? '✨' : '🔒'}</span>
+                        )}
                       </div>
 
                       {/* Active Indicator */}
                       {isActive && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#C5A059] rounded-full flex items-center justify-center border-2 border-[var(--divine-bg)]">
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#C5A059] rounded-full flex items-center justify-center border-2 border-[var(--divine-bg)] z-10">
                           <Star size={8} className="text-black fill-black" />
                         </div>
                       )}
-                    </div>
+                    </button>
                     <p className={`text-[9px] font-bold uppercase tracking-tighter mt-2 text-center line-clamp-1 transition-opacity ${isUnlocked ? 'opacity-100' : 'opacity-40'}`}>
                       {relic.name}
                     </p>

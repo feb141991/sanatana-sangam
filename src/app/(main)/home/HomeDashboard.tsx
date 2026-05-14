@@ -1378,7 +1378,37 @@ export default function HomeDashboard({
     const previouslyUnlockedCount = Number(localStorage.getItem('shoonaya_relics_count') || '0');
     if (unlocked.length > previouslyUnlockedCount) {
       const newest = unlocked[unlocked.length - 1];
-      toast(`✨ New Sacred Symbol Unlocked: ${newest.name}!`, { icon: '🔱', duration: 6000 });
+      
+      // Interactive Toast
+      toast((t) => (
+        <button 
+          onClick={() => {
+            router.push('/profile');
+            toast.dismiss(t.id);
+          }}
+          className="flex flex-col items-start gap-1 group"
+        >
+          <span className="text-xs font-bold text-[#C5A059]">✨ New Sacred Symbol Unlocked!</span>
+          <span className="text-sm font-medium">{newest.name} is now yours. Tap to view in Kosh.</span>
+        </button>
+      ), { 
+        icon: newest.imageUrl ? <Image src={newest.imageUrl} alt={newest.name} width={24} height={24} className="rounded-full" /> : '🔱',
+        duration: 8000 
+      });
+
+      // Also persist as an in-app notification
+      supabase.from('notifications').insert({
+        user_id: userId,
+        title: 'New Sacred Symbol Unlocked! ✨',
+        body: `You've unlocked the ${newest.name}. View it in your Kosh.`,
+        icon_emoji: '🔱',
+        action_url: '/profile',
+        category: 'milestone'
+      }).then(() => {
+        // Refresh notifications query if needed
+        queryClient.invalidateQueries({ queryKey: queryKeys.notifications(userId) });
+      });
+
       localStorage.setItem('shoonaya_relics_count', unlocked.length.toString());
     }
 
@@ -1849,8 +1879,12 @@ export default function HomeDashboard({
                 <div className="flex items-center gap-3 w-full pr-6">
                   <span className="sacred-pulse-emoji" aria-hidden="true">{sacredPulse.emoji}</span>
                   <div className="sacred-pulse-body flex-1 min-w-0">
-                    <span className="sacred-pulse-label">{sacredPulse.label} Today</span>
-                    <span className="sacred-pulse-desc">{sacredPulse.description} Tap to view significance.</span>
+                    <span className="sacred-pulse-label">
+                      {sacredPulse.translationKey ? t(lang as any, sacredPulse.translationKey as any) : sacredPulse.label} {t(lang as any, 'today')}
+                    </span>
+                    <span className="sacred-pulse-desc">
+                      {sacredPulse.descKey ? t(lang as any, sacredPulse.descKey as any) : sacredPulse.description} {t(lang as any, 'viewDetails')}
+                    </span>
                   </div>
                   <ChevronRight size={16} className="text-[#A0622A]/80 shrink-0" />
                 </div>
@@ -2288,6 +2322,22 @@ export default function HomeDashboard({
                   </p>
                   <p className="text-sm leading-relaxed" style={{ color: heroSecondaryText }}>{personalContent.suggestion}</p>
                   {personalContent.nudge && <p className="text-xs mt-1.5 italic" style={{ color: 'rgba(200,146,74,0.55)' }}>{personalContent.nudge}</p>}
+                  {(personalContent as any).action && (
+                    <div className="mt-3">
+                      <Link
+                        href={(personalContent as any).action.href}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-colors"
+                        style={{
+                          background: (personalContent as any).action.type === 'primary' ? 'var(--brand-primary)' : 'rgba(200,146,74,0.12)',
+                          color: (personalContent as any).action.type === 'primary' ? '#1c1c1a' : 'var(--brand-primary)',
+                          border: (personalContent as any).action.type === 'primary' ? 'none' : '1px solid rgba(200,146,74,0.2)'
+                        }}
+                      >
+                        {(personalContent as any).action.label}
+                        <ChevronRight size={12} strokeWidth={3} />
+                      </Link>
+                    </div>
+                  )}
                 </div>
               )}
 

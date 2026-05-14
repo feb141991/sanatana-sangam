@@ -50,8 +50,7 @@ export async function getKulPageData() {
 
     if (!kulRes.data && !kulRes.error) {
       // The Kul was deleted, but profile still had kul_id. Self-heal!
-      await supabase.from('profiles').update({ kul_id: null }).eq('id', user.id);
-      await supabase.from('kul_members').delete().eq('user_id', user.id);
+      await supabase.rpc('leave_kul');
     } else {
       kul = kulRes.data;
       members = membersRes.data ?? [];

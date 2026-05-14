@@ -100,7 +100,12 @@ Return ONLY this JSON (no markdown fences, no extra keys):
 {
   "suggestion": "<A specific, actionable practice for today matching their level and seeking. 2-3 sentences. Concrete — not vague. For example: 'Spend 10 minutes with Pranayama before breakfast today' or 'Read one chapter of the Gita and journal one insight.' Vary by day and level.>",
   "nudge": "<One warm, personal sentence of encouragement. Optional — null is fine.>",
-  "context_label": "<A 2-4 word label for the type of practice, e.g. 'Morning sadhana', 'Contemplative reading', 'Breathwork focus'. Used as the section eyebrow.>"
+  "context_label": "<A 2-4 word label for the type of practice, e.g. 'Morning sadhana', 'Contemplative reading', 'Breathwork focus'. Used as the section eyebrow.>",
+  "action": {
+    "label": "<Short CTA label, e.g. 'Open Mantra' or 'Start Mala'>",
+    "href": "<A valid internal route, e.g. '/bhakti/mahamrityunjaya-mantra' or '/bhakti/mala'>",
+    "type": "<'link' | 'primary'> "
+  }
 }
 
 Keep the tone warm, grounded, and personal — not preachy. No shloka text needed.`;

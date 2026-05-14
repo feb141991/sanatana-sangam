@@ -769,7 +769,7 @@ function MembersTab({ members, userId, myRole, kul }: {
       await kulMutations.promoteMember.mutateAsync(memberId);
       toast.success('Member promoted to Guardian 👑');
     } catch (error: any) {
-      toast.error(error.message ?? 'Could not promote this member.');
+      toast.error(formatError(error));
     }
   }
 
@@ -779,7 +779,7 @@ function MembersTab({ members, userId, myRole, kul }: {
       await kulMutations.removeMember.mutateAsync(memberId);
       toast.success(`${memberName} removed`);
     } catch (error: any) {
-      toast.error(error.message ?? 'Could not remove this member.');
+      toast.error(formatError(error));
     }
   }
 
@@ -884,7 +884,7 @@ function TasksTab({ tasks, members, userId, myRole, kulId }: {
       setTitle(''); setDescription(''); setAssignTo(''); setDueDate('');
       setShowCompose(false);
     } catch (error: any) {
-      toast.error(error.message ?? 'Could not assign the task.');
+      toast.error(formatError(error));
     } finally {
       setSaving(false);
     }
@@ -896,7 +896,7 @@ function TasksTab({ tasks, members, userId, myRole, kulId }: {
       setShowConfetti(true);
       toast.success('Task completed! 🎉 +10 seva');
     } catch (error: any) {
-      toast.error(error.message ?? 'Could not complete this task.');
+      toast.error(formatError(error));
     }
   }
 

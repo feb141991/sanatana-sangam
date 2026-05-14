@@ -158,7 +158,25 @@ export async function fetchKulData(userId: string): Promise<KulData> {
     .eq('id', userId)
     .single();
 
-  const kulId = profile?.kul_id ?? null;
+  let kulId = profile?.kul_id ?? null;
+
+  // AUTO-RECOVER: If profile.kul_id is missing, check if the user is a member of any Kul.
+  // This ensures that even if Step 3 of join_kul/create_kul failed (or was cleared),
+  // the user can still access their Kul dashboard.
+  if (!kulId) {
+    const { data: membership } = await supabase
+      .from('kul_members')
+      .select('kul_id')
+      .eq('user_id', userId)
+      .limit(1)
+      .maybeSingle();
+    
+    if (membership?.kul_id) {
+      kulId = membership.kul_id;
+      // Proactively fix the profile link in the background via RPC (bypasses REVOKE)
+      supabase.rpc('repair_kul_membership').then(() => {});
+    }
+  }
 
   let kul: KulSummary | null = null;
   let members: KulMemberRow[] = [];
@@ -262,6 +280,12 @@ export async function promoteKulMember(memberId: string) {
 export async function removeKulMember(memberId: string) {
   const supabase = createClient();
   const { error } = await supabase.from('kul_members').delete().eq('id', memberId);
+  if (error) throw error;
+}
+
+export async function leaveKul() {
+  const supabase = createClient();
+  const { error } = await supabase.rpc('leave_kul');
   if (error) throw error;
 }
 

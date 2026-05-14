@@ -554,6 +554,8 @@ export type SpiritualPulse = {
   emoji: string;
   description: string;
   intensity: 'low' | 'medium' | 'high';
+  translationKey?: string;
+  descKey?: string;
 };
 
 export function getTodaySpiritualPulse(
@@ -566,19 +568,54 @@ export function getTodaySpiritualPulse(
   // 1. Hindu / Vaishnava / Shaiva Pulse
   if (t === 'hindu' || t === 'vaishnava' || t === 'shaiva') {
     if (tithiIndex === 11 || tithiIndex === 26) {
-      return { label: 'Ekadashi', emoji: '🌿', description: 'Sacred day for fasting and deep bhajan.', intensity: 'high' };
+      return { 
+        label: 'Ekadashi', 
+        emoji: '🌿', 
+        description: 'Sacred day for fasting and deep bhajan.', 
+        intensity: 'high',
+        translationKey: 'pulseEkadashi',
+        descKey: 'pulseEkadashiDesc'
+      };
     }
     if (tithiIndex === 15) {
-      return { label: 'Purnima', emoji: '🌕', description: 'Full moon — clarity and community worship.', intensity: 'medium' };
+      return { 
+        label: 'Purnima', 
+        emoji: '🌕', 
+        description: 'Full moon — clarity and community worship.', 
+        intensity: 'medium',
+        translationKey: 'pulsePurnima',
+        descKey: 'pulsePurnimaDesc'
+      };
     }
     if (tithiIndex === 30) {
-      return { label: 'Amavasya', emoji: '🌑', description: 'New moon — ancestor remembrance and stillness.', intensity: 'medium' };
+      return { 
+        label: 'Amavasya', 
+        emoji: '🌑', 
+        description: 'New moon — ancestor remembrance and stillness.', 
+        intensity: 'medium',
+        translationKey: 'pulseAmavasya',
+        descKey: 'pulseAmavasyaDesc'
+      };
     }
     if (tithiIndex === 13 || tithiIndex === 28) {
-      return { label: 'Pradosh', emoji: '🕉️', description: 'Twilight worship of Lord Shiva.', intensity: 'low' };
+      return { 
+        label: 'Pradosh', 
+        emoji: '🕉️', 
+        description: 'Twilight worship of Lord Shiva.', 
+        intensity: 'low',
+        translationKey: 'pulsePradosh',
+        descKey: 'pulsePradoshDesc'
+      };
     }
     if (tithiIndex === 29) {
-      return { label: 'Masik Shivaratri', emoji: '🌙', description: 'Night of Shiva — vigil and devotion.', intensity: 'medium' };
+      return { 
+        label: 'Masik Shivaratri', 
+        emoji: '🌙', 
+        description: 'Night of Shiva — vigil and devotion.', 
+        intensity: 'medium',
+        translationKey: 'pulseShivaratri',
+        descKey: 'pulseShivaratriDesc'
+      };
     }
   }
 
@@ -592,12 +629,21 @@ export function getTodaySpiritualPulse(
       return {
         label: `Sangrand (${currentMonth.name})`,
         emoji: '☬',
-        description: `The 1st of ${currentMonth.name} — a day for new beginnings and special shabads.`,
+        description: `The 1st of ${currentMonth.name} — a day for new beginnings.`,
         intensity: 'high',
+        translationKey: 'pulseSangrand',
+        descKey: 'pulseSangrandDesc'
       };
     }
     if (tithiIndex === 15) {
-      return { label: 'Puranmashi', emoji: '🌕', description: 'Full moon — gathering for kirtan and sangat.', intensity: 'medium' };
+      return { 
+        label: 'Puranmashi', 
+        emoji: '🌕', 
+        description: 'Full moon — gathering for kirtan and sangat.', 
+        intensity: 'medium',
+        translationKey: 'pulsePurnima',
+        descKey: 'pulsePurnimaDesc'
+      };
     }
   }
 
@@ -607,8 +653,10 @@ export function getTodaySpiritualPulse(
       return {
         label: 'Uposatha',
         emoji: '☸️',
-        description: 'Lunar observance — a day for deeper practice and the Eight Precepts.',
+        description: 'Lunar observance — a day for deeper practice.',
         intensity: 'high',
+        translationKey: 'pulseUposatha',
+        descKey: 'pulseUposathaDesc'
       };
     }
   }
@@ -616,10 +664,24 @@ export function getTodaySpiritualPulse(
   // 4. Jain Pulse (Tithi-based observances)
   if (t === 'jain') {
     if (tithiIndex === 8 || tithiIndex === 14 || tithiIndex === 23 || tithiIndex === 29) {
-      return { label: 'Ashtami/Chaturdashi', emoji: '🤲', description: 'Auspicious day for fasting and Tattvartha study.', intensity: 'medium' };
+      return { 
+        label: 'Ashtami/Chaturdashi', 
+        emoji: '🤲', 
+        description: 'Auspicious day for fasting and Tattvartha study.', 
+        intensity: 'medium',
+        translationKey: 'pulseAshtamiChaturdashi',
+        descKey: 'pulseAshtamiChaturdashiDesc'
+      };
     }
     if (tithiIndex === 15) {
-      return { label: 'Purnima', emoji: '🌕', description: 'Full moon — remembrance of the Tirthankaras.', intensity: 'medium' };
+      return { 
+        label: 'Purnima', 
+        emoji: '🌕', 
+        description: 'Full moon — remembrance of the Tirthankaras.', 
+        intensity: 'medium',
+        translationKey: 'pulsePurnima',
+        descKey: 'pulsePurnimaDesc'
+      };
     }
   }
 
