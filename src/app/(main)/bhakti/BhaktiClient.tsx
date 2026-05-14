@@ -190,8 +190,34 @@ export default function BhaktiClient({
         </Link>
       </section>
 
+      {/* ── 2b. Sacred Kathas Card ───────────────────────────────────────── */}
+      <section className="px-6 mt-5 relative z-40">
+        <Link href="/bhakti/katha">
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="rounded-[2.5rem] overflow-hidden border border-[#C09759]/15"
+            style={{ background: `linear-gradient(135deg, rgba(192,151,89,0.08), rgba(1,1,1,0.95))` }}
+          >
+            <div className="flex items-center gap-5 p-5">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl bg-[#C09759]/10 border border-[#C09759]/20 flex-shrink-0">
+                📖
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-[10px] font-bold text-[#C09759] uppercase tracking-[0.25em] block mb-1">Sacred Library</span>
+                <h4 className="text-white font-bold text-xl">Sacred Kathas</h4>
+                <p className="text-white/35 text-[11px] mt-0.5">Vrat kathas, sakhis &amp; dhamma stories</p>
+              </div>
+              <div className="w-10 h-10 rounded-full border border-[#C09759]/30 flex items-center justify-center flex-shrink-0">
+                <Sparkles size={16} color={THEME.gold} />
+              </div>
+            </div>
+          </motion.div>
+        </Link>
+      </section>
+
       {/* ── 3. Time-Aware Rituals (The Pulse) ────────────────────────────── */}
-      <section className="px-6 mt-14 grid grid-cols-2 gap-4">
+      <section className="px-6 mt-10 grid grid-cols-2 gap-4">
         <div className="rounded-[2rem] p-6 border border-white/5 bg-[#2C2C2F]/30 backdrop-blur-md">
           <div className="flex items-center gap-2 mb-2 opacity-50">
             <Clock size={12} color={THEME.gold} />
