@@ -6,13 +6,13 @@ export async function GET() {
 
   try {
     const { data, error } = await supabase
-      .from('festivals')
+      .from('mandalis')
       .select('*')
-      .order('date', { ascending: true });
+      .order('name', { ascending: true });
 
     if (error) throw error;
     return NextResponse.json(data);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch festivals' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch mandalis' }, { status: 500 });
   }
 }
