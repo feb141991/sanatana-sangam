@@ -1883,10 +1883,10 @@ export default function HomeDashboard({
                   <span className="sacred-pulse-emoji" aria-hidden="true">{sacredPulse.emoji}</span>
                   <div className="sacred-pulse-body flex-1 min-w-0">
                     <span className="sacred-pulse-label">
-                      {sacredPulse.translationKey ? t(lang as any, sacredPulse.translationKey as any) : sacredPulse.label} {t(lang as any, 'today')}
+                      {sacredPulse.translationKey ? t(sacredPulse.translationKey as any) : sacredPulse.label} {t('today')}
                     </span>
                     <span className="sacred-pulse-desc">
-                      {sacredPulse.descKey ? t(lang as any, sacredPulse.descKey as any) : sacredPulse.description} {t(lang as any, 'viewDetails')}
+                      {sacredPulse.descKey ? t(sacredPulse.descKey as any) : sacredPulse.description} {t('viewDetails')}
                     </span>
                   </div>
                   <ChevronRight size={16} className="text-[#A0622A]/80 shrink-0" />

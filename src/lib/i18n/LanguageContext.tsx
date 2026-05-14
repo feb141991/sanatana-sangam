@@ -6,13 +6,24 @@ import { type AppLang, type TranslationKey, t as translateFn } from './translati
 interface LangContextValue {
   lang: AppLang;
   setLang: (lang: AppLang) => void;
-  t: (key: TranslationKey) => string;
+  t: {
+    (key: TranslationKey, overrideLang?: AppLang): string;
+    (lang: AppLang, key: TranslationKey): string;
+  };
 }
 
 const LangContext = createContext<LangContextValue>({
   lang: 'en',
   setLang: () => {},
-  t: (key) => translateFn('en', key),
+  t: (arg1: any, arg2?: any) => {
+    if (arg2) {
+      // Two arguments provided: could be (key, lang) or (lang, key)
+      const VALID_LANGS: AppLang[] = ['en', 'hi', 'pa'];
+      if (VALID_LANGS.includes(arg1)) return translateFn(arg1, arg2);
+      return translateFn(arg2, arg1);
+    }
+    return translateFn('en', arg1);
+  },
 });
 
 const LANG_STORAGE_KEY = 'shoonaya-app-lang';
@@ -25,13 +36,8 @@ export function LanguageProvider({
   lang: AppLang;
   children: ReactNode;
 }) {
-  // Client-side state initialised from the server-rendered profile value.
-  // On hydration we prefer the locally-stored preference so the language
-  // survives page reloads without a round-trip to the database.
   const [lang, setLangState] = useState<AppLang>(serverLang);
 
-  // After hydration: read localStorage. Local preference wins over serverLang
-  // so the UI stays in the user's chosen language even if the DB hasn't synced.
   useEffect(() => {
     try {
       const stored = localStorage.getItem(LANG_STORAGE_KEY) as AppLang | null;
@@ -39,21 +45,27 @@ export function LanguageProvider({
         setLangState(stored);
         return;
       }
-    } catch { /* localStorage unavailable */ }
-    // Fall back to whatever the server sent
+    } catch { /* ignore */ }
     setLangState(serverLang);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [serverLang]);
 
   const setLang = (newLang: AppLang) => {
     setLangState(newLang);
     try { localStorage.setItem(LANG_STORAGE_KEY, newLang); } catch { /* ignore */ }
   };
 
+  const tValue = (arg1: any, arg2?: any) => {
+    if (arg2) {
+      if (VALID_LANGS.includes(arg1)) return translateFn(arg1, arg2);
+      return translateFn(arg2, arg1);
+    }
+    return translateFn(lang, arg1);
+  };
+
   const value: LangContextValue = {
     lang,
     setLang,
-    t: (key) => translateFn(lang, key),
+    t: tValue as any,
   };
   return <LangContext.Provider value={value}>{children}</LangContext.Provider>;
 }

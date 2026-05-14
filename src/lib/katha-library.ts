@@ -3,7 +3,7 @@ export type KathaOccasion =
   | 'ekadashi' | 'purnima' | 'amavasya' | 'pradosh' | 'chaturthi'
   | 'shivaratri' | 'navratri' | 'diwali' | 'holi' | 'janmashtami'
   | 'ramnavami' | 'ganesh-chaturthi' | 'karva-chauth' | 'teej'
-  | 'gurpurab' | 'baisakhi' | 'vesak' | 'paryushana' | 'general';
+  | 'gurpurab' | 'baisakhi' | 'vesak' | 'paryushana' | 'uposatha' | 'general';
 
 export interface Katha {
   id: string;

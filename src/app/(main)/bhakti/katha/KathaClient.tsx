@@ -164,7 +164,7 @@ export default function KathaClient({
         </AnimatePresence>
       </div>
 
-      {/* ── 1. Today's Katha Hero ── */}
+      {/* ── 1. Today&apos;s Katha Hero ── */}
       {!searchQuery && (
         <section className="px-6 mt-2">
           <Link href={`/bhakti/katha/${todayKatha.id}`}>

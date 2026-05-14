@@ -304,6 +304,23 @@ const pa: TranslationMap = {
   enrolled: 'ਦਾਖਲ ਹੋਏ', complete: 'ਪੂਰਾ ਹੋਇਆ', beginReading: 'ਪੜ੍ਹਨਾ ਸ਼ੁਰੂ ਕਰੋ', exploreAll: 'ਸਭ ਵੇਖੋ',
   // Brand
   brandTagline: 'ਸੁੰਨ ਵਿੱਚ ਅਨੰਤ',
+  // Sacred Pulse
+  pulseEkadashi: 'ਇਕਾਦਸ਼ੀ',
+  pulseEkadashiDesc: 'ਵਰਤ ਅਤੇ ਡੂੰਘੇ ਭਜਨ ਲਈ ਪਵਿੱਤਰ ਦਿਨ।',
+  pulsePurnima: 'ਪੂਰਨਮਾਸ਼ੀ',
+  pulsePurnimaDesc: 'ਪੂਰਾ ਚੰਦਰਮਾ — ਸਪੱਸ਼ਟਤਾ ਅਤੇ ਭਾਈਚਾਰਕ ਪੂਜਾ।',
+  pulseAmavasya: 'ਮੱਸਿਆ',
+  pulseAmavasyaDesc: 'ਨਵਾਂ ਚੰਦਰਮਾ — ਪੁਰਖਿਆਂ ਦੀ ਯਾਦ ਅਤੇ ਸ਼ਾਂਤੀ।',
+  pulsePradosh: 'ਪ੍ਰਦੋਸ਼',
+  pulsePradoshDesc: 'ਭਗਵਾਨ ਸ਼ਿਵ ਦੀ ਸੰਧਿਆ ਉਪਾਸਨਾ।',
+  pulseShivaratri: 'ਮਾਸਿਕ ਸ਼ਿਵਰਾਤਰੀ',
+  pulseShivaratriDesc: 'ਸ਼ਿਵ ਦੀ ਰਾਤ — ਜਾਗਰਣ ਅਤੇ ਭਗਤੀ।',
+  pulseSangrand: 'ਸੰਗਰਾਂਦ',
+  pulseSangrandDesc: 'ਮਹੀਨੇ ਦਾ ਪਹਿਲਾ ਦਿਨ — ਨਵੀਂ ਸ਼ੁਰੂਆਤ ਦਾ ਦਿਨ।',
+  pulseUposatha: 'ਉਪੋਸਥ',
+  pulseUposathaDesc: 'ਚੰਦਰ ਅਵਲੋਕਨ — ਡੂੰਘੇ ਅਭਿਆਸ ਦਾ ਦਿਨ।',
+  pulseAshtamiChaturdashi: 'ਅਸ਼ਟਮੀ/ਚਤੁਰਦਸ਼ੀ',
+  pulseAshtamiChaturdashiDesc: 'ਵਰਤ ਅਤੇ ਤੱਤਵਾਰਥ ਅਧਿਐਨ ਲਈ ਸ਼ੁਭ ਦਿਨ।',
 };
 
 export const TRANSLATIONS: Record<AppLang, TranslationMap> = { en, hi, pa };

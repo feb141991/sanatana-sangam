@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, Monitor, Moon, Sun, Star, MessageSquare, MessageCircle } from 'lucide-react';
+import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, Monitor, Moon, Sun, Star, MessageSquare, MessageCircle, Settings, Shield, Users } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { APP } from '@/lib/config';
@@ -151,6 +151,8 @@ export default function ProfileClient({
   const updateProfileMutation = useUpdateProfileMutation(userId);
   const liveProfile = profileQuery.data ?? profile;
   const [editing,   setEditing]   = useState(false);
+  const [koshOpen,  setKoshOpen]  = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -570,7 +572,7 @@ export default function ProfileClient({
         
         {/* ── Zenith Profile Hero ────────────────────────────────────────────── */}
         <div className="relative min-h-[300px] overflow-hidden">
-          {/* Atmospheric background (matches home hero vibe) */}
+          {/* Atmospheric background */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#1c1c1a] via-[#2c1a0e] to-[#1c1c1a] opacity-65 dark:opacity-85" />
           <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--divine-bg)] to-transparent z-10" />
           
@@ -591,11 +593,11 @@ export default function ProfileClient({
                 <MessageSquare size={18} className="text-[#F2EAD6]" />
               </Link>
               <button 
-                onClick={() => setEditing(!editing)}
+                onClick={() => setSettingsOpen(true)}
                 className="w-10 h-10 rounded-full glass-panel border border-white/10 flex items-center justify-center transition-transform active:scale-90"
-                title="Edit Profile"
+                title="App Settings"
               >
-                <Edit3 size={18} className="text-[#F2EAD6]" />
+                <Settings size={18} className="text-[#F2EAD6]" />
               </button>
             </div>
           </div>
@@ -657,24 +659,10 @@ export default function ProfileClient({
               )}
             </motion.div>
 
-            {/* WhatsApp Invite Button */}
-            <motion.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.15 }}
-              onClick={() => {
-                const link = inviteFriendsToWhatsApp(liveProfile?.full_name || liveProfile?.username || 'A friend');
-                window.open(link, '_blank');
-              }}
-              className="mt-6 flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#25D366] text-white text-xs font-bold shadow-lg shadow-[#25D366]/20 transition-transform active:scale-95"
-            >
-              <MessageCircle size={16} />
-              Invite Mandali on WhatsApp
-            </motion.button>
           </div>
         </div>
 
-        <div className="px-5 -mt-8 space-y-4 relative z-30">
+        <div className="px-5 -mt-10 space-y-4 relative z-30">
           {/* Metric Row */}
           <div className="grid grid-cols-3 gap-3">
             {[
@@ -695,6 +683,31 @@ export default function ProfileClient({
             ))}
           </div>
 
+          <CompletionBar profile={liveProfile} onEdit={() => setEditing(true)} />
+
+          {/* ── Zenith Action Grid ── */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => setKoshOpen(true)}
+              className="group relative flex flex-col items-center justify-center p-4 rounded-3xl bg-gradient-to-br from-[#C5A059]/15 to-[#C5A059]/5 border border-[#C5A059]/20 shadow-xl overflow-hidden transition-all active:scale-95"
+            >
+              <div className="absolute inset-0 bg-[#C5A059]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <Shield size={24} className="text-[#C5A059] mb-2 drop-shadow-sm" />
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#C5A059]">Open Kosh</span>
+              <span className="text-[9px] text-[#C5A059]/60 font-medium mt-1">Sacred Treasury</span>
+            </button>
+
+            <button
+              onClick={() => setEditing(true)}
+              className="group relative flex flex-col items-center justify-center p-4 rounded-3xl bg-white/5 border border-white/10 shadow-xl overflow-hidden transition-all active:scale-95"
+            >
+              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <Edit3 size={24} className="text-[#F2EAD6] mb-2 drop-shadow-sm opacity-80" />
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#F2EAD6] opacity-80">Personal Info</span>
+              <span className="text-[9px] text-white/40 font-medium mt-1">Lineage & Bio</span>
+            </button>
+          </div>
+
           {showAvatarPreview && avatarUrl && (
             <AvatarPreviewModal
               avatarUrl={avatarUrl}
@@ -703,506 +716,115 @@ export default function ProfileClient({
             />
           )}
 
-          <CompletionBar profile={liveProfile} onEdit={() => setEditing(true)} />
-
-          {/* ── Sacred Kosh (Treasury) ────────────────────────────────────────── */}
-          <SurfaceSection
-            eyebrow="Sacred Collection"
-            title="Kosh"
-            description="Your treasury of divine symbols unlocked through devotion."
-          >
-            <div className="grid grid-cols-4 gap-4">
-              {SACRED_RELICS.map((relic) => {
-                const unlockedRelics = getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, liveProfile?.tradition ?? 'hindu');
-                const isUnlocked = unlockedRelics.some(r => r.id === relic.id);
-                const isActive = (liveProfile as any)?.active_symbol_id === relic.id;
-
-                return (
-                  <div key={relic.id} className="flex flex-col items-center group">
-                    <button 
-                      onClick={() => {
-                        if (!isUnlocked) {
-                          toast.error(`Maintain your streak to unlock ${relic.name} 🙏`);
-                          return;
-                        }
-                        if (isActive) return;
-                        patchProfile({ active_symbol_id: relic.id } as any, `${relic.name} set as active symbol ✨`);
-                      }}
-                      className={`relative w-14 h-14 rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden ${
-                        isUnlocked 
-                          ? 'bg-gradient-to-br from-[#C5A059]/20 to-[#C5A059]/5 border border-[#C5A059]/30 shadow-lg shadow-[#C5A059]/10' 
-                          : 'bg-black/5 dark:bg-white/5 border border-white/5 grayscale opacity-30'
-                      }`}
-                    >
-                      {isUnlocked && (
-                        <div className="absolute inset-0 rounded-full bg-[#C5A059]/5 animate-pulse" />
-                      )}
-                      
-                      <div className="relative w-10 h-10 flex items-center justify-center">
-                        {relic.imageUrl ? (
-                          <Image 
-                            src={relic.imageUrl} 
-                            alt={relic.name} 
-                            fill 
-                            className={`object-contain transition-transform duration-500 ${isUnlocked ? 'group-hover:scale-110' : ''}`}
-                          />
-                        ) : (
-                          <span className="text-xl">{isUnlocked ? '✨' : '🔒'}</span>
-                        )}
-                      </div>
-
-                      {/* Active Indicator */}
-                      {isActive && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#C5A059] rounded-full flex items-center justify-center border-2 border-[var(--divine-bg)] z-10">
-                          <Star size={8} className="text-black fill-black" />
-                        </div>
-                      )}
-                    </button>
-                    <p className={`text-[9px] font-bold uppercase tracking-tighter mt-2 text-center line-clamp-1 transition-opacity ${isUnlocked ? 'opacity-100' : 'opacity-40'}`}>
-                      {relic.name}
-                    </p>
-                  </div>
-                );
-              })}
+          {/* WhatsApp Invite Card */}
+          <div className="glass-panel border border-white/5 rounded-[2rem] p-5 flex flex-col items-center text-center">
+            <div className="w-12 h-12 rounded-full bg-[#25D366]/10 border border-[#25D366]/20 flex items-center justify-center mb-3">
+              <MessageCircle size={22} className="text-[#25D366]" />
             </div>
-            
-            {!SACRED_RELICS.some(r => getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, liveProfile?.tradition ?? 'hindu').some(ur => ur.id === r.id)) && (
-              <div className="mt-4 p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-dashed border-white/10 text-center">
-                <p className="text-xs text-[var(--brand-muted)]">Maintain a 3-day streak to unlock your first relic 🙏</p>
-              </div>
-            )}
-          </SurfaceSection>
-
-          <SurfaceSection
-            eyebrow="Settings"
-            title="App preferences"
-            description="Only the choices needed for daily use."
-          >
-            <div className="space-y-5">
-              <div>
-                <p className="type-card-label mb-2">Theme</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {THEME_OPTIONS.map((option) => {
-                    const active = themePreference === option.value;
-                    const Icon = themeIconMap[option.value];
-                    return (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => setThemePreference(option.value)}
-                        className="rounded-2xl border px-3 py-3 text-left transition motion-press"
-                        style={{
-                          background: active ? 'rgba(200,146,74,0.14)' : 'var(--card-bg)',
-                          borderColor: active ? 'rgba(200,146,74,0.32)' : 'rgba(255,255,255,0.08)',
-                        }}
-                      >
-                        <Icon size={16} style={{ color: active ? 'var(--brand-primary-strong)' : 'var(--text-dim)' }} />
-                        <p className="mt-2 text-sm font-medium theme-ink">{option.label}</p>
-                      </button>
-                    );
-                  })}
-                </div>
-                <p className="type-micro mt-2">Current surface: {resolvedTheme}</p>
-              </div>
-
-              <div>
-                <p className="type-card-label mb-2">App language</p>
-                <div className="flex gap-2">
-                  {APP_LANGUAGES.map((lang) => {
-                    const active = ((liveProfile as any)?.app_language ?? 'en') === lang.value;
-                    return (
-                      <button
-                        key={lang.value}
-                        onClick={() => {
-                          const nextMeaningLanguage = lang.value === 'hi' || lang.value === 'pa' ? lang.value : 'en';
-                          setLang(lang.value as AppLang);
-                          setForm({
-                            ...form,
-                            app_language: lang.value,
-                            meaning_language: nextMeaningLanguage,
-                          });
-                          patchProfile({
-                            app_language: lang.value,
-                            meaning_language: nextMeaningLanguage,
-                          }, `Language set to ${lang.label}`);
-                        }}
-                        className="flex-1 rounded-xl border py-2 text-sm font-medium transition"
-                        style={active ? {
-                          background: 'var(--brand-primary)',
-                          color: '#1c1c1a',
-                          borderColor: 'transparent',
-                        } : {
-                          background: 'var(--card-bg)',
-                          color: 'var(--text-muted-warm)',
-                          borderColor: 'rgba(255,255,255,0.08)',
-                        }}
-                      >
-                        {lang.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <p className="type-card-label mb-2">Meaning language</p>
-                <div className="flex gap-2">
-                  {MEANING_LANGUAGE_OPTIONS.map((opt) => {
-                    const active = (form.meaning_language ?? 'en') === opt.value;
-                    return (
-                      <button
-                        key={opt.value}
-                        onClick={() => {
-                          setForm({ ...form, meaning_language: opt.value });
-                          patchProfile({ meaning_language: opt.value }, `Meanings set to ${opt.label}`);
-                        }}
-                        className="flex-1 rounded-xl border py-2 text-sm font-medium transition"
-                        style={active ? {
-                          background: 'var(--brand-primary)',
-                          color: '#1c1c1a',
-                          borderColor: 'transparent',
-                        } : {
-                          background: 'var(--card-bg)',
-                          color: 'var(--text-muted-warm)',
-                          borderColor: 'rgba(255,255,255,0.08)',
-                        }}
-                      >
-                        {opt.label.replace(' meaning', '')}
-                      </button>
-                    );
-                  })}
-                </div>
-                <p className="type-micro mt-2">This controls translations and explanations. Transliteration remains separate.</p>
-              </div>
-
-              {/* App Icon Selection (Pro Only) */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <p className="type-card-label">App Icon</p>
-                  {!isPro && (
-                     <div className="px-2 py-0.5 rounded-full bg-amber-400/10 border border-amber-400/20">
-                       <span className="text-[8px] font-bold text-amber-400 uppercase tracking-widest">Pro Only</span>
-                     </div>
-                  )}
-                </div>
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => {
-                      setLocalAppIcon('normal');
-                      localStorage.setItem('shoonaya_app_icon', 'normal');
-                      toast.success('Default icon set 🙏');
-                    }}
-                    className={`relative w-24 flex flex-col items-center gap-2 p-1.5 rounded-2xl border transition-all
-                      ${localAppIcon !== 'pro' ? 'border-[#C5A059] bg-[rgba(200,146,74,0.1)]' : 'border-black/5 dark:border-white/5 opacity-60'}
-                    `}
-                  >
-                    <div className="relative w-full aspect-square rounded-xl overflow-hidden shadow-inner">
-                      <Image src="/assets/images/logos/logo-normal.png" alt="Normal Icon" fill className="object-cover" />
-                    </div>
-                    <span className="text-[9px] font-bold uppercase tracking-widest theme-ink">Normal</span>
-                  </button>
-
-                  <button
-                    disabled={!isPro}
-                    onClick={() => {
-                      setLocalAppIcon('pro');
-                      localStorage.setItem('shoonaya_app_icon', 'pro');
-                      toast.success('Pro icon set! ✨');
-                    }}
-                    className={`relative w-24 flex flex-col items-center gap-2 p-1.5 rounded-2xl border transition-all
-                      ${localAppIcon === 'pro' ? 'border-amber-400 bg-amber-400/10 shadow-lg shadow-amber-400/10' : 'border-black/5 dark:border-white/5'}
-                      ${!isPro ? 'grayscale opacity-40 cursor-not-allowed' : ''}
-                    `}
-                  >
-                    <div className="relative w-full aspect-square rounded-xl overflow-hidden shadow-inner">
-                      <Image src="/assets/images/logos/logo-pro.png" alt="Pro Icon" fill className="object-cover" />
-                    </div>
-                    <span className={`text-[9px] font-bold uppercase tracking-widest ${isPro ? 'text-amber-500' : 'theme-ink'}`}>Pro</span>
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <p className="type-card-label mb-2">Transliteration script</p>
-                <div className="flex gap-2">
-                  {TRANSLITERATION_LANGUAGE_OPTIONS.map((opt) => {
-                    const active = (form.transliteration_language ?? 'en') === opt.value;
-                    return (
-                      <button
-                        key={opt.value}
-                        onClick={() => {
-                          setForm({ ...form, transliteration_language: opt.value });
-                          patchProfile({ transliteration_language: opt.value }, `Transliteration set to ${opt.label}`);
-                        }}
-                        className="flex-1 rounded-xl border py-2 text-sm font-medium transition"
-                        style={active ? {
-                          background: 'var(--brand-primary)',
-                          color: '#1c1c1a',
-                          borderColor: 'transparent',
-                        } : {
-                          background: 'var(--card-bg)',
-                          color: 'var(--text-muted-warm)',
-                          borderColor: 'rgba(255,255,255,0.08)',
-                        }}
-                      >
-                        {opt.label}
-                      </button>
-                    );
-                  })}
-                </div>
-                <p className="type-micro mt-2">Script used for shlokas and sacred chants.</p>
-              </div>
-
-              <div className="rounded-2xl surface-input border px-4 py-4 space-y-3">
-                <button
-                  type="button"
-                  onClick={() => setShowNotificationAdvanced((current) => !current)}
-                  className="flex w-full items-center justify-between gap-3 text-left"
-                >
-                  <div>
-                    <p className="text-sm font-medium theme-ink">Notifications</p>
-                    <p className="text-xs theme-dim mt-1">Daily, festival, community, and family reminders.</p>
-                  </div>
-                  <span className="type-chip rounded-full surface-input border px-3 py-1 text-[color:var(--text-cream)]">
-                    {showNotificationAdvanced ? 'Hide' : 'Show'}
-                  </span>
-                </button>
-                {showNotificationAdvanced ? (
-                  <div className="space-y-3">
-                    {[
-                      { key: 'wants_shloka_reminders', title: 'Daily shloka' },
-                      { key: 'wants_festival_reminders', title: 'Festival reminders' },
-                      { key: 'wants_community_notifications', title: 'Community updates' },
-                      { key: 'wants_family_notifications', title: 'Family updates' },
-                    ].map((item) => {
-                      const checked = notificationPrefs[item.key as keyof typeof notificationPrefs] as boolean;
-                      return (
-                        <label key={item.key} className="flex items-center justify-between gap-4 rounded-xl border border-white/6 bg-white/[0.03] px-3 py-2.5 cursor-pointer">
-                          <span className="text-sm theme-ink">{item.title}</span>
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={(e) => setNotificationPrefs((current) => ({ ...current, [item.key]: e.target.checked }))}
-                            className="h-4 w-4 rounded"
-                            style={{ accentColor: 'var(--brand-primary)' }}
-                          />
-                        </label>
-                      );
-                    })}
-                    <div className="rounded-2xl border border-white/6 bg-white/[0.03] px-4 py-4 space-y-3">
-                      <div>
-                        <p className="text-sm font-medium theme-ink">Quiet hours</p>
-                        <p className="text-xs theme-dim mt-1">
-                          Reminders skip this local window.
-                        </p>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-xs font-medium theme-dim mb-1.5">Start</label>
-                          <select
-                            value={notificationPrefs.notification_quiet_hours_start}
-                            onChange={(e) => setNotificationPrefs((current) => ({ ...current, notification_quiet_hours_start: Number(e.target.value) }))}
-                            className="surface-select px-3 py-2.5 outline-none text-sm"
-                          >
-                            {Array.from({ length: 24 }).map((_, hour) => (
-                              <option key={`start-${hour}`} value={hour}>{String(hour).padStart(2, '0')}:00</option>
-                            ))}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium theme-dim mb-1.5">End</label>
-                          <select
-                            value={notificationPrefs.notification_quiet_hours_end}
-                            onChange={(e) => setNotificationPrefs((current) => ({ ...current, notification_quiet_hours_end: Number(e.target.value) }))}
-                            className="surface-select px-3 py-2.5 outline-none text-sm"
-                          >
-                            {Array.from({ length: 24 }).map((_, hour) => (
-                              <option key={`end-${hour}`} value={hour}>{String(hour).padStart(2, '0')}:00</option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                      <p className="text-xs theme-dim">
-                        Local time zone: {profileTimezone ?? 'UTC fallback until your browser reports a timezone'}
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        onClick={saveNotificationPreferences}
-                        disabled={savingNotificationPrefs}
-                        className="glass-button-primary inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium disabled:opacity-60"
-                      >
-                        {savingNotificationPrefs ? 'Saving...' : 'Save notifications'}
-                      </button>
-                      <button
-                        onClick={sendTestNotification}
-                        disabled={sendingTestNotification}
-                        className="glass-button-secondary inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium disabled:opacity-60"
-                        style={{ color: 'var(--text-cream)' }}
-                      >
-                        {sendingTestNotification ? 'Testing...' : 'Test'}
-                      </button>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </SurfaceSection>
-
-          {hasSafetyItems ? (
-            <SurfaceSection
-              eyebrow="Safety"
-              title="Visibility and boundaries"
-              description="Manage hidden, muted, and blocked activity."
+            <h3 className="text-sm font-semibold theme-ink">Grow your Mandali</h3>
+            <p className="text-xs theme-dim mt-1 mb-4 leading-relaxed px-4">
+              Invite your family and fellow seekers to join the spiritual sangam on WhatsApp.
+            </p>
+            <button
+              onClick={() => {
+                const link = inviteFriendsToWhatsApp(liveProfile?.full_name || liveProfile?.username || 'A friend');
+                window.open(link, '_blank');
+              }}
+              className="w-full py-3 rounded-2xl bg-[#25D366] text-white text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-[#25D366]/20 transition-transform active:scale-95"
             >
-              <div className="space-y-4">
+              Invite on WhatsApp
+            </button>
+          </div>
+
+          {hasSafetyItems && (
+            <div className="glass-panel border border-white/5 rounded-[2rem] p-5">
+              <div className="flex items-center gap-3 mb-4">
+                <ShieldBan size={18} className="text-[#C5A059]" />
+                <h3 className="text-sm font-semibold theme-ink">Safety & Boundaries</h3>
+              </div>
+              <div className="space-y-3">
                 {blockedProfiles.length > 0 && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-semibold theme-ink">
-                      <ShieldBan size={15} className="text-red-500" />
-                      Blocked people
-                    </div>
-                    {blockedProfiles.map((item) => {
-                      const busy = safetyBusyKey === `block:${item.id}`;
-                      return (
-                        <SafetyProfileRow
-                          key={`blocked-${item.id}`}
-                          profile={item}
-                          actionLabel={busy ? 'Updating…' : 'Unblock'}
-                          disabled={busy}
-                          onAction={() => unblockProfile(item.id)}
-                        />
-                      );
-                    })}
-                  </div>
+                   <button onClick={() => setSettingsOpen(true)} className="w-full flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5 text-[11px] font-bold uppercase tracking-wider text-white/60">
+                      <span>{blockedProfiles.length} Blocked Profiles</span>
+                      <Settings size={12} />
+                   </button>
                 )}
-
                 {mutedProfiles.length > 0 && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-semibold theme-ink">
-                      <BellOff size={15} className="text-[color:var(--brand-primary)]" />
-                      Muted people
-                    </div>
-                    {mutedProfiles.map((item) => {
-                      const busy = safetyBusyKey === `mute:${item.id}`;
-                      return (
-                        <SafetyProfileRow
-                          key={`muted-${item.id}`}
-                          profile={item}
-                          actionLabel={busy ? 'Updating…' : 'Unmute'}
-                          disabled={busy}
-                          onAction={() => unmuteProfile(item.id)}
-                        />
-                      );
-                    })}
-                  </div>
-                )}
-
-                {hiddenItems.length > 0 && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-semibold theme-ink">
-                      <EyeOff size={15} className="text-[color:var(--brand-primary)]" />
-                      Hidden content
-                    </div>
-                    {hiddenItems.map((item) => {
-                      const busy = safetyBusyKey === `hide:${item.content_type}:${item.content_id}`;
-                      return (
-                        <div key={`${item.content_type}:${item.content_id}`} className="rounded-2xl surface-input border px-3 py-3 flex items-center gap-3">
-                          <div
-                            className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
-                            style={{ background: 'rgba(124, 58, 45, 0.08)', color: 'var(--brand-primary)' }}
-                          >
-                            <EyeOff size={16} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium theme-ink truncate">{item.title}</p>
-                            <p className="text-xs theme-dim">{item.subtitle}</p>
-                          </div>
-                          <button
-                            onClick={() => unhideContent(item.content_type, item.content_id)}
-                            disabled={busy}
-                            className="px-3 py-1.5 rounded-full text-xs font-semibold transition disabled:opacity-60"
-                            style={{
-                              border: '1px solid rgba(124, 58, 45, 0.18)',
-                              color: 'var(--brand-primary)',
-                              background: 'var(--card-bg)',
-                            }}
-                          >
-                            {busy ? 'Updating…' : 'Unhide'}
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
+                   <button onClick={() => setSettingsOpen(true)} className="w-full flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5 text-[11px] font-bold uppercase tracking-wider text-white/60">
+                      <span>{mutedProfiles.length} Muted Profiles</span>
+                      <Settings size={12} />
+                   </button>
                 )}
               </div>
-            </SurfaceSection>
-          ) : null}
+            </div>
+          )}
 
-          {/* ── Edit Form ── */}
+          {/* ── Edit Form (Inline for now, as it's large) ── */}
           {editing && (
-            <div className="surface-sheet rounded-2xl p-5 space-y-4 fade-in">
-              <h2 className="font-display font-semibold text-lg theme-ink">Edit Profile</h2>
+            <div className="surface-sheet rounded-[2rem] p-6 space-y-6 shadow-2xl border border-white/5 fade-in relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4">
+                <button onClick={() => setEditing(false)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+                  <X size={16} className="text-white/40" />
+                </button>
+              </div>
+              <h2 className="font-display font-semibold text-lg theme-ink">Personal Information</h2>
 
               {/* ── Tradition — locked at signup, not editable ── */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium theme-muted">Tradition</label>
-                  <span className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full"
-                    style={{ background: 'rgba(200,146,74,0.12)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(200,146,74,0.2)' }}>
-                    <Lock size={9} /> Set at signup
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] uppercase tracking-widest font-bold text-white/30">Your Tradition</label>
+                  <span className="flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full bg-white/5 text-white/40 border border-white/5">
+                    <Lock size={8} /> Locked
                   </span>
                 </div>
                 {(() => {
                   const t = TRADITIONS.find(t => t.value === form.tradition);
                   return t ? (
-                    <div className="flex items-center gap-3 px-4 py-3 rounded-xl surface-input border">
+                    <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/[0.02] border border-white/5">
                       <span className="text-2xl">{t.emoji}</span>
                       <div>
                         <p className="font-semibold text-sm theme-ink">{t.label}</p>
                         <p className="text-xs theme-dim mt-0.5">{t.desc}</p>
                       </div>
                     </div>
-                  ) : (
-                    <p className="text-sm theme-dim italic">No tradition set — contact support to update.</p>
-                  );
+                  ) : null;
                 })()}
               </div>
 
-              <div className="space-y-3">
-                <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My details</p>
+              <div className="space-y-4">
+                <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-[#C5A059]">Core Details</p>
                 {[
                   { label: 'Full Name', key: 'full_name', placeholder: 'Your full name' },
                   { label: 'Home Town', key: 'home_town', placeholder: 'Where you are from' },
                 ].map(({ label, key, placeholder }) => (
                   <div key={key}>
-                    <label className="block text-sm font-medium theme-muted mb-1.5">{label}</label>
+                    <label className="block text-[11px] font-semibold theme-muted mb-1.5">{label}</label>
                     <input type="text" placeholder={placeholder}
                       value={(form as Record<string, string>)[key]}
                       onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                      className="surface-input px-4 py-2.5 outline-none text-sm"
+                      className="surface-input px-4 py-3 rounded-2xl outline-none text-sm bg-white/5 border-white/5 focus:border-[#C5A059]/30 transition-all"
                     />
                   </div>
                 ))}
               </div>
 
-              <div className="space-y-3">
-                <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My practice</p>
+              <div className="space-y-4">
+                <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-[#C5A059]">Lineage & Path</p>
                 <div>
-                  <label className="block text-sm font-medium theme-muted mb-1.5">{sampradayaLabel}</label>
+                  <label className="block text-[11px] font-semibold theme-muted mb-1.5">{sampradayaLabel}</label>
                   <select value={form.sampradaya}
                     onChange={(e) => setForm({ ...form, sampradaya: e.target.value })}
-                    className="surface-select px-4 py-2.5 outline-none text-sm">
+                    className="surface-select px-4 py-3 rounded-2xl outline-none text-sm bg-white/5 border-white/5">
                     <option value="">Select {sampradayaLabel.toLowerCase()}</option>
                     {sampradayaOptions.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium theme-muted mb-1.5">{ishtaDevataLabel}</label>
+                  <label className="block text-[11px] font-semibold theme-muted mb-1.5">{ishtaDevataLabel}</label>
                   <select value={form.ishta_devata}
                     onChange={(e) => setForm({ ...form, ishta_devata: e.target.value })}
-                    className="surface-select px-4 py-2.5 outline-none text-sm">
+                    className="surface-select px-4 py-3 rounded-2xl outline-none text-sm bg-white/5 border-white/5">
                     <option value="">Select {ishtaDevataLabel.toLowerCase()}</option>
                     {ishtaDevataOptions.map((d) => <option key={d.value} value={d.value}>{d.emoji} {d.label}</option>)}
                   </select>
@@ -1211,57 +833,50 @@ export default function ProfileClient({
 
               {/* ── Hindu-specific fields ── */}
               {(activeTradition === 'hindu') && (
-                <>
+                <div className="space-y-4">
                   {[
                     { label: 'Gotra',      key: 'gotra',      placeholder: 'e.g. Kashyapa'     },
                     { label: 'Kul Devata', key: 'kul_devata', placeholder: 'e.g. Shiva, Durga' },
-                    { label: 'Kul',        key: 'kul',        placeholder: 'Family lineage'    },
+                    { label: 'Family Name', key: 'kul',        placeholder: 'Kul / Vansh'    },
                   ].map(({ label, key, placeholder }) => (
                     <div key={key}>
-                      <label className="block text-sm font-medium theme-muted mb-1.5">{label}</label>
+                      <label className="block text-[11px] font-semibold theme-muted mb-1.5">{label}</label>
                       <input type="text" placeholder={placeholder}
                         value={(form as Record<string, string>)[key]}
                         onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                        className="surface-input px-4 py-2.5 outline-none text-sm"
+                        className="surface-input px-4 py-3 rounded-2xl outline-none text-sm bg-white/5 border-white/5"
                       />
                     </div>
                   ))}
-                </>
+                </div>
               )}
 
-              {/* ── My Stage — DOB + practice path ── */}
-              <div className="space-y-3">
-                <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My stage</p>
-
-                {/* Date of birth */}
+              <div className="space-y-4">
+                <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-[#C5A059]">Life Stage</p>
                 <div>
-                  <label className="block text-sm font-medium theme-muted mb-1.5">Date of birth</label>
+                  <label className="block text-[11px] font-semibold theme-muted mb-1.5">Date of birth</label>
                   <input
                     type="date"
                     value={form.date_of_birth}
                     max={new Date().toISOString().split('T')[0]}
-                    onChange={(e) => {
-                      const dob = e.target.value;
-                      setForm(prev => ({ ...prev, date_of_birth: dob }));
-                    }}
-                    className="surface-input px-4 py-2.5 outline-none text-sm"
+                    onChange={(e) => setForm(prev => ({ ...prev, date_of_birth: e.target.value }))}
+                    className="surface-input px-4 py-3 rounded-2xl outline-none text-sm bg-white/5 border-white/5"
                   />
                   {form.date_of_birth && (() => {
                     const suggested = ageToAshrama(form.date_of_birth);
                     const age       = ageFromDob(form.date_of_birth);
                     const meta      = getAshramaMeta(activeTradition, suggested as LifeStage, form.gender_context);
                     return (
-                      <p className="text-xs mt-1.5 text-white/50">
+                      <p className="text-[10px] mt-2 text-white/30 font-medium">
                         {meta.icon} Age {age} — suggested stage:{' '}
-                        <span style={{ color: meta.accent, fontWeight: 600 }}>{meta.label}</span>
+                        <span style={{ color: meta.accent, fontWeight: 700 }}>{meta.label}</span>
                       </p>
                     );
                   })()}
                 </div>
 
-                {/* Practice path (gender context) */}
                 <div>
-                  <label className="block text-sm font-medium theme-muted mb-1.5">Practice path</label>
+                  <label className="block text-[11px] font-semibold theme-muted mb-1.5">Practice Path</label>
                   <div className="grid grid-cols-2 gap-2">
                     {getPracticePathOptions(activeTradition).map(opt => {
                       const sel = form.gender_context === opt.key;
@@ -1270,15 +885,15 @@ export default function ProfileClient({
                           key={opt.key}
                           type="button"
                           onClick={() => setForm({ ...form, gender_context: opt.key })}
-                          className="rounded-2xl border px-3 py-3 text-left transition"
+                          className="rounded-2xl border px-3 py-3 text-left transition relative overflow-hidden"
                           style={{
-                            background:   sel ? 'rgba(200,146,74,0.14)' : 'var(--card-bg)',
-                            borderColor:  sel ? 'rgba(200,146,74,0.32)' : 'rgba(255,255,255,0.08)',
+                            background:   sel ? 'rgba(200,146,74,0.1)' : 'transparent',
+                            borderColor:  sel ? 'rgba(200,146,74,0.3)' : 'rgba(255,255,255,0.05)',
                           }}
                         >
-                          <div className="text-xl mb-1">{opt.icon}</div>
-                          <p className="text-sm font-semibold theme-ink leading-tight">{opt.label}</p>
-                          <p className="text-[11px] theme-dim mt-0.5 leading-snug">{opt.sub}</p>
+                          <div className="text-lg mb-1">{opt.icon}</div>
+                          <p className="text-[11px] font-bold theme-ink leading-tight">{opt.label}</p>
+                          <p className="text-[9px] theme-dim mt-0.5 leading-snug opacity-60">{opt.sub}</p>
                         </button>
                       );
                     })}
@@ -1286,131 +901,428 @@ export default function ProfileClient({
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <p className="text-[10px] uppercase tracking-[0.18em] font-semibold theme-dim">My voice</p>
-                <div>
-                  <label className="block text-sm font-medium theme-muted mb-1.5">Bio</label>
-                  <textarea placeholder="Share a little about your spiritual journey…"
-                    value={form.bio}
-                    onChange={(e) => setForm({ ...form, bio: e.target.value })}
-                    rows={3}
-                    className="surface-input px-4 py-2.5 outline-none resize-none text-sm"
-                  />
-                </div>
+              <div>
+                <label className="block text-[11px] font-semibold theme-muted mb-1.5">Bio</label>
+                <textarea placeholder="Share your spiritual journey…"
+                  value={form.bio}
+                  onChange={(e) => setForm({ ...form, bio: e.target.value })}
+                  rows={3}
+                  className="surface-input px-4 py-3 rounded-2xl outline-none resize-none text-sm bg-white/5 border-white/5"
+                />
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex gap-3 pt-4">
                 <button onClick={() => setEditing(false)}
-                  className="flex-1 py-3 rounded-xl text-sm font-medium theme-muted border border-white/10 hover:bg-white/5 transition">
+                  className="flex-1 py-3.5 rounded-2xl text-[11px] font-bold uppercase tracking-widest text-white/40 border border-white/5 transition">
                   Cancel
                 </button>
                 <button onClick={saveProfile} disabled={saving}
-                  className="flex-1 py-3 text-[#1c1c1a] font-semibold rounded-xl text-sm hover:opacity-90 disabled:opacity-50"
-                  style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}>
+                  className="flex-1 py-3.5 text-black font-bold rounded-2xl text-[11px] uppercase tracking-widest shadow-lg shadow-[#C5A059]/20"
+                  style={{ background: 'var(--brand-primary)' }}>
                   {saving ? 'Saving…' : 'Save Changes'}
                 </button>
               </div>
             </div>
           )}
 
-          {/* ── Account ── */}
-          <div className="surface-card rounded-2xl p-4 space-y-3">
-            <div>
-              <p className="type-card-heading">Account</p>
-              <p className="type-micro mt-1">Signed in as {userEmail}</p>
+          {/* ── Account Summary ── */}
+          <div className="glass-panel border border-white/5 rounded-[2rem] p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] font-bold text-[#C5A059] uppercase tracking-widest mb-1">Account</p>
+                <p className="text-sm font-medium theme-ink">{userEmail}</p>
+              </div>
+              <button
+                onClick={signOut}
+                className="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 transition-colors active:bg-red-500/20"
+              >
+                <LogOut size={16} />
+              </button>
             </div>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            
+            <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => setInviteOpen(true)}
-                className="glass-button-secondary inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium"
-                style={{ color: 'var(--text-cream)' }}
+                className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/5 border border-white/5 text-[10px] font-bold uppercase tracking-widest text-white/70"
               >
-                Invite family
+                <Users size={14} /> Invite
               </button>
               <button
                 onClick={downloadReport}
                 disabled={reportLoading}
-                className="glass-button-secondary inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium disabled:opacity-60"
-                style={{ color: 'var(--text-cream)' }}
+                className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/5 border border-white/5 text-[10px] font-bold uppercase tracking-widest text-white/70 disabled:opacity-50"
               >
-                {reportLoading ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
+                {reportLoading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
                 Report
               </button>
-              <button
-                onClick={signOut}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition"
-                style={{ borderColor: 'rgba(220,80,80,0.20)', color: 'rgba(220,80,80,0.82)' }}
-              >
-                <LogOut size={15} /> Sign out
-              </button>
-            </div>
-            {/* ── Footer Info ── */}
-            <div className="mt-8 mb-4 px-6 text-center space-y-4">
-              <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
-                {[
-                  { href: '/about',      label: 'About'      },
-                  { href: '/privacy',    label: 'Privacy'    },
-                  { href: '/terms',      label: 'Terms'      },
-                  { href: '/guidelines', label: 'Guidelines' },
-                  { href: '/contact',    label: 'Contact'    },
-                ].map(l => (
-                  <Link key={l.href} href={l.href}
-                    className="text-[11px] font-medium text-white/30 hover:text-white/60 transition-colors uppercase tracking-widest">
-                    {l.label}
-                  </Link>
-                ))}
-              </div>
-              <p className="text-[10px] text-white/20">
-                Built with 🙏 for the global Sanatani community
-              </p>
             </div>
           </div>
 
-          {/* ── Invite Modal ── */}
-          <AnimatePresence>
-            {inviteOpen && (() => {
-              const code = generateInviteCode(userId);
-              const baseUrl = typeof window !== 'undefined' ? window.location.origin : APP.BASE_URL;
-              const link = `${baseUrl}/join?ref=${code}`;
-              async function share() {
-                const shareText = `Join me on Shoonaya — your dharmic home.\n\nInvite code: ${code}\n${link}`;
-                if (typeof navigator !== 'undefined' && navigator.share) {
-                  try { await navigator.share({ title: 'Join Shoonaya 🙏', text: shareText, url: link }); return; } catch {}
-                }
-                try { await navigator.clipboard.writeText(shareText); toast.success('Invite link copied! 🙏'); } catch { window.prompt('Copy your invite link:', link); }
-              }
-              return (
-                <motion.div className="fixed inset-0 z-50 flex items-end" onClick={() => setInviteOpen(false)}
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                  <motion.div className="w-full rounded-t-[2rem] p-6 space-y-5" onClick={e => e.stopPropagation()}
-                    style={{ background: 'linear-gradient(180deg, var(--surface-raised), rgba(34,30,22,0.99))', borderTop: '1px solid rgba(200,146,74,0.20)', boxShadow: '0 -20px 48px rgba(0,0,0,0.38)' }}
-                    initial={{ y: 32, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}
-                    transition={{ duration: 0.32, ease: [0.34, 1.26, 0.64, 1] }}>
-                    <div className="w-10 h-1 rounded-full mx-auto mb-1" style={{ background: 'rgba(200,146,74,0.28)' }} />
-                    <div className="flex items-center justify-between">
-                      <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-cream)' }}>Invite Friends &amp; Family</h3>
-                      <button onClick={() => setInviteOpen(false)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(200,146,74,0.10)' }}>
-                        <X size={15} style={{ color: 'var(--text-muted-warm)' }} />
-                      </button>
+          {/* ── Footer ── */}
+          <div className="py-8 text-center space-y-4">
+            <div className="flex flex-wrap justify-center gap-x-5 gap-y-2">
+              {[
+                { href: '/about',      label: 'About'      },
+                { href: '/privacy',    label: 'Privacy'    },
+                { href: '/terms',      label: 'Terms'      },
+                { href: '/contact',    label: 'Contact'    },
+              ].map(l => (
+                <Link key={l.href} href={l.href}
+                  className="text-[9px] font-bold text-white/20 hover:text-[#C5A059] transition-colors uppercase tracking-[0.2em]">
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+            <p className="text-[9px] text-white/10 font-medium">
+              Sanatan Sangam · Built with 🙏
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Drawers ── */}
+      <BottomDrawer
+        isOpen={koshOpen}
+        onClose={() => setKoshOpen(false)}
+        title="Sacred Kosh"
+        description="Your treasury of divine symbols."
+      >
+        <div className="grid grid-cols-4 gap-4 py-4">
+          {SACRED_RELICS.map((relic) => {
+            const unlockedRelics = getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, liveProfile?.tradition ?? 'hindu');
+            const isUnlocked = unlockedRelics.some(r => r.id === relic.id);
+            const isActive = (liveProfile as any)?.active_symbol_id === relic.id;
+
+            return (
+              <div key={relic.id} className="flex flex-col items-center group">
+                <button 
+                  onClick={() => {
+                    if (!isUnlocked) {
+                      toast.error(`Maintain your streak to unlock ${relic.name} 🙏`);
+                      return;
+                    }
+                    if (isActive) return;
+                    patchProfile({ active_symbol_id: relic.id } as any, `${relic.name} set as active symbol ✨`);
+                  }}
+                  className={`relative w-16 h-16 rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden ${
+                    isUnlocked 
+                      ? 'bg-gradient-to-br from-[#C5A059]/20 to-[#C5A059]/5 border border-[#C5A059]/30 shadow-lg shadow-[#C5A059]/10' 
+                      : 'bg-black/20 dark:bg-white/5 border border-white/5 grayscale opacity-30'
+                  }`}
+                >
+                  {isUnlocked && (
+                    <div className="absolute inset-0 rounded-full bg-[#C5A059]/5 animate-pulse" />
+                  )}
+                  
+                  <div className="relative w-12 h-12 flex items-center justify-center">
+                    {relic.imageUrl ? (
+                      <Image 
+                        src={relic.imageUrl} 
+                        alt={relic.name} 
+                        fill 
+                        className={`object-contain transition-transform duration-500 ${isUnlocked ? 'group-hover:scale-110' : ''}`}
+                      />
+                    ) : (
+                      <span className="text-xl">{isUnlocked ? '✨' : '🔒'}</span>
+                    )}
+                  </div>
+
+                  {isActive && (
+                    <div className="absolute top-1 right-1 w-4 h-4 bg-[#C5A059] rounded-full flex items-center justify-center border-2 border-[var(--divine-bg)] z-10">
+                      <Star size={8} className="text-black fill-black" />
                     </div>
-                    <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>Share Shoonaya with your family and friends using your personal invite code.</p>
-                    <div className="rounded-[1.4rem] p-5 text-center border" style={{ background: 'rgba(200,146,74,0.08)', borderColor: 'rgba(200,146,74,0.18)' }}>
-                      <p className="text-[10px] mb-2 font-semibold uppercase tracking-[0.16em]" style={{ color: 'var(--text-dim)' }}>Your Invite Code</p>
-                      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', fontWeight: 700, letterSpacing: '0.18em', color: 'var(--brand-primary)' }}>{code}</p>
-                      <p className="text-[11px] mt-2" style={{ color: 'var(--text-dim)' }}>{link}</p>
-                    </div>
-                    <button onClick={share} className="w-full py-3.5 rounded-2xl font-semibold text-sm" style={{ background: 'var(--brand-primary)', color: '#1a1610' }}>
-                      🙏 Share invite
+                  )}
+                </button>
+                <p className={`text-[9px] font-bold uppercase tracking-tighter mt-3 text-center line-clamp-1 transition-opacity ${isUnlocked ? 'opacity-100 text-[#C5A059]' : 'opacity-40'}`}>
+                  {relic.name}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+        {!SACRED_RELICS.some(r => getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, liveProfile?.tradition ?? 'hindu').some(ur => ur.id === r.id)) && (
+          <div className="mt-6 p-4 rounded-2xl bg-white/5 border border-dashed border-white/10 text-center">
+            <p className="text-[11px] text-[#C5A059]/60 font-medium">Continue your daily sadhana to unlock these relics 🙏</p>
+          </div>
+        )}
+      </BottomDrawer>
+
+      <BottomDrawer
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        title="App Settings"
+        description="Personalize your spiritual experience."
+      >
+        <div className="space-y-6 py-4">
+          {/* Theme */}
+          <div>
+            <p className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] mb-3">Theme Preference</p>
+            <div className="grid grid-cols-3 gap-2">
+              {THEME_OPTIONS.map((option) => {
+                const active = themePreference === option.value;
+                const Icon = themeIconMap[option.value];
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setThemePreference(option.value)}
+                    className="flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all"
+                    style={{
+                      background: active ? 'rgba(200,146,74,0.1)' : 'rgba(255,255,255,0.02)',
+                      borderColor: active ? '#C5A059' : 'rgba(255,255,255,0.05)',
+                    }}
+                  >
+                    <Icon size={18} className={active ? 'text-[#C5A059]' : 'text-white/40'} />
+                    <span className={`text-[10px] font-bold uppercase tracking-wider ${active ? 'text-[#C5A059]' : 'text-white/40'}`}>
+                      {option.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* App Icon */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059]">App Icon</p>
+              {!isPro && (
+                 <span className="text-[8px] font-bold text-amber-400 uppercase tracking-widest bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/20">Pro</span>
+              )}
+            </div>
+            <div className="flex gap-3">
+              {[
+                { key: 'normal', img: '/assets/images/logos/logo-normal.png', label: 'Classic' },
+                { key: 'pro', img: '/assets/images/logos/logo-pro.png', label: 'Divine Gold' },
+              ].map((icon) => (
+                <button
+                  key={icon.key}
+                  disabled={icon.key === 'pro' && !isPro}
+                  onClick={() => {
+                    setLocalAppIcon(icon.key as any);
+                    localStorage.setItem('shoonaya_app_icon', icon.key);
+                    toast.success(`${icon.label} icon set!`);
+                  }}
+                  className={`flex-1 flex flex-col items-center gap-2 p-2 rounded-2xl border transition-all ${
+                    localAppIcon === icon.key ? 'border-[#C5A059] bg-[#C5A059]/10' : 'border-white/5 bg-white/5'
+                  } ${icon.key === 'pro' && !isPro ? 'grayscale opacity-30' : ''}`}
+                >
+                  <div className="relative w-12 h-12 rounded-xl overflow-hidden shadow-lg">
+                    <Image src={icon.img} alt={icon.label} fill className="object-cover" />
+                  </div>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-white/40">{icon.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Languages */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] mb-2">App Language</p>
+              <div className="flex flex-col gap-1.5">
+                {APP_LANGUAGES.map((lang) => {
+                  const active = ((liveProfile as any)?.app_language ?? 'en') === lang.value;
+                  return (
+                    <button
+                      key={lang.value}
+                      onClick={() => {
+                        const nextMeaningLanguage = lang.value === 'hi' || lang.value === 'pa' ? lang.value : 'en';
+                        setLang(lang.value as AppLang);
+                        patchProfile({ app_language: lang.value, meaning_language: nextMeaningLanguage }, `Language: ${lang.label}`);
+                      }}
+                      className={`px-4 py-2.5 rounded-xl text-left text-xs font-bold border transition-all ${
+                        active ? 'bg-[#C5A059] text-black border-[#C5A059]' : 'bg-white/5 border-white/5 text-white/60'
+                      }`}
+                    >
+                      {lang.label}
                     </button>
+                  );
+                })}
+              </div>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] mb-2">Meaning Script</p>
+              <div className="flex flex-col gap-1.5">
+                {MEANING_LANGUAGE_OPTIONS.map((opt) => {
+                  const active = (form.meaning_language ?? 'en') === opt.value;
+                  return (
+                    <button
+                      key={opt.value}
+                      onClick={() => patchProfile({ meaning_language: opt.value }, `Meanings: ${opt.label}`)}
+                      className={`px-4 py-2.5 rounded-xl text-left text-xs font-bold border transition-all ${
+                        active ? 'bg-[#C5A059] text-black border-[#C5A059]' : 'bg-white/5 border-white/5 text-white/60'
+                      }`}
+                    >
+                      {opt.label.replace(' meaning', '')}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Notifications */}
+          <div className="space-y-3">
+             <p className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059]">Notifications</p>
+             <div className="grid grid-cols-2 gap-2">
+                {[
+                  { key: 'wants_shloka_reminders', label: 'Daily Wisdom' },
+                  { key: 'wants_festival_reminders', label: 'Festivals' },
+                  { key: 'wants_community_notifications', label: 'Community' },
+                  { key: 'wants_family_notifications', label: 'Family' },
+                ].map((item) => {
+                  const checked = notificationPrefs[item.key as keyof typeof notificationPrefs] as boolean;
+                  return (
+                    <button
+                      key={item.key}
+                      onClick={() => {
+                        const next = !checked;
+                        setNotificationPrefs(prev => ({ ...prev, [item.key]: next }));
+                        patchProfile({ [item.key]: next }, `${item.label} ${next ? 'enabled' : 'disabled'}`);
+                      }}
+                      className={`flex items-center justify-between px-4 py-3 rounded-2xl border transition-all ${
+                        checked ? 'bg-[#C5A059]/10 border-[#C5A059]/30 text-[#C5A059]' : 'bg-white/5 border-white/5 text-white/40'
+                      }`}
+                    >
+                      <span className="text-[10px] font-bold uppercase tracking-wider">{item.label}</span>
+                      <div className={`w-2 h-2 rounded-full ${checked ? 'bg-[#C5A059]' : 'bg-white/10'}`} />
+                    </button>
+                  );
+                })}
+             </div>
+             <button
+               onClick={sendTestNotification}
+               disabled={sendingTestNotification}
+               className="w-full py-3 rounded-2xl bg-white/5 border border-white/5 text-[10px] font-bold uppercase tracking-widest text-white/40"
+             >
+               {sendingTestNotification ? 'Testing...' : 'Send Test Notification'}
+             </button>
+          </div>
+
+          {/* Safety Sections if exist */}
+          {hasSafetyItems && (
+            <div className="space-y-3">
+              <p className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059]">Moderation & Safety</p>
+              <div className="space-y-2">
+                {blockedProfiles.map(p => (
+                   <div key={p.id} className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
+                      <span className="text-[11px] font-medium text-white/60 truncate">{p.full_name || p.username}</span>
+                      <button onClick={() => unblockProfile(p.id)} className="text-[9px] font-bold uppercase tracking-widest text-[#C5A059] px-3 py-1.5 rounded-full border border-[#C5A059]/30">Unblock</button>
+                   </div>
+                ))}
+                {mutedProfiles.map(p => (
+                   <div key={p.id} className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
+                      <span className="text-[11px] font-medium text-white/60 truncate">{p.full_name || p.username}</span>
+                      <button onClick={() => unmuteProfile(p.id)} className="text-[9px] font-bold uppercase tracking-widest text-[#C5A059] px-3 py-1.5 rounded-full border border-[#C5A059]/30">Unmute</button>
+                   </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </BottomDrawer>
+
+      <AnimatePresence>
+        {inviteOpen && (() => {
+          const code = generateInviteCode(userId);
+          const baseUrl = typeof window !== 'undefined' ? window.location.origin : APP.BASE_URL;
+          const link = `${baseUrl}/join?ref=${code}`;
+          async function share() {
+            const shareText = `Join me on Shoonaya — your dharmic home.\n\nInvite code: ${code}\n${link}`;
+            if (typeof navigator !== 'undefined' && navigator.share) {
+              try { await navigator.share({ title: 'Join Shoonaya 🙏', text: shareText, url: link }); return; } catch {}
+            }
+            try { await navigator.clipboard.writeText(shareText); toast.success('Invite link copied! 🙏'); } catch { window.prompt('Copy your invite link:', link); }
+          }
+          return (
+            <motion.div className="fixed inset-0 z-[100] flex items-end" onClick={() => setInviteOpen(false)}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+              <motion.div className="relative w-full rounded-t-[2.5rem] p-8 space-y-6" onClick={e => e.stopPropagation()}
+                style={{ background: 'linear-gradient(180deg, #1c1c1a, #1a1610)', borderTop: '1px solid rgba(200,146,74,0.3)', boxShadow: '0 -20px 60px rgba(0,0,0,0.5)' }}
+                initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}>
+                <div className="w-12 h-1 rounded-full mx-auto mb-2 bg-[#C5A059]/20" />
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-serif font-bold text-[#F2EAD6]">Expand the Circle</h3>
+                  <button onClick={() => setInviteOpen(false)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                    <X size={18} className="text-white/40" />
+                  </button>
+                </div>
+                <p className="text-sm text-white/60 leading-relaxed">Your devotion grows when shared. Invite your family and close friends to the Shoonaya community.</p>
+                <div className="rounded-3xl p-6 text-center border bg-[#C5A059]/5 border-[#C5A059]/20">
+                  <p className="text-[10px] mb-3 font-bold uppercase tracking-[0.2em] text-white/30">Personal Invite Code</p>
+                  <p className="text-4xl font-serif font-bold tracking-[0.1em] text-[#C5A059] uppercase">{code}</p>
+                </div>
+                <button onClick={share} className="w-full py-4 rounded-2xl font-bold text-xs uppercase tracking-widest shadow-xl shadow-[#C5A059]/20" style={{ background: 'var(--brand-primary)', color: '#1a1610' }}>
+                  🙏 Share invite
+                </button>
               </motion.div>
             </motion.div>
           );
         })()}
       </AnimatePresence>
     </div>
-  </div>
-</div>
-);
+  );
+}
+
+function BottomDrawer({
+  isOpen,
+  onClose,
+  title,
+  description,
+  children
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[100] flex items-end"
+          onClick={onClose}
+        >
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-h-[85vh] overflow-y-auto rounded-t-[2.5rem] p-8 pb-12"
+            style={{ 
+              background: 'linear-gradient(180deg, #1c1c1a, #161412)', 
+              borderTop: '1px solid rgba(200,146,74,0.3)',
+              boxShadow: '0 -20px 60px rgba(0,0,0,0.6)' 
+            }}
+          >
+            <div className="w-12 h-1.5 rounded-full mx-auto mb-6 bg-[#C5A059]/20" />
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-2xl font-serif font-bold text-[#F2EAD6]">{title}</h3>
+              <button
+                onClick={onClose}
+                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center active:scale-90 transition-transform"
+              >
+                <X size={20} className="text-white/40" />
+              </button>
+            </div>
+            {description && <p className="text-sm text-white/50 mb-6 font-medium">{description}</p>}
+            <div className="custom-scrollbar">
+              {children}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 }
 
 function SafetyProfileRow({
@@ -1427,15 +1339,15 @@ function SafetyProfileRow({
   const initials = getInitials(profile.full_name || profile.username || 'S');
 
   return (
-    <div className="rounded-2xl px-3 py-3 flex items-center gap-3" style={{ border: '1px solid rgba(200,146,74,0.12)', background: 'var(--card-bg)' }}>
+    <div className="rounded-2xl px-3 py-3 flex items-center gap-3" style={{ border: '1px solid rgba(200,146,74,0.12)', background: 'rgba(255,255,255,0.02)' }}>
       <div className="relative w-10 h-10 rounded-full bg-gradient-sacred text-white flex items-center justify-center text-xs font-bold overflow-hidden flex-shrink-0">
         {profile.avatar_url
           ? <Image src={profile.avatar_url} alt="" fill sizes="40px" className="object-cover" />
           : initials}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-[color:var(--text-cream)] truncate">{profile.full_name || profile.username}</p>
-        <p className="text-xs text-[color:var(--brand-muted)] truncate">{profile.username ? `@${profile.username}` : 'Shoonaya member'}</p>
+        <p className="text-sm font-medium text-white/90 truncate">{profile.full_name || profile.username}</p>
+        <p className="text-xs text-white/40 truncate">{profile.username ? `@${profile.username}` : 'Shoonaya member'}</p>
       </div>
       <button
         onClick={onAction}
@@ -1464,31 +1376,30 @@ function AvatarPreviewModal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm px-4 py-6 flex items-center justify-center"
+      className="fixed inset-0 z-[150] bg-black/75 backdrop-blur-sm px-4 py-6 flex items-center justify-center"
       onClick={onClose}
     >
       <div className="relative w-full max-w-md" onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
           onClick={onClose}
-          className="absolute -top-2 right-0 z-10 w-10 h-10 rounded-full text-[color:var(--text-muted-warm)] flex items-center justify-center shadow-lg"
-          style={{ background: 'var(--surface-raised)' }}
-          aria-label="Close profile photo"
+          className="absolute -top-12 right-0 z-10 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center active:scale-90 transition-transform"
+          aria-label="Close"
         >
-          <X size={18} />
+          <X size={20} />
         </button>
-        <div className="glass-panel rounded-[2rem] p-3">
-          <div className="relative aspect-square w-full overflow-hidden rounded-[1.6rem] bg-white/20">
+        <div className="glass-panel rounded-[2.5rem] p-4 bg-white/5 border-white/10 shadow-2xl">
+          <div className="relative aspect-square w-full overflow-hidden rounded-[2rem]">
             <Image
               src={avatarUrl}
-              alt={`${fullName} profile photo`}
+              alt={fullName}
               fill
               sizes="(max-width: 768px) 92vw, 420px"
               className="object-cover"
               priority
             />
           </div>
-          <p className="text-center text-sm font-medium text-[color:var(--text-muted-warm)] mt-3">
+          <p className="text-center text-sm font-bold text-[#F2EAD6] mt-4 uppercase tracking-widest">
             {fullName}
           </p>
         </div>
