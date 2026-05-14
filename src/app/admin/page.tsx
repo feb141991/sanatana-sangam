@@ -8,7 +8,7 @@ import {
   ArrowUpRight, BarChart3, AlertTriangle, 
   UserCheck, ShieldCheck, LogOut
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 

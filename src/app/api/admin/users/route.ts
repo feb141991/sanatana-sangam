@@ -32,8 +32,7 @@ export async function POST(req: NextRequest) {
 
   try {
     if (action === 'ban' || action === 'unban') {
-      const { error } = await supabase
-        .from('profiles')
+      const { error } = await (supabase.from('profiles') as any)
         .update({ is_banned: action === 'ban' })
         .eq('id', userId);
       if (error) throw error;

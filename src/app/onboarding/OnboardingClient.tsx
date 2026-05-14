@@ -186,13 +186,14 @@ const slide = {
 interface Props {
   userId:          string;
   traditionValue?: string;
+  phoneValue?:     string;
   hasTradition:    boolean;
   hasLifeStage:    boolean;
   hasCity:         boolean;
   hasLanguage:     boolean;
 }
 
-export default function OnboardingClient({ userId, traditionValue = '', hasTradition, hasLifeStage, hasCity, hasLanguage }: Props) {
+export default function OnboardingClient({ userId, traditionValue = '', phoneValue = '', hasTradition, hasLifeStage, hasCity, hasLanguage }: Props) {
   const router   = useRouter();
   const supabase = createClient();
   const prefersReducedMotion = useReducedMotion();
@@ -214,7 +215,7 @@ export default function OnboardingClient({ userId, traditionValue = '', hasTradi
   const [country,    setCountry]    = useState('');
   const [latitude,   setLatitude]   = useState<number | null>(null);
   const [longitude,  setLongitude]  = useState<number | null>(null);
-  const [phone,      setPhone]      = useState('');
+  const [phone,      setPhone]      = useState(phoneValue);
   const [otp,        setOtp]        = useState('');
   const [isOtpSent,  setIsOtpSent]  = useState(false);
   const [isVerified, setIsVerified] = useState(false);

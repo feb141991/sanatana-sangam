@@ -118,15 +118,13 @@ export default function SignupPage() {
     return createClient();
   }, []);
 
-  const [step,       setStep]       = useState<Step>(1);
+  const [step,       setStep]       = useState<1 | 2>(1);
   const [loading,    setLoading]    = useState(false);
   const [showPass,   setShowPass]   = useState(false);
-  const [geoLoading, setGeoLoading] = useState(false);
   const [inviteCode, setInviteCode] = useState('');
   const [acceptedPolicies, setAcceptedPolicies] = useState(false);
   const [quoteIdx, setQuoteIdx] = useState(0);
   const [factIdx, setFactIdx] = useState(0);
-  const [hoveredTradition, setHoveredTradition] = useState<TraditionKey | ''>('');
   const [activeFeature, setActiveFeature] = useState(0);
 
   const [form, setForm] = useState({
@@ -134,18 +132,6 @@ export default function SignupPage() {
     password:       '',
     full_name:      '',
     username:       '',
-    tradition:      '' as TraditionKey | '',
-    city:           '',
-    country:        '',
-    latitude:       null as number | null,
-    longitude:      null as number | null,
-    sampradaya:     '',
-    ishta_devata:   '',
-    spiritual_level:'jigyasu',
-    seeking:        [] as string[],
-    kul:            '',
-    gotra:          '',
-    gender_context: '' as 'male' | 'female' | 'other' | '',
     phone:          '',
   });
 
@@ -161,48 +147,6 @@ export default function SignupPage() {
     return () => clearInterval(interval);
   }, []);
 
-  async function detectLocation() {
-    if (!navigator.geolocation) { toast.error('Geolocation not supported'); return; }
-    setGeoLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const { latitude, longitude } = pos.coords;
-        try {
-          const res  = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`, { 
-            headers: { 
-              'Accept-Language': 'en',
-              'User-Agent': 'Shoonaya-App-v1'
-            } 
-          });
-          const data = await res.json();
-          const addr = data.address ?? {};
-          const city = addr.city || addr.town || addr.municipality || addr.village || addr.suburb || addr.county || '';
-          const country = addr.country || '';
-          setForm(f => ({ ...f, city, country, latitude, longitude }));
-          if (city) {
-            toast.success(`📍 ${city} detected!`);
-          } else if (country) {
-            toast.success(`📍 Located in ${country}`);
-          } else {
-            toast.error('Could not determine exact location');
-          }
-        } catch {
-          toast.error('Location lookup failed');
-        } finally {
-          setGeoLoading(false);
-        }
-      },
-      () => { toast.error('Location access denied'); setGeoLoading(false); }
-    );
-  }
-
-  function toggleSeeking(value: string) {
-    setForm(f => ({
-      ...f,
-      seeking: f.seeking.includes(value) ? f.seeking.filter(s => s !== value) : [...f.seeking, value],
-    }));
-  }
-
   async function handleSubmit() {
     if (!supabase || !acceptedPolicies) return;
     setLoading(true);
@@ -213,32 +157,9 @@ export default function SignupPage() {
       const profilePayload = {
         full_name: form.full_name.trim(),
         username: normalizedUsername,
-        tradition: form.tradition || null,
-        city: form.city.trim() || null,
-        country: form.country.trim() || null,
-        latitude: form.latitude,
-        longitude: form.longitude,
-        sampradaya: form.sampradaya || null,
-        ishta_devata: form.ishta_devata || null,
-        spiritual_level: form.spiritual_level,
-        seeking: form.seeking,
-        kul: form.kul.trim() || null,
-        gotra: form.gotra.trim() || null,
-        app_language: 'en',
-        transliteration_language: 'en',
-        scripture_script: 'devanagari',
-        show_transliteration: true,
-        meaning_language: 'en',
-        wants_festival_reminders: true,
-        wants_shloka_reminders: true,
-        wants_community_notifications: true,
-        wants_family_notifications: true,
-        is_admin: false,
-        is_pro: false,
-        life_stage_locked: false,
-        is_banned: false,
-        gender_context: form.gender_context || null,
         phone: form.phone.trim() || null,
+        app_language: 'en',
+        onboarding_completed: false,
       };
 
       const { data, error } = await supabase.auth.signUp({
@@ -250,24 +171,17 @@ export default function SignupPage() {
         },
       });
 
-      if (error) {
-        if (error.message.includes('unique constraint') || error.message.includes('already registered')) {
-          throw new Error('This email or username is already taken. Please try another.');
-        }
-        throw error;
-      }
+      if (error) throw error;
 
       if (data.session) {
-        const { error: syncError } = await supabase.from('profiles').update(profilePayload).eq('id', data.user!.id);
-        if (syncError) console.error('Profile sync error:', syncError);
-        toast.success('Welcome to Shoonaya! 🙏');
-        router.push('/home');
+        toast.success('Pranam! Welcome to Shoonaya. 🙏');
+        router.push('/onboarding');
       } else {
         toast.success('Pranam! Please check your inbox to confirm.');
         router.push(`/login?message=check_email&email=${encodeURIComponent(normalizedEmail)}`);
       }
     } catch (err: any) {
-      toast.error(err.message || 'Something went wrong while saving. Please try again.');
+      toast.error(err.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -280,381 +194,82 @@ export default function SignupPage() {
       
       {/* ── LEFT SIDE: Immersive & Interactive (Value Section) ─────────────────────── */}
       <div className="hidden lg:flex w-1/2 relative flex-col items-center justify-between p-16 overflow-hidden border-r border-[var(--premium-border)] bg-[#faf6ef]">
-        
-        {/* Dynamic Background Aura */}
         <motion.div 
-          animate={{ 
-            backgroundColor: activeAuraColor,
-            scale: [1, 1.1, 1],
-          }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          animate={{ backgroundColor: activeAuraColor }}
+          transition={{ duration: 0.8 }}
           className="absolute inset-0 z-0 blur-[120px] opacity-20"
           style={{ background: `radial-gradient(circle at center, ${activeAuraColor} 0%, transparent 70%)` }}
         />
-
-        {/* Top: Shoonaya Logo & Signs */}
         <div className="relative z-10 w-full flex flex-col items-center">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-2 text-4xl font-serif font-bold text-[var(--brand-primary-strong)] tracking-tighter"
-          >
-            Shoonaya
-          </motion.div>
+          <div className="mb-2 text-4xl font-serif font-bold text-[var(--brand-primary-strong)] tracking-tighter">Shoonaya</div>
           <div className="text-[10px] uppercase tracking-[0.4em] text-[var(--brand-muted)] font-bold mb-8">Sanatan Sangam</div>
-          
           <TraditionSignages activeIdx={quoteIdx % TRADITION_SIGNS.length} />
         </div>
-
-        {/* Middle: Interactive Content Carousel */}
-        <div className="relative z-10 w-full max-w-lg space-y-12">
-          
-          {/* Why Shoonaya? Featured Apps */}
-          <div className="space-y-6">
-            <h2 className="text-sm font-bold uppercase tracking-[0.3em] text-[var(--premium-gold)] text-center">Your Spiritual Companion</h2>
-            <div className="grid grid-cols-2 gap-4">
-              {APP_FEATURES.map((feat, i) => (
-                <motion.div
-                  key={feat.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ 
-                    opacity: activeFeature === i ? 1 : 0.6,
-                    scale: activeFeature === i ? 1.05 : 1,
-                    borderColor: activeFeature === i ? feat.color : 'rgba(0,0,0,0.05)'
-                  }}
-                  className="p-5 rounded-[2rem] bg-white/40 border-2 backdrop-blur-sm transition-all duration-500 cursor-default shadow-sm"
-                >
-                  <div className="p-3 rounded-2xl w-fit mb-3" style={{ background: activeFeature === i ? feat.color : 'rgba(0,0,0,0.05)' }}>
-                    <feat.icon size={20} className={activeFeature === i ? "text-white" : "text-[var(--brand-muted)]"} />
-                  </div>
-                  <h4 className="font-bold text-[var(--brand-primary-strong)] text-sm">{feat.title}</h4>
-                  <p className="text-[10px] text-[var(--brand-muted)] mt-1 leading-relaxed">{feat.desc}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-
-          {/* Facts & Shloka Section */}
-          <div className="h-40 flex flex-col justify-center text-center">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={quoteIdx}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="space-y-4"
-              >
-                <h2 className="text-3xl font-devanagari text-[var(--brand-primary-strong)] leading-relaxed">
-                  {QUOTES[quoteIdx].text}
-                </h2>
-                <p className="text-lg italic font-outfit text-[var(--brand-muted)]">
-                  &quot;{QUOTES[quoteIdx].meaning}&quot;
-                </p>
-                <div className="flex items-center justify-center gap-2 text-xs uppercase tracking-[0.1em] text-[var(--premium-gold)] font-bold">
-                  <Star size={12} fill="var(--premium-gold)" />
-                  {QUOTES[quoteIdx].author}
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
-
-        {/* Bottom: "Did you know?" Bubbles */}
-        <div className="relative z-10 w-full flex justify-center">
-           <AnimatePresence mode="wait">
-            <motion.div
-              key={factIdx}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.05 }}
-              className="px-6 py-3 rounded-full bg-[var(--premium-gold-soft)] border border-[var(--premium-gold)]/20 text-[11px] font-bold text-[var(--premium-gold)] flex items-center gap-3"
-            >
-              <Sparkles size={14} />
-              {FACTS[factIdx]}
+        <div className="relative z-10 w-full max-w-lg space-y-12 text-center">
+          <AnimatePresence mode="wait">
+            <motion.div key={quoteIdx} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+              <h2 className="text-3xl font-devanagari text-[var(--brand-primary-strong)] leading-relaxed">{QUOTES[quoteIdx].text}</h2>
+              <p className="text-lg italic text-[var(--brand-muted)] mt-2">&quot;{QUOTES[quoteIdx].meaning}&quot;</p>
+              <div className="mt-4 text-xs font-bold text-[var(--premium-gold)] uppercase tracking-widest">{QUOTES[quoteIdx].author}</div>
             </motion.div>
-           </AnimatePresence>
+          </AnimatePresence>
+        </div>
+        <div className="relative z-10">
+          <div className="px-6 py-3 rounded-full bg-[var(--premium-gold-soft)] border border-[var(--premium-gold)]/20 text-[11px] font-bold text-[var(--premium-gold)] flex items-center gap-3">
+            <Sparkles size={14} /> {FACTS[factIdx]}
+          </div>
         </div>
       </div>
 
-      {/* ── RIGHT SIDE: "Cloud Glass" Signup Flow ────────────────────────── */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 relative bg-[var(--premium-ivory)]">
-        
-        {/* Mobile Header */}
-        <div className="lg:hidden absolute top-8 left-0 right-0 flex flex-col items-center">
-          <div className="text-2xl font-serif font-bold text-[var(--brand-primary-strong)]">Shoonaya</div>
-          <h1 className="text-xs uppercase tracking-widest text-[var(--brand-muted)] mt-1">Sanatan Sangam</h1>
-        </div>
-
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md"
-        >
-          {/* Cloud Glass Card */}
-          <div className="bg-white/70 backdrop-blur-[40px] rounded-[3rem] border border-[var(--premium-border)] shadow-[0_40px_80px_rgba(142,94,42,0.1)] p-10 relative overflow-hidden">
-            
-            {/* Header */}
-            <div className="mb-10 text-center lg:text-left">
-              <h3 className="text-3xl font-poppins font-bold text-[var(--brand-primary-strong)] tracking-tight">Join the Sangam</h3>
-              <p className="text-sm text-[var(--brand-muted)] font-outfit mt-2">Your journey into the infinite begins here.</p>
+      {/* ── RIGHT SIDE: Signup Flow ────────────────────────── */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 bg-[var(--premium-ivory)]">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
+          <div className="bg-white/70 backdrop-blur-[40px] rounded-[3rem] border border-[var(--premium-border)] shadow-xl p-10">
+            <div className="mb-10">
+              <h3 className="text-3xl font-bold text-[var(--brand-primary-strong)]">Create Account</h3>
+              <p className="text-sm text-[var(--brand-muted)] mt-2">Enter your basics to start your journey.</p>
             </div>
 
-            {/* Steps Flow */}
-            <div className="relative min-h-[420px]">
-              <AnimatePresence mode="wait" initial={false}>
-                
-                {/* STEP 1: Account */}
-                {step === 1 && (
-                  <motion.div
-                    key="step1"
-                    initial={{ x: 300, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: -300, opacity: 0 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="space-y-6"
-                  >
-                    <div className="space-y-4">
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)] ml-1">Full Name</label>
-                        <input type="text" placeholder="Arjun Sharma" value={form.full_name}
-                          onChange={e => setForm({ ...form, full_name: e.target.value })}
-                          className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl px-6 py-4 text-sm font-outfit focus:border-[var(--premium-gold)] focus:ring-4 focus:ring-[var(--premium-gold-soft)] outline-none transition-all shadow-sm" />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)] ml-1">Username</label>
-                        <div className="relative">
-                          <span className="absolute left-6 top-1/2 -translate-y-1/2 text-[var(--brand-muted)] font-bold">@</span>
-                          <input type="text" placeholder="arjun_seeker" value={form.username}
-                            onChange={e => setForm({ ...form, username: e.target.value })}
-                            className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl pl-12 pr-6 py-4 text-sm font-outfit focus:border-[var(--premium-gold)] focus:ring-4 focus:ring-[var(--premium-gold-soft)] outline-none transition-all shadow-sm" />
-                        </div>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)] ml-1">Email</label>
-                        <input type="email" placeholder="arjun@wisdom.com" value={form.email}
-                          onChange={e => setForm({ ...form, email: e.target.value })}
-                          className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl px-6 py-4 text-sm font-outfit focus:border-[var(--premium-gold)] focus:ring-4 focus:ring-[var(--premium-gold-soft)] outline-none transition-all shadow-sm" />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <div className="flex items-center justify-between ml-1">
-                          <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)]">Phone Number</label>
-                          <span className="text-[9px] font-bold text-[var(--brand-muted)] uppercase tracking-widest opacity-60">Optional</span>
-                        </div>
-                        <div className="relative">
-                          <span className="absolute left-6 top-1/2 -translate-y-1/2 text-[var(--brand-muted)] font-bold">+91</span>
-                          <input type="tel" placeholder="9876543210" value={form.phone}
-                            onChange={e => setForm({ ...form, phone: e.target.value })}
-                            className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl pl-16 pr-6 py-4 text-sm font-outfit focus:border-[var(--premium-gold)] focus:ring-4 focus:ring-[var(--premium-gold-soft)] outline-none transition-all shadow-sm" />
-                        </div>
-                        <p className="text-[9px] text-[var(--brand-muted)] ml-2 italic">Connect for daily WhatsApp Sadhana reminders.</p>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)] ml-1">Password</label>
-                        <div className="relative">
-                          <input type={showPass ? 'text' : 'password'} placeholder="Min. 8 characters" value={form.password}
-                            onChange={e => setForm({ ...form, password: e.target.value })}
-                            className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl px-6 py-4 text-sm font-outfit focus:border-[var(--premium-gold)] focus:ring-4 focus:ring-[var(--premium-gold-soft)] outline-none transition-all shadow-sm" />
-                          <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-6 top-1/2 -translate-y-1/2 text-[var(--brand-muted)] hover:text-[var(--premium-gold)] transition-colors">
-                            {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
-                          </button>
-                        </div>
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)] ml-1">Gender (for personalized reminders)</label>
-                        <div className="grid grid-cols-3 gap-2">
-                          {['male', 'female', 'other'].map(g => (
-                            <button
-                              key={g}
-                              type="button"
-                              onClick={() => setForm({ ...form, gender_context: g as any })}
-                              className={`py-3 rounded-xl text-xs font-bold transition-all border ${
-                                form.gender_context === g
-                                  ? 'bg-[var(--premium-gold)] text-white border-transparent'
-                                  : 'bg-white/50 border-[var(--premium-border)] text-[var(--brand-muted)]'
-                              }`}
-                            >
-                              {g.charAt(0).toUpperCase() + g.slice(1)}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    <button 
-                      onClick={() => {
-                        if (!form.full_name || !form.email || !form.password || !form.username) return toast.error('Please fill all fields');
-                        setStep(2);
-                      }}
-                      className="w-full bg-[var(--premium-gold)] text-white py-5 rounded-2xl font-bold font-outfit shadow-[0_15px_30px_rgba(216,138,28,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-6"
-                    >
-                      Share Your Path <ArrowRight size={18} />
-                    </button>
-                  </motion.div>
-                )}
-
-                {/* STEP 2: Tradition & Identity */}
-                {step === 2 && (
-                  <motion.div
-                    key="step2"
-                    initial={{ x: 300, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: -300, opacity: 0 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="space-y-8"
-                  >
-                    <div className="space-y-6">
-                      <div>
-                        <div className="flex items-center justify-between mb-4">
-                          <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)] ml-1">Choose Tradition</label>
-                          <span className="flex items-center gap-1 text-[9px] font-bold text-[var(--premium-gold)] bg-[var(--premium-gold-soft)] px-2.5 py-1 rounded-full border border-[var(--premium-border)]">
-                            <Lock size={10} /> CORE IDENTITY
-                          </span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          {TRADITIONS.map(t => (
-                            <motion.button 
-                              key={t.value}
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                              onMouseEnter={() => setHoveredTradition(t.value as TraditionKey)}
-                              onMouseLeave={() => setHoveredTradition('')}
-                              onClick={() => setForm({ ...form, tradition: t.value as TraditionKey })}
-                              className={`p-5 rounded-[2rem] border-2 transition-all flex flex-col items-center gap-3 relative overflow-hidden ${
-                                form.tradition === t.value 
-                                  ? "border-[var(--premium-gold)] bg-white shadow-[0_15px_30px_rgba(216,138,28,0.15)]"
-                                  : "border-[var(--premium-border)] bg-white/20 hover:border-[var(--premium-gold)] hover:bg-white/40"
-                              }`}
-                            >
-                              {form.tradition === t.value && (
-                                <motion.div layoutId="trad-glow" className="absolute inset-0 opacity-10 bg-[var(--premium-gold)]" />
-                              )}
-                              <span className="text-4xl relative z-10">{t.emoji}</span>
-                              <span className={`text-xs font-bold font-outfit relative z-10 ${form.tradition === t.value ? "text-[var(--premium-gold)]" : "text-[var(--brand-muted)]"}`}>
-                                {t.label}
-                              </span>
-                            </motion.button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {form.tradition && (
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-                          <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)] ml-1">Your Location</label>
-                            <div className="relative">
-                              <input type="text" placeholder="Search City" value={form.city}
-                                onChange={e => setForm({ ...form, city: e.target.value })}
-                                className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl px-6 py-4 text-sm font-outfit focus:border-[var(--premium-gold)] outline-none shadow-sm" />
-                              <button onClick={detectLocation} className="absolute right-5 top-1/2 -translate-y-1/2 text-[var(--premium-gold)] hover:scale-110 transition-transform">
-                                {geoLoading ? <Loader2 size={18} className="animate-spin" /> : <MapPin size={20} />}
-                              </button>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </div>
-
-                    <div className="flex gap-4 pt-6">
-                      <button onClick={() => setStep(1)} className="p-5 rounded-2xl border-2 border-[var(--premium-border)] text-[var(--brand-muted)] font-bold hover:bg-white transition-all">
-                        <ArrowLeft size={20} />
-                      </button>
-                      <button 
-                        onClick={() => {
-                          if (!form.tradition) return toast.error('Choose a tradition');
-                          setStep(3);
-                        }}
-                        className="flex-1 bg-[var(--premium-gold)] text-white py-5 rounded-2xl font-bold font-outfit shadow-[0_15px_30px_rgba(216,138,28,0.2)] hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
-                      >
-                        Last Step <ArrowRight size={18} />
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* STEP 3: Seeking */}
-                {step === 3 && (
-                  <motion.div
-                    key="step3"
-                    initial={{ x: 300, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: -300, opacity: 0 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="space-y-8"
-                  >
-                    <div className="space-y-6">
-                      <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)] ml-1">What are you seeking?</label>
-                      <div className="grid grid-cols-1 gap-3">
-                        {[
-                          { id: 'community',  label: 'Local Sangam', icon: Users, sub: 'Connect with nearby seekers' },
-                          { id: 'knowledge',  label: 'Sacred Pathshala', icon: Globe, sub: 'Learn Shastras & Wisdom' },
-                          { id: 'events',     label: 'Auspicious Utsav', icon: Sparkles, sub: 'Festivals & Holy Days' },
-                          { id: 'mentorship', label: 'Guru Connection', icon: Heart, sub: 'Spiritual Mentorship' },
-                        ].map(opt => (
-                          <button 
-                            key={opt.id}
-                            onClick={() => toggleSeeking(opt.id)}
-                            className={`flex items-center gap-5 px-6 py-4 rounded-[2rem] border-2 transition-all group ${
-                              form.seeking.includes(opt.id)
-                                ? "border-[var(--premium-gold)] bg-white shadow-lg"
-                                : "border-[var(--premium-border)] bg-white/20 hover:border-[var(--premium-gold)] hover:bg-white/40"
-                            }`}
-                          >
-                            <div className={`p-3 rounded-2xl transition-colors ${form.seeking.includes(opt.id) ? "bg-[var(--premium-gold)] text-white" : "bg-[var(--premium-gold-soft)] text-[var(--premium-gold)] group-hover:bg-[var(--premium-gold)] group-hover:text-white"}`}>
-                              <opt.icon size={20} />
-                            </div>
-                            <div className="text-left">
-                              <span className={`block text-sm font-bold font-outfit ${form.seeking.includes(opt.id) ? "text-[var(--premium-gold)]" : "text-[var(--brand-primary-strong)]"}`}>
-                                {opt.label}
-                              </span>
-                              <span className="text-[10px] text-[var(--brand-muted)]">{opt.sub}</span>
-                            </div>
-                            {form.seeking.includes(opt.id) && <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="ml-auto"><Check size={20} className="text-[var(--premium-gold)]" /></motion.div>}
-                          </button>
-                        ))}
-                      </div>
-
-                      <div className="pt-4 flex items-start gap-4 px-2">
-                        <div className="relative mt-1">
-                          <input type="checkbox" checked={acceptedPolicies} onChange={e => setAcceptedPolicies(e.target.checked)} className="peer appearance-none w-6 h-6 border-2 border-[var(--premium-border)] rounded-lg checked:bg-[var(--premium-gold)] checked:border-transparent transition-all cursor-pointer" />
-                          <Check size={16} className="absolute left-1 top-1 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
-                        </div>
-                        <p className="text-[11px] text-[var(--brand-muted)] font-outfit leading-relaxed">
-                          I agree to the <Link href="/terms" className="text-[var(--premium-gold)] font-bold">Terms</Link> and <Link href="/privacy" className="text-[var(--premium-gold)] font-bold">Privacy Policy</Link>. I commit to maintaining the dharma of this community.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-4 pt-4">
-                      <button onClick={() => setStep(2)} className="p-5 rounded-2xl border-2 border-[var(--premium-border)] text-[var(--brand-muted)] font-bold hover:bg-white transition-all">
-                        <ArrowLeft size={20} />
-                      </button>
-                      <button 
-                        onClick={handleSubmit}
-                        disabled={loading || !acceptedPolicies}
-                        className="flex-1 bg-[var(--premium-gold)] text-white py-5 rounded-2xl font-bold font-outfit shadow-[0_15px_30px_rgba(216,138,28,0.2)] hover:scale-[1.02] disabled:opacity-50 transition-all flex items-center justify-center gap-3"
-                      >
-                        {loading ? <Loader2 className="animate-spin" /> : <>Enter Shoonaya 🙏</>}
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+            <div className="space-y-6">
+              {step === 1 ? (
+                <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)]">Full Name</label>
+                    <input type="text" placeholder="Arjun Sharma" value={form.full_name} onChange={e => setForm({ ...form, full_name: e.target.value })} className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl px-6 py-4 text-sm outline-none focus:border-[var(--premium-gold)]" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)]">Username</label>
+                    <input type="text" placeholder="arjun_seeker" value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl px-6 py-4 text-sm outline-none focus:border-[var(--premium-gold)]" />
+                  </div>
+                  <button onClick={() => { if(form.full_name && form.username) setStep(2); else toast.error('Fill in your name'); }} className="w-full bg-[var(--premium-gold)] text-white py-5 rounded-2xl font-bold shadow-lg flex items-center justify-center gap-2">Next <ArrowRight size={18} /></button>
+                </motion.div>
+              ) : (
+                <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)]">Email</label>
+                    <input type="email" placeholder="arjun@wisdom.com" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl px-6 py-4 text-sm outline-none focus:border-[var(--premium-gold)]" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)]">Password</label>
+                    <input type="password" placeholder="••••••••" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl px-6 py-4 text-sm outline-none focus:border-[var(--premium-gold)]" />
+                  </div>
+                  <div className="flex items-start gap-3 py-2">
+                    <input type="checkbox" checked={acceptedPolicies} onChange={e => setAcceptedPolicies(e.target.checked)} className="mt-1 w-5 h-5 rounded accent-[var(--premium-gold)]" />
+                    <p className="text-[11px] text-[var(--brand-muted)]">I agree to the <Link href="/terms" className="text-[var(--premium-gold)] font-bold">Terms</Link> and <Link href="/privacy" className="text-[var(--premium-gold)] font-bold">Privacy Policy</Link>.</p>
+                  </div>
+                  <div className="flex gap-4">
+                    <button onClick={() => setStep(1)} className="p-5 rounded-2xl border-2 border-[var(--premium-border)]"><ArrowLeft size={20} /></button>
+                    <button onClick={handleSubmit} disabled={loading || !acceptedPolicies} className="flex-1 bg-[var(--premium-gold)] text-white py-5 rounded-2xl font-bold shadow-lg flex items-center justify-center gap-2">{loading ? <Loader2 className="animate-spin" /> : 'Create Account'}</button>
+                  </div>
+                </motion.div>
+              )}
             </div>
 
-            {/* Bottom Section */}
-            <div className="mt-10 pt-8 border-t border-[var(--premium-border)] text-center">
-              <p className="text-sm text-[var(--brand-muted)] font-outfit">
-                Already part of the mandali? {' '}
-                <Link href="/login" className="text-[var(--premium-gold)] font-bold hover:underline">Sign In</Link>
-              </p>
+            <div className="mt-10 text-center">
+              <p className="text-sm text-[var(--brand-muted)]">Already have an account? <Link href="/login" className="text-[var(--premium-gold)] font-bold">Sign In</Link></p>
             </div>
           </div>
-          
-          {/* Social Proof & Extras */}
+
           <div className="mt-10 flex flex-col items-center gap-6">
             <div className="flex items-center gap-4 w-full">
               <div className="h-px flex-1 bg-[var(--premium-border)]" />

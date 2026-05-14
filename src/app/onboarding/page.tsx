@@ -11,7 +11,7 @@ export default async function OnboardingPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('tradition, life_stage, gender_context, city, app_language, onboarding_completed')
+    .select('tradition, life_stage, gender_context, city, app_language, onboarding_completed, phone')
     .eq('id', user.id)
     .single();
 
@@ -22,6 +22,7 @@ export default async function OnboardingPage() {
     <OnboardingClient
       userId={user.id}
       traditionValue={profile?.tradition ?? ''}
+      phoneValue={profile?.phone ?? ''}
       hasTradition={Boolean(profile?.tradition)}
       hasLifeStage={Boolean(profile?.life_stage)}
       hasCity={Boolean(profile?.city)}

@@ -12,7 +12,6 @@ import { useState, useEffect } from 'react';
 export default function SystemMonitoring() {
   const [latency, setLatency] = useState(120);
   const [activeUsers, setActiveUsers] = useState(0);
-  const supabase = createClient();
 
   useEffect(() => {
     async function fetchStats() {
