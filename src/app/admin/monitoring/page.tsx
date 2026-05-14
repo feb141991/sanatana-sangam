@@ -5,7 +5,7 @@ import {
   Activity, Zap, Server, Globe, 
   Clock, AlertCircle, CheckCircle,
   BarChart3, RefreshCcw, Database,
-  Cpu, HardDrive
+  Cpu, HardDrive, Shield
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 

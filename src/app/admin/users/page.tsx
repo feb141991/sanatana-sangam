@@ -7,7 +7,7 @@ import {
   Search, UserMinus, UserCheck, Shield, 
   MapPin, Flame, Mail, Calendar, 
   ChevronRight, Filter, MoreVertical,
-  AlertCircle
+  AlertCircle, Users
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { getInitials } from '@/lib/utils';
