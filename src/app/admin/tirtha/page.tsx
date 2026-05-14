@@ -1,16 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { 
-  MapPin, Plus, Search, Users, 
-  Settings, Globe, Shield, ArrowUpRight 
+  MapPin, Users, Globe, Plus, 
+  Search, ArrowLeft, Filter, 
+  MoreVertical, ShieldCheck, Star,
+  Compass, ExternalLink, Mail,
+  ChevronRight
 } from 'lucide-react';
-import toast from 'react-hot-toast';
+import Link from 'next/link';
 
-export default function TirthaManagement() {
-  const [mandalis, setMandalis] = useState<any[]>([]);
+export default function MandaliRegistry() {
   const [loading, setLoading] = useState(true);
+  const [mandalis, setMandalis] = useState<any[]>([]);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     async function fetchMandalis() {
@@ -19,7 +22,7 @@ export default function TirthaManagement() {
         const data = await res.json();
         setMandalis(data || []);
       } catch (err) {
-        toast.error('Failed to load mandalis');
+        console.error('Failed to fetch mandalis');
       } finally {
         setLoading(false);
       }
@@ -27,71 +30,119 @@ export default function TirthaManagement() {
     fetchMandalis();
   }, []);
 
+  const filtered = mandalis.filter(m => 
+    m.name?.toLowerCase().includes(search.toLowerCase()) ||
+    m.location?.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] pb-24 font-outfit">
+      {/* Header */}
       <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-[rgba(200,146,74,0.15)] px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-purple-500/10 text-purple-500">
-              <MapPin size={24} />
-            </div>
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href="/admin" className="p-2 rounded-xl hover:bg-black/5 text-[var(--brand-muted)] transition-all">
+              <ArrowLeft size={20} />
+            </Link>
             <div>
               <h1 className="text-xl font-bold font-serif theme-ink">Mandali Registry</h1>
-              <p className="text-[10px] text-[var(--brand-muted)] uppercase tracking-[0.2em] font-bold">Community Governance</p>
+              <p className="text-[10px] text-[var(--brand-muted)] uppercase tracking-[0.2em] font-bold">Community Chapters</p>
             </div>
           </div>
-          <button className="bg-purple-500 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg shadow-purple-500/20">
+          <button className="bg-[var(--premium-gold)] text-white px-6 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg shadow-[var(--premium-gold)]/20">
             <Plus size={16} /> New Mandali
           </button>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        {loading ? (
-          <div className="flex justify-center py-24">
-            <div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full" />
+      <div className="max-w-7xl mx-auto px-6 py-10 space-y-8">
+        
+        {/* Search & Filter */}
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--brand-muted)]" size={18} />
+            <input 
+              type="text" 
+              placeholder="Search by name, location or tradition..." 
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-white/40 border border-black/5 rounded-2xl pl-12 pr-6 py-4 text-sm outline-none focus:border-[var(--premium-gold)] transition-all"
+            />
           </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {mandalis.map((mandali) => (
-              <motion.div
-                key={mandali.id}
-                className="glass-panel rounded-3xl p-6 border border-black/5 hover:border-purple-500/30 transition-all flex items-start justify-between"
-              >
+          <button className="px-6 py-4 rounded-2xl bg-white border border-black/5 flex items-center gap-2 text-xs font-bold theme-ink hover:bg-black/5 transition-all">
+            <Filter size={18} /> Filter Traditions
+          </button>
+        </div>
+
+        {/* Mandali Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {loading ? (
+            [...Array(6)].map((_, i) => (
+              <div key={i} className="h-64 rounded-3xl bg-black/5 animate-pulse" />
+            ))
+          ) : filtered.length > 0 ? (
+            filtered.map((mandali) => (
+              <div key={mandali.id} className="glass-panel rounded-[2.5rem] border border-black/5 p-8 bg-white/40 hover:border-[var(--premium-gold)] transition-all group relative overflow-hidden">
+                <div className="flex items-start justify-between mb-6">
+                  <div className="p-4 rounded-2xl bg-[var(--premium-gold-soft)] text-[var(--premium-gold)]">
+                    <Compass size={24} />
+                  </div>
+                  <button className="p-2 rounded-xl hover:bg-black/5 text-[var(--brand-muted)]">
+                    <MoreVertical size={20} />
+                  </button>
+                </div>
+
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-lg font-bold theme-ink">{mandali.name}</h3>
-                    <p className="text-xs text-purple-500 font-bold uppercase tracking-widest mt-1">{mandali.city}, {mandali.country}</p>
+                    <p className="flex items-center gap-1.5 text-[10px] text-[var(--brand-muted)] uppercase tracking-widest font-bold mt-1">
+                      <MapPin size={12} className="text-rose-500" /> {mandali.location}
+                    </p>
                   </div>
-                  
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 text-xs theme-dim">
-                      <Users size={14} className="text-purple-500" />
-                      <span className="font-bold">{mandali.member_count || 0} Members</span>
+
+                  <div className="flex items-center gap-6 py-4 border-y border-black/5">
+                    <div className="text-center">
+                      <p className="text-sm font-bold theme-ink">{mandali.members_count || 0}</p>
+                      <p className="text-[8px] text-[var(--brand-muted)] uppercase tracking-widest font-bold">Seekers</p>
                     </div>
-                    <div className="flex items-center gap-2 text-xs theme-dim">
-                      <Globe size={14} className="text-blue-500" />
-                      <span className="font-bold">{mandali.radius_km}km Radius</span>
+                    <div className="text-center">
+                      <p className="text-sm font-bold theme-ink">{mandali.tradition || 'Global'}</p>
+                      <p className="text-[8px] text-[var(--brand-muted)] uppercase tracking-widest font-bold">Tradition</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-bold text-green-600">Active</p>
+                      <p className="text-[8px] text-[var(--brand-muted)] uppercase tracking-widest font-bold">Status</p>
                     </div>
                   </div>
 
-                  <p className="text-sm theme-dim line-clamp-2 max-w-md">
-                    {mandali.description || 'A sacred spiritual community hub for local seekers to share their journey and grow together.'}
-                  </p>
+                  <div className="flex items-center justify-between pt-2">
+                    <div className="flex -space-x-2">
+                      {[...Array(3)].map((_, i) => (
+                        <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-slate-200" />
+                      ))}
+                    </div>
+                    <button className="text-[10px] font-bold text-[var(--premium-gold)] uppercase tracking-widest flex items-center gap-1 hover:underline">
+                      Manage Chapter <ChevronRight size={12} />
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex flex-col items-end justify-between h-full">
-                  <div className="px-3 py-1 rounded-full bg-green-500/10 text-green-600 text-[8px] font-bold uppercase tracking-widest border border-green-500/20">
-                    Active Hub
-                  </div>
-                  <button className="p-3 rounded-2xl bg-black/5 text-[var(--brand-muted)] hover:bg-purple-500/10 hover:text-purple-500 transition-all">
-                    <Settings size={20} />
-                  </button>
+                {/* Decorative Pattern */}
+                <div className="absolute -right-4 -bottom-4 opacity-[0.03] text-[var(--premium-gold)] group-hover:opacity-10 transition-all">
+                  <Star size={120} />
                 </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full py-20 text-center space-y-4">
+              <div className="w-16 h-16 rounded-full bg-black/5 flex items-center justify-center mx-auto text-[var(--brand-muted)]">
+                <Compass size={32} />
+              </div>
+              <p className="text-sm text-[var(--brand-muted)]">No mandalis found matching your search.</p>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );
