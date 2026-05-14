@@ -177,7 +177,7 @@ export default function KathaClient({
                 {/* Badge */}
                 <div className="flex items-center gap-2">
                   <Sparkles size={11} color={THEME.gold} />
-                  <span className="text-[10px] font-bold text-[#C09759] uppercase tracking-[0.3em]">Today's Katha</span>
+                  <span className="text-[10px] font-bold text-[#C09759] uppercase tracking-[0.3em]">Today&apos;s Katha</span>
                 </div>
 
                 {/* Tags */}

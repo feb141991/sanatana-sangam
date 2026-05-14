@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase-server';
+import { createServerSupabaseClient as createClient } from '@/lib/supabase-server';
 import KathaClient from './KathaClient';
 import { ALL_KATHAS, getKathasByTradition } from '@/lib/katha-library';
 
