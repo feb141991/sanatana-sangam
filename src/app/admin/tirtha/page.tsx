@@ -121,9 +121,12 @@ export default function MandaliRegistry() {
                         <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-slate-200" />
                       ))}
                     </div>
-                    <button className="text-[10px] font-bold text-[var(--premium-gold)] uppercase tracking-widest flex items-center gap-1 hover:underline">
+                    <Link 
+                      href={`/admin/tirtha/${mandali.id}`}
+                      className="text-[10px] font-bold text-[var(--premium-gold)] uppercase tracking-widest flex items-center gap-1 hover:underline"
+                    >
                       Manage Chapter <ChevronRight size={12} />
-                    </button>
+                    </Link>
                   </div>
                 </div>
 

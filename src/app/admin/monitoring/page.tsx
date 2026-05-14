@@ -53,6 +53,17 @@ export default function SystemMonitoring() {
             </div>
           </div>
           <div className="flex items-center gap-4">
+            <button 
+              onClick={async () => {
+                const start = Date.now();
+                // Simulating a cron call
+                await fetch('/api/admin/logs/simulate', { method: 'POST' });
+                alert('System Sync Triggered & Logged');
+              }}
+              className="px-4 py-2 rounded-full bg-white border border-black/5 text-[10px] font-bold uppercase tracking-widest hover:bg-black/5 transition-all flex items-center gap-2"
+            >
+              <RefreshCcw size={14} /> Trigger System Sync
+            </button>
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-green-600 text-[10px] font-bold uppercase tracking-widest">
               <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
               All Systems Operational

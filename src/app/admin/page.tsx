@@ -15,11 +15,12 @@ import Link from 'next/link';
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<any>({
     totalSeekers: 0,
     activeNow: 0,
     pendingReports: 0,
-    globalReach: 0
+    globalReach: 0,
+    intelligence: null
   });
   const [loading, setLoading] = useState(true);
 
@@ -91,11 +92,11 @@ export default function AdminDashboard() {
             color="blue"
           />
           <StatCard 
-            href="/admin/monitoring"
-            icon={Activity} 
-            label="Active Now" 
-            value={stats.activeNow.toLocaleString()} 
-            trend="Live Pulse" 
+            href="/admin/reports"
+            icon={Heart} 
+            label="Retention Rate" 
+            value={stats.intelligence?.retentionRate || '0%'} 
+            trend="Active Pulse" 
             color="rose"
             pulse
           />
@@ -111,7 +112,7 @@ export default function AdminDashboard() {
           <StatCard 
             href="/admin/tirtha"
             icon={Globe} 
-            label="Global Mandalis" 
+            label="Active Mandalis" 
             value={stats.globalReach.toLocaleString()} 
             trend="Across 12 countries" 
             color="emerald"
