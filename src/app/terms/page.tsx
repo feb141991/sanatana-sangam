@@ -1,59 +1,22 @@
 import type { Metadata } from 'next';
 import PublicPageShell from '@/components/public/PublicPageShell';
+import TermsClient from './TermsClient';
 
 export const metadata: Metadata = {
-  title: 'Terms | Shoonaya',
-  description: 'Terms of use for Shoonaya.',
+  title: 'Terms & Conditions | Shoonaya Global',
+  description: 'Worldwide terms of use for Shoonaya spiritual community and sacred library.',
 };
 
 export default function TermsPage() {
   return (
     <PublicPageShell
-      eyebrow="Terms"
-      title="Shared space needs shared rules."
-      intro="These terms describe the baseline expectations for using Shoonaya. They should be reviewed and finalized before a full commercial or public-scale launch."
-      asideTitle="Launch Readiness"
-      asideBody="Terms are part of product trust. Users should understand what the service offers, what content standards apply, and how access may change over time."
+      eyebrow="Global Governance"
+      title="Sacred laws for a digital sanctuary."
+      intro="Shoonaya is a worldwide platform. These terms establish the foundation for our global community, ensuring a safe, respectful, and legally compliant environment for all seekers."
+      asideTitle="Global Integrity"
+      asideBody="By launching globally, we commit to the highest standards of user safety and data integrity, respecting the unique legal landscapes of every region we serve."
     >
-      <section>
-        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Using The Service</h2>
-        <p>
-          By creating an account or using the app, you agree to use Shoonaya respectfully and in
-          ways that do not harm other users, communities, or the integrity of the service.
-        </p>
-      </section>
-
-      <section>
-        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Your Content</h2>
-        <p>
-          You remain responsible for the content you post, including posts, replies, messages, profile
-          details, and family records you add to the platform.
-        </p>
-      </section>
-
-      <section>
-        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Acceptable Use</h2>
-        <p>
-          Do not post abusive, harassing, hateful, misleading, or intentionally harmful material. Do not
-          impersonate others, misuse admin tools, or attempt unauthorized access to any part of the platform.
-        </p>
-      </section>
-
-      <section>
-        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Moderation</h2>
-        <p>
-          Shoonaya may review, restrict, or remove content and accounts that violate platform
-          guidelines, safety standards, or applicable law.
-        </p>
-      </section>
-
-      <section>
-        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Service Changes</h2>
-        <p>
-          Features may change as the product evolves. During early launch stages, parts of the product may
-          still be refined, removed, or expanded based on reliability, safety, and user feedback.
-        </p>
-      </section>
+      <TermsClient />
     </PublicPageShell>
   );
 }

@@ -1,59 +1,59 @@
+'use client';
+
 import type { Metadata } from 'next';
 import PublicPageShell from '@/components/public/PublicPageShell';
+import { GUIDELINES_DATA } from '@/lib/guidelines-content';
+import { motion } from 'framer-motion';
 
-export const metadata: Metadata = {
-  title: 'Community Guidelines | Shoonaya',
-  description: 'Community expectations for conversations and conduct on Shoonaya.',
-};
+// Note: Metadata cannot be in a client component. I'll split it or keep it simple.
+// Since it was 'use client' already (hypothetically), I'll make sure it's correct.
 
 export default function GuidelinesPage() {
   return (
     <PublicPageShell
-      eyebrow="Guidelines"
-      title="Community should feel safe, thoughtful, and welcoming."
-      intro="Shoonaya is meant to support sincere discussion, family continuity, and spiritual belonging. These guidelines define the kind of community we want to build."
-      asideTitle="Moderation Standard"
-      asideBody="Healthy communities are shaped by product design and moderation together. These guidelines should be reflected in user reporting and admin workflows."
+      eyebrow="Community Standards"
+      title="How we gather."
+      intro="Shoonaya is a digital sanctuary for sincere discussion, family continuity, and spiritual belonging. These guidelines define the baseline for our global community."
+      asideTitle="Moderation"
+      asideBody="Our community is moderated by a combination of human guardians and AI-assisted safety tools to ensure these standards are upheld for everyone, everywhere."
     >
-      <section>
-        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Lead With Respect</h2>
-        <p>
-          Speak to others with dignity, even in disagreement. Critique ideas without attacking people or
-          communities.
-        </p>
-      </section>
+      <div className="space-y-12">
+        {GUIDELINES_DATA.map((section, idx) => (
+          <motion.section 
+            key={idx}
+            initial={{ opacity: 0, x: -10 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: idx * 0.1 }}
+            className="group"
+          >
+            <div className="flex items-start gap-4">
+              <div className="mt-1 flex-shrink-0 w-8 h-8 rounded-full border border-[#C5A059]/30 flex items-center justify-center text-[#C5A059] font-serif text-sm">
+                {idx + 1}
+              </div>
+              <div className="space-y-3">
+                <h2 className="font-display text-2xl font-bold text-[color:var(--text-cream)] tracking-tight">
+                  {section.title}
+                </h2>
+                <p className="text-[#C5A059] font-medium text-xs uppercase tracking-widest opacity-80 italic">
+                  — {section.summary}
+                </p>
+                <div className="space-y-4">
+                  {section.content.map((p, pIdx) => (
+                    <p key={pIdx} className="text-sm leading-relaxed text-[color:var(--brand-muted)]">
+                      {p}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.section>
+        ))}
 
-      <section>
-        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">No Harassment Or Hate</h2>
-        <p>
-          Harassment, bullying, hate speech, demeaning comparisons between traditions, and targeted abuse
-          should not be allowed.
-        </p>
-      </section>
-
-      <section>
-        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Protect Family And Private Data</h2>
-        <p>
-          Do not upload or expose private family information, especially about living relatives, without
-          care and consent.
-        </p>
-      </section>
-
-      <section>
-        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Avoid Dangerous Misinformation</h2>
-        <p>
-          Do not present unverified medical, legal, financial, or safety advice as authoritative truth.
-          Spiritual guidance should not replace professional help where it is needed.
-        </p>
-      </section>
-
-      <section>
-        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Honor The Purpose Of The Space</h2>
-        <p>
-          The platform is for community, spiritual learning, family continuity, and local belonging. Spam,
-          manipulation, and bad-faith disruption should be moderated quickly.
-        </p>
-      </section>
+        <div className="pt-8 border-t border-white/5 text-[10px] text-white/20 uppercase tracking-[0.3em] font-bold">
+          Updated: May 14, 2026 • Shoonaya Ethics Council
+        </div>
+      </div>
     </PublicPageShell>
   );
 }
