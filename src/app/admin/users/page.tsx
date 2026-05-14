@@ -40,13 +40,9 @@ export default function UserManagement() {
     setLoading(true);
     
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .or(`username.ilike.%${query}%,full_name.ilike.%${query}%`)
-        .limit(20);
-
-      if (error) throw error;
+      const res = await fetch(`/api/admin/users?query=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
       setUsers(data || []);
     } catch (err: any) {
       toast.error('Search failed');
@@ -55,17 +51,34 @@ export default function UserManagement() {
     }
   };
 
+  useEffect(() => {
+    async function fetchRecent() {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/admin/users');
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        setUsers(data || []);
+      } catch (err) {
+        toast.error('Failed to load seekers');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchRecent();
+  }, []);
+
   const toggleBan = async (user: UserProfile) => {
     const action = user.is_banned ? 'unban' : 'ban';
     if (!confirm(`Are you sure you want to ${action} @${user.username}?`)) return;
 
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ is_banned: !user.is_banned })
-        .eq('id', user.id);
-
-      if (error) throw error;
+      const res = await fetch('/api/admin/users', {
+        method: 'POST',
+        body: JSON.stringify({ userId: user.id, action })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
 
       setUsers(prev => prev.map(u => u.id === user.id ? { ...u, is_banned: !user.is_banned } : u));
       if (selectedUser?.id === user.id) {

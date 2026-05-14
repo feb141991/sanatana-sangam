@@ -84,6 +84,31 @@ export default function AdminHub() {
     reportsCount: 0,
     systemStatus: 'Optimal'
   });
+  const [loading, setLoading] = useState(true);
+  const supabase = createClient();
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await fetch('/api/admin/stats');
+        const data = await res.json();
+        
+        if (!res.ok) throw new Error(data.error);
+
+        setStats({
+          totalUsers: data.totalUsers || 0,
+          activeNow: data.activeNow || 0,
+          reportsCount: data.reportsCount || 0,
+          systemStatus: 'Optimal'
+        });
+      } catch (err) {
+        console.error('Failed to fetch admin stats:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchStats();
+  }, []);
 
   const handleLogout = async () => {
     // Admin logout logic usually involves clearing the admin cookie
@@ -134,9 +159,9 @@ export default function AdminHub() {
         {/* Quick Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { label: 'Total Seekers', value: '12,842', trend: '+12%', icon: Users, color: 'text-blue-500' },
-            { label: 'Active Sangam', value: '1,420', trend: '+5%', icon: Activity, color: 'text-emerald-500' },
-            { label: 'Pending Reports', value: '12', trend: '-2', icon: AlertTriangle, color: 'text-amber-500' },
+            { label: 'Total Seekers', value: stats.totalUsers.toLocaleString(), trend: 'Live', icon: Users, color: 'text-blue-500' },
+            { label: 'Active Sangam', value: stats.activeNow.toLocaleString(), trend: 'Active', icon: Activity, color: 'text-emerald-500' },
+            { label: 'Pending Reports', value: stats.reportsCount.toString(), trend: stats.reportsCount > 0 ? 'Review' : 'Clear', icon: AlertTriangle, color: stats.reportsCount > 0 ? 'text-rose-500' : 'text-amber-500' },
             { label: 'System Health', value: '99.9%', trend: 'Stable', icon: ShieldCheck, color: 'text-purple-500' }
           ].map((stat, i) => (
             <motion.div

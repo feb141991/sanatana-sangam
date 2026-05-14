@@ -15381,8 +15381,8 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/profile/ProfileClient.tsx",
       "source_location": "L570",
       "weight": 1.0,
-      "_src": "profileclient_requestaccountdeletion",
-      "_tgt": "progress_progress_update",
+      "_src": "progress_progress_update",
+      "_tgt": "profileclient_requestaccountdeletion",
       "source": "progress_progress_update",
       "target": "profileclient_requestaccountdeletion"
     },
@@ -15393,8 +15393,8 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/profile/ProfileClient.tsx",
       "source_location": "L603",
       "weight": 1.0,
-      "_src": "profileclient_cancelaccountdeletion",
-      "_tgt": "progress_progress_update",
+      "_src": "progress_progress_update",
+      "_tgt": "profileclient_cancelaccountdeletion",
       "source": "progress_progress_update",
       "target": "profileclient_cancelaccountdeletion"
     },

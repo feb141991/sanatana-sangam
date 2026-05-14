@@ -11,12 +11,23 @@ import { useState, useEffect } from 'react';
 
 export default function SystemMonitoring() {
   const [latency, setLatency] = useState(120);
-  const [activeUsers, setActiveUsers] = useState(842);
+  const [activeUsers, setActiveUsers] = useState(0);
+  const supabase = createClient();
 
   useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await fetch('/api/admin/stats');
+        const data = await res.json();
+        if (res.ok) setActiveUsers(data.activeNow || 0);
+      } catch (err) {
+        console.error('Failed to fetch monitoring stats:', err);
+      }
+    }
+    fetchStats();
+
     const interval = setInterval(() => {
       setLatency(prev => prev + (Math.random() > 0.5 ? 5 : -5));
-      setActiveUsers(prev => prev + (Math.random() > 0.5 ? 2 : -2));
     }, 3000);
     return () => clearInterval(interval);
   }, []);
