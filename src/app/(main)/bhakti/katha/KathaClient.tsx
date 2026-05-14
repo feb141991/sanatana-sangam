@@ -140,7 +140,7 @@ export default function KathaClient({
                   <div className="flex items-center gap-2.5 mb-4">
                     <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--premium-gold)]/10 border border-[var(--premium-gold)]/20">
                       <Sparkles size={11} className="text-[var(--premium-gold)]" />
-                      <span className="text-[10px] font-black text-[var(--premium-gold)] uppercase tracking-[0.25em]">Today's Pick</span>
+                      <span className="text-[10px] font-black text-[var(--premium-gold)] uppercase tracking-[0.25em]">Today&apos;s Pick</span>
                     </div>
                     <span className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">
                       {todayKatha.durationMin} min
