@@ -64,6 +64,8 @@ import DarshanPrompt from '@/components/home/DarshanPrompt';
 import { getTransliteration } from '@/lib/transliteration';
 import { resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query-keys';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 // DivineDiya removed — Prāthanā card removed from home
 import BottomNav from '@/components/layout/BottomNav';
@@ -987,7 +989,8 @@ export default function HomeDashboard({
   sevaScore = 0,
 }: Props) {
   const supabase = createClient();
-  const router   = useRouter();
+  const queryClient = useQueryClient();
+  const router      = useRouter();
   const prefersReducedMotion = useReducedMotion();
   const searchParams = useSearchParams();
   const isPro = usePremium();
