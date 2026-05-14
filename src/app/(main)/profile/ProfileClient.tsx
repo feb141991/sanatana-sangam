@@ -144,7 +144,7 @@ export default function ProfileClient({
   const router      = useRouter();
   const supabase    = useRef(createClient()).current;
   const queryClient = useQueryClient();
-  const { setLang } = useLanguage();
+  const { setLang, lang: contextLang } = useLanguage();
   const { preference: themePreference, resolvedTheme, setPreference: setThemePreference } = useThemePreference();
   const isPro       = usePremium();
   const profileQuery = useProfileQuery(userId, profile);
@@ -628,7 +628,12 @@ export default function ProfileClient({
   } satisfies Record<ThemePreference, typeof Monitor>;
 
   return (
-    <div className="divine-home-shell min-h-screen bg-[var(--divine-bg)] -mx-3 sm:-mx-4 relative selection:bg-[#C5A059]/30">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="divine-home-shell min-h-screen bg-[var(--divine-bg)] -mx-3 sm:-mx-4 relative selection:bg-[#C5A059]/30"
+    >
       <div className="relative pb-24">
         
         {/* ── Zenith Profile Hero ────────────────────────────────────────────── */}
@@ -671,8 +676,9 @@ export default function ProfileClient({
                 type="button"
                 onClick={() => avatarUrl && setShowAvatarPreview(true)}
                 disabled={!avatarUrl}
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
+                initial={{ scale: 0.85, opacity: 0, y: 10 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                 className={`relative w-24 h-24 rounded-full bg-white/10 border-2 border-white/20 p-1 flex items-center justify-center overflow-hidden shadow-2xl ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
               >
                 <div className="relative w-full h-full rounded-full overflow-hidden bg-white/5">
@@ -723,7 +729,16 @@ export default function ProfileClient({
           </div>
         </div>
 
-        <div className="px-5 -mt-10 space-y-4 relative z-30">
+        {/* Ambient glow for body section */}
+        <div className="fixed top-1/3 right-0 w-64 h-64 bg-[#C5A059]/5 blur-[100px] rounded-full translate-x-1/2 pointer-events-none -z-10" />
+        <div className="fixed bottom-1/3 left-0 w-48 h-48 bg-[#C5A059]/4 blur-[80px] rounded-full -translate-x-1/2 pointer-events-none -z-10" />
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="px-5 -mt-10 space-y-4 relative z-30"
+        >
           {/* Metric Row */}
           <div className="grid grid-cols-3 gap-3">
             {[
@@ -733,9 +748,9 @@ export default function ProfileClient({
             ].map((m, i) => (
               <motion.div
                 key={m.label}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 + (i * 0.05) }}
+                initial={{ opacity: 0, y: 16, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: 0.15 + (i * 0.07), type: 'spring', stiffness: 300, damping: 24 }}
                 className="glass-panel border border-white/10 rounded-2xl p-3 text-center"
               >
                 <p className="text-[10px] font-bold text-[#C5A059] uppercase tracking-widest mb-1 opacity-70">{m.label}</p>
@@ -747,27 +762,39 @@ export default function ProfileClient({
           <CompletionBar profile={liveProfile} onEdit={() => setEditing(true)} />
 
           {/* ── Zenith Action Grid ── */}
-          <div className="grid grid-cols-2 gap-3">
-            <button
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.32, type: 'spring', stiffness: 280, damping: 22 }}
+            className="grid grid-cols-2 gap-3"
+          >
+            <motion.button
               onClick={() => setKoshOpen(true)}
-              className="group relative flex flex-col items-center justify-center p-4 rounded-3xl bg-gradient-to-br from-[#C5A059]/15 to-[#C5A059]/5 border border-[#C5A059]/20 shadow-xl overflow-hidden transition-all active:scale-95"
+              whileTap={{ scale: 0.96 }}
+              className="group relative flex flex-col items-center justify-center p-5 rounded-3xl bg-gradient-to-br from-[#C5A059]/15 to-[#C5A059]/5 border border-[#C5A059]/25 shadow-xl overflow-hidden transition-all"
             >
               <div className="absolute inset-0 bg-[#C5A059]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <Shield size={24} className="text-[#C5A059] mb-2 drop-shadow-sm" />
+              <div className="w-10 h-10 rounded-2xl bg-[#C5A059]/10 flex items-center justify-center mb-3">
+                <Shield size={20} className="text-[#C5A059] drop-shadow-sm" />
+              </div>
               <span className="text-[11px] font-bold uppercase tracking-widest text-[#C5A059]">Open Kosh</span>
-              <span className="text-[9px] text-[#C5A059]/60 font-medium mt-1">Sacred Treasury</span>
-            </button>
+              <span className="text-[9px] text-[#C5A059]/50 font-medium mt-1">Sacred Treasury</span>
+            </motion.button>
 
-            <button
+            <motion.button
               onClick={() => setEditing(true)}
-              className="group relative flex flex-col items-center justify-center p-4 rounded-3xl bg-white/5 border border-white/10 shadow-xl overflow-hidden transition-all active:scale-95"
+              whileTap={{ scale: 0.96 }}
+              className="group relative flex flex-col items-center justify-center p-5 rounded-3xl border overflow-hidden transition-all"
+              style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)' }}
             >
               <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <Edit3 size={24} className="text-[#F2EAD6] mb-2 drop-shadow-sm opacity-80" />
-              <span className="text-[11px] font-bold uppercase tracking-widest text-[#F2EAD6] opacity-80">Personal Info</span>
-              <span className="text-[9px] text-white/40 font-medium mt-1">Lineage & Bio</span>
-            </button>
-          </div>
+              <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center mb-3 border border-white/10">
+                <Edit3 size={20} className="text-[#F2EAD6] drop-shadow-sm opacity-80" />
+              </div>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--divine-text)] dark:text-[#F2EAD6] opacity-80">Personal Info</span>
+              <span className="text-[9px] text-white/35 font-medium mt-1">Lineage &amp; Bio</span>
+            </motion.button>
+          </motion.div>
 
           {showAvatarPreview && avatarUrl && (
             <AvatarPreviewModal
@@ -778,7 +805,12 @@ export default function ProfileClient({
           )}
 
           {/* WhatsApp Invite Card */}
-          <div className="glass-panel border border-white/5 rounded-[2rem] p-5 flex flex-col items-center text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.42, type: 'spring', stiffness: 260, damping: 22 }}
+            className="glass-panel border border-white/5 rounded-[2rem] p-5 flex flex-col items-center text-center"
+          >
             <div className="w-12 h-12 rounded-full bg-[#25D366]/10 border border-[#25D366]/20 flex items-center justify-center mb-3">
               <MessageCircle size={22} className="text-[#25D366]" />
             </div>
@@ -795,7 +827,7 @@ export default function ProfileClient({
             >
               Invite on WhatsApp
             </button>
-          </div>
+          </motion.div>
 
           {hasSafetyItems && (
             <div className="glass-panel border border-white/5 rounded-[2rem] p-5">
@@ -1038,7 +1070,7 @@ export default function ProfileClient({
               Sanatan Sangam · Built with 🙏
             </p>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* ── Drawers ── */}
@@ -1183,7 +1215,7 @@ export default function ProfileClient({
               <p className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] mb-2">App Language</p>
               <div className="flex flex-col gap-1.5">
                 {APP_LANGUAGES.map((lang) => {
-                  const active = ((liveProfile as any)?.app_language ?? 'en') === lang.value;
+                  const active = contextLang === lang.value;
                   return (
                     <button
                       key={lang.value}
@@ -1353,7 +1385,7 @@ export default function ProfileClient({
           );
         })()}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }
 
