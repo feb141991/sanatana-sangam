@@ -14,7 +14,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Volume2, VolumeX, Flame, RotateCcw, BarChart2, Settings2, X } from 'lucide-react';
+import { ChevronLeft, Volume2, VolumeX, Flame, RotateCcw, BarChart2, Settings2, X, Moon, Sun, Sparkles } from 'lucide-react';
 import { useEngine } from '@/contexts/EngineContext';
 import { hapticLight, hapticSuccess } from '@/lib/platform';
 import { createClient } from '@/lib/supabase';
