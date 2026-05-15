@@ -33,6 +33,7 @@ export function KulHub({
   setNewKulName: (value: string) => void;
   setEditingName: (value: boolean) => void;
   saveKulName: () => void;
+  onUpdateKul: (updates: { name?: string; cover_url?: string | null }) => void;
 }) {
   const completedTasks = tasks.filter((task) => task.completed).length;
   const openTasks = tasks.length - completedTasks;
@@ -94,10 +95,24 @@ export function KulHub({
       `}</style>
 
       {/* ── NEW SACRED HERO ── */}
-      <div className="relative clay-card rounded-[2.5rem] p-6 overflow-hidden flex flex-col items-center text-center">
-        {/* Background Accents */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--brand-primary)] opacity-[0.03] blur-[60px]" />
-        <div className="absolute bottom-0 left-0 w-40 h-40 bg-[var(--brand-primary-strong)] opacity-[0.03] blur-[80px]" />
+      <div className="relative clay-card rounded-[2.5rem] p-6 overflow-hidden flex flex-col items-center text-center min-h-[360px]">
+        {/* Banner / Cover Image */}
+        {kul.cover_url ? (
+          <div className="absolute inset-0 z-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
+              src={kul.cover_url} 
+              alt="" 
+              className="w-full h-full object-cover opacity-20" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/40 to-white" />
+          </div>
+        ) : (
+          <>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--brand-primary)] opacity-[0.03] blur-[60px]" />
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[var(--brand-primary-strong)] opacity-[0.03] blur-[80px]" />
+          </>
+        )}
 
         {/* Top Actions Row */}
         <div className="w-full flex items-center justify-between z-10 mb-8">
@@ -107,9 +122,22 @@ export function KulHub({
             <ChevronLeft size={14} strokeWidth={3} />
             Home
           </Link>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--brand-primary)]/20 bg-[var(--brand-primary)]/5">
-            <span className="text-[10px] font-bold text-[var(--brand-primary)] uppercase tracking-widest opacity-60">Invite</span>
-            <span className="text-xs font-bold text-[var(--brand-primary)] tracking-[0.2em]">{kul.invite_code}</span>
+          <div className="flex items-center gap-3">
+             {myRole === 'guardian' && (
+               <button 
+                 onClick={() => {
+                   const url = prompt('Enter Image URL for Kul Banner:', kul.cover_url || '');
+                   if (url !== null) onUpdateKul({ cover_url: url || null });
+                 }}
+                 className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-black/5 hover:bg-black/10 transition border border-black/5"
+               >
+                 Change Cover
+               </button>
+             )}
+             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--brand-primary)]/20 bg-[var(--brand-primary)]/5">
+                <span className="text-[10px] font-bold text-[var(--brand-primary)] uppercase tracking-widest opacity-60">Invite</span>
+                <span className="text-xs font-bold text-[var(--brand-primary)] tracking-[0.2em]">{kul.invite_code}</span>
+             </div>
           </div>
         </div>
 

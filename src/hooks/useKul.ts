@@ -16,6 +16,7 @@ import {
   saveKulEvent,
   saveKulFamilyMember,
   sendKulMessage,
+  updateKul,
   type KulData,
   type SaveKulEventPayload,
   type SaveKulFamilyMemberPayload,
@@ -96,6 +97,10 @@ export function useKulMutations(userId: string) {
     }),
     leaveKul: useMutation({
       mutationFn: () => leaveKul(userId),
+      onSuccess: refreshKul,
+    }),
+    updateKul: useMutation({
+      mutationFn: ({ kulId, updates }: { kulId: string; updates: { name?: string; avatar_emoji?: string; cover_url?: string | null } }) => updateKul(userId, kulId, updates),
       onSuccess: refreshKul,
     }),
   };

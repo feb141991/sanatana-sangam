@@ -6,6 +6,7 @@ export type KulSummary = {
   name: string;
   invite_code: string;
   avatar_emoji: string;
+  cover_url: string | null;
   created_by: string;
   created_at: string;
 };
@@ -268,6 +269,12 @@ export async function renameKul(kulId: string, name: string) {
     .from('kuls')
     .update({ name: name.trim() })
     .eq('id', kulId);
+  if (error) throw error;
+}
+
+export async function updateKul(kulId: string, updates: { name?: string; avatar_emoji?: string; cover_url?: string | null }) {
+  const supabase = createClient();
+  const { error } = await supabase.from('kuls').update(updates).eq('id', kulId);
   if (error) throw error;
 }
 

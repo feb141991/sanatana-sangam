@@ -58,6 +58,10 @@ const kulRuntimeApi = selectRuntimeAdapter({
     deleteKulFamilyMember: async (userId: string, memberId: string) => deleteLiveKulFamilyMember(memberId),
     saveKulEvent: saveLiveKulEvent,
     leaveKul: leaveLiveKul,
+    updateKul: async (userId: string, kulId: string, updates: any) => {
+      const { updateKul: updateLiveKul } = await import('@/lib/api/kul');
+      return updateLiveKul(kulId, updates);
+    },
   },
   mock: {
     fetchKulData: fetchMockKulData,
@@ -74,6 +78,9 @@ const kulRuntimeApi = selectRuntimeAdapter({
     deleteKulFamilyMember: deleteMockKulFamilyMember,
     saveKulEvent: saveMockKulEvent,
     leaveKul: leaveMockKul,
+    updateKul: async (userId: string, kulId: string, updates: any) => {
+      console.log('Mock updateKul', kulId, updates);
+    },
   },
 });
 
@@ -91,6 +98,10 @@ export async function joinKul(inviteCode: string) {
 
 export async function renameKul(userId: string, kulId: string, name: string) {
   return kulRuntimeApi.renameKul(userId, kulId, name);
+}
+
+export async function updateKul(userId: string, kulId: string, updates: { name?: string; avatar_emoji?: string; cover_url?: string | null }) {
+  return kulRuntimeApi.updateKul(userId, kulId, updates);
 }
 
 export async function promoteKulMember(userId: string, memberId: string) {

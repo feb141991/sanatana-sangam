@@ -229,6 +229,7 @@ export default function KulClient({
             setNewKulName={() => {}}
             setEditingName={() => {}}
             saveKulName={() => {}}
+            onUpdateKul={(updates) => kulMutations.updateKul.mutate({ kulId: data.kul!.id, updates })}
           />
         );
     }
