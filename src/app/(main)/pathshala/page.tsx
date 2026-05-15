@@ -5,7 +5,7 @@ import PathshalaClient from './PathshalaClient';
 export default async function PathshalaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; entryId?: string; sectionId?: string }>;
 }) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -20,9 +20,14 @@ export default async function PathshalaPage({
   const params = await searchParams;
   const validTabs = ['learn', 'scripture', 'explore'] as const;
   type Tab = typeof validTabs[number];
-  const initialTab: Tab = validTabs.includes(params.tab as Tab)
+  let initialTab: Tab = validTabs.includes(params.tab as Tab)
     ? (params.tab as Tab)
     : 'learn';
+
+  // Force scripture tab if deep-linking to an entry or section
+  if (params.entryId || params.sectionId) {
+    initialTab = 'scripture';
+  }
 
   return (
     <PathshalaClient
@@ -30,6 +35,8 @@ export default async function PathshalaPage({
       userName={profile?.full_name ?? profile?.username ?? 'Sadhak'}
       tradition={profile?.tradition ?? 'hindu'}
       initialTab={initialTab}
+      initialEntryId={params.entryId}
+      initialSectionId={params.sectionId}
       appLanguage={(profile as any)?.app_language ?? 'en'}
       meaningLanguage={(profile as any)?.meaning_language ?? 'en'}
       transliterationLanguage={(profile as any)?.transliteration_language ?? 'en'}

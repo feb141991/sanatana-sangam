@@ -616,14 +616,14 @@ function EpicViewer({ structure, accentColour }: { structure: EpicStructure; acc
 
 // ── Scripture Library Tab — Scripture cards → drill-in view ───────────────────
 function ScriptureTab({
-  tradition, accentColour, navLabel, isDark,
+  tradition, accentColour, navLabel, isDark, initialSectionId,
 }: {
-  tradition: string; accentColour: string; navLabel: string; isDark: boolean;
+  tradition: string; accentColour: string; navLabel: string; isDark: boolean; initialSectionId?: string;
 }) {
   const allowedSections = SECTIONS_BY_TRADITION[tradition] ?? SECTIONS_BY_TRADITION.other;
   const sections        = LIBRARY_SECTIONS.filter(s => allowedSections.includes(s.id));
 
-  const [drillSection, setDrillSection] = useState<string | null>(null);
+  const [drillSection, setDrillSection] = useState<string | null>(initialSectionId ?? null);
   const [query,        setQuery]        = useState('');
   const [showSearch,   setSearch]       = useState(false);
 
@@ -799,6 +799,8 @@ interface Props {
   userName:    string;
   tradition:   string;
   initialTab?: 'learn' | 'scripture' | 'explore';
+  initialEntryId?: string;
+  initialSectionId?: string;
   appLanguage?: string;
   meaningLanguage?: string;
   transliterationLanguage?: string;
@@ -820,6 +822,8 @@ export default function PathshalaClient({
   userName,
   tradition,
   initialTab,
+  initialEntryId,
+  initialSectionId,
   appLanguage,
   meaningLanguage,
   transliterationLanguage,
@@ -891,6 +895,13 @@ export default function PathshalaClient({
     window.addEventListener('open-reader', handleOpen);
     return () => window.removeEventListener('open-reader', handleOpen);
   }, []);
+
+  useEffect(() => {
+    if (initialEntryId) {
+      const entry = ALL_LIBRARY_ENTRIES.find(e => e.id === initialEntryId);
+      if (entry) setReadingEntry(entry);
+    }
+  }, [initialEntryId]);
 
   const cardStyle = {
     background: glassSurface,
@@ -1187,7 +1198,7 @@ export default function PathshalaClient({
   // (Engine shloka-of-day wired separately; show a motivational prompt for now)
   function DailyVersePrompt() {
     return (
-      <Link href="/discover" className="block rounded-[1.8rem] overflow-hidden mb-4 motion-press"
+      <Link href="/pathshala?tab=scripture" className="block rounded-[1.8rem] overflow-hidden mb-4 motion-press"
         style={cardStyle}>
         <div className="p-5" style={{ background: `linear-gradient(135deg, ${meta.accentColour}12 0%, transparent 100%)` }}>
           {pulse && (
@@ -1544,6 +1555,7 @@ export default function PathshalaClient({
                 accentColour={meta.accentColour}
                 navLabel={meta.navLibraryLabel}
                 isDark={isDark}
+                initialSectionId={initialSectionId}
               />
             )}
 

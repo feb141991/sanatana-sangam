@@ -1,15 +1,15 @@
 import type { LibraryEntry, LibrarySection, LibraryTradition } from '@/lib/library-content';
 
 export function getPathshalaTraditionHref(tradition: LibraryTradition) {
-  return `/library/${tradition}`;
+  return `/pathshala?tab=scripture&tradition=${tradition}`;
 }
 
 export function getPathshalaSectionHref(tradition: LibraryTradition, sectionId: string) {
-  return `${getPathshalaTraditionHref(tradition)}/${sectionId}`;
+  return `/pathshala?tab=scripture&sectionId=${sectionId}`;
 }
 
 export function getPathshalaEntryHref(tradition: LibraryTradition, sectionId: string, entryId: string) {
-  return `${getPathshalaSectionHref(tradition, sectionId)}/${entryId}`;
+  return `/pathshala?tab=scripture&entryId=${entryId}`;
 }
 
 export function getPathshalaEntryHrefFromSection(section: LibrarySection, entry: LibraryEntry) {
@@ -21,9 +21,9 @@ export function getPathshalaChapterHref(tradition: LibraryTradition, sectionId: 
 }
 
 export function getGitaRecitationHref(chapterId?: string) {
-  const base = '/library/hindu/gita/recite';
+  const base = '/pathshala?tab=scripture&sectionId=gita';
   if (!chapterId) return base;
-  return `${base}?chapter=${encodeURIComponent(chapterId)}`;
+  return `/pathshala?tab=scripture&entryId=${chapterId}`;
 }
 export function getAIChatHref(prompt: string, context?: string) {
   const params = new URLSearchParams({ prefill: prompt });

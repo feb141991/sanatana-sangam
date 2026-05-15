@@ -103,7 +103,7 @@ Return ONLY this JSON (no markdown fences, no extra keys):
   "context_label": "<A 2-4 word label for the type of practice, e.g. 'Morning sadhana', 'Contemplative reading', 'Breathwork focus'. Used as the section eyebrow.>",
   "action": {
     "label": "<Short CTA label, e.g. 'Open Mantra' or 'Start Mala'>",
-    "href": "<A valid internal route, e.g. '/bhakti/mahamrityunjaya-mantra' or '/bhakti/mala'>",
+    "href": "<A valid internal route, e.g. '/pathshala?tab=scripture&entryId=[id]' for scripture or '/bhakti/mala' for tools>",
     "type": "<'link' | 'primary'> "
   }
 }

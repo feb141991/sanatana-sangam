@@ -90,7 +90,7 @@ function VerseCard({
           {result.entry.source}
         </span>
         <Link
-          href={`/library`}
+          href={`/pathshala?tab=scripture&entryId=${result.entry.id}`}
           className="text-[10px] font-medium"
           style={{ color: 'var(--text-dim)' }}
         >
