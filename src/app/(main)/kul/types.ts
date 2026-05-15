@@ -3,7 +3,7 @@ export type KulSummary = {
   name: string; 
   invite_code: string; 
   avatar_emoji: string; 
-  cover_url?: string | null;
+  cover_url: string | null;
   created_by: string; 
   created_at: string 
 };
