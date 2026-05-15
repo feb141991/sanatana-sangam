@@ -8,6 +8,7 @@ import { ChevronLeft } from 'lucide-react';
 
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { useKulMutations, useKulQuery } from '@/hooks/useKul';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 // Modular Components
 import { KulHub } from './components/KulHub';
@@ -58,6 +59,7 @@ export default function KulClient({
   view: initialView = 'hub',
 }: Props) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [activeView, setActiveView] = useState<KulView>(initialView);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -273,7 +275,7 @@ export default function KulClient({
           <div className="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center group-hover:bg-black/10 transition-colors">
             <ChevronLeft size={16} />
           </div>
-          <span className="font-bold uppercase tracking-widest text-[10px]">Back to Hub</span>
+          <span className="font-bold uppercase tracking-widest text-[10px]">{t('kulBackToHub')}</span>
         </motion.button>
       )}
 
@@ -295,13 +297,13 @@ export default function KulClient({
       {/* Bottom Tab Bar (Mobile) */}
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] px-4 w-full max-w-md">
          <div className="glass-panel bg-white/70 backdrop-blur-2xl rounded-full p-2 border border-white/20 shadow-2xl flex items-center justify-between">
-           {[
-             { key: 'hub', label: 'Hub', icon: '🏡' },
-             { key: 'tasks', label: 'Tasks', icon: '📋' },
-             { key: 'sabha', label: 'Sabha', icon: '💬' },
-             { key: 'vansh', label: 'Vansh', icon: '🌳' },
-             { key: 'members', label: 'Kul', icon: '👨‍👩‍👧' },
-           ].map((tab) => (
+          {[
+            { key: 'hub', label: t('navHome'), icon: '🏡' },
+            { key: 'tasks', label: t('kulTasksTitle'), icon: '📋' },
+            { key: 'sabha', label: t('kulSabhaTitle'), icon: '💬' },
+            { key: 'vansh', label: t('kulVanshTitleLong'), icon: '🌳' },
+            { key: 'members', label: t('kulMembersTitle'), icon: '👨‍👩‍👧' },
+          ].map((tab) => (
              <button
                key={tab.key}
                onClick={() => setActiveView(tab.key as KulView)}

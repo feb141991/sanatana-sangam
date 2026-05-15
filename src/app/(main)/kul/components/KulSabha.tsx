@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Smile, Image as ImageIcon } from 'lucide-react';
 import { MessageRow, MemberRow } from '../types';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export function KulSabha({
   messages,
@@ -16,6 +17,7 @@ export function KulSabha({
   userId: string;
   onSendMessage: (content: string) => void;
 }) {
+  const { t } = useLanguage();
   const [content, setContent] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -36,8 +38,8 @@ export function KulSabha({
       {/* Header */}
       <div className="px-6 py-4 border-b border-white/8 bg-white/5 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold theme-ink premium-serif">Kul Sabha</h2>
-          <p className="text-[10px] theme-muted uppercase tracking-widest font-bold">Family Council Chat</p>
+          <h2 className="text-lg font-bold theme-ink premium-serif">{t('kulSabhaTitle')}</h2>
+          <p className="text-[10px] theme-muted uppercase tracking-widest font-bold">{t('kulSabhaDesc')}</p>
         </div>
         <div className="flex -space-x-2">
           {members.slice(0, 5).map(m => (
@@ -126,7 +128,7 @@ export function KulSabha({
                value={content}
                onChange={e => setContent(e.target.value)}
                onKeyDown={e => e.key === 'Enter' && handleSend()}
-               placeholder="Write to the family council…"
+               placeholder={t('kulSabhaPlaceholder')}
                className="w-full px-5 py-3 rounded-2xl bg-white/5 border border-white/10 focus:border-[var(--brand-primary)]/40 outline-none text-sm theme-ink placeholder:text-[color:var(--brand-muted)]"
              />
            </div>

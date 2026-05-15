@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
 import { KulSummary, MemberRow, TaskRow, MessageRow, FamilyMember, KulEvent } from '../types';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { daysUntilNextOccurrence } from '../utils';
 import { KulSectionTiles } from './KulSectionTiles';
 
@@ -36,6 +37,7 @@ export function KulHub({
   saveKulName: () => void;
   onUpdateKul: (updates: { name?: string; cover_url?: string | null }) => void;
 }) {
+  const { t } = useLanguage();
   const completedTasks = tasks.filter((task) => task.completed).length;
   const openTasks = tasks.length - completedTasks;
   const totalStreak = members.reduce((sum, member) => sum + (member.profiles?.shloka_streak ?? 0), 0);
@@ -121,7 +123,7 @@ export function KulHub({
             className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full glass-panel border border-white/5 transition hover:bg-white/10"
             style={{ color: 'var(--brand-primary)' }}>
             <ChevronLeft size={14} strokeWidth={3} />
-            Home
+            {t('back')}
           </Link>
           <div className="flex items-center gap-3">
              {myRole === 'guardian' && (
@@ -132,11 +134,11 @@ export function KulHub({
                  }}
                  className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-black/5 hover:bg-black/10 transition border border-black/5"
                >
-                 Change Cover
+                 {t('kulChangeCover')}
                </button>
              )}
              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--brand-primary)]/20 bg-[var(--brand-primary)]/5">
-                <span className="text-[10px] font-bold text-[var(--brand-primary)] uppercase tracking-widest opacity-60">Invite</span>
+                <span className="text-[10px] font-bold text-[var(--brand-primary)] uppercase tracking-widest opacity-60">{t('kulInviteLabel')}</span>
                 <span className="text-xs font-bold text-[var(--brand-primary)] tracking-[0.2em]">{kul.invite_code}</span>
              </div>
           </div>
@@ -175,7 +177,7 @@ export function KulHub({
                 )}
               </h1>
               <p className="text-[10px] uppercase tracking-[0.3em] font-semibold text-[var(--brand-primary)] opacity-70">
-                Lineage of {members.find(m => m.profiles?.gotra)?.profiles?.gotra || 'Dharma'}
+                {t('kulLineageOf')} {members.find(m => m.profiles?.gotra)?.profiles?.gotra || 'Dharma'}
               </p>
             </div>
           )}
@@ -184,10 +186,10 @@ export function KulHub({
         {/* Floating Metrics Row */}
         <div className="flex flex-wrap justify-center gap-3 mt-10 z-10 w-full max-w-lg">
           {[
-            { label: 'Members', value: members.length, emoji: '👨‍👩‍👧‍👦', href: '/kul/members' },
-            { label: 'Pending', value: openTasks, emoji: '📋', href: '/kul/tasks' },
+            { label: t('kulMembersTitle'), value: members.length, emoji: '👨‍👩‍👧‍👦', href: '/kul/members' },
+            { label: t('kulTasksTitle'), value: openTasks, emoji: '📋', href: '/kul/tasks' },
             { label: 'Kul Streak', value: totalStreak, emoji: '🔥', href: '/kul/sabha' },
-            { label: 'Dates', value: upcomingEvents.length, emoji: '📅', href: '/kul/events' },
+            { label: t('kulEventsTitle'), value: upcomingEvents.length, emoji: '📅', href: '/kul/events' },
           ].map((item) => (
             <motion.div
               key={item.label}
@@ -219,13 +221,13 @@ export function KulHub({
               🪔
             </div>
             <div className="flex-1">
-              <p className="text-[10px] uppercase tracking-widest font-bold text-[var(--brand-primary)] opacity-70">Family Altar</p>
+              <p className="text-[10px] uppercase tracking-widest font-bold text-[var(--brand-primary)] opacity-70">{t('kulFamilyAltar')}</p>
               <h3 className="text-base font-bold theme-ink premium-serif mt-0.5">
                 {members.find(m => m.profiles?.kul_devata)?.profiles?.kul_devata}
               </h3>
             </div>
             <div className="px-2.5 py-1 rounded-full bg-[var(--brand-primary)]/10 border border-[var(--brand-primary)]/20 text-[9px] font-bold text-[var(--brand-primary)] uppercase tracking-widest">
-              Protected
+              {t('kulProtected')}
             </div>
           </div>
         </motion.div>
@@ -234,10 +236,10 @@ export function KulHub({
       {/* ── SECTIONS TILES ── */}
       <div className="space-y-4">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-[10px] uppercase tracking-[0.2em] font-bold theme-muted">Open a section</p>
+          <p className="text-[10px] uppercase tracking-[0.2em] font-bold theme-muted">{t('kulOpenSection')}</p>
           {upcomingEvents[0] ? (
             <Link href="/kul/events" className="text-xs font-semibold theme-ink">
-              Next date in {upcomingEvents[0].daysUntil}d
+              {t('kulNextDateIn')} {upcomingEvents[0].daysUntil}{t('kulDays')}
             </Link>
           ) : null}
         </div>
@@ -261,8 +263,8 @@ export function KulHub({
           >
             <div className="w-12 h-12 rounded-2xl bg-[var(--brand-primary)]/10 border border-[var(--brand-primary)]/10 flex items-center justify-center text-xl flex-shrink-0 shadow-inner">🪬</div>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--brand-primary)] opacity-70">Lifecycle</p>
-              <h3 className="text-base font-bold theme-ink mt-0.5 premium-serif">16 Sanskaras</h3>
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--brand-primary)] opacity-70">{t('lineage')}</p>
+              <h3 className="text-base font-bold theme-ink mt-0.5 premium-serif">16 {t('sanskara')}</h3>
             </div>
             <ChevronRight size={16} className="theme-dim group-hover:translate-x-0.5 transition-transform flex-shrink-0" />
           </Link>

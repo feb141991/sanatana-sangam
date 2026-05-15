@@ -5,52 +5,8 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { KulSectionView, KulView, MemberRow, TaskRow, MessageRow, FamilyMember, KulEvent } from '../types';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { getUnreadSignature, getKulSectionHref } from '../utils';
-
-const KUL_SECTION_META: Record<KulSectionView, {
-  label: string;
-  eyebrow: string;
-  emoji: string;
-  description: string;
-  group: 'today' | 'family' | 'lineage';
-}> = {
-  members: {
-    label: 'Members',
-    eyebrow: 'Care circle',
-    emoji: '👨‍👩‍👧‍👦',
-    description: 'Manage roles, view who is participating, and keep the family circle clear.',
-    group: 'family',
-  },
-  tasks: {
-    label: 'Tasks',
-    eyebrow: 'Do together',
-    emoji: '📋',
-    description: 'Assign and complete shared practices, readings, and small family commitments.',
-    group: 'today',
-  },
-  sabha: {
-    label: 'Kul Sabha',
-    eyebrow: 'Family conversation',
-    emoji: '💬',
-    description: 'Keep your Kul chat in a dedicated, full-page conversation space.',
-    group: 'family',
-  },
-  vansh: {
-    label: 'Vansh',
-    eyebrow: 'Lineage',
-    emoji: '🫶',
-    description: 'Read your family tree as a warm keepsake wall with room to breathe.',
-    group: 'lineage',
-  },
-  events: {
-    label: 'Family Dates',
-    eyebrow: 'Puja & More',
-    emoji: '📅',
-    description: 'Track upcoming family events, puja dates, and important anniversaries.',
-    group: 'today',
-  },
-};
-
 export function KulSectionTiles({
   currentView,
   members,
@@ -66,7 +22,46 @@ export function KulSectionTiles({
   familyMembers: FamilyMember[];
   kulEvents: KulEvent[];
 }) {
+  const { t } = useLanguage();
   const [seenSignatures, setSeenSignatures] = useState<Record<string, string>>({});
+
+  const KUL_SECTION_META: Record<KulSectionView, {
+    label: string;
+    eyebrow: string;
+    emoji: string;
+    group: 'today' | 'family' | 'lineage';
+  }> = {
+    members: {
+      label: t('kulMembersTitle'),
+      eyebrow: t('kulMembersEyebrow'),
+      emoji: '👨‍👩‍👧‍👦',
+      group: 'family',
+    },
+    tasks: {
+      label: t('kulTasksTitle'),
+      eyebrow: t('kulTasksEyebrow'),
+      emoji: '📋',
+      group: 'today',
+    },
+    sabha: {
+      label: t('kulSabhaTitle'),
+      eyebrow: t('kulSabhaEyebrow'),
+      emoji: '💬',
+      group: 'family',
+    },
+    vansh: {
+      label: t('kulVanshTitle'),
+      eyebrow: t('kulVanshEyebrow'),
+      emoji: '🫶',
+      group: 'lineage',
+    },
+    events: {
+      label: t('kulEventsLabel'),
+      eyebrow: t('kulEventsEyebrow'),
+      emoji: '📅',
+      group: 'today',
+    },
+  };
 
   const liveSignatures: Record<KulSectionView, string> = {
     tasks: getUnreadSignature('tasks', { members, tasks, messages, familyMembers, kulEvents }),

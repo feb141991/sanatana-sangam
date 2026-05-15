@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { UserPlus, Crown, Mail } from 'lucide-react';
 import { MemberRow } from '../types';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export function KulMembers({
   members,
@@ -15,12 +16,13 @@ export function KulMembers({
   onInvite: () => void;
   onMemberClick: (member: MemberRow) => void;
 }) {
+  const { t } = useLanguage();
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold theme-ink premium-serif">Care Circle</h2>
-          <p className="text-xs theme-muted mt-0.5">The hearts that sustain this lineage.</p>
+          <h2 className="text-xl font-bold theme-ink premium-serif">{t('kulCareCircle')}</h2>
+          <p className="text-xs theme-muted mt-0.5">{t('kulCareCircleDesc')}</p>
         </div>
         {myRole === 'guardian' && (
           <motion.button
@@ -31,7 +33,7 @@ export function KulMembers({
             style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))', color: 'white' }}
           >
             <UserPlus size={16} />
-            Invite
+            {t('join')}
           </motion.button>
         )}
       </div>
@@ -39,7 +41,7 @@ export function KulMembers({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {members.map((member) => {
           const profile = member.profiles;
-          const name = profile?.full_name || profile?.username || 'Family member';
+          const name = profile?.full_name || profile?.username || t('kulFamilyMemberDefault');
           return (
             <motion.div
               key={member.id}

@@ -2,27 +2,30 @@
 
 import { motion } from 'framer-motion';
 import { ChevronRight, Info } from 'lucide-react';
-
-const SANSKARAS = [
-  { id: 'garbhadhana', name: 'Garbhadhana', description: 'Conception — The sacred rite of bringing life.', status: 'upcoming' },
-  { id: 'pumsavana', name: 'Pumsavana', description: 'Quickening of the fetus — To ensure the health of the unborn.', status: 'upcoming' },
-  { id: 'simantonnayana', name: 'Simantonnayana', description: 'Parting the hair — Protecting the mother and child.', status: 'upcoming' },
-  { id: 'jatakarma', name: 'Jatakarma', description: 'Birth rites — Welcoming the newcomer to the lineage.', status: 'upcoming' },
-  { id: 'namakarana', name: 'Namakarana', description: 'Naming ceremony — Assigning the sacred identity.', status: 'upcoming' },
-  { id: 'nishkramana', name: 'Nishkramana', description: 'First outing — The child meets the sun and world.', status: 'upcoming' },
-  { id: 'annaprashana', name: 'Annaprashana', description: 'First solid food — Feeding the divine fire within.', status: 'upcoming' },
-  { id: 'chudakarana', name: 'Chudakarana', description: 'Tonsure — The first hair cut, a sign of purity.', status: 'upcoming' },
-  { id: 'karnavedha', name: 'Karnavedha', description: 'Ear piercing — Opening the gates of wisdom.', status: 'upcoming' },
-  { id: 'vidyarambha', name: 'Vidyarambha', description: 'Beginning of knowledge — The first lesson.', status: 'upcoming' },
-  { id: 'upanayana', name: 'Upanayana', description: 'Sacred thread — Entry into the world of study.', status: 'upcoming' },
-  { id: 'vedarambha', name: 'Vedarambha', description: 'Beginning of Vedas — The deeper dive into dharma.', status: 'upcoming' },
-  { id: 'keshanta', name: 'Keshanta', description: 'First shave — Transition into youth.', status: 'upcoming' },
-  { id: 'samavartana', name: 'Samavartana', description: 'Graduation — Returning from the guru after study.', status: 'upcoming' },
-  { id: 'vivaha', name: 'Vivaha', description: 'Marriage — Entry into the householder stage.', status: 'upcoming' },
-  { id: 'antyesti', name: 'Antyesti', description: 'Funeral rites — The final sacrifice to the fire.', status: 'upcoming' },
-];
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export function KulSanskara() {
+  const { t } = useLanguage();
+  
+  const SANSKARAS = [
+    { id: 's1', name: t('s1'), description: t('s1d') },
+    { id: 's2', name: t('s2'), description: t('s2d') },
+    { id: 's3', name: t('s3'), description: t('s3d') },
+    { id: 's4', name: t('s4'), description: t('s4d') },
+    { id: 's5', name: t('s5'), description: t('s5d') },
+    { id: 's6', name: t('s6'), description: t('s6d') },
+    { id: 's7', name: t('s7'), description: t('s7d') },
+    { id: 's8', name: t('s8'), description: t('s8d') },
+    { id: 's9', name: t('s9'), description: t('s9d') },
+    { id: 's10', name: t('s10'), description: t('s10d') },
+    { id: 's11', name: t('s11'), description: t('s11d') },
+    { id: 's12', name: t('s12'), description: t('s12d') },
+    { id: 's13', name: t('s13'), description: t('s13d') },
+    { id: 's14', name: t('s14'), description: t('s14d') },
+    { id: 's15', name: t('s15'), description: t('s15d') },
+    { id: 's16', name: t('s16'), description: t('s16d') },
+  ];
+
   return (
     <div className="space-y-8">
       <div className="relative clay-card rounded-[2.5rem] p-8 overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100/50">
@@ -35,14 +38,14 @@ export function KulSanskara() {
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.3em] text-orange-800/60">
-                Shodasha Sanskaras
+                {t('kulSanskaraSubtitle')}
               </p>
-              <h3 className="font-display text-2xl font-bold theme-ink mt-1 premium-serif">The 16 Sacred Rites</h3>
+              <h3 className="font-display text-2xl font-bold theme-ink mt-1 premium-serif">{t('kulSanskaraTitle')}</h3>
             </div>
           </div>
           
           <p className="text-sm theme-muted leading-relaxed max-w-xl italic">
-            &ldquo;From conception to liberation, the Sanskaras are the sacred transitions that refine the human soul and align it with Dharma.&rdquo;
+            &ldquo;{t('kulSanskaraQuote')}&rdquo;
           </p>
         </div>
       </div>
@@ -76,7 +79,7 @@ export function KulSanskara() {
       </div>
       
       <div className="p-8 text-center glass-panel rounded-[2.5rem] border border-dashed border-black/5">
-         <p className="text-xs theme-muted italic">Tracking feature for family Sanskaras coming soon in the next update.</p>
+         <p className="text-xs theme-muted italic">{t('kulComingSoon')}</p>
       </div>
     </div>
   );

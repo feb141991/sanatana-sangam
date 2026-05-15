@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, UserPlus, ChevronLeft, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 const KUL_EMOJIS = ['🏡', '🕉️', '🙏', '🔱', '🪔', '🌸', '☀️', '🌺', '🫶', '✨'];
 
@@ -23,6 +24,7 @@ export function NoKulPrompt({
   const [inviteCode, setInviteCode] = useState('');
   const [selectedEmoji, setSelectedEmoji] = useState('🏡');
   const [loading, setLoading] = useState(false);
+  const { t } = useLanguage();
 
   const handleCreate = async () => {
     if (!kulName.trim()) return toast.error('Please enter a name');
@@ -63,9 +65,9 @@ export function NoKulPrompt({
               🌳
             </div>
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold theme-ink premium-serif">Begin your Lineage</h1>
+              <h1 className="text-3xl font-bold theme-ink premium-serif">{t('kulNoKulTitle')}</h1>
               <p className="text-sm theme-muted leading-relaxed">
-                A Kul is a sacred family circle where you preserve your traditions, track your vansh (tree), and practice together.
+                {t('kulNoKulDesc')}
               </p>
             </div>
 
@@ -78,8 +80,8 @@ export function NoKulPrompt({
                   <Plus size={24} />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-bold theme-ink">Create a new Kul</h3>
-                  <p className="text-[11px] theme-muted mt-0.5">Start your own family circle and invite others.</p>
+                  <h3 className="font-bold theme-ink">{t('kulCreateNew')}</h3>
+                  <p className="text-[11px] theme-muted mt-0.5">{t('kulCreateNewDesc')}</p>
                 </div>
                 <ArrowRight size={18} className="theme-dim opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
               </button>
@@ -92,8 +94,8 @@ export function NoKulPrompt({
                   <UserPlus size={24} />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-bold theme-ink">Join an existing Kul</h3>
-                  <p className="text-[11px] theme-muted mt-0.5">Ask a family guardian for their invite code.</p>
+                  <h3 className="font-bold theme-ink">{t('kulJoinExisting')}</h3>
+                  <p className="text-[11px] theme-muted mt-0.5">{t('kulJoinExistingDesc')}</p>
                 </div>
                 <ArrowRight size={18} className="theme-dim opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
               </button>
@@ -126,7 +128,7 @@ export function NoKulPrompt({
 
                 <div className="space-y-4">
                   <div className="text-left space-y-1.5">
-                    <label className="text-[10px] uppercase tracking-widest font-bold theme-muted ml-1">Family Name</label>
+                    <label className="text-[10px] uppercase tracking-widest font-bold theme-muted ml-1">{t('kulFamilyName')}</label>
                     <input
                       autoFocus
                       placeholder="e.g. Sharma Parivar"
@@ -143,7 +145,7 @@ export function NoKulPrompt({
                   className="w-full py-5 rounded-[2rem] text-white font-bold shadow-xl transition-all disabled:opacity-40"
                   style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}
                 >
-                  {loading ? 'Creating…' : 'Establish Lineage 🙏'}
+                  {loading ? t('loading') : t('kulEstablishLineage') + ' 🙏'}
                 </button>
              </div>
           </motion.div>
@@ -164,8 +166,8 @@ export function NoKulPrompt({
                   🗝️
                 </div>
                 <div className="space-y-2">
-                  <h2 className="text-2xl font-bold theme-ink premium-serif">Enter Invite Code</h2>
-                  <p className="text-sm theme-muted">Lineages are private circles of trust.</p>
+                  <h2 className="text-2xl font-bold theme-ink premium-serif">{t('kulEnterInviteCode')}</h2>
+                  <p className="text-sm theme-muted">{t('kulPrivateTrust')}</p>
                 </div>
 
                 <input
@@ -182,7 +184,7 @@ export function NoKulPrompt({
                   className="w-full py-5 rounded-[2rem] text-white font-bold shadow-xl transition-all disabled:opacity-40"
                   style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))' }}
                 >
-                  {loading ? 'Joining…' : 'Enter the Kul 🙏'}
+                  {loading ? t('loading') : t('kulEnterTheKul') + ' 🙏'}
                 </button>
              </div>
           </motion.div>

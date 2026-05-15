@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Plus, Calendar, Bell, Clock, ChevronRight } from 'lucide-react';
 import { KulEvent, MemberRow } from '../types';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { daysUntilNextOccurrence } from '../utils';
 
 export function KulEvents({
@@ -18,6 +19,7 @@ export function KulEvents({
   onAdd: () => void;
   onDelete: (id: string) => void;
 }) {
+  const { t } = useLanguage();
   const sortedEvents = [...events]
     .map(e => ({ ...e, daysUntil: daysUntilNextOccurrence(e.event_date) }))
     .sort((a, b) => a.daysUntil - b.daysUntil);
@@ -26,8 +28,8 @@ export function KulEvents({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold theme-ink premium-serif">Family Dates</h2>
-          <p className="text-xs theme-muted mt-0.5">Important milestones and observances.</p>
+          <h2 className="text-xl font-bold theme-ink premium-serif">{t('kulEventsLabel')}</h2>
+          <p className="text-xs theme-muted mt-0.5">{t('kulEventsDesc')}</p>
         </div>
         {myRole === 'guardian' && (
           <motion.button
@@ -38,7 +40,7 @@ export function KulEvents({
             style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))', color: 'white' }}
           >
             <Plus size={16} />
-            Add Event
+            {t('kulAddEvent')}
           </motion.button>
         )}
       </div>
@@ -47,7 +49,7 @@ export function KulEvents({
         {sortedEvents.length === 0 ? (
           <div className="text-center py-16 glass-panel rounded-[2.5rem] border border-dashed border-black/5">
             <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4 text-2xl">📅</div>
-            <p className="text-sm theme-muted">No upcoming events found.</p>
+            <p className="text-sm theme-muted">{t('kulNoEventsFound')}</p>
           </div>
         ) : (
           sortedEvents.map((event) => (
@@ -75,12 +77,12 @@ export function KulEvents({
                 <div className="flex items-center gap-3 mt-1.5">
                    <div className="flex items-center gap-1 text-[10px] theme-muted font-semibold">
                       <Bell size={10} className="text-[var(--brand-primary)]" />
-                      <span>{event.daysUntil === 0 ? 'TODAY' : `In ${event.daysUntil} days`}</span>
+                      <span>{event.daysUntil === 0 ? t('today').toUpperCase() : t('kulInDays').replace('{days}', event.daysUntil.toString())}</span>
                    </div>
                    {event.recurring && (
                      <div className="flex items-center gap-1 text-[10px] theme-muted font-semibold">
                         <Clock size={10} />
-                        <span>Annual</span>
+                        <span>{t('kulAnnual')}</span>
                      </div>
                    )}
                 </div>

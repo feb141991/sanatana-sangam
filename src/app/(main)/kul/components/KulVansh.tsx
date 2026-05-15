@@ -4,15 +4,8 @@ import { motion } from 'framer-motion';
 import { Plus, X, Search, ChevronRight, MapPin, Heart } from 'lucide-react';
 import { FamilyMember, MemberRow } from '../types';
 import { FamilyKeepsakeStage } from './FamilyKeepsakeStage';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
-const GENERATION_LABELS: Record<number, string> = {
-  1: 'Prapitamah — Great Grandparents',
-  2: 'Pitamah — Grandparents',
-  3: 'Pitru — Parents',
-  4: 'Vartaman — Current Generation',
-  5: 'Santan — Children',
-  6: 'Pautra — Grandchildren',
-};
 
 export function KulVansh({
   members,
@@ -33,6 +26,7 @@ export function KulVansh({
   showAdd: boolean;
   setShowAdd: (show: boolean) => void;
 }) {
+  const { t } = useLanguage();
   const generations = Array.from(new Set(familyMembers.map(m => m.generation || 4))).sort((a, b) => a - b);
   const byGen: Record<number, FamilyMember[]> = {};
   generations.forEach(gen => {
@@ -54,9 +48,9 @@ export function KulVansh({
               </div>
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.3em] text-[var(--brand-primary)]">
-                  Kul Vriksha — कुल वृक्ष
+                  {t('kulVanshTitle')}
                 </p>
-                <h3 className="font-display text-2xl font-bold theme-ink mt-1 premium-serif">The Living Lineage</h3>
+                <h3 className="font-display text-2xl font-bold theme-ink mt-1 premium-serif">{t('kulLivingLineage')}</h3>
               </div>
             </div>
             {canManageVansh && (
@@ -73,7 +67,7 @@ export function KulVansh({
           </div>
           
           <p className="text-sm theme-muted leading-relaxed max-w-xl italic">
-            &ldquo;As the roots are deep, the tree stands firm. Your lineage is the sacred soil from which your spirit grows. Honor those who came before, for they are the keepers of your path.&rdquo;
+            &ldquo;{t('kulHeritageQuote')}&rdquo;
           </p>
         </div>
       </div>
@@ -90,13 +84,13 @@ export function KulVansh({
               </div>
             </div>
           </div>
-          <h4 className="text-xl font-bold theme-ink premium-serif">A Vansh yet to be written</h4>
-          <p className="text-sm mt-3 theme-muted max-w-xs mx-auto">Add your ancestors and family members to begin mapping your spiritual heritage.</p>
+          <h4 className="text-xl font-bold theme-ink premium-serif">{t('kulVanshEmptyTitle')}</h4>
+          <p className="text-sm mt-3 theme-muted max-w-xs mx-auto">{t('kulVanshEmptyDesc')}</p>
           <button 
             onClick={() => setShowAdd(true)}
             className="mt-8 px-8 py-3 rounded-2xl bg-[var(--brand-primary)]/10 text-[var(--brand-primary-strong)] font-bold text-sm hover:bg-[var(--brand-primary)]/20 transition-all border border-[var(--brand-primary)]/20"
           >
-            Create First Branch
+            {t('kulCreateFirstBranch')}
           </button>
         </div>
       )}
@@ -112,7 +106,7 @@ export function KulVansh({
             <div className="flex justify-center mb-8">
               <div className="px-5 py-1.5 rounded-full bg-[var(--brand-primary)]/5 border border-[var(--brand-primary)]/10 shadow-sm">
                 <p className="text-[10px] font-bold theme-ink uppercase tracking-[0.25em]">
-                  {GENERATION_LABELS[gen] ?? `Generation ${gen}`}
+                  {t(`gen${gen}` as any) ?? `Generation ${gen}`}
                 </p>
               </div>
             </div>
@@ -164,12 +158,12 @@ export function KulVansh({
                         {age !== null && (
                           <p className="font-bold text-[var(--brand-primary)]/80">
                             {m.is_alive 
-                              ? `Age: ${age}y` 
-                              : `Lived: ${age}y (${m.birth_year ?? '—'}–${m.death_year ?? '—'})`}
+                              ? `${t('kulAge')}: ${age}${t('kulYearsAbbrev')}` 
+                              : `${t('kulLived')}: ${age}${t('kulYearsAbbrev')} (${m.birth_year ?? '—'}–${m.death_year ?? '—'})`}
                           </p>
                         )}
                         {!m.is_alive && !age && (
-                          <p className="font-bold opacity-40 uppercase tracking-tighter">In Eternal Memory</p>
+                          <p className="font-bold opacity-40 uppercase tracking-tighter">{t('kulInEternalMemory')}</p>
                         )}
                       </div>
                       

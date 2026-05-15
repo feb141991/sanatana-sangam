@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, X, CheckSquare, Clock, User, ChevronRight } from 'lucide-react';
 import { TaskRow, MemberRow } from '../types';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export function KulTasks({
   tasks,
@@ -22,6 +23,7 @@ export function KulTasks({
   onAdd: (task: any) => void;
   onDelete: (taskId: string) => void;
 }) {
+  const { t } = useLanguage();
   const [filter, setFilter] = useState<'pending' | 'completed'>('pending');
   
   const filteredTasks = tasks.filter(t => filter === 'pending' ? !t.completed : t.completed);
@@ -30,8 +32,8 @@ export function KulTasks({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold theme-ink premium-serif">Kul Tasks</h2>
-          <p className="text-xs theme-muted mt-0.5">Shared practices and commitments.</p>
+          <h2 className="text-xl font-bold theme-ink premium-serif">{t('kulTasksTitle')}</h2>
+          <p className="text-xs theme-muted mt-0.5">{t('kulTasksDesc')}</p>
         </div>
         {myRole === 'guardian' && (
           <motion.button
@@ -42,7 +44,7 @@ export function KulTasks({
             style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))', color: 'white' }}
           >
             <Plus size={16} />
-            Add Task
+            {t('kulAddTask')}
           </motion.button>
         )}
       </div>
@@ -54,7 +56,7 @@ export function KulTasks({
             onClick={() => setFilter(f)}
             className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${filter === f ? 'bg-white shadow-sm theme-ink' : 'theme-muted hover:theme-ink'}`}
           >
-            {f === 'pending' ? 'Pending' : 'Completed'}
+            {f === 'pending' ? t('kulPending') : t('kulCompleted')}
           </button>
         ))}
       </div>
@@ -67,7 +69,7 @@ export function KulTasks({
               animate={{ opacity: 1 }}
               className="text-center py-12 glass-panel rounded-[2rem] border border-dashed border-black/5"
             >
-              <p className="text-sm theme-muted">No {filter} tasks found.</p>
+              <p className="text-sm theme-muted">{t('kulNoTasksFound')}</p>
             </motion.div>
           ) : (
             filteredTasks.map((task) => (
@@ -100,7 +102,7 @@ export function KulTasks({
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
                     <div className="flex items-center gap-1.5 text-[10px] theme-muted">
                       <User size={10} />
-                      <span>{task.assigned_to_profile?.full_name || 'Assigned to all'}</span>
+                      <span>{task.assigned_to_profile?.full_name || t('kulAssignedToAll')}</span>
                     </div>
                     {task.due_date && (
                       <div className="flex items-center gap-1.5 text-[10px] theme-muted">

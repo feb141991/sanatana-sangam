@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Heart, Users, MapPin, Calendar, Info, Baby } from 'lucide-react';
 import { FamilyMember } from '../types';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 const EXTENDED_ROLES = [
   { group: 'Direct', roles: ['Self', 'Spouse', 'Son', 'Daughter', 'Brother', 'Sister'] },
@@ -13,6 +14,7 @@ const EXTENDED_ROLES = [
 ];
 
 export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose: () => void; onSave: (data: any) => void; members: FamilyMember[]; editMember?: FamilyMember | null }) {
+  const { t } = useLanguage();
   const [form, setForm] = useState(editMember ? { ...editMember } : {
     name: '',
     role: '',
@@ -39,10 +41,10 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
         <div className="flex items-start justify-between">
           <div className="space-y-2">
             <h2 className="text-3xl font-bold text-[#F2EAD6] premium-serif">
-              {editMember ? 'Refine Lineage' : 'Add to Vansh'}
+              {editMember ? t('kulEditMember') : t('kulAddMember')}
             </h2>
             <p className="text-[10px] text-[#C5A059] font-black uppercase tracking-[0.3em] opacity-70">
-              Building the eternal family tree
+              {t('kulBuildingEternal')}
             </p>
           </div>
           <button 
@@ -58,12 +60,12 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
           <section className="space-y-5">
             <div className="flex items-center gap-2 mb-2">
               <Users size={14} className="text-[#C5A059]" />
-              <span className="text-[10px] uppercase font-black tracking-widest text-[#C5A059]">Basic Identity</span>
+              <span className="text-[10px] uppercase font-black tracking-widest text-[#C5A059]">{t('kulBasicIdentity')}</span>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <label className="text-[10px] uppercase font-bold text-[#F2EAD6]/40 ml-1">Full Name</label>
+                <label className="text-[10px] uppercase font-bold text-[#F2EAD6]/40 ml-1">{t('kulFullName')}</label>
                 <input
                   autoFocus
                   placeholder="e.g. Pt. Ram Sharma"
@@ -74,7 +76,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] uppercase font-bold text-[#F2EAD6]/40 ml-1">Relationship</label>
+                <label className="text-[10px] uppercase font-bold text-[#F2EAD6]/40 ml-1">{t('kulRelationship')}</label>
                 <div className="relative">
                   <select
                     value={form.role ?? ''}
@@ -101,7 +103,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
 
             {/* Gender Toggle */}
             <div className="flex items-center gap-3 p-1">
-              <span className="text-[10px] uppercase font-bold text-[#F2EAD6]/40 mr-2">Gender:</span>
+              <span className="text-[10px] uppercase font-bold text-[#F2EAD6]/40 mr-2">{t('kulGender')}:</span>
               {(['male', 'female'] as const).map(g => (
                 <button
                   key={g}
@@ -110,7 +112,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
                     form.gender === g ? 'bg-[#C5A059] text-black border-[#C5A059] shadow-lg shadow-[#C5A059]/20' : 'bg-white/5 border-white/10 text-[#F2EAD6]/30'
                   }`}
                 >
-                  {g === 'male' ? 'Shiva (M)' : 'Shakti (F)'}
+                  {g === 'male' ? t('shivaM') : t('shaktiF')}
                 </button>
               ))}
             </div>
@@ -120,12 +122,12 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
           <section className="space-y-5">
             <div className="flex items-center gap-2 mb-2">
               <MapPin size={14} className="text-[#C5A059]" />
-              <span className="text-[10px] uppercase font-black tracking-widest text-[#C5A059]">Origin & Life</span>
+              <span className="text-[10px] uppercase font-black tracking-widest text-[#C5A059]">{t('kulOriginLife')}</span>
             </div>
 
             <div className="grid grid-cols-2 gap-5">
               <div className="space-y-2">
-                <label className="text-[10px] uppercase font-bold text-[#F2EAD6]/40 ml-1">Birth Date (Optional)</label>
+                <label className="text-[10px] uppercase font-bold text-[#F2EAD6]/40 ml-1">{t('kulBirthDate')} ({t('skip')})</label>
                 <input
                   type="date"
                   value={form.birth_date ?? ''}
@@ -134,7 +136,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] uppercase font-bold text-[#F2EAD6]/40 ml-1">Birth Year</label>
+                <label className="text-[10px] uppercase font-bold text-[#F2EAD6]/40 ml-1">{t('kulBirthYear')}</label>
                 <input
                   type="number"
                   placeholder="e.g. 1945"
@@ -146,7 +148,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] uppercase font-bold text-[#F2EAD6]/40 ml-1">Birth Place / Original Village</label>
+              <label className="text-[10px] uppercase font-bold text-[#F2EAD6]/40 ml-1">{t('kulBirthPlace')}</label>
               <input
                 placeholder="e.g. Mathura, UP"
                 value={form.birth_place ?? ''}
@@ -154,7 +156,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
                 className="w-full px-5 py-4 rounded-2xl bg-white/5 border border-white/10 outline-none focus:border-[#C5A059]/40 text-[#F2EAD6] text-sm shadow-inner"
               />
               <p className="text-[9px] text-[#C5A059]/60 font-medium ml-1 flex items-center gap-1">
-                <Info size={10} /> Helps in tracking roots across generations.
+                <Info size={10} /> {t('kulBirthPlaceDesc')}
               </p>
             </div>
 
@@ -163,8 +165,8 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
                  <Baby size={20} />
                </div>
                <div className="flex-1">
-                 <p className="text-[11px] font-bold text-[#F2EAD6]">Currently Living</p>
-                 <p className="text-[9px] text-[#F2EAD6]/40 uppercase tracking-widest mt-0.5">Toggle status of this relative</p>
+                 <p className="text-[11px] font-bold text-[#F2EAD6]">{t('kulIsAlive')}</p>
+                 <p className="text-[9px] text-[#F2EAD6]/40 uppercase tracking-widest mt-0.5">{t('kulIsAliveDesc')}</p>
                </div>
                <button 
                  onClick={() => setForm(f => ({ ...f, is_alive: !f.is_alive }))}
@@ -182,13 +184,13 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
           <section className="space-y-5">
             <div className="flex items-center gap-2 mb-2">
               <Heart size={14} className="text-[#C5A059]" />
-              <span className="text-[10px] uppercase font-black tracking-widest text-[#C5A059]">Ancestral Links</span>
+              <span className="text-[10px] uppercase font-black tracking-widest text-[#C5A059]">{t('kulAncestralLinks')}</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <label className="text-[10px] uppercase font-bold text-[#F2EAD6]/40 ml-1 flex items-center justify-between">
-                  Link to Parent
+                  {t('kulLinkParent')}
                   <span className="text-[8px] opacity-40">Direct Line</span>
                 </label>
                 <select
@@ -205,7 +207,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
 
               <div className="space-y-2">
                 <label className="text-[10px] uppercase font-bold text-[#F2EAD6]/40 ml-1 flex items-center justify-between">
-                  Link to Spouse
+                  {t('kulLinkSpouse')}
                   <span className="text-[8px] opacity-40">Extended Family</span>
                 </label>
                 <select
@@ -230,7 +232,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
             className="w-full py-5 rounded-[2rem] text-black font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl transition-all active:scale-95 disabled:opacity-30 disabled:grayscale"
             style={{ background: 'linear-gradient(135deg, #C5A059, #d4ae6a)' }}
           >
-            {editMember ? 'Update Vansh 🙏' : 'Enter into Vansh 🙏'}
+            {editMember ? t('kulUpdateVansh') : t('kulEnterIntoVansh')}
           </button>
         </div>
       </motion.div>
