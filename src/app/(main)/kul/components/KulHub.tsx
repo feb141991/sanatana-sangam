@@ -134,9 +134,10 @@ export function KulHub({
             <ChevronLeft size={14} strokeWidth={3} />
             {t('back')}
           </Link>
+
           <div className="flex items-center gap-2">
              {!editingName ? (
-               <>
+               <div className="flex items-center gap-2">
                  <button 
                    onClick={() => {
                      navigator.clipboard.writeText(kul.invite_code);
@@ -148,17 +149,28 @@ export function KulHub({
                     <span className="text-sm font-bold text-[var(--brand-primary)] tracking-[0.1em]">{kul.invite_code}</span>
                  </button>
                  {myRole === 'guardian' && (
-                   <button 
-                     onClick={() => {
-                        setNewKulName(kul.name);
-                        setEditingName(true);
-                     }}
-                     className="flex items-center justify-center w-9 h-9 rounded-full glass-panel border border-white/10 hover:bg-white/20 transition shadow-sm text-[var(--brand-primary)]"
-                   >
-                     <Pencil size={16} />
-                   </button>
+                   <div className="flex flex-col gap-2">
+                     <button 
+                       onClick={() => {
+                          setNewKulName(kul.name);
+                          setEditingName(true);
+                       }}
+                       className="flex items-center justify-center w-9 h-9 rounded-full glass-panel border border-white/10 hover:bg-white/20 transition shadow-sm text-[var(--brand-primary)]"
+                       title="Edit Name"
+                     >
+                       <Pencil size={16} />
+                     </button>
+                     <button 
+                       disabled={isUploading}
+                       onClick={() => fileInputRef.current?.click()}
+                       className="flex items-center justify-center w-9 h-9 rounded-full glass-panel border border-white/10 hover:bg-white/20 transition shadow-sm text-[var(--brand-primary)]"
+                       title="Change Banner"
+                     >
+                       {isUploading ? <Loader2 size={14} className="animate-spin" /> : <Camera size={16} />}
+                     </button>
+                   </div>
                  )}
-               </>
+               </div>
              ) : (
                <button 
                  onClick={() => {
@@ -172,45 +184,6 @@ export function KulHub({
              )}
           </div>
         </div>
-
-        {/* Change Cover CTA (Only in edit mode, highly visible) */}
-        <AnimatePresence>
-          {editingName && myRole === 'guardian' && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="absolute top-28 z-30 flex flex-col items-center gap-3"
-            >
-              <button 
-                disabled={isUploading}
-                onClick={() => fileInputRef.current?.click()}
-                className="flex flex-col items-center gap-2.5 px-8 py-5 rounded-[2.5rem] glass-panel border border-white/40 bg-black/40 hover:bg-black/60 transition-all shadow-2xl backdrop-blur-2xl group ring-1 ring-white/10"
-              >
-                 {isUploading ? (
-                   <div className="flex flex-col items-center gap-2">
-                     <Loader2 size={28} className="animate-spin text-[var(--brand-primary)]" />
-                     <span className="text-[9px] font-bold text-white uppercase tracking-widest">{t('loading')}</span>
-                   </div>
-                 ) : (
-                   <>
-                     <div className="w-14 h-14 rounded-full bg-[var(--brand-primary)] text-white flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform border border-white/20">
-                       <Camera size={24} />
-                     </div>
-                     <span className="text-[11px] font-bold text-white uppercase tracking-[0.4em] drop-shadow-lg">{t('kulChangeCover')}</span>
-                   </>
-                 )}
-              </button>
-              
-              <button 
-                onClick={() => setEditingName(false)}
-                className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em] hover:text-white transition-colors py-2 px-4 rounded-full bg-white/5 border border-white/5"
-              >
-                {t('cancel')}
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Central Identity Section */}
         <div className="relative mb-5 group">

@@ -16833,8 +16833,8 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/KulClient.tsx",
       "source_location": "L193",
       "weight": 1.0,
-      "_src": "kulclient_handleuploadcover",
-      "_tgt": "shruti_shrutiengine_upload",
+      "_src": "shruti_shrutiengine_upload",
+      "_tgt": "kulclient_handleuploadcover",
       "source": "shruti_shrutiengine_upload",
       "target": "kulclient_handleuploadcover"
     },
