@@ -885,7 +885,7 @@ function ChooseMalaScreen({
                   {sc.overlay !== 'none' && (
                     <div style={{ position: 'absolute', inset: 0, background: sc.overlay, borderRadius: 'inherit' }} />
                   )}
-                  <span className="text-2xl relative z-10">{scene.emoji}</span>
+                  <span className="text-2xl relative z-10">{scene.icon}</span>
                 </div>
                 <p className="text-[9px] font-semibold text-center leading-tight"
                   style={{ color: isSelected ? amber : sub, maxWidth: 56 }}>
@@ -1063,7 +1063,7 @@ function SoundsSheet({
                     ? (isDark ? 'rgba(200,146,74,0.40)' : 'rgba(122,74,30,0.35)')
                     : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'),
                 }}>
-                <span className="text-[1.6rem] leading-none">{s.emoji}</span>
+                <span className="text-[1.6rem] leading-none">{s.icon}</span>
                 <span className="text-[9px] font-semibold text-center"
                   style={{ color: isActive ? (isDark ? '#C8924A' : '#7A4A1E') : sub }}>
                   {s.label}
@@ -1399,7 +1399,7 @@ function PracticeSettingsSheet({
                     background: isActive ? `${amber}14` : cardBg,
                     borderColor: isActive ? `${amber}45` : border,
                   }}>
-                  <span className="text-xl leading-none">{s.emoji}</span>
+                  <span className="text-xl leading-none">{s.icon}</span>
                   <span className="text-[9px] font-semibold" style={{ color: isActive ? amber : sub }}>{s.label}</span>
                 </button>
               );
