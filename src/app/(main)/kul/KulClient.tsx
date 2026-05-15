@@ -1410,41 +1410,49 @@ function KulSectionTiles({
   ];
 
   return (
-    <div className={`grid gap-3 ${large ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2 sm:grid-cols-3'}`}>
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
       {tiles.map(({ key, badge }) => {
         const meta = KUL_SECTION_META[key];
         const active = currentView === key;
         return (
-          <Link
+          <motion.div
             key={key}
-            href={getKulSectionHref(key)}
-            className={`group rounded-[1.6rem] p-4 transition-all ${active ? 'clay-card' : 'glass-panel'}`}
+            whileHover={{ y: -2, scale: 1.01 }}
+            whileTap={{ scale: 0.97 }}
+            className="h-full"
           >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-3 min-w-0">
-                <div className="clay-icon-well text-lg flex-shrink-0">{meta.emoji}</div>
-                <div className="min-w-0">
-          <p className="type-card-label">
-                    {meta.eyebrow}
-                  </p>
-                  <h3 className="type-card-heading mt-1 leading-tight">
-                    {meta.label}
-                  </h3>
+            <Link
+              key={key}
+              href={getKulSectionHref(key)}
+              className={`group flex flex-col h-full rounded-[1.8rem] p-4 transition-all ${
+                active 
+                  ? 'bg-gradient-to-br from-[var(--brand-primary)]/20 to-[var(--brand-primary)]/5 border border-[var(--brand-primary)]/20 shadow-lg' 
+                  : 'glass-panel border border-white/5 hover:border-white/10'
+              }`}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl bg-[var(--brand-primary)]/10 border border-[var(--brand-primary)]/15 group-hover:bg-[var(--brand-primary)]/20 transition-colors shadow-inner">
+                  {meta.emoji}
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                  {badge != null && badge > 0 && (
+                    <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-[#1c1c1a] shadow-sm animate-pulse" style={{ background: 'var(--brand-primary)' }}>
+                      {badge > 99 ? '!' : badge}
+                    </span>
+                  )}
+                  <ChevronRight size={14} className="theme-dim group-hover:translate-x-0.5 transition-transform" />
                 </div>
               </div>
-              <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                {badge != null && badge > 0 && (
-                  <span className="type-chip rounded-full px-2 py-1 text-[#1c1c1a]" style={{ background: 'var(--brand-primary)' }}>
-                    {badge > 99 ? '99+' : badge}
-                  </span>
-                )}
-                <ChevronRight size={16} className="theme-dim group-hover:translate-x-0.5 transition-transform" />
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--brand-primary)] opacity-70 mb-1">
+                  {meta.eyebrow}
+                </p>
+                <h3 className="text-[15px] font-bold theme-ink leading-tight premium-serif">
+                  {meta.label}
+                </h3>
               </div>
-            </div>
-            <p className="type-body mt-3">
-              {meta.description}
-            </p>
-          </Link>
+            </Link>
+          </motion.div>
         );
       })}
     </div>
@@ -1732,37 +1740,46 @@ function KulHubView({
             { label: 'Kul Streak', value: totalStreak, emoji: '🔥', href: '/kul/sabha' },
             { label: 'Dates', value: upcomingEvents.length, emoji: '📅', href: '/kul/events' },
           ].map((item) => (
-            <Link key={item.label} href={item.href} className="floating-pill px-4 py-3 rounded-2xl flex items-center gap-3 min-w-[110px] transition-all hover:scale-105 active:scale-95">
-              <div className="text-xl">{item.emoji}</div>
-              <div className="text-left">
-                <p className="text-lg font-bold leading-none theme-ink">{item.value}</p>
-                <p className="text-[9px] uppercase tracking-wider theme-muted mt-1 font-semibold">{item.label}</p>
-              </div>
-            </Link>
+            <motion.div
+              key={item.label}
+              whileHover={{ y: -3, scale: 1.02 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Link href={item.href} className="floating-pill px-4 py-3 rounded-2xl flex items-center gap-3 min-w-[110px] transition-all h-full">
+                <div className="text-xl">{item.emoji}</div>
+                <div className="text-left">
+                  <p className="text-lg font-bold leading-none theme-ink">{item.value}</p>
+                  <p className="text-[9px] uppercase tracking-wider theme-muted mt-1 font-semibold">{item.label}</p>
+                </div>
+              </Link>
+            </motion.div>
           ))}
         </div>
       </div>
 
       {/* ── FAMILY ALTAR (KUL DEVATA) ── */}
       {members.some(m => m.profiles?.kul_devata) && (
-        <div className="relative glass-panel rounded-[2rem] p-5 border border-[var(--brand-primary)]/10 overflow-hidden">
+        <motion.div 
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.99 }}
+          className="relative glass-panel rounded-[2rem] p-4 border border-[var(--brand-primary)]/15 overflow-hidden"
+        >
           <div className="absolute top-0 right-0 w-24 h-24 bg-[var(--brand-primary)] opacity-5 blur-2xl" />
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full flex items-center justify-center text-3xl bg-[var(--brand-primary)]/10 border border-[var(--brand-primary)]/20 shadow-inner">
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl bg-[var(--brand-primary)]/10 border border-[var(--brand-primary)]/20 shadow-inner">
               🪔
             </div>
             <div className="flex-1">
-              <p className="text-[10px] uppercase tracking-widest font-bold text-[var(--brand-primary)]">Family Altar</p>
-              <h3 className="text-lg font-bold theme-ink premium-serif mt-0.5">
+              <p className="text-[10px] uppercase tracking-widest font-bold text-[var(--brand-primary)] opacity-70">Family Altar</p>
+              <h3 className="text-base font-bold theme-ink premium-serif mt-0.5">
                 {members.find(m => m.profiles?.kul_devata)?.profiles?.kul_devata}
               </h3>
-              <p className="text-xs theme-muted">Our sacred Kul Devata, protecting this lineage.</p>
             </div>
-            <div className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/5 text-[10px] font-bold text-[var(--brand-primary)] uppercase tracking-tighter">
+            <div className="px-2.5 py-1 rounded-full bg-[var(--brand-primary)]/10 border border-[var(--brand-primary)]/20 text-[9px] font-bold text-[var(--brand-primary)] uppercase tracking-widest">
               Protected
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
       {/* ── SECTIONS TILES ── */}
       <div className="space-y-4">
@@ -1785,20 +1802,22 @@ function KulHubView({
         />
 
         {/* Sanskaras — lifecycle rites */}
-        <Link
-          href="/kul/sanskara"
-          className="group flex items-center gap-4 rounded-[1.6rem] px-4 py-4 transition-all glass-panel"
+        <motion.div
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.98 }}
         >
-          <div className="clay-icon-well text-xl flex-shrink-0">🪬</div>
-          <div className="flex-1 min-w-0">
-            <p className="type-card-label">Lifecycle</p>
-            <h3 className="type-card-heading mt-1">16 Sanskaras</h3>
-            <p className="type-body mt-0.5">
-              Track the sacred rites of passage — from birth to liberation.
-            </p>
-          </div>
-          <ChevronRight size={16} className="theme-dim group-hover:translate-x-0.5 transition-transform flex-shrink-0" />
-        </Link>
+          <Link
+            href="/kul/sanskara"
+            className="group flex items-center gap-4 rounded-[1.8rem] px-5 py-4 transition-all glass-panel border border-white/5 hover:border-white/10"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-[var(--brand-primary)]/10 border border-[var(--brand-primary)]/10 flex items-center justify-center text-xl flex-shrink-0 shadow-inner">🪬</div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--brand-primary)] opacity-70">Lifecycle</p>
+              <h3 className="text-base font-bold theme-ink mt-0.5 premium-serif">16 Sanskaras</h3>
+            </div>
+            <ChevronRight size={16} className="theme-dim group-hover:translate-x-0.5 transition-transform flex-shrink-0" />
+          </Link>
+        </motion.div>
       </div>
     </div>
   );
