@@ -6,6 +6,8 @@ import {
   completeKulTask,
   createKul,
   deleteKulFamilyMember,
+  deleteKulTask,
+  deleteKulEvent,
   fetchKulData,
   joinKul,
   leaveKul,
@@ -89,6 +91,14 @@ export function useKulMutations(userId: string) {
     }),
     deleteFamilyMember: useMutation({
       mutationFn: (memberId: string) => deleteKulFamilyMember(userId, memberId),
+      onSuccess: refreshKul,
+    }),
+    deleteTask: useMutation({
+      mutationFn: (taskId: string) => deleteKulTask(userId, taskId),
+      onSuccess: refreshKul,
+    }),
+    deleteEvent: useMutation({
+      mutationFn: (eventId: string) => deleteKulEvent(userId, eventId),
       onSuccess: refreshKul,
     }),
     saveEvent: useMutation({

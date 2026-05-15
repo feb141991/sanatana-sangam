@@ -429,3 +429,14 @@ export async function saveKulEvent(userId: string, payload: SaveKulEventPayload)
   });
   if (error) throw error;
 }
+export async function deleteKulTask(taskId: string) {
+  const supabase = createClient();
+  const { error } = await supabase.from('kul_tasks').delete().eq('id', taskId);
+  if (error) throw error;
+}
+
+export async function deleteKulEvent(eventId: string) {
+  const supabase = createClient();
+  const { error } = await supabase.from('kul_events').delete().eq('id', eventId);
+  if (error) throw error;
+}

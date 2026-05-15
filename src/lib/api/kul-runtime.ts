@@ -3,6 +3,8 @@ import {
   completeKulTask as completeLiveKulTask,
   createKul as createLiveKul,
   deleteKulFamilyMember as deleteLiveKulFamilyMember,
+  deleteKulTask as deleteLiveKulTask,
+  deleteKulEvent as deleteLiveKulEvent,
   fetchKulData as fetchLiveKulData,
   joinKul as joinLiveKul,
   leaveKul as leaveLiveKul,
@@ -56,6 +58,8 @@ const kulRuntimeApi = selectRuntimeAdapter({
     reactToKulMessage: async (userId: string, messageId: string, emoji: string) => reactLiveKulMessage(messageId, emoji),
     saveKulFamilyMember: saveLiveKulFamilyMember,
     deleteKulFamilyMember: async (userId: string, memberId: string) => deleteLiveKulFamilyMember(memberId),
+    deleteKulTask: async (userId: string, taskId: string) => deleteLiveKulTask(taskId),
+    deleteKulEvent: async (userId: string, eventId: string) => deleteLiveKulEvent(eventId),
     saveKulEvent: saveLiveKulEvent,
     leaveKul: leaveLiveKul,
     updateKul: async (userId: string, kulId: string, updates: any) => {
@@ -76,6 +80,8 @@ const kulRuntimeApi = selectRuntimeAdapter({
     reactToKulMessage: reactMockKulMessage,
     saveKulFamilyMember: saveMockKulFamilyMember,
     deleteKulFamilyMember: deleteMockKulFamilyMember,
+    deleteKulTask: async (userId: string, taskId: string) => { console.log('Mock deleteTask', taskId); },
+    deleteKulEvent: async (userId: string, eventId: string) => { console.log('Mock deleteEvent', eventId); },
     saveKulEvent: saveMockKulEvent,
     leaveKul: leaveMockKul,
     updateKul: async (userId: string, kulId: string, updates: any) => {
@@ -141,6 +147,14 @@ export async function saveKulFamilyMember(userId: string, payload: SaveKulFamily
 
 export async function deleteKulFamilyMember(userId: string, memberId: string) {
   return kulRuntimeApi.deleteKulFamilyMember(userId, memberId);
+}
+
+export async function deleteKulTask(userId: string, taskId: string) {
+  return kulRuntimeApi.deleteKulTask(userId, taskId);
+}
+
+export async function deleteKulEvent(userId: string, eventId: string) {
+  return kulRuntimeApi.deleteKulEvent(userId, eventId);
 }
 
 export async function saveKulEvent(userId: string, payload: SaveKulEventPayload) {
