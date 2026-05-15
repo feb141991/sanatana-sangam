@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
-import { KulData, MemberRow, TaskRow, MessageRow, FamilyMember, KulEvent } from '../types';
+import { KulSummary, MemberRow, TaskRow, MessageRow, FamilyMember, KulEvent } from '../types';
 import { daysUntilNextOccurrence } from '../utils';
 import { KulSectionTiles } from './KulSectionTiles';
 
@@ -20,8 +20,9 @@ export function KulHub({
   setNewKulName,
   setEditingName,
   saveKulName,
+  onUpdateKul,
 }: {
-  kul: KulData;
+  kul: KulSummary;
   members: MemberRow[];
   tasks: TaskRow[];
   messages: MessageRow[];

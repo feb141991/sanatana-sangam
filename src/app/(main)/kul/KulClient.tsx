@@ -28,13 +28,13 @@ import { KulEventForm } from './components/KulEventForm';
 import { KulFamilyProfileSheet } from './components/KulFamilyProfileSheet';
 
 // Types & Utils
-import { KulData, MemberRow, TaskRow, MessageRow, FamilyMember, KulEvent, KulView } from './types';
+import { KulSummary, MemberRow, TaskRow, MessageRow, FamilyMember, KulEvent, KulView } from './types';
 
 interface Props {
   userId: string;
   userName: string;
   userProfile: any;
-  kul: KulData | null;
+  kul: KulSummary | null;
   members: MemberRow[];
   tasks: TaskRow[];
   messages: MessageRow[];
@@ -71,19 +71,17 @@ export default function KulClient({
   const [selectedMember, setSelectedMember] = useState<MemberRow | null>(null);
 
   // Queries & Mutations
-  const { data } = useKulQuery({
-    initialData: {
-      userId,
-      userName,
-      userProfile,
-      kul: initialKul,
-      members: initialMembers,
-      tasks: initialTasks,
-      messages: initialMessages,
-      familyMembers: initialFamilyMembers,
-      kulEvents: initialEvents,
-      myRole: initialRole,
-    },
+  const { data } = useKulQuery(userId, {
+    userId,
+    userName,
+    userProfile,
+    kul: initialKul,
+    members: initialMembers,
+    tasks: initialTasks,
+    messages: initialMessages,
+    familyMembers: initialFamilyMembers,
+    kulEvents: initialEvents,
+    myRole: initialRole,
   });
 
   const kulMutations = useKulMutations();

@@ -1,4 +1,4 @@
-export type KulData = { 
+export type KulSummary = { 
   id: string; 
   name: string; 
   invite_code: string; 
