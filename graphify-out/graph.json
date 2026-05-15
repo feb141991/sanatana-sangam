@@ -7567,7 +7567,7 @@
       "label": "handleSend()",
       "file_type": "code",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulSabha.tsx",
-      "source_location": "L30",
+      "source_location": "L53",
       "id": "kulsabha_handlesend",
       "community": 92,
       "norm_label": "handlesend()"
@@ -31272,7 +31272,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulSabha.tsx",
-      "source_location": "L30",
+      "source_location": "L53",
       "weight": 1.0,
       "_src": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_kulsabha_tsx",
       "_tgt": "kulsabha_handlesend",

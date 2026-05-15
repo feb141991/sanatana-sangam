@@ -61,8 +61,15 @@ export default function KulClient({
   const router = useRouter();
   const { t } = useLanguage();
   const [activeView, setActiveView] = useState<KulView>(initialView);
+  const [editingName, setEditingName] = useState(false);
+  const [newKulName, setNewKulName] = useState(initialKul?.name || '');
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+
+  // Sync view when props change (routing)
+  useEffect(() => {
+    setActiveView(initialView);
+  }, [initialView]);
   
   // Sheet States
   const [showInvite, setShowInvite] = useState(false);
@@ -157,6 +164,19 @@ export default function KulClient({
     setShowEventForm(false);
   };
 
+  const handleSaveKulName = async () => {
+    if (!data?.kul || !newKulName.trim()) {
+      setEditingName(false);
+      return;
+    }
+    await kulMutations.updateKul.mutateAsync({
+      kulId: data.kul.id,
+      updates: { name: newKulName }
+    });
+    setEditingName(false);
+    toast.success('Kul name updated!');
+  };
+
   // ── Render Views ───────────────────────────────────────────────────────────
 
   if (!data || !data.kul) {
@@ -241,11 +261,11 @@ export default function KulClient({
             familyMembers={data.familyMembers}
             kulEvents={data.kulEvents}
             myRole={data.myRole}
-            editingName={false}
-            newKulName={data.kul!.name}
-            setNewKulName={() => {}}
-            setEditingName={() => {}}
-            saveKulName={() => {}}
+            editingName={editingName}
+            newKulName={newKulName}
+            setNewKulName={setNewKulName}
+            setEditingName={setEditingName}
+            saveKulName={handleSaveKulName}
             onUpdateKul={(updates) => kulMutations.updateKul.mutate({ kulId: data.kul!.id, updates })}
           />
         );

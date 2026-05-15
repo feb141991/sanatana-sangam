@@ -130,17 +130,26 @@ export function KulHub({
                <button 
                  onClick={() => {
                    const url = prompt('Enter Image URL for Kul Banner:', kul.cover_url || '');
-                   if (url !== null) onUpdateKul({ cover_url: url || null });
+                   if (url !== null) {
+                     onUpdateKul({ cover_url: url || null });
+                     import('react-hot-toast').then(m => m.default.success('Banner updated!'));
+                   }
                  }}
                  className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-black/5 hover:bg-black/10 transition border border-black/5"
                >
                  {t('kulChangeCover')}
                </button>
              )}
-             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--brand-primary)]/20 bg-[var(--brand-primary)]/5">
+             <button 
+               onClick={() => {
+                 navigator.clipboard.writeText(kul.invite_code);
+                 import('react-hot-toast').then(m => m.default.success('Invite code copied!'));
+               }}
+               className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--brand-primary)]/20 bg-[var(--brand-primary)]/5 hover:bg-[var(--brand-primary)]/10 transition-colors"
+             >
                 <span className="text-[10px] font-bold text-[var(--brand-primary)] uppercase tracking-widest opacity-60">{t('kulInviteLabel')}</span>
                 <span className="text-xs font-bold text-[var(--brand-primary)] tracking-[0.2em]">{kul.invite_code}</span>
-             </div>
+             </button>
           </div>
         </div>
 
@@ -157,22 +166,27 @@ export function KulHub({
         {/* Kul Name & Identity */}
         <div className="z-10 space-y-1">
           {editingName && myRole === 'guardian' ? (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col items-center gap-2">
               <input
                 autoFocus
                 value={newKulName}
                 onChange={(e) => setNewKulName(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') saveKulName(); if (e.key === 'Escape') setEditingName(false); }}
-                className="text-3xl font-bold bg-transparent outline-none border-b-2 border-[var(--brand-primary)] text-center w-64 premium-serif"
+                onBlur={saveKulName}
+                onKeyDown={(e) => { 
+                  if (e.key === 'Enter') saveKulName(); 
+                  if (e.key === 'Escape') setEditingName(false); 
+                }}
+                className="text-3xl font-bold bg-transparent outline-none border-b-2 border-[var(--brand-primary)] text-center w-64 premium-serif theme-ink"
               />
+              <p className="text-[10px] theme-muted uppercase tracking-widest font-bold">Press Enter to Save</p>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-1">
               <h1 className="text-3xl sm:text-4xl font-bold theme-ink premium-serif flex items-center gap-2">
                 {kul.name}
                 {myRole === 'guardian' && (
-                  <button onClick={() => { setNewKulName(kul.name); setEditingName(true); }} className="opacity-40 hover:opacity-100 transition">
-                    <Pencil size={14} />
+                  <button onClick={() => { setNewKulName(kul.name); setEditingName(true); }} className="opacity-40 hover:opacity-100 transition p-1">
+                    <Pencil size={18} />
                   </button>
                 )}
               </h1>
