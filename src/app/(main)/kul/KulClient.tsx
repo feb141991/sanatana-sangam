@@ -84,7 +84,7 @@ export default function KulClient({
     myRole: initialRole,
   });
 
-  const kulMutations = useKulMutations();
+  const kulMutations = useKulMutations(userId);
 
   // Onboarding Logic
   useEffect(() => {
