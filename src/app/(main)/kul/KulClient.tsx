@@ -30,6 +30,8 @@ import { KulFamilyProfileSheet } from './components/KulFamilyProfileSheet';
 
 // Types & Utils
 import { KulSummary, MemberRow, TaskRow, MessageRow, FamilyMember, KulEvent, KulView } from './types';
+import { useRef } from 'react';
+import { createClient } from '@/lib/supabase';
 
 interface Props {
   userId: string;
@@ -65,6 +67,8 @@ export default function KulClient({
   const [newKulName, setNewKulName] = useState(initialKul?.name || '');
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const supabase = useRef(createClient()).current;
 
   // Sync view when props change (routing)
   useEffect(() => {
@@ -177,6 +181,37 @@ export default function KulClient({
     toast.success('Kul name updated!');
   };
 
+  const handleUploadCover = async (file: File) => {
+    if (!data?.kul) return;
+    if (file.size > 5 * 1024 * 1024) { toast.error('Photo must be under 5 MB'); return; }
+    
+    setIsUploading(true);
+    try {
+      const ext = file.name.split('.').pop() ?? 'jpg';
+      const path = `kuls/${data.kul.id}/cover.${ext}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('avatars') // Using existing bucket for simplicity
+        .upload(path, file, { upsert: true, contentType: file.type });
+        
+      if (uploadError) throw uploadError;
+      
+      const { data: pubData } = supabase.storage.from('avatars').getPublicUrl(path);
+      const publicUrl = pubData.publicUrl;
+      
+      await kulMutations.updateKul.mutateAsync({
+        kulId: data.kul.id,
+        updates: { cover_url: publicUrl }
+      });
+      
+      toast.success('Kul banner updated! 🙏');
+    } catch (err: any) {
+      toast.error(err.message || 'Upload failed');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   // ── Render Views ───────────────────────────────────────────────────────────
 
   if (!data || !data.kul) {
@@ -267,6 +302,8 @@ export default function KulClient({
             setEditingName={setEditingName}
             saveKulName={handleSaveKulName}
             onUpdateKul={(updates) => kulMutations.updateKul.mutate({ kulId: data.kul!.id, updates })}
+            onUploadCover={handleUploadCover}
+            isUploading={isUploading}
           />
         );
     }

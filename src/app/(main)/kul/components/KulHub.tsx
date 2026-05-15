@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Pencil, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Pencil, Sparkles, Camera, Loader2 } from 'lucide-react';
 import { KulSummary, MemberRow, TaskRow, MessageRow, FamilyMember, KulEvent } from '../types';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { daysUntilNextOccurrence } from '../utils';
 import { KulSectionTiles } from './KulSectionTiles';
+import { useRef } from 'react';
 
 export function KulHub({
   kul,
@@ -22,6 +23,8 @@ export function KulHub({
   setEditingName,
   saveKulName,
   onUpdateKul,
+  onUploadCover,
+  isUploading,
 }: {
   kul: KulSummary;
   members: MemberRow[];
@@ -36,7 +39,10 @@ export function KulHub({
   setEditingName: (value: boolean) => void;
   saveKulName: () => void;
   onUpdateKul: (updates: { name?: string; cover_url?: string | null }) => void;
+  onUploadCover: (file: File) => void;
+  isUploading: boolean;
 }) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { t } = useLanguage();
   const completedTasks = tasks.filter((task) => task.completed).length;
   const openTasks = tasks.length - completedTasks;
@@ -97,15 +103,49 @@ export function KulHub({
       `}</style>
 
       {/* ── IMMERSIVE ZENITH HERO ── */}
-      <div className="immersive-hero pt-2 pb-8 flex flex-col items-center text-center">
+      <div className="immersive-hero pt-2 pb-8 flex flex-col items-center text-center group/hero">
+        {/* Hidden File Input */}
+        <input 
+          type="file" 
+          ref={fileInputRef} 
+          className="hidden" 
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) onUploadCover(file);
+          }}
+        />
+
         {/* Banner Background (Immersive) */}
-        {kul.cover_url && (
-          <div className="absolute inset-x-[-1rem] top-[-1.5rem] h-[380px] z-[-1] overflow-hidden opacity-30 mask-gradient-b">
-             {/* eslint-disable-next-line @next/next/no-img-element */}
+        <div className="absolute inset-x-[-1rem] top-[-1.5rem] h-[380px] z-[-1] overflow-hidden opacity-30 mask-gradient-b transition-all group-hover/hero:opacity-40">
+           {kul.cover_url ? (
+             // eslint-disable-next-line @next/next/no-img-element
              <img src={kul.cover_url} alt="" className="w-full h-full object-cover blur-[1px]" />
-             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/40 to-[color:var(--surface-soft)]" />
-          </div>
-        )}
+           ) : (
+             <div className="w-full h-full bg-gradient-to-br from-slate-200 to-slate-300 opacity-20" />
+           )}
+           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/40 to-[color:var(--surface-soft)]" />
+           
+           {/* Change Cover Overlay (Zenith Style) */}
+           {myRole === 'guardian' && (
+             <button 
+               disabled={isUploading}
+               onClick={() => fileInputRef.current?.click()}
+               className="absolute inset-0 flex flex-col items-center justify-center bg-black/5 opacity-0 group-hover/hero:opacity-100 transition-all cursor-pointer backdrop-blur-[2px]"
+             >
+                {isUploading ? (
+                  <Loader2 size={32} className="animate-spin text-[var(--brand-primary)]" />
+                ) : (
+                  <>
+                    <div className="w-16 h-16 rounded-full bg-white/20 border border-white/40 flex items-center justify-center text-white shadow-2xl mb-2 backdrop-blur-md">
+                      <Camera size={24} strokeWidth={2.5} />
+                    </div>
+                    <span className="text-[10px] font-bold text-white uppercase tracking-[0.2em] drop-shadow-md">{t('kulChangeCover')}</span>
+                  </>
+                )}
+             </button>
+           )}
+        </div>
 
         {/* Top Floating Actions */}
         <div className="w-full flex items-center justify-between mb-8">
@@ -125,16 +165,11 @@ export function KulHub({
                 <span className="text-[9px] font-bold text-[var(--brand-primary)] uppercase tracking-[0.2em] opacity-70">{t('kulInviteLabel')}</span>
                 <span className="text-sm font-bold text-[var(--brand-primary)] tracking-[0.1em]">{kul.invite_code}</span>
              </button>
-             {myRole === 'guardian' && (
+             {myRole === 'guardian' && !editingName && (
                <button 
                  onClick={() => {
-                   const newName = prompt('Rename Kul:', kul.name);
-                   if (newName && newName !== kul.name) {
-                      setNewKulName(newName);
-                      saveKulName();
-                   }
-                   const url = prompt('New Banner Image URL (Optional):', kul.cover_url || '');
-                   if (url !== null && url !== kul.cover_url) onUpdateKul({ cover_url: url || null });
+                    setNewKulName(kul.name);
+                    setEditingName(true);
                  }}
                  className="flex items-center justify-center w-9 h-9 rounded-full glass-panel border border-white/10 hover:bg-white/20 transition shadow-sm text-[var(--brand-primary)]"
                >
@@ -158,14 +193,38 @@ export function KulHub({
           </motion.div>
         </div>
 
-        <div className="space-y-1 mb-6">
-          <motion.h1 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-3xl sm:text-4xl font-bold theme-ink premium-serif tracking-tight"
-          >
-            {kul.name}
-          </motion.h1>
+        <div className="space-y-1 mb-6 w-full max-w-sm">
+          {editingName ? (
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="flex flex-col items-center gap-2"
+            >
+              <input
+                autoFocus
+                value={newKulName}
+                onChange={(e) => setNewKulName(e.target.value)}
+                onBlur={saveKulName}
+                onKeyDown={(e) => { 
+                  if (e.key === 'Enter') saveKulName(); 
+                  if (e.key === 'Escape') setEditingName(false); 
+                }}
+                className="text-3xl font-bold bg-transparent outline-none border-b-2 border-[var(--brand-primary)] text-center w-full premium-serif theme-ink placeholder:opacity-30"
+                placeholder={t('kulNamePlaceholder')}
+              />
+              <p className="text-[9px] theme-muted uppercase tracking-widest font-bold opacity-60">
+                Press Enter to Save
+              </p>
+            </motion.div>
+          ) : (
+            <motion.h1 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-3xl sm:text-4xl font-bold theme-ink premium-serif tracking-tight"
+            >
+              {kul.name}
+            </motion.h1>
+          )}
           <div className="flex items-center justify-center gap-2.5">
              <div className="h-px w-6 bg-gradient-to-r from-transparent to-[var(--brand-primary)] opacity-20" />
              <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--brand-primary)] opacity-70">

@@ -85,7 +85,7 @@ export type TranslationKey =
   | 's1' | 's1d' | 's2' | 's2d' | 's3' | 's3d' | 's4' | 's4d' | 's5' | 's5d'
   | 's6' | 's6d' | 's7' | 's7d' | 's8' | 's8d' | 's9' | 's9d' | 's10' | 's10d'
   | 's11' | 's11d' | 's12' | 's12d' | 's13' | 's13d' | 's14' | 's14d' | 's15' | 's15d'
-  | 's16' | 's16d';
+  | 's16' | 's16d' | 'kulNamePlaceholder';
 
 type TranslationMap = Record<TranslationKey, string>;
 
@@ -282,6 +282,7 @@ const en: TranslationMap = {
   s14: 'Samavartana', s14d: 'Graduation — Returning from the guru after study.',
   s15: 'Vivaha', s15d: 'Marriage — Entry into the householder stage.',
   s16: 'Antyesti', s16d: 'Funeral rites — The final sacrifice to the fire.',
+  kulNamePlaceholder: 'Enter Lineage Name…',
 };
 
 const hi: TranslationMap = {
@@ -476,6 +477,7 @@ const hi: TranslationMap = {
   s14: 'समावर्तन', s14d: 'स्नातक — अध्ययन के बाद गुरु से वापसी।',
   s15: 'विवाह', s15d: 'विवाह — गृहस्थ जीवन में प्रवेश।',
   s16: 'अंत्येष्टि', s16d: 'अंतिम संस्कार — अग्नि को अंतिम आहुति।',
+  kulNamePlaceholder: 'कुल का नाम दर्ज करें…',
 };
 
 const pa: TranslationMap = {
@@ -670,6 +672,7 @@ const pa: TranslationMap = {
   s14: 'ਸਮਾਵਰਤਨ', s14d: 'ਗ੍ਰੈਜੂਏਸ਼ਨ — ਅਧਿਐਨ ਤੋਂ ਬਾਅਦ ਗੁਰੂ ਤੋਂ ਵਾਪਸੀ।',
   s15: 'ਵਿਵਾਹ', s15d: 'ਵਿਆਹ — ਗ੍ਰਹਿਸਥ ਜੀਵਨ ਵਿੱਚ ਪ੍ਰਵੇਸ਼।',
   s16: 'ਅੰਤਿਮ ਸੰਸਕਾਰ', s16d: 'ਅੰਤਿਮ ਸੰਸਕਾਰ — ਅਗਨੀ ਨੂੰ ਅੰਤਿਮ ਭੇਟ।',
+  kulNamePlaceholder: 'ਕੁਲ ਦਾ ਨਾਮ ਦਰਜ ਕਰੋ…',
 };
 
 export const TRANSLATIONS: Record<AppLang, TranslationMap> = { en, hi, pa };
