@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { 
   BarChart3, PieChart, TrendingUp, Download,
   ArrowLeft, Calendar, Filter, FileText,
@@ -11,9 +12,10 @@ import {
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
-export default function ReportCenter() {
+function ReportCenterContent() {
+  const searchParams = useSearchParams();
   const [timeframe, setTimeframe] = useState('7d');
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'overview');
   const [stats, setStats] = useState<any>(null);
 
   useEffect(() => {
@@ -45,7 +47,7 @@ export default function ReportCenter() {
           </div>
           <div className="flex items-center gap-3">
             <div className="flex items-center bg-black/5 p-1 rounded-xl mr-4">
-              {['overview', 'content', 'finance', 'lifecycle'].map((tab) => (
+              {['overview', 'content', 'finance', 'lifecycle', 'export'].map((tab) => (
                 <button 
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -165,7 +167,66 @@ export default function ReportCenter() {
             </div>
           </div>
         )}
+
+        {activeTab === 'export' && (
+          <div className="space-y-8">
+            <div className="glass-panel rounded-[3rem] border border-black/5 p-10 bg-white/40">
+              <h3 className="text-xl font-bold theme-ink mb-8">Platform Data Extraction</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-6">
+                  <ExportCard 
+                    title="Seeker Registry" 
+                    desc="Full list of users with tradition and city data." 
+                    onExport={() => alert('Exporting Seeker Registry...')}
+                  />
+                  <ExportCard 
+                    title="Financial Audit" 
+                    desc="Subscription records and MRR breakdown for the last 30 days." 
+                    onExport={() => alert('Exporting Financial Audit...')}
+                  />
+                </div>
+                <div className="space-y-6">
+                  <ExportCard 
+                    title="Engagement Metrics" 
+                    desc="Aggregated view counts and session durations." 
+                    onExport={() => alert('Exporting Engagement Metrics...')}
+                  />
+                  <ExportCard 
+                    title="Content Reports" 
+                    desc="Historical moderation actions and flagged content logs." 
+                    onExport={() => alert('Exporting Content Reports...')}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+    </div>
+  );
+}
+
+export default function ReportCenter() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--divine-bg)] flex items-center justify-center"><Activity className="animate-spin text-[var(--premium-gold)]" /></div>}>
+      <ReportCenterContent />
+    </Suspense>
+  );
+}
+
+function ExportCard({ title, desc, onExport }: any) {
+  return (
+    <div className="p-6 rounded-[2rem] bg-black/5 border border-black/5 hover:border-[var(--premium-gold)]/30 transition-all flex items-center justify-between group">
+      <div>
+        <h4 className="text-sm font-bold theme-ink">{title}</h4>
+        <p className="text-[10px] text-[var(--brand-muted)] mt-1">{desc}</p>
+      </div>
+      <button 
+        onClick={onExport}
+        className="px-4 py-2 rounded-xl bg-white text-[10px] font-bold text-[var(--premium-gold)] uppercase tracking-widest shadow-sm hover:bg-[var(--premium-gold)] hover:text-white transition-all"
+      >
+        Download CSV
+      </button>
     </div>
   );
 }
@@ -201,7 +262,7 @@ function CronLogList() {
       try {
         const res = await fetch('/api/admin/logs');
         const data = await res.json();
-        setLogs(data);
+        setLogs(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error('Failed to fetch cron logs');
       }
