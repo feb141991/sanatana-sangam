@@ -53,6 +53,12 @@ export async function GET() {
           churn: '2.4%',
           renewalsDue: 128
         }
+      },
+      health: {
+        database: 'up',
+        auth: 'up',
+        functions: 'up',
+        storage: 'up'
       }
     });
   } catch (error) {

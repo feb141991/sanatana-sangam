@@ -17,13 +17,22 @@ function SystemMonitoringContent() {
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'overview');
   const [latency, setLatency] = useState(120);
   const [activeUsers, setActiveUsers] = useState(0);
+  const [health, setHealth] = useState<any>({
+    database: 'up',
+    auth: 'up',
+    functions: 'up',
+    storage: 'up'
+  });
 
   useEffect(() => {
     async function fetchStats() {
       try {
         const res = await fetch('/api/admin/stats');
         const data = await res.json();
-        if (res.ok) setActiveUsers(data.activeNow || 0);
+        if (res.ok) {
+          setActiveUsers(data.activeNow || 0);
+          if (data.health) setHealth(data.health);
+        }
       } catch (err) {
         console.error('Failed to fetch monitoring stats:', err);
       }
@@ -94,10 +103,10 @@ function SystemMonitoringContent() {
                 <h2 className="text-lg font-serif font-bold theme-ink px-2">Cloud Services</h2>
                 <div className="glass-panel rounded-3xl border border-black/5 divide-y divide-black/5 overflow-hidden bg-white/40">
                   {[
-                    { name: 'Auth Engine (Supabase)', status: 'up', icon: Shield, link: 'https://supabase.com/dashboard' },
-                    { name: 'Database (PostgreSQL)', status: 'up', icon: Database, link: 'https://supabase.com/dashboard/project/_/database/tables' },
-                    { name: 'Edge Functions', status: 'warning', icon: Cpu, link: 'https://supabase.com/dashboard/project/_/functions' },
-                    { name: 'Asset Storage (S3)', status: 'up', icon: HardDrive, link: 'https://supabase.com/dashboard/project/_/storage' }
+                    { name: 'Auth Engine (Supabase)', status: health.auth, icon: Shield, link: 'https://supabase.com/dashboard' },
+                    { name: 'Database (PostgreSQL)', status: health.database, icon: Database, link: 'https://supabase.com/dashboard/project/_/database/tables' },
+                    { name: 'Edge Functions', status: health.functions, icon: Cpu, link: 'https://supabase.com/dashboard/project/_/functions' },
+                    { name: 'Asset Storage (S3)', status: health.storage, icon: HardDrive, link: 'https://supabase.com/dashboard/project/_/storage' }
                   ].map((service) => (
                     <a key={service.name} href={service.link} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-5 hover:bg-white transition-all group">
                       <div className="flex items-center gap-3">
