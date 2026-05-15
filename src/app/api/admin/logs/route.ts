@@ -5,8 +5,8 @@ export async function GET() {
   const supabase = createAdminClient();
 
   try {
-    const { data, error } = await supabase
-      .from('cron_logs')
+    const { data, error } = await (supabase
+      .from('cron_logs') as any)
       .select('*')
       .order('created_at', { ascending: false })
       .limit(50);

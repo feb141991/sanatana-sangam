@@ -6,7 +6,7 @@ import {
   ArrowUpRight, BarChart3, AlertTriangle, 
   UserCheck, ShieldCheck, LogOut, ArrowLeft,
   FileText, Megaphone, MapPin, Calendar,
-  RefreshCw
+  RefreshCw, Heart
 } from 'lucide-react';
 import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase';

@@ -324,6 +324,18 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['user_warnings']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['user_warnings']['Insert']>;
       };
+      cron_logs: {
+        Row: {
+          id: string;
+          job_name: string;
+          status: string;
+          message: string | null;
+          execution_time: number | null;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['cron_logs']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['cron_logs']['Insert']>;
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -344,6 +356,7 @@ export type PathshalaUserState = Database['public']['Tables']['pathshala_user_st
 export type PostComment = Database['public']['Tables']['post_comments']['Row'];
 export type EventRsvp = Database['public']['Tables']['event_rsvps']['Row'];
 export type MalaSession = Database['public']['Tables']['mala_sessions']['Row'];
+export type CronLog = Database['public']['Tables']['cron_logs']['Row'];
 export type PostWithAuthor = Post & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'spiritual_level'> };
 export type ThreadWithAuthor = ForumThread & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya'> };
 export type PostCommentWithAuthor = PostComment & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url'> };

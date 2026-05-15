@@ -23,7 +23,7 @@ export async function GET() {
 
     // Calculate tradition distribution
     const traditionStats: Record<string, number> = {};
-    traditionsData.data?.forEach(p => {
+    (traditionsData.data as any[])?.forEach(p => {
       const t = p.tradition || 'Universal';
       traditionStats[t] = (traditionStats[t] || 0) + 1;
     });

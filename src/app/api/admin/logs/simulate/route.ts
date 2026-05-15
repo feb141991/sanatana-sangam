@@ -8,8 +8,8 @@ export async function POST() {
     const jobs = ['nitya-reminder', 'shloka-reminder', 'panchang-sync', 'analytics-rollup'];
     const job = jobs[Math.floor(Math.random() * jobs.length)];
     
-    const { error } = await supabase
-      .from('cron_logs')
+    const { error } = await (supabase
+      .from('cron_logs') as any)
       .insert({
         job_name: job,
         status: Math.random() > 0.1 ? 'success' : 'fail',
