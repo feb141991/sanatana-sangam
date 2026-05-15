@@ -758,8 +758,8 @@ function BoardTab({ kul, members, tasks, userId, myRole }: {
 }
 
 // ── Members Tab ───────────────────────────────────────────────────────────────
-function MembersTab({ members, userId, myRole, kul }: {
-  members: MemberRow[]; userId: string; myRole: string; kul: KulData;
+function MembersTab({ members, userId, myRole, kul, onLeave }: {
+  members: MemberRow[]; userId: string; myRole: string; kul: KulData; onLeave?: () => void;
 }) {
   const kulMutations = useKulMutations(userId);
   const [selectedMember, setSelectedMember] = useState<MemberRow | null>(null);
@@ -839,6 +839,16 @@ function MembersTab({ members, userId, myRole, kul }: {
                 <button onClick={() => remove(m.id, name)}
                   className="w-10 h-10 rounded-2xl flex items-center justify-center border border-black/[0.04] text-[color:var(--brand-muted)] hover:bg-red-50 hover:text-red-500 transition-all active:scale-90">
                   <X size={16} strokeWidth={2.5} />
+                </button>
+              </div>
+            )}
+
+            {/* Leave button for self */}
+            {isMe && onLeave && (
+              <div className="flex items-center pr-1">
+                <button onClick={onLeave}
+                  className="h-10 px-4 text-xs font-bold rounded-2xl transition-all shadow-sm border border-red-500/10 bg-red-500/5 text-red-500 hover:bg-red-500/10 active:scale-95">
+                  Leave Kul
                 </button>
               </div>
             )}
@@ -2520,6 +2530,29 @@ export default function KulClient({ userId, userName, userProfile, kul, members,
     }
   }
 
+  async function handleLeaveKul() {
+    const isGuardian = data.myRole === 'guardian';
+    const otherGuardians = data.members.filter(m => m.role === 'guardian' && m.user_id !== userId);
+    
+    let msg = 'Are you sure you want to leave this Kul? 🙏';
+    if (isGuardian && otherGuardians.length === 0 && data.members.length > 1) {
+      msg = 'You are the only Guardian. Please promote someone else to Guardian before leaving, or the Kul will have no leader! 🙏';
+      toast.error(msg);
+      return;
+    }
+    
+    if (!confirm(msg)) return;
+    
+    try {
+      await kulMutations.leaveKul.mutateAsync();
+      toast.success('Left the Kul. You can join or create another one now.');
+      router.push('/kul');
+      router.refresh();
+    } catch (error: any) {
+      toast.error(error.message ?? 'Could not leave the Kul.');
+    }
+  }
+
   const renderSection = () => {
     switch (view) {
       case 'hub':
@@ -2551,7 +2584,7 @@ export default function KulClient({ userId, userName, userProfile, kul, members,
             familyMembers={data.familyMembers}
             kulEvents={data.kulEvents}
           >
-            <MembersTab members={data.members} userId={userId} myRole={data.myRole} kul={liveKul} />
+            <MembersTab members={data.members} userId={userId} myRole={data.myRole} kul={liveKul} onLeave={handleLeaveKul} />
           </KulSectionShell>
         );
       case 'tasks':

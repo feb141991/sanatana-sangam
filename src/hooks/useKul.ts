@@ -93,5 +93,9 @@ export function useKulMutations(userId: string) {
       mutationFn: (payload: SaveKulEventPayload) => saveKulEvent(userId, payload),
       onSuccess: refreshKul,
     }),
+    leaveKul: useMutation({
+      mutationFn: () => leaveKul(),
+      onSuccess: refreshKul,
+    }),
   };
 }

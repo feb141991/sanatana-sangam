@@ -12,7 +12,25 @@ export async function getKulPageData() {
     .eq('id', user.id)
     .single();
 
-  const kulId = profile?.kul_id ?? null;
+  let kulId = profile?.kul_id ?? null;
+  
+  // AUTO-RECOVER: If profile.kul_id is missing, check if the user is a member of any Kul.
+  // This ensures that even if Step 3 of join_kul/create_kul failed (or was cleared),
+  // the user can still access their Kul dashboard without "Already in a Kul" errors.
+  if (!kulId) {
+    const { data: membership } = await supabase
+      .from('kul_members')
+      .select('kul_id')
+      .eq('user_id', user.id)
+      .limit(1)
+      .maybeSingle();
+    
+    if (membership?.kul_id) {
+      kulId = membership.kul_id;
+      // Proactively fix the profile link in the background (SECURITY DEFINER)
+      supabase.rpc('repair_kul_membership').then(() => {});
+    }
+  }
 
   let kul = null;
   let members: any[] = [];

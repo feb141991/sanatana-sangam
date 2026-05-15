@@ -19,15 +19,21 @@ export type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
  *  updated_at  — managed by the set_profiles_updated_at trigger
  */
 const SERVER_MANAGED_COLUMNS = new Set<string>([
+  'id',
   'kul_id',
   'mandali_id',
   'seva_score',
+  'shloka_streak',
+  'last_shloka_date',
   'is_admin',
   'is_pro',
   'is_banned',
   'ban_reason',
   'created_at',
   'updated_at',
+  'last_seen',
+  'is_deleting',
+  'deletion_requested_at',
 ]);
 
 function sanitizePayload(payload: ProfileUpdate): ProfileUpdate {
