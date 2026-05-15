@@ -29,16 +29,13 @@ export function KulVansh({
   const { t } = useLanguage();
 
   // ─── THE TREE ARCHITECT (Recursive logic) ───
-  // We need to build a true hierarchy where children are nested under parents
   const buildTree = () => {
     const nodesMap: Record<string, FamilyMember> = {};
     familyMembers.forEach(m => nodesMap[m.id] = m);
 
-    // Identify unions and individuals
     const processedIds = new Set<string>();
     const tree: any[] = [];
 
-    // Helper to find children
     const findChildrenOf = (parentId: string | null, spouseId: string | null) => {
       return familyMembers.filter(m => 
         (parentId && m.parent_id === parentId) || 
@@ -46,21 +43,18 @@ export function KulVansh({
       );
     };
 
-    // First, find 'Roots' (members with no parent_id in our list)
+    // Correctly identify 'Roots' (members with no parent_id in our list)
     const roots = familyMembers.filter(m => !m.parent_id || !nodesMap[m.parent_id]);
 
     roots.forEach(m => {
       if (processedIds.has(m.id)) return;
-
       const spouse = familyMembers.find(s => s.id === m.spouse_id || m.id === s.spouse_id);
-      const children = findChildrenOf(m.id, spouse?.id || null);
-
       if (spouse) {
-        tree.push({ type: 'union', members: [m, spouse], children });
+        tree.push({ type: 'union', members: [m, spouse] });
         processedIds.add(m.id);
         processedIds.add(spouse.id);
       } else {
-        tree.push({ type: 'individual', members: [m], children });
+        tree.push({ type: 'individual', members: [m] });
         processedIds.add(m.id);
       }
     });
@@ -71,35 +65,57 @@ export function KulVansh({
   const vanshTree = buildTree();
 
   return (
-    <div className="space-y-16 pb-32 relative min-h-[800px] celestial-tapestry p-4 sm:p-10 rounded-[3.5rem] overflow-hidden">
+    <div className="space-y-16 pb-32 relative min-h-[900px] celestial-akasha rounded-[3.5rem] p-6 sm:p-12 overflow-hidden border border-white/5">
       <style jsx global>{`
-        .celestial-tapestry {
-          background: radial-gradient(circle at 50% 0%, #0a0b1a 0%, #020205 100%);
-          color: white;
+        .celestial-akasha {
+          background: radial-gradient(circle at 50% -20%, #1a1b3a 0%, #05050a 100%);
+          position: relative;
         }
-        .shoonaya-glow {
-          filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.2));
+        .celestial-akasha::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background-image: radial-gradient(white 1px, transparent 1px);
+          background-size: 100px 100px;
+          opacity: 0.05;
+          pointer-events: none;
+        }
+        .etheric-path {
+          stroke: rgba(251, 191, 36, 0.15);
+          stroke-width: 1.5;
+          fill: none;
+          stroke-dasharray: 6 12;
+          animation: ether-flow 30s linear infinite;
+        }
+        @keyframes ether-flow {
+          from { stroke-dashoffset: 200; }
+          to { stroke-dashoffset: 0; }
+        }
+        .orb-glow {
+          box-shadow: 0 0 30px rgba(var(--brand-primary-rgb), 0.15);
         }
       `}</style>
 
-      {/* ─── Celestial Hero ─── */}
-      <div className="relative rounded-[3rem] p-12 overflow-hidden border border-white/10 bg-black/40 backdrop-blur-3xl shoonaya-glow">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--brand-primary)] opacity-10 blur-[120px]" />
+      {/* ─── Celestial Hero Header ─── */}
+      <div className="relative rounded-[2.5rem] p-10 overflow-hidden border border-white/10 bg-black/40 backdrop-blur-2xl orb-glow">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-[var(--brand-primary)] opacity-[0.08] blur-[100px]" />
         
         <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
           <motion.div 
             animate={{ rotate: 360 }}
-            transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
-            className="w-24 h-24 rounded-full flex items-center justify-center text-5xl bg-gradient-to-br from-amber-200/20 to-transparent border border-amber-500/30 shadow-[0_0_30px_rgba(251,191,36,0.2)]"
+            transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
+            className="w-20 h-20 rounded-full flex items-center justify-center text-4xl bg-gradient-to-br from-amber-200/20 to-transparent border border-amber-500/30"
           >
             🔯
           </motion.div>
-          <div className="flex-1 text-center md:text-left space-y-3">
-            <h3 className="text-4xl md:text-5xl font-black premium-serif tracking-tight bg-gradient-to-r from-amber-200 via-white to-amber-100 bg-clip-text text-transparent">
+          <div className="flex-1 space-y-2 text-center md:text-left">
+            <p className="text-[10px] font-black uppercase tracking-[0.6em] text-amber-500/60">
               {t('kulVanshTitle')}
+            </p>
+            <h3 className="font-display text-3xl md:text-5xl font-bold text-white premium-serif tracking-tight">
+              {t('kulLivingLineage')}
             </h3>
-            <p className="text-amber-200/60 text-xs font-bold uppercase tracking-[0.5em]">The Eternal Vansh Fractal</p>
-            <p className="text-sm text-slate-400 leading-relaxed max-w-2xl italic">
+            <p className="text-sm text-slate-400 leading-relaxed max-w-xl italic opacity-70">
               &ldquo;{t('kulHeritageQuote')}&rdquo;
             </p>
           </div>
@@ -107,8 +123,9 @@ export function KulVansh({
             <motion.button
               whileHover={{ scale: 1.05, y: -2 }}
               onClick={() => setShowAdd(true)}
-              className="px-10 py-5 rounded-full bg-amber-500 text-black font-black text-xs uppercase tracking-widest shadow-[0_10px_40px_rgba(245,158,11,0.4)] transition-all"
+              className="px-10 py-5 rounded-full bg-amber-500 text-black font-black text-xs uppercase tracking-widest shadow-2xl shadow-amber-500/20"
             >
+              <Plus size={18} strokeWidth={3} className="inline mr-2" />
               {t('kulAddMember')}
             </motion.button>
           )}
@@ -116,16 +133,16 @@ export function KulVansh({
       </div>
 
       {familyMembers.length === 0 && !showAdd && (
-        <div className="py-32 text-center">
-          <h4 className="text-2xl font-bold text-amber-100/40 premium-serif">{t('kulVanshEmptyTitle')}</h4>
+        <div className="py-40 text-center relative z-10">
+          <h4 className="text-2xl font-bold text-white/30 premium-serif">{t('kulVanshEmptyTitle')}</h4>
           <button onClick={() => setShowAdd(true)} className="mt-8 px-12 py-4 rounded-full border border-amber-500/30 text-amber-500 font-bold hover:bg-amber-500/10 transition-all">
             {t('kulCreateFirstBranch')}
           </button>
         </div>
       )}
 
-      {/* ─── RECURSIVE FRACTAL RENDER ─── */}
-      <div className="vansh-fractal-container flex flex-col items-center">
+      {/* ─── RECURSIVE FRACTAL ENGINE ─── */}
+      <div className="flex flex-col items-center gap-24 relative">
         {vanshTree.map((root, idx) => (
           <FractalNode 
             key={idx} 
@@ -142,7 +159,7 @@ export function KulVansh({
   );
 }
 
-// ─── RECURSIVE FRACTAL NODE ───
+// ─── THE FRACTAL NODE (Recursive Lineage) ───
 function FractalNode({ node, allMembers, onDetails, onEdit, onDelete, canManage }: { node: any, allMembers: FamilyMember[], onDetails: any, onEdit: any, onDelete: any, canManage: boolean }) {
   const children = allMembers.filter((m: FamilyMember) => 
     node.members.some((parent: any) => m.parent_id === parent.id)
@@ -165,23 +182,33 @@ function FractalNode({ node, allMembers, onDetails, onEdit, onDelete, canManage 
   });
 
   return (
-    <div className="flex flex-col items-center relative py-12">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-12 bg-gradient-to-b from-amber-500/20 to-transparent" />
+    <div className="flex flex-col items-center relative py-12 w-full">
+      {/* ── Etheric Connection Line (Parent to Children) ── */}
+      {processedChildren.length > 0 && (
+        <svg className="absolute bottom-0 left-0 w-full h-24 -z-10 pointer-events-none" style={{ top: '100%' }}>
+          <path className="etheric-path" d={`M 50% 0 L 50% 100%`} />
+        </svg>
+      )}
 
-      <div className="relative z-10">
+      {/* ── The Core Dharma Node ── */}
+      <div className="relative z-20">
         {node.type === 'union' ? (
-          <div className="flex items-center gap-12 group/union relative">
-             <div className="absolute inset-x-[-20px] inset-y-[-10px] rounded-full bg-amber-500/5 blur-2xl opacity-0 group-hover/union:opacity-100 transition-opacity" />
-             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+          <div className="flex items-center gap-12 sm:gap-20 group/union relative dharma-cluster">
+             {/* Sacred Union Heart */}
+             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30">
                <motion.div 
-                 animate={{ scale: [1, 1.1, 1] }} 
-                 transition={{ duration: 3, repeat: Infinity }}
-                 className="w-8 h-8 rounded-full bg-black border border-amber-500/40 flex items-center justify-center text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)]"
+                 animate={{ scale: [1, 1.2, 1] }} 
+                 transition={{ duration: 4, repeat: Infinity }}
+                 className="w-10 h-10 rounded-full bg-black border border-amber-500/40 flex items-center justify-center text-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.4)]"
                >
-                 <Heart size={12} fill="currentColor" />
+                 <Heart size={14} fill="currentColor" />
                </motion.div>
              </div>
-             {node.members.map((m: any) => (
+             
+             {/* Union Aura */}
+             <div className="absolute inset-x-[-30px] inset-y-[-10px] rounded-[3.5rem] bg-amber-500/[0.03] border border-amber-500/10 blur-[2px] -z-10 opacity-0 group-hover/union:opacity-100 transition-all duration-700" />
+
+             {node.members.map((m: FamilyMember) => (
                <VanshCard 
                  key={m.id} 
                  member={m} 
@@ -205,97 +232,67 @@ function FractalNode({ node, allMembers, onDetails, onEdit, onDelete, canManage 
         )}
       </div>
 
+      {/* ── Fractal Branches (Children) ── */}
       {processedChildren.length > 0 && (
-        <div className="relative mt-12 flex items-start justify-center gap-16 md:gap-32">
-          {processedChildren.length > 1 && (
-            <div className="absolute top-0 left-[15%] right-[15%] h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
-          )}
-          {processedChildren.map((childNode, idx) => (
-            <FractalNode 
-              key={idx} 
-              node={childNode} 
-              allMembers={allMembers} 
-              onDetails={onDetails} 
-              onEdit={onEdit} 
-              onDelete={onDelete} 
-              canManage={canManage}
-            />
-          ))}
+        <div className="relative mt-24 flex items-start justify-center gap-16 md:gap-32 w-full">
+           {/* Horizontal Branching Thread */}
+           {processedChildren.length > 1 && (
+             <div className="absolute top-0 left-[20%] right-[20%] h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+           )}
+           
+           {processedChildren.map((childNode, idx) => (
+             <FractalNode 
+               key={idx} 
+               node={childNode} 
+               allMembers={allMembers} 
+               onDetails={onDetails} 
+               onEdit={onEdit} 
+               onDelete={onDelete} 
+               canManage={canManage}
+             />
+           ))}
         </div>
       )}
     </div>
   );
 }
 
-
-// ─── REUSABLE VANSH CARD ───
+// ─── THE CELESTIAL ORB (Vansh Card) ───
 function VanshCard({ member, canManage, onClick, onEdit, onDelete, delay }: { member: FamilyMember, canManage: boolean, onClick: any, onEdit: any, onDelete: any, delay: number }) {
   const { t } = useLanguage();
-  const age = member.birth_date
-    ? Math.floor((Date.now() - new Date(member.birth_date).getTime()) / (365.25 * 86400000))
-    : member.birth_year ? new Date().getFullYear() - member.birth_year : null;
-
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9, y: 30 }}
-      whileInView={{ opacity: 1, scale: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay, type: 'spring', damping: 20 }}
+      initial={{ opacity: 0, scale: 0.9 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      whileHover={{ y: -8 }}
       onClick={onClick}
-      className="group relative cursor-pointer"
+      className="group relative cursor-pointer z-20"
     >
-      {/* Sacred Aura for Individual/Partner */}
-      <div className={`absolute inset-[-10px] rounded-[3rem] transition-all duration-700 opacity-0 group-hover:opacity-100 bg-gradient-to-br ${member.gender === 'M' ? 'from-blue-500/10' : 'from-pink-500/10'} to-transparent blur-xl -z-10`} />
+      {/* Celestial Halo */}
+      <div className={`absolute inset-[-12px] rounded-[3.2rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 bg-gradient-to-br ${member.gender === 'M' ? 'from-blue-500/20' : 'from-pink-500/20'} to-transparent blur-2xl -z-10`} />
 
-      <div className="clay-portrait-card w-[10.5rem] sm:w-[12rem] rounded-[2.8rem] p-5 text-center relative transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:-translate-y-2 bg-white/80 border border-white/60 backdrop-blur-md overflow-hidden ring-1 ring-black/[0.03]">
-        {/* Sacred Accent Corner */}
-        <div className={`absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl ${member.gender === 'M' ? 'from-blue-500/5' : 'from-pink-500/5'} to-transparent rounded-bl-[2rem]`} />
-        
+      <div className="relative w-[11rem] sm:w-[13rem] rounded-[3rem] p-6 text-center border border-white/10 bg-white/5 backdrop-blur-3xl shadow-2xl transition-all duration-500 hover:border-amber-500/40 hover:bg-white/10 overflow-hidden ring-1 ring-white/5">
         <FamilyKeepsakeStage member={member} />
         
         <div className="mt-5 space-y-1">
-          <p className="text-[15px] font-bold theme-ink leading-tight tracking-tight premium-serif group-hover:text-[var(--brand-primary)] transition-colors">{member.name}</p>
-          {member.role && (
-            <p className="text-[8px] font-black uppercase tracking-[0.2em] text-[var(--brand-primary)] opacity-60">
-              {member.role}
-            </p>
-          )}
+          <p className="text-[16px] font-bold text-white premium-serif tracking-tight leading-tight group-hover:text-amber-200 transition-colors">{member.name}</p>
+          <p className="text-[8px] font-black uppercase tracking-[0.3em] text-amber-500/60">{member.role || (member.gender === 'M' ? 'Purusha' : 'Prakriti')}</p>
         </div>
 
-        <div className="w-8 h-[1px] mx-auto my-4 bg-gradient-to-r from-transparent via-[var(--brand-primary)]/40 to-transparent" />
-
-        <div className="text-[10px] theme-dim space-y-1.5 leading-relaxed font-medium">
-          {member.birth_place && (
-            <p className="flex items-center justify-center gap-1 opacity-60 italic">
-              <MapPin size={8} /> {member.birth_place}
-            </p>
-          )}
-          {age !== null && (
-            <p className={`${member.is_alive ? 'text-[var(--brand-primary)]' : 'text-slate-400'} font-bold`}>
-              {member.is_alive 
-                ? `${t('kulAge')}: ${age}${t('kulYearsAbbrev')}` 
-                : `${t('kulLived')}: ${age}${t('kulYearsAbbrev')} (${member.birth_year ?? '—'}–${member.death_year ?? '—'})`}
-            </p>
-          )}
-          {!member.is_alive && !age && (
-            <p className="font-bold opacity-30 uppercase tracking-tighter text-[9px]">{t('kulInEternalMemory')}</p>
-          )}
-        </div>
-        
-        {/* Interaction Mini-Panel */}
+        {/* Interaction Panel */}
         {canManage && (
-          <div className="mt-4 pt-3 border-t border-black/[0.03] flex items-center justify-center gap-4">
+          <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button 
               onClick={(e) => { e.stopPropagation(); onEdit(); }} 
-              className="p-2 rounded-full hover:bg-[var(--brand-primary)]/10 text-[var(--brand-primary)] transition-all"
+              className="w-8 h-8 rounded-full bg-black/40 text-white/60 hover:text-amber-500 border border-white/5 flex items-center justify-center transition-all"
             >
-              <Pencil size={11} />
+              <Pencil size={12} />
             </button>
             <button 
               onClick={(e) => { e.stopPropagation(); onDelete(); }} 
-              className="p-2 rounded-full hover:bg-red-50 text-red-400 transition-all"
+              className="w-8 h-8 rounded-full bg-black/40 text-white/60 hover:text-red-500 border border-white/5 flex items-center justify-center transition-all"
             >
-              <X size={11} />
+              <X size={12} />
             </button>
           </div>
         )}

@@ -151,16 +151,6 @@ export function KulHub({
                  {myRole === 'guardian' && (
                    <div className="flex flex-col gap-2">
                      <button 
-                       onClick={() => {
-                          setNewKulName(kul.name);
-                          setEditingName(true);
-                       }}
-                       className="flex items-center justify-center w-9 h-9 rounded-full glass-panel border border-white/10 hover:bg-white/20 transition shadow-sm text-[var(--brand-primary)]"
-                       title="Edit Name"
-                     >
-                       <Pencil size={16} />
-                     </button>
-                     <button 
                        disabled={isUploading}
                        onClick={() => fileInputRef.current?.click()}
                        className="flex items-center justify-center w-9 h-9 rounded-full glass-panel border border-white/10 hover:bg-white/20 transition shadow-sm text-[var(--brand-primary)]"
@@ -200,39 +190,55 @@ export function KulHub({
         </div>
 
         <div className="space-y-1 mb-6 w-full max-w-sm">
-          {editingName ? (
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="flex flex-col items-center gap-2"
-            >
-              <input
-                autoFocus
-                value={newKulName}
-                onChange={(e) => setNewKulName(e.target.value)}
-                onKeyDown={(e) => { 
-                  if (e.key === 'Enter') {
-                    saveKulName();
-                    setEditingName(false);
-                  }
-                  if (e.key === 'Escape') setEditingName(false); 
-                }}
-                className="text-3xl font-bold bg-transparent outline-none border-b-2 border-[var(--brand-primary)] text-center w-full premium-serif theme-ink placeholder:opacity-30 drop-shadow-sm"
-                placeholder={t('kulNamePlaceholder')}
-              />
-              <p className="text-[9px] theme-muted uppercase tracking-widest font-bold opacity-60">
-                {t('save')} — Press Enter
-              </p>
-            </motion.div>
-          ) : (
-            <motion.h1 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-3xl sm:text-4xl font-bold theme-ink premium-serif tracking-tight"
-            >
-              {kul.name}
-            </motion.h1>
-          )}
+          <div className="flex items-center justify-center gap-3">
+            {editingName ? (
+              <motion.div 
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="flex flex-col items-center gap-2 w-full"
+              >
+                <input
+                  autoFocus
+                  value={newKulName}
+                  onChange={(e) => setNewKulName(e.target.value)}
+                  onKeyDown={(e) => { 
+                    if (e.key === 'Enter') {
+                      saveKulName();
+                      setEditingName(false);
+                    }
+                    if (e.key === 'Escape') setEditingName(false); 
+                  }}
+                  className="text-3xl font-bold bg-transparent outline-none border-b-2 border-[var(--brand-primary)] text-center w-full premium-serif theme-ink placeholder:opacity-30 drop-shadow-sm"
+                  placeholder={t('kulNamePlaceholder')}
+                />
+                <p className="text-[9px] theme-muted uppercase tracking-widest font-bold opacity-60">
+                  {t('save')} — Press Enter
+                </p>
+              </motion.div>
+            ) : (
+              <div className="flex items-center gap-3 group/title">
+                <motion.h1 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-3xl sm:text-4xl font-bold theme-ink premium-serif tracking-tight"
+                >
+                  {kul.name}
+                </motion.h1>
+                {myRole === 'guardian' && (
+                  <button 
+                    onClick={() => {
+                       setNewKulName(kul.name);
+                       setEditingName(true);
+                    }}
+                    className="p-2 rounded-full glass-panel border border-white/10 hover:bg-white/20 transition-all opacity-0 group-hover/title:opacity-100 text-[var(--brand-primary)]"
+                    title="Edit Name"
+                  >
+                    <Pencil size={18} />
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
           <div className="flex items-center justify-center gap-2.5">
              <div className="h-px w-6 bg-gradient-to-r from-transparent to-[var(--brand-primary)] opacity-20" />
              <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--brand-primary)] opacity-70">

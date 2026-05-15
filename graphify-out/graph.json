@@ -7546,13 +7546,13 @@
       "norm_label": "kulvansh.tsx"
     },
     {
-      "label": "getNodesForGeneration()",
+      "label": "buildTree()",
       "file_type": "code",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulVansh.tsx",
-      "source_location": "L35",
-      "id": "kulvansh_getnodesforgeneration",
+      "source_location": "L33",
+      "id": "kulvansh_buildtree",
       "community": 1,
-      "norm_label": "getnodesforgeneration()"
+      "norm_label": "buildtree()"
     },
     {
       "label": "KulTaskForm.tsx",
@@ -21952,12 +21952,12 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulVansh.tsx",
-      "source_location": "L36",
+      "source_location": "L50",
       "weight": 1.0,
-      "_src": "kulvansh_getnodesforgeneration",
+      "_src": "kulvansh_buildtree",
       "_tgt": "mantra_library_mantralibrary_filter",
       "source": "mantra_library_mantralibrary_filter",
-      "target": "kulvansh_getnodesforgeneration"
+      "target": "kulvansh_buildtree"
     },
     {
       "relation": "calls",
@@ -31347,12 +31347,12 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulVansh.tsx",
-      "source_location": "L35",
+      "source_location": "L33",
       "weight": 1.0,
       "_src": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_kulvansh_tsx",
-      "_tgt": "kulvansh_getnodesforgeneration",
+      "_tgt": "kulvansh_buildtree",
       "source": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_kulvansh_tsx",
-      "target": "kulvansh_getnodesforgeneration",
+      "target": "kulvansh_buildtree",
       "confidence_score": 1.0
     },
     {
