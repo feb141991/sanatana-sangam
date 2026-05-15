@@ -118,23 +118,31 @@ export default function KulClient({
   };
 
   const handleSaveTask = async (task: any) => {
-    await kulMutations.createTask.mutateAsync(task);
+    await kulMutations.assignTask.mutateAsync({
+      kulId: data.kul!.id,
+      ...task,
+      taskType: task.task_type,
+      assignTo: task.assigned_to,
+    });
     setShowTaskForm(false);
     toast.success('Task assigned!');
   };
 
   const handleSaveVansh = async (memberData: any) => {
-    if (editMember) {
-      await kulMutations.updateFamilyMember.mutateAsync({ id: editMember.id, updates: memberData });
-    } else {
-      await kulMutations.addFamilyMember.mutateAsync(memberData);
-    }
+    await kulMutations.saveFamilyMember.mutateAsync({
+      kulId: data.kul!.id,
+      ...memberData,
+    });
     setShowVanshForm(false);
     setEditMember(null);
   };
 
   const handleSaveEvent = async (eventData: any) => {
-    await kulMutations.addEvent.mutateAsync(eventData);
+    await kulMutations.saveEvent.mutateAsync({
+      kulId: data.kul!.id,
+      ...eventData,
+      event_type: 'custom',
+    });
     setShowEventForm(false);
   };
 
