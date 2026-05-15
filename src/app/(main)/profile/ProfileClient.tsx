@@ -159,6 +159,7 @@ export default function ProfileClient({
   const [inviteOpen, setInviteOpen] = useState(false);
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [showPhotoOptions, setShowPhotoOptions] = useState(false);
   const [sendingTestNotification, setSendingTestNotification] = useState(false);
   const [savingNotificationPrefs, setSavingNotificationPrefs] = useState(false);
   const [reportLoading, setReportLoading] = useState(false);
@@ -230,6 +231,37 @@ export default function ProfileClient({
     notification_quiet_hours_end: (liveProfile as any)?.notification_quiet_hours_end ?? 7,
   });
 
+  // ── Kul State & Metadata ───────────────────────────────────────────────────
+  const [kulData, setKulData] = useState<{ name: string; code: string } | null>(null);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [repairing, setRepairing] = useState(false);
+
+  // Proactive Kul Membership Repair & Sync
+  useEffect(() => {
+    if (!userId) return;
+    
+    async function syncMembership() {
+      // 1. Repair orphaned memberships (handled for every user globally)
+      await supabase.rpc('repair_kul_membership');
+      
+      // 2. Fetch fresh Kul name/code for the profile UI
+      const { data: profileWithKul } = await supabase
+        .from('profiles')
+        .select('kul_id, kuls(name, invite_code)')
+        .eq('id', userId)
+        .single();
+        
+      if (profileWithKul?.kuls) {
+        setKulData({ 
+          name: (profileWithKul.kuls as any).name, 
+          code: (profileWithKul.kuls as any).invite_code 
+        });
+      }
+    }
+    
+    syncMembership().then(() => setRepairing(false));
+  }, [userId, supabase]);
+
   // Silently save coords + city + country + country_code when location resolves
   useEffect(() => {
     if (!coords || !userId) return;
@@ -272,6 +304,7 @@ export default function ProfileClient({
     if (!file.type.startsWith('image/')) { toast.error('Please select an image file'); return; }
 
     setUploading(true);
+    setShowPhotoOptions(false);
     try {
       const ext  = file.name.split('.').pop() ?? 'jpg';
       const path = `${userId}/avatar.${ext}`;
@@ -297,7 +330,25 @@ export default function ProfileClient({
       toast.error(err.message ?? 'Upload failed');
     } finally {
       setUploading(false);
-      // reset handled by the input's own state via key change if needed
+    }
+  }
+
+  async function removeAvatar() {
+    setUploading(true);
+    setShowPhotoOptions(false);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ avatar_url: null })
+        .eq('id', userId);
+      if (error) throw error;
+      setAvatarUrl(null);
+      toast.success('Photo removed 🙏');
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err.message ?? 'Removal failed');
+    } finally {
+      setUploading(false);
     }
   }
 
@@ -703,86 +754,102 @@ export default function ProfileClient({
         }
       `}</style>
 
-      <div className="relative pb-24">
+      <div className="relative pb-24 min-h-screen bg-black">
         
-        {/* ── Zenith Profile Hero ────────────────────────────────────────────── */}
-        <div className="relative min-h-[340px] overflow-hidden flex items-center justify-center">
-          {/* Atmospheric background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#12100e] via-[#1c1a16] to-[#12100e]" />
-          <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/carbon-fibre.png")' }} />
-          
-          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[var(--divine-bg)] to-transparent z-10" />
-          
-          {/* Header Controls Overlay */}
-          <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-6 pt-6 pointer-events-none">
-            <button
-              onClick={() => router.back()}
-              className="w-12 h-12 rounded-2xl clay-card flex items-center justify-center pointer-events-auto transition-all active:scale-90 hover:border-[#C5A059]/30"
-            >
-              <ChevronLeft size={22} className="text-[#F2EAD6]" />
-            </button>
-            <div className="flex items-center gap-3 pointer-events-auto">
-              <Link
-                href="/messages"
-                className="w-12 h-12 rounded-2xl clay-card flex items-center justify-center transition-all active:scale-90 hover:border-[#C5A059]/30"
-                title="Direct Messages"
-              >
-                <MessageSquare size={20} className="text-[#F2EAD6]" />
-              </Link>
-              <button 
-                onClick={() => setSettingsOpen(true)}
-                className="w-12 h-12 rounded-2xl clay-card flex items-center justify-center transition-all active:scale-90 hover:border-[#C5A059]/30"
-                title="App Settings"
-              >
-                <Settings size={20} className="text-[#F2EAD6]" />
-              </button>
-            </div>
-          </div>
+      {/* ── Immersive Zenith Hero (Borderless & Tightened) ── */}
+      <div className="relative w-full overflow-hidden pt-8 pb-12">
+        {/* Deep atmospheric backdrop - No corners, full bleed */}
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-[#1c1c1a] via-[#12100e] to-black" />
+          <motion.div 
+            animate={{ 
+              scale: [1, 1.2, 1],
+              opacity: [0.1, 0.2, 0.1],
+              x: [0, 20, 0]
+            }}
+            transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
+            className="absolute -top-[20%] -left-[10%] w-[120%] h-[120%] bg-[radial-gradient(circle_at_center,rgba(197,160,89,0.12)_0%,transparent_70%)] blur-[100px]" 
+          />
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent" />
+        </div>
 
-          {/* Hero Content */}
-          <div className="relative z-20 flex flex-col items-center pt-12 pb-4 px-5">
-            {/* Avatar Cluster with Sacred Aura */}
-            <div className="relative mb-8">
-              <div className="sacred-aura" />
-              <motion.div
+        {/* Header Controls Overlay */}
+        <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-6 pt-6 pointer-events-auto">
+          <button
+            onClick={() => router.back()}
+            className="w-12 h-12 rounded-2xl clay-card flex items-center justify-center transition-all active:scale-90 hover:border-[#C5A059]/30"
+          >
+            <ChevronLeft size={22} className="text-[#F2EAD6]" />
+          </button>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/messages"
+              className="w-12 h-12 rounded-2xl clay-card flex items-center justify-center transition-all active:scale-90 hover:border-[#C5A059]/30"
+              title="Direct Messages"
+            >
+              <MessageSquare size={20} className="text-[#F2EAD6]" />
+            </Link>
+            <button 
+              onClick={() => setSettingsOpen(true)}
+              className="w-12 h-12 rounded-2xl clay-card flex items-center justify-center transition-all active:scale-90 hover:border-[#C5A059]/30"
+              title="App Settings"
+            >
+              <Settings size={20} className="text-[#F2EAD6]" />
+            </button>
+          </div>
+        </div>
+
+        <div className="max-w-xl mx-auto px-6 relative">
+          <div className="flex flex-col items-center">
+            {/* Avatar Section with Pulse */}
+            <div className="relative mb-6">
+              <motion.div 
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-                className="sacred-seal-ring"
+                className="sacred-seal-ring !w-32 !h-32"
               >
                 <button
                   type="button"
                   onClick={() => avatarUrl && setShowAvatarPreview(true)}
                   disabled={!avatarUrl}
-                  className={`sacred-seal-inner ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
+                  className={`sacred-seal-inner !w-28 !h-28 ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
                 >
                   {avatarUrl
-                    ? <Image src={avatarUrl} alt="avatar" fill sizes="96px" className="object-cover transition-transform duration-700 hover:scale-110" />
-                    : <span className="text-4xl font-serif text-[#C5A059]">{initials}</span>}
+                    ? <Image src={avatarUrl} alt="avatar" fill sizes="128px" className="object-cover transition-transform duration-700 hover:scale-110" />
+                    : <span className="text-5xl font-serif text-[#C5A059]">{initials}</span>}
                 </button>
               </motion.div>
               
-              <label
-                htmlFor="avatar-upload"
-                className={`absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-xl border border-[#F2EAD6]/20 bg-[#C5A059] shadow-xl shadow-[#C5A059]/30 transition-all active:scale-75 z-20 ${uploading ? 'opacity-60' : 'cursor-pointer hover:scale-110'}`}
+              <button
+                type="button"
+                onClick={() => setShowPhotoOptions(true)}
+                className={`absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-xl border border-[#C5A059]/30 bg-[#C5A059] shadow-2xl shadow-[#C5A059]/40 transition-all active:scale-75 z-20 ${uploading ? 'opacity-60' : 'hover:scale-110'}`}
               >
                 {uploading
                   ? <Loader2 size={16} className="text-black animate-spin" />
                   : <Camera size={16} className="text-black" />}
-              </label>
-              <input id="avatar-upload" type="file" accept="image/*" className="hidden" disabled={uploading} onChange={uploadAvatar} />
+              </button>
             </div>
 
             <motion.div 
-              initial={{ y: 20, opacity: 0 }}
+              initial={{ y: 15, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-              className="text-center"
+              transition={{ delay: 0.15, type: 'spring', stiffness: 200 }}
+              className="text-center space-y-3"
             >
-              <div className="flex flex-col items-center gap-2">
-                <h1 className="text-3xl sm:text-4xl font-bold text-[#F2EAD6] leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] premium-serif">
-                  {liveProfile?.full_name}
-                </h1>
+                <div className="flex items-center justify-center gap-3">
+                  <h1 className="text-3xl font-bold text-[#F2EAD6] premium-serif tracking-tight drop-shadow-2xl">
+                    {liveProfile?.full_name}
+                  </h1>
+                  <button
+                    onClick={() => setEditing(true)}
+                    className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[#C5A059]/60 transition-all hover:bg-white/10 hover:text-[#C5A059] active:scale-90 shadow-lg"
+                    title="Edit Identity"
+                  >
+                    <Edit3 size={14} />
+                  </button>
+                </div>
                 <div className="flex items-center gap-3">
                   <span className="text-[11px] font-bold text-[#C5A059] uppercase tracking-[0.25em] opacity-80">@{liveProfile?.username}</span>
                   {isPro && (
@@ -792,7 +859,6 @@ export default function ProfileClient({
                     </div>
                   )}
                 </div>
-              </div>
               
               {(liveProfile?.city || liveProfile?.country) && (
                 <div className="mt-4 flex items-center justify-center gap-2 text-[10px] font-bold text-[#F2EAD6]/50 uppercase tracking-[0.3em]">
@@ -803,75 +869,83 @@ export default function ProfileClient({
                 </div>
               )}
             </motion.div>
-
           </div>
         </div>
+      </div>
 
-        {/* Ambient glow for body section */}
-        <div className="fixed top-1/3 right-0 w-64 h-64 bg-[#C5A059]/5 blur-[100px] rounded-full translate-x-1/2 pointer-events-none -z-10" />
-        <div className="fixed bottom-1/3 left-0 w-48 h-48 bg-[#C5A059]/4 blur-[80px] rounded-full -translate-x-1/2 pointer-events-none -z-10" />
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-          className="px-5 -mt-10 space-y-6 relative z-30"
-        >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className="max-w-xl mx-auto px-5 -mt-6 space-y-5 relative z-30 pb-32"
+      >
           {/* Metric Row with Clay Cards */}
-          <div className="grid grid-cols-3 gap-3">
+          {/* Metric Row (Compact Zenith) */}
+          <div className="grid grid-cols-4 gap-2">
             {[
               { label: 'Threads', value: threadCount },
               { label: 'Posts', value: postCount },
-              { label: 'Streak', value: isPro ? `${streak}🔥` : '🔒' }
+              { label: 'Streak', value: isPro ? `${streak}🔥` : '🔒' },
+              { label: 'Kul', value: kulData ? 'Connected' : 'None' }
             ].map((m, i) => (
               <motion.div
                 key={m.label}
-                initial={{ opacity: 0, y: 16, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ delay: 0.15 + (i * 0.07), type: 'spring', stiffness: 300, damping: 24 }}
-                className="clay-card rounded-2xl p-4 text-center group transition-all hover:border-[#C5A059]/40"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 * i }}
+                className={`clay-card rounded-2xl p-2.5 text-center transition-all ${m.label === 'Kul' && !kulData ? 'border-red-500/20' : 'hover:border-[#C5A059]/30'}`}
               >
-                <p className="text-[9px] font-black text-[#C5A059] uppercase tracking-[0.25em] mb-2 opacity-60 group-hover:opacity-100 transition-opacity">{m.label}</p>
-                <p className="text-xl font-serif text-[#F2EAD6] drop-shadow-sm">{m.value}</p>
+                <p className="text-[7px] font-black text-[#C5A059] uppercase tracking-[0.2em] mb-1 opacity-50">{m.label}</p>
+                <p className="text-sm font-serif text-[#F2EAD6] truncate">{m.value}</p>
               </motion.div>
             ))}
           </div>
 
           <CompletionBar profile={liveProfile} onEdit={() => setEditing(true)} />
 
-          {/* ── Zenith Action Grid ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.32, type: 'spring', stiffness: 280, damping: 22 }}
-            className="grid grid-cols-2 gap-4"
-          >
+          {/* ── Zenith Action Grid (Tightened) ── */}
+          <div className="grid grid-cols-2 gap-3">
             <motion.button
               onClick={() => setKoshOpen(true)}
-              whileTap={{ scale: 0.96 }}
-              className="group relative flex flex-col items-center justify-center p-6 rounded-[2rem] bg-gradient-to-br from-[#C5A059]/15 to-transparent border border-[#C5A059]/30 shadow-2xl overflow-hidden transition-all hover:border-[#C5A059]/60"
+              className="clay-card rounded-[2rem] p-5 flex flex-col items-center gap-2.5 group border-[#C5A059]/20"
             >
-              <div className="absolute inset-0 bg-[#C5A059]/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="w-12 h-12 rounded-2xl bg-[#C5A059]/20 flex items-center justify-center mb-4 border border-[#C5A059]/40 transition-transform group-hover:scale-110">
-                <Shield size={24} className="text-[#C5A059] drop-shadow-lg" />
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#C5A059]/20 to-transparent flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                <Star className="text-[#C5A059] group-hover:animate-pulse" size={20} />
               </div>
-              <span className="text-[12px] font-black uppercase tracking-[0.2em] text-[#C5A059]">Open Kosh</span>
-              <span className="text-[9px] text-[#C5A059]/40 font-bold mt-1.5 uppercase tracking-wider">Sacred Treasury</span>
+              <div className="text-center">
+                <p className="text-sm font-bold text-[#F2EAD6] tracking-wide premium-serif">Sacred Kosh</p>
+                <p className="text-[8px] font-black text-[#C5A059] uppercase tracking-widest mt-0.5 opacity-60">Divine Relics</p>
+              </div>
             </motion.button>
 
-            <motion.button
-              onClick={() => setEditing(true)}
-              whileTap={{ scale: 0.96 }}
-              className="group relative flex flex-col items-center justify-center p-6 rounded-[2rem] clay-card overflow-hidden transition-all hover:border-[#C5A059]/40"
-            >
-              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-4 border border-white/10 transition-transform group-hover:scale-110">
-                <Edit3 size={24} className="text-[#F2EAD6] opacity-80" />
-              </div>
-              <span className="text-[12px] font-black uppercase tracking-[0.2em] text-[#F2EAD6] opacity-80">Edit Profile</span>
-              <span className="text-[9px] text-white/30 font-bold mt-1.5 uppercase tracking-wider">Lineage & Bio</span>
-            </motion.button>
-          </motion.div>
+            {kulData ? (
+              <motion.button
+                onClick={() => setShowInviteModal(true)}
+                className="clay-card rounded-[2rem] p-5 flex flex-col items-center gap-2.5 group border-[#C5A059]/20"
+              >
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#C5A059]/20 to-transparent flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                  <Users className="text-[#C5A059]" size={20} />
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-bold text-[#F2EAD6] tracking-wide premium-serif">Sacred Invite</p>
+                  <p className="text-[8px] font-black text-[#C5A059] uppercase tracking-widest mt-0.5 opacity-60">Invite to {kulData.name}</p>
+                </div>
+              </motion.button>
+            ) : (
+              <motion.button
+                onClick={() => router.push('/kul')}
+                className="clay-card rounded-[2rem] p-5 flex flex-col items-center gap-2.5 group border-white/5"
+              >
+                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                  <Shield className="text-[#F2EAD6]/40" size={20} />
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-bold text-[#F2EAD6] tracking-wide premium-serif">Join Kul</p>
+                  <p className="text-[8px] font-black text-white/30 uppercase tracking-widest mt-0.5 opacity-60">Start Lineage</p>
+                </div>
+              </motion.button>
+            )}
+          </div>
 
           {showAvatarPreview && avatarUrl && (
             <AvatarPreviewModal
@@ -881,31 +955,22 @@ export default function ProfileClient({
             />
           )}
 
-          {/* WhatsApp Invite Card - Refined Zenith */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.42, type: 'spring', stiffness: 260, damping: 22 }}
-            className="clay-card rounded-[2.5rem] p-6 flex flex-col items-center text-center relative overflow-hidden"
+          <button 
+            onClick={() => {
+              const link = inviteFriendsToWhatsApp(liveProfile?.full_name || liveProfile?.username || 'A friend');
+              window.open(link, '_blank');
+            }}
+            className="clay-card rounded-[1.5rem] p-4 flex items-center gap-4 group hover:bg-[#C5A059]/5"
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#25D366]/5 blur-[50px] -mr-16 -mt-16" />
-            <div className="w-14 h-14 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/20 flex items-center justify-center mb-4 shadow-inner">
-              <MessageCircle size={26} className="text-[#25D366] drop-shadow-md" />
+            <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform">
+              <MessageCircle size={20} />
             </div>
-            <h3 className="text-base font-bold text-[#F2EAD6] premium-serif">Grow your Mandali</h3>
-            <p className="text-xs text-[#F2EAD6]/40 mt-2 mb-6 leading-relaxed px-4 font-medium">
-              Invite your family and fellow seekers to join the spiritual sangam on WhatsApp.
-            </p>
-            <button
-              onClick={() => {
-                const link = inviteFriendsToWhatsApp(liveProfile?.full_name || liveProfile?.username || 'A friend');
-                window.open(link, '_blank');
-              }}
-              className="w-full py-4 rounded-2xl bg-[#25D366] text-white text-[11px] font-black uppercase tracking-[0.25em] shadow-xl shadow-[#25D366]/20 transition-all active:scale-95 hover:bg-[#1ebd5e] hover:shadow-[#25D366]/40"
-            >
-              Invite on WhatsApp
-            </button>
-          </motion.div>
+            <div className="flex-1 text-left">
+              <p className="text-[12px] font-bold text-[#F2EAD6]">Expand the Mandali</p>
+              <p className="text-[9px] font-black text-[#C5A059] uppercase tracking-widest mt-0.5 opacity-60">Invite on WhatsApp</p>
+            </div>
+            <ChevronRight size={16} className="text-white/20 group-hover:translate-x-1 transition-transform" />
+          </button>
 
           {hasSafetyItems && (
             <div className="clay-card rounded-[2.5rem] p-6">
@@ -1451,45 +1516,185 @@ export default function ProfileClient({
           const code = generateInviteCode(userId);
           const baseUrl = typeof window !== 'undefined' ? window.location.origin : APP.BASE_URL;
           const link = `${baseUrl}/join?ref=${code}`;
-          async function share() {
+          
+          const onCopy = async () => {
+            try {
+              await navigator.clipboard.writeText(link);
+              toast.success('Invite link copied! 🙏');
+            } catch {
+              toast.error('Failed to copy');
+            }
+          };
+
+          const onShare = async () => {
             const shareText = `Join me on Shoonaya — your dharmic home.\n\nInvite code: ${code}\n${link}`;
             if (typeof navigator !== 'undefined' && navigator.share) {
-              try { await navigator.share({ title: 'Join Shoonaya 🙏', text: shareText, url: link }); return; } catch {}
+              try {
+                await navigator.share({ title: 'Join Shoonaya 🙏', text: shareText, url: link });
+              } catch (err) {
+                if ((err as Error).name !== 'AbortError') onCopy();
+              }
+            } else {
+              onCopy();
             }
-            try { await navigator.clipboard.writeText(shareText); toast.success('Invite link copied! 🙏'); } catch { window.prompt('Copy your invite link:', link); }
-          }
+          };
+
           return (
             <motion.div className="fixed inset-0 z-[150] flex items-end" onClick={() => setInviteOpen(false)}
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
-              <motion.div className="relative w-full rounded-t-[3rem] p-10 space-y-8" onClick={e => e.stopPropagation()}
+              <motion.div className="relative w-full rounded-t-[3.5rem] p-10 space-y-8" onClick={e => e.stopPropagation()}
                 style={{ background: 'linear-gradient(180deg, #1c1c1a, #12100e)', borderTop: '1px solid rgba(197, 160, 89, 0.4)', boxShadow: '0 -20px 80px rgba(0,0,0,0.8)' }}
                 initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
                 transition={{ type: 'spring', damping: 28, stiffness: 180 }}>
                 <div className="w-16 h-1.5 rounded-full mx-auto mb-4 bg-[#C5A059]/30" />
                 <div className="flex items-center justify-between mb-2">
                   <div className="space-y-1">
-                    <h3 className="text-2xl font-bold text-[#F2EAD6] premium-serif">Expand the Circle</h3>
+                    <h3 className="text-3xl font-bold text-[#F2EAD6] premium-serif">Expand the Circle</h3>
                     <p className="text-[10px] text-[#C5A059] font-black uppercase tracking-[0.25em] opacity-80">Invite your Mandali</p>
                   </div>
                   <button onClick={() => setInviteOpen(false)} className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 transition-all hover:bg-white/10 active:scale-90">
                     <X size={22} className="text-[#F2EAD6]/40" />
                   </button>
                 </div>
-                <p className="text-sm text-[#F2EAD6]/50 leading-relaxed font-medium">Your devotion grows when shared. Invite your family and close friends to the Shoonaya community.</p>
-                <div className="rounded-[2.5rem] p-10 text-center border bg-[#C5A059]/5 border-[#C5A059]/20 shadow-inner relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#C5A059]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <p className="text-[11px] mb-4 font-black uppercase tracking-[0.3em] text-[#C5A059]/40 relative z-10">Personal Invite Code</p>
-                  <p className="text-5xl font-serif font-black tracking-[0.15em] text-[#C5A059] uppercase drop-shadow-2xl relative z-10">{code}</p>
+                
+                <div className="space-y-6">
+                  <p className="text-sm text-[#F2EAD6]/50 leading-relaxed font-medium">Your devotion grows when shared. Invite your family and close friends to the Shoonaya community.</p>
+                  
+                  <div className="relative group cursor-pointer" onClick={onCopy}>
+                    <div className="rounded-[2.5rem] p-10 text-center border bg-[#C5A059]/5 border-[#C5A059]/20 shadow-inner overflow-hidden relative">
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#C5A059]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <p className="text-[11px] mb-4 font-black uppercase tracking-[0.3em] text-[#C5A059]/40 relative z-10">Personal Invite Code</p>
+                      <p className="text-5xl font-serif font-black tracking-[0.15em] text-[#C5A059] uppercase drop-shadow-2xl relative z-10">{code}</p>
+                      <div className="absolute top-4 right-4 text-[#C5A059]/40 group-hover:text-[#C5A059] transition-colors">
+                        <Star size={16} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <button onClick={onCopy} className="py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] bg-white/5 border border-white/10 text-[#F2EAD6]/60 transition-all hover:bg-white/10 active:scale-95 flex items-center justify-center gap-2">
+                      Copy Link
+                    </button>
+                    <button onClick={onShare} className="py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] bg-[#C5A059] text-black shadow-2xl shadow-[#C5A059]/30 transition-all active:scale-95 hover:bg-[#d4ae6a] flex items-center justify-center gap-2">
+                      🙏 Share Now
+                    </button>
+                  </div>
                 </div>
-                <button onClick={share} className="w-full py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.3em] bg-[#C5A059] text-black shadow-2xl shadow-[#C5A059]/30 transition-all active:scale-95 hover:bg-[#d4ae6a]">
-                  🙏 Share invite
-                </button>
               </motion.div>
             </motion.div>
           );
         })()}
       </AnimatePresence>
+
+      {/* ── Kul Invite Modal (Sacred Invite) ── */}
+      <AnimatePresence>
+        {showInviteModal && kulData && (
+          <div className="fixed inset-0 z-[300] flex items-end justify-center px-4 pb-12">
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }}
+              onClick={() => setShowInviteModal(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-xl" 
+            />
+            <motion.div 
+              initial={{ y: '100%' }} 
+              animate={{ y: 0 }} 
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="relative w-full max-w-lg clay-card rounded-[3rem] p-8 space-y-8 border-[#C5A059]/30 shadow-[0_-20px_60px_rgba(0,0,0,0.5)] overflow-hidden"
+            >
+              {/* Decorative Aura */}
+              <div className="absolute -top-24 -left-24 w-64 h-64 bg-[#C5A059]/10 blur-[80px] rounded-full pointer-events-none" />
+              
+              <div className="text-center space-y-2">
+                <div className="w-20 h-20 rounded-[2rem] bg-gradient-to-br from-[#C5A059]/30 to-transparent flex items-center justify-center mx-auto mb-4 border border-[#C5A059]/20 shadow-inner">
+                  <Users className="text-[#C5A059]" size={32} />
+                </div>
+                <h2 className="text-3xl font-bold text-[#F2EAD6] premium-serif">Sacred Invite</h2>
+                <p className="text-[10px] text-[#C5A059] font-black uppercase tracking-[0.3em]">Invite seekers to {kulData.name}</p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="p-6 rounded-[2rem] bg-black/40 border border-white/5 space-y-3 text-center shadow-inner">
+                  <p className="text-[10px] text-[#F2EAD6]/30 font-black uppercase tracking-[0.2em]">Your Kul Invite Code</p>
+                  <p className="text-4xl font-serif text-[#C5A059] tracking-[0.4em] drop-shadow-lg">{kulData.code}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <button 
+                    onClick={() => {
+                      const link = `https://shoonaya.app/kul/join?code=${kulData.code}`;
+                      navigator.clipboard.writeText(link);
+                      toast.success('Join link copied 🙏');
+                    }}
+                    className="flex flex-col items-center gap-2 p-5 rounded-[2rem] bg-white/5 border border-white/5 hover:bg-white/10 hover:border-[#C5A059]/30 transition-all active:scale-95 group"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-[#C5A059]/10 flex items-center justify-center text-[#C5A059] group-hover:scale-110 transition-transform">
+                      <Download className="rotate-[-90deg]" size={18} />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[#F2EAD6]/70">Copy Link</span>
+                  </button>
+
+                  <button 
+                    onClick={() => {
+                      const text = `🙏 Namaste! Join my Kul "${kulData.name}" on Shoonaya. \n\nJoin link: https://shoonaya.app/kul/join?code=${kulData.code}`;
+                      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+                    }}
+                    className="flex flex-col items-center gap-2 p-5 rounded-[2rem] bg-green-500/10 border border-green-500/20 hover:bg-green-500/20 transition-all active:scale-95 group"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform">
+                      <MessageCircle size={18} />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-green-500">WhatsApp</span>
+                  </button>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => setShowInviteModal(false)}
+                className="w-full py-5 rounded-[2rem] bg-[#F2EAD6]/5 text-[#F2EAD6]/30 text-[11px] font-black uppercase tracking-[0.25em] hover:bg-[#F2EAD6]/10 transition-all active:scale-[0.98]"
+              >
+                Close Portal
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+      <BottomDrawer
+        isOpen={showPhotoOptions}
+        onClose={() => setShowPhotoOptions(false)}
+        title="Photo Identity"
+        description="Choose how you present your presence."
+      >
+        <div className="space-y-4 py-6">
+          <label className="flex items-center gap-4 p-5 rounded-[1.5rem] bg-[#C5A059]/10 border border-[#C5A059]/30 cursor-pointer active:scale-95 transition-all">
+            <div className="w-10 h-10 rounded-xl bg-[#C5A059] flex items-center justify-center text-black shadow-lg">
+              <Download size={20} />
+            </div>
+            <div className="flex-1">
+              <p className="text-[12px] font-bold text-[#F2EAD6]">Upload from Device</p>
+              <p className="text-[9px] font-black text-[#C5A059] uppercase tracking-widest mt-0.5">Gallery or Camera</p>
+            </div>
+            <input type="file" accept="image/*" className="hidden" onChange={uploadAvatar} />
+          </label>
+
+          <button 
+            onClick={removeAvatar}
+            disabled={!avatarUrl}
+            className="w-full flex items-center gap-4 p-5 rounded-[1.5rem] bg-red-500/5 border border-red-500/10 active:scale-95 transition-all disabled:opacity-20"
+          >
+            <div className="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center text-red-500 shadow-lg">
+              <X size={20} />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-[12px] font-bold text-[#F2EAD6]">Remove Current Photo</p>
+              <p className="text-[9px] font-black text-red-500 uppercase tracking-widest mt-0.5">Reset to initials</p>
+            </div>
+          </button>
+        </div>
+      </BottomDrawer>
     </motion.div>
   );
 }
