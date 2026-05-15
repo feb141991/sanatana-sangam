@@ -26,6 +26,7 @@ const baseKul: KulSummary = {
   name: 'Sharma Kul',
   invite_code: 'KUL108',
   avatar_emoji: '🪔',
+  cover_url: null,
   created_by: 'mock-user',
   created_at: new Date('2026-01-02T08:00:00.000Z').toISOString(),
 };
