@@ -8,6 +8,7 @@ import {
   deleteKulFamilyMember,
   fetchKulData,
   joinKul,
+  leaveKul,
   promoteKulMember,
   reactToKulMessage,
   removeKulMember,
