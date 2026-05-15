@@ -2455,6 +2455,7 @@ function VanshTab({ familyMembers: initial, kulEvents: initialEvents, kulId, use
 
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function KulClient({ userId, userName, userProfile, kul, members, tasks, messages, familyMembers, kulEvents, myRole, view = 'hub' }: Props) {
+  const router = useRouter();
   const kulQuery = useKulQuery(userId, {
     userId,
     userName,
