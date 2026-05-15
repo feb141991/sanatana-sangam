@@ -86,18 +86,20 @@ export default function KulClient({
 
   const kulMutations = useKulMutations(userId);
 
+  if (!data) return null;
+
   // Onboarding Logic
   useEffect(() => {
-    if (data.kul && typeof window !== 'undefined') {
+    if (data?.kul && typeof window !== 'undefined') {
       const seen = window.localStorage.getItem(`kul-onboarding-seen-${data.kul.id}`);
       if (!seen) {
         setShowOnboarding(true);
       }
     }
-  }, [data.kul]);
+  }, [data?.kul]);
 
   const closeOnboarding = () => {
-    if (data.kul) {
+    if (data?.kul) {
       window.localStorage.setItem(`kul-onboarding-seen-${data.kul.id}`, 'true');
     }
     setShowOnboarding(false);
@@ -140,7 +142,7 @@ export default function KulClient({
 
   // ── Render Views ───────────────────────────────────────────────────────────
 
-  if (!data.kul) {
+  if (!data || !data.kul) {
     return (
       <NoKulPrompt
         userId={userId}
@@ -239,7 +241,7 @@ export default function KulClient({
       {showOnboarding && <KulOnboarding onComplete={closeOnboarding} />}
       
       {/* Dynamic Sheets */}
-      {showInvite && <KulInviteSheet inviteCode={data.kul.invite_code} onClose={() => setShowInvite(false)} />}
+      {showInvite && <KulInviteSheet inviteCode={data?.kul?.invite_code ?? ''} onClose={() => setShowInvite(false)} />}
       {showTaskForm && <KulTaskForm members={data.members} onClose={() => setShowTaskForm(false)} onSave={handleSaveTask} />}
       {showVanshForm && <KulVanshForm members={data.familyMembers} editMember={editMember} onClose={() => { setShowVanshForm(false); setEditMember(null); }} onSave={handleSaveVansh} />}
       {showEventForm && <KulEventForm onClose={() => setShowEventForm(false)} onSave={handleSaveEvent} />}
