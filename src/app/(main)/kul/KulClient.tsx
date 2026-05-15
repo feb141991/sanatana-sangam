@@ -131,12 +131,18 @@ export default function KulClient({
 
   const handleSaveVansh = async (memberData: any) => {
     if (!data?.kul) return;
-    await kulMutations.saveFamilyMember.mutateAsync({
-      kulId: data.kul.id,
-      ...memberData,
-    });
-    setShowVanshForm(false);
-    setEditMember(null);
+    try {
+      await kulMutations.saveFamilyMember.mutateAsync({
+        kulId: data.kul.id,
+        memberId: memberData.id,
+        ...memberData,
+      });
+      setShowVanshForm(false);
+      setEditMember(null);
+      toast.success(memberData.id ? 'Vansh updated! 🙏' : 'Added to Vansh! 🙏');
+    } catch (err: any) {
+      toast.error('Failed to save lineage: ' + err.message);
+    }
   };
 
   const handleSaveEvent = async (eventData: any) => {

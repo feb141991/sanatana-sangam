@@ -71,6 +71,7 @@ export type KulFamilyMember = {
   gender: string | null;
   birth_year: number | null;
   birth_date: string | null;
+  birth_place: string | null;
   death_year: number | null;
   death_date: string | null;
   marriage_date: string | null;
@@ -128,6 +129,7 @@ export type SaveKulFamilyMemberPayload = {
   gender?: string | null;
   birth_year?: number | null;
   birth_date?: string | null;
+  birth_place?: string | null;
   death_year?: number | null;
   death_date?: string | null;
   marriage_date?: string | null;
@@ -359,6 +361,7 @@ export async function saveKulFamilyMember(userId: string, payload: SaveKulFamily
     gender:         payload.gender || null,
     birth_year:     payload.birth_year ?? null,
     birth_date:     payload.birth_date || null,
+    birth_place:    payload.birth_place || null,
     death_year:     payload.death_year ?? null,
     death_date:     payload.death_date || null,
     marriage_date:  payload.marriage_date || null,

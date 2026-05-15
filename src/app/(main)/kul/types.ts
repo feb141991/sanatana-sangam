@@ -77,6 +77,7 @@ export type FamilyMember = {
   gender: string | null;
   birth_year: number | null; 
   birth_date: string | null;
+  birth_place: string | null;
   death_year: number | null; 
   death_date: string | null;
   marriage_date: string | null;

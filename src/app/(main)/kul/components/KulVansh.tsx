@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Plus, X, Search, ChevronRight } from 'lucide-react';
+import { Plus, X, Search, ChevronRight, MapPin, Heart } from 'lucide-react';
 import { FamilyMember, MemberRow } from '../types';
 import { FamilyKeepsakeStage } from './FamilyKeepsakeStage';
 
@@ -155,13 +155,21 @@ export function KulVansh({
 
                       <div className="w-10 h-[1px] mx-auto my-4 bg-gradient-to-r from-transparent via-[var(--brand-primary)]/30 to-transparent" />
 
-                      <div className="text-[10px] theme-dim space-y-1 leading-relaxed">
+                      <div className="text-[10px] theme-dim space-y-1.5 leading-relaxed">
+                        {m.birth_place && (
+                          <p className="flex items-center justify-center gap-1 font-medium italic opacity-60">
+                            <MapPin size={8} /> {m.birth_place}
+                          </p>
+                        )}
                         {age !== null && (
-                          <p className="font-semibold">
+                          <p className="font-bold text-[var(--brand-primary)]/80">
                             {m.is_alive 
                               ? `Age: ${age}y` 
-                              : `${m.birth_year ?? '—'} – ${m.death_year ?? '—'}`}
+                              : `Lived: ${age}y (${m.birth_year ?? '—'}–${m.death_year ?? '—'})`}
                           </p>
+                        )}
+                        {!m.is_alive && !age && (
+                          <p className="font-bold opacity-40 uppercase tracking-tighter">In Eternal Memory</p>
                         )}
                       </div>
                       
