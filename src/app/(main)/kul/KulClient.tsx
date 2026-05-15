@@ -86,8 +86,6 @@ export default function KulClient({
 
   const kulMutations = useKulMutations(userId);
 
-  if (!data) return null;
-
   // Onboarding Logic
   useEffect(() => {
     if (data?.kul && typeof window !== 'undefined') {
