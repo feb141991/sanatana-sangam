@@ -86,9 +86,9 @@ export default function AdminDashboard() {
           <StatCard 
             href="/admin/users"
             icon={Users} 
-            label="Total Seekers" 
-            value={stats.totalSeekers.toLocaleString()} 
-            trend="+12% this week" 
+            label="Onboarded Seekers" 
+            value={stats.onboardedSeekers?.toLocaleString() || '0'} 
+            trend={`Total: ${stats.totalSeekers?.toLocaleString() || '0'}`} 
             color="blue"
           />
           <StatCard 
