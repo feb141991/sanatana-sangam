@@ -47,6 +47,6 @@ export function daysUntilNextOccurrence(dateStr: string) {
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 
-export function getKulSectionHref(section: KulSectionView) {
-  return `/kul?view=${section}`;
+export function getKulSectionHref(section: string) {
+  return `/kul/${section}`;
 }

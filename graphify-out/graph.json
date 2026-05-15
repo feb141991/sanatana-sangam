@@ -9,7 +9,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/next.config.js",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_next_config_js",
-      "community": 135,
+      "community": 134,
       "norm_label": "next.config.js"
     },
     {
@@ -18,7 +18,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/next-env.d.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_next_env_d_ts",
-      "community": 136,
+      "community": 135,
       "norm_label": "next-env.d.ts"
     },
     {
@@ -27,7 +27,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/tailwind.config.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_tailwind_config_ts",
-      "community": 137,
+      "community": 136,
       "norm_label": "tailwind.config.ts"
     },
     {
@@ -36,7 +36,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/postcss.config.js",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_postcss_config_js",
-      "community": 138,
+      "community": 137,
       "norm_label": "postcss.config.js"
     },
     {
@@ -45,7 +45,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/capacitor.config.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_capacitor_config_ts",
-      "community": 139,
+      "community": 138,
       "norm_label": "capacitor.config.ts"
     },
     {
@@ -54,7 +54,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/scratch/check_divs.js",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_scratch_check_divs_js",
-      "community": 140,
+      "community": 139,
       "norm_label": "check_divs.js"
     },
     {
@@ -63,7 +63,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/scratch/fix_pathshala.py",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_scratch_fix_pathshala_py",
-      "community": 141,
+      "community": 140,
       "norm_label": "fix_pathshala.py"
     },
     {
@@ -72,7 +72,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/public/OneSignalSDKWorker.js",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_public_onesignalsdkworker_js",
-      "community": 142,
+      "community": 141,
       "norm_label": "onesignalsdkworker.js"
     },
     {
@@ -81,7 +81,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/public/OneSignalSDKUpdaterWorker.js",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_public_onesignalsdkupdaterworker_js",
-      "community": 143,
+      "community": 142,
       "norm_label": "onesignalsdkupdaterworker.js"
     },
     {
@@ -90,7 +90,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/public/sw.js",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_public_sw_js",
-      "community": 144,
+      "community": 143,
       "norm_label": "sw.js"
     },
     {
@@ -450,7 +450,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/pathshala-engine/src/types/index.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_packages_pathshala_engine_src_types_index_ts",
-      "community": 145,
+      "community": 144,
       "norm_label": "index.ts"
     },
     {
@@ -756,7 +756,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/pathshala-engine/src/core/enrollment.ts",
       "source_location": "L108",
       "id": "enrollment_enrollment_setpaused",
-      "community": 20,
+      "community": 19,
       "norm_label": ".setpaused()"
     },
     {
@@ -945,7 +945,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/pathshala-engine/src/ai/explain.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_packages_pathshala_engine_src_ai_explain_ts",
-      "community": 40,
+      "community": 39,
       "norm_label": "explain.ts"
     },
     {
@@ -954,7 +954,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/pathshala-engine/src/ai/explain.ts",
       "source_location": "L8",
       "id": "explain_explainengine",
-      "community": 40,
+      "community": 39,
       "norm_label": "explainengine"
     },
     {
@@ -963,7 +963,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/pathshala-engine/src/ai/explain.ts",
       "source_location": "L12",
       "id": "explain_explainengine_constructor",
-      "community": 40,
+      "community": 39,
       "norm_label": ".constructor()"
     },
     {
@@ -972,7 +972,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/pathshala-engine/src/ai/explain.ts",
       "source_location": "L25",
       "id": "explain_explainengine_explain",
-      "community": 40,
+      "community": 39,
       "norm_label": ".explain()"
     },
     {
@@ -981,7 +981,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/pathshala-engine/src/ai/explain.ts",
       "source_location": "L46",
       "id": "explain_explainengine_compare",
-      "community": 40,
+      "community": 39,
       "norm_label": ".compare()"
     },
     {
@@ -1107,7 +1107,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/pathshala-engine/src/ai/shloka-of-day.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_packages_pathshala_engine_src_ai_shloka_of_day_ts",
-      "community": 35,
+      "community": 34,
       "norm_label": "shloka-of-day.ts"
     },
     {
@@ -1116,7 +1116,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/pathshala-engine/src/ai/shloka-of-day.ts",
       "source_location": "L8",
       "id": "shloka_of_day_shlokaofdayengine",
-      "community": 35,
+      "community": 34,
       "norm_label": "shlokaofdayengine"
     },
     {
@@ -1125,7 +1125,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/pathshala-engine/src/ai/shloka-of-day.ts",
       "source_location": "L12",
       "id": "shloka_of_day_shlokaofdayengine_constructor",
-      "community": 35,
+      "community": 34,
       "norm_label": ".constructor()"
     },
     {
@@ -1134,7 +1134,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/pathshala-engine/src/ai/shloka-of-day.ts",
       "source_location": "L22",
       "id": "shloka_of_day_shlokaofdayengine_gettoday",
-      "community": 35,
+      "community": 34,
       "norm_label": ".gettoday()"
     },
     {
@@ -1143,7 +1143,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/pathshala-engine/src/ai/shloka-of-day.ts",
       "source_location": "L39",
       "id": "shloka_of_day_shlokaofdayengine_getcached",
-      "community": 35,
+      "community": 34,
       "norm_label": ".getcached()"
     },
     {
@@ -1152,7 +1152,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/pathshala-engine/src/ai/shloka-of-day.ts",
       "source_location": "L57",
       "id": "shloka_of_day_shlokaofdayengine_getorfetch",
-      "community": 35,
+      "community": 34,
       "norm_label": ".getorfetch()"
     },
     {
@@ -1161,7 +1161,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/pathshala-engine/src/hooks/useRecitation.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_packages_pathshala_engine_src_hooks_userecitation_ts",
-      "community": 76,
+      "community": 75,
       "norm_label": "userecitation.ts"
     },
     {
@@ -1170,7 +1170,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/pathshala-engine/src/hooks/useRecitation.ts",
       "source_location": "L58",
       "id": "userecitation_userecitation",
-      "community": 76,
+      "community": 75,
       "norm_label": "userecitation()"
     },
     {
@@ -1332,7 +1332,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/tests/phase1.test.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_packages_sadhana_engine_tests_phase1_test_ts",
-      "community": 146,
+      "community": 145,
       "norm_label": "phase1.test.ts"
     },
     {
@@ -1674,7 +1674,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/supabase/functions/ai-sanskar-guide/index.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_packages_sadhana_engine_supabase_functions_ai_sanskar_guide_index_ts",
-      "community": 77,
+      "community": 76,
       "norm_label": "index.ts"
     },
     {
@@ -1683,7 +1683,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/supabase/functions/ai-sanskar-guide/index.ts",
       "source_location": "L23",
       "id": "index_gettodaytithi",
-      "community": 77,
+      "community": 76,
       "norm_label": "gettodaytithi()"
     },
     {
@@ -1692,7 +1692,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/supabase/functions/ai-yatra-guide/index.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_packages_sadhana_engine_supabase_functions_ai_yatra_guide_index_ts",
-      "community": 147,
+      "community": 146,
       "norm_label": "index.ts"
     },
     {
@@ -1935,7 +1935,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/scripts/seed-mantras.js",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_packages_sadhana_engine_scripts_seed_mantras_js",
-      "community": 148,
+      "community": 147,
       "norm_label": "seed-mantras.js"
     },
     {
@@ -1944,7 +1944,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/scripts/fetch-gita.py",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_packages_sadhana_engine_scripts_fetch_gita_py",
-      "community": 12,
+      "community": 13,
       "norm_label": "fetch-gita.py"
     },
     {
@@ -1953,7 +1953,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/scripts/fetch-gita.py",
       "source_location": "L69",
       "id": "fetch_gita_fetch_json",
-      "community": 12,
+      "community": 13,
       "norm_label": "fetch_json()"
     },
     {
@@ -1962,7 +1962,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/scripts/fetch-gita.py",
       "source_location": "L83",
       "id": "fetch_gita_fetch_all_verses",
-      "community": 12,
+      "community": 13,
       "norm_label": "fetch_all_verses()"
     },
     {
@@ -1971,7 +1971,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/scripts/fetch-gita.py",
       "source_location": "L109",
       "id": "fetch_gita_fetch_translations",
-      "community": 12,
+      "community": 13,
       "norm_label": "fetch_translations()"
     },
     {
@@ -1980,7 +1980,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/scripts/fetch-gita.py",
       "source_location": "L118",
       "id": "fetch_gita_transform_to_sangam",
-      "community": 12,
+      "community": 13,
       "norm_label": "transform_to_sangam()"
     },
     {
@@ -1989,7 +1989,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/scripts/fetch-gita.py",
       "source_location": "L209",
       "id": "fetch_gita_generate_embeddings",
-      "community": 12,
+      "community": 13,
       "norm_label": "generate_embeddings()"
     },
     {
@@ -1998,7 +1998,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/scripts/fetch-gita.py",
       "source_location": "L236",
       "id": "fetch_gita_main",
-      "community": 12,
+      "community": 13,
       "norm_label": "main()"
     },
     {
@@ -2006,7 +2006,7 @@
       "file_type": "rationale",
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/scripts/fetch-gita.py",
       "source_location": "L70",
-      "community": 12,
+      "community": 13,
       "norm_label": "fetch json from url with retries.",
       "id": "fetch_gita_rationale_70"
     },
@@ -2015,7 +2015,7 @@
       "file_type": "rationale",
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/scripts/fetch-gita.py",
       "source_location": "L84",
-      "community": 12,
+      "community": 13,
       "norm_label": "fetch verse data from the static api.",
       "id": "fetch_gita_rationale_84"
     },
@@ -2024,7 +2024,7 @@
       "file_type": "rationale",
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/scripts/fetch-gita.py",
       "source_location": "L110",
-      "community": 12,
+      "community": 13,
       "norm_label": "fetch translation data.",
       "id": "fetch_gita_rationale_110"
     },
@@ -2033,7 +2033,7 @@
       "file_type": "rationale",
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/scripts/fetch-gita.py",
       "source_location": "L119",
-      "community": 12,
+      "community": 13,
       "norm_label": "transform api data into sangam scripture_chunks format.",
       "id": "fetch_gita_rationale_119"
     },
@@ -2042,7 +2042,7 @@
       "file_type": "rationale",
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/scripts/fetch-gita.py",
       "source_location": "L210",
-      "community": 12,
+      "community": 13,
       "norm_label": "generate embeddings using local huggingface model.",
       "id": "fetch_gita_rationale_210"
     },
@@ -2070,7 +2070,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/types/astronomia.d.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_packages_sadhana_engine_src_types_astronomia_d_ts",
-      "community": 41,
+      "community": 40,
       "norm_label": "astronomia.d.ts"
     },
     {
@@ -2079,7 +2079,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/types/astronomia.d.ts",
       "source_location": "L2",
       "id": "astronomia_d_calendar",
-      "community": 41,
+      "community": 40,
       "norm_label": "calendar"
     },
     {
@@ -2088,7 +2088,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/types/astronomia.d.ts",
       "source_location": "L7",
       "id": "astronomia_d_calendargregorian",
-      "community": 41,
+      "community": 40,
       "norm_label": "calendargregorian"
     },
     {
@@ -2097,7 +2097,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/types/astronomia.d.ts",
       "source_location": "L58",
       "id": "astronomia_d_sunrise",
-      "community": 41,
+      "community": 40,
       "norm_label": "sunrise"
     },
     {
@@ -2106,7 +2106,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/types/index.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_packages_sadhana_engine_src_types_index_ts",
-      "community": 149,
+      "community": 148,
       "norm_label": "index.ts"
     },
     {
@@ -2538,7 +2538,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/core/streaks.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_packages_sadhana_engine_src_core_streaks_ts",
-      "community": 11,
+      "community": 12,
       "norm_label": "streaks.ts"
     },
     {
@@ -2547,7 +2547,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/core/streaks.ts",
       "source_location": "L8",
       "id": "streaks_streaktracker",
-      "community": 11,
+      "community": 12,
       "norm_label": "streaktracker"
     },
     {
@@ -2556,7 +2556,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/core/streaks.ts",
       "source_location": "L11",
       "id": "streaks_streaktracker_constructor",
-      "community": 11,
+      "community": 12,
       "norm_label": ".constructor()"
     },
     {
@@ -2565,7 +2565,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/core/streaks.ts",
       "source_location": "L17",
       "id": "streaks_streaktracker_today",
-      "community": 11,
+      "community": 12,
       "norm_label": ".today()"
     },
     {
@@ -2574,7 +2574,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/core/streaks.ts",
       "source_location": "L35",
       "id": "streaks_streaktracker_yesterday",
-      "community": 11,
+      "community": 12,
       "norm_label": ".yesterday()"
     },
     {
@@ -2583,7 +2583,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/core/streaks.ts",
       "source_location": "L43",
       "id": "streaks_streaktracker_gettodayrecord",
-      "community": 11,
+      "community": 12,
       "norm_label": ".gettodayrecord()"
     },
     {
@@ -2592,7 +2592,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/core/streaks.ts",
       "source_location": "L80",
       "id": "streaks_streaktracker_markdone",
-      "community": 11,
+      "community": 12,
       "norm_label": ".markdone()"
     },
     {
@@ -2601,7 +2601,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/core/streaks.ts",
       "source_location": "L102",
       "id": "streaks_streaktracker_getcurrentstreak",
-      "community": 11,
+      "community": 12,
       "norm_label": ".getcurrentstreak()"
     },
     {
@@ -2610,7 +2610,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/core/streaks.ts",
       "source_location": "L126",
       "id": "streaks_streaktracker_getlongeststreak",
-      "community": 11,
+      "community": 12,
       "norm_label": ".getlongeststreak()"
     },
     {
@@ -2619,7 +2619,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/core/streaks.ts",
       "source_location": "L138",
       "id": "streaks_streaktracker_getstreakhistory",
-      "community": 11,
+      "community": 12,
       "norm_label": ".getstreakhistory()"
     },
     {
@@ -2628,7 +2628,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/core/streaks.ts",
       "source_location": "L153",
       "id": "streaks_streaktracker_isstreakatrisk",
-      "community": 11,
+      "community": 12,
       "norm_label": ".isstreakatrisk()"
     },
     {
@@ -2637,7 +2637,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/core/streaks.ts",
       "source_location": "L161",
       "id": "streaks_streaktracker_dayssincelastpractice",
-      "community": 11,
+      "community": 12,
       "norm_label": ".dayssincelastpractice()"
     },
     {
@@ -2646,7 +2646,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/core/streaks.ts",
       "source_location": "L178",
       "id": "streaks_streaktracker_getrecord",
-      "community": 11,
+      "community": 12,
       "norm_label": ".getrecord()"
     },
     {
@@ -3735,7 +3735,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/ai/scripture-search.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_packages_sadhana_engine_src_ai_scripture_search_ts",
-      "community": 19,
+      "community": 20,
       "norm_label": "scripture-search.ts"
     },
     {
@@ -3744,7 +3744,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/ai/scripture-search.ts",
       "source_location": "L37",
       "id": "scripture_search_scripturesearch",
-      "community": 19,
+      "community": 20,
       "norm_label": "scripturesearch"
     },
     {
@@ -3753,7 +3753,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/ai/scripture-search.ts",
       "source_location": "L42",
       "id": "scripture_search_scripturesearch_constructor",
-      "community": 19,
+      "community": 20,
       "norm_label": ".constructor()"
     },
     {
@@ -3762,7 +3762,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/ai/scripture-search.ts",
       "source_location": "L49",
       "id": "scripture_search_scripturesearch_ask",
-      "community": 19,
+      "community": 20,
       "norm_label": ".ask()"
     },
     {
@@ -3771,7 +3771,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/ai/scripture-search.ts",
       "source_location": "L84",
       "id": "scripture_search_scripturesearch_similarverses",
-      "community": 19,
+      "community": 20,
       "norm_label": ".similarverses()"
     },
     {
@@ -3780,7 +3780,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/ai/scripture-search.ts",
       "source_location": "L107",
       "id": "scripture_search_scripturesearch_getverse",
-      "community": 19,
+      "community": 20,
       "norm_label": ".getverse()"
     },
     {
@@ -3789,7 +3789,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/ai/scripture-search.ts",
       "source_location": "L122",
       "id": "scripture_search_scripturesearch_getchapter",
-      "community": 19,
+      "community": 20,
       "norm_label": ".getchapter()"
     },
     {
@@ -3798,7 +3798,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/packages/sadhana-engine/src/ai/scripture-search.ts",
       "source_location": "L134",
       "id": "scripture_search_scripturesearch_clearcache",
-      "community": 19,
+      "community": 20,
       "norm_label": ".clearcache()"
     },
     {
@@ -4392,7 +4392,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/types/astronomia.d.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_types_astronomia_d_ts",
-      "community": 41,
+      "community": 40,
       "norm_label": "astronomia.d.ts"
     },
     {
@@ -4401,7 +4401,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/types/database.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_types_database_ts",
-      "community": 150,
+      "community": 149,
       "norm_label": "database.ts"
     },
     {
@@ -4410,7 +4410,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/contexts/ZenithSensoryContext.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_contexts_zenithsensorycontext_tsx",
-      "community": 58,
+      "community": 57,
       "norm_label": "zenithsensorycontext.tsx"
     },
     {
@@ -4419,7 +4419,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/contexts/ZenithSensoryContext.tsx",
       "source_location": "L27",
       "id": "zenithsensorycontext_zenithsensoryprovider",
-      "community": 58,
+      "community": 57,
       "norm_label": "zenithsensoryprovider()"
     },
     {
@@ -4428,7 +4428,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/contexts/ZenithSensoryContext.tsx",
       "source_location": "L121",
       "id": "zenithsensorycontext_usezenithsensory",
-      "community": 58,
+      "community": 57,
       "norm_label": "usezenithsensory()"
     },
     {
@@ -4437,7 +4437,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/contexts/EngineContext.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_contexts_enginecontext_tsx",
-      "community": 42,
+      "community": 41,
       "norm_label": "enginecontext.tsx"
     },
     {
@@ -4446,7 +4446,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/contexts/EngineContext.tsx",
       "source_location": "L60",
       "id": "enginecontext_engineprovider",
-      "community": 42,
+      "community": 41,
       "norm_label": "engineprovider()"
     },
     {
@@ -4455,7 +4455,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/contexts/EngineContext.tsx",
       "source_location": "L117",
       "id": "enginecontext_useengine",
-      "community": 42,
+      "community": 41,
       "norm_label": "useengine()"
     },
     {
@@ -4464,7 +4464,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/contexts/EngineContext.tsx",
       "source_location": "L124",
       "id": "enginecontext_usepathshala",
-      "community": 42,
+      "community": 41,
       "norm_label": "usepathshala()"
     },
     {
@@ -4473,7 +4473,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/contexts/EngineContext.tsx",
       "source_location": "L129",
       "id": "enginecontext_usesadhana",
-      "community": 42,
+      "community": 41,
       "norm_label": "usesadhana()"
     },
     {
@@ -4482,7 +4482,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/contexts/QueryProvider.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_contexts_queryprovider_tsx",
-      "community": 78,
+      "community": 77,
       "norm_label": "queryprovider.tsx"
     },
     {
@@ -4491,7 +4491,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/contexts/QueryProvider.tsx",
       "source_location": "L24",
       "id": "queryprovider_queryprovider",
-      "community": 78,
+      "community": 77,
       "norm_label": "queryprovider()"
     },
     {
@@ -4500,7 +4500,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/LandingPage.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_landingpage_tsx",
-      "community": 59,
+      "community": 58,
       "norm_label": "landingpage.tsx"
     },
     {
@@ -4509,7 +4509,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/LandingPage.tsx",
       "source_location": "L181",
       "id": "landingpage_handler",
-      "community": 59,
+      "community": 58,
       "norm_label": "handler()"
     },
     {
@@ -4518,7 +4518,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/LandingPage.tsx",
       "source_location": "L187",
       "id": "landingpage_install",
-      "community": 59,
+      "community": 58,
       "norm_label": "install()"
     },
     {
@@ -4527,7 +4527,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/layout.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_layout_tsx",
-      "community": 151,
+      "community": 150,
       "norm_label": "layout.tsx"
     },
     {
@@ -4554,7 +4554,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/contact/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_contact_page_tsx",
-      "community": 152,
+      "community": 151,
       "norm_label": "page.tsx"
     },
     {
@@ -4563,7 +4563,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/privacy/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_privacy_page_tsx",
-      "community": 79,
+      "community": 78,
       "norm_label": "page.tsx"
     },
     {
@@ -4572,7 +4572,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/privacy/page.tsx",
       "source_location": "L10",
       "id": "page_privacypage",
-      "community": 79,
+      "community": 78,
       "norm_label": "privacypage()"
     },
     {
@@ -4581,7 +4581,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/privacy/PrivacyClient.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_privacy_privacyclient_tsx",
-      "community": 153,
+      "community": 152,
       "norm_label": "privacyclient.tsx"
     },
     {
@@ -4590,7 +4590,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/join/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_join_page_tsx",
-      "community": 154,
+      "community": 153,
       "norm_label": "page.tsx"
     },
     {
@@ -4626,7 +4626,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/terms/TermsClient.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_terms_termsclient_tsx",
-      "community": 155,
+      "community": 154,
       "norm_label": "termsclient.tsx"
     },
     {
@@ -4635,7 +4635,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/terms/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_terms_page_tsx",
-      "community": 80,
+      "community": 79,
       "norm_label": "page.tsx"
     },
     {
@@ -4644,7 +4644,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/terms/page.tsx",
       "source_location": "L10",
       "id": "page_termspage",
-      "community": 80,
+      "community": 79,
       "norm_label": "termspage()"
     },
     {
@@ -4653,7 +4653,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/admin/layout.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_app_admin_layout_tsx",
-      "community": 81,
+      "community": 80,
       "norm_label": "layout.tsx"
     },
     {
@@ -4662,7 +4662,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/admin/layout.tsx",
       "source_location": "L2",
       "id": "layout_adminlayout",
-      "community": 81,
+      "community": 80,
       "norm_label": "adminlayout()"
     },
     {
@@ -4671,7 +4671,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/admin/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_admin_page_tsx",
-      "community": 60,
+      "community": 59,
       "norm_label": "page.tsx"
     },
     {
@@ -4680,7 +4680,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/admin/page.tsx",
       "source_location": "L16",
       "id": "page_admindashboard",
-      "community": 60,
+      "community": 59,
       "norm_label": "admindashboard()"
     },
     {
@@ -4689,7 +4689,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/admin/page.tsx",
       "source_location": "L223",
       "id": "page_statcard",
-      "community": 60,
+      "community": 59,
       "norm_label": "statcard()"
     },
     {
@@ -4698,7 +4698,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/admin/settings/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_admin_settings_page_tsx",
-      "community": 82,
+      "community": 81,
       "norm_label": "page.tsx"
     },
     {
@@ -4707,7 +4707,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/admin/settings/page.tsx",
       "source_location": "L13",
       "id": "page_globalsettings",
-      "community": 82,
+      "community": 81,
       "norm_label": "globalsettings()"
     },
     {
@@ -4716,7 +4716,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/admin/tirtha/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_admin_tirtha_page_tsx",
-      "community": 83,
+      "community": 82,
       "norm_label": "page.tsx"
     },
     {
@@ -4725,7 +4725,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/admin/tirtha/page.tsx",
       "source_location": "L19",
       "id": "page_fetchmandalis",
-      "community": 83,
+      "community": 82,
       "norm_label": "fetchmandalis()"
     },
     {
@@ -4752,7 +4752,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/admin/hindi-generator/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_admin_hindi_generator_page_tsx",
-      "community": 156,
+      "community": 155,
       "norm_label": "page.tsx"
     },
     {
@@ -4761,7 +4761,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/admin/content/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_admin_content_page_tsx",
-      "community": 84,
+      "community": 83,
       "norm_label": "page.tsx"
     },
     {
@@ -4770,7 +4770,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/admin/content/page.tsx",
       "source_location": "L17",
       "id": "page_fetchfestivals",
-      "community": 84,
+      "community": 83,
       "norm_label": "fetchfestivals()"
     },
     {
@@ -4815,7 +4815,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/admin/monitoring/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_admin_monitoring_page_tsx",
-      "community": 36,
+      "community": 35,
       "norm_label": "page.tsx"
     },
     {
@@ -4824,7 +4824,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/admin/reports/page.tsx",
       "source_location": "L22",
       "id": "page_fetchstats",
-      "community": 36,
+      "community": 35,
       "norm_label": "fetchstats()"
     },
     {
@@ -4833,7 +4833,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/admin/broadcast/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_admin_broadcast_page_tsx",
-      "community": 85,
+      "community": 84,
       "norm_label": "page.tsx"
     },
     {
@@ -4842,7 +4842,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/admin/broadcast/page.tsx",
       "source_location": "L20",
       "id": "page_handlesend",
-      "community": 85,
+      "community": 84,
       "norm_label": "handlesend()"
     },
     {
@@ -4869,7 +4869,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/admin/reports/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_admin_reports_page_tsx",
-      "community": 36,
+      "community": 35,
       "norm_label": "page.tsx"
     },
     {
@@ -4878,7 +4878,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/admin/reports/page.tsx",
       "source_location": "L258",
       "id": "page_cronloglist",
-      "community": 36,
+      "community": 35,
       "norm_label": "cronloglist()"
     },
     {
@@ -4887,7 +4887,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/admin/reports/page.tsx",
       "source_location": "L293",
       "id": "page_reportlist",
-      "community": 36,
+      "community": 35,
       "norm_label": "reportlist()"
     },
     {
@@ -4896,7 +4896,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/admin/reports/page.tsx",
       "source_location": "L309",
       "id": "page_reportbutton",
-      "community": 36,
+      "community": 35,
       "norm_label": "reportbutton()"
     },
     {
@@ -4941,7 +4941,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/about/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_about_page_tsx",
-      "community": 86,
+      "community": 85,
       "norm_label": "page.tsx"
     },
     {
@@ -4950,7 +4950,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/about/page.tsx",
       "source_location": "L9",
       "id": "page_aboutpage",
-      "community": 86,
+      "community": 85,
       "norm_label": "aboutpage()"
     },
     {
@@ -5724,7 +5724,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/guidelines/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_guidelines_page_tsx",
-      "community": 87,
+      "community": 86,
       "norm_label": "page.tsx"
     },
     {
@@ -5733,7 +5733,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/guidelines/page.tsx",
       "source_location": "L11",
       "id": "page_guidelinespage",
-      "community": 87,
+      "community": 86,
       "norm_label": "guidelinespage()"
     },
     {
@@ -5742,7 +5742,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/layout.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_layout_tsx",
-      "community": 14,
+      "community": 15,
       "norm_label": "layout.tsx"
     },
     {
@@ -5751,7 +5751,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/layout.tsx",
       "source_location": "L10",
       "id": "layout_mainlayout",
-      "community": 14,
+      "community": 15,
       "norm_label": "mainlayout()"
     },
     {
@@ -5832,7 +5832,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/home/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_home_page_tsx",
-      "community": 14,
+      "community": 15,
       "norm_label": "page.tsx"
     },
     {
@@ -5841,7 +5841,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/home/page.tsx",
       "source_location": "L21",
       "id": "page_homepage",
-      "community": 14,
+      "community": 15,
       "norm_label": "homepage()"
     },
     {
@@ -5850,7 +5850,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/messages/MessagesClient.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_messages_messagesclient_tsx",
-      "community": 61,
+      "community": 60,
       "norm_label": "messagesclient.tsx"
     },
     {
@@ -5859,7 +5859,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/messages/MessagesClient.tsx",
       "source_location": "L12",
       "id": "messagesclient_threadkindpill",
-      "community": 61,
+      "community": 60,
       "norm_label": "threadkindpill()"
     },
     {
@@ -5868,7 +5868,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/messages/MessagesClient.tsx",
       "source_location": "L99",
       "id": "messagesclient_handlesend",
-      "community": 61,
+      "community": 60,
       "norm_label": "handlesend()"
     },
     {
@@ -5877,7 +5877,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/messages/page.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_app_main_messages_page_tsx",
-      "community": 13,
+      "community": 14,
       "norm_label": "page.tsx"
     },
     {
@@ -5886,7 +5886,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/messages/page.tsx",
       "source_location": "L6",
       "id": "page_messagespage",
-      "community": 13,
+      "community": 14,
       "norm_label": "messagespage()"
     },
     {
@@ -6066,7 +6066,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/recite/ReciteClient.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_pathshala_pathid_recite_reciteclient_tsx",
-      "community": 11,
+      "community": 12,
       "norm_label": "reciteclient.tsx"
     },
     {
@@ -6075,7 +6075,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/recite/ReciteClient.tsx",
       "source_location": "L39",
       "id": "reciteclient_scorecolor",
-      "community": 11,
+      "community": 12,
       "norm_label": "scorecolor()"
     },
     {
@@ -6084,7 +6084,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/recite/ReciteClient.tsx",
       "source_location": "L46",
       "id": "reciteclient_scorepanel",
-      "community": 11,
+      "community": 12,
       "norm_label": "scorepanel()"
     },
     {
@@ -6093,7 +6093,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/recite/ReciteClient.tsx",
       "source_location": "L201",
       "id": "reciteclient_explainverse",
-      "community": 11,
+      "community": 12,
       "norm_label": "explainverse()"
     },
     {
@@ -6102,7 +6102,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/recite/ReciteClient.tsx",
       "source_location": "L415",
       "id": "reciteclient_formattime",
-      "community": 11,
+      "community": 12,
       "norm_label": "formattime()"
     },
     {
@@ -6111,7 +6111,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/recite/ReciteClient.tsx",
       "source_location": "L421",
       "id": "reciteclient_markversecomplete",
-      "community": 11,
+      "community": 12,
       "norm_label": "markversecomplete()"
     },
     {
@@ -6120,7 +6120,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/recite/page.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_app_main_pathshala_pathid_recite_page_tsx",
-      "community": 157,
+      "community": 156,
       "norm_label": "page.tsx"
     },
     {
@@ -6129,7 +6129,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/lesson/LessonClient.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_app_main_pathshala_pathid_lesson_lessonclient_tsx",
-      "community": 11,
+      "community": 12,
       "norm_label": "lessonclient.tsx"
     },
     {
@@ -6138,7 +6138,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/lesson/LessonClient.tsx",
       "source_location": "L48",
       "id": "lessonclient_getentrytext",
-      "community": 11,
+      "community": 12,
       "norm_label": "getentrytext()"
     },
     {
@@ -6147,7 +6147,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/lesson/LessonClient.tsx",
       "source_location": "L190",
       "id": "lessonclient_load",
-      "community": 11,
+      "community": 12,
       "norm_label": "load()"
     },
     {
@@ -6156,7 +6156,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/lesson/LessonClient.tsx",
       "source_location": "L213",
       "id": "lessonclient_speakentry",
-      "community": 11,
+      "community": 12,
       "norm_label": "speakentry()"
     },
     {
@@ -6165,7 +6165,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/lesson/LessonClient.tsx",
       "source_location": "L242",
       "id": "lessonclient_togglebookmark",
-      "community": 11,
+      "community": 12,
       "norm_label": "togglebookmark()"
     },
     {
@@ -6174,7 +6174,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/lesson/LessonClient.tsx",
       "source_location": "L264",
       "id": "lessonclient_copyentry",
-      "community": 11,
+      "community": 12,
       "norm_label": "copyentry()"
     },
     {
@@ -6183,7 +6183,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/lesson/LessonClient.tsx",
       "source_location": "L274",
       "id": "lessonclient_explainverse",
-      "community": 11,
+      "community": 12,
       "norm_label": "explainverse()"
     },
     {
@@ -6192,7 +6192,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/lesson/LessonClient.tsx",
       "source_location": "L303",
       "id": "lessonclient_markcomplete",
-      "community": 11,
+      "community": 12,
       "norm_label": "markcomplete()"
     },
     {
@@ -6201,7 +6201,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/lesson/LessonClient.tsx",
       "source_location": "L337",
       "id": "lessonclient_gonextverse",
-      "community": 11,
+      "community": 12,
       "norm_label": "gonextverse()"
     },
     {
@@ -6210,7 +6210,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/lesson/LessonClient.tsx",
       "source_location": "L346",
       "id": "lessonclient_goprevverse",
-      "community": 11,
+      "community": 12,
       "norm_label": "goprevverse()"
     },
     {
@@ -6219,7 +6219,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/lesson/LessonClient.tsx",
       "source_location": "L355",
       "id": "lessonclient_gotolesson",
-      "community": 11,
+      "community": 12,
       "norm_label": "gotolesson()"
     },
     {
@@ -6228,7 +6228,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/pathshala/[pathId]/lesson/page.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_app_main_pathshala_pathid_lesson_page_tsx",
-      "community": 158,
+      "community": 157,
       "norm_label": "page.tsx"
     },
     {
@@ -6237,7 +6237,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/discover/DiscoverClient.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_discover_discoverclient_tsx",
-      "community": 62,
+      "community": 61,
       "norm_label": "discoverclient.tsx"
     },
     {
@@ -6246,7 +6246,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/discover/DiscoverClient.tsx",
       "source_location": "L176",
       "id": "discoverclient_fetchformood",
-      "community": 62,
+      "community": 61,
       "norm_label": "fetchformood()"
     },
     {
@@ -6255,7 +6255,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/discover/DiscoverClient.tsx",
       "source_location": "L204",
       "id": "discoverclient_reset",
-      "community": 62,
+      "community": 61,
       "norm_label": "reset()"
     },
     {
@@ -6300,7 +6300,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/vrat/[id]/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_vrat_id_page_tsx",
-      "community": 55,
+      "community": 49,
       "norm_label": "page.tsx"
     },
     {
@@ -6309,7 +6309,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/vrat/[id]/page.tsx",
       "source_location": "L9",
       "id": "page_vratpage",
-      "community": 55,
+      "community": 49,
       "norm_label": "vratpage()"
     },
     {
@@ -6453,7 +6453,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/dharm-veer/[id]/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_dharm_veer_id_page_tsx",
-      "community": 88,
+      "community": 87,
       "norm_label": "page.tsx"
     },
     {
@@ -6462,7 +6462,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/dharm-veer/[id]/page.tsx",
       "source_location": "L5",
       "id": "page_dharmveerpage",
-      "community": 88,
+      "community": 87,
       "norm_label": "dharmveerpage()"
     },
     {
@@ -6471,7 +6471,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/seva/SevaClient.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_seva_sevaclient_tsx",
-      "community": 159,
+      "community": 158,
       "norm_label": "sevaclient.tsx"
     },
     {
@@ -6795,7 +6795,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/nitya-karma/plans/GuidedPlansClient.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_nitya_karma_plans_guidedplansclient_tsx",
-      "community": 89,
+      "community": 88,
       "norm_label": "guidedplansclient.tsx"
     },
     {
@@ -6804,7 +6804,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/nitya-karma/plans/GuidedPlansClient.tsx",
       "source_location": "L163",
       "id": "guidedplansclient_markdaycomplete",
-      "community": 89,
+      "community": 88,
       "norm_label": "markdaycomplete()"
     },
     {
@@ -6831,7 +6831,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/nitya-karma/plans/insights/InsightsClient.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_nitya_karma_plans_insights_insightsclient_tsx",
-      "community": 90,
+      "community": 89,
       "norm_label": "insightsclient.tsx"
     },
     {
@@ -6840,7 +6840,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/nitya-karma/plans/insights/InsightsClient.tsx",
       "source_location": "L25",
       "id": "insightsclient_ring",
-      "community": 90,
+      "community": 89,
       "norm_label": "ring()"
     },
     {
@@ -6867,7 +6867,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/quiz/QuizDashboardClient.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_app_main_quiz_quizdashboardclient_tsx",
-      "community": 63,
+      "community": 62,
       "norm_label": "quizdashboardclient.tsx"
     },
     {
@@ -6876,7 +6876,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/quiz/QuizDashboardClient.tsx",
       "source_location": "L59",
       "id": "quizdashboardclient_computerank",
-      "community": 63,
+      "community": 62,
       "norm_label": "computerank()"
     },
     {
@@ -6885,7 +6885,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/quiz/QuizDashboardClient.tsx",
       "source_location": "L67",
       "id": "quizdashboardclient_nextrankinfo",
-      "community": 63,
+      "community": 62,
       "norm_label": "nextrankinfo()"
     },
     {
@@ -6912,7 +6912,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/quiz/practice/PracticeClient.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_app_main_quiz_practice_practiceclient_tsx",
-      "community": 91,
+      "community": 90,
       "norm_label": "practiceclient.tsx"
     },
     {
@@ -6921,7 +6921,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/quiz/practice/PracticeClient.tsx",
       "source_location": "L180",
       "id": "practiceclient_handleanswer",
-      "community": 91,
+      "community": 90,
       "norm_label": "handleanswer()"
     },
     {
@@ -6948,7 +6948,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/ai-chat/AIChatClient.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_ai_chat_aichatclient_tsx",
-      "community": 19,
+      "community": 20,
       "norm_label": "aichatclient.tsx"
     },
     {
@@ -6957,7 +6957,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/ai-chat/AIChatClient.tsx",
       "source_location": "L95",
       "id": "aichatclient_messagebubble",
-      "community": 19,
+      "community": 20,
       "norm_label": "messagebubble()"
     },
     {
@@ -6966,7 +6966,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/ai-chat/AIChatClient.tsx",
       "source_location": "L295",
       "id": "aichatclient_newid",
-      "community": 19,
+      "community": 20,
       "norm_label": "newid()"
     },
     {
@@ -6975,7 +6975,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/ai-chat/AIChatClient.tsx",
       "source_location": "L299",
       "id": "aichatclient_sendmessage",
-      "community": 19,
+      "community": 20,
       "norm_label": "sendmessage()"
     },
     {
@@ -6984,7 +6984,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/ai-chat/AIChatClient.tsx",
       "source_location": "L392",
       "id": "aichatclient_handlekeydown",
-      "community": 19,
+      "community": 20,
       "norm_label": "handlekeydown()"
     },
     {
@@ -6993,7 +6993,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/ai-chat/AIChatClient.tsx",
       "source_location": "L399",
       "id": "aichatclient_clearchat",
-      "community": 19,
+      "community": 20,
       "norm_label": "clearchat()"
     },
     {
@@ -7110,7 +7110,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/scoreboard/ScoreboardClient.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_scoreboard_scoreboardclient_tsx",
-      "community": 37,
+      "community": 38,
       "norm_label": "scoreboardclient.tsx"
     },
     {
@@ -7119,7 +7119,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/scoreboard/ScoreboardClient.tsx",
       "source_location": "L34",
       "id": "scoreboardclient_handleshare",
-      "community": 37,
+      "community": 38,
       "norm_label": "handleshare()"
     },
     {
@@ -7146,7 +7146,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/panchang/PanchangClient.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_app_main_panchang_panchangclient_tsx",
-      "community": 38,
+      "community": 36,
       "norm_label": "panchangclient.tsx"
     },
     {
@@ -7155,7 +7155,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/panchang/PanchangClient.tsx",
       "source_location": "L33",
       "id": "panchangclient_parsesuntime",
-      "community": 38,
+      "community": 36,
       "norm_label": "parsesuntime()"
     },
     {
@@ -7164,7 +7164,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/panchang/PanchangClient.tsx",
       "source_location": "L43",
       "id": "panchangclient_getskyphase",
-      "community": 38,
+      "community": 36,
       "norm_label": "getskyphase()"
     },
     {
@@ -7173,7 +7173,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/panchang/PanchangClient.tsx",
       "source_location": "L79",
       "id": "panchangclient_issameday",
-      "community": 38,
+      "community": 36,
       "norm_label": "issameday()"
     },
     {
@@ -7182,7 +7182,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/panchang/PanchangClient.tsx",
       "source_location": "L86",
       "id": "panchangclient_glasscard",
-      "community": 38,
+      "community": 36,
       "norm_label": "glasscard()"
     },
     {
@@ -7191,7 +7191,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/panchang/PanchangClient.tsx",
       "source_location": "L116",
       "id": "panchangclient_handler",
-      "community": 38,
+      "community": 36,
       "norm_label": "handler()"
     },
     {
@@ -7218,62 +7218,71 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/KulClient.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_kulclient_tsx",
-      "community": 33,
+      "community": 31,
       "norm_label": "kulclient.tsx"
     },
     {
       "label": "closeOnboarding()",
       "file_type": "code",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/KulClient.tsx",
-      "source_location": "L101",
+      "source_location": "L108",
       "id": "kulclient_closeonboarding",
-      "community": 33,
+      "community": 31,
       "norm_label": "closeonboarding()"
     },
     {
       "label": "handleCreateKul()",
       "file_type": "code",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/KulClient.tsx",
-      "source_location": "L110",
+      "source_location": "L117",
       "id": "kulclient_handlecreatekul",
-      "community": 33,
+      "community": 31,
       "norm_label": "handlecreatekul()"
     },
     {
       "label": "handleJoinKul()",
       "file_type": "code",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/KulClient.tsx",
-      "source_location": "L116",
+      "source_location": "L123",
       "id": "kulclient_handlejoinkul",
-      "community": 33,
+      "community": 31,
       "norm_label": "handlejoinkul()"
     },
     {
       "label": "handleSaveTask()",
       "file_type": "code",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/KulClient.tsx",
-      "source_location": "L122",
+      "source_location": "L129",
       "id": "kulclient_handlesavetask",
-      "community": 33,
+      "community": 31,
       "norm_label": "handlesavetask()"
     },
     {
       "label": "handleSaveVansh()",
       "file_type": "code",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/KulClient.tsx",
-      "source_location": "L134",
+      "source_location": "L141",
       "id": "kulclient_handlesavevansh",
-      "community": 33,
+      "community": 31,
       "norm_label": "handlesavevansh()"
     },
     {
       "label": "handleSaveEvent()",
       "file_type": "code",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/KulClient.tsx",
-      "source_location": "L150",
+      "source_location": "L157",
       "id": "kulclient_handlesaveevent",
-      "community": 33,
+      "community": 31,
       "norm_label": "handlesaveevent()"
+    },
+    {
+      "label": "handleSaveKulName()",
+      "file_type": "code",
+      "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/KulClient.tsx",
+      "source_location": "L167",
+      "id": "kulclient_handlesavekulname",
+      "community": 31,
+      "norm_label": "handlesavekulname()"
     },
     {
       "label": "utils.ts",
@@ -7317,7 +7326,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/types.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_types_ts",
-      "community": 160,
+      "community": 159,
       "norm_label": "types.ts"
     },
     {
@@ -7341,16 +7350,16 @@
     {
       "label": "sections.ts",
       "file_type": "code",
-      "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/kul/sections.ts",
+      "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/sections.ts",
       "source_location": "L1",
-      "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_app_main_kul_sections_ts",
+      "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_sections_ts",
       "community": 3,
       "norm_label": "sections.ts"
     },
     {
       "label": "isKulSectionView()",
       "file_type": "code",
-      "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/kul/sections.ts",
+      "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/sections.ts",
       "source_location": "L5",
       "id": "sections_iskulsectionview",
       "community": 3,
@@ -7398,7 +7407,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulSanskara.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_kulsanskara_tsx",
-      "community": 161,
+      "community": 160,
       "norm_label": "kulsanskara.tsx"
     },
     {
@@ -7407,7 +7416,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulHub.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_kulhub_tsx",
-      "community": 162,
+      "community": 161,
       "norm_label": "kulhub.tsx"
     },
     {
@@ -7416,7 +7425,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulMembers.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_kulmembers_tsx",
-      "community": 163,
+      "community": 162,
       "norm_label": "kulmembers.tsx"
     },
     {
@@ -7425,7 +7434,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulVanshForm.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_kulvanshform_tsx",
-      "community": 164,
+      "community": 163,
       "norm_label": "kulvanshform.tsx"
     },
     {
@@ -7434,7 +7443,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulEventForm.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_kuleventform_tsx",
-      "community": 165,
+      "community": 164,
       "norm_label": "kuleventform.tsx"
     },
     {
@@ -7443,7 +7452,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulTasks.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_kultasks_tsx",
-      "community": 166,
+      "community": 165,
       "norm_label": "kultasks.tsx"
     },
     {
@@ -7452,7 +7461,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulSectionTiles.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_kulsectiontiles_tsx",
-      "community": 167,
+      "community": 166,
       "norm_label": "kulsectiontiles.tsx"
     },
     {
@@ -7461,7 +7470,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/NoKulPrompt.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_nokulprompt_tsx",
-      "community": 64,
+      "community": 63,
       "norm_label": "nokulprompt.tsx"
     },
     {
@@ -7470,7 +7479,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/NoKulPrompt.tsx",
       "source_location": "L29",
       "id": "nokulprompt_handlecreate",
-      "community": 64,
+      "community": 63,
       "norm_label": "handlecreate()"
     },
     {
@@ -7479,7 +7488,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/NoKulPrompt.tsx",
       "source_location": "L41",
       "id": "nokulprompt_handlejoin",
-      "community": 64,
+      "community": 63,
       "norm_label": "handlejoin()"
     },
     {
@@ -7515,7 +7524,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulEvents.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_kulevents_tsx",
-      "community": 168,
+      "community": 167,
       "norm_label": "kulevents.tsx"
     },
     {
@@ -7524,7 +7533,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulVansh.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_kulvansh_tsx",
-      "community": 169,
+      "community": 168,
       "norm_label": "kulvansh.tsx"
     },
     {
@@ -7533,7 +7542,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulTaskForm.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_kultaskform_tsx",
-      "community": 170,
+      "community": 169,
       "norm_label": "kultaskform.tsx"
     },
     {
@@ -7542,7 +7551,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/FamilyKeepsakeStage.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_familykeepsakestage_tsx",
-      "community": 171,
+      "community": 170,
       "norm_label": "familykeepsakestage.tsx"
     },
     {
@@ -7551,7 +7560,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulFamilyProfileSheet.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_kulfamilyprofilesheet_tsx",
-      "community": 172,
+      "community": 171,
       "norm_label": "kulfamilyprofilesheet.tsx"
     },
     {
@@ -7560,7 +7569,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulSabha.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_kulsabha_tsx",
-      "community": 92,
+      "community": 91,
       "norm_label": "kulsabha.tsx"
     },
     {
@@ -7569,7 +7578,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulSabha.tsx",
       "source_location": "L53",
       "id": "kulsabha_handlesend",
-      "community": 92,
+      "community": 91,
       "norm_label": "handlesend()"
     },
     {
@@ -7578,7 +7587,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulOnboarding.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_components_kulonboarding_tsx",
-      "community": 65,
+      "community": 64,
       "norm_label": "kulonboarding.tsx"
     },
     {
@@ -7587,7 +7596,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulOnboarding.tsx",
       "source_location": "L41",
       "id": "kulonboarding_next",
-      "community": 65,
+      "community": 64,
       "norm_label": "next()"
     },
     {
@@ -7596,7 +7605,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/components/KulOnboarding.tsx",
       "source_location": "L46",
       "id": "kulonboarding_prev",
-      "community": 65,
+      "community": 64,
       "norm_label": "prev()"
     },
     {
@@ -7605,7 +7614,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/kul/sanskara/SanskaraClient.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_kul_sanskara_sanskaraclient_tsx",
-      "community": 93,
+      "community": 92,
       "norm_label": "sanskaraclient.tsx"
     },
     {
@@ -7614,7 +7623,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/kul/sanskara/SanskaraClient.tsx",
       "source_location": "L287",
       "id": "sanskaraclient_markform",
-      "community": 93,
+      "community": 92,
       "norm_label": "markform()"
     },
     {
@@ -7641,7 +7650,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/kul/mockup/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_kul_mockup_page_tsx",
-      "community": 173,
+      "community": 172,
       "norm_label": "page.tsx"
     },
     {
@@ -7650,7 +7659,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/guest/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_guest_page_tsx",
-      "community": 174,
+      "community": 173,
       "norm_label": "page.tsx"
     },
     {
@@ -7686,7 +7695,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/bhakti/BhaktiClient.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_main_bhakti_bhakticlient_tsx",
-      "community": 94,
+      "community": 93,
       "norm_label": "bhakticlient.tsx"
     },
     {
@@ -7695,7 +7704,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/bhakti/BhaktiClient.tsx",
       "source_location": "L57",
       "id": "bhakticlient_togglecheck",
-      "community": 94,
+      "community": 93,
       "norm_label": "togglecheck()"
     },
     {
@@ -7740,7 +7749,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/bhakti/insights/BhaktiInsightsClient.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_bhakti_insights_bhaktiinsightsclient_tsx",
-      "community": 175,
+      "community": 174,
       "norm_label": "bhaktiinsightsclient.tsx"
     },
     {
@@ -7875,7 +7884,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/bhakti/zen/page.tsx",
       "source_location": "L183",
       "id": "page_formatclock",
-      "community": 10,
+      "community": 2,
       "norm_label": "formatclock()"
     },
     {
@@ -7920,7 +7929,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Shoonaya/src/app/(main)/bhakti/katha/KathaClient.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_shoonaya_src_app_main_bhakti_katha_kathaclient_tsx",
-      "community": 176,
+      "community": 175,
       "norm_label": "kathaclient.tsx"
     },
     {
@@ -7947,7 +7956,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Shoonaya/src/app/(main)/bhakti/katha/[id]/KathaReaderClient.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_shoonaya_src_app_main_bhakti_katha_id_kathareaderclient_tsx",
-      "community": 177,
+      "community": 176,
       "norm_label": "kathareaderclient.tsx"
     },
     {
@@ -7974,7 +7983,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/bhakti/browse/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_bhakti_browse_page_tsx",
-      "community": 178,
+      "community": 177,
       "norm_label": "page.tsx"
     },
     {
@@ -8154,7 +8163,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/my-progress/shields/ShieldsClient.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_app_main_my_progress_shields_shieldsclient_tsx",
-      "community": 179,
+      "community": 178,
       "norm_label": "shieldsclient.tsx"
     },
     {
@@ -8235,7 +8244,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/vichaar-sabha/[id]/ThreadDetailClient.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_app_main_vichaar_sabha_id_threaddetailclient_tsx",
-      "community": 43,
+      "community": 42,
       "norm_label": "threaddetailclient.tsx"
     },
     {
@@ -8244,7 +8253,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/vichaar-sabha/[id]/ThreadDetailClient.tsx",
       "source_location": "L37",
       "id": "threaddetailclient_submitreply",
-      "community": 43,
+      "community": 42,
       "norm_label": "submitreply()"
     },
     {
@@ -8253,7 +8262,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/vichaar-sabha/[id]/ThreadDetailClient.tsx",
       "source_location": "L54",
       "id": "threaddetailclient_leavethreadview",
-      "community": 43,
+      "community": 42,
       "norm_label": "leavethreadview()"
     },
     {
@@ -8262,7 +8271,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/vichaar-sabha/[id]/ThreadDetailClient.tsx",
       "source_location": "L59",
       "id": "threaddetailclient_hidereply",
-      "community": 43,
+      "community": 42,
       "norm_label": "hidereply()"
     },
     {
@@ -8271,7 +8280,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/vichaar-sabha/[id]/ThreadDetailClient.tsx",
       "source_location": "L63",
       "id": "threaddetailclient_hidereplyauthor",
-      "community": 43,
+      "community": 42,
       "norm_label": "hidereplyauthor()"
     },
     {
@@ -8298,7 +8307,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/live-darshan/LiveDarshanClient.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_live_darshan_livedarshanclient_tsx",
-      "community": 180,
+      "community": 179,
       "norm_label": "livedarshanclient.tsx"
     },
     {
@@ -8325,7 +8334,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/japa/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_japa_page_tsx",
-      "community": 95,
+      "community": 94,
       "norm_label": "page.tsx"
     },
     {
@@ -8334,7 +8343,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/japa/page.tsx",
       "source_location": "L3",
       "id": "page_japaredirectpage",
-      "community": 95,
+      "community": 94,
       "norm_label": "japaredirectpage()"
     },
     {
@@ -8343,7 +8352,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/japa/JapaClient.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_app_main_japa_japaclient_tsx",
-      "community": 20,
+      "community": 19,
       "norm_label": "japaclient.tsx"
     },
     {
@@ -8352,7 +8361,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/japa/JapaClient.tsx",
       "source_location": "L1535",
       "id": "japaclient_handlesoundselect",
-      "community": 20,
+      "community": 19,
       "norm_label": "handlesoundselect()"
     },
     {
@@ -8361,7 +8370,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/japa/JapaClient.tsx",
       "source_location": "L1646",
       "id": "japaclient_handlebgsceneselect",
-      "community": 20,
+      "community": 19,
       "norm_label": "handlebgsceneselect()"
     },
     {
@@ -8370,7 +8379,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/japa/JapaClient.tsx",
       "source_location": "L1651",
       "id": "japaclient_handleconfirmmala",
-      "community": 20,
+      "community": 19,
       "norm_label": "handleconfirmmala()"
     },
     {
@@ -8379,7 +8388,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/japa/JapaClient.tsx",
       "source_location": "L1656",
       "id": "japaclient_handleconfirmmantra",
-      "community": 20,
+      "community": 19,
       "norm_label": "handleconfirmmantra()"
     },
     {
@@ -8388,7 +8397,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/japa/JapaClient.tsx",
       "source_location": "L1662",
       "id": "japaclient_handlereset",
-      "community": 20,
+      "community": 19,
       "norm_label": "handlereset()"
     },
     {
@@ -8397,7 +8406,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/japa/JapaClient.tsx",
       "source_location": "L1672",
       "id": "japaclient_resetpracticefornextround",
-      "community": 20,
+      "community": 19,
       "norm_label": "resetpracticefornextround()"
     },
     {
@@ -8406,7 +8415,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/japa/JapaClient.tsx",
       "source_location": "L1683",
       "id": "japaclient_handleviewinsights",
-      "community": 20,
+      "community": 19,
       "norm_label": "handleviewinsights()"
     },
     {
@@ -8415,7 +8424,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/japa/JapaClient.tsx",
       "source_location": "L1688",
       "id": "japaclient_handlecontinueaftercomplete",
-      "community": 20,
+      "community": 19,
       "norm_label": "handlecontinueaftercomplete()"
     },
     {
@@ -8424,7 +8433,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/japa/JapaClient.tsx",
       "source_location": "L1693",
       "id": "japaclient_handlechangeaftercomplete",
-      "community": 20,
+      "community": 19,
       "norm_label": "handlechangeaftercomplete()"
     },
     {
@@ -8433,7 +8442,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/japa/JapaClient.tsx",
       "source_location": "L1707",
       "id": "japaclient_handlesaveandstop",
-      "community": 20,
+      "community": 19,
       "norm_label": "handlesaveandstop()"
     },
     {
@@ -8442,7 +8451,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/japa/JapaClient.tsx",
       "source_location": "L1712",
       "id": "japaclient_handlediscardandstop",
-      "community": 20,
+      "community": 19,
       "norm_label": "handlediscardandstop()"
     },
     {
@@ -8451,7 +8460,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/japa/JapaClient.tsx",
       "source_location": "L1722",
       "id": "japaclient_handlemanualend",
-      "community": 20,
+      "community": 19,
       "norm_label": "handlemanualend()"
     },
     {
@@ -8496,7 +8505,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/japa/insights/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_main_japa_insights_page_tsx",
-      "community": 96,
+      "community": 95,
       "norm_label": "page.tsx"
     },
     {
@@ -8505,7 +8514,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/japa/insights/page.tsx",
       "source_location": "L3",
       "id": "page_japainsightsredirectpage",
-      "community": 96,
+      "community": 95,
       "norm_label": "japainsightsredirectpage()"
     },
     {
@@ -8532,7 +8541,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(auth)/login/page.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_app_auth_login_page_tsx",
-      "community": 97,
+      "community": 96,
       "norm_label": "page.tsx"
     },
     {
@@ -8541,7 +8550,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(auth)/login/page.tsx",
       "source_location": "L60",
       "id": "page_handlelogin",
-      "community": 97,
+      "community": 96,
       "norm_label": "handlelogin()"
     },
     {
@@ -8550,7 +8559,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/onboarding/OnboardingClient.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_app_onboarding_onboardingclient_tsx",
-      "community": 98,
+      "community": 97,
       "norm_label": "onboardingclient.tsx"
     },
     {
@@ -8559,7 +8568,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/onboarding/OnboardingClient.tsx",
       "source_location": "L29",
       "id": "onboardingclient_getpracticepathoptions",
-      "community": 98,
+      "community": 97,
       "norm_label": "getpracticepathoptions()"
     },
     {
@@ -8640,7 +8649,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/PanchangWidget.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_components_panchangwidget_tsx",
-      "community": 181,
+      "community": 180,
       "norm_label": "panchangwidget.tsx"
     },
     {
@@ -8649,7 +8658,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/BrandMark.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_brandmark_tsx",
-      "community": 99,
+      "community": 98,
       "norm_label": "brandmark.tsx"
     },
     {
@@ -8658,7 +8667,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/BrandMark.tsx",
       "source_location": "L32",
       "id": "brandmark_cn",
-      "community": 99,
+      "community": 98,
       "norm_label": "cn()"
     },
     {
@@ -8667,7 +8676,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/TirthaMapComponent.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_components_tirthamapcomponent_tsx",
-      "community": 100,
+      "community": 99,
       "norm_label": "tirthamapcomponent.tsx"
     },
     {
@@ -8676,7 +8685,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/TirthaMapComponent.tsx",
       "source_location": "L36",
       "id": "tirthamapcomponent_makemarkerhtml",
-      "community": 100,
+      "community": 99,
       "norm_label": "makemarkerhtml()"
     },
     {
@@ -8685,7 +8694,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/CircularProgress.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_ui_circularprogress_tsx",
-      "community": 101,
+      "community": 100,
       "norm_label": "circularprogress.tsx"
     },
     {
@@ -8694,7 +8703,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/CircularProgress.tsx",
       "source_location": "L28",
       "id": "circularprogress_circularprogress",
-      "community": 101,
+      "community": 100,
       "norm_label": "circularprogress()"
     },
     {
@@ -8703,7 +8712,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/Card.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_ui_card_tsx",
-      "community": 102,
+      "community": 101,
       "norm_label": "card.tsx"
     },
     {
@@ -8712,7 +8721,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/Card.tsx",
       "source_location": "L12",
       "id": "card_card",
-      "community": 102,
+      "community": 101,
       "norm_label": "card()"
     },
     {
@@ -8721,7 +8730,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/MoodGlyph.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_ui_moodglyph_tsx",
-      "community": 103,
+      "community": 102,
       "norm_label": "moodglyph.tsx"
     },
     {
@@ -8730,7 +8739,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/MoodGlyph.tsx",
       "source_location": "L11",
       "id": "moodglyph_moodglyph",
-      "community": 103,
+      "community": 102,
       "norm_label": "moodglyph()"
     },
     {
@@ -8775,7 +8784,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/SurfaceSection.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_ui_surfacesection_tsx",
-      "community": 104,
+      "community": 103,
       "norm_label": "surfacesection.tsx"
     },
     {
@@ -8784,7 +8793,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/SurfaceSection.tsx",
       "source_location": "L5",
       "id": "surfacesection_surfacesection",
-      "community": 104,
+      "community": 103,
       "norm_label": "surfacesection()"
     },
     {
@@ -8793,7 +8802,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/SectionHeading.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_ui_sectionheading_tsx",
-      "community": 182,
+      "community": 181,
       "norm_label": "sectionheading.tsx"
     },
     {
@@ -8838,7 +8847,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/MetricTile.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_ui_metrictile_tsx",
-      "community": 105,
+      "community": 104,
       "norm_label": "metrictile.tsx"
     },
     {
@@ -8847,7 +8856,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/MetricTile.tsx",
       "source_location": "L4",
       "id": "metrictile_metrictile",
-      "community": 105,
+      "community": 104,
       "norm_label": "metrictile()"
     },
     {
@@ -8856,7 +8865,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/AsyncStateCard.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_ui_asyncstatecard_tsx",
-      "community": 106,
+      "community": 105,
       "norm_label": "asyncstatecard.tsx"
     },
     {
@@ -8865,7 +8874,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/AsyncStateCard.tsx",
       "source_location": "L5",
       "id": "asyncstatecard_asyncstatecard",
-      "community": 106,
+      "community": 105,
       "norm_label": "asyncstatecard()"
     },
     {
@@ -8874,7 +8883,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/RadialRing.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_ui_radialring_tsx",
-      "community": 183,
+      "community": 182,
       "norm_label": "radialring.tsx"
     },
     {
@@ -8883,7 +8892,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/Badge.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_ui_badge_tsx",
-      "community": 107,
+      "community": 106,
       "norm_label": "badge.tsx"
     },
     {
@@ -8892,7 +8901,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/Badge.tsx",
       "source_location": "L12",
       "id": "badge_badge",
-      "community": 107,
+      "community": 106,
       "norm_label": "badge()"
     },
     {
@@ -8901,7 +8910,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/index.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_ui_index_ts",
-      "community": 184,
+      "community": 183,
       "norm_label": "index.ts"
     },
     {
@@ -8910,7 +8919,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/Button.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_ui_button_tsx",
-      "community": 108,
+      "community": 107,
       "norm_label": "button.tsx"
     },
     {
@@ -8919,7 +8928,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/Button.tsx",
       "source_location": "L22",
       "id": "button_button",
-      "community": 108,
+      "community": 107,
       "norm_label": "button()"
     },
     {
@@ -8928,7 +8937,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/EmptyState.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_ui_emptystate_tsx",
-      "community": 109,
+      "community": 108,
       "norm_label": "emptystate.tsx"
     },
     {
@@ -8937,7 +8946,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/EmptyState.tsx",
       "source_location": "L4",
       "id": "emptystate_emptystate",
-      "community": 109,
+      "community": 108,
       "norm_label": "emptystate()"
     },
     {
@@ -8946,7 +8955,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/Spinner.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_ui_spinner_tsx",
-      "community": 110,
+      "community": 109,
       "norm_label": "spinner.tsx"
     },
     {
@@ -8955,7 +8964,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/Spinner.tsx",
       "source_location": "L3",
       "id": "spinner_spinner",
-      "community": 110,
+      "community": 109,
       "norm_label": "spinner()"
     },
     {
@@ -8964,7 +8973,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/Input.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_ui_input_tsx",
-      "community": 111,
+      "community": 110,
       "norm_label": "input.tsx"
     },
     {
@@ -8973,7 +8982,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/Input.tsx",
       "source_location": "L4",
       "id": "input_input",
-      "community": 111,
+      "community": 110,
       "norm_label": "input()"
     },
     {
@@ -8982,7 +8991,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/Skeleton.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_ui_skeleton_tsx",
-      "community": 112,
+      "community": 111,
       "norm_label": "skeleton.tsx"
     },
     {
@@ -8991,7 +9000,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/ui/Skeleton.tsx",
       "source_location": "L3",
       "id": "skeleton_skeleton",
-      "community": 112,
+      "community": 111,
       "norm_label": "skeleton()"
     },
     {
@@ -9000,7 +9009,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/home/PracticePulse.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_components_home_practicepulse_tsx",
-      "community": 44,
+      "community": 43,
       "norm_label": "practicepulse.tsx"
     },
     {
@@ -9009,7 +9018,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/home/PracticePulse.tsx",
       "source_location": "L23",
       "id": "practicepulse_todaystr",
-      "community": 44,
+      "community": 43,
       "norm_label": "todaystr()"
     },
     {
@@ -9018,7 +9027,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/home/PracticePulse.tsx",
       "source_location": "L28",
       "id": "practicepulse_last28days",
-      "community": 44,
+      "community": 43,
       "norm_label": "last28days()"
     },
     {
@@ -9027,7 +9036,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/home/PracticePulse.tsx",
       "source_location": "L39",
       "id": "practicepulse_heatdot",
-      "community": 44,
+      "community": 43,
       "norm_label": "heatdot()"
     },
     {
@@ -9036,7 +9045,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/home/PracticePulse.tsx",
       "source_location": "L83",
       "id": "practicepulse_check",
-      "community": 44,
+      "community": 43,
       "norm_label": "check()"
     },
     {
@@ -9081,7 +9090,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/home/SpiritualMetricsSection.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_components_home_spiritualmetricssection_tsx",
-      "community": 113,
+      "community": 112,
       "norm_label": "spiritualmetricssection.tsx"
     },
     {
@@ -9090,7 +9099,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/home/SpiritualMetricsSection.tsx",
       "source_location": "L73",
       "id": "spiritualmetricssection_check",
-      "community": 113,
+      "community": 112,
       "norm_label": "check()"
     },
     {
@@ -9099,7 +9108,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/home/DarshanPrompt.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_components_home_darshanprompt_tsx",
-      "community": 185,
+      "community": 184,
       "norm_label": "darshanprompt.tsx"
     },
     {
@@ -9108,7 +9117,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/nitya/NityaHeroBanner.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_components_nitya_nityaherobanner_tsx",
-      "community": 45,
+      "community": 44,
       "norm_label": "nityaherobanner.tsx"
     },
     {
@@ -9117,7 +9126,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/nitya/NityaHeroBanner.tsx",
       "source_location": "L126",
       "id": "nityaherobanner_getphase",
-      "community": 45,
+      "community": 44,
       "norm_label": "getphase()"
     },
     {
@@ -9126,7 +9135,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/nitya/NityaHeroBanner.tsx",
       "source_location": "L137",
       "id": "nityaherobanner_genstars",
-      "community": 45,
+      "community": 44,
       "norm_label": "genstars()"
     },
     {
@@ -9135,7 +9144,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/nitya/NityaHeroBanner.tsx",
       "source_location": "L156",
       "id": "nityaherobanner_sunposition",
-      "community": 45,
+      "community": 44,
       "norm_label": "sunposition()"
     },
     {
@@ -9144,7 +9153,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/nitya/NityaHeroBanner.tsx",
       "source_location": "L342",
       "id": "nityaherobanner_tick",
-      "community": 45,
+      "community": 44,
       "norm_label": "tick()"
     },
     {
@@ -9153,7 +9162,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/darshan/InteractiveAarti.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_components_darshan_interactiveaarti_tsx",
-      "community": 66,
+      "community": 65,
       "norm_label": "interactiveaarti.tsx"
     },
     {
@@ -9162,7 +9171,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/darshan/InteractiveAarti.tsx",
       "source_location": "L41",
       "id": "interactiveaarti_gettoolsfortradition",
-      "community": 66,
+      "community": 65,
       "norm_label": "gettoolsfortradition()"
     },
     {
@@ -9171,7 +9180,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/darshan/InteractiveAarti.tsx",
       "source_location": "L49",
       "id": "interactiveaarti_interactiveaarti",
-      "community": 66,
+      "community": 65,
       "norm_label": "interactiveaarti()"
     },
     {
@@ -9234,7 +9243,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/layout/AIChatFAB.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_components_layout_aichatfab_tsx",
-      "community": 13,
+      "community": 14,
       "norm_label": "aichatfab.tsx"
     },
     {
@@ -9243,7 +9252,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/layout/AIChatFAB.tsx",
       "source_location": "L15",
       "id": "aichatfab_zenithmitralogo",
-      "community": 13,
+      "community": 14,
       "norm_label": "zenithmitralogo()"
     },
     {
@@ -9252,7 +9261,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/layout/AIChatFAB.tsx",
       "source_location": "L66",
       "id": "aichatfab_formatverselabel",
-      "community": 13,
+      "community": 14,
       "norm_label": "formatverselabel()"
     },
     {
@@ -9261,7 +9270,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/layout/AIChatFAB.tsx",
       "source_location": "L79",
       "id": "aichatfab_versechip",
-      "community": 13,
+      "community": 14,
       "norm_label": "versechip()"
     },
     {
@@ -9270,7 +9279,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/layout/AIChatFAB.tsx",
       "source_location": "L175",
       "id": "aichatfab_compute",
-      "community": 13,
+      "community": 14,
       "norm_label": "compute()"
     },
     {
@@ -9279,7 +9288,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/layout/AIChatFAB.tsx",
       "source_location": "L190",
       "id": "aichatfab_handler",
-      "community": 13,
+      "community": 14,
       "norm_label": "handler()"
     },
     {
@@ -9288,7 +9297,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/layout/AIChatFAB.tsx",
       "source_location": "L214",
       "id": "aichatfab_newid",
-      "community": 13,
+      "community": 14,
       "norm_label": "newid()"
     },
     {
@@ -9297,7 +9306,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/layout/AIChatFAB.tsx",
       "source_location": "L216",
       "id": "aichatfab_savefabpos",
-      "community": 13,
+      "community": 14,
       "norm_label": "savefabpos()"
     },
     {
@@ -9306,7 +9315,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/layout/AIChatFAB.tsx",
       "source_location": "L221",
       "id": "aichatfab_sendmessage",
-      "community": 13,
+      "community": 14,
       "norm_label": "sendmessage()"
     },
     {
@@ -9315,7 +9324,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/layout/AIChatFAB.tsx",
       "source_location": "L248",
       "id": "aichatfab_clearchat",
-      "community": 13,
+      "community": 14,
       "norm_label": "clearchat()"
     },
     {
@@ -9324,7 +9333,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/layout/AIChatFAB.tsx",
       "source_location": "L254",
       "id": "aichatfab_handlekeydown",
-      "community": 13,
+      "community": 14,
       "norm_label": "handlekeydown()"
     },
     {
@@ -9333,7 +9342,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/layout/BottomNav.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_layout_bottomnav_tsx",
-      "community": 67,
+      "community": 66,
       "norm_label": "bottomnav.tsx"
     },
     {
@@ -9342,7 +9351,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/layout/BottomNav.tsx",
       "source_location": "L31",
       "id": "bottomnav_useglass",
-      "community": 67,
+      "community": 66,
       "norm_label": "useglass()"
     },
     {
@@ -9351,7 +9360,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/layout/BottomNav.tsx",
       "source_location": "L129",
       "id": "bottomnav_onscroll",
-      "community": 67,
+      "community": 66,
       "norm_label": "onscroll()"
     },
     {
@@ -9414,7 +9423,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/providers/ThemeProvider.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_components_providers_themeprovider_tsx",
-      "community": 68,
+      "community": 67,
       "norm_label": "themeprovider.tsx"
     },
     {
@@ -9423,7 +9432,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/providers/ThemeProvider.tsx",
       "source_location": "L16",
       "id": "themeprovider_getsystemtheme",
-      "community": 68,
+      "community": 67,
       "norm_label": "getsystemtheme()"
     },
     {
@@ -9432,7 +9441,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/providers/ThemeProvider.tsx",
       "source_location": "L21",
       "id": "themeprovider_themeprovider",
-      "community": 68,
+      "community": 67,
       "norm_label": "themeprovider()"
     },
     {
@@ -9441,7 +9450,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/providers/AppProviders.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_components_providers_appproviders_tsx",
-      "community": 114,
+      "community": 113,
       "norm_label": "appproviders.tsx"
     },
     {
@@ -9450,7 +9459,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/providers/AppProviders.tsx",
       "source_location": "L8",
       "id": "appproviders_appproviders",
-      "community": 114,
+      "community": 113,
       "norm_label": "appproviders()"
     },
     {
@@ -9513,7 +9522,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/safety/ContentSafetyMenu.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_components_safety_contentsafetymenu_tsx",
-      "community": 115,
+      "community": 114,
       "norm_label": "contentsafetymenu.tsx"
     },
     {
@@ -9522,7 +9531,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/components/safety/ContentSafetyMenu.tsx",
       "source_location": "L23",
       "id": "contentsafetymenu_contentsafetymenu",
-      "community": 115,
+      "community": 114,
       "norm_label": "contentsafetymenu()"
     },
     {
@@ -9531,7 +9540,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/public/PublicPageShell.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_components_public_publicpageshell_tsx",
-      "community": 186,
+      "community": 185,
       "norm_label": "publicpageshell.tsx"
     },
     {
@@ -9540,7 +9549,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/bhakti/DivineDiya.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_components_bhakti_divinediya_tsx",
-      "community": 116,
+      "community": 115,
       "norm_label": "divinediya.tsx"
     },
     {
@@ -9549,7 +9558,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/bhakti/DivineDiya.tsx",
       "source_location": "L18",
       "id": "divinediya_handlelight",
-      "community": 116,
+      "community": 115,
       "norm_label": "handlelight()"
     },
     {
@@ -9630,7 +9639,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/premium/PremiumGate.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_components_premium_premiumgate_tsx",
-      "community": 187,
+      "community": 186,
       "norm_label": "premiumgate.tsx"
     },
     {
@@ -9639,7 +9648,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/premium/PremiumActivateModal.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_components_premium_premiumactivatemodal_tsx",
-      "community": 117,
+      "community": 116,
       "norm_label": "premiumactivatemodal.tsx"
     },
     {
@@ -9648,7 +9657,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/premium/PremiumActivateModal.tsx",
       "source_location": "L134",
       "id": "premiumactivatemodal_handleactivate",
-      "community": 117,
+      "community": 116,
       "norm_label": "handleactivate()"
     },
     {
@@ -9657,7 +9666,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/components/onboarding/DigitalDeeksha.tsx",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_components_onboarding_digitaldeeksha_tsx",
-      "community": 188,
+      "community": 187,
       "norm_label": "digitaldeeksha.tsx"
     },
     {
@@ -9666,7 +9675,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/hooks/usePremium.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_hooks_usepremium_ts",
-      "community": 118,
+      "community": 117,
       "norm_label": "usepremium.ts"
     },
     {
@@ -9675,7 +9684,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/hooks/usePremium.ts",
       "source_location": "L7",
       "id": "usepremium_usepremium",
-      "community": 118,
+      "community": 117,
       "norm_label": "usepremium()"
     },
     {
@@ -9684,7 +9693,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/hooks/useMandali.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_hooks_usemandali_ts",
-      "community": 69,
+      "community": 68,
       "norm_label": "usemandali.ts"
     },
     {
@@ -9693,7 +9702,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/hooks/useMandali.ts",
       "source_location": "L16",
       "id": "usemandali_usemandaliquery",
-      "community": 69,
+      "community": 68,
       "norm_label": "usemandaliquery()"
     },
     {
@@ -9702,7 +9711,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/hooks/useMandali.ts",
       "source_location": "L25",
       "id": "usemandali_usemandalimutations",
-      "community": 69,
+      "community": 68,
       "norm_label": "usemandalimutations()"
     },
     {
@@ -9711,7 +9720,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/hooks/useNativeAudio.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_hooks_usenativeaudio_ts",
-      "community": 119,
+      "community": 118,
       "norm_label": "usenativeaudio.ts"
     },
     {
@@ -9720,7 +9729,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/hooks/useNativeAudio.ts",
       "source_location": "L49",
       "id": "usenativeaudio_usenativeaudio",
-      "community": 119,
+      "community": 118,
       "norm_label": "usenativeaudio()"
     },
     {
@@ -9756,7 +9765,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/hooks/useSacredCalendar.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_hooks_usesacredcalendar_ts",
-      "community": 120,
+      "community": 119,
       "norm_label": "usesacredcalendar.ts"
     },
     {
@@ -9765,7 +9774,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/hooks/useSacredCalendar.ts",
       "source_location": "L22",
       "id": "usesacredcalendar_usesacredcalendar",
-      "community": 120,
+      "community": 119,
       "norm_label": "usesacredcalendar()"
     },
     {
@@ -9819,7 +9828,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/hooks/useProfile.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_hooks_useprofile_ts",
-      "community": 70,
+      "community": 69,
       "norm_label": "useprofile.ts"
     },
     {
@@ -9828,7 +9837,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/hooks/useProfile.ts",
       "source_location": "L8",
       "id": "useprofile_useprofilequery",
-      "community": 70,
+      "community": 69,
       "norm_label": "useprofilequery()"
     },
     {
@@ -9837,7 +9846,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/hooks/useProfile.ts",
       "source_location": "L17",
       "id": "useprofile_useupdateprofilemutation",
-      "community": 70,
+      "community": 69,
       "norm_label": "useupdateprofilemutation()"
     },
     {
@@ -9846,7 +9855,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/hooks/useMessages.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_hooks_usemessages_ts",
-      "community": 46,
+      "community": 45,
       "norm_label": "usemessages.ts"
     },
     {
@@ -9855,7 +9864,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/hooks/useMessages.ts",
       "source_location": "L10",
       "id": "usemessages_usemessagethreadsquery",
-      "community": 46,
+      "community": 45,
       "norm_label": "usemessagethreadsquery()"
     },
     {
@@ -9864,7 +9873,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/hooks/useMessages.ts",
       "source_location": "L19",
       "id": "usemessages_usethreadmessagesquery",
-      "community": 46,
+      "community": 45,
       "norm_label": "usethreadmessagesquery()"
     },
     {
@@ -9873,7 +9882,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/hooks/useMessages.ts",
       "source_location": "L42",
       "id": "usemessages_usesendthreadmessagemutation",
-      "community": 46,
+      "community": 45,
       "norm_label": "usesendthreadmessagemutation()"
     },
     {
@@ -9882,7 +9891,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/hooks/useMessages.ts",
       "source_location": "L91",
       "id": "usemessages_usemarkthreadreadmutation",
-      "community": 46,
+      "community": 45,
       "norm_label": "usemarkthreadreadmutation()"
     },
     {
@@ -9891,7 +9900,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/hooks/useKul.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_hooks_usekul_ts",
-      "community": 71,
+      "community": 70,
       "norm_label": "usekul.ts"
     },
     {
@@ -9900,7 +9909,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/hooks/useKul.ts",
       "source_location": "L28",
       "id": "usekul_usekulquery",
-      "community": 71,
+      "community": 70,
       "norm_label": "usekulquery()"
     },
     {
@@ -9909,7 +9918,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/hooks/useKul.ts",
       "source_location": "L37",
       "id": "usekul_usekulmutations",
-      "community": 71,
+      "community": 70,
       "norm_label": "usekulmutations()"
     },
     {
@@ -9918,7 +9927,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/hooks/useVocabulary.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_hooks_usevocabulary_ts",
-      "community": 121,
+      "community": 120,
       "norm_label": "usevocabulary.ts"
     },
     {
@@ -9927,7 +9936,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/hooks/useVocabulary.ts",
       "source_location": "L11",
       "id": "usevocabulary_usevocabulary",
-      "community": 121,
+      "community": 120,
       "norm_label": "usevocabulary()"
     },
     {
@@ -9990,7 +9999,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/premium.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_premium_ts",
-      "community": 47,
+      "community": 46,
       "norm_label": "premium.ts"
     },
     {
@@ -9999,7 +10008,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/premium.ts",
       "source_location": "L8",
       "id": "premium_getispro",
-      "community": 47,
+      "community": 46,
       "norm_label": "getispro()"
     },
     {
@@ -10008,7 +10017,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/premium.ts",
       "source_location": "L14",
       "id": "premium_activateprolocally",
-      "community": 47,
+      "community": 46,
       "norm_label": "activateprolocally()"
     },
     {
@@ -10017,7 +10026,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/premium.ts",
       "source_location": "L21",
       "id": "premium_activatepro",
-      "community": 47,
+      "community": 46,
       "norm_label": "activatepro()"
     },
     {
@@ -10026,7 +10035,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/premium.ts",
       "source_location": "L33",
       "id": "premium_deactivatepro",
-      "community": 47,
+      "community": 46,
       "norm_label": "deactivatepro()"
     },
     {
@@ -10035,7 +10044,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/epics-registry.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_epics_registry_ts",
-      "community": 189,
+      "community": 188,
       "norm_label": "epics-registry.ts"
     },
     {
@@ -10044,7 +10053,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/upanishads-original-data.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_upanishads_original_data_ts",
-      "community": 190,
+      "community": 189,
       "norm_label": "upanishads-original-data.ts"
     },
     {
@@ -10053,7 +10062,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/language-preferences.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_language_preferences_ts",
-      "community": 122,
+      "community": 121,
       "norm_label": "language-preferences.ts"
     },
     {
@@ -10062,7 +10071,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/language-preferences.ts",
       "source_location": "L24",
       "id": "language_preferences_getlanguagelabel",
-      "community": 122,
+      "community": 121,
       "norm_label": "getlanguagelabel()"
     },
     {
@@ -10287,7 +10296,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/guidelines-content.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_lib_guidelines_content_ts",
-      "community": 191,
+      "community": 190,
       "norm_label": "guidelines-content.ts"
     },
     {
@@ -10314,7 +10323,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/upanishads-full-data.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_upanishads_full_data_ts",
-      "community": 192,
+      "community": 191,
       "norm_label": "upanishads-full-data.ts"
     },
     {
@@ -10323,7 +10332,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/curated-bhakti.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_curated_bhakti_ts",
-      "community": 193,
+      "community": 192,
       "norm_label": "curated-bhakti.ts"
     },
     {
@@ -10422,7 +10431,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/tradition-config.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_tradition_config_ts",
-      "community": 14,
+      "community": 15,
       "norm_label": "tradition-config.ts"
     },
     {
@@ -10431,7 +10440,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/tradition-config.ts",
       "source_location": "L327",
       "id": "tradition_config_gettraditionmeta",
-      "community": 14,
+      "community": 15,
       "norm_label": "gettraditionmeta()"
     },
     {
@@ -10485,7 +10494,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/email.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_email_ts",
-      "community": 72,
+      "community": 71,
       "norm_label": "email.ts"
     },
     {
@@ -10494,7 +10503,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/email.ts",
       "source_location": "L21",
       "id": "email_buildpremiumhtml",
-      "community": 72,
+      "community": 71,
       "norm_label": "buildpremiumhtml()"
     },
     {
@@ -10503,7 +10512,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/email.ts",
       "source_location": "L72",
       "id": "email_sendshoonayaemail",
-      "community": 72,
+      "community": 71,
       "norm_label": "sendshoonayaemail()"
     },
     {
@@ -10539,7 +10548,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/utils.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_utils_ts",
-      "community": 14,
+      "community": 15,
       "norm_label": "utils.ts"
     },
     {
@@ -10548,7 +10557,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/utils.ts",
       "source_location": "L4",
       "id": "utils_cn",
-      "community": 14,
+      "community": 15,
       "norm_label": "cn()"
     },
     {
@@ -10557,7 +10566,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/utils.ts",
       "source_location": "L8",
       "id": "utils_formatrelativetime",
-      "community": 14,
+      "community": 15,
       "norm_label": "formatrelativetime()"
     },
     {
@@ -10566,7 +10575,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/utils.ts",
       "source_location": "L23",
       "id": "utils_getinitials",
-      "community": 14,
+      "community": 15,
       "norm_label": "getinitials()"
     },
     {
@@ -10611,7 +10620,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-state.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_pathshala_state_ts",
-      "community": 1,
+      "community": 11,
       "norm_label": "pathshala-state.ts"
     },
     {
@@ -10620,7 +10629,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-state.ts",
       "source_location": "L29",
       "id": "pathshala_state_resolvestaterow",
-      "community": 1,
+      "community": 11,
       "norm_label": "resolvestaterow()"
     },
     {
@@ -10629,7 +10638,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-state.ts",
       "source_location": "L84",
       "id": "pathshala_state_getcontinuelearningsummary",
-      "community": 1,
+      "community": 11,
       "norm_label": "getcontinuelearningsummary()"
     },
     {
@@ -10638,7 +10647,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-state.ts",
       "source_location": "L97",
       "id": "pathshala_state_getbookmarkedstudysummaries",
-      "community": 1,
+      "community": 11,
       "norm_label": "getbookmarkedstudysummaries()"
     },
     {
@@ -10647,7 +10656,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_pathshala_canonical_ts",
-      "community": 15,
+      "community": 11,
       "norm_label": "pathshala-canonical.ts"
     },
     {
@@ -10656,7 +10665,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L379",
       "id": "pathshala_canonical_getofficialgitabaseparams",
-      "community": 15,
+      "community": 11,
       "norm_label": "getofficialgitabaseparams()"
     },
     {
@@ -10665,7 +10674,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L383",
       "id": "pathshala_canonical_getofficialgitachapterurl",
-      "community": 15,
+      "community": 11,
       "norm_label": "getofficialgitachapterurl()"
     },
     {
@@ -10674,7 +10683,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L387",
       "id": "pathshala_canonical_getofficialgitaaudiourl",
-      "community": 15,
+      "community": 11,
       "norm_label": "getofficialgitaaudiourl()"
     },
     {
@@ -10683,7 +10692,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L391",
       "id": "pathshala_canonical_getofficialgitaverseurl",
-      "community": 15,
+      "community": 11,
       "norm_label": "getofficialgitaverseurl()"
     },
     {
@@ -10692,7 +10701,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L395",
       "id": "pathshala_canonical_getofficialramayanatexturl",
-      "community": 15,
+      "community": 11,
       "norm_label": "getofficialramayanatexturl()"
     },
     {
@@ -10701,7 +10710,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L399",
       "id": "pathshala_canonical_getofficialramayanastudyurl",
-      "community": 15,
+      "community": 11,
       "norm_label": "getofficialramayanastudyurl()"
     },
     {
@@ -10710,7 +10719,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L403",
       "id": "pathshala_canonical_getcanonicalchaptersforsection",
-      "community": 15,
+      "community": 11,
       "norm_label": "getcanonicalchaptersforsection()"
     },
     {
@@ -10719,7 +10728,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L408",
       "id": "pathshala_canonical_getcanonicalchapter",
-      "community": 15,
+      "community": 11,
       "norm_label": "getcanonicalchapter()"
     },
     {
@@ -10728,7 +10737,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L412",
       "id": "pathshala_canonical_getramayanakandasforsection",
-      "community": 15,
+      "community": 11,
       "norm_label": "getramayanakandasforsection()"
     },
     {
@@ -10737,7 +10746,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L417",
       "id": "pathshala_canonical_getramayanakanda",
-      "community": 15,
+      "community": 11,
       "norm_label": "getramayanakanda()"
     },
     {
@@ -10746,7 +10755,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L421",
       "id": "pathshala_canonical_getgitachapterforentry",
-      "community": 15,
+      "community": 11,
       "norm_label": "getgitachapterforentry()"
     },
     {
@@ -10755,7 +10764,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L431",
       "id": "pathshala_canonical_getgitaentriesforchapter",
-      "community": 15,
+      "community": 11,
       "norm_label": "getgitaentriesforchapter()"
     },
     {
@@ -10764,7 +10773,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L451",
       "id": "pathshala_canonical_getramayanakandaforentry",
-      "community": 15,
+      "community": 11,
       "norm_label": "getramayanakandaforentry()"
     },
     {
@@ -10773,7 +10782,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L462",
       "id": "pathshala_canonical_getramayanaentriesforkanda",
-      "community": 15,
+      "community": 11,
       "norm_label": "getramayanaentriesforkanda()"
     },
     {
@@ -10782,7 +10791,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L471",
       "id": "pathshala_canonical_getgitaversecoverage",
-      "community": 15,
+      "community": 11,
       "norm_label": "getgitaversecoverage()"
     },
     {
@@ -10791,7 +10800,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L497",
       "id": "pathshala_canonical_getcanonicalverselinksforchapter",
-      "community": 15,
+      "community": 11,
       "norm_label": "getcanonicalverselinksforchapter()"
     },
     {
@@ -10800,7 +10809,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/pathshala-canonical.ts",
       "source_location": "L526",
       "id": "pathshala_canonical_getcanonicalreadingplansforsection",
-      "community": 15,
+      "community": 11,
       "norm_label": "getcanonicalreadingplansforsection()"
     },
     {
@@ -10827,7 +10836,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/bhakti-practice.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_bhakti_practice_ts",
-      "community": 123,
+      "community": 122,
       "norm_label": "bhakti-practice.ts"
     },
     {
@@ -10836,7 +10845,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/bhakti-practice.ts",
       "source_location": "L34",
       "id": "bhakti_practice_buildmalasharetext",
-      "community": 123,
+      "community": 122,
       "norm_label": "buildmalasharetext()"
     },
     {
@@ -11061,7 +11070,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/ashrama.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_ashrama_ts",
-      "community": 34,
+      "community": 33,
       "norm_label": "ashrama.ts"
     },
     {
@@ -11070,7 +11079,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/ashrama.ts",
       "source_location": "L82",
       "id": "ashrama_getashramameta",
-      "community": 34,
+      "community": 33,
       "norm_label": "getashramameta()"
     },
     {
@@ -11079,7 +11088,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/ashrama.ts",
       "source_location": "L95",
       "id": "ashrama_getallashramastages",
-      "community": 34,
+      "community": 33,
       "norm_label": "getallashramastages()"
     },
     {
@@ -11088,7 +11097,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/ashrama.ts",
       "source_location": "L104",
       "id": "ashrama_agetoashrama",
-      "community": 34,
+      "community": 33,
       "norm_label": "agetoashrama()"
     },
     {
@@ -11097,7 +11106,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/ashrama.ts",
       "source_location": "L118",
       "id": "ashrama_agefromdob",
-      "community": 34,
+      "community": 33,
       "norm_label": "agefromdob()"
     },
     {
@@ -11106,7 +11115,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/ashrama.ts",
       "source_location": "L661",
       "id": "ashrama_getashramaduties",
-      "community": 34,
+      "community": 33,
       "norm_label": "getashramaduties()"
     },
     {
@@ -11115,7 +11124,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/ashrama.ts",
       "source_location": "L696",
       "id": "ashrama_getashramanudgesuffix",
-      "community": 34,
+      "community": 33,
       "norm_label": "getashramanudgesuffix()"
     },
     {
@@ -11241,7 +11250,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/gita-audio-state.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_gita_audio_state_ts",
-      "community": 48,
+      "community": 47,
       "norm_label": "gita-audio-state.ts"
     },
     {
@@ -11250,7 +11259,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/gita-audio-state.ts",
       "source_location": "L19",
       "id": "gita_audio_state_readgitaaudiostate",
-      "community": 48,
+      "community": 47,
       "norm_label": "readgitaaudiostate()"
     },
     {
@@ -11259,7 +11268,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/gita-audio-state.ts",
       "source_location": "L36",
       "id": "gita_audio_state_writegitaaudiostate",
-      "community": 48,
+      "community": 47,
       "norm_label": "writegitaaudiostate()"
     },
     {
@@ -11268,7 +11277,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/gita-audio-state.ts",
       "source_location": "L41",
       "id": "gita_audio_state_markgitaaudioopened",
-      "community": 48,
+      "community": 47,
       "norm_label": "markgitaaudioopened()"
     },
     {
@@ -11277,7 +11286,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/gita-audio-state.ts",
       "source_location": "L52",
       "id": "gita_audio_state_markgitaaudiocompleted",
-      "community": 48,
+      "community": 47,
       "norm_label": "markgitaaudiocompleted()"
     },
     {
@@ -11286,7 +11295,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/live-streams.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_live_streams_ts",
-      "community": 194,
+      "community": 193,
       "norm_label": "live-streams.ts"
     },
     {
@@ -11295,7 +11304,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/theme-preferences.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_theme_preferences_ts",
-      "community": 124,
+      "community": 123,
       "norm_label": "theme-preferences.ts"
     },
     {
@@ -11304,7 +11313,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/theme-preferences.ts",
       "source_location": "L11",
       "id": "theme_preferences_isthemepreference",
-      "community": 124,
+      "community": 123,
       "norm_label": "isthemepreference()"
     },
     {
@@ -11385,7 +11394,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/traditions.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_traditions_ts",
-      "community": 39,
+      "community": 37,
       "norm_label": "traditions.ts"
     },
     {
@@ -11394,7 +11403,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/traditions.ts",
       "source_location": "L132",
       "id": "traditions_getgreeting",
-      "community": 39,
+      "community": 37,
       "norm_label": "getgreeting()"
     },
     {
@@ -11403,7 +11412,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/traditions.ts",
       "source_location": "L141",
       "id": "traditions_getgreetingpool",
-      "community": 39,
+      "community": 37,
       "norm_label": "getgreetingpool()"
     },
     {
@@ -11412,7 +11421,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/traditions.ts",
       "source_location": "L149",
       "id": "traditions_isgreetingcompatiblewithtradition",
-      "community": 39,
+      "community": 37,
       "norm_label": "isgreetingcompatiblewithtradition()"
     },
     {
@@ -11421,7 +11430,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/traditions.ts",
       "source_location": "L177",
       "id": "traditions_getishtadevatalabel",
-      "community": 39,
+      "community": 37,
       "norm_label": "getishtadevatalabel()"
     },
     {
@@ -11430,7 +11439,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/traditions.ts",
       "source_location": "L189",
       "id": "traditions_getsampradayalabel",
-      "community": 39,
+      "community": 37,
       "norm_label": "getsampradayalabel()"
     },
     {
@@ -11520,7 +11529,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/pathshala-paths.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_pathshala_paths_ts",
-      "community": 195,
+      "community": 194,
       "norm_label": "pathshala-paths.ts"
     },
     {
@@ -11592,7 +11601,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/devotional-audio.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_devotional_audio_ts",
-      "community": 196,
+      "community": 195,
       "norm_label": "devotional-audio.ts"
     },
     {
@@ -11601,7 +11610,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/query-keys.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_query_keys_ts",
-      "community": 197,
+      "community": 196,
       "norm_label": "query-keys.ts"
     },
     {
@@ -11745,7 +11754,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/festival-stories.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_festival_stories_ts",
-      "community": 125,
+      "community": 124,
       "norm_label": "festival-stories.ts"
     },
     {
@@ -11754,7 +11763,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/festival-stories.ts",
       "source_location": "L579",
       "id": "festival_stories_getfestivalstory",
-      "community": 125,
+      "community": 124,
       "norm_label": "getfestivalstory()"
     },
     {
@@ -11763,7 +11772,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/admin-auth.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_admin_auth_ts",
-      "community": 12,
+      "community": 13,
       "norm_label": "admin-auth.ts"
     },
     {
@@ -11772,7 +11781,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/admin-auth.ts",
       "source_location": "L19",
       "id": "admin_auth_toarraybuffer",
-      "community": 12,
+      "community": 13,
       "norm_label": "toarraybuffer()"
     },
     {
@@ -11781,7 +11790,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/admin-auth.ts",
       "source_location": "L23",
       "id": "admin_auth_encode",
-      "community": 12,
+      "community": 13,
       "norm_label": "encode()"
     },
     {
@@ -11790,7 +11799,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/admin-auth.ts",
       "source_location": "L27",
       "id": "admin_auth_secretbuf",
-      "community": 12,
+      "community": 13,
       "norm_label": "secretbuf()"
     },
     {
@@ -11799,7 +11808,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/admin-auth.ts",
       "source_location": "L33",
       "id": "admin_auth_hmackey",
-      "community": 12,
+      "community": 13,
       "norm_label": "hmackey()"
     },
     {
@@ -11808,7 +11817,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/admin-auth.ts",
       "source_location": "L39",
       "id": "admin_auth_buftohex",
-      "community": 12,
+      "community": 13,
       "norm_label": "buftohex()"
     },
     {
@@ -11817,7 +11826,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/admin-auth.ts",
       "source_location": "L45",
       "id": "admin_auth_hextoarraybuffer",
-      "community": 12,
+      "community": 13,
       "norm_label": "hextoarraybuffer()"
     },
     {
@@ -11826,7 +11835,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/admin-auth.ts",
       "source_location": "L52",
       "id": "admin_auth_createadmintoken",
-      "community": 12,
+      "community": 13,
       "norm_label": "createadmintoken()"
     },
     {
@@ -11835,7 +11844,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/admin-auth.ts",
       "source_location": "L63",
       "id": "admin_auth_verifyadmintoken",
-      "community": 12,
+      "community": 13,
       "norm_label": "verifyadmintoken()"
     },
     {
@@ -11844,7 +11853,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/admin-auth.ts",
       "source_location": "L85",
       "id": "admin_auth_admincookieheader",
-      "community": 12,
+      "community": 13,
       "norm_label": "admincookieheader()"
     },
     {
@@ -11853,7 +11862,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/admin-auth.ts",
       "source_location": "L90",
       "id": "admin_auth_adminclearcookieheader",
-      "community": 3,
+      "community": 13,
       "norm_label": "adminclearcookieheader()"
     },
     {
@@ -11862,7 +11871,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/admin-auth.ts",
       "source_location": "L94",
       "id": "admin_auth_checkadmincredentials",
-      "community": 12,
+      "community": 13,
       "norm_label": "checkadmincredentials()"
     },
     {
@@ -11871,7 +11880,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/terms-content.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_lib_terms_content_ts",
-      "community": 198,
+      "community": 197,
       "norm_label": "terms-content.ts"
     },
     {
@@ -11880,7 +11889,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/library-provenance.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_library_provenance_ts",
-      "community": 126,
+      "community": 125,
       "norm_label": "library-provenance.ts"
     },
     {
@@ -11889,7 +11898,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/library-provenance.ts",
       "source_location": "L8",
       "id": "library_provenance_getlibrarysourcemeta",
-      "community": 126,
+      "community": 125,
       "norm_label": "getlibrarysourcemeta()"
     },
     {
@@ -11943,7 +11952,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/whatsapp.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_whatsapp_ts",
-      "community": 37,
+      "community": 38,
       "norm_label": "whatsapp.ts"
     },
     {
@@ -11952,7 +11961,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/whatsapp.ts",
       "source_location": "L7",
       "id": "whatsapp_getwhatsappsharelink",
-      "community": 37,
+      "community": 38,
       "norm_label": "getwhatsappsharelink()"
     },
     {
@@ -11961,7 +11970,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/whatsapp.ts",
       "source_location": "L11",
       "id": "whatsapp_sharescoretowhatsapp",
-      "community": 37,
+      "community": 38,
       "norm_label": "sharescoretowhatsapp()"
     },
     {
@@ -11970,7 +11979,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/whatsapp.ts",
       "source_location": "L16",
       "id": "whatsapp_invitefriendstowhatsapp",
-      "community": 37,
+      "community": 38,
       "norm_label": "invitefriendstowhatsapp()"
     },
     {
@@ -11979,7 +11988,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/sacred-assets.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_sacred_assets_ts",
-      "community": 127,
+      "community": 126,
       "norm_label": "sacred-assets.ts"
     },
     {
@@ -11988,7 +11997,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/sacred-assets.ts",
       "source_location": "L71",
       "id": "sacred_assets_getsacredplaceholder",
-      "community": 127,
+      "community": 126,
       "norm_label": "getsacredplaceholder()"
     },
     {
@@ -11997,7 +12006,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/gita-full-data.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_gita_full_data_ts",
-      "community": 199,
+      "community": 198,
       "norm_label": "gita-full-data.ts"
     },
     {
@@ -12060,7 +12069,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/config.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_config_ts",
-      "community": 200,
+      "community": 199,
       "norm_label": "config.ts"
     },
     {
@@ -12069,7 +12078,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/app-icon.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_app_icon_ts",
-      "community": 128,
+      "community": 127,
       "norm_label": "app-icon.ts"
     },
     {
@@ -12078,7 +12087,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/app-icon.ts",
       "source_location": "L1",
       "id": "app_icon_updateappicon",
-      "community": 128,
+      "community": 127,
       "norm_label": "updateappicon()"
     },
     {
@@ -12087,7 +12096,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Shoonaya/src/lib/vrat-data.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_shoonaya_src_lib_vrat_data_ts",
-      "community": 55,
+      "community": 49,
       "norm_label": "vrat-data.ts"
     },
     {
@@ -12096,7 +12105,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Shoonaya/src/lib/vrat-data.ts",
       "source_location": "L304",
       "id": "vrat_data_getvratdata",
-      "community": 55,
+      "community": 49,
       "norm_label": "getvratdata()"
     },
     {
@@ -12150,7 +12159,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/sacred-texts.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_sacred_texts_ts",
-      "community": 14,
+      "community": 15,
       "norm_label": "sacred-texts.ts"
     },
     {
@@ -12159,7 +12168,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/sacred-texts.ts",
       "source_location": "L267",
       "id": "sacred_texts_getdailysacredtext",
-      "community": 14,
+      "community": 15,
       "norm_label": "getdailysacredtext()"
     },
     {
@@ -12168,7 +12177,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/sacred-texts.ts",
       "source_location": "L295",
       "id": "sacred_texts_getdayofyear",
-      "community": 14,
+      "community": 15,
       "norm_label": "getdayofyear()"
     },
     {
@@ -12267,7 +12276,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/library-content.ts",
       "source_location": "L1812",
       "id": "library_content_getlibrarysectionbyid",
-      "community": 1,
+      "community": 11,
       "norm_label": "getlibrarysectionbyid()"
     },
     {
@@ -12303,7 +12312,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/library-content.ts",
       "source_location": "L1835",
       "id": "library_content_getlibraryentrybyid",
-      "community": 1,
+      "community": 11,
       "norm_label": "getlibraryentrybyid()"
     },
     {
@@ -12339,7 +12348,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/pathshala-links.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_lib_pathshala_links_ts",
-      "community": 31,
+      "community": 11,
       "norm_label": "pathshala-links.ts"
     },
     {
@@ -12348,7 +12357,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/pathshala-links.ts",
       "source_location": "L3",
       "id": "pathshala_links_getpathshalatraditionhref",
-      "community": 31,
+      "community": 11,
       "norm_label": "getpathshalatraditionhref()"
     },
     {
@@ -12357,7 +12366,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/pathshala-links.ts",
       "source_location": "L7",
       "id": "pathshala_links_getpathshalasectionhref",
-      "community": 31,
+      "community": 11,
       "norm_label": "getpathshalasectionhref()"
     },
     {
@@ -12366,7 +12375,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/pathshala-links.ts",
       "source_location": "L11",
       "id": "pathshala_links_getpathshalaentryhref",
-      "community": 31,
+      "community": 11,
       "norm_label": "getpathshalaentryhref()"
     },
     {
@@ -12375,7 +12384,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/pathshala-links.ts",
       "source_location": "L15",
       "id": "pathshala_links_getpathshalaentryhreffromsection",
-      "community": 31,
+      "community": 11,
       "norm_label": "getpathshalaentryhreffromsection()"
     },
     {
@@ -12384,7 +12393,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/pathshala-links.ts",
       "source_location": "L19",
       "id": "pathshala_links_getpathshalachapterhref",
-      "community": 31,
+      "community": 11,
       "norm_label": "getpathshalachapterhref()"
     },
     {
@@ -12393,7 +12402,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/pathshala-links.ts",
       "source_location": "L23",
       "id": "pathshala_links_getgitarecitationhref",
-      "community": 31,
+      "community": 11,
       "norm_label": "getgitarecitationhref()"
     },
     {
@@ -12402,7 +12411,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/pathshala-links.ts",
       "source_location": "L28",
       "id": "pathshala_links_getaichathref",
-      "community": 31,
+      "community": 11,
       "norm_label": "getaichathref()"
     },
     {
@@ -12429,7 +12438,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/festivals.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_festivals_ts",
-      "community": 14,
+      "community": 15,
       "norm_label": "festivals.ts"
     },
     {
@@ -12438,7 +12447,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/festivals.ts",
       "source_location": "L130",
       "id": "festivals_buildfestivalcalendarmeta",
-      "community": 14,
+      "community": 15,
       "norm_label": "buildfestivalcalendarmeta()"
     },
     {
@@ -12447,7 +12456,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/festivals.ts",
       "source_location": "L155",
       "id": "festivals_attachfestivaltrust",
-      "community": 14,
+      "community": 15,
       "norm_label": "attachfestivaltrust()"
     },
     {
@@ -12456,7 +12465,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/festivals.ts",
       "source_location": "L176",
       "id": "festivals_getnextfestival",
-      "community": 14,
+      "community": 15,
       "norm_label": "getnextfestival()"
     },
     {
@@ -12465,7 +12474,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/festivals.ts",
       "source_location": "L197",
       "id": "festivals_daysuntil",
-      "community": 14,
+      "community": 15,
       "norm_label": "daysuntil()"
     },
     {
@@ -12474,7 +12483,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/festivals.ts",
       "source_location": "L204",
       "id": "festivals_gettodaypanchang",
-      "community": 14,
+      "community": 15,
       "norm_label": "gettodaypanchang()"
     },
     {
@@ -12483,7 +12492,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/privacy-content.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_lib_privacy_content_ts",
-      "community": 201,
+      "community": 200,
       "norm_label": "privacy-content.ts"
     },
     {
@@ -12492,7 +12501,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/gita-audio.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_gita_audio_ts",
-      "community": 129,
+      "community": 128,
       "norm_label": "gita-audio.ts"
     },
     {
@@ -12501,7 +12510,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/gita-audio.ts",
       "source_location": "L34",
       "id": "gita_audio_getgitaaudiotrack",
-      "community": 129,
+      "community": 128,
       "norm_label": "getgitaaudiotrack()"
     },
     {
@@ -12753,7 +12762,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/mocks/messages.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_mocks_messages_ts",
-      "community": 202,
+      "community": 201,
       "norm_label": "messages.ts"
     },
     {
@@ -12942,7 +12951,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/strategies/CalendarFactory.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_strategies_calendarfactory_ts",
-      "community": 73,
+      "community": 72,
       "norm_label": "calendarfactory.ts"
     },
     {
@@ -12951,7 +12960,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/strategies/CalendarFactory.ts",
       "source_location": "L7",
       "id": "calendarfactory_calendarfactory",
-      "community": 73,
+      "community": 72,
       "norm_label": "calendarfactory"
     },
     {
@@ -12960,7 +12969,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/strategies/CalendarFactory.ts",
       "source_location": "L17",
       "id": "calendarfactory_calendarfactory_getstrategy",
-      "community": 73,
+      "community": 72,
       "norm_label": ".getstrategy()"
     },
     {
@@ -12969,7 +12978,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/strategies/CalendarStrategy.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_strategies_calendarstrategy_ts",
-      "community": 203,
+      "community": 202,
       "norm_label": "calendarstrategy.ts"
     },
     {
@@ -13014,7 +13023,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/contracts/messages.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_contracts_messages_ts",
-      "community": 204,
+      "community": 203,
       "norm_label": "messages.ts"
     },
     {
@@ -13023,7 +13032,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/realtime/transport.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_realtime_transport_ts",
-      "community": 56,
+      "community": 55,
       "norm_label": "transport.ts"
     },
     {
@@ -13032,7 +13041,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/realtime/transport.ts",
       "source_location": "L12",
       "id": "transport_createnooprealtimetransport",
-      "community": 56,
+      "community": 55,
       "norm_label": "createnooprealtimetransport()"
     },
     {
@@ -13041,7 +13050,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/realtime/transport.ts",
       "source_location": "L23",
       "id": "transport_createsocketiotransport",
-      "community": 56,
+      "community": 55,
       "norm_label": "createsocketiotransport()"
     },
     {
@@ -13050,7 +13059,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/realtime/transport.ts",
       "source_location": "L58",
       "id": "transport_getrealtimetransport",
-      "community": 56,
+      "community": 55,
       "norm_label": "getrealtimetransport()"
     },
     {
@@ -13293,7 +13302,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/profile-runtime.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_api_profile_runtime_ts",
-      "community": 74,
+      "community": 73,
       "norm_label": "profile-runtime.ts"
     },
     {
@@ -13302,7 +13311,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/profile-runtime.ts",
       "source_location": "L24",
       "id": "profile_runtime_fetchprofile",
-      "community": 74,
+      "community": 73,
       "norm_label": "fetchprofile()"
     },
     {
@@ -13311,7 +13320,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/profile-runtime.ts",
       "source_location": "L28",
       "id": "profile_runtime_updateprofile",
-      "community": 74,
+      "community": 73,
       "norm_label": "updateprofile()"
     },
     {
@@ -13356,7 +13365,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/messages.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_api_messages_ts",
-      "community": 13,
+      "community": 14,
       "norm_label": "messages.ts"
     },
     {
@@ -13365,7 +13374,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/messages.ts",
       "source_location": "L9",
       "id": "messages_clonethread",
-      "community": 13,
+      "community": 14,
       "norm_label": "clonethread()"
     },
     {
@@ -13374,7 +13383,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/messages.ts",
       "source_location": "L13",
       "id": "messages_clonemessage",
-      "community": 13,
+      "community": 14,
       "norm_label": "clonemessage()"
     },
     {
@@ -13383,7 +13392,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/messages.ts",
       "source_location": "L17",
       "id": "messages_ensureseeded",
-      "community": 13,
+      "community": 14,
       "norm_label": "ensureseeded()"
     },
     {
@@ -13392,7 +13401,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/messages.ts",
       "source_location": "L108",
       "id": "messages_fetchmessagethreads",
-      "community": 13,
+      "community": 14,
       "norm_label": "fetchmessagethreads()"
     },
     {
@@ -13401,7 +13410,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/messages.ts",
       "source_location": "L112",
       "id": "messages_fetchthreadmessages",
-      "community": 13,
+      "community": 14,
       "norm_label": "fetchthreadmessages()"
     },
     {
@@ -13410,7 +13419,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/messages.ts",
       "source_location": "L116",
       "id": "messages_sendthreadmessage",
-      "community": 13,
+      "community": 14,
       "norm_label": "sendthreadmessage()"
     },
     {
@@ -13419,7 +13428,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/messages.ts",
       "source_location": "L120",
       "id": "messages_markthreadread",
-      "community": 13,
+      "community": 14,
       "norm_label": "markthreadread()"
     },
     {
@@ -13500,7 +13509,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/notifications-runtime.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_api_notifications_runtime_ts",
-      "community": 57,
+      "community": 56,
       "norm_label": "notifications-runtime.ts"
     },
     {
@@ -13509,7 +13518,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/notifications-runtime.ts",
       "source_location": "L28",
       "id": "notifications_runtime_fetchnotifications",
-      "community": 57,
+      "community": 56,
       "norm_label": "fetchnotifications()"
     },
     {
@@ -13518,7 +13527,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/notifications-runtime.ts",
       "source_location": "L32",
       "id": "notifications_runtime_marknotificationsread",
-      "community": 57,
+      "community": 56,
       "norm_label": "marknotificationsread()"
     },
     {
@@ -13527,7 +13536,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/notifications-runtime.ts",
       "source_location": "L36",
       "id": "notifications_runtime_marknotificationread",
-      "community": 57,
+      "community": 56,
       "norm_label": "marknotificationread()"
     },
     {
@@ -13536,7 +13545,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/runtime.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_api_runtime_ts",
-      "community": 49,
+      "community": 48,
       "norm_label": "runtime.ts"
     },
     {
@@ -13545,7 +13554,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/runtime.ts",
       "source_location": "L5",
       "id": "runtime_getappdataruntime",
-      "community": 49,
+      "community": 48,
       "norm_label": "getappdataruntime()"
     },
     {
@@ -13554,7 +13563,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/api/runtime.ts",
       "source_location": "L11",
       "id": "runtime_prefersmockdata",
-      "community": 49,
+      "community": 48,
       "norm_label": "prefersmockdata()"
     },
     {
@@ -13761,7 +13770,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/i18n/translations.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_shoonaya_src_lib_i18n_translations_ts",
-      "community": 130,
+      "community": 129,
       "norm_label": "translations.ts"
     },
     {
@@ -13770,7 +13779,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/i18n/translations.ts",
       "source_location": "L678",
       "id": "translations_t",
-      "community": 130,
+      "community": 129,
       "norm_label": "t()"
     },
     {
@@ -13779,7 +13788,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/i18n/hindi-meanings.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_i18n_hindi_meanings_ts",
-      "community": 131,
+      "community": 130,
       "norm_label": "hindi-meanings.ts"
     },
     {
@@ -13788,7 +13797,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/i18n/hindi-meanings.ts",
       "source_location": "L15",
       "id": "hindi_meanings_gethindimeaning",
-      "community": 131,
+      "community": 130,
       "norm_label": "gethindimeaning()"
     },
     {
@@ -13824,7 +13833,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/data/bhagavatam-canto-1-ch-2.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_data_bhagavatam_canto_1_ch_2_ts",
-      "community": 205,
+      "community": 204,
       "norm_label": "bhagavatam-canto-1-ch-2.ts"
     },
     {
@@ -13833,7 +13842,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/data/bhagavatam-canto-1-ch-3.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_data_bhagavatam_canto_1_ch_3_ts",
-      "community": 206,
+      "community": 205,
       "norm_label": "bhagavatam-canto-1-ch-3.ts"
     },
     {
@@ -13842,7 +13851,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/data/bhagavatam-canto-1-ch-1.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_lib_data_bhagavatam_canto_1_ch_1_ts",
-      "community": 207,
+      "community": 206,
       "norm_label": "bhagavatam-canto-1-ch-1.ts"
     },
     {
@@ -13851,7 +13860,7 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/data/ramayana-bal-kanda-1.ts",
       "source_location": "L1",
       "id": "users_business_c_sanatan_sangam_sanatan_sangam_src_lib_data_ramayana_bal_kanda_1_ts",
-      "community": 208,
+      "community": 207,
       "norm_label": "ramayana-bal-kanda-1.ts"
     },
     {
@@ -13860,7 +13869,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/shared-core/ui/mobile/MobileList.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_shared_core_ui_mobile_mobilelist_tsx",
-      "community": 75,
+      "community": 74,
       "norm_label": "mobilelist.tsx"
     },
     {
@@ -13869,7 +13878,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/shared-core/ui/mobile/MobileList.tsx",
       "source_location": "L4",
       "id": "mobilelist_mobilelist",
-      "community": 75,
+      "community": 74,
       "norm_label": "mobilelist()"
     },
     {
@@ -13878,7 +13887,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/shared-core/ui/mobile/MobileList.tsx",
       "source_location": "L22",
       "id": "mobilelist_mobilelistitem",
-      "community": 75,
+      "community": 74,
       "norm_label": "mobilelistitem()"
     },
     {
@@ -13887,7 +13896,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/shared-core/ui/mobile/MobileScreen.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_shared_core_ui_mobile_mobilescreen_tsx",
-      "community": 132,
+      "community": 131,
       "norm_label": "mobilescreen.tsx"
     },
     {
@@ -13896,7 +13905,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/shared-core/ui/mobile/MobileScreen.tsx",
       "source_location": "L4",
       "id": "mobilescreen_mobilescreen",
-      "community": 132,
+      "community": 131,
       "norm_label": "mobilescreen()"
     },
     {
@@ -13905,7 +13914,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/shared-core/ui/mobile/MobileCard.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_shared_core_ui_mobile_mobilecard_tsx",
-      "community": 133,
+      "community": 132,
       "norm_label": "mobilecard.tsx"
     },
     {
@@ -13914,7 +13923,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/shared-core/ui/mobile/MobileCard.tsx",
       "source_location": "L4",
       "id": "mobilecard_mobilecard",
-      "community": 133,
+      "community": 132,
       "norm_label": "mobilecard()"
     },
     {
@@ -13923,7 +13932,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/shared-core/ui/mobile/index.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_shared_core_ui_mobile_index_ts",
-      "community": 209,
+      "community": 208,
       "norm_label": "index.ts"
     },
     {
@@ -13932,7 +13941,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/shared-core/ui/mobile/MobileScreenHeader.tsx",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_shared_core_ui_mobile_mobilescreenheader_tsx",
-      "community": 134,
+      "community": 133,
       "norm_label": "mobilescreenheader.tsx"
     },
     {
@@ -13941,7 +13950,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/shared-core/ui/mobile/MobileScreenHeader.tsx",
       "source_location": "L4",
       "id": "mobilescreenheader_mobilescreenheader",
-      "community": 134,
+      "community": 133,
       "norm_label": "mobilescreenheader()"
     },
     {
@@ -13950,7 +13959,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/shared-core/runtime/selectRuntimeAdapter.ts",
       "source_location": "L1",
       "id": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_shared_core_runtime_selectruntimeadapter_ts",
-      "community": 49,
+      "community": 48,
       "norm_label": "selectruntimeadapter.ts"
     },
     {
@@ -13959,7 +13968,7 @@
       "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/shared-core/runtime/selectRuntimeAdapter.ts",
       "source_location": "L4",
       "id": "selectruntimeadapter_selectruntimeadapter",
-      "community": 49,
+      "community": 48,
       "norm_label": "selectruntimeadapter()"
     }
   ],
@@ -30984,7 +30993,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/KulClient.tsx",
-      "source_location": "L101",
+      "source_location": "L108",
       "weight": 1.0,
       "_src": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_kulclient_tsx",
       "_tgt": "kulclient_closeonboarding",
@@ -30996,7 +31005,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/KulClient.tsx",
-      "source_location": "L110",
+      "source_location": "L117",
       "weight": 1.0,
       "_src": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_kulclient_tsx",
       "_tgt": "kulclient_handlecreatekul",
@@ -31008,7 +31017,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/KulClient.tsx",
-      "source_location": "L116",
+      "source_location": "L123",
       "weight": 1.0,
       "_src": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_kulclient_tsx",
       "_tgt": "kulclient_handlejoinkul",
@@ -31020,7 +31029,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/KulClient.tsx",
-      "source_location": "L122",
+      "source_location": "L129",
       "weight": 1.0,
       "_src": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_kulclient_tsx",
       "_tgt": "kulclient_handlesavetask",
@@ -31032,7 +31041,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/KulClient.tsx",
-      "source_location": "L134",
+      "source_location": "L141",
       "weight": 1.0,
       "_src": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_kulclient_tsx",
       "_tgt": "kulclient_handlesavevansh",
@@ -31044,12 +31053,24 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/KulClient.tsx",
-      "source_location": "L150",
+      "source_location": "L157",
       "weight": 1.0,
       "_src": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_kulclient_tsx",
       "_tgt": "kulclient_handlesaveevent",
       "source": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_kulclient_tsx",
       "target": "kulclient_handlesaveevent",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/KulClient.tsx",
+      "source_location": "L167",
+      "weight": 1.0,
+      "_src": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_kulclient_tsx",
+      "_tgt": "kulclient_handlesavekulname",
+      "source": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_kulclient_tsx",
+      "target": "kulclient_handlesavekulname",
       "confidence_score": 1.0
     },
     {
@@ -31151,12 +31172,12 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "/sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/(main)/kul/sections.ts",
+      "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/app/(main)/kul/sections.ts",
       "source_location": "L5",
       "weight": 1.0,
-      "_src": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_app_main_kul_sections_ts",
+      "_src": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_sections_ts",
       "_tgt": "sections_iskulsectionview",
-      "source": "sessions_beautiful_dazzling_curie_mnt_sanatan_sangam_src_app_main_kul_sections_ts",
+      "source": "users_business_c_sanatan_sangam_shoonaya_src_app_main_kul_sections_ts",
       "target": "sections_iskulsectionview",
       "confidence_score": 1.0
     },
