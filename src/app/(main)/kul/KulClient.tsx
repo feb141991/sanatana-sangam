@@ -294,29 +294,6 @@ export default function KulClient({
         </motion.div>
       </AnimatePresence>
 
-      {/* Bottom Tab Bar (Mobile) */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] px-4 w-full max-w-md">
-         <div className="glass-panel bg-white/70 backdrop-blur-2xl rounded-full p-2 border border-white/20 shadow-2xl flex items-center justify-between">
-          {[
-            { key: 'hub', label: t('navHome'), icon: '🏡' },
-            { key: 'tasks', label: t('kulTasksTitle'), icon: '📋' },
-            { key: 'sabha', label: t('kulSabhaTitle'), icon: '💬' },
-            { key: 'vansh', label: t('kulVanshTitleLong'), icon: '🌳' },
-            { key: 'members', label: t('kulMembersTitle'), icon: '👨‍👩‍👧' },
-          ].map((tab) => (
-             <button
-               key={tab.key}
-               onClick={() => setActiveView(tab.key as KulView)}
-               className={`flex-1 flex flex-col items-center py-2 rounded-full transition-all ${activeView === tab.key ? 'bg-[var(--brand-primary)]/15 scale-110' : 'hover:bg-black/5'}`}
-             >
-               <span className="text-xl leading-none">{tab.icon}</span>
-               <span className={`text-[8px] font-bold uppercase tracking-tighter mt-1 ${activeView === tab.key ? 'text-[var(--brand-primary-strong)]' : 'theme-muted'}`}>
-                 {tab.label}
-               </span>
-             </button>
-           ))}
-         </div>
-      </div>
     </div>
   );
 }
