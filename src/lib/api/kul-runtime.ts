@@ -5,6 +5,7 @@ import {
   deleteKulFamilyMember as deleteLiveKulFamilyMember,
   fetchKulData as fetchLiveKulData,
   joinKul as joinLiveKul,
+  leaveKul as leaveLiveKul,
   promoteKulMember as promoteLiveKulMember,
   reactToKulMessage as reactLiveKulMessage,
   removeKulMember as removeLiveKulMember,
@@ -21,6 +22,7 @@ import {
   deleteMockKulFamilyMember,
   fetchMockKulData,
   joinMockKul,
+  leaveMockKul,
   promoteMockKulMember,
   reactMockKulMessage,
   removeMockKulMember,
@@ -55,6 +57,7 @@ const kulRuntimeApi = selectRuntimeAdapter({
     saveKulFamilyMember: saveLiveKulFamilyMember,
     deleteKulFamilyMember: async (userId: string, memberId: string) => deleteLiveKulFamilyMember(memberId),
     saveKulEvent: saveLiveKulEvent,
+    leaveKul: leaveLiveKul,
   },
   mock: {
     fetchKulData: fetchMockKulData,
@@ -70,6 +73,7 @@ const kulRuntimeApi = selectRuntimeAdapter({
     saveKulFamilyMember: saveMockKulFamilyMember,
     deleteKulFamilyMember: deleteMockKulFamilyMember,
     saveKulEvent: saveMockKulEvent,
+    leaveKul: leaveMockKul,
   },
 });
 
@@ -130,4 +134,8 @@ export async function deleteKulFamilyMember(userId: string, memberId: string) {
 
 export async function saveKulEvent(userId: string, payload: SaveKulEventPayload) {
   return kulRuntimeApi.saveKulEvent(userId, payload);
+}
+
+export async function leaveKul(userId: string) {
+  return kulRuntimeApi.leaveKul(userId);
 }

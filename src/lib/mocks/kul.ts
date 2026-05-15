@@ -349,3 +349,9 @@ export async function saveMockKulEvent(userId: string, payload: SaveKulEventPayl
     member: null,
   });
 }
+
+export async function leaveMockKul(userId: string) {
+  const state = ensureState(userId);
+  state.kul = null;
+  state.members = [];
+}
