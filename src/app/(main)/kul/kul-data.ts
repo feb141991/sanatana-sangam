@@ -15,10 +15,13 @@ export async function getKulPageData() {
   let kulId = profile?.kul_id ?? null;
   
   // AUTO-RECOVER: If profile.kul_id is missing, check if the user is a member of any Kul.
-  // This ensures that even if Step 3 of join_kul/create_kul failed (or was cleared),
-  // the user can still access their Kul dashboard without "Already in a Kul" errors.
+  // We use the service role here because the RLS policy for kul_members_select
+  // requires profiles.kul_id to be set (auth_kul_id()), which creates a catch-22.
   if (!kulId) {
-    const { data: membership } = await supabase
+    const { createServiceRoleSupabaseClient } = await import('@/lib/admin');
+    const adminSupabase = createServiceRoleSupabaseClient();
+    
+    const { data: membership } = await adminSupabase
       .from('kul_members')
       .select('kul_id')
       .eq('user_id', user.id)
