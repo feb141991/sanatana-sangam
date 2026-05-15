@@ -191,7 +191,7 @@ export default function KulClient({
             messages={data.messages}
             members={data.members}
             userId={userId}
-            onSendMessage={(content) => kulMutations.sendMessage.mutate(content)}
+            onSendMessage={(content) => kulMutations.sendMessage.mutate({ kulId: data?.kul?.id ?? '', content })}
           />
         );
       case 'vansh':
