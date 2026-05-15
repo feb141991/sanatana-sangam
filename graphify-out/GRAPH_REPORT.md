@@ -1,11 +1,11 @@
 # Graph Report - /Users/Business(C)/Sanatan Sangam/Shoonaya  (2026-05-15)
 
 ## Corpus Check
-- 413 files · ~1,552,462 words
+- 413 files · ~1,552,596 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1554 nodes · 2188 edges · 206 communities detected
+- 1556 nodes · 2190 edges · 206 communities detected
 - Extraction: 72% EXTRACTED · 28% INFERRED · 0% AMBIGUOUS · INFERRED: 607 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
@@ -236,28 +236,28 @@
   /sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/api/cron/nitya-reminder/route.ts → /Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/mala-sessions.ts
 - `GET()` --calls--> `isInWindow()`  [INFERRED]
   /sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/api/cron/nitya-reminder/route.ts → /Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/panchang.ts
+- `GET()` --calls--> `isoDateDiff()`  [INFERRED]
+  /sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/api/cron/nitya-reminder/route.ts → /sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/lib/sacred-time.ts
 - `GET()` --calls--> `getPlanById()`  [INFERRED]
   /sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/api/cron/nitya-reminder/route.ts → /Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/lib/guided-paths.ts
-- `GET()` --calls--> `getPathInfo()`  [INFERRED]
-  /sessions/beautiful-dazzling-curie/mnt/Sanatan_Sangam/src/app/api/cron/nitya-reminder/route.ts → /Users/Business(C)/Sanatan Sangam/Sanatan_Sangam/src/app/(main)/pathshala/insights/PathshalaInsightsClient.tsx
 
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.02
-Nodes (41): BadgeManager, checkUser(), addBurst(), Corpus, Enrollment, buildGuidedPathStatusMap(), handleUploadCover(), MandaliManager (+33 more)
+Cohesion: 0.01
+Nodes (49): BadgeManager, checkUser(), addBurst(), Corpus, Enrollment, buildGuidedPathStatusMap(), fetchMandaliData(), MandaliManager (+41 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.03
-Nodes (46): getDailyDarshan(), getDharmVeerOfTheDay(), matches(), normalise(), resolveHomeHeroTheme(), slugifyFestivalName(), dismissPushPromptForNow(), markAllRead() (+38 more)
+Nodes (37): getDailyDarshan(), getDharmVeerOfTheDay(), matches(), normalise(), resolveHomeHeroTheme(), slugifyFestivalName(), getPlanById(), getPlansByDuration() (+29 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.03
-Nodes (62): build_searchable_text(), generate_embeddings(), load_scripture(), main(), Save a sample for inspection., Upload verses with embeddings to Supabase in batches of 50., Build rich text for embedding: translation + transliteration + tags., Generate 384-dim LSA embeddings using TF-IDF + TruncatedSVD. (+54 more)
+Cohesion: 0.04
+Nodes (55): createServiceRoleSupabaseClient(), requireAdminAccess(), getPathshalaEngine(), getSadhanaEngine(), requireEnv(), createPathshalaEngine(), createSadhanaEngine(), assignKulTask() (+47 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.03
-Nodes (53): createServiceRoleSupabaseClient(), requireAdminAccess(), assignKulTask(), completeKulTask(), createKul(), getKulPageData(), deleteKulEvent(), deleteKulFamilyMember() (+45 more)
+Nodes (46): build_searchable_text(), generate_embeddings(), load_scripture(), main(), Save a sample for inspection., Upload verses with embeddings to Supabase in batches of 50., Build rich text for embedding: translation + transliteration + tags., Generate 384-dim LSA embeddings using TF-IDF + TruncatedSVD. (+38 more)
 
 ### Community 4 - "Community 4"
 Cohesion: 0.05
@@ -268,56 +268,56 @@ Cohesion: 0.05
 Nodes (28): BuddhistStrategy, getPanchang(), getTithiNumber(), PlannedPanchangPrecisionEngine, JainStrategy, NanakshahiStrategy, addMinutes(), calculatePanchang() (+20 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.05
-Nodes (43): formatDharmaReferencePack(), getDharmaReferences(), getEntryScore(), tokenize(), createOutput(), decodeEntities(), extractParagraphs(), fetchChapterHtml() (+35 more)
+Cohesion: 0.04
+Nodes (18): fmt(), togglePlayback(), formatError(), dismissPushPromptForNow(), markAllRead(), buildFallbackQuiz(), String(), fmt() (+10 more)
 
 ### Community 7 - "Community 7"
+Cohesion: 0.06
+Nodes (42): formatDharmaReferencePack(), getDharmaReferences(), getEntryScore(), tokenize(), createOutput(), decodeEntities(), extractParagraphs(), fetchChapterHtml() (+34 more)
+
+### Community 8 - "Community 8"
 Cohesion: 0.04
 Nodes (18): handleShare(), handleShare(), share(), useLanguage(), fmt(), handleShare(), monthName(), handleShare() (+10 more)
 
-### Community 8 - "Community 8"
-Cohesion: 0.07
-Nodes (22): NityaKarma, customKey(), getCustom(), getDefaultSteps(), getLocalDone(), handleSave(), load(), loadHistory() (+14 more)
-
 ### Community 9 - "Community 9"
 Cohesion: 0.06
-Nodes (9): getPathshalaEngine(), getSadhanaEngine(), requireEnv(), createPathshalaEngine(), createSadhanaEngine(), OfflineQueue, SangamOfflineDB, SyncManager (+1 more)
+Nodes (9): copyEntry(), getEntryText(), goToLesson(), load(), markComplete(), OfflineQueue, SangamOfflineDB, SyncManager (+1 more)
 
 ### Community 10 - "Community 10"
-Cohesion: 0.1
-Nodes (10): copyEntry(), getEntryText(), goToLesson(), load(), markComplete(), formatTime(), markVerseComplete(), scoreColor() (+2 more)
+Cohesion: 0.07
+Nodes (21): NityaKarma, customKey(), getCustom(), getDefaultSteps(), getLocalDone(), handleSave(), load(), loadTodayLog() (+13 more)
 
 ### Community 11 - "Community 11"
-Cohesion: 0.1
-Nodes (14): getCanonicalChapter(), getCanonicalChaptersForSection(), getCanonicalVerseLinksForChapter(), getGitaEntriesForChapter(), getOfficialGitaAudioUrl(), getOfficialGitaBaseParams(), getOfficialGitaChapterUrl(), getOfficialGitaVerseUrl() (+6 more)
+Cohesion: 0.08
+Nodes (24): buildFestivalCalendarMeta(), daysUntil(), getNextFestival(), getTodayPanchang(), MainLayout(), loadHistory(), BhaktiPage(), HomePage() (+16 more)
 
 ### Community 12 - "Community 12"
+Cohesion: 0.08
+Nodes (19): getLibraryEntryById(), getLibrarySectionById(), getCanonicalChapter(), getCanonicalChaptersForSection(), getCanonicalVerseLinksForChapter(), getGitaEntriesForChapter(), getOfficialGitaAudioUrl(), getOfficialGitaBaseParams() (+11 more)
+
+### Community 13 - "Community 13"
 Cohesion: 0.14
 Nodes (22): adminClearCookieHeader(), adminCookieHeader(), bufToHex(), checkAdminCredentials(), createAdminToken(), encode(), hexToArrayBuffer(), hmacKey() (+14 more)
 
-### Community 13 - "Community 13"
-Cohesion: 0.11
-Nodes (8): handleKeyDown(), newId(), saveFabPos(), sendMessage(), fetchMessageThreads(), fetchThreadMessages(), sendThreadMessage(), MessagesPage()
-
 ### Community 14 - "Community 14"
-Cohesion: 0.13
-Nodes (10): buildFestivalCalendarMeta(), daysUntil(), getNextFestival(), getTodayPanchang(), MainLayout(), HomePage(), getDailySacredText(), getDayOfYear() (+2 more)
+Cohesion: 0.1
+Nodes (2): handleUploadCover(), ShrutiEngine
 
 ### Community 15 - "Community 15"
 Cohesion: 0.11
-Nodes (0): 
+Nodes (8): handleKeyDown(), newId(), saveFabPos(), sendMessage(), fetchMessageThreads(), fetchThreadMessages(), sendThreadMessage(), MessagesPage()
 
 ### Community 16 - "Community 16"
+Cohesion: 0.11
+Nodes (0): 
+
+### Community 17 - "Community 17"
 Cohesion: 0.15
 Nodes (3): buildFallbackNudge(), buildFallbackSummary(), KulIntelligence
 
-### Community 17 - "Community 17"
+### Community 18 - "Community 18"
 Cohesion: 0.23
 Nodes (15): assignMockKulTask(), clone(), completeMockKulTask(), createMockKul(), deleteMockKulFamilyMember(), ensureState(), fetchMockKulData(), leaveMockKul() (+7 more)
-
-### Community 18 - "Community 18"
-Cohesion: 0.18
-Nodes (10): fetchMandaliData(), MandaliPage(), ProfilePage(), ThreadPage(), VichaarSabhaPage(), filterAuthoredItems(), filterProfileRows(), getUserSafetyDashboardData() (+2 more)
 
 ### Community 19 - "Community 19"
 Cohesion: 0.16
@@ -336,16 +336,16 @@ Cohesion: 0.27
 Nodes (3): buildFallbackPlan(), localPanchang(), PracticePlan
 
 ### Community 23 - "Community 23"
-Cohesion: 0.2
-Nodes (4): fmt(), togglePlayback(), getAudioContext(), playBeadTapFeedback()
+Cohesion: 0.22
+Nodes (1): NudgeEngine
 
 ### Community 24 - "Community 24"
-Cohesion: 0.2
-Nodes (0): 
-
-### Community 25 - "Community 25"
 Cohesion: 0.22
 Nodes (6): getKathaById(), getKathasByOccasion(), getKathasByTradition(), getKathasForVrat(), KathaPage(), KathaReaderPage()
+
+### Community 25 - "Community 25"
+Cohesion: 0.2
+Nodes (0): 
 
 ### Community 26 - "Community 26"
 Cohesion: 0.31
@@ -356,12 +356,12 @@ Cohesion: 0.4
 Nodes (9): clone(), createMockMandaliComment(), createMockMandaliPost(), ensureState(), fetchMockMandaliData(), joinMockMandaliForLocation(), leaveMockMandali(), toggleMockMandaliPostUpvote() (+1 more)
 
 ### Community 28 - "Community 28"
-Cohesion: 0.25
-Nodes (3): malaSessionBeads(), malaSessionMantra(), malaSessionRounds()
+Cohesion: 0.36
+Nodes (1): PersonalisationEngine
 
 ### Community 29 - "Community 29"
 Cohesion: 0.25
-Nodes (0): 
+Nodes (3): malaSessionBeads(), malaSessionMantra(), malaSessionRounds()
 
 ### Community 30 - "Community 30"
 Cohesion: 0.25
@@ -380,16 +380,16 @@ Cohesion: 0.33
 Nodes (1): fetchStats()
 
 ### Community 34 - "Community 34"
-Cohesion: 0.47
-Nodes (4): handleShare(), getWhatsAppShareLink(), inviteFriendsToWhatsApp(), shareScoreToWhatsApp()
-
-### Community 35 - "Community 35"
 Cohesion: 0.33
 Nodes (0): 
 
-### Community 36 - "Community 36"
+### Community 35 - "Community 35"
 Cohesion: 0.47
 Nodes (3): getGreeting(), getGreetingPool(), isGreetingCompatibleWithTradition()
+
+### Community 36 - "Community 36"
+Cohesion: 0.47
+Nodes (4): handleShare(), getWhatsAppShareLink(), inviteFriendsToWhatsApp(), shareScoreToWhatsApp()
 
 ### Community 37 - "Community 37"
 Cohesion: 0.4
@@ -440,12 +440,12 @@ Cohesion: 0.5
 Nodes (0): 
 
 ### Community 49 - "Community 49"
-Cohesion: 0.83
-Nodes (3): closeIntro(), nextStep(), updateTargetPosition()
-
-### Community 50 - "Community 50"
 Cohesion: 0.5
 Nodes (0): 
+
+### Community 50 - "Community 50"
+Cohesion: 0.83
+Nodes (3): closeIntro(), nextStep(), updateTargetPosition()
 
 ### Community 51 - "Community 51"
 Cohesion: 0.5
@@ -453,18 +453,18 @@ Nodes (0):
 
 ### Community 52 - "Community 52"
 Cohesion: 0.5
-Nodes (2): VratPage(), getVratData()
+Nodes (0): 
 
 ### Community 53 - "Community 53"
+Cohesion: 0.5
+Nodes (2): VratPage(), getVratData()
+
+### Community 54 - "Community 54"
 Cohesion: 0.83
 Nodes (3): createNoopRealtimeTransport(), createSocketIoTransport(), getRealtimeTransport()
 
-### Community 54 - "Community 54"
-Cohesion: 0.5
-Nodes (0): 
-
 ### Community 55 - "Community 55"
-Cohesion: 0.67
+Cohesion: 0.5
 Nodes (0): 
 
 ### Community 56 - "Community 56"
@@ -496,12 +496,12 @@ Cohesion: 0.67
 Nodes (0): 
 
 ### Community 63 - "Community 63"
-Cohesion: 1.0
-Nodes (2): getToolsForTradition(), InteractiveAarti()
-
-### Community 64 - "Community 64"
 Cohesion: 0.67
 Nodes (0): 
+
+### Community 64 - "Community 64"
+Cohesion: 1.0
+Nodes (2): getToolsForTradition(), InteractiveAarti()
 
 ### Community 65 - "Community 65"
 Cohesion: 0.67
@@ -520,23 +520,23 @@ Cohesion: 0.67
 Nodes (0): 
 
 ### Community 69 - "Community 69"
+Cohesion: 0.67
+Nodes (0): 
+
+### Community 70 - "Community 70"
 Cohesion: 1.0
 Nodes (2): buildPremiumHtml(), sendShoonayaEmail()
 
-### Community 70 - "Community 70"
-Cohesion: 0.67
-Nodes (1): CalendarFactory
-
 ### Community 71 - "Community 71"
 Cohesion: 0.67
-Nodes (0): 
+Nodes (1): CalendarFactory
 
 ### Community 72 - "Community 72"
 Cohesion: 0.67
 Nodes (0): 
 
 ### Community 73 - "Community 73"
-Cohesion: 1.0
+Cohesion: 0.67
 Nodes (0): 
 
 ### Community 74 - "Community 74"
@@ -1070,43 +1070,41 @@ Nodes (0):
 ## Knowledge Gaps
 - **12 isolated node(s):** `Build rich text for embedding: translation + transliteration + tags.`, `Generate 384-dim LSA embeddings using TF-IDF + TruncatedSVD.`, `Save a sample for inspection.`, `Upload verses with embeddings to Supabase in batches of 50.`, `Load scripture JSON file.` (+7 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 73`** (2 nodes): `useRecitation.ts`, `useRecitation()`
+- **Thin community `Community 74`** (2 nodes): `useRecitation.ts`, `useRecitation()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 74`** (2 nodes): `getTodayTithi()`, `index.ts`
+- **Thin community `Community 75`** (2 nodes): `getTodayTithi()`, `index.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 75`** (2 nodes): `QueryProvider()`, `QueryProvider.tsx`
+- **Thin community `Community 76`** (2 nodes): `QueryProvider()`, `QueryProvider.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 76`** (2 nodes): `PrivacyPage()`, `page.tsx`
+- **Thin community `Community 77`** (2 nodes): `PrivacyPage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 77`** (2 nodes): `TermsPage()`, `page.tsx`
+- **Thin community `Community 78`** (2 nodes): `TermsPage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 78`** (2 nodes): `AdminLayout()`, `layout.tsx`
+- **Thin community `Community 79`** (2 nodes): `AdminLayout()`, `layout.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 79`** (2 nodes): `GlobalSettings()`, `page.tsx`
+- **Thin community `Community 80`** (2 nodes): `GlobalSettings()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 80`** (2 nodes): `fetchMandalis()`, `page.tsx`
+- **Thin community `Community 81`** (2 nodes): `fetchMandalis()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 81`** (2 nodes): `fetchFestivals()`, `page.tsx`
+- **Thin community `Community 82`** (2 nodes): `fetchFestivals()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 82`** (2 nodes): `handleSend()`, `page.tsx`
+- **Thin community `Community 83`** (2 nodes): `handleSend()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 83`** (2 nodes): `AboutPage()`, `page.tsx`
+- **Thin community `Community 84`** (2 nodes): `AboutPage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 84`** (2 nodes): `GuidelinesPage()`, `page.tsx`
+- **Thin community `Community 85`** (2 nodes): `GuidelinesPage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 85`** (2 nodes): `DharmVeerPage()`, `page.tsx`
+- **Thin community `Community 86`** (2 nodes): `DharmVeerPage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 86`** (2 nodes): `markDayComplete()`, `GuidedPlansClient.tsx`
+- **Thin community `Community 87`** (2 nodes): `markDayComplete()`, `GuidedPlansClient.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 87`** (2 nodes): `Ring()`, `InsightsClient.tsx`
+- **Thin community `Community 88`** (2 nodes): `Ring()`, `InsightsClient.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 88`** (2 nodes): `handleAnswer()`, `PracticeClient.tsx`
+- **Thin community `Community 89`** (2 nodes): `handleAnswer()`, `PracticeClient.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 89`** (2 nodes): `handleSend()`, `KulSabha.tsx`
+- **Thin community `Community 90`** (2 nodes): `handleSend()`, `KulSabha.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 90`** (2 nodes): `MarkForm()`, `SanskaraClient.tsx`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 91`** (2 nodes): `toggleCheck()`, `BhaktiClient.tsx`
+- **Thin community `Community 91`** (2 nodes): `MarkForm()`, `SanskaraClient.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 92`** (2 nodes): `JapaRedirectPage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -1340,12 +1338,12 @@ Nodes (0):
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `select()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 13`, `Community 14`, `Community 16`, `Community 18`, `Community 19`, `Community 22`, `Community 24`, `Community 25`, `Community 32`, `Community 40`?**
-  _High betweenness centrality (0.292) - this node is a cross-community bridge._
-- **Why does `GET()` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 9`, `Community 12`, `Community 13`, `Community 17`, `Community 19`, `Community 27`, `Community 28`?**
-  _High betweenness centrality (0.245) - this node is a cross-community bridge._
-- **Why does `POST()` connect `Community 4` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 6`, `Community 12`?**
-  _High betweenness centrality (0.075) - this node is a cross-community bridge._
+- **Why does `select()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 14`, `Community 15`, `Community 17`, `Community 19`, `Community 22`, `Community 23`, `Community 24`, `Community 25`, `Community 28`, `Community 32`, `Community 40`?**
+  _High betweenness centrality (0.225) - this node is a cross-community bridge._
+- **Why does `GET()` connect `Community 3` to `Community 0`, `Community 1`, `Community 2`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 11`, `Community 13`, `Community 15`, `Community 18`, `Community 19`, `Community 27`, `Community 28`, `Community 29`?**
+  _High betweenness centrality (0.219) - this node is a cross-community bridge._
+- **Why does `POST()` connect `Community 4` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 6`, `Community 7`, `Community 13`, `Community 14`?**
+  _High betweenness centrality (0.091) - this node is a cross-community bridge._
 - **Are the 171 inferred relationships involving `select()` (e.g. with `.listTexts()` and `.listChapters()`) actually correct?**
   _`select()` has 171 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 58 inferred relationships involving `GET()` (e.g. with `parseVersesFromHtml()` and `.listTexts()`) actually correct?**

@@ -27,18 +27,6 @@ interface Props {
   dailyStotramDeityEmoji: string;
 }
 
-// ── New Color Palette ────────────────────────────────────────────────────────
-const THEME = {
-  bg: '#1A1918',
-  void: '#010101',
-  charcoal: '#2C2C2F',
-  gold: '#C09759',
-  goldMuted: 'rgba(192, 151, 89, 0.4)',
-  goldGlow: 'rgba(192, 151, 89, 0.1)',
-  textGold: '#E2C28F',
-  textMuted: 'rgba(255, 255, 255, 0.4)',
-};
-
 export default function BhaktiClient({
   shloka, tradition, userName, japaStreak, sessionCountToday,
   dailyStotramId, dailyStotramTitle, dailyStotramDeityEmoji
@@ -46,7 +34,6 @@ export default function BhaktiClient({
   const { t, lang } = useLanguage();
   const { playHaptic } = useZenithSensory();
   
-  // ─── Pandit's Design Tokens ──────────────────────────────────────────
   const [activeDeity, setActiveDeity] = useState('shiva');
   const [rituals, setRituals] = useState([
     { id: 'snana', label: t('sacredAblution') || 'Snana (Ablution)', done: false, icon: <Droplets size={20} /> },
@@ -90,7 +77,6 @@ export default function BhaktiClient({
           </motion.div>
         </AnimatePresence>
         
-        {/* Divine Gradient Veils */}
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-base)] via-transparent to-transparent z-1" />
         
         <div className="relative z-10 space-y-8">
@@ -138,14 +124,12 @@ export default function BhaktiClient({
 
       {/* ─── 2. Nitya Karma (The Daily Flow) ─── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-8 sm:px-16 mt-[-4rem] relative z-20">
-          {/* Daily Path Card */}
           <Link href={`/bhakti/stotram/${dailyStotramId}`} className="lg:col-span-2">
             <motion.div
               whileHover={{ y: -8, scale: 1.01 }}
               className="group relative rounded-[4rem] p-10 sm:p-12 overflow-hidden border border-[var(--brand-primary-soft)] bg-[var(--card-bg)] shadow-2xl backdrop-blur-3xl"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--brand-primary)] opacity-[0.05] blur-[100px] rounded-full pointer-events-none" />
-              
               <div className="flex flex-col sm:flex-row items-center gap-8">
                 <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-[var(--brand-primary)] to-[var(--brand-primary-strong)] flex items-center justify-center text-white shadow-2xl group-hover:scale-110 transition-transform">
                   <SacredIcon deity={activeDeity} size={48} />
@@ -161,10 +145,9 @@ export default function BhaktiClient({
               </div>
             </motion.div>
           </Link>
-        </div>
       </div>
 
-      {/* ─── Divine Portals (Deity Selection) ─── */}
+      {/* ─── 3. Divine Portals (Deity Selection) ─── */}
       <section className="px-8 sm:px-16 mt-24">
         <div className="flex flex-col items-center text-center space-y-4 mb-16">
           <span className="text-[10px] font-black text-[var(--brand-primary)] uppercase tracking-[0.6em]">{t('exploreByDeity')}</span>
@@ -194,7 +177,7 @@ export default function BhaktiClient({
         </div>
       </section>
 
-      {/* ─── 3. Wisdom Streams (Katha & Stotram) ─── */}
+      {/* ─── 4. Wisdom Streams (Katha & Stotram) ─── */}
       <section className="px-8 sm:px-16 mt-24">
         <div className="flex items-end justify-between mb-12">
           <div className="space-y-3">
@@ -236,18 +219,16 @@ export default function BhaktiClient({
         </div>
       </section>
 
-      {/* ─── 4. The Akasha Verse (Daily Shloka) ─── */}
+      {/* ─── 5. The Akasha Verse (Daily Shloka) ─── */}
       <section className="px-8 sm:px-16 mt-32">
         <div className="relative rounded-[4.5rem] p-16 sm:p-24 text-center overflow-hidden border border-[var(--brand-primary-soft)] bg-gradient-to-br from-[var(--brand-primary-soft)] to-transparent shadow-2xl">
           <div className="absolute top-[-20%] left-[30%] w-96 h-96 bg-[var(--brand-primary)] opacity-[0.03] blur-[120px] rounded-full pointer-events-none" />
-          
           <div className="relative space-y-12 max-w-4xl mx-auto">
             <div className="flex items-center justify-center gap-6">
               <div className="w-12 h-px bg-[var(--brand-primary-soft)]" />
               <span className="text-[11px] font-black text-[var(--brand-primary)] uppercase tracking-[0.6em]">{t('sacredReflection')}</span>
               <div className="w-12 h-px bg-[var(--brand-primary-soft)]" />
             </div>
-            
             <motion.p 
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -255,7 +236,6 @@ export default function BhaktiClient({
             >
               &ldquo;{shloka.sanskrit}&rdquo;
             </motion.p>
-            
             <div className="pt-8">
               <div className="w-20 h-0.5 bg-[var(--brand-primary-soft)] mx-auto mb-6 rounded-full" />
               <p className="text-sm text-[var(--brand-primary)] font-bold uppercase tracking-[0.4em]">— {shloka.source}</p>
@@ -264,7 +244,7 @@ export default function BhaktiClient({
         </div>
       </section>
 
-      {/* ─── 5. Nitya Karma (Daily Ritual Checklist) ─── */}
+      {/* ─── 6. Nitya Karma (Daily Ritual Checklist) ─── */}
       <section className="px-8 sm:px-16 mt-32 space-y-12">
         <div className="flex flex-col sm:flex-row items-end justify-between gap-6 px-4">
            <div className="space-y-3">
@@ -305,7 +285,6 @@ export default function BhaktiClient({
           ))}
         </div>
       </section>
-
     </div>
   );
 }
@@ -314,15 +293,15 @@ export default function BhaktiClient({
 function SacredIcon({ deity, size = 24, className = "" }: { deity: string, size?: number, className?: string }) {
   switch (deity.toLowerCase()) {
     case 'shiva':
-      return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}><path d="M12 2v20M7 7l10 10M17 7L7 17M12 7c2 0 3 2 3 5s-1 5-3 5-3-2-3-5 1-5 3-5z"/></svg>; // Trishul-like
+      return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}><path d="M12 2v20M7 7l10 10M17 7L7 17M12 7c2 0 3 2 3 5s-1 5-3 5-3-2-3-5 1-5 3-5z"/></svg>;
     case 'vishnu':
-      return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>; // Chakra-like
+      return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>;
     case 'devi':
-      return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}><path d="M12 3l3 4 5-1-2 5 4 3-5 1 1 5-5-3-5 3 1-5-5-1 4-3-2-5 5 1 3-4z"/></svg>; // Lotus/Shakti
+      return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}><path d="M12 3l3 4 5-1-2 5 4 3-5 1 1 5-5-3-5 3 1-5-5-1 4-3-2-5 5 1 3-4z"/></svg>;
     case 'ganesha':
       return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}><path d="M8 3h8c1 0 2 1 2 2v14c0 1-1 2-2 2H8c-1 0-2-1-2-2V5c0-1 1-2 2-2z"/><path d="M6 8h12M12 3v18"/></svg>;
     case 'hanuman':
-      return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>; // Gada/Shield
+      return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>;
     case 'surya':
       return <Sun size={size} className={className} />;
     default:
