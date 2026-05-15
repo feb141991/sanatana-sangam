@@ -27828,8 +27828,8 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/api/kul.ts",
       "source_location": "L434",
       "weight": 1.0,
-      "_src": "kul_deletekultask",
-      "_tgt": "route_delete",
+      "_src": "route_delete",
+      "_tgt": "kul_deletekultask",
       "source": "route_delete",
       "target": "kul_deletekultask"
     },
@@ -27840,8 +27840,8 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/api/kul.ts",
       "source_location": "L440",
       "weight": 1.0,
-      "_src": "kul_deletekulevent",
-      "_tgt": "route_delete",
+      "_src": "route_delete",
+      "_tgt": "kul_deletekulevent",
       "source": "route_delete",
       "target": "kul_deletekulevent"
     },
@@ -37884,8 +37884,8 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/api/kul.ts",
       "source_location": "L433",
       "weight": 1.0,
-      "_src": "kul_deletekultask",
-      "_tgt": "supabase_createclient",
+      "_src": "supabase_createclient",
+      "_tgt": "kul_deletekultask",
       "source": "supabase_createclient",
       "target": "kul_deletekultask"
     },
@@ -37896,8 +37896,8 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/api/kul.ts",
       "source_location": "L439",
       "weight": 1.0,
-      "_src": "kul_deletekulevent",
-      "_tgt": "supabase_createclient",
+      "_src": "supabase_createclient",
+      "_tgt": "kul_deletekulevent",
       "source": "supabase_createclient",
       "target": "kul_deletekulevent"
     },

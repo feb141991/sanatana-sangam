@@ -226,7 +226,7 @@ export default function KulClient({
       default:
         return (
           <KulHub
-            kul={data.kul}
+            kul={data.kul!}
             members={data.members}
             tasks={data.tasks}
             messages={data.messages}
@@ -234,7 +234,7 @@ export default function KulClient({
             kulEvents={data.kulEvents}
             myRole={data.myRole}
             editingName={false}
-            newKulName={data.kul.name}
+            newKulName={data.kul!.name}
             setNewKulName={() => {}}
             setEditingName={() => {}}
             saveKulName={() => {}}
