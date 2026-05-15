@@ -151,17 +151,17 @@ type MantraId = typeof MANTRAS[number]['id'];
 
 // ── Sound definitions ──────────────────────────────────────────────────────────
 type SoundId = 'silence' | 'om' | 'bowl' | 'rain' | 'river' | 'bells' | 'forest' | 'dilruba' | 'dhamma' | 'stavan';
-const SOUNDS: { id: SoundId; label: string; emoji: string }[] = [
-  { id: 'silence', label: 'Silence',      emoji: '🤫' },
-  { id: 'om',      label: 'Om Chant',     emoji: '🕉' },
-  { id: 'bowl',    label: 'Singing Bowl', emoji: '🪘' },
-  { id: 'rain',    label: 'Rain',         emoji: '🌧️' },
-  { id: 'river',   label: 'River',        emoji: '🌊' },
-  { id: 'bells',   label: 'Temple Bells', emoji: '🔔' },
-  { id: 'forest',  label: 'Forest',       emoji: '🌿' },
-  { id: 'dilruba', label: 'Dilruba',      emoji: '🎻' },
-  { id: 'dhamma',  label: 'Dhamma Chant', emoji: '☸️' },
-  { id: 'stavan',  label: 'Jain Chime',   emoji: '✨' },
+const SOUNDS: { id: SoundId; label: string; icon: any }[] = [
+  { id: 'silence', label: 'Silence',      icon: <VolumeX size={18} /> },
+  { id: 'om',      label: 'Om Chant',     icon: <Volume2 size={18} /> },
+  { id: 'bowl',    label: 'Singing Bowl', icon: <Volume2 size={18} /> },
+  { id: 'rain',    label: 'Rain',         icon: <Volume2 size={18} /> },
+  { id: 'river',   label: 'River',        icon: <Volume2 size={18} /> },
+  { id: 'bells',   label: 'Temple Bells', icon: <Volume2 size={18} /> },
+  { id: 'forest',  label: 'Forest',       icon: <Volume2 size={18} /> },
+  { id: 'dilruba', label: 'Dilruba',      icon: <Volume2 size={18} /> },
+  { id: 'dhamma',  label: 'Dhamma Chant', icon: <Volume2 size={18} /> },
+  { id: 'stavan',  label: 'Jain Chime',   icon: <Volume2 size={18} /> },
 ];
 
 // ── Background scenes ──────────────────────────────────────────────────────────
@@ -169,42 +169,42 @@ const BG_SCENES = [
   {
     id: 'midnight',
     name: 'Midnight',
-    emoji: '🌙',
+    icon: <Moon size={18} />,
     dark:  { bg: '#06060A', overlay: 'none' },
     light: { bg: '#F5F0E8', overlay: 'none' },
   },
   {
     id: 'himalayan_dawn',
     name: 'Himalayan',
-    emoji: '🏔️',
+    icon: <Sun size={18} />,
     dark:  { bg: '#0A0614', overlay: 'radial-gradient(ellipse 80% 60% at 50% 100%, rgba(200,120,50,0.40) 0%, rgba(100,50,140,0.20) 55%, transparent 100%)' },
     light: { bg: '#FFF0E0', overlay: 'radial-gradient(ellipse 80% 60% at 50% 100%, rgba(255,180,80,0.55) 0%, rgba(220,140,80,0.25) 55%, transparent 100%)' },
   },
   {
     id: 'temple',
     name: 'Temple',
-    emoji: '🛕',
+    icon: <Flame size={18} />,
     dark:  { bg: '#0E0804', overlay: 'radial-gradient(ellipse 70% 80% at 30% 80%, rgba(200,130,40,0.38) 0%, rgba(140,80,20,0.12) 60%, transparent 100%)' },
     light: { bg: '#FDF4E0', overlay: 'radial-gradient(ellipse 70% 80% at 30% 80%, rgba(220,160,60,0.45) 0%, rgba(200,140,60,0.15) 60%, transparent 100%)' },
   },
   {
     id: 'river_ghat',
     name: 'River Ghat',
-    emoji: '🌊',
+    icon: <RotateCcw size={18} />,
     dark:  { bg: '#040A12', overlay: 'radial-gradient(ellipse 90% 50% at 50% 90%, rgba(30,100,140,0.38) 0%, rgba(15,60,100,0.15) 60%, transparent 100%)' },
     light: { bg: '#E8F4F8', overlay: 'radial-gradient(ellipse 90% 50% at 50% 90%, rgba(70,140,180,0.45) 0%, rgba(50,110,160,0.18) 60%, transparent 100%)' },
   },
   {
     id: 'forest_ashram',
     name: 'Forest',
-    emoji: '🌿',
+    icon: <BarChart2 size={18} />,
     dark:  { bg: '#040C06', overlay: 'radial-gradient(ellipse 80% 70% at 50% 65%, rgba(30,90,40,0.35) 0%, rgba(15,60,25,0.12) 60%, transparent 100%)' },
     light: { bg: '#EAF5EA', overlay: 'radial-gradient(ellipse 80% 70% at 50% 65%, rgba(60,140,70,0.45) 0%, rgba(40,110,55,0.18) 60%, transparent 100%)' },
   },
   {
     id: 'cosmos',
     name: 'Cosmos',
-    emoji: '✨',
+    icon: <Sparkles size={18} />,
     dark:  { bg: '#04040E', overlay: 'radial-gradient(ellipse 70% 80% at 50% 20%, rgba(80,60,160,0.42) 0%, rgba(40,30,120,0.18) 55%, transparent 100%)' },
     light: { bg: '#EEE8F8', overlay: 'radial-gradient(ellipse 70% 80% at 50% 20%, rgba(120,100,200,0.45) 0%, rgba(80,60,160,0.18) 55%, transparent 100%)' },
   },
@@ -236,7 +236,7 @@ function LotusParticles() {
             ease: 'linear' 
           }}
         >
-          <span className="text-xl">🪷</span>
+          <div className="w-1 h-1 rounded-full bg-amber-500/30 blur-[1px]" />
         </motion.div>
       ))}
     </div>
