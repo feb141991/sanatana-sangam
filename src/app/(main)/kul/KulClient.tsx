@@ -118,8 +118,9 @@ export default function KulClient({
   };
 
   const handleSaveTask = async (task: any) => {
+    if (!data?.kul) return;
     await kulMutations.assignTask.mutateAsync({
-      kulId: data.kul!.id,
+      kulId: data.kul.id,
       ...task,
       taskType: task.task_type,
       assignTo: task.assigned_to,
@@ -129,8 +130,9 @@ export default function KulClient({
   };
 
   const handleSaveVansh = async (memberData: any) => {
+    if (!data?.kul) return;
     await kulMutations.saveFamilyMember.mutateAsync({
-      kulId: data.kul!.id,
+      kulId: data.kul.id,
       ...memberData,
     });
     setShowVanshForm(false);
@@ -138,8 +140,9 @@ export default function KulClient({
   };
 
   const handleSaveEvent = async (eventData: any) => {
+    if (!data?.kul) return;
     await kulMutations.saveEvent.mutateAsync({
-      kulId: data.kul!.id,
+      kulId: data.kul.id,
       ...eventData,
       event_type: 'custom',
     });
