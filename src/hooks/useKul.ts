@@ -95,7 +95,7 @@ export function useKulMutations(userId: string) {
       onSuccess: refreshKul,
     }),
     leaveKul: useMutation({
-      mutationFn: () => leaveKul(),
+      mutationFn: () => leaveKul(userId),
       onSuccess: refreshKul,
     }),
   };
