@@ -182,7 +182,7 @@ export default function ProfileClient({
     sampradaya:       liveProfile?.sampradaya       ?? '',
     ishta_devata:     liveProfile?.ishta_devata     ?? '',
     spiritual_level:  liveProfile?.spiritual_level  ?? 'jigyasu',
-    kul:              liveProfile?.kul              ?? '',
+    kul:              (liveProfile as any)?.legacy_family_name ?? '',
     gotra:            liveProfile?.gotra            ?? '',
     kul_devata:       (liveProfile as any)?.kul_devata       ?? '',
     home_town:        (liveProfile as any)?.home_town        ?? '',
@@ -1479,6 +1479,31 @@ export default function ProfileClient({
               </div>
             </div>
           )}
+
+          {/* Data Management (L-02) */}
+          <div className="pt-6 border-t border-white/10 space-y-4">
+            <p className="text-[10px] uppercase tracking-[0.25em] font-black text-[#C5A059]/60 px-1">Privacy & Data</p>
+            <button 
+              onClick={async () => {
+                const { data, error } = await supabase.rpc('export_user_data');
+                if (error) return toast.error('Export failed: ' + error.message);
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `shoonaya_data_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                toast.success('Data exported successfully! 🙏');
+              }}
+              className="w-full flex items-center justify-between p-5 rounded-2xl bg-white/5 border border-white/5 text-[#F2EAD6]/80 hover:bg-white/10 transition-all group"
+            >
+              <div className="flex flex-col items-start">
+                <span className="text-[11px] font-black uppercase tracking-widest">Download My Data</span>
+                <span className="text-[9px] font-bold opacity-40 uppercase tracking-wider mt-1">Export your spiritual records</span>
+              </div>
+              <Download size={18} className="text-[#C5A059]/40 group-hover:scale-110 transition-transform" />
+            </button>
+          </div>
 
           {/* Account Deletion */}
           <div className="pt-8 border-t border-white/10">

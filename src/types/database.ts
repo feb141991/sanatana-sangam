@@ -19,7 +19,9 @@ export interface Database {
           sampradaya: string | null;
           ishta_devata: string | null;
           spiritual_level: string | null;
-          kul: string | null;
+          legacy_family_name: string | null;
+          consent_religious_data: boolean;
+          consent_updated_at: string | null;
           gotra: string | null;
           kul_devata: string | null;
           home_town: string | null;
@@ -335,6 +337,42 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['cron_logs']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['cron_logs']['Insert']>;
+      };
+      kuls: {
+        Row: {
+          id: string;
+          name: string;
+          invite_code: string;
+          created_by: string;
+          avatar_emoji: string;
+          created_at: string;
+          updated_at: string;
+          cover_url: string | null;
+        };
+        Insert: Omit<Database['public']['Tables']['kuls']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['kuls']['Insert']>;
+      };
+      kul_members: {
+        Row: {
+          id: string;
+          kul_id: string;
+          user_id: string;
+          role: 'guardian' | 'sadhak';
+          joined_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['kul_members']['Row'], 'id' | 'joined_at'>;
+        Update: Partial<Database['public']['Tables']['kul_members']['Insert']>;
+      };
+      nitya_karma_logs: {
+        Row: {
+          id: string;
+          user_id: string;
+          task_id: string;
+          completed_at: string;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['nitya_karma_logs']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['nitya_karma_logs']['Insert']>;
       };
     };
     Views: Record<string, never>;

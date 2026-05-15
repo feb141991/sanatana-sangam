@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { MapPin, Loader2, ChevronRight, Check, Monitor, Moon, Sun } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
@@ -220,6 +221,7 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
   const [isOtpSent,  setIsOtpSent]  = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [goals,      setGoals]      = useState<string[]>([]);
+  const [consentReligious, setConsentReligious] = useState(false);
   const themeIconMap = {
     system: Monitor,
     dark: Moon,
@@ -282,6 +284,10 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
       if (phone)     updates.phone        = phone;
       if (isVerified) updates.phone_verified = true;
       if (goals.length > 0) updates.seeking = goals;
+      if (consentReligious) {
+        updates.consent_religious_data = true;
+        updates.consent_updated_at = new Date().toISOString();
+      }
 
       const { error } = await supabase.from('profiles').update(updates).eq('id', userId);
       if (error) throw error;
@@ -1182,6 +1188,31 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                     >
                       You have set your intention. Shoonaya holds space for your dharmic journey — every day, at your own pace.
                     </motion.p>
+
+                    {/* Legal Consent Checkbox (L-04) */}
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.8 }}
+                      className="w-full max-w-[280px] pt-4"
+                    >
+                      <label className="flex items-start gap-3 cursor-pointer group">
+                        <div className="relative mt-1">
+                          <input 
+                            type="checkbox" 
+                            checked={consentReligious}
+                            onChange={(e) => setConsentReligious(e.target.checked)}
+                            className="peer sr-only"
+                          />
+                          <div className="w-5 h-5 rounded-md border border-[#C5A059]/40 bg-white/5 transition-all peer-checked:bg-[#C5A059] peer-checked:border-[#C5A059] flex items-center justify-center">
+                            <Check size={12} className="text-black opacity-0 peer-checked:opacity-100 transition-opacity" />
+                          </div>
+                        </div>
+                        <span className="text-[11px] text-left leading-relaxed text-[#F2EAD6]/40 group-hover:text-[#F2EAD6]/60 transition-colors">
+                          I consent to the processing of my religious and spiritual data as per the <Link href="/privacy" className="text-[#C5A059] underline underline-offset-2">Privacy Policy</Link>.
+                        </span>
+                      </label>
+                    </motion.div>
                   </motion.div>
                 );
               })()}
@@ -1210,7 +1241,7 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                 {saving
                   ? <><Loader2 size={15} className="animate-spin" /> Saving…</>
                   : step === 7
-                    ? '🪔 Enter Shoonaya'
+                    ? consentReligious ? '🪔 Enter Shoonaya' : 'Grant Consent to Proceed'
                     : <>Continue <ChevronRight size={15} /></>}
               </motion.button>
             )}
