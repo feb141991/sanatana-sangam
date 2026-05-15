@@ -273,7 +273,7 @@ export default function KulClient({
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 pb-32">
+    <div className="max-w-4xl mx-auto px-4 py-4 pb-24">
       <ConfettiOverlay show={showConfetti} />
       {showOnboarding && <KulOnboarding onComplete={closeOnboarding} />}
       

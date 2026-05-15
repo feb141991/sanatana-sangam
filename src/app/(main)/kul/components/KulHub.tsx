@@ -47,7 +47,7 @@ export function KulHub({
     .sort((a, b) => a.daysUntil - b.daysUntil);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <style>{`
         @keyframes aura-pulse {
           0% { transform: translate(-50%, -50%) scale(1); opacity: 0.15; }
@@ -58,8 +58,8 @@ export function KulHub({
           position: absolute;
           top: 50%;
           left: 50%;
-          width: 320px;
-          height: 320px;
+          width: 300px;
+          height: 300px;
           background: radial-gradient(circle, var(--brand-primary) 0%, transparent 70%);
           filter: blur(50px);
           animation: aura-pulse 8s ease-in-out infinite;
@@ -72,17 +72,17 @@ export function KulHub({
           background: linear-gradient(135deg, #f0c040, #d4a645, #a07830);
           padding: 4px;
           border-radius: 999px;
-          box-shadow: 0 15px 40px rgba(160, 120, 48, 0.4);
+          box-shadow: 0 10px 30px rgba(160, 120, 48, 0.35);
         }
         .kul-seal-inner {
           background: var(--surface-soft);
           border-radius: 999px;
-          width: 110px;
-          height: 110px;
+          width: 100px;
+          height: 100px;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 48px;
+          font-size: 42px;
           border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .premium-serif {
@@ -97,30 +97,30 @@ export function KulHub({
       `}</style>
 
       {/* ── IMMERSIVE ZENITH HERO ── */}
-      <div className="immersive-hero pt-4 pb-12 flex flex-col items-center text-center">
+      <div className="immersive-hero pt-2 pb-8 flex flex-col items-center text-center">
         {/* Banner Background (Immersive) */}
         {kul.cover_url && (
-          <div className="absolute inset-x-[-1rem] top-[-2rem] h-[450px] z-[-1] overflow-hidden opacity-30 mask-gradient-b">
+          <div className="absolute inset-x-[-1rem] top-[-1.5rem] h-[380px] z-[-1] overflow-hidden opacity-30 mask-gradient-b">
              {/* eslint-disable-next-line @next/next/no-img-element */}
-             <img src={kul.cover_url} alt="" className="w-full h-full object-cover blur-[2px]" />
-             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-[color:var(--surface-soft)]" />
+             <img src={kul.cover_url} alt="" className="w-full h-full object-cover blur-[1px]" />
+             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/40 to-[color:var(--surface-soft)]" />
           </div>
         )}
 
         {/* Top Floating Actions */}
-        <div className="w-full flex items-center justify-between mb-12">
+        <div className="w-full flex items-center justify-between mb-8">
           <Link href="/home"
-            className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] px-5 py-2.5 rounded-full glass-panel border border-white/10 transition hover:bg-white/20 theme-ink shadow-sm">
+            className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] px-4 py-2 rounded-full glass-panel border border-white/10 transition hover:bg-white/20 theme-ink shadow-sm">
             <ChevronLeft size={14} strokeWidth={3} />
             {t('back')}
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
              <button 
                onClick={() => {
                  navigator.clipboard.writeText(kul.invite_code);
                  import('react-hot-toast').then(m => m.default.success('Invite code copied!'));
                }}
-               className="flex items-center gap-3 px-4 py-2 rounded-full glass-panel border border-[var(--brand-primary)]/20 bg-[var(--brand-primary)]/5 hover:bg-[var(--brand-primary)]/10 transition-all shadow-sm"
+               className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full glass-panel border border-[var(--brand-primary)]/20 bg-[var(--brand-primary)]/5 hover:bg-[var(--brand-primary)]/10 transition-all shadow-sm"
              >
                 <span className="text-[9px] font-bold text-[var(--brand-primary)] uppercase tracking-[0.2em] opacity-70">{t('kulInviteLabel')}</span>
                 <span className="text-sm font-bold text-[var(--brand-primary)] tracking-[0.1em]">{kul.invite_code}</span>
@@ -136,20 +136,20 @@ export function KulHub({
                    const url = prompt('New Banner Image URL (Optional):', kul.cover_url || '');
                    if (url !== null && url !== kul.cover_url) onUpdateKul({ cover_url: url || null });
                  }}
-                 className="flex items-center justify-center w-10 h-10 rounded-full glass-panel border border-white/10 hover:bg-white/20 transition shadow-sm text-[var(--brand-primary)]"
+                 className="flex items-center justify-center w-9 h-9 rounded-full glass-panel border border-white/10 hover:bg-white/20 transition shadow-sm text-[var(--brand-primary)]"
                >
-                 <Pencil size={18} />
+                 <Pencil size={16} />
                </button>
              )}
           </div>
         </div>
 
         {/* Central Identity Section */}
-        <div className="relative mb-8 group">
+        <div className="relative mb-5 group">
           <div className="kul-sacred-aura" />
           <motion.div 
             className="kul-seal-ring"
-            whileHover={{ scale: 1.05, rotate: 5 }}
+            whileHover={{ scale: 1.05, rotate: 3 }}
             transition={{ type: 'spring', damping: 15 }}
           >
             <div className="kul-seal-inner">
@@ -158,42 +158,42 @@ export function KulHub({
           </motion.div>
         </div>
 
-        <div className="space-y-2 mb-10">
+        <div className="space-y-1 mb-6">
           <motion.h1 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl sm:text-5xl font-bold theme-ink premium-serif tracking-tight"
+            className="text-3xl sm:text-4xl font-bold theme-ink premium-serif tracking-tight"
           >
             {kul.name}
           </motion.h1>
-          <div className="flex items-center justify-center gap-3">
-             <div className="h-px w-8 bg-gradient-to-r from-transparent to-[var(--brand-primary)] opacity-30" />
-             <p className="text-[11px] uppercase tracking-[0.4em] font-bold text-[var(--brand-primary)] opacity-80">
+          <div className="flex items-center justify-center gap-2.5">
+             <div className="h-px w-6 bg-gradient-to-r from-transparent to-[var(--brand-primary)] opacity-20" />
+             <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--brand-primary)] opacity-70">
                {t('kulLineageOf')} {members.find(m => m.profiles?.gotra)?.profiles?.gotra || 'Dharma'}
              </p>
-             <div className="h-px w-8 bg-gradient-to-l from-transparent to-[var(--brand-primary)] opacity-30" />
+             <div className="h-px w-6 bg-gradient-to-l from-transparent to-[var(--brand-primary)] opacity-20" />
           </div>
         </div>
 
         {/* Horizontal Performance Metrics */}
-        <div className="flex flex-wrap justify-center gap-4 w-full max-w-2xl px-4">
+        <div className="flex flex-wrap justify-center gap-3 w-full max-w-2xl px-4">
           {[
             { label: t('kulMembersTitle'), value: members.length, emoji: '👨‍👩‍👧‍👦', href: '/kul/members' },
             { label: t('kulTasksTitle'), value: openTasks, emoji: '📋', href: '/kul/tasks' },
-            { label: 'Lineage Power', value: totalStreak, emoji: '✨', href: '/kul/sabha' },
+            { label: 'Power', value: totalStreak, emoji: '✨', href: '/kul/sabha' },
             { label: t('kulEventsTitle'), value: upcomingEvents.length, emoji: '📅', href: '/kul/events' },
           ].map((item, idx) => (
             <motion.div
               key={item.label}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + idx * 0.05 }}
-              className="flex-1 min-w-[130px]"
+              className="flex-1 min-w-[110px]"
             >
-              <Link href={item.href} className="flex flex-col items-center gap-1.5 p-4 rounded-3xl glass-panel border border-white/5 hover:border-[var(--brand-primary)]/20 transition-all hover:bg-white/10 group shadow-sm">
-                <span className="text-2xl group-hover:scale-110 transition-transform">{item.emoji}</span>
-                <span className="text-xl font-bold theme-ink leading-none">{item.value}</span>
-                <span className="text-[9px] uppercase tracking-widest theme-muted font-bold">{item.label}</span>
+              <Link href={item.href} className="flex flex-col items-center gap-1 p-3 rounded-[1.8rem] glass-panel border border-white/5 hover:border-[var(--brand-primary)]/20 transition-all hover:bg-white/10 group shadow-sm">
+                <span className="text-xl group-hover:scale-110 transition-transform">{item.emoji}</span>
+                <span className="text-lg font-bold theme-ink leading-none">{item.value}</span>
+                <span className="text-[8px] uppercase tracking-widest theme-muted font-bold">{item.label}</span>
               </Link>
             </motion.div>
           ))}
@@ -201,14 +201,14 @@ export function KulHub({
       </div>
 
       {/* ── DASHBOARD GRID ── */}
-      <div className="space-y-6">
+      <div className="space-y-5">
         <div className="flex items-center justify-between px-2">
            <div className="flex items-center gap-2">
-              <Sparkles size={14} className="text-[var(--brand-primary)]" />
-              <p className="text-[10px] uppercase tracking-[0.2em] font-bold theme-muted">{t('kulOpenSection')}</p>
+              <Sparkles size={12} className="text-[var(--brand-primary)]" />
+              <p className="text-[9px] uppercase tracking-[0.2em] font-bold theme-muted">{t('kulOpenSection')}</p>
            </div>
            {upcomingEvents[0] && (
-             <Link href="/kul/events" className="text-[10px] font-bold theme-ink bg-white/40 px-3 py-1 rounded-full border border-white/10">
+             <Link href="/kul/events" className="text-[9px] font-bold theme-ink bg-white/40 px-2.5 py-1 rounded-full border border-white/10">
                {t('kulNextDateIn')} {upcomingEvents[0].daysUntil} {t('kulDays')}
              </Link>
            )}
