@@ -204,6 +204,7 @@ export async function createMockKul(payload: { name: string; emoji: string }) {
     name: payload.name.trim(),
     invite_code: 'KUL108',
     avatar_emoji: payload.emoji,
+    cover_url: null,
     created_by: 'mock-user',
     created_at: new Date().toISOString(),
   };

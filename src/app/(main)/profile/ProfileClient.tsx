@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, Monitor, Moon, Sun, Star, MessageSquare, MessageCircle, Settings, Shield, Users, AlertCircle } from 'lucide-react';
+import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, ChevronRight, Monitor, Moon, Sun, Star, MessageSquare, MessageCircle, Settings, Shield, Users, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { APP } from '@/lib/config';
@@ -87,28 +87,31 @@ function CompletionBar({ profile, onEdit }: { profile: Profile | null; onEdit: (
   if (pct === 100) return null;
 
   return (
-    <div className="glass-panel rounded-2xl p-4 flex items-center gap-4">
+    <div className="glass-panel border border-white/10 rounded-[2rem] p-5 flex items-center gap-5 relative overflow-hidden group">
+      <div className="absolute inset-0 bg-gradient-to-r from-[#C5A059]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
       {/* Circular completion ring */}
-      <CircularProgress
-        pct={pct}
-        accent="var(--brand-secondary)"
-        size={56}
-        strokeWidth={5}
-        label={<span className="text-xs font-bold" style={{ color: 'var(--brand-ink)' }}>{pct}%</span>}
-      />
+      <div className="relative">
+        <div className="absolute inset-0 bg-[#C5A059]/20 blur-xl rounded-full scale-150 opacity-50" />
+        <CircularProgress
+          pct={pct}
+          accent="#C5A059"
+          size={64}
+          strokeWidth={6}
+          label={<span className="text-[13px] font-bold text-[#C5A059]">{pct}%</span>}
+        />
+      </div>
       {/* Label + CTA */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between mb-0.5">
-          <p className="type-card-heading">Profile complete</p>
+      <div className="flex-1 min-w-0 z-10">
+        <div className="flex items-center justify-between mb-1.5">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#C5A059]/70">Profile Strength</p>
           <button onClick={onEdit}
-            className="type-chip rounded-full px-3 py-1 text-[#1c1c1a] transition"
-            style={{ background: 'var(--brand-primary)' }}>
+            className="px-4 py-1.5 rounded-full bg-[#C5A059] text-black text-[10px] font-bold uppercase tracking-widest transition-transform active:scale-95 shadow-lg shadow-[#C5A059]/20">
             Complete
           </button>
         </div>
         {missing.length > 0 && (
-          <p className="type-micro">
-            Add: {missing.slice(0, 3).join(', ')}{missing.length > 3 ? ` +${missing.length - 3} more` : ''}
+          <p className="text-xs text-white/40 font-medium leading-relaxed">
+            Enhance your journey by adding: {missing.slice(0, 3).join(', ')}{missing.length > 3 ? ` +${missing.length - 3} more` : ''}
           </p>
         )}
       </div>
@@ -634,94 +637,169 @@ export default function ProfileClient({
       transition={{ duration: 0.3 }}
       className="divine-home-shell min-h-screen bg-[var(--divine-bg)] -mx-3 sm:-mx-4 relative selection:bg-[#C5A059]/30"
     >
+      <style>{`
+        @keyframes aura-pulse {
+          0% { transform: translate(-50%, -50%) scale(1); opacity: 0.2; }
+          50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.4; }
+          100% { transform: translate(-50%, -50%) scale(1); opacity: 0.2; }
+        }
+        .sacred-aura {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 240px;
+          height: 240px;
+          background: radial-gradient(circle, #C5A059 0%, transparent 70%);
+          filter: blur(40px);
+          animation: aura-pulse 8s ease-in-out infinite;
+          pointer-events: none;
+          z-index: 0;
+        }
+        .sacred-seal-ring {
+          position: relative;
+          z-index: 1;
+          background: linear-gradient(135deg, #F2EAD6, #C5A059, #8C6A3B);
+          padding: 3px;
+          border-radius: 999px;
+          box-shadow: 0 10px 40px rgba(197, 160, 89, 0.25);
+        }
+        .sacred-seal-inner {
+          background: #1a1610;
+          border-radius: 999px;
+          width: 96px;
+          height: 96px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          overflow: hidden;
+        }
+        .premium-serif {
+          font-family: var(--font-serif);
+          letter-spacing: -0.02em;
+        }
+        .clay-card {
+          background: rgba(255, 255, 255, 0.03);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: 
+            inset 0 0 20px rgba(255, 255, 255, 0.02),
+            0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        .zenith-input {
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 1.25rem;
+          padding: 0.875rem 1.25rem;
+          color: #F2EAD6;
+          font-size: 0.875rem;
+          transition: all 0.3s ease;
+        }
+        .zenith-input:focus {
+          background: rgba(197, 160, 89, 0.05);
+          border-color: rgba(197, 160, 89, 0.4);
+          box-shadow: 0 0 15px rgba(197, 160, 89, 0.1);
+          outline: none;
+        }
+      `}</style>
+
       <div className="relative pb-24">
         
         {/* ── Zenith Profile Hero ────────────────────────────────────────────── */}
-        <div className="relative min-h-[300px] overflow-hidden">
+        <div className="relative min-h-[340px] overflow-hidden flex items-center justify-center">
           {/* Atmospheric background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#1c1c1a] via-[#2c1a0e] to-[#1c1c1a] opacity-65 dark:opacity-85" />
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--divine-bg)] to-transparent z-10" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#12100e] via-[#1c1a16] to-[#12100e]" />
+          <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/carbon-fibre.png")' }} />
+          
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[var(--divine-bg)] to-transparent z-10" />
           
           {/* Header Controls Overlay */}
-          <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 pt-5 pointer-events-none">
+          <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-6 pt-6 pointer-events-none">
             <button
               onClick={() => router.back()}
-              className="w-10 h-10 rounded-full glass-panel border border-white/10 flex items-center justify-center pointer-events-auto transition-transform active:scale-90"
+              className="w-12 h-12 rounded-2xl clay-card flex items-center justify-center pointer-events-auto transition-all active:scale-90 hover:border-[#C5A059]/30"
             >
-              <ChevronLeft size={20} className="text-[#F2EAD6]" />
+              <ChevronLeft size={22} className="text-[#F2EAD6]" />
             </button>
-            <div className="flex items-center gap-2 pointer-events-auto">
+            <div className="flex items-center gap-3 pointer-events-auto">
               <Link
                 href="/messages"
-                className="w-10 h-10 rounded-full glass-panel border border-white/10 flex items-center justify-center transition-transform active:scale-90"
+                className="w-12 h-12 rounded-2xl clay-card flex items-center justify-center transition-all active:scale-90 hover:border-[#C5A059]/30"
                 title="Direct Messages"
               >
-                <MessageSquare size={18} className="text-[#F2EAD6]" />
+                <MessageSquare size={20} className="text-[#F2EAD6]" />
               </Link>
               <button 
                 onClick={() => setSettingsOpen(true)}
-                className="w-10 h-10 rounded-full glass-panel border border-white/10 flex items-center justify-center transition-transform active:scale-90"
+                className="w-12 h-12 rounded-2xl clay-card flex items-center justify-center transition-all active:scale-90 hover:border-[#C5A059]/30"
                 title="App Settings"
               >
-                <Settings size={18} className="text-[#F2EAD6]" />
+                <Settings size={20} className="text-[#F2EAD6]" />
               </button>
             </div>
           </div>
 
           {/* Hero Content */}
-          <div className="relative z-20 flex flex-col items-center pt-16 pb-8 px-5">
-            {/* Avatar Cluster */}
-            <div className="relative mb-5">
-              <motion.button
-                type="button"
-                onClick={() => avatarUrl && setShowAvatarPreview(true)}
-                disabled={!avatarUrl}
-                initial={{ scale: 0.85, opacity: 0, y: 10 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                className={`relative w-24 h-24 rounded-full bg-white/10 border-2 border-white/20 p-1 flex items-center justify-center overflow-hidden shadow-2xl ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
+          <div className="relative z-20 flex flex-col items-center pt-12 pb-4 px-5">
+            {/* Avatar Cluster with Sacred Aura */}
+            <div className="relative mb-8">
+              <div className="sacred-aura" />
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+                className="sacred-seal-ring"
               >
-                <div className="relative w-full h-full rounded-full overflow-hidden bg-white/5">
+                <button
+                  type="button"
+                  onClick={() => avatarUrl && setShowAvatarPreview(true)}
+                  disabled={!avatarUrl}
+                  className={`sacred-seal-inner ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
+                >
                   {avatarUrl
-                    ? <Image src={avatarUrl} alt="avatar" fill sizes="96px" className="object-cover" />
-                    : <span className="text-3xl font-serif text-[#F2EAD6]">{initials}</span>}
-                </div>
-              </motion.button>
+                    ? <Image src={avatarUrl} alt="avatar" fill sizes="96px" className="object-cover transition-transform duration-700 hover:scale-110" />
+                    : <span className="text-4xl font-serif text-[#C5A059]">{initials}</span>}
+                </button>
+              </motion.div>
               
               <label
                 htmlFor="avatar-upload"
-                className={`absolute bottom-1 right-1 flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-[#C5A059] shadow-lg transition-transform active:scale-75 ${uploading ? 'opacity-60' : 'cursor-pointer'}`}
+                className={`absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-xl border border-[#F2EAD6]/20 bg-[#C5A059] shadow-xl shadow-[#C5A059]/30 transition-all active:scale-75 z-20 ${uploading ? 'opacity-60' : 'cursor-pointer hover:scale-110'}`}
               >
                 {uploading
-                  ? <Loader2 size={14} className="text-white animate-spin" />
-                  : <Camera size={14} className="text-white" />}
+                  ? <Loader2 size={16} className="text-black animate-spin" />
+                  : <Camera size={16} className="text-black" />}
               </label>
               <input id="avatar-upload" type="file" accept="image/*" className="hidden" disabled={uploading} onChange={uploadAvatar} />
             </div>
 
             <motion.div 
-              initial={{ y: 10, opacity: 0 }}
+              initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1 }}
+              transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
               className="text-center"
             >
-              <div className="flex items-center justify-center gap-2 mb-1">
-                <h1 className="text-2xl font-serif text-[var(--divine-text)] dark:text-white leading-tight drop-shadow-md">
+              <div className="flex flex-col items-center gap-2">
+                <h1 className="text-3xl sm:text-4xl font-bold text-[#F2EAD6] leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] premium-serif">
                   {liveProfile?.full_name}
                 </h1>
-                {isPro && (
-                  <div className="px-2 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center gap-1">
-                    <Star size={10} className="text-amber-400 fill-amber-400" />
-                    <span className="text-[9px] font-bold text-amber-400 uppercase tracking-wider">Pro</span>
-                  </div>
-                )}
+                <div className="flex items-center gap-3">
+                  <span className="text-[11px] font-bold text-[#C5A059] uppercase tracking-[0.25em] opacity-80">@{liveProfile?.username}</span>
+                  {isPro && (
+                    <div className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-amber-200/10 border border-amber-400/30 flex items-center gap-1.5 shadow-lg shadow-amber-900/20">
+                      <Star size={11} className="text-amber-400 fill-amber-400" />
+                      <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest">Pro Member</span>
+                    </div>
+                  )}
+                </div>
               </div>
-              <p className="text-sm text-[var(--divine-text)] dark:text-white/60 mb-2 font-medium opacity-60 dark:opacity-100">@{liveProfile?.username}</p>
               
               {(liveProfile?.city || liveProfile?.country) && (
-                <div className="flex items-center justify-center gap-1.5 text-[11px] font-semibold text-[#C5A059] uppercase tracking-widest">
-                  <MapPin size={10} strokeWidth={2.5} />
-                  {[liveProfile?.city, liveProfile?.country].filter(Boolean).join(', ')}
+                <div className="mt-4 flex items-center justify-center gap-2 text-[10px] font-bold text-[#F2EAD6]/50 uppercase tracking-[0.3em]">
+                  <div className="w-8 h-px bg-gradient-to-r from-transparent to-[#C5A059]/30" />
+                  <MapPin size={11} className="text-[#C5A059]" />
+                  <span>{[liveProfile?.city, liveProfile?.country].filter(Boolean).join(' · ')}</span>
+                  <div className="w-8 h-px bg-gradient-to-l from-transparent to-[#C5A059]/30" />
                 </div>
               )}
             </motion.div>
@@ -737,9 +815,9 @@ export default function ProfileClient({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.1 }}
-          className="px-5 -mt-10 space-y-4 relative z-30"
+          className="px-5 -mt-10 space-y-6 relative z-30"
         >
-          {/* Metric Row */}
+          {/* Metric Row with Clay Cards */}
           <div className="grid grid-cols-3 gap-3">
             {[
               { label: 'Threads', value: threadCount },
@@ -751,10 +829,10 @@ export default function ProfileClient({
                 initial={{ opacity: 0, y: 16, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ delay: 0.15 + (i * 0.07), type: 'spring', stiffness: 300, damping: 24 }}
-                className="glass-panel border border-white/10 rounded-2xl p-3 text-center"
+                className="clay-card rounded-2xl p-4 text-center group transition-all hover:border-[#C5A059]/40"
               >
-                <p className="text-[10px] font-bold text-[#C5A059] uppercase tracking-widest mb-1 opacity-70">{m.label}</p>
-                <p className="text-lg font-serif text-[var(--divine-text)] dark:text-white">{m.value}</p>
+                <p className="text-[9px] font-black text-[#C5A059] uppercase tracking-[0.25em] mb-2 opacity-60 group-hover:opacity-100 transition-opacity">{m.label}</p>
+                <p className="text-xl font-serif text-[#F2EAD6] drop-shadow-sm">{m.value}</p>
               </motion.div>
             ))}
           </div>
@@ -766,33 +844,32 @@ export default function ProfileClient({
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.32, type: 'spring', stiffness: 280, damping: 22 }}
-            className="grid grid-cols-2 gap-3"
+            className="grid grid-cols-2 gap-4"
           >
             <motion.button
               onClick={() => setKoshOpen(true)}
               whileTap={{ scale: 0.96 }}
-              className="group relative flex flex-col items-center justify-center p-5 rounded-3xl bg-gradient-to-br from-[#C5A059]/15 to-[#C5A059]/5 border border-[#C5A059]/25 shadow-xl overflow-hidden transition-all"
+              className="group relative flex flex-col items-center justify-center p-6 rounded-[2rem] bg-gradient-to-br from-[#C5A059]/15 to-transparent border border-[#C5A059]/30 shadow-2xl overflow-hidden transition-all hover:border-[#C5A059]/60"
             >
-              <div className="absolute inset-0 bg-[#C5A059]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="w-10 h-10 rounded-2xl bg-[#C5A059]/10 flex items-center justify-center mb-3">
-                <Shield size={20} className="text-[#C5A059] drop-shadow-sm" />
+              <div className="absolute inset-0 bg-[#C5A059]/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="w-12 h-12 rounded-2xl bg-[#C5A059]/20 flex items-center justify-center mb-4 border border-[#C5A059]/40 transition-transform group-hover:scale-110">
+                <Shield size={24} className="text-[#C5A059] drop-shadow-lg" />
               </div>
-              <span className="text-[11px] font-bold uppercase tracking-widest text-[#C5A059]">Open Kosh</span>
-              <span className="text-[9px] text-[#C5A059]/50 font-medium mt-1">Sacred Treasury</span>
+              <span className="text-[12px] font-black uppercase tracking-[0.2em] text-[#C5A059]">Open Kosh</span>
+              <span className="text-[9px] text-[#C5A059]/40 font-bold mt-1.5 uppercase tracking-wider">Sacred Treasury</span>
             </motion.button>
 
             <motion.button
               onClick={() => setEditing(true)}
               whileTap={{ scale: 0.96 }}
-              className="group relative flex flex-col items-center justify-center p-5 rounded-3xl border overflow-hidden transition-all"
-              style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)' }}
+              className="group relative flex flex-col items-center justify-center p-6 rounded-[2rem] clay-card overflow-hidden transition-all hover:border-[#C5A059]/40"
             >
               <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center mb-3 border border-white/10">
-                <Edit3 size={20} className="text-[#F2EAD6] drop-shadow-sm opacity-80" />
+              <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-4 border border-white/10 transition-transform group-hover:scale-110">
+                <Edit3 size={24} className="text-[#F2EAD6] opacity-80" />
               </div>
-              <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--divine-text)] dark:text-[#F2EAD6] opacity-80">Personal Info</span>
-              <span className="text-[9px] text-white/35 font-medium mt-1">Lineage &amp; Bio</span>
+              <span className="text-[12px] font-black uppercase tracking-[0.2em] text-[#F2EAD6] opacity-80">Edit Profile</span>
+              <span className="text-[9px] text-white/30 font-bold mt-1.5 uppercase tracking-wider">Lineage & Bio</span>
             </motion.button>
           </motion.div>
 
@@ -804,18 +881,19 @@ export default function ProfileClient({
             />
           )}
 
-          {/* WhatsApp Invite Card */}
+          {/* WhatsApp Invite Card - Refined Zenith */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.42, type: 'spring', stiffness: 260, damping: 22 }}
-            className="glass-panel border border-white/5 rounded-[2rem] p-5 flex flex-col items-center text-center"
+            className="clay-card rounded-[2.5rem] p-6 flex flex-col items-center text-center relative overflow-hidden"
           >
-            <div className="w-12 h-12 rounded-full bg-[#25D366]/10 border border-[#25D366]/20 flex items-center justify-center mb-3">
-              <MessageCircle size={22} className="text-[#25D366]" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#25D366]/5 blur-[50px] -mr-16 -mt-16" />
+            <div className="w-14 h-14 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/20 flex items-center justify-center mb-4 shadow-inner">
+              <MessageCircle size={26} className="text-[#25D366] drop-shadow-md" />
             </div>
-            <h3 className="text-sm font-semibold theme-ink">Grow your Mandali</h3>
-            <p className="text-xs theme-dim mt-1 mb-4 leading-relaxed px-4">
+            <h3 className="text-base font-bold text-[#F2EAD6] premium-serif">Grow your Mandali</h3>
+            <p className="text-xs text-[#F2EAD6]/40 mt-2 mb-6 leading-relaxed px-4 font-medium">
               Invite your family and fellow seekers to join the spiritual sangam on WhatsApp.
             </p>
             <button
@@ -823,229 +901,254 @@ export default function ProfileClient({
                 const link = inviteFriendsToWhatsApp(liveProfile?.full_name || liveProfile?.username || 'A friend');
                 window.open(link, '_blank');
               }}
-              className="w-full py-3 rounded-2xl bg-[#25D366] text-white text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-[#25D366]/20 transition-transform active:scale-95"
+              className="w-full py-4 rounded-2xl bg-[#25D366] text-white text-[11px] font-black uppercase tracking-[0.25em] shadow-xl shadow-[#25D366]/20 transition-all active:scale-95 hover:bg-[#1ebd5e] hover:shadow-[#25D366]/40"
             >
               Invite on WhatsApp
             </button>
           </motion.div>
 
           {hasSafetyItems && (
-            <div className="glass-panel border border-white/5 rounded-[2rem] p-5">
-              <div className="flex items-center gap-3 mb-4">
-                <ShieldBan size={18} className="text-[#C5A059]" />
-                <h3 className="text-sm font-semibold theme-ink">Safety & Boundaries</h3>
+            <div className="clay-card rounded-[2.5rem] p-6">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-[#C5A059]/10 flex items-center justify-center border border-[#C5A059]/20">
+                  <ShieldBan size={20} className="text-[#C5A059]" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-[#F2EAD6] uppercase tracking-[0.15em]">Safety & Boundaries</h3>
+                  <p className="text-[10px] text-[#C5A059]/50 font-bold uppercase tracking-wider mt-0.5">Control your experience</p>
+                </div>
               </div>
               <div className="space-y-3">
                 {blockedProfiles.length > 0 && (
-                   <button onClick={() => setSettingsOpen(true)} className="w-full flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5 text-[11px] font-bold uppercase tracking-wider text-white/60">
-                      <span>{blockedProfiles.length} Blocked Profiles</span>
-                      <Settings size={12} />
+                   <button onClick={() => setSettingsOpen(true)} className="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 text-[11px] font-black uppercase tracking-widest text-[#F2EAD6]/70 transition-all hover:bg-white/10 hover:border-[#C5A059]/30">
+                      <div className="flex items-center gap-3">
+                        <Users size={14} className="text-[#C5A059]" />
+                        <span>{blockedProfiles.length} Blocked Profiles</span>
+                      </div>
+                      <ChevronRight size={14} className="opacity-40" />
                    </button>
                 )}
                 {mutedProfiles.length > 0 && (
-                   <button onClick={() => setSettingsOpen(true)} className="w-full flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5 text-[11px] font-bold uppercase tracking-wider text-white/60">
-                      <span>{mutedProfiles.length} Muted Profiles</span>
-                      <Settings size={12} />
+                   <button onClick={() => setSettingsOpen(true)} className="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 text-[11px] font-black uppercase tracking-widest text-[#F2EAD6]/70 transition-all hover:bg-white/10 hover:border-[#C5A059]/30">
+                      <div className="flex items-center gap-3">
+                        <BellOff size={14} className="text-[#C5A059]" />
+                        <span>{mutedProfiles.length} Muted Profiles</span>
+                      </div>
+                      <ChevronRight size={14} className="opacity-40" />
                    </button>
                 )}
               </div>
             </div>
           )}
 
-          {/* ── Edit Form (Inline for now, as it's large) ── */}
+          {/* ── Edit Form (Zenith Sheet) ── */}
           {editing && (
-            <div className="surface-sheet rounded-[2rem] p-6 space-y-6 shadow-2xl border border-white/5 fade-in relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-4">
-                <button onClick={() => setEditing(false)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
-                  <X size={16} className="text-white/40" />
+            <div className="clay-card rounded-[2.5rem] p-8 space-y-8 shadow-2xl fade-in relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-6">
+                <button onClick={() => setEditing(false)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center transition-all hover:bg-white/10 active:scale-90">
+                  <X size={20} className="text-[#F2EAD6]/40" />
                 </button>
               </div>
-              <h2 className="font-display font-semibold text-lg theme-ink">Personal Information</h2>
+              
+              <div className="space-y-1">
+                <h2 className="text-2xl font-bold text-[#F2EAD6] premium-serif">Personal Details</h2>
+                <p className="text-[10px] text-[#C5A059] font-black uppercase tracking-[0.2em] opacity-70">Update your spiritual identity</p>
+              </div>
 
-              {/* ── Tradition — locked at signup, not editable ── */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-[10px] uppercase tracking-widest font-bold text-white/30">Your Tradition</label>
-                  <span className="flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full bg-white/5 text-white/40 border border-white/5">
-                    <Lock size={8} /> Locked
+              {/* ── Tradition — locked ── */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between px-1">
+                  <label className="text-[10px] uppercase tracking-widest font-black text-[#F2EAD6]/30">Spiritual Tradition</label>
+                  <span className="flex items-center gap-1.5 text-[9px] px-3 py-1 rounded-full bg-white/5 text-[#F2EAD6]/40 border border-white/10 font-bold uppercase tracking-wider">
+                    <Lock size={10} className="text-[#C5A059]" /> Secured
                   </span>
                 </div>
                 {(() => {
                   const t = TRADITIONS.find(t => t.value === form.tradition);
                   return t ? (
-                    <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/[0.02] border border-white/5">
-                      <span className="text-2xl">{t.emoji}</span>
+                    <div className="flex items-center gap-4 px-5 py-4 rounded-[1.5rem] bg-white/[0.03] border border-[#C5A059]/20 shadow-inner">
+                      <span className="text-3xl drop-shadow-md">{t.emoji}</span>
                       <div>
-                        <p className="font-semibold text-sm theme-ink">{t.label}</p>
-                        <p className="text-xs theme-dim mt-0.5">{t.desc}</p>
+                        <p className="font-bold text-sm text-[#F2EAD6] tracking-wide">{t.label}</p>
+                        <p className="text-[11px] text-[#F2EAD6]/40 mt-0.5 font-medium">{t.desc}</p>
                       </div>
                     </div>
                   ) : null;
                 })()}
               </div>
 
-              <div className="space-y-4">
-                <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-[#C5A059]">Core Details</p>
-                {[
-                  { label: 'Full Name', key: 'full_name', placeholder: 'Your full name' },
-                  { label: 'Home Town', key: 'home_town', placeholder: 'Where you are from' },
-                ].map(({ label, key, placeholder }) => (
-                  <div key={key}>
-                    <label className="block text-[11px] font-semibold theme-muted mb-1.5">{label}</label>
-                    <input type="text" placeholder={placeholder}
-                      value={(form as Record<string, string>)[key]}
-                      onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                      className="surface-input px-4 py-3 rounded-2xl outline-none text-sm bg-white/5 border-white/5 focus:border-[#C5A059]/30 transition-all"
-                    />
-                  </div>
-                ))}
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    { label: 'Full Name', key: 'full_name', placeholder: 'Your full name' },
+                    { label: 'Home Town', key: 'home_town', placeholder: 'Where you are from' },
+                  ].map(({ label, key, placeholder }) => (
+                    <div key={key} className="space-y-2">
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-[#C5A059]/60 px-1">{label}</label>
+                      <input type="text" placeholder={placeholder}
+                        value={(form as Record<string, string>)[key]}
+                        onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                        className="zenith-input w-full"
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <div className="space-y-4">
-                <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-[#C5A059]">Lineage & Path</p>
-                <div>
-                  <label className="block text-[11px] font-semibold theme-muted mb-1.5">{sampradayaLabel}</label>
-                  <select value={form.sampradaya}
-                    onChange={(e) => setForm({ ...form, sampradaya: e.target.value })}
-                    className="surface-select px-4 py-3 rounded-2xl outline-none text-sm bg-white/5 border-white/5">
-                    <option value="">Select {sampradayaLabel.toLowerCase()}</option>
-                    {sampradayaOptions.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-                  </select>
-                </div>
+              <div className="space-y-6">
+                <p className="text-[11px] uppercase tracking-[0.25em] font-black text-[#C5A059]">Lineage & Path</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-[#C5A059]/60 px-1">{sampradayaLabel}</label>
+                    <select value={form.sampradaya}
+                      onChange={(e) => setForm({ ...form, sampradaya: e.target.value })}
+                      className="zenith-input w-full appearance-none">
+                      <option value="">Select {sampradayaLabel.toLowerCase()}</option>
+                      {sampradayaOptions.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                    </select>
+                  </div>
 
-                <div>
-                  <label className="block text-[11px] font-semibold theme-muted mb-1.5">{ishtaDevataLabel}</label>
-                  <select value={form.ishta_devata}
-                    onChange={(e) => setForm({ ...form, ishta_devata: e.target.value })}
-                    className="surface-select px-4 py-3 rounded-2xl outline-none text-sm bg-white/5 border-white/5">
-                    <option value="">Select {ishtaDevataLabel.toLowerCase()}</option>
-                    {ishtaDevataOptions.map((d) => <option key={d.value} value={d.value}>{d.emoji} {d.label}</option>)}
-                  </select>
+                  <div className="space-y-2">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-[#C5A059]/60 px-1">{ishtaDevataLabel}</label>
+                    <select value={form.ishta_devata}
+                      onChange={(e) => setForm({ ...form, ishta_devata: e.target.value })}
+                      className="zenith-input w-full appearance-none">
+                      <option value="">Select {ishtaDevataLabel.toLowerCase()}</option>
+                      {ishtaDevataOptions.map((d) => <option key={d.value} value={d.value}>{d.emoji} {d.label}</option>)}
+                    </select>
+                  </div>
                 </div>
               </div>
 
               {/* ── Hindu-specific fields ── */}
               {(activeTradition === 'hindu') && (
-                <div className="space-y-4">
-                  {[
-                    { label: 'Gotra',      key: 'gotra',      placeholder: 'e.g. Kashyapa'     },
-                    { label: 'Kul Devata', key: 'kul_devata', placeholder: 'e.g. Shiva, Durga' },
-                    { label: 'Family Name', key: 'kul',        placeholder: 'Kul / Vansh'    },
-                  ].map(({ label, key, placeholder }) => (
-                    <div key={key}>
-                      <label className="block text-[11px] font-semibold theme-muted mb-1.5">{label}</label>
-                      <input type="text" placeholder={placeholder}
-                        value={(form as Record<string, string>)[key]}
-                        onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                        className="surface-input px-4 py-3 rounded-2xl outline-none text-sm bg-white/5 border-white/5"
-                      />
-                    </div>
-                  ))}
+                <div className="space-y-6">
+                  <p className="text-[11px] uppercase tracking-[0.25em] font-black text-[#C5A059]">Vansh Identity</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {[
+                      { label: 'Gotra',      key: 'gotra',      placeholder: 'e.g. Kashyapa'     },
+                      { label: 'Kul Devata', key: 'kul_devata', placeholder: 'e.g. Shiva, Durga' },
+                      { label: 'Family Name', key: 'kul',        placeholder: 'Kul / Vansh'    },
+                    ].map(({ label, key, placeholder }) => (
+                      <div key={key} className="space-y-2">
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-[#C5A059]/60 px-1">{label}</label>
+                        <input type="text" placeholder={placeholder}
+                          value={(form as Record<string, string>)[key]}
+                          onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                          className="zenith-input w-full"
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
-              <div className="space-y-4">
-                <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-[#C5A059]">Life Stage</p>
-                <div>
-                  <label className="block text-[11px] font-semibold theme-muted mb-1.5">Date of birth</label>
-                  <input
-                    type="date"
-                    value={form.date_of_birth}
-                    max={new Date().toISOString().split('T')[0]}
-                    onChange={(e) => setForm(prev => ({ ...prev, date_of_birth: e.target.value }))}
-                    className="surface-input px-4 py-3 rounded-2xl outline-none text-sm bg-white/5 border-white/5"
-                  />
-                  {form.date_of_birth && (() => {
-                    const suggested = ageToAshrama(form.date_of_birth);
-                    const age       = ageFromDob(form.date_of_birth);
-                    const meta      = getAshramaMeta(activeTradition, suggested as LifeStage, form.gender_context);
-                    return (
-                      <p className="text-[10px] mt-2 text-white/30 font-medium">
-                        {meta.icon} Age {age} — suggested stage:{' '}
-                        <span style={{ color: meta.accent, fontWeight: 700 }}>{meta.label}</span>
-                      </p>
-                    );
-                  })()}
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-semibold theme-muted mb-1.5">Practice Path</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {getPracticePathOptions(activeTradition).map(opt => {
-                      const sel = form.gender_context === opt.key;
+              <div className="space-y-6">
+                <p className="text-[11px] uppercase tracking-[0.25em] font-black text-[#C5A059]">Life Stage</p>
+                <div className="grid grid-cols-1 gap-6">
+                  <div className="space-y-2">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-[#C5A059]/60 px-1">Date of birth</label>
+                    <input
+                      type="date"
+                      value={form.date_of_birth}
+                      max={new Date().toISOString().split('T')[0]}
+                      onChange={(e) => setForm(prev => ({ ...prev, date_of_birth: e.target.value }))}
+                      className="zenith-input w-full"
+                      style={{ colorScheme: 'dark' }}
+                    />
+                    {form.date_of_birth && (() => {
+                      const suggested = ageToAshrama(form.date_of_birth);
+                      const age       = ageFromDob(form.date_of_birth);
+                      const meta      = getAshramaMeta(activeTradition, suggested as LifeStage, form.gender_context);
                       return (
-                        <button
-                          key={opt.key}
-                          type="button"
-                          onClick={() => setForm({ ...form, gender_context: opt.key })}
-                          className="rounded-2xl border px-3 py-3 text-left transition relative overflow-hidden"
-                          style={{
-                            background:   sel ? 'rgba(200,146,74,0.1)' : 'transparent',
-                            borderColor:  sel ? 'rgba(200,146,74,0.3)' : 'rgba(255,255,255,0.05)',
-                          }}
-                        >
-                          <div className="text-lg mb-1">{opt.icon}</div>
-                          <p className="text-[11px] font-bold theme-ink leading-tight">{opt.label}</p>
-                          <p className="text-[9px] theme-dim mt-0.5 leading-snug opacity-60">{opt.sub}</p>
-                        </button>
+                        <div className="flex items-center gap-2 mt-3 px-3 py-2 rounded-xl bg-[#C5A059]/5 border border-[#C5A059]/10">
+                          <span className="text-sm">{meta.icon}</span>
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-[#F2EAD6]/50">
+                            Age {age} · Suggested stage: <span style={{ color: meta.accent }}>{meta.label}</span>
+                          </p>
+                        </div>
                       );
-                    })}
+                    })()}
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-[#C5A059]/60 px-1">Practice Path</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {getPracticePathOptions(activeTradition).map(opt => {
+                        const sel = form.gender_context === opt.key;
+                        return (
+                          <button
+                            key={opt.key}
+                            type="button"
+                            onClick={() => setForm({ ...form, gender_context: opt.key })}
+                            className={`rounded-2xl border p-4 text-left transition-all relative overflow-hidden ${
+                              sel ? 'bg-[#C5A059]/10 border-[#C5A059]/40 shadow-lg shadow-[#C5A059]/10' : 'bg-white/5 border-white/5 opacity-60 hover:opacity-100'
+                            }`}
+                          >
+                            <div className="text-xl mb-2">{opt.icon}</div>
+                            <p className="text-[11px] font-black uppercase tracking-widest text-[#F2EAD6]">{opt.label}</p>
+                            <p className="text-[9px] text-[#F2EAD6]/40 mt-1 font-bold leading-snug">{opt.sub}</p>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-semibold theme-muted mb-1.5">Bio</label>
+              <div className="space-y-2">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-[#C5A059]/60 px-1">Bio</label>
                 <textarea placeholder="Share your spiritual journey…"
                   value={form.bio}
                   onChange={(e) => setForm({ ...form, bio: e.target.value })}
-                  rows={3}
-                  className="surface-input px-4 py-3 rounded-2xl outline-none resize-none text-sm bg-white/5 border-white/5"
+                  rows={4}
+                  className="zenith-input w-full resize-none min-h-[100px]"
                 />
               </div>
 
-              <div className="flex gap-3 pt-4">
+              <div className="flex gap-4 pt-6">
                 <button onClick={() => setEditing(false)}
-                  className="flex-1 py-3.5 rounded-2xl text-[11px] font-bold uppercase tracking-widest text-white/40 border border-white/5 transition">
+                  className="flex-1 py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] text-[#F2EAD6]/30 border border-white/10 transition-all hover:bg-white/5 active:scale-95">
                   Cancel
                 </button>
                 <button onClick={saveProfile} disabled={saving}
-                  className="flex-1 py-3.5 text-black font-bold rounded-2xl text-[11px] uppercase tracking-widest shadow-lg shadow-[#C5A059]/20"
-                  style={{ background: 'var(--brand-primary)' }}>
+                  className="flex-1 py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] bg-[#C5A059] text-black shadow-2xl shadow-[#C5A059]/30 transition-all active:scale-95 hover:bg-[#d4ae6a] disabled:opacity-50">
                   {saving ? 'Saving…' : 'Save Changes'}
                 </button>
               </div>
             </div>
           )}
 
-          {/* ── Account Summary ── */}
-          <div className="glass-panel border border-white/5 rounded-[2rem] p-6 space-y-4">
+          {/* ── Account Summary (Refined Zenith) ── */}
+          <div className="clay-card rounded-[2.5rem] p-6 space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-bold text-[#C5A059] uppercase tracking-widest mb-1">Account</p>
-                <p className="text-sm font-medium theme-ink">{userEmail}</p>
+                <p className="text-[9px] font-black text-[#C5A059] uppercase tracking-[0.25em] mb-1.5 opacity-60">Connected Email</p>
+                <p className="text-sm font-bold text-[#F2EAD6] tracking-wide">{userEmail}</p>
               </div>
               <button
                 onClick={signOut}
-                className="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 transition-colors active:bg-red-500/20"
+                className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 transition-all active:scale-90 hover:bg-red-500/20 shadow-lg shadow-red-900/10"
+                title="Sign Out"
               >
-                <LogOut size={16} />
+                <LogOut size={18} />
               </button>
             </div>
             
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => setInviteOpen(true)}
-                className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/5 border border-white/5 text-[10px] font-bold uppercase tracking-widest text-white/70"
+                className="flex items-center justify-center gap-2.5 py-4 rounded-2xl bg-white/5 border border-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-[#F2EAD6]/60 transition-all hover:bg-white/10 hover:border-[#C5A059]/30"
               >
-                <Users size={14} /> Invite
+                <Users size={16} className="text-[#C5A059]" />
+                Invite
               </button>
               <button
                 onClick={downloadReport}
                 disabled={reportLoading}
-                className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/5 border border-white/5 text-[10px] font-bold uppercase tracking-widest text-white/70 disabled:opacity-50"
+                className="flex items-center justify-center gap-2.5 py-4 rounded-2xl bg-white/5 border border-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-[#F2EAD6]/60 transition-all hover:bg-white/10 hover:border-[#C5A059]/30 disabled:opacity-50"
               >
-                {reportLoading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+                {reportLoading ? <Loader2 size={16} className="animate-spin text-[#C5A059]" /> : <Download size={16} className="text-[#C5A059]" />}
                 Report
               </button>
             </div>
@@ -1073,14 +1176,14 @@ export default function ProfileClient({
         </motion.div>
       </div>
 
-      {/* ── Drawers ── */}
+      {/* ── Drawers (Zenith Modals) ── */}
       <BottomDrawer
         isOpen={koshOpen}
         onClose={() => setKoshOpen(false)}
         title="Sacred Kosh"
-        description="Your treasury of divine symbols."
+        description="Your treasury of divine symbols and relics."
       >
-        <div className="grid grid-cols-4 gap-4 py-4">
+        <div className="grid grid-cols-4 gap-5 py-6">
           {SACRED_RELICS.map((relic) => {
             const unlockedRelics = getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, liveProfile?.tradition ?? 'hindu');
             const isUnlocked = unlockedRelics.some(r => r.id === relic.id);
@@ -1097,36 +1200,36 @@ export default function ProfileClient({
                     if (isActive) return;
                     patchProfile({ active_symbol_id: relic.id } as any, `${relic.name} set as active symbol ✨`);
                   }}
-                  className={`relative w-16 h-16 rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden ${
+                  className={`relative w-20 h-20 rounded-[2rem] flex items-center justify-center transition-all duration-500 overflow-hidden ${
                     isUnlocked 
-                      ? 'bg-gradient-to-br from-[#C5A059]/20 to-[#C5A059]/5 border border-[#C5A059]/30 shadow-lg shadow-[#C5A059]/10' 
-                      : 'bg-black/20 dark:bg-white/5 border border-white/5 grayscale opacity-30'
-                  }`}
+                      ? 'bg-gradient-to-br from-[#C5A059]/25 to-[#C5A059]/5 border border-[#C5A059]/40 shadow-xl shadow-[#C5A059]/10' 
+                      : 'bg-black/40 border border-white/10 grayscale opacity-40'
+                  } ${!isActive && isUnlocked ? 'hover:scale-110 hover:border-[#C5A059]' : ''}`}
                 >
                   {isUnlocked && (
-                    <div className="absolute inset-0 rounded-full bg-[#C5A059]/5 animate-pulse" />
+                    <div className="absolute inset-0 bg-[#C5A059]/10 animate-pulse opacity-50" />
                   )}
                   
-                  <div className="relative w-12 h-12 flex items-center justify-center">
+                  <div className="relative w-14 h-14 flex items-center justify-center">
                     {relic.imageUrl ? (
                       <Image 
                         src={relic.imageUrl} 
                         alt={relic.name} 
                         fill 
-                        className={`object-contain transition-transform duration-500 ${isUnlocked ? 'group-hover:scale-110' : ''}`}
+                        className={`object-contain transition-transform duration-700 ${isUnlocked ? 'group-hover:scale-110' : ''}`}
                       />
                     ) : (
-                      <span className="text-xl">{isUnlocked ? '✨' : '🔒'}</span>
+                      <span className="text-2xl">{isUnlocked ? '✨' : '🔒'}</span>
                     )}
                   </div>
 
                   {isActive && (
-                    <div className="absolute top-1 right-1 w-4 h-4 bg-[#C5A059] rounded-full flex items-center justify-center border-2 border-[var(--divine-bg)] z-10">
-                      <Star size={8} className="text-black fill-black" />
+                    <div className="absolute top-2 right-2 w-5 h-5 bg-[#C5A059] rounded-full flex items-center justify-center border-2 border-[#1a1610] z-10 shadow-lg">
+                      <Star size={10} className="text-black fill-black" />
                     </div>
                   )}
                 </button>
-                <p className={`text-[9px] font-bold uppercase tracking-tighter mt-3 text-center line-clamp-1 transition-opacity ${isUnlocked ? 'opacity-100 text-[#C5A059]' : 'opacity-40'}`}>
+                <p className={`text-[10px] font-black uppercase tracking-widest mt-4 text-center line-clamp-1 transition-opacity ${isUnlocked ? 'opacity-100 text-[#C5A059]' : 'opacity-30'}`}>
                   {relic.name}
                 </p>
               </div>
@@ -1134,8 +1237,8 @@ export default function ProfileClient({
           })}
         </div>
         {!SACRED_RELICS.some(r => getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, liveProfile?.tradition ?? 'hindu').some(ur => ur.id === r.id)) && (
-          <div className="mt-6 p-4 rounded-2xl bg-white/5 border border-dashed border-white/10 text-center">
-            <p className="text-[11px] text-[#C5A059]/60 font-medium">Continue your daily sadhana to unlock these relics 🙏</p>
+          <div className="mt-8 p-6 rounded-[2rem] bg-[#C5A059]/5 border border-dashed border-[#C5A059]/20 text-center">
+            <p className="text-[12px] text-[#C5A059]/60 font-bold uppercase tracking-widest leading-relaxed">Continue your daily sadhana<br/>to unlock these relics 🙏</p>
           </div>
         )}
       </BottomDrawer>
@@ -1143,14 +1246,14 @@ export default function ProfileClient({
       <BottomDrawer
         isOpen={settingsOpen}
         onClose={() => setSettingsOpen(false)}
-        title="App Settings"
+        title="Sanatan Settings"
         description="Personalize your spiritual experience."
       >
-        <div className="space-y-6 py-4">
+        <div className="space-y-8 py-6">
           {/* Theme */}
-          <div>
-            <p className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] mb-3">Theme Preference</p>
-            <div className="grid grid-cols-3 gap-2">
+          <div className="space-y-4">
+            <p className="text-[10px] uppercase tracking-[0.25em] font-black text-[#C5A059]">Visual Theme</p>
+            <div className="grid grid-cols-3 gap-3">
               {THEME_OPTIONS.map((option) => {
                 const active = themePreference === option.value;
                 const Icon = themeIconMap[option.value];
@@ -1159,14 +1262,12 @@ export default function ProfileClient({
                     key={option.value}
                     type="button"
                     onClick={() => setThemePreference(option.value)}
-                    className="flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all"
-                    style={{
-                      background: active ? 'rgba(200,146,74,0.1)' : 'rgba(255,255,255,0.02)',
-                      borderColor: active ? '#C5A059' : 'rgba(255,255,255,0.05)',
-                    }}
+                    className={`flex flex-col items-center gap-3 p-4 rounded-2xl border transition-all duration-300 ${
+                      active ? 'bg-[#C5A059]/15 border-[#C5A059] shadow-lg shadow-[#C5A059]/10' : 'bg-white/5 border-white/10 opacity-60 hover:opacity-100'
+                    }`}
                   >
-                    <Icon size={18} className={active ? 'text-[#C5A059]' : 'text-white/40'} />
-                    <span className={`text-[10px] font-bold uppercase tracking-wider ${active ? 'text-[#C5A059]' : 'text-white/40'}`}>
+                    <Icon size={20} className={active ? 'text-[#C5A059]' : 'text-[#F2EAD6]/40'} />
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${active ? 'text-[#C5A059]' : 'text-[#F2EAD6]/40'}`}>
                       {option.label}
                     </span>
                   </button>
@@ -1176,14 +1277,14 @@ export default function ProfileClient({
           </div>
 
           {/* App Icon */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059]">App Icon</p>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] uppercase tracking-[0.25em] font-black text-[#C5A059]">App Identity</p>
               {!isPro && (
-                 <span className="text-[8px] font-bold text-amber-400 uppercase tracking-widest bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/20">Pro</span>
+                 <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">Pro Exclusive</span>
               )}
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               {[
                 { key: 'normal', img: '/assets/images/logos/logo-normal.png', label: 'Classic' },
                 { key: 'pro', img: '/assets/images/logos/logo-pro.png', label: 'Divine Gold' },
@@ -1196,24 +1297,24 @@ export default function ProfileClient({
                     localStorage.setItem('shoonaya_app_icon', icon.key);
                     toast.success(`${icon.label} icon set!`);
                   }}
-                  className={`flex-1 flex flex-col items-center gap-2 p-2 rounded-2xl border transition-all ${
-                    localAppIcon === icon.key ? 'border-[#C5A059] bg-[#C5A059]/10' : 'border-white/5 bg-white/5'
-                  } ${icon.key === 'pro' && !isPro ? 'grayscale opacity-30' : ''}`}
+                  className={`flex-1 flex flex-col items-center gap-3 p-3 rounded-2xl border transition-all duration-300 ${
+                    localAppIcon === icon.key ? 'border-[#C5A059] bg-[#C5A059]/15 shadow-xl shadow-[#C5A059]/10' : 'border-white/5 bg-white/5 opacity-60 hover:opacity-100'
+                  } ${icon.key === 'pro' && !isPro ? 'grayscale opacity-30 cursor-not-allowed' : ''}`}
                 >
-                  <div className="relative w-12 h-12 rounded-xl overflow-hidden shadow-lg">
+                  <div className="relative w-14 h-14 rounded-2xl overflow-hidden shadow-2xl border border-white/10">
                     <Image src={icon.img} alt={icon.label} fill className="object-cover" />
                   </div>
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-white/40">{icon.label}</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-[#F2EAD6]/40">{icon.label}</span>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Languages */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] mb-2">App Language</p>
-              <div className="flex flex-col gap-1.5">
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <p className="text-[10px] uppercase tracking-[0.25em] font-black text-[#C5A059]">Interface</p>
+              <div className="flex flex-col gap-2">
                 {APP_LANGUAGES.map((lang) => {
                   const active = contextLang === lang.value;
                   return (
@@ -1224,8 +1325,8 @@ export default function ProfileClient({
                         setLang(lang.value as AppLang);
                         patchProfile({ app_language: lang.value, meaning_language: nextMeaningLanguage }, `Language: ${lang.label}`);
                       }}
-                      className={`px-4 py-2.5 rounded-xl text-left text-xs font-bold border transition-all ${
-                        active ? 'bg-[#C5A059] text-black border-[#C5A059]' : 'bg-white/5 border-white/5 text-white/60'
+                      className={`px-4 py-3 rounded-xl text-left text-xs font-black uppercase tracking-widest border transition-all ${
+                        active ? 'bg-[#C5A059] text-black border-[#C5A059] shadow-lg shadow-[#C5A059]/20' : 'bg-white/5 border-white/5 text-[#F2EAD6]/40'
                       }`}
                     >
                       {lang.label}
@@ -1234,17 +1335,17 @@ export default function ProfileClient({
                 })}
               </div>
             </div>
-            <div>
-              <p className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] mb-2">Meaning Script</p>
-              <div className="flex flex-col gap-1.5">
+            <div className="space-y-4">
+              <p className="text-[10px] uppercase tracking-[0.25em] font-black text-[#C5A059]">Scripture</p>
+              <div className="flex flex-col gap-2">
                 {MEANING_LANGUAGE_OPTIONS.map((opt) => {
                   const active = (form.meaning_language ?? 'en') === opt.value;
                   return (
                     <button
                       key={opt.value}
                       onClick={() => patchProfile({ meaning_language: opt.value }, `Meanings: ${opt.label}`)}
-                      className={`px-4 py-2.5 rounded-xl text-left text-xs font-bold border transition-all ${
-                        active ? 'bg-[#C5A059] text-black border-[#C5A059]' : 'bg-white/5 border-white/5 text-white/60'
+                      className={`px-4 py-3 rounded-xl text-left text-xs font-black uppercase tracking-widest border transition-all ${
+                        active ? 'bg-[#C5A059] text-black border-[#C5A059] shadow-lg shadow-[#C5A059]/20' : 'bg-white/5 border-white/5 text-[#F2EAD6]/40'
                       }`}
                     >
                       {opt.label.replace(' meaning', '')}
@@ -1256,9 +1357,9 @@ export default function ProfileClient({
           </div>
 
           {/* Notifications */}
-          <div className="space-y-3">
-             <p className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059]">Notifications</p>
-             <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-4">
+             <p className="text-[10px] uppercase tracking-[0.25em] font-black text-[#C5A059]">Divine Reminders</p>
+             <div className="grid grid-cols-2 gap-3">
                 {[
                   { key: 'wants_shloka_reminders', label: 'Daily Wisdom' },
                   { key: 'wants_festival_reminders', label: 'Festivals' },
@@ -1274,12 +1375,12 @@ export default function ProfileClient({
                         setNotificationPrefs(prev => ({ ...prev, [item.key]: next }));
                         patchProfile({ [item.key]: next }, `${item.label} ${next ? 'enabled' : 'disabled'}`);
                       }}
-                      className={`flex items-center justify-between px-4 py-3 rounded-2xl border transition-all ${
-                        checked ? 'bg-[#C5A059]/10 border-[#C5A059]/30 text-[#C5A059]' : 'bg-white/5 border-white/5 text-white/40'
+                      className={`flex items-center justify-between px-5 py-4 rounded-2xl border transition-all duration-300 ${
+                        checked ? 'bg-[#C5A059]/15 border-[#C5A059]/40 text-[#C5A059] shadow-lg shadow-[#C5A059]/5' : 'bg-white/5 border-white/5 text-[#F2EAD6]/30'
                       }`}
                     >
-                      <span className="text-[10px] font-bold uppercase tracking-wider">{item.label}</span>
-                      <div className={`w-2 h-2 rounded-full ${checked ? 'bg-[#C5A059]' : 'bg-white/10'}`} />
+                      <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>
+                      <div className={`w-2.5 h-2.5 rounded-full shadow-lg ${checked ? 'bg-[#C5A059] animate-pulse' : 'bg-white/10'}`} />
                     </button>
                   );
                 })}
@@ -1287,27 +1388,27 @@ export default function ProfileClient({
              <button
                onClick={sendTestNotification}
                disabled={sendingTestNotification}
-               className="w-full py-3 rounded-2xl bg-white/5 border border-white/5 text-[10px] font-bold uppercase tracking-widest text-white/40"
+               className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-[#F2EAD6]/30 transition-all hover:bg-white/10 active:scale-95"
              >
-               {sendingTestNotification ? 'Testing...' : 'Send Test Notification'}
+               {sendingTestNotification ? 'Ascending...' : 'Send Test Notification'}
              </button>
           </div>
 
           {/* Safety Sections if exist */}
           {hasSafetyItems && (
-            <div className="space-y-3">
-              <p className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059]">Moderation & Safety</p>
-              <div className="space-y-2">
+            <div className="space-y-4">
+              <p className="text-[10px] uppercase tracking-[0.25em] font-black text-[#C5A059]">Moderation & Safety</p>
+              <div className="space-y-3">
                 {blockedProfiles.map(p => (
-                   <div key={p.id} className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
-                      <span className="text-[11px] font-medium text-white/60 truncate">{p.full_name || p.username}</span>
-                      <button onClick={() => unblockProfile(p.id)} className="text-[9px] font-bold uppercase tracking-widest text-[#C5A059] px-3 py-1.5 rounded-full border border-[#C5A059]/30">Unblock</button>
+                   <div key={p.id} className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 shadow-inner">
+                      <span className="text-[12px] font-bold text-[#F2EAD6]/70 truncate max-w-[140px]">{p.full_name || p.username}</span>
+                      <button onClick={() => unblockProfile(p.id)} className="text-[10px] font-black uppercase tracking-widest text-[#C5A059] px-4 py-2 rounded-full border border-[#C5A059]/30 transition-all hover:bg-[#C5A059]/10">Unblock</button>
                    </div>
                 ))}
                 {mutedProfiles.map(p => (
-                   <div key={p.id} className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
-                      <span className="text-[11px] font-medium text-white/60 truncate">{p.full_name || p.username}</span>
-                      <button onClick={() => unmuteProfile(p.id)} className="text-[9px] font-bold uppercase tracking-widest text-[#C5A059] px-3 py-1.5 rounded-full border border-[#C5A059]/30">Unmute</button>
+                   <div key={p.id} className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 shadow-inner">
+                      <span className="text-[12px] font-bold text-[#F2EAD6]/70 truncate max-w-[140px]">{p.full_name || p.username}</span>
+                      <button onClick={() => unmuteProfile(p.id)} className="text-[10px] font-black uppercase tracking-widest text-[#C5A059] px-4 py-2 rounded-full border border-[#C5A059]/30 transition-all hover:bg-[#C5A059]/10">Unmute</button>
                    </div>
                 ))}
               </div>
@@ -1315,16 +1416,16 @@ export default function ProfileClient({
           )}
 
           {/* Account Deletion */}
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-[10px] uppercase tracking-widest font-bold text-red-500/60 mb-3">Danger Zone</p>
+          <div className="pt-8 border-t border-white/10">
+            <p className="text-[10px] uppercase tracking-[0.25em] font-black text-red-500/60 mb-4 px-1">Danger Zone</p>
             {isDeleting ? (
-              <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 space-y-3">
-                <p className="text-xs text-red-400 font-medium">
-                  Account scheduled for deletion on {new Date(new Date(deletionDate!).getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}.
+              <div className="p-6 rounded-2xl bg-red-500/10 border border-red-500/20 space-y-4 shadow-xl">
+                <p className="text-[11px] text-red-400 font-bold uppercase tracking-wider leading-relaxed">
+                  Account scheduled for deletion on<br/>{new Date(new Date(deletionDate!).getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}.
                 </p>
                 <button 
                   onClick={cancelAccountDeletion}
-                  className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white hover:bg-white/10 transition-all"
+                  className="w-full py-4 rounded-xl bg-white/10 border border-white/20 text-[10px] font-black uppercase tracking-[0.2em] text-white hover:bg-white/20 transition-all active:scale-95"
                 >
                   Cancel Deletion Request
                 </button>
@@ -1332,13 +1433,13 @@ export default function ProfileClient({
             ) : (
               <button 
                 onClick={requestAccountDeletion}
-                className="w-full flex items-center justify-between p-4 rounded-2xl bg-red-500/5 border border-red-500/10 text-red-500/60 hover:bg-red-500/10 transition-all"
+                className="w-full flex items-center justify-between p-5 rounded-2xl bg-red-500/5 border border-red-500/10 text-red-500/60 hover:bg-red-500/10 transition-all duration-300 group shadow-lg"
               >
                 <div className="flex flex-col items-start">
-                  <span className="text-[10px] font-bold uppercase tracking-wider">Delete Account</span>
-                  <span className="text-[9px] opacity-60">30-day cool-off period applies</span>
+                  <span className="text-[11px] font-black uppercase tracking-widest group-hover:text-red-500 transition-colors">Delete Account</span>
+                  <span className="text-[9px] font-bold opacity-60 uppercase tracking-wider mt-1">30-day cool-off period</span>
                 </div>
-                <AlertCircle size={16} />
+                <AlertCircle size={18} className="group-hover:scale-110 transition-transform" />
               </button>
             )}
           </div>
@@ -1358,26 +1459,30 @@ export default function ProfileClient({
             try { await navigator.clipboard.writeText(shareText); toast.success('Invite link copied! 🙏'); } catch { window.prompt('Copy your invite link:', link); }
           }
           return (
-            <motion.div className="fixed inset-0 z-[100] flex items-end" onClick={() => setInviteOpen(false)}
+            <motion.div className="fixed inset-0 z-[150] flex items-end" onClick={() => setInviteOpen(false)}
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-              <motion.div className="relative w-full rounded-t-[2.5rem] p-8 space-y-6" onClick={e => e.stopPropagation()}
-                style={{ background: 'linear-gradient(180deg, #1c1c1a, #1a1610)', borderTop: '1px solid rgba(200,146,74,0.3)', boxShadow: '0 -20px 60px rgba(0,0,0,0.5)' }}
+              <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+              <motion.div className="relative w-full rounded-t-[3rem] p-10 space-y-8" onClick={e => e.stopPropagation()}
+                style={{ background: 'linear-gradient(180deg, #1c1c1a, #12100e)', borderTop: '1px solid rgba(197, 160, 89, 0.4)', boxShadow: '0 -20px 80px rgba(0,0,0,0.8)' }}
                 initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-                transition={{ type: 'spring', damping: 25, stiffness: 200 }}>
-                <div className="w-12 h-1 rounded-full mx-auto mb-2 bg-[#C5A059]/20" />
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-serif font-bold text-[#F2EAD6]">Expand the Circle</h3>
-                  <button onClick={() => setInviteOpen(false)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
-                    <X size={18} className="text-white/40" />
+                transition={{ type: 'spring', damping: 28, stiffness: 180 }}>
+                <div className="w-16 h-1.5 rounded-full mx-auto mb-4 bg-[#C5A059]/30" />
+                <div className="flex items-center justify-between mb-2">
+                  <div className="space-y-1">
+                    <h3 className="text-2xl font-bold text-[#F2EAD6] premium-serif">Expand the Circle</h3>
+                    <p className="text-[10px] text-[#C5A059] font-black uppercase tracking-[0.25em] opacity-80">Invite your Mandali</p>
+                  </div>
+                  <button onClick={() => setInviteOpen(false)} className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 transition-all hover:bg-white/10 active:scale-90">
+                    <X size={22} className="text-[#F2EAD6]/40" />
                   </button>
                 </div>
-                <p className="text-sm text-white/60 leading-relaxed">Your devotion grows when shared. Invite your family and close friends to the Shoonaya community.</p>
-                <div className="rounded-3xl p-6 text-center border bg-[#C5A059]/5 border-[#C5A059]/20">
-                  <p className="text-[10px] mb-3 font-bold uppercase tracking-[0.2em] text-white/30">Personal Invite Code</p>
-                  <p className="text-4xl font-serif font-bold tracking-[0.1em] text-[#C5A059] uppercase">{code}</p>
+                <p className="text-sm text-[#F2EAD6]/50 leading-relaxed font-medium">Your devotion grows when shared. Invite your family and close friends to the Shoonaya community.</p>
+                <div className="rounded-[2.5rem] p-10 text-center border bg-[#C5A059]/5 border-[#C5A059]/20 shadow-inner relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#C5A059]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <p className="text-[11px] mb-4 font-black uppercase tracking-[0.3em] text-[#C5A059]/40 relative z-10">Personal Invite Code</p>
+                  <p className="text-5xl font-serif font-black tracking-[0.15em] text-[#C5A059] uppercase drop-shadow-2xl relative z-10">{code}</p>
                 </div>
-                <button onClick={share} className="w-full py-4 rounded-2xl font-bold text-xs uppercase tracking-widest shadow-xl shadow-[#C5A059]/20" style={{ background: 'var(--brand-primary)', color: '#1a1610' }}>
+                <button onClick={share} className="w-full py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.3em] bg-[#C5A059] text-black shadow-2xl shadow-[#C5A059]/30 transition-all active:scale-95 hover:bg-[#d4ae6a]">
                   🙏 Share invite
                 </button>
               </motion.div>
@@ -1409,35 +1514,38 @@ function BottomDrawer({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-end"
+          className="fixed inset-0 z-[150] flex items-end"
           onClick={onClose}
         >
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" />
           <motion.div
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            transition={{ type: 'spring', damping: 28, stiffness: 180 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-h-[85vh] overflow-y-auto rounded-t-[2.5rem] p-8 pb-12"
+            className="relative w-full max-h-[90vh] overflow-y-auto rounded-t-[3.5rem] p-10 pb-16"
             style={{ 
-              background: 'linear-gradient(180deg, #1c1c1a, #161412)', 
-              borderTop: '1px solid rgba(200,146,74,0.3)',
-              boxShadow: '0 -20px 60px rgba(0,0,0,0.6)' 
+              background: 'linear-gradient(180deg, #1c1c1a, #0d0c0b)', 
+              borderTop: '1px solid rgba(197, 160, 89, 0.4)',
+              boxShadow: '0 -20px 100px rgba(0,0,0,0.9)' 
             }}
           >
-            <div className="w-12 h-1.5 rounded-full mx-auto mb-6 bg-[#C5A059]/20" />
+            <div className="w-16 h-1.5 rounded-full mx-auto mb-10 bg-[#C5A059]/20" />
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-2xl font-serif font-bold text-[#F2EAD6]">{title}</h3>
+              <div className="space-y-1">
+                <h3 className="text-3xl font-bold text-[#F2EAD6] premium-serif tracking-tight">{title}</h3>
+                {description && <p className="text-[11px] text-[#C5A059] font-black uppercase tracking-[0.2em] opacity-80">{description}</p>}
+              </div>
               <button
                 onClick={onClose}
-                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center active:scale-90 transition-transform"
+                className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 transition-all active:scale-90 hover:bg-white/10"
               >
-                <X size={20} className="text-white/40" />
+                <X size={24} className="text-[#F2EAD6]/40" />
               </button>
             </div>
-            {description && <p className="text-sm text-white/50 mb-6 font-medium">{description}</p>}
-            <div className="custom-scrollbar">
+            
+            <div className="custom-scrollbar mt-4">
               {children}
             </div>
           </motion.div>
@@ -1461,24 +1569,24 @@ function SafetyProfileRow({
   const initials = getInitials(profile.full_name || profile.username || 'S');
 
   return (
-    <div className="rounded-2xl px-3 py-3 flex items-center gap-3" style={{ border: '1px solid rgba(200,146,74,0.12)', background: 'rgba(255,255,255,0.02)' }}>
-      <div className="relative w-10 h-10 rounded-full bg-gradient-sacred text-white flex items-center justify-center text-xs font-bold overflow-hidden flex-shrink-0">
+    <div className="rounded-[1.5rem] px-5 py-4 flex items-center gap-4 group transition-all" style={{ border: '1px solid rgba(197, 160, 89, 0.15)', background: 'rgba(255,255,255,0.02)' }}>
+      <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-[#C5A059] to-[#8C6A3B] text-black flex items-center justify-center text-sm font-black overflow-hidden flex-shrink-0 shadow-lg group-hover:scale-105 transition-transform">
         {profile.avatar_url
-          ? <Image src={profile.avatar_url} alt="" fill sizes="40px" className="object-cover" />
+          ? <Image src={profile.avatar_url} alt="" fill sizes="48px" className="object-cover" />
           : initials}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-white/90 truncate">{profile.full_name || profile.username}</p>
-        <p className="text-xs text-white/40 truncate">{profile.username ? `@${profile.username}` : 'Shoonaya member'}</p>
+        <p className="text-sm font-bold text-[#F2EAD6] truncate">{profile.full_name || profile.username}</p>
+        <p className="text-[10px] text-[#C5A059]/50 font-black uppercase tracking-widest truncate">{profile.username ? `@${profile.username}` : 'Shoonaya Member'}</p>
       </div>
       <button
         onClick={onAction}
         disabled={disabled}
-        className="px-3 py-1.5 rounded-full text-xs font-semibold transition disabled:opacity-60"
+        className="px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-40"
         style={{
-          border: '1px solid rgba(124, 58, 45, 0.18)',
-          color: 'var(--brand-primary)',
-          background: 'rgba(200,146,74,0.08)',
+          border: '1px solid rgba(197, 160, 89, 0.3)',
+          color: '#C5A059',
+          background: 'rgba(197, 160, 89, 0.08)',
         }}
       >
         {actionLabel}
@@ -1498,33 +1606,40 @@ function AvatarPreviewModal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-[150] bg-black/75 backdrop-blur-sm px-4 py-6 flex items-center justify-center"
+      className="fixed inset-0 z-[200] bg-black/85 backdrop-blur-md px-6 py-10 flex items-center justify-center"
       onClick={onClose}
     >
-      <div className="relative w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+      <div className="relative w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
           onClick={onClose}
-          className="absolute -top-12 right-0 z-10 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center active:scale-90 transition-transform"
+          className="absolute -top-16 right-0 z-10 w-12 h-12 rounded-2xl bg-white/10 text-[#F2EAD6] flex items-center justify-center transition-all hover:bg-white/20 active:scale-90 border border-white/10"
           aria-label="Close"
         >
-          <X size={20} />
+          <X size={24} />
         </button>
-        <div className="glass-panel rounded-[2.5rem] p-4 bg-white/5 border-white/10 shadow-2xl">
-          <div className="relative aspect-square w-full overflow-hidden rounded-[2rem]">
+        <motion.div 
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="clay-card rounded-[3rem] p-6 shadow-2xl border-white/10"
+        >
+          <div className="relative aspect-square w-full overflow-hidden rounded-[2.5rem] shadow-inner">
             <Image
               src={avatarUrl}
               alt={fullName}
               fill
-              sizes="(max-width: 768px) 92vw, 420px"
+              sizes="(max-width: 768px) 90vw, 500px"
               className="object-cover"
               priority
             />
           </div>
-          <p className="text-center text-sm font-bold text-[#F2EAD6] mt-4 uppercase tracking-widest">
-            {fullName}
-          </p>
-        </div>
+          <div className="text-center mt-6 space-y-1">
+            <p className="text-2xl font-bold text-[#F2EAD6] premium-serif tracking-wide">
+              {fullName}
+            </p>
+            <p className="text-[10px] text-[#C5A059] font-black uppercase tracking-[0.3em] opacity-60">Profile Vision</p>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
