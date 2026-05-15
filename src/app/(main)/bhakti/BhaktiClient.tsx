@@ -196,7 +196,7 @@ export default function BhaktiClient({
           {[
             { id: 'katha', title: 'Puranic Kathas', desc: 'Narratives of the divine.', icon: <BookOpen />, href: '/bhakti/katha' },
             { id: 'stotram', title: 'Sacred Hymns', desc: 'Powerful Sanskrit chants.', icon: <Volume2 />, href: '/bhakti/stotram' },
-            { id: 'mala', title: 'Japa Sadhana', desc: 'Digital mala for mantra.', icon: <Disc />, href: '/bhakti/mala' },
+            { id: 'mala', title: 'Japa Sadhana', desc: 'Digital mala for mantra.', icon: <Disc size={24} />, href: '/bhakti/mala' },
           ].map((item, idx) => (
             <Link key={idx} href={item.href}>
               <motion.div

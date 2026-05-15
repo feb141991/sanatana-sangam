@@ -85,7 +85,11 @@ export type TranslationKey =
   | 's1' | 's1d' | 's2' | 's2d' | 's3' | 's3d' | 's4' | 's4d' | 's5' | 's5d'
   | 's6' | 's6d' | 's7' | 's7d' | 's8' | 's8d' | 's9' | 's9d' | 's10' | 's10d'
   | 's11' | 's11d' | 's12' | 's12d' | 's13' | 's13d' | 's14' | 's14d' | 's15' | 's15d'
-  | 's16' | 's16d' | 'kulNamePlaceholder';
+  | 's16' | 's16d' | 'kulNamePlaceholder'
+  // Bhakti Revamp Ext
+  | 'bhaktiIntro' | 'dailyDisciplines' | 'dailyVani' | 'deityDesc' | 'divinePresence'
+  | 'exploreByDeity' | 'mantraJapa' | 'morningSandhya' | 'nityaSadhana' | 'purityLevel'
+  | 'ritualChecklist' | 'sacredAblution' | 'shrutiSmriti' | 'viewAll' | 'wisdomStreams';
 
 type TranslationMap = Record<TranslationKey, string>;
 
@@ -283,6 +287,21 @@ const en: TranslationMap = {
   s15: 'Vivaha', s15d: 'Marriage — Entry into the householder stage.',
   s16: 'Antyesti', s16d: 'Funeral rites — The final sacrifice to the fire.',
   kulNamePlaceholder: 'Enter Lineage Name…',
+  bhaktiIntro: 'Awaken the sacred within through ancient vibrations and disciplined devotion.',
+  dailyDisciplines: 'Daily Disciplines',
+  dailyVani: 'Daily Vani',
+  deityDesc: 'Connect with the different manifestations of the divine.',
+  divinePresence: 'Divine Presence',
+  exploreByDeity: 'Explore by Deity',
+  mantraJapa: 'Mantra Japa',
+  morningSandhya: 'Morning Sandhya',
+  nityaSadhana: 'Nitya Sadhana',
+  purityLevel: 'Purity Level',
+  ritualChecklist: 'Ritual Checklist',
+  sacredAblution: 'Sacred Ablution',
+  shrutiSmriti: 'Shruti & Smriti',
+  viewAll: 'View All',
+  wisdomStreams: 'Wisdom Streams',
 };
 
 const hi: TranslationMap = {
@@ -478,6 +497,21 @@ const hi: TranslationMap = {
   s15: 'विवाह', s15d: 'विवाह — गृहस्थ जीवन में प्रवेश।',
   s16: 'अंत्येष्टि', s16d: 'अंतिम संस्कार — अग्नि को अंतिम आहुति।',
   kulNamePlaceholder: 'कुल का नाम दर्ज करें…',
+  bhaktiIntro: 'प्राचीन स्पंदनों और अनुशासित भक्ति के माध्यम से अपने भीतर के पावन स्वरूप को जागृत करें।',
+  dailyDisciplines: 'दैनिक अनुशासन',
+  dailyVani: 'दैनिक वाणी',
+  deityDesc: 'ईश्वर के विभिन्न स्वरूपों के साथ जुड़ें।',
+  divinePresence: 'दिव्य उपस्थिति',
+  exploreByDeity: 'देवता द्वारा खोजें',
+  mantraJapa: 'मंत्र जप',
+  morningSandhya: 'प्रातः संध्या',
+  nityaSadhana: 'नित्य साधना',
+  purityLevel: 'शुद्धि स्तर',
+  ritualChecklist: 'अनुष्ठान सूची',
+  sacredAblution: 'पवित्र स्नान',
+  shrutiSmriti: 'श्रुति और स्मृति',
+  viewAll: 'सभी देखें',
+  wisdomStreams: 'ज्ञान धाराएं',
 };
 
 const pa: TranslationMap = {
@@ -673,6 +707,21 @@ const pa: TranslationMap = {
   s15: 'ਵਿਵਾਹ', s15d: 'ਵਿਆਹ — ਗ੍ਰਹਿਸਥ ਜੀਵਨ ਵਿੱਚ ਪ੍ਰਵੇਸ਼।',
   s16: 'ਅੰਤਿਮ ਸੰਸਕਾਰ', s16d: 'ਅੰਤਿਮ ਸੰਸਕਾਰ — ਅਗਨੀ ਨੂੰ ਅੰਤਿਮ ਭੇਟ।',
   kulNamePlaceholder: 'ਕੁਲ ਦਾ ਨਾਮ ਦਰਜ ਕਰੋ…',
+  bhaktiIntro: 'ਪ੍ਰਾਚੀਨ ਕੰਪਨਾਂ ਅਤੇ ਅਨੁਸ਼ਾਸਿਤ ਭਗਤੀ ਦੁਆਰਾ ਆਪਣੇ ਅੰਦਰਲੇ ਪਵਿੱਤਰ ਸਰੂਪ ਨੂੰ ਜਗਾਓ।',
+  dailyDisciplines: 'ਰੋਜ਼ਾਨਾ ਅਨੁਸ਼ਾਸਨ',
+  dailyVani: 'ਰੋਜ਼ਾਨਾ ਬਾਣੀ',
+  deityDesc: 'ਪ੍ਰਮਾਤਮਾ ਦੇ ਵੱਖ-ਵੱਖ ਰੂਪਾਂ ਨਾਲ ਜੁੜੋ।',
+  divinePresence: 'ਦੈਵੀ ਮੌਜੂਦਗੀ',
+  exploreByDeity: 'ਦੇਵਤੇ ਦੁਆਰਾ ਖੋਜੋ',
+  mantraJapa: 'ਮੰਤਰ ਜਾਪ',
+  morningSandhya: 'ਸਵੇਰ ਦੀ ਸੰਧਿਆ',
+  nityaSadhana: 'ਨਿਤਨੇਮ',
+  purityLevel: 'ਸ਼ੁੱਧਤਾ ਪੱਧਰ',
+  ritualChecklist: 'ਅਨੁਸ਼ਠਾਨ ਸੂਚੀ',
+  sacredAblution: 'ਪਵਿੱਤਰ ਇਸ਼ਨਾਨ',
+  shrutiSmriti: 'ਸ਼ਰੁਤੀ ਅਤੇ ਸਮ੍ਰਿਤੀ',
+  viewAll: 'ਸਭ ਵੇਖੋ',
+  wisdomStreams: 'ਗਿਆਨ ਦੀਆਂ ਧਾਰਾਵਾਂ',
 };
 
 export const TRANSLATIONS: Record<AppLang, TranslationMap> = { en, hi, pa };
