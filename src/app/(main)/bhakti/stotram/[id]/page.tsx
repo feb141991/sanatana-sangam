@@ -127,7 +127,7 @@ function StotramReader({ id }: { id: string }) {
   const { t } = useLanguage();
 
   const [activeVerse, setActiveVerse] = useState<number | null>(null);
-  const [showAll,     setShowAll]     = useState(true);
+  const [showAll,     setShowAll]     = useState(false);
 
   // ── Tokens ──────────────────────────────────────────────────────────────────
   const pageBg  = isDark ? `linear-gradient(180deg,#0e0a06 0%,#160f08 100%)` : `linear-gradient(180deg,#fdf6ee 0%,#f5e8d5 100%)`;

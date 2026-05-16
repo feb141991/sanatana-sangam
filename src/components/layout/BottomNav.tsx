@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
@@ -136,13 +136,21 @@ export default function BottomNav({ isGuest = false }: Props) {
   
   const [quickOpen, setQuickOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [otherMenuIcon, setOtherMenuIcon] = useState<string | null>(null);
+
+  const lastScrollYRef = useRef(0);
 
   // Scroll responsive collapsing (collapses to left on scroll down, expands to center on scroll up)
   useEffect(() => {
+    // Prevent false scroll triggers by storing current scroll on mount
+    lastScrollYRef.current = window.scrollY;
+
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
+      const lastScrollY = lastScrollYRef.current;
+      
+      const diff = currentScrollY - lastScrollY;
+      if (Math.abs(diff) < 8) return; // ignore minor scroll tremors
       
       if (currentScrollY > lastScrollY && currentScrollY > 70) {
         setIsVisible(false);
@@ -161,12 +169,12 @@ export default function BottomNav({ isGuest = false }: Props) {
         setIsVisible(true);
       }
 
-      setLastScrollY(currentScrollY);
+      lastScrollYRef.current = currentScrollY;
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   // Signal AI chat FAB to hide/show
   useEffect(() => {
