@@ -123,6 +123,8 @@ Last updated: 2026-04-09
 - [x] Create `LANGUAGE_SUPPORT_PLAN.md` to separate sacred content script support, UI localization, and user preference modeling
 - [ ] Implement sacred-content language support first: original script, transliteration, and meaning-language preferences before broad shell localization
 - [ ] Later shape a bhajan discovery MVP as a catalog + ranking + open-out experience, not a heavy streaming product
+- [ ] Shape Tirtha into a sacred-place companion: place detail pages, private-first check-ins, Tirtha Passport, seasonal relevance, share cards, and tradition-aware visit guidance from `TIRTHA_STRATEGY.md`
+- [ ] Audit permission timing before native store submission: location, notifications, microphone, camera/photos, haptics, clipboard/share, and local preferences must be prompted only in context with clear user intent
 - [ ] Activate referral attribution from invite codes
 - [ ] Shape Panchang into an atmospheric sacred-time experience: living sky background, calmer motion, large readable cards, and optional light haptics that still work well for elders
 - [x] Create a dedicated experience roadmap in `UX_SWEEP_PLAN.md` for Panchang, Kul, Mandali, Pathshala, Home, Profile, and Notifications
@@ -157,6 +159,8 @@ Last updated: 2026-04-09
 - The first Pathshala experience pass is now active too: root, tradition, track, and chapter surfaces are being reshaped into calmer study-entry lanes rather than dense knowledge stacks.
 - The first Vichaar Sabha experience pass is now active too: the forum is being reshaped to feel like a guided wisdom space instead of a generic thread board.
 - The first Tirtha Map experience pass is now active too: discovery is being framed as calmer sacred-place guidance instead of only a search utility.
+- `TIRTHA_STRATEGY.md` now tracks the deeper Tirtha product lane: place pages, private-first check-ins, Tirtha Passport, seasonal/festival relevance, family/Kul memory, and share cards.
+- Native store readiness needs a permission audit: browser/local key-value storage does not require a runtime permission prompt, but location, notifications, microphone, camera/photos, background location, and exact alarms do require clear copy and context-specific prompts.
 - The first auth/front-door experience pass is now active too: login, signup, join, guest, and recovery flows are being shaped to feel warmer and less transactional.
 - The first AI chat experience pass is now active too: Dharma Mitra is being shaped into a calmer study-and-reflection companion instead of a generic assistant box.
 - The first Bhakti experience pass is now active too: the placeholder is being turned into a meaningful devotional preview surface instead of a dead-end coming-soon card.

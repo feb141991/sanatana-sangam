@@ -136,5 +136,58 @@ CREATE TABLE pilgrim_checkins (
 
 ---
 
+## 2026 Product Research Addendum: Launchable Tirtha Companion
+
+The practical launch direction is to make Tirtha feel less like a generic map utility and more like a sacred-place companion:
+
+> Discover, prepare for, remember, and optionally share sacred visits.
+
+### MVP product slice
+
+1. **Place detail pages**
+   * Every map/list result should open into a dedicated sacred-place page.
+   * Include hero/identity, tradition, distance, opening heuristic, directions, phone/website, etiquette, visit guidance, and source-confidence state.
+
+2. **Save + sacred check-in**
+   * Add save/visited actions from the place page.
+   * Default check-ins to `private`.
+   * Privacy options: `private`, `family`, `mandali`, `public`.
+   * Record visit note, darshan mood, optional photo, optional companions, and optional pradakshina/seva metadata.
+
+3. **Tirtha Passport**
+   * A private memory surface for visited sacred places.
+   * Show count, recent visits, map/list toggle, tradition breakdown, family visits, and saved-but-not-yet-visited places.
+   * Avoid ego-driven leaderboards; use memory, continuity, and gratitude.
+
+4. **Seasonal / festival relevance**
+   * Use the existing festival + tradition metadata to surface relevant places.
+   * Examples: Mahashivratri → Shiva temples, Gurpurab → gurdwaras/langar, Paryushan → Jain temples/pratikraman, Vesak/Purnima → Buddhist centers.
+
+5. **Share card**
+   * Generate a polished optional visit card with place name, city, date, short blessing, and Shoonaya mark.
+   * Never expose exact live location by default.
+
+### Data model direction
+
+Minimum new tables / models:
+
+* `tirtha_places`: canonical normalized places from Overpass, admin, or user-confirmed saves.
+* `tirtha_saves`: user saved places.
+* `tirtha_visits`: user check-ins / visit memories.
+* `tirtha_place_notes`: admin/community practical notes and verified corrections.
+* `tirtha_place_media`: approved images and share-card assets.
+* `tirtha_collections`: seasonal journeys, curated routes, and tradition-specific lists.
+* `tirtha_reports`: wrong location, duplicate, closed, inappropriate, or tradition mismatch reports.
+
+### Privacy and store-review guardrails
+
+* Never auto-share live check-ins.
+* Ask for location only in context, with a visible reason, before invoking native/browser permission.
+* Keep geofencing/background-location as a later native-only feature because it requires stronger App Store / Play Store justification.
+* Add reporting and admin verification because OpenStreetMap/Overpass data can be incomplete or misclassified.
+* Keep vocabulary tradition-aware: no `aarti` for gurdwaras; use `sangat`, `darbar`, `langar`, `simran`, `vihara`, `dhamma`, `jina darshan`, `pratikraman`, etc. where appropriate.
+
+---
+
 ### Product Manager's Closing Thoughts
 By elevating the Tirtha Map from a sterile directory into an active, mindful companion, we align Shoonaya with the deepest traditions of the East. We respect the user's phone space by encouraging presence over scrolling, and we create a gorgeous, gamification-free chronicle of their lifelong spiritual footprint. 
