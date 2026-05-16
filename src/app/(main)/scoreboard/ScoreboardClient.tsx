@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 import { getInitials } from '@/lib/utils';
 import { shareScoreToWhatsApp } from '@/lib/whatsapp';
-import BottomNav from '@/components/layout/BottomNav';
 
 type LeaderboardUser = {
   id: string;
@@ -242,8 +241,7 @@ export default function ScoreboardClient({ initialUsers, currentUserId }: { init
           ))}
         </div>
       </div>
-
-      <BottomNav />
     </div>
   );
 }
+

@@ -68,7 +68,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 // DivineDiya removed — Prāthanā card removed from home
-import BottomNav from '@/components/layout/BottomNav';
 
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
@@ -1615,7 +1614,7 @@ export default function HomeDashboard({
     dbThemes: heroThemes,
   });
   
-  const isFestivalTheme = Boolean(heroTheme.festivalSlugs && heroTheme.festivalSlugs.length > 0);
+  const isFestivalTheme = Boolean(heroTheme.festivalSlugs && heroTheme.festivalSlugs.length > 0 && daysUntilFestival === 0);
   const activeCoverUrl = isFestivalTheme ? heroTheme.heroImage : (customCover || heroTheme.heroImage);
   
   const heroFallback = meta.heroFallback;
@@ -2704,7 +2703,6 @@ export default function HomeDashboard({
 
 
 
-      <BottomNav />
     </div>
   );
 }

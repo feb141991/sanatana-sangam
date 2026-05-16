@@ -1,9 +1,9 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, RotateCcw, Award, CheckCircle2, BookOpen, Music } from 'lucide-react';
+import { Play, Pause, RotateCcw, CheckCircle2, BookOpen, Music, Loader2 } from 'lucide-react';
 import { useSacredSync, SyncToken } from '@/hooks/useSacredSync';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface SacredReaderProps {
   shlokaId: string;
@@ -18,7 +18,7 @@ interface SacredReaderProps {
  * ─── SacredReader (The Zenith Immersive Sync Engine) ─────────────────────────
  * 
  * High-fidelity recitation engine with time-synchronized word highlighting.
- * Follows the "Deep Akasha" design language.
+ * Dynamically resolves both Standard TTS and high-fidelity Pandit AI voice.
  */
 export default function SacredReader({ 
   shlokaId, sanskrit, translation, audioUrl, tokens, source 
@@ -26,11 +26,13 @@ export default function SacredReader({
   const [isCompleted, setIsCompleted] = useState(false);
   const [mastery, setMastery] = useState(0.65); 
   const [voiceQuality, setVoiceQuality] = useState<'standard' | 'pandit'>('standard');
+  const [standardAudio, setStandardAudio] = useState<string | null>(audioUrl || null);
+  const [panditAudio, setPanditAudio] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [dynamicAudio, setDynamicAudio] = useState<string | null>(null);
 
-  const currentAudioUrl = dynamicAudio || audioUrl;
+  const currentAudioUrl = (voiceQuality === 'pandit' ? panditAudio : (standardAudio || audioUrl)) || '';
 
+  // Synchronized Recitation Engine
   const { isPlaying, activeIndex, toggle, seek, progress } = useSacredSync({
     audioUrl: currentAudioUrl,
     tokens,
@@ -47,10 +49,44 @@ export default function SacredReader({
     }
   });
 
+  // Dynamic Audio Fetcher (pre-fetch Standard on mount, lazy-fetch Pandit AI)
+  useEffect(() => {
+    setStandardAudio(audioUrl || null);
+    setPanditAudio(null);
+    setVoiceQuality('standard');
+
+    if (!audioUrl && sanskrit) {
+      const fetchStandardTTS = async () => {
+        setIsGenerating(true);
+        try {
+          const res = await fetch('/api/tts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: sanskrit, quality: 'standard' })
+          });
+          const data = await res.json();
+          if (data.audioContent) {
+            setStandardAudio(`data:audio/mp3;base64,${data.audioContent}`);
+          }
+        } catch (err) {
+          console.error('Failed to pre-fetch standard voice:', err);
+        } finally {
+          setIsGenerating(false);
+        }
+      };
+      fetchStandardTTS();
+    }
+  }, [sanskrit, audioUrl]);
+
+  // Voice quality toggler
   const togglePanditVoice = async () => {
     if (voiceQuality === 'pandit') {
       setVoiceQuality('standard');
-      setDynamicAudio(null);
+      return;
+    }
+
+    if (panditAudio) {
+      setVoiceQuality('pandit');
       return;
     }
 
@@ -63,7 +99,7 @@ export default function SacredReader({
       });
       const data = await res.json();
       if (data.audioContent) {
-        setDynamicAudio(`data:audio/mp3;base64,${data.audioContent}`);
+        setPanditAudio(`data:audio/mp3;base64,${data.audioContent}`);
         setVoiceQuality('pandit');
       }
     } catch (err) {
@@ -74,39 +110,40 @@ export default function SacredReader({
   };
 
   return (
-    <div className="relative min-h-[60vh] rounded-[4rem] overflow-hidden border border-[var(--brand-primary-soft)] bg-[var(--surface-base)] shadow-2xl">
+    <div className="relative min-h-[60vh] rounded-[3rem] overflow-hidden border border-[var(--brand-primary-soft)] bg-[var(--surface-base)] shadow-2xl">
+      
       {/* ─── 1. Akasha Backdrop (Dynamic) ─── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div 
-          animate={{ scale: isPlaying ? 1.5 : 1, opacity: isPlaying ? 0.6 : 0.2 }}
-          className="absolute top-[-20%] left-[-10%] w-[100%] h-[100%] bg-[var(--brand-primary-soft)] blur-[160px] rounded-full transition-all duration-1000" 
+          animate={{ scale: isPlaying ? 1.4 : 1, opacity: isPlaying ? 0.5 : 0.15 }}
+          className="absolute top-[-25%] left-[-10%] w-[120%] h-[120%] bg-[var(--brand-primary-soft)] blur-[140px] rounded-full transition-all duration-1000" 
         />
         {/* Atmospheric Dimming Overlay */}
         <motion.div 
-          animate={{ opacity: isPlaying ? 0.15 : 0 }}
+          animate={{ opacity: isPlaying ? 0.12 : 0 }}
           className="absolute inset-0 bg-black pointer-events-none z-0"
         />
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-[0.05]" />
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-[0.04]" />
       </div>
 
-      <div className="relative z-10 p-12 sm:p-20 flex flex-col h-full space-y-12">
+      <div className="relative z-10 p-8 sm:p-12 flex flex-col h-full space-y-8">
         
         {/* ─── 2. Header & Progress Tracker ─── */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[var(--brand-primary-soft)] flex items-center justify-center text-[var(--brand-primary)]">
-              <BookOpen size={24} />
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[var(--brand-primary-soft)] flex items-center justify-center text-[var(--brand-primary)]">
+              <BookOpen size={20} />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--brand-primary)] opacity-60">Pathshala Mastery</p>
-              <h4 className="text-xl font-bold premium-serif theme-ink">{source}</h4>
+              <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-primary)] opacity-70">Guided Study</p>
+              <h4 className="text-base font-bold premium-serif theme-ink leading-tight">{source}</h4>
             </div>
           </div>
 
-          <div className="flex-1 max-w-md w-full px-6">
-            <div className="relative h-1.5 w-full bg-[var(--brand-primary-soft)] rounded-full overflow-hidden">
+          <div className="flex-1 max-w-xs w-full sm:px-4">
+            <div className="relative h-1 w-full bg-[var(--brand-primary-soft)] rounded-full overflow-hidden">
               <motion.div 
-                className="absolute inset-y-0 left-0 bg-gradient-to-r from-[var(--brand-primary)] to-[#FFCC33] shadow-[0_0_10px_rgba(200,146,74,0.5)]"
+                className="absolute inset-y-0 left-0 bg-gradient-to-r from-[var(--brand-primary)] to-[#FFCC33] shadow-[0_0_8px_rgba(200,146,74,0.4)]"
                 style={{ width: `${progress}%` }}
                 transition={{ type: 'spring', bounce: 0, duration: 0.2 }}
               />
@@ -115,53 +152,53 @@ export default function SacredReader({
         </div>
 
         {/* ─── 3. The Synchronized Text Canvas ─── */}
-        <div className="flex-1 flex flex-col items-center justify-center space-y-12 py-12">
+        <div className="flex-1 flex flex-col items-center justify-center space-y-8 py-6">
           {/* Sanskrit Layer */}
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-10 max-w-5xl px-4">
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-6 max-w-4xl px-2">
             {tokens.map((token, idx) => (
               <motion.span
                 key={idx}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ 
                   opacity: 1, 
                   y: 0,
-                  color: activeIndex === idx ? 'var(--brand-primary)' : (isPlaying ? 'rgba(var(--text-ink-rgb), 0.3)' : 'var(--theme-ink)'),
-                  scale: activeIndex === idx ? 1.15 : 1,
-                  filter: activeIndex === idx ? 'drop-shadow(0 0 15px var(--brand-primary-soft))' : 'none',
+                  color: activeIndex === idx ? 'var(--brand-primary)' : (isPlaying ? 'rgba(var(--text-ink-rgb), 0.35)' : 'var(--theme-ink)'),
+                  scale: activeIndex === idx ? 1.12 : 1,
+                  filter: activeIndex === idx ? 'drop-shadow(0 0 12px var(--brand-primary-soft))' : 'none',
                   z: activeIndex === idx ? 10 : 0
                 }}
                 transition={{ 
                   type: 'spring', 
-                  stiffness: 300, 
-                  damping: 30,
-                  opacity: { duration: 0.2 }
+                  stiffness: 280, 
+                  damping: 28,
+                  opacity: { duration: 0.18 }
                 }}
-                className="text-4xl md:text-7xl font-bold premium-serif cursor-pointer relative"
+                className="text-2xl md:text-5xl font-bold premium-serif cursor-pointer relative"
                 onClick={() => seek(token.start)}
               >
                 {token.word}
                 {activeIndex === idx && (
                   <motion.div 
                     layoutId="divine-underline"
-                    className="absolute -bottom-2 left-0 right-0 h-1 bg-[var(--brand-primary)] rounded-full blur-[2px]"
+                    className="absolute -bottom-1.5 left-0 right-0 h-[3px] bg-[var(--brand-primary)] rounded-full blur-[1px]"
                     initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.6 }}
+                    animate={{ opacity: 0.7 }}
                   />
                 )}
               </motion.span>
             ))}
           </div>
 
-          {/* Translation Layer (Faded unless active or paused) */}
+          {/* Translation Layer */}
           <AnimatePresence mode="wait">
             <motion.div
               key={activeIndex}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="text-center px-8"
+              exit={{ opacity: 0, y: -8 }}
+              className="text-center px-4"
             >
-              <p className="text-lg md:text-2xl italic theme-muted max-w-2xl font-medium leading-relaxed opacity-80">
+              <p className="text-sm md:text-lg italic theme-muted max-w-lg font-medium leading-relaxed opacity-85">
                 &ldquo;{translation}&rdquo;
               </p>
             </motion.div>
@@ -169,49 +206,64 @@ export default function SacredReader({
         </div>
 
         {/* ─── 4. Controls ─── */}
-        <div className="pt-8 flex flex-col items-center space-y-6">
-          <div className="flex items-center gap-10">
-            <button onClick={() => seek(0)} className="theme-muted hover:theme-ink transition-colors">
-              <RotateCcw size={24} />
+        <div className="pt-4 flex flex-col items-center space-y-4">
+          <div className="flex items-center gap-8">
+            {/* Reset Seek */}
+            <button 
+              onClick={() => seek(0)} 
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+              title="Reset Recitation"
+            >
+              <RotateCcw size={16} className="text-[var(--text-dim)]" />
             </button>
+
+            {/* Play/Pause Trigger */}
             <button 
               onClick={toggle}
-              disabled={isGenerating}
-              className={`w-20 h-20 rounded-full bg-[var(--brand-primary)] text-white shadow-2xl flex items-center justify-center transform transition-all hover:scale-110 active:scale-95 ${isGenerating ? 'opacity-50 grayscale' : ''}`}
+              disabled={isGenerating || !currentAudioUrl}
+              className={`w-16 h-16 rounded-full bg-[var(--brand-primary)] text-white shadow-xl flex items-center justify-center transform transition-all hover:scale-105 active:scale-95 ${
+                isGenerating || !currentAudioUrl ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
+              }`}
             >
               {isGenerating ? (
-                <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+                <Loader2 size={24} className="animate-spin text-[#1c1c1a]" />
               ) : (
-                isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />
+                isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-0.5" />
               )}
             </button>
             
+            {/* Pandit AI (HD) Toggle */}
             <button 
               onClick={togglePanditVoice}
-              className={`group relative flex flex-col items-center gap-2 transition-all ${voiceQuality === 'pandit' ? 'scale-110' : 'opacity-60 hover:opacity-100'}`}
+              disabled={isGenerating}
+              className={`group relative flex flex-col items-center gap-1 transition-all ${
+                voiceQuality === 'pandit' ? 'scale-105' : 'opacity-65 hover:opacity-100'
+              }`}
             >
-              <div className={`relative p-4 rounded-2xl border-2 overflow-hidden transition-all duration-500 ${
+              <div className={`relative p-3.5 rounded-xl border transition-all duration-300 ${
                 voiceQuality === 'pandit' 
-                  ? 'bg-gradient-to-br from-[#FF9933] to-[#FFCC33] border-[#FFCC33] shadow-[0_0_30px_rgba(255,153,51,0.4)]' 
+                  ? 'bg-gradient-to-br from-[#FF9933] to-[#FFCC33] border-[#FFCC33] shadow-[0_0_20px_rgba(255,153,51,0.3)]' 
                   : 'bg-white/5 border-white/10'
               }`}>
-                <Music size={22} className={voiceQuality === 'pandit' ? 'text-white' : 'theme-muted'} />
+                <Music size={18} className={voiceQuality === 'pandit' ? 'text-[#1c1c1a]' : 'theme-muted'} />
                 
                 {voiceQuality === 'pandit' && (
                   <motion.div 
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
                     animate={{ x: ['-200%', '200%'] }}
                     transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
                   />
                 )}
               </div>
               
-              <div className="flex items-center gap-1.5">
-                <span className={`text-[10px] font-black uppercase tracking-widest ${voiceQuality === 'pandit' ? 'text-[#FF9933]' : 'theme-muted'}`}>
-                  Pandit AI
+              <div className="flex items-center gap-1">
+                <span className={`text-[8px] font-black uppercase tracking-widest ${
+                  voiceQuality === 'pandit' ? 'text-[#FF9933]' : 'theme-muted'
+                }`}>
+                  {voiceQuality === 'pandit' ? 'Pandit AI' : 'Standard'}
                 </span>
                 {voiceQuality === 'pandit' && (
-                  <span className="bg-[#FF9933] text-[8px] font-black text-white px-1.5 py-0.5 rounded-sm">HD</span>
+                  <span className="bg-[#FF9933] text-[7px] font-black text-white px-1 py-0.2 rounded-sm leading-none">HD</span>
                 )}
               </div>
             </button>
@@ -225,22 +277,22 @@ export default function SacredReader({
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="absolute inset-0 z-50 bg-[var(--surface-base)]/90 backdrop-blur-xl flex flex-col items-center justify-center p-12 text-center"
+            className="absolute inset-0 z-50 bg-[var(--surface-base)]/95 backdrop-blur-xl flex flex-col items-center justify-center p-8 text-center"
           >
             <motion.div
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="w-24 h-24 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center mb-8"
+              className="w-16 h-16 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center mb-6"
             >
-              <CheckCircle2 size={48} />
+              <CheckCircle2 size={32} />
             </motion.div>
-            <h2 className="text-4xl font-bold premium-serif theme-ink mb-4">Mastery Increased</h2>
-            <p className="theme-muted mb-12 max-w-sm">You have successfully completed a guided recitation. Your spiritual momentum is growing.</p>
+            <h2 className="text-2xl font-bold premium-serif theme-ink mb-2">Recitation Complete</h2>
+            <p className="theme-muted mb-8 max-w-xs text-xs leading-relaxed">Your recitation practice has been successfully registered. You have earned sadhana points. Keep moving forward!</p>
             <button 
               onClick={() => setIsCompleted(false)}
-              className="px-10 py-4 rounded-full bg-[var(--brand-primary)] text-white font-bold tracking-widest uppercase text-xs"
+              className="px-8 py-3 rounded-full bg-[var(--brand-primary)] text-white font-bold tracking-widest uppercase text-[10px]"
             >
-              Return to Sanctuary
+              Continue Practice
             </button>
           </motion.div>
         )}

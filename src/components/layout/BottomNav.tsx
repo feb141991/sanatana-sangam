@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Heart, MessageCircle, Sun, Users, Radio, BookOpen, Shield } from 'lucide-react';
+import { Heart, BookOpen, Users, Home, Plus, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
@@ -13,33 +13,35 @@ interface Props {
   isGuest?: boolean;
 }
 
-// ── Quick Actions ──────────────────────────────────────────────────────────────
+// ── Quick Actions for Sacred Menu ──────────────────────────────────────────────
 const QUICK_ACTIONS = [
-  { icon: '📿', label: 'japa',         href: '/japa'        },
-  { icon: '🧠', label: 'quizMastery',  href: '/quiz'        },
-  { icon: '💬', label: 'vichaar',      href: '/mandali'     },
-  { icon: '🤝', label: 'sevaHub',      href: '/seva'        },
-  { icon: '🔆', label: 'sadhanaPulse', href: '/my-progress' },
+  { icon: '📿', label: 'japa',         href: '/bhakti/mala', desc: 'Chant your ishta mantra' },
+  { icon: '🔆', label: 'morningRoutine', href: '/nitya-karma', desc: 'Complete daily rhythms' },
+  { icon: '❤️', label: 'kul',          href: '/kul',         desc: 'Family lineage sadhana' },
+  { icon: '🤝', label: 'sevaHub',      href: '/seva',        desc: 'Support sacred causes' },
+  { icon: '📈', label: 'sadhanaPulse', href: '/my-progress', desc: 'Track your spiritual progress' },
+  { icon: '🧠', label: 'quizMastery',  href: '/home?focus=quiz', desc: 'Test your dharmic knowledge' },
 ];
+
 const GUEST_QUICK_ACTIONS = [
-  { icon: '✨', label: 'join',    href: '/signup'  },
-  { icon: '🔍', label: 'explore', href: '/guest'   },
-  { icon: '💬', label: 'vichaar', href: '/mandali' },
+  { icon: '✨', label: 'join',    href: '/signup',  desc: 'Create your profile' },
+  { icon: '🔍', label: 'explore', href: '/guest',   desc: 'Explore the dashboard' },
+  { icon: '💬', label: 'vichaar', href: '/mandali', desc: 'Read local discussions' },
 ];
 
 // Glass tokens — computed per-theme
 function useGlass(isDark: boolean) {
   return {
-    bg:     isDark ? 'rgba(10, 8, 6, 0.72)'      : 'rgba(255, 252, 248, 0.80)',
-    border: isDark ? 'rgba(255, 255, 255, 0.08)'  : 'rgba(0, 0, 0, 0.05)',
-    blur:   'blur(40px) saturate(200%)',
+    bg:     isDark ? 'rgba(12, 10, 8, 0.82)'      : 'rgba(255, 252, 248, 0.88)',
+    border: isDark ? 'rgba(200, 146, 74, 0.18)'  : 'rgba(200, 146, 74, 0.12)',
+    blur:   'blur(42px) saturate(210%)',
     shadow: isDark
-      ? '0 8px 32px rgba(0,0,0,0.45), inset 0 1px 1px rgba(255,255,255,0.05)'
-      : '0 8px 32px rgba(0,0,0,0.08), inset 0 1px 1px rgba(255,255,255,0.9)',
+      ? '0 12px 40px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.06)'
+      : '0 12px 40px rgba(180,120,40,0.08), inset 0 1px 1px rgba(255,255,255,0.9)',
   };
 }
 
-// ── Quick-action menu ─────────────────────────────────────────────────────────
+// ── Floating Quick Menu (Sacred Action Grid) ──────────────────────────────────
 function FloatingQuickMenu({
   open, onClose, isGuest, isDark,
 }: { open: boolean; onClose: () => void; isGuest: boolean; isDark: boolean }) {
@@ -47,55 +49,75 @@ function FloatingQuickMenu({
   const { t } = useLanguage();
   const router  = useRouter();
   const actions = isGuest ? GUEST_QUICK_ACTIONS : QUICK_ACTIONS;
-  const reversed = [...actions].reverse();
   const GLASS = useGlass(isDark);
-  const labelColor = isDark ? 'rgba(245, 220, 160, 0.92)' : 'rgba(80, 45, 8, 0.88)';
   const ease = [0.22, 1, 0.36, 1] as const;
 
   return (
-    <AnimatePresence mode="popLayout">
+    <AnimatePresence>
       {open && (
         <>
           {/* Backdrop for outside-click */}
           <motion.div
-            className="fixed inset-0 z-[54]"
+            className="fixed inset-0 z-[54] bg-black/40 backdrop-blur-[2px]"
             onClick={onClose}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.18, ease }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease }}
           />
 
-          {/* Quick-action pills — anchored above the + button */}
+          {/* Quick-action Grid Overlay — anchored beautifully above bottom nav */}
           <motion.div
-            className="fixed bottom-[90px] right-4 z-[55] flex flex-col-reverse items-end gap-2"
-            initial={prefersReducedMotion ? undefined : { opacity: 0, y: 8, scale: 0.97 }}
+            className="fixed bottom-[96px] left-4 right-4 z-[55] max-w-2xl mx-auto rounded-[2.2rem] p-6 border"
+            style={{
+              background:           GLASS.bg,
+              borderColor:          GLASS.border,
+              backdropFilter:       GLASS.blur,
+              WebkitBackdropFilter: GLASS.blur,
+              boxShadow:            GLASS.shadow,
+            }}
+            initial={prefersReducedMotion ? undefined : { opacity: 0, y: 24, scale: 0.96 }}
             animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
-            exit={prefersReducedMotion   ? undefined : { opacity: 0, y: 8, scale: 0.97 }}
-            transition={{ duration: 0.22, ease }}
+            exit={prefersReducedMotion   ? undefined : { opacity: 0, y: 16, scale: 0.97 }}
+            transition={{ duration: 0.28, ease }}
           >
-            {reversed.map((action, i) => (
-              <motion.button
-                key={action.href}
-                onClick={() => { onClose(); router.push(action.href); }}
-                className="flex items-center gap-3 rounded-full px-5 py-3 cursor-pointer"
-                style={{
-                  background:           GLASS.bg,
-                  border:               `1px solid ${GLASS.border}`,
-                  backdropFilter:       GLASS.blur,
-                  WebkitBackdropFilter: GLASS.blur,
-                  boxShadow:            GLASS.shadow,
-                }}
-                whileTap={{ scale: 0.94 }}
-                initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10, scale: 0.94 }}
-                animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0,  scale: 1    }}
-                exit={prefersReducedMotion    ? undefined : { opacity: 0, y: 6,  scale: 0.96 }}
-                transition={{ duration: 0.22, delay: prefersReducedMotion ? 0 : i * 0.04, ease }}
+            {/* Title / Motif */}
+            <div className="flex items-center justify-between mb-5 px-1">
+              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#C5A059]">
+                {isGuest ? 'Explore Shoonaya' : 'Sacred Sadhana Actions'}
+              </span>
+              <button 
+                onClick={onClose}
+                className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
               >
-                <span className="text-[1.4rem] leading-none">{action.icon}</span>
-                <span className="text-[14px] font-bold" style={{ color: labelColor, letterSpacing: '-0.01em' }}>
-                  {t(action.label as any)}
-                </span>
-              </motion.button>
-            ))}
+                <X size={14} className="text-[var(--text-dim)]" />
+              </button>
+            </div>
+
+            {/* Grid layout */}
+            <div className={cn("grid gap-3", isGuest ? "grid-cols-1" : "grid-cols-2")}>
+              {actions.map((action, i) => (
+                <motion.button
+                  key={action.href}
+                  onClick={() => { onClose(); router.push(action.href); }}
+                  className="flex items-center gap-4 rounded-2xl p-4 text-left border border-black/[0.03] dark:border-white/[0.03] bg-black/[0.02] dark:bg-white/[0.01] hover:bg-[#C5A059]/5 dark:hover:bg-[#C5A059]/10 hover:border-[#C5A059]/30 transition-all"
+                  whileTap={{ scale: 0.97 }}
+                  initial={prefersReducedMotion ? undefined : { opacity: 0, y: 8 }}
+                  animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2, delay: prefersReducedMotion ? 0 : i * 0.03 }}
+                >
+                  <span className="text-2xl select-none">{action.icon}</span>
+                  <div>
+                    <h4 className="text-xs font-bold theme-ink leading-tight">
+                      {t(action.label as any)}
+                    </h4>
+                    <p className="text-[10px] text-[var(--text-dim)] leading-tight mt-0.5">
+                      {action.desc}
+                    </p>
+                  </div>
+                </motion.button>
+              ))}
+            </div>
           </motion.div>
         </>
       )}
@@ -111,28 +133,53 @@ export default function BottomNav({ isGuest = false }: Props) {
   const { resolvedTheme } = useThemePreference();
   const isDark   = resolvedTheme === 'dark';
   const GLASS    = useGlass(isDark);
+  
   const [quickOpen, setQuickOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
-  // Signal AI FAB to hide/show when quick menu toggles
+  // Scroll responsive collapsing
   useEffect(() => {
-    window.dispatchEvent(new CustomEvent('ai-fab-visibility', { detail: { hidden: quickOpen } }));
-  }, [quickOpen]);
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Collapse on scroll down, reveal on scroll up
+      if (currentScrollY > lastScrollY && currentScrollY > 70) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
 
-  const memberNavItems = [
-    { href: '/pathshala',   label: t('navPathshala'), mobileLabel: t('study'),   icon: BookOpen      },
-    { href: '/nitya-karma', label: t('morningRoutine'), mobileLabel: 'Nitya',    icon: Sun           },
-    { href: '/bhakti',      label: t('bhakti'),       mobileLabel: 'Bhakti',     icon: Heart         },
-    { href: '/kul',         label: t('kul'),          mobileLabel: t('kul'),     icon: Shield        },
-    { href: '/mandali',     label: t('navMandali'),   mobileLabel: t('circle'),  icon: MessageCircle },
-  ];
-  const guestNavItems = [
-    { href: '/mandali', label: 'Mandali', mobileLabel: t('circle'), icon: MessageCircle },
-  ];
+      // Always visible near top and bottom
+      if (currentScrollY < 30) {
+        setIsVisible(true);
+      }
+      
+      const windowHeight = window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+      if (currentScrollY + windowHeight >= docHeight - 80) {
+        setIsVisible(true);
+      }
 
-  const navItems  = isGuest ? guestNavItems : memberNavItems;
-  const isHome    = pathname === '/home' || pathname === '/guest';
-  const ease      = [0.22, 1, 0.36, 1] as const;
-  const dur       = prefRM ? 0 : 0.25;
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
+  // Signal AI chat FAB to hide/show
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('ai-fab-visibility', { detail: { hidden: quickOpen || !isVisible } }));
+  }, [quickOpen, isVisible]);
+
+  const activeHome = pathname === '/home' || pathname === '/guest';
+  const activePathshala = pathname === '/pathshala' || pathname.startsWith('/pathshala/');
+  const activeBhakti = pathname === '/bhakti' || pathname.startsWith('/bhakti/');
+  const activeMandali = pathname === '/mandali' || pathname.startsWith('/mandali/');
+
+  const ease = [0.22, 1, 0.36, 1] as const;
+  const dur = prefRM ? 0 : 0.25;
 
   return (
     <>
@@ -143,12 +190,18 @@ export default function BottomNav({ isGuest = false }: Props) {
         isDark={isDark}
       />
 
-      <nav
-        className="fixed bottom-0 left-0 right-0 z-[100] px-4 pb-[env(safe-area-inset-bottom,16px)] mb-3 pointer-events-none"
+      <motion.nav
+        className="fixed left-0 right-0 z-[100] px-4 pointer-events-none"
+        initial={{ y: 0 }}
+        animate={{ y: isVisible ? 0 : 120 }}
+        transition={{ duration: 0.32, ease: [0.25, 0.8, 0.25, 1] }}
+        style={{
+          bottom: 'max(14px, env(safe-area-inset-bottom))',
+        }}
       >
         <div className="max-w-2xl mx-auto flex justify-center">
           <div
-            className="relative flex items-center h-[64px] rounded-[2rem] w-full pointer-events-auto"
+            className="relative flex items-center h-[68px] rounded-[2.2rem] w-full pointer-events-auto px-2"
             style={{
               background:           GLASS.bg,
               border:               `1px solid ${GLASS.border}`,
@@ -157,117 +210,129 @@ export default function BottomNav({ isGuest = false }: Props) {
               boxShadow:            GLASS.shadow,
             }}
           >
+            {isGuest ? (
+              // ── Guest Layout (3-tabs) ───────────────────────────────────────
+              <div className="flex-1 flex items-center justify-around w-full">
+                {/* Home */}
+                <Link href="/guest" className="flex-1 flex flex-col items-center">
+                  <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
+                    <Home size={22} className={activeHome ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
+                    <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activeHome ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
+                      Home
+                    </span>
+                  </motion.div>
+                </Link>
 
-            {/* ── Home anchor button ───────────────────────────────────── */}
-            <div className="pl-2 flex-shrink-0">
-              <Link href={isGuest ? '/guest' : '/home'} aria-label="Home">
-                <motion.div
-                  className="relative w-[50px] h-[50px] rounded-full flex items-center justify-center"
-                  whileTap={{ scale: 0.88 }}
-                  style={{
-                    background: isHome
-                      ? 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))'
-                      : 'rgba(200,146,74,0.10)',
-                    border:    isHome ? 'none' : '1px solid rgba(200,146,74,0.20)',
-                    boxShadow: isHome ? '0 4px 14px rgba(200,146,74,0.28)' : 'none',
-                  }}
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke={isHome ? '#1a1610' : 'rgba(200,146,74,0.75)'}
-                    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                    <polyline points="9 22 9 12 15 12 15 22" />
-                  </svg>
-                  {isHome && !prefRM && (
-                    <motion.span
-                      className="absolute inset-0 rounded-full"
-                      style={{ border: '1.5px solid rgba(200,146,74,0.35)' }}
-                      animate={{ scale: [1, 1.18, 1], opacity: [0.5, 0, 0.5] }}
-                      transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
-                    />
-                  )}
-                </motion.div>
-              </Link>
-            </div>
+                {/* Central Join Button */}
+                <div className="relative -mt-6">
+                  <motion.button
+                    onClick={() => setQuickOpen(v => !v)}
+                    aria-label="Quick Actions"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.92 }}
+                    className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer"
+                    style={{
+                      background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))',
+                      boxShadow: '0 8px 24px rgba(200, 146, 74, 0.35)',
+                    }}
+                  >
+                    <Plus size={24} className="text-[#1c1812]" />
+                  </motion.button>
+                </div>
 
-            {/* ── Center nav items ─────────────────────────────────────── */}
-            <div className="flex-1 flex items-center justify-around">
-              {navItems.map(({ href, label, mobileLabel, icon: Icon }) => {
-                const active = pathname === href || (href !== '/home' && pathname.startsWith(href));
-                return (
-                  <Link key={href} href={href} className="relative group">
+                {/* Mandali */}
+                <Link href="/mandali" className="flex-1 flex flex-col items-center">
+                  <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
+                    <Users size={22} className={activeMandali ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
+                    <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activeMandali ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
+                      Mandali
+                    </span>
+                  </motion.div>
+                </Link>
+              </div>
+            ) : (
+              // ── Premium Member Layout (5-tabs) ─────────────────────────────────
+              <div className="flex-1 flex items-center w-full justify-between">
+                
+                {/* Tab 1: Home */}
+                <Link href="/home" className="flex-1 flex flex-col items-center py-2 relative">
+                  <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
+                    <Home size={22} className={activeHome ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
+                    <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activeHome ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
+                      Home
+                    </span>
+                    {activeHome && (
+                      <motion.div layoutId="active-nav-dot" className="absolute bottom-1 w-1 h-1 rounded-full bg-[#C5A059]" />
+                    )}
+                  </motion.div>
+                </Link>
+
+                {/* Tab 2: Pathshala */}
+                <Link href="/pathshala" className="flex-1 flex flex-col items-center py-2 relative">
+                  <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
+                    <BookOpen size={22} className={activePathshala ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
+                    <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activePathshala ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
+                      Study
+                    </span>
+                    {activePathshala && (
+                      <motion.div layoutId="active-nav-dot" className="absolute bottom-1 w-1 h-1 rounded-full bg-[#C5A059]" />
+                    )}
+                  </motion.div>
+                </Link>
+
+                {/* Tab 3: Central Golden Actions FAB */}
+                <div className="flex-1 flex justify-center relative -mt-6">
+                  <motion.button
+                    onClick={() => setQuickOpen(v => !v)}
+                    aria-label="Sacred Actions"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.92 }}
+                    className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer"
+                    style={{
+                      background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))',
+                      boxShadow: '0 8px 24px rgba(200, 146, 74, 0.35)',
+                    }}
+                  >
                     <motion.div
-                      whileTap={{ scale: 0.88 }}
-                      className={cn(
-                        'relative flex flex-col items-center gap-0.5 px-3 py-2 rounded-2xl transition-colors',
-                        active ? 'text-[color:var(--brand-primary)]' : 'text-[color:var(--brand-muted)]'
-                      )}
+                      animate={quickOpen ? { rotate: 45 } : { rotate: 0 }}
+                      transition={{ duration: dur, ease }}
                     >
-                      {active && (
-                        <motion.span
-                          layoutId="bottom-nav-active-shell"
-                          className="absolute inset-0 rounded-[1rem]"
-                          style={{ background: 'rgba(200,146,74,0.12)', border: '1px solid rgba(200,146,74,0.20)' }}
-                          transition={prefRM ? { duration: 0 } : { duration: dur, ease }}
-                        />
-                      )}
-                      <div className="relative z-10 w-[38px] h-[38px] flex items-center justify-center">
-                        <motion.div animate={prefRM ? undefined : { scale: active ? 1.1 : 1 }}
-                          transition={{ duration: dur, ease }}>
-                          <Icon
-                            size={24}
-                            strokeWidth={active ? 2.4 : 1.8}
-                            style={{ color: active ? 'var(--brand-primary)' : 'var(--text-dim)' }}
-                          />
-                        </motion.div>
-                      </div>
-                      <span
-                        className="type-tab relative z-10 text-[10px] font-bold leading-none"
-                        style={{ color: active ? 'var(--brand-primary)' : 'var(--text-dim)' }}
-                      >
-                        <span className="sm:hidden">{mobileLabel ?? label}</span>
-                        <span className="hidden sm:inline">{label}</span>
-                      </span>
-                      {active && (
-                        <motion.div
-                          layoutId="active-dot"
-                          className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-[color:var(--brand-primary)]"
-                        />
-                      )}
+                      <Plus size={24} className="text-[#1c1812]" />
                     </motion.div>
-                  </Link>
-                );
-              })}
-            </div>
+                  </motion.button>
+                </div>
 
-            {/* ── Right: + quick-actions button ────────────────────────── */}
-            <div className="pr-2 flex-shrink-0">
-              <motion.button
-                onClick={() => setQuickOpen(v => !v)}
-                aria-label="Quick actions"
-                whileTap={{ scale: 0.88 }}
-                className="w-[50px] h-[50px] rounded-full flex items-center justify-center"
-                style={{
-                  background: quickOpen ? 'rgba(200,146,74,0.20)' : 'rgba(200,146,74,0.10)',
-                  border:     '1px solid rgba(200,146,74,0.28)',
-                  boxShadow:  quickOpen ? '0 0 0 4px rgba(200,146,74,0.10)' : 'none',
-                }}
-              >
-                <motion.svg
-                  width="20" height="20" viewBox="0 0 24 24" fill="none"
-                  stroke="rgba(200,146,74,0.95)" strokeWidth="2.4" strokeLinecap="round"
-                  animate={quickOpen ? { rotate: 45 } : { rotate: 0 }}
-                  transition={{ duration: dur, ease }}
-                >
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5"  y1="12" x2="19" y2="12" />
-                </motion.svg>
-              </motion.button>
-            </div>
+                {/* Tab 4: Bhakti */}
+                <Link href="/bhakti" className="flex-1 flex flex-col items-center py-2 relative">
+                  <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
+                    <Heart size={22} className={activeBhakti ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
+                    <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activeBhakti ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
+                      Bhakti
+                    </span>
+                    {activeBhakti && (
+                      <motion.div layoutId="active-nav-dot" className="absolute bottom-1 w-1 h-1 rounded-full bg-[#C5A059]" />
+                    )}
+                  </motion.div>
+                </Link>
 
+                {/* Tab 5: Mandali */}
+                <Link href="/mandali" className="flex-1 flex flex-col items-center py-2 relative">
+                  <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
+                    <Users size={22} className={activeMandali ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
+                    <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activeMandali ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
+                      Circle
+                    </span>
+                    {activeMandali && (
+                      <motion.div layoutId="active-nav-dot" className="absolute bottom-1 w-1 h-1 rounded-full bg-[#C5A059]" />
+                    )}
+                  </motion.div>
+                </Link>
+
+              </div>
+            )}
           </div>
         </div>
-      </nav>
+      </motion.nav>
     </>
   );
 }
