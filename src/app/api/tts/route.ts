@@ -8,21 +8,69 @@ export const runtime = 'nodejs';
 function hasDevanagari(text: string): boolean { return /[ऀ-ॿ]/.test(text); }
 function hasGurmukhi(text: string): boolean   { return /[਀-੿]/.test(text); }
 
-interface VoiceConfig {
+// ── Voice Quality Profiles ───────────────────────────────────────────────────
+interface VoiceProfile {
   languageCode: string;
   name: string;
-  ssmlGender?: 'MALE' | 'FEMALE' | 'NEUTRAL';
+  ssmlGender: 'MALE' | 'FEMALE';
+  pitch: number;
+  rate: number;
 }
 
-function pickVoice(text: string): VoiceConfig {
-  if (hasDevanagari(text))
-    // Sanskrit has no dedicated Google Cloud TTS voice. hi-IN voices handle
-    // Devanagari script and Sanskrit pronunciation well — Standard-D has the
-    // clearest articulation for liturgical recitation.
-    return { languageCode: 'hi-IN', name: 'hi-IN-Standard-D', ssmlGender: 'FEMALE' };
-  if (hasGurmukhi(text))
-    return { languageCode: 'pa-IN', name: 'pa-IN-Standard-A', ssmlGender: 'FEMALE' };
-  return { languageCode: 'en-IN', name: 'en-IN-Standard-A', ssmlGender: 'FEMALE' };
+const PANDIT_PROFILES: Record<string, VoiceProfile> = {
+  SANSKRIT_MALE: {
+    languageCode: 'hi-IN',
+    name: 'hi-IN-Neural2-B', // Deep, resonant male voice
+    ssmlGender: 'MALE',
+    pitch: -4.0,
+    rate: 0.78,
+  },
+  SANSKRIT_FEMALE: {
+    languageCode: 'hi-IN',
+    name: 'hi-IN-Neural2-A',
+    ssmlGender: 'FEMALE',
+    pitch: -1.0,
+    rate: 0.82,
+  },
+  GURMUKHI: {
+    languageCode: 'pa-IN',
+    name: 'pa-IN-Wavenet-B',
+    ssmlGender: 'MALE',
+    pitch: -2.0,
+    rate: 0.80,
+  }
+};
+
+function getVoiceConfig(text: string, quality: 'standard' | 'pandit'): VoiceProfile {
+  const isPandit = quality === 'pandit';
+  
+  if (hasDevanagari(text)) {
+    return isPandit ? PANDIT_PROFILES.SANSKRIT_MALE : {
+      languageCode: 'hi-IN',
+      name: 'hi-IN-Standard-D',
+      ssmlGender: 'FEMALE',
+      pitch: -1.5,
+      rate: 0.82
+    };
+  }
+  
+  if (hasGurmukhi(text)) {
+    return isPandit ? PANDIT_PROFILES.GURMUKHI : {
+      languageCode: 'pa-IN',
+      name: 'pa-IN-Standard-A',
+      ssmlGender: 'FEMALE',
+      pitch: 0,
+      rate: 0.85
+    };
+  }
+
+  return {
+    languageCode: 'en-IN',
+    name: 'en-IN-Wavenet-B',
+    ssmlGender: 'MALE',
+    pitch: 0,
+    rate: 0.90
+  };
 }
 
 // ── Cached GoogleAuth client ──────────────────────────────────────────────────
@@ -33,23 +81,8 @@ function getAuth(): GoogleAuth {
   const client_email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const private_key  = process.env.GOOGLE_SERVICE_ACCOUNT_KEY?.replace(/\\n/g, '\n');
 
-  if (!client_email) {
-    throw new Error(
-      'GOOGLE_SERVICE_ACCOUNT_EMAIL is not set. Add it to Vercel → Settings → Environment Variables. ' +
-      'Call GET /api/tts/health for a full diagnosis.'
-    );
-  }
-  if (!private_key) {
-    throw new Error(
-      'GOOGLE_SERVICE_ACCOUNT_KEY is not set. Add the service account private key to Vercel env vars. ' +
-      'Call GET /api/tts/health for a full diagnosis.'
-    );
-  }
-  if (!private_key.includes('-----BEGIN')) {
-    throw new Error(
-      'GOOGLE_SERVICE_ACCOUNT_KEY does not contain a valid PEM header (-----BEGIN PRIVATE KEY-----). ' +
-      'Ensure you copied the full private_key value from the JSON service account file.'
-    );
+  if (!client_email || !private_key) {
+    throw new Error('Google Cloud TTS Credentials not configured.');
   }
 
   _auth = new GoogleAuth({
@@ -62,18 +95,19 @@ function getAuth(): GoogleAuth {
 // ── POST /api/tts ─────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   let text: string;
-  let rate: number;
+  let quality: 'standard' | 'pandit';
+  let requestedRate: number | null = null;
 
   try {
     const body = await req.json();
     text = String(body.text ?? '').trim();
-    rate = Number(body.rate ?? 0.82);
+    quality = body.quality === 'pandit' ? 'pandit' : 'standard';
+    requestedRate = body.rate ? Number(body.rate) : null;
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
   if (!text) return NextResponse.json({ error: 'text is required' }, { status: 400 });
-  rate = Math.max(0.25, Math.min(4.0, rate));
 
   // Get OAuth2 access token
   let token: string | null | undefined;
@@ -84,18 +118,29 @@ export async function POST(req: NextRequest) {
     token = res.token;
     if (!token) throw new Error('Empty token returned');
   } catch (err: any) {
-    console.error('[TTS] Auth error:', err?.message);
-    return NextResponse.json({ error: 'TTS auth failed', detail: err?.message }, { status: 503 });
+    return NextResponse.json({ error: 'TTS auth failed' }, { status: 503 });
   }
 
+  const profile = getVoiceConfig(text, quality);
+  
+  // For 'Pandit' quality, we use SSML to add meditative pauses
+  // Sanskrit verses (Shlokas) usually have a break at the half-verse (।).
+  const ssmlText = quality === 'pandit' 
+    ? `<speak>${text.replace(/।/g, '। <break time="1200ms"/>').replace(/॥/g, '॥ <break time="2000ms"/>')}</speak>`
+    : text;
+
   const ttsPayload = {
-    input: { text },
-    voice: pickVoice(text),
+    input: quality === 'pandit' ? { ssml: ssmlText } : { text },
+    voice: {
+      languageCode: profile.languageCode,
+      name: profile.name,
+      ssmlGender: profile.ssmlGender,
+    },
     audioConfig: {
       audioEncoding: 'MP3',
-      speakingRate: rate,
-      pitch: -1.5,
-      effectsProfileId: [],
+      speakingRate: requestedRate ?? profile.rate,
+      pitch: profile.pitch,
+      effectsProfileId: ['handset-class-device'], // Adds a bit of resonance
     },
   };
 
@@ -112,11 +157,17 @@ export async function POST(req: NextRequest) {
     if (!gRes.ok) {
       const errText = await gRes.text();
       console.error('[TTS] Google API error:', gRes.status, errText);
-      return NextResponse.json({ error: 'TTS upstream error', detail: gRes.status }, { status: 502 });
+      return NextResponse.json({ error: 'TTS upstream error' }, { status: 502 });
     }
 
     const data = await gRes.json() as { audioContent: string };
-    return NextResponse.json({ audioContent: data.audioContent });
+    return NextResponse.json({ 
+      audioContent: data.audioContent,
+      meta: {
+        voiceUsed: profile.name,
+        qualityUsed: quality
+      }
+    });
 
   } catch (err) {
     console.error('[TTS] Fetch error:', err);

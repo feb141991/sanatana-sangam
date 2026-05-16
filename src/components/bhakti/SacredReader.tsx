@@ -24,31 +24,54 @@ export default function SacredReader({
   shlokaId, sanskrit, translation, audioUrl, tokens, source 
 }: SacredReaderProps) {
   const [isCompleted, setIsCompleted] = useState(false);
-  const [mastery, setMastery] = useState(0.65); // Mock mastery level for UI
+  const [mastery, setMastery] = useState(0.65); 
+  const [voiceQuality, setVoiceQuality] = useState<'standard' | 'pandit'>('standard');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [dynamicAudio, setDynamicAudio] = useState<string | null>(null);
+
+  const currentAudioUrl = dynamicAudio || audioUrl;
 
   const { isPlaying, activeIndex, toggle, seek, progress } = useSacredSync({
-    audioUrl,
+    audioUrl: currentAudioUrl,
     tokens,
     onComplete: async () => {
       setIsCompleted(true);
-      
-      // ─── Real-World Mastery Hookup ───
       try {
         const { createClient } = await import('@/lib/supabase');
         const supabase = createClient();
-        
-        const { error } = await supabase.rpc('increment_sadhana_mastery', {
-          p_shloka_id: shlokaId
-        });
-        
-        if (!error) {
-          setMastery(prev => Math.min(1, prev + 0.05));
-        }
+        const { error } = await supabase.rpc('increment_sadhana_mastery', { p_shloka_id: shlokaId });
+        if (!error) setMastery(prev => Math.min(1, prev + 0.05));
       } catch (err) {
         console.error('Mastery update failed:', err);
       }
     }
   });
+
+  const togglePanditVoice = async () => {
+    if (voiceQuality === 'pandit') {
+      setVoiceQuality('standard');
+      setDynamicAudio(null);
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: sanskrit, quality: 'pandit' })
+      });
+      const data = await res.json();
+      if (data.audioContent) {
+        setDynamicAudio(`data:audio/mp3;base64,${data.audioContent}`);
+        setVoiceQuality('pandit');
+      }
+    } catch (err) {
+      console.error('Failed to generate Pandit voice:', err);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   return (
     <div className="relative min-h-[60vh] rounded-[4rem] overflow-hidden border border-[var(--brand-primary-soft)] bg-[var(--surface-base)] shadow-2xl">
@@ -139,11 +162,25 @@ export default function SacredReader({
             </button>
             <button 
               onClick={toggle}
-              className="w-20 h-20 rounded-full bg-[var(--brand-primary)] text-white shadow-2xl flex items-center justify-center transform transition-all hover:scale-110 active:scale-95"
+              disabled={isGenerating}
+              className={`w-20 h-20 rounded-full bg-[var(--brand-primary)] text-white shadow-2xl flex items-center justify-center transform transition-all hover:scale-110 active:scale-95 ${isGenerating ? 'opacity-50 grayscale' : ''}`}
             >
-              {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
+              {isGenerating ? (
+                <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />
+              )}
             </button>
-            <div className="w-6" /> {/* Spacer */}
+            
+            <button 
+              onClick={togglePanditVoice}
+              className={`flex flex-col items-center gap-2 transition-all ${voiceQuality === 'pandit' ? 'text-[var(--brand-primary)]' : 'theme-muted opacity-60 hover:opacity-100'}`}
+            >
+              <div className={`p-3 rounded-xl border ${voiceQuality === 'pandit' ? 'bg-[var(--brand-primary-soft)] border-[var(--brand-primary)]' : 'border-dashed border-[var(--brand-primary-soft)]'}`}>
+                <Music size={20} />
+              </div>
+              <span className="text-[9px] font-black uppercase tracking-tighter">Pandit Voice</span>
+            </button>
           </div>
         </div>
       </div>
