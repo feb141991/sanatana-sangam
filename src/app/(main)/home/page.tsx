@@ -7,7 +7,7 @@ import {
   buildFestivalCalendarMeta,
   daysUntil,
   FESTIVALS_2026,
-  getNextFestival,
+  getNextFestivals,
   getTodayPanchang,
 } from '@/lib/festivals';
 import { mapHeroAssetToTheme, type HeroAssetRow, type HomeHeroTheme } from '@/config/festivalThemes';
@@ -58,9 +58,10 @@ export default async function HomePage() {
     festivalCalendar,
   );
 
-  // Tradition-aware festival: shows their tradition's next festival first
-  const festival = getNextFestival(festivalCalendar, new Date(), tradition);
-  const daysLeft = festival ? daysUntil(festival.date) : null;
+  // Tradition-aware festival: shows their tradition's next festival(s) first
+  const festivals = getNextFestivals(festivalCalendar, new Date(), tradition);
+  const festival  = festivals[0] ?? null;
+  const daysLeft  = festival ? daysUntil(festival.date) : null;
 
   const { data: heroAssetRows } = await supabase
     .from('hero_assets')
@@ -163,7 +164,7 @@ export default async function HomePage() {
         accentColour: meta.accentColour,
         accentLight: meta.accentLight,
       }}
-      festival={festival}
+      festivals={festivals}
       festivalCalendar={festivalCalendar}
       festivalCalendarMeta={festivalCalendarMeta}
       heroThemes={heroThemes}

@@ -17,16 +17,13 @@ import {
 import toast from 'react-hot-toast';
 import { GITA_FULL_DATA } from '@/lib/gita-full-data';
 import { ALL_LIBRARY_ENTRIES } from '@/lib/library-content';
-import { SEED_PATHS } from '@/app/(main)/pathshala/PathshalaClient';
-import { usePathshala, useSadhana } from '@/contexts/EngineContext';
-import { usePremium } from '@/hooks/usePremium';
-import type { LibraryEntry } from '@/lib/library-content';
-import type { RecitationResult } from '@sangam/pathshala-engine';
 import CircularProgress from '@/components/ui/CircularProgress';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { getTransliteration } from '@/lib/transliteration';
 import { getMeaningLabel, resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
+import SacredReader from '@/components/bhakti/SacredReader';
+import type { SyncToken } from '@/hooks/useSacredSync';
 
 // ─── Font size steps (same scale as LessonClient) ─────────────────────────────
 const READER_FONT_STEPS = [1.1, 1.25, 1.4, 1.58, 1.78] as const;
@@ -132,13 +129,17 @@ function ScorePanel({ result, accent, onDismiss }: {
   );
 }
 
+interface EnrichedLibraryEntry extends LibraryEntry {
+  sync_metadata?: SyncToken[];
+}
+
 // ─── Props ─────────────────────────────────────────────────────────────────────
 interface Props {
   userId: string;
   pathId: string;
   tradition: string;
   accentColour: string;
-  lessons: { title: string; entries: LibraryEntry[] }[];
+  lessons: { title: string; entries: EnrichedLibraryEntry[] }[];
   currentLesson: number;
   appLanguage?: string;
   meaningLanguage?: string;
@@ -618,183 +619,196 @@ export default function ReciteClient({
             transition={{ duration: 0.2 }}
             className="glass-panel rounded-3xl border border-white/8 p-5 space-y-4"
           >
-            {/* Source + TTS controls */}
-            <div className="flex items-center justify-between gap-2">
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold text-[color:var(--brand-muted)] uppercase tracking-wider">{verse.source}</p>
-                <p className="text-sm font-bold text-[color:var(--brand-ink)] mt-0.5">{verse.title}</p>
-              </div>
+            {/* ─── Immersive SacredReader (Read-Along Mode) ─── */}
+            {mode === 'read' ? (
+              <SacredReader
+                shlokaId={verse.id}
+                sanskrit={verse.original}
+                translation={localizedMeaning.meaning}
+                audioUrl="" // Will be generated via togglePanditVoice
+                tokens={verse.sync_metadata || []}
+                source={verse.source || verse.title}
+              />
+            ) : (
+              <div className="space-y-4">
+                {/* Source + TTS controls */}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-semibold text-[color:var(--brand-muted)] uppercase tracking-wider">{verse.source}</p>
+                    <p className="text-sm font-bold text-[color:var(--brand-ink)] mt-0.5">{verse.title}</p>
+                  </div>
 
-              {/* Waveform animation while speaking */}
-              <AnimatePresence>
-                {isSpeaking && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    className="flex items-end gap-[3px] h-5 flex-shrink-0"
-                  >
-                    {[0, 0.12, 0.24, 0.12, 0].map((delay, i) => (
+                  {/* Waveform animation while speaking */}
+                  <AnimatePresence>
+                    {isSpeaking && (
                       <motion.div
-                        key={i}
-                        className="w-[3px] rounded-full"
-                        style={{ background: accentColour }}
-                        animate={{ scaleY: [0.25, 1, 0.25] }}
-                        transition={{ duration: 0.65, repeat: Infinity, delay, ease: 'easeInOut' }}
-                      />
-                    ))}
-                  </motion.div>
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        className="flex items-end gap-[3px] h-5 flex-shrink-0"
+                      >
+                        {[0, 0.12, 0.24, 0.12, 0].map((delay, i) => (
+                          <motion.div
+                            key={i}
+                            className="w-[3px] rounded-full"
+                            style={{ background: accentColour }}
+                            animate={{ scaleY: [0.25, 1, 0.25] }}
+                            transition={{ duration: 0.65, repeat: Infinity, delay, ease: 'easeInOut' }}
+                          />
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Play / Stop TTS button */}
+                  <button
+                    onClick={() => {
+                      if (isSpeaking) {
+                        stopTTS();
+                      } else {
+                        speakCurrent(verse.original || verse.transliteration || '');
+                      }
+                    }}
+                    disabled={ttsLoading}
+                    className="w-9 h-9 rounded-full border flex items-center justify-center transition-all flex-shrink-0"
+                    style={{
+                      color: accentColour,
+                      background: isSpeaking ? `${accentColour}25` : `${accentColour}10`,
+                      borderColor: isSpeaking ? `${accentColour}50` : 'rgba(255,255,255,0.10)',
+                    }}
+                    title={isSpeaking ? 'Stop reading' : 'Listen — Sanskrit voice'}
+                  >
+                    {ttsLoading
+                      ? <Loader2 size={15} className="animate-spin" />
+                      : isSpeaking
+                        ? <VolumeX size={15} />
+                        : <Volume2 size={15} />
+                    }
+                  </button>
+                </div>
+
+                {/* Speed selector — compact tap cycle */}
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-[color:var(--brand-muted)] uppercase tracking-wider font-medium">Speed</span>
+                  <button
+                    onClick={() => {
+                      const steps: (0.5 | 0.75 | 1 | 1.25)[] = [0.5, 0.75, 1, 1.25];
+                      const next = steps[(steps.indexOf(ttsRate) + 1) % steps.length];
+                      setTtsRate(next);
+                    }}
+                    className="px-3 py-0.5 rounded-full text-[10px] font-bold transition-all"
+                    style={{ background: `${accentColour}18`, color: accentColour, border: `1px solid ${accentColour}30` }}
+                  >
+                    {ttsRate}×
+                  </button>
+                  <button
+                    onClick={() => setAutoPlay(a => !a)}
+                    className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold transition-all ml-auto"
+                    style={{
+                      background: autoPlay ? `${accentColour}20` : 'rgba(255,255,255,0.06)',
+                      color: autoPlay ? accentColour : 'var(--brand-muted)',
+                      border: autoPlay ? `1px solid ${accentColour}40` : '1px solid rgba(255,255,255,0.08)',
+                    }}
+                  >
+                    <Play size={9} /> Auto
+                  </button>
+                </div>
+
+                {/* Original script — hidden in 'from memory' mode */}
+                {mode !== 'hidden' && (
+                  <div
+                    className="text-center py-4 leading-[1.8] font-medium"
+                    style={{
+                      color: accentColour,
+                      fontFamily: 'var(--font-deva, serif)',
+                      fontSize: `${fontScale * 1.6}rem`,
+                      textShadow: `0 0 28px ${accentColour}22`,
+                    }}
+                  >
+                    {verse.original}
+                  </div>
                 )}
-              </AnimatePresence>
 
-              {/* Play / Stop TTS button */}
-              <button
-                onClick={() => {
-                  if (isSpeaking) {
-                    stopTTS();
-                  } else {
-                    // Prefer Devanagari original for sa-IN voice accuracy
-                    speakCurrent(verse.original || verse.transliteration || '');
-                  }
-                }}
-                disabled={ttsLoading}
-                className="w-9 h-9 rounded-full border flex items-center justify-center transition-all flex-shrink-0"
-                style={{
-                  color: accentColour,
-                  background: isSpeaking ? `${accentColour}25` : `${accentColour}10`,
-                  borderColor: isSpeaking ? `${accentColour}50` : 'rgba(255,255,255,0.10)',
-                }}
-                title={isSpeaking ? 'Stop reading' : 'Listen — Sanskrit voice'}
-              >
-                {ttsLoading
-                  ? <Loader2 size={15} className="animate-spin" />
-                  : isSpeaking
-                    ? <VolumeX size={15} />
-                    : <Volume2 size={15} />
-                }
-              </button>
-            </div>
-
-            {/* Speed selector — compact tap cycle */}
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] text-[color:var(--brand-muted)] uppercase tracking-wider font-medium">Speed</span>
-              <button
-                onClick={() => {
-                  const steps: (0.5 | 0.75 | 1 | 1.25)[] = [0.5, 0.75, 1, 1.25];
-                  const next = steps[(steps.indexOf(ttsRate) + 1) % steps.length];
-                  setTtsRate(next);
-                }}
-                className="px-3 py-0.5 rounded-full text-[10px] font-bold transition-all"
-                style={{ background: `${accentColour}18`, color: accentColour, border: `1px solid ${accentColour}30` }}
-              >
-                {ttsRate}×
-              </button>
-              <button
-                onClick={() => setAutoPlay(a => !a)}
-                className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold transition-all ml-auto"
-                style={{
-                  background: autoPlay ? `${accentColour}20` : 'rgba(255,255,255,0.06)',
-                  color: autoPlay ? accentColour : 'var(--brand-muted)',
-                  border: autoPlay ? `1px solid ${accentColour}40` : '1px solid rgba(255,255,255,0.08)',
-                }}
-              >
-                <Play size={9} /> Auto
-              </button>
-            </div>
-
-            {/* Original script — hidden in 'from memory' mode */}
-            {mode !== 'hidden' && (
-              <div
-                className="text-center py-4 leading-[1.8] font-medium"
-                style={{
-                  color: accentColour,
-                  fontFamily: 'var(--font-deva, serif)',
-                  fontSize: `${fontScale * 1.6}rem`,
-                  textShadow: `0 0 28px ${accentColour}22`,
-                }}
-              >
-                {verse.original}
-              </div>
-            )}
-
-            {/* Placeholder for hidden mode */}
-            {mode === 'hidden' && (
-              <div className="text-center py-8 border border-dashed rounded-2xl"
-                style={{ borderColor: `${accentColour}30` }}>
-                <EyeOff size={28} className="mx-auto mb-2" style={{ color: accentColour }} />
-                <p className="text-sm font-semibold text-[color:var(--brand-ink)]">Recite from memory</p>
-                <p className="text-xs text-[color:var(--brand-muted)] mt-1">Tap &ldquo;Reveal&rdquo; to check yourself</p>
-                <button
-                  onClick={() => setMode('read')}
-                  className="mt-3 px-4 py-1.5 rounded-full text-xs font-semibold"
-                  style={{ background: `${accentColour}18`, color: accentColour }}
-                >
-                  Reveal
-                </button>
-              </div>
-            )}
-
-            {/* Translation accordion — transliteration + meaning in one toggle */}
-            {mode !== 'hidden' && (
-              <div>
-                <button
-                  onClick={() => setShowExplan(s => !s)}
-                  className="flex items-center gap-1.5 text-xs text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition mb-2"
-                >
-                  {showExplan ? <EyeOff size={12} /> : <Eye size={12} />}
-                  {showExplan ? 'Hide' : 'Show'} translation
-                </button>
-                <AnimatePresence>
-                  {showExplan && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden rounded-2xl overflow-hidden"
-                      style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.16)' }}
+                {/* Placeholder for hidden mode */}
+                {mode === 'hidden' && (
+                  <div className="text-center py-8 border border-dashed rounded-2xl"
+                    style={{ borderColor: `${accentColour}30` }}>
+                    <EyeOff size={28} className="mx-auto mb-2" style={{ color: accentColour }} />
+                    <p className="text-sm font-semibold text-[color:var(--brand-ink)]">Recite from memory</p>
+                    <p className="text-xs text-[color:var(--brand-muted)] mt-1">Tap &ldquo;Reveal&rdquo; to check yourself</p>
+                    <button
+                      onClick={() => setMode('read')}
+                      className="mt-3 px-4 py-1.5 rounded-full text-xs font-semibold"
+                      style={{ background: `${accentColour}18`, color: accentColour }}
                     >
-                      {showVerseTransliteration && (
-                        <div className="px-4 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(200,146,74,0.12)' }}>
-                          <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.6 }}>Transliteration</p>
-                          <p className="italic leading-relaxed" style={{ color: 'var(--brand-muted)', fontSize: `${fontScale * 0.95}rem` }}>
-                            {verseTransliteration}
-                          </p>
-                        </div>
+                      Reveal
+                    </button>
+                  </div>
+                )}
+
+                {/* Translation accordion — transliteration + meaning in one toggle */}
+                {mode !== 'hidden' && (
+                  <div>
+                    <button
+                      onClick={() => setShowExplan(s => !s)}
+                      className="flex items-center gap-1.5 text-xs text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition mb-2"
+                    >
+                      {showExplan ? <EyeOff size={12} /> : <Eye size={12} />}
+                      {showExplan ? 'Hide' : 'Show'} translation
+                    </button>
+                    <AnimatePresence>
+                      {showExplan && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="overflow-hidden rounded-2xl overflow-hidden"
+                          style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.16)' }}
+                        >
+                          {showVerseTransliteration && (
+                            <div className="px-4 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(200,146,74,0.12)' }}>
+                              <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.6 }}>Transliteration</p>
+                              <p className="italic leading-relaxed" style={{ color: 'var(--brand-muted)', fontSize: `${fontScale * 0.95}rem` }}>
+                                {verseTransliteration}
+                              </p>
+                            </div>
+                          )}
+                          {verse.meaning && (
+                            <div className="px-4 py-4">
+                              <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.7 }}>
+                                {getMeaningLabel(effectiveMeaningLanguage)}
+                              </p>
+                              <p className="leading-relaxed font-medium" style={{ color: 'var(--brand-ink)', fontSize: `${fontScale * 1.05}rem`, lineHeight: 1.75 }}>
+                                {localizedMeaning.meaning}
+                              </p>
+                            </div>
+                          )}
+                        </motion.div>
                       )}
-                      {verse.meaning && (
-                        <div className="px-4 py-4">
-                          <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.7 }}>
-                            {getMeaningLabel(effectiveMeaningLanguage)}
-                          </p>
-                          <p className="leading-relaxed font-medium" style={{ color: 'var(--brand-ink)', fontSize: `${fontScale * 1.05}rem`, lineHeight: 1.75 }}>
-                            {localizedMeaning.meaning}
-                          </p>
-                        </div>
-                      )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                    </AnimatePresence>
+                  </div>
+                )}
+
+                {/* ── Explain button ───────────────────────────────────────────────── */}
+                <div className="pt-1 border-t border-white/6">
+                  <button
+                    onClick={explainVerse}
+                    disabled={explainLoading}
+                    className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full transition-all w-full justify-center"
+                    style={{
+                      background: explainResult ? `${accentColour}18` : 'rgba(255,255,255,0.06)',
+                      color: explainLoading ? 'var(--brand-muted)' : accentColour,
+                      border: `1px solid ${explainResult ? accentColour + '40' : 'rgba(255,255,255,0.10)'}`,
+                    }}
+                  >
+                    {explainLoading
+                      ? <><Loader2 size={12} className="animate-spin" /> Asking teacher…</>
+                      : <><Sparkles size={12} /> {explainResult ? 'Refresh explanation' : 'Explain this verse'}</>
+                    }
+                  </button>
+                </div>
               </div>
             )}
-
-            {/* ── Explain button ───────────────────────────────────────────────── */}
-            <div className="pt-1 border-t border-white/6">
-              <button
-                onClick={explainVerse}
-                disabled={explainLoading}
-                className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full transition-all w-full justify-center"
-                style={{
-                  background: explainResult ? `${accentColour}18` : 'rgba(255,255,255,0.06)',
-                  color: explainLoading ? 'var(--brand-muted)' : accentColour,
-                  border: `1px solid ${explainResult ? accentColour + '40' : 'rgba(255,255,255,0.10)'}`,
-                }}
-              >
-                {explainLoading
-                  ? <><Loader2 size={12} className="animate-spin" /> Asking teacher…</>
-                  : <><Sparkles size={12} /> {explainResult ? 'Refresh explanation' : 'Explain this verse'}</>
-                }
-              </button>
-            </div>
           </motion.div>
         </AnimatePresence>
 

@@ -196,6 +196,33 @@ export const FESTIVAL_STORIES: FestivalStory[] = [
       'Today, identify one fear that is limiting you. Write it down. Then write the one brave action you would take if that fear were gone — and do just that action, however small.',
   },
 
+  // ── Shani Jayanti ─────────────────────────────────────────────────────────
+  {
+    slug: 'Shani Jayanti',
+    emoji: '⚖️',
+    tradition: 'hindu',
+    origin:
+      'Shani Jayanti commemorates the birth of Shani Dev, the son of Surya Dev (the Sun God) and Chhaya (Shadow). Legend says that when Shani Dev first opened his eyes as a newborn, the Sun went into a total eclipse, signifying his immense power over time and destiny. He is the elder brother of Yama (the God of Death) and is considered the greatest teacher among the Navagrahas.',
+    significance:
+      'Shani Dev is the "Karma Phala Daata"—the dispenser of the fruits of our actions. He is often misunderstood as a punisher, but his true nature is that of a strict disciplinarian who forces us to face our own karma with patience, humility, and hard work. Shani Jayanti is a day to seek his grace, not to avoid "bad luck," but to ask for the inner strength to navigate our life\'s challenges and learn the lessons our soul requires.',
+    rituals: [
+      'Perform Shani Tailabhishek: Offer mustard oil to a Shani murti to cool his intense energy and seek his protection',
+      'Light a sesame oil lamp under a Peepal tree after sunset, circumambulating the tree seven times',
+      'Chant the Shani Beej Mantra ("Om Pram Preem Proum Sah Shanischaraya Namah") or the Shani Chalisa',
+      'Donate black sesame seeds, black cloth, or iron items to the needy—acts of charity on this day are said to please Shani Dev greatly',
+    ],
+    shloka: {
+      text: 'नीलांजन समाभासं रविपुत्रं यमाग्रजम्।\nछायामार्तण्ड सम्भूतं तं नमामि शनैश्चरम्।।',
+      transliteration:
+        'Nilāñjana samābhāsaṃ raviputraṃ yamāgrajam,\nChhāyāmārtaṇḍa sambhūtaṃ taṃ namāmi śanaiścaram.',
+      translation:
+        'I bow to Shani Dev, who is as dark as a blue mountain, the son of the Sun and the elder brother of Yama; born from the womb of Chhaya and the radiance of the Sun, I salute the slow-moving one.',
+      source: 'Shani Stotram',
+    },
+    practice:
+      'Today, perform one act of service for someone in the working or labor class (associated with Shani Dev). Feed a stray dog or offer a meal to a manual laborer. Practice "Mauna" (silence) for one hour to reflect on your actions of the past year.',
+  },
+
   // ── Guru Purnima ──────────────────────────────────────────────────────────
   {
     slug: 'Guru Purnima',

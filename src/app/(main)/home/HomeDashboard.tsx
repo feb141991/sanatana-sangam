@@ -109,7 +109,7 @@ interface Props {
   /** Non-null for Sikh / Buddhist / Jain traditions */
   sacredText:        DailySacredText | null;
   sacredTextMeta:    SacredTextMeta;
-  festival:          Festival | null;
+  festivals:         Festival[];
   festivalCalendar:  Festival[];
   festivalCalendarMeta: FestivalCalendarMeta;
   heroThemes:        HomeHeroTheme[];
@@ -1496,6 +1496,10 @@ export default function HomeDashboard({
       : "today’s shloka",
     streakLabel: sacredText ? 'sacred text streak' : 'shloka streak',
   };
+
+  // ── Multi-Festival Engine ──────────────────────────────────────────────────
+  const festival = festivals[0] ?? null;
+  const secondaryFestivals = festivals.slice(1);
   const localizedDailyMeaning = useLocalizedMeaning({
     entryId: `home:${tradition ?? 'other'}:${dailyTextBase.source}:${dailyTextBase.original.slice(0, 48)}`,
     sourceMeaning: dailyTextBase.meaning,
@@ -1556,11 +1560,11 @@ export default function HomeDashboard({
     { label: 'Mala', value: japaAlreadyDoneToday ? 'complete' : 'start', active: japaAlreadyDoneToday, href: '/bhakti/mala', onClick: undefined },
     { label: 'Nitya', value: nityaDoneToday ? 'complete' : 'continue', active: nityaDoneToday, href: '/nitya-karma', onClick: undefined },
   ];
-  // ── Sacred Day Pulse ────────────────────────────────────────────────────────
+  // ── Sacred Day Pulses ───────────────────────────────────────────────────────
   // Only show when viewing today (not a past/future panchang date).
-  const sacredPulse = isToday
-    ? getTodaySpiritualPulse(panchang.tithiIndex, tradition, selectedDate)
-    : null;
+  const sacredPulses = isToday
+    ? getTodaySpiritualPulses(panchang.tithiIndex, tradition, selectedDate)
+    : [];
 
   // ── Mood check-in card ───────────────────────────────────────────────────────
   // Visible from 5 AM to 1 PM local if the user hasn't set a mood today.
@@ -1587,13 +1591,11 @@ export default function HomeDashboard({
   })();
   const pitruPakshaCopy = pitruPakshaDay ? getPitruPakshaBannerCopy(pitruPakshaDay) : null;
 
-  // ── Festival Story ───────────────────────────────────────────────────────────
-  // Show a "read the story" card when we are ≤ 7 days from a festival AND we
-  // have handcrafted content for it.
-  const festivalStory: FestivalStory | null =
-    festival && daysUntilFestival !== null && daysUntilFestival <= 7
-      ? getFestivalStory(festival.name)
-      : null;
+  // ── Festival Story Cards ────────────────────────────────────────────────────
+  // Show "read the story" cards for ALL festivals ≤ 7 days away that have content.
+  const activeFestivalStories = festivals
+    .map(f => ({ festival: f, story: getFestivalStory(f.name), daysLeft: daysUntil(f.date) }))
+    .filter(x => x.story && x.daysLeft !== null && x.daysLeft <= 7);
 
   // ── Dharm Veer ───────────────────────────────────────────────────────────────
   // Always shown on home — a forgotten/underappreciated hero of Dharma, rotating
@@ -1891,37 +1893,38 @@ export default function HomeDashboard({
       </div>
 
 
-        {/* ── Sacred Day Pulse Banner ─────────────────────────────────────────── */}
+        {/* ── Sacred Day Pulses (Stack) ────────────────────────────────────────────── */}
         <AnimatePresence>
-          {sacredPulse && (
+          {sacredPulses.map((pulse, idx) => (
             <motion.div
-              key="sacred-pulse"
+              key={`pulse-${pulse.label}-${idx}`}
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.4, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="mb-2"
             >
               <Link 
-                href={`/vrat/${encodeURIComponent(sacredPulse.label)}`}
+                href={`/vrat/${encodeURIComponent(pulse.label)}`}
                 className="sacred-pulse-banner group relative hover:scale-[1.02] transition-transform duration-300 block overflow-hidden"
                 role="status"
                 aria-live="polite"
               >
                 <div className="flex items-center gap-3 w-full pr-6">
-                  <span className="sacred-pulse-emoji" aria-hidden="true">{sacredPulse.emoji}</span>
+                  <span className="sacred-pulse-emoji" aria-hidden="true">{pulse.emoji}</span>
                   <div className="sacred-pulse-body flex-1 min-w-0">
                     <span className="sacred-pulse-label">
-                      {sacredPulse.translationKey ? t(sacredPulse.translationKey as any) : sacredPulse.label} {t('today')}
+                      {pulse.translationKey ? t(pulse.translationKey as any) : pulse.label} {t('today')}
                     </span>
                     <span className="sacred-pulse-desc">
-                      {sacredPulse.descKey ? t(sacredPulse.descKey as any) : sacredPulse.description} {t('viewDetails')}
+                      {pulse.descKey ? t(pulse.descKey as any) : pulse.description} {t('viewDetails')}
                     </span>
                   </div>
                   <ChevronRight size={16} className="text-[#A0622A]/80 shrink-0" />
                 </div>
               </Link>
             </motion.div>
-          )}
+          ))}
         </AnimatePresence>
 
         {/* ── Pitru Paksha Banner ─────────────────────────────────────────── */}
@@ -1989,32 +1992,35 @@ export default function HomeDashboard({
           )}
         </AnimatePresence>
 
-        {/* ── Festival Story Card ──────────────────────────────────────────── */}
+        {/* ── Festival Story Cards (Stack) ────────────────────────────────────────── */}
         <AnimatePresence>
-          {festivalStory && (
+          {activeFestivalStories.map(({ festival: f, story, daysLeft }) => (
             <motion.button
-              key="festival-story-card"
+              key={`story-${f.name}`}
               type="button"
-              onClick={() => setStorySheetOpen(true)}
+              onClick={() => {
+                // In a future update, we'll pass the specific story to the sheet
+                setStorySheetOpen(true);
+              }}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 6 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="festival-story-card motion-press"
-              aria-label={`Read the story of ${festival?.name}`}
+              className="festival-story-card motion-press mb-3"
+              aria-label={`Read the story of ${f.name}`}
             >
-              <span className="festival-story-emoji" aria-hidden="true">{festivalStory.emoji}</span>
+              <span className="festival-story-emoji" aria-hidden="true">{story?.emoji}</span>
               <div className="festival-story-body">
                 <span className="festival-story-kicker">
-                  {daysUntilFestival === 0 ? 'Today' : `In ${daysUntilFestival} day${daysUntilFestival === 1 ? '' : 's'}`}
+                  {daysLeft === 0 ? 'Today' : `In ${daysLeft} day${daysLeft === 1 ? '' : 's'}`}
                   {' · '}Festival Story
                 </span>
-                <span className="festival-story-title">{festival?.name}</span>
-                <span className="festival-story-teaser line-clamp-2">{festivalStory.significance}</span>
+                <span className="festival-story-title">{f.name}</span>
+                <span className="festival-story-teaser line-clamp-2">{story?.significance}</span>
               </div>
               <ChevronRight size={16} className="festival-story-chevron" aria-hidden="true" />
             </motion.button>
-          )}
+          ))}
         </AnimatePresence>
 
         {/* ── Dharm Veer Card ──────────────────────────────────────────────── */}

@@ -191,8 +191,8 @@ export default function BottomNav({
     <>
       <FloatingQuickMenu open={quickOpen} onClose={() => setQuickOpen(false)} isGuest={isGuest} isDark={isDark} />
 
-      <nav className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 safe-area-pb pointer-events-none">
-        <div className="max-w-2xl mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 z-[100] px-4 pb-[env(safe-area-inset-bottom,1.5rem)] mb-4 pointer-events-none">
+      <div className="max-w-2xl mx-auto flex justify-center">
 
           {/* ── Outer wrapper — animates shadow away when collapsed ──────── */}
           <motion.div

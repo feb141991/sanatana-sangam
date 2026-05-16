@@ -23,10 +23,6 @@ export default async function RecitePage({
   const tradition = profile?.tradition ?? 'hindu';
   const meta = getTraditionMeta(tradition);
 
-  // ── Fetch lessons server-side to ensure full library access ───
-  const { getPathLessons } = await import('@/lib/pathshala-lessons');
-  const lessons = getPathLessons(pathId);
-
   // Verify enrollment
   const { data: enrollment } = await supabase
     .from('guided_path_progress')
@@ -38,6 +34,30 @@ export default async function RecitePage({
   if (!enrollment || enrollment.status !== 'active') {
     redirect('/pathshala');
   }
+
+  // ── Fetch lessons server-side to ensure full library access ───
+  const { getPathLessons } = await import('@/lib/pathshala-lessons');
+  const lessons = getPathLessons(pathId);
+  const currentLessonIdx = (enrollment as any).current_lesson ?? 0;
+  const lessonVerses = lessons[currentLessonIdx]?.entries ?? [];
+
+  // ── Enrich verses with sync metadata from the database ───
+  const verseIds = lessonVerses.map(v => v.id);
+  const { data: syncData } = await supabase
+    .from('shlokas')
+    .select('id, sync_metadata')
+    .in('id', verseIds);
+
+  const enrichedLessons = lessons.map((l, lIdx) => {
+    if (lIdx !== currentLessonIdx) return l;
+    return {
+      ...l,
+      entries: l.entries.map(v => ({
+        ...v,
+        sync_metadata: syncData?.find(s => s.id === v.id)?.sync_metadata ?? []
+      }))
+    };
+  });
 
   const appLanguage = (profile as any)?.app_language ?? 'en';
   const meaningLanguage = (profile as any)?.meaning_language ?? 'en';
@@ -59,7 +79,7 @@ export default async function RecitePage({
       pathId={pathId}
       tradition={tradition}
       accentColour={meta.accentColour}
-      lessons={lessons}
+      lessons={enrichedLessons}
       currentLesson={(enrollment as any).current_lesson ?? 0}
       appLanguage={appLanguage}
       meaningLanguage={meaningLanguage}

@@ -57,6 +57,7 @@ export const FESTIVALS_2026: Festival[] = [
   { name: 'Hanuman Jayanti',      date: '2026-04-11', emoji: '🙏', description: 'Celebration of the birth of Lord Hanuman',                           type: 'major',    tradition: 'hindu' },
   { name: 'Akshaya Tritiya',      date: '2026-04-21', emoji: '💛', description: 'Auspicious day for new beginnings — celebrated by Hindu and Jain',   type: 'major',    tradition: 'hindu' },
   { name: 'Narasimha Jayanti',    date: '2026-05-05', emoji: '🦁', description: 'Celebration of Vishnu\'s Narasimha avatar',                          type: 'regional', tradition: 'hindu' },
+  { name: 'Shani Jayanti',       date: '2026-05-16', emoji: '⚖️', description: 'Birth anniversary of Shani Dev — the lord of karma and justice',      type: 'major',    tradition: 'hindu' },
   { name: 'Vat Savitri Vrat',     date: '2026-05-22', emoji: '🌳', description: 'Vrat observed by married women for the well-being of their husbands', type: 'vrat',     tradition: 'hindu' },
   { name: 'Jagannath Rath Yatra', date: '2026-06-23', emoji: '🛕', description: 'Grand chariot procession of Lord Jagannath at Puri',                 type: 'major',    tradition: 'hindu' },
   { name: 'Guru Purnima',         date: '2026-07-10', emoji: '🙏', description: 'Day to honour spiritual teachers and gurus — observed by all traditions', type: 'major', tradition: 'all' },
@@ -172,25 +173,34 @@ export function attachFestivalTrust(row: FestivalSourceRow): Festival & Pick<Fes
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Get the next upcoming festival, prioritising the user's tradition */
-export function getNextFestival(
+/** Get all festivals occurring on a specific date string (YYYY-MM-DD) */
+export function getFestivalsForDate(
+  dateStr: string,
+  festivals: Festival[] = FESTIVALS_2026,
+): Festival[] {
+  return festivals.filter(f => f.date === dateStr);
+}
+
+/** Get the next upcoming festival(s), strictly filtered by the user's tradition */
+export function getNextFestivals(
   festivals: Festival[] = FESTIVALS_2026,
   today: Date = new Date(),
   tradition?: string | null,
-): Festival | null {
+): Festival[] {
   const todayStr = today.toISOString().split('T')[0];
-  const upcoming = festivals.filter(f => f.date >= todayStr);
-  if (upcoming.length === 0) return festivals[festivals.length - 1] ?? null;
+  
+  // 1. Strict Tradition Filtering: Only show events for the user's path or 'all'
+  const filtered = (tradition && tradition !== 'other' && tradition !== 'exploring')
+    ? festivals.filter(f => f.tradition === tradition || f.tradition === 'all')
+    : festivals;
 
-  // If tradition is provided, prefer tradition-matching or 'all' festivals
-  if (tradition && tradition !== 'other') {
-    const traditionFirst = upcoming.find(
-      f => f.tradition === tradition || f.tradition === 'all'
-    );
-    if (traditionFirst) return traditionFirst;
-  }
+  const upcoming = filtered.filter(f => f.date >= todayStr);
+  
+  if (upcoming.length === 0) return filtered.length > 0 ? [filtered[filtered.length - 1]] : [];
 
-  return upcoming[0] ?? null;
+  // 2. Identify the very next date in THIS tradition's calendar
+  const nextDate = upcoming[0].date;
+  return upcoming.filter(f => f.date === nextDate);
 }
 
 /** Days until a festival date */
