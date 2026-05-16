@@ -960,7 +960,6 @@ export default function HomeDashboard({
   shloka,
   sacredText,
   sacredTextMeta,
-  festival,
   festivalCalendar,
   festivalCalendarMeta,
   heroThemes,
@@ -1500,7 +1499,6 @@ export default function HomeDashboard({
 
   // ── Multi-Festival Engine ──────────────────────────────────────────────────
   const festival = festivals[0] ?? null;
-  const daysUntilFestival = festival ? daysFromNow(festival.date) : null;
   const secondaryFestivals = festivals.slice(1);
   const localizedDailyMeaning = useLocalizedMeaning({
     entryId: `home:${tradition ?? 'other'}:${dailyTextBase.source}:${dailyTextBase.original.slice(0, 48)}`,
