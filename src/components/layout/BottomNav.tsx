@@ -139,12 +139,11 @@ export default function BottomNav({ isGuest = false }: Props) {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [otherMenuIcon, setOtherMenuIcon] = useState<string | null>(null);
 
-  // Scroll responsive collapsing
+  // Scroll responsive collapsing (collapses to left on scroll down, expands to center on scroll up)
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       
-      // Collapse on scroll down, reveal on scroll up
       if (currentScrollY > lastScrollY && currentScrollY > 70) {
         setIsVisible(false);
       } else {
@@ -174,7 +173,7 @@ export default function BottomNav({ isGuest = false }: Props) {
     window.dispatchEvent(new CustomEvent('ai-fab-visibility', { detail: { hidden: quickOpen || !isVisible } }));
   }, [quickOpen, isVisible]);
 
-  // Listen to external/other menus opening across the app to auto-collapse the bottom nav
+  // Listen to external/other menus opening across the app to auto-collapse the bottom nav to the left
   useEffect(() => {
     const handleGlobalMenu = (e: Event) => {
       const customEvent = e as CustomEvent;
@@ -199,33 +198,36 @@ export default function BottomNav({ isGuest = false }: Props) {
   const ease = [0.22, 1, 0.36, 1] as const;
   const dur = prefRM ? 0 : 0.25;
 
-  // The main bar collapses (slides down) if scrolled out, OR if a quick action overlay is open, OR if any other external menu is open
+  // Bottom Navigation is always visible: either expanded at center, or collapsed to the left side
   const shouldShowBar = isVisible && !quickOpen && !otherMenuIcon;
 
-  // Resolves which icon to show when the bottom navigation is collapsed
+  // Resolves which icon to show in the left-side collapsed pill
   const getCollapsedIcon = () => {
+    const iconSize = 22;
+    const colorClass = 'text-[#C5A059]'; // Saffron Gold active icon
+    
     if (otherMenuIcon) {
       return <span className="text-base select-none">{otherMenuIcon}</span>;
     }
     if (quickOpen) {
-      return <X size={20} className="text-[#1c1812]" />;
+      return <X size={iconSize} className={colorClass} />;
     }
     if (activeHome) {
-      return <Home size={20} className="text-[#1c1812]" />;
+      return <Home size={iconSize} className={colorClass} />;
     }
     if (activePathshala) {
-      return <BookOpen size={20} className="text-[#1c1812]" />;
+      return <BookOpen size={iconSize} className={colorClass} />;
     }
     if (activeBhakti) {
-      return <Heart size={20} className="text-[#1c1812]" />;
+      return <Heart size={iconSize} className={colorClass} />;
     }
     if (activeMandali) {
-      return <Users size={20} className="text-[#1c1812]" />;
+      return <Users size={iconSize} className={colorClass} />;
     }
-    return <Plus size={20} className="text-[#1c1812]" />;
+    return <Plus size={iconSize} className={colorClass} />;
   };
 
-  // Handles clicking the minimized floating bubble
+  // Handles clicking the minimized floating active-menu bubble on the left
   const handleFabClick = () => {
     if (otherMenuIcon) {
       window.dispatchEvent(new CustomEvent('shoonaya-close-menu'));
@@ -238,8 +240,26 @@ export default function BottomNav({ isGuest = false }: Props) {
       setIsVisible(true);
       return;
     }
-    // Expand the bottom nav back to full size
+    // Expand the bottom nav back to the center of the screen
     setIsVisible(true);
+  };
+
+  // Framer Motion Morphing variants: morphs seamlessly between centered bar and left circular bubble
+  const morphVariants = {
+    expanded: {
+      left: '50%',
+      x: '-50%',
+      width: 'min(calc(100% - 32px), 640px)',
+      borderRadius: '2.2rem',
+      height: '68px',
+    },
+    collapsed: {
+      left: 'max(16px, env(safe-area-inset-left))',
+      x: '0%',
+      width: '56px',
+      borderRadius: '9999px',
+      height: '56px',
+    }
   };
 
   return (
@@ -251,175 +271,164 @@ export default function BottomNav({ isGuest = false }: Props) {
         isDark={isDark}
       />
 
-      {/* Main Bottom Navigation Bar */}
+      {/* Morphed Bottom Navigation Container (Seamless Left-Side Collapse Dock) */}
       <motion.nav
-        className="fixed left-0 right-0 z-[100] px-4 pointer-events-none"
-        initial={{ y: 0 }}
-        animate={{ y: shouldShowBar ? 0 : 120 }}
-        transition={{ duration: 0.32, ease: [0.25, 0.8, 0.25, 1] }}
+        className="fixed z-[100] border pointer-events-auto flex items-center overflow-hidden"
+        variants={morphVariants}
+        animate={shouldShowBar ? 'expanded' : 'collapsed'}
+        transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
         style={{
           bottom: 'max(14px, env(safe-area-inset-bottom))',
+          background:           GLASS.bg,
+          borderColor:          GLASS.border,
+          backdropFilter:       GLASS.blur,
+          WebkitBackdropFilter: GLASS.blur,
+          boxShadow:            GLASS.shadow,
         }}
       >
-        <div className="max-w-2xl mx-auto flex justify-center">
-          <div
-            className="relative flex items-center h-[68px] rounded-[2.2rem] w-full pointer-events-auto px-2"
-            style={{
-              background:           GLASS.bg,
-              border:               `1px solid ${GLASS.border}`,
-              backdropFilter:       GLASS.blur,
-              WebkitBackdropFilter: GLASS.blur,
-              boxShadow:            GLASS.shadow,
-            }}
-          >
-            {isGuest ? (
-              // ── Guest Layout (3-tabs) ───────────────────────────────────────
-              <div className="flex-1 flex items-center justify-around w-full">
-                {/* Home */}
-                <Link href="/guest" className="flex-1 flex flex-col items-center">
-                  <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
-                    <Home size={22} className={activeHome ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
-                    <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activeHome ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
-                      Home
-                    </span>
-                  </motion.div>
-                </Link>
+        <AnimatePresence mode="wait">
+          {shouldShowBar ? (
+            // ── 1. Expanded centered bar content ──
+            <motion.div
+              key="expanded-nav"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="flex-1 flex items-center justify-between w-full h-full px-2"
+            >
+              {isGuest ? (
+                // ── Guest Layout (3-tabs) ──
+                <div className="flex-1 flex items-center justify-around w-full">
+                  <Link href="/guest" className="flex-1 flex flex-col items-center">
+                    <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
+                      <Home size={22} className={activeHome ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
+                      <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activeHome ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
+                        Home
+                      </span>
+                    </motion.div>
+                  </Link>
 
-                {/* Central Join Button */}
-                <div className="relative -mt-6">
-                  <motion.button
-                    onClick={() => setQuickOpen(v => !v)}
-                    aria-label="Quick Actions"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.92 }}
-                    className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer"
-                    style={{
-                      background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))',
-                      boxShadow: '0 8px 24px rgba(200, 146, 74, 0.35)',
-                    }}
-                  >
-                    <Plus size={24} className="text-[#1c1812]" />
-                  </motion.button>
-                </div>
-
-                {/* Mandali */}
-                <Link href="/mandali" className="flex-1 flex flex-col items-center">
-                  <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
-                    <Users size={22} className={activeMandali ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
-                    <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activeMandali ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
-                      Mandali
-                    </span>
-                  </motion.div>
-                </Link>
-              </div>
-            ) : (
-              // ── Premium Member Layout (5-tabs) ─────────────────────────────────
-              <div className="flex-1 flex items-center w-full justify-between">
-                
-                {/* Tab 1: Home */}
-                <Link href="/home" className="flex-1 flex flex-col items-center py-2 relative">
-                  <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
-                    <Home size={22} className={activeHome ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
-                    <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activeHome ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
-                      Home
-                    </span>
-                    {activeHome && (
-                      <motion.div layoutId="active-nav-dot" className="absolute bottom-1 w-1 h-1 rounded-full bg-[#C5A059]" />
-                    )}
-                  </motion.div>
-                </Link>
-
-                {/* Tab 2: Pathshala */}
-                <Link href="/pathshala" className="flex-1 flex flex-col items-center py-2 relative">
-                  <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
-                    <BookOpen size={22} className={activePathshala ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
-                    <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activePathshala ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
-                      Study
-                    </span>
-                    {activePathshala && (
-                      <motion.div layoutId="active-nav-dot" className="absolute bottom-1 w-1 h-1 rounded-full bg-[#C5A059]" />
-                    )}
-                  </motion.div>
-                </Link>
-
-                {/* Tab 3: Central Golden Actions FAB */}
-                <div className="flex-1 flex justify-center relative -mt-6">
-                  <motion.button
-                    onClick={() => setQuickOpen(v => !v)}
-                    aria-label="Sacred Actions"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.92 }}
-                    className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer"
-                    style={{
-                      background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))',
-                      boxShadow: '0 8px 24px rgba(200, 146, 74, 0.35)',
-                    }}
-                  >
-                    <motion.div
-                      animate={quickOpen ? { rotate: 45 } : { rotate: 0 }}
-                      transition={{ duration: dur, ease }}
+                  <div className="relative -mt-6">
+                    <motion.button
+                      onClick={() => setQuickOpen(v => !v)}
+                      aria-label="Quick Actions"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.92 }}
+                      className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer"
+                      style={{
+                        background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))',
+                        boxShadow: '0 8px 24px rgba(200, 146, 74, 0.35)',
+                      }}
                     >
                       <Plus size={24} className="text-[#1c1812]" />
+                    </motion.button>
+                  </div>
+
+                  <Link href="/mandali" className="flex-1 flex flex-col items-center">
+                    <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
+                      <Users size={22} className={activeMandali ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
+                      <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activeMandali ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
+                        Mandali
+                      </span>
                     </motion.div>
-                  </motion.button>
+                  </Link>
                 </div>
+              ) : (
+                // ── Premium Member Layout (5-tabs) ──
+                <div className="flex-1 flex items-center w-full justify-between">
+                  {/* Tab 1: Home */}
+                  <Link href="/home" className="flex-1 flex flex-col items-center py-2 relative">
+                    <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
+                      <Home size={22} className={activeHome ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
+                      <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activeHome ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
+                        Home
+                      </span>
+                      {activeHome && (
+                        <motion.div layoutId="active-nav-dot" className="absolute bottom-1 w-1 h-1 rounded-full bg-[#C5A059]" />
+                      )}
+                    </motion.div>
+                  </Link>
 
-                {/* Tab 4: Bhakti */}
-                <Link href="/bhakti" className="flex-1 flex flex-col items-center py-2 relative">
-                  <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
-                    <Heart size={22} className={activeBhakti ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
-                    <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activeBhakti ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
-                      Bhakti
-                    </span>
-                    {activeBhakti && (
-                      <motion.div layoutId="active-nav-dot" className="absolute bottom-1 w-1 h-1 rounded-full bg-[#C5A059]" />
-                    )}
-                  </motion.div>
-                </Link>
+                  {/* Tab 2: Pathshala */}
+                  <Link href="/pathshala" className="flex-1 flex flex-col items-center py-2 relative">
+                    <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
+                      <BookOpen size={22} className={activePathshala ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
+                      <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activePathshala ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
+                        Study
+                      </span>
+                      {activePathshala && (
+                        <motion.div layoutId="active-nav-dot" className="absolute bottom-1 w-1 h-1 rounded-full bg-[#C5A059]" />
+                      )}
+                    </motion.div>
+                  </Link>
 
-                {/* Tab 5: Mandali */}
-                <Link href="/mandali" className="flex-1 flex flex-col items-center py-2 relative">
-                  <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
-                    <Users size={22} className={activeMandali ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
-                    <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activeMandali ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
-                      Circle
-                    </span>
-                    {activeMandali && (
-                      <motion.div layoutId="active-nav-dot" className="absolute bottom-1 w-1 h-1 rounded-full bg-[#C5A059]" />
-                    )}
-                  </motion.div>
-                </Link>
+                  {/* Tab 3: Central Golden Actions FAB */}
+                  <div className="flex-1 flex justify-center relative -mt-6">
+                    <motion.button
+                      onClick={() => setQuickOpen(v => !v)}
+                      aria-label="Sacred Actions"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.92 }}
+                      className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer"
+                      style={{
+                        background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))',
+                        boxShadow: '0 8px 24px rgba(200, 146, 74, 0.35)',
+                      }}
+                    >
+                      <motion.div
+                        animate={quickOpen ? { rotate: 45 } : { rotate: 0 }}
+                        transition={{ duration: dur, ease }}
+                      >
+                        <Plus size={24} className="text-[#1c1812]" />
+                      </motion.div>
+                    </motion.button>
+                  </div>
 
-              </div>
-            )}
-          </div>
-        </div>
+                  {/* Tab 4: Bhakti */}
+                  <Link href="/bhakti" className="flex-1 flex flex-col items-center py-2 relative">
+                    <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
+                      <Heart size={22} className={activeBhakti ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
+                      <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activeBhakti ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
+                        Bhakti
+                      </span>
+                      {activeBhakti && (
+                        <motion.div layoutId="active-nav-dot" className="absolute bottom-1 w-1 h-1 rounded-full bg-[#C5A059]" />
+                      )}
+                    </motion.div>
+                  </Link>
+
+                  {/* Tab 5: Mandali */}
+                  <Link href="/mandali" className="flex-1 flex flex-col items-center py-2 relative">
+                    <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
+                      <Users size={22} className={activeMandali ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
+                      <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activeMandali ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
+                        Circle
+                      </span>
+                      {activeMandali && (
+                        <motion.div layoutId="active-nav-dot" className="absolute bottom-1 w-1 h-1 rounded-full bg-[#C5A059]" />
+                      )}
+                    </motion.div>
+                  </Link>
+                </div>
+              )}
+            </motion.div>
+          ) : (
+            // ── 2. Collapsed left circular pill content ──
+            <motion.div
+              key="collapsed-nav"
+              initial={{ opacity: 0, scale: 0.7 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.7 }}
+              transition={{ duration: 0.15 }}
+              onClick={handleFabClick}
+              className="w-full h-full flex items-center justify-center cursor-pointer pointer-events-auto"
+            >
+              {getCollapsedIcon()}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.nav>
-
-      {/* Minimized / Collapsed Floating Bubble */}
-      <AnimatePresence>
-        {!shouldShowBar && (
-          <motion.button
-            key="collapsed-fab"
-            onClick={handleFabClick}
-            initial={{ opacity: 0, scale: 0.6, y: 30 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.6, y: 30 }}
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.92 }}
-            className="fixed z-[101] w-12 h-12 rounded-full flex items-center justify-center border shadow-lg pointer-events-auto cursor-pointer"
-            style={{
-              bottom: 'max(14px, env(safe-area-inset-bottom))',
-              left: 'calc(50% - 24px)', // exactly centered
-              background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))',
-              borderColor: 'var(--brand-primary-soft)',
-              boxShadow: '0 8px 20px rgba(200, 146, 74, 0.3)',
-            }}
-          >
-            {getCollapsedIcon()}
-          </motion.button>
-        )}
-      </AnimatePresence>
     </>
   );
 }
