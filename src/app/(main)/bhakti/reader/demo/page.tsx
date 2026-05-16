@@ -51,7 +51,7 @@ export default function GitaReaderDemo() {
           </div>
           <div className="p-8 rounded-3xl bg-[var(--card-bg)] border border-[var(--card-border)]">
             <h5 className="font-bold theme-ink mb-2">Grammatical Notes</h5>
-            <p className="text-sm theme-muted">"Karmany-eva" is a sandhi of Karmani + Eva, emphasizing that action alone is under your control.</p>
+            <p className="text-sm theme-muted">&ldquo;Karmany-eva&rdquo; is a sandhi of Karmani + Eva, emphasizing that action alone is under your control.</p>
           </div>
         </div>
       </div>
