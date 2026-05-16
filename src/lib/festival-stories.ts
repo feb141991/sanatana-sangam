@@ -494,7 +494,7 @@ export const FESTIVAL_STORIES: FestivalStory[] = [
 
   // ── Guru Nanak Gurpurab ───────────────────────────────────────────────────
   {
-    slug: 'Guru Nanak Jayanti',
+    slug: 'Guru Nanak Gurpurab',
     emoji: '☬',
     tradition: 'sikh',
     origin:
@@ -521,7 +521,7 @@ export const FESTIVAL_STORIES: FestivalStory[] = [
 
   // ── Vesak / Buddha Purnima ────────────────────────────────────────────────
   {
-    slug: 'Buddha Purnima',
+    slug: 'Vesak / Buddha Purnima',
     emoji: '☸️',
     tradition: 'buddhist',
     origin:
@@ -573,7 +573,7 @@ export const FESTIVAL_STORIES: FestivalStory[] = [
 
   // ── Paryushana ────────────────────────────────────────────────────────────
   {
-    slug: 'Paryushana',
+    slug: 'Paryushana Parva begins',
     emoji: '🤲',
     tradition: 'jain',
     origin:
