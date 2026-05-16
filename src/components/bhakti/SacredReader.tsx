@@ -67,9 +67,12 @@ export default function SacredReader({
           const data = await res.json();
           if (data.audioContent) {
             setStandardAudio(`data:audio/mp3;base64,${data.audioContent}`);
+          } else {
+            throw new Error('Google Cloud TTS returned no audio content');
           }
         } catch (err) {
-          console.error('Failed to pre-fetch standard voice:', err);
+          console.warn('[SacredReader] Standard TTS pre-fetch failed. Falling back to native client-side voice:', err);
+          setStandardAudio(`fallback-tts://${encodeURIComponent(sanskrit)}`);
         } finally {
           setIsGenerating(false);
         }
@@ -101,9 +104,13 @@ export default function SacredReader({
       if (data.audioContent) {
         setPanditAudio(`data:audio/mp3;base64,${data.audioContent}`);
         setVoiceQuality('pandit');
+      } else {
+        throw new Error('Google Cloud TTS returned no audio content');
       }
     } catch (err) {
-      console.error('Failed to generate Pandit voice:', err);
+      console.warn('[SacredReader] Pandit TTS generation failed. Falling back to native client-side voice:', err);
+      setPanditAudio(`fallback-tts://${encodeURIComponent(sanskrit)}?quality=pandit`);
+      setVoiceQuality('pandit');
     } finally {
       setIsGenerating(false);
     }
