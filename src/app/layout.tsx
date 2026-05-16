@@ -78,7 +78,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en" className={fontVars}>
-      <body>
+      <body className="zenith-120fps">
         <AppProviders>
           {children}
 

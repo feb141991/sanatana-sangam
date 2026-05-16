@@ -4,8 +4,24 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* ─── 120fps Zenith Performance Layer ─── */
+.zenith-120fps {
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform: translateZ(0);
+}
+
+.zenith-120fps *, 
+.zenith-orb, 
+.premium-card,
+.sacred-sync-token {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
 
 :root {
   /* ── Fonts ─────────────────────────────────────────────────────────────── */
@@ -1558,7 +1574,27 @@ h5, h6 {
 }
 
 .font-display {
-  font-family: var(--font-serif);
+  --font-serif: var(--font-instrument-serif);
+}
+
+/* ─── 120fps Hardware Acceleration Layer ─── */
+@media (prefers-reduced-motion: no-preference) {
+  .zenith-orb, 
+  .premium-card,
+  .sacred-sync-token,
+  .framer-motion-layer {
+    backface-visibility: hidden;
+    perspective: 1000px;
+    transform: translateZ(0);
+    will-change: transform, opacity;
+  }
+}
+
+/* Smooth Scrolling for High-Refresh Displays */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .font-display.font-bold,
@@ -2212,6 +2248,25 @@ body::after {
   .mood-sparkle {
     animation: none !important;
   }
+}
+
+.zenith-120fps {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform;
+}
+
+.celestial-orb {
+  border-radius: 50%;
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  border: 1px solid var(--brand-primary-soft);
+  background: var(--card-bg);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  transform: translateZ(0);
+  will-change: transform, opacity;
 }
 
 /* ── Decorative orbits ──────────────────────────────────────────────────────── */
