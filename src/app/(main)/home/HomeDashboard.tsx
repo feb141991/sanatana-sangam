@@ -987,7 +987,7 @@ export default function HomeDashboard({
   isAdmin = false,
   sevaScore = 0,
 }: Props) {
-  const supabase = createClient();
+  const supabase = useRef(createClient()).current;
   const queryClient = useQueryClient();
   const router      = useRouter();
   const prefersReducedMotion = useReducedMotion();
@@ -1030,7 +1030,6 @@ export default function HomeDashboard({
   // Daily Darshan Logic — Tradition Based
   const [customCover, setCustomCover] = useState<string | null>(coverUrl || null);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
-  const supabase = useRef(createClient()).current;
   
   useEffect(() => {
     if (coverUrl) setCustomCover(coverUrl);
