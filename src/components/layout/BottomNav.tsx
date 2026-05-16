@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
@@ -18,6 +18,7 @@ const QUICK_ACTIONS = [
   { icon: '📿', label: 'japa',         href: '/bhakti/mala', desc: 'Chant your ishta mantra' },
   { icon: '🔆', label: 'morningRoutine', href: '/nitya-karma', desc: 'Complete daily rhythms' },
   { icon: '❤️', label: 'kul',          href: '/kul',         desc: 'Family lineage sadhana' },
+  { icon: '👥', label: 'mandali',      href: '/mandali',     desc: 'Gather with your dharma circle' },
   { icon: '🤝', label: 'sevaHub',      href: '/seva',        desc: 'Support sacred causes' },
   { icon: '📈', label: 'sadhanaPulse', href: '/my-progress', desc: 'Track your spiritual progress' },
   { icon: '🧠', label: 'quizMastery',  href: '/home?focus=quiz', desc: 'Test your dharmic knowledge' },
@@ -58,7 +59,7 @@ function FloatingQuickMenu({
         <>
           {/* Backdrop for outside-click */}
           <motion.div
-            className="fixed inset-0 z-[54] bg-black/40 backdrop-blur-[2px]"
+            className="fixed inset-0 z-[9005] bg-black/40 backdrop-blur-[2px]"
             onClick={onClose}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -68,8 +69,9 @@ function FloatingQuickMenu({
 
           {/* Quick-action Grid Overlay — anchored beautifully above bottom nav */}
           <motion.div
-            className="fixed bottom-[96px] left-4 right-4 z-[55] max-w-2xl mx-auto rounded-[2.2rem] p-6 border"
+            className="fixed left-4 right-4 z-[9010] max-w-2xl mx-auto rounded-[2.2rem] p-6 border"
             style={{
+              bottom: 'calc(env(safe-area-inset-bottom, 0px) + 96px)',
               background:           GLASS.bg,
               borderColor:          GLASS.border,
               backdropFilter:       GLASS.blur,
@@ -135,129 +137,19 @@ export default function BottomNav({ isGuest = false }: Props) {
   const GLASS    = useGlass(isDark);
   
   const [quickOpen, setQuickOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [otherMenuIcon, setOtherMenuIcon] = useState<string | null>(null);
-
-  const lastScrollYRef = useRef(0);
-
-  // Scroll responsive collapsing (collapses to left on scroll down, expands to center on scroll up)
-  useEffect(() => {
-    let isReady = false;
-    
-    // Ignore browser scroll-restoration/layout shifts on initial load
-    const timer = setTimeout(() => {
-      isReady = true;
-      lastScrollYRef.current = window.scrollY;
-    }, 800);
-
-    const handleScroll = () => {
-      if (!isReady) return;
-
-      const currentScrollY = window.scrollY;
-      const lastScrollY = lastScrollYRef.current;
-      
-      const diff = currentScrollY - lastScrollY;
-      if (Math.abs(diff) < 10) return; // ignore minor scroll tremors
-      
-      // Persist collapse on scroll down, keep collapsed when scroll stops
-      if (diff > 0 && currentScrollY > 70) {
-        setIsVisible(false);
-      } 
-      // Expand back when scrolling up significantly
-      else if (diff < -15) {
-        setIsVisible(true);
-      }
-
-      // Always visible near top of page
-      if (currentScrollY < 30) {
-        setIsVisible(true);
-      }
-
-      lastScrollYRef.current = currentScrollY;
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
   // Signal AI chat FAB to hide/show
   useEffect(() => {
-    window.dispatchEvent(new CustomEvent('ai-fab-visibility', { detail: { hidden: quickOpen || !isVisible } }));
-  }, [quickOpen, isVisible]);
-
-  // Listen to external/other menus opening across the app to auto-collapse the bottom nav to the left
-  useEffect(() => {
-    const handleGlobalMenu = (e: Event) => {
-      const customEvent = e as CustomEvent;
-      if (customEvent.detail?.open) {
-        setIsVisible(false);
-        setOtherMenuIcon(customEvent.detail?.icon || '📂');
-      } else {
-        setIsVisible(true);
-        setOtherMenuIcon(null);
-      }
-    };
-
-    window.addEventListener('shoonaya-menu-state', handleGlobalMenu);
-    return () => window.removeEventListener('shoonaya-menu-state', handleGlobalMenu);
-  }, []);
+    window.dispatchEvent(new CustomEvent('ai-fab-visibility', { detail: { hidden: quickOpen } }));
+  }, [quickOpen]);
 
   const activeHome = pathname === '/home' || pathname === '/guest';
   const activePathshala = pathname === '/pathshala' || pathname.startsWith('/pathshala/');
   const activeBhakti = pathname === '/bhakti' || pathname.startsWith('/bhakti/');
   const activeMandali = pathname === '/mandali' || pathname.startsWith('/mandali/');
+  const activeKul = pathname === '/kul' || pathname.startsWith('/kul/');
 
   const ease = [0.22, 1, 0.36, 1] as const;
   const dur = prefRM ? 0 : 0.25;
-
-  // Bottom Navigation is always visible: either expanded at center, or collapsed to the left side
-  const shouldShowBar = isVisible && !quickOpen && !otherMenuIcon;
-
-  // Resolves which icon to show in the left-side collapsed pill
-  const getCollapsedIcon = () => {
-    const iconSize = 20;
-    const colorClass = 'text-[#C5A059] drop-shadow-[0_0_8px_rgba(197,160,89,0.6)]'; // Saffron Gold with sacred aura
-    
-    if (otherMenuIcon) {
-      return <span className="text-base select-none">{otherMenuIcon}</span>;
-    }
-    if (quickOpen) {
-      return <X size={iconSize} className={colorClass} />;
-    }
-    if (activeHome) {
-      return <Home size={iconSize} className={colorClass} />;
-    }
-    if (activePathshala) {
-      return <BookOpen size={iconSize} className={colorClass} />;
-    }
-    if (activeBhakti) {
-      return <Heart size={iconSize} className={colorClass} />;
-    }
-    if (activeMandali) {
-      return <Users size={iconSize} className={colorClass} />;
-    }
-    return <Plus size={iconSize} className={colorClass} />;
-  };
-
-  // Handles clicking the minimized floating active-menu bubble on the left
-  const handleFabClick = () => {
-    if (otherMenuIcon) {
-      window.dispatchEvent(new CustomEvent('shoonaya-close-menu'));
-      setOtherMenuIcon(null);
-      setIsVisible(true);
-      return;
-    }
-    if (quickOpen) {
-      setQuickOpen(false);
-      setIsVisible(true);
-      return;
-    }
-    // Expand the bottom nav back to the center of the screen
-    setIsVisible(true);
-  };
 
   return (
     <>
@@ -268,34 +160,25 @@ export default function BottomNav({ isGuest = false }: Props) {
         isDark={isDark}
       />
 
-      {/* Morphed Bottom Navigation Container (Seamless Left-Side Collapse Dock) */}
+      {/* Persistent premium bottom navigation */}
       <nav
-        className="fixed z-[100] border pointer-events-auto flex items-center overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+        aria-label="Primary app navigation"
+        className="fixed z-[9000] border pointer-events-auto flex items-center overflow-visible transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
         style={{
-          bottom: 'max(14px, env(safe-area-inset-bottom))',
-          left: shouldShowBar ? '50%' : 'max(16px, env(safe-area-inset-left))',
-          transform: shouldShowBar ? 'translateX(-50%)' : 'translateX(0)',
-          width: shouldShowBar ? 'min(calc(100% - 32px), 640px)' : '56px',
-          height: shouldShowBar ? '68px' : '56px',
-          borderRadius: shouldShowBar ? '2.2rem' : '9999px',
-          background:           shouldShowBar ? GLASS.bg : 'rgba(24, 20, 15, 0.92)', // deep golden charcoal
-          borderColor:          shouldShowBar ? GLASS.border : 'rgba(197, 160, 89, 0.45)', // luxury saffron gold border
+          bottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: 'min(calc(100% - 24px), 640px)',
+          height: '70px',
+          borderRadius: '2.2rem',
+          background:           GLASS.bg,
+          borderColor:          GLASS.border,
           backdropFilter:       GLASS.blur,
           WebkitBackdropFilter: GLASS.blur,
-          boxShadow:            shouldShowBar ? GLASS.shadow : '0 8px 32px rgba(197, 160, 89, 0.22), inset 0 0 12px rgba(197, 160, 89, 0.15)',
+          boxShadow:            GLASS.shadow,
         }}
       >
-        <AnimatePresence mode="wait">
-          {shouldShowBar ? (
-            // ── 1. Expanded centered bar content ──
-            <motion.div
-              key="expanded-nav"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className="flex-1 flex items-center justify-between w-full h-full px-2"
-            >
+        <div className="flex-1 flex items-center justify-between w-full h-full px-2">
               {isGuest ? (
                 // ── Guest Layout (3-tabs) ──
                 <div className="flex-1 flex items-center justify-around w-full">
@@ -397,36 +280,21 @@ export default function BottomNav({ isGuest = false }: Props) {
                     </motion.div>
                   </Link>
 
-                  {/* Tab 5: Mandali */}
-                  <Link href="/mandali" className="flex-1 flex flex-col items-center py-2 relative">
+                  {/* Tab 5: Kul */}
+                  <Link href="/kul" className="flex-1 flex flex-col items-center py-2 relative">
                     <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
-                      <Users size={22} className={activeMandali ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
-                      <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activeMandali ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
-                        Circle
+                      <Users size={22} className={activeKul ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
+                      <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activeKul ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
+                        Kul
                       </span>
-                      {activeMandali && (
+                      {activeKul && (
                         <motion.div layoutId="active-nav-dot" className="absolute bottom-1 w-1 h-1 rounded-full bg-[#C5A059]" />
                       )}
                     </motion.div>
                   </Link>
                 </div>
               )}
-            </motion.div>
-          ) : (
-            // ── 2. Collapsed left circular pill content ──
-            <motion.div
-              key="collapsed-nav"
-              initial={{ opacity: 0, scale: 0.7 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.7 }}
-              transition={{ duration: 0.15 }}
-              onClick={handleFabClick}
-              className="w-full h-full flex items-center justify-center cursor-pointer pointer-events-auto"
-            >
-              {getCollapsedIcon()}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        </div>
       </nav>
     </>
   );
