@@ -137,6 +137,7 @@ export default function BottomNav({ isGuest = false }: Props) {
   const [quickOpen, setQuickOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [otherMenuIcon, setOtherMenuIcon] = useState<string | null>(null);
 
   // Scroll responsive collapsing
   useEffect(() => {
@@ -173,6 +174,23 @@ export default function BottomNav({ isGuest = false }: Props) {
     window.dispatchEvent(new CustomEvent('ai-fab-visibility', { detail: { hidden: quickOpen || !isVisible } }));
   }, [quickOpen, isVisible]);
 
+  // Listen to external/other menus opening across the app to auto-collapse the bottom nav
+  useEffect(() => {
+    const handleGlobalMenu = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.open) {
+        setIsVisible(false);
+        setOtherMenuIcon(customEvent.detail?.icon || '📂');
+      } else {
+        setIsVisible(true);
+        setOtherMenuIcon(null);
+      }
+    };
+
+    window.addEventListener('shoonaya-menu-state', handleGlobalMenu);
+    return () => window.removeEventListener('shoonaya-menu-state', handleGlobalMenu);
+  }, []);
+
   const activeHome = pathname === '/home' || pathname === '/guest';
   const activePathshala = pathname === '/pathshala' || pathname.startsWith('/pathshala/');
   const activeBhakti = pathname === '/bhakti' || pathname.startsWith('/bhakti/');
@@ -180,6 +198,49 @@ export default function BottomNav({ isGuest = false }: Props) {
 
   const ease = [0.22, 1, 0.36, 1] as const;
   const dur = prefRM ? 0 : 0.25;
+
+  // The main bar collapses (slides down) if scrolled out, OR if a quick action overlay is open, OR if any other external menu is open
+  const shouldShowBar = isVisible && !quickOpen && !otherMenuIcon;
+
+  // Resolves which icon to show when the bottom navigation is collapsed
+  const getCollapsedIcon = () => {
+    if (otherMenuIcon) {
+      return <span className="text-base select-none">{otherMenuIcon}</span>;
+    }
+    if (quickOpen) {
+      return <X size={20} className="text-[#1c1812]" />;
+    }
+    if (activeHome) {
+      return <Home size={20} className="text-[#1c1812]" />;
+    }
+    if (activePathshala) {
+      return <BookOpen size={20} className="text-[#1c1812]" />;
+    }
+    if (activeBhakti) {
+      return <Heart size={20} className="text-[#1c1812]" />;
+    }
+    if (activeMandali) {
+      return <Users size={20} className="text-[#1c1812]" />;
+    }
+    return <Plus size={20} className="text-[#1c1812]" />;
+  };
+
+  // Handles clicking the minimized floating bubble
+  const handleFabClick = () => {
+    if (otherMenuIcon) {
+      window.dispatchEvent(new CustomEvent('shoonaya-close-menu'));
+      setOtherMenuIcon(null);
+      setIsVisible(true);
+      return;
+    }
+    if (quickOpen) {
+      setQuickOpen(false);
+      setIsVisible(true);
+      return;
+    }
+    // Expand the bottom nav back to full size
+    setIsVisible(true);
+  };
 
   return (
     <>
@@ -190,10 +251,11 @@ export default function BottomNav({ isGuest = false }: Props) {
         isDark={isDark}
       />
 
+      {/* Main Bottom Navigation Bar */}
       <motion.nav
         className="fixed left-0 right-0 z-[100] px-4 pointer-events-none"
         initial={{ y: 0 }}
-        animate={{ y: isVisible ? 0 : 120 }}
+        animate={{ y: shouldShowBar ? 0 : 120 }}
         transition={{ duration: 0.32, ease: [0.25, 0.8, 0.25, 1] }}
         style={{
           bottom: 'max(14px, env(safe-area-inset-bottom))',
@@ -333,6 +395,31 @@ export default function BottomNav({ isGuest = false }: Props) {
           </div>
         </div>
       </motion.nav>
+
+      {/* Minimized / Collapsed Floating Bubble */}
+      <AnimatePresence>
+        {!shouldShowBar && (
+          <motion.button
+            key="collapsed-fab"
+            onClick={handleFabClick}
+            initial={{ opacity: 0, scale: 0.6, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.6, y: 30 }}
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.92 }}
+            className="fixed z-[101] w-12 h-12 rounded-full flex items-center justify-center border shadow-lg pointer-events-auto cursor-pointer"
+            style={{
+              bottom: 'max(14px, env(safe-area-inset-bottom))',
+              left: 'calc(50% - 24px)', // exactly centered
+              background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))',
+              borderColor: 'var(--brand-primary-soft)',
+              boxShadow: '0 8px 20px rgba(200, 146, 74, 0.3)',
+            }}
+          >
+            {getCollapsedIcon()}
+          </motion.button>
+        )}
+      </AnimatePresence>
     </>
   );
 }
