@@ -21,12 +21,10 @@ import {
   Users,
   X,
   Radio,
-  Play,
   Mic,
   GraduationCap,
   ShieldAlert,
 } from 'lucide-react';
-import { SEED_PATHS } from '@/lib/pathshala-paths';
 // DigitalDeeksha removed — was overlaying home page
 import { Sparkles, Search, Settings, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -974,7 +972,6 @@ export default function HomeDashboard({
   lifeStage,
   customGreeting,
   coverUrl,
-  guidedPathProgress,
   showFirstTimeGuidance,
   japaStreak = 0,
   japaAlreadyDoneToday = false,
@@ -1515,7 +1512,6 @@ export default function HomeDashboard({
   const heroPrimaryText = isDark ? 'var(--text-cream)' : '#211B14';
   const heroSecondaryText = isDark ? 'var(--text-muted-warm)' : '#4D4035';
   const { t, lang } = useLanguage();
-  const heroTertiaryText = isDark ? 'var(--text-dim)' : '#66584A';
   const heroGlassSurface = isDark ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.72)';
   const heroGlassBorder = isDark ? 'rgba(250,238,218,0.12)' : 'rgba(65,36,2,0.12)';
   const dailyTextLine = dailyText.original.split('\n')[0];
@@ -1549,9 +1545,9 @@ export default function HomeDashboard({
             onClick: undefined,
           }
         : {
-            label: 'Continue Pathshala',
-            detail: 'Move into study with a calm base.',
-            href: '/pathshala',
+            label: 'Open today\'s Panchang',
+            detail: 'Review tithi, nakshatra and sacred timing.',
+            href: '/panchang',
             onClick: undefined,
           };
 
@@ -2036,91 +2032,6 @@ export default function HomeDashboard({
           </Link>
         </motion.div>
         
-        {/* ── Your Path — Continue Learning ────────────────────────────────────── */}
-        {guidedPathProgress && guidedPathProgress.length > 0 && (
-          <div className="px-5 mb-4 mt-2">
-            <div className="flex items-center justify-between mb-3 px-1">
-              <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#C5A059] opacity-80">
-                Your Path
-              </p>
-              <Link href="/pathshala" className="text-[10px] font-bold uppercase tracking-wider text-[#C5A059] hover:underline">
-                View All →
-              </Link>
-            </div>
-            
-            {guidedPathProgress.filter(p => p.status === 'active').slice(0, 1).map((enrollment) => {
-              const path = SEED_PATHS.find(p => p.id === enrollment.path_id);
-              if (!path) return null;
-              
-              const doneLessons = (enrollment.completed_lessons ?? []).length;
-              const totalLessons = (path as any).total_lessons ?? 1;
-              const progressPct = Math.round((doneLessons / totalLessons) * 100);
-              const resumeLesson = enrollment.current_lesson ?? 0;
-              const lessonLabel = resumeLesson > 0 ? `Lesson ${resumeLesson + 1}` : 'Begin';
-
-              return (
-                <motion.div
-                  key={enrollment.path_id}
-                  className="relative rounded-[1.8rem] overflow-hidden motion-press p-5 border border-[rgba(200,146,74,0.18)]"
-                  style={{ 
-                    background: isDark 
-                      ? 'linear-gradient(135deg, rgba(28,20,12,0.92), rgba(18,12,8,0.96))'
-                      : 'linear-gradient(135deg, rgba(255,244,228,0.96), rgba(250,235,210,0.98))',
-                    boxShadow: isDark 
-                      ? '0 8px 32px rgba(0,0,0,0.32)'
-                      : '0 8px 32px rgba(180,110,30,0.08)'
-                  }}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl"
-                        style={{ background: 'rgba(200,146,74,0.12)', border: '1px solid rgba(200,146,74,0.2)' }}>
-                        📖
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-lg leading-tight truncate" style={{ fontFamily: 'var(--font-serif)', color: heroPrimaryText }}>
-                        {path.title}
-                      </h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <div className="flex-1 h-1 rounded-full bg-black/5 dark:bg-white/5 overflow-hidden">
-                          <motion.div 
-                            className="h-full bg-[#C5A059]"
-                            initial={{ width: 0 }}
-                            animate={{ width: `${progressPct}%` }}
-                            transition={{ duration: 0.8, delay: 0.2 }}
-                          />
-                        </div>
-                        <span className="text-[10px] font-bold text-[#C5A059]">{progressPct}%</span>
-                      </div>
-                    </div>
-                    <Link
-                      href={`/pathshala/${enrollment.path_id}/lesson`}
-                      className="w-11 h-11 rounded-full bg-[#C5A059] flex items-center justify-center text-[#1c1c1a] shadow-lg shadow-[#C5A059]/30"
-                    >
-                      <Play size={18} fill="currentColor" />
-                    </Link>
-                  </div>
-                  
-                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-[rgba(200,146,74,0.1)]">
-                    <p className="text-[10px] font-medium" style={{ color: heroTertiaryText }}>
-                      {lessonLabel} · {totalLessons - doneLessons} lessons remaining
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <Link href={`/pathshala/${enrollment.path_id}/recite`} className="text-[10px] font-bold text-[#C5A059] uppercase tracking-wider">
-                        Recite
-                      </Link>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        )}
-
-
         {/* ── Do You Know? Daily Quiz Spark Teaser ─────────────────────────── */}
         <AnimatePresence>
           {quiz && quiz !== 'loading' && quiz !== 'error' && (

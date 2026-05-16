@@ -33,9 +33,9 @@ const GUEST_QUICK_ACTIONS = [
 // Glass tokens — computed per-theme
 function useGlass(isDark: boolean) {
   return {
-    bg:     isDark ? 'rgba(12, 10, 8, 0.82)'      : 'rgba(255, 252, 248, 0.88)',
-    border: isDark ? 'rgba(200, 146, 74, 0.18)'  : 'rgba(200, 146, 74, 0.12)',
-    blur:   'blur(42px) saturate(210%)',
+    bg:     isDark ? 'rgba(12, 10, 8, 0.90)'      : 'rgba(255, 252, 248, 0.94)',
+    border: isDark ? 'rgba(250, 238, 218, 0.16)' : 'rgba(133, 79, 11, 0.14)',
+    blur:   'blur(18px) saturate(150%)',
     shadow: isDark
       ? '0 12px 40px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.06)'
       : '0 12px 40px rgba(180,120,40,0.08), inset 0 1px 1px rgba(255,255,255,0.9)',
@@ -203,8 +203,8 @@ export default function BottomNav({ isGuest = false }: Props) {
   const contentDur = prefRM ? 0 : 0.24;
   const shouldShowBar = !collapsed;
   const collapsedBg = isDark
-    ? 'rgba(22, 18, 13, 0.46)'
-    : 'rgba(255, 252, 246, 0.50)';
+    ? 'rgba(24, 20, 15, 0.62)'
+    : 'rgba(255, 252, 246, 0.72)';
   const collapsedBorder = isDark
     ? 'rgba(250, 238, 218, 0.22)'
     : 'rgba(133, 79, 11, 0.18)';
@@ -267,9 +267,9 @@ export default function BottomNav({ isGuest = false }: Props) {
           {shouldShowBar ? (
             <motion.div
               key="expanded-nav"
-              initial={prefRM ? undefined : { opacity: 0, scale: 0.98, filter: 'blur(4px)' }}
+              initial={prefRM ? undefined : { opacity: 0, scale: 0.98 }}
               animate={prefRM ? undefined : { opacity: 1, scale: 1 }}
-              exit={prefRM ? undefined : { opacity: 0, scale: 0.96, filter: 'blur(3px)' }}
+              exit={prefRM ? undefined : { opacity: 0, scale: 0.96 }}
               transition={{ duration: contentDur || 0.01, ease }}
               className="flex-1 flex items-center justify-between w-full h-full px-2"
             >
@@ -395,9 +395,9 @@ export default function BottomNav({ isGuest = false }: Props) {
               type="button"
               aria-label="Expand navigation"
               onClick={expandCollapsedNav}
-              initial={prefRM ? undefined : { opacity: 0, scale: 0.78, filter: 'blur(4px)' }}
-              animate={prefRM ? undefined : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
-              exit={prefRM ? undefined : { opacity: 0, scale: 0.88, filter: 'blur(3px)' }}
+              initial={prefRM ? undefined : { opacity: 0, scale: 0.78 }}
+              animate={prefRM ? undefined : { opacity: 1, scale: 1 }}
+              exit={prefRM ? undefined : { opacity: 0, scale: 0.88 }}
               transition={{ duration: 0.30, ease }}
               className="relative w-full h-full flex items-center justify-center overflow-hidden"
             >
