@@ -1500,6 +1500,7 @@ export default function HomeDashboard({
 
   // ── Multi-Festival Engine ──────────────────────────────────────────────────
   const festival = festivals[0] ?? null;
+  const daysUntilFestival = festival ? daysFromNow(festival.date) : null;
   const secondaryFestivals = festivals.slice(1);
   const localizedDailyMeaning = useLocalizedMeaning({
     entryId: `home:${tradition ?? 'other'}:${dailyTextBase.source}:${dailyTextBase.original.slice(0, 48)}`,
@@ -1513,11 +1514,6 @@ export default function HomeDashboard({
     meaning: localizedDailyMeaning.meaning,
     meaningLabel: localizedDailyMeaning.label,
   };
-
-  // ── Multi-Festival Engine ──────────────────────────────────────────────────
-  const festival = festivals[0] ?? null;
-  const daysUntilFestival = festival ? daysFromNow(festival.date) : null;
-  const secondaryFestivals = festivals.slice(1);
 
   // ── Context for Sacred Text — resolve meaning + transliteration in background
   const heroPrimaryText = isDark ? 'var(--text-cream)' : '#211B14';
