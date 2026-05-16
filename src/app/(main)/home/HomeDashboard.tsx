@@ -120,6 +120,8 @@ interface Props {
   tradition:         string | null;
   sampradaya:        string | null;
   ishtaDevata:       string | null;
+  appLanguage?:      string;
+  meaningLanguage?:  string;
   transliterationLanguage?: string;
   showTransliteration?: boolean;
   spiritualLevel:    string | null;
@@ -975,6 +977,7 @@ export default function HomeDashboard({
   seeking,
   lifeStage,
   customGreeting,
+  coverUrl,
   guidedPathProgress,
   showFirstTimeGuidance,
   japaStreak = 0,
