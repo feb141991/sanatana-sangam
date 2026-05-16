@@ -76,7 +76,6 @@ export default function TopBar({
 
   const [open,       setOpen]       = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>('default');
-  const [isHidden,   setIsHidden]   = useState(false);
   const [pushPromptDismissedUntil, setPushPromptDismissedUntil] = useState<number | null>(null);
   const [avatarFailed, setAvatarFailed] = useState(false);
   // iOS Safari without "Add to Home Screen" cannot receive web push (iOS 16.4+ PWA only).
@@ -90,9 +89,6 @@ export default function TopBar({
   useEffect(() => {
     setAvatarFailed(false);
   }, [avatarUrl]);
-
-  const lastScrollYRef       = useRef(0);
-  const scrollAccumulatorRef = useRef(0);
 
   const notificationsQuery  = useNotificationsQuery(userId);
   const notifs              = notificationsQuery.data ?? [];
@@ -134,39 +130,6 @@ export default function TopBar({
     wantsCommunityNotifications, wantsFamilyNotifications,
     wantsFestivalReminders, wantsShlokaReminders]);
 
-  useEffect(() => {
-    function handleScroll() {
-      const currentY = window.scrollY;
-      const previousY = lastScrollYRef.current;
-      const delta = currentY - previousY;
-      const absDelta = Math.abs(delta);
-
-      if (open) {
-        setIsHidden(false);
-        scrollAccumulatorRef.current = 0;
-      } else if (currentY <= 32) {
-        setIsHidden(false);
-        scrollAccumulatorRef.current = 0;
-      } else if (absDelta < 2) {
-        lastScrollYRef.current = currentY;
-        return;
-      } else {
-        scrollAccumulatorRef.current += delta;
-        if (scrollAccumulatorRef.current > 18 && currentY > 96) {
-          setIsHidden(true);
-          scrollAccumulatorRef.current = 0;
-        } else if (scrollAccumulatorRef.current < -14) {
-          setIsHidden(false);
-          scrollAccumulatorRef.current = 0;
-        }
-      }
-      lastScrollYRef.current = currentY;
-    }
-
-    handleScroll();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [open]);
 
   const unreadCount = notifs.filter((n) => !n.read).length;
   const shouldSuppressPrompt = Boolean(
@@ -179,7 +142,6 @@ export default function TopBar({
   function handleBellClick() {
     const opening = !open;
     setOpen(opening);
-    setIsHidden(false);
     if (opening) notificationsQuery.refetch();
   }
 
@@ -417,7 +379,7 @@ export default function TopBar({
 
   return (
     <>
-      <header className={`sticky top-0 z-40 px-3 pt-3 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isHidden ? '-translate-y-[120%]' : 'translate-y-0'}`}>
+      <header className="sticky top-0 z-40 px-3 pt-3">
         <div className="glass-nav max-w-2xl mx-auto px-4 h-14 rounded-[1.65rem] flex items-center gap-2" style={shellTint}>
 
           {/* Left — logo + quick-links */}

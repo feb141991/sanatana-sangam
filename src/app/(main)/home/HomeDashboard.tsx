@@ -1513,6 +1513,13 @@ export default function HomeDashboard({
     meaning: localizedDailyMeaning.meaning,
     meaningLabel: localizedDailyMeaning.label,
   };
+
+  // ── Multi-Festival Engine ──────────────────────────────────────────────────
+  const festival = festivals[0] ?? null;
+  const daysUntilFestival = festival ? daysFromNow(festival.date) : null;
+  const secondaryFestivals = festivals.slice(1);
+
+  // ── Context for Sacred Text — resolve meaning + transliteration in background
   const heroPrimaryText = isDark ? 'var(--text-cream)' : '#211B14';
   const heroSecondaryText = isDark ? 'var(--text-muted-warm)' : '#4D4035';
   const { t, lang } = useLanguage();
@@ -1595,7 +1602,7 @@ export default function HomeDashboard({
   // ── Festival Story Cards ────────────────────────────────────────────────────
   // Show "read the story" cards for ALL festivals ≤ 7 days away that have content.
   const activeFestivalStories = festivals
-    .map(f => ({ festival: f, story: getFestivalStory(f.name), daysLeft: daysUntil(f.date) }))
+    .map(f => ({ festival: f, story: getFestivalStory(f.name), daysLeft: daysFromNow(f.date) }))
     .filter(x => x.story && x.daysLeft !== null && x.daysLeft <= 7);
 
   // ── Dharm Veer ───────────────────────────────────────────────────────────────
