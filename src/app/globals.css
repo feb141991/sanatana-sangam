@@ -11,11 +11,8 @@ html {
 /* ─── 120fps Zenith Performance Layer ─── */
 .zenith-120fps {
   backface-visibility: hidden;
-  perspective: 1000px;
-  transform: translateZ(0);
 }
 
-.zenith-120fps *, 
 .zenith-orb, 
 .premium-card,
 .sacred-sync-token {
@@ -2253,8 +2250,6 @@ body::after {
 .zenith-120fps {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  perspective: 1000px;
-  will-change: transform;
 }
 
 .celestial-orb {
