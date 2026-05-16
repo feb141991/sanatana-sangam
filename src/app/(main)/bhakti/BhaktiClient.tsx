@@ -203,7 +203,7 @@ export default function BhaktiClient({
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[9px] font-bold uppercase tracking-widest mb-0.5" style={{ color: accent }}>
-                Today's Vani
+                Today&apos;s Vani
               </p>
               <p className="text-[15px] font-semibold premium-serif theme-ink truncate">
                 {dailyStotramTitle}

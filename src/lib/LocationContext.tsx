@@ -109,7 +109,7 @@ export function LocationProvider({
   const [loading,     setLoading]     = useState(false);
   const [error,       setError]       = useState<string | null>(null);
 
-  const shouldAutoLocate = pathname === '/home' || pathname === '/mandali' || pathname === '/tirtha-map' || pathname === '/profile';
+  const shouldAutoLocate = pathname === '/home' || pathname === '/mandali' || pathname === '/profile';
 
   const requestLocation = useCallback(() => {
     if (!navigator.geolocation) {
