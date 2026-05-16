@@ -55,24 +55,24 @@ export default function KathaClient({
   });
 
   return (
-    <div className="relative min-h-screen pb-24 overflow-x-hidden bg-[#050506] font-outfit selection:bg-[var(--premium-gold)] selection:text-black">
+    <div className="relative min-h-screen pb-24 overflow-x-hidden bg-[var(--divine-bg)] font-outfit selection:bg-[var(--brand-primary)] selection:text-black">
       {/* Atmospheric ambient glows */}
-      <div className="fixed top-0 right-0 w-[60vw] h-[60vw] max-w-[400px] max-h-[400px] bg-[var(--premium-gold)]/[0.04] blur-[120px] rounded-full pointer-events-none -z-10" />
+      <div className="fixed top-0 right-0 w-[60vw] h-[60vw] max-w-[400px] max-h-[400px] bg-[var(--brand-primary)]/[0.04] blur-[120px] rounded-full pointer-events-none -z-10" />
       <div className="fixed bottom-0 left-0 w-[50vw] h-[50vw] max-w-[300px] max-h-[300px] bg-rose-500/[0.03] blur-[100px] rounded-full pointer-events-none -z-10" />
 
       {/* ── Header ── */}
-      <header className="sticky top-0 z-50 w-full px-4 pt-4 pb-3 backdrop-blur-[30px] bg-[#050506]/60 border-b border-white/[0.04]">
+      <header className="sticky top-0 z-50 w-full px-4 pt-4 pb-3 backdrop-blur-[30px] bg-[var(--divine-bg)]/60 border-b border-white/[0.04]">
         <div className="flex items-center justify-between gap-3">
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => router.back()}
             className="w-10 h-10 rounded-2xl border border-white/[0.08] flex items-center justify-center bg-white/[0.03] flex-shrink-0"
           >
-            <ChevronLeft size={20} className="text-[var(--premium-gold)]" />
+            <ChevronLeft size={20} className="text-[var(--brand-primary)]" />
           </motion.button>
 
           <div className="flex flex-col items-center flex-1 min-w-0">
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--premium-gold)]/60 mb-0.5">Sacred Library</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--brand-primary)]/60 mb-0.5">Sacred Library</span>
             <h1 className="text-[17px] font-serif font-bold text-white tracking-tight">Sacred Kathas</h1>
           </div>
 
@@ -81,7 +81,7 @@ export default function KathaClient({
             onClick={() => setShowSearch(s => !s)}
             className="w-10 h-10 rounded-2xl border border-white/[0.08] flex items-center justify-center bg-white/[0.03] flex-shrink-0"
           >
-            <Search size={18} className={showSearch ? 'text-[var(--premium-gold)]' : 'text-white/50'} />
+            <Search size={18} className={showSearch ? 'text-[var(--brand-primary)]' : 'text-white/50'} />
           </motion.button>
         </div>
 
@@ -100,7 +100,7 @@ export default function KathaClient({
                   placeholder="Search by deity, occasion, title…"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-2.5 pl-9 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/20 outline-none focus:border-[var(--premium-gold)]/40 transition-all"
+                  className="w-full px-4 py-2.5 pl-9 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/20 outline-none focus:border-[var(--brand-primary)]/40 transition-all"
                   autoFocus
                 />
                 <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" />
@@ -133,14 +133,14 @@ export default function KathaClient({
                 style={{ background: 'linear-gradient(135deg, rgba(192,151,89,0.08) 0%, rgba(5,5,6,0.98) 60%)' }}
               >
                 {/* Subtle radial glow */}
-                <div className="absolute top-0 right-0 w-48 h-48 bg-[var(--premium-gold)]/[0.07] blur-[60px] rounded-full pointer-events-none" />
+                <div className="absolute top-0 right-0 w-48 h-48 bg-[var(--brand-primary)]/[0.07] blur-[60px] rounded-full pointer-events-none" />
 
                 <div className="relative z-10 p-5">
                   {/* Labels row */}
                   <div className="flex items-center gap-2.5 mb-4">
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--premium-gold)]/10 border border-[var(--premium-gold)]/20">
-                      <Sparkles size={11} className="text-[var(--premium-gold)]" />
-                      <span className="text-[10px] font-black text-[var(--premium-gold)] uppercase tracking-[0.25em]">Today&apos;s Pick</span>
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--brand-primary)]/10 border border-[var(--brand-primary)]/20">
+                      <Sparkles size={11} className="text-[var(--brand-primary)]" />
+                      <span className="text-[10px] font-black text-[var(--brand-primary)] uppercase tracking-[0.25em]">Today&apos;s Pick</span>
                     </div>
                     <span className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">
                       {todayKatha.durationMin} min
@@ -148,7 +148,7 @@ export default function KathaClient({
                   </div>
 
                   {/* Title */}
-                  <h2 className="text-xl sm:text-2xl font-serif font-bold text-white leading-tight tracking-tight group-hover:text-[var(--premium-gold)] transition-colors duration-500 mb-2">
+                  <h2 className="text-xl sm:text-2xl font-serif font-bold text-white leading-tight tracking-tight group-hover:text-[var(--brand-primary)] transition-colors duration-500 mb-2">
                     {todayKatha.title}
                   </h2>
 
@@ -167,7 +167,7 @@ export default function KathaClient({
                         {OCCASION_LABELS[todayKatha.occasion]}
                       </span>
                     </div>
-                    <div className="w-9 h-9 rounded-full bg-[var(--premium-gold)] flex items-center justify-center shadow-[0_8px_20px_rgba(192,151,89,0.35)]">
+                    <div className="w-9 h-9 rounded-full bg-[var(--brand-primary)] flex items-center justify-center shadow-[0_8px_20px_rgba(192,151,89,0.35)]">
                       <BookOpen size={16} strokeWidth={1.5} className="text-black" />
                     </div>
                   </div>
@@ -182,10 +182,10 @@ export default function KathaClient({
           <section>
             <div className="flex items-center justify-between mb-3 px-0.5">
               <div>
-                <span className="text-[10px] font-black uppercase tracking-[0.35em] text-[var(--premium-gold)]/60 block mb-0.5">This Week</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.35em] text-[var(--brand-primary)]/60 block mb-0.5">This Week</span>
                 <h3 className="text-base font-serif font-bold text-white tracking-tight">Weekly Sadhana</h3>
               </div>
-              <button className="text-[10px] font-black text-[var(--premium-gold)]/60 uppercase tracking-[0.3em] flex items-center gap-1">
+              <button className="text-[10px] font-black text-[var(--brand-primary)]/60 uppercase tracking-[0.3em] flex items-center gap-1">
                 All <ChevronRight size={13} />
               </button>
             </div>
@@ -213,7 +213,7 @@ export default function KathaClient({
           {/* Section header */}
           <div className="flex items-end justify-between mb-3 px-0.5">
             <div>
-              <span className="text-[10px] font-black uppercase tracking-[0.35em] text-[var(--premium-gold)]/60 block mb-0.5">
+              <span className="text-[10px] font-black uppercase tracking-[0.35em] text-[var(--brand-primary)]/60 block mb-0.5">
                 {searchQuery ? 'Results' : 'Explore'}
               </span>
               <h3 className="text-base font-serif font-bold text-white tracking-tight">
@@ -235,7 +235,7 @@ export default function KathaClient({
                   onClick={() => setActiveFilter(t)}
                   className={`flex-shrink-0 px-4 py-2 rounded-full text-[11px] font-black uppercase tracking-[0.2em] border transition-all duration-300 ${
                     activeFilter === t
-                      ? 'border-[var(--premium-gold)]/50 text-[var(--premium-gold)] bg-[var(--premium-gold)]/10'
+                      ? 'border-[var(--brand-primary)]/50 text-[var(--brand-primary)] bg-[var(--brand-primary)]/10'
                       : 'border-white/[0.06] text-white/25 bg-white/[0.02] hover:text-white/40'
                   }`}
                 >
@@ -298,13 +298,13 @@ function KathaCard({ katha, size = 'normal' }: { katha: Katha; size?: 'normal' |
           </div>
 
           {/* Title */}
-          <h3 className="text-white font-serif font-bold text-[13px] leading-snug tracking-tight line-clamp-2 group-hover:text-[var(--premium-gold)] transition-colors duration-300 flex-1">
+          <h3 className="text-white font-serif font-bold text-[13px] leading-snug tracking-tight line-clamp-2 group-hover:text-[var(--brand-primary)] transition-colors duration-300 flex-1">
             {katha.title}
           </h3>
 
           {/* Duration */}
           <div className="flex items-center gap-1.5 text-[10px] font-bold text-white/25">
-            <Clock size={11} className="text-[var(--premium-gold)]/30" />
+            <Clock size={11} className="text-[var(--brand-primary)]/30" />
             {katha.durationMin} min
           </div>
         </motion.div>
@@ -316,7 +316,7 @@ function KathaCard({ katha, size = 'normal' }: { katha: Katha; size?: 'normal' |
     <Link href={`/bhakti/katha/${katha.id}`}>
       <motion.div
         whileTap={{ scale: 0.97 }}
-        className="group relative rounded-2xl border border-white/[0.05] bg-white/[0.02] p-4 flex flex-col gap-3 transition-all duration-300 hover:bg-white/[0.05] hover:border-[var(--premium-gold)]/15"
+        className="group relative rounded-2xl border border-white/[0.05] bg-white/[0.02] p-4 flex flex-col gap-3 transition-all duration-300 hover:bg-white/[0.05] hover:border-[var(--brand-primary)]/15"
       >
         {/* Header row */}
         <div className="flex items-center justify-between">
@@ -327,13 +327,13 @@ function KathaCard({ katha, size = 'normal' }: { katha: Katha; size?: 'normal' |
             {trad.label}
           </div>
           <div className="flex items-center gap-1 text-[10px] font-bold text-white/20">
-            <Clock size={11} className="text-[var(--premium-gold)]/30" />
+            <Clock size={11} className="text-[var(--brand-primary)]/30" />
             {katha.durationMin}m
           </div>
         </div>
 
         {/* Title */}
-        <h3 className="text-white font-serif font-bold text-[15px] leading-snug tracking-tight line-clamp-2 group-hover:text-[var(--premium-gold)] transition-colors duration-300">
+        <h3 className="text-white font-serif font-bold text-[15px] leading-snug tracking-tight line-clamp-2 group-hover:text-[var(--brand-primary)] transition-colors duration-300">
           {katha.title}
         </h3>
 
@@ -347,13 +347,13 @@ function KathaCard({ katha, size = 'normal' }: { katha: Katha; size?: 'normal' |
           <span className="text-[9px] font-black uppercase tracking-[0.15em] text-white/20 bg-white/[0.03] px-2.5 py-1 rounded-full">
             {OCCASION_LABELS[katha.occasion] ?? katha.occasion}
           </span>
-          <div className="w-7 h-7 rounded-full border border-white/[0.06] bg-white/[0.02] flex items-center justify-center text-[var(--premium-gold)] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300">
+          <div className="w-7 h-7 rounded-full border border-white/[0.06] bg-white/[0.02] flex items-center justify-center text-[var(--brand-primary)] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300">
             <ChevronRight size={14} strokeWidth={2} />
           </div>
         </div>
 
         {/* Corner glow on hover */}
-        <div className="absolute top-0 right-0 w-20 h-20 bg-[var(--premium-gold)]/0 group-hover:bg-[var(--premium-gold)]/[0.04] blur-[30px] rounded-full transition-all duration-700 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-20 h-20 bg-[var(--brand-primary)]/0 group-hover:bg-[var(--brand-primary)]/[0.04] blur-[30px] rounded-full transition-all duration-700 pointer-events-none" />
       </motion.div>
     </Link>
   );

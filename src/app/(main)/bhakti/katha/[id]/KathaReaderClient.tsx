@@ -13,11 +13,8 @@ import type { Katha } from '@/lib/katha-library';
 interface Props { katha: Katha; }
 
 const THEME = {
-  bg: '#1A1918',
-  void: '#010101',
-  charcoal: '#2C2C2F',
-  gold: '#C09759',
-  textMuted: 'rgba(255,255,255,0.4)',
+  bg: 'var(--divine-bg)',
+  gold: '#C5A059',
 };
 
 const TRADITION_COLORS: Record<string, string> = {
@@ -48,7 +45,7 @@ export default function KathaReaderClient({ katha }: Props) {
   const [liked, setLiked] = useState(false);
   const [showPhal, setShowPhal] = useState(false);
 
-  const tradColor = TRADITION_COLORS[katha.tradition] ?? '#C09759';
+  const tradColor = TRADITION_COLORS[katha.tradition] ?? '#C5A059';
   const trad = TRADITION_LABELS[katha.tradition] ?? TRADITION_LABELS.hindu;
   const hasHindi = (katha.bodyHi?.length ?? 0) > 0;
 
@@ -56,27 +53,24 @@ export default function KathaReaderClient({ katha }: Props) {
   const phalToShow = showHindi && katha.phalHi ? katha.phalHi : katha.phal;
 
   return (
-    <div
-      className="relative min-h-screen pb-36 overflow-x-hidden"
-      style={{ backgroundColor: THEME.bg, color: 'white' }}
-    >
+    <div className="relative min-h-screen pb-36 overflow-x-hidden bg-[var(--divine-bg)] text-[var(--text-main)] font-outfit selection:bg-[#C5A059]/30">
       {/* Ambient glow */}
       <div
-        className="fixed top-0 left-0 w-96 h-96 blur-[140px] rounded-full -translate-y-1/2 -translate-x-1/2 pointer-events-none -z-10 opacity-20"
+        className="fixed top-0 left-0 w-96 h-96 blur-[140px] rounded-full -translate-y-1/2 -translate-x-1/2 pointer-events-none -z-10 opacity-25 dark:opacity-20"
         style={{ background: tradColor }}
       />
 
       {/* ── Header ── */}
-      <div className="sticky top-0 z-40 px-6 pt-12 pb-4 backdrop-blur-xl" style={{ background: 'rgba(26,25,24,0.9)' }}>
+      <div className="sticky top-0 z-40 px-6 pt-12 pb-4 backdrop-blur-xl bg-[var(--divine-bg)]/80 border-b border-[var(--divine-border)]/10">
         <div className="flex items-center justify-between">
           <button
             onClick={() => router.back()}
-            className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center bg-white/5"
+            className="w-10 h-10 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 text-[var(--text-main)]"
           >
             <ChevronLeft size={20} color={THEME.gold} />
           </button>
           <div className="text-center">
-            <p className="text-[10px] font-bold uppercase tracking-[0.5em] opacity-50" style={{ color: tradColor }}>
+            <p className="text-[10px] font-bold uppercase tracking-[0.5em]" style={{ color: tradColor }}>
               {trad.termKatha}
             </p>
           </div>
@@ -86,14 +80,14 @@ export default function KathaReaderClient({ katha }: Props) {
                 onClick={() => setShowHindi(s => !s)}
                 className={`px-3 py-1.5 rounded-full text-[10px] font-bold border transition-all ${
                   showHindi
-                    ? 'border-[#C09759] text-[#C09759] bg-[#C09759]/10'
-                    : 'border-white/10 text-white/40'
+                    ? 'border-[#C5A059] text-[#C5A059] bg-[#C5A059]/10'
+                    : 'border-[var(--divine-border)]/10 text-[var(--text-dim)]'
                 }`}
               >
                 {showHindi ? 'EN' : 'हिं'}
               </button>
             )}
-            <button className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center bg-white/5">
+            <button className="w-10 h-10 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 text-[var(--text-main)]">
               <Share2 size={15} color={THEME.gold} />
             </button>
           </div>
@@ -118,12 +112,12 @@ export default function KathaReaderClient({ katha }: Props) {
                 <p className="text-[11px] font-bold uppercase tracking-widest mb-1" style={{ color: tradColor }}>
                   Sankalpa Moment
                 </p>
-                <p className="text-white/50 text-[12px] leading-relaxed">
+                <p className="text-[var(--text-dim)] text-[12px] leading-relaxed">
                   Before you begin, take a breath. Set your intention — read this katha with an open heart and let its wisdom guide your practice of{' '}
-                  <span className="text-white/70 font-medium">{OCCASION_LABELS[katha.occasion]}</span>.
+                  <span className="text-[var(--text-main)] font-semibold">{OCCASION_LABELS[katha.occasion]}</span>.
                 </p>
               </div>
-              <button onClick={() => setSankalpaDismissed(true)} className="text-white/20 text-xs mt-0.5">✕</button>
+              <button onClick={() => setSankalpaDismissed(true)} className="text-[var(--text-dim)] text-xs mt-0.5 hover:text-[var(--text-main)]">✕</button>
             </div>
           </motion.section>
         )}
@@ -139,40 +133,40 @@ export default function KathaReaderClient({ katha }: Props) {
           >
             {trad.label}
           </span>
-          <span className="text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border border-white/10 text-white/35">
+          <span className="text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border border-[var(--divine-border)]/15 text-[var(--text-dim)]">
             {OCCASION_LABELS[katha.occasion] ?? katha.occasion}
           </span>
           {katha.deity && (
-            <span className="text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border border-[#C09759]/15 text-[#C09759]/60">
+            <span className="text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border border-[#C5A059]/15 text-[#C5A059]/80">
               {katha.deity.charAt(0).toUpperCase() + katha.deity.slice(1)}
             </span>
           )}
         </div>
 
         {/* Title */}
-        <h1 className="text-4xl font-serif text-white leading-tight">
+        <h1 className="text-3xl sm:text-4xl font-serif text-[var(--text-main)] leading-tight">
           {showHindi && katha.titleHi ? katha.titleHi : katha.title}
         </h1>
 
         {/* Meta */}
-        <div className="flex items-center gap-4 text-white/25 text-[11px]">
+        <div className="flex items-center gap-4 text-[var(--text-dim)] text-[11px]">
           <div className="flex items-center gap-1.5">
-            <Clock size={11} />
+            <Clock size={11} className="text-[#C5A059]" />
             <span>{katha.durationMin} min read</span>
           </div>
           {katha.relatedJapaMantra && (
             <div className="flex items-center gap-1.5">
-              <Star size={10} />
-              <span className="font-medium text-[#C09759]/50">{katha.relatedJapaMantra}</span>
+              <Star size={10} className="text-[#C5A059]" />
+              <span className="font-semibold text-[#C5A059]">{katha.relatedJapaMantra}</span>
             </div>
           )}
         </div>
 
         {/* Divider */}
         <div className="flex items-center gap-3 pt-2">
-          <div className="flex-1 h-px bg-white/5" />
-          <span className="text-2xl opacity-30">🕉️</span>
-          <div className="flex-1 h-px bg-white/5" />
+          <div className="flex-1 h-px bg-[var(--divine-border)]/10" />
+          <span className="text-2xl opacity-40">🕉️</span>
+          <div className="flex-1 h-px bg-[var(--divine-border)]/10" />
         </div>
       </section>
 
@@ -184,7 +178,7 @@ export default function KathaReaderClient({ katha }: Props) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.04, duration: 0.4 }}
-            className="text-white/75 text-[15px] leading-[1.8] font-light"
+            className="text-[var(--text-main)]/85 text-[15px] sm:text-[16px] leading-[1.8] font-light"
             style={{ fontFamily: showHindi ? 'inherit' : 'var(--font-serif, Georgia, serif)' }}
           >
             {para}
@@ -196,18 +190,17 @@ export default function KathaReaderClient({ katha }: Props) {
       <section className="px-6 mt-12">
         <motion.button
           onClick={() => setShowPhal(s => !s)}
-          className="w-full rounded-[2rem] p-6 border border-[#C09759]/20 bg-[#C09759]/5 flex items-center justify-between text-left"
+          className="w-full rounded-[2rem] p-6 border border-[#C5A059]/20 bg-[#C5A059]/5 flex items-center justify-between text-left cursor-pointer"
         >
           <div className="flex items-center gap-3">
             <div
-              className="w-10 h-10 rounded-full flex items-center justify-center"
-              style={{ background: `${THEME.gold}20`, border: `1px solid ${THEME.gold}30` }}
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-[#C5A059]/10 border border-[#C5A059]/30"
             >
               <Star size={16} color={THEME.gold} />
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[#C09759]/70 mb-0.5">Phal — Fruit of the Katha</p>
-              <p className="text-white/60 text-[12px]">Tap to reveal the blessing and moral</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#C5A059] mb-0.5">Phal — Fruit of the Katha</p>
+              <p className="text-[var(--text-dim)] text-[12px]">Tap to reveal the blessing and moral</p>
             </div>
           </div>
           {showPhal ? <ChevronUp size={16} color={THEME.gold} /> : <ChevronDown size={16} color={THEME.gold} />}
@@ -222,8 +215,8 @@ export default function KathaReaderClient({ katha }: Props) {
               transition={{ duration: 0.3 }}
               className="overflow-hidden"
             >
-              <div className="mt-3 rounded-[2rem] p-6 border border-[#C09759]/15 bg-[#C09759]/5">
-                <p className="text-white/70 text-[14px] leading-[1.8] font-light italic">
+              <div className="mt-3 rounded-[2rem] p-6 border border-[#C5A059]/15 bg-[#C5A059]/5">
+                <p className="text-[var(--text-main)]/85 text-[14px] leading-[1.8] font-light italic">
                   &ldquo;{phalToShow}&rdquo;
                 </p>
               </div>
@@ -234,24 +227,24 @@ export default function KathaReaderClient({ katha }: Props) {
 
       {/* ── Cross-links ── */}
       <section className="px-6 mt-10 space-y-4">
-        <h3 className="text-[11px] font-bold uppercase tracking-widest text-white/25">Continue Your Practice</h3>
+        <h3 className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-dim)]">Continue Your Practice</h3>
 
         {katha.relatedJapaMantra && (
           <Link href="/japa">
             <motion.div
               whileTap={{ scale: 0.98 }}
-              className="rounded-[2rem] p-5 border border-white/5 bg-[#2C2C2F]/20 flex items-center justify-between"
+              className="rounded-[2rem] p-5 border border-[var(--divine-border)]/10 bg-[var(--surface-base)]/30 flex items-center justify-between hover:bg-[var(--surface-base)]/50 transition-colors"
             >
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-2xl bg-[#C09759]/10 border border-[#C09759]/20 flex items-center justify-center text-xl">
+                <div className="w-10 h-10 rounded-2xl bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-xl">
                   📿
                 </div>
                 <div>
-                  <p className="text-white/70 text-[13px] font-medium">Start Japa</p>
-                  <p className="text-white/30 text-[11px] mt-0.5">{katha.relatedJapaMantra}</p>
+                  <p className="text-[var(--text-main)] text-[13px] font-semibold">Start Japa</p>
+                  <p className="text-[var(--text-dim)] text-[11px] mt-0.5">{katha.relatedJapaMantra}</p>
                 </div>
               </div>
-              <ExternalLink size={14} color={THEME.gold} className="opacity-40" />
+              <ExternalLink size={14} color={THEME.gold} className="opacity-60" />
             </motion.div>
           </Link>
         )}
@@ -259,18 +252,18 @@ export default function KathaReaderClient({ katha }: Props) {
         <Link href="/bhakti/katha">
           <motion.div
             whileTap={{ scale: 0.98 }}
-            className="rounded-[2rem] p-5 border border-white/5 bg-[#2C2C2F]/20 flex items-center justify-between"
+            className="rounded-[2rem] p-5 border border-[var(--divine-border)]/10 bg-[var(--surface-base)]/30 flex items-center justify-between hover:bg-[var(--surface-base)]/50 transition-colors"
           >
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-xl">
+              <div className="w-10 h-10 rounded-2xl bg-[var(--surface-base)] border border-[var(--divine-border)]/20 flex items-center justify-center text-xl">
                 📚
               </div>
               <div>
-                <p className="text-white/70 text-[13px] font-medium">More Kathas</p>
-                <p className="text-white/30 text-[11px] mt-0.5">Explore the sacred library</p>
+                <p className="text-[var(--text-main)] text-[13px] font-semibold">More Kathas</p>
+                <p className="text-[var(--text-dim)] text-[11px] mt-0.5">Explore the sacred library</p>
               </div>
             </div>
-            <ExternalLink size={14} color={THEME.gold} className="opacity-40" />
+            <ExternalLink size={14} color={THEME.gold} className="opacity-60" />
           </motion.div>
         </Link>
       </section>
@@ -280,10 +273,10 @@ export default function KathaReaderClient({ katha }: Props) {
         <motion.button
           whileTap={{ scale: 0.9 }}
           onClick={() => setLiked(l => !l)}
-          className={`flex items-center gap-2 px-6 py-3 rounded-full border text-[13px] font-semibold transition-all duration-300 ${
+          className={`flex items-center gap-2 px-6 py-3 rounded-full border text-[13px] font-semibold transition-all duration-300 cursor-pointer ${
             liked
-              ? 'border-rose-400/40 bg-rose-400/10 text-rose-300'
-              : 'border-white/10 text-white/40'
+              ? 'border-rose-400/40 bg-rose-400/10 text-rose-500'
+              : 'border-[var(--divine-border)]/20 text-[var(--text-dim)] hover:text-[var(--text-main)] bg-[var(--surface-base)]/30'
           }`}
         >
           <Heart size={15} fill={liked ? 'currentColor' : 'none'} />

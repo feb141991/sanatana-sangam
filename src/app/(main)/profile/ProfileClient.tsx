@@ -754,7 +754,7 @@ export default function ProfileClient({
         }
       `}</style>
 
-      <div className="relative pb-24 min-h-screen bg-black">
+      <div className="relative pb-24 min-h-screen bg-[var(--divine-bg)]">
         
       {/* ── Immersive Zenith Hero (Borderless & Tightened) ── */}
       <div className="relative w-full overflow-hidden pt-8 pb-12">
