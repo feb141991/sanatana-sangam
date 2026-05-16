@@ -142,10 +142,17 @@ export default function BottomNav({ isGuest = false }: Props) {
 
   // Scroll responsive collapsing (collapses to left on scroll down, expands to center on scroll up)
   useEffect(() => {
-    // Prevent false scroll triggers by storing current scroll on mount
-    lastScrollYRef.current = window.scrollY;
+    let isReady = false;
+    
+    // Ignore browser scroll-restoration/layout shifts on initial load
+    const timer = setTimeout(() => {
+      isReady = true;
+      lastScrollYRef.current = window.scrollY;
+    }, 800);
 
     const handleScroll = () => {
+      if (!isReady) return;
+
       const currentScrollY = window.scrollY;
       const lastScrollY = lastScrollYRef.current;
       
@@ -161,14 +168,8 @@ export default function BottomNav({ isGuest = false }: Props) {
         setIsVisible(true);
       }
 
-      // Always visible near top and bottom
+      // Always visible near top of page
       if (currentScrollY < 30) {
-        setIsVisible(true);
-      }
-      
-      const windowHeight = window.innerHeight;
-      const docHeight = document.documentElement.scrollHeight;
-      if (currentScrollY + windowHeight >= docHeight - 80) {
         setIsVisible(true);
       }
 
@@ -176,7 +177,10 @@ export default function BottomNav({ isGuest = false }: Props) {
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   // Signal AI chat FAB to hide/show
