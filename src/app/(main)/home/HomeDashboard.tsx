@@ -41,7 +41,7 @@ import {
 import type { Shloka } from '@/lib/shlokas';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { DailySacredText } from '@/lib/sacred-texts';
-import { calculatePanchang, PANCHANG_TRUST_META, getTodaySpiritualPulse } from '@/lib/panchang';
+import { calculatePanchang, PANCHANG_TRUST_META, getTodaySpiritualPulses } from '@/lib/panchang';
 import { getFestivalStory, type FestivalStory } from '@/lib/festival-stories';
 import { getDharmVeerOfTheDay, TRADITION_META, type DharmVeer } from '@/lib/dharm-veer';
 import { getPitruPakshaDay, getPitruPakshaBannerCopy } from '@/lib/pitru-paksha';
@@ -960,6 +960,7 @@ export default function HomeDashboard({
   shloka,
   sacredText,
   sacredTextMeta,
+  festivals,
   festivalCalendar,
   festivalCalendarMeta,
   heroThemes,
@@ -1018,7 +1019,7 @@ export default function HomeDashboard({
     return lastShlokaDate === today;
   });
   const [editHomeOpen,     setEditHomeOpen]     = useState(false);
-  const [storySheetOpen,   setStorySheetOpen]   = useState(false);
+  const [activeStoryFestival, setActiveStoryFestival] = useState<import('@/lib/festivals').Festival | null>(null);
   const [isQuizModalOpen,  setQuizModalOpen]    = useState(false);
 
   // showDeeksha / handleDeekshaComplete removed
@@ -1141,9 +1142,10 @@ export default function HomeDashboard({
   });
 
   // ── Daily Quiz — load from localStorage cache or fetch fresh ──────────────
-  const QUIZ_CACHE_KEY      = 'shoonaya-quiz-daily';
-  const QUIZ_CACHE_DATE_KEY = 'shoonaya-quiz-daily-date';
-  const QUIZ_ANSWERED_KEY   = 'shoonaya-quiz-daily-answered';
+  const _quizTrad           = tradition ?? 'hindu';
+  const QUIZ_CACHE_KEY      = `shoonaya-quiz-daily-${_quizTrad}`;
+  const QUIZ_CACHE_DATE_KEY = `shoonaya-quiz-daily-date-${_quizTrad}`;
+  const QUIZ_ANSWERED_KEY   = `shoonaya-quiz-daily-answered-${_quizTrad}`;
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -2002,10 +2004,7 @@ export default function HomeDashboard({
             <motion.button
               key={`story-${f.name}`}
               type="button"
-              onClick={() => {
-                // In a future update, we'll pass the specific story to the sheet
-                setStorySheetOpen(true);
-              }}
+              onClick={() => setActiveStoryFestival(f)}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 6 }}
@@ -2458,10 +2457,13 @@ export default function HomeDashboard({
 
       {/* ── Festival Story Sheet ───────────────────────────────────────────── */}
       <AnimatePresence>
-        {storySheetOpen && festivalStory && (
+        {(() => {
+          const _activeStory = activeStoryFestival ? getFestivalStory(activeStoryFestival.name) : null;
+          const _activeDays  = activeStoryFestival ? daysFromNow(activeStoryFestival.date) : null;
+          return activeStoryFestival && _activeStory ? (
           <motion.div
             className="fixed inset-0 z-50 flex flex-col justify-end"
-            onClick={() => setStorySheetOpen(false)}
+            onClick={() => setActiveStoryFestival(null)}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -2490,19 +2492,19 @@ export default function HomeDashboard({
               {/* Header */}
               <div className="flex items-start justify-between px-6 pt-1 pb-4">
                 <div className="flex items-center gap-3">
-                  <span className="text-4xl" aria-hidden="true">{festivalStory.emoji}</span>
+                  <span className="text-4xl" aria-hidden="true">{_activeStory.emoji}</span>
                   <div>
                     <p className="text-[10px] font-semibold uppercase tracking-[0.16em]"
                       style={{ color: 'var(--brand-primary)', marginBottom: '2px' }}>
-                      {daysUntilFestival === 0 ? 'Today' : `In ${daysUntilFestival} day${daysUntilFestival === 1 ? '' : 's'}`}
+                      {_activeDays === 0 ? 'Today' : `In ${_activeDays} day${_activeDays === 1 ? '' : 's'}`}
                     </p>
                     <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.45rem', fontWeight: 700, color: 'var(--text-cream)', lineHeight: 1.2 }}>
-                      {festival?.name}
+                      {activeStoryFestival.name}
                     </h2>
                   </div>
                 </div>
                 <button
-                  onClick={() => setStorySheetOpen(false)}
+                  onClick={() => setActiveStoryFestival(null)}
                   className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 mt-1"
                   style={{ background: 'rgba(200,146,74,0.10)' }}
                   aria-label="Close"
@@ -2515,13 +2517,13 @@ export default function HomeDashboard({
                 {/* Origin */}
                 <section>
                   <h3 className="festival-story-section-label">Origin</h3>
-                  <p className="festival-story-prose">{festivalStory.origin}</p>
+                  <p className="festival-story-prose">{_activeStory.origin}</p>
                 </section>
 
                 {/* Significance */}
                 <section>
                   <h3 className="festival-story-section-label">Spiritual Significance</h3>
-                  <p className="festival-story-prose">{festivalStory.significance}</p>
+                  <p className="festival-story-prose">{_activeStory.significance}</p>
                 </section>
 
                 {/* Shloka block */}
@@ -2533,15 +2535,15 @@ export default function HomeDashboard({
                     style={{ color: 'var(--brand-primary)' }}>
                     Sacred Verse
                   </p>
-                  <p className="festival-story-verse">{festivalStory.shloka.text}</p>
-                  {getTransliteration(festivalStory.shloka.text, festivalStory.shloka.transliteration || '', transliterationLanguage ?? 'en') !== festivalStory.shloka.text && (
+                  <p className="festival-story-verse">{_activeStory.shloka.text}</p>
+                  {getTransliteration(_activeStory.shloka.text, _activeStory.shloka.transliteration || '', transliterationLanguage ?? 'en') !== _activeStory.shloka.text && (
                     <p className="festival-story-transliteration">
-                      {getTransliteration(festivalStory.shloka.text, festivalStory.shloka.transliteration || '', transliterationLanguage ?? 'en')}
+                      {getTransliteration(_activeStory.shloka.text, _activeStory.shloka.transliteration || '', transliterationLanguage ?? 'en')}
                     </p>
                   )}
-                  <p className="festival-story-prose mt-3 italic">&ldquo;{festivalStory.shloka.translation}&rdquo;</p>
+                  <p className="festival-story-prose mt-3 italic">&ldquo;{_activeStory.shloka.translation}&rdquo;</p>
                   <p className="text-[10px] mt-2" style={{ color: 'var(--text-dim)' }}>
-                    — {festivalStory.shloka.source}
+                    — {_activeStory.shloka.source}
                   </p>
                 </section>
 
@@ -2549,7 +2551,7 @@ export default function HomeDashboard({
                 <section>
                   <h3 className="festival-story-section-label">How to Observe</h3>
                   <ul className="space-y-2 mt-1">
-                    {festivalStory.rituals.map((ritual, i) => (
+                    {_activeStory.rituals.map((ritual, i) => (
                       <li key={i} className="flex items-start gap-2">
                         <span style={{ color: 'var(--brand-primary)', fontSize: '0.8rem', marginTop: '2px' }}>🪔</span>
                         <p className="festival-story-prose" style={{ margin: 0 }}>{ritual}</p>
@@ -2567,12 +2569,13 @@ export default function HomeDashboard({
                     style={{ color: 'var(--brand-primary-strong)' }}>
                     Your Practice Today
                   </p>
-                  <p className="festival-story-prose">{festivalStory.practice}</p>
+                  <p className="festival-story-prose">{_activeStory.practice}</p>
                 </section>
               </div>
             </motion.div>
           </motion.div>
-        )}
+          ) : null;
+        })()}
       </AnimatePresence>
 
       {/* ── Daily Quiz Modal ───────────────────────────────────────────── */}
