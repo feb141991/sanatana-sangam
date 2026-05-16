@@ -259,24 +259,6 @@ export default function BottomNav({ isGuest = false }: Props) {
     setIsVisible(true);
   };
 
-  // Framer Motion Morphing variants: morphs seamlessly between centered bar and left circular bubble
-  const morphVariants = {
-    expanded: {
-      left: '50%',
-      x: '-50%',
-      width: 'min(calc(100% - 32px), 640px)',
-      borderRadius: '2.2rem',
-      height: '68px',
-    },
-    collapsed: {
-      left: 'max(16px, env(safe-area-inset-left))',
-      x: '0%',
-      width: '56px',
-      borderRadius: '9999px',
-      height: '56px',
-    }
-  };
-
   return (
     <>
       <FloatingQuickMenu
@@ -287,13 +269,15 @@ export default function BottomNav({ isGuest = false }: Props) {
       />
 
       {/* Morphed Bottom Navigation Container (Seamless Left-Side Collapse Dock) */}
-      <motion.nav
-        className="fixed z-[100] border pointer-events-auto flex items-center overflow-hidden"
-        variants={morphVariants}
-        animate={shouldShowBar ? 'expanded' : 'collapsed'}
-        transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+      <nav
+        className="fixed z-[100] border pointer-events-auto flex items-center overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
         style={{
           bottom: 'max(14px, env(safe-area-inset-bottom))',
+          left: shouldShowBar ? '50%' : 'max(16px, env(safe-area-inset-left))',
+          transform: shouldShowBar ? 'translateX(-50%)' : 'translateX(0)',
+          width: shouldShowBar ? 'min(calc(100% - 32px), 640px)' : '56px',
+          height: shouldShowBar ? '68px' : '56px',
+          borderRadius: shouldShowBar ? '2.2rem' : '9999px',
           background:           shouldShowBar ? GLASS.bg : 'rgba(24, 20, 15, 0.92)', // deep golden charcoal
           borderColor:          shouldShowBar ? GLASS.border : 'rgba(197, 160, 89, 0.45)', // luxury saffron gold border
           backdropFilter:       GLASS.blur,
@@ -443,7 +427,7 @@ export default function BottomNav({ isGuest = false }: Props) {
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.nav>
+      </nav>
     </>
   );
 }
