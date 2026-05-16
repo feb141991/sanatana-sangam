@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Heart, BookOpen, Users, Home, Plus, X } from 'lucide-react';
+import { Heart, BookOpen, Users, Home, Plus, X, CalendarDays, MapPin, User, MessageCircle, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
@@ -137,19 +137,90 @@ export default function BottomNav({ isGuest = false }: Props) {
   const GLASS    = useGlass(isDark);
   
   const [quickOpen, setQuickOpen] = useState(false);
-  // Signal AI chat FAB to hide/show
-  useEffect(() => {
-    window.dispatchEvent(new CustomEvent('ai-fab-visibility', { detail: { hidden: quickOpen } }));
-  }, [quickOpen]);
+  const [collapsed, setCollapsed] = useState(false);
+  const lastScrollYRef = useRef(0);
 
   const activeHome = pathname === '/home' || pathname === '/guest';
   const activePathshala = pathname === '/pathshala' || pathname.startsWith('/pathshala/');
   const activeBhakti = pathname === '/bhakti' || pathname.startsWith('/bhakti/');
   const activeMandali = pathname === '/mandali' || pathname.startsWith('/mandali/');
   const activeKul = pathname === '/kul' || pathname.startsWith('/kul/');
+  const activePanchang = pathname === '/panchang' || pathname.startsWith('/vrat/');
+  const activeTirtha = pathname === '/tirtha-map' || pathname === '/live-darshan';
+  const activeProfile = pathname === '/profile' || pathname === '/my-progress' || pathname.startsWith('/my-progress/');
+  const activeMessages = pathname === '/messages' || pathname.startsWith('/vichaar-sabha/');
+
+  useEffect(() => {
+    setQuickOpen(false);
+    setCollapsed(!(pathname === '/home' || pathname === '/guest'));
+    if (typeof window !== 'undefined') {
+      lastScrollYRef.current = window.scrollY;
+    }
+  }, [pathname]);
+
+  // Collapse into a left-side page pill on downward scroll, expand on intentional upward scroll.
+  useEffect(() => {
+    let ready = false;
+    const timer = window.setTimeout(() => {
+      ready = true;
+      lastScrollYRef.current = window.scrollY;
+    }, 350);
+
+    const onScroll = () => {
+      if (!ready || quickOpen) return;
+
+      const currentY = window.scrollY;
+      const previousY = lastScrollYRef.current;
+      const diff = currentY - previousY;
+
+      if (Math.abs(diff) < 8) return;
+
+      if (diff > 0 && currentY > 56) {
+        setCollapsed(true);
+      } else if (diff < -18) {
+        setCollapsed(false);
+      } else if (currentY < 24 && activeHome) {
+        setCollapsed(false);
+      }
+
+      lastScrollYRef.current = currentY;
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, [activeHome, quickOpen]);
+
+  // Signal AI chat FAB to hide/show
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('ai-fab-visibility', { detail: { hidden: quickOpen } }));
+  }, [quickOpen]);
 
   const ease = [0.22, 1, 0.36, 1] as const;
   const dur = prefRM ? 0 : 0.25;
+  const shouldShowBar = !collapsed;
+
+  function collapsedIcon() {
+    const iconSize = 21;
+    const colorClass = 'text-[#C5A059] drop-shadow-[0_0_8px_rgba(197,160,89,0.52)]';
+
+    if (activeHome) return <Home size={iconSize} className={colorClass} />;
+    if (activePathshala) return <BookOpen size={iconSize} className={colorClass} />;
+    if (activeBhakti) return <Heart size={iconSize} className={colorClass} />;
+    if (activeKul) return <Users size={iconSize} className={colorClass} />;
+    if (activeMandali) return <MessageCircle size={iconSize} className={colorClass} />;
+    if (activePanchang) return <CalendarDays size={iconSize} className={colorClass} />;
+    if (activeTirtha) return <MapPin size={iconSize} className={colorClass} />;
+    if (activeProfile) return <User size={iconSize} className={colorClass} />;
+    if (activeMessages) return <MessageCircle size={iconSize} className={colorClass} />;
+    return <Sparkles size={iconSize} className={colorClass} />;
+  }
+
+  function expandCollapsedNav() {
+    setCollapsed(false);
+  }
 
   return (
     <>
@@ -160,25 +231,37 @@ export default function BottomNav({ isGuest = false }: Props) {
         isDark={isDark}
       />
 
-      {/* Persistent premium bottom navigation */}
+      {/* Premium bottom navigation: expanded dock or persistent collapsed page pill */}
       <nav
         aria-label="Primary app navigation"
-        className="fixed z-[9000] border pointer-events-auto flex items-center overflow-visible transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+        className="fixed z-[9000] border pointer-events-auto flex items-center transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
         style={{
           bottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: 'min(calc(100% - 24px), 640px)',
-          height: '70px',
-          borderRadius: '2.2rem',
-          background:           GLASS.bg,
-          borderColor:          GLASS.border,
+          left: shouldShowBar ? '50%' : 'max(16px, env(safe-area-inset-left))',
+          transform: shouldShowBar ? 'translateX(-50%)' : 'translateX(0)',
+          width: shouldShowBar ? 'min(calc(100% - 24px), 640px)' : '58px',
+          height: shouldShowBar ? '70px' : '58px',
+          borderRadius: shouldShowBar ? '2.2rem' : '9999px',
+          overflow: shouldShowBar ? 'visible' : 'hidden',
+          background:           shouldShowBar ? GLASS.bg : 'rgba(24, 20, 15, 0.92)',
+          borderColor:          shouldShowBar ? GLASS.border : 'rgba(197, 160, 89, 0.45)',
           backdropFilter:       GLASS.blur,
           WebkitBackdropFilter: GLASS.blur,
-          boxShadow:            GLASS.shadow,
+          boxShadow:            shouldShowBar
+            ? GLASS.shadow
+            : '0 12px 34px rgba(197,160,89,0.22), inset 0 0 14px rgba(197,160,89,0.16)',
         }}
       >
-        <div className="flex-1 flex items-center justify-between w-full h-full px-2">
+        <AnimatePresence mode="wait">
+          {shouldShowBar ? (
+            <motion.div
+              key="expanded-nav"
+              initial={prefRM ? undefined : { opacity: 0, scale: 0.98 }}
+              animate={prefRM ? undefined : { opacity: 1, scale: 1 }}
+              exit={prefRM ? undefined : { opacity: 0, scale: 0.98 }}
+              transition={{ duration: dur || 0.01, ease }}
+              className="flex-1 flex items-center justify-between w-full h-full px-2"
+            >
               {isGuest ? (
                 // ── Guest Layout (3-tabs) ──
                 <div className="flex-1 flex items-center justify-around w-full">
@@ -294,7 +377,23 @@ export default function BottomNav({ isGuest = false }: Props) {
                   </Link>
                 </div>
               )}
-        </div>
+            </motion.div>
+          ) : (
+            <motion.button
+              key="collapsed-nav"
+              type="button"
+              aria-label="Expand navigation"
+              onClick={expandCollapsedNav}
+              initial={prefRM ? undefined : { opacity: 0, scale: 0.82 }}
+              animate={prefRM ? undefined : { opacity: 1, scale: 1 }}
+              exit={prefRM ? undefined : { opacity: 0, scale: 0.82 }}
+              transition={{ duration: dur || 0.01, ease }}
+              className="w-full h-full flex items-center justify-center"
+            >
+              {collapsedIcon()}
+            </motion.button>
+          )}
+        </AnimatePresence>
       </nav>
     </>
   );
