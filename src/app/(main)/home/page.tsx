@@ -26,7 +26,7 @@ export default async function HomePage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, avatar_url, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, ishta_devata, tradition, spiritual_level, seeking, custom_greeting, life_stage, timezone, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script, is_pro, karma_points, seva_score, is_admin')
+    .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, ishta_devata, tradition, spiritual_level, seeking, custom_greeting, life_stage, timezone, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script, is_pro, karma_points, seva_score, is_admin')
     .eq('id', user.id)
     .single();
 
@@ -178,6 +178,7 @@ export default async function HomePage() {
       seeking={profile?.seeking ?? []}
       lifeStage={(profile as any)?.life_stage ?? null}
       customGreeting={(profile as any)?.custom_greeting ?? null}
+      coverUrl={profile?.cover_url ?? null}
       guidedPathProgress={(guidedPathProgress as GuidedPathProgressRow[]) ?? []}
       showFirstTimeGuidance={showFirstTimeGuidance}
       japaStreak={todaySadhana?.streak_count ?? 0}

@@ -120,14 +120,13 @@ interface Props {
   tradition:         string | null;
   sampradaya:        string | null;
   ishtaDevata:       string | null;
-  appLanguage?:      string;
-  meaningLanguage?:  string;
   transliterationLanguage?: string;
   showTransliteration?: boolean;
   spiritualLevel:    string | null;
   seeking:           string[];
   lifeStage:         string | null;
   customGreeting:    string | null;
+  coverUrl?:         string | null;
   guidedPathProgress: GuidedPathProgressRow[];
   showFirstTimeGuidance: boolean;
   japaStreak?:          number;
@@ -1029,24 +1028,51 @@ export default function HomeDashboard({
   const [quizAnswered, setQuizAnswered] = useState<number | null>(null); // index of chosen option
 
   // Daily Darshan Logic — Tradition Based
-  const [customCover, setCustomCover] = useState<string | null>(null);
+  const [customCover, setCustomCover] = useState<string | null>(coverUrl || null);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const supabase = useRef(createClient()).current;
   
   useEffect(() => {
-    const saved = localStorage.getItem('user_cover_photo');
-    if (saved) setCustomCover(saved);
-  }, []);
+    if (coverUrl) setCustomCover(coverUrl);
+    else {
+      const saved = localStorage.getItem('user_cover_photo');
+      if (saved) setCustomCover(saved);
+    }
+  }, [coverUrl]);
 
-  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const url = event.target?.result as string;
-        setCustomCover(url);
-        localStorage.setItem('user_cover_photo', url);
-        toast.success('Cover photo updated! 🙏');
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { toast.error('Photo must be under 5MB'); return; }
+
+    setIsUploadingCover(true);
+    try {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `profiles/${userId}/home_cover_${Date.now()}.${ext}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(path, file, { upsert: true, contentType: file.type });
+
+      if (uploadError) throw uploadError;
+
+      const { data: pubData } = supabase.storage.from('avatars').getPublicUrl(path);
+      const publicUrl = pubData.publicUrl;
+
+      // Update profile
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ cover_url: publicUrl })
+        .eq('id', userId);
+
+      if (updateError) throw updateError;
+
+      setCustomCover(publicUrl);
+      toast.success('Home sanctuary updated! 🙏');
+    } catch (err: any) {
+      toast.error(err.message || 'Upload failed');
+    } finally {
+      setIsUploadingCover(false);
     }
   };
 
