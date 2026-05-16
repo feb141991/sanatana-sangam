@@ -199,8 +199,18 @@ export default function BottomNav({ isGuest = false }: Props) {
   }, [quickOpen]);
 
   const ease = [0.22, 1, 0.36, 1] as const;
-  const dur = prefRM ? 0 : 0.25;
+  const navDur = prefRM ? 0 : 0.46;
+  const contentDur = prefRM ? 0 : 0.24;
   const shouldShowBar = !collapsed;
+  const collapsedBg = isDark
+    ? 'rgba(22, 18, 13, 0.46)'
+    : 'rgba(255, 252, 246, 0.50)';
+  const collapsedBorder = isDark
+    ? 'rgba(250, 238, 218, 0.22)'
+    : 'rgba(133, 79, 11, 0.18)';
+  const collapsedShadow = isDark
+    ? '0 18px 42px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -18px 34px rgba(197,160,89,0.08)'
+    : '0 18px 42px rgba(97,67,34,0.12), inset 0 1px 0 rgba(255,255,255,0.74), inset 0 -18px 34px rgba(197,160,89,0.10)';
 
   function collapsedIcon() {
     const iconSize = 21;
@@ -234,7 +244,7 @@ export default function BottomNav({ isGuest = false }: Props) {
       {/* Premium bottom navigation: expanded dock or persistent collapsed page pill */}
       <nav
         aria-label="Primary app navigation"
-        className="fixed z-[9000] border pointer-events-auto flex items-center transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+        className="fixed z-[9000] border pointer-events-auto flex items-center"
         style={{
           bottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)',
           left: shouldShowBar ? '50%' : 'max(16px, env(safe-area-inset-left))',
@@ -243,23 +253,24 @@ export default function BottomNav({ isGuest = false }: Props) {
           height: shouldShowBar ? '70px' : '58px',
           borderRadius: shouldShowBar ? '2.2rem' : '9999px',
           overflow: shouldShowBar ? 'visible' : 'hidden',
-          background:           shouldShowBar ? GLASS.bg : 'rgba(24, 20, 15, 0.92)',
-          borderColor:          shouldShowBar ? GLASS.border : 'rgba(197, 160, 89, 0.45)',
+          background:           shouldShowBar ? GLASS.bg : collapsedBg,
+          borderColor:          shouldShowBar ? GLASS.border : collapsedBorder,
           backdropFilter:       GLASS.blur,
           WebkitBackdropFilter: GLASS.blur,
-          boxShadow:            shouldShowBar
-            ? GLASS.shadow
-            : '0 12px 34px rgba(197,160,89,0.22), inset 0 0 14px rgba(197,160,89,0.16)',
+          boxShadow:            shouldShowBar ? GLASS.shadow : collapsedShadow,
+          transition: prefRM
+            ? 'none'
+            : `left ${navDur}s cubic-bezier(0.22,1,0.36,1), transform ${navDur}s cubic-bezier(0.22,1,0.36,1), width ${navDur}s cubic-bezier(0.22,1,0.36,1), height ${navDur}s cubic-bezier(0.22,1,0.36,1), border-radius ${navDur}s cubic-bezier(0.22,1,0.36,1), background-color ${navDur}s cubic-bezier(0.22,1,0.36,1), border-color ${navDur}s cubic-bezier(0.22,1,0.36,1), box-shadow ${navDur}s cubic-bezier(0.22,1,0.36,1)`,
         }}
       >
         <AnimatePresence mode="wait">
           {shouldShowBar ? (
             <motion.div
               key="expanded-nav"
-              initial={prefRM ? undefined : { opacity: 0, scale: 0.98 }}
+              initial={prefRM ? undefined : { opacity: 0, scale: 0.98, filter: 'blur(4px)' }}
               animate={prefRM ? undefined : { opacity: 1, scale: 1 }}
-              exit={prefRM ? undefined : { opacity: 0, scale: 0.98 }}
-              transition={{ duration: dur || 0.01, ease }}
+              exit={prefRM ? undefined : { opacity: 0, scale: 0.96, filter: 'blur(3px)' }}
+              transition={{ duration: contentDur || 0.01, ease }}
               className="flex-1 flex items-center justify-between w-full h-full px-2"
             >
               {isGuest ? (
@@ -343,7 +354,7 @@ export default function BottomNav({ isGuest = false }: Props) {
                     >
                       <motion.div
                         animate={quickOpen ? { rotate: 45 } : { rotate: 0 }}
-                        transition={{ duration: dur, ease }}
+                        transition={{ duration: contentDur, ease }}
                       >
                         <Plus size={24} className="text-[#1c1812]" />
                       </motion.div>
@@ -384,13 +395,15 @@ export default function BottomNav({ isGuest = false }: Props) {
               type="button"
               aria-label="Expand navigation"
               onClick={expandCollapsedNav}
-              initial={prefRM ? undefined : { opacity: 0, scale: 0.82 }}
-              animate={prefRM ? undefined : { opacity: 1, scale: 1 }}
-              exit={prefRM ? undefined : { opacity: 0, scale: 0.82 }}
-              transition={{ duration: dur || 0.01, ease }}
-              className="w-full h-full flex items-center justify-center"
+              initial={prefRM ? undefined : { opacity: 0, scale: 0.78, filter: 'blur(4px)' }}
+              animate={prefRM ? undefined : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
+              exit={prefRM ? undefined : { opacity: 0, scale: 0.88, filter: 'blur(3px)' }}
+              transition={{ duration: 0.30, ease }}
+              className="relative w-full h-full flex items-center justify-center overflow-hidden"
             >
-              {collapsedIcon()}
+              <span className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_35%_22%,rgba(255,255,255,0.34),transparent_38%),radial-gradient(circle_at_70%_78%,rgba(197,160,89,0.16),transparent_48%)]" />
+              <span className="pointer-events-none absolute inset-[7px] rounded-full border border-white/15" />
+              <span className="relative z-10">{collapsedIcon()}</span>
             </motion.button>
           )}
         </AnimatePresence>
