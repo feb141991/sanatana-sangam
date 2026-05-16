@@ -7,7 +7,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   Bell,
-  BookOpen,
   CalendarDays,
   ChevronDown,
   ChevronLeft,
@@ -22,7 +21,6 @@ import {
   Users,
   X,
   Radio,
-  BarChart2,
   Play,
   Mic,
   GraduationCap,
@@ -143,7 +141,6 @@ const DEFAULT_QUICK_ACCESS = [
   { label: 'Tirtha',     icon: '🛕', href: '/tirtha-map',    desc: 'Find sacred places near you',   theme: 'tirtha'    },
   { label: 'Mandali',    icon: '🏡', href: '/mandali',        desc: 'Your local sangam',              theme: 'mandali'   },
   { label: 'Kul',        icon: '❤️', href: '/kul',            desc: 'Family sadhana together',        theme: 'kul'       },
-  { label: 'Pathshala',  icon: '📖', href: '/pathshala',        desc: 'Tradition-first study tracks',   theme: 'pathshala' },
   { label: 'Sanskar',    icon: '🪔', href: '/kul/sanskara',   desc: '16 sacred lifecycle rites',      theme: 'kul'       },
   { label: 'Discover',   icon: '🌿', href: '/discover',       desc: 'Scripture for your mood',        theme: 'bhakti'    },
   { label: 'Panchang',   icon: '📅', href: '/panchang',       desc: 'Today\'s tithi & muhurta',       theme: 'panchang'  },
@@ -1645,12 +1642,6 @@ export default function HomeDashboard({
       icon: CalendarDays,
     },
     {
-      title: t('sadhanaPulse'),
-      description: t('sadhanaPulseDesc'),
-      href: '/my-progress',
-      icon: BarChart2,
-    },
-    {
       title: 'Mandali Ranks',
       description: 'See the top disciples globally',
       href: '/scoreboard',
@@ -1667,12 +1658,6 @@ export default function HomeDashboard({
       description: t('bhaktiDesc'),
       href: '/bhakti',
       icon: Heart,
-    },
-    {
-      title: t('navPathshala'),
-      description: t('pathshalaDesc'),
-      href: '/pathshala',
-      icon: BookOpen,
     },
     {
       title: t('mandali'),
