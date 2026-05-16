@@ -1070,6 +1070,7 @@ export default function HomeDashboard({
       if (updateError) throw updateError;
 
       setCustomCover(publicUrl);
+      localStorage.setItem('user_cover_photo', publicUrl);
       toast.success('Home sanctuary updated! 🙏');
     } catch (err: any) {
       toast.error(err.message || 'Upload failed');
@@ -1693,7 +1694,7 @@ export default function HomeDashboard({
   ];
 
   return (
-    <div className="divine-home-shell min-h-screen bg-[var(--divine-bg)] -mx-3 sm:-mx-4 relative selection:bg-[#C5A059]/30">
+    <div className="divine-home-shell bg-[var(--divine-bg)] -mx-3 sm:-mx-4 relative selection:bg-[#C5A059]/30">
       <div className="relative">
 
       {/* ── Sacred confetti celebration ── */}
@@ -1738,10 +1739,12 @@ export default function HomeDashboard({
               {customCover && (
                 <button
                   type="button"
-                  onClick={(e) => {
+                  onClick={async (e) => {
                     e.stopPropagation();
                     setCustomCover(null);
                     localStorage.removeItem('user_cover_photo');
+                    // Clear from DB so it doesn't restore on next load
+                    await supabase.from('profiles').update({ cover_url: null }).eq('id', userId);
                     toast.success('Restored default cover 🙏');
                   }}
                   className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/60 transition-colors shadow-lg"
