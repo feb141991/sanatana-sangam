@@ -150,11 +150,14 @@ export default function BottomNav({ isGuest = false }: Props) {
       const lastScrollY = lastScrollYRef.current;
       
       const diff = currentScrollY - lastScrollY;
-      if (Math.abs(diff) < 8) return; // ignore minor scroll tremors
+      if (Math.abs(diff) < 10) return; // ignore minor scroll tremors
       
-      if (currentScrollY > lastScrollY && currentScrollY > 70) {
+      // Persist collapse on scroll down, keep collapsed when scroll stops
+      if (diff > 0 && currentScrollY > 70) {
         setIsVisible(false);
-      } else {
+      } 
+      // Expand back when scrolling up significantly
+      else if (diff < -15) {
         setIsVisible(true);
       }
 
@@ -211,8 +214,8 @@ export default function BottomNav({ isGuest = false }: Props) {
 
   // Resolves which icon to show in the left-side collapsed pill
   const getCollapsedIcon = () => {
-    const iconSize = 22;
-    const colorClass = 'text-[#C5A059]'; // Saffron Gold active icon
+    const iconSize = 20;
+    const colorClass = 'text-[#C5A059] drop-shadow-[0_0_8px_rgba(197,160,89,0.6)]'; // Saffron Gold with sacred aura
     
     if (otherMenuIcon) {
       return <span className="text-base select-none">{otherMenuIcon}</span>;
@@ -287,11 +290,11 @@ export default function BottomNav({ isGuest = false }: Props) {
         transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
         style={{
           bottom: 'max(14px, env(safe-area-inset-bottom))',
-          background:           GLASS.bg,
-          borderColor:          GLASS.border,
+          background:           shouldShowBar ? GLASS.bg : 'rgba(24, 20, 15, 0.92)', // deep golden charcoal
+          borderColor:          shouldShowBar ? GLASS.border : 'rgba(197, 160, 89, 0.45)', // luxury saffron gold border
           backdropFilter:       GLASS.blur,
           WebkitBackdropFilter: GLASS.blur,
-          boxShadow:            GLASS.shadow,
+          boxShadow:            shouldShowBar ? GLASS.shadow : '0 8px 32px rgba(197, 160, 89, 0.22), inset 0 0 12px rgba(197, 160, 89, 0.15)',
         }}
       >
         <AnimatePresence mode="wait">
