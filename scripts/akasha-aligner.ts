@@ -46,7 +46,7 @@ async function runAligner() {
   try {
     let token: string | undefined;
     if (!isSimulated) {
-      token = await getGoogleToken();
+      token = (await getGoogleToken()) ?? undefined;
       console.log('✅ Google Auth Successful');
     } else {
       console.log('✨ Simulating alignment using meditative pace (no API calls)');
@@ -75,11 +75,11 @@ async function runAligner() {
 
       // 2. Tokenize into words
       const textSource = shloka.devanagari;
-      const words = textSource.split(/[\s।॥,]+/).filter(w => w.trim().length > 0);
-      
+      const words: string[] = (textSource as string).split(/[\s।॥,]+/).filter((w: string) => w.trim().length > 0);
+
       // 3. Build SSML with marks
       let ssml = '<speak>';
-      words.forEach((word, index) => {
+      words.forEach((word: string, index: number) => {
         ssml += `<mark name="w${index}"/> ${word} `;
       });
       ssml += '</speak>';
@@ -90,7 +90,7 @@ async function runAligner() {
       if (isSimulated) {
         // Simulate a meditative reading pace: ~450ms per word
         let currentTime = 0.5; // Start after 500ms
-        timepoints = words.map((_, i) => {
+        timepoints = words.map((_: string, i: number) => {
           const tp = { name: `w${i}`, timeSeconds: currentTime };
           currentTime += 0.45; // 450ms per word
           return tp;

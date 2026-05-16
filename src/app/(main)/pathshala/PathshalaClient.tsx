@@ -40,7 +40,7 @@ import {
   RAMAYANA_STRUCTURE, BHAGAVATAM_STRUCTURE,
   type EpicStructure, type EpicKanda, type EpicChapter, type EpicVerse
 } from '@/lib/epics-registry';
-import { calculatePanchang, getTodaySpiritualPulse } from '@/lib/panchang';
+import { calculatePanchang, getTodaySpiritualPulses } from '@/lib/panchang';
 import { getMeaningLabel, resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import { getTransliteration } from '@/lib/transliteration';
@@ -848,7 +848,7 @@ export default function PathshalaClient({
   
   const pulse = useMemo(() => {
     const p = calculatePanchang(new Date(), lat ?? undefined, lon ?? undefined);
-    return getTodaySpiritualPulse(p.tithiIndex, tradition);
+    return getTodaySpiritualPulses(p.tithiIndex, tradition)[0] ?? null;
   }, [tradition, lat, lon]);
 
   const [tab, setTab] = useState<'learn' | 'scripture' | 'explore'>(initialTab ?? 'learn');

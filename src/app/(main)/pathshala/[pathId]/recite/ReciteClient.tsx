@@ -16,7 +16,10 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { GITA_FULL_DATA } from '@/lib/gita-full-data';
-import { ALL_LIBRARY_ENTRIES } from '@/lib/library-content';
+import { ALL_LIBRARY_ENTRIES, type LibraryEntry } from '@/lib/library-content';
+import { SEED_PATHS } from '@/lib/pathshala-paths';
+import { usePathshala, useSadhana } from '@/contexts/EngineContext';
+import { usePremium } from '@/hooks/usePremium';
 import CircularProgress from '@/components/ui/CircularProgress';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { getTransliteration } from '@/lib/transliteration';
@@ -24,6 +27,7 @@ import { getMeaningLabel, resolveEffectiveMeaningLanguage } from '@/lib/language
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import SacredReader from '@/components/bhakti/SacredReader';
 import type { SyncToken } from '@/hooks/useSacredSync';
+import type { RecitationResult } from '@sangam/pathshala-engine';
 
 // ─── Font size steps (same scale as LessonClient) ─────────────────────────────
 const READER_FONT_STEPS = [1.1, 1.25, 1.4, 1.58, 1.78] as const;
