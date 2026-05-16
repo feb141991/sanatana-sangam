@@ -29,9 +29,24 @@ export default function SacredReader({
   const { isPlaying, activeIndex, toggle, seek, progress } = useSacredSync({
     audioUrl,
     tokens,
-    onComplete: () => {
+    onComplete: async () => {
       setIsCompleted(true);
-      setMastery(prev => Math.min(1, prev + 0.05));
+      
+      // ─── Real-World Mastery Hookup ───
+      try {
+        const { createClient } = await import('@/lib/supabase');
+        const supabase = createClient();
+        
+        const { error } = await supabase.rpc('increment_sadhana_mastery', {
+          p_shloka_id: shlokaId
+        });
+        
+        if (!error) {
+          setMastery(prev => Math.min(1, prev + 0.05));
+        }
+      } catch (err) {
+        console.error('Mastery update failed:', err);
+      }
     }
   });
 
