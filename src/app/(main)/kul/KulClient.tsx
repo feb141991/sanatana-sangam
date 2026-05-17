@@ -304,6 +304,8 @@ export default function KulClient({
             onUpdateKul={(updates) => kulMutations.updateKul.mutate({ kulId: data.kul!.id, updates })}
             onUploadCover={handleUploadCover}
             isUploading={isUploading}
+            userId={userId}
+            onSendMessage={(content) => kulMutations.sendMessage.mutate({ kulId: data?.kul?.id ?? '', content })}
           />
         );
     }

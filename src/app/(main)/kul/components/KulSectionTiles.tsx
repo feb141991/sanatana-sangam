@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
+import { CalendarDays, GitBranch, ListChecks, MessageCircle, Users } from 'lucide-react';
 import { KulSectionView, KulView, MemberRow, TaskRow, MessageRow, FamilyMember, KulEvent } from '../types';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { getUnreadSignature, getKulSectionHref } from '../utils';
@@ -28,37 +28,37 @@ export function KulSectionTiles({
   const KUL_SECTION_META: Record<KulSectionView, {
     label: string;
     eyebrow: string;
-    emoji: string;
+    Icon: typeof Users;
     group: 'today' | 'family' | 'lineage';
   }> = {
     members: {
       label: t('kulMembersTitle'),
       eyebrow: t('kulMembersEyebrow'),
-      emoji: '👨‍👩‍👧‍👦',
+      Icon: Users,
       group: 'family',
     },
     tasks: {
       label: t('kulTasksTitle'),
       eyebrow: t('kulTasksEyebrow'),
-      emoji: '📋',
+      Icon: ListChecks,
       group: 'today',
     },
     sabha: {
       label: t('kulSabhaTitle'),
       eyebrow: t('kulSabhaEyebrow'),
-      emoji: '💬',
+      Icon: MessageCircle,
       group: 'family',
     },
     vansh: {
       label: t('kulVanshTitle'),
       eyebrow: t('kulVanshEyebrow'),
-      emoji: '🫶',
+      Icon: GitBranch,
       group: 'lineage',
     },
     events: {
       label: t('kulEventsLabel'),
       eyebrow: t('kulEventsEyebrow'),
-      emoji: '📅',
+      Icon: CalendarDays,
       group: 'today',
     },
   };
@@ -96,50 +96,48 @@ export function KulSectionTiles({
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+    <div className="rounded-[2rem] border border-[var(--card-border)] bg-[var(--card-bg)]/70 px-3 py-4 shadow-sm backdrop-blur-xl">
+      <div className="mb-3 flex items-center justify-between px-1">
+        <p className="text-[12px] font-medium theme-ink premium-serif">Open a space</p>
+        <p className="text-[10px] theme-muted">Family tools</p>
+      </div>
+      <div className="flex items-start gap-2 overflow-x-auto pb-1 scrollbar-none">
       {tiles.map(({ key, badge }) => {
         const meta = KUL_SECTION_META[key];
         const active = currentView === key;
+        const Icon = meta.Icon;
         return (
           <motion.div
             key={key}
-            whileHover={{ y: -2, scale: 1.01 }}
-            whileTap={{ scale: 0.97 }}
-            className="h-full"
+            whileTap={{ scale: 0.94 }}
+            className="shrink-0"
           >
             <Link
               href={getKulSectionHref(key)}
-              className={`group flex flex-col h-full rounded-[1.8rem] p-4 transition-all ${
+              className={`group relative flex w-[76px] flex-col items-center gap-2 rounded-[1.4rem] px-2 py-3 text-center transition-all ${
                 active 
-                  ? 'bg-gradient-to-br from-[var(--brand-primary)]/20 to-[var(--brand-primary)]/5 border border-[var(--brand-primary)]/20 shadow-lg' 
-                  : 'glass-panel border border-white/5 hover:border-white/10'
+                  ? 'bg-[var(--brand-primary)]/12 text-[var(--brand-primary)]'
+                  : 'hover:bg-[var(--surface-raised)]'
               }`}
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl bg-[var(--brand-primary)]/10 border border-[var(--brand-primary)]/15 group-hover:bg-[var(--brand-primary)]/20 transition-colors shadow-inner">
-                  {meta.emoji}
-                </div>
-                <div className="flex flex-col items-end gap-2">
-                  {badge != null && badge > 0 && (
-                    <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-[#1c1c1a] shadow-sm animate-pulse" style={{ background: 'var(--brand-primary)' }}>
-                      {badge > 99 ? '!' : badge}
-                    </span>
-                  )}
-                  <ChevronRight size={14} className="theme-dim group-hover:translate-x-0.5 transition-transform" />
-                </div>
+              <div className={`flex h-14 w-14 items-center justify-center rounded-full border transition-all ${
+                active
+                  ? 'border-[var(--brand-primary)]/30 bg-[var(--brand-primary)]/14 text-[var(--brand-primary)]'
+                  : 'border-[var(--card-border)] bg-[var(--surface-raised)] text-[var(--brand-primary)]'
+              }`}>
+                <Icon size={20} strokeWidth={1.8} />
               </div>
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--brand-primary)] opacity-70 mb-1">
-                  {meta.eyebrow}
-                </p>
-                <h3 className="text-[15px] font-bold theme-ink leading-tight">
-                  {meta.label}
-                </h3>
-              </div>
+              {badge != null && badge > 0 && (
+                <span className="absolute right-3 top-2 h-2.5 w-2.5 rounded-full bg-[var(--brand-primary)] shadow-sm" />
+              )}
+              <span className="line-clamp-2 min-h-[28px] text-[11px] font-medium leading-tight theme-ink">
+                {meta.label}
+              </span>
             </Link>
           </motion.div>
         );
       })}
+      </div>
     </div>
   );
 }
