@@ -135,7 +135,15 @@ export default function BhaktiClient({
   const hero          = TRADITION_HERO[tradition] ?? TRADITION_HERO.hindu;
 
   // Filter cards to this tradition (show universal cards + tradition-specific ones)
-  const cards = CONTENT_CARDS.filter(
+  const cards = CONTENT_CARDS.map(c => {
+    if (c.title === 'Stotrams & Hymns') {
+      return { ...c, href: `/bhakti/browse?tradition=${tradition === 'jain' ? 'jain' : 'hindu'}` };
+    }
+    if (c.title === 'Sacred Chants') {
+      return { ...c, href: `/bhakti/browse?tradition=buddhist` };
+    }
+    return c;
+  }).filter(
     c => !c.traditions || c.traditions.includes(tradition)
   );
 

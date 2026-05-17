@@ -106,18 +106,72 @@ export default function KathaClient({
   const pageHeading = viewCfg?.heading ?? `${trad.termKatha}`;
   const pageSubHeading = viewCfg?.sub ?? 'Sacred Library';
 
+  // 1. Get the list of all kathas matching the current filter/view (for Today's Pick and Weekly Sadhana)
+  const allowedKathas = allKathas.filter(k => {
+    if (viewCfg) {
+      return viewCfg.filter(k);
+    }
+    if (activeFilter === 'hindu') {
+      return k.tradition === 'hindu' && !k.tags.includes('panchatantra') && !k.tags.includes('heroes');
+    }
+    if (activeFilter === 'sikh') {
+      return k.tradition === 'sikh';
+    }
+    if (activeFilter === 'buddhist') {
+      return k.tradition === 'buddhist';
+    }
+    if (activeFilter === 'jain') {
+      return k.tradition === 'jain';
+    }
+    // 'all' shows all tradition-filtered scriptural stories (excluding fables and heroes)
+    return !k.tags.includes('panchatantra') && !k.tags.includes('heroes');
+  });
+
+  // 2. Select a stable today's pick from allowedKathas
+  const dayOfYear = Math.floor(
+    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000
+  );
+  const activeTodayKatha = allowedKathas.length > 0
+    ? allowedKathas[dayOfYear % allowedKathas.length]
+    : todayKatha;
+
+  // 3. Select 5 unique weekly sadhanas from the allowed set, excluding today's pick
+  const activeWeekKathas = allowedKathas
+    .filter(k => k.id !== activeTodayKatha.id)
+    .slice(0, 5);
+
   const filtered = allKathas.filter(k => {
-    // 1. If a view is active, apply its pre-filter first
-    if (viewCfg && !viewCfg.filter(k)) return false;
-    // 2. Apply tradition tab filter (only when no view lock)
-    const matchTrad = viewCfg?.lockTabs || activeFilter === 'all' || k.tradition === activeFilter;
-    // 3. Apply search
+    // 1. If a view is active, apply its pre-filter
+    if (viewCfg) {
+      if (!viewCfg.filter(k)) return false;
+    } else {
+      // 2. If no view is active, filter the main tabs as per card separation:
+      // - 'hindu' tab shows Puranic/scriptural tales (no Panchatantra, no Heroes)
+      // - 'sikh' tab shows Sikh Sakhis
+      // - 'buddhist' tab shows Dhamma Stories
+      // - 'jain' tab shows Jain Kathas
+      // - 'all' tab shows a unified stream of spiritual scriptural stories (no Panchatantra, no Heroes)
+      if (activeFilter === 'hindu') {
+        if (k.tradition !== 'hindu' || k.tags.includes('panchatantra') || k.tags.includes('heroes')) return false;
+      } else if (activeFilter === 'sikh') {
+        if (k.tradition !== 'sikh') return false;
+      } else if (activeFilter === 'buddhist') {
+        if (k.tradition !== 'buddhist') return false;
+      } else if (activeFilter === 'jain') {
+        if (k.tradition !== 'jain') return false;
+      } else if (activeFilter === 'all') {
+        if (k.tags.includes('panchatantra') || k.tags.includes('heroes')) return false;
+      }
+    }
+
+    // 3. Apply search query
     const matchSearch = searchQuery.trim() === '' ||
       k.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (k.deity ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
       OCCASION_LABELS[k.occasion]?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       k.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchTrad && matchSearch;
+    
+    return matchSearch;
   });
 
   return (
@@ -188,9 +242,9 @@ export default function KathaClient({
       <main className="px-4 pt-5 space-y-6">
 
         {/* ── Today's Pick — Hero Card ── */}
-        {!searchQuery && (
+        {!searchQuery && activeTodayKatha && (
           <section>
-            <Link href={`/bhakti/katha/${todayKatha.id}`}>
+            <Link href={`/bhakti/katha/${activeTodayKatha.id}`}>
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -209,28 +263,28 @@ export default function KathaClient({
                       <span className="text-[10px] font-black text-[var(--brand-primary)] uppercase tracking-[0.25em]">Today&apos;s Pick</span>
                     </div>
                     <span className="text-[10px] font-bold theme-muted uppercase tracking-[0.2em]">
-                      {todayKatha.durationMin} min
+                      {activeTodayKatha.durationMin} min
                     </span>
                   </div>
 
                   {/* Title */}
                   <h2 className="text-xl sm:text-2xl font-serif font-bold theme-ink leading-tight tracking-tight group-hover:text-[var(--brand-primary)] transition-colors duration-500 mb-2">
-                    {todayKatha.title}
+                    {activeTodayKatha.title}
                   </h2>
 
                   {/* Preview */}
                   <p className="theme-muted text-sm leading-relaxed line-clamp-2 font-light mb-4">
-                    &quot;{todayKatha.preview}&quot;
+                    &quot;{activeTodayKatha.preview}&quot;
                   </p>
 
                   {/* Footer row */}
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
                       <span className="text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1 rounded-full bg-[var(--card-bg)] border border-[var(--card-border)] theme-muted">
-                        {TRADITION_LABELS[todayKatha.tradition]?.label}
+                        {TRADITION_LABELS[activeTodayKatha.tradition]?.label}
                       </span>
                       <span className="text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1 rounded-full bg-[var(--card-bg)] border border-[var(--card-border)] theme-muted">
-                        {OCCASION_LABELS[todayKatha.occasion]}
+                        {OCCASION_LABELS[activeTodayKatha.occasion]}
                       </span>
                     </div>
                     <div className="w-9 h-9 rounded-full bg-[var(--brand-primary)] flex items-center justify-center shadow-md">
@@ -244,7 +298,7 @@ export default function KathaClient({
         )}
 
         {/* ── This Week — Horizontal Scroll ── */}
-        {!searchQuery && weekKathas.length > 0 && (
+        {!searchQuery && activeWeekKathas.length > 0 && (
           <section>
             <div className="flex items-center justify-between mb-3 px-0.5">
               <div>
@@ -256,8 +310,8 @@ export default function KathaClient({
               </button>
             </div>
 
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none snap-x -mx-4 px-4">
-              {weekKathas.map((k, i) => (
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none snap-x -mx-4 snap-always px-4">
+              {activeWeekKathas.map((k, i) => (
                 <motion.div
                   key={k.id}
                   initial={{ opacity: 0, x: 20 }}

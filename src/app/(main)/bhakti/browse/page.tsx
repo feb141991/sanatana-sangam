@@ -28,6 +28,7 @@ function BrowseInner() {
   const { resolvedTheme } = useThemePreference();
   const isDark = resolvedTheme === 'dark';
 
+  const [tradition, setTradition] = useState<string>(searchParams.get('tradition') ?? 'all');
   const [deity,  setDeity]  = useState<string>(searchParams.get('deity') ?? 'all');
   const [mood,   setMood]   = useState<string>(searchParams.get('mood')  ?? 'all');
   const [type,   setType]   = useState<string>('all');
@@ -48,12 +49,13 @@ function BrowseInner() {
   // ── Filter ──────────────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
     return STOTRAMS.filter(s => {
-      const deityOk  = deity === 'all' || s.deity === deity || s.deity === 'universal';
-      const moodOk   = mood === 'all';  // mood filtering not in stotrams data yet — show all
-      const typeOk   = type === 'all' || s.type === type;
-      return deityOk && moodOk && typeOk;
+      const traditionOk = tradition === 'all' || s.tradition === tradition || s.tradition === 'all';
+      const deityOk     = deity === 'all' || s.deity === deity || s.deity === 'universal';
+      const moodOk      = mood === 'all';  // mood filtering not in stotrams data yet — show all
+      const typeOk      = type === 'all' || s.type === type;
+      return traditionOk && deityOk && moodOk && typeOk;
     });
-  }, [deity, mood, type]);
+  }, [tradition, deity, mood, type]);
 
   function PillRow<T extends { id: string; label?: string; emoji?: string }>({
     items, active, onSelect, title,
@@ -95,6 +97,15 @@ function BrowseInner() {
       {/* Filters */}
       <div className="px-4 space-y-3 mb-4 rounded-[1.5rem] mx-4 py-4"
         style={{ background: isDark ? 'rgba(18,12,8,0.9)' : 'rgba(255,245,228,0.95)', border: `1px solid ${cardBdr}` }}>
+        <PillRow
+          items={Object.entries(TRADITION_LABELS)
+            .filter(([id]) => id !== 'all')
+            .map(([id, label]) => ({
+              id,
+              label,
+              emoji: id === 'hindu' ? '🕉️' : id === 'sikh' ? '☬' : id === 'buddhist' ? '☸️' : id === 'jain' ? '🪷' : '✨'
+            }))}
+          active={tradition} onSelect={setTradition} title="Tradition" />
         <PillRow
           items={DEITIES.map(d => ({ id: d.id, label: d.label, emoji: d.emoji }))}
           active={deity} onSelect={setDeity} title="Deity" />
