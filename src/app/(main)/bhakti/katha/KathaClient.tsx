@@ -311,34 +311,64 @@ export default function KathaClient({
             </div>
           )}
 
-          {/* Katha grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <AnimatePresence mode="popLayout">
-              {filtered.length === 0 ? (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="col-span-full py-16 rounded-3xl border border-[var(--card-border)] bg-[var(--card-bg)] flex flex-col items-center justify-center text-center space-y-3"
-                >
-                  <BookOpen size={36} className="theme-muted opacity-40" />
-                  <p className="theme-muted text-sm font-medium">The archive is silent. Try another keyword.</p>
-                </motion.div>
-              ) : (
-                filtered.map((k, i) => (
+          {/* Katha grid — hero portrait layout OR regular */}
+          {viewParam === 'heroes' && !searchQuery ? (
+            <div className="grid grid-cols-2 gap-3">
+              <AnimatePresence mode="popLayout">
+                {filtered.length === 0 ? (
                   <motion.div
-                    key={k.id}
-                    layout
-                    initial={{ opacity: 0, y: 16 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ delay: (i % 8) * 0.05, type: 'spring', damping: 22, stiffness: 120 }}
+                    className="col-span-full py-16 rounded-3xl border border-[var(--card-border)] bg-[var(--card-bg)] flex flex-col items-center justify-center text-center space-y-3"
                   >
-                    <KathaCard katha={k} />
+                    <BookOpen size={36} className="theme-muted opacity-40" />
+                    <p className="theme-muted text-sm font-medium">No heroes found.</p>
                   </motion.div>
-                ))
-              )}
-            </AnimatePresence>
-          </div>
+                ) : (
+                  filtered.map((k, i) => (
+                    <motion.div
+                      key={k.id}
+                      layout
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ delay: (i % 8) * 0.05, type: 'spring', damping: 22, stiffness: 120 }}
+                    >
+                      <HeroCard katha={k} />
+                    </motion.div>
+                  ))
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <AnimatePresence mode="popLayout">
+                {filtered.length === 0 ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="col-span-full py-16 rounded-3xl border border-[var(--card-border)] bg-[var(--card-bg)] flex flex-col items-center justify-center text-center space-y-3"
+                  >
+                    <BookOpen size={36} className="theme-muted opacity-40" />
+                    <p className="theme-muted text-sm font-medium">The archive is silent. Try another keyword.</p>
+                  </motion.div>
+                ) : (
+                  filtered.map((k, i) => (
+                    <motion.div
+                      key={k.id}
+                      layout
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ delay: (i % 8) * 0.05, type: 'spring', damping: 22, stiffness: 120 }}
+                    >
+                      <KathaCard katha={k} />
+                    </motion.div>
+                  ))
+                )}
+              </AnimatePresence>
+            </div>
+          )}
         </section>
       </main>
     </div>
@@ -415,6 +445,62 @@ function KathaCard({ katha, size = 'normal' }: { katha: Katha; size?: 'normal' |
           </span>
           <div className="w-7 h-7 rounded-full border border-[var(--card-border)] bg-[var(--card-bg)] flex items-center justify-center text-[var(--brand-primary)] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300">
             <ChevronRight size={14} strokeWidth={2} />
+          </div>
+        </div>
+      </motion.div>
+    </Link>
+  );
+}
+
+// ── Hero portrait card — compact 2-col grid for Heroes of Bharat view ──────
+function HeroCard({ katha }: { katha: Katha }) {
+  const trad = TRADITION_LABELS[katha.tradition] ?? TRADITION_LABELS.hindu;
+  // Extract the hero's short name — everything before the em-dash
+  const shortName = katha.title.includes('—')
+    ? katha.title.split('—')[0].trim()
+    : katha.title;
+  // Subtitle after the dash
+  const subtitle = katha.title.includes('—')
+    ? katha.title.split('—')[1]?.trim()
+    : null;
+
+  return (
+    <Link href={`/bhakti/katha/${katha.id}`}>
+      <motion.div
+        whileTap={{ scale: 0.95 }}
+        className="group relative rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] overflow-hidden flex flex-col transition-all duration-300 hover:border-[var(--brand-primary-soft)]"
+      >
+        {/* Portrait panel */}
+        <div
+          className="w-full aspect-[4/3] flex items-center justify-center text-[56px] leading-none relative overflow-hidden"
+          style={{ background: `linear-gradient(135deg, ${trad.color}18 0%, ${trad.color}08 100%)` }}
+        >
+          {/* Subtle radial glow behind portrait */}
+          <div
+            className="absolute inset-0 opacity-20"
+            style={{ background: `radial-gradient(circle at 50% 60%, ${trad.color} 0%, transparent 70%)` }}
+          />
+          <span className="relative z-10 drop-shadow-sm">{katha.portrait ?? '🦁'}</span>
+          {/* Tradition pip */}
+          <span
+            className="absolute top-2 right-2 text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-full border"
+            style={{ color: trad.color, borderColor: `${trad.color}40`, background: `${trad.color}15` }}
+          >
+            {trad.label}
+          </span>
+        </div>
+
+        {/* Info panel */}
+        <div className="p-3 flex flex-col gap-1 flex-1">
+          <h3 className="theme-ink font-serif font-bold text-[13px] leading-tight tracking-tight line-clamp-2 group-hover:text-[var(--brand-primary)] transition-colors duration-300">
+            {shortName}
+          </h3>
+          {subtitle && (
+            <p className="theme-muted text-[10px] leading-snug line-clamp-1 font-light">{subtitle}</p>
+          )}
+          <div className="flex items-center gap-1 mt-auto pt-1 text-[10px] font-bold theme-muted">
+            <Clock size={10} className="text-[var(--brand-primary)] opacity-50" />
+            {katha.durationMin} min
           </div>
         </div>
       </motion.div>
