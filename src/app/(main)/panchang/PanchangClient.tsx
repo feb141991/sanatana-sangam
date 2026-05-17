@@ -233,9 +233,15 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
     name: '',
     birthDate: '',
     birthTime: '',
-    birthPlace: '',
+    birthPlace: city || '',
+    lat: lat || 28.6139,
+    lng: lon || 77.2090,
+    timezone: 'Asia/Kolkata',
   });
-  const [kundaliResult, setKundaliResult] = useState<KundaliResult | null>(null);
+  const [kundaliResult,  setKundaliResult]  = useState<KundaliResult | null>(null);
+  const [kundaliLoading, setKundaliLoading] = useState(false);
+  const [kundaliError,   setKundaliError]   = useState<string | null>(null);
+  const [chartSaved,     setChartSaved]     = useState(false);
 
   const p: SacredCalendarData = useSacredCalendar(selected, lat, lon, tradition);
 
@@ -395,21 +401,29 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
 
   async function share() {
     let text = '';
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://shoonaya.com';
+
     if (activeTab === 'panchang') {
-      text = `🪔 Panchang — ${dateLabel}\n\n` +
+      const link = `${origin}/panchang`;
+      text = `Read & check your panchang following this link to open the feature: ${link}\n\n` +
+        `🪔 Panchang — ${dateLabel}\n\n` +
         `📅 Tithi: ${p.tithi} (${p.paksha} Paksha)\n` +
         `⭐ Nakshatra: ${p.nakshatra}\n🕉️ Yoga: ${p.yoga}\n📆 Vara: ${p.vara}\n` +
         `🌅 Sunrise: ${p.sunrise}  🌆 Sunset: ${p.sunset}\n` +
         `⚠️ Rahu Kaal: ${p.rahuKaal}\n✨ Abhijit Muhurat: ${p.abhijitMuhurat}\n\n— Shoonaya`;
     } else if (activeTab === 'rashiphal') {
       const h = getDailyHoroscope(selectedRashi, selected);
-      text = `🐏 Daily Rashiphal for ${h.rashiSanskrit} (${h.rashi}) — ${dateLabel}\n\n` +
+      const link = `${origin}/panchang?tab=rashiphal`;
+      text = `Read & check your rashiphal following this link to open those features: ${link}\n\n` +
+        `🐏 Daily Rashiphal for ${h.rashiSanskrit} (${h.rashi}) — ${dateLabel}\n\n` +
         `📿 Sadhana Focus: ${h.sadhanaFocus}\n` +
         `💼 Karma & Focus: ${h.karma}\n` +
         `🌿 Aura & Health: ${h.health}\n` +
         `✨ Lucky Color: ${h.luckyColor} | Lucky Number: ${h.luckyNumber}\n\n— Shoonaya`;
     } else {
-      text = `🛕 Vedic Kundali Chart for ${kundaliResult?.input.name ?? 'Pilgrim'}\n\n` +
+      const link = `${origin}/panchang?tab=kundali`;
+      text = `Read & check your Vedic Kundali chart following this link to open those features: ${link}\n\n` +
+        `🛕 Vedic Kundali Chart for ${kundaliResult?.input.name ?? 'Pilgrim'}\n\n` +
         `🌟 Lagna Ascendant: ${kundaliResult?.lagnaSign} (${kundaliResult?.lagnaEnglish})\n` +
         `🔮 Alignment: ${kundaliResult?.lagnaReading}\n\n— Shoonaya`;
     }

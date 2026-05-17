@@ -77,11 +77,12 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
   const activeTheme = themeColors[theme];
 
   const handleShare = () => {
-    const text = `Today's Sacred Observance: ${vrat.name}\\n${vrat.tagline}\\nRead more on Shoonaya.`;
+    const link = typeof window !== 'undefined' ? window.location.href : '';
+    const text = `Read & check this sacred Vrat observance following this link to open those features: ${link}\n\nToday's Sacred Observance: ${vrat.name}\n${vrat.tagline}\nRead more on Shoonaya.`;
     if (navigator.share) {
-      navigator.share({ title: vrat.name, text, url: window.location.href }).catch(() => {});
+      navigator.share({ title: vrat.name, text, url: link }).catch(() => {});
     } else {
-      navigator.clipboard.writeText(`${text}\\n${window.location.href}`);
+      navigator.clipboard.writeText(text);
       toast.success('Link copied to clipboard!');
     }
   };

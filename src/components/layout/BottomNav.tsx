@@ -178,6 +178,12 @@ export default function BottomNav({ isGuest = false }: Props) {
       // Collapse only when scrolling down past 80px
       if (diff > 0 && currentY > 80) {
         setCollapsed(true);
+      } else if (diff < -24) {
+        // Smoothly auto expand on intentional scroll up
+        setCollapsed(false);
+      } else if (currentY < 30) {
+        // Auto expand when scrolled near the top of the page
+        setCollapsed(false);
       }
 
       lastScrollYRef.current = currentY;
