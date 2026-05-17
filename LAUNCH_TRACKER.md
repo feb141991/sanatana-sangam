@@ -1,6 +1,6 @@
 # Launch Tracker
 
-Last updated: 2026-04-09
+Last updated: 2026-05-17
 
 ## Current Focus
 
@@ -52,6 +52,9 @@ Last updated: 2026-04-09
 - [ ] Choose Swiss Ephemeris license mode (`AGPL` vs `Professional`) before activating the precision Panchang engine in production
 - [ ] Wire `packages/panchang-engine` to a modern Swiss Ephemeris Node binding and exact transition calculations
 - [ ] Build Panchang validation fixtures against trusted references before changing product precision claims
+- [ ] Complete the app-level launch hardening pass from the May 2026 review: safe-area overlays, bottom nav persistence, top pill collapse behavior, native-feeling touch targets, icon-system replacement, and reduced-motion coverage
+- [ ] Convert the current early-access Pro toggle into a production entitlement system before charging: provider adapter, server-side entitlement truth, restore/manage subscription actions, legal copy, and platform-compliant purchase flows
+- [ ] Define shared engine contracts for progress, recommendations, sacred content, calendar output, practice sessions, and entitlements so route UI stops depending on unrelated direct Supabase reads
 
 ## P0 Launch Blockers
 
@@ -72,6 +75,9 @@ Last updated: 2026-04-09
 - [x] CI is added for build and lint checks
 - [ ] PWA assets and registration are complete, or incomplete claims are removed
 - [ ] Kul lineage destructive permissions are enforced in the database, not just the UI
+- [ ] Production paywall compliance is ready before any real billing: clear benefits, localized price/renewal terms, visible dismiss path where free access exists, restore purchase, manage/cancel subscription, terms/privacy links, and no misleading “free” subscription wording
+- [ ] Global overlay and navigation contract is finalized so bottom nav, top pill, modals, sheets, fullscreen Mala/Sattvic modes, and admin overlays cannot hide or fight each other on mobile safe areas
+- [ ] App store readiness pass is complete for spiritual-content accuracy, report/block/moderation, source provenance, privacy prompts, support contact, demo account, and paywall review notes
 
 ## P1 Beta Work
 
@@ -139,6 +145,13 @@ Last updated: 2026-04-09
 - [x] Add the first shared sacred-content adapter so Pathshala and Bhakti can reuse one content object model without merging the user-facing sections
 - [ ] Continue replacing emoji-led UI with the original icon/SVG system across Tirtha, Discover, Premium, Nitya, Panchang, Kul, and Progress
 - [ ] Consolidate Mala, Nitya, Pathshala, Bhakti, Kul, Tirtha, Mandali, and Seva signals into one global progress dashboard with drill-down sections
+- [ ] Replace remaining emoji-led launch UI in auth, onboarding, floating pill, AI chat, Kul Sabha reactions, Panchang rows/share text, Nitya insights, Tirtha map pins, and admin surfaces with the original icon/SVG system
+- [ ] Introduce a shared `ProgressSignal` model so Mala sessions, Nitya completions, Pathshala reading, Bhakti audio, Kul actions, Tirtha visits, Mandali contributions, and Seva can feed one dashboard and one recommendation engine
+- [ ] Introduce a shared `Entitlement` model and provider adapter so web Stripe, native StoreKit/Google Play Billing, and optional RevenueCat can all write the same server-side access state
+- [ ] Redesign the Shoonaya Pro modal/paywall into one restrained product story: free tier value, Pro value, family/Kul value, compliant billing copy, restore/manage actions, and no paid promise for unfinished “coming soon” features
+- [ ] Keep domain engines separate but contract-led: `sadhana-engine` orchestrates daily practice, `pathshala-engine` owns corpus/recitation/study, `panchang-engine` owns precision calendar, and shared app adapters own transport/state seams
+- [ ] Add engine registry metadata for method, source, confidence, version, and last validation so Panchang, Jyotish, AI guidance, Tirtha relevance, and content recommendations can show trust cues consistently
+- [ ] Continue moving high-traffic screens away from direct Supabase queries into `src/lib/api/*`, `src/hooks/*`, and shared-core contracts before deeper native mobile extraction
 
 ## Notes
 
@@ -171,6 +184,11 @@ Last updated: 2026-04-09
 - The shared app foundation now has a first reusable UI layer (`Button`, `Card`, `Badge`, `Input`, `SectionHeading`, async states) plus a TanStack Query provider and stable query-key map for future Mandali/Kul/Profile client data work.
 - A mobile-first carve-out has started: runtime adapters, mock/live seams, realtime transport abstraction, and the first `shared-core` mobile UI primitives now exist without breaking the current Next.js shell.
 - Native mobile-only dependencies are intentionally deferred until the real Expo workspace exists; do not install them into the current web test app.
+- May 2026 app-level review conclusion: Shoonaya is strongest when positioned as a daily dharmic home for practice, learning, family continuity, and sacred places. The market opportunity is real, but the product must reduce feature overload and lead with one daily ritual loop before exposing the full universe of modules.
+- Market posture: generic meditation/devotional content is crowded; Shoonaya's defensible wedge is the combination of tradition-aware daily practice, Kul/family continuity, Tirtha place memory, Mandali/community, and progress intelligence. Do not launch with broad multi-tradition claims until route parity, vocabulary, calendars, and media defaults are credible.
+- Engine posture: keep engines separate by domain, but standardize their outputs. `sadhana-engine` should orchestrate; `pathshala-engine` and `panchang-engine` should remain specialized; UI routes should consume shared contracts instead of each inventing progress, recommendation, and entitlement logic.
+- Paywall posture: `profiles.is_pro` plus `localStorage` is acceptable only as early-access preview. Before charging, entitlements must be server-truth, restorable, manageable, compliant with Apple/Google subscription wording, and connected to provider webhooks.
+- Paywall product line should protect trust: keep core daily practice, basic Mala, basic Pathshala, basic Panchang, and basic Tirtha discovery free; place Pro around deeper insights, advanced AI guidance, premium Kul visualizations, Tirtha Passport/share cards, advanced reminders, richer language/audio, and family collaboration depth.
 - `PATHSHALA_SOURCE_POLICY.md` now centralizes the trust rules for what Pathshala may store locally, what must remain companion-only, what should stay catalog-first, and what launch may honestly claim.
 - Gita recitation now has a real in-app audio foundation even before hosted playback: chapter metadata, saved listening state on device, focused recitation mode, and a cleaner handoff into the authoritative companion source.
 - The notification system now has a first real preference layer: sacred-time reminder toggles, quiet hours, and cron filtering, but it still needs live production verification and richer destination targeting.
