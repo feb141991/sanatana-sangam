@@ -17,10 +17,13 @@ export interface Katha {
   titlePa?: string;
   preview: string; // 5–6 lines shown in card
   previewHi?: string;
+  previewPa?: string;
   body: string[];  // paragraphs — full katha
   bodyHi?: string[];
+  bodyPa?: string[]; // Punjabi (Gurmukhi) body paragraphs
   phal: string;    // fruit/moral of the katha
   phalHi?: string;
+  phalPa?: string; // Punjabi phal
   durationMin: number; // estimated reading time in minutes
   tags: string[];
   relatedJapaMantra?: string;
