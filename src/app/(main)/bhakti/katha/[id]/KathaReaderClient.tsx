@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ChevronLeft, Share2, Clock, BookOpen, Sparkles, Heart,
-  Star, ExternalLink, ChevronDown, ChevronUp
+  ChevronLeft, Share2, Clock, Sparkles, Heart,
+  Star, ExternalLink, ChevronDown, ChevronUp, Loader2, Volume2, VolumeX
 } from 'lucide-react';
 import Link from 'next/link';
 import type { Katha } from '@/lib/katha-library';
@@ -44,6 +44,10 @@ export default function KathaReaderClient({ katha }: Props) {
   const [sankalpaDismissed, setSankalpaDismissed] = useState(false);
   const [liked, setLiked] = useState(false);
   const [showPhal, setShowPhal] = useState(false);
+  const [ttsLoading, setTtsLoading] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioUrlRef = useRef<string | null>(null);
 
   const tradColor = TRADITION_COLORS[katha.tradition] ?? '#C5A059';
   const trad = TRADITION_LABELS[katha.tradition] ?? TRADITION_LABELS.hindu;
@@ -51,6 +55,63 @@ export default function KathaReaderClient({ katha }: Props) {
 
   const bodyToShow = showHindi && hasHindi ? (katha.bodyHi ?? katha.body) : katha.body;
   const phalToShow = showHindi && katha.phalHi ? katha.phalHi : katha.phal;
+  const isPanchatantra = katha.tags.includes('panchatantra');
+
+  const stopTTS = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = '';
+      audioRef.current = null;
+    }
+    if (audioUrlRef.current) {
+      URL.revokeObjectURL(audioUrlRef.current);
+      audioUrlRef.current = null;
+    }
+    setSpeaking(false);
+    setTtsLoading(false);
+  }, []);
+
+  useEffect(() => () => stopTTS(), [stopTTS]);
+
+  async function speakKatha() {
+    if (speaking || ttsLoading) {
+      stopTTS();
+      return;
+    }
+
+    const title = showHindi && katha.titleHi ? katha.titleHi : katha.title;
+    const text = [title, ...bodyToShow, phalToShow].join('\n\n');
+    const trimmedText = text.length > 4600 ? `${text.slice(0, 4550)}.` : text;
+
+    setTtsLoading(true);
+    try {
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: trimmedText,
+          quality: 'pandit',
+          rate: isPanchatantra ? 0.86 : 0.78,
+        }),
+      });
+      if (!res.ok) throw new Error('TTS failed');
+      const { audioContent } = await res.json() as { audioContent: string };
+      const bytes = Uint8Array.from(atob(audioContent), c => c.charCodeAt(0));
+      const blob = new Blob([bytes], { type: 'audio/mpeg' });
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audioRef.current = audio;
+      audioUrlRef.current = url;
+      audio.onended = stopTTS;
+      audio.onerror = stopTTS;
+      await audio.play();
+      setSpeaking(true);
+    } catch {
+      stopTTS();
+    } finally {
+      setTtsLoading(false);
+    }
+  }
 
   return (
     <div className="relative min-h-screen pb-36 overflow-x-hidden bg-[var(--divine-bg)] text-[var(--text-main)] font-outfit selection:bg-[#C5A059]/30">
@@ -168,6 +229,49 @@ export default function KathaReaderClient({ katha }: Props) {
           <span className="text-2xl opacity-40">🕉️</span>
           <div className="flex-1 h-px bg-[var(--divine-border)]/10" />
         </div>
+
+        {/* Akash narration */}
+        <motion.button
+          whileTap={{ scale: 0.98 }}
+          onClick={speakKatha}
+          disabled={ttsLoading}
+          className="w-full rounded-[1.6rem] p-4 border flex items-center justify-between text-left disabled:opacity-70"
+          style={{ borderColor: `${tradColor}28`, background: `${tradColor}0d` }}
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <div
+              className="h-11 w-11 rounded-2xl flex items-center justify-center border"
+              style={{ borderColor: `${tradColor}28`, background: speaking ? tradColor : `${tradColor}16` }}
+            >
+              {ttsLoading
+                ? <Loader2 size={18} className="animate-spin" color={speaking ? '#fff' : tradColor} />
+                : speaking
+                  ? <VolumeX size={18} color="#fff" />
+                  : <Volume2 size={18} color={tradColor} />}
+            </div>
+            <div className="min-w-0">
+              <p className="text-[13px] font-semibold text-[var(--text-main)]">
+                {speaking ? 'Stop Akash narration' : isPanchatantra ? 'Listen with Akash' : 'Listen to this katha'}
+              </p>
+              <p className="text-[11px] text-[var(--text-dim)] mt-0.5">
+                {showHindi && hasHindi ? 'Hindi narration' : 'English narration'} · {isPanchatantra ? 'Story pace' : 'Meditative pace'}
+              </p>
+            </div>
+          </div>
+          {speaking && (
+            <div className="flex items-end gap-1 h-7" aria-hidden="true">
+              {[0, 1, 2].map(i => (
+                <motion.span
+                  key={i}
+                  className="w-1 rounded-full"
+                  style={{ background: tradColor }}
+                  animate={{ height: [6, 22, 10, 18, 6] }}
+                  transition={{ duration: 1.1, repeat: Infinity, delay: i * 0.16 }}
+                />
+              ))}
+            </div>
+          )}
+        </motion.button>
       </section>
 
       {/* ── Katha Body ── */}
