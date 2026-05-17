@@ -233,6 +233,122 @@ export const STOTRAMS: Stotram[] = [
     ],
   },
 
+  // ── Hare Krishna Maha Mantra ───────────────────────────────────────────────
+  {
+    id: 'hare-krishna-maha-mantra',
+    title: 'Hare Krishna Maha Mantra',
+    titleDevanagari: 'हरे कृष्ण महामंत्र',
+    deity: 'vishnu',
+    deityEmoji: '',
+    tradition: 'hindu',
+    type: 'mantra',
+    language: 'Sanskrit',
+    source: 'Kali-Santarana Upanishad; Gaudiya Vaishnava tradition',
+    description: 'A central Vaishnava mantra invoking Krishna, Rama, and the divine energy of Hari. Chanted as sankirtan, japa, and congregational kirtan for purification of the heart and remembrance of the Divine.',
+    audioTrackId: 'kirtana-in-hindi',
+    verses: [
+      {
+        number: 1,
+        sanskrit: 'हरे कृष्ण हरे कृष्ण\nकृष्ण कृष्ण हरे हरे ।\nहरे राम हरे राम\nराम राम हरे हरे ॥',
+        transliteration: 'Hare Kṛṣṇa Hare Kṛṣṇa\nKṛṣṇa Kṛṣṇa Hare Hare\nHare Rāma Hare Rāma\nRāma Rāma Hare Hare',
+        meaning: 'O Divine energy of Hari, O Krishna, O Rama — please engage me in loving remembrance and service. The mantra is a call of devotion, surrender, and joyful return to the Divine Name.',
+        startSecs: 0,
+      },
+    ],
+  },
+
+  // ── Om Namo Bhagavate Vasudevaya ──────────────────────────────────────────
+  {
+    id: 'om-namo-bhagavate-vasudevaya',
+    title: 'Om Namo Bhagavate Vasudevaya',
+    titleDevanagari: 'ॐ नमो भगवते वासुदेवाय',
+    deity: 'vishnu',
+    deityEmoji: '',
+    tradition: 'hindu',
+    type: 'mantra',
+    language: 'Sanskrit',
+    source: 'Bhagavata Purana and Vaishnava mantra tradition',
+    description: 'The twelve-syllable mantra of Bhagavan Vasudeva, widely used in Vaishnava japa and meditation. Chanted for devotion, surrender, protection, and inner clarity.',
+    verses: [
+      {
+        number: 1,
+        sanskrit: 'ॐ नमो भगवते वासुदेवाय',
+        transliteration: 'Oṃ namo bhagavate vāsudevāya',
+        meaning: 'Om. Salutations to Bhagavan Vasudeva, the indwelling Lord present in all beings. The mantra expresses surrender to the Divine source and sustainer of life.',
+        startSecs: 0,
+      },
+    ],
+  },
+
+  // ── Sri Ram Jai Ram Jai Jai Ram ───────────────────────────────────────────
+  {
+    id: 'sri-ram-jai-ram',
+    title: 'Sri Ram Jai Ram Jai Jai Ram',
+    titleDevanagari: 'श्री राम जय राम जय जय राम',
+    deity: 'vishnu',
+    deityEmoji: '',
+    tradition: 'hindu',
+    type: 'mantra',
+    language: 'Sanskrit',
+    source: 'Rama bhakti and nama-japa tradition',
+    description: 'A beloved Rama nama mantra used in japa, kirtan, and daily remembrance. Chanted for courage, steadiness, dharma, and devotion to Lord Rama.',
+    verses: [
+      {
+        number: 1,
+        sanskrit: 'श्री राम जय राम जय जय राम',
+        transliteration: 'Śrī Rāma jaya Rāma jaya jaya Rāma',
+        meaning: 'Glory to Sri Rama. Victory to Rama again and again. The mantra invokes Rama as the embodiment of dharma, compassion, courage, and righteous action.',
+        startSecs: 0,
+      },
+    ],
+  },
+
+  // ── Ganesha Mantra ────────────────────────────────────────────────────────
+  {
+    id: 'om-gam-ganapataye-namah',
+    title: 'Om Gam Ganapataye Namah',
+    titleDevanagari: 'ॐ गं गणपतये नमः',
+    deity: 'ganesha',
+    deityEmoji: '',
+    tradition: 'hindu',
+    type: 'mantra',
+    language: 'Sanskrit',
+    source: 'Traditional Ganesha bija mantra',
+    description: 'A concise mantra for invoking Ganesha, remover of obstacles and guardian of auspicious beginnings. Chanted before study, travel, work, and new undertakings.',
+    verses: [
+      {
+        number: 1,
+        sanskrit: 'ॐ गं गणपतये नमः',
+        transliteration: 'Oṃ gaṃ gaṇapataye namaḥ',
+        meaning: 'Om. Salutations to Ganapati. May obstacles be removed, wisdom awaken, and the path ahead become clear and auspicious.',
+        startSecs: 0,
+      },
+    ],
+  },
+
+  // ── Waheguru Simran ───────────────────────────────────────────────────────
+  {
+    id: 'waheguru-simran',
+    title: 'Waheguru Simran',
+    titleDevanagari: 'ਵਾਹਿਗੁਰੂ ਸਿਮਰਨ',
+    deity: 'universal',
+    deityEmoji: '',
+    tradition: 'sikh',
+    type: 'simran',
+    language: 'Gurmukhi',
+    source: 'Sikh Naam Simran tradition',
+    description: 'Naam Simran on Waheguru, the wondrous Guru. Practised for remembrance, humility, steadiness, and living awareness of the Divine.',
+    verses: [
+      {
+        number: 1,
+        sanskrit: 'ਵਾਹਿਗੁਰੂ',
+        transliteration: 'Vāhigurū',
+        meaning: 'Wondrous Guru. A remembrance of the Divine wisdom that carries the seeker from darkness into light.',
+        startSecs: 0,
+      },
+    ],
+  },
+
   // ── Namokar Mantra (Jain) ─────────────────────────────────────────────────
   {
     id: 'namokar-mantra',

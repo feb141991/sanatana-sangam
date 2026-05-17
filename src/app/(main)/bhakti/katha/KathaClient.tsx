@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, BookOpen, Clock, Search, Sparkles, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
@@ -39,18 +40,21 @@ export default function KathaClient({
   todayKatha, weekKathas, traditionKathas, allKathas, tradition, userName
 }: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const trad = TRADITION_LABELS[tradition] ?? TRADITION_LABELS.hindu;
+  const initialQuery = searchParams.get('search') ?? '';
 
-  const [activeFilter, setActiveFilter] = useState<'all' | KathaTradition>(tradition as any);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showSearch, setShowSearch] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<'all' | KathaTradition>(initialQuery ? 'all' : tradition as any);
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
+  const [showSearch, setShowSearch] = useState(Boolean(initialQuery));
 
   const filtered = allKathas.filter(k => {
     const matchTrad = activeFilter === 'all' || k.tradition === activeFilter;
     const matchSearch = searchQuery.trim() === '' ||
       k.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (k.deity ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-      OCCASION_LABELS[k.occasion]?.toLowerCase().includes(searchQuery.toLowerCase());
+      OCCASION_LABELS[k.occasion]?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      k.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchTrad && matchSearch;
   });
 

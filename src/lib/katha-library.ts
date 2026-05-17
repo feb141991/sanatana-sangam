@@ -555,6 +555,95 @@ export const SIKH_SAKHIS: Katha[] = [
   },
 ];
 
+// ─── Panchatantra Wisdom Stories ─────────────────────────────────────────────
+
+export const PANCHATANTRA_STORIES: Katha[] = [
+  {
+    id: 'panchatantra-lion-and-rabbit',
+    tradition: 'hindu',
+    occasion: 'general',
+    deity: 'wisdom',
+    title: 'The Lion and the Clever Rabbit',
+    titleHi: 'सिंह और चतुर खरगोश',
+    preview: 'A cruel lion terrorised the animals of the forest until they agreed to send one animal each day as his meal. When a small rabbit was chosen, he did not fight with strength. He used calm intelligence, led the lion to a well, and ended the terror by making the lion battle his own reflection.',
+    previewHi: 'एक क्रूर सिंह जंगल के सभी जानवरों को डराता था। जब एक छोटे खरगोश की बारी आई, तो उसने बल से नहीं, बुद्धि से काम लिया और सिंह को उसके ही प्रतिबिंब से हरवा दिया।',
+    body: [
+      'In a great forest lived a powerful lion who hunted whenever he pleased. The animals trembled because no creature was safe. One day, the animals gathered and made a proposal: "O King of the forest, if you stop hunting randomly, we will send one animal to you each day as your meal."',
+      'The lion agreed. For many days, one animal went each morning, and the rest of the forest lived in uneasy peace. Then the turn came to a small rabbit. The rabbit knew that running away would only bring danger to everyone, so he began thinking quietly.',
+      'He reached the lion very late. The hungry lion roared, "Why are you late?" The rabbit bowed and said, "My lord, I was coming with five other rabbits, but another lion stopped us. He claimed he was the true king of this forest and kept the others."',
+      'The lion burned with anger. "Show me this enemy." The rabbit led him to a deep well and said, "He lives inside." The lion looked down and saw his own reflection in the water. Mistaking it for another lion, he roared. The echo roared back.',
+      'In fury, the lion leapt into the well to attack his reflection and drowned. The rabbit returned to the animals, and the forest was free.',
+    ],
+    bodyHi: [
+      'एक बड़े जंगल में एक शक्तिशाली सिंह रहता था। वह जब चाहे शिकार करता और सभी जीव भय में जीते थे। एक दिन जानवरों ने विनती की कि यदि वह बिना कारण शिकार न करे, तो वे रोज़ एक जीव उसके भोजन के लिए भेजेंगे।',
+      'सिंह मान गया। कई दिनों तक यह चलता रहा। फिर एक छोटे खरगोश की बारी आई। खरगोश ने सोचा कि भागने से सबका संकट बढ़ेगा, इसलिए उसने बुद्धि से उपाय खोजा।',
+      'वह सिंह के पास बहुत देर से पहुँचा। सिंह गरजा, "इतनी देर क्यों?" खरगोश ने कहा, "महाराज, मैं पाँच खरगोशों के साथ आ रहा था, पर एक और सिंह ने हमें रोक लिया। वह स्वयं को इस जंगल का राजा बताता है।"',
+      'सिंह क्रोध से भर गया। खरगोश उसे एक गहरे कुएँ के पास ले गया और बोला, "वह इसी में रहता है।" सिंह ने पानी में अपना प्रतिबिंब देखा और उसे दूसरा सिंह समझ लिया।',
+      'क्रोध में सिंह कुएँ में कूद पड़ा और डूब गया। खरगोश लौट आया और जंगल भय से मुक्त हो गया।',
+    ],
+    phal: 'Wisdom can defeat force when the mind remains calm. The story teaches that panic strengthens danger, while observation and strategy can protect the whole community.',
+    phalHi: 'शांत बुद्धि बल से बड़ी होती है। संकट में घबराने के बजाय समझ, धैर्य और युक्ति से काम लेना चाहिए।',
+    durationMin: 5,
+    tags: ['panchatantra', 'wisdom', 'strategy', 'courage', 'children', 'ethics'],
+  },
+  {
+    id: 'panchatantra-monkey-and-crocodile',
+    tradition: 'hindu',
+    occasion: 'general',
+    deity: 'wisdom',
+    title: 'The Monkey and the Crocodile',
+    titleHi: 'बंदर और मगरमच्छ',
+    preview: 'A monkey shared sweet fruits with a crocodile and treated him as a friend. But the crocodile, pressured by his wife, tried to deceive the monkey. In the middle of the river, the monkey discovered the danger and saved himself through presence of mind.',
+    previewHi: 'एक बंदर मगरमच्छ को मीठे फल खिलाता था। मगरमच्छ ने छल किया, पर नदी के बीच बंदर ने बुद्धि और तुरंत सूझ-बूझ से अपनी जान बचा ली।',
+    body: [
+      'On the bank of a river stood a fruit tree where a cheerful monkey lived. Every day he ate sweet fruits and watched the river flow. One day, a crocodile came near the tree. The monkey, generous by nature, offered him some fruits.',
+      'The crocodile enjoyed them and began visiting often. A friendship grew between the two. The crocodile also carried fruits home to his wife. After tasting them, she became greedy and thought, "If the fruits are so sweet, the monkey who eats them daily must have an even sweeter heart."',
+      'She asked her husband to bring the monkey to her. The crocodile was troubled but gave in to her demand. He invited the monkey to visit his home across the river and offered to carry him on his back.',
+      'Halfway across the river, the crocodile confessed the truth: his wife wanted the monkey\'s heart. The monkey did not panic. He said, "Friend, why did you not tell me earlier? I left my heart on the tree. Take me back and I will bring it."',
+      'The foolish crocodile turned back. As soon as they reached the tree, the monkey jumped to safety and said, "No one leaves their heart behind. A friend who betrays trust cannot be trusted again."',
+    ],
+    bodyHi: [
+      'एक नदी के किनारे मीठे फलों का पेड़ था, जिस पर एक बंदर रहता था। एक दिन एक मगरमच्छ वहाँ आया। बंदर ने उदारता से उसे फल दिए।',
+      'मगरमच्छ रोज़ आने लगा और दोनों में मित्रता हो गई। वह फल अपनी पत्नी के लिए भी ले जाता था। पत्नी ने सोचा कि जो बंदर रोज़ इतने मीठे फल खाता है, उसका हृदय भी मीठा होगा।',
+      'उसने मगरमच्छ से बंदर को लाने को कहा। मगरमच्छ ने बंदर को अपने घर चलने का निमंत्रण दिया और पीठ पर बैठाकर नदी पार कराने लगा।',
+      'नदी के बीच मगरमच्छ ने सच बता दिया। बंदर घबराया नहीं। उसने कहा, "मित्र, तुमने पहले क्यों नहीं बताया? मेरा हृदय तो पेड़ पर ही रह गया है। मुझे वापस ले चलो।"',
+      'मगरमच्छ उसे वापस ले आया। बंदर तुरंत पेड़ पर चढ़ गया और बोला, "हृदय कोई पेड़ पर नहीं छोड़ता। जो मित्र विश्वास तोड़े, उससे सावधान रहना चाहिए।"',
+    ],
+    phal: 'Generosity needs discernment. The story teaches kindness, but also the importance of recognising betrayal and protecting oneself without hatred.',
+    phalHi: 'उदारता के साथ विवेक भी आवश्यक है। मित्रता विश्वास पर टिकती है; छल करने वाले से सावधान रहना चाहिए।',
+    durationMin: 5,
+    tags: ['panchatantra', 'friendship', 'discernment', 'trust', 'children', 'ethics'],
+  },
+  {
+    id: 'panchatantra-blue-jackal',
+    tradition: 'hindu',
+    occasion: 'general',
+    deity: 'wisdom',
+    title: 'The Blue Jackal',
+    titleHi: 'नीला सियार',
+    preview: 'A jackal fell into a dyer\'s vat and emerged blue. The forest animals, frightened by his strange colour, accepted him as a divine king. For a while he enjoyed power, but when he forgot himself and howled with other jackals, the truth was revealed.',
+    previewHi: 'एक सियार रंगरेज़ के नीले रंग में गिर गया और नीला होकर निकला। जानवरों ने उसे दिव्य राजा मान लिया, पर उसकी अपनी आवाज़ ने उसका छल खोल दिया।',
+    body: [
+      'A hungry jackal once wandered into a town looking for food. Dogs chased him through the streets, and in panic he jumped into a large vat in a dyer\'s courtyard. The vat was full of deep blue dye.',
+      'When he climbed out, his fur had become a strange blue colour. Returning to the forest, he saw that the animals were frightened by his unusual appearance. The jackal quickly understood the opportunity.',
+      '"Do not fear," he declared. "The gods have sent me as your king." The animals believed him. Lions, tigers, elephants, and deer all bowed before the blue creature. The jackal enjoyed royal food and honour.',
+      'But he grew arrogant and forgot his old companions. One evening, a pack of jackals howled in the distance. Hearing them, the blue jackal could not control himself. He lifted his head and howled back.',
+      'The animals immediately recognised him. "He is only a jackal in disguise," they said. His false kingship ended at once.',
+    ],
+    bodyHi: [
+      'एक भूखा सियार भोजन की तलाश में नगर में गया। कुत्तों ने उसे दौड़ाया और घबराकर वह रंगरेज़ के नीले रंग के बड़े पात्र में कूद गया।',
+      'जब वह बाहर निकला, तो उसका शरीर नीला हो चुका था। जंगल में लौटकर उसने देखा कि जानवर उसके विचित्र रूप से डर रहे हैं। उसने तुरंत अवसर समझ लिया।',
+      'उसने कहा, "डरो मत। देवताओं ने मुझे तुम्हारा राजा बनाकर भेजा है।" सभी जानवरों ने उसे राजा मान लिया।',
+      'कुछ समय तक वह सम्मान और सुख भोगता रहा। पर एक दिन दूर से सियारों की आवाज़ आई। वह स्वयं को रोक न सका और सियारों की तरह हुआँ-हुआँ करने लगा।',
+      'जानवरों ने पहचान लिया कि वह कोई दिव्य प्राणी नहीं, साधारण सियार है। उसका झूठा राज्य समाप्त हो गया।',
+    ],
+    phal: 'False identity cannot survive for long. The story teaches humility, authenticity, and the danger of gaining respect through deception.',
+    phalHi: 'झूठी पहचान अधिक समय तक नहीं टिकती। सम्मान छल से नहीं, सत्य और विनम्रता से मिलना चाहिए।',
+    durationMin: 4,
+    tags: ['panchatantra', 'truth', 'humility', 'identity', 'children', 'ethics'],
+  },
+];
+
 // ─── Buddhist Dhamma Stories ──────────────────────────────────────────────────
 
 export const BUDDHIST_STORIES: Katha[] = [
@@ -659,6 +748,7 @@ export const JAIN_KATHAS: Katha[] = [
 
 export const ALL_KATHAS: Katha[] = [
   ...HINDU_KATHAS,
+  ...PANCHATANTRA_STORIES,
   ...SIKH_SAKHIS,
   ...BUDDHIST_STORIES,
   ...JAIN_KATHAS,

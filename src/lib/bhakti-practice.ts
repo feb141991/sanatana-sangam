@@ -9,7 +9,7 @@ export const BHAKTI_MANTRAS = [
   {
     value: 'Hare Krishna Maha Mantra',
     source: 'Public-domain mantra tradition',
-    audioState: 'focus_only',
+    audioState: 'in_app',
     sourceUrl: null,
     audioTrackId: 'kirtana-in-hindi',
   },
@@ -26,6 +26,41 @@ export const BHAKTI_MANTRAS = [
     audioState: 'in_app',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Gayatri_Mantra_as_it_is.ogg',
     audioTrackId: 'gayatri-mantra-as-it-is',
+  },
+  {
+    value: 'Om Namo Bhagavate Vasudevaya',
+    source: 'Public-domain Vaishnava mantra tradition',
+    audioState: 'focus_only',
+    sourceUrl: null,
+    audioTrackId: null,
+  },
+  {
+    value: 'Om Gam Ganapataye Namah',
+    source: 'Public-domain Ganesha mantra tradition',
+    audioState: 'focus_only',
+    sourceUrl: null,
+    audioTrackId: null,
+  },
+  {
+    value: 'Waheguru',
+    source: 'Sikh Naam Simran tradition',
+    audioState: 'focus_only',
+    sourceUrl: null,
+    audioTrackId: null,
+  },
+  {
+    value: 'Om Mani Padme Hum',
+    source: 'Buddhist compassion mantra tradition',
+    audioState: 'in_app',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Usnidha_Sitatapatra_dharani,_Siddham_chant_and_Buddhist_Sanskrit_mantra_chant_420_590.ogg',
+    audioTrackId: 'usnidha-sitatapatra',
+  },
+  {
+    value: 'Namokar Mantra',
+    source: 'Jain Navkar mantra tradition',
+    audioState: 'focus_only',
+    sourceUrl: null,
+    audioTrackId: null,
   },
 ] as const;
 
