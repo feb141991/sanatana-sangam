@@ -304,16 +304,18 @@ function calcDasha(nak: NakshatraInfo, birthUtc: Date): DashaInfo {
   // Antardasha (current sub-period) with actual dates
   let currentAntardasha: AntardashaEntry | null = null;
   if (current) {
-    const dashaStartMs = new Date(current.startDate).getTime();
-    const dashaEndMs   = new Date(current.endDate).getTime();
-    const dashaDurMs   = dashaEndMs - dashaStartMs;
-    const antarOrder   = DASHA_ORDER.indexOf(current.planet);
-    let antarCursorMs  = dashaStartMs;
+    const dashaStartMs  = new Date(current.startDate).getTime();
+    const dashaEndMs    = new Date(current.endDate).getTime();
+    // Use the ACTUAL dasha duration (partial for birth dasha, full otherwise)
+    const dashaDurMs    = dashaEndMs - dashaStartMs;
+    const antarOrder    = DASHA_ORDER.indexOf(current.planet);
+    let antarCursorMs   = dashaStartMs;
 
     for (let i = 0; i < 9; i++) {
       const sub       = DASHA_ORDER[(antarOrder + i) % 9];
-      // Antardasha duration = (mahadasha years × sub years / 120) × 365.25 days
-      const antarDurMs = (DASHA_YEARS[current.planet] * DASHA_YEARS[sub] / 120) * 365.25 * 86400000;
+      // Antardasha proportional to actual dasha duration:
+      // (sub_years / 120) × actual_dasha_ms  — ensures all 9 sum to exact dasha duration
+      const antarDurMs = (DASHA_YEARS[sub] / 120) * dashaDurMs;
       const antarEndMs = antarCursorMs + antarDurMs;
 
       if (now.getTime() >= antarCursorMs && now.getTime() < antarEndMs) {

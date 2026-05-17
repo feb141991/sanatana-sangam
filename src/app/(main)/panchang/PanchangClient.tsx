@@ -12,6 +12,7 @@ import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 // Import our premium Jyotish engines
 import { getDailyHoroscope, RASHI_LIST } from '@/lib/jyotish/rashiphal-data';
 import { generateKundali, renderKundaliSVG, type KundaliInput, type KundaliResult } from '@/lib/jyotish/kundali-engine';
+import { getTodayTransits, detectSadeSati } from '@/lib/jyotish/astro-engine';
 
 interface Props {
   lat:       number;
@@ -1052,6 +1053,11 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                     <span className="text-[10px] font-bold text-[#C5A059] uppercase tracking-wider">Calculated Ascendant (Lagna)</span>
                     <h3 className="font-serif text-2xl font-bold text-[#F2EAD6]">{kundaliResult.lagnaSign} ({kundaliResult.lagnaEnglish})</h3>
                     <p className="text-white/40 text-xs">Chart generated for: {kundaliResult.input.name}</p>
+                    {kundaliResult.chart.timeUnknown && (
+                      <p className="text-[10px] text-amber-400/80 italic mt-1">
+                        ⚠️ Birth time unknown — Lagna and house placements use solar noon (less accurate)
+                      </p>
+                    )}
                   </div>
                   <div className="rounded-xl p-4 border border-[#C5A059]/20 bg-white/5">
                     <p className="text-sm font-medium text-[#F2EAD6] leading-relaxed">{kundaliResult.lagnaReading}</p>
@@ -1156,6 +1162,13 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                     <button
                       onClick={async () => {
                         try {
+                          // Persist guest token in sessionStorage so it can be claimed on signup
+                          let guestToken = sessionStorage.getItem('kundali_guest_token');
+                          if (!guestToken) {
+                            guestToken = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+                            sessionStorage.setItem('kundali_guest_token', guestToken);
+                          }
+
                           const res = await fetch('/api/jyotish/chart', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -1169,16 +1182,17 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                               birth_lng:      kundaliResult.input.lng,
                               birth_timezone: kundaliResult.input.timezone,
                               is_primary:     true,
-                              session_token:  `guest-${Date.now()}`,
+                              session_token:  guestToken,
                             }),
                           });
                           if (res.status === 401) {
-                            // Not logged in — redirect to signup
-                            window.location.href = '/auth/signup?next=/panchang?tab=kundali';
+                            // Not logged in — redirect to signup; token is in sessionStorage
+                            window.location.href = `/auth/signup?next=${encodeURIComponent('/panchang?tab=kundali')}&claim_token=${encodeURIComponent(guestToken)}`;
                             return;
                           }
                           if (res.ok) {
                             setChartSaved(true);
+                            sessionStorage.removeItem('kundali_guest_token');
                             const { default: toast } = await import('react-hot-toast');
                             toast.success('Chart saved! ✨');
                           }
@@ -1196,24 +1210,69 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                   </div>
                 )}
 
+                {/* Sade Sati detection */}
+                {(() => {
+                  try {
+                    const moonRashiIndex = kundaliResult.chart.planets['Chandra']?.rashiIndex;
+                    const transits = getTodayTransits();
+                    const saturnRashiIndex = transits['Shani']?.rashiIndex;
+                    if (moonRashiIndex === undefined || saturnRashiIndex === undefined) return null;
+                    const ss = detectSadeSati(moonRashiIndex, saturnRashiIndex);
+                    if (!ss.isActive) return null;
+                    const phaseLabel = ss.phase === 'rising' ? '🌑 Rising Phase — Shani approaches your Chandra'
+                                     : ss.phase === 'peak'   ? '🌕 Peak Phase — Shani directly on your Chandra'
+                                     :                         '🌗 Setting Phase — Shani leaving your Chandra';
+                    return (
+                      <div className="rounded-2xl p-4 border border-orange-500/30 space-y-2"
+                        style={{ background: 'rgba(200,80,20,0.12)' }}>
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">⚡</span>
+                          <h4 className="text-xs font-bold text-orange-300 uppercase tracking-wider">Sade Sati Active</h4>
+                        </div>
+                        <p className="text-sm font-semibold text-orange-200">{phaseLabel}</p>
+                        <p className="text-[11px] text-white/50 leading-relaxed">
+                          Shani (Saturn) is transiting {ss.saturnRashi} while your natal Chandra is in {ss.moonRashi}.
+                          This 7.5-year period calls for patience, discipline, and inner surrender. Shani rewards sincere effort.
+                        </p>
+                      </div>
+                    );
+                  } catch { return null; }
+                })()}
+
                 {/* Planet positions */}
                 <div className="rounded-2xl p-4 border border-white/5 space-y-3"
                   style={{ background: 'rgba(10,8,25,0.5)' }}>
                   <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Grahas &amp; House Placements</h4>
                   <div className="grid grid-cols-2 gap-2">
-                    {kundaliResult.placements.map(p => (
-                      <div key={p.name} className="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/5">
-                        <div className="w-8 h-8 rounded-lg bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center font-bold text-[#C5A059] text-xs">
-                          {p.symbol}
+                    {kundaliResult.placements.map(p => {
+                      const grahaData = kundaliResult.chart.planets[p.name];
+                      const dignity   = grahaData?.dignity;
+                      const combust   = grahaData?.isCombust;
+                      const dignityColor = dignity === 'exalted'     ? 'text-emerald-400'
+                                         : dignity === 'debilitated' ? 'text-red-400'
+                                         : dignity === 'own'         ? 'text-sky-400'
+                                         : '';
+                      const dignityLabel = dignity === 'exalted'     ? 'Uchcha'
+                                         : dignity === 'debilitated' ? 'Neecha'
+                                         : dignity === 'own'         ? 'Svakshetra'
+                                         : null;
+                      return (
+                        <div key={p.name} className="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/5">
+                          <div className="w-8 h-8 rounded-lg bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center font-bold text-[#C5A059] text-xs flex-shrink-0">
+                            {p.symbol}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-white/80 flex items-center gap-1 flex-wrap">
+                              {p.name}
+                              {p.isRetrograde && <span className="text-[9px] text-orange-400">(R)</span>}
+                              {combust && <span className="text-[9px] text-red-400">combust</span>}
+                              {dignityLabel && <span className={`text-[9px] font-bold ${dignityColor}`}>{dignityLabel}</span>}
+                            </p>
+                            <p className="text-[10px] text-white/40">H{p.house} · {p.sign} {p.degree}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-xs font-bold text-white/80">
-                            {p.name}{p.isRetrograde ? <span className="ml-1 text-[9px] text-orange-400">(R)</span> : null}
-                          </p>
-                          <p className="text-[10px] text-white/40">House {p.house} · {p.sign} {p.degree}</p>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
