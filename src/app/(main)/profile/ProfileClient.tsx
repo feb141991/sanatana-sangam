@@ -1369,7 +1369,7 @@ export default function ProfileClient({
         <div className="space-y-8 py-6">
           {/* Theme */}
           <div className="space-y-4">
-            <p className="text-[10px] uppercase tracking-[0.25em] font-black text-[#C5A059]">Visual Theme</p>
+            <p className="text-sm font-medium text-[var(--brand-primary)]">Visual theme</p>
             <div className="grid grid-cols-3 gap-3">
               {THEME_OPTIONS.map((option) => {
                 const active = themePreference === option.value;
@@ -1380,11 +1380,13 @@ export default function ProfileClient({
                     type="button"
                     onClick={() => setThemePreference(option.value)}
                     className={`flex flex-col items-center gap-3 p-4 rounded-2xl border transition-all duration-300 ${
-                      active ? 'bg-[#C5A059]/15 border-[#C5A059] shadow-lg shadow-[#C5A059]/10' : 'bg-white/5 border-white/10 opacity-60 hover:opacity-100'
+                      active
+                        ? 'bg-[var(--brand-primary-soft)] border-[var(--brand-primary)] text-[var(--brand-primary-strong)] shadow-sm'
+                        : 'bg-[var(--card-bg-soft)] border-[var(--card-border)] theme-muted hover:border-[var(--brand-primary)]'
                     }`}
                   >
-                    <Icon size={20} className={active ? 'text-[#C5A059]' : 'text-[#F2EAD6]/40'} />
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${active ? 'text-[#C5A059]' : 'text-[#F2EAD6]/40'}`}>
+                    <Icon size={20} className={active ? 'text-[var(--brand-primary)]' : 'theme-muted'} />
+                    <span className={`text-sm font-medium ${active ? 'text-[var(--brand-primary-strong)]' : 'theme-muted'}`}>
                       {option.label}
                     </span>
                   </button>
