@@ -175,12 +175,9 @@ export default function BottomNav({ isGuest = false }: Props) {
 
       if (Math.abs(diff) < 8) return;
 
-      if (diff > 0 && currentY > 56) {
+      // Collapse only when scrolling down past 80px
+      if (diff > 0 && currentY > 80) {
         setCollapsed(true);
-      } else if (diff < -18) {
-        setCollapsed(false);
-      } else if (currentY < 24 && activeHome) {
-        setCollapsed(false);
       }
 
       lastScrollYRef.current = currentY;
@@ -191,7 +188,7 @@ export default function BottomNav({ isGuest = false }: Props) {
       window.clearTimeout(timer);
       window.removeEventListener('scroll', onScroll);
     };
-  }, [activeHome, quickOpen]);
+  }, [quickOpen]);
 
   // Signal AI chat FAB to hide/show
   useEffect(() => {
