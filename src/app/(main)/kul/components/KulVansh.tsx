@@ -88,17 +88,19 @@ export function KulVansh({
   }
 
   return (
-    <div className="relative min-h-[760px] overflow-hidden rounded-[2rem] border border-[var(--card-border)] bg-[var(--surface-base)] pb-28">
-      <div className="absolute inset-x-0 top-0 h-72 bg-[var(--brand-primary-soft)] opacity-70 blur-3xl" />
+    <div className="relative min-h-[760px] overflow-hidden rounded-[2.5rem] bg-[var(--surface-base)] pb-28">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,var(--brand-primary-soft),transparent_46%),radial-gradient(circle_at_0%_42%,rgba(201,163,91,0.10),transparent_32%),radial-gradient(circle_at_100%_76%,rgba(216,138,28,0.10),transparent_34%)]" />
+      <div className="absolute left-1/2 top-8 h-[520px] w-[520px] -translate-x-1/2 rounded-full border border-[var(--brand-primary-soft)] opacity-45" />
+      <div className="absolute left-1/2 top-28 h-[360px] w-[360px] -translate-x-1/2 rounded-full border border-dashed border-[var(--brand-primary-soft)] opacity-45" />
 
       <div className="relative z-10 space-y-6 p-4 sm:p-6">
-        <header className="rounded-[2rem] border border-[var(--card-border)] bg-[var(--card-bg)]/90 p-5 shadow-sm backdrop-blur-xl">
+        <header className="p-1 sm:p-2">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <p className="text-sm font-medium text-[var(--brand-primary)]">{t('kulVanshTitle')}</p>
               <h2 className="mt-1 text-3xl font-medium leading-tight theme-ink premium-serif">{t('kulLivingLineage')}</h2>
               <p className="mt-2 max-w-xl text-sm leading-relaxed theme-muted">
-                Build one family graph, then view it as a tree, mandala, timeline, constellation, scroll, or courtyard.
+                One family graph, shown through immersive Kul views.
               </p>
             </div>
 
@@ -114,7 +116,7 @@ export function KulVansh({
             )}
           </div>
 
-          <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
+          <div className="mt-5 flex gap-2 overflow-x-auto pb-1">
             {VIEW_OPTIONS.map((option) => {
               const Icon = option.icon;
               const active = activeView === option.key;
@@ -124,21 +126,18 @@ export function KulVansh({
                   key={option.key}
                   type="button"
                   onClick={() => selectView(option.key)}
-                  className={`flex min-h-16 items-center gap-3 rounded-2xl border px-3 text-left transition ${
+                  className={`flex min-h-12 shrink-0 items-center gap-2 rounded-full border px-4 text-left transition ${
                     active
                       ? 'border-[var(--brand-primary)] bg-[var(--brand-primary-soft)] text-[var(--brand-primary-strong)] shadow-sm'
-                      : 'border-[var(--card-border)] bg-[var(--card-bg-soft)] theme-muted hover:border-[var(--brand-primary)]'
+                      : 'border-[var(--card-border)] bg-[var(--surface-raised)]/72 theme-muted backdrop-blur-md hover:border-[var(--brand-primary)]'
                   }`}
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--surface-raised)]">
-                    <Icon size={17} className={active ? 'text-[var(--brand-primary)]' : 'theme-muted'} />
-                  </span>
-                  <span className="min-w-0">
+                  <Icon size={16} className={active ? 'text-[var(--brand-primary)]' : 'theme-muted'} />
+                  <span className="min-w-0 whitespace-nowrap">
                     <span className="flex items-center gap-1.5 text-sm font-medium">
                       {option.label}
                       {locked && <Lock size={12} />}
                     </span>
-                    <span className="block truncate text-xs theme-muted">{option.description}</span>
                   </span>
                 </button>
               );
@@ -149,10 +148,10 @@ export function KulVansh({
         {familyMembers.length === 0 && !showAdd ? (
           <EmptyVanshState canManageVansh={canManageVansh} onAdd={() => setShowAdd(true)} />
         ) : (
-          <section className="relative overflow-hidden rounded-[2rem] border border-[var(--card-border)] bg-[var(--card-bg)]/86 p-4 shadow-sm backdrop-blur-xl sm:p-6">
+          <section className="relative overflow-hidden p-1 sm:p-2">
             <ViewHeader activeMeta={activeMeta} memberCount={familyMembers.length} isLocked={isLocked} />
 
-            <div className="mt-6">
+            <div className="mt-4">
               {activeView === 'lineage' && (
                 <LineageTree
                   roots={graph.roots}
@@ -278,13 +277,13 @@ function ViewHeader({
 }) {
   const Icon = activeMeta.icon;
   return (
-    <div className="flex items-start justify-between gap-4">
+    <div className="flex items-start justify-between gap-4 px-1">
       <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--brand-primary-soft)] text-[var(--brand-primary)]">
+        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--brand-primary-soft)] text-[var(--brand-primary)]">
           <Icon size={20} />
         </div>
         <div>
-          <h3 className="text-xl font-medium theme-ink premium-serif">{activeMeta.label}</h3>
+          <h3 className="text-2xl font-medium theme-ink premium-serif">{activeMeta.label}</h3>
           <p className="text-sm theme-muted">{memberCount} family members preserved</p>
         </div>
       </div>
@@ -344,8 +343,8 @@ function LineageTree({
   }
 
   return (
-    <div className="overflow-x-auto pb-6">
-      <div className="flex min-w-max flex-col items-center gap-10 px-4">
+    <div className="overflow-x-auto rounded-[2rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.28),transparent)] py-8 pb-10 backdrop-blur-[2px]">
+      <div className="flex min-w-max flex-col items-center gap-10 px-8">
         {roots.map((root) => (
           <TreeBranch key={root.member.id} node={root} canManage={canManage} onSelect={onSelect} onEdit={onEdit} onDelete={onDelete} />
         ))}
@@ -381,8 +380,8 @@ function TreeBranch({
 
       {node.children.length > 0 && (
         <>
-          <div className="h-8 w-px bg-[var(--brand-primary-soft)]" />
-          <div className="h-px w-full min-w-40 bg-[var(--brand-primary-soft)]" />
+          <div className="h-8 w-px bg-[var(--brand-primary)]/24" />
+          <div className="h-px w-full min-w-40 bg-[var(--brand-primary)]/18" />
           <div className="flex items-start gap-6 pt-8">
             {node.children.map((child) => (
               <TreeBranch key={child.member.id} node={child} canManage={canManage} onSelect={onSelect} onEdit={onEdit} onDelete={onDelete} />
@@ -412,13 +411,13 @@ function MemberNodeCard({
       initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
-      className="group relative w-[154px] rounded-[1.5rem] border border-[var(--card-border)] bg-[var(--surface-raised)] p-3 text-center shadow-sm"
+      className="group relative w-[132px] text-center"
     >
       <button type="button" onClick={() => onSelect(member)} className="block w-full">
         <MemberAvatar member={member} size="lg" />
-        <p className="mt-3 truncate text-base font-medium theme-ink premium-serif">{member.name}</p>
+        <p className="mt-3 truncate text-lg font-medium theme-ink premium-serif">{member.name}</p>
         <p className="mt-1 truncate text-xs theme-muted">{member.role || relationFallback(member)}</p>
-        <div className="mt-3 flex items-center justify-center gap-1.5 text-[11px] theme-muted">
+        <div className="mx-auto mt-2 flex w-fit items-center justify-center gap-1.5 rounded-full border border-[var(--card-border)] bg-[var(--surface-raised)]/70 px-2.5 py-1 text-[11px] theme-muted backdrop-blur-md">
           {member.linked_user_id && <span className="h-2 w-2 rounded-full bg-[var(--brand-primary)]" />}
           <span>{member.birth_year || member.birth_date ? birthLabel(member) : member.is_alive ? 'Living' : 'Remembered'}</span>
         </div>
@@ -455,19 +454,27 @@ function MemberNodeCard({
 }
 
 function MandalaView({ members, onSelect }: { members: FamilyMember[]; onSelect: (member: FamilyMember) => void }) {
-  const radius = 138;
+  const visibleMembers = members.slice(0, 22);
+  const innerCount = Math.min(visibleMembers.length, 8);
   return (
-    <div className="relative mx-auto h-[430px] max-w-[430px] overflow-hidden rounded-[2rem] border border-[var(--card-border)] bg-[var(--surface-base)]">
-      <div className="absolute left-1/2 top-1/2 h-36 w-36 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--brand-primary)] bg-[var(--brand-primary-soft)] text-center">
+    <div className="relative mx-auto h-[520px] max-w-[520px] overflow-hidden">
+      <div className="absolute inset-8 rounded-full border border-[var(--brand-primary-soft)]" />
+      <div className="absolute inset-20 rounded-full border border-dashed border-[var(--brand-primary-soft)]" />
+      <div className="absolute inset-32 rounded-full border border-[var(--brand-primary-soft)] opacity-70" />
+      <div className="absolute left-1/2 top-1/2 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--brand-primary)] bg-[var(--brand-primary-soft)] text-center shadow-[0_18px_50px_rgba(216,138,28,0.16)]">
         <div className="flex h-full flex-col items-center justify-center">
           <Sparkles size={22} className="text-[var(--brand-primary)]" />
           <p className="mt-2 text-2xl font-medium theme-ink premium-serif">Kul</p>
           <p className="text-xs theme-muted">{members.length} souls</p>
         </div>
       </div>
-      <div className="absolute left-1/2 top-1/2 h-[320px] w-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-[var(--brand-primary-soft)]" />
-      {members.slice(0, 18).map((member, index) => {
-        const angle = (index / Math.max(members.slice(0, 18).length, 1)) * Math.PI * 2 - Math.PI / 2;
+      <div className="absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,transparent_46%,var(--brand-primary-soft)_47%,transparent_48%)] opacity-70" />
+      {visibleMembers.map((member, index) => {
+        const innerRing = index < innerCount;
+        const count = innerRing ? innerCount : Math.max(visibleMembers.length - innerCount, 1);
+        const ringIndex = innerRing ? index : index - innerCount;
+        const radius = innerRing ? 126 : 202;
+        const angle = (ringIndex / count) * Math.PI * 2 - Math.PI / 2 + (innerRing ? 0 : Math.PI / count);
         const x = Math.cos(angle) * radius;
         const y = Math.sin(angle) * radius;
         return (
@@ -479,7 +486,8 @@ function MandalaView({ members, onSelect }: { members: FamilyMember[]; onSelect:
             style={{ transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))` }}
             aria-label={member.name}
           >
-            <MemberAvatar member={member} size="sm" />
+            <MemberAvatar member={member} size={innerRing ? 'sm' : 'xs'} />
+            <span className="mt-1 block max-w-20 truncate text-[11px] font-medium theme-ink">{member.name}</span>
           </button>
         );
       })}
@@ -495,14 +503,16 @@ function TimelineView({
   onSelect: (member: FamilyMember) => void;
 }) {
   return (
-    <div className="overflow-x-auto pb-4">
-      <div className="flex min-w-max items-stretch gap-4">
+    <div className="overflow-x-auto py-8 pb-10">
+      <div className="relative flex min-w-max items-stretch gap-8 px-5">
+        <div className="absolute left-8 right-8 top-12 h-px bg-[var(--brand-primary)]/24" />
         {generations.map(([generation, members]) => (
-          <div key={generation} className="w-64 rounded-[1.5rem] border border-[var(--card-border)] bg-[var(--surface-raised)] p-4">
+          <div key={generation} className="relative w-64 pt-8">
+            <div className="absolute left-0 top-0 h-6 w-6 rounded-full border-4 border-[var(--surface-base)] bg-[var(--brand-primary)] shadow-sm" />
             <p className="text-sm font-medium text-[var(--brand-primary)]">Generation {generation}</p>
             <div className="mt-4 space-y-3">
               {members.map((member) => (
-                <button key={member.id} type="button" onClick={() => onSelect(member)} className="flex w-full items-center gap-3 rounded-2xl bg-[var(--card-bg-soft)] p-3 text-left">
+                <button key={member.id} type="button" onClick={() => onSelect(member)} className="flex w-full items-center gap-3 rounded-2xl bg-[var(--surface-raised)]/76 p-3 text-left shadow-sm backdrop-blur-md">
                   <MemberAvatar member={member} size="xs" />
                   <span className="min-w-0">
                     <span className="block truncate text-sm font-medium theme-ink">{member.name}</span>
@@ -519,27 +529,57 @@ function TimelineView({
 }
 
 function ConstellationView({ members, onSelect }: { members: FamilyMember[]; onSelect: (member: FamilyMember) => void }) {
-  const positions = members.map((member, index) => ({
+  const positions = members.slice(0, 20).map((member, index) => ({
     member,
-    x: 12 + ((index * 31) % 74),
-    y: 14 + ((index * 47) % 70),
+    x: 12 + ((index * 37) % 76),
+    y: 16 + ((index * 53) % 68),
   }));
+  const positionById = new Map(positions.map((point) => [point.member.id, point]));
+  const relationLines = positions
+    .map((point, index) => {
+      const parent = point.member.parent_id ? positionById.get(point.member.parent_id) : null;
+      const spouse = point.member.spouse_id ? positionById.get(point.member.spouse_id) : null;
+      return {
+        from: parent ?? spouse ?? positions[Math.max(index - 1, 0)],
+        to: point,
+      };
+    })
+    .filter((line) => line.from && line.from.member.id !== line.to.member.id);
 
   return (
-    <div className="relative h-[440px] overflow-hidden rounded-[2rem] border border-[var(--card-border)] bg-[var(--surface-base)]">
-      <svg className="absolute inset-0 h-full w-full" aria-hidden="true">
-        {positions.slice(1).map((point, index) => {
-          const previous = positions[index];
+    <div className="relative h-[520px] overflow-hidden rounded-[2.5rem] bg-[radial-gradient(circle_at_50%_45%,var(--brand-primary-soft),transparent_46%)]">
+      <div className="absolute inset-0 opacity-55">
+        {Array.from({ length: 42 }).map((_, index) => (
+          <span
+            key={index}
+            className="absolute h-1 w-1 rounded-full bg-[var(--brand-primary)]"
+            style={{
+              left: `${6 + ((index * 23) % 88)}%`,
+              top: `${8 + ((index * 41) % 82)}%`,
+              opacity: 0.16 + (index % 4) * 0.08,
+            }}
+          />
+        ))}
+      </div>
+      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="kul-constellation-line" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="var(--brand-primary)" stopOpacity="0.08" />
+            <stop offset="50%" stopColor="var(--brand-primary)" stopOpacity="0.34" />
+            <stop offset="100%" stopColor="var(--brand-primary)" stopOpacity="0.08" />
+          </linearGradient>
+        </defs>
+        {relationLines.map((line) => {
           return (
-            <line
-              key={`${point.member.id}-${previous.member.id}`}
-              x1={`${previous.x}%`}
-              y1={`${previous.y}%`}
-              x2={`${point.x}%`}
-              y2={`${point.y}%`}
-              stroke="var(--brand-primary)"
-              strokeOpacity="0.2"
-              strokeWidth="1"
+            <path
+              key={`${line.from.member.id}-${line.to.member.id}`}
+              d={`M ${line.from.x} ${line.from.y} Q ${(line.from.x + line.to.x) / 2} ${(line.from.y + line.to.y) / 2 - 8} ${line.to.x} ${line.to.y}`}
+              vectorEffect="non-scaling-stroke"
+              pathLength={100}
+              transform="scale(1)"
+              stroke="url(#kul-constellation-line)"
+              strokeWidth="1.4"
+              fill="none"
             />
           );
         })}
@@ -549,13 +589,19 @@ function ConstellationView({ members, onSelect }: { members: FamilyMember[]; onS
           key={member.id}
           type="button"
           onClick={() => onSelect(member)}
-          className="absolute -translate-x-1/2 -translate-y-1/2"
+          className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
           style={{ left: `${x}%`, top: `${y}%` }}
         >
-          <MemberAvatar member={member} size="sm" />
-          <span className="mt-1 block max-w-20 truncate text-xs font-medium theme-ink">{member.name}</span>
+          <span className="block rounded-full bg-[var(--surface-raised)]/72 p-1 shadow-[0_12px_30px_rgba(62,42,31,0.10)] backdrop-blur-md">
+            <MemberAvatar member={member} size="sm" />
+          </span>
+          <span className="mt-1 block max-w-24 truncate rounded-full bg-[var(--surface-raised)]/70 px-2 py-0.5 text-xs font-medium theme-ink backdrop-blur-md">{member.name}</span>
         </button>
       ))}
+      <div className="absolute bottom-4 right-4 flex gap-2">
+        <span className="rounded-full border border-[var(--card-border)] bg-[var(--surface-raised)]/72 px-3 py-1 text-xs theme-muted backdrop-blur-md">Focus me</span>
+        <span className="rounded-full border border-[var(--card-border)] bg-[var(--surface-raised)]/72 px-3 py-1 text-xs theme-muted backdrop-blur-md">Pinch to explore</span>
+      </div>
     </div>
   );
 }
@@ -568,8 +614,9 @@ function AncestralScrollView({
   onSelect: (member: FamilyMember) => void;
 }) {
   return (
-    <div className="rounded-[2rem] border border-[var(--card-border)] bg-[var(--surface-raised)] p-5">
-      <div className="space-y-5">
+    <div className="relative overflow-hidden rounded-[2.5rem] bg-[linear-gradient(180deg,rgba(255,253,249,0.82),rgba(239,228,211,0.34))] p-5 dark:bg-[var(--surface-raised)]">
+      <div className="absolute inset-x-8 top-0 h-full border-x border-[var(--brand-primary-soft)] opacity-50" />
+      <div className="relative space-y-5">
         {generations.map(([generation, members]) => (
           <section key={generation}>
             <div className="flex items-center gap-3">
@@ -579,7 +626,7 @@ function AncestralScrollView({
             </div>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               {members.map((member) => (
-                <button key={member.id} type="button" onClick={() => onSelect(member)} className="rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg-soft)] p-4 text-left">
+                <button key={member.id} type="button" onClick={() => onSelect(member)} className="rounded-2xl border border-[var(--card-border)] bg-[var(--surface-raised)]/72 p-4 text-left backdrop-blur-md">
                   <p className="text-lg font-medium theme-ink premium-serif">{member.name}</p>
                   <p className="mt-1 text-sm theme-muted">{[member.role, birthLabel(member), member.birth_place].filter(Boolean).join(' · ') || 'Family record'}</p>
                 </button>
@@ -594,15 +641,16 @@ function AncestralScrollView({
 
 function TempleCourtyardView({ members, onSelect }: { members: FamilyMember[]; onSelect: (member: FamilyMember) => void }) {
   return (
-    <div className="relative mx-auto h-[460px] max-w-[460px] overflow-hidden rounded-[2rem] border border-[var(--card-border)] bg-[var(--surface-base)]">
-      <div className="absolute inset-x-16 top-8 h-24 rounded-t-[3rem] border border-[var(--brand-primary-soft)] bg-[var(--brand-primary-soft)]" />
-      <div className="absolute left-1/2 top-20 h-24 w-24 -translate-x-1/2 rounded-full border border-[var(--brand-primary)] bg-[var(--surface-raised)] text-center">
+    <div className="relative mx-auto h-[520px] max-w-[520px] overflow-hidden">
+      <div className="absolute inset-x-14 top-10 h-28 rounded-t-[4rem] border border-[var(--brand-primary-soft)] bg-[var(--brand-primary-soft)]/70" />
+      <div className="absolute left-1/2 top-24 h-28 w-28 -translate-x-1/2 rounded-full border border-[var(--brand-primary)] bg-[var(--surface-raised)]/84 text-center shadow-sm backdrop-blur-md">
         <div className="flex h-full flex-col items-center justify-center">
           <Sparkles size={18} className="text-[var(--brand-primary)]" />
           <p className="text-sm font-medium theme-ink">Kul</p>
         </div>
       </div>
-      <div className="absolute inset-x-10 bottom-10 top-28 rounded-[3rem] border border-dashed border-[var(--brand-primary-soft)]" />
+      <div className="absolute inset-x-8 bottom-12 top-32 rounded-[4rem] border border-dashed border-[var(--brand-primary-soft)]" />
+      <div className="absolute inset-x-20 bottom-24 top-52 rounded-[4rem] border border-[var(--brand-primary-soft)] opacity-55" />
       {members.slice(0, 14).map((member, index) => {
         const column = index % 4;
         const row = Math.floor(index / 4);
