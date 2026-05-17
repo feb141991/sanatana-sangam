@@ -121,7 +121,8 @@ export default function SignupPage() {
   const [step,       setStep]       = useState<1 | 2>(1);
   const [loading,    setLoading]    = useState(false);
   const [showPass,   setShowPass]   = useState(false);
-  const [inviteCode, setInviteCode] = useState('');
+  const [inviteCode,  setInviteCode]  = useState('');
+  const [claimToken,  setClaimToken]  = useState('');
   const [acceptedPolicies, setAcceptedPolicies] = useState(false);
   const [quoteIdx, setQuoteIdx] = useState(0);
   const [factIdx, setFactIdx] = useState(0);
@@ -138,6 +139,7 @@ export default function SignupPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setInviteCode(params.get('ref')?.trim().toUpperCase() ?? '');
+    setClaimToken(params.get('claim_token')?.trim() ?? '');
 
     const interval = setInterval(() => {
       setQuoteIdx(prev => (prev + 1) % QUOTES.length);
@@ -166,7 +168,9 @@ export default function SignupPage() {
         email: normalizedEmail,
         password: form.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(
+          '/onboarding' + (claimToken ? `?claim_token=${encodeURIComponent(claimToken)}` : '')
+        )}`,
           data: { ...profilePayload, referred_by_code: inviteCode || null },
         },
       });
@@ -174,6 +178,14 @@ export default function SignupPage() {
       if (error) throw error;
 
       if (data.session) {
+        // Claim any guest-saved chart before navigating
+        if (claimToken) {
+          await fetch('/api/jyotish/birth-profiles', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_token: claimToken }),
+          }).catch(() => {}); // silent — chart stays as guest if this fails, recoverable
+        }
         toast.success('Pranam! Welcome to Shoonaya. 🙏');
         router.push('/onboarding');
       } else {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { MapPin, Loader2, ChevronRight, Check, Monitor, Moon, Sun } from 'lucide-react';
@@ -227,6 +227,29 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
     dark: Moon,
     light: Sun,
   } satisfies Record<ThemePreference, typeof Monitor>;
+
+  // ── Claim guest chart on arrival (email-confirmation flow) ──────────────────
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const claimToken = searchParams.get('claim_token');
+    if (!claimToken) return;
+
+    fetch('/api/jyotish/birth-profiles', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_token: claimToken }),
+    })
+      .then(r => {
+        if (r.ok) {
+          // Scrub the token from the URL so a page-refresh doesn't re-attempt
+          const url = new URL(window.location.href);
+          url.searchParams.delete('claim_token');
+          window.history.replaceState({}, '', url.toString());
+        }
+      })
+      .catch(() => {}); // silent — chart stays as guest if offline/failed
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // intentionally run once on mount only
 
   // Animated background crossfade
   const [bgStep, setBgStep] = useState(step);
