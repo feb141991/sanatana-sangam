@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Settings2 } from 'lucide-react';
 import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
@@ -408,6 +409,7 @@ function EnvParticles({ env }: { env: EnvId }) {
 
 // ─── Main Page ─────────────────────────────────────────────────────────────
 export default function SattvicModePage() {
+  const router = useRouter();
   const { resolvedTheme } = useThemePreference();
   const isDark = resolvedTheme === 'dark';
   const { playHaptic, setIsMuted } = useZenithSensory();
@@ -558,6 +560,19 @@ export default function SattvicModePage() {
 
   return (
     <div className="fade-in space-y-3 pb-4">
+      {/* ── Page Header with Back Button Chevron ── */}
+      <div className="flex items-center justify-between pb-2 border-b border-white/5">
+        <button 
+          onClick={() => router.back()} 
+          className="w-9 h-9 rounded-full flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-95"
+          style={{ border: `1px solid rgba(197,160,89,0.2)` }}
+        >
+          <ChevronLeft size={18} style={{ color: '#C5A059' }} />
+        </button>
+        <h1 className="text-sm font-bold uppercase tracking-[0.2em] text-center flex-1 pr-9" style={{ color: '#C5A059', fontFamily: 'var(--font-serif)' }}>
+          Sattvic Mode
+        </h1>
+      </div>
 
       {/* ── Top card: mode + timer + controls ───────────────────────────── */}
       <section className="relative overflow-hidden rounded-[2rem]"

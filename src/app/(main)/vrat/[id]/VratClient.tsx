@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronLeft, Settings, Sun, Moon, 
-  Book, Flame, Share2, Info
+  Book, Flame, Share2, Info, Copy, Check
 } from 'lucide-react';
 import type { VratData } from '@/lib/vrat-data';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
@@ -87,6 +87,16 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
     }
   };
 
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    const link = typeof window !== 'undefined' ? window.location.href : '';
+    const textToCopy = `🙏 Today's Sacred Observance: ${vrat.name}\n"${vrat.tagline}"\n\nSignificance:\n${vrat.significance}\n\nHow to observe:\n${vrat.practice}\n\nMantra:\n${vrat.mantra}\n\nRead more on Shoonaya: ${link}`;
+    navigator.clipboard.writeText(textToCopy);
+    setCopied(true);
+    toast.success('Sacred Vrat details copied! 🙏');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div 
       className="min-h-screen transition-colors duration-500 pb-24"
@@ -145,6 +155,26 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
               {lang === 'en' ? 'अ' : 'A'}
             </button>
           )}
+
+          {/* Copy Button */}
+          <button 
+            onClick={handleCopy}
+            className="w-9 h-9 rounded-full flex items-center justify-center transition"
+            style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
+            title="Copy Vrat Details"
+          >
+            {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
+          </button>
+
+          {/* Share Button */}
+          <button 
+            onClick={handleShare}
+            className="w-9 h-9 rounded-full flex items-center justify-center transition"
+            style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
+            title="Share Vrat"
+          >
+            <Share2 size={16} />
+          </button>
         </div>
       </header>
 

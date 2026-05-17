@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronRight, Mic, MicOff, Play, Pause,
   Eye, EyeOff, Timer, Sparkles, BookOpen,
-  CheckCircle2, Volume2, VolumeX, Loader2, Lock,
+  CheckCircle2, Volume2, VolumeX, Loader2, Lock, Share2, Check, Copy,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { GITA_FULL_DATA } from '@/lib/gita-full-data';
@@ -251,7 +251,10 @@ export default function ReciteClient({
   const chunksRef      = useRef<Blob[]>([]);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const verse = verses[verseIndex];
-  const effectiveMeaningLanguage = resolveEffectiveMeaningLanguage(appLanguage, meaningLanguage);
+  const [customLang, setCustomLang] = useState<'en' | 'hi'>(appLanguage === 'hi' || meaningLanguage === 'hi' ? 'hi' : 'en');
+  const [copied, setCopied] = useState(false);
+
+  const effectiveMeaningLanguage = customLang;
   const reviewedMeaning = effectiveMeaningLanguage === 'hi' ? hindiMeanings?.[verse?.id] : undefined;
   const localizedMeaning = useLocalizedMeaning({
     entryId: verse?.id,
@@ -264,6 +267,25 @@ export default function ReciteClient({
     ? getTransliteration(verse.original, verse.transliteration, transliterationLanguage ?? 'en')
     : '';
   const showVerseTransliteration = showTransliteration && verseTransliteration !== verse?.original;
+
+  const handleCopy = () => {
+    const textToCopy = `${verse.title} (${verse.source})\n\n${verse.original}\n\nMeaning: ${localizedMeaning.meaning}`;
+    navigator.clipboard.writeText(textToCopy);
+    setCopied(true);
+    toast.success('Scripture verse copied! 🙏');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShare = () => {
+    const link = typeof window !== 'undefined' ? window.location.href : '';
+    const text = `🙏 Radhe Radhe! Practice scripture recitation on Shoonaya with the Shruti engine! Check Verse ${verseIndex + 1} of '${path?.title ?? pathId}' following the link: ${link}`;
+    if (navigator.share) {
+      navigator.share({ title: verse.title, text, url: link }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(text);
+      toast.success('Recitation link copied! 🙏');
+    }
+  };
 
   // Engine timeout — if pathshala isn't ready after ENGINE_TIMEOUT_MS, unlock mic anyway
   useEffect(() => {
@@ -519,7 +541,7 @@ export default function ReciteClient({
       <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
 
       {/* Header */}
-      <div className="sticky top-0 z-30 glass-panel border-b border-white/8 px-4 py-3">
+      <div className="sticky top-0 z-30 glass-panel border-b border-white/8 px-4 py-3 flex flex-col gap-2">
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push(`/pathshala/${pathId}/lesson`)}
@@ -535,15 +557,24 @@ export default function ReciteClient({
             </p>
           </div>
 
-          {/* Font size — tap to cycle */}
-          <button
-            onClick={() => setFontStep(step => (step + 1) % READER_FONT_STEPS.length)}
-            className="shrink-0 px-2 py-1 rounded-lg text-[11px] font-bold"
-            style={{ background: 'rgba(255,255,255,0.06)', color: accentColour, border: '1px solid rgba(200,146,74,0.14)' }}
-            aria-label="Cycle text size"
-          >
-            Aa
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleCopy}
+              className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center transition hover:bg-white/10 active:scale-90"
+              style={{ background: 'rgba(255,255,255,0.06)' }}
+              title="Copy scripture"
+            >
+              {copied ? <Check size={13} style={{ color: accentColour }} /> : <Copy size={13} style={{ color: accentColour }} />}
+            </button>
+            <button
+              onClick={handleShare}
+              className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center transition hover:bg-white/10 active:scale-90"
+              style={{ background: 'rgba(255,255,255,0.06)' }}
+              title="Share recitation link"
+            >
+              <Share2 size={13} style={{ color: accentColour }} />
+            </button>
+          </div>
 
           {/* Timer */}
           <button
@@ -560,16 +591,67 @@ export default function ReciteClient({
           </button>
         </div>
 
+        {/* ── Subheader Controls row for Zoom & Language ── */}
+        <div className="flex items-center justify-between pt-2 border-t border-white/5">
+          {/* Zoom Selector */}
+          <div className="flex items-center gap-1">
+            <span className="text-[9px] uppercase font-bold tracking-wider text-[color:var(--brand-muted)]">Zoom:</span>
+            {READER_FONT_STEPS.map((step, idx) => (
+              <button
+                key={idx}
+                onClick={() => setFontStep(idx)}
+                className="w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center transition-all"
+                style={{
+                  backgroundColor: fontStep === idx ? accentColour : 'rgba(255,255,255,0.06)',
+                  color: fontStep === idx ? '#1c1c1a' : 'var(--brand-muted)',
+                  border: `1px solid ${fontStep === idx ? accentColour : 'rgba(255,255,255,0.08)'}`
+                }}
+              >
+                {idx === 0 ? 'A-' : idx === 2 ? 'A' : idx === 4 ? 'A+' : idx + 1}
+              </button>
+            ))}
+          </div>
+
+          {/* Language Toggle */}
+          <div className="flex items-center gap-1">
+            <span className="text-[9px] uppercase font-bold tracking-wider text-[color:var(--brand-muted)]">Lang:</span>
+            <button
+              onClick={() => setCustomLang('en')}
+              className="px-2 py-0.5 rounded-full text-[9px] font-bold transition-all"
+              style={{
+                backgroundColor: customLang === 'en' ? accentColour : 'rgba(255,255,255,0.06)',
+                color: customLang === 'en' ? '#1c1c1a' : 'var(--brand-muted)',
+                border: `1px solid ${customLang === 'en' ? accentColour : 'rgba(255,255,255,0.08)'}`
+              }}
+            >
+              EN
+            </button>
+            <button
+              onClick={() => setCustomLang('hi')}
+              className="px-2 py-0.5 rounded-full text-[9px] font-bold transition-all"
+              style={{
+                backgroundColor: customLang === 'hi' ? accentColour : 'rgba(255,255,255,0.06)',
+                color: customLang === 'hi' ? '#1c1c1a' : 'var(--brand-muted)',
+                border: `1px solid ${customLang === 'hi' ? accentColour : 'rgba(255,255,255,0.08)'}`
+              }}
+            >
+              हिं/Local
+            </button>
+          </div>
+        </div>
+
         {/* Progress */}
-        <div className="mt-2 flex items-center gap-2.5">
-          <CircularProgress
-            pct={progressPct}
-            accent={accentColour}
-            size={36}
-            strokeWidth={3}
-            label={<span className="text-[8px] font-bold" style={{ color: accentColour }}>{progressPct}%</span>}
-          />
-          <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.35)' }}>{completed.length}/{verses.length} verses</p>
+        <div className="mt-1 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CircularProgress
+              pct={progressPct}
+              accent={accentColour}
+              size={24}
+              strokeWidth={2.5}
+              label={<span className="text-[7px] font-bold" style={{ color: accentColour }}>{progressPct}%</span>}
+            />
+            <p className="text-[9px] text-[color:var(--brand-muted)]">{completed.length}/{verses.length} verses</p>
+          </div>
         </div>
       </div>
 

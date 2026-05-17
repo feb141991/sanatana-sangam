@@ -22,6 +22,7 @@ const TRADITION_LABELS: Record<string, { label: string; termKatha: string; color
   sikh:     { label: 'Sikh',     termKatha: 'Sakhis',  color: '#1B7FD4' },
   buddhist: { label: 'Buddhist', termKatha: 'Dhamma Stories', color: '#7C5CBF' },
   jain:     { label: 'Jain',     termKatha: 'Kathas',  color: '#2D9E4A' },
+  all:      { label: 'Universal', termKatha: 'Tales',   color: '#8B9E6E' },
 };
 
 const OCCASION_LABELS: Record<string, string> = {
@@ -49,25 +50,25 @@ const VIEW_CONFIGS: Record<string, ViewConfig> = {
   puranic: {
     heading: 'Puranic Tales',
     sub: 'Ramayana, Mahabharata & the Puranas',
-    filter: k => k.tradition === 'hindu' && !k.tags.includes('panchatantra') && !k.tags.includes('heroes'),
+    filter: k => (k.tradition === 'hindu' || k.tradition === 'all') && !k.tags.includes('panchatantra') && !k.tags.includes('heroes'),
     lockTabs: true,
   },
   bani: {
     heading: 'Bani & Sakhis',
     sub: 'Guru stories, sakhis and kirtan wisdom',
-    filter: k => k.tradition === 'sikh',
+    filter: k => k.tradition === 'sikh' || k.tradition === 'all',
     lockTabs: true,
   },
   dhamma: {
     heading: 'Dhamma Stories',
     sub: "Buddha's parables & Jataka tales",
-    filter: k => k.tradition === 'buddhist',
+    filter: k => k.tradition === 'buddhist' || k.tradition === 'all',
     lockTabs: true,
   },
   jain: {
     heading: 'Jain Kathas',
     sub: 'Tirthankara stories & moral tales',
-    filter: k => k.tradition === 'jain',
+    filter: k => k.tradition === 'jain' || k.tradition === 'all',
     lockTabs: true,
   },
   panchatantra: {
@@ -112,16 +113,16 @@ export default function KathaClient({
       return viewCfg.filter(k);
     }
     if (activeFilter === 'hindu') {
-      return k.tradition === 'hindu' && !k.tags.includes('panchatantra') && !k.tags.includes('heroes');
+      return (k.tradition === 'hindu' || k.tradition === 'all') && !k.tags.includes('panchatantra') && !k.tags.includes('heroes');
     }
     if (activeFilter === 'sikh') {
-      return k.tradition === 'sikh';
+      return k.tradition === 'sikh' || k.tradition === 'all';
     }
     if (activeFilter === 'buddhist') {
-      return k.tradition === 'buddhist';
+      return k.tradition === 'buddhist' || k.tradition === 'all';
     }
     if (activeFilter === 'jain') {
-      return k.tradition === 'jain';
+      return k.tradition === 'jain' || k.tradition === 'all';
     }
     // 'all' shows all tradition-filtered scriptural stories (excluding fables and heroes)
     return !k.tags.includes('panchatantra') && !k.tags.includes('heroes');
@@ -152,13 +153,13 @@ export default function KathaClient({
       // - 'jain' tab shows Jain Kathas
       // - 'all' tab shows a unified stream of spiritual scriptural stories (no Panchatantra, no Heroes)
       if (activeFilter === 'hindu') {
-        if (k.tradition !== 'hindu' || k.tags.includes('panchatantra') || k.tags.includes('heroes')) return false;
+        if ((k.tradition !== 'hindu' && k.tradition !== 'all') || k.tags.includes('panchatantra') || k.tags.includes('heroes')) return false;
       } else if (activeFilter === 'sikh') {
-        if (k.tradition !== 'sikh') return false;
+        if (k.tradition !== 'sikh' && k.tradition !== 'all') return false;
       } else if (activeFilter === 'buddhist') {
-        if (k.tradition !== 'buddhist') return false;
+        if (k.tradition !== 'buddhist' && k.tradition !== 'all') return false;
       } else if (activeFilter === 'jain') {
-        if (k.tradition !== 'jain') return false;
+        if (k.tradition !== 'jain' && k.tradition !== 'all') return false;
       } else if (activeFilter === 'all') {
         if (k.tags.includes('panchatantra') || k.tags.includes('heroes')) return false;
       }

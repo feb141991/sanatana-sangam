@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, Share2, Clock, Sparkles, Heart,
-  Star, ExternalLink, ChevronDown, ChevronUp, Loader2, Volume2, VolumeX, ALargeSmall
+  Star, ExternalLink, ChevronDown, ChevronUp, Loader2, Volume2, VolumeX, Copy, Check
 } from 'lucide-react';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import type { Katha } from '@/lib/katha-library';
 
 interface Props { katha: Katha; }
@@ -39,30 +40,47 @@ const OCCASION_LABELS: Record<string, string> = {
 };
 
 type Lang = 'en' | 'hi' | 'pa';
-type FontSize = 'sm' | 'md' | 'lg';
+type FontSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
 const FONT_SIZES: Record<FontSize, string> = {
-  sm: 'text-[13px] sm:text-[14px]',
-  md: 'text-[15px] sm:text-[16px]',
-  lg: 'text-[18px] sm:text-[19px]',
+  xs: 'text-[12px] sm:text-[13px]',
+  sm: 'text-[14px] sm:text-[15px]',
+  md: 'text-[16px] sm:text-[17px]',
+  lg: 'text-[19px] sm:text-[20px]',
+  xl: 'text-[22px] sm:text-[24px]',
+  xxl: 'text-[26px] sm:text-[28px]',
 };
-const FONT_CYCLE: FontSize[] = ['sm', 'md', 'lg'];
-const FONT_LABELS: Record<FontSize, string> = { sm: 'A', md: 'A', lg: 'A' };
+const SIZES: FontSize[] = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
 
 export default function KathaReaderClient({ katha }: Props) {
   const router = useRouter();
   const [lang, setLang] = useState<Lang>('en');
-  const [fontSize, setFontSize] = useState<FontSize>('md');
+  const [sizeIndex, setSizeIndex] = useState(2); // Default to 'md' (index 2)
+  const fontSize = SIZES[sizeIndex];
   const [sankalpaDismissed, setSankalpaDismissed] = useState(false);
   const [liked, setLiked] = useState(false);
   const [showPhal, setShowPhal] = useState(false);
   const [ttsLoading, setTtsLoading] = useState(false);
   const [speaking, setSpeaking] = useState(false);
+  const [copied, setCopied] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioUrlRef = useRef<string | null>(null);
 
-  const tradColor = TRADITION_COLORS[katha.tradition] ?? '#C5A059';
-  const trad = TRADITION_LABELS[katha.tradition] ?? TRADITION_LABELS.hindu;
+  const isPanchatantra = katha.tags.includes('panchatantra');
+  const isHero = katha.tags.some(t => ['warriors', 'saints', 'heroes', 'martyrdom', 'seva', 'sacrifice'].includes(t)) && !isPanchatantra;
+
+  const tradColor = isPanchatantra
+    ? '#8B9E6E'
+    : isHero
+      ? '#D4643A'
+      : (TRADITION_COLORS[katha.tradition] ?? '#C5A059');
+
+  const trad = isPanchatantra
+    ? { label: 'Panchatantra', termKatha: 'Wisdom Tale' }
+    : isHero
+      ? { label: 'Heroes of Bharat', termKatha: 'Hero Legend' }
+      : (TRADITION_LABELS[katha.tradition] ?? TRADITION_LABELS.hindu);
+
   const hasHindi = (katha.bodyHi?.length ?? 0) > 0;
   const hasPunjabi = (katha.bodyPa?.length ?? 0) > 0;
 
@@ -80,29 +98,89 @@ export default function KathaReaderClient({ katha }: Props) {
     lang === 'pa' && katha.titlePa ? katha.titlePa :
     katha.title;
 
-  const isPanchatantra = katha.tags.includes('panchatantra');
-
-  // Cycle font size
-  function cycleFontSize() {
-    setFontSize(s => {
-      const idx = FONT_CYCLE.indexOf(s);
-      return FONT_CYCLE[(idx + 1) % FONT_CYCLE.length];
-    });
-  }
-
-  // Cycle language: en → hi (if available) → pa (if available) → en
-  function cycleLang() {
-    setLang(current => {
-      if (current === 'en' && hasHindi) return 'hi';
-      if (current === 'en' && hasPunjabi) return 'pa';
-      if (current === 'hi' && hasPunjabi) return 'pa';
-      return 'en';
-    });
-  }
-
-  // Language button label
-  const langLabel = lang === 'hi' ? 'हिं' : lang === 'pa' ? 'ਪੰ' : 'EN';
   const hasAnyLocal = hasHindi || hasPunjabi;
+
+  function fallbackCopy(text: string, successMessage: string) {
+    try {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      const successful = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      if (successful) {
+        setCopied(true);
+        toast.success(successMessage, {
+          icon: '📋',
+          style: { background: '#2e1710', color: '#f5dfa0' }
+        });
+        setTimeout(() => setCopied(false), 2000);
+      } else {
+        throw new Error('Copy command unsuccessful');
+      }
+    } catch (err) {
+      toast.error('Failed to copy. Please select and copy manually.');
+    }
+  }
+
+  function copyToClipboard() {
+    const textToCopy = `${titleToShow}\n\n${bodyToShow.join('\n\n')}\n\nPhal:\n${phalToShow}`;
+    const successMsg = 'Katha copied to clipboard! 🙏';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(textToCopy)
+        .then(() => {
+          setCopied(true);
+          toast.success(successMsg, {
+            icon: '📋',
+            style: { background: '#2e1710', color: '#f5dfa0' }
+          });
+          setTimeout(() => setCopied(false), 2000);
+        })
+        .catch(() => fallbackCopy(textToCopy, successMsg));
+    } else {
+      fallbackCopy(textToCopy, successMsg);
+    }
+  }
+
+  function copyShareText(text: string) {
+    const successMsg = 'Share link & text copied! Send it via WhatsApp or Messages. 🙏';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          toast.success(successMsg, {
+            icon: '🔗',
+            style: { background: '#2e1710', color: '#f5dfa0' }
+          });
+        })
+        .catch(() => fallbackCopy(text, successMsg));
+    } else {
+      fallbackCopy(text, successMsg);
+    }
+  }
+
+  async function shareKatha() {
+    const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+    const shareText = `🙏 Radhe Radhe! Check out this inspiring ${trad.termKatha} on Shoonaya: '${titleToShow}'. Read here: ${shareUrl} to elevate your Sadhana.`;
+    
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: `Shoonaya - ${titleToShow}`,
+          text: shareText,
+          url: shareUrl
+        });
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          copyShareText(shareText);
+        }
+      }
+    } else {
+      copyShareText(shareText);
+    }
+  }
 
   const stopTTS = useCallback(() => {
     if (audioRef.current) {
@@ -173,7 +251,7 @@ export default function KathaReaderClient({ katha }: Props) {
         <div className="flex items-center justify-between">
           <button
             onClick={() => router.back()}
-            className="w-10 h-10 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 text-[var(--text-main)]"
+            className="w-10 h-10 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 text-[var(--text-main)] transition-all hover:bg-[var(--surface-base)]/40 active:scale-90"
           >
             <ChevronLeft size={20} color={THEME.gold} />
           </button>
@@ -183,31 +261,84 @@ export default function KathaReaderClient({ katha }: Props) {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {/* Text size cycle */}
             <button
-              onClick={cycleFontSize}
-              className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20"
-              title="Change text size"
+              onClick={copyToClipboard}
+              className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-90"
+              title="Copy Katha"
             >
-              <ALargeSmall size={15} color={THEME.gold} />
+              {copied ? <Check size={14} color="#2D9E4A" /> : <Copy size={14} color={THEME.gold} />}
             </button>
-            {/* Language cycle — only shown when a local language exists */}
-            {hasAnyLocal && (
+            <button
+              onClick={shareKatha}
+              className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-90"
+              title="Share Katha"
+            >
+              <Share2 size={14} color={THEME.gold} />
+            </button>
+          </div>
+        </div>
+
+        {/* ── Dynamic Controls Bar (Zoom, Language & Script toggles) ── */}
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[var(--divine-border)]/5">
+          {/* Zoom Control */}
+          <div className="flex items-center gap-1.5 bg-[var(--surface-base)]/10 px-2 py-1 rounded-full border border-[var(--divine-border)]/5">
+            <span className="text-[10px] uppercase font-bold tracking-wider px-1 text-[var(--text-dim)]">Zoom:</span>
+            <button
+              onClick={() => setSizeIndex(i => Math.max(0, i - 1))}
+              disabled={sizeIndex === 0}
+              className="w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center transition-all bg-[var(--surface-base)]/20 text-[var(--text-main)] hover:bg-[var(--surface-base)]/40 disabled:opacity-30"
+            >
+              A-
+            </button>
+            <span className="text-xs font-bold px-1 text-[#C5A059] min-w-[2rem] text-center">
+              {sizeIndex + 1}
+            </span>
+            <button
+              onClick={() => setSizeIndex(i => Math.min(SIZES.length - 1, i + 1))}
+              disabled={sizeIndex === SIZES.length - 1}
+              className="w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center transition-all bg-[var(--surface-base)]/20 text-[var(--text-main)] hover:bg-[var(--surface-base)]/40 disabled:opacity-30"
+            >
+              A+
+            </button>
+          </div>
+
+          {/* Language Toggle (Local and English) */}
+          <div className="flex items-center gap-1.5 bg-[var(--surface-base)]/10 px-2 py-1 rounded-full border border-[var(--divine-border)]/5">
+            <span className="text-[10px] uppercase font-bold tracking-wider px-1 text-[var(--text-dim)]">Lang:</span>
+            <button
+              onClick={() => setLang('en')}
+              className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${
+                lang === 'en'
+                  ? 'bg-[#C5A059] text-black shadow-md shadow-[#C5A059]/20'
+                  : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'
+              }`}
+            >
+              EN
+            </button>
+            {hasHindi && (
               <button
-                onClick={cycleLang}
-                className={`px-3 py-1.5 rounded-full text-[10px] font-bold border transition-all ${
-                  lang !== 'en'
-                    ? 'border-[#C5A059] text-[#C5A059] bg-[#C5A059]/10'
-                    : 'border-[var(--divine-border)]/10 text-[var(--text-dim)]'
+                onClick={() => setLang('hi')}
+                className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${
+                  lang === 'hi'
+                    ? 'bg-[#C5A059] text-black shadow-md shadow-[#C5A059]/20'
+                    : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'
                 }`}
-                title="Switch language"
               >
-                {langLabel}
+                हिं
               </button>
             )}
-            <button className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20">
-              <Share2 size={15} color={THEME.gold} />
-            </button>
+            {hasPunjabi && (
+              <button
+                onClick={() => setLang('pa')}
+                className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${
+                  lang === 'pa'
+                    ? 'bg-[#C5A059] text-black shadow-md shadow-[#C5A059]/20'
+                    : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'
+                }`}
+              >
+                ਪੰ
+              </button>
+            )}
           </div>
         </div>
       </div>

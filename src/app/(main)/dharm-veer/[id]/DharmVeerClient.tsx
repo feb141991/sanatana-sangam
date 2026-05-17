@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronLeft, Settings, Type, Sun, Moon, 
-  Book, Quote, Shield, Lightbulb, Share2
+  Book, Quote, Shield, Lightbulb, Share2, Copy, Check 
 } from 'lucide-react';
 import type { DharmVeer } from '@/lib/dharm-veer';
 import { TRADITION_META } from '@/lib/dharm-veer';
@@ -22,9 +22,9 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
   const router = useRouter();
   const [theme, setTheme] = useState<ReadingTheme>('light');
   const [fontSize, setFontSize] = useState<FontSize>('md');
-  const [showSettings, setShowSettings] = useState(false);
   const { lang: appLang } = useLanguage();
   const [lang, setLang] = useState<'en' | 'local'>(appLang === 'en' ? 'en' : 'local');
+  const [copied, setCopied] = useState(false);
 
   const effectiveLang: AppLang = lang === 'en' ? 'en' : (appLang === 'en' ? 'hi' : appLang);
   const meta = TRADITION_META[hero.tradition];
@@ -86,14 +86,35 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
 
   const activeTheme = themeColors[theme];
 
+  const handleCopy = () => {
+    const title = lang === 'local' && hero.nameLocal ? hero.nameLocal : hero.name;
+    const tagline = lang === 'local' && hero.taglineLocal ? hero.taglineLocal : hero.tagline;
+    const journeyText = lang === 'local' ? localizedJourney.meaning : hero.journey;
+    const trialText = lang === 'local' ? localizedTrial.meaning : hero.trial;
+    const teachingText = lang === 'local' ? localizedTeaching.meaning : hero.teaching;
+    const moralText = lang === 'local' ? localizedMoral.meaning : hero.moral;
+
+    const textToCopy = `${title}\n${tagline}\n\n[Journey]\n${journeyText}\n\n[Trial]\n${trialText}\n\n[Teaching]\n${teachingText}\n\n[Moral]\n${moralText}`;
+    
+    navigator.clipboard.writeText(textToCopy);
+    setCopied(true);
+    toast.success('Story copied to clipboard! 🙏', {
+      icon: '📋',
+      style: { background: activeTheme.bg === '#FAF6EF' ? '#ffffff' : '#2e1710', color: activeTheme.text }
+    });
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const handleShare = () => {
     const link = typeof window !== 'undefined' ? window.location.href : '';
-    const text = `Read & check this Dharm Veer story following this link to open those features: ${link}\n\nToday's Dharm Veer: ${hero.name}\n${hero.tagline}\nRead more on Shoonaya.`;
+    const title = lang === 'local' && hero.nameLocal ? hero.nameLocal : hero.name;
+    const text = `🙏 Jai Shri Hari! Read this inspiring Dharm Veer story of '${title}' and check your daily rashiphal following the link to open those features: ${link} to grow your Sadhana.`;
+    
     if (navigator.share) {
       navigator.share({ title: hero.name, text, url: link }).catch(() => {});
     } else {
       navigator.clipboard.writeText(text);
-      toast.success('Link copied to clipboard!');
+      toast.success('Story link copied! 🙏');
     }
   };
 
@@ -107,59 +128,102 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
       }}
     >
       {/* ── Fixed Header ─────────────────────────────────────────────────── */}
-      <header className="fixed top-0 inset-x-0 z-50 px-4 py-3 flex items-center gap-3 backdrop-blur-xl" style={{ borderBottom: `1px solid ${activeTheme.border}`, backgroundColor: `${activeTheme.bg}cc` }}>
-        <button 
-          onClick={() => router.back()}
-          className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition"
-          style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
-        >
-          <ChevronLeft size={18} />
-        </button>
-        
-        <div className="flex-1 min-w-0 flex flex-col">
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
-            {meta.dharmVeerLocal || 'Dharm Veer'}
-          </span>
-          <span className="text-xs font-bold truncate" style={{ color: 'var(--brand-primary)' }}>
-            {hero.tradition.toUpperCase()}
-          </span>
+      <header className="fixed top-0 inset-x-0 z-50 px-4 pt-12 pb-4 flex flex-col gap-3 backdrop-blur-xl border-b" style={{ borderColor: activeTheme.border, backgroundColor: `${activeTheme.bg}d9` }}>
+        <div className="flex items-center justify-between gap-3">
+          <button 
+            onClick={() => router.back()}
+            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition hover:bg-[var(--surface-base)]/20 active:scale-90"
+            style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
+          >
+            <ChevronLeft size={18} />
+          </button>
+          
+          <div className="flex-1 min-w-0 flex flex-col text-center">
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
+              {meta.dharmVeerLocal || 'Dharm Veer'}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {/* Theme Toggle */}
+            <button 
+              onClick={() => setTheme(t => t === 'light' ? 'dark' : t === 'dark' ? 'sepia' : 'light')}
+              className="theme-toggle w-9 h-9 rounded-full flex items-center justify-center transition hover:bg-[var(--surface-base)]/20 active:scale-90"
+              style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
+              title="Toggle Theme"
+            >
+              {theme === 'light' ? <Moon size={15} /> : theme === 'dark' ? <div className="w-4 h-4 bg-[#F4ECD8] rounded-full border border-black/10" /> : <Sun size={15} />}
+            </button>
+            <button
+              onClick={handleCopy}
+              className="w-9 h-9 rounded-full flex items-center justify-center transition hover:bg-[var(--surface-base)]/20 active:scale-90"
+              style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
+              title="Copy Story"
+            >
+              {copied ? <Check size={14} color="#2D9E4A" /> : <Copy size={14} />}
+            </button>
+            <button
+              onClick={handleShare}
+              className="w-9 h-9 rounded-full flex items-center justify-center transition hover:bg-[var(--surface-base)]/20 active:scale-90"
+              style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
+              title="Share Story"
+            >
+              <Share2 size={14} />
+            </button>
+          </div>
         </div>
 
-        {/* ── Reading Options ── */}
-        <div className="flex items-center gap-2">
-          {/* Theme Toggle */}
-          <button 
-            onClick={() => setTheme(t => t === 'light' ? 'dark' : t === 'dark' ? 'sepia' : 'light')}
-            className="theme-toggle w-9 h-9 rounded-full flex items-center justify-center transition"
-            style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
-          >
-            {theme === 'light' ? <Moon size={16} /> : theme === 'dark' ? <div className="w-4 h-4 bg-[#F4ECD8] rounded-full border border-black/10" /> : <Sun size={16} />}
-          </button>
-
-          {/* Font Size Toggle */}
-          <button 
-            onClick={() => setFontSize(s => s === 'sm' ? 'md' : s === 'md' ? 'lg' : s === 'lg' ? 'xl' : 'sm')}
-            className="font-toggle w-9 h-9 rounded-full flex items-center justify-center transition text-[11px] font-bold"
-            style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
-          >
-            Aa
-          </button>
+        {/* ── Dynamic Controls Bar (Zoom & Language toggles) ── */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t" style={{ borderColor: `${activeTheme.border}30` }}>
+          {/* Zoom Control */}
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full" style={{ backgroundColor: activeTheme.border }}>
+            <span className="text-[9px] uppercase font-bold tracking-wider px-1 opacity-70">Zoom:</span>
+            {(['sm', 'md', 'lg', 'xl'] as const).map(sz => (
+              <button
+                key={sz}
+                onClick={() => setFontSize(sz)}
+                className={`w-6 h-6 rounded-full text-[10px] font-semibold flex items-center justify-center transition-all ${
+                  fontSize === sz
+                    ? 'bg-[var(--brand-primary)] text-black font-bold shadow-sm'
+                    : 'opacity-70 hover:opacity-100'
+                }`}
+              >
+                {sz === 'sm' ? 'A-' : sz === 'md' ? 'A' : sz === 'lg' ? 'A+' : 'A++'}
+              </button>
+            ))}
+          </div>
 
           {/* Language Toggle */}
           {hero.nameLocal && (
-            <button 
-              onClick={() => setLang(l => l === 'en' ? 'local' : 'en')}
-              className="lang-toggle w-9 h-9 rounded-full flex items-center justify-center transition font-[family:var(--font-deva)] text-sm font-bold"
-              style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
-            >
-              {lang === 'en' ? 'अ' : 'A'}
-            </button>
+            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full" style={{ backgroundColor: activeTheme.border }}>
+              <span className="text-[9px] uppercase font-bold tracking-wider px-1 opacity-70">Lang:</span>
+              <button
+                onClick={() => setLang('en')}
+                className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all ${
+                  lang === 'en'
+                    ? 'bg-[var(--brand-primary)] text-black shadow-sm'
+                    : 'opacity-70 hover:opacity-100'
+                }`}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => setLang('local')}
+                className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all ${
+                  lang === 'local'
+                    ? 'bg-[var(--brand-primary)] text-black shadow-sm'
+                    : 'opacity-70 hover:opacity-100'
+                }`}
+              >
+                हिं/Local
+              </button>
+            </div>
           )}
         </div>
       </header>
 
       {/* ── Content ─────────────────────────────────────────────────────── */}
-      <main className="pt-28 px-6 max-w-2xl mx-auto space-y-12">
+      <main className="pt-36 px-6 max-w-2xl mx-auto space-y-12">
         {/* Hero Section */}
         <section className="text-center space-y-4">
           <motion.div 

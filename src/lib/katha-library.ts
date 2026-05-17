@@ -1,4 +1,4 @@
-export type KathaTradition = 'hindu' | 'sikh' | 'buddhist' | 'jain';
+export type KathaTradition = 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'all';
 export type KathaOccasion =
   | 'ekadashi' | 'purnima' | 'amavasya' | 'pradosh' | 'chaturthi'
   | 'shivaratri' | 'navratri' | 'diwali' | 'holi' | 'janmashtami'
@@ -1705,17 +1705,17 @@ export const HEROES_KATHAS: Katha[] = [
 
 export const ALL_KATHAS: Katha[] = [
   ...HINDU_KATHAS,
-  ...PANCHATANTRA_STORIES,
-  ...MORE_PANCHATANTRA_STORIES,
+  ...PANCHATANTRA_STORIES.map(k => ({ ...k, tradition: 'all' as const })),
+  ...MORE_PANCHATANTRA_STORIES.map(k => ({ ...k, tradition: 'all' as const })),
   ...SIKH_SAKHIS,
   ...BUDDHIST_STORIES,
   ...JAIN_KATHAS,
-  ...HEROES_KATHAS,
+  ...HEROES_KATHAS.map(k => ({ ...k, tradition: 'all' as const })),
 ];
 
 /** Get kathas for a specific tradition */
 export function getKathasByTradition(tradition: KathaTradition): Katha[] {
-  return ALL_KATHAS.filter(k => k.tradition === tradition);
+  return ALL_KATHAS.filter(k => k.tradition === tradition || k.tradition === 'all');
 }
 
 /** Get kathas for a specific occasion */

@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronRight, CheckCircle2, BookOpen, Mic,
-  Sparkles, Copy, Loader2, Bookmark, Volume2, VolumeX, EyeOff,
+  Sparkles, Copy, Loader2, Bookmark, Volume2, VolumeX, EyeOff, Share2, Check
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
@@ -151,7 +151,10 @@ export default function LessonClient({
     : '';
   const showTranslit = showTransliteration && translitText && translitText !== entry?.original;
 
-  const effectiveMeaningLanguage = resolveEffectiveMeaningLanguage(appLanguage, meaningLanguage);
+  const [customLang, setCustomLang] = useState<'en' | 'hi'>(appLanguage === 'hi' || meaningLanguage === 'hi' ? 'hi' : 'en');
+  const [copied, setCopied] = useState(false);
+
+  const effectiveMeaningLanguage = customLang;
   const reviewedMeaning = entry && effectiveMeaningLanguage === 'hi' ? hindiMeanings?.[entry.id] : undefined;
   const localizedMeaning = useLocalizedMeaning({
     entryId: entry?.id,
@@ -162,6 +165,25 @@ export default function LessonClient({
   });
   const meaningText = entry ? localizedMeaning.meaning : '';
   const meaningLabel = getMeaningLabel(effectiveMeaningLanguage);
+
+  const handleCopy = () => {
+    const textToCopy = getEntryText(entry);
+    navigator.clipboard.writeText(textToCopy);
+    setCopied(true);
+    toast.success('Scripture verse copied! 🙏');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShare = () => {
+    const link = typeof window !== 'undefined' ? window.location.href : '';
+    const text = `🙏 Radhe Radhe! Check out this profound Pathshala lesson on Shoonaya: '${lesson.title}' from path '${pathTitle}'. Check your rashiphal following this link: ${link}`;
+    if (navigator.share) {
+      navigator.share({ title: lesson.title, text, url: link }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(text);
+      toast.success('Lesson link copied! 🙏');
+    }
+  };
 
   const askHref = entry
     ? getAIChatHref(
@@ -394,51 +416,109 @@ export default function LessonClient({
 
       {/* ════════════ HEADER ════════════════════════════════════════════════ */}
       <header
-        className="sticky top-0 z-30 px-4 py-3 flex items-center gap-3"
+        className="sticky top-0 z-30 px-4 py-3 flex flex-col gap-2"
         style={{ background: P.bgCard, borderBottom: `1px solid ${P.border}` }}
       >
-        {/* Back */}
-        <button
-          onClick={() => router.push('/pathshala')}
-          className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 motion-press"
-          style={{ background: P.accentBg, border: `1px solid ${P.border}` }}
-        >
-          <ChevronLeft size={18} style={{ color: P.accentDeep }} />
-        </button>
+        <div className="flex items-center gap-3">
+          {/* Back */}
+          <button
+            onClick={() => router.push('/pathshala')}
+            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 motion-press"
+            style={{ background: P.accentBg, border: `1px solid ${P.border}` }}
+          >
+            <ChevronLeft size={18} style={{ color: P.accentDeep }} />
+          </button>
 
-        {/* Titles */}
-        <div className="flex-1 min-w-0">
-          <p className="text-[10px] truncate font-medium" style={{ color: P.inkMuted }}>{pathTitle}</p>
-          <p className="text-sm font-bold truncate" style={{ color: P.ink }}>{lesson.title}</p>
+          {/* Titles */}
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] truncate font-medium" style={{ color: P.inkMuted }}>{pathTitle}</p>
+            <p className="text-sm font-bold truncate" style={{ color: P.ink }}>{lesson.title}</p>
+          </div>
+
+          {/* Progress ring */}
+          <CircularProgress
+            pct={progressPct}
+            accent={P.accent}
+            size={32}
+            strokeWidth={3}
+            label={<span className="text-[8px] font-bold" style={{ color: P.accentDeep }}>{progressPct}%</span>}
+          />
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleCopy}
+              className="w-8 h-8 rounded-full flex items-center justify-center bg-[rgba(200,146,74,0.12)] border border-[rgba(200,146,74,0.2)] transition active:scale-90"
+              title="Copy Scripture"
+            >
+              {copied ? <Check size={13} style={{ color: P.accentDeep }} /> : <Copy size={13} style={{ color: P.accentDeep }} />}
+            </button>
+            <button
+              onClick={handleShare}
+              className="w-8 h-8 rounded-full flex items-center justify-center bg-[rgba(200,146,74,0.12)] border border-[rgba(200,146,74,0.2)] transition active:scale-90"
+              title="Share Lesson"
+            >
+              <Share2 size={13} style={{ color: P.accentDeep }} />
+            </button>
+          </div>
         </div>
 
-        {/* Progress ring */}
-        <CircularProgress
-          pct={progressPct}
-          accent={P.accent}
-          size={32}
-          strokeWidth={3}
-          label={<span className="text-[8px] font-bold" style={{ color: P.accentDeep }}>{progressPct}%</span>}
-        />
+        {/* ── Subheader Controls row for Zoom & Language ── */}
+        <div className="flex items-center justify-between pt-2 border-t border-[rgba(200,146,74,0.1)]">
+          {/* Zoom Selector */}
+          <div className="flex items-center gap-1">
+            <span className="text-[9px] uppercase font-bold tracking-wider" style={{ color: P.inkMuted }}>Zoom:</span>
+            {READER_FONT_STEPS.map((step, idx) => (
+              <button
+                key={idx}
+                onClick={() => setFontStep(idx)}
+                className={`w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center transition-all ${
+                  fontStep === idx
+                    ? 'text-white shadow-sm'
+                    : ''
+                }`}
+                style={{
+                  backgroundColor: fontStep === idx ? P.accent : P.accentBg,
+                  color: fontStep === idx ? P.btnText : P.accentDeep
+                }}
+              >
+                {idx === 0 ? 'A-' : idx === 2 ? 'A' : idx === 4 ? 'A+' : idx + 1}
+              </button>
+            ))}
+          </div>
 
-        {/* Font size cycle */}
-        <button
-          onClick={() => setFontStep(s => (s + 1) % READER_FONT_STEPS.length)}
-          className="px-2.5 py-1.5 rounded-lg text-[12px] font-bold shrink-0 motion-press"
-          style={{ background: P.accentBg, color: P.accentDeep, border: `1px solid ${P.border}` }}
-          aria-label="Change text size"
-        >
-          Aa
-        </button>
-
-        {/* Recite shortcut */}
-        <Link
-          href={`/pathshala/${pathId}/recite`}
-          className="hidden sm:flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 motion-press"
-          style={{ color: P.accentDeep, background: P.accentBg, border: `1px solid ${P.border}` }}
-        >
-          <Mic size={12} /> Recite
-        </Link>
+          {/* Language Toggle */}
+          <div className="flex items-center gap-1">
+            <span className="text-[9px] uppercase font-bold tracking-wider" style={{ color: P.inkMuted }}>Lang:</span>
+            <button
+              onClick={() => setCustomLang('en')}
+              className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all ${
+                customLang === 'en'
+                  ? 'text-white'
+                  : ''
+              }`}
+              style={{
+                backgroundColor: customLang === 'en' ? P.accent : P.accentBg,
+                color: customLang === 'en' ? P.btnText : P.accentDeep
+              }}
+            >
+              EN
+            </button>
+            <button
+              onClick={() => setCustomLang('hi')}
+              className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all ${
+                customLang === 'hi'
+                  ? 'text-white'
+                  : ''
+              }`}
+              style={{
+                backgroundColor: customLang === 'hi' ? P.accent : P.accentBg,
+                color: customLang === 'hi' ? P.btnText : P.accentDeep
+              }}
+            >
+              हिं/Local
+            </button>
+          </div>
+        </div>
       </header>
 
       {/* ════════════ SCROLLABLE CONTENT ════════════════════════════════════ */}
