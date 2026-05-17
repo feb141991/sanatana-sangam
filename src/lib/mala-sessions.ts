@@ -23,6 +23,17 @@ export interface MalaSessionRow {
   duration_secs?: number | null;
   mala_id?: string | null;
   background_scene?: string | null;
+  tradition?: string | null;
+  practice_type?: string | null;
+  intention?: string | null;
+  completion_type?: string | null;
+  target_rounds?: number | null;
+  completed_rounds?: number | null;
+  ambient_id?: string | null;
+  spiritual_time_window?: string | null;
+  timezone?: string | null;
+  source_route?: string | null;
+  panchang_context?: Record<string, unknown> | null;
 }
 
 export interface MalaSessionInsert {
@@ -42,6 +53,17 @@ export interface MalaSessionInsert {
   duration_secs?: number | null;
   mala_id?: string | null;
   background_scene?: string | null;
+  tradition?: string | null;
+  practice_type?: string | null;
+  intention?: string | null;
+  completion_type?: string | null;
+  target_rounds?: number | null;
+  completed_rounds?: number | null;
+  ambient_id?: string | null;
+  spiritual_time_window?: string | null;
+  timezone?: string | null;
+  source_route?: string | null;
+  panchang_context?: Record<string, unknown> | null;
 }
 
 export function malaSessionDate(row: MalaSessionRow): string {
@@ -93,6 +115,17 @@ export function buildMalaSessionInsert(input: {
   chantSource?: string | null;
   notes?: string | null;
   shareScope?: 'private' | 'kul' | 'public';
+  tradition?: string | null;
+  practiceType?: string | null;
+  intention?: string | null;
+  completionType?: string | null;
+  targetRounds?: number | null;
+  completedRounds?: number | null;
+  ambientId?: string | null;
+  spiritualTimeWindow?: string | null;
+  timezone?: string | null;
+  sourceRoute?: string | null;
+  panchangContext?: Record<string, unknown> | null;
 }): MalaSessionInsert {
   const completedAt = input.completedAt ?? new Date().toISOString();
   const targetCount = input.targetCount ?? 108;
@@ -116,5 +149,16 @@ export function buildMalaSessionInsert(input: {
     duration_secs: input.durationSeconds,
     mala_id: input.malaId ?? null,
     background_scene: input.backgroundScene ?? null,
+    tradition: input.tradition ?? null,
+    practice_type: input.practiceType ?? 'mala',
+    intention: input.intention ?? null,
+    completion_type: input.completionType ?? 'completed',
+    target_rounds: input.targetRounds ?? null,
+    completed_rounds: input.completedRounds ?? rounds,
+    ambient_id: input.ambientId ?? null,
+    spiritual_time_window: input.spiritualTimeWindow ?? null,
+    timezone: input.timezone ?? null,
+    source_route: input.sourceRoute ?? '/bhakti/mala',
+    panchang_context: input.panchangContext ?? null,
   };
 }

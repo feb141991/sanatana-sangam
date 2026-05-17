@@ -137,10 +137,32 @@ export interface Database {
           duration_secs: number | null;
           mala_id: string | null;
           background_scene: string | null;
+          tradition: string | null;
+          practice_type: string | null;
+          intention: string | null;
+          completion_type: string | null;
+          target_rounds: number | null;
+          completed_rounds: number | null;
+          ambient_id: string | null;
+          spiritual_time_window: string | null;
+          timezone: string | null;
+          source_route: string | null;
+          panchang_context: Record<string, unknown> | null;
         };
-        Insert: Omit<Database['public']['Tables']['mala_sessions']['Row'], 'id' | 'created_at' | 'completed_at'> & {
+        Insert: Omit<Database['public']['Tables']['mala_sessions']['Row'], 'id' | 'created_at' | 'completed_at' | 'tradition' | 'practice_type' | 'intention' | 'completion_type' | 'target_rounds' | 'completed_rounds' | 'ambient_id' | 'spiritual_time_window' | 'timezone' | 'source_route' | 'panchang_context'> & {
           completed_at?: string;
           created_at?: string;
+          tradition?: string | null;
+          practice_type?: string | null;
+          intention?: string | null;
+          completion_type?: string | null;
+          target_rounds?: number | null;
+          completed_rounds?: number | null;
+          ambient_id?: string | null;
+          spiritual_time_window?: string | null;
+          timezone?: string | null;
+          source_route?: string | null;
+          panchang_context?: Record<string, unknown> | null;
         };
         Update: Partial<Database['public']['Tables']['mala_sessions']['Insert']>;
       };

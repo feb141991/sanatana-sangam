@@ -240,7 +240,7 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     sampradayaLabel:      'Jain Sect',
     devataLabel:          'Tirthankar Devotion',
     festivalPriority:     'jain',
-    japaDefaultMantra:    'gayatri', // Or a Jain specific default like navkar if added later
+    japaDefaultMantra:    'namokar',
     nityaKarmaTitle:      'Pratikramana / Sadhana',
     pathshalaVocabulary:  'Agamas',
     mapPinEmoji:          '🤲',

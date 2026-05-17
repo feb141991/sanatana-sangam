@@ -14,9 +14,8 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Volume2, VolumeX, Flame, RotateCcw, BarChart2, Settings2, X, Moon, Sun, Sparkles } from 'lucide-react';
-import { useEngine } from '@/contexts/EngineContext';
-import { hapticLight, hapticSuccess } from '@/lib/platform';
+import { ChevronLeft, Volume2, VolumeX, Flame, RotateCcw, BarChart2, Settings2, X, Moon, Sun, Sparkles, Play, Pause } from 'lucide-react';
+import { hapticSuccess } from '@/lib/platform';
 import { createClient } from '@/lib/supabase';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { buildMalaSessionInsert } from '@/lib/mala-sessions';
@@ -38,6 +37,15 @@ const STORAGE_MALA   = 'shoonaya-japa-mala';
 const STORAGE_MANTRA = 'shoonaya-japa-mantra';
 const STORAGE_BG     = 'shoonaya-japa-bg';
 const STORAGE_SOUND  = 'shoonaya-japa-sound';
+
+function getSpiritualTimeWindow(date: Date) {
+  const hour = date.getHours();
+  if (hour >= 3 && hour < 6) return 'brahma_muhurta';
+  if (hour >= 6 && hour < 11) return 'morning';
+  if (hour >= 11 && hour < 16) return 'midday';
+  if (hour >= 16 && hour < 20) return 'sandhya';
+  return 'night';
+}
 
 // ── Mala definitions ───────────────────────────────────────────────────────────
 const MALAS = [
@@ -145,9 +153,33 @@ const MANTRAS = [
     full: 'ਵਾਹਿਗੁਰੂ\nਵਾਹਿਗੁਰੂ\nਵਾਹਿਗੁਰੂ',
     tradColor: '#4A8870',
   },
+  {
+    id: 'namokar',
+    name: 'Namokar Mantra',
+    devanagari: 'णमो अरिहंताणं',
+    tradition: 'Jain',
+    description: 'Navkar remembrance — bowing to liberated beings',
+    full: 'णमो अरिहंताणं\nणमो सिद्धाणं\nणमो आयरियाणं\nणमो उवज्झायाणं\nणमो लोए सव्वसाहूणं',
+    tradColor: '#A07830',
+  },
 ] as const;
 
 type MantraId = typeof MANTRAS[number]['id'];
+
+function orderedMantrasForTradition(tradition: string, defaultId: MantraId) {
+  const priority: Record<string, MantraId[]> = {
+    hindu: ['gayatri', 'om_namah_shivaya', 'hare_krishna', 'om_namo_narayanaya', 'mahamrityunjaya'],
+    sikh: ['waheguru'],
+    buddhist: ['om_mani'],
+    jain: ['namokar'],
+    other: ['gayatri', 'waheguru', 'om_mani', 'namokar'],
+  };
+  const ids = new Set<MantraId>([defaultId, ...(priority[tradition] ?? priority.hindu)]);
+  return [
+    ...Array.from(ids).map(id => MANTRAS.find(m => m.id === id)).filter(Boolean),
+    ...MANTRAS.filter(m => !ids.has(m.id)),
+  ] as typeof MANTRAS[number][];
+}
 
 // ── Sound definitions ──────────────────────────────────────────────────────────
 type SoundId = 'silence' | 'om' | 'bowl' | 'rain' | 'river' | 'bells' | 'forest' | 'dilruba' | 'dhamma' | 'stavan';
@@ -767,6 +799,114 @@ function MalaSVG({
   );
 }
 
+// ── Screen 0: Ritual launcher ─────────────────────────────────────────────────
+function PracticeLauncherScreen({
+  isDark, traditionLabel, currentMala, currentMantra, targetRounds, streak, onTargetChange, onStart, onCustomize, onBack,
+}: {
+  isDark: boolean;
+  traditionLabel: string;
+  currentMala: typeof MALAS[number];
+  currentMantra: typeof MANTRAS[number];
+  targetRounds: number;
+  streak: number;
+  onTargetChange: (rounds: number) => void;
+  onStart: () => void;
+  onCustomize: () => void;
+  onBack: () => void;
+}) {
+  const bg = isDark ? '#06060A' : '#F7F0E6';
+  const card = isDark ? 'rgba(28,25,20,0.84)' : 'rgba(255,253,249,0.88)';
+  const text = isDark ? 'rgba(245,232,210,0.96)' : '#2D1F0E';
+  const sub = isDark ? 'rgba(205,178,130,0.68)' : 'rgba(96,66,34,0.66)';
+  const amber = isDark ? '#C8924A' : '#8A5A18';
+
+  return (
+    <motion.div
+      key="launcher"
+      className="min-h-[100dvh] -mx-3 -mt-2 px-5 pb-28 pt-12 overflow-hidden"
+      style={{ background: bg }}
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+    >
+      <div className="relative mx-auto flex min-h-[calc(100dvh-5rem)] max-w-xl flex-col">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -right-24 top-10 h-64 w-64 rounded-full" style={{ background: `${amber}10` }} />
+          <div className="absolute -left-20 bottom-10 h-52 w-52 rounded-full border" style={{ borderColor: `${amber}18` }} />
+        </div>
+
+        <div className="relative flex items-center justify-between">
+          <button onClick={onBack} className="h-10 w-10 rounded-full border flex items-center justify-center" style={{ borderColor: `${amber}22`, background: card }}>
+            <ChevronLeft size={18} style={{ color: amber }} />
+          </button>
+          <Link href="/bhakti/mala/insights" className="rounded-full border px-3 py-2 text-[12px] font-medium" style={{ borderColor: `${amber}22`, color: sub, background: card }}>
+            Insights
+          </Link>
+        </div>
+
+        <div className="relative flex flex-1 flex-col justify-center gap-6 py-8">
+          <div>
+            <p className="text-[11px] tracking-[0.18em] uppercase" style={{ color: sub }}>{traditionLabel} practice</p>
+            <h1 className="mt-2 text-[2.65rem] leading-none" style={{ color: text, fontFamily: 'var(--font-serif)', fontWeight: 500 }}>
+              Begin your jaap
+            </h1>
+            <p className="mt-3 max-w-sm text-sm leading-6" style={{ color: sub }}>
+              A quiet full-screen mala with haptics, sound, and clean practice tracking.
+            </p>
+          </div>
+
+          <div className="relative rounded-[2rem] border p-5" style={{ background: card, borderColor: `${amber}1f`, backdropFilter: 'blur(18px)' }}>
+            <div className="absolute right-5 top-5 h-16 w-16 rounded-full border" style={{ borderColor: `${amber}24`, background: `${amber}0f` }} />
+            <p className="text-[11px] tracking-[0.16em] uppercase" style={{ color: sub }}>Today&apos;s mantra</p>
+            <h2 className="mt-2 text-2xl leading-tight" style={{ color: text, fontFamily: 'var(--font-serif)', fontWeight: 500 }}>{currentMantra.name}</h2>
+            <p className="mt-2 text-[1.35rem] leading-relaxed" style={{ color: amber, fontFamily: 'var(--font-devanagari), var(--font-serif)' }}>{currentMantra.devanagari}</p>
+            <p className="mt-2 text-sm leading-6" style={{ color: sub }}>{currentMantra.description}</p>
+
+            <div className="mt-5 grid grid-cols-3 gap-2">
+              <div className="rounded-2xl border p-3" style={{ borderColor: `${amber}18`, background: `${amber}08` }}>
+                <p className="text-[10px]" style={{ color: sub }}>Mala</p>
+                <p className="mt-1 text-sm font-medium" style={{ color: text }}>{currentMala.name}</p>
+              </div>
+              <div className="rounded-2xl border p-3" style={{ borderColor: `${amber}18`, background: `${amber}08` }}>
+                <p className="text-[10px]" style={{ color: sub }}>Target</p>
+                <p className="mt-1 text-sm font-medium" style={{ color: text }}>{targetRounds} x 108</p>
+              </div>
+              <div className="rounded-2xl border p-3" style={{ borderColor: `${amber}18`, background: `${amber}08` }}>
+                <p className="text-[10px]" style={{ color: sub }}>Streak</p>
+                <p className="mt-1 text-sm font-medium" style={{ color: text }}>{streak > 0 ? `${streak} days` : 'Start'}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-center gap-2">
+            {TARGET_OPTIONS.map(rounds => (
+              <button
+                key={rounds}
+                onClick={() => onTargetChange(rounds)}
+                className="h-11 rounded-full border px-4 text-sm font-medium transition-all active:scale-95"
+                style={{
+                  background: targetRounds === rounds ? amber : card,
+                  borderColor: targetRounds === rounds ? amber : `${amber}22`,
+                  color: targetRounds === rounds ? (isDark ? '#16100A' : '#fffaf2') : text,
+                }}
+              >
+                {rounds} mala
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative space-y-3 pb-3">
+          <button onClick={onStart} className="w-full rounded-full py-4 text-[15px] font-medium transition-transform active:scale-[0.98]" style={{ background: amber, color: isDark ? '#160F08' : '#fffaf2' }}>
+            Start full focus
+          </button>
+          <button onClick={onCustomize} className="w-full rounded-full border py-3.5 text-[14px] font-medium" style={{ borderColor: `${amber}28`, color: sub, background: card }}>
+            Change mala, mantra, or sanctuary
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 // ── Screen 1: Choose Mala ─────────────────────────────────────────────────────
 function ChooseMalaScreen({
   isDark, selected, onSelect, onConfirm, onBack, bgSceneId, onBgSceneSelect,
@@ -918,9 +1058,10 @@ function ChooseMalaScreen({
 
 // ── Screen 2: Choose Mantra ───────────────────────────────────────────────────
 function ChooseMantraScreen({
-  isDark, selected, onSelect, onBack, onConfirm,
+  isDark, selected, mantras, onSelect, onBack, onConfirm,
 }: {
   isDark: boolean; selected: MantraId;
+  mantras: typeof MANTRAS[number][];
   onSelect: (id: MantraId) => void; onBack: () => void; onConfirm: () => void;
 }) {
   const bg    = isDark ? '#08070A' : '#F5F0E8';
@@ -953,7 +1094,7 @@ function ChooseMantraScreen({
 
       {/* Mantra list */}
       <div className="flex-1 px-5 space-y-3 overflow-y-auto pb-6">
-        {MANTRAS.map(m => {
+        {mantras.map(m => {
           const isSelected = selected === m.id;
           return (
             <motion.button
@@ -1125,12 +1266,13 @@ function CompletionOverlay({
         >
           <div className="w-10 h-1 rounded-full mx-auto" style={{ background: `${amber}30` }} />
 
-          {/* Celebration */}
           <div className="text-center space-y-2">
-            <motion.div className="text-5xl"
+            <motion.div
+              className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border"
+              style={{ borderColor: `${amber}35`, background: `${amber}14` }}
               animate={{ scale: [0.5, 1.2, 1] }}
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
-              🙏
+              <Sparkles size={28} style={{ color: amber }} />
             </motion.div>
             <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', fontWeight: 700, color: text, letterSpacing: '-0.01em' }}>
               {isGoalMet ? 'Sadhana Complete' : 'Japa Complete'}
@@ -1141,7 +1283,7 @@ function CompletionOverlay({
             {isGoalMet && targetRounds > 1 && (
               <p className="text-xs font-semibold px-3 py-1 rounded-full inline-block"
                 style={{ background: `${amber}18`, color: amber }}>
-                🎯 Goal of {targetRounds} malas achieved!
+                Goal of {targetRounds} malas achieved
               </p>
             )}
           </div>
@@ -1412,7 +1554,7 @@ function PracticeSettingsSheet({
           onClick={onChangeMala}
           className="w-full py-3.5 rounded-2xl font-semibold text-sm border flex items-center justify-center gap-2"
           style={{ background: cardBg, borderColor: border, color: text }}>
-          <span>🪬</span> Change Mala &amp; Mantra
+          <Settings2 size={15} /> Change Mala &amp; Mantra
         </button>
       </motion.div>
     </motion.div>
@@ -1420,7 +1562,7 @@ function PracticeSettingsSheet({
 }
 
 // ── Main JapaClient ────────────────────────────────────────────────────────────
-type Screen = 'chooseMala' | 'chooseMantra' | 'practice';
+type Screen = 'launcher' | 'chooseMala' | 'chooseMantra' | 'practice';
 
 interface Props {
   userId: string;
@@ -1443,7 +1585,7 @@ export default function JapaClient({
   const defaultMantraId: MantraId = meta.japaDefaultMantra as MantraId;
 
   // ── Screen + selection state ─────────────────────────────────────────────
-  const [screen,    setScreen]    = useState<Screen>('chooseMala');
+  const [screen,    setScreen]    = useState<Screen>('launcher');
   const [malaId,    setMalaId]    = useState<MalaId>('sandalwood');
   const [mantraId,  setMantraId]  = useState<MantraId>(defaultMantraId);
   const [bgSceneId, setBgSceneId] = useState<BgSceneId>('midnight');
@@ -1596,6 +1738,15 @@ export default function JapaClient({
         date: today,
         malaId,
         backgroundScene: bgSceneId,
+        tradition,
+        practiceType: tradition === 'sikh' ? 'naam_simran' : tradition === 'buddhist' ? 'mantra_meditation' : tradition === 'jain' ? 'navkar_japa' : 'mala',
+        completionType: completedRounds >= targetRoundsRef.current ? 'target_completed' : 'ended_manually',
+        targetRounds: targetRoundsRef.current,
+        completedRounds,
+        ambientId: soundId,
+        spiritualTimeWindow: getSpiritualTimeWindow(new Date()),
+        timezone: tz,
+        sourceRoute: '/bhakti/mala',
       });
 
       const primaryInsert = await supabase.from('mala_sessions').insert(malaSessionRow);
@@ -1609,6 +1760,17 @@ export default function JapaClient({
           duration_secs: _durationSecs,
           mala_id: _malaId,
           background_scene: _backgroundScene,
+          tradition: _tradition,
+          practice_type: _practiceType,
+          intention: _intention,
+          completion_type: _completionType,
+          target_rounds: _targetRounds,
+          completed_rounds: _completedRounds,
+          ambient_id: _ambientId,
+          spiritual_time_window: _spiritualTimeWindow,
+          timezone: _timezone,
+          source_route: _sourceRoute,
+          panchang_context: _panchangContext,
           ...canonicalRow
         } = malaSessionRow;
         const fallback = await supabase.from('mala_sessions').insert(canonicalRow);
@@ -1641,7 +1803,7 @@ export default function JapaClient({
     } finally {
       setSavingSession(false);
     }
-  }, [saved, savingSession, userId, mantraId, malaId, bgSceneId, duration]);
+  }, [saved, savingSession, userId, mantraId, malaId, bgSceneId, duration, tradition, soundId]);
 
   const handleBgSceneSelect = (id: BgSceneId) => {
     setBgSceneId(id);
@@ -1655,6 +1817,16 @@ export default function JapaClient({
 
   const handleConfirmMantra = () => {
     try { localStorage.setItem(STORAGE_MANTRA, mantraId); } catch { /* ok */ }
+    enterBrowserFullscreen();
+    setScreen('practice');
+  };
+
+  const handleStartPractice = () => {
+    try {
+      localStorage.setItem(STORAGE_MALA, malaId);
+      localStorage.setItem(STORAGE_MANTRA, mantraId);
+      localStorage.setItem(STORAGE_BG, bgSceneId);
+    } catch { /* ok */ }
     enterBrowserFullscreen();
     setScreen('practice');
   };
@@ -1701,8 +1873,9 @@ export default function JapaClient({
     setShowSettings(false);
     setShowComplete(false);
     setPaused(false);
-    router.back();
-  }, [router]);
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    setScreen('launcher');
+  }, []);
 
   const handleSaveAndStop = async () => {
     await saveSession(roundsDone, beadCount);
@@ -1731,6 +1904,10 @@ export default function JapaClient({
   const currentMantra = MANTRAS.find(m => m.id === mantraId)  ?? MANTRAS[0];
   const currentMala   = MALAS.find(m => m.id === malaId)      ?? MALAS[0];
   const currentBgScene = BG_SCENES.find(s => s.id === bgSceneId) ?? BG_SCENES[0];
+  const traditionMantras = useMemo(
+    () => orderedMantrasForTradition(tradition, defaultMantraId),
+    [tradition, defaultMantraId]
+  );
   const bgC = isDark ? currentBgScene.dark : currentBgScene.light;
 
   const bg      = bgC.bg;
@@ -1745,6 +1922,22 @@ export default function JapaClient({
 
   return (
     <AnimatePresence mode="wait">
+      {screen === 'launcher' && (
+        <PracticeLauncherScreen
+          key="launcher"
+          isDark={isDark}
+          traditionLabel={meta.shortLabel}
+          currentMala={currentMala}
+          currentMantra={currentMantra}
+          targetRounds={targetRounds}
+          streak={streak}
+          onTargetChange={setTargetRounds}
+          onStart={handleStartPractice}
+          onCustomize={() => setScreen('chooseMala')}
+          onBack={() => router.back()}
+        />
+      )}
+
       {screen === 'chooseMala' && (
         <ChooseMalaScreen
           key="chooseMala"
@@ -1763,6 +1956,7 @@ export default function JapaClient({
           key="chooseMantra"
           isDark={isDark}
           selected={mantraId}
+          mantras={traditionMantras}
           onSelect={setMantraId}
           onBack={() => setScreen('chooseMala')}
           onConfirm={handleConfirmMantra}
@@ -1798,7 +1992,7 @@ export default function JapaClient({
           <motion.div
             animate={{ opacity: controlsVisible ? 1 : 0 }}
             transition={{ duration: 0.5, ease: 'easeInOut' }}
-            style={{ pointerEvents: controlsVisible ? 'auto' : 'none', position: 'relative', zIndex: 10 }}
+            style={{ pointerEvents: controlsVisible ? 'auto' : 'none', position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}
           >
           <div className="flex items-center justify-between px-5 pt-14 pb-2">
             <button
@@ -1875,7 +2069,7 @@ export default function JapaClient({
                 className="w-full flex items-center justify-center"
                 animate={pulsing ? { scale: [1, 0.980, 1.005, 1] } : {}}
                 transition={{ duration: 0.15 }}
-                style={{ maxWidth: 420, maxHeight: 'calc(100vh - 26rem)', aspectRatio: '1 / 1' }}
+                style={{ maxWidth: 430, maxHeight: 'min(76dvh, 430px)', aspectRatio: '1 / 1' }}
               >
                 <MalaSVG
                   malaId={malaId}
@@ -1892,7 +2086,7 @@ export default function JapaClient({
           <motion.div
             animate={{ opacity: controlsVisible ? 1 : 0 }}
             transition={{ duration: 0.5, ease: 'easeInOut' }}
-            style={{ pointerEvents: controlsVisible ? 'auto' : 'none', position: 'relative', zIndex: 10 }}
+            style={{ pointerEvents: controlsVisible ? 'auto' : 'none', position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 10 }}
           >
           <div className="px-5 space-y-3" style={{ paddingBottom: 'max(5.5rem, calc(env(safe-area-inset-bottom, 0px) + 4.5rem))' }}>
             <div className="flex items-center justify-between px-1">
@@ -1918,7 +2112,10 @@ export default function JapaClient({
                 onClick={() => setPaused(p => !p)}
                 className="flex-1 py-3.5 rounded-2xl font-semibold text-[14px] border transition-all"
                 style={{ background: cardBg, borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)', color: text }}>
-                {paused ? '▶  Resume' : '⏸  Pause'}
+                <span className="inline-flex items-center justify-center gap-2">
+                  {paused ? <Play size={15} /> : <Pause size={15} />}
+                  {paused ? 'Resume' : 'Pause'}
+                </span>
               </button>
               <button
                 onClick={handleReset}

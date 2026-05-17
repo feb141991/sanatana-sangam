@@ -3,13 +3,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Settings2 } from 'lucide-react';
+import { ChevronLeft, RotateCcw, Settings2 } from 'lucide-react';
 import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
 import { BHAKTI_MANTRAS } from '@/lib/bhakti-practice';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
+import SacredIcon, { type SacredIconName } from '@/components/ui/SacredIcon';
+import { getTraditionMeta } from '@/lib/tradition-config';
 
 // ─── Timing ──────────────────────────────────────────────────────────────────
 const PRESET_DURATIONS = [12, 24, 48];
@@ -29,28 +31,28 @@ const PHASE_COLOURS: Record<Phase, { primary: string; glow: string; ring: string
 
 // ─── Environments ───────────────────────────────────────────────────────────
 type EnvId = 'temple' | 'mountains' | 'forest' | 'river' | 'night';
-const ENVIRONMENTS: Record<EnvId, { label: string; emoji: string; bg: string; glowColor: string; particleColor: string }> = {
-  temple:    { label: 'Temple Dawn',  emoji: '🪔', bg: 'linear-gradient(180deg, #0A0A0A 0%, #1A1208 100%)', glowColor: 'rgba(197,160,89,',  particleColor: 'rgba(255,245,220,'  },
-  mountains: { label: 'Snow Peaks',   emoji: '🏔️', bg: 'linear-gradient(180deg, #0F172A 0%, #1E293B 100%)', glowColor: 'rgba(148,163,184,', particleColor: 'rgba(241,245,249,' },
-  forest:    { label: 'Forest Still', emoji: '🌿', bg: 'linear-gradient(180deg, #064E3B 0%, #065F46 100%)', glowColor: 'rgba(52,211,153,',  particleColor: 'rgba(209,250,229,' },
-  river:     { label: 'Sacred River', emoji: '🌊', bg: 'linear-gradient(180deg, #0C4A6E 0%, #075985 100%)', glowColor: 'rgba(56,189,248,',  particleColor: 'rgba(224,242,254,'  },
-  night:     { label: 'Night Sky',    emoji: '✨', bg: 'linear-gradient(180deg, #0F172A 0%, #020617 100%)', glowColor: 'rgba(139,92,246,', particleColor: 'rgba(237,233,254,' },
+const ENVIRONMENTS: Record<EnvId, { label: string; icon: SacredIconName; bg: string; glowColor: string; particleColor: string }> = {
+  temple:    { label: 'Temple dawn',  icon: 'landmark', bg: 'linear-gradient(180deg, #0A0A0A 0%, #1A1208 100%)', glowColor: 'rgba(197,160,89,',  particleColor: 'rgba(255,245,220,'  },
+  mountains: { label: 'Snow peaks',   icon: 'mountain', bg: 'linear-gradient(180deg, #0F172A 0%, #1E293B 100%)', glowColor: 'rgba(148,163,184,', particleColor: 'rgba(241,245,249,' },
+  forest:    { label: 'Forest still', icon: 'tree', bg: 'linear-gradient(180deg, #082F24 0%, #064E3B 100%)', glowColor: 'rgba(90,190,135,',  particleColor: 'rgba(209,250,229,' },
+  river:     { label: 'Sacred river', icon: 'water', bg: 'linear-gradient(180deg, #0C4A6E 0%, #083344 100%)', glowColor: 'rgba(56,189,248,',  particleColor: 'rgba(224,242,254,'  },
+  night:     { label: 'Night sky',    icon: 'moon', bg: 'linear-gradient(180deg, #111827 0%, #020617 100%)', glowColor: 'rgba(197,160,89,', particleColor: 'rgba(237,233,254,' },
 };
 
 // ─── Modes ──────────────────────────────────────────────────────────────────
 const MODES = [
-  { id: 'reading', emoji: '📖', title: 'Svādhyāya', description: 'Silent scripture in sattva.' },
-  { id: 'breath',  emoji: '🫁', title: 'Prānāyāma', description: 'Nāḍī śodhana — 4-2-6 cycle.' },
-  { id: 'chant',   emoji: '🕉️', title: 'Kīrtana',   description: 'One mantra, one pointed mind.' },
+  { id: 'reading', icon: 'book' as SacredIconName, title: 'Svādhyāya', description: 'Silent scripture in sattva.' },
+  { id: 'breath',  icon: 'wind' as SacredIconName, title: 'Prānāyāma', description: 'Nāḍī śodhana — 4-2-6 cycle.' },
+  { id: 'chant',   icon: 'chant' as SacredIconName, title: 'Kīrtana',   description: 'One mantra, one pointed mind.' },
 ] as const;
 
 // ─── Ambient options ─────────────────────────────────────────────────────────
 const AMBIENT_OPTIONS = [
-  { id: 'off',  label: 'Off',     emoji: '🔇' },
-  { id: 'bowl', label: 'Bowl',    emoji: '🎵' },
-  { id: 'om',   label: 'Om Nada', emoji: '🕉️' },
-  { id: 'tanpura', label: 'Tanpura', emoji: '🪕' },
-  { id: 'inst', label: 'Strings', emoji: '🎻' },
+  { id: 'off',  label: 'Off',     icon: 'shield' as SacredIconName },
+  { id: 'bowl', label: 'Bowl',    icon: 'music' as SacredIconName },
+  { id: 'om',   label: 'Om nada', icon: 'chant' as SacredIconName },
+  { id: 'tanpura', label: 'Tanpura', icon: 'radio' as SacredIconName },
+  { id: 'inst', label: 'Strings', icon: 'music' as SacredIconName },
 ] as const;
 type AmbientId = typeof AMBIENT_OPTIONS[number]['id'];
 const STORAGE_ZEN_SOUND = 'shoonaya-zen-ambient';
@@ -352,7 +354,7 @@ function LotusParticles() {
             ease: 'linear' 
           }}
         >
-          <span className="text-xl">🪷</span>
+          <SacredIcon name="flower" size={18} />
         </motion.div>
       ))}
     </div>
@@ -365,13 +367,13 @@ function NightStars() {
       {Array.from({ length: 40 }).map((_, i) => (
         <motion.div key={`star-${i}`} className="absolute rounded-full bg-white"
           style={{ 
-            width: Math.random() * 2, 
-            height: Math.random() * 2, 
-            left: `${Math.random() * 100}%`, 
-            top: `${Math.random() * 100}%` 
+            width: 1 + (i % 3) * 0.45,
+            height: 1 + (i % 3) * 0.45,
+            left: `${(i * 17.3) % 100}%`,
+            top: `${(i * 29.7) % 100}%`
           }}
           animate={{ opacity: [0.2, 0.8, 0.2] }}
-          transition={{ duration: 2 + Math.random() * 3, repeat: Infinity, delay: Math.random() * 5 }}
+          transition={{ duration: 2 + (i % 5) * 0.55, repeat: Infinity, delay: (i % 9) * 0.35 }}
         />
       ))}
     </div>
@@ -386,8 +388,8 @@ function RiverRipples() {
           style={{ 
             width: 100, 
             height: 40, 
-            left: `${Math.random() * 80}%`, 
-            top: `${Math.random() * 80}%` 
+            left: `${8 + (i * 11) % 80}%`,
+            top: `${12 + (i * 17) % 70}%`
           }}
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: [1, 2], opacity: [0, 0.3, 0] }}
@@ -412,7 +414,9 @@ export default function SattvicModePage() {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
   const isDark = resolvedTheme === 'dark';
-  const { playHaptic, setIsMuted } = useZenithSensory();
+  const { playHaptic } = useZenithSensory();
+  const [tradition, setTradition] = useState('hindu');
+  const traditionMeta = getTraditionMeta(tradition);
 
   // ── Premium Theme Tokens (Sattvic Ivory) ───────────────────────────
   const mainCardBg   = isDark ? '#121212' : '#FFFFFF';
@@ -462,6 +466,32 @@ export default function SattvicModePage() {
   const phaseTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const totalSecs    = duration * 60;
 
+  useEffect(() => {
+    let mounted = true;
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user || !mounted) return;
+      const { data } = await supabase.from('profiles').select('tradition').eq('id', user.id).maybeSingle();
+      const nextTradition = data?.tradition ?? 'hindu';
+      if (!mounted) return;
+      setTradition(nextTradition);
+      if (nextTradition === 'sikh') {
+        setMode('chant');
+        setMantra('Waheguru');
+        setEnv('temple');
+      } else if (nextTradition === 'buddhist') {
+        setMode('breath');
+        setMantra('Om Mani Padme Hum');
+        setEnv('mountains');
+      } else if (nextTradition === 'jain') {
+        setMode('reading');
+        setMantra('Namokar Mantra');
+        setEnv('temple');
+      }
+    });
+    return () => { mounted = false; };
+  }, []);
+
   // Reset on duration/mode change
   useEffect(() => {
     setRemaining(duration * 60);
@@ -483,15 +513,26 @@ export default function SattvicModePage() {
           // Save session
           createClient().auth.getUser().then(({ data: { user } }) => {
             if (user) {
-              createClient().from('sattvic_sessions').insert({
+              const row = {
                 user_id: user.id,
                 mode: mode,
                 duration_secs: totalSecs,
                 environment: focusEnv,
                 mantra: mode === 'chant' ? chantMantra : null,
-              }).then(({ error }) => {
-                if (error) console.error('Failed to save sattvic session:', error);
-                else toast.success('Session saved 🙏', { icon: '✨' });
+                tradition,
+                ambient_id: ambientId,
+                completion_type: 'completed',
+                source_route: '/bhakti/zen',
+              };
+              createClient().from('sattvic_sessions').insert(row).then(async ({ error }) => {
+                if (error) {
+                  const { tradition: _tradition, ambient_id: _ambientId, completion_type: _completionType, source_route: _sourceRoute, ...legacyRow } = row;
+                  const fallback = await createClient().from('sattvic_sessions').insert(legacyRow);
+                  if (fallback.error) console.error('Failed to save sattvic session:', fallback.error);
+                  else toast.success('Session saved');
+                  return;
+                }
+                toast.success('Session saved');
               });
             }
           });
@@ -502,7 +543,7 @@ export default function SattvicModePage() {
       });
     }, 1000);
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [running, totalSecs, mode, focusEnv, chantMantra]);
+  }, [running, totalSecs, mode, focusEnv, chantMantra, tradition, ambientId]);
 
   // Breath phase cycle
   useEffect(() => {
@@ -570,7 +611,7 @@ export default function SattvicModePage() {
           <ChevronLeft size={18} style={{ color: '#C5A059' }} />
         </button>
         <h1 className="text-sm font-bold uppercase tracking-[0.2em] text-center flex-1 pr-9" style={{ color: '#C5A059', fontFamily: 'var(--font-serif)' }}>
-          Sattvic Mode
+          {tradition === 'sikh' ? 'Simran mode' : tradition === 'buddhist' ? 'Dhamma stillness' : tradition === 'jain' ? 'Samayika mode' : 'Sattvic mode'}
         </h1>
       </div>
 
@@ -596,7 +637,7 @@ export default function SattvicModePage() {
                   background: mode === item.id ? pillBgAct : pillBgInact,
                   border: `1px solid ${mode === item.id ? pillBdrAct : pillBdrInact}`,
                 }}>
-                <div className="text-base leading-none">{item.emoji}</div>
+                <SacredIcon name={item.icon} size={17} className="mx-auto" />
                 <p className="text-[11px] mt-1 font-medium"
                   style={{ color: mode === item.id ? textPrimary : textSecond }}>
                   {item.title}
@@ -713,12 +754,12 @@ export default function SattvicModePage() {
             <button onClick={enterFocus}
               className="rounded-full px-5 py-3 text-sm font-medium transition-all"
               style={{ background: 'rgba(200,146,74,0.08)', color: 'rgba(200,146,74,0.8)', border: '1px solid rgba(200,146,74,0.22)' }}>
-              ✨ Focus
+              Focus
             </button>
             <button onClick={reset}
               className="rounded-full px-4 py-3 text-sm transition-all"
               style={{ color: textSecond, border: `1px solid ${pillBdrInact}` }}>
-              ↺
+              <RotateCcw size={15} />
             </button>
           </div>
         </div>
@@ -735,7 +776,7 @@ export default function SattvicModePage() {
               style={focusEnv === id
                 ? { background: pillBgAct, color: textPrimary, border: `1px solid ${pillBdrAct}`, boxShadow: '0 0 10px rgba(200,146,74,0.1)' }
                 : { background: pillBgInact, color: textSecond, border: `1px solid ${pillBdrInact}` }}>
-              {env.emoji} {env.label}
+              <span className="inline-flex items-center gap-1.5"><SacredIcon name={env.icon} size={12} />{env.label}</span>
             </button>
           ))}
         </div>
@@ -748,7 +789,7 @@ export default function SattvicModePage() {
               style={ambientId === opt.id
                 ? { background: pillBgAct, color: textPrimary, border: `1px solid ${pillBdrAct}` }
                 : { background: pillBgInact, color: textSecond, border: `1px solid ${pillBdrInact}` }}>
-              {opt.emoji} {opt.label}
+              <span className="inline-flex items-center justify-center gap-1.5"><SacredIcon name={opt.icon} size={12} />{opt.label}</span>
             </button>
           ))}
         </div>
@@ -763,22 +804,22 @@ export default function SattvicModePage() {
       <section className="rounded-[1.6rem] px-4 py-3.5"
         style={{ background: sattvaBg, border: `1px solid ${sectionBdr}` }}>
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: sattvaLabel }}>
-          Sattva Guna
+          {tradition === 'sikh' ? 'Naam simran' : tradition === 'buddhist' ? 'Dhamma practice' : tradition === 'jain' ? 'Samayika' : 'Sattva guna'}
         </p>
         <p className="text-[12.5px] leading-relaxed" style={{ color: sattvaText, fontFamily: 'var(--font-serif)' }}>
-          Sattvic practice cultivates clarity, lightness, and equanimity — the guṇa of wisdom and peace. This space is your invitation to step out of rajas and tamas, and into presence.
+          {traditionMeta.bhaktiGreeting}. This space keeps the essential practice in front and moves advanced choices into focus settings, so the session feels quiet instead of busy.
         </p>
         <div className="flex gap-3 mt-3">
-          {[
-            { icon: '🌿', label: 'Light food before' },
-            { icon: '🤫', label: 'Silence preferred' },
-            { icon: '🌅', label: 'Best at sandhyā' },
-          ].map(({ icon, label }) => (
-            <div key={label} className="flex items-center gap-1.5 text-[10.5px]" style={{ color: sattvaHints }}>
-              <span>{icon}</span>
-              <span>{label}</span>
-            </div>
-          ))}
+            {[
+              { icon: 'flower' as SacredIconName, label: tradition === 'sikh' ? 'Sangat-ready' : 'Light preparation' },
+              { icon: 'shield' as SacredIconName, label: 'Silence preferred' },
+              { icon: 'sunset' as SacredIconName, label: tradition === 'sikh' ? 'Good for Rehras' : 'Best at sandhya' },
+            ].map(({ icon, label }) => (
+              <div key={label} className="flex items-center gap-1.5 text-[10.5px]" style={{ color: sattvaHints }}>
+                <SacredIcon name={icon} size={12} />
+                <span>{label}</span>
+              </div>
+            ))}
         </div>
       </section>
 
@@ -801,7 +842,7 @@ export default function SattvicModePage() {
               sub: running ? 'in session' : 'selected',
             },
             {
-              value: activeEnv.emoji,
+              value: <SacredIcon name={activeEnv.icon} size={24} className="mx-auto" />,
               label: 'Sanctuary',
               sub: activeEnv.label,
             },
@@ -861,7 +902,7 @@ export default function SattvicModePage() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate"
                   style={{ color: `${activeEnv.glowColor}0.85)`, textShadow: `0 0 8px ${activeEnv.glowColor}0.4)` }}>
-                  {activeEnv.emoji} {activeEnv.label}
+                  <span className="inline-flex items-center gap-1.5"><SacredIcon name={activeEnv.icon} size={14} />{activeEnv.label}</span>
                 </p>
                 <p className="text-[10px] mt-0.5 truncate" style={{ color: 'rgba(245,220,150,0.42)' }}>
                   {activeMode.title}{mode === 'chant' ? ` · ${chantMantra}` : ''}
@@ -899,7 +940,7 @@ export default function SattvicModePage() {
                         style={focusEnv === id
                           ? { background: `${activeEnv.glowColor}0.2)`, color: '#f5dfa0', border: `1px solid ${activeEnv.glowColor}0.35)` }
                           : { background: 'rgba(255,255,255,0.06)', color: 'rgba(245,220,150,0.5)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        {env.emoji} {env.label}
+                        <span className="inline-flex items-center gap-1.5"><SacredIcon name={env.icon} size={12} />{env.label}</span>
                       </button>
                     ))}
                   </div>
@@ -912,7 +953,7 @@ export default function SattvicModePage() {
                         style={ambientId === opt.id
                           ? { background: `${activeEnv.glowColor}0.22)`, color: '#f5dfa0', border: `1px solid ${activeEnv.glowColor}0.4)` }
                           : { background: 'rgba(255,255,255,0.06)', color: 'rgba(245,220,150,0.5)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        {opt.emoji} {opt.label}
+                        <span className="inline-flex items-center justify-center gap-1.5"><SacredIcon name={opt.icon} size={12} />{opt.label}</span>
                       </button>
                     ))}
                   </div>
