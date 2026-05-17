@@ -67,6 +67,11 @@ create index if not exists idx_birth_profiles_rashi_notify
   on birth_profiles(owner_id, rashi)
   where is_primary = true and rashi is not null;
 
+-- Enforce one primary profile per authenticated user at DB level
+create unique index if not exists idx_birth_profiles_one_primary
+  on birth_profiles(owner_id)
+  where is_primary = true and owner_id is not null;
+
 -- ── Row Level Security ────────────────────────────────────────────────────────
 alter table birth_profiles enable row level security;
 

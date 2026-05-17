@@ -72,12 +72,10 @@ export async function geocodeCity(query: string): Promise<GeoResult> {
   const lat  = parseFloat(hit.lat);
   const lng  = parseFloat(hit.lon);
 
-  // geo-tz returns array of IANA tz strings; take first (most specific)
+  // geo-tz returns array of IANA tz strings; take first (most specific).
+  // Fall back to 'UTC' rather than throwing — timezone is a recoverable issue.
   const tzCandidates = geoTzFind(lat, lng);
-  if (!tzCandidates || tzCandidates.length === 0) {
-    throw new Error(`Could not resolve timezone for coordinates (${lat}, ${lng})`);
-  }
-  const timezone = tzCandidates[0];
+  const timezone = tzCandidates?.[0] ?? 'UTC';
 
   const addr    = hit.address ?? {};
   const city    = addr.city ?? addr.town ?? addr.village ?? addr.state ?? query;

@@ -10,7 +10,7 @@ import * as Astronomy from 'astronomy-engine';
 
 export interface BirthInput {
   date:     string;   // 'YYYY-MM-DD'
-  time:     string;   // 'HH:MM' local birth time (use '06:00' if unknown)
+  time:     string;   // 'HH:MM' local birth time (use '12:00' if unknown)
   lat:      number;   // birth location latitude
   lng:      number;   // birth location longitude
   timezone: string;   // IANA e.g. 'Asia/Kolkata', 'America/New_York'
@@ -433,8 +433,10 @@ function calcPlanets(
 
   // ── Combustion check (Sun–planet angular distance) ─────────────────────────
   const sunTropical = planets['Surya'].tropicalDeg;
-  for (const [pname, orb] of Object.entries(COMBUST_ORB)) {
+  for (const [pname, baseOrb] of Object.entries(COMBUST_ORB)) {
     if (!planets[pname]) continue;
+    // Mercury (Budha): 14° direct, 12° retrograde (traditional Vedic rule)
+    const orb = (pname === 'Budha' && planets[pname].isRetrograde) ? 12 : baseOrb;
     let diff = Math.abs(planets[pname].tropicalDeg - sunTropical);
     if (diff > 180) diff = 360 - diff;
     planets[pname].isCombust = diff <= orb;

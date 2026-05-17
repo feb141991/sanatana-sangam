@@ -244,6 +244,11 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
   const [kundaliError,   setKundaliError]   = useState<string | null>(null);
   const [chartSaved,     setChartSaved]     = useState(false);
 
+  // Memoize today's transit positions — expensive computation, run once per mount
+  const todayTransits = useMemo(() => {
+    try { return getTodayTransits(); } catch { return null; }
+  }, []);
+
   const p: SacredCalendarData = useSacredCalendar(selected, lat, lon, tradition);
 
   // ── Web Audio Graha Beeja Resonance Synthesizer ─────────────────────────────
@@ -986,15 +991,14 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                       const geoRes = await fetch(
                         `/api/jyotish/geocode?q=${encodeURIComponent(kundaliInput.birthPlace)}`
                       );
-                      let geoLat = kundaliInput.lat;
-                      let geoLng = kundaliInput.lng;
-                      let geoTz  = kundaliInput.timezone;
-                      if (geoRes.ok) {
-                        const geo = await geoRes.json();
-                        geoLat = geo.lat;
-                        geoLng = geo.lng;
-                        geoTz  = geo.timezone;
+                      if (!geoRes.ok) {
+                        const { error } = await geoRes.json().catch(() => ({ error: 'Location not found' }));
+                        throw new Error(`Could not find "${kundaliInput.birthPlace}": ${error}. Try a more specific city name.`);
                       }
+                      const geo   = await geoRes.json();
+                      const geoLat = geo.lat as number;
+                      const geoLng = geo.lng as number;
+                      const geoTz  = geo.timezone as string;
 
                       // 2. Compute real chart client-side using resolved coords
                       const fullInput: KundaliInput = {
@@ -1214,8 +1218,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                 {(() => {
                   try {
                     const moonRashiIndex = kundaliResult.chart.planets['Chandra']?.rashiIndex;
-                    const transits = getTodayTransits();
-                    const saturnRashiIndex = transits['Shani']?.rashiIndex;
+                    const saturnRashiIndex = todayTransits?.['Shani']?.rashiIndex;
                     if (moonRashiIndex === undefined || saturnRashiIndex === undefined) return null;
                     const ss = detectSadeSati(moonRashiIndex, saturnRashiIndex);
                     if (!ss.isActive) return null;

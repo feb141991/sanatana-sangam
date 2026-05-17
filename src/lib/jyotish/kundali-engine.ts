@@ -69,8 +69,13 @@ const PLANET_SYMBOLS: Record<string, string> = {
   Ketu:    'Ke',
 };
 
-// Shadbala strength proxy — based on house position rules (not full Shadbala)
-function estimateStrength(planetName: string, house: number, isRetrograde?: boolean): number {
+// Shadbala strength proxy — house position + dignity + retrograde
+function estimateStrength(
+  planetName: string,
+  house: number,
+  isRetrograde?: boolean,
+  dignity?: 'exalted' | 'debilitated' | 'own' | 'neutral',
+): number {
   // Natural benefics strong in 1,4,5,7,9,10,11; natural malefics strong in 3,6,10,11
   const benefics = new Set(['Chandra', 'Budha', 'Guru', 'Shukra']);
   const isBenefic = benefics.has(planetName);
@@ -78,9 +83,18 @@ function estimateStrength(planetName: string, house: number, isRetrograde?: bool
   const goodHousesM = new Set([3, 6, 10, 11]);
   const isGood = isBenefic ? goodHousesB.has(house) : goodHousesM.has(house);
   const base = isGood ? 72 : 52;
+
+  // Dignity modifier (±15 swing)
+  const dignityMod = dignity === 'exalted'     ?  15
+                   : dignity === 'own'         ?   8
+                   : dignity === 'debilitated' ? -15
+                   : 0;
+
   const retroBonus = isRetrograde ? 8 : 0;
+  const lagnaBonus = house === 1  ? 5 : 0;
+
   // Clamp 50–95
-  return Math.max(50, Math.min(95, base + retroBonus + (house === 1 ? 5 : 0)));
+  return Math.max(50, Math.min(95, base + dignityMod + retroBonus + lagnaBonus));
 }
 
 function generatePanditAiReading(
@@ -180,7 +194,7 @@ export function generateKundali(input: KundaliInput): KundaliResult {
       sign:        rashiMeta.sa,
       house:       graha.house,
       degree:      `${deg}° ${min}'`,
-      strength:    estimateStrength(pname, graha.house, graha.isRetrograde),
+      strength:    estimateStrength(pname, graha.house, graha.isRetrograde, graha.dignity),
       isRetrograde: graha.isRetrograde,
     });
   }
