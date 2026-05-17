@@ -944,29 +944,85 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                     <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Birth Location (City)</label>
                     <input
                       type="text"
-                      placeholder="e.g. New Delhi, India"
+                      placeholder="e.g. New Delhi, India or Mumbai"
                       value={kundaliInput.birthPlace}
                       onChange={e => setKundaliInput(prev => ({ ...prev, birthPlace: e.target.value }))}
                       className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-black/30 outline-none text-white text-sm focus:border-[#C5A059]/50 transition"
                     />
                   </div>
+
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={kundaliInput.timeUnknown}
+                      onChange={e => setKundaliInput(prev => ({ ...prev, timeUnknown: e.target.checked, birthTime: e.target.checked ? '' : prev.birthTime }))}
+                      className="accent-[#C5A059]"
+                    />
+                    <span className="text-[10px] text-white/50">Birth time unknown (chart will use solar noon)</span>
+                  </label>
                 </div>
 
+                {kundaliError && (
+                  <div className="rounded-xl px-4 py-2.5 text-xs text-red-300 border border-red-500/30 bg-red-500/10">
+                    ⚠️ {kundaliError}
+                  </div>
+                )}
+
                 <button
-                  onClick={() => {
-                    if (!kundaliInput.name || !kundaliInput.birthDate || !kundaliInput.birthTime || !kundaliInput.birthPlace) {
-                      import('react-hot-toast').then((m) => {
-                        m.default.error('Please complete all birth fields');
-                      });
+                  disabled={kundaliLoading}
+                  onClick={async () => {
+                    if (!kundaliInput.name || !kundaliInput.birthDate || !kundaliInput.birthPlace) {
+                      const { default: toast } = await import('react-hot-toast');
+                      toast.error('Please fill in name, date, and birth city');
                       return;
                     }
+                    setKundaliError(null);
+                    setKundaliLoading(true);
+                    setChartSaved(false);
                     playHaptic('heavy');
-                    const result = generateKundali(kundaliInput);
-                    setKundaliResult(result);
+                    try {
+                      // 1. Geocode birth city → real lat/lng + IANA timezone
+                      const geoRes = await fetch(
+                        `/api/jyotish/geocode?q=${encodeURIComponent(kundaliInput.birthPlace)}`
+                      );
+                      let geoLat = kundaliInput.lat;
+                      let geoLng = kundaliInput.lng;
+                      let geoTz  = kundaliInput.timezone;
+                      if (geoRes.ok) {
+                        const geo = await geoRes.json();
+                        geoLat = geo.lat;
+                        geoLng = geo.lng;
+                        geoTz  = geo.timezone;
+                      }
+
+                      // 2. Compute real chart client-side using resolved coords
+                      const fullInput: KundaliInput = {
+                        name:        kundaliInput.name,
+                        birthDate:   kundaliInput.birthDate,
+                        birthTime:   kundaliInput.birthTime || '12:00',
+                        birthPlace:  kundaliInput.birthPlace,
+                        lat:         geoLat,
+                        lng:         geoLng,
+                        timezone:    geoTz,
+                        timeUnknown: !kundaliInput.birthTime,
+                      };
+                      const result = generateKundali(fullInput);
+                      setKundaliResult(result);
+                    } catch (err) {
+                      const msg = err instanceof Error ? err.message : 'Chart generation failed';
+                      setKundaliError(msg);
+                    } finally {
+                      setKundaliLoading(false);
+                    }
                   }}
-                  className="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider text-[#1c1c1a] bg-[#C5A059] hover:opacity-90 transition shadow-lg"
+                  className="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider text-[#1c1c1a] bg-[#C5A059] hover:opacity-90 transition shadow-lg disabled:opacity-60 flex items-center justify-center gap-2"
                 >
-                  🔮 Generate Vedic Kundali
+                  {kundaliLoading ? (
+                    <>
+                      <span className="animate-spin inline-block w-3.5 h-3.5 border-2 border-[#1c1c1a]/30 border-t-[#1c1c1a] rounded-full" />
+                      Calculating Chart…
+                    </>
+                  ) : '🔮 Generate Vedic Kundali'}
                 </button>
               </motion.div>
             ) : (
@@ -980,6 +1036,8 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                 <button
                   onClick={() => {
                     setKundaliResult(null);
+                    setKundaliError(null);
+                    setChartSaved(false);
                     playHaptic('light');
                   }}
                   className="flex items-center gap-1.5 text-xs text-[#C5A059] font-semibold border border-[#C5A059]/20 bg-[#C5A059]/5 rounded-xl px-3.5 py-1.5 hover:bg-[#C5A059]/10 transition"
@@ -1027,6 +1085,113 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                   <span className="text-[10px] text-white/30 italic">Numbers represent Rashi placements (1=Mesha, 12=Meena)</span>
                 </div>
 
+                {/* Nakshatra + Dasha banner */}
+                {kundaliResult.chart && (
+                  <div className="rounded-2xl p-4 border border-white/5 space-y-3"
+                    style={{ background: 'rgba(10,8,25,0.55)' }}>
+                    <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Birth Nakshatra &amp; Dasha Period</h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      {kundaliResult.chart.nakshatra && (
+                        <div className="rounded-xl p-3 bg-white/5 border border-white/5 space-y-1">
+                          <p className="text-[9px] text-white/35 uppercase font-bold tracking-wider">Janma Nakshatra</p>
+                          <p className="text-sm font-bold text-[#F2EAD6]">{kundaliResult.chart.nakshatra.name}</p>
+                          <p className="text-[10px] text-white/50">Pada {kundaliResult.chart.nakshatra.pada} · Lord: {kundaliResult.chart.nakshatra.lord}</p>
+                          <p className="text-[10px] text-[#C5A059]/80">{kundaliResult.chart.nakshatra.devata}</p>
+                        </div>
+                      )}
+                      {kundaliResult.chart.dasha?.current && (
+                        <div className="rounded-xl p-3 bg-white/5 border border-white/5 space-y-1">
+                          <p className="text-[9px] text-white/35 uppercase font-bold tracking-wider">Mahadasha</p>
+                          <p className="text-sm font-bold text-[#F2EAD6]">{kundaliResult.chart.dasha.current.planet}</p>
+                          <p className="text-[10px] text-white/50">
+                            Ends {new Date(kundaliResult.chart.dasha.current.endDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                          </p>
+                          {kundaliResult.chart.dasha.currentAntardasha && (
+                            <p className="text-[10px] text-[#C5A059]/80">
+                              Antardasha: {kundaliResult.chart.dasha.currentAntardasha}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {/* Dasha timeline strip */}
+                    {kundaliResult.chart.dasha?.timeline && (
+                      <div className="overflow-x-auto pb-1 scrollbar-none">
+                        <div className="flex gap-1.5 w-max">
+                          {kundaliResult.chart.dasha.timeline.slice(0, 9).map((d, i) => {
+                            const isCurrent = d.isCurrent;
+                            return (
+                              <div key={i}
+                                className={`flex-shrink-0 rounded-lg px-2.5 py-1.5 border text-center ${
+                                  isCurrent
+                                    ? 'bg-[#C5A059]/20 border-[#C5A059]/50'
+                                    : 'bg-white/4 border-white/5'
+                                }`}>
+                                <p className={`text-[9px] font-bold ${isCurrent ? 'text-[#C5A059]' : 'text-white/40'}`}>{d.planet}</p>
+                                <p className="text-[8px] text-white/30">{d.years}y</p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Save Chart prompt */}
+                {!chartSaved && (
+                  <div className="rounded-2xl p-4 border border-[#C5A059]/25 flex items-start gap-3"
+                    style={{ background: 'rgba(197,160,89,0.06)' }}>
+                    <span className="text-xl flex-shrink-0">💾</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-[#C5A059]">Save your Kundali</p>
+                      <p className="text-[10px] text-white/50 mt-0.5 leading-relaxed">
+                        Sign in to save this chart and track your Dasha periods, daily Rashiphal, and family charts.
+                      </p>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        try {
+                          const res = await fetch('/api/jyotish/chart', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              label:          kundaliResult.input.name || 'My Chart',
+                              full_name:      kundaliResult.input.name,
+                              date_of_birth:  kundaliResult.input.birthDate,
+                              time_of_birth:  kundaliResult.input.timeUnknown ? null : kundaliResult.input.birthTime,
+                              birth_city:     kundaliResult.input.birthPlace,
+                              birth_lat:      kundaliResult.input.lat,
+                              birth_lng:      kundaliResult.input.lng,
+                              birth_timezone: kundaliResult.input.timezone,
+                              is_primary:     true,
+                              session_token:  `guest-${Date.now()}`,
+                            }),
+                          });
+                          if (res.status === 401) {
+                            // Not logged in — redirect to signup
+                            window.location.href = '/auth/signup?next=/panchang?tab=kundali';
+                            return;
+                          }
+                          if (res.ok) {
+                            setChartSaved(true);
+                            const { default: toast } = await import('react-hot-toast');
+                            toast.success('Chart saved! ✨');
+                          }
+                        } catch { /* ignore */ }
+                      }}
+                      className="flex-shrink-0 px-3 py-1.5 rounded-lg text-[10px] font-bold bg-[#C5A059] text-[#1c1c1a] hover:opacity-90 transition"
+                    >
+                      Save
+                    </button>
+                  </div>
+                )}
+                {chartSaved && (
+                  <div className="rounded-2xl p-3 border border-green-500/30 bg-green-500/10 text-center text-xs font-semibold text-green-400">
+                    ✓ Chart saved to your profile
+                  </div>
+                )}
+
                 {/* Planet positions */}
                 <div className="rounded-2xl p-4 border border-white/5 space-y-3"
                   style={{ background: 'rgba(10,8,25,0.5)' }}>
@@ -1038,8 +1203,10 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                           {p.symbol}
                         </div>
                         <div>
-                          <p className="text-xs font-bold text-white/80">{p.name}</p>
-                          <p className="text-[10px] text-white/40">House {p.house} · {p.sign} ({p.degree})</p>
+                          <p className="text-xs font-bold text-white/80">
+                            {p.name}{p.isRetrograde ? <span className="ml-1 text-[9px] text-orange-400">(R)</span> : null}
+                          </p>
+                          <p className="text-[10px] text-white/40">House {p.house} · {p.sign} {p.degree}</p>
                         </div>
                       </div>
                     ))}
