@@ -239,6 +239,126 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
 
   const p: SacredCalendarData = useSacredCalendar(selected, lat, lon, tradition);
 
+  // ── Web Audio Graha Beeja Resonance Synthesizer ─────────────────────────────
+  const [isPlayingResonance, setIsPlayingResonance] = useState(false);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const osc1Ref = useRef<OscillatorNode | null>(null);
+  const osc2Ref = useRef<OscillatorNode | null>(null);
+  const gainRef = useRef<GainNode | null>(null);
+
+  const startResonance = (freq: number) => {
+    try {
+      stopResonance();
+
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return;
+
+      const ctx = new AudioContextClass();
+      audioCtxRef.current = ctx;
+
+      const mainGain = ctx.createGain();
+      mainGain.gain.setValueAtTime(0, ctx.currentTime);
+      mainGain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.7);
+      gainRef.current = mainGain;
+
+      // Fundamental pure tone (Sine)
+      const osc1 = ctx.createOscillator();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(freq, ctx.currentTime);
+      osc1Ref.current = osc1;
+
+      // Cozy harmonic secondary (Triangle)
+      const osc2 = ctx.createOscillator();
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(freq * 2, ctx.currentTime);
+      osc2Ref.current = osc2;
+
+      const osc2Gain = ctx.createGain();
+      osc2Gain.gain.setValueAtTime(0.08, ctx.currentTime);
+
+      // Lowpass filtering to make the sound soft and temple-like
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(450, ctx.currentTime);
+
+      osc1.connect(filter);
+      osc2.connect(osc2Gain);
+      osc2Gain.connect(filter);
+      filter.connect(mainGain);
+      mainGain.connect(ctx.destination);
+
+      osc1.start();
+      osc2.start();
+      setIsPlayingResonance(true);
+      playHaptic('heavy');
+    } catch (e) {
+      console.error("Audio Context Failed", e);
+    }
+  };
+
+  const stopResonance = () => {
+    try {
+      if (gainRef.current && audioCtxRef.current) {
+        const ctx = audioCtxRef.current;
+        gainRef.current.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.4);
+        
+        const o1 = osc1Ref.current;
+        const o2 = osc2Ref.current;
+        const g = gainRef.current;
+        const c = audioCtxRef.current;
+        
+        setTimeout(() => {
+          try {
+            o1?.stop();
+            o2?.stop();
+            c?.close();
+          } catch {}
+        }, 500);
+      }
+    } catch {}
+    setIsPlayingResonance(false);
+    osc1Ref.current = null;
+    osc2Ref.current = null;
+    gainRef.current = null;
+    audioCtxRef.current = null;
+  };
+
+  useEffect(() => {
+    return () => {
+      stopResonance();
+    };
+  }, [activeTab, selectedRashi]);
+
+  // ── Live Vedic Hora Timing Calculator ─────────────────────────────────────────
+  const getLiveHora = (): string => {
+    const hr = today.getHours();
+    const dayOfWeek = today.getDay(); // 0-6
+
+    // Hours elapsed relative to standard 6:00 AM Sunrise
+    const hoursSinceSunrise = (hr >= 6) ? (hr - 6) : (hr + 18);
+
+    const WEEKDAY_BASE_PLANET = ['Surya (Sun)', 'Chandra (Moon)', 'Mangal (Mars)', 'Budha (Mercury)', 'Guru (Jupiter)', 'Shukra (Venus)', 'Shani (Saturn)'];
+    const SEQUENCE = ['Surya (Sun)', 'Shukra (Venus)', 'Budha (Mercury)', 'Chandra (Moon)', 'Shani (Saturn)', 'Guru (Jupiter)', 'Mangal (Mars)'];
+
+    const startPlanet = WEEKDAY_BASE_PLANET[dayOfWeek];
+    const startIndex = SEQUENCE.indexOf(startPlanet);
+
+    const activeIndex = (startIndex + hoursSinceSunrise) % 7;
+    const planetName = SEQUENCE[activeIndex];
+
+    const HORA_PURPOSES: Record<string, string> = {
+      'Surya (Sun)': 'Auspicious for leadership, focus, and solar meditations.',
+      'Chandra (Moon)': 'Highly auspicious for peace, emotional clarity, and devotion.',
+      'Mangal (Mars)': 'Best for physical courage, organizing, and active sadhana.',
+      'Budha (Mercury)': 'Auspicious for business meetings, shastra study, and writing.',
+      'Guru (Jupiter)': 'Blessed for receiving spiritual mantras, yoga, and guru connection.',
+      'Shukra (Venus)': 'Auspicious for music, temple art, relationships, and wellness.',
+      'Shani (Saturn)': 'Auspicious for quiet solitude, discipline, and tapasya.'
+    };
+
+    return `${planetName} Hora · ${HORA_PURPOSES[planetName] ?? 'Auspicious for devotion'}`;
+  };
+
   // ── Compute sky phase ────────────────────────────────────────────────────────
   const skyPhase = useMemo(() => {
     const nowMin      = today.getHours() * 60 + today.getMinutes();
@@ -476,9 +596,18 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
             </GlassCard>
 
             {/* Date label */}
-            <div className="flex items-center gap-2 px-1">
-              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: tradMeta.accent }} />
-              <p className="text-xs font-semibold text-white/70">{isToday ? 'Today — ' : ''}{dateLabel}</p>
+            <div className="flex flex-col gap-1 px-1">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: tradMeta.accent }} />
+                <p className="text-xs font-semibold text-white/70">{isToday ? 'Today — ' : ''}{dateLabel}</p>
+              </div>
+              {isToday && (
+                <div className="mt-1 flex items-center gap-1.5 bg-[#C5A059]/10 border border-[#C5A059]/20 text-[#C5A059] px-3 py-1.5 rounded-xl self-start">
+                  <span className="animate-pulse text-[10px]">⏳</span>
+                  <span className="text-[9px] font-bold tracking-wide uppercase">Live Hora:</span>
+                  <span className="text-[10px] font-semibold text-white/95">{getLiveHora()}</span>
+                </div>
+              )}
             </div>
 
             {/* Details */}
@@ -632,6 +761,72 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                           &ldquo;{(h as any).shlokaTranslation}&rdquo;
                         </p>
                       </div>
+                    </div>
+                  )}
+
+                  {/* Graha Sound Resonance (Web Audio API Synthesizer) */}
+                  {'beejaMantra' in h && (
+                    <div className="rounded-2xl p-4 border border-[#C5A059]/30 space-y-4 relative overflow-hidden"
+                      style={{ background: 'rgba(10,8,25,0.75)' }}>
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A059]/5 rounded-full blur-2xl pointer-events-none" />
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">🔊</span>
+                          <div>
+                            <h4 className="text-xs font-bold text-white/80 uppercase tracking-wider">Graha Sound Resonance</h4>
+                            <p className="text-[10px] text-white/40 mt-0.5">Tune your energy into the planet&apos;s physical frequency</p>
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-bold text-[#C5A059] bg-[#C5A059]/10 border border-[#C5A059]/20 px-2 py-0.5 rounded-md">
+                          {(h as any).beejaFrequency} Hz
+                        </span>
+                      </div>
+
+                      {isPlayingResonance ? (
+                        <div className="flex flex-col items-center justify-center py-4 space-y-4 border border-[#C5A059]/20 bg-[#C5A059]/5 rounded-xl">
+                          {/* Pulsing expander ring */}
+                          <div className="relative w-16 h-16 flex items-center justify-center">
+                            <span className="absolute inset-0 rounded-full bg-[#C5A059]/20 animate-ping" />
+                            <span className="absolute inset-2 rounded-full bg-[#C5A059]/30 animate-pulse" />
+                            <div className="w-10 h-10 rounded-full bg-[#C5A059] flex items-center justify-center text-[#1c1c1a] font-bold text-sm">
+                              🕉️
+                            </div>
+                          </div>
+                          <div className="text-center space-y-1">
+                            <p className="text-xs text-white/40 uppercase tracking-wider font-bold">Resonating Mantra</p>
+                            <p className="font-serif text-lg text-[#F2EAD6] font-bold tracking-wide">
+                              {(h as any).beejaMantra}
+                            </p>
+                            <p className="text-[10px] text-white/50 italic mt-1">Close your eyes and hum along in perfect pitch</p>
+                          </div>
+
+                          <button
+                            onClick={() => {
+                              stopResonance();
+                              playHaptic('light');
+                            }}
+                            className="px-6 py-2 rounded-xl text-xs font-bold uppercase tracking-wider text-[#F2EAD6] border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 transition"
+                          >
+                            🛑 Stop Resonance Hum
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          <div className="p-3 bg-white/5 rounded-xl border border-white/5">
+                            <p className="text-xs text-white/60 leading-relaxed">
+                              This sound engine generates a real-time deep temple drone at the cosmic pitch of <span className="text-[#C5A059] font-bold">{(h as any).beejaFrequency}Hz</span>. Chant the sacred beeja mantra while humming to balance the active Graha.
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => {
+                              startResonance((h as any).beejaFrequency);
+                            }}
+                            className="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider text-[#1c1c1a] bg-[#C5A059] hover:opacity-90 transition shadow-lg flex items-center justify-center gap-2"
+                          >
+                            📿 Start Cosmic Sound Resonance
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -834,6 +1029,45 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                         </div>
                       </div>
                     ))}
+                  </div>
+                </div>
+
+                {/* Graha Shadbala Strength Heatmap (Vedic Power Index) */}
+                <div className="rounded-2xl p-4 border border-white/5 space-y-4"
+                  style={{ background: 'rgba(10,8,25,0.5)' }}>
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Graha Shadbala Strength Heatmap</h4>
+                    <span className="text-[9px] font-bold text-[#C5A059] bg-[#C5A059]/10 border border-[#C5A059]/20 px-2 py-0.5 rounded-md">Vedic Power Index</span>
+                  </div>
+
+                  <div className="space-y-3">
+                    {kundaliResult.placements.map(p => {
+                      // Custom glowing bar colors for planets based on strength
+                      const barColor = p.strength >= 80 ? 'from-[#C5A059] to-amber-300' 
+                                     : p.strength >= 60 ? 'from-emerald-600 to-teal-400' 
+                                     : 'from-orange-600 to-red-400';
+                      return (
+                        <div key={p.name} className="space-y-1">
+                          <div className="flex justify-between text-xs">
+                            <span className="font-semibold text-white/80 flex items-center gap-1.5">
+                              <span className="w-5 h-5 rounded-md bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center text-[9px] font-bold text-[#C5A059]">
+                                {p.symbol}
+                              </span>
+                              {p.name} <span className="text-[10px] text-white/40 font-medium">({p.sign})</span>
+                            </span>
+                            <span className="font-bold text-white/70">{p.strength}%</span>
+                          </div>
+                          <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden border border-white/5 relative">
+                            <motion.div 
+                              initial={{ width: 0 }}
+                              animate={{ width: `${p.strength}%` }}
+                              transition={{ duration: 1, ease: 'easeOut' }}
+                              className={`h-full rounded-full bg-gradient-to-r ${barColor}`}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 

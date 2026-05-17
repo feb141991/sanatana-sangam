@@ -2,7 +2,8 @@
 // Pure, seed-based Vedic astrology generator. Uses a daily date seed to ensure
 // horoscopes change precisely at midnight, remain constant throughout the day,
 // and are completely cost-free and offline-capable!
-// Includes simulated high-IQ Pandit AI Oracle channelings and Sanskrit planetary shlokas.
+// Includes simulated high-IQ Pandit AI Oracle channelings, Sanskrit planetary shlokas,
+// and cosmic Graha Beeja Mantras with specific physical sound frequencies (Hz).
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface RashiHoroscope {
@@ -22,6 +23,8 @@ export interface RashiHoroscope {
   shloka:            string;
   shlokaTranslation: string;
   panditAiOracle:    string; // High-fidelity Pandit AI channeled insight
+  beejaMantra:       string; // Planet sound resonance mantra
+  beejaFrequency:    number; // Physically matched planetary Hz
 }
 
 export const RASHI_LIST = [
@@ -67,6 +70,37 @@ const SHLOKAS: Record<string, { shloka: string; trans: string }> = {
   shani: {
     shloka: 'नीलाञ्जनसमाभासं रविपुत्रं यमाग्रजम् । छायामार्तण्डसम्भूतं तं नमामि शनैश्चरम् ॥',
     trans: 'I salute Saturn, dark like blue collyrium, son of Surya and elder brother of Yama, born of Chhaya and Martanda, who moves gracefully and slowly.'
+  }
+};
+
+const BEEJA_MANTRAS: Record<string, { mantra: string; freq: number }> = {
+  mangal: {
+    mantra: 'ॐ क्रां क्रीं क्रौं सः भौमाय नमः',
+    freq: 144.72
+  },
+  shukra: {
+    mantra: 'ॐ द्रां द्रीं द्रौं सः शुक्राय नमः',
+    freq: 221.23
+  },
+  budha: {
+    mantra: 'ॐ ब्रां ब्रीं ब्रौं सः बुधाय नमः',
+    freq: 141.27
+  },
+  chandra: {
+    mantra: 'ॐ श्रां श्रीं श्रौं सः चन्द्राय नमः',
+    freq: 210.42
+  },
+  surya: {
+    mantra: 'ॐ ह्रां ह्रीं ह्रौं सः सूर्याय नमः',
+    freq: 136.10
+  },
+  guru: {
+    mantra: 'ॐ ग्रां ग्रीं ग्रौं सः गुरवे नमः',
+    freq: 183.58
+  },
+  shani: {
+    mantra: 'ॐ प्रां प्रीं प्रौं सः शनये नमः',
+    freq: 147.85
   }
 };
 
@@ -132,7 +166,6 @@ const LOVE_POOL = [
   'A quiet evening at home with your loved ones will recharge your emotional battery completely.'
 ];
 
-// Channeled by Pandit AI (Advanced Astrological synthesis engine)
 const PANDIT_INSIGHTS_POOL = [
   "The cosmic winds reveal a convergence of your ruling deity's energy with the current lunar transit. Your subtle energetic channel (Sushumna Nadi) is highly receptive today. Under Pandit AI's calculations, a minor planetary square suggests temporary external friction, but an inner refuge is easily attained. Prioritize early morning silent prayer.",
   "Your planetary ruler is forming a harmonious trine with Jupiter (Guru), creating a gateway for spiritual wisdom. This is not a time for shallow material pursuits; the stars call for deep, quiet study and contemplation. Sit quietly under the sky after sunset and let your mind absorb the cosmic silence.",
@@ -164,6 +197,9 @@ export function getDailyHoroscope(rashiKey: string, date: Date = new Date()): Ra
   const baseInsight = PANDIT_INSIGHTS_POOL[Math.floor(rand() * PANDIT_INSIGHTS_POOL.length)];
   const panditAiOracle = `Pandit AI Daily Channeling: ${baseInsight} Favour your lucky time of ${luckyTime.toLowerCase()} to align your subtle breathing cycles.`;
 
+  // Resolve Beeja Mantra Details
+  const beejaData = BEEJA_MANTRAS[shlokaKey] ?? BEEJA_MANTRAS.surya;
+
   return {
     rashi: rashi.en,
     rashiSanskrit: rashi.sa,
@@ -178,6 +214,8 @@ export function getDailyHoroscope(rashiKey: string, date: Date = new Date()): Ra
     love,
     shloka: shlokaData.shloka,
     shlokaTranslation: shlokaData.trans,
-    panditAiOracle
+    panditAiOracle,
+    beejaMantra: beejaData.mantra,
+    beejaFrequency: beejaData.freq
   };
 }

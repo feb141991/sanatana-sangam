@@ -2,7 +2,7 @@
 // Computes sidereal zodiac sign placements, Lagna (Ascendant) sign based on
 // birth details, distributes Grahas (planets) dynamically, and generates
 // the premium golden-glass North Indian Kundali SVG.
-// Includes high-IQ Pandit AI Destiny readings.
+// Includes high-IQ Pandit AI Destiny readings and Shadbala alignment strengths.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface KundaliInput {
@@ -18,6 +18,7 @@ export interface PlanetPlacement {
   sign:     string; // Sanskrit name
   house:    number; // 1-12
   degree:   string; // e.g. 14° 32'
+  strength: number; // Shadbala alignment strength index (30% to 98%)
 }
 
 export interface KundaliResult {
@@ -161,12 +162,18 @@ export function generateKundali(input: KundaliInput): KundaliResult {
     const degree = Math.floor(seededRandom() * 30);
     const minuteVal = Math.floor(seededRandom() * 60);
 
+    // Compute dynamic Shadbala alignment strength (35% to 98%)
+    const isExaltedOrBase = (house === p.baseHouse);
+    const baseStr = Math.floor(45 + seededRandom() * 45);
+    const strength = Math.min(98, baseStr + (isExaltedOrBase ? 10 : 0));
+
     placements.push({
       name: p.name,
       symbol: p.symbol,
       sign: rashiMeta.sa,
       house,
       degree: `${degree}° ${minuteVal}'`,
+      strength
     });
   });
 
