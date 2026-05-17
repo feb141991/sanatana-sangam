@@ -36,6 +36,56 @@ const OCCASION_LABELS: Record<string, string> = {
 
 const TRADITIONS = ['all', 'hindu', 'sikh', 'buddhist', 'jain'] as const;
 
+// ── View config: maps ?view= param → heading + pre-filter function ──────────
+interface ViewConfig {
+  heading: string;
+  sub: string;
+  filter: (k: Katha) => boolean;
+  /** Hide the tradition tabs when a specific view is active */
+  lockTabs: boolean;
+}
+
+const VIEW_CONFIGS: Record<string, ViewConfig> = {
+  puranic: {
+    heading: 'Puranic Tales',
+    sub: 'Ramayana, Mahabharata & the Puranas',
+    filter: k => k.tradition === 'hindu' && !k.tags.includes('panchatantra') && !k.tags.includes('heroes'),
+    lockTabs: true,
+  },
+  bani: {
+    heading: 'Bani & Sakhis',
+    sub: 'Guru stories, sakhis and kirtan wisdom',
+    filter: k => k.tradition === 'sikh',
+    lockTabs: true,
+  },
+  dhamma: {
+    heading: 'Dhamma Stories',
+    sub: "Buddha's parables & Jataka tales",
+    filter: k => k.tradition === 'buddhist',
+    lockTabs: true,
+  },
+  jain: {
+    heading: 'Jain Kathas',
+    sub: 'Tirthankara stories & moral tales',
+    filter: k => k.tradition === 'jain',
+    lockTabs: true,
+  },
+  panchatantra: {
+    heading: 'Panchatantra',
+    sub: 'Ancient animal fables & wisdom tales',
+    filter: k => k.tags.includes('panchatantra'),
+    lockTabs: true,
+  },
+  heroes: {
+    heading: 'Heroes of Bharat',
+    sub: 'Warriors, saints & unsung legends',
+    filter: k =>
+      k.tags.some(t => ['warriors', 'saints', 'heroes', 'martyrdom', 'seva', 'sacrifice'].includes(t)) &&
+      !k.tags.includes('panchatantra'),
+    lockTabs: true,
+  },
+};
+
 export default function KathaClient({
   todayKatha, weekKathas, traditionKathas, allKathas, tradition, userName
 }: Props) {
@@ -43,13 +93,25 @@ export default function KathaClient({
   const searchParams = useSearchParams();
   const trad = TRADITION_LABELS[tradition] ?? TRADITION_LABELS.hindu;
   const initialQuery = searchParams.get('search') ?? '';
+  const viewParam = searchParams.get('view') ?? '';
+  const viewCfg = VIEW_CONFIGS[viewParam] ?? null;
 
-  const [activeFilter, setActiveFilter] = useState<'all' | KathaTradition>(initialQuery ? 'all' : tradition as any);
+  const [activeFilter, setActiveFilter] = useState<'all' | KathaTradition>(
+    viewCfg ? 'all' : initialQuery ? 'all' : tradition as any
+  );
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [showSearch, setShowSearch] = useState(Boolean(initialQuery));
 
+  // Page heading — view-specific or fall back to tradition term
+  const pageHeading = viewCfg?.heading ?? `${trad.termKatha}`;
+  const pageSubHeading = viewCfg?.sub ?? 'Sacred Library';
+
   const filtered = allKathas.filter(k => {
-    const matchTrad = activeFilter === 'all' || k.tradition === activeFilter;
+    // 1. If a view is active, apply its pre-filter first
+    if (viewCfg && !viewCfg.filter(k)) return false;
+    // 2. Apply tradition tab filter (only when no view lock)
+    const matchTrad = viewCfg?.lockTabs || activeFilter === 'all' || k.tradition === activeFilter;
+    // 3. Apply search
     const matchSearch = searchQuery.trim() === '' ||
       k.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (k.deity ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -76,8 +138,8 @@ export default function KathaClient({
           </motion.button>
 
           <div className="flex flex-col items-center flex-1 min-w-0">
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--brand-primary)] mb-0.5 opacity-70">Sacred Library</span>
-            <h1 className="text-[17px] font-serif font-bold theme-ink tracking-tight">Sacred Kathas</h1>
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--brand-primary)] mb-0.5 opacity-70">{pageSubHeading}</span>
+            <h1 className="text-[17px] font-serif font-bold theme-ink tracking-tight">{pageHeading}</h1>
           </div>
 
           <motion.button
@@ -229,8 +291,8 @@ export default function KathaClient({
             )}
           </div>
 
-          {/* Filter tabs */}
-          {!searchQuery && (
+          {/* Filter tabs — hidden when a view already scopes the content */}
+          {!searchQuery && !viewCfg?.lockTabs && (
             <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-none -mx-4 px-4 mb-4">
               {TRADITIONS.map(t => (
                 <motion.button

@@ -39,13 +39,40 @@ interface ContentCard {
 }
 
 const CONTENT_CARDS: ContentCard[] = [
+  // ── Tradition-specific story entry points ──
+  {
+    emoji: '🏛️',
+    title: 'Puranic Tales',
+    desc:  'Ramayana, Mahabharata & the Puranas',
+    href:  '/bhakti/katha?view=puranic',
+    tint:  'rgba(200,160,60,0.10)',
+    traditions: ['hindu'],
+  },
+  {
+    emoji: '☬',
+    title: 'Bani & Sakhis',
+    desc:  'Guru stories, sakhis & kirtan wisdom',
+    href:  '/bhakti/katha?view=bani',
+    tint:  'rgba(100,160,220,0.10)',
+    traditions: ['sikh'],
+  },
+  {
+    emoji: '☸️',
+    title: 'Dhamma Stories',
+    desc:  'Buddha\'s parables & Jataka tales',
+    href:  '/bhakti/katha?view=dhamma',
+    tint:  'rgba(140,100,200,0.10)',
+    traditions: ['buddhist'],
+  },
   {
     emoji: '📖',
-    title: 'Sacred Kathas',
-    desc:  'Puranic stories of gods, sages & devotees',
-    href:  '/bhakti/katha',
-    tint:  'rgba(200,120,74,0.10)',
+    title: 'Jain Kathas',
+    desc:  'Tirthankara stories & moral tales',
+    href:  '/bhakti/katha?view=jain',
+    tint:  'rgba(50,160,80,0.10)',
+    traditions: ['jain'],
   },
+  // ── Hymns & chants ──
   {
     emoji: '🎵',
     title: 'Stotrams & Hymns',
@@ -55,48 +82,26 @@ const CONTENT_CARDS: ContentCard[] = [
     traditions: ['hindu', 'jain'],
   },
   {
-    emoji: '☬',
-    title: 'Bani & Sakhis',
-    desc:  'Gurbani, sakhis and kirtan stories',
-    href:  '/bhakti/katha',
-    tint:  'rgba(100,160,220,0.10)',
-    traditions: ['sikh'],
-  },
-  {
-    emoji: '☸️',
+    emoji: '🎶',
     title: 'Sacred Chants',
     desc:  'Buddhist sutras, chants & mantras',
     href:  '/bhakti/browse',
     tint:  'rgba(140,100,200,0.10)',
     traditions: ['buddhist'],
   },
-  {
-    emoji: '🏛️',
-    title: 'Puranic Tales',
-    desc:  'Ramayana, Mahabharata & the Puranas',
-    href:  '/bhakti/katha',
-    tint:  'rgba(200,160,60,0.10)',
-    traditions: ['hindu'],
-  },
-  {
-    emoji: '🌟',
-    title: "Kids' Stories",
-    desc:  'Dharmic tales for little hearts',
-    href:  '/bhakti/katha',
-    tint:  'rgba(80,180,160,0.10)',
-  },
+  // ── Universal content ──
   {
     emoji: '🦊',
     title: 'Panchatantra',
-    desc:  'Ancient wisdom fables & animal tales',
-    href:  '/bhakti/katha?search=panchatantra',
+    desc:  'Ancient animal fables & wisdom tales for all ages',
+    href:  '/bhakti/katha?view=panchatantra',
     tint:  'rgba(200,120,80,0.10)',
   },
   {
     emoji: '🦁',
     title: 'Heroes of Bharat',
     desc:  'Warriors, saints & unsung legends',
-    href:  '/bhakti/katha',
+    href:  '/bhakti/katha?view=heroes',
     tint:  'rgba(180,80,80,0.10)',
   },
   {
