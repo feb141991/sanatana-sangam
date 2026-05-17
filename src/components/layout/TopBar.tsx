@@ -13,6 +13,7 @@ import { useMarkAllNotificationsReadMutation, useMarkNotificationReadMutation, u
 import { syncOneSignalContext, loginToOneSignal, isOneSignalConfigured, getPermissionState, getPlayerId, requestNotificationPermission } from '@/lib/onesignal';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import type { TranslationKey } from '@/lib/i18n/translations';
+import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 
 const titles: Record<string, TranslationKey> = {
   '/guest':         'explore',
@@ -29,8 +30,8 @@ const titles: Record<string, TranslationKey> = {
 const PUSH_PROMPT_DISMISS_KEY = 'sanatana-push-prompt-dismissed-until';
 const PUSH_PROMPT_COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000;
 const QUICK_LINKS = [
-  { href: '/bhakti',     label: 'Bhakti',  emoji: '✨' },
-  { href: '/tirtha-map', label: 'Tirtha',  emoji: '🗺️' },
+  { href: '/bhakti',     label: 'Bhakti',  icon: 'heart' as SacredIconName },
+  { href: '/tirtha-map', label: 'Tirtha',  icon: 'location' as SacredIconName },
 ] as const;
 
 const shellTint = {
@@ -404,6 +405,7 @@ export default function TopBar({
                         color: active ? 'var(--brand-primary-strong)' : 'var(--brand-muted)',
                       }}
                     >
+                      <SacredIcon name={item.icon} size={12} className="mr-1.5" />
                       {t(item.label.toLowerCase() as any)}
                     </Link>
                   );
@@ -519,7 +521,7 @@ function NotificationsEmptyState({ userId, onNotificationSent }: { userId: strin
     <div className="flex flex-col items-center justify-center px-6 py-12 text-center gap-5">
       <div className="w-16 h-16 rounded-3xl flex items-center justify-center text-3xl"
         style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.15)' }}>
-        🪔
+        <SacredIcon name="bell" size={26} />
       </div>
       <div>
         <p className="text-base font-semibold text-[color:var(--brand-ink)]">{t('allQuiet')}</p>

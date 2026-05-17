@@ -5,11 +5,12 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { X, Check } from 'lucide-react';
 import { activatePro } from '@/lib/premium';
+import SacredIcon, { type SacredIconName } from '@/components/ui/SacredIcon';
 
 // ─── Individual luxury benefit cards ──────────────────────────────────────────
 const LUXURY_CARDS = [
   {
-    emoji: '🌅',
+    icon: 'sunrise' as SacredIconName,
     label: 'Deeper Rituals',
     tagline: 'Your morning, sacred by design',
     surface: 'linear-gradient(160deg, rgba(200,146,74,0.14) 0%, rgba(200,146,74,0.05) 100%)',
@@ -17,13 +18,13 @@ const LUXURY_CARDS = [
     accent: '#C8924A',
     glow: 'rgba(200,146,74,0.18)',
     features: [
-      { icon: '🌅', text: 'Brahma Muhurta alert — timed to your location' },
-      { icon: '⚙️', text: 'Personalise every step of your Nitya Karma' },
-      { icon: '🔔', text: 'Custom sadhana reminders at your chosen times' },
+      { icon: 'sunrise' as SacredIconName, text: 'Brahma Muhurta alert — timed to your location' },
+      { icon: 'settings' as SacredIconName, text: 'Personalise every step of your Nitya Karma' },
+      { icon: 'bell' as SacredIconName, text: 'Custom sadhana reminders at your chosen times' },
     ],
   },
   {
-    emoji: '🧭',
+    icon: 'compass' as SacredIconName,
     label: 'Personalised Guidance',
     tagline: 'A path shaped around you',
     surface: 'linear-gradient(160deg, rgba(100,140,220,0.14) 0%, rgba(80,120,200,0.05) 100%)',
@@ -31,13 +32,13 @@ const LUXURY_CARDS = [
     accent: '#6a9cd4',
     glow: 'rgba(100,140,220,0.18)',
     features: [
-      { icon: '✦', text: '7-day and 21-day guided Sadhana plans' },
-      { icon: '🪔', text: 'Adaptive practice suggestions from Sattvic AI' },
-      { icon: '📊', text: 'Weekly spiritual review and growth insights' },
+      { icon: 'sparkles' as SacredIconName, text: '7-day and 21-day guided Sadhana plans' },
+      { icon: 'guidance' as SacredIconName, text: 'Adaptive practice suggestions from Sattvic AI' },
+      { icon: 'activity' as SacredIconName, text: 'Weekly spiritual review and growth insights' },
     ],
   },
   {
-    emoji: '📿',
+    icon: 'heart' as SacredIconName,
     label: 'Practice Depth',
     tagline: 'Every mantra. Every milestone',
     surface: 'linear-gradient(160deg, rgba(160,100,220,0.14) 0%, rgba(140,80,200,0.05) 100%)',
@@ -45,13 +46,13 @@ const LUXURY_CARDS = [
     accent: '#b07ad4',
     glow: 'rgba(160,100,220,0.18)',
     features: [
-      { icon: '📿', text: 'Full Japa history with insights and timelines' },
-      { icon: '🔥', text: 'Streak tracking, milestones, and celebrations' },
-      { icon: '📖', text: 'All Pathshala study paths unlocked' },
+      { icon: 'heart' as SacredIconName, text: 'Full Japa history with insights and timelines' },
+      { icon: 'sparkles' as SacredIconName, text: 'Streak tracking, milestones, and celebrations' },
+      { icon: 'book' as SacredIconName, text: 'All Pathshala study paths unlocked' },
     ],
   },
   {
-    emoji: '🏡',
+    icon: 'kul' as SacredIconName,
     label: 'Kul & Sanskar',
     tagline: 'Dharma flows through generations',
     surface: 'linear-gradient(160deg, rgba(80,160,100,0.14) 0%, rgba(60,140,80,0.05) 100%)',
@@ -59,13 +60,13 @@ const LUXURY_CARDS = [
     accent: '#6ab87a',
     glow: 'rgba(80,160,100,0.18)',
     features: [
-      { icon: '🏡', text: 'Smart nudges for family observances and kul milestones' },
-      { icon: '🌿', text: 'All 16 Sanskaras tracked for every family member' },
-      { icon: '🕯️', text: 'Pitru Paksha and ancestral remembrance reminders' },
+      { icon: 'kul' as SacredIconName, text: 'Smart nudges for family observances and kul milestones' },
+      { icon: 'tree' as SacredIconName, text: 'All 16 Sanskaras tracked for every family member' },
+      { icon: 'flower' as SacredIconName, text: 'Pitru Paksha and ancestral remembrance reminders' },
     ],
   },
   {
-    emoji: '✨',
+    icon: 'sparkles' as SacredIconName,
     label: 'Coming Soon',
     tagline: 'The sanctuary grows with you',
     surface: 'linear-gradient(160deg, rgba(200,146,74,0.07) 0%, rgba(200,146,74,0.03) 100%)',
@@ -73,9 +74,9 @@ const LUXURY_CARDS = [
     accent: 'rgba(200,146,74,0.5)',
     glow: 'rgba(200,146,74,0.08)',
     features: [
-      { icon: '🤖', text: 'Dharma Mitra AI — your personal dharmic companion' },
-      { icon: '🎵', text: 'Sanskrit pronunciation with Bhashini audio' },
-      { icon: '🛕', text: 'Tirtha maps, darshan alerts, and pilgrimage guides' },
+      { icon: 'brain' as SacredIconName, text: 'Dharma Mitra AI — your personal dharmic companion' },
+      { icon: 'music' as SacredIconName, text: 'Sanskrit pronunciation with Bhashini audio' },
+      { icon: 'landmark' as SacredIconName, text: 'Tirtha maps, darshan alerts, and pilgrimage guides' },
     ],
     dimmed: true,
   },
@@ -113,7 +114,7 @@ function SacredHero({ prefersReducedMotion }: { prefersReducedMotion: boolean | 
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
         style={{ filter: 'drop-shadow(0 0 12px rgba(200,146,74,0.45))' }}
       >
-        🕉️
+        <SacredIcon name="sparkles" size={30} className="text-[#C8924A]" />
       </motion.div>
     </div>
   );
@@ -279,16 +280,17 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
                   >
                     {/* Card header */}
                     <div className="px-5 pt-5 pb-3 flex items-start gap-4">
-                      {/* Emoji well with glow */}
+                      {/* Icon well with glow */}
                       <div
-                        className="flex-shrink-0 w-12 h-12 rounded-[1rem] flex items-center justify-center text-2xl"
+                        className="flex-shrink-0 w-12 h-12 rounded-[1rem] flex items-center justify-center"
                         style={{
                           background: `radial-gradient(circle at 40% 40%, ${card.glow}, rgba(0,0,0,0.22))`,
                           border: `1px solid ${card.border}`,
                           boxShadow: `0 4px 16px ${card.glow}`,
+                          color: card.accent,
                         }}
                       >
-                        {card.emoji}
+                        <SacredIcon name={card.icon} size={22} />
                       </div>
 
                       {/* Title + tagline */}

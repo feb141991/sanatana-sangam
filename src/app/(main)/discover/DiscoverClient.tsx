@@ -7,6 +7,7 @@ import { ChevronLeft, Sparkles, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 import type { LibraryEntry } from '@/lib/library-content';
 import MoodGlyph from '@/components/ui/MoodGlyph';
+import SacredIcon from '@/components/ui/SacredIcon';
 import { getTransliteration } from '@/lib/transliteration';
 
 interface Props {
@@ -20,28 +21,28 @@ import { useThemePreference } from '@/components/providers/ThemeProvider';
 // ── Mood palette ──────────────────────────────────────────────────────────────
 const MOODS_CONFIG = {
   dark: [
-    { key: 'anxious',     label: 'Anxious',      emoji: '😰', colour: '#A594E0', bg: 'rgba(165,148,224,0.12)' },
-    { key: 'grieving',    label: 'Grieving',      emoji: '🌧️', colour: '#84A9FF', bg: 'rgba(132,169,255,0.12)' },
-    { key: 'angry',       label: 'Angry',         emoji: '🔥', colour: '#FF8A65', bg: 'rgba(255,138,101,0.12)' },
-    { key: 'scattered',   label: 'Scattered',     emoji: '🌀', colour: '#81C784', bg: 'rgba(129,199,132,0.12)' },
-    { key: 'lost',        label: 'Lost',          emoji: '🌑', colour: '#B0BEC5', bg: 'rgba(176,190,197,0.12)' },
-    { key: 'joyful',      label: 'Joyful',        emoji: '☀️', colour: '#FFD54F', bg: 'rgba(255,213,79,0.12)'  },
-    { key: 'seeking',     label: 'Seeking',       emoji: '🔍', colour: '#FFB74D', bg: 'rgba(255,183,77,0.12)'  },
-    { key: 'lonely',      label: 'Lonely',        emoji: '🕊️', colour: '#4DD0E1', bg: 'rgba(77,208,225,0.12)'  },
-    { key: 'overwhelmed', label: 'Overwhelmed',   emoji: '🌊', colour: '#64B5F6', bg: 'rgba(100,181,246,0.12)' },
-    { key: 'grateful',    label: 'Grateful',      emoji: '🙏', colour: '#D4E157', bg: 'rgba(212,225,87,0.12)'  },
+    { key: 'anxious',     label: 'Anxious',      colour: '#A594E0', bg: 'rgba(165,148,224,0.12)' },
+    { key: 'grieving',    label: 'Grieving',      colour: '#84A9FF', bg: 'rgba(132,169,255,0.12)' },
+    { key: 'angry',       label: 'Angry',         colour: '#FF8A65', bg: 'rgba(255,138,101,0.12)' },
+    { key: 'scattered',   label: 'Scattered',     colour: '#81C784', bg: 'rgba(129,199,132,0.12)' },
+    { key: 'lost',        label: 'Lost',          colour: '#B0BEC5', bg: 'rgba(176,190,197,0.12)' },
+    { key: 'joyful',      label: 'Joyful',        colour: '#FFD54F', bg: 'rgba(255,213,79,0.12)'  },
+    { key: 'seeking',     label: 'Seeking',       colour: '#FFB74D', bg: 'rgba(255,183,77,0.12)'  },
+    { key: 'lonely',      label: 'Lonely',        colour: '#4DD0E1', bg: 'rgba(77,208,225,0.12)'  },
+    { key: 'overwhelmed', label: 'Overwhelmed',   colour: '#64B5F6', bg: 'rgba(100,181,246,0.12)' },
+    { key: 'grateful',    label: 'Grateful',      colour: '#D4E157', bg: 'rgba(212,225,87,0.12)'  },
   ],
   light: [
-    { key: 'anxious',     label: 'Anxious',      emoji: '😰', colour: '#5E4B8B', bg: 'rgba(94,75,139,0.08)' },
-    { key: 'grieving',    label: 'Grieving',      emoji: '🌧️', colour: '#3F51B5', bg: 'rgba(63,81,181,0.08)' },
-    { key: 'angry',       label: 'Angry',         emoji: '🔥', colour: '#BF360C', bg: 'rgba(191,54,12,0.08)'  },
-    { key: 'scattered',   label: 'Scattered',     emoji: '🌀', colour: '#2E7D32', bg: 'rgba(46,125,50,0.08)'  },
-    { key: 'lost',        label: 'Lost',          emoji: '🌑', colour: '#455A64', bg: 'rgba(69,90,100,0.08)'  },
-    { key: 'joyful',      label: 'Joyful',        emoji: '☀️', colour: '#E65100', bg: 'rgba(230,81,0,0.08)'   },
-    { key: 'seeking',     label: 'Seeking',       emoji: '🔍', colour: '#EF6C00', bg: 'rgba(239,108,0,0.08)'  },
-    { key: 'lonely',      label: 'Lonely',        emoji: '🕊️', colour: '#00838F', bg: 'rgba(0,131,143,0.08)'  },
-    { key: 'overwhelmed', label: 'Overwhelmed',   emoji: '🌊', colour: '#1565C0', bg: 'rgba(21,101,192,0.08)' },
-    { key: 'grateful',    label: 'Grateful',      emoji: '🙏', colour: '#827717', bg: 'rgba(130,119,23,0.08)'  },
+    { key: 'anxious',     label: 'Anxious',      colour: '#5E4B8B', bg: 'rgba(94,75,139,0.08)' },
+    { key: 'grieving',    label: 'Grieving',      colour: '#3F51B5', bg: 'rgba(63,81,181,0.08)' },
+    { key: 'angry',       label: 'Angry',         colour: '#BF360C', bg: 'rgba(191,54,12,0.08)'  },
+    { key: 'scattered',   label: 'Scattered',     colour: '#2E7D32', bg: 'rgba(46,125,50,0.08)'  },
+    { key: 'lost',        label: 'Lost',          colour: '#455A64', bg: 'rgba(69,90,100,0.08)'  },
+    { key: 'joyful',      label: 'Joyful',        colour: '#E65100', bg: 'rgba(230,81,0,0.08)'   },
+    { key: 'seeking',     label: 'Seeking',       colour: '#EF6C00', bg: 'rgba(239,108,0,0.08)'  },
+    { key: 'lonely',      label: 'Lonely',        colour: '#00838F', bg: 'rgba(0,131,143,0.08)'  },
+    { key: 'overwhelmed', label: 'Overwhelmed',   colour: '#1565C0', bg: 'rgba(21,101,192,0.08)' },
+    { key: 'grateful',    label: 'Grateful',      colour: '#827717', bg: 'rgba(130,119,23,0.08)'  },
   ]
 };
 
@@ -394,7 +395,11 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
                 boxShadow: 'var(--shadow-soft)',
               }}
             >
-              <p className="text-3xl mb-3">🌿</p>
+              <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full border"
+                style={{ background: 'var(--brand-primary-soft)', borderColor: 'var(--card-border)', color: 'var(--brand-primary)' }}
+              >
+                <SacredIcon name="flower" size={22} />
+              </div>
               <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-cream)' }}>
                 The right teaching finds you
               </p>

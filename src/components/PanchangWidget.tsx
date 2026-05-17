@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { useSacredCalendar } from '@/hooks/useSacredCalendar';
+import SacredIcon, { type SacredIconName } from '@/components/ui/SacredIcon';
 
 interface Props {
   lat?: number;
@@ -18,16 +19,16 @@ export default function PanchangWidget({ lat = 51.5074, lon = -0.1278, tradition
     label: 'Today',
   };
 
-  const items = [
-    { label: p.labels.dayLabel,   value: p.tithi,            emoji: '🌙' },
-    { label: 'Nakshatra', value: p.nakshatra,         emoji: '⭐' },
-    { label: 'Yoga',      value: p.yoga,              emoji: '🧘' },
-    { label: 'Vara',      value: p.vara,              emoji: '📅' },
-    { label: p.labels.monthLabel, value: p.masaName,          emoji: '🗓️' },
-    { label: 'Sunrise',   value: p.sunrise,           emoji: '🌅' },
-    { label: 'Sunset',    value: p.sunset,            emoji: '🌇' },
-    { label: 'Rahu Kaal', value: p.rahuKaal,          emoji: '⚠️' },
-    { label: 'Abhijit',   value: p.abhijitMuhurat,    emoji: '✨' },
+  const items: Array<{ label: string; value: string; icon: SacredIconName }> = [
+    { label: p.labels.dayLabel, value: p.tithi, icon: 'moon' },
+    { label: 'Nakshatra', value: p.nakshatra, icon: 'star' },
+    { label: 'Yoga', value: p.yoga, icon: 'activity' },
+    { label: 'Vara', value: p.vara, icon: 'calendar' },
+    { label: p.labels.monthLabel, value: p.masaName, icon: 'calendar' },
+    { label: 'Sunrise', value: p.sunrise, icon: 'sunrise' },
+    { label: 'Sunset', value: p.sunset, icon: 'sunset' },
+    { label: 'Rahu Kaal', value: p.rahuKaal, icon: 'alert' },
+    { label: 'Abhijit', value: p.abhijitMuhurat, icon: 'sparkles' },
   ];
 
   return (
@@ -49,7 +50,9 @@ export default function PanchangWidget({ lat = 51.5074, lon = -0.1278, tradition
             <div className="theme-muted text-xs mt-0.5">{p.calendarName}</div>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <span className="text-2xl">🪔</span>
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(212,166,70,0.20)] bg-[rgba(212,166,70,0.10)] text-[rgb(212,166,70)]">
+              <SacredIcon name="sun" size={17} />
+            </span>
             <span className="rounded-full border px-2 py-0.5 text-[10px] font-semibold theme-dim" style={{ borderColor: 'rgba(212, 166, 70, 0.16)', background: 'rgba(40, 40, 37, 0.88)' }}>
               {mood.label}
             </span>
@@ -63,7 +66,7 @@ export default function PanchangWidget({ lat = 51.5074, lon = -0.1278, tradition
         {items.map((item) => (
           <div key={item.label} className="px-3 py-2.5" style={{ borderColor: 'rgba(200, 127, 146, 0.08)' }}>
             <div className="flex items-center gap-1 mb-0.5">
-              <span className="text-xs">{item.emoji}</span>
+              <SacredIcon name={item.icon} size={11} className="text-[rgb(212,166,70)]" />
               <span className="text-[10px] theme-dim uppercase tracking-wide font-medium">
                 {item.label}
               </span>
@@ -77,7 +80,7 @@ export default function PanchangWidget({ lat = 51.5074, lon = -0.1278, tradition
 
       {/* Rahu Kaal warning */}
       <div className="relative px-4 py-2.5 border-t flex items-center gap-2" style={{ background: 'rgba(34, 34, 31, 0.94)', borderColor: 'rgba(212, 166, 70, 0.18)' }}>
-        <span className="text-sm">⚠️</span>
+        <SacredIcon name="alert" size={15} className="text-[rgb(212,166,70)]" />
         <div>
           <span className="text-xs font-semibold theme-ink">Rahu Kaal: </span>
           <span className="text-xs theme-muted">{p.rahuKaal}</span>

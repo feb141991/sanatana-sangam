@@ -52,6 +52,7 @@ import { APP } from '@/lib/config';
 import { resolveHomeHeroTheme, type HomeHeroTheme } from '@/config/festivalThemes';
 import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
 import MoodGlyph from '@/components/ui/MoodGlyph';
+import SacredIcon from '@/components/ui/SacredIcon';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { getDailyDarshan, DARSHAN_REGISTRY } from '@/lib/darshan-registry';
@@ -147,11 +148,11 @@ const DEFAULT_QUICK_ACCESS = [
 
 // Five moods surfaced in the home card (subset of MOOD_QUICK_MAP)
 const MOOD_CARD_OPTIONS = [
-  { key: 'grateful',    emoji: '🙏', label: 'Grateful' },
-  { key: 'seeking',     emoji: '🔍', label: 'Seeking'  },
-  { key: 'anxious',     emoji: '😔', label: 'Anxious'  },
-  { key: 'joyful',      emoji: '😊', label: 'Joyful'   },
-  { key: 'scattered',   emoji: '🌀', label: 'Scattered' },
+  { key: 'grateful',    label: 'Grateful' },
+  { key: 'seeking',     label: 'Seeking'  },
+  { key: 'anxious',     label: 'Anxious'  },
+  { key: 'joyful',      label: 'Joyful'   },
+  { key: 'scattered',   label: 'Scattered' },
 ] as const;
 
 // Mood quick-lookup (mirrors DiscoverClient MOODS)
@@ -1897,7 +1898,9 @@ export default function HomeDashboard({
                 aria-live="polite"
               >
                 <div className="flex items-center gap-3 w-full pr-6">
-                  <span className="sacred-pulse-emoji" aria-hidden="true">{pulse.emoji}</span>
+                  <span className="sacred-pulse-emoji" aria-hidden="true">
+                    <SacredIcon name="calendar" size={18} />
+                  </span>
                   <div className="sacred-pulse-body flex-1 min-w-0">
                     <span className="sacred-pulse-label">
                       {pulse.translationKey ? t(pulse.translationKey as any) : pulse.label} {t('today')}
@@ -1928,7 +1931,7 @@ export default function HomeDashboard({
             >
               <div className="pitru-paksha-left">
                 <span className="pitru-paksha-emoji" aria-hidden="true">
-                  {pitruPakshaDay.isMahalaya ? '🪔' : '☽'}
+                  <SacredIcon name={pitruPakshaDay.isMahalaya ? 'sun' : 'moon'} size={18} />
                 </span>
                 <div>
                   <span className="pitru-paksha-title">{pitruPakshaCopy.title}</span>
@@ -1966,7 +1969,9 @@ export default function HomeDashboard({
                     role="listitem"
                     aria-label={m.label}
                   >
-                    <span className="mood-checkin-emoji" aria-hidden="true">{m.emoji}</span>
+                    <span className="mood-checkin-emoji" aria-hidden="true">
+                      <MoodGlyph mood={m.key} color="currentColor" size={19} />
+                    </span>
                     <span className="mood-checkin-label">{m.label}</span>
                   </button>
                 ))}
@@ -1992,7 +1997,9 @@ export default function HomeDashboard({
               className="festival-story-card motion-press mb-3"
               aria-label={`Read the story of ${f.name}`}
             >
-              <span className="festival-story-emoji" aria-hidden="true">{story?.emoji}</span>
+              <span className="festival-story-emoji" aria-hidden="true">
+                <SacredIcon name="scroll" size={18} />
+              </span>
               <div className="festival-story-body">
                 <span className="festival-story-kicker">
                   {daysLeft === 0 ? 'Today' : `In ${daysLeft} day${daysLeft === 1 ? '' : 's'}`}
@@ -2019,7 +2026,9 @@ export default function HomeDashboard({
             className="flex items-center gap-3 w-full pr-6 text-left no-underline"
             onClick={() => playHaptic('light')}
           >
-            <span className="sacred-pulse-emoji" aria-hidden="true">{dharmVeer.emoji}</span>
+            <span className="sacred-pulse-emoji" aria-hidden="true">
+              <SacredIcon name="sparkles" size={18} />
+            </span>
             <div className="sacred-pulse-body flex-1 min-w-0">
               <span className="sacred-pulse-label">
                 {lang !== 'en' && dharmVeer.nameLocal ? dharmVeer.nameLocal : dharmVeer.name}

@@ -3,34 +3,41 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronRight, ChevronLeft, Check } from 'lucide-react';
+import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 
-const STEPS = [
+const STEPS: Array<{
+  title: string;
+  subtitle: string;
+  description: string;
+  icon: SacredIconName;
+  color: string;
+}> = [
   {
     title: 'Welcome to your Kul',
     subtitle: 'Sacred Lineage',
     description: 'This is a private space for your family. Here you can track your lineage, share tasks, and keep the sacred fire of your traditions alive.',
-    emoji: '🌳',
+    icon: 'tree',
     color: 'var(--brand-primary)',
   },
   {
     title: 'Track Your Vansh',
     subtitle: 'Family Tree',
     description: 'Build your family tree from the roots up. Connect with your ancestors and preserve their stories for generations to come.',
-    emoji: '🫶',
+    icon: 'kul',
     color: '#a07830',
   },
   {
     title: 'Shared Sadhana',
     subtitle: 'Kul Tasks',
     description: 'Assign and complete daily commitments together. Every shared practice strengthens the collective spirit of your family.',
-    emoji: '📋',
+    icon: 'activity',
     color: '#c3522d',
   },
   {
     title: 'Stay Connected',
     subtitle: 'Kul Sabha',
     description: 'A dedicated, distraction-free space for family conversations. No ads, no noise—just pure connection.',
-    emoji: '💬',
+    icon: 'mandali',
     color: '#164d54',
   }
 ];
@@ -67,9 +74,10 @@ export function KulOnboarding({ onComplete }: { onComplete: () => void }) {
                initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
                animate={{ opacity: 1, scale: 1, rotate: 0 }}
                exit={{ opacity: 0, scale: 1.5, rotate: 10 }}
-               className="text-7xl z-10"
+               className="z-10 flex h-24 w-24 items-center justify-center rounded-[2rem] border shadow-lg"
+               style={{ background: `${current.color}18`, borderColor: `${current.color}40`, color: current.color }}
              >
-               {current.emoji}
+               <SacredIcon name={current.icon} size={42} strokeWidth={1.55} />
              </motion.div>
            </AnimatePresence>
            

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Play, MapPin, Clock, X, Search, Radio, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LiveStream, LiveStreamCategory } from '@/lib/live-streams';
+import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 
 interface LiveDarshanClientProps {
   tradition: string;
@@ -15,12 +16,12 @@ interface LiveDarshanClientProps {
 type TraditionFilter = 'all' | 'hindu' | 'sikh' | 'jain' | 'buddhist';
 type CategoryFilter = 'all' | LiveStreamCategory;
 
-const TRADITION_LABELS: Record<TraditionFilter, { label: string; emoji: string }> = {
-  all:      { label: 'All',      emoji: '🕉️' },
-  hindu:    { label: 'Hindu',    emoji: '🪔' },
-  sikh:     { label: 'Sikh',     emoji: '☬'  },
-  jain:     { label: 'Jain',     emoji: '🙏' },
-  buddhist: { label: 'Buddhist', emoji: '☸️' },
+const TRADITION_LABELS: Record<TraditionFilter, { label: string; icon: SacredIconName }> = {
+  all:      { label: 'All',      icon: 'sparkles' },
+  hindu:    { label: 'Hindu',    icon: 'landmark' },
+  sikh:     { label: 'Sikh',     icon: 'music' },
+  jain:     { label: 'Jain',     icon: 'flower' },
+  buddhist: { label: 'Buddhist', icon: 'flower' },
 };
 
 const CATEGORY_LABELS: Record<CategoryFilter, string> = {
@@ -41,15 +42,15 @@ export default function LiveDarshanClient({ tradition, userId, streams }: LiveDa
   const [activeState, setActiveState]         = useState<string>('all');
 
   const ALL_COLLECTIONS = [
-    { id: 'Char Dham',     label: 'Char Dham',    emoji: '🏔️', color: '#FF9933', desc: 'The 4 holy abodes', trad: 'hindu' },
-    { id: 'Jyotirlinga',   label: 'Jyotirlinga',  emoji: '🔱', color: '#660000', desc: '12 Radiant Lingas', trad: 'hindu' },
-    { id: 'Rivers',        label: 'Holy Rivers',  emoji: '🌊', color: '#0066CC', desc: 'Ganga & Yamuna Aarti', trad: 'hindu' },
-    { id: 'Panj Takht',    label: 'Panj Takht',   emoji: '☬',  color: '#FFCC00', desc: '5 Sikh Thrones',      trad: 'sikh'  },
-    { id: 'Gurbani Kirtan',label: 'Kirtan',       emoji: '🎶', color: '#336600', desc: 'Akhand Gurbani',      trad: 'sikh'  },
-    { id: 'Jain Path',     label: 'Jain Path',    emoji: '🙏', color: '#FF6666', desc: 'Tirthankar Bhakti',   trad: 'jain'  },
-    { id: 'Bodhi Path',    label: 'Bodhi Path',   emoji: '☸️', color: '#9933CC', desc: 'Peace of Buddha',      trad: 'buddhist' },
-    { id: 'Saptapuri',     label: 'Saptapuri',    emoji: '🕍', color: '#CC9900', desc: '7 Ancient Holy Cities', trad: 'hindu' },
-    { id: 'Shaktipeeth',   label: 'Shaktipeeth',  emoji: '🪔', color: '#FF3300', desc: 'Seats of the Goddess', trad: 'hindu' },
+    { id: 'Char Dham',     label: 'Char Dham',    icon: 'mountain' as SacredIconName, color: '#FF9933', desc: 'The 4 holy abodes', trad: 'hindu' },
+    { id: 'Jyotirlinga',   label: 'Jyotirlinga',  icon: 'sparkles' as SacredIconName, color: '#660000', desc: '12 Radiant Lingas', trad: 'hindu' },
+    { id: 'Rivers',        label: 'Holy Rivers',  icon: 'water' as SacredIconName, color: '#0066CC', desc: 'Ganga & Yamuna Aarti', trad: 'hindu' },
+    { id: 'Panj Takht',    label: 'Panj Takht',   icon: 'landmark' as SacredIconName, color: '#FFCC00', desc: '5 Sikh Thrones',      trad: 'sikh'  },
+    { id: 'Gurbani Kirtan',label: 'Kirtan',       icon: 'music' as SacredIconName, color: '#336600', desc: 'Akhand Gurbani',      trad: 'sikh'  },
+    { id: 'Jain Path',     label: 'Jain Path',    icon: 'flower' as SacredIconName, color: '#FF6666', desc: 'Tirthankar Bhakti',   trad: 'jain'  },
+    { id: 'Bodhi Path',    label: 'Bodhi Path',   icon: 'flower' as SacredIconName, color: '#9933CC', desc: 'Peace of Buddha',      trad: 'buddhist' },
+    { id: 'Saptapuri',     label: 'Saptapuri',    icon: 'landmark' as SacredIconName, color: '#CC9900', desc: '7 Ancient Holy Cities', trad: 'hindu' },
+    { id: 'Shaktipeeth',   label: 'Shaktipeeth',  icon: 'sparkles' as SacredIconName, color: '#FF3300', desc: 'Seats of the Goddess', trad: 'hindu' },
   ];
 
   // Sort collections to show user's tradition first
@@ -105,7 +106,7 @@ export default function LiveDarshanClient({ tradition, userId, streams }: LiveDa
                 : 'bg-[var(--divine-surface)] border-[var(--divine-border)] text-[var(--divine-muted)]'
             }`}
           >
-            <span className="text-xl mb-1">🕉️</span>
+            <SacredIcon name="sparkles" size={20} className="mb-1" />
             <span className="text-[10px] font-bold">Explore</span>
           </button>
           
@@ -121,7 +122,7 @@ export default function LiveDarshanClient({ tradition, userId, streams }: LiveDa
               style={activeCollection === col.id ? { backgroundColor: col.color } : {}}
             >
               <div className="flex justify-between items-start">
-                <span className="text-lg">{col.emoji}</span>
+                <SacredIcon name={col.icon} size={18} />
                 {activeCollection === col.id && (
                   <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                 )}
@@ -187,7 +188,7 @@ export default function LiveDarshanClient({ tradition, userId, streams }: LiveDa
                         : 'bg-[var(--divine-surface)] text-[var(--divine-muted)] border-[var(--divine-border)]'
                     }`}
                   >
-                    <span>{TRADITION_LABELS[t].emoji}</span>
+                    <SacredIcon name={TRADITION_LABELS[t].icon} size={13} />
                     {TRADITION_LABELS[t].label}
                   </button>
                 ))}

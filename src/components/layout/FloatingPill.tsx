@@ -23,6 +23,7 @@ import {
   loginToOneSignal,
   syncOneSignalContext,
 } from '@/lib/onesignal';
+import SacredIcon from '@/components/ui/SacredIcon';
 
 const PUSH_PROMPT_DISMISS_KEY = 'sanatana-push-prompt-dismissed-until';
 const PUSH_PROMPT_COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000;
@@ -554,7 +555,7 @@ function NotificationsEmptyState({ userId, onNotificationSent }: { userId: strin
       <div className="flex flex-col items-center w-full text-center gap-3">
         <div className="w-16 h-16 rounded-3xl flex items-center justify-center text-3xl"
           style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.15)' }}>
-          🪔
+          <SacredIcon name="bell" size={26} />
         </div>
         <div>
           <p className="text-base font-semibold" style={{ color: 'var(--text-cream)' }}>All quiet for now</p>

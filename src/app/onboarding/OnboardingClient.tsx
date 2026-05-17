@@ -11,19 +11,28 @@ import { APP_LANGUAGES } from '@/lib/language-preferences';
 import { getAllAshramaStages, ageToAshrama, ageFromDob, type LifeStage, type GenderContext } from '@/lib/ashrama';
 import { THEME_OPTIONS, type ThemePreference } from '@/lib/theme-preferences';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 import toast from 'react-hot-toast';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type TraditionKey = 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'other';
 type Step = 1 | 2 | 3 | 4 | 5 | 5.5 | 6 | 7;
 
+const TRADITION_ICON: Record<string, SacredIconName> = {
+  hindu: 'landmark',
+  sikh: 'music',
+  buddhist: 'flower',
+  jain: 'flower',
+  other: 'sparkles',
+};
+
 const GOALS = [
-  { id: 'japa',      emoji: '📿', label: 'Daily Japa',      desc: 'Mantra practice & mala' },
-  { id: 'learning',  emoji: '📖', label: 'Learn Scripture', desc: 'Pathshala, Gita, Granth' },
-  { id: 'festivals', emoji: '🗓️', label: 'Festivals',       desc: 'Auspicious days & vrats' },
-  { id: 'family',    emoji: '👨‍👩‍👧', label: 'Family & Kul',   desc: 'Lineage, Sanskaras, tree' },
-  { id: 'temples',   emoji: '🛕', label: 'Sacred Places',   desc: 'Tirthas & gurudwaras' },
-  { id: 'community', emoji: '💬', label: 'Community',       desc: 'Mandali, sangat, wisdom' },
+  { id: 'japa',      icon: 'japa' as SacredIconName, label: 'Daily Japa',      desc: 'Mantra practice & mala' },
+  { id: 'learning',  icon: 'book' as SacredIconName, label: 'Learn Scripture', desc: 'Pathshala, Gita, Granth' },
+  { id: 'festivals', icon: 'calendar' as SacredIconName, label: 'Festivals',   desc: 'Auspicious days & vrats' },
+  { id: 'family',    icon: 'kul' as SacredIconName, label: 'Family & Kul',     desc: 'Lineage, Sanskaras, tree' },
+  { id: 'temples',   icon: 'landmark' as SacredIconName, label: 'Sacred Places', desc: 'Tirthas & gurudwaras' },
+  { id: 'community', icon: 'mandali' as SacredIconName, label: 'Community',    desc: 'Mandali, sangat, wisdom' },
 ] as const;
 
 function getPracticePathOptions(tradition: TraditionKey | '') {
@@ -538,11 +547,12 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                             }} />
                           )}
 
-                          {/* Emoji well */}
+                          {/* Icon well */}
                           <div
-                            className="relative flex-shrink-0 w-20 h-20 rounded-[1.2rem] flex items-center justify-center text-4xl"
+                            className="relative flex-shrink-0 w-20 h-20 rounded-[1.2rem] flex items-center justify-center"
                             style={{ 
                               background: selected ? 'rgba(200,146,74,0.22)' : 'rgba(255,255,255,0.05)',
+                              color: selected ? '#f0c870' : 'rgba(230, 200, 130, 0.72)',
                               boxShadow: selected ? '0 0 30px rgba(200,146,74,0.25)' : 'none'
                             }}
                           >
@@ -551,7 +561,7 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                               animate={{ scale: selected ? 1.1 : 1 }}
                               transition={{ type: 'spring', stiffness: 300 }}
                             >
-                              {t.emoji}
+                              <SacredIcon name={TRADITION_ICON[t.value] ?? 'sparkles'} size={30} />
                             </motion.span>
                           </div>
 
@@ -1076,7 +1086,7 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                             }} />
                           )}
                           <div className="flex items-start justify-between gap-1 mb-2">
-                            <span className="text-xl">{goal.emoji}</span>
+                            <SacredIcon name={goal.icon} size={20} />
                             <AnimatePresence>
                               {selected && (
                                 <motion.div

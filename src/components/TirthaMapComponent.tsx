@@ -12,12 +12,12 @@ interface Props {
 }
 
 // ── Tradition marker styles ────────────────────────────────────────────────
-const TRADITION_MARKER: Record<string, { emoji: string; gradient: string; shadow: string }> = {
-  hindu:    { emoji: '🛕', gradient: 'linear-gradient(135deg,#ff7722,#d4a017)', shadow: 'rgba(255,119,34,0.4)'  },
-  sikh:     { emoji: '☬',  gradient: 'linear-gradient(135deg,#1e6bb8,#3b9ef4)', shadow: 'rgba(30,107,184,0.4)' },
-  buddhist: { emoji: '☸️', gradient: 'linear-gradient(135deg,#7c3aed,#c084fc)', shadow: 'rgba(124,58,237,0.4)' },
-  jain:     { emoji: '🤲', gradient: 'linear-gradient(135deg,#0d9488,#2dd4bf)', shadow: 'rgba(13,148,136,0.4)' },
-  other:    { emoji: '🕌', gradient: 'linear-gradient(135deg,#6b7280,#9ca3af)', shadow: 'rgba(107,114,128,0.3)' },
+const TRADITION_MARKER: Record<string, { glyph: string; gradient: string; shadow: string }> = {
+  hindu:    { glyph: '⌂', gradient: 'linear-gradient(135deg,#ff7722,#d4a017)', shadow: 'rgba(255,119,34,0.4)'  },
+  sikh:     { glyph: 'ੴ', gradient: 'linear-gradient(135deg,#1e6bb8,#3b9ef4)', shadow: 'rgba(30,107,184,0.4)' },
+  buddhist: { glyph: '☸', gradient: 'linear-gradient(135deg,#7c3aed,#c084fc)', shadow: 'rgba(124,58,237,0.4)' },
+  jain:     { glyph: 'अ', gradient: 'linear-gradient(135deg,#0d9488,#2dd4bf)', shadow: 'rgba(13,148,136,0.4)' },
+  other:    { glyph: '⌖', gradient: 'linear-gradient(135deg,#6b7280,#9ca3af)', shadow: 'rgba(107,114,128,0.3)' },
 };
 
 const TRADITION_LABEL: Record<string, string> = {
@@ -34,17 +34,20 @@ const TRADITION_VISIT_HINT: Record<string, string> = {
 };
 
 function makeMarkerHtml(tradition: string) {
-  const { emoji, gradient, shadow } = TRADITION_MARKER[tradition] ?? TRADITION_MARKER.other;
+  const { glyph, gradient, shadow } = TRADITION_MARKER[tradition] ?? TRADITION_MARKER.other;
   return `<div style="
     background: ${gradient};
     border: 2px solid white;
     border-radius: 50%;
     width: 32px; height: 32px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 15px;
+    font-size: 16px;
+    color: white;
+    font-weight: 700;
+    line-height: 1;
     box-shadow: 0 2px 8px ${shadow};
     cursor: pointer;
-  ">${emoji}</div>`;
+  ">${glyph}</div>`;
 }
 
 export default function TirthaMapComponent({ temples, center, loading }: Props) {
@@ -96,7 +99,6 @@ export default function TirthaMapComponent({ temples, center, loading }: Props) 
     temples.forEach((t) => {
       const trad      = t.tradition ?? 'other';
       const tradLabel = TRADITION_LABEL[trad] ?? 'Sacred Place';
-      const { emoji } = TRADITION_MARKER[trad] ?? TRADITION_MARKER.other;
 
       const icon = L.divIcon({
         html: makeMarkerHtml(trad),
@@ -105,14 +107,14 @@ export default function TirthaMapComponent({ temples, center, loading }: Props) 
 
       const popup = `
         <div style="font-family:Inter,sans-serif;min-width:180px">
-          <div style="font-weight:700;font-size:14px;color:#1a1a1a;margin-bottom:4px">${emoji} ${t.name}</div>
+          <div style="font-weight:700;font-size:14px;color:#1a1a1a;margin-bottom:4px">${t.name}</div>
           <div style="font-size:11px;color:#888;margin-bottom:4px;font-style:italic">${tradLabel}</div>
           <div style="font-size:11px;color:#9f5d74;margin-bottom:4px">${TRADITION_VISIT_HINT[trad] ?? TRADITION_VISIT_HINT.other}</div>
-          ${t.deity    ? `<div style="font-size:12px;color:#666;margin-bottom:2px">🙏 ${t.deity}</div>` : ''}
-          ${t.address  ? `<div style="font-size:12px;color:#666;margin-bottom:2px">📍 ${t.address}</div>` : ''}
-          ${t.opening  ? `<div style="font-size:12px;color:#666;margin-bottom:2px">🕐 ${t.opening}</div>` : ''}
-          ${t.phone    ? `<div style="font-size:12px;color:#666;margin-bottom:2px">📞 ${t.phone}</div>` : ''}
-          ${t.website  ? `<a href="${t.website}" target="_blank" style="font-size:12px;color:#ff7722">🌐 Website</a>` : ''}
+          ${t.deity    ? `<div style="font-size:12px;color:#666;margin-bottom:2px">Known for: ${t.deity}</div>` : ''}
+          ${t.address  ? `<div style="font-size:12px;color:#666;margin-bottom:2px">Address: ${t.address}</div>` : ''}
+          ${t.opening  ? `<div style="font-size:12px;color:#666;margin-bottom:2px">Opening: ${t.opening}</div>` : ''}
+          ${t.phone    ? `<div style="font-size:12px;color:#666;margin-bottom:2px">Phone: ${t.phone}</div>` : ''}
+          ${t.website  ? `<a href="${t.website}" target="_blank" style="font-size:12px;color:#ff7722">Website</a>` : ''}
           <div style="margin-top:6px">
             <a href="${MAP.googleDirections(t.lat, t.lon)}" target="_blank"
                style="font-size:11px;color:#ff7722;text-decoration:none;background:#fff8f0;padding:3px 8px;border-radius:8px;border:1px solid #fcd5ac">
@@ -134,7 +136,7 @@ export default function TirthaMapComponent({ temples, center, loading }: Props) 
       {loading && (
         <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center rounded-2xl">
           <div className="flex flex-col items-center gap-2">
-            <span className="text-3xl animate-spin">🛕</span>
+            <span className="h-9 w-9 animate-spin rounded-full border-2 border-[#ff7722]/20 border-t-[#ff7722]" />
             <span className="text-sm text-gray-600 font-medium">Finding sacred places nearby…</span>
           </div>
         </div>
