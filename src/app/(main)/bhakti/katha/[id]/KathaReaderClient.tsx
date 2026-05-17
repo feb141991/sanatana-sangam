@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, Share2, Clock, Sparkles, Heart,
-  Star, ExternalLink, ChevronDown, ChevronUp, Loader2, Volume2, VolumeX
+  Star, ExternalLink, ChevronDown, ChevronUp, Loader2, Volume2, VolumeX, ALargeSmall
 } from 'lucide-react';
 import Link from 'next/link';
 import type { Katha } from '@/lib/katha-library';
@@ -38,9 +38,21 @@ const OCCASION_LABELS: Record<string, string> = {
   vesak: 'Vesak', paryushana: 'Paryushana', general: 'General',
 };
 
+type Lang = 'en' | 'hi' | 'pa';
+type FontSize = 'sm' | 'md' | 'lg';
+
+const FONT_SIZES: Record<FontSize, string> = {
+  sm: 'text-[13px] sm:text-[14px]',
+  md: 'text-[15px] sm:text-[16px]',
+  lg: 'text-[18px] sm:text-[19px]',
+};
+const FONT_CYCLE: FontSize[] = ['sm', 'md', 'lg'];
+const FONT_LABELS: Record<FontSize, string> = { sm: 'A', md: 'A', lg: 'A' };
+
 export default function KathaReaderClient({ katha }: Props) {
   const router = useRouter();
-  const [showHindi, setShowHindi] = useState(false);
+  const [lang, setLang] = useState<Lang>('en');
+  const [fontSize, setFontSize] = useState<FontSize>('md');
   const [sankalpaDismissed, setSankalpaDismissed] = useState(false);
   const [liked, setLiked] = useState(false);
   const [showPhal, setShowPhal] = useState(false);
@@ -52,10 +64,45 @@ export default function KathaReaderClient({ katha }: Props) {
   const tradColor = TRADITION_COLORS[katha.tradition] ?? '#C5A059';
   const trad = TRADITION_LABELS[katha.tradition] ?? TRADITION_LABELS.hindu;
   const hasHindi = (katha.bodyHi?.length ?? 0) > 0;
+  const hasPunjabi = (katha.bodyPa?.length ?? 0) > 0;
 
-  const bodyToShow = showHindi && hasHindi ? (katha.bodyHi ?? katha.body) : katha.body;
-  const phalToShow = showHindi && katha.phalHi ? katha.phalHi : katha.phal;
+  // Which body / phal to show based on selected language
+  const bodyToShow =
+    lang === 'hi' && hasHindi ? (katha.bodyHi ?? katha.body) :
+    lang === 'pa' && hasPunjabi ? (katha.bodyPa ?? katha.body) :
+    katha.body;
+  const phalToShow =
+    lang === 'hi' && katha.phalHi ? katha.phalHi :
+    lang === 'pa' && katha.phalPa ? katha.phalPa :
+    katha.phal;
+  const titleToShow =
+    lang === 'hi' && katha.titleHi ? katha.titleHi :
+    lang === 'pa' && katha.titlePa ? katha.titlePa :
+    katha.title;
+
   const isPanchatantra = katha.tags.includes('panchatantra');
+
+  // Cycle font size
+  function cycleFontSize() {
+    setFontSize(s => {
+      const idx = FONT_CYCLE.indexOf(s);
+      return FONT_CYCLE[(idx + 1) % FONT_CYCLE.length];
+    });
+  }
+
+  // Cycle language: en → hi (if available) → pa (if available) → en
+  function cycleLang() {
+    setLang(current => {
+      if (current === 'en' && hasHindi) return 'hi';
+      if (current === 'en' && hasPunjabi) return 'pa';
+      if (current === 'hi' && hasPunjabi) return 'pa';
+      return 'en';
+    });
+  }
+
+  // Language button label
+  const langLabel = lang === 'hi' ? 'हिं' : lang === 'pa' ? 'ਪੰ' : 'EN';
+  const hasAnyLocal = hasHindi || hasPunjabi;
 
   const stopTTS = useCallback(() => {
     if (audioRef.current) {
@@ -79,7 +126,7 @@ export default function KathaReaderClient({ katha }: Props) {
       return;
     }
 
-    const title = showHindi && katha.titleHi ? katha.titleHi : katha.title;
+    const title = titleToShow;
     const text = [title, ...bodyToShow, phalToShow].join('\n\n');
     const trimmedText = text.length > 4600 ? `${text.slice(0, 4550)}.` : text;
 
@@ -136,19 +183,29 @@ export default function KathaReaderClient({ katha }: Props) {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {hasHindi && (
+            {/* Text size cycle */}
+            <button
+              onClick={cycleFontSize}
+              className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20"
+              title="Change text size"
+            >
+              <ALargeSmall size={15} color={THEME.gold} />
+            </button>
+            {/* Language cycle — only shown when a local language exists */}
+            {hasAnyLocal && (
               <button
-                onClick={() => setShowHindi(s => !s)}
+                onClick={cycleLang}
                 className={`px-3 py-1.5 rounded-full text-[10px] font-bold border transition-all ${
-                  showHindi
+                  lang !== 'en'
                     ? 'border-[#C5A059] text-[#C5A059] bg-[#C5A059]/10'
                     : 'border-[var(--divine-border)]/10 text-[var(--text-dim)]'
                 }`}
+                title="Switch language"
               >
-                {showHindi ? 'EN' : 'हिं'}
+                {langLabel}
               </button>
             )}
-            <button className="w-10 h-10 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 text-[var(--text-main)]">
+            <button className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20">
               <Share2 size={15} color={THEME.gold} />
             </button>
           </div>
@@ -206,7 +263,7 @@ export default function KathaReaderClient({ katha }: Props) {
 
         {/* Title */}
         <h1 className="text-3xl sm:text-4xl font-serif text-[var(--text-main)] leading-tight">
-          {showHindi && katha.titleHi ? katha.titleHi : katha.title}
+          {titleToShow}
         </h1>
 
         {/* Meta */}
@@ -254,7 +311,7 @@ export default function KathaReaderClient({ katha }: Props) {
                 {speaking ? 'Stop Akash narration' : isPanchatantra ? 'Listen with Akash' : 'Listen to this katha'}
               </p>
               <p className="text-[11px] text-[var(--text-dim)] mt-0.5">
-                {showHindi && hasHindi ? 'Hindi narration' : 'English narration'} · {isPanchatantra ? 'Story pace' : 'Meditative pace'}
+                {lang === 'hi' ? 'Hindi narration' : lang === 'pa' ? 'Punjabi narration' : 'English narration'} · {isPanchatantra ? 'Story pace' : 'Meditative pace'}
               </p>
             </div>
           </div>
@@ -278,12 +335,12 @@ export default function KathaReaderClient({ katha }: Props) {
       <section className="px-6 mt-8 space-y-6">
         {bodyToShow.map((para, idx) => (
           <motion.p
-            key={`${showHindi}-${idx}`}
+            key={`${lang}-${idx}`}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.04, duration: 0.4 }}
-            className="text-[var(--text-main)]/85 text-[15px] sm:text-[16px] leading-[1.8] font-light"
-            style={{ fontFamily: showHindi ? 'inherit' : 'var(--font-serif, Georgia, serif)' }}
+            className={`text-[var(--text-main)]/85 ${FONT_SIZES[fontSize]} leading-[1.8] font-light`}
+            style={{ fontFamily: lang !== 'en' ? 'inherit' : 'var(--font-serif, Georgia, serif)' }}
           >
             {para}
           </motion.p>

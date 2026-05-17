@@ -26,6 +26,8 @@ export interface Katha {
   phalPa?: string; // Punjabi phal
   durationMin: number; // estimated reading time in minutes
   tags: string[];
+  /** Emoji portrait shown on hero cards in the Heroes of Bharat view */
+  portrait?: string;
   relatedJapaMantra?: string;
   relatedPathshalaId?: string;
 }
@@ -473,6 +475,7 @@ export const SIKH_SAKHIS: Katha[] = [
     title: 'Sacha Sauda — The True Bargain',
     titlePa: 'ਸੱਚਾ ਸੌਦਾ',
     preview: 'Guru Nanak Dev Ji\'s father gave young Nanak twenty rupees and asked him to buy goods to trade for profit — his first business venture. On the way to the market, Nanak encountered a group of starving sadhus. Without hesitation, he spent all twenty rupees feeding them, then returned home saying he had made the best bargain possible — a sacha sauda, a true deal.',
+    previewPa: 'ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਦੇ ਪਿਤਾ ਮਹਿਤਾ ਕਾਲੂ ਜੀ ਨੇ ਨੌਜਵਾਨ ਨਾਨਕ ਨੂੰ ਵੀਹ ਰੁਪਏ ਦੇ ਕੇ ਵਪਾਰ ਲਈ ਭੇਜਿਆ। ਰਸਤੇ ਵਿੱਚ ਭੁੱਖੇ ਸਾਧੂਆਂ ਨੂੰ ਦੇਖ ਕੇ ਨਾਨਕ ਨੇ ਸਾਰੇ ਪੈਸੇ ਉਨ੍ਹਾਂ ਦੀ ਸੇਵਾ ਵਿੱਚ ਲਗਾ ਦਿੱਤੇ ਅਤੇ ਕਿਹਾ ਕਿ ਇਹੀ ਸੱਚਾ ਸੌਦਾ ਹੈ।',
     body: [
       'When Guru Nanak Dev Ji was a young man, his father Mehta Kalu Ji decided it was time his son learned about commerce and trade. He gave Nanak twenty rupees and instructed him to go to the market town, buy goods, trade them for a profit, and return home. This was to be Nanak\'s initiation into the world of business.',
       'Nanak set off with his childhood friend Bala. On the road to the market, they came upon a grove of trees where a group of sadhus — wandering holy men — were resting. They were clearly in a state of severe hunger, some too weak to sit upright. Nanak learned they had been fasting for many days and had no food.',
@@ -481,7 +484,16 @@ export const SIKH_SAKHIS: Katha[] = [
       'His father, though angry, was silenced by the profound logic. This story became one of the most beloved in Sikh tradition — a perfect illustration of Guru Nanak\'s teaching that seva (selfless service) to humanity is the highest form of worship. Feeding the hungry is feeding God.',
       '"Ghaal khaae kichhu hathho dae. Nanak raahu pachhaanahi sae." — One who eats from their own labour and gives from their hands — O Nanak, this is the true path. The Sacha Sauda episode set the tone for Guru Nanak\'s entire mission: that genuine spirituality is inseparable from service to fellow human beings.',
     ],
+    bodyPa: [
+      'ਜਦੋਂ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਜਵਾਨ ਹੋਏ, ਉਨ੍ਹਾਂ ਦੇ ਪਿਤਾ ਮਹਿਤਾ ਕਾਲੂ ਜੀ ਨੇ ਸੋਚਿਆ ਕਿ ਪੁੱਤਰ ਨੂੰ ਵਪਾਰ ਸਿੱਖਣਾ ਚਾਹੀਦਾ ਹੈ। ਉਨ੍ਹਾਂ ਨੇ ਨਾਨਕ ਨੂੰ ਵੀਹ ਰੁਪਏ ਦੇ ਕੇ ਕਿਹਾ ਕਿ ਬਾਜ਼ਾਰ ਜਾ ਕੇ ਸੌਦਾ ਖਰੀਦੋ ਅਤੇ ਮੁਨਾਫ਼ੇ ਨਾਲ ਵੇਚ ਕੇ ਆਉ।',
+      'ਨਾਨਕ ਆਪਣੇ ਮਿੱਤਰ ਬਾਲਾ ਨਾਲ ਚੱਲ ਪਏ। ਰਸਤੇ ਵਿੱਚ ਉਨ੍ਹਾਂ ਨੇ ਕੁਝ ਸਾਧੂਆਂ ਨੂੰ ਦੇਖਿਆ ਜੋ ਕਈ ਦਿਨਾਂ ਤੋਂ ਭੁੱਖੇ ਸਨ। ਕੁਝ ਬੈਠਣ ਦੇ ਵੀ ਸਮਰੱਥ ਨਹੀਂ ਸਨ।',
+      'ਨਾਨਕ ਦੇ ਮਨ ਵਿੱਚ ਦਇਆ ਜਾਗੀ। ਉਨ੍ਹਾਂ ਨੇ ਬਿਨਾਂ ਸੋਚੇ ਵੀਹ ਰੁਪਏ ਨਾਲ ਭੋਜਨ ਖਰੀਦਿਆ — ਸਬਜ਼ੀਆਂ, ਦਾਲਾਂ, ਆਟਾ ਅਤੇ ਫਲ। ਆਪਣੇ ਹੱਥੀਂ ਰੋਟੀ ਪਕਾਈ ਅਤੇ ਸਾਧੂਆਂ ਨੂੰ ਪ੍ਰੇਮ ਨਾਲ ਪਰੋਸਿਆ। ਸਾਧੂਆਂ ਨੇ ਖਾਧਾ ਅਤੇ ਆਸ਼ੀਰਵਾਦ ਦੇ ਕੇ ਚਲੇ ਗਏ।',
+      'ਨਾਨਕ ਘਰ ਵਾਪਸ ਆਏ — ਨਾ ਮਾਲ, ਨਾ ਪੈਸੇ, ਪਰ ਮਨ ਵਿੱਚ ਅਨੰਦ। ਪਿਤਾ ਜੀ ਨੇ ਕਿਹਾ, "ਸੌਦਾ ਕਿੱਥੇ ਹੈ?" ਨਾਨਕ ਨੇ ਮੁਸਕਰਾ ਕੇ ਕਿਹਾ, "ਬਾਬਾ ਜੀ, ਮੈਂ ਸੱਚਾ ਸੌਦਾ ਕਰ ਆਇਆ ਹਾਂ। ਭੁੱਖੀਆਂ ਰੂਹਾਂ ਨੂੰ ਭੋਜਨ ਖੁਆਉਣ ਤੋਂ ਵੱਡਾ ਕੋਈ ਲਾਭ ਨਹੀਂ।"',
+      'ਪਿਤਾ ਜੀ ਗੁੱਸੇ ਵਿੱਚ ਆਏ ਪਰ ਨਾਨਕ ਦੀ ਗੱਲ ਸੁਣ ਕੇ ਚੁੱਪ ਹੋ ਗਏ। ਇਹ ਸਾਖੀ ਸਿੱਖ ਪਰੰਪਰਾ ਵਿੱਚ ਬਹੁਤ ਪਿਆਰੀ ਹੈ। ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਦੀ ਇਸ ਕਹਾਣੀ ਵਿੱਚ ਸੇਵਾ ਹੀ ਪੂਜਾ ਦਾ ਸੁਨੇਹਾ ਹੈ।',
+      '"ਘਾਲਿ ਖਾਇ ਕਿਛੁ ਹਥਹੁ ਦੇਇ॥ ਨਾਨਕ ਰਾਹੁ ਪਛਾਣਹਿ ਸੇਇ॥" — ਜੋ ਆਪਣੀ ਮਿਹਨਤ ਦੀ ਕਮਾਈ ਖਾਂਦੇ ਅਤੇ ਹੱਥੀਂ ਦੂਜਿਆਂ ਨੂੰ ਵੰਡਦੇ ਹਨ, ਨਾਨਕ ਕਹਿੰਦੇ ਹਨ ਕਿ ਉਹੀ ਸੱਚੇ ਰਾਹ ਨੂੰ ਪਛਾਣਦੇ ਹਨ।',
+    ],
     phal: 'The Sacha Sauda teaches that selfless service — particularly feeding the hungry — is the highest trade one can make. Whatever is offered to the needy in the spirit of seva reaches the Divine directly. True wealth is measured in hearts served, not coins accumulated.',
+    phalPa: 'ਸੱਚਾ ਸੌਦਾ ਸਾਨੂੰ ਸਿਖਾਉਂਦਾ ਹੈ ਕਿ ਭੁੱਖੇ ਨੂੰ ਭੋਜਨ ਦੇਣਾ ਅਤੇ ਨਿਰਸਵਾਰਥ ਸੇਵਾ ਕਰਨਾ ਸਭ ਤੋਂ ਵੱਡਾ ਸੌਦਾ ਹੈ। ਜੋ ਲੋੜਵੰਦਾਂ ਦੀ ਸੇਵਾ ਵਿੱਚ ਅਰਪਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਉਹ ਸਿੱਧਾ ਪਰਮਾਤਮਾ ਤੱਕ ਪਹੁੰਚਦਾ ਹੈ।',
     durationMin: 8,
     tags: ['guru-nanak', 'seva', 'langar', 'compassion', 'sacha-sauda'],
   },
@@ -525,6 +537,7 @@ export const SIKH_SAKHIS: Katha[] = [
     tradition: 'sikh',
     occasion: 'gurpurab',
     title: 'Guru Tegh Bahadur Ji — Hind Di Chadar',
+    titlePa: 'ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਜੀ — ਹਿੰਦ ਦੀ ਚਾਦਰ',
     preview: 'When Kashmiri Pandits came to Guru Tegh Bahadur Ji weeping that the Mughal emperor Aurangzeb was forcing them to convert to Islam under threat of death, the Guru — knowing it would cost him his life — stood up for their freedom of faith. He was arrested in Delhi, tortured for days, and ultimately beheaded at Chandni Chowk rather than renounce his faith or allow another\'s religious persecution.',
     body: [
       'It was the year 1675. Aurangzeb, the Mughal emperor, had issued a decree that the Kashmiri Pandits — Hindus living in the Kashmir valley — must convert to Islam or face death. Thousands of Pandits were terrified, their temples destroyed, their sacred texts burned.',
@@ -536,7 +549,7 @@ export const SIKH_SAKHIS: Katha[] = [
     ],
     phal: 'Guru Tegh Bahadur Ji\'s martyrdom teaches that religious freedom is a universal human right worth dying for. Remembering his sacrifice strengthens one\'s own resolve to live with integrity and courage. His Bani teaches: "Bhai kaahu ko det nahi, nahi bhai manat aan" — Fear no one, intimidate no one.',
     durationMin: 10,
-    tags: ['guru-tegh-bahadur', 'martyrdom', 'courage', 'religious-freedom', 'hind-di-chadar'],
+    tags: ['guru-tegh-bahadur', 'martyrdom', 'courage', 'religious-freedom', 'hind-di-chadar', 'heroes', 'sacrifice'],
   },
   {
     id: 'sakhi-bhai-kanhaiya',
