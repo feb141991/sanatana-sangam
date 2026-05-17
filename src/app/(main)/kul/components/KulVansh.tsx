@@ -5,12 +5,13 @@ import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   CalendarDays,
+  ChevronLeft,
   Crown,
   Edit3,
-  GitBranch,
   Heart,
   Lock,
   MapPin,
+  MoreVertical,
   Network,
   Orbit,
   Plus,
@@ -57,6 +58,7 @@ export function KulVansh({
   deleteMember,
   showAdd,
   setShowAdd,
+  onBack,
 }: {
   members: MemberRow[];
   familyMembers: FamilyMember[];
@@ -66,6 +68,7 @@ export function KulVansh({
   deleteMember: (id: string, name: string) => void;
   showAdd: boolean;
   setShowAdd: (show: boolean) => void;
+  onBack?: () => void;
 }) {
   const { t } = useLanguage();
   const isPro = usePremium();
@@ -88,35 +91,36 @@ export function KulVansh({
   }
 
   return (
-    <div className="relative min-h-[760px] overflow-hidden rounded-[2.5rem] bg-[var(--surface-base)] pb-28">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,var(--brand-primary-soft),transparent_46%),radial-gradient(circle_at_0%_42%,rgba(201,163,91,0.10),transparent_32%),radial-gradient(circle_at_100%_76%,rgba(216,138,28,0.10),transparent_34%)]" />
-      <div className="absolute left-1/2 top-8 h-[520px] w-[520px] -translate-x-1/2 rounded-full border border-[var(--brand-primary-soft)] opacity-45" />
-      <div className="absolute left-1/2 top-28 h-[360px] w-[360px] -translate-x-1/2 rounded-full border border-dashed border-[var(--brand-primary-soft)] opacity-45" />
+    <div className="relative min-h-[calc(100svh-120px)] overflow-hidden bg-[var(--surface-base)] pb-28">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(201,163,91,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(201,163,91,0.055)_1px,transparent_1px)] bg-[length:34px_34px]" />
+      <div className="absolute -right-28 top-10 h-72 w-72 rounded-full bg-[var(--brand-primary-soft)]/48 blur-3xl" />
+      <div className="absolute -left-24 bottom-20 h-64 w-64 rounded-full bg-[var(--brand-primary-soft)]/36 blur-3xl" />
 
-      <div className="relative z-10 space-y-6 p-4 sm:p-6">
-        <header className="p-1 sm:p-2">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0">
-              <p className="text-sm font-medium text-[var(--brand-primary)]">{t('kulVanshTitle')}</p>
-              <h2 className="mt-1 text-3xl font-medium leading-tight theme-ink premium-serif">{t('kulLivingLineage')}</h2>
-              <p className="mt-2 max-w-xl text-sm leading-relaxed theme-muted">
-                One family graph, shown through immersive Kul views.
-              </p>
+      <div className="relative z-10 space-y-4 px-1 pt-2 sm:px-2">
+        <header className="space-y-4">
+          <div className="grid min-h-12 grid-cols-[44px_1fr_44px] items-center gap-2">
+            <button
+              type="button"
+              onClick={onBack}
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--surface-raised)]/76 theme-ink shadow-sm backdrop-blur-md"
+              aria-label="Back to Kul hub"
+            >
+              <ChevronLeft size={22} />
+            </button>
+            <div className="min-w-0 text-center">
+              <p className="truncate text-xl font-medium leading-tight theme-ink premium-serif">Kul Vriksha</p>
+              <p className="mt-0.5 text-xs theme-muted">{familyMembers.length} members preserved</p>
             </div>
-
-            {canManageVansh && (
-              <motion.button
-                whileTap={{ scale: 0.96 }}
-                onClick={() => setShowAdd(true)}
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand-primary)] px-5 text-sm font-medium text-white shadow-sm"
-              >
-                <Plus size={17} />
-                {t('kulAddMember')}
-              </motion.button>
-            )}
+            <button
+              type="button"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--surface-raised)]/70 theme-muted shadow-sm backdrop-blur-md"
+              aria-label="Kul Vriksha options"
+            >
+              <MoreVertical size={20} />
+            </button>
           </div>
 
-          <div className="mt-5 flex gap-2 overflow-x-auto pb-1">
+          <div className="flex gap-2 overflow-x-auto pb-1">
             {VIEW_OPTIONS.map((option) => {
               const Icon = option.icon;
               const active = activeView === option.key;
@@ -126,13 +130,13 @@ export function KulVansh({
                   key={option.key}
                   type="button"
                   onClick={() => selectView(option.key)}
-                  className={`flex min-h-12 shrink-0 items-center gap-2 rounded-full border px-4 text-left transition ${
+                  className={`flex min-h-11 shrink-0 items-center gap-2 rounded-full border px-4 text-left transition ${
                     active
-                      ? 'border-[var(--brand-primary)] bg-[var(--brand-primary-soft)] text-[var(--brand-primary-strong)] shadow-sm'
-                      : 'border-[var(--card-border)] bg-[var(--surface-raised)]/72 theme-muted backdrop-blur-md hover:border-[var(--brand-primary)]'
+                      ? 'border-[var(--brand-primary)] bg-[var(--brand-primary)] text-white shadow-sm'
+                      : 'border-[var(--card-border)] bg-[var(--surface-raised)]/62 theme-muted backdrop-blur-md hover:border-[var(--brand-primary)]'
                   }`}
                 >
-                  <Icon size={16} className={active ? 'text-[var(--brand-primary)]' : 'theme-muted'} />
+                  <Icon size={16} className={active ? 'text-white' : 'theme-muted'} />
                   <span className="min-w-0 whitespace-nowrap">
                     <span className="flex items-center gap-1.5 text-sm font-medium">
                       {option.label}
@@ -148,10 +152,10 @@ export function KulVansh({
         {familyMembers.length === 0 && !showAdd ? (
           <EmptyVanshState canManageVansh={canManageVansh} onAdd={() => setShowAdd(true)} />
         ) : (
-          <section className="relative overflow-hidden p-1 sm:p-2">
+          <section className="relative overflow-hidden">
             <ViewHeader activeMeta={activeMeta} memberCount={familyMembers.length} isLocked={isLocked} />
 
-            <div className="mt-4">
+            <div className="mt-3">
               {activeView === 'lineage' && (
                 <LineageTree
                   roots={graph.roots}
@@ -191,6 +195,17 @@ export function KulVansh({
           </section>
         )}
       </div>
+
+      {canManageVansh && familyMembers.length > 0 && (
+        <motion.button
+          whileTap={{ scale: 0.94 }}
+          onClick={() => setShowAdd(true)}
+          className="fixed bottom-28 left-1/2 z-30 flex h-16 w-16 -translate-x-1/2 items-center justify-center rounded-full bg-[var(--brand-primary)] text-white shadow-[0_18px_46px_rgba(216,138,28,0.34)]"
+          aria-label={t('kulAddMember')}
+        >
+          <Plus size={30} />
+        </motion.button>
+      )}
 
       {selectedMember && (
         <FamilyMemberSheet
@@ -277,14 +292,14 @@ function ViewHeader({
 }) {
   const Icon = activeMeta.icon;
   return (
-    <div className="flex items-start justify-between gap-4 px-1">
+    <div className="flex items-center justify-between gap-3 px-3">
       <div className="flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--brand-primary-soft)] text-[var(--brand-primary)]">
-          <Icon size={20} />
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--brand-primary-soft)] text-[var(--brand-primary)]">
+          <Icon size={18} />
         </div>
         <div>
-          <h3 className="text-2xl font-medium theme-ink premium-serif">{activeMeta.label}</h3>
-          <p className="text-sm theme-muted">{memberCount} family members preserved</p>
+          <h3 className="text-xl font-medium theme-ink premium-serif">{activeMeta.label}</h3>
+          <p className="text-xs theme-muted">{memberCount} family members preserved</p>
         </div>
       </div>
       {isLocked && (
@@ -300,14 +315,14 @@ function ViewHeader({
 function EmptyVanshState({ canManageVansh, onAdd }: { canManageVansh: boolean; onAdd: () => void }) {
   const { t } = useLanguage();
   return (
-    <div className="rounded-[2rem] border border-dashed border-[var(--card-border)] bg-[var(--card-bg)]/80 px-6 py-16 text-center">
-      <TreePine className="mx-auto text-[var(--brand-primary)]" size={36} />
+    <div className="mx-2 mt-4 rounded-[2rem] border border-dashed border-[var(--brand-primary-soft)] bg-[var(--surface-raised)]/62 px-5 py-10 text-center backdrop-blur-md">
+      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[var(--brand-primary-soft)] text-[var(--brand-primary)]">
+        <TreePine size={30} />
+      </div>
       <h3 className="mt-5 text-2xl font-medium theme-ink premium-serif">{t('kulVanshEmptyTitle')}</h3>
-      <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed theme-muted">
-        Start with yourself or an elder, then connect parents, spouses, children, and memories.
-      </p>
+      <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed theme-muted">Add the first person and the Kul Vriksha will form from here.</p>
       {canManageVansh && (
-        <button onClick={onAdd} className="mt-6 rounded-full bg-[var(--brand-primary)] px-6 py-3 text-sm font-medium text-white">
+        <button onClick={onAdd} className="mt-6 rounded-full bg-[var(--brand-primary)] px-6 py-3 text-sm font-medium text-white shadow-[0_14px_34px_rgba(216,138,28,0.26)]">
           {t('kulCreateFirstBranch')}
         </button>
       )}
@@ -343,8 +358,13 @@ function LineageTree({
   }
 
   return (
-    <div className="overflow-x-auto rounded-[2rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.28),transparent)] py-8 pb-10 backdrop-blur-[2px]">
-      <div className="flex min-w-max flex-col items-center gap-10 px-8">
+    <div className="relative min-h-[590px] overflow-x-auto rounded-[2.5rem] bg-[radial-gradient(circle_at_50%_10%,rgba(250,238,218,0.72),transparent_28%),linear-gradient(180deg,rgba(255,253,249,0.38),rgba(255,253,249,0.08))] py-8 pb-12 backdrop-blur-[2px]">
+      <div className="pointer-events-none absolute inset-0 opacity-40">
+        <div className="absolute -left-8 top-20 h-28 w-28 rounded-full border border-[var(--brand-primary-soft)]" />
+        <div className="absolute -right-10 top-36 h-32 w-32 rounded-full border border-[var(--brand-primary-soft)]" />
+        <div className="absolute left-1/2 top-0 h-[520px] w-[520px] -translate-x-1/2 rounded-full border border-[var(--brand-primary-soft)]/70" />
+      </div>
+      <div className="relative flex min-w-max flex-col items-center gap-10 px-8">
         {roots.map((root) => (
           <TreeBranch key={root.member.id} node={root} canManage={canManage} onSelect={onSelect} onEdit={onEdit} onDelete={onDelete} />
         ))}

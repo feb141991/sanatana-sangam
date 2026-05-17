@@ -272,6 +272,7 @@ export default function KulClient({
             }}
             showAdd={showVanshForm}
             setShowAdd={setShowVanshForm}
+            onBack={() => setActiveView('hub')}
           />
         );
       case 'events':
