@@ -601,6 +601,40 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                     </div>
                   </div>
 
+                  {/* Pandit AI Cosmic Channeled Oracle */}
+                  {'panditAiOracle' in h && (
+                    <div className="rounded-2xl p-4 border border-[#C5A059]/40 space-y-2 relative overflow-hidden"
+                      style={{ background: 'linear-gradient(135deg, rgba(197, 160, 89, 0.08) 0%, rgba(10,8,25,0.85) 100%)' }}>
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-[#C5A059]/10 rounded-full blur-xl pointer-events-none" />
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">📿</span>
+                        <h3 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">Pandit AI Daily Oracle</h3>
+                      </div>
+                      <p className="text-sm font-medium text-[#F2EAD6]/90 leading-relaxed italic">
+                        &ldquo;{(h as any).panditAiOracle}&rdquo;
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Planetary Dhyana Shloka */}
+                  {'shloka' in h && (
+                    <div className="rounded-2xl p-4 border border-white/5 space-y-3"
+                      style={{ background: 'rgba(10,8,25,0.65)' }}>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs">📜</span>
+                        <h4 className="text-[10px] font-bold text-white/40 uppercase tracking-wider">Graha Dhyana Shloka</h4>
+                      </div>
+                      <div className="text-center py-2 px-1">
+                        <p className="font-serif text-base text-[#F2EAD6] font-medium leading-relaxed tracking-wide">
+                          {(h as any).shloka}
+                        </p>
+                        <p className="text-xs text-[#C5A059]/90 italic mt-3 leading-relaxed">
+                          &ldquo;{(h as any).shlokaTranslation}&rdquo;
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Daily Sadhana Focus Card (Featured Shoonaya Experience!) */}
                   <div className="rounded-2xl p-4 border border-[#C5A059]/35 space-y-2 relative overflow-hidden"
                     style={{ background: 'linear-gradient(135deg, rgba(197, 160, 89, 0.12) 0%, rgba(10,8,25,0.7) 100%)' }}>
@@ -756,6 +790,23 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                     <p className="text-sm font-medium text-[#F2EAD6] leading-relaxed">{kundaliResult.lagnaReading}</p>
                   </div>
                 </div>
+
+                {/* Pandit AI Destiny Synthesis */}
+                {'panditAiDestinyReading' in kundaliResult && (
+                  <div className="rounded-2xl p-5 border border-[#C5A059]/40 space-y-3 relative overflow-hidden"
+                    style={{ background: 'linear-gradient(135deg, rgba(197, 160, 89, 0.08) 0%, rgba(10,8,25,0.85) 100%)' }}>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A059]/10 rounded-full blur-2xl pointer-events-none" />
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">🔮</span>
+                      <h3 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">Pandit AI Destiny Synthesis</h3>
+                    </div>
+                    <div className="space-y-4 text-sm text-[#F2EAD6]/90 leading-relaxed font-medium">
+                      {kundaliResult.panditAiDestinyReading.split('\n\n').map((paragraph, index) => (
+                        <p key={index}>{paragraph}</p>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Styled North Indian Kundali SVG */}
                 <div className="rounded-2xl p-4 border border-white/5 space-y-3 flex flex-col items-center"

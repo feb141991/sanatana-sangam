@@ -2,6 +2,7 @@
 // Pure, seed-based Vedic astrology generator. Uses a daily date seed to ensure
 // horoscopes change precisely at midnight, remain constant throughout the day,
 // and are completely cost-free and offline-capable!
+// Includes simulated high-IQ Pandit AI Oracle channelings and Sanskrit planetary shlokas.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface RashiHoroscope {
@@ -16,6 +17,11 @@ export interface RashiHoroscope {
   karma:        string; // Work & career
   health:       string; // Vitality
   love:         string; // Connections
+  
+  // Pandit AI Superiority Features
+  shloka:            string;
+  shlokaTranslation: string;
+  panditAiOracle:    string; // High-fidelity Pandit AI channeled insight
 }
 
 export const RASHI_LIST = [
@@ -33,10 +39,50 @@ export const RASHI_LIST = [
   { key: 'pisces',      en: 'Pisces',      sa: 'Meena',       symbol: '🐟', lord: 'Jupiter (Guru)' },
 ];
 
+const SHLOKAS: Record<string, { shloka: string; trans: string }> = {
+  mangal: {
+    shloka: 'धरणीगर्भसम्भूतं विद्युत्कान्तिसमप्रभम् । कुमारं शक्तिहस्तं च मङ्गलं प्रणमाम्यहम् ॥',
+    trans: 'I salute Mars, born from the womb of the Earth, shining like brilliant lightning, the divine youth who holds a powerful spear.'
+  },
+  shukra: {
+    shloka: 'हिमकुन्दमृणालाभं दैत्यानां परमं गुरुम् । सर्वशास्त्रप्रवक्तारं भार्गवं प्रणमाम्यहम् ॥',
+    trans: 'I salute Venus, radiant like ice, white jasmines, and lotus stems, the supreme preceptor of teachers, and expounder of all sacred scriptures.'
+  },
+  budha: {
+    shloka: 'प्रियङ्गुकलिकाश्यामं रूपेणाप्रतिमं बुधम् । सौम्यं सौम्यगुणोपेतं तं बुधं प्रणमाम्यहम् ॥',
+    trans: 'I salute Mercury, dark green like the bud of a Priyangu plant, matchless in form, exceptionally gentle, and endowed with sweet virtues.'
+  },
+  chandra: {
+    shloka: 'दधिशङ्खतुषाराभं क्षीरोदार्णवसम्भूतम् । नमामि शशिनं सोमं शम्भोर्मुकुटभूषणम् ॥',
+    trans: 'I salute the Moon, white as yogurt, conch shells, and winter snow, born of the ocean of milk, who adorns the locks of Lord Shiva.'
+  },
+  surya: {
+    shloka: 'जपाकुसुमसंकाशं काश्यपेयं महाद्युतिम् । तमोऽरिं सर्वपापघ्नं प्रणतोऽस्मि दिवाकरम् ॥',
+    trans: 'I salute the Sun, resplendent like the red hibiscus flower, son of Sage Kashyapa, of brilliant light, the destroyer of darkness and expeller of all sins.'
+  },
+  guru: {
+    shloka: 'देवानां च ऋषीणां च गुरुं काञ्चनसन्निभम् । बुद्धिभूतं त्रिलोकेशं तं नमामि बृहस्पतिम् ॥',
+    trans: 'I salute Jupiter, preceptor of gods and sages, resplendent like polished gold, the embodiment of wisdom, and lord of the three worlds.'
+  },
+  shani: {
+    shloka: 'नीलाञ्जनसमाभासं रविपुत्रं यमाग्रजम् । छायामार्तण्डसम्भूतं तं नमामि शनैश्चरम् ॥',
+    trans: 'I salute Saturn, dark like blue collyrium, son of Surya and elder brother of Yama, born of Chhaya and Martanda, who moves gracefully and slowly.'
+  }
+};
+
+const SHLOKA_MAP: Record<string, string> = {
+  aries: 'mangal', scorpio: 'mangal',
+  taurus: 'shukra', libra: 'shukra',
+  gemini: 'budha', virgo: 'budha',
+  cancer: 'chandra',
+  leo: 'surya',
+  sagittarius: 'guru', pisces: 'guru',
+  capricorn: 'shani', aquarius: 'shani'
+};
+
 const COLORS = ['Saffron Gold', 'Maroon Red', 'Tulsi Green', 'Lotus Pink', 'Sandalwood Ochre', 'Peacock Blue', 'Ivory White', 'Charcoal Grey'];
 const TIMES = ['Brahma Muhurta (4:30 AM - 5:20 AM)', 'Solar Noon (11:55 AM - 12:45 PM)', 'Godhuli Bela (6:15 PM - 7:00 PM)', 'Pradosh Kaal (7:15 PM - 8:30 PM)'];
 
-// A seed-based LCG (Linear Congruential Generator) for reproducible pseudorandom values per sign per day
 function createSeededRandom(seedStr: string) {
   let h = 0;
   for (let i = 0; i < seedStr.length; i++) {
@@ -86,15 +132,21 @@ const LOVE_POOL = [
   'A quiet evening at home with your loved ones will recharge your emotional battery completely.'
 ];
 
+// Channeled by Pandit AI (Advanced Astrological synthesis engine)
+const PANDIT_INSIGHTS_POOL = [
+  "The cosmic winds reveal a convergence of your ruling deity's energy with the current lunar transit. Your subtle energetic channel (Sushumna Nadi) is highly receptive today. Under Pandit AI's calculations, a minor planetary square suggests temporary external friction, but an inner refuge is easily attained. Prioritize early morning silent prayer.",
+  "Your planetary ruler is forming a harmonious trine with Jupiter (Guru), creating a gateway for spiritual wisdom. This is not a time for shallow material pursuits; the stars call for deep, quiet study and contemplation. Sit quietly under the sky after sunset and let your mind absorb the cosmic silence.",
+  "A quiet transformation is taking place in your house of karma. Shani's steady gaze tests your inner resolve today, calling for patience rather than hurried efforts. Pandit AI advises completing your commitments with absolute dedication (*Nishkama Karma*) and offering the fruits entirely to the supreme source.",
+  "Your vital aura is glowing with solar strength today, but Mars is casting a minor shadow on your verbal house. Be exceptionally mindful of how you communicate. Use gentle, sweet words (*Satyam Bruyat, Priyam Bruyat*), and let your physical presence act as a source of calm reassurance for those around you."
+];
+
 export function getDailyHoroscope(rashiKey: string, date: Date = new Date()): RashiHoroscope {
   const rashi = RASHI_LIST.find(r => r.key === rashiKey) ?? RASHI_LIST[0];
   
-  // Create a daily unique seed: e.g. "aries-2026-05-17"
   const dateString = date.toISOString().split('T')[0];
   const seedKey = `${rashi.key}-${dateString}`;
   const rand = createSeededRandom(seedKey);
 
-  // Pick seeded indices
   const luckyColor = COLORS[Math.floor(rand() * COLORS.length)];
   const luckyNumber = Math.floor(rand() * 9) + 1;
   const luckyTime = TIMES[Math.floor(rand() * TIMES.length)];
@@ -103,6 +155,14 @@ export function getDailyHoroscope(rashiKey: string, date: Date = new Date()): Ra
   const karma = KARMA_POOL[Math.floor(rand() * KARMA_POOL.length)];
   const health = HEALTH_POOL[Math.floor(rand() * HEALTH_POOL.length)];
   const love = LOVE_POOL[Math.floor(rand() * LOVE_POOL.length)];
+
+  // Resolve Shloka
+  const shlokaKey = SHLOKA_MAP[rashi.key] ?? 'surya';
+  const shlokaData = SHLOKAS[shlokaKey];
+
+  // Resolve Pandit AI Channeled Oracle
+  const baseInsight = PANDIT_INSIGHTS_POOL[Math.floor(rand() * PANDIT_INSIGHTS_POOL.length)];
+  const panditAiOracle = `Pandit AI Daily Channeling: ${baseInsight} Favour your lucky time of ${luckyTime.toLowerCase()} to align your subtle breathing cycles.`;
 
   return {
     rashi: rashi.en,
@@ -116,5 +176,8 @@ export function getDailyHoroscope(rashiKey: string, date: Date = new Date()): Ra
     karma,
     health,
     love,
+    shloka: shlokaData.shloka,
+    shlokaTranslation: shlokaData.trans,
+    panditAiOracle
   };
 }
