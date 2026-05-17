@@ -1108,7 +1108,11 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                           </p>
                           {kundaliResult.chart.dasha.currentAntardasha && (
                             <p className="text-[10px] text-[#C5A059]/80">
-                              Antardasha: {kundaliResult.chart.dasha.currentAntardasha}
+                              Antardasha: {kundaliResult.chart.dasha.currentAntardasha.planet}
+                              {' '}
+                              ({new Date(kundaliResult.chart.dasha.currentAntardasha.startDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                              {' - '}
+                              {new Date(kundaliResult.chart.dasha.currentAntardasha.endDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })})
                             </p>
                           )}
                         </div>
@@ -1283,4 +1287,3 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
     </div>
   );
 }
-
