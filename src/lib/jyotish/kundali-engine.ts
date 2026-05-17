@@ -2,7 +2,7 @@
 // Computes sidereal zodiac sign placements, Lagna (Ascendant) sign based on
 // birth details, distributes Grahas (planets) dynamically, and generates
 // the premium golden-glass North Indian Kundali SVG.
-// Includes high-IQ Pandit AI Destiny Synthesis readings.
+// Includes high-IQ Pandit AI Destiny readings.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface KundaliInput {
@@ -30,7 +30,7 @@ export interface KundaliResult {
   lagnaReading:     string;
   
   // Pandit AI Superiority Features
-  panditAiDestinyReading: string; // Dynamic scholar-grade astrological synthesis
+  panditAiDestinyReading: string; // Dynamic scholar-grade astrological reading
 }
 
 const RASHI_METADATA = [
@@ -101,7 +101,7 @@ function generatePanditAiReading(
     12: "dissolving the ego in solitude, dream-state illumination, and eventual liberation (*Moksha*)"
   };
 
-  const p1 = `Pandit AI Synthesis: As a soul incarnated with a ${lagnaMeta.sa} (${lagnaMeta.en}) Lagna, your lifetime's core cosmic governor is ${lagnaMeta.ruler}. This planetary ruler sets a foundational frequency of ${
+  const p1 = `Pandit AI Destiny: As a soul incarnated with a ${lagnaMeta.sa} (${lagnaMeta.en}) Lagna, your lifetime's core cosmic governor is ${lagnaMeta.ruler}. This planetary ruler sets a foundational frequency of ${
     lagnaMeta.num % 2 === 0 ? 'yin, receptive, deep, and reflective energies' : 'yang, dynamic, active, and pioneering energies'
   } that will continuously pull your consciousness inward to refine your destiny.`;
 

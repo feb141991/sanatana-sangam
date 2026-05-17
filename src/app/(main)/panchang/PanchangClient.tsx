@@ -791,14 +791,14 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                   </div>
                 </div>
 
-                {/* Pandit AI Destiny Synthesis */}
+                {/* Pandit AI Destiny Reading */}
                 {'panditAiDestinyReading' in kundaliResult && (
                   <div className="rounded-2xl p-5 border border-[#C5A059]/40 space-y-3 relative overflow-hidden"
                     style={{ background: 'linear-gradient(135deg, rgba(197, 160, 89, 0.08) 0%, rgba(10,8,25,0.85) 100%)' }}>
                     <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A059]/10 rounded-full blur-2xl pointer-events-none" />
                     <div className="flex items-center gap-2">
                       <span className="text-xl">🔮</span>
-                      <h3 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">Pandit AI Destiny Synthesis</h3>
+                      <h3 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">Pandit AI Destiny Reading</h3>
                     </div>
                     <div className="space-y-4 text-sm text-[#F2EAD6]/90 leading-relaxed font-medium">
                       {kundaliResult.panditAiDestinyReading.split('\n\n').map((paragraph, index) => (
