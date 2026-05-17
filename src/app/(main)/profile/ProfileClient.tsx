@@ -1199,11 +1199,13 @@ export default function ProfileClient({
                             type="button"
                             onClick={() => setForm({ ...form, gender_context: opt.key })}
                             className={`rounded-2xl border p-4 text-left transition-all relative overflow-hidden ${
-                              sel ? 'bg-[#C5A059]/10 border-[#C5A059]/40 shadow-lg shadow-[#C5A059]/10' : 'bg-white/5 border-white/5 opacity-60 hover:opacity-100'
+                              sel
+                                ? 'bg-[var(--brand-primary-soft)] border-[var(--brand-primary)] text-[var(--brand-primary-strong)] shadow-sm'
+                                : 'bg-[var(--card-bg-soft)] border-[var(--card-border)] theme-muted hover:border-[var(--brand-primary)]'
                             }`}
                           >
                             <div className="text-xl mb-2">{opt.icon}</div>
-                            <p className="text-sm font-medium theme-ink">{opt.label}</p>
+                            <p className={`text-sm font-medium ${sel ? 'text-[var(--brand-primary-strong)]' : 'theme-ink'}`}>{opt.label}</p>
                             <p className="text-xs theme-muted mt-1 leading-snug">{opt.sub}</p>
                           </button>
                         );
@@ -1318,13 +1320,15 @@ export default function ProfileClient({
                     patchProfile({ active_symbol_id: relic.id } as any, `${relic.name} set as active symbol ✨`);
                   }}
                   className={`relative w-20 h-20 rounded-[2rem] flex items-center justify-center transition-all duration-500 overflow-hidden ${
-                    isUnlocked 
-                      ? 'bg-gradient-to-br from-[#C5A059]/25 to-[#C5A059]/5 border border-[#C5A059]/40 shadow-xl shadow-[#C5A059]/10' 
-                      : 'bg-black/40 border border-white/10 grayscale opacity-40'
-                  } ${!isActive && isUnlocked ? 'hover:scale-110 hover:border-[#C5A059]' : ''}`}
+                    isActive
+                      ? 'bg-[var(--brand-primary-soft)] border border-[var(--brand-primary)] shadow-sm'
+                      : isUnlocked
+                        ? 'bg-[var(--card-bg-soft)] border border-[var(--card-border)]'
+                        : 'bg-[var(--card-bg-soft)] border border-[var(--card-border)] grayscale opacity-40'
+                  } ${!isActive && isUnlocked ? 'hover:scale-110 hover:border-[var(--brand-primary)]' : ''}`}
                 >
-                  {isUnlocked && (
-                    <div className="absolute inset-0 bg-[#C5A059]/10 animate-pulse opacity-50" />
+                  {isActive && (
+                    <div className="absolute inset-0 bg-[var(--brand-primary-soft)] animate-pulse opacity-70" />
                   )}
                   
                   <div className="relative w-14 h-14 flex items-center justify-center">
@@ -1341,12 +1345,12 @@ export default function ProfileClient({
                   </div>
 
                   {isActive && (
-                    <div className="absolute top-2 right-2 w-5 h-5 bg-[#C5A059] rounded-full flex items-center justify-center border-2 border-[#1a1610] z-10 shadow-lg">
-                      <Star size={10} className="text-black fill-black" />
+                    <div className="absolute top-2 right-2 w-5 h-5 bg-[var(--brand-primary)] rounded-full flex items-center justify-center border-2 border-[var(--surface-raised)] z-10 shadow-lg">
+                      <Star size={10} className="text-white fill-white" />
                     </div>
                   )}
                 </button>
-                <p className={`text-[10px] font-black uppercase tracking-widest mt-4 text-center line-clamp-1 transition-opacity ${isUnlocked ? 'opacity-100 text-[#C5A059]' : 'opacity-30'}`}>
+                <p className={`text-xs font-medium mt-4 text-center line-clamp-1 transition-opacity ${isActive ? 'text-[var(--brand-primary-strong)]' : isUnlocked ? 'theme-ink' : 'theme-muted opacity-40'}`}>
                   {relic.name}
                 </p>
               </div>
@@ -1398,7 +1402,7 @@ export default function ProfileClient({
           {/* App Icon */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <p className="text-[10px] uppercase tracking-[0.25em] font-black text-[#C5A059]">App Identity</p>
+              <p className="text-sm font-medium text-[var(--brand-primary)]">App identity</p>
               {!isPro && (
                  <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">Pro Exclusive</span>
               )}
@@ -1417,13 +1421,15 @@ export default function ProfileClient({
                     toast.success(`${icon.label} icon set!`);
                   }}
                   className={`flex-1 flex flex-col items-center gap-3 p-3 rounded-2xl border transition-all duration-300 ${
-                    localAppIcon === icon.key ? 'border-[#C5A059] bg-[#C5A059]/15 shadow-xl shadow-[#C5A059]/10' : 'border-white/5 bg-white/5 opacity-60 hover:opacity-100'
+                    localAppIcon === icon.key
+                      ? 'bg-[var(--brand-primary-soft)] border-[var(--brand-primary)] text-[var(--brand-primary-strong)] shadow-sm'
+                      : 'bg-[var(--card-bg-soft)] border-[var(--card-border)] theme-muted hover:border-[var(--brand-primary)]'
                   } ${icon.key === 'pro' && !isPro ? 'grayscale opacity-30 cursor-not-allowed' : ''}`}
                 >
                   <div className="relative w-14 h-14 rounded-2xl overflow-hidden shadow-2xl border border-white/10">
                     <Image src={icon.img} alt={icon.label} fill className="object-cover" />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-[#F2EAD6]/40">{icon.label}</span>
+                  <span className={`text-sm font-medium ${localAppIcon === icon.key ? 'text-[var(--brand-primary-strong)]' : 'theme-muted'}`}>{icon.label}</span>
                 </button>
               ))}
             </div>
@@ -1432,7 +1438,7 @@ export default function ProfileClient({
           {/* Languages */}
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-4">
-              <p className="text-[10px] uppercase tracking-[0.25em] font-black text-[#C5A059]">Interface</p>
+              <p className="text-sm font-medium text-[var(--brand-primary)]">Interface</p>
               <div className="flex flex-col gap-2">
                 {APP_LANGUAGES.map((lang) => {
                   const active = contextLang === lang.value;
@@ -1444,8 +1450,10 @@ export default function ProfileClient({
                         setLang(lang.value as AppLang);
                         patchProfile({ app_language: lang.value, meaning_language: nextMeaningLanguage }, `Language: ${lang.label}`);
                       }}
-                      className={`px-4 py-3 rounded-xl text-left text-xs font-black uppercase tracking-widest border transition-all ${
-                        active ? 'bg-[#C5A059] text-black border-[#C5A059] shadow-lg shadow-[#C5A059]/20' : 'bg-white/5 border-white/5 text-[#F2EAD6]/40'
+                      className={`px-4 py-3 rounded-xl text-left text-sm font-medium border transition-all ${
+                        active
+                          ? 'bg-[var(--brand-primary-soft)] border-[var(--brand-primary)] text-[var(--brand-primary-strong)] shadow-sm'
+                          : 'bg-[var(--card-bg-soft)] border-[var(--card-border)] theme-muted hover:border-[var(--brand-primary)]'
                       }`}
                     >
                       {lang.label}
@@ -1455,7 +1463,7 @@ export default function ProfileClient({
               </div>
             </div>
             <div className="space-y-4">
-              <p className="text-[10px] uppercase tracking-[0.25em] font-black text-[#C5A059]">Scripture</p>
+              <p className="text-sm font-medium text-[var(--brand-primary)]">Scripture</p>
               <div className="flex flex-col gap-2">
                 {MEANING_LANGUAGE_OPTIONS.map((opt) => {
                   const active = (form.meaning_language ?? 'en') === opt.value;
@@ -1463,8 +1471,10 @@ export default function ProfileClient({
                     <button
                       key={opt.value}
                       onClick={() => patchProfile({ meaning_language: opt.value }, `Meanings: ${opt.label}`)}
-                      className={`px-4 py-3 rounded-xl text-left text-xs font-black uppercase tracking-widest border transition-all ${
-                        active ? 'bg-[#C5A059] text-black border-[#C5A059] shadow-lg shadow-[#C5A059]/20' : 'bg-white/5 border-white/5 text-[#F2EAD6]/40'
+                      className={`px-4 py-3 rounded-xl text-left text-sm font-medium border transition-all ${
+                        active
+                          ? 'bg-[var(--brand-primary-soft)] border-[var(--brand-primary)] text-[var(--brand-primary-strong)] shadow-sm'
+                          : 'bg-[var(--card-bg-soft)] border-[var(--card-border)] theme-muted hover:border-[var(--brand-primary)]'
                       }`}
                     >
                       {opt.label.replace(' meaning', '')}
