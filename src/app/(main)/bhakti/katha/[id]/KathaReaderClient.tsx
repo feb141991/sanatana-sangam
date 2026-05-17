@@ -39,6 +39,56 @@ const OCCASION_LABELS: Record<string, string> = {
   vesak: 'Vesak', paryushana: 'Paryushana', general: 'General',
 };
 
+function transliterateDevanagariToGurmukhi(input: string): string {
+  if (!input) return '';
+  
+  const devToGurMap: Record<string, string> = {
+    // Vowels
+    'अ': 'ਅ', 'आ': 'ਆ', 'इ': 'ਇ', 'ई': 'ਈ', 'उ': 'ਉ', 'ऊ': 'ਊ', 'ए': 'ਏ', 'ऐ': 'ਐ', 'ओ': 'ਓ', 'औ': 'ਔ',
+    // Consonants
+    'क': 'ਕ', 'ख': 'ਖ', 'ग': 'ਗ', 'घ': 'ਘ', 'ङ': 'ਙ',
+    'च': 'ਚ', 'छ': 'ਛ', 'ज': 'ਜ', 'झ': 'ਝ', 'ञ': 'ਞ',
+    'ट': 'ਟ', 'ठ': 'ਠ', 'ड': 'ਡ', 'ढ': 'ਢ', 'ण': 'ਣ',
+    'त': 'ਤ', 'थ': 'ਥ', 'द': 'ਦ', 'ध': 'ਧ', 'न': 'ਨ',
+    'प': 'ਪ', 'फ': 'ਫ', 'ब': 'ਬ', 'भ': 'ਭ', 'म': 'ਮ',
+    'य': 'ਯ', 'र': 'ਰ', 'ल': 'ਲ', 'व': 'ਵ', 'श': 'ਸ਼', 'ष': 'ਸ਼', 'स': 'ਸ', 'ह': 'ਹ',
+    // Matras (Vowel signs)
+    'ा': 'ਾ', 'ਿ': 'ਿ', 'ੀ': 'ੀ', 'ੁ': 'ੁ', 'ੂ': 'ੂ', 'ੇ': 'ੇ', 'ੈ': 'ੈ', 'ੋ': 'ੋ', 'ੌ': 'ੌ',
+    'ं': 'ਂ', 'ः': 'ਃ', 'ँ': 'ਂ', '्': '',
+    // Numbers
+    '०': '੦', '੧': '੧', '੨': '੨', '੩': '੩', '੪': '੪', '੫': '੫', '੬': '੬', '੭': '੭', '੮': '੮', '੯': '੯',
+    // Punctuation
+    '।': '।', '॥': '॥'
+  };
+
+  let result = '';
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+    
+    if (char === '्') {
+      continue;
+    }
+    
+    let mapped = devToGurMap[char];
+    
+    if (mapped !== undefined) {
+      if (char === 'ं') {
+        const prev = result.slice(-1);
+        if (['ਕ', 'ਖ', 'ਗ', 'ਘ', 'ਚ', 'ਛ', 'ਜ', 'ਝ', 'ਟ', 'ਠ', 'ਡ', 'ਢ', 'ਤ', 'ਥ', 'ਦ', 'ਧ', 'ਨ', 'ਪ', 'ਫ', 'ਬ', 'ਭ', 'ਮ', 'ਯ', 'ਰ', 'ਲ', 'ਵ', 'ਸ', 'ਹ', 'ਅ'].includes(prev)) {
+          mapped = 'ੰ'; // Tippi
+        } else {
+          mapped = 'ਂ'; // Bindi
+        }
+      }
+      result += mapped;
+    } else {
+      result += char;
+    }
+  }
+  
+  return result;
+}
+
 type Lang = 'en' | 'hi' | 'pa';
 type FontSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
@@ -82,20 +132,38 @@ export default function KathaReaderClient({ katha }: Props) {
       : (TRADITION_LABELS[katha.tradition] ?? TRADITION_LABELS.hindu);
 
   const hasHindi = (katha.bodyHi?.length ?? 0) > 0;
-  const hasPunjabi = (katha.bodyPa?.length ?? 0) > 0;
+  const hasPunjabi = true; // Always true to make Punjabi dynamic script selection fully available
 
   // Which body / phal to show based on selected language
+  const nativePaBody = katha.bodyPa;
+  const nativePaTitle = katha.titlePa;
+  const nativePaPhal = katha.phalPa;
+
   const bodyToShow =
     lang === 'hi' && hasHindi ? (katha.bodyHi ?? katha.body) :
-    lang === 'pa' && hasPunjabi ? (katha.bodyPa ?? katha.body) :
+    lang === 'pa' ? (
+      nativePaBody && nativePaBody.length > 0 
+        ? nativePaBody 
+        : (katha.bodyHi ?? katha.body).map(para => transliterateDevanagariToGurmukhi(para))
+    ) :
     katha.body;
+
   const phalToShow =
     lang === 'hi' && katha.phalHi ? katha.phalHi :
-    lang === 'pa' && katha.phalPa ? katha.phalPa :
+    lang === 'pa' ? (
+      nativePaPhal 
+        ? nativePaPhal 
+        : transliterateDevanagariToGurmukhi(katha.phalHi ?? katha.phal)
+    ) :
     katha.phal;
+
   const titleToShow =
     lang === 'hi' && katha.titleHi ? katha.titleHi :
-    lang === 'pa' && katha.titlePa ? katha.titlePa :
+    lang === 'pa' ? (
+      nativePaTitle 
+        ? nativePaTitle 
+        : transliterateDevanagariToGurmukhi(katha.titleHi ?? katha.title)
+    ) :
     katha.title;
 
   const hasAnyLocal = hasHindi || hasPunjabi;
