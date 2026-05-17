@@ -1475,7 +1475,7 @@ export default function ProfileClient({
 
           {/* Notifications */}
           <div className="space-y-4">
-             <p className="text-[10px] uppercase tracking-[0.25em] font-black text-[#C5A059]">Divine Reminders</p>
+             <p className="text-sm font-medium text-[var(--brand-primary)]">Divine reminders</p>
              <div className="grid grid-cols-2 gap-3">
                 {[
                   { key: 'wants_shloka_reminders', label: 'Daily Wisdom' },
@@ -1493,11 +1493,13 @@ export default function ProfileClient({
                         patchProfile({ [item.key]: next }, `${item.label} ${next ? 'enabled' : 'disabled'}`);
                       }}
                       className={`flex items-center justify-between px-5 py-4 rounded-2xl border transition-all duration-300 ${
-                        checked ? 'bg-[#C5A059]/15 border-[#C5A059]/40 text-[#C5A059] shadow-lg shadow-[#C5A059]/5' : 'bg-white/5 border-white/5 text-[#F2EAD6]/30'
+                        checked
+                          ? 'bg-[var(--brand-primary-soft)] border-[var(--brand-primary)] text-[var(--brand-primary-strong)] shadow-sm'
+                          : 'bg-[var(--card-bg-soft)] border-[var(--card-border)] theme-muted'
                       }`}
                     >
-                      <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>
-                      <div className={`w-2.5 h-2.5 rounded-full shadow-lg ${checked ? 'bg-[#C5A059] animate-pulse' : 'bg-white/10'}`} />
+                      <span className="text-sm font-medium">{item.label}</span>
+                      <div className={`w-2.5 h-2.5 rounded-full shadow-sm ${checked ? 'bg-[var(--brand-primary)]' : 'bg-[var(--text-dim)]/30'}`} />
                     </button>
                   );
                 })}
@@ -1505,7 +1507,7 @@ export default function ProfileClient({
              <button
                onClick={sendTestNotification}
                disabled={sendingTestNotification}
-               className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-[#F2EAD6]/30 transition-all hover:bg-white/10 active:scale-95"
+               className="w-full py-4 rounded-2xl bg-[var(--card-bg-soft)] border border-[var(--card-border)] text-sm font-medium theme-ink transition-all hover:border-[var(--brand-primary)] active:scale-95 disabled:opacity-50"
              >
                {sendingTestNotification ? 'Ascending...' : 'Send Test Notification'}
              </button>
