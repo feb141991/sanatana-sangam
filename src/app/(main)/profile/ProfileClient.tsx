@@ -87,30 +87,30 @@ function CompletionBar({ profile, onEdit }: { profile: Profile | null; onEdit: (
   if (pct === 100) return null;
 
   return (
-    <div className="glass-panel border border-white/10 rounded-[2rem] p-5 flex items-center gap-5 relative overflow-hidden group">
-      <div className="absolute inset-0 bg-gradient-to-r from-[#C5A059]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+    <div className="profile-card rounded-[2rem] p-5 flex items-center gap-5 relative overflow-hidden group">
+      <div className="absolute inset-0 bg-[var(--brand-primary-soft)] opacity-0 group-hover:opacity-100 transition-opacity" />
       {/* Circular completion ring */}
       <div className="relative">
         <div className="absolute inset-0 bg-[#C5A059]/20 blur-xl rounded-full scale-150 opacity-50" />
         <CircularProgress
           pct={pct}
-          accent="#C5A059"
+          accent="var(--brand-primary)"
           size={64}
           strokeWidth={6}
-          label={<span className="text-[13px] font-bold text-[#C5A059]">{pct}%</span>}
+          label={<span className="text-[13px] font-semibold text-[var(--brand-primary)]">{pct}%</span>}
         />
       </div>
       {/* Label + CTA */}
       <div className="flex-1 min-w-0 z-10">
         <div className="flex items-center justify-between mb-1.5">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#C5A059]/70">Profile Strength</p>
+          <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--brand-primary)]">Profile strength</p>
           <button onClick={onEdit}
-            className="px-4 py-1.5 rounded-full bg-[#C5A059] text-black text-[10px] font-bold uppercase tracking-widest transition-transform active:scale-95 shadow-lg shadow-[#C5A059]/20">
+            className="px-4 py-1.5 rounded-full bg-[var(--brand-primary)] text-white text-[11px] font-medium transition-transform active:scale-95 shadow-sm">
             Complete
           </button>
         </div>
         {missing.length > 0 && (
-          <p className="text-xs text-white/40 font-medium leading-relaxed">
+          <p className="text-sm theme-muted leading-relaxed">
             Enhance your journey by adding: {missing.slice(0, 3).join(', ')}{missing.length > 3 ? ` +${missing.length - 3} more` : ''}
           </p>
         )}
@@ -686,13 +686,73 @@ export default function ProfileClient({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="divine-home-shell min-h-screen bg-[var(--divine-bg)] -mx-3 sm:-mx-4 relative selection:bg-[#C5A059]/30"
+      className="profile-page divine-home-shell min-h-screen bg-[var(--surface-base)] -mx-3 sm:-mx-4 relative selection:bg-[var(--brand-primary-soft)]"
     >
       <style>{`
+        .profile-page {
+          --profile-shadow: 0 16px 36px rgba(62, 42, 31, 0.08);
+        }
+        .dark .profile-page {
+          --profile-shadow: 0 18px 44px rgba(0, 0, 0, 0.34);
+        }
+        .profile-page .profile-card,
+        .profile-page .clay-card {
+          background: var(--card-bg);
+          border: 1px solid var(--card-border);
+          box-shadow: var(--profile-shadow);
+          backdrop-filter: blur(18px);
+          -webkit-backdrop-filter: blur(18px);
+        }
+        .profile-page .profile-soft {
+          background: var(--card-bg-soft);
+          border: 1px solid var(--card-border-soft);
+        }
+        .profile-page [class*="text-[#F2EAD6]"],
+        .profile-page [class*="text-white/"] {
+          color: var(--text-cream) !important;
+        }
+        .profile-page [class*="text-[#F2EAD6]/"],
+        .profile-page [class*="text-white/1"],
+        .profile-page [class*="text-white/2"],
+        .profile-page [class*="text-white/3"],
+        .profile-page [class*="text-white/4"],
+        .profile-page [class*="text-white/5"],
+        .profile-page [class*="text-white/6"],
+        .profile-page [class*="text-white/7"],
+        .profile-page [class*="text-white/8"] {
+          color: var(--text-muted-warm) !important;
+        }
+        .profile-page [class*="text-[#C5A059]"] {
+          color: var(--brand-primary) !important;
+        }
+        .profile-page [class*="bg-white/5"],
+        .profile-page [class*="bg-white/10"],
+        .profile-page [class*="bg-white/[0.03]"] {
+          background: var(--card-bg-soft) !important;
+        }
+        .profile-page [class*="border-white/"] {
+          border-color: var(--card-border) !important;
+        }
+        .profile-page [class*="bg-[#C5A059]"] {
+          background: var(--brand-primary) !important;
+        }
+        .profile-page [class*="border-[#C5A059]"] {
+          border-color: color-mix(in srgb, var(--brand-primary) 42%, transparent) !important;
+        }
+        .profile-page [class*="shadow-[#C5A059]"] {
+          box-shadow: 0 12px 28px color-mix(in srgb, var(--brand-primary) 14%, transparent) !important;
+        }
+        .profile-page .profile-eyebrow {
+          color: var(--brand-primary);
+          font-size: 11px;
+          font-weight: 500;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
         @keyframes aura-pulse {
-          0% { transform: translate(-50%, -50%) scale(1); opacity: 0.2; }
-          50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.4; }
-          100% { transform: translate(-50%, -50%) scale(1); opacity: 0.2; }
+          0% { transform: translate(-50%, -50%) scale(1); opacity: 0.12; }
+          50% { transform: translate(-50%, -50%) scale(1.16); opacity: 0.2; }
+          100% { transform: translate(-50%, -50%) scale(1); opacity: 0.12; }
         }
         .sacred-aura {
           position: absolute;
@@ -700,7 +760,7 @@ export default function ProfileClient({
           left: 50%;
           width: 240px;
           height: 240px;
-          background: radial-gradient(circle, #C5A059 0%, transparent 70%);
+          background: radial-gradient(circle, var(--brand-primary) 0%, transparent 70%);
           filter: blur(40px);
           animation: aura-pulse 8s ease-in-out infinite;
           pointer-events: none;
@@ -709,58 +769,50 @@ export default function ProfileClient({
         .sacred-seal-ring {
           position: relative;
           z-index: 1;
-          background: linear-gradient(135deg, #F2EAD6, #C5A059, #8C6A3B);
+          background: linear-gradient(135deg, var(--surface-raised), var(--brand-primary), var(--surface-soft));
           padding: 3px;
           border-radius: 999px;
-          box-shadow: 0 10px 40px rgba(197, 160, 89, 0.25);
+          box-shadow: 0 16px 36px color-mix(in srgb, var(--brand-primary) 18%, transparent);
         }
         .sacred-seal-inner {
-          background: #1a1610;
+          background: var(--surface-raised);
           border-radius: 999px;
           width: 96px;
           height: 96px;
           display: flex;
           align-items: center;
           justify-content: center;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 1px solid var(--card-border);
           overflow: hidden;
         }
         .premium-serif {
           font-family: var(--font-serif);
-          letter-spacing: -0.02em;
-        }
-        .clay-card {
-          background: rgba(255, 255, 255, 0.03);
-          backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          box-shadow: 
-            inset 0 0 20px rgba(255, 255, 255, 0.02),
-            0 20px 40px rgba(0, 0, 0, 0.3);
+          letter-spacing: 0;
         }
         .zenith-input {
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: var(--surface-raised);
+          border: 1px solid var(--card-border);
           border-radius: 1.25rem;
           padding: 0.875rem 1.25rem;
-          color: #F2EAD6;
+          color: var(--text-cream);
           font-size: 0.875rem;
           transition: all 0.3s ease;
         }
         .zenith-input:focus {
-          background: rgba(197, 160, 89, 0.05);
-          border-color: rgba(197, 160, 89, 0.4);
-          box-shadow: 0 0 15px rgba(197, 160, 89, 0.1);
+          background: var(--card-bg);
+          border-color: color-mix(in srgb, var(--brand-primary) 45%, transparent);
+          box-shadow: 0 0 0 3px var(--brand-primary-soft);
           outline: none;
         }
       `}</style>
 
-      <div className="relative pb-24 min-h-screen bg-[var(--divine-bg)]">
+      <div className="relative pb-24 min-h-screen bg-[var(--surface-base)]">
         
       {/* ── Immersive Zenith Hero (Borderless & Tightened) ── */}
       <div className="relative w-full overflow-hidden pt-8 pb-12">
         {/* Deep atmospheric backdrop - No corners, full bleed */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#1c1c1a] via-[#12100e] to-black" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[var(--surface-soft)] via-[var(--surface-base)] to-[var(--surface-base)]" />
           <motion.div 
             animate={{ 
               scale: [1, 1.2, 1],
@@ -768,9 +820,9 @@ export default function ProfileClient({
               x: [0, 20, 0]
             }}
             transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
-            className="absolute -top-[20%] -left-[10%] w-[120%] h-[120%] bg-[radial-gradient(circle_at_center,rgba(197,160,89,0.12)_0%,transparent_70%)] blur-[100px]" 
+            className="absolute -top-[20%] -left-[10%] w-[120%] h-[120%] bg-[var(--brand-primary-soft)] blur-[100px]"
           />
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[var(--surface-base)] to-transparent" />
         </div>
 
         {/* Header Controls Overlay */}
@@ -813,7 +865,7 @@ export default function ProfileClient({
                   type="button"
                   onClick={() => avatarUrl && setShowAvatarPreview(true)}
                   disabled={!avatarUrl}
-                  className={`sacred-seal-inner !w-28 !h-28 ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
+                  className={`sacred-seal-inner relative !w-28 !h-28 ${avatarUrl ? 'cursor-zoom-in' : 'cursor-default'}`}
                 >
                   {avatarUrl
                     ? <Image src={avatarUrl} alt="avatar" fill sizes="128px" className="object-cover transition-transform duration-700 hover:scale-110" />
@@ -839,7 +891,7 @@ export default function ProfileClient({
               className="text-center space-y-3"
             >
                 <div className="flex items-center justify-center gap-3">
-                  <h1 className="text-3xl font-bold text-[#F2EAD6] premium-serif tracking-tight drop-shadow-2xl">
+                  <h1 className="text-3xl font-medium theme-ink premium-serif">
                     {liveProfile?.full_name}
                   </h1>
                   <button
@@ -851,7 +903,7 @@ export default function ProfileClient({
                   </button>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[11px] font-bold text-[#C5A059] uppercase tracking-[0.25em] opacity-80">@{liveProfile?.username}</span>
+                  <span className="profile-eyebrow opacity-90">@{liveProfile?.username}</span>
                   {isPro && (
                     <div className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-amber-200/10 border border-amber-400/30 flex items-center gap-1.5 shadow-lg shadow-amber-900/20">
                       <Star size={11} className="text-amber-400 fill-amber-400" />
@@ -861,7 +913,7 @@ export default function ProfileClient({
                 </div>
               
               {(liveProfile?.city || liveProfile?.country) && (
-                <div className="mt-4 flex items-center justify-center gap-2 text-[10px] font-bold text-[#F2EAD6]/50 uppercase tracking-[0.3em]">
+                <div className="mt-4 flex items-center justify-center gap-2 text-[12px] font-medium theme-muted">
                   <div className="w-8 h-px bg-gradient-to-r from-transparent to-[#C5A059]/30" />
                   <MapPin size={11} className="text-[#C5A059]" />
                   <span>{[liveProfile?.city, liveProfile?.country].filter(Boolean).join(' · ')}</span>
@@ -895,8 +947,8 @@ export default function ProfileClient({
                 transition={{ delay: 0.1 * i }}
                 className={`clay-card rounded-2xl p-2.5 text-center transition-all ${m.label === 'Kul' && !kulData ? 'border-red-500/20' : 'hover:border-[#C5A059]/30'}`}
               >
-                <p className="text-[7px] font-black text-[#C5A059] uppercase tracking-[0.2em] mb-1 opacity-50">{m.label}</p>
-                <p className="text-sm font-serif text-[#F2EAD6] truncate">{m.value}</p>
+                <p className="text-[11px] font-medium theme-dim mb-1">{m.label}</p>
+                <p className="text-sm font-medium theme-ink truncate">{m.value}</p>
               </motion.div>
             ))}
           </div>
@@ -913,8 +965,8 @@ export default function ProfileClient({
                 <Star className="text-[#C5A059] group-hover:animate-pulse" size={20} />
               </div>
               <div className="text-center">
-                <p className="text-sm font-bold text-[#F2EAD6] tracking-wide premium-serif">Sacred Kosh</p>
-                <p className="text-[8px] font-black text-[#C5A059] uppercase tracking-widest mt-0.5 opacity-60">Divine Relics</p>
+                <p className="text-base font-medium theme-ink premium-serif">Sacred kosh</p>
+                <p className="text-xs theme-muted mt-0.5">Divine relics</p>
               </div>
             </motion.button>
 
@@ -927,8 +979,8 @@ export default function ProfileClient({
                   <Users className="text-[#C5A059]" size={20} />
                 </div>
                 <div className="text-center">
-                  <p className="text-sm font-bold text-[#F2EAD6] tracking-wide premium-serif">Sacred Invite</p>
-                  <p className="text-[8px] font-black text-[#C5A059] uppercase tracking-widest mt-0.5 opacity-60">Invite to {kulData.name}</p>
+                  <p className="text-base font-medium theme-ink premium-serif">Sacred invite</p>
+                  <p className="text-xs theme-muted mt-0.5">Invite to {kulData.name}</p>
                 </div>
               </motion.button>
             ) : (
@@ -940,8 +992,8 @@ export default function ProfileClient({
                   <Shield className="text-[#F2EAD6]/40" size={20} />
                 </div>
                 <div className="text-center">
-                  <p className="text-sm font-bold text-[#F2EAD6] tracking-wide premium-serif">Join Kul</p>
-                  <p className="text-[8px] font-black text-white/30 uppercase tracking-widest mt-0.5 opacity-60">Start Lineage</p>
+                  <p className="text-base font-medium theme-ink premium-serif">Join Kul</p>
+                  <p className="text-xs theme-muted mt-0.5">Start lineage</p>
                 </div>
               </motion.button>
             )}
@@ -966,8 +1018,8 @@ export default function ProfileClient({
               <MessageCircle size={20} />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-[12px] font-bold text-[#F2EAD6]">Expand the Mandali</p>
-              <p className="text-[9px] font-black text-[#C5A059] uppercase tracking-widest mt-0.5 opacity-60">Invite on WhatsApp</p>
+              <p className="text-sm font-medium theme-ink">Expand the Mandali</p>
+              <p className="text-xs theme-muted mt-0.5">Invite on WhatsApp</p>
             </div>
             <ChevronRight size={16} className="text-white/20 group-hover:translate-x-1 transition-transform" />
           </button>
@@ -979,8 +1031,8 @@ export default function ProfileClient({
                   <ShieldBan size={20} className="text-[#C5A059]" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-[#F2EAD6] uppercase tracking-[0.15em]">Safety & Boundaries</h3>
-                  <p className="text-[10px] text-[#C5A059]/50 font-bold uppercase tracking-wider mt-0.5">Control your experience</p>
+                  <h3 className="text-base font-medium theme-ink premium-serif">Safety and boundaries</h3>
+                  <p className="text-xs theme-muted mt-0.5">Control your experience</p>
                 </div>
               </div>
               <div className="space-y-3">
@@ -1016,16 +1068,16 @@ export default function ProfileClient({
               </div>
               
               <div className="space-y-1">
-                <h2 className="text-2xl font-bold text-[#F2EAD6] premium-serif">Personal Details</h2>
-                <p className="text-[10px] text-[#C5A059] font-black uppercase tracking-[0.2em] opacity-70">Update your spiritual identity</p>
+                <h2 className="text-2xl font-medium theme-ink premium-serif">Personal details</h2>
+                <p className="text-sm theme-muted">Update your spiritual identity</p>
               </div>
 
               {/* ── Tradition — locked ── */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between px-1">
-                  <label className="text-[10px] uppercase tracking-widest font-black text-[#F2EAD6]/30">Spiritual Tradition</label>
-                  <span className="flex items-center gap-1.5 text-[9px] px-3 py-1 rounded-full bg-white/5 text-[#F2EAD6]/40 border border-white/10 font-bold uppercase tracking-wider">
-                    <Lock size={10} className="text-[#C5A059]" /> Secured
+                  <label className="text-xs font-medium theme-muted">Spiritual tradition</label>
+                  <span className="flex items-center gap-1.5 text-[11px] px-3 py-1 rounded-full bg-[var(--brand-primary-soft)] text-[var(--brand-primary)] border border-[var(--card-border)] font-medium">
+                    <Lock size={10} /> Secured
                   </span>
                 </div>
                 {(() => {
@@ -1034,8 +1086,8 @@ export default function ProfileClient({
                     <div className="flex items-center gap-4 px-5 py-4 rounded-[1.5rem] bg-white/[0.03] border border-[#C5A059]/20 shadow-inner">
                       <span className="text-3xl drop-shadow-md">{t.emoji}</span>
                       <div>
-                        <p className="font-bold text-sm text-[#F2EAD6] tracking-wide">{t.label}</p>
-                        <p className="text-[11px] text-[#F2EAD6]/40 mt-0.5 font-medium">{t.desc}</p>
+                        <p className="font-medium text-sm theme-ink">{t.label}</p>
+                        <p className="text-xs theme-muted mt-0.5">{t.desc}</p>
                       </div>
                     </div>
                   ) : null;
@@ -1049,7 +1101,7 @@ export default function ProfileClient({
                     { label: 'Home Town', key: 'home_town', placeholder: 'Where you are from' },
                   ].map(({ label, key, placeholder }) => (
                     <div key={key} className="space-y-2">
-                      <label className="block text-[10px] font-black uppercase tracking-widest text-[#C5A059]/60 px-1">{label}</label>
+                      <label className="block text-xs font-medium theme-muted px-1">{label}</label>
                       <input type="text" placeholder={placeholder}
                         value={(form as Record<string, string>)[key]}
                         onChange={(e) => setForm({ ...form, [key]: e.target.value })}
@@ -1061,10 +1113,10 @@ export default function ProfileClient({
               </div>
 
               <div className="space-y-6">
-                <p className="text-[11px] uppercase tracking-[0.25em] font-black text-[#C5A059]">Lineage & Path</p>
+                <p className="text-sm font-medium text-[var(--brand-primary)]">Lineage and path</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-[#C5A059]/60 px-1">{sampradayaLabel}</label>
+                    <label className="block text-xs font-medium theme-muted px-1">{sampradayaLabel}</label>
                     <select value={form.sampradaya}
                       onChange={(e) => setForm({ ...form, sampradaya: e.target.value })}
                       className="zenith-input w-full appearance-none">
@@ -1074,7 +1126,7 @@ export default function ProfileClient({
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-[#C5A059]/60 px-1">{ishtaDevataLabel}</label>
+                    <label className="block text-xs font-medium theme-muted px-1">{ishtaDevataLabel}</label>
                     <select value={form.ishta_devata}
                       onChange={(e) => setForm({ ...form, ishta_devata: e.target.value })}
                       className="zenith-input w-full appearance-none">
@@ -1088,7 +1140,7 @@ export default function ProfileClient({
               {/* ── Hindu-specific fields ── */}
               {(activeTradition === 'hindu') && (
                 <div className="space-y-6">
-                  <p className="text-[11px] uppercase tracking-[0.25em] font-black text-[#C5A059]">Vansh Identity</p>
+                  <p className="text-sm font-medium text-[var(--brand-primary)]">Vansh identity</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {[
                       { label: 'Gotra',      key: 'gotra',      placeholder: 'e.g. Kashyapa'     },
@@ -1096,7 +1148,7 @@ export default function ProfileClient({
                       { label: 'Family Name', key: 'kul',        placeholder: 'Kul / Vansh'    },
                     ].map(({ label, key, placeholder }) => (
                       <div key={key} className="space-y-2">
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-[#C5A059]/60 px-1">{label}</label>
+                        <label className="block text-xs font-medium theme-muted px-1">{label}</label>
                         <input type="text" placeholder={placeholder}
                           value={(form as Record<string, string>)[key]}
                           onChange={(e) => setForm({ ...form, [key]: e.target.value })}
@@ -1109,10 +1161,10 @@ export default function ProfileClient({
               )}
 
               <div className="space-y-6">
-                <p className="text-[11px] uppercase tracking-[0.25em] font-black text-[#C5A059]">Life Stage</p>
+                <p className="text-sm font-medium text-[var(--brand-primary)]">Life stage</p>
                 <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-[#C5A059]/60 px-1">Date of birth</label>
+                    <label className="block text-xs font-medium theme-muted px-1">Date of birth</label>
                     <input
                       type="date"
                       value={form.date_of_birth}
@@ -1128,7 +1180,7 @@ export default function ProfileClient({
                       return (
                         <div className="flex items-center gap-2 mt-3 px-3 py-2 rounded-xl bg-[#C5A059]/5 border border-[#C5A059]/10">
                           <span className="text-sm">{meta.icon}</span>
-                          <p className="text-[10px] font-bold uppercase tracking-wider text-[#F2EAD6]/50">
+                          <p className="text-xs font-medium theme-muted">
                             Age {age} · Suggested stage: <span style={{ color: meta.accent }}>{meta.label}</span>
                           </p>
                         </div>
@@ -1137,7 +1189,7 @@ export default function ProfileClient({
                   </div>
 
                   <div className="space-y-3">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-[#C5A059]/60 px-1">Practice Path</label>
+                    <label className="block text-xs font-medium theme-muted px-1">Practice path</label>
                     <div className="grid grid-cols-2 gap-3">
                       {getPracticePathOptions(activeTradition).map(opt => {
                         const sel = form.gender_context === opt.key;
@@ -1151,8 +1203,8 @@ export default function ProfileClient({
                             }`}
                           >
                             <div className="text-xl mb-2">{opt.icon}</div>
-                            <p className="text-[11px] font-black uppercase tracking-widest text-[#F2EAD6]">{opt.label}</p>
-                            <p className="text-[9px] text-[#F2EAD6]/40 mt-1 font-bold leading-snug">{opt.sub}</p>
+                            <p className="text-sm font-medium theme-ink">{opt.label}</p>
+                            <p className="text-xs theme-muted mt-1 leading-snug">{opt.sub}</p>
                           </button>
                         );
                       })}
@@ -1162,7 +1214,7 @@ export default function ProfileClient({
               </div>
 
               <div className="space-y-2">
-                <label className="block text-[10px] font-black uppercase tracking-widest text-[#C5A059]/60 px-1">Bio</label>
+                <label className="block text-xs font-medium theme-muted px-1">Bio</label>
                 <textarea placeholder="Share your spiritual journey…"
                   value={form.bio}
                   onChange={(e) => setForm({ ...form, bio: e.target.value })}
@@ -1173,12 +1225,12 @@ export default function ProfileClient({
 
               <div className="flex gap-4 pt-6">
                 <button onClick={() => setEditing(false)}
-                  className="flex-1 py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] text-[#F2EAD6]/30 border border-white/10 transition-all hover:bg-white/5 active:scale-95">
+                  className="flex-1 py-4 rounded-2xl text-sm font-medium theme-muted border border-[var(--card-border)] transition-all hover:bg-[var(--card-bg-soft)] active:scale-95">
                   Cancel
                 </button>
                 <button onClick={saveProfile} disabled={saving}
-                  className="flex-1 py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] bg-[#C5A059] text-black shadow-2xl shadow-[#C5A059]/30 transition-all active:scale-95 hover:bg-[#d4ae6a] disabled:opacity-50">
-                  {saving ? 'Saving…' : 'Save Changes'}
+                  className="flex-1 py-4 rounded-2xl text-sm font-medium bg-[var(--brand-primary)] text-white shadow-sm transition-all active:scale-95 disabled:opacity-50">
+                  {saving ? 'Saving...' : 'Save changes'}
                 </button>
               </div>
             </div>
@@ -1188,8 +1240,8 @@ export default function ProfileClient({
           <div className="clay-card rounded-[2.5rem] p-6 space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[9px] font-black text-[#C5A059] uppercase tracking-[0.25em] mb-1.5 opacity-60">Connected Email</p>
-                <p className="text-sm font-bold text-[#F2EAD6] tracking-wide">{userEmail}</p>
+                <p className="text-xs font-medium theme-muted mb-1.5">Connected email</p>
+                <p className="text-sm font-medium theme-ink break-all">{userEmail}</p>
               </div>
               <button
                 onClick={signOut}
@@ -1203,7 +1255,7 @@ export default function ProfileClient({
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => setInviteOpen(true)}
-                className="flex items-center justify-center gap-2.5 py-4 rounded-2xl bg-white/5 border border-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-[#F2EAD6]/60 transition-all hover:bg-white/10 hover:border-[#C5A059]/30"
+                className="flex items-center justify-center gap-2.5 py-4 rounded-2xl bg-[var(--card-bg-soft)] border border-[var(--card-border)] text-sm font-medium theme-ink transition-all hover:border-[var(--brand-primary)]"
               >
                 <Users size={16} className="text-[#C5A059]" />
                 Invite
@@ -1211,7 +1263,7 @@ export default function ProfileClient({
               <button
                 onClick={downloadReport}
                 disabled={reportLoading}
-                className="flex items-center justify-center gap-2.5 py-4 rounded-2xl bg-white/5 border border-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-[#F2EAD6]/60 transition-all hover:bg-white/10 hover:border-[#C5A059]/30 disabled:opacity-50"
+                className="flex items-center justify-center gap-2.5 py-4 rounded-2xl bg-[var(--card-bg-soft)] border border-[var(--card-border)] text-sm font-medium theme-ink transition-all hover:border-[var(--brand-primary)] disabled:opacity-50"
               >
                 {reportLoading ? <Loader2 size={16} className="animate-spin text-[#C5A059]" /> : <Download size={16} className="text-[#C5A059]" />}
                 Report
@@ -1569,14 +1621,14 @@ export default function ProfileClient({
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
               <motion.div className="relative w-full rounded-t-[3.5rem] p-10 space-y-8" onClick={e => e.stopPropagation()}
-                style={{ background: 'linear-gradient(180deg, #1c1c1a, #12100e)', borderTop: '1px solid rgba(197, 160, 89, 0.4)', boxShadow: '0 -20px 80px rgba(0,0,0,0.8)' }}
+                style={{ background: 'var(--surface-raised)', borderTop: '1px solid var(--card-border)', boxShadow: 'var(--profile-shadow)' }}
                 initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
                 transition={{ type: 'spring', damping: 28, stiffness: 180 }}>
                 <div className="w-16 h-1.5 rounded-full mx-auto mb-4 bg-[#C5A059]/30" />
                 <div className="flex items-center justify-between mb-2">
                   <div className="space-y-1">
-                    <h3 className="text-3xl font-bold text-[#F2EAD6] premium-serif">Expand the Circle</h3>
-                    <p className="text-[10px] text-[#C5A059] font-black uppercase tracking-[0.25em] opacity-80">Invite your Mandali</p>
+                    <h3 className="text-3xl font-medium theme-ink premium-serif">Expand the circle</h3>
+                    <p className="text-sm theme-muted">Invite your Mandali</p>
                   </div>
                   <button onClick={() => setInviteOpen(false)} className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 transition-all hover:bg-white/10 active:scale-90">
                     <X size={22} className="text-[#F2EAD6]/40" />
@@ -1584,7 +1636,7 @@ export default function ProfileClient({
                 </div>
                 
                 <div className="space-y-6">
-                  <p className="text-sm text-[#F2EAD6]/50 leading-relaxed font-medium">Your devotion grows when shared. Invite your family and close friends to the Shoonaya community.</p>
+                  <p className="text-sm theme-muted leading-relaxed">Your devotion grows when shared. Invite your family and close friends to the Shoonaya community.</p>
                   
                   <div className="relative group cursor-pointer" onClick={onCopy}>
                     <div className="rounded-[2.5rem] p-10 text-center border bg-[#C5A059]/5 border-[#C5A059]/20 shadow-inner overflow-hidden relative">
@@ -1598,10 +1650,10 @@ export default function ProfileClient({
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
-                    <button onClick={onCopy} className="py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] bg-white/5 border border-white/10 text-[#F2EAD6]/60 transition-all hover:bg-white/10 active:scale-95 flex items-center justify-center gap-2">
+                    <button onClick={onCopy} className="py-5 rounded-2xl font-medium text-sm bg-[var(--card-bg-soft)] border border-[var(--card-border)] theme-ink transition-all hover:border-[var(--brand-primary)] active:scale-95 flex items-center justify-center gap-2">
                       Copy Link
                     </button>
-                    <button onClick={onShare} className="py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] bg-[#C5A059] text-black shadow-2xl shadow-[#C5A059]/30 transition-all active:scale-95 hover:bg-[#d4ae6a] flex items-center justify-center gap-2">
+                    <button onClick={onShare} className="py-5 rounded-2xl font-medium text-sm bg-[var(--brand-primary)] text-white shadow-sm transition-all active:scale-95 flex items-center justify-center gap-2">
                       🙏 Share Now
                     </button>
                   </div>
@@ -1637,14 +1689,14 @@ export default function ProfileClient({
                 <div className="w-20 h-20 rounded-[2rem] bg-gradient-to-br from-[#C5A059]/30 to-transparent flex items-center justify-center mx-auto mb-4 border border-[#C5A059]/20 shadow-inner">
                   <Users className="text-[#C5A059]" size={32} />
                 </div>
-                <h2 className="text-3xl font-bold text-[#F2EAD6] premium-serif">Sacred Invite</h2>
-                <p className="text-[10px] text-[#C5A059] font-black uppercase tracking-[0.3em]">Invite seekers to {kulData.name}</p>
+                <h2 className="text-3xl font-medium theme-ink premium-serif">Sacred invite</h2>
+                <p className="text-sm theme-muted">Invite seekers to {kulData.name}</p>
               </div>
 
               <div className="space-y-4">
                 <div className="p-6 rounded-[2rem] bg-black/40 border border-white/5 space-y-3 text-center shadow-inner">
-                  <p className="text-[10px] text-[#F2EAD6]/30 font-black uppercase tracking-[0.2em]">Your Kul Invite Code</p>
-                  <p className="text-4xl font-serif text-[#C5A059] tracking-[0.4em] drop-shadow-lg">{kulData.code}</p>
+                  <p className="text-xs theme-muted">Your Kul invite code</p>
+                  <p className="text-4xl font-serif text-[var(--brand-primary)] tracking-[0.18em] drop-shadow-lg">{kulData.code}</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -1659,7 +1711,7 @@ export default function ProfileClient({
                     <div className="w-10 h-10 rounded-full bg-[#C5A059]/10 flex items-center justify-center text-[#C5A059] group-hover:scale-110 transition-transform">
                       <Download className="rotate-[-90deg]" size={18} />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-[#F2EAD6]/70">Copy Link</span>
+                    <span className="text-xs font-medium theme-ink">Copy link</span>
                   </button>
 
                   <button 
@@ -1679,7 +1731,7 @@ export default function ProfileClient({
 
               <button 
                 onClick={() => setShowInviteModal(false)}
-                className="w-full py-5 rounded-[2rem] bg-[#F2EAD6]/5 text-[#F2EAD6]/30 text-[11px] font-black uppercase tracking-[0.25em] hover:bg-[#F2EAD6]/10 transition-all active:scale-[0.98]"
+                className="w-full py-5 rounded-[2rem] bg-[var(--card-bg-soft)] theme-muted text-sm font-medium hover:bg-[var(--brand-primary-soft)] transition-all active:scale-[0.98]"
               >
                 Close Portal
               </button>
@@ -1699,8 +1751,8 @@ export default function ProfileClient({
               <Download size={20} />
             </div>
             <div className="flex-1">
-              <p className="text-[12px] font-bold text-[#F2EAD6]">Upload from Device</p>
-              <p className="text-[9px] font-black text-[#C5A059] uppercase tracking-widest mt-0.5">Gallery or Camera</p>
+              <p className="text-sm font-medium theme-ink">Upload from device</p>
+              <p className="text-xs theme-muted mt-0.5">Gallery or camera</p>
             </div>
             <input type="file" accept="image/*" className="hidden" onChange={uploadAvatar} />
           </label>
@@ -1714,8 +1766,8 @@ export default function ProfileClient({
               <X size={20} />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-[12px] font-bold text-[#F2EAD6]">Remove Current Photo</p>
-              <p className="text-[9px] font-black text-red-500 uppercase tracking-widest mt-0.5">Reset to initials</p>
+              <p className="text-sm font-medium theme-ink">Remove current photo</p>
+              <p className="text-xs text-red-500 mt-0.5">Reset to initials</p>
             </div>
           </button>
         </div>
@@ -1756,22 +1808,22 @@ function BottomDrawer({
             onClick={(e) => e.stopPropagation()}
             className="relative w-full max-h-[90vh] overflow-y-auto rounded-t-[3.5rem] p-10 pb-16"
             style={{ 
-              background: 'linear-gradient(180deg, #1c1c1a, #0d0c0b)', 
-              borderTop: '1px solid rgba(197, 160, 89, 0.4)',
-              boxShadow: '0 -20px 100px rgba(0,0,0,0.9)' 
+              background: 'var(--surface-raised)',
+              borderTop: '1px solid var(--card-border)',
+              boxShadow: 'var(--profile-shadow)'
             }}
           >
-            <div className="w-16 h-1.5 rounded-full mx-auto mb-10 bg-[#C5A059]/20" />
+            <div className="w-16 h-1.5 rounded-full mx-auto mb-10 bg-[var(--brand-primary-soft)]" />
             <div className="flex items-center justify-between mb-2">
               <div className="space-y-1">
-                <h3 className="text-3xl font-bold text-[#F2EAD6] premium-serif tracking-tight">{title}</h3>
-                {description && <p className="text-[11px] text-[#C5A059] font-black uppercase tracking-[0.2em] opacity-80">{description}</p>}
+                <h3 className="text-3xl font-medium theme-ink premium-serif">{title}</h3>
+                {description && <p className="text-sm theme-muted">{description}</p>}
               </div>
               <button
                 onClick={onClose}
-                className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 transition-all active:scale-90 hover:bg-white/10"
+                className="w-12 h-12 rounded-2xl bg-[var(--card-bg-soft)] flex items-center justify-center border border-[var(--card-border)] transition-all active:scale-90 hover:bg-[var(--brand-primary-soft)]"
               >
-                <X size={24} className="text-[#F2EAD6]/40" />
+                <X size={24} className="theme-muted" />
               </button>
             </div>
             
@@ -1799,15 +1851,15 @@ function SafetyProfileRow({
   const initials = getInitials(profile.full_name || profile.username || 'S');
 
   return (
-    <div className="rounded-[1.5rem] px-5 py-4 flex items-center gap-4 group transition-all" style={{ border: '1px solid rgba(197, 160, 89, 0.15)', background: 'rgba(255,255,255,0.02)' }}>
-      <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-[#C5A059] to-[#8C6A3B] text-black flex items-center justify-center text-sm font-black overflow-hidden flex-shrink-0 shadow-lg group-hover:scale-105 transition-transform">
+    <div className="rounded-[1.5rem] px-5 py-4 flex items-center gap-4 group transition-all profile-card">
+      <div className="relative w-12 h-12 rounded-2xl bg-[var(--brand-primary)] text-white flex items-center justify-center text-sm font-medium overflow-hidden flex-shrink-0 shadow-lg group-hover:scale-105 transition-transform">
         {profile.avatar_url
           ? <Image src={profile.avatar_url} alt="" fill sizes="48px" className="object-cover" />
           : initials}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold text-[#F2EAD6] truncate">{profile.full_name || profile.username}</p>
-        <p className="text-[10px] text-[#C5A059]/50 font-black uppercase tracking-widest truncate">{profile.username ? `@${profile.username}` : 'Shoonaya Member'}</p>
+        <p className="text-sm font-medium theme-ink truncate">{profile.full_name || profile.username}</p>
+        <p className="text-xs theme-muted truncate">{profile.username ? `@${profile.username}` : 'Shoonaya member'}</p>
       </div>
       <button
         onClick={onAction}
@@ -1836,14 +1888,14 @@ function AvatarPreviewModal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-[200] bg-black/85 backdrop-blur-md px-6 py-10 flex items-center justify-center"
+      className="fixed inset-0 z-[200] bg-black/75 backdrop-blur-md px-6 py-10 flex items-center justify-center"
       onClick={onClose}
     >
       <div className="relative w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
           onClick={onClose}
-          className="absolute -top-16 right-0 z-10 w-12 h-12 rounded-2xl bg-white/10 text-[#F2EAD6] flex items-center justify-center transition-all hover:bg-white/20 active:scale-90 border border-white/10"
+          className="absolute -top-16 right-0 z-10 w-12 h-12 rounded-2xl bg-[var(--surface-raised)] theme-ink flex items-center justify-center transition-all hover:bg-[var(--card-bg)] active:scale-90 border border-[var(--card-border)]"
           aria-label="Close"
         >
           <X size={24} />
@@ -1864,10 +1916,10 @@ function AvatarPreviewModal({
             />
           </div>
           <div className="text-center mt-6 space-y-1">
-            <p className="text-2xl font-bold text-[#F2EAD6] premium-serif tracking-wide">
+            <p className="text-2xl font-medium theme-ink premium-serif">
               {fullName}
             </p>
-            <p className="text-[10px] text-[#C5A059] font-black uppercase tracking-[0.3em] opacity-60">Profile Vision</p>
+            <p className="text-xs theme-muted">Profile photo</p>
           </div>
         </motion.div>
       </div>
