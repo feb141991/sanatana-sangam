@@ -2,10 +2,11 @@
 
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ChevronLeft, Play, ChevronRight, Flame } from 'lucide-react';
+import { BookOpen, ChevronLeft, Play, ChevronRight, Flame, Heart, Mic, Music2, ScrollText, Shield, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import type { SacredContentItem } from '@/lib/sacred-content';
 import type { Shloka } from '@/lib/shlokas';
 
 interface Props {
@@ -28,11 +29,8 @@ const TRADITION_HERO: Record<string, { greeting: string; sub: string }> = {
 };
 
 // ── Content category cards ─────────────────────────────────────────────────────
-interface ContentCard {
-  emoji: string;
-  title: string;
-  desc:  string;
-  href:  string;
+interface ContentCard extends Pick<SacredContentItem, 'id' | 'kind' | 'title' | 'description' | 'href' | 'tradition' | 'tags'> {
+  icon: typeof BookOpen;
   // subtle tint on the card
   tint:  string;
   traditions?: string[]; // if omitted, show for all
@@ -41,82 +39,122 @@ interface ContentCard {
 const CONTENT_CARDS: ContentCard[] = [
   // ── Tradition-specific story entry points ──
   {
-    emoji: '🏛️',
+    id: 'puranic-tales',
+    kind: 'katha',
+    tradition: 'hindu',
+    icon: ScrollText,
     title: 'Puranic Tales',
-    desc:  'Ramayana, Mahabharata & the Puranas',
+    description: 'Ramayana, Mahabharata & the Puranas',
     href:  '/bhakti/katha?view=puranic',
     tint:  'rgba(200,160,60,0.10)',
     traditions: ['hindu'],
+    tags: ['katha', 'purana', 'ramayana'],
   },
   {
-    emoji: '☬',
+    id: 'bani-sakhis',
+    kind: 'katha',
+    tradition: 'sikh',
+    icon: BookOpen,
     title: 'Bani & Sakhis',
-    desc:  'Guru stories, sakhis & kirtan wisdom',
+    description: 'Guru stories, sakhis & kirtan wisdom',
     href:  '/bhakti/katha?view=bani',
     tint:  'rgba(100,160,220,0.10)',
     traditions: ['sikh'],
+    tags: ['bani', 'sakhi', 'kirtan'],
   },
   {
-    emoji: '☸️',
+    id: 'dhamma-stories',
+    kind: 'katha',
+    tradition: 'buddhist',
+    icon: BookOpen,
     title: 'Dhamma Stories',
-    desc:  'Buddha\'s parables & Jataka tales',
+    description: 'Buddha\'s parables & Jataka tales',
     href:  '/bhakti/katha?view=dhamma',
     tint:  'rgba(140,100,200,0.10)',
     traditions: ['buddhist'],
+    tags: ['dhamma', 'jataka'],
   },
   {
-    emoji: '📖',
+    id: 'jain-kathas',
+    kind: 'katha',
+    tradition: 'jain',
+    icon: BookOpen,
     title: 'Jain Kathas',
-    desc:  'Tirthankara stories & moral tales',
+    description: 'Tirthankara stories & moral tales',
     href:  '/bhakti/katha?view=jain',
     tint:  'rgba(50,160,80,0.10)',
     traditions: ['jain'],
+    tags: ['jain', 'tirthankara'],
   },
   // ── Hymns & chants ──
   {
-    emoji: '🎵',
+    id: 'stotrams-hymns',
+    kind: 'stotram',
+    tradition: 'hindu',
+    icon: Music2,
     title: 'Stotrams & Hymns',
-    desc:  'Sanskrit chants, chalisa, ashtakam',
+    description: 'Sanskrit chants, chalisa, ashtakam',
     href:  '/bhakti/browse',
     tint:  'rgba(200,146,74,0.10)',
     traditions: ['hindu', 'jain'],
+    tags: ['stotram', 'hymn', 'chant'],
   },
   {
-    emoji: '🎶',
+    id: 'sacred-chants',
+    kind: 'chant',
+    tradition: 'buddhist',
+    icon: Mic,
     title: 'Sacred Chants',
-    desc:  'Buddhist sutras, chants & mantras',
+    description: 'Buddhist sutras, chants & mantras',
     href:  '/bhakti/browse',
     tint:  'rgba(140,100,200,0.10)',
     traditions: ['buddhist'],
+    tags: ['chant', 'sutra', 'mantra'],
   },
   // ── Universal content ──
   {
-    emoji: '🦊',
+    id: 'panchatantra',
+    kind: 'katha',
+    tradition: 'all',
+    icon: Sparkles,
     title: 'Panchatantra',
-    desc:  'Ancient animal fables & wisdom tales for all ages',
+    description: 'Ancient animal fables & wisdom tales for all ages',
     href:  '/bhakti/katha?view=panchatantra',
     tint:  'rgba(200,120,80,0.10)',
+    tags: ['panchatantra', 'family', 'wisdom'],
   },
   {
-    emoji: '🦁',
+    id: 'heroes-bharat',
+    kind: 'katha',
+    tradition: 'all',
+    icon: Shield,
     title: 'Heroes of Bharat',
-    desc:  'Warriors, saints & unsung legends',
+    description: 'Warriors, saints & unsung legends',
     href:  '/bhakti/katha?view=heroes',
     tint:  'rgba(180,80,80,0.10)',
+    tags: ['heroes', 'saints', 'history'],
   },
   {
-    emoji: '📿',
+    id: 'japa-mala',
+    kind: 'practice',
+    tradition: 'all',
+    icon: Heart,
     title: 'Japa Mala',
-    desc:  'Digital mala for mantra & Naam Simran',
+    description: 'Digital mala for mantra & Naam Simran',
     href:  '/bhakti/mala',
     tint:  'rgba(160,120,200,0.10)',
+    tags: ['japa', 'mala', 'simran'],
   },
   {
-    emoji: '🕯️',
+    id: 'sattvic-mode',
+    kind: 'practice',
+    tradition: 'all',
+    icon: Sparkles,
     title: 'Sattvic Mode',
-    desc:  'Sacred ambience for puja & meditation',
+    description: 'Sacred ambience for puja & meditation',
     href:  '/bhakti/zen',
     tint:  'rgba(200,180,120,0.10)',
+    tags: ['zen', 'sattvic', 'ambience'],
   },
 ];
 
@@ -194,7 +232,7 @@ export default function BhaktiClient({
           {sessionCountToday > 0 && (
             <span className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-full"
               style={{ background: `${accent}18`, color: accent }}>
-              📿 {sessionCountToday} today
+              <Heart size={12} /> {sessionCountToday} today
             </span>
           )}
         </div>
@@ -209,10 +247,10 @@ export default function BhaktiClient({
             style={{ background: `${accent}0d`, borderColor: `${accent}28` }}
           >
             <div
-              className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
               style={{ background: `${accent}22` }}
             >
-              {dailyStotramDeityEmoji}
+              {dailyStotramDeityEmoji ? <span aria-hidden="true" className="text-lg">{dailyStotramDeityEmoji}</span> : <Music2 size={18} style={{ color: accent }} />}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[9px] font-bold uppercase tracking-widest mb-0.5" style={{ color: accent }}>
@@ -251,13 +289,15 @@ export default function BhaktiClient({
                 borderColor: 'var(--card-border)',
               }}
             >
-              <span className="text-[28px] leading-none">{card.emoji}</span>
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--card-border)] bg-[var(--surface-raised)]/70">
+                <card.icon size={21} style={{ color: accent }} strokeWidth={1.8} />
+              </span>
               <div className="flex-1">
                 <p className="text-[14px] font-semibold premium-serif theme-ink leading-snug">
                   {card.title}
                 </p>
                 <p className="text-[11px] theme-muted mt-1 leading-snug">
-                  {card.desc}
+                  {card.description}
                 </p>
               </div>
               <div className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide"

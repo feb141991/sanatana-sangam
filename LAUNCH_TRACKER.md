@@ -135,6 +135,10 @@ Last updated: 2026-04-09
 - [ ] Create a unified sacred-calendar interface so `/panchang` can expose Vedic Panchang, Nanakshahi, Buddhist lunar, and Jain calendar views without forcing Hindu calendar concepts onto every tradition
 - [ ] Build tradition-specific Bhakti media defaults so Hindu users see aarti/stotram, Sikh users see kirtan/simran, Buddhist users see chants/meditation, and Jain users see sutra/pratikraman without cross-tradition empty states
 - [ ] Add a vocabulary provider for tradition-sensitive words such as shloka/shabad/sutra, sadhana/simran/practice, sangam/sangat, dharma/dhamma, and path/panth
+- [x] Define the launch product consolidation direction in `PRODUCT_CONSOLIDATION_PLAN.md`: Home, Pathshala, Bhakti, Kul, and contextual Tirtha/Mandali entry points
+- [x] Add the first shared sacred-content adapter so Pathshala and Bhakti can reuse one content object model without merging the user-facing sections
+- [ ] Continue replacing emoji-led UI with the original icon/SVG system across Tirtha, Discover, Premium, Nitya, Panchang, Kul, and Progress
+- [ ] Consolidate Mala, Nitya, Pathshala, Bhakti, Kul, Tirtha, Mandali, and Seva signals into one global progress dashboard with drill-down sections
 
 ## Notes
 
@@ -180,3 +184,4 @@ Last updated: 2026-04-09
 - `PARAMPARA_PATHSHALA_PLAN.md` now defines the source strategy and learning-product direction for turning Library into Pathshala.
 - Multi-tradition architecture review is now tracked as a later refactor lane. Current hotspots to un-intertwine are Home, Pathshala, Bhakti, Mala/Japa, Nitya Karma, Tirtha Map, and Panchang.
 - Recommended implementation order for that refactor: expand `tradition-config.ts`, split feature-specific config where needed (`bhakti-config`, `japa-config`, `sacred-calendar`), introduce `useVocabulary()`, then remove inline `tradition === ...` checks from React components route by route.
+- `PRODUCT_CONSOLIDATION_PLAN.md` is now the main UX/product consolidation brief: keep Pathshala and Bhakti separate in the UI, share content/progress models underneath, reduce Home/action-menu complexity, and migrate visible launch UI away from emoji-led presentation.

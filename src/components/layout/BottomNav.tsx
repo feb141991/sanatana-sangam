@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Heart, BookOpen, Users, Home, Plus, X, CalendarDays, MapPin, User, MessageCircle, Sparkles } from 'lucide-react';
+import { Heart, BookOpen, Users, Home, Plus, X, CalendarDays, MapPin, User, MessageCircle, Sparkles, Sunrise, HandHeart, Activity, Brain } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
@@ -14,20 +15,20 @@ interface Props {
 }
 
 // ── Quick Actions for Sacred Menu ──────────────────────────────────────────────
-const QUICK_ACTIONS = [
-  { icon: '📿', label: 'japa',         href: '/bhakti/mala', desc: 'Chant your ishta mantra' },
-  { icon: '🔆', label: 'morningRoutine', href: '/nitya-karma', desc: 'Complete daily rhythms' },
-  { icon: '❤️', label: 'kul',          href: '/kul',         desc: 'Family lineage sadhana' },
-  { icon: '👥', label: 'mandali',      href: '/mandali',     desc: 'Gather with your dharma circle' },
-  { icon: '🤝', label: 'sevaHub',      href: '/seva',        desc: 'Support sacred causes' },
-  { icon: '📈', label: 'sadhanaPulse', href: '/my-progress', desc: 'Track your spiritual progress' },
-  { icon: '🧠', label: 'quizMastery',  href: '/home?focus=quiz', desc: 'Test your dharmic knowledge' },
+const QUICK_ACTIONS: Array<{ icon: LucideIcon; label: string; href: string; desc: string }> = [
+  { icon: Heart, label: 'japa', href: '/bhakti/mala', desc: 'Chant your ishta mantra' },
+  { icon: Sunrise, label: 'morningRoutine', href: '/nitya-karma', desc: 'Complete daily rhythms' },
+  { icon: Users, label: 'kul', href: '/kul', desc: 'Family lineage sadhana' },
+  { icon: MessageCircle, label: 'mandali', href: '/mandali', desc: 'Gather with your dharma circle' },
+  { icon: HandHeart, label: 'sevaHub', href: '/seva', desc: 'Support sacred causes' },
+  { icon: Activity, label: 'sadhanaPulse', href: '/my-progress', desc: 'Track your spiritual progress' },
+  { icon: Brain, label: 'quizMastery', href: '/home?focus=quiz', desc: 'Test your dharmic knowledge' },
 ];
 
-const GUEST_QUICK_ACTIONS = [
-  { icon: '✨', label: 'join',    href: '/signup',  desc: 'Create your profile' },
-  { icon: '🔍', label: 'explore', href: '/guest',   desc: 'Explore the dashboard' },
-  { icon: '💬', label: 'vichaar', href: '/mandali', desc: 'Read local discussions' },
+const GUEST_QUICK_ACTIONS: Array<{ icon: LucideIcon; label: string; href: string; desc: string }> = [
+  { icon: Sparkles, label: 'join', href: '/signup', desc: 'Create your profile' },
+  { icon: Home, label: 'explore', href: '/guest', desc: 'Explore the dashboard' },
+  { icon: MessageCircle, label: 'vichaar', href: '/mandali', desc: 'Read local discussions' },
 ];
 
 // Glass tokens — computed per-theme
@@ -108,7 +109,9 @@ function FloatingQuickMenu({
                   animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
                   transition={{ duration: 0.2, delay: prefersReducedMotion ? 0 : i * 0.03 }}
                 >
-                  <span className="text-2xl select-none">{action.icon}</span>
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[#C5A059]/20 bg-[#C5A059]/10 text-[#C5A059]">
+                    <action.icon size={18} strokeWidth={1.8} />
+                  </span>
                   <div>
                     <h4 className="text-xs font-bold theme-ink leading-tight">
                       {t(action.label as any)}
@@ -334,7 +337,7 @@ export default function BottomNav({ isGuest = false }: Props) {
                     <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
                       <BookOpen size={22} className={activePathshala ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
                       <span className={cn("text-[9px] font-bold mt-1 tracking-wider leading-none", activePathshala ? 'text-[#C5A059]' : 'text-[var(--text-dim)]')}>
-                        Study
+                        Pathshala
                       </span>
                       {activePathshala && (
                         <motion.div layoutId="active-nav-dot" className="absolute bottom-1 w-1 h-1 rounded-full bg-[#C5A059]" />
