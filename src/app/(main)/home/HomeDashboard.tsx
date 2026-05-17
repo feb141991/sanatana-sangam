@@ -141,7 +141,7 @@ const DEFAULT_QUICK_ACCESS = [
   { label: 'Kul',        icon: '❤️', href: '/kul',            desc: 'Family sadhana together',        theme: 'kul'       },
   { label: 'Sanskar',    icon: '🪔', href: '/kul/sanskara',   desc: '16 sacred lifecycle rites',      theme: 'kul'       },
   { label: 'Discover',   icon: '🌿', href: '/discover',       desc: 'Scripture for your mood',        theme: 'bhakti'    },
-  { label: 'Panchang',   icon: '📅', href: '/panchang',       desc: 'Today\'s tithi & muhurta',       theme: 'panchang'  },
+  { label: 'Jyotish Hub', icon: '📅', href: '/panchang',       desc: 'Panchang, Rashiphal & Kundali',  theme: 'panchang'  },
 ];
 // Mood quick-lookup (mirrors DiscoverClient MOODS)
 

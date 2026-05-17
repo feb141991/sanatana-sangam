@@ -9,6 +9,10 @@ import { calculatePanchang } from '@/lib/panchang';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 
+// Import our premium Jyotish engines
+import { getDailyHoroscope, RASHI_LIST } from '@/lib/jyotish/rashiphal-data';
+import { generateKundali, renderKundaliSVG, type KundaliInput, type KundaliResult } from '@/lib/jyotish/kundali-engine';
+
 interface Props {
   lat:       number;
   lon:       number;
@@ -31,7 +35,6 @@ const DAY_LABELS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 type SkyPhase = 'night' | 'predawn' | 'dawn' | 'morning' | 'afternoon' | 'dusk' | 'evening';
 
 function parseSunTime(timeStr: string): number {
-  // "6:12 AM" → minutes since midnight
   const [time, period] = timeStr.split(' ');
   const [h, m]         = time.split(':').map(Number);
   let hours = h;
@@ -52,7 +55,7 @@ function getSkyPhase(nowMin: number, sunriseMin: number, sunsetMin: number): Sky
 }
 
 const SKY_GRADIENTS: Record<SkyPhase, string> = {
-  night:     'linear-gradient(180deg, #050508 0%, #0a0a1a 40%, #080812 100%)', // Deeper Obsidian
+  night:     'linear-gradient(180deg, #050508 0%, #0a0a1a 40%, #080812 100%)',
   predawn:   'linear-gradient(180deg, #080812 0%, #0f0a20 50%, #1a0830 100%)',
   dawn:      'linear-gradient(180deg, #1a0a28 0%, #5c1f3a 35%, #c45c2a 70%, #e8a060 100%)',
   morning:   'linear-gradient(180deg, #1e4a8a 0%, #3a7ab8 35%, #d4885a 70%, #f0b870 100%)',
@@ -212,12 +215,27 @@ function Stars({ count = 28 }: { count?: number }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: Props) {
   const { t } = useLanguage();
-  const { playHaptic, setTheme } = useZenithSensory();
+  const { playHaptic } = useZenithSensory();
   const tradMeta = TRADITION_META[tradition] ?? TRADITION_META.hindu;
   const today    = useMemo(() => new Date(), []);
   const [selected,   setSelected]  = useState<Date>(today);
   const [viewYear,   setViewYear]  = useState(today.getFullYear());
   const [viewMonth,  setViewMonth] = useState(today.getMonth());
+
+  // Unified Page Tabs
+  const [activeTab, setActiveTab] = useState<'panchang' | 'rashiphal' | 'kundali'>('panchang');
+
+  // Rashiphal Tab State
+  const [selectedRashi, setSelectedRashi] = useState<string>('aries');
+
+  // Kundali Tab State
+  const [kundaliInput, setKundaliInput] = useState<KundaliInput>({
+    name: '',
+    birthDate: '',
+    birthTime: '',
+    birthPlace: '',
+  });
+  const [kundaliResult, setKundaliResult] = useState<KundaliResult | null>(null);
 
   const p: SacredCalendarData = useSacredCalendar(selected, lat, lon, tradition);
 
@@ -256,12 +274,27 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
   const orb      = SKY_ORB[skyPhase];
 
   async function share() {
-    const text = `🪔 Panchang — ${dateLabel}\n\n` +
-      `📅 Tithi: ${p.tithi} (${p.paksha} Paksha)\n` +
-      `⭐ Nakshatra: ${p.nakshatra}\n🕉️ Yoga: ${p.yoga}\n📆 Vara: ${p.vara}\n` +
-      `🌅 Sunrise: ${p.sunrise}  🌆 Sunset: ${p.sunset}\n` +
-      `⚠️ Rahu Kaal: ${p.rahuKaal}\n✨ Abhijit Muhurat: ${p.abhijitMuhurat}\n\n— Shoonaya`;
-    if (navigator.share) { try { await navigator.share({ title: 'Panchang', text }); return; } catch {} }
+    let text = '';
+    if (activeTab === 'panchang') {
+      text = `🪔 Panchang — ${dateLabel}\n\n` +
+        `📅 Tithi: ${p.tithi} (${p.paksha} Paksha)\n` +
+        `⭐ Nakshatra: ${p.nakshatra}\n🕉️ Yoga: ${p.yoga}\n📆 Vara: ${p.vara}\n` +
+        `🌅 Sunrise: ${p.sunrise}  🌆 Sunset: ${p.sunset}\n` +
+        `⚠️ Rahu Kaal: ${p.rahuKaal}\n✨ Abhijit Muhurat: ${p.abhijitMuhurat}\n\n— Shoonaya`;
+    } else if (activeTab === 'rashiphal') {
+      const h = getDailyHoroscope(selectedRashi, selected);
+      text = `🐏 Daily Rashiphal for ${h.rashiSanskrit} (${h.rashi}) — ${dateLabel}\n\n` +
+        `📿 Sadhana Focus: ${h.sadhanaFocus}\n` +
+        `💼 Karma & Focus: ${h.karma}\n` +
+        `🌿 Aura & Health: ${h.health}\n` +
+        `✨ Lucky Color: ${h.luckyColor} | Lucky Number: ${h.luckyNumber}\n\n— Shoonaya`;
+    } else {
+      text = `🛕 Vedic Kundali Chart for ${kundaliResult?.input.name ?? 'Pilgrim'}\n\n` +
+        `🌟 Lagna Ascendant: ${kundaliResult?.lagnaSign} (${kundaliResult?.lagnaEnglish})\n` +
+        `🔮 Alignment: ${kundaliResult?.lagnaReading}\n\n— Shoonaya`;
+    }
+
+    if (navigator.share) { try { await navigator.share({ title: 'Astrology Hub', text }); return; } catch {} }
     try {
       await navigator.clipboard.writeText(text);
       const toast = (await import('react-hot-toast')).default;
@@ -316,7 +349,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
           </Link>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 600, color: '#F2EAD6', letterSpacing: '-0.01em', lineHeight: 1.2 }}>Panchang</h1>
+              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 600, color: '#F2EAD6', letterSpacing: '-0.01em', lineHeight: 1.2 }}>Astrology Hub</h1>
               <span className="text-[10px] font-bold px-2.5 py-1 rounded-full text-white/90"
                 style={{ background: tradMeta.accent }}>
                 {tradMeta.badge}
@@ -333,154 +366,455 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
           </button>
         </div>
 
-        {/* Paksha banner — floats over sky */}
-        <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="rounded-2xl px-4 py-3 flex items-center gap-3"
-          style={{ background: `linear-gradient(135deg, ${tradMeta.accent}dd, ${tradMeta.accent}99)`, border: `1px solid rgba(255,255,255,0.12)` }}>
-          <span className="text-2xl">🪔</span>
-          <div>
-            <p className="text-white font-bold text-sm">{p.paksha} Paksha · {p.masaName} {p.labels.monthLabel}</p>
-            <p className="text-white/60 text-[11px] mt-0.5">{p.vara} · {tradMeta.note}</p>
-          </div>
-          <div className="ml-auto text-right">
-            <p className="text-white/80 text-xs font-semibold">{p.sunrise}</p>
-            <p className="text-white/40 text-[10px]">sunrise</p>
-          </div>
-        </motion.div>
-
-        {/* Calendar */}
-        <GlassCard className="overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3"
-            style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-            <button onClick={prevMonth}
-              className="w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ background: 'rgba(255,255,255,0.08)' }}>
-              <ChevronLeft size={15} className="text-white/70" />
+        {/* Premium Hub Navigation Tabs */}
+        <div className="grid grid-cols-3 p-1 rounded-2xl bg-black/25 border border-white/5 backdrop-blur-sm">
+          {[
+            { id: 'panchang',  label: '📅 Panchang' },
+            { id: 'rashiphal', label: '🐏 Rashiphal' },
+            { id: 'kundali',   label: '🛕 Kundali' },
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => {
+                setActiveTab(tab.id as any);
+                playHaptic('light');
+              }}
+              className={`py-2.5 text-xs font-semibold rounded-xl transition-all ${
+                activeTab === tab.id
+                  ? 'bg-[#C5A059] text-[#1c1c1a] shadow-md font-bold'
+                  : 'text-white/60 hover:text-white/90'
+              }`}
+            >
+              {tab.label}
             </button>
-            <div className="text-center">
-              <p className="font-semibold text-white text-sm">{MONTHS[viewMonth]} {viewYear}</p>
-              <p className="text-white/40 text-[10px] mt-0.5">
-                {p.masaName} {p.labels.monthLabel} · {p.calendarName}
-              </p>
-            </div>
-            <button onClick={nextMonth}
-              className="w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ background: 'rgba(255,255,255,0.08)' }}>
-              <ChevronRight size={15} className="text-white/70" />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-7" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-            {DAY_LABELS.map(d => (
-              <div key={d} className="py-2 text-center text-[10px] font-medium text-white/35">{d}</div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-7 p-2 gap-1">
-            {calendarDays.map((date, i) => {
-              if (!date) return <div key={`e-${i}`} />;
-              const isSelected    = isSameDay(date, selected);
-              const isCurrentDay  = isSameDay(date, today);
-              const dayP = calculatePanchang(date, lat, lon);
-              return (
-                <motion.button
-                  key={date.toISOString()}
-                  onClick={() => { 
-                    setSelected(date);
-                    playHaptic('medium'); // Tactile time-shift
-                  }}
-                  whileTap={{ scale: 0.88 }}
-                  className="relative flex flex-col items-center justify-center rounded-xl py-1.5 transition-all"
-                  style={
-                    isSelected    ? { background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }
-                    : isCurrentDay ? { border: `1px solid ${tradMeta.accent}`, background: `${tradMeta.accent}20` }
-                    : { background: 'transparent' }
-                  }>
-                  <span className={`text-xs font-semibold leading-none ${isSelected ? 'text-white' : isCurrentDay ? 'text-white' : 'text-white/70'}`}>
-                    {date.getDate()}
-                  </span>
-                  <span className={`text-[8px] leading-none mt-0.5 ${isSelected ? 'text-white/60' : 'text-white/30'}`}>
-                    {dayP.tithiIndex}
-                  </span>
-                </motion.button>
-              );
-            })}
-          </div>
-        </GlassCard>
-
-        {/* Date label */}
-        <div className="flex items-center gap-2 px-1">
-          <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: tradMeta.accent }} />
-          <p className="text-xs font-semibold text-white/70">{isToday ? 'Today — ' : ''}{dateLabel}</p>
+          ))}
         </div>
 
-        {/* Panchang details */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.1 }}
-          className="space-y-2">
+        {/* ── TAB 1: PANCHANG CONTENT ─────────────────────────────────────── */}
+        {activeTab === 'panchang' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-3"
+          >
+            {/* Paksha banner */}
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="rounded-2xl px-4 py-3 flex items-center gap-3"
+              style={{ background: `linear-gradient(135deg, ${tradMeta.accent}dd, ${tradMeta.accent}99)`, border: `1px solid rgba(255,255,255,0.12)` }}>
+              <span className="text-2xl">🪔</span>
+              <div>
+                <p className="text-white font-bold text-sm">{p.paksha} Paksha · {p.masaName} {p.labels.monthLabel}</p>
+                <p className="text-white/60 text-[11px] mt-0.5">{p.vara} · {tradMeta.note}</p>
+              </div>
+              <div className="ml-auto text-right">
+                <p className="text-white/80 text-xs font-semibold">{p.sunrise}</p>
+                <p className="text-white/40 text-[10px]">sunrise</p>
+              </div>
+            </motion.div>
 
-          {/* Main Panchang elements — single column so long values fit */}
-          <div className="space-y-2">
-            <Row emoji="📅" label={t('tithi')}
-              value={`${p.tithi} · ${p.paksha} Paksha`}
-              upto={p.tithiUpto}
-              accent={tradMeta.accent} infoKey="Tithi" />
-            <Row emoji="⭐" label={t('nakshatra')}
-              value={p.nakshatra}
-              upto={p.nakshatraUpto}
-              accent={tradMeta.accent} infoKey="Nakshatra" />
-            <Row emoji="🕉️" label={t('yoga')}
-              value={p.yoga}
-              upto={p.yogaUpto}
-              accent={tradMeta.accent} infoKey="Yoga" />
-            <Row emoji="🃏" label="Karana"
-              value={p.karana}
-              upto={p.karanaUpto}
-              accent={tradMeta.accent} infoKey="Karana" />
-            <Row emoji="📆" label={t('vara')}      value={p.vara}      accent={tradMeta.accent} infoKey="Vara" />
-          </div>
+            {/* Calendar */}
+            <GlassCard className="overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3"
+                style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                <button onClick={prevMonth}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center"
+                  style={{ background: 'rgba(255,255,255,0.08)' }}>
+                  <ChevronLeft size={15} className="text-white/70" />
+                </button>
+                <div className="text-center">
+                  <p className="font-semibold text-white text-sm">{MONTHS[viewMonth]} {viewYear}</p>
+                  <p className="text-white/40 text-[10px] mt-0.5">
+                    {p.masaName} {p.labels.monthLabel} · {p.calendarName}
+                  </p>
+                </div>
+                <button onClick={nextMonth}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center"
+                  style={{ background: 'rgba(255,255,255,0.08)' }}>
+                  <ChevronRight size={15} className="text-white/70" />
+                </button>
+              </div>
 
-          {/* Sun times — 2-col fine since values are short */}
-          <div className="grid grid-cols-2 gap-2">
-            <Row emoji="🌅" label={t('sunrise')} value={p.sunrise} accent={tradMeta.accent} infoKey="Sunrise" />
-            <Row emoji="🌆" label={t('sunset')}  value={p.sunset}  accent={tradMeta.accent} infoKey="Sunset" />
-          </div>
-          {/* Brahma Muhurta */}
-          {'brahmaMuhurta' in p && (
-            <Row emoji="🌙" label="Brahma Muhurta" value={(p as any).brahmaMuhurta} accent={tradMeta.accent} infoKey="Brahma Muhurta" />
-          )}
+              <div className="grid grid-cols-7" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                {DAY_LABELS.map(d => (
+                  <div key={d} className="py-2 text-center text-[10px] font-medium text-white/35">{d}</div>
+                ))}
+              </div>
 
-          <Row emoji="⚠️" label={t('rahuKaal')}        value={p.rahuKaal}       accent={tradMeta.accent} warn infoKey="Rahu Kaal" />
-          <Row emoji="✨" label={t('abhijitMuhurat')} value={p.abhijitMuhurat} accent={tradMeta.accent} infoKey="Abhijit Muhurat" />
+              <div className="grid grid-cols-7 p-2 gap-1">
+                {calendarDays.map((date, i) => {
+                  if (!date) return <div key={`e-${i}`} />;
+                  const isSelected    = isSameDay(date, selected);
+                  const isCurrentDay  = isSameDay(date, today);
+                  const dayP = calculatePanchang(date, lat, lon);
+                  return (
+                    <motion.button
+                      key={date.toISOString()}
+                      onClick={() => { 
+                        setSelected(date);
+                        playHaptic('medium');
+                      }}
+                      whileTap={{ scale: 0.88 }}
+                      className="relative flex flex-col items-center justify-center rounded-xl py-1.5 transition-all"
+                      style={
+                        isSelected    ? { background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)' }
+                        : isCurrentDay ? { border: `1px solid ${tradMeta.accent}`, background: `${tradMeta.accent}20` }
+                        : { background: 'transparent' }
+                      }>
+                      <span className={`text-xs font-semibold leading-none ${isSelected ? 'text-white' : isCurrentDay ? 'text-white' : 'text-white/70'}`}>
+                        {date.getDate()}
+                      </span>
+                      <span className={`text-[8px] leading-none mt-0.5 ${isSelected ? 'text-white/60' : 'text-white/30'}`}>
+                        {dayP.tithiIndex}
+                      </span>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </GlassCard>
 
-          {/* Samvat */}
-          {'samvatYear' in p && (
-            <div className="rounded-xl px-4 py-2.5 flex items-center gap-3"
-              style={{ background: 'var(--card-bg)', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <span className="text-white/40 text-[10px] font-medium uppercase tracking-wider">Vikram Samvat</span>
-              <span className="text-white/80 text-sm font-semibold ml-auto">
-                {(p as any).samvatYear} {(p as any).samvatName}
-              </span>
+            {/* Date label */}
+            <div className="flex items-center gap-2 px-1">
+              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: tradMeta.accent }} />
+              <p className="text-xs font-semibold text-white/70">{isToday ? 'Today — ' : ''}{dateLabel}</p>
             </div>
-          )}
 
-          {/* Guidance */}
-          <div className="rounded-xl px-4 py-3"
-            style={{ background: 'rgba(255,200,100,0.08)', border: '1px solid rgba(255,200,100,0.15)' }}>
-            <p className="text-xs text-amber-200/80 leading-relaxed">
-              <span className="font-semibold text-amber-200">Today&apos;s guidance:</span>{' '}
-              {p.paksha === 'Shukla'
-                ? 'Shukla Paksha — auspicious for new beginnings, prayers, and satsang. Chant, give, begin.'
-                : 'Krishna Paksha — turn inward. Fast, introspect, offer ancestral prayers (Pitru Tarpan).'}
-            </p>
+            {/* Details */}
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-2">
+
+              <div className="space-y-2">
+                <Row emoji="📅" label={t('tithi')} value={`${p.tithi} · ${p.paksha} Paksha`} upto={p.tithiUpto} accent={tradMeta.accent} infoKey="Tithi" />
+                <Row emoji="⭐" label={t('nakshatra')} value={p.nakshatra} upto={p.nakshatraUpto} accent={tradMeta.accent} infoKey="Nakshatra" />
+                <Row emoji="🕉️" label={t('yoga')} value={p.yoga} upto={p.yogaUpto} accent={tradMeta.accent} infoKey="Yoga" />
+                <Row emoji="🃏" label="Karana" value={p.karana} upto={p.karanaUpto} accent={tradMeta.accent} infoKey="Karana" />
+                <Row emoji="📆" label={t('vara')} value={p.vara} accent={tradMeta.accent} infoKey="Vara" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <Row emoji="🌅" label={t('sunrise')} value={p.sunrise} accent={tradMeta.accent} infoKey="Sunrise" />
+                <Row emoji="🌆" label={t('sunset')}  value={p.sunset}  accent={tradMeta.accent} infoKey="Sunset" />
+              </div>
+
+              {'brahmaMuhurta' in p && (
+                <Row emoji="🌙" label="Brahma Muhurta" value={(p as any).brahmaMuhurta} accent={tradMeta.accent} infoKey="Brahma Muhurta" />
+              )}
+
+              <Row emoji="⚠️" label={t('rahuKaal')} value={p.rahuKaal} accent={tradMeta.accent} warn infoKey="Rahu Kaal" />
+              <Row emoji="✨" label={t('abhijitMuhurat')} value={p.abhijitMuhurat} accent={tradMeta.accent} infoKey="Abhijit Muhurat" />
+
+              {'samvatYear' in p && (
+                <div className="rounded-xl px-4 py-2.5 flex items-center gap-3"
+                  style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <span className="text-white/40 text-[10px] font-medium uppercase tracking-wider">Vikram Samvat</span>
+                  <span className="text-white/80 text-sm font-semibold ml-auto">
+                    {(p as any).samvatYear} {(p as any).samvatName}
+                  </span>
+                </div>
+              )}
+
+              <div className="rounded-xl px-4 py-3"
+                style={{ background: 'rgba(255,200,100,0.08)', border: '1px solid rgba(255,200,100,0.15)' }}>
+                <p className="text-xs text-amber-200/80 leading-relaxed">
+                  <span className="font-semibold text-amber-200">Today&apos;s guidance:</span>{' '}
+                  {p.paksha === 'Shukla'
+                    ? 'Shukla Paksha — auspicious for new beginnings, prayers, and blessings. Act and grow.'
+                    : 'Krishna Paksha — quiet reflection. Focus on purification, ancestral gratitude, and inward practices.'}
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* ── TAB 2: RASHIPHAL CONTENT ────────────────────────────────────── */}
+        {activeTab === 'rashiphal' && (
+          <div className="space-y-4">
+            {/* Horizontal Rashi/Zodiac sign selector */}
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none snap-x">
+              {RASHI_LIST.map((rashi) => {
+                const isSelected = selectedRashi === rashi.key;
+                return (
+                  <button
+                    key={rashi.key}
+                    onClick={() => {
+                      setSelectedRashi(rashi.key);
+                      playHaptic('medium');
+                    }}
+                    className={`flex-shrink-0 snap-center flex flex-col items-center px-4 py-2.5 rounded-2xl border transition-all ${
+                      isSelected
+                        ? 'border-[#C5A059] bg-[#C5A059]/15 text-white'
+                        : 'border-white/5 bg-black/25 text-white/50 hover:border-white/10'
+                    }`}
+                  >
+                    <span className="text-xl">{rashi.symbol}</span>
+                    <span className="text-xs font-bold mt-1">{rashi.sa}</span>
+                    <span className="text-[9px] opacity-60 uppercase">{rashi.en}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Generated Horoscope details */}
+            {(() => {
+              const h = getDailyHoroscope(selectedRashi, selected);
+              return (
+                <motion.div
+                  key={selectedRashi}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-3"
+                >
+                  {/* Hero Information Card */}
+                  <div className="rounded-2xl p-4 border border-white/5 flex flex-col gap-3"
+                    style={{ background: 'rgba(10,8,25,0.65)' }}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-2xl bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center text-2xl">
+                        {h.symbol}
+                      </div>
+                      <div>
+                        <h2 className="font-serif text-lg font-bold text-[#F2EAD6]">{h.rashiSanskrit} ({h.rashi})</h2>
+                        <p className="text-white/40 text-xs">Ruling Graha: {h.lord}</p>
+                      </div>
+                      <span className="ml-auto text-[10px] font-semibold bg-green-500/10 border border-green-500/20 text-green-400 px-2.5 py-0.5 rounded-full">
+                        ● Active
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 border-t border-white/5 pt-3">
+                      <div className="text-center p-2 rounded-xl bg-white/5">
+                        <p className="text-[9px] text-white/30 uppercase font-medium">Lucky Color</p>
+                        <p className="text-xs font-semibold text-white/80 mt-0.5">{h.luckyColor}</p>
+                      </div>
+                      <div className="text-center p-2 rounded-xl bg-white/5">
+                        <p className="text-[9px] text-white/30 uppercase font-medium">Lucky Number</p>
+                        <p className="text-xs font-semibold text-[#C5A059] mt-0.5">{h.luckyNumber}</p>
+                      </div>
+                      <div className="text-center p-2 rounded-xl bg-white/5">
+                        <p className="text-[9px] text-white/30 uppercase font-medium">Lucky Time</p>
+                        <p className="text-[9px] font-semibold text-white/80 mt-0.5 leading-tight">{h.luckyTime.split(' (')[0]}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Daily Sadhana Focus Card (Featured Shoonaya Experience!) */}
+                  <div className="rounded-2xl p-4 border border-[#C5A059]/35 space-y-2 relative overflow-hidden"
+                    style={{ background: 'linear-gradient(135deg, rgba(197, 160, 89, 0.12) 0%, rgba(10,8,25,0.7) 100%)' }}>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#C5A059]/5 rounded-full blur-xl pointer-events-none" />
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">📿</span>
+                      <h3 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">Today&apos;s Sadhana Focus</h3>
+                    </div>
+                    <p className="text-sm font-medium text-[#F2EAD6] leading-relaxed pr-6">{h.sadhanaFocus}</p>
+                  </div>
+
+                  {/* Interpretations for work/life */}
+                  <div className="space-y-2">
+                    <div className="rounded-2xl p-4 border border-white/5 flex gap-3 items-start"
+                      style={{ background: 'rgba(10,8,25,0.5)' }}>
+                      <span className="text-xl mt-0.5">💼</span>
+                      <div className="space-y-0.5">
+                        <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Karma &amp; Career</h4>
+                        <p className="text-sm text-white/85 leading-relaxed">{h.karma}</p>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl p-4 border border-white/5 flex gap-3 items-start"
+                      style={{ background: 'rgba(10,8,25,0.5)' }}>
+                      <span className="text-xl mt-0.5">🌿</span>
+                      <div className="space-y-0.5">
+                        <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Vitality &amp; Health</h4>
+                        <p className="text-sm text-white/85 leading-relaxed">{h.health}</p>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl p-4 border border-white/5 flex gap-3 items-start"
+                      style={{ background: 'rgba(10,8,25,0.5)' }}>
+                      <span className="text-xl mt-0.5">💖</span>
+                      <div className="space-y-0.5">
+                        <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Love &amp; Connections</h4>
+                        <p className="text-sm text-white/85 leading-relaxed">{h.love}</p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })()}
           </div>
-        </motion.div>
+        )}
+
+        {/* ── TAB 3: KUNDALI CONTENT ──────────────────────────────────────── */}
+        {activeTab === 'kundali' && (
+          <div className="space-y-4">
+            {kundaliResult === null ? (
+              /* Generate Form */
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-2xl p-5 border border-white/5 space-y-4"
+                style={{ background: 'rgba(10,8,25,0.65)' }}
+              >
+                <div className="text-center space-y-1">
+                  <span className="text-3xl">🛕</span>
+                  <h2 className="font-serif text-lg font-bold text-[#F2EAD6]">Vedic Kundali Chart</h2>
+                  <p className="text-white/40 text-xs">Enter birth details to map your planetary alignment</p>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Full Name</label>
+                    <input
+                      type="text"
+                      placeholder="Enter your name"
+                      value={kundaliInput.name}
+                      onChange={e => setKundaliInput(prev => ({ ...prev, name: e.target.value }))}
+                      className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-black/30 outline-none text-white text-sm focus:border-[#C5A059]/50 transition"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Date of Birth</label>
+                      <input
+                        type="date"
+                        value={kundaliInput.birthDate}
+                        onChange={e => setKundaliInput(prev => ({ ...prev, birthDate: e.target.value }))}
+                        className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-black/30 outline-none text-white text-sm focus:border-[#C5A059]/50 transition"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Time of Birth</label>
+                      <input
+                        type="time"
+                        value={kundaliInput.birthTime}
+                        onChange={e => setKundaliInput(prev => ({ ...prev, birthTime: e.target.value }))}
+                        className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-black/30 outline-none text-white text-sm focus:border-[#C5A059]/50 transition"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Birth Location (City)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. New Delhi, India"
+                      value={kundaliInput.birthPlace}
+                      onChange={e => setKundaliInput(prev => ({ ...prev, birthPlace: e.target.value }))}
+                      className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-black/30 outline-none text-white text-sm focus:border-[#C5A059]/50 transition"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    if (!kundaliInput.name || !kundaliInput.birthDate || !kundaliInput.birthTime || !kundaliInput.birthPlace) {
+                      import('react-hot-toast').then((m) => {
+                        m.default.error('Please complete all birth fields');
+                      });
+                      return;
+                    }
+                    playHaptic('heavy');
+                    const result = generateKundali(kundaliInput);
+                    setKundaliResult(result);
+                  }}
+                  className="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider text-[#1c1c1a] bg-[#C5A059] hover:opacity-90 transition shadow-lg"
+                >
+                  🔮 Generate Vedic Kundali
+                </button>
+              </motion.div>
+            ) : (
+              /* Display Results */
+              <motion.div
+                initial={{ opacity: 0, scale: 0.97 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="space-y-3"
+              >
+                {/* Back Button */}
+                <button
+                  onClick={() => {
+                    setKundaliResult(null);
+                    playHaptic('light');
+                  }}
+                  className="flex items-center gap-1.5 text-xs text-[#C5A059] font-semibold border border-[#C5A059]/20 bg-[#C5A059]/5 rounded-xl px-3.5 py-1.5 hover:bg-[#C5A059]/10 transition"
+                >
+                  ← Calculate New Chart
+                </button>
+
+                {/* Lagna details banner */}
+                <div className="rounded-2xl p-5 border border-white/5 space-y-3"
+                  style={{ background: 'rgba(10,8,25,0.65)' }}>
+                  <div className="text-center space-y-1">
+                    <span className="text-[10px] font-bold text-[#C5A059] uppercase tracking-wider">Calculated Ascendant (Lagna)</span>
+                    <h3 className="font-serif text-2xl font-bold text-[#F2EAD6]">{kundaliResult.lagnaSign} ({kundaliResult.lagnaEnglish})</h3>
+                    <p className="text-white/40 text-xs">Chart generated for: {kundaliResult.input.name}</p>
+                  </div>
+                  <div className="rounded-xl p-4 border border-[#C5A059]/20 bg-white/5">
+                    <p className="text-sm font-medium text-[#F2EAD6] leading-relaxed">{kundaliResult.lagnaReading}</p>
+                  </div>
+                </div>
+
+                {/* Styled North Indian Kundali SVG */}
+                <div className="rounded-2xl p-4 border border-white/5 space-y-3 flex flex-col items-center"
+                  style={{ background: 'rgba(10,8,25,0.65)' }}>
+                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider self-start">North Indian Rashi Chart</h4>
+                  <div className="w-full max-w-[340px] aspect-square rounded-2xl overflow-hidden shadow-2xl"
+                    dangerouslySetInnerHTML={{ __html: renderKundaliSVG(kundaliResult) }}
+                  />
+                  <span className="text-[10px] text-white/30 italic">Numbers represent Rashi placements (1=Mesha, 12=Meena)</span>
+                </div>
+
+                {/* Planet positions */}
+                <div className="rounded-2xl p-4 border border-white/5 space-y-3"
+                  style={{ background: 'rgba(10,8,25,0.5)' }}>
+                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Grahas &amp; House Placements</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {kundaliResult.placements.map(p => (
+                      <div key={p.name} className="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/5">
+                        <div className="w-8 h-8 rounded-lg bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center font-bold text-[#C5A059] text-xs">
+                          {p.symbol}
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-white/80">{p.name}</p>
+                          <p className="text-[10px] text-white/40">House {p.house} · {p.sign} ({p.degree})</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Bhava readings */}
+                <div className="rounded-2xl p-4 border border-white/5 space-y-3"
+                  style={{ background: 'rgba(10,8,25,0.5)' }}>
+                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Interactive Bhava Readings</h4>
+                  <div className="space-y-2">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(house => (
+                      <details key={house} className="group border border-white/5 rounded-xl overflow-hidden transition-all duration-300">
+                        <summary className="flex justify-between items-center px-4 py-3 bg-white/5 cursor-pointer select-none hover:bg-white/10 list-none">
+                          <span className="text-xs font-bold text-white/80 flex items-center gap-2">
+                            <span className="w-5 h-5 rounded-full bg-[#C5A059]/20 flex items-center justify-center text-[10px] text-[#C5A059] font-bold">
+                              {house}
+                            </span>
+                            House {house} Reading
+                          </span>
+                          <span className="text-[#C5A059] group-open:rotate-180 transition-transform duration-300 text-xs">▼</span>
+                        </summary>
+                        <div className="px-4 py-3 bg-black/20 text-xs text-white/70 leading-relaxed border-t border-white/5">
+                          {kundaliResult.houseReadings[house]}
+                        </div>
+                      </details>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
