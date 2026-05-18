@@ -29,9 +29,14 @@ export interface MalaSessionRow {
   completion_type?: string | null;
   target_rounds?: number | null;
   completed_rounds?: number | null;
+  completed_beads?: number | null;
+  mood_before?: string | null;
+  mood_after?: string | null;
   ambient_id?: string | null;
   spiritual_time_window?: string | null;
+  spiritual_date?: string | null;
   timezone?: string | null;
+  haptics_enabled?: boolean | null;
   source_route?: string | null;
   panchang_context?: Record<string, unknown> | null;
 }
@@ -59,15 +64,21 @@ export interface MalaSessionInsert {
   completion_type?: string | null;
   target_rounds?: number | null;
   completed_rounds?: number | null;
+  completed_beads?: number | null;
+  mood_before?: string | null;
+  mood_after?: string | null;
   ambient_id?: string | null;
   spiritual_time_window?: string | null;
+  spiritual_date?: string | null;
   timezone?: string | null;
+  haptics_enabled?: boolean | null;
   source_route?: string | null;
   panchang_context?: Record<string, unknown> | null;
 }
 
 export function malaSessionDate(row: MalaSessionRow): string {
   return row.completed_at?.slice(0, 10)
+    ?? row.spiritual_date
     ?? row.date
     ?? row.created_at?.slice(0, 10)
     ?? '';
@@ -102,6 +113,14 @@ export function malaSessionMalaId(row: MalaSessionRow): string | null {
   return row.mala_id ?? null;
 }
 
+export function malaSessionSpiritualWindow(row: MalaSessionRow): string | null {
+  return row.spiritual_time_window ?? null;
+}
+
+export function malaSessionCompletionType(row: MalaSessionRow): string | null {
+  return row.completion_type ?? null;
+}
+
 export function buildMalaSessionInsert(input: {
   userId: string;
   mantra: string;
@@ -121,9 +140,14 @@ export function buildMalaSessionInsert(input: {
   completionType?: string | null;
   targetRounds?: number | null;
   completedRounds?: number | null;
+  completedBeads?: number | null;
+  moodBefore?: string | null;
+  moodAfter?: string | null;
   ambientId?: string | null;
   spiritualTimeWindow?: string | null;
+  spiritualDate?: string | null;
   timezone?: string | null;
+  hapticsEnabled?: boolean | null;
   sourceRoute?: string | null;
   panchangContext?: Record<string, unknown> | null;
 }): MalaSessionInsert {
@@ -155,9 +179,14 @@ export function buildMalaSessionInsert(input: {
     completion_type: input.completionType ?? 'completed',
     target_rounds: input.targetRounds ?? null,
     completed_rounds: input.completedRounds ?? rounds,
+    completed_beads: input.completedBeads ?? input.count,
+    mood_before: input.moodBefore ?? null,
+    mood_after: input.moodAfter ?? null,
     ambient_id: input.ambientId ?? null,
     spiritual_time_window: input.spiritualTimeWindow ?? null,
+    spiritual_date: input.spiritualDate ?? input.date ?? completedAt.slice(0, 10),
     timezone: input.timezone ?? null,
+    haptics_enabled: input.hapticsEnabled ?? true,
     source_route: input.sourceRoute ?? '/bhakti/mala',
     panchang_context: input.panchangContext ?? null,
   };

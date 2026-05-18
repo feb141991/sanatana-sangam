@@ -13,7 +13,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ChevronLeft, Volume2, VolumeX, Flame, RotateCcw, BarChart2, Settings2, X, Moon, Sun, Sparkles, Play, Pause } from 'lucide-react';
 import { hapticSuccess } from '@/lib/platform';
 import { createClient } from '@/lib/supabase';
@@ -22,7 +22,15 @@ import { buildMalaSessionInsert } from '@/lib/mala-sessions';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import Link from 'next/link';
-import { getTraditionMeta } from '@/lib/tradition-config';
+import {
+  getJapaMantrasForTradition,
+  getJapaPracticeType,
+  getTraditionMeta,
+  JAPA_MALAS as MALAS,
+  JAPA_MANTRAS as MANTRAS,
+  type JapaMalaId,
+  type JapaMantraId,
+} from '@/lib/tradition-config';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 
 // ── Constants ──────────────────────────────────────────────────────────────────
@@ -47,139 +55,8 @@ function getSpiritualTimeWindow(date: Date) {
   return 'night';
 }
 
-// ── Mala definitions ───────────────────────────────────────────────────────────
-const MALAS = [
-  {
-    id: 'sandalwood',
-    name: 'Sandalwood',
-    subtitle: 'Calming · All Traditions',
-    dark:  { thread: 'rgba(120,80,40,0.20)', bead: '#5A3218', counted: '#C8924A', sumeru: '#2E1508', glow: 'rgba(200,146,74,0.55)' },
-    light: { thread: 'rgba(80,50,20,0.15)',  bead: '#C8A070', counted: '#7A4A1E', sumeru: '#5A3010', glow: 'rgba(122,74,30,0.45)' },
-  },
-  {
-    id: 'rudraksha',
-    name: 'Rudraksha',
-    subtitle: 'Sacred · Shaiva',
-    dark:  { thread: 'rgba(80,40,20,0.20)', bead: '#3A1A08', counted: '#C8924A', sumeru: '#1A0802', glow: 'rgba(200,100,60,0.55)' },
-    light: { thread: 'rgba(60,30,10,0.15)', bead: '#A07050', counted: '#5A2E10', sumeru: '#3A1A02', glow: 'rgba(90,46,16,0.45)' },
-  },
-  {
-    id: 'rose_quartz',
-    name: 'Rose Quartz',
-    subtitle: 'Love & Healing · Universal',
-    dark:  { thread: 'rgba(160,80,100,0.20)', bead: '#5A2A3A', counted: '#D4826A', sumeru: '#3A1828', glow: 'rgba(210,120,140,0.55)' },
-    light: { thread: 'rgba(160,80,100,0.15)', bead: '#E8B0C0', counted: '#C07090', sumeru: '#A04870', glow: 'rgba(192,112,144,0.45)' },
-  },
-  {
-    id: 'tulsi',
-    name: 'Tulsi',
-    subtitle: 'Pure & Auspicious · Vaishnava',
-    dark:  { thread: 'rgba(40,100,40,0.20)', bead: '#1E3E1E', counted: '#C8924A', sumeru: '#0E2A0E', glow: 'rgba(60,160,60,0.40)' },
-    light: { thread: 'rgba(30,80,30,0.15)',  bead: '#90C090', counted: '#3A7A3A', sumeru: '#1E5A1E', glow: 'rgba(58,122,58,0.40)' },
-  },
-  {
-    id: 'crystal',
-    name: 'Crystal',
-    subtitle: 'Clarity & Purity · Universal',
-    dark:  { thread: 'rgba(180,200,220,0.12)', bead: 'rgba(200,215,235,0.12)', counted: '#C8924A', sumeru: 'rgba(200,220,240,0.22)', glow: 'rgba(180,200,240,0.50)' },
-    light: { thread: 'rgba(100,120,160,0.15)',  bead: 'rgba(160,180,210,0.35)', counted: '#6878A8', sumeru: 'rgba(140,160,200,0.55)', glow: 'rgba(104,120,168,0.40)' },
-  },
-] as const;
-
-type MalaId = typeof MALAS[number]['id'];
-
-// ── Mantra definitions ─────────────────────────────────────────────────────────
-const MANTRAS = [
-  {
-    id: 'om_namah_shivaya',
-    name: 'Om Namah Shivaya',
-    devanagari: 'ॐ नमः शिवाय',
-    tradition: 'Shaiva',
-    description: 'Salutation to Shiva — the five elements',
-    full: 'ॐ नमः शिवाय\nॐ नमः शिवाय\nॐ नमः शिवाय',
-    tradColor: '#A06888',
-  },
-  {
-    id: 'om_namo_narayanaya',
-    name: 'Om Namo Narayanaya',
-    devanagari: 'ॐ नमो नारायणाय',
-    tradition: 'Vaishnava',
-    description: 'Salutation to Lord Narayana',
-    full: 'ॐ नमो नारायणाय\nॐ नमो नारायणाय\nॐ नमो नारायणाय',
-    tradColor: '#6888C8',
-  },
-  {
-    id: 'gayatri',
-    name: 'Gayatri Mantra',
-    devanagari: 'ॐ भूर्भुवः स्वः',
-    tradition: 'Vedic',
-    description: 'Universal mantra of light and wisdom',
-    full: 'ॐ भूर्भुवः स्वः\nतत्सवितुर्वरेण्यं\nभर्गो देवस्य धीमहि\nधियो यो नः प्रचोदयात् ।।',
-    tradColor: '#C8A040',
-  },
-  {
-    id: 'hare_krishna',
-    name: 'Hare Krishna Mahamantra',
-    devanagari: 'हरे कृष्ण हरे कृष्ण',
-    tradition: 'Vaishnava',
-    description: 'The great mantra of Krishna and Rama',
-    full: 'हरे कृष्ण हरे कृष्ण\nकृष्ण कृष्ण हरे हरे\nहरे राम हरे राम\nराम राम हरे हरे',
-    tradColor: '#5888C8',
-  },
-  {
-    id: 'mahamrityunjaya',
-    name: 'Mahamrityunjaya',
-    devanagari: 'ॐ त्र्यम्बकं यजामहे',
-    tradition: 'Vedic',
-    description: 'The great death-conquering mantra of Shiva',
-    full: 'ॐ त्र्यम्बकं यजामहे\nसुगन्धिं पुष्टिवर्धनम्\nउर्वारुकमिव बन्धनान्\nमृत्योर्मुक्षीय मामृतात् ।।',
-    tradColor: '#A86838',
-  },
-  {
-    id: 'om_mani',
-    name: 'Om Mani Padme Hum',
-    devanagari: 'ॐ मणि पद्मे हूँ',
-    tradition: 'Buddhist',
-    description: 'Jewel in the lotus — mantra of compassion',
-    full: 'ॐ मणि पद्मे हूँ\nॐ मणि पद्मे हूँ\nॐ मणि पद्मे हूँ',
-    tradColor: '#6A9888',
-  },
-  {
-    id: 'waheguru',
-    name: 'Waheguru Simran',
-    devanagari: 'ਵਾਹਿਗੁਰੂ',
-    tradition: 'Sikh',
-    description: 'The wondrous Guru — sacred simran of the Sikhs',
-    full: 'ਵਾਹਿਗੁਰੂ\nਵਾਹਿਗੁਰੂ\nਵਾਹਿਗੁਰੂ',
-    tradColor: '#4A8870',
-  },
-  {
-    id: 'namokar',
-    name: 'Namokar Mantra',
-    devanagari: 'णमो अरिहंताणं',
-    tradition: 'Jain',
-    description: 'Navkar remembrance — bowing to liberated beings',
-    full: 'णमो अरिहंताणं\nणमो सिद्धाणं\nणमो आयरियाणं\nणमो उवज्झायाणं\nणमो लोए सव्वसाहूणं',
-    tradColor: '#A07830',
-  },
-] as const;
-
-type MantraId = typeof MANTRAS[number]['id'];
-
-function orderedMantrasForTradition(tradition: string, defaultId: MantraId) {
-  const priority: Record<string, MantraId[]> = {
-    hindu: ['gayatri', 'om_namah_shivaya', 'hare_krishna', 'om_namo_narayanaya', 'mahamrityunjaya'],
-    sikh: ['waheguru'],
-    buddhist: ['om_mani'],
-    jain: ['namokar'],
-    other: ['gayatri', 'waheguru', 'om_mani', 'namokar'],
-  };
-  const ids = new Set<MantraId>([defaultId, ...(priority[tradition] ?? priority.hindu)]);
-  return [
-    ...Array.from(ids).map(id => MANTRAS.find(m => m.id === id)).filter(Boolean),
-    ...MANTRAS.filter(m => !ids.has(m.id)),
-  ] as typeof MANTRAS[number][];
-}
+type MalaId = JapaMalaId;
+type MantraId = JapaMantraId;
 
 // ── Sound definitions ──────────────────────────────────────────────────────────
 type SoundId = 'silence' | 'om' | 'bowl' | 'rain' | 'river' | 'bells' | 'forest' | 'dilruba' | 'dhamma' | 'stavan';
@@ -555,6 +432,46 @@ function startJapaAmbient(id: SoundId) {
            : id === 'stavan'  ? _startStavan(ctx)
            : null;
   if (fn) _japaStopFns.push(fn);
+}
+
+function playBeadTapSound() {
+  const ctx = _getCtx();
+  if (!ctx) return;
+  const t0 = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const filter = ctx.createBiquadFilter();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(680, t0);
+  osc.frequency.exponentialRampToValueAtTime(430, t0 + 0.045);
+  filter.type = 'lowpass';
+  filter.frequency.value = 1800;
+  gain.gain.setValueAtTime(0.0001, t0);
+  gain.gain.exponentialRampToValueAtTime(0.055, t0 + 0.006);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.105);
+  osc.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(t0);
+  osc.stop(t0 + 0.12);
+}
+
+function playIntervalBell() {
+  const ctx = _getCtx();
+  if (!ctx) return;
+  const t0 = ctx.currentTime;
+  [528, 792, 1056].forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.08 / (i + 1), t0);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.8);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(t0);
+    osc.stop(t0 + 1.9);
+  });
 }
 
 // ── Target rounds ──────────────────────────────────────────────────────────────
@@ -1580,13 +1497,14 @@ export default function JapaClient({
   const { resolvedTheme } = useThemePreference();
   const isDark = resolvedTheme === 'dark';
   const { playHaptic } = useZenithSensory();
+  const prefersReducedMotion = useReducedMotion();
 
   const meta = getTraditionMeta(tradition);
   const defaultMantraId: MantraId = meta.japaDefaultMantra as MantraId;
 
   // ── Screen + selection state ─────────────────────────────────────────────
   const [screen,    setScreen]    = useState<Screen>('launcher');
-  const [malaId,    setMalaId]    = useState<MalaId>('sandalwood');
+  const [malaId,    setMalaId]    = useState<MalaId>((meta.japaRecommendedMalas[0] ?? 'sandalwood') as MalaId);
   const [mantraId,  setMantraId]  = useState<MantraId>(defaultMantraId);
   const [bgSceneId, setBgSceneId] = useState<BgSceneId>('midnight');
   const [targetRounds, setTargetRounds] = useState(1);
@@ -1683,6 +1601,7 @@ export default function JapaClient({
   const countBead = useCallback(() => {
     if (paused || showComplete) return;
     playHaptic('light');
+    playBeadTapSound();
     setPulsing(true);
     setTimeout(() => setPulsing(false), 120);
 
@@ -1702,6 +1621,7 @@ export default function JapaClient({
       const next = prev + 1;
       if (next >= TOTAL_BEADS) {
         hapticSuccess();
+        playIntervalBell();
         setRoundsDone(r => {
           const newRounds = r + 1;
           setTotalBeads(t => t + next);
@@ -1739,13 +1659,17 @@ export default function JapaClient({
         malaId,
         backgroundScene: bgSceneId,
         tradition,
-        practiceType: tradition === 'sikh' ? 'naam_simran' : tradition === 'buddhist' ? 'mantra_meditation' : tradition === 'jain' ? 'navkar_japa' : 'mala',
+        practiceType: getJapaPracticeType(tradition),
+        intention: 'daily_practice',
         completionType: completedRounds >= targetRoundsRef.current ? 'target_completed' : 'ended_manually',
         targetRounds: targetRoundsRef.current,
         completedRounds,
+        completedBeads: totalBeads,
         ambientId: soundId,
         spiritualTimeWindow: getSpiritualTimeWindow(new Date()),
+        spiritualDate: today,
         timezone: tz,
+        hapticsEnabled: true,
         sourceRoute: '/bhakti/mala',
       });
 
@@ -1766,9 +1690,14 @@ export default function JapaClient({
           completion_type: _completionType,
           target_rounds: _targetRounds,
           completed_rounds: _completedRounds,
+          completed_beads: _completedBeads,
           ambient_id: _ambientId,
+          mood_before: _moodBefore,
+          mood_after: _moodAfter,
           spiritual_time_window: _spiritualTimeWindow,
+          spiritual_date: _spiritualDate,
           timezone: _timezone,
+          haptics_enabled: _hapticsEnabled,
           source_route: _sourceRoute,
           panchang_context: _panchangContext,
           ...canonicalRow
@@ -1905,8 +1834,8 @@ export default function JapaClient({
   const currentMala   = MALAS.find(m => m.id === malaId)      ?? MALAS[0];
   const currentBgScene = BG_SCENES.find(s => s.id === bgSceneId) ?? BG_SCENES[0];
   const traditionMantras = useMemo(
-    () => orderedMantrasForTradition(tradition, defaultMantraId),
-    [tradition, defaultMantraId]
+    () => getJapaMantrasForTradition(tradition),
+    [tradition]
   );
   const bgC = isDark ? currentBgScene.dark : currentBgScene.light;
 
@@ -1997,8 +1926,9 @@ export default function JapaClient({
           <div className="flex items-center justify-between px-5 pt-14 pb-2">
             <button
               onClick={() => setShowStopSheet(true)}
-              className="w-9 h-9 rounded-full flex items-center justify-center"
-              style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
+              className="w-11 h-11 rounded-full flex items-center justify-center border"
+              aria-label="Stop session"
+              style={{ background: isDark ? 'rgba(8,6,4,0.36)' : 'rgba(255,253,248,0.42)', borderColor: `${amber}28`, backdropFilter: 'blur(18px)' }}>
               <X size={17} style={{ color: amber }} />
             </button>
             <div className="text-center flex-1 px-3">
@@ -2012,16 +1942,18 @@ export default function JapaClient({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowSettings(true)}
-                className="w-9 h-9 rounded-full flex items-center justify-center"
-                style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
+                className="w-11 h-11 rounded-full flex items-center justify-center border"
+                aria-label="Sound settings"
+                style={{ background: isDark ? 'rgba(8,6,4,0.36)' : 'rgba(255,253,248,0.42)', borderColor: `${amber}28`, backdropFilter: 'blur(18px)' }}>
                 {soundId === 'silence'
                   ? <VolumeX size={15} style={{ color: amber }} />
                   : <Volume2 size={15} style={{ color: amber }} />}
               </button>
               <button
                 onClick={() => setShowSettings(true)}
-                className="w-9 h-9 rounded-full flex items-center justify-center"
-                style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
+                className="w-11 h-11 rounded-full flex items-center justify-center border"
+                aria-label="Practice settings"
+                style={{ background: isDark ? 'rgba(8,6,4,0.36)' : 'rgba(255,253,248,0.42)', borderColor: `${amber}28`, backdropFilter: 'blur(18px)' }}>
                 <Settings2 size={15} style={{ color: amber }} />
               </button>
             </div>
@@ -2067,9 +1999,9 @@ export default function JapaClient({
             <div className="relative z-10 w-full max-w-sm px-6">
               <motion.div
                 className="w-full flex items-center justify-center"
-                animate={pulsing ? { scale: [1, 0.980, 1.005, 1] } : {}}
+                animate={!prefersReducedMotion && pulsing ? { scale: [1, 0.980, 1.005, 1] } : {}}
                 transition={{ duration: 0.15 }}
-                style={{ maxWidth: 430, maxHeight: 'min(76dvh, 430px)', aspectRatio: '1 / 1' }}
+                style={{ width: 'min(88vw, 78dvh, 540px)', maxWidth: 540, aspectRatio: '1 / 1' }}
               >
                 <MalaSVG
                   malaId={malaId}
@@ -2106,39 +2038,35 @@ export default function JapaClient({
               </Link>
             </div>
 
-            {/* Pause / Reset row */}
-            <div className="flex gap-3">
+            {/* Floating controls */}
+            <div className="mx-auto flex w-fit gap-2 rounded-full border p-1.5"
+              style={{ background: isDark ? 'rgba(8,6,4,0.38)' : 'rgba(255,253,248,0.48)', borderColor: `${amber}24`, backdropFilter: 'blur(18px)' }}>
               <button
                 onClick={() => setPaused(p => !p)}
-                className="flex-1 py-3.5 rounded-2xl font-semibold text-[14px] border transition-all"
-                style={{ background: cardBg, borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)', color: text }}>
-                <span className="inline-flex items-center justify-center gap-2">
-                  {paused ? <Play size={15} /> : <Pause size={15} />}
-                  {paused ? 'Resume' : 'Pause'}
-                </span>
+                className="h-11 min-w-11 rounded-full px-4 font-semibold text-[13px] transition-all active:scale-95"
+                aria-label={paused ? 'Resume practice' : 'Pause practice'}
+                style={{ background: paused ? `${amber}22` : 'transparent', color: text }}>
+                <span className="inline-flex items-center justify-center gap-2">{paused ? <Play size={15} /> : <Pause size={15} />}{paused ? 'Resume' : 'Pause'}</span>
               </button>
               <button
                 onClick={handleReset}
-                className="w-14 py-3.5 rounded-2xl flex items-center justify-center border transition-all"
-                style={{ background: cardBg, borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)' }}>
+                className="h-11 w-11 rounded-full flex items-center justify-center transition-all active:scale-95"
+                aria-label="Reset session"
+                style={{ background: 'transparent' }}>
                 <RotateCcw size={17} style={{ color: sub }} />
               </button>
-            </div>
-
-            {/* Finish session — always shown once any beads counted */}
-            {(roundsDone > 0 || beadCount > 0) && (
               <button
-                onClick={handleManualEnd}
+                onClick={roundsDone > 0 || beadCount > 0 ? handleManualEnd : () => setShowStopSheet(true)}
                 disabled={savingSession}
-                className="w-full py-3 rounded-2xl font-semibold text-[13px]"
+                className="h-11 rounded-full px-4 font-semibold text-[13px] transition-all active:scale-95 disabled:opacity-60"
+                aria-label="End and save session"
                 style={{
-                  background: isDark ? 'rgba(200,146,74,0.12)' : 'rgba(122,74,30,0.08)',
+                  background: isDark ? 'rgba(200,146,74,0.14)' : 'rgba(122,74,30,0.10)',
                   color: amber,
-                  border: `1px solid ${amber}28`,
                 }}>
-                {savingSession ? 'Saving...' : 'End & Save Session'}
+                {savingSession ? 'Saving...' : 'End'}
               </button>
-            )}
+            </div>
           </div>
           </motion.div>{/* end bottom controls auto-hide wrapper */}
 

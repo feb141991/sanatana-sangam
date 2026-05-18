@@ -11,9 +11,11 @@ import {
   malaSessionBeads as sessionBeads,
   malaSessionDate as sessionDate,
   malaSessionDurationSeconds as sessionSecs,
+  malaSessionCompletionType as sessionCompletionType,
   malaSessionMalaId as sessionMalaId,
   malaSessionMantra as sessionMantra,
   malaSessionRounds as sessionRounds,
+  malaSessionSpiritualWindow as sessionSpiritualWindow,
 } from '@/lib/mala-sessions';
 
 interface Props {
@@ -38,6 +40,23 @@ const MALA_LABELS: Record<string, string> = {
   rose_quartz: 'Rose quartz',
   tulsi: 'Tulsi',
   crystal: 'Crystal',
+};
+const MANTRA_LABELS: Record<string, string> = {
+  gayatri: 'Gayatri Mantra',
+  om_namah_shivaya: 'Om Namah Shivaya',
+  om_namo_narayanaya: 'Om Namo Narayanaya',
+  hare_krishna: 'Hare Krishna Mahamantra',
+  mahamrityunjaya: 'Mahamrityunjaya',
+  om_mani: 'Om Mani Padme Hum',
+  waheguru: 'Waheguru Simran',
+  namokar: 'Namokar Mantra',
+};
+const WINDOW_LABELS: Record<string, string> = {
+  brahma_muhurta: 'Brahma muhurta',
+  morning: 'Morning',
+  midday: 'Midday',
+  sandhya: 'Sandhya',
+  night: 'Night',
 };
 
 function DayOfWeekChart({ data, isDark, amber }: {
@@ -246,7 +265,7 @@ function CalendarMonthView({ sessions, isDark, amber, text, sub, borderCol, surf
                 <p className="text-[11px]" style={{ color: sub }}>No japa session this day.</p>
               ) : selectedSessions.map((s, i) => (
                 <div key={i} className="text-[11px]" style={{ color: text }}>
-                  📿 {sessionRounds(s)} mala{sessionRounds(s) !== 1 ? 's' : ''} · {sessionBeads(s)} beads
+                  {sessionRounds(s)} mala{sessionRounds(s) !== 1 ? 's' : ''} · {sessionBeads(s)} beads
                   {sessionSecs(s) > 0 && ` · ${Math.round(sessionSecs(s) / 60)}m`}
                 </div>
               ))}
@@ -313,13 +332,26 @@ export default function InsightsClient({ sessions }: Props) {
     const totalSecs     = filtered.reduce((a, s) => a + sessionSecs(s), 0);
     const avgPerDay     = days > 0 ? Math.round(totalBeads / days) : 0;
     const malaFreq: Record<string, number> = {};
+    const mantraFreq: Record<string, number> = {};
+    const windowFreq: Record<string, number> = {};
+    let completedSessions = 0;
     filtered.forEach(s => {
       const mala = sessionMalaId(s);
       if (mala) malaFreq[mala] = (malaFreq[mala] ?? 0) + 1;
+      const mantra = sessionMantra(s);
+      if (mantra) mantraFreq[mantra] = (mantraFreq[mantra] ?? 0) + 1;
+      const spiritualWindow = sessionSpiritualWindow(s);
+      if (spiritualWindow) windowFreq[spiritualWindow] = (windowFreq[spiritualWindow] ?? 0) + 1;
+      if (sessionCompletionType(s) === 'target_completed' || sessionRounds(s) > 0) completedSessions++;
     });
     const malas = Object.entries(malaFreq).sort((a, b) => b[1] - a[1]).slice(0, 5);
     const topMala = malas[0]?.[0] ?? null;
-    return { totalBeads, totalSessions, totalSecs, avgPerDay, malas, topMala };
+    const mantras = Object.entries(mantraFreq).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const topMantra = mantras[0]?.[0] ?? null;
+    const windows = Object.entries(windowFreq).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const topWindow = windows[0]?.[0] ?? null;
+    const completionRate = totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 0;
+    return { totalBeads, totalSessions, totalSecs, avgPerDay, malas, topMala, mantras, topMantra, windows, topWindow, completionRate };
   }, [filtered, days]);
 
   // Consistency: % of days in range that had a session
@@ -354,6 +386,23 @@ export default function InsightsClient({ sessions }: Props) {
     'Getting Started';
 
   const isEmpty = filtered.length === 0;
+  const daysSinceLastPractice = useMemo(() => {
+    const latest = [...sessions].map(s => sessionDate(s)).filter(Boolean).sort().at(-1);
+    if (!latest) return null;
+    const today = localSpiritualDate(typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC', 4);
+    const diff = new Date(`${today}T12:00:00Z`).getTime() - new Date(`${latest}T12:00:00Z`).getTime();
+    return Math.max(0, Math.floor(diff / 86400000));
+  }, [sessions]);
+  const recommendedNextPractice = stats.topMantra
+    ? `Return to ${MANTRA_LABELS[stats.topMantra] ?? stats.topMantra.replace(/_/g, ' ')} at ${stats.topWindow ? WINDOW_LABELS[stats.topWindow] ?? stats.topWindow : bestTime !== '—' ? bestTime : 'your usual time'}.`
+    : 'Start with one mala today so Shoonaya can learn your rhythm.';
+  const streakRisk = daysSinceLastPractice == null
+    ? 'No rhythm yet'
+    : daysSinceLastPractice === 0
+      ? 'Protected today'
+      : daysSinceLastPractice === 1
+        ? 'Practice today to protect the rhythm'
+        : 'High risk: restart with one short mala';
 
   return (
     <div style={{ background: bg, minHeight: '100dvh', marginLeft: '-0.75rem', marginRight: '-0.75rem', marginTop: '-0.5rem' }}>
@@ -441,7 +490,9 @@ export default function InsightsClient({ sessions }: Props) {
         {isEmpty ? (
           // ── Empty state ────────────────────────────────────────────────
           <div className="px-5 pt-10 flex flex-col items-center gap-4 text-center">
-            <div className="text-5xl">📿</div>
+            <div className="h-16 w-16 rounded-full border flex items-center justify-center" style={{ borderColor: `${amber}30`, background: `${amber}12` }}>
+              <Calendar size={24} style={{ color: amber }} />
+            </div>
             <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 600, color: text }}>
               No sessions yet
             </p>
@@ -544,6 +595,58 @@ export default function InsightsClient({ sessions }: Props) {
                   <p className="text-xs mt-2" style={{ color: sub }}>
                     You are most consistent at this time.
                   </p>
+                </div>
+              </div>
+            )}
+
+            {/* ── Practice dashboard intelligence ─────────────────────── */}
+            <div className="px-5 mb-5">
+              <div
+                className="rounded-2xl p-5 border"
+                style={{ background: surface, borderColor: borderCol, boxShadow: isDark ? 'none' : '0 2px 12px rgba(0,0,0,0.06)' }}
+              >
+                <p className="text-[12px] font-semibold uppercase tracking-wide mb-4" style={{ color: sub }}>
+                  Practice dashboard
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <StatCard label="Completion rate" value={`${stats.completionRate}%`} isDark={isDark} amber={amber} sub={sub} />
+                  <StatCard label="Streak risk" value={daysSinceLastPractice === 0 ? 'Low' : daysSinceLastPractice === 1 ? 'Medium' : 'High'} isDark={isDark} amber={amber} sub={sub} />
+                </div>
+                <div className="mt-4 rounded-2xl border p-4" style={{ borderColor: `${amber}1f`, background: `${amber}08` }}>
+                  <p className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: sub }}>Recommended next practice</p>
+                  <p className="mt-2 text-sm leading-relaxed" style={{ color: text }}>{recommendedNextPractice}</p>
+                  <p className="mt-2 text-[11px]" style={{ color: sub }}>{streakRisk}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Mantra and spiritual-time preference ─────────────────── */}
+            {(stats.mantras.length > 0 || stats.windows.length > 0) && (
+              <div className="px-5 mb-5">
+                <div
+                  className="rounded-2xl p-5 border"
+                  style={{ background: surface, borderColor: borderCol, boxShadow: isDark ? 'none' : '0 2px 12px rgba(0,0,0,0.06)' }}
+                >
+                  <p className="text-[12px] font-semibold uppercase tracking-wide mb-1" style={{ color: sub }}>
+                    Practice preference
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 700, color: text }}>
+                    {stats.topMantra ? MANTRA_LABELS[stats.topMantra] ?? stats.topMantra.replace(/_/g, ' ') : 'Learning your mantra'}
+                  </p>
+                  <div className="mt-4 grid gap-3">
+                    {stats.mantras.slice(0, 3).map(([mantra, count]) => (
+                      <div key={mantra} className="flex items-center justify-between gap-3">
+                        <span className="text-[12px] font-semibold" style={{ color: text }}>{MANTRA_LABELS[mantra] ?? mantra.replace(/_/g, ' ')}</span>
+                        <span className="text-[11px]" style={{ color: sub }}>{count} session{count !== 1 ? 's' : ''}</span>
+                      </div>
+                    ))}
+                    {stats.windows.slice(0, 3).map(([windowKey, count]) => (
+                      <div key={windowKey} className="flex items-center justify-between gap-3">
+                        <span className="text-[12px] font-semibold" style={{ color: text }}>{WINDOW_LABELS[windowKey] ?? windowKey}</span>
+                        <span className="text-[11px]" style={{ color: sub }}>{count} session{count !== 1 ? 's' : ''}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}

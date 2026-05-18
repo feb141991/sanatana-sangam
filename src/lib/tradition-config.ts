@@ -48,6 +48,12 @@ export interface TraditionMeta {
   festivalPriority: TraditionKey;
   /** Default mantra for Japa mala */
   japaDefaultMantra: string;
+  /** Canonical practice type recorded for Mala/Japa sessions */
+  japaPracticeType: JapaPracticeType;
+  /** Recommended mantra ordering for today's launcher */
+  japaRecommendedMantras: JapaMantraId[];
+  /** Recommended mala ordering for today's launcher */
+  japaRecommendedMalas: JapaMalaId[];
   /** Title for the Nitya Karma section */
   nityaKarmaTitle:  string;
   /** Vocabulary word for scriptures in Pathshala */
@@ -81,6 +87,158 @@ export interface TraditionMeta {
   morningAllDoneMsg: string;
 }
 
+export type JapaMalaId = 'sandalwood' | 'rudraksha' | 'rose_quartz' | 'tulsi' | 'crystal';
+export type JapaMantraId =
+  | 'om_namah_shivaya'
+  | 'om_namo_narayanaya'
+  | 'gayatri'
+  | 'hare_krishna'
+  | 'mahamrityunjaya'
+  | 'om_mani'
+  | 'waheguru'
+  | 'namokar';
+export type JapaPracticeType = 'hindu_japa' | 'naam_simran' | 'buddhist_mantra' | 'jain_navkar' | 'daily_japa';
+
+export const JAPA_MALAS = [
+  {
+    id: 'sandalwood',
+    name: 'Sandalwood',
+    subtitle: 'Calming · all traditions',
+    dark:  { thread: 'rgba(120,80,40,0.20)', bead: '#5A3218', counted: '#C8924A', sumeru: '#2E1508', glow: 'rgba(200,146,74,0.55)' },
+    light: { thread: 'rgba(80,50,20,0.15)',  bead: '#C8A070', counted: '#7A4A1E', sumeru: '#5A3010', glow: 'rgba(122,74,30,0.45)' },
+  },
+  {
+    id: 'rudraksha',
+    name: 'Rudraksha',
+    subtitle: 'Sacred · Shaiva',
+    dark:  { thread: 'rgba(80,40,20,0.20)', bead: '#3A1A08', counted: '#C8924A', sumeru: '#1A0802', glow: 'rgba(200,100,60,0.55)' },
+    light: { thread: 'rgba(60,30,10,0.15)', bead: '#A07050', counted: '#5A2E10', sumeru: '#3A1A02', glow: 'rgba(90,46,16,0.45)' },
+  },
+  {
+    id: 'rose_quartz',
+    name: 'Rose quartz',
+    subtitle: 'Soft focus · universal',
+    dark:  { thread: 'rgba(160,80,100,0.20)', bead: '#5A2A3A', counted: '#D4826A', sumeru: '#3A1828', glow: 'rgba(210,120,140,0.55)' },
+    light: { thread: 'rgba(160,80,100,0.15)', bead: '#E8B0C0', counted: '#C07090', sumeru: '#A04870', glow: 'rgba(192,112,144,0.45)' },
+  },
+  {
+    id: 'tulsi',
+    name: 'Tulsi',
+    subtitle: 'Pure · Vaishnava',
+    dark:  { thread: 'rgba(40,100,40,0.20)', bead: '#1E3E1E', counted: '#C8924A', sumeru: '#0E2A0E', glow: 'rgba(60,160,60,0.40)' },
+    light: { thread: 'rgba(30,80,30,0.15)',  bead: '#90C090', counted: '#3A7A3A', sumeru: '#1E5A1E', glow: 'rgba(58,122,58,0.40)' },
+  },
+  {
+    id: 'crystal',
+    name: 'Crystal',
+    subtitle: 'Clarity · breath practice',
+    dark:  { thread: 'rgba(180,200,220,0.12)', bead: 'rgba(200,215,235,0.12)', counted: '#C8924A', sumeru: 'rgba(200,220,240,0.22)', glow: 'rgba(180,200,240,0.50)' },
+    light: { thread: 'rgba(100,120,160,0.15)',  bead: 'rgba(160,180,210,0.35)', counted: '#6878A8', sumeru: 'rgba(140,160,200,0.55)', glow: 'rgba(104,120,168,0.40)' },
+  },
+] as const satisfies readonly {
+  id: JapaMalaId;
+  name: string;
+  subtitle: string;
+  dark: { thread: string; bead: string; counted: string; sumeru: string; glow: string };
+  light: { thread: string; bead: string; counted: string; sumeru: string; glow: string };
+}[];
+
+export const JAPA_MANTRAS = [
+  {
+    id: 'om_namah_shivaya',
+    name: 'Om Namah Shivaya',
+    devanagari: 'ॐ नमः शिवाय',
+    tradition: 'Shaiva',
+    description: 'Salutation to Shiva — the five elements',
+    full: 'ॐ नमः शिवाय\nॐ नमः शिवाय\nॐ नमः शिवाय',
+    tradColor: '#A06888',
+  },
+  {
+    id: 'om_namo_narayanaya',
+    name: 'Om Namo Narayanaya',
+    devanagari: 'ॐ नमो नारायणाय',
+    tradition: 'Vaishnava',
+    description: 'Salutation to Lord Narayana',
+    full: 'ॐ नमो नारायणाय\nॐ नमो नारायणाय\nॐ नमो नारायणाय',
+    tradColor: '#6888C8',
+  },
+  {
+    id: 'gayatri',
+    name: 'Gayatri Mantra',
+    devanagari: 'ॐ भूर्भुवः स्वः',
+    tradition: 'Vedic',
+    description: 'Universal mantra of light and wisdom',
+    full: 'ॐ भूर्भुवः स्वः\nतत्सवितुर्वरेण्यं\nभर्गो देवस्य धीमहि\nधियो यो नः प्रचोदयात् ।।',
+    tradColor: '#C8A040',
+  },
+  {
+    id: 'hare_krishna',
+    name: 'Hare Krishna Mahamantra',
+    devanagari: 'हरे कृष्ण हरे कृष्ण',
+    tradition: 'Vaishnava',
+    description: 'The great mantra of Krishna and Rama',
+    full: 'हरे कृष्ण हरे कृष्ण\nकृष्ण कृष्ण हरे हरे\nहरे राम हरे राम\nराम राम हरे हरे',
+    tradColor: '#5888C8',
+  },
+  {
+    id: 'mahamrityunjaya',
+    name: 'Mahamrityunjaya',
+    devanagari: 'ॐ त्र्यम्बकं यजामहे',
+    tradition: 'Vedic',
+    description: 'The great death-conquering mantra of Shiva',
+    full: 'ॐ त्र्यम्बकं यजामहे\nसुगन्धिं पुष्टिवर्धनम्\nउर्वारुकमिव बन्धनान्\nमृत्योर्मुक्षीय मामृतात् ।।',
+    tradColor: '#A86838',
+  },
+  {
+    id: 'om_mani',
+    name: 'Om Mani Padme Hum',
+    devanagari: 'ॐ मणि पद्मे हूँ',
+    tradition: 'Buddhist',
+    description: 'Jewel in the lotus — mantra of compassion',
+    full: 'ॐ मणि पद्मे हूँ\nॐ मणि पद्मे हूँ\nॐ मणि पद्मे हूँ',
+    tradColor: '#6A9888',
+  },
+  {
+    id: 'waheguru',
+    name: 'Waheguru Simran',
+    devanagari: 'ਵਾਹਿਗੁਰੂ',
+    tradition: 'Sikh',
+    description: 'The wondrous Guru — sacred naam simran',
+    full: 'ਵਾਹਿਗੁਰੂ\nਵਾਹਿਗੁਰੂ\nਵਾਹਿਗੁਰੂ',
+    tradColor: '#4A8870',
+  },
+  {
+    id: 'namokar',
+    name: 'Namokar Mantra',
+    devanagari: 'णमो अरिहंताणं',
+    tradition: 'Jain',
+    description: 'Navkar remembrance — bowing to liberated beings',
+    full: 'णमो अरिहंताणं\nणमो सिद्धाणं\nणमो आयरियाणं\nणमो उवज्झायाणं\nणमो लोए सव्वसाहूणं',
+    tradColor: '#A07830',
+  },
+] as const satisfies readonly {
+  id: JapaMantraId;
+  name: string;
+  devanagari: string;
+  tradition: string;
+  description: string;
+  full: string;
+  tradColor: string;
+}[];
+
+export function getJapaMantrasForTradition(tradition?: string | null) {
+  const meta = getTraditionMeta(tradition);
+  const ids = new Set<JapaMantraId>([meta.japaDefaultMantra as JapaMantraId, ...meta.japaRecommendedMantras]);
+  return [
+    ...Array.from(ids).map(id => JAPA_MANTRAS.find(m => m.id === id)).filter(Boolean),
+    ...JAPA_MANTRAS.filter(m => !ids.has(m.id)),
+  ] as typeof JAPA_MANTRAS[number][];
+}
+
+export function getJapaPracticeType(tradition?: string | null): JapaPracticeType {
+  return getTraditionMeta(tradition).japaPracticeType;
+}
+
 export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
 
   hindu: {
@@ -100,6 +258,9 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     devataLabel:          'Ishta Devata',
     festivalPriority:     'hindu',
     japaDefaultMantra:    'gayatri',
+    japaPracticeType:     'hindu_japa',
+    japaRecommendedMantras: ['gayatri', 'om_namah_shivaya', 'hare_krishna', 'om_namo_narayanaya', 'mahamrityunjaya'],
+    japaRecommendedMalas: ['sandalwood', 'rudraksha', 'tulsi', 'crystal'],
     nityaKarmaTitle:      'Nitya Karma',
     pathshalaVocabulary:  'Scriptures',
     mapPinEmoji:          '🛕',
@@ -147,6 +308,9 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     devataLabel:          'Simran Focus',
     festivalPriority:     'sikh',
     japaDefaultMantra:    'waheguru',
+    japaPracticeType:     'naam_simran',
+    japaRecommendedMantras: ['waheguru'],
+    japaRecommendedMalas: ['sandalwood', 'crystal'],
     nityaKarmaTitle:      'Nitnem',
     pathshalaVocabulary:  'Gurbani',
     mapPinEmoji:          '☬',
@@ -194,6 +358,9 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     devataLabel:          'Bodhisattva / Buddha',
     festivalPriority:     'buddhist',
     japaDefaultMantra:    'om_mani',
+    japaPracticeType:     'buddhist_mantra',
+    japaRecommendedMantras: ['om_mani'],
+    japaRecommendedMalas: ['crystal', 'sandalwood'],
     nityaKarmaTitle:      'Morning Practice',
     pathshalaVocabulary:  'Dhamma',
     mapPinEmoji:          '☸️',
@@ -241,6 +408,9 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     devataLabel:          'Tirthankar Devotion',
     festivalPriority:     'jain',
     japaDefaultMantra:    'namokar',
+    japaPracticeType:     'jain_navkar',
+    japaRecommendedMantras: ['namokar'],
+    japaRecommendedMalas: ['sandalwood', 'crystal'],
     nityaKarmaTitle:      'Pratikramana / Sadhana',
     pathshalaVocabulary:  'Agamas',
     mapPinEmoji:          '🤲',
@@ -288,6 +458,9 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     devataLabel:          'Spiritual Guide',
     festivalPriority:     'hindu',
     japaDefaultMantra:    'gayatri',
+    japaPracticeType:     'daily_japa',
+    japaRecommendedMantras: ['gayatri', 'waheguru', 'om_mani', 'namokar'],
+    japaRecommendedMalas: ['sandalwood', 'crystal'],
     nityaKarmaTitle:      'Daily Practice',
     pathshalaVocabulary:  'Wisdom',
     mapPinEmoji:          '✨',
