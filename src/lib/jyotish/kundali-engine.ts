@@ -231,43 +231,80 @@ export function generateKundali(input: KundaliInput): KundaliResult {
 }
 
 // ── SVG renderer (North Indian Diamond chart) ─────────────────────────────────
+// Rahu & Ketu are ALWAYS retrograde in Vedic astrology — no (R) shown for them.
+// Other planets use a compact ᴿ superscript to keep labels tidy inside triangles.
+// Multi-planet houses are center-stacked; font shrinks for 3+ planets per house.
 export function renderKundaliSVG(result: KundaliResult): string {
   const { lagnaNumber, placements } = result;
 
+  // Build per-house label lists
   const housePlanets: Record<number, string[]> = {};
   for (let h = 1; h <= 12; h++) housePlanets[h] = [];
   placements.forEach(p => {
-    const label = p.isRetrograde ? `${p.symbol}(R)` : p.symbol;
+    const alwaysRetro = p.name === 'Rahu' || p.name === 'Ketu';
+    const label = (p.isRetrograde && !alwaysRetro) ? `${p.symbol}ᴬ` : p.symbol; // ᴿ = U+1D2C
     housePlanets[p.house].push(label);
   });
 
-  const getHouseRashi = (house: number) => {
+  const getHouseRashi = (house: number): string => {
     const num = ((lagnaNumber - 1 + (house - 1)) % 12) + 1;
-    return RASHI_METADATA[num - 1]?.sa?.slice(0, 3) ?? num;
+    return String(RASHI_METADATA[num - 1]?.sa?.slice(0, 3) ?? num);
   };
 
+  // Rashi label corner positions (edge/corner of each triangle)
   const housePos: Record<number, [number, number]> = {
-    1: [180, 80],   2: [95, 50],   3: [50, 95],   4: [80, 180],
-    5: [50, 270],   6: [95, 315],  7: [180, 295],  8: [265, 315],
-    9: [315, 270], 10: [280, 180], 11: [315, 95],  12: [265, 50],
+    1: [180, 76],  2: [94, 48],   3: [48, 94],   4: [76, 180],
+    5: [48, 268],  6: [94, 315],  7: [180, 296],  8: [268, 315],
+    9: [315, 268], 10: [284, 180], 11: [315, 94], 12: [268, 48],
   };
+
+  // Planet area center per house — kept well inside each triangle
   const planetPos: Record<number, [number, number]> = {
-    1: [180, 115],  2: [110, 90],   3: [80, 120],  4: [115, 185],
-    5: [80, 245],   6: [110, 280],  7: [180, 255],  8: [250, 280],
-    9: [280, 245], 10: [245, 185], 11: [280, 120], 12: [250, 90],
+    1: [180, 116],  2: [114, 94],  3: [82, 124],  4: [118, 182],
+    5: [82, 242],   6: [114, 282], 7: [180, 248],  8: [246, 282],
+    9: [278, 242], 10: [242, 182], 11: [278, 124], 12: [246, 94],
   };
+
+  // Safe vertical extent per house (how many lines fit without overflowing)
+  const houseMaxLines: Record<number, number> = {
+    1: 4, 2: 3, 3: 3, 4: 4, 5: 3, 6: 3,
+    7: 4, 8: 3, 9: 3, 10: 4, 11: 3, 12: 3,
+  };
+
+  const LINE_H = 12;
 
   const rashiLabels = Object.entries(housePos).map(([h, [x, y]]) =>
-    `<text x="${x}" y="${y}" fill="#C5A059" font-size="11" font-family="'Outfit',sans-serif" font-weight="600" text-anchor="middle">${getHouseRashi(Number(h))}</text>`
+    `<text x="${x}" y="${y}" fill="#C5A059" font-size="10" font-family="'Outfit',sans-serif" font-weight="700" text-anchor="middle">${getHouseRashi(Number(h))}</text>`
   ).join('\n');
 
-  const planetLabels = Object.entries(planetPos).map(([h, [x, y]]) => {
-    const symbols = housePlanets[Number(h)];
-    if (symbols.length === 0) return '';
-    // Stack multiple planets vertically
-    return symbols.map((sym, i) =>
-      `<text x="${x}" y="${y + i * 12}" fill="#EDE8DE" font-size="10" font-family="'Outfit',sans-serif" font-weight="600" text-anchor="middle">${sym}</text>`
-    ).join('\n');
+  const planetLabels = Object.entries(planetPos).map(([h, [cx, cy]]) => {
+    const hNum   = Number(h);
+    const all    = housePlanets[hNum];
+    if (all.length === 0) return '';
+
+    const maxLines = houseMaxLines[hNum] ?? 3;
+    const visible  = all.slice(0, maxLines);
+    const overflow = all.length - visible.length;
+
+    // Font shrinks for crowded houses
+    const fs = visible.length >= 3 ? 9 : 10;
+
+    // Center-stack: compute topmost y so the group is vertically centered at cy
+    const totalH = visible.length * LINE_H;
+    const startY = cy - totalH / 2 + LINE_H / 2;
+
+    const rows = visible.map((sym, i) =>
+      `<text x="${cx}" y="${startY + i * LINE_H}" fill="#EDE8DE" font-size="${fs}" font-family="'Outfit',sans-serif" font-weight="600" text-anchor="middle">${sym}</text>`
+    );
+
+    // Overflow indicator (e.g. "+1" when > maxLines planets in same house)
+    if (overflow > 0) {
+      rows.push(
+        `<text x="${cx}" y="${startY + visible.length * LINE_H}" fill="rgba(237,232,222,0.4)" font-size="8" font-family="'Outfit',sans-serif" text-anchor="middle">+${overflow}</text>`
+      );
+    }
+
+    return rows.join('\n');
   }).join('\n');
 
   return `
@@ -285,17 +322,16 @@ export function renderKundaliSVG(result: KundaliResult): string {
 
   <rect width="360" height="360" rx="24" fill="url(#darkBg)" stroke="rgba(197,160,89,0.22)" stroke-width="1.5" />
   <rect x="15" y="15" width="330" height="330" fill="none" stroke="#C5A059" stroke-width="1.5" stroke-opacity="0.45" />
-
   <line x1="15" y1="15" x2="345" y2="345" stroke="#C5A059" stroke-width="1.5" stroke-opacity="0.5" />
   <line x1="15" y1="345" x2="345" y2="15" stroke="#C5A059" stroke-width="1.5" stroke-opacity="0.5" />
-
   <polygon points="180,15 345,180 180,345 15,180" fill="none" stroke="#C5A059" stroke-width="1.5" stroke-opacity="0.75" />
 
   ${rashiLabels}
   ${planetLabels}
 
   <path d="M180 168 L183 177 L192 180 L183 183 L180 192 L177 183 L168 180 L177 177 Z" fill="url(#goldGlow)" opacity="0.85" />
-  <text x="180" y="206" fill="rgba(197,160,89,0.65)" font-size="7" font-weight="bold" letter-spacing="0.1em" text-anchor="middle">LAGNA</text>
+  <text x="180" y="206" fill="rgba(197,160,89,0.65)" font-size="7" font-weight="bold" letter-spacing="0.08em" text-anchor="middle">LAGNA</text>
+  <text x="348" y="356" fill="rgba(197,160,89,0.35)" font-size="7" font-family="'Outfit',sans-serif" text-anchor="end">ᴬ = retrograde</text>
 </svg>
   `.trim();
 }

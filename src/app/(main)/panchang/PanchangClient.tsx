@@ -8,6 +8,7 @@ import { useSacredCalendar, type SacredCalendarData } from '@/hooks/useSacredCal
 import { calculatePanchang } from '@/lib/panchang';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
+import { createClient } from '@/lib/supabase';
 
 // Import our premium Jyotish engines
 import { getDailyHoroscope, RASHI_LIST } from '@/lib/jyotish/rashiphal-data';
@@ -213,6 +214,50 @@ function Stars({ count = 28 }: { count?: number }) {
   );
 }
 
+// ─── Nakshatra attributes lookup ──────────────────────────────────────────────
+const NAKSHATRA_ATTRS: Record<string, { gana: string; animal: string; element: string; symbol: string; syllable: string }> = {
+  'Ashwini':           { gana: 'Deva',     animal: 'Horse',    element: 'Earth', symbol: '🐴', syllable: 'Chu, Che, Cho, La' },
+  'Bharani':           { gana: 'Manushya', animal: 'Elephant', element: 'Earth', symbol: '🐘', syllable: 'Li, Lu, Le, Lo' },
+  'Krittika':          { gana: 'Rakshasa', animal: 'Sheep',    element: 'Earth', symbol: '🔥', syllable: 'A, I, U, E' },
+  'Rohini':            { gana: 'Manushya', animal: 'Serpent',  element: 'Earth', symbol: '🌺', syllable: 'O, Va, Vi, Vu' },
+  'Mrigashira':        { gana: 'Deva',     animal: 'Serpent',  element: 'Earth', symbol: '🦌', syllable: 'Ve, Vo, Ka, Ki' },
+  'Ardra':             { gana: 'Manushya', animal: 'Dog',      element: 'Water', symbol: '💧', syllable: 'Ku, Gha, Ing, Ja' },
+  'Punarvasu':         { gana: 'Deva',     animal: 'Cat',      element: 'Water', symbol: '⭐', syllable: 'Ke, Ko, Ha, Hi' },
+  'Pushya':            { gana: 'Deva',     animal: 'Sheep',    element: 'Water', symbol: '🌼', syllable: 'Hu, He, Ho, Da' },
+  'Ashlesha':          { gana: 'Rakshasa', animal: 'Cat',      element: 'Water', symbol: '🐍', syllable: 'Di, Du, De, Do' },
+  'Magha':             { gana: 'Rakshasa', animal: 'Rat',      element: 'Fire',  symbol: '👑', syllable: 'Ma, Mi, Mu, Me' },
+  'Purva Phalguni':    { gana: 'Manushya', animal: 'Rat',      element: 'Fire',  symbol: '🛏️', syllable: 'Mo, Ta, Ti, Tu' },
+  'Uttara Phalguni':   { gana: 'Manushya', animal: 'Cow',      element: 'Fire',  symbol: '🌟', syllable: 'Te, To, Pa, Pi' },
+  'Hasta':             { gana: 'Deva',     animal: 'Buffalo',  element: 'Fire',  symbol: '✋', syllable: 'Pu, Sha, Na, Tha' },
+  'Chitra':            { gana: 'Rakshasa', animal: 'Tiger',    element: 'Fire',  symbol: '💎', syllable: 'Pe, Po, Ra, Ri' },
+  'Swati':             { gana: 'Deva',     animal: 'Buffalo',  element: 'Air',   symbol: '🌬️', syllable: 'Ru, Re, Ro, Ta' },
+  'Vishakha':          { gana: 'Rakshasa', animal: 'Tiger',    element: 'Fire',  symbol: '⚡', syllable: 'Ti, Tu, Te, To' },
+  'Anuradha':          { gana: 'Deva',     animal: 'Deer',     element: 'Fire',  symbol: '🌸', syllable: 'Na, Ni, Nu, Ne' },
+  'Jyeshtha':          { gana: 'Rakshasa', animal: 'Deer',     element: 'Water', symbol: '🌂', syllable: 'No, Ya, Yi, Yu' },
+  'Mula':              { gana: 'Rakshasa', animal: 'Dog',      element: 'Water', symbol: '🌀', syllable: 'Ye, Yo, Bha, Bhi' },
+  'Purva Ashadha':     { gana: 'Manushya', animal: 'Monkey',   element: 'Water', symbol: '🌊', syllable: 'Bhu, Dha, Pha, Da' },
+  'Uttara Ashadha':    { gana: 'Manushya', animal: 'Mongoose', element: 'Fire',  symbol: '🏆', syllable: 'Be, Bo, Ja, Ji' },
+  'Shravana':          { gana: 'Deva',     animal: 'Monkey',   element: 'Air',   symbol: '👂', syllable: 'Ju, Je, Jo, Sha' },
+  'Dhanishtha':        { gana: 'Rakshasa', animal: 'Lion',     element: 'Air',   symbol: '🥁', syllable: 'Ga, Gi, Gu, Ge' },
+  'Shatabhisha':       { gana: 'Rakshasa', animal: 'Horse',    element: 'Air',   symbol: '🌌', syllable: 'Go, Sa, Si, Su' },
+  'Purva Bhadrapada':  { gana: 'Manushya', animal: 'Lion',     element: 'Air',   symbol: '⚔️', syllable: 'Se, So, Da, Di' },
+  'Uttara Bhadrapada': { gana: 'Manushya', animal: 'Cow',      element: 'Air',   symbol: '🐟', syllable: 'Du, Tha, Jha, Da' },
+  'Revati':            { gana: 'Deva',     animal: 'Elephant', element: 'Air',   symbol: '🐠', syllable: 'De, Do, Cha, Chi' },
+};
+
+const GANA_COLOR: Record<string, string> = {
+  Deva:     'text-sky-300 bg-sky-400/10 border-sky-400/20',
+  Manushya: 'text-amber-300 bg-amber-400/10 border-amber-400/20',
+  Rakshasa: 'text-red-300 bg-red-400/10 border-red-400/20',
+};
+
+const ELEMENT_COLOR: Record<string, string> = {
+  Earth: 'text-emerald-300 bg-emerald-400/10 border-emerald-400/20',
+  Water: 'text-cyan-300 bg-cyan-400/10 border-cyan-400/20',
+  Fire:  'text-orange-300 bg-orange-400/10 border-orange-400/20',
+  Air:   'text-purple-300 bg-purple-400/10 border-purple-400/20',
+};
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: Props) {
   const { t } = useLanguage();
@@ -243,6 +288,20 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
   const [kundaliLoading, setKundaliLoading] = useState(false);
   const [kundaliError,   setKundaliError]   = useState<string | null>(null);
   const [chartSaved,     setChartSaved]     = useState(false);
+  const [saveError,      setSaveError]      = useState<string | null>(null);
+
+  // Auth + saved profiles
+  const [isLoggedIn,    setIsLoggedIn]    = useState(false);
+  const [savedProfiles, setSavedProfiles] = useState<any[]>([]);
+
+  // Recent searches (localStorage)
+  const [recentSearches, setRecentSearches] = useState<KundaliInput[]>([]);
+
+  // Text size preference: 'sm' | 'md' | 'lg'
+  const [textSize, setTextSize] = useState<'sm' | 'md' | 'lg'>('md');
+
+  // Interactive Dasha — toggle antardasha list
+  const [showAllAntardasha, setShowAllAntardasha] = useState(false);
 
   // Memoize today's transit positions — expensive computation, run once per mount
   const todayTransits = useMemo(() => {
@@ -340,6 +399,30 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
       stopResonance();
     };
   }, [activeTab, selectedRashi]);
+
+  // ── Auth state + load saved profiles ─────────────────────────────────────────
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const client = createClient();
+    client.auth.getUser().then(({ data }) => {
+      const loggedIn = !!data.user;
+      setIsLoggedIn(loggedIn);
+      if (loggedIn) {
+        fetch('/api/jyotish/birth-profiles')
+          .then(r => r.ok ? r.json() : null)
+          .then(d => { if (d?.profiles) setSavedProfiles(d.profiles); })
+          .catch(() => {});
+      }
+    });
+  }, []);
+
+  // ── Load recent searches from localStorage ────────────────────────────────────
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('kundali_recent');
+      if (stored) setRecentSearches(JSON.parse(stored).slice(0, 5));
+    } catch {}
+  }, []);
 
   // ── Live Vedic Hora Timing Calculator ─────────────────────────────────────────
   const getLiveHora = (): string => {
@@ -914,6 +997,50 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                 </div>
 
                 <div className="space-y-3">
+                  {/* Saved profiles quick-load (logged-in) */}
+                  {isLoggedIn && savedProfiles.length > 0 && (
+                    <div className="space-y-1.5">
+                      <p className="text-[10px] uppercase font-bold text-white/35 tracking-wider">Saved Charts</p>
+                      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+                        {savedProfiles.slice(0, 5).map((sp: any) => (
+                          <button
+                            key={sp.id}
+                            onClick={() => {
+                              setKundaliInput(prev => ({
+                                ...prev,
+                                name:      sp.full_name ?? sp.label ?? '',
+                                birthDate: sp.date_of_birth ?? '',
+                                birthTime: sp.time_of_birth ?? '',
+                                birthPlace: sp.birth_city ?? '',
+                              }));
+                            }}
+                            className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#C5A059]/30 bg-[#C5A059]/8 text-[10px] font-semibold text-[#C5A059] hover:bg-[#C5A059]/15 transition"
+                          >
+                            {sp.is_primary ? '⭐ ' : ''}{sp.label ?? sp.full_name ?? 'Chart'}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Recent searches quick-load */}
+                  {recentSearches.length > 0 && (
+                    <div className="space-y-1.5">
+                      <p className="text-[10px] uppercase font-bold text-white/35 tracking-wider">Recent</p>
+                      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+                        {recentSearches.map((rs, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setKundaliInput(rs)}
+                            className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 text-[10px] font-semibold text-white/60 hover:text-white hover:border-white/20 transition"
+                          >
+                            🕐 {rs.name || rs.birthPlace || 'Chart'}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Full Name</label>
                     <input
@@ -1013,6 +1140,47 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                       };
                       const result = generateKundali(fullInput);
                       setKundaliResult(result);
+
+                      // Save recent search to localStorage (last 5)
+                      try {
+                        const updated = [
+                          fullInput,
+                          ...recentSearches.filter(r => r.name !== fullInput.name),
+                        ].slice(0, 5);
+                        setRecentSearches(updated);
+                        localStorage.setItem('kundali_recent', JSON.stringify(updated));
+                      } catch {}
+
+                      // Auto-save chart if user is logged in
+                      if (isLoggedIn) {
+                        setSaveError(null);
+                        const isPrimary = savedProfiles.length === 0;
+                        fetch('/api/jyotish/chart', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            label:          fullInput.name || 'My Chart',
+                            full_name:      fullInput.name,
+                            date_of_birth:  fullInput.birthDate,
+                            time_of_birth:  fullInput.timeUnknown ? null : fullInput.birthTime,
+                            birth_city:     fullInput.birthPlace,
+                            birth_lat:      fullInput.lat,
+                            birth_lng:      fullInput.lng,
+                            birth_timezone: fullInput.timezone,
+                            is_primary:     isPrimary,
+                          }),
+                        })
+                          .then(r => r.json())
+                          .then(d => {
+                            if (d.profile) {
+                              setChartSaved(true);
+                              setSavedProfiles(prev => [d.profile, ...prev.filter(p => p.id !== d.profile.id)]);
+                            } else if (d.error) {
+                              setSaveError(d.error);
+                            }
+                          })
+                          .catch(() => {});
+                      }
                     } catch (err) {
                       const msg = err instanceof Error ? err.message : 'Chart generation failed';
                       setKundaliError(msg);
@@ -1035,20 +1203,38 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
               <motion.div
                 initial={{ opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="space-y-3"
+                className={`space-y-3 ${textSize === 'sm' ? 'text-[0.8rem]' : textSize === 'lg' ? 'text-[1.05rem]' : ''}`}
               >
-                {/* Back Button */}
-                <button
-                  onClick={() => {
-                    setKundaliResult(null);
-                    setKundaliError(null);
-                    setChartSaved(false);
-                    playHaptic('light');
-                  }}
-                  className="flex items-center gap-1.5 text-xs text-[#C5A059] font-semibold border border-[#C5A059]/20 bg-[#C5A059]/5 rounded-xl px-3.5 py-1.5 hover:bg-[#C5A059]/10 transition"
-                >
-                  ← Calculate New Chart
-                </button>
+                {/* Back Button + Text Size Toolbar */}
+                <div className="flex items-center justify-between gap-2">
+                  <button
+                    onClick={() => {
+                      setKundaliResult(null);
+                      setKundaliError(null);
+                      setChartSaved(false);
+                      playHaptic('light');
+                    }}
+                    className="flex items-center gap-1.5 text-xs text-[#C5A059] font-semibold border border-[#C5A059]/20 bg-[#C5A059]/5 rounded-xl px-3.5 py-1.5 hover:bg-[#C5A059]/10 transition"
+                  >
+                    ← New Chart
+                  </button>
+                  {/* Text size selector */}
+                  <div className="flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 p-1">
+                    {(['sm', 'md', 'lg'] as const).map(sz => (
+                      <button
+                        key={sz}
+                        onClick={() => setTextSize(sz)}
+                        className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition ${
+                          textSize === sz
+                            ? 'bg-[#C5A059] text-[#1c1c1a]'
+                            : 'text-white/40 hover:text-white/70'
+                        }`}
+                      >
+                        {sz === 'sm' ? 'A' : sz === 'md' ? 'Aᴬ' : 'A⁺'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
                 {/* Lagna details banner */}
                 <div className="rounded-2xl p-5 border border-white/5 space-y-3"
@@ -1097,121 +1283,219 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
 
                 {/* Nakshatra + Dasha banner */}
                 {kundaliResult.chart && (
-                  <div className="rounded-2xl p-4 border border-white/5 space-y-3"
+                  <div className="rounded-2xl p-4 border border-white/5 space-y-4"
                     style={{ background: 'rgba(10,8,25,0.55)' }}>
-                    <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Birth Nakshatra &amp; Dasha Period</h4>
-                    <div className="grid grid-cols-2 gap-3">
-                      {kundaliResult.chart.nakshatra && (
-                        <div className="rounded-xl p-3 bg-white/5 border border-white/5 space-y-1">
-                          <p className="text-[9px] text-white/35 uppercase font-bold tracking-wider">Janma Nakshatra</p>
-                          <p className="text-sm font-bold text-[#F2EAD6]">{kundaliResult.chart.nakshatra.name}</p>
-                          <p className="text-[10px] text-white/50">Pada {kundaliResult.chart.nakshatra.pada} · Lord: {kundaliResult.chart.nakshatra.lord}</p>
-                          <p className="text-[10px] text-[#C5A059]/80">{kundaliResult.chart.nakshatra.devata}</p>
-                        </div>
-                      )}
-                      {kundaliResult.chart.dasha?.current && (
-                        <div className="rounded-xl p-3 bg-white/5 border border-white/5 space-y-1">
-                          <p className="text-[9px] text-white/35 uppercase font-bold tracking-wider">Mahadasha</p>
-                          <p className="text-sm font-bold text-[#F2EAD6]">{kundaliResult.chart.dasha.current.planet}</p>
-                          <p className="text-[10px] text-white/50">
-                            Ends {new Date(kundaliResult.chart.dasha.current.endDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
-                          </p>
-                          {kundaliResult.chart.dasha.currentAntardasha && (
-                            <p className="text-[10px] text-[#C5A059]/80">
-                              Antardasha: {kundaliResult.chart.dasha.currentAntardasha.planet}
-                              {' '}
-                              ({new Date(kundaliResult.chart.dasha.currentAntardasha.startDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
-                              {' - '}
-                              {new Date(kundaliResult.chart.dasha.currentAntardasha.endDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })})
-                            </p>
+                    <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Birth Nakshatra &amp; Dasha</h4>
+
+                    {/* ── Nakshatra card ── */}
+                    {kundaliResult.chart.nakshatra && (() => {
+                      const nk = kundaliResult.chart.nakshatra;
+                      const attrs = NAKSHATRA_ATTRS[nk.name];
+                      return (
+                        <div className="rounded-2xl p-4 border border-white/8 space-y-3"
+                          style={{ background: 'rgba(255,255,255,0.04)' }}>
+                          <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                              style={{ background: 'rgba(197,160,89,0.12)', border: '1px solid rgba(197,160,89,0.2)' }}>
+                              {attrs?.symbol ?? '⭐'}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[9px] text-white/35 uppercase font-bold tracking-wider">Janma Nakshatra</p>
+                              <p className="font-serif text-lg font-bold text-[#F2EAD6] leading-tight">{nk.name}</p>
+                              <p className="text-[10px] text-white/50 mt-0.5">Pada {nk.pada} · Lord: {nk.lord} · {nk.devata}</p>
+                            </div>
+                          </div>
+                          {attrs && (
+                            <div className="grid grid-cols-3 gap-2">
+                              <div className={`rounded-lg px-2 py-1.5 border text-center text-[9px] font-bold ${GANA_COLOR[attrs.gana] ?? 'text-white/60 border-white/10'}`}>
+                                <div className="text-white/30 text-[8px] mb-0.5">Gana</div>
+                                {attrs.gana}
+                              </div>
+                              <div className={`rounded-lg px-2 py-1.5 border text-center text-[9px] font-bold ${ELEMENT_COLOR[attrs.element] ?? 'text-white/60 border-white/10'}`}>
+                                <div className="text-white/30 text-[8px] mb-0.5">Tattva</div>
+                                {attrs.element}
+                              </div>
+                              <div className="rounded-lg px-2 py-1.5 border border-white/10 text-center text-[9px] font-bold text-white/60">
+                                <div className="text-white/30 text-[8px] mb-0.5">Animal</div>
+                                {attrs.animal}
+                              </div>
+                            </div>
+                          )}
+                          {attrs?.syllable && (
+                            <div className="rounded-xl px-3 py-2 bg-[#C5A059]/5 border border-[#C5A059]/15">
+                              <p className="text-[9px] text-[#C5A059]/60 uppercase font-bold tracking-wider mb-1">Seed Syllables (Naam Akshar)</p>
+                              <p className="text-[10px] text-[#C5A059] font-semibold tracking-widest">{attrs.syllable}</p>
+                            </div>
                           )}
                         </div>
-                      )}
-                    </div>
-                    {/* Dasha timeline strip */}
+                      );
+                    })()}
+
+                    {/* ── Mahadasha card ── */}
+                    {kundaliResult.chart.dasha?.current && (() => {
+                      const dasha = kundaliResult.chart.dasha.current;
+                      const timelineEntry = kundaliResult.chart.dasha.timeline?.find((d: any) => d.isCurrent);
+                      const dashaYears = timelineEntry?.years ?? 16;
+                      const endDate  = new Date(dasha.endDate);
+                      const startDate = new Date(endDate.getTime() - dashaYears * 365.25 * 24 * 60 * 60 * 1000);
+                      const now = new Date();
+                      const elapsed = Math.max(0, now.getTime() - startDate.getTime());
+                      const total   = Math.max(1, endDate.getTime() - startDate.getTime());
+                      const pct     = Math.min(100, Math.round(elapsed / total * 100));
+                      const antardasha = kundaliResult.chart.dasha.currentAntardasha;
+                      return (
+                        <div className="rounded-2xl p-4 border border-white/8 space-y-3"
+                          style={{ background: 'rgba(255,255,255,0.04)' }}>
+                          <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                              style={{ background: 'rgba(197,160,89,0.12)', border: '1px solid rgba(197,160,89,0.2)' }}>
+                              🔮
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[9px] text-white/35 uppercase font-bold tracking-wider">Mahadasha</p>
+                              <p className="font-serif text-lg font-bold text-[#F2EAD6] leading-tight">{dasha.planet} Mahadasha</p>
+                              <p className="text-[10px] text-white/50 mt-0.5">
+                                {startDate.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                                {' – '}
+                                {endDate.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                                {' · '}{dashaYears}y period
+                              </p>
+                            </div>
+                            <div className="flex-shrink-0 text-right">
+                              <p className="text-2xl font-bold text-[#C5A059]">{pct}%</p>
+                              <p className="text-[9px] text-white/30">elapsed</p>
+                            </div>
+                          </div>
+                          {/* Progress bar */}
+                          <div className="space-y-1">
+                            <div className="h-2.5 w-full rounded-full bg-white/5 border border-white/5 overflow-hidden">
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${pct}%` }}
+                                transition={{ duration: 1.2, ease: 'easeOut' }}
+                                className="h-full rounded-full bg-gradient-to-r from-[#C5A059] to-amber-300"
+                              />
+                            </div>
+                            <div className="flex justify-between text-[8px] text-white/25">
+                              <span>Start</span>
+                              <span>Today</span>
+                              <span>End</span>
+                            </div>
+                          </div>
+                          {/* Current antardasha */}
+                          {antardasha && (
+                            <div className="rounded-xl px-3 py-2.5 border border-[#C5A059]/20 bg-[#C5A059]/6 space-y-0.5">
+                              <p className="text-[9px] text-[#C5A059]/60 uppercase font-bold tracking-wider">Current Antardasha</p>
+                              <p className="text-sm font-bold text-[#C5A059]">{antardasha.planet} Antardasha</p>
+                              <p className="text-[10px] text-white/40">
+                                {new Date(antardasha.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                {' – '}
+                                {new Date(antardasha.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+
+                    {/* ── Dasha timeline strip ── */}
                     {kundaliResult.chart.dasha?.timeline && (
-                      <div className="overflow-x-auto pb-1 scrollbar-none">
-                        <div className="flex gap-1.5 w-max">
-                          {kundaliResult.chart.dasha.timeline.slice(0, 9).map((d, i) => {
-                            const isCurrent = d.isCurrent;
-                            return (
-                              <div key={i}
-                                className={`flex-shrink-0 rounded-lg px-2.5 py-1.5 border text-center ${
-                                  isCurrent
-                                    ? 'bg-[#C5A059]/20 border-[#C5A059]/50'
-                                    : 'bg-white/4 border-white/5'
-                                }`}>
-                                <p className={`text-[9px] font-bold ${isCurrent ? 'text-[#C5A059]' : 'text-white/40'}`}>{d.planet}</p>
-                                <p className="text-[8px] text-white/30">{d.years}y</p>
-                              </div>
-                            );
-                          })}
+                      <div className="space-y-2">
+                        <p className="text-[9px] text-white/30 uppercase font-bold tracking-wider">Vimshottari Dasha Sequence</p>
+                        <div className="overflow-x-auto pb-1 scrollbar-none">
+                          <div className="flex gap-1.5 w-max">
+                            {kundaliResult.chart.dasha.timeline.slice(0, 9).map((d: any, i: number) => {
+                              const isCurrent = d.isCurrent;
+                              return (
+                                <div key={i}
+                                  className={`flex-shrink-0 rounded-lg px-3 py-2 border text-center transition ${
+                                    isCurrent
+                                      ? 'bg-[#C5A059]/20 border-[#C5A059]/50 shadow-sm'
+                                      : 'bg-white/4 border-white/5'
+                                  }`}>
+                                  {isCurrent && <div className="w-1 h-1 rounded-full bg-[#C5A059] mx-auto mb-1" />}
+                                  <p className={`text-[9px] font-bold ${isCurrent ? 'text-[#C5A059]' : 'text-white/40'}`}>{d.planet}</p>
+                                  <p className="text-[8px] text-white/25 mt-0.5">{d.years}y</p>
+                                </div>
+                              );
+                            })}
+                          </div>
                         </div>
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* Save Chart prompt */}
-                {!chartSaved && (
-                  <div className="rounded-2xl p-4 border border-[#C5A059]/25 flex items-start gap-3"
-                    style={{ background: 'rgba(197,160,89,0.06)' }}>
-                    <span className="text-xl flex-shrink-0">💾</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold text-[#C5A059]">Save your Kundali</p>
-                      <p className="text-[10px] text-white/50 mt-0.5 leading-relaxed">
-                        Sign in to save this chart and track your Dasha periods, daily Rashiphal, and family charts.
-                      </p>
+                {/* Save Chart section */}
+                {isLoggedIn ? (
+                  /* Logged-in: show auto-save status */
+                  chartSaved ? (
+                    <div className="rounded-2xl p-3 border border-green-500/30 bg-green-500/10 text-center text-xs font-semibold text-green-400">
+                      ✓ Chart auto-saved to your profile
                     </div>
-                    <button
-                      onClick={async () => {
-                        try {
-                          // Persist guest token in sessionStorage so it can be claimed on signup
-                          let guestToken = sessionStorage.getItem('kundali_guest_token');
-                          if (!guestToken) {
-                            guestToken = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-                            sessionStorage.setItem('kundali_guest_token', guestToken);
-                          }
-
-                          const res = await fetch('/api/jyotish/chart', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                              label:          kundaliResult.input.name || 'My Chart',
-                              full_name:      kundaliResult.input.name,
-                              date_of_birth:  kundaliResult.input.birthDate,
-                              time_of_birth:  kundaliResult.input.timeUnknown ? null : kundaliResult.input.birthTime,
-                              birth_city:     kundaliResult.input.birthPlace,
-                              birth_lat:      kundaliResult.input.lat,
-                              birth_lng:      kundaliResult.input.lng,
-                              birth_timezone: kundaliResult.input.timezone,
-                              is_primary:     true,
-                              session_token:  guestToken,
-                            }),
-                          });
-                          if (res.status === 401) {
-                            // Not logged in — redirect to signup; token is in sessionStorage
-                            window.location.href = `/auth/signup?next=${encodeURIComponent('/panchang?tab=kundali')}&claim_token=${encodeURIComponent(guestToken)}`;
-                            return;
-                          }
-                          if (res.ok) {
-                            setChartSaved(true);
-                            sessionStorage.removeItem('kundali_guest_token');
-                            const { default: toast } = await import('react-hot-toast');
-                            toast.success('Chart saved! ✨');
-                          }
-                        } catch { /* ignore */ }
-                      }}
-                      className="flex-shrink-0 px-3 py-1.5 rounded-lg text-[10px] font-bold bg-[#C5A059] text-[#1c1c1a] hover:opacity-90 transition"
-                    >
-                      Save
-                    </button>
-                  </div>
-                )}
-                {chartSaved && (
-                  <div className="rounded-2xl p-3 border border-green-500/30 bg-green-500/10 text-center text-xs font-semibold text-green-400">
-                    ✓ Chart saved to your profile
-                  </div>
+                  ) : saveError ? (
+                    <div className="rounded-2xl p-3 border border-red-500/30 bg-red-500/10 text-center text-xs font-semibold text-red-400">
+                      ⚠️ Could not save chart: {saveError}
+                    </div>
+                  ) : null
+                ) : (
+                  /* Guest: show sign-in prompt */
+                  !chartSaved ? (
+                    <div className="rounded-2xl p-4 border border-[#C5A059]/25 flex items-start gap-3"
+                      style={{ background: 'rgba(197,160,89,0.06)' }}>
+                      <span className="text-xl flex-shrink-0">💾</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold text-[#C5A059]">Save your Kundali</p>
+                        <p className="text-[10px] text-white/50 mt-0.5 leading-relaxed">
+                          Sign in to save this chart and track your Dasha periods, daily Rashiphal, and family charts.
+                        </p>
+                      </div>
+                      <button
+                        onClick={async () => {
+                          try {
+                            let guestToken = sessionStorage.getItem('kundali_guest_token');
+                            if (!guestToken) {
+                              guestToken = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+                              sessionStorage.setItem('kundali_guest_token', guestToken);
+                            }
+                            const res = await fetch('/api/jyotish/chart', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                label:          kundaliResult.input.name || 'My Chart',
+                                full_name:      kundaliResult.input.name,
+                                date_of_birth:  kundaliResult.input.birthDate,
+                                time_of_birth:  kundaliResult.input.timeUnknown ? null : kundaliResult.input.birthTime,
+                                birth_city:     kundaliResult.input.birthPlace,
+                                birth_lat:      kundaliResult.input.lat,
+                                birth_lng:      kundaliResult.input.lng,
+                                birth_timezone: kundaliResult.input.timezone,
+                                is_primary:     true,
+                                session_token:  guestToken,
+                              }),
+                            });
+                            if (res.status === 401) {
+                              window.location.href = `/auth/signup?next=${encodeURIComponent('/panchang?tab=kundali')}&claim_token=${encodeURIComponent(guestToken)}`;
+                              return;
+                            }
+                            if (res.ok) {
+                              setChartSaved(true);
+                              sessionStorage.removeItem('kundali_guest_token');
+                              const { default: toast } = await import('react-hot-toast');
+                              toast.success('Chart saved! ✨');
+                            }
+                          } catch { /* ignore */ }
+                        }}
+                        className="flex-shrink-0 px-3 py-1.5 rounded-lg text-[10px] font-bold bg-[#C5A059] text-[#1c1c1a] hover:opacity-90 transition"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl p-3 border border-green-500/30 bg-green-500/10 text-center text-xs font-semibold text-green-400">
+                      ✓ Chart saved to your profile
+                    </div>
+                  )
                 )}
 
                 {/* Sade Sati detection */}
