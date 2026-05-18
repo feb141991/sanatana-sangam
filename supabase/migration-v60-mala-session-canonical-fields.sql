@@ -3,6 +3,17 @@
 -- stays anchored to mala_sessions with tradition-aware metadata.
 
 ALTER TABLE public.mala_sessions
+  ADD COLUMN IF NOT EXISTS tradition text,
+  ADD COLUMN IF NOT EXISTS practice_type text DEFAULT 'mala',
+  ADD COLUMN IF NOT EXISTS intention text,
+  ADD COLUMN IF NOT EXISTS completion_type text DEFAULT 'completed',
+  ADD COLUMN IF NOT EXISTS target_rounds integer,
+  ADD COLUMN IF NOT EXISTS completed_rounds integer,
+  ADD COLUMN IF NOT EXISTS ambient_id text,
+  ADD COLUMN IF NOT EXISTS spiritual_time_window text,
+  ADD COLUMN IF NOT EXISTS timezone text,
+  ADD COLUMN IF NOT EXISTS source_route text,
+  ADD COLUMN IF NOT EXISTS panchang_context jsonb,
   ADD COLUMN IF NOT EXISTS mood_before text,
   ADD COLUMN IF NOT EXISTS mood_after text,
   ADD COLUMN IF NOT EXISTS completed_beads integer CHECK (completed_beads IS NULL OR completed_beads >= 0),
