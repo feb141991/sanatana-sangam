@@ -20,6 +20,14 @@ html {
   transform: translateZ(0);
 }
 
+html[data-practice-immersive='true'] .app-bottom-nav,
+html[data-practice-immersive='true'] .app-ai-fab {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(24px) scale(0.96) !important;
+  transition: opacity 180ms ease, transform 180ms ease !important;
+}
+
 :root {
   /* ── Fonts ─────────────────────────────────────────────────────────────── */
   --font-inter:      'Outfit', var(--font-inter-next), Inter, system-ui, sans-serif;

@@ -14,7 +14,12 @@ SET completed_beads = COALESCE(completed_beads, count, bead_count, 0)
 WHERE completed_beads IS NULL;
 
 UPDATE public.mala_sessions
-SET spiritual_date = COALESCE(spiritual_date, date, completed_at::date, created_at::date)
+SET spiritual_date = COALESCE(
+  spiritual_date,
+  NULLIF(date::text, '')::date,
+  completed_at::date,
+  created_at::date
+)
 WHERE spiritual_date IS NULL;
 
 CREATE INDEX IF NOT EXISTS idx_mala_sessions_user_spiritual_date

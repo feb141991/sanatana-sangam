@@ -404,7 +404,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
           if (didDrag.current) { didDrag.current = false; return; }
           setOpen(true);
         }}
-        className="fixed z-[9989] cursor-grab active:cursor-grabbing"
+        className="app-ai-fab fixed z-[9989] cursor-grab active:cursor-grabbing"
         style={{
           right:  FAB_RIGHT,
           bottom: `calc(env(safe-area-inset-bottom, 0px) + ${FAB_BOTTOM}px)`,

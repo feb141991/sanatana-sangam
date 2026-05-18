@@ -250,7 +250,7 @@ export default function BottomNav({ isGuest = false }: Props) {
       {/* Premium bottom navigation: expanded dock or persistent collapsed page pill */}
       <nav
         aria-label="Primary app navigation"
-        className="fixed z-[9000] border pointer-events-auto flex items-center"
+        className="app-bottom-nav fixed z-[9000] border pointer-events-auto flex items-center"
         style={{
           bottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)',
           left: shouldShowBar ? '50%' : 'max(16px, env(safe-area-inset-left))',

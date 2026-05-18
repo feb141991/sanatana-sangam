@@ -1531,6 +1531,23 @@ export default function JapaClient({
     return () => { if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current); };
   }, [screen, showControlsBriefly]); 
 
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const root = document.documentElement;
+    const immersive = screen === 'practice';
+    if (immersive) {
+      root.dataset.practiceImmersive = 'true';
+      document.body.style.overflow = 'hidden';
+    } else {
+      delete root.dataset.practiceImmersive;
+      document.body.style.overflow = '';
+    }
+    return () => {
+      delete root.dataset.practiceImmersive;
+      document.body.style.overflow = '';
+    };
+  }, [screen]);
+
   // ── Per-bead flash animation state ──────────────────────────────────────
   const [flashBeadIdx, setFlashBeadIdx] = useState(-1);
   const [flashKey,     setFlashKey]     = useState(0);
