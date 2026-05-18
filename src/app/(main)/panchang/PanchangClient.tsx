@@ -383,7 +383,7 @@ function getAntardashaDates(dashaEntry: { planet: string; startDate: string; end
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: Props) {
-  const { t } = useLanguage();
+  const { t, lang, setLang } = useLanguage();
   const { playHaptic } = useZenithSensory();
   const tradMeta = TRADITION_META[tradition] ?? TRADITION_META.hindu;
   const today    = useMemo(() => new Date(), []);
@@ -435,6 +435,16 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
   const todayTransits = useMemo(() => {
     try { return getTodayTransits(); } catch { return null; }
   }, []);
+
+  // Dynamic Localization: Automatically translate Kundali output when language changes
+  useEffect(() => {
+    if (kundaliResult) {
+      try {
+        const updated = generateKundali(kundaliResult.input, lang);
+        setKundaliResult(updated);
+      } catch {}
+    }
+  }, [lang]);
 
   const p: SacredCalendarData = useSacredCalendar(selected, lat, lon, tradition);
 
@@ -1139,33 +1149,58 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
               >
                 <div className="text-center space-y-1">
                   <span className="text-3xl">🛕</span>
-                  <h2 className="font-serif text-lg font-bold text-[#F2EAD6]">Vedic Kundali Chart</h2>
-                  <p className="text-white/40 text-xs">Enter birth details to map your planetary alignment</p>
+                  <h2 className="font-serif text-lg font-bold text-[#F2EAD6]">{t('vedicKundaliChart')}</h2>
+                  <p className="text-white/40 text-xs">{t('enterBirthDetails')}</p>
                 </div>
 
                 <div className="space-y-3">
-                  {/* Saved profiles quick-load (logged-in) */}
+                  {/* Saved profiles (logged-in) — full card list with load + count */}
                   {isLoggedIn && savedProfiles.length > 0 && (
-                    <div className="space-y-1.5">
-                      <p className="text-[10px] uppercase font-bold text-white/35 tracking-wider">Saved Charts</p>
-                      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-                        {savedProfiles.slice(0, 5).map((sp: any) => (
-                          <button
-                            key={sp.id}
-                            onClick={() => {
-                              setKundaliInput(prev => ({
-                                ...prev,
-                                name:      sp.full_name ?? sp.label ?? '',
-                                birthDate: sp.date_of_birth ?? '',
-                                birthTime: sp.time_of_birth ?? '',
-                                birthPlace: sp.birth_city ?? '',
-                              }));
-                            }}
-                            className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#C5A059]/30 bg-[#C5A059]/8 text-[10px] font-semibold text-[#C5A059] hover:bg-[#C5A059]/15 transition"
-                          >
-                            {sp.is_primary ? '⭐ ' : ''}{sp.label ?? sp.full_name ?? 'Chart'}
-                          </button>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <p className="text-[10px] uppercase font-bold text-white/35 tracking-wider">
+                          {t('savedCharts')} · {savedProfiles.length}
+                        </p>
+                      </div>
+                      <div className="space-y-1.5">
+                        {savedProfiles.slice(0, 6).map((sp: any) => (
+                          <div key={sp.id}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-white/8 bg-white/4 hover:bg-white/8 transition group">
+                            <div className="w-8 h-8 rounded-lg bg-[#C5A059]/15 border border-[#C5A059]/25 flex items-center justify-center text-sm flex-shrink-0">
+                              {sp.is_primary ? '⭐' : '🪐'}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-bold text-white/80 truncate">
+                                {sp.full_name ?? sp.label ?? 'Chart'}
+                              </p>
+                              <p className="text-[9px] text-white/35 mt-0.5">
+                                {sp.date_of_birth ?? ''}{sp.birth_city ? ` · ${sp.birth_city}` : ''}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => {
+                                setKundaliInput(prev => ({
+                                  ...prev,
+                                  name:       sp.full_name ?? sp.label ?? '',
+                                  birthDate:  sp.date_of_birth ?? '',
+                                  birthTime:  sp.time_of_birth ?? '',
+                                  birthPlace: sp.birth_city ?? '',
+                                  lat:        sp.birth_lat ?? prev.lat,
+                                  lng:        sp.birth_lng ?? prev.lng,
+                                  timezone:   sp.birth_timezone ?? prev.timezone,
+                                }));
+                              }}
+                              className="flex-shrink-0 px-2.5 py-1 rounded-lg text-[9px] font-bold border border-[#C5A059]/30 text-[#C5A059] bg-[#C5A059]/8 hover:bg-[#C5A059]/18 transition"
+                            >
+                              Load
+                            </button>
+                          </div>
                         ))}
+                        {savedProfiles.length > 6 && (
+                          <p className="text-[9px] text-white/25 text-center pt-0.5">
+                            +{savedProfiles.length - 6} more · upgrade Pro to manage all
+                          </p>
+                        )}
                       </div>
                     </div>
                   )}
@@ -1173,7 +1208,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                   {/* Recent searches quick-load */}
                   {recentSearches.length > 0 && (
                     <div className="space-y-1.5">
-                      <p className="text-[10px] uppercase font-bold text-white/35 tracking-wider">Recent</p>
+                      <p className="text-[10px] uppercase font-bold text-white/35 tracking-wider">{t('recent')}</p>
                       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
                         {recentSearches.map((rs, i) => (
                           <button
@@ -1189,10 +1224,10 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                   )}
 
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Full Name · पूरा नाम</label>
+                    <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">{t('fullName')}</label>
                     <input
                       type="text"
-                      placeholder="Enter your name"
+                      placeholder={t('enterName')}
                       value={kundaliInput.name}
                       onChange={e => setKundaliInput(prev => ({ ...prev, name: e.target.value }))}
                       className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-black/30 outline-none text-white text-sm focus:border-[#C5A059]/50 transition"
@@ -1201,7 +1236,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
 
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1">
-                      <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Date of Birth · जन्म तिथि</label>
+                      <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">{t('birthDate')}</label>
                       <input
                         type="date"
                         value={kundaliInput.birthDate}
@@ -1210,7 +1245,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Time of Birth · जन्म समय</label>
+                      <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">{t('birthTime')}</label>
                       <input
                         type="time"
                         value={kundaliInput.birthTime}
@@ -1221,10 +1256,10 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                   </div>
 
                   <div className="space-y-1 relative">
-                    <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Birth Location (City) · जन्म स्थान</label>
+                    <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">{t('birthLocation')}</label>
                     <input
                       type="text"
-                      placeholder="e.g. New Delhi, Mumbai, London…"
+                      placeholder={t('birthLocationPlaceholder')}
                       value={kundaliInput.birthPlace}
                       onChange={e => handleLocationChange(e.target.value)}
                       onBlur={() => setTimeout(() => setShowLocSuggestions(false), 200)}
@@ -1263,7 +1298,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                       onChange={e => setKundaliInput(prev => ({ ...prev, timeUnknown: e.target.checked, birthTime: e.target.checked ? '' : prev.birthTime }))}
                       className="accent-[#C5A059]"
                     />
-                    <span className="text-[10px] text-white/50">Birth time unknown (chart will use solar noon)</span>
+                    <span className="text-[10px] text-white/50">{t('birthTimeUnknown')}</span>
                   </label>
                 </div>
 
@@ -1310,7 +1345,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                         timezone:    geoTz,
                         timeUnknown: !kundaliInput.birthTime,
                       };
-                      const result = generateKundali(fullInput);
+                      const result = generateKundali(fullInput, lang);
                       setKundaliResult(result);
                       // Auto-select current mahadasha so user sees it expanded immediately
                       const currentIdx = result.chart.dasha?.timeline?.findIndex((d: any) => d.isCurrent) ?? -1;
@@ -1326,36 +1361,6 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                         localStorage.setItem('kundali_recent', JSON.stringify(updated));
                       } catch {}
 
-                      // Auto-save chart if user is logged in
-                      if (isLoggedIn) {
-                        setSaveError(null);
-                        const isPrimary = savedProfiles.length === 0;
-                        fetch('/api/jyotish/chart', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            label:          fullInput.name || 'My Chart',
-                            full_name:      fullInput.name,
-                            date_of_birth:  fullInput.birthDate,
-                            time_of_birth:  fullInput.timeUnknown ? null : fullInput.birthTime,
-                            birth_city:     fullInput.birthPlace,
-                            birth_lat:      fullInput.lat,
-                            birth_lng:      fullInput.lng,
-                            birth_timezone: fullInput.timezone,
-                            is_primary:     isPrimary,
-                          }),
-                        })
-                          .then(r => r.json())
-                          .then(d => {
-                            if (d.profile) {
-                              setChartSaved(true);
-                              setSavedProfiles(prev => [d.profile, ...prev.filter(p => p.id !== d.profile.id)]);
-                            } else if (d.error) {
-                              setSaveError(d.error);
-                            }
-                          })
-                          .catch(() => {});
-                      }
                     } catch (err) {
                       const msg = err instanceof Error ? err.message : 'Chart generation failed';
                       setKundaliError(msg);
@@ -1368,9 +1373,9 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                   {kundaliLoading ? (
                     <>
                       <span className="animate-spin inline-block w-3.5 h-3.5 border-2 border-[#1c1c1a]/30 border-t-[#1c1c1a] rounded-full" />
-                      Calculating Chart…
+                      {t('calculatingChart')}
                     </>
-                  ) : '🔮 Generate Vedic Kundali'}
+                  ) : `🔮 ${t('generateVedicKundali')}`}
                 </button>
               </motion.div>
             ) : (
@@ -1378,10 +1383,10 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
               <motion.div
                 initial={{ opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className={`space-y-3 ${textSize === 'sm' ? 'text-[0.8rem]' : textSize === 'lg' ? 'text-[1.05rem]' : ''}`}
+                className={`space-y-3 ${textSize === 'sm' ? 'text-[0.78rem] leading-snug' : textSize === 'lg' ? 'text-[1.08rem] leading-relaxed' : 'text-[0.9rem]'}`}
               >
-                {/* Back Button + Text Size Toolbar */}
-                <div className="flex items-center justify-between gap-2">
+                {/* Back Button + Toolbar (text size + language toggle) */}
+                <div className="flex items-center gap-2 flex-wrap">
                   <button
                     onClick={() => {
                       setKundaliResult(null);
@@ -1392,23 +1397,41 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                     }}
                     className="flex items-center gap-1.5 text-xs text-[#C5A059] font-semibold border border-[#C5A059]/20 bg-[#C5A059]/5 rounded-xl px-3.5 py-1.5 hover:bg-[#C5A059]/10 transition"
                   >
-                    ← New Chart
+                    ← {t('newChart')}
                   </button>
-                  {/* Text size selector */}
-                  <div className="flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 p-1">
-                    {(['sm', 'md', 'lg'] as const).map(sz => (
-                      <button
-                        key={sz}
-                        onClick={() => setTextSize(sz)}
-                        className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition ${
-                          textSize === sz
-                            ? 'bg-[#C5A059] text-[#1c1c1a]'
-                            : 'text-white/40 hover:text-white/70'
-                        }`}
-                      >
-                        {sz === 'sm' ? 'A' : sz === 'md' ? 'Aᴬ' : 'A⁺'}
-                      </button>
-                    ))}
+                  <div className="flex items-center gap-2 ml-auto">
+                    {/* Language toggle: EN | हि */}
+                    <div className="flex items-center rounded-xl border border-white/10 bg-white/5 p-0.5">
+                      {(['en', 'hi'] as const).map(l => (
+                        <button
+                          key={l}
+                          onClick={() => setLang(l)}
+                          className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition ${
+                            lang === l
+                              ? 'bg-[#C5A059] text-[#1c1c1a]'
+                              : 'text-white/40 hover:text-white/70'
+                          }`}
+                        >
+                          {l === 'en' ? 'EN' : 'हि'}
+                        </button>
+                      ))}
+                    </div>
+                    {/* Text size: A / AA / AAA */}
+                    <div className="flex items-center rounded-xl border border-white/10 bg-white/5 p-0.5">
+                      {(['sm', 'md', 'lg'] as const).map(sz => (
+                        <button
+                          key={sz}
+                          onClick={() => setTextSize(sz)}
+                          className={`px-2 py-1 rounded-lg font-bold transition ${
+                            textSize === sz
+                              ? 'bg-[#C5A059] text-[#1c1c1a]'
+                              : 'text-white/40 hover:text-white/70'
+                          } ${sz === 'sm' ? 'text-[9px]' : sz === 'md' ? 'text-[11px]' : 'text-[14px]'}`}
+                        >
+                          A
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
@@ -1416,12 +1439,12 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                 <div className="rounded-2xl p-5 border border-white/5 space-y-3"
                   style={{ background: 'rgba(10,8,25,0.65)' }}>
                   <div className="text-center space-y-1">
-                    <span className="text-[10px] font-bold text-[#C5A059] uppercase tracking-wider">Calculated Ascendant (Lagna)</span>
+                    <span className="text-[10px] font-bold text-[#C5A059] uppercase tracking-wider">{t('calculatedAscendant')}</span>
                     <h3 className="font-serif text-2xl font-bold text-[#F2EAD6]">{kundaliResult.lagnaSign} ({kundaliResult.lagnaEnglish})</h3>
-                    <p className="text-white/40 text-xs">Chart generated for: {kundaliResult.input.name}</p>
+                    <p className="text-white/40 text-xs">{t('chartGeneratedFor')}: {kundaliResult.input.name}</p>
                     {kundaliResult.chart.timeUnknown && (
                       <p className="text-[10px] text-amber-400/80 italic mt-1">
-                        ⚠️ Birth time unknown — Lagna and house placements use solar noon (less accurate)
+                        {t('birthTimeUnknownWarning')}
                       </p>
                     )}
                   </div>
@@ -1437,7 +1460,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                     <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A059]/10 rounded-full blur-2xl pointer-events-none" />
                     <div className="flex items-center gap-2">
                       <span className="text-xl">🔮</span>
-                      <h3 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">Pandit AI Destiny Reading</h3>
+                      <h3 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">{t('panditAiDestinyReadingLabel')}</h3>
                     </div>
                     <div className="space-y-4 text-sm text-[#F2EAD6]/90 leading-relaxed font-medium">
                       {kundaliResult.panditAiDestinyReading.split('\n\n').map((paragraph, index) => (
@@ -1450,18 +1473,18 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                 {/* Styled North Indian Kundali SVG */}
                 <div className="rounded-2xl p-4 border border-white/5 space-y-3 flex flex-col items-center"
                   style={{ background: 'rgba(10,8,25,0.65)' }}>
-                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider self-start">North Indian Rashi Chart</h4>
+                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider self-start">{t('northIndianRashiChart')}</h4>
                   <div className="w-full max-w-[340px] aspect-square rounded-2xl overflow-hidden shadow-2xl"
                     dangerouslySetInnerHTML={{ __html: renderKundaliSVG(kundaliResult) }}
                   />
-                  <span className="text-[10px] text-white/30 italic">Numbers represent Rashi placements (1=Mesha, 12=Meena)</span>
+                  <span className="text-[10px] text-white/30 italic">{t('rashiPlacementsHint')}</span>
                 </div>
 
                 {/* Nakshatra + Dasha banner */}
                 {kundaliResult.chart && (
                   <div className="rounded-2xl p-4 border border-white/5 space-y-4"
                     style={{ background: 'rgba(10,8,25,0.55)' }}>
-                    <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Birth Nakshatra &amp; Dasha</h4>
+                    <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">{t('birthNakshatraDasha')}</h4>
 
                     {/* ── Nakshatra card ── */}
                     {kundaliResult.chart.nakshatra && (() => {
@@ -1476,7 +1499,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                               {attrs?.symbol ?? '⭐'}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-[9px] text-white/35 uppercase font-bold tracking-wider">Janma Nakshatra</p>
+                              <p className="text-[9px] text-white/35 uppercase font-bold tracking-wider">{t('janmaNakshatra')}</p>
                               <p className="font-serif text-lg font-bold text-[#F2EAD6] leading-tight">{nk.name}</p>
                               <p className="text-[10px] text-white/50 mt-0.5">Pada {nk.pada} · Lord: {nk.lord} · {nk.devata}</p>
                             </div>
@@ -1528,8 +1551,8 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                               🔮
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-[9px] text-white/35 uppercase font-bold tracking-wider">Mahadasha</p>
-                              <p className="font-serif text-lg font-bold text-[#F2EAD6] leading-tight">{dasha.planet} Mahadasha</p>
+                              <p className="text-[9px] text-white/35 uppercase font-bold tracking-wider">{t('mahadasha')}</p>
+                              <p className="font-serif text-lg font-bold text-[#F2EAD6] leading-tight">{dasha.planet} {t('mahadasha')}</p>
                               <p className="text-[10px] text-white/50 mt-0.5">
                                 {startDate.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
                                 {' – '}
@@ -1539,7 +1562,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                             </div>
                             <div className="flex-shrink-0 text-right">
                               <p className="text-2xl font-bold text-[#C5A059]">{pct}%</p>
-                              <p className="text-[9px] text-white/30">elapsed</p>
+                              <p className="text-[9px] text-white/30">{t('elapsed')}</p>
                             </div>
                           </div>
                           {/* Progress bar */}
@@ -1553,15 +1576,15 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                               />
                             </div>
                             <div className="flex justify-between text-[8px] text-white/25">
-                              <span>Start</span>
-                              <span>Today</span>
-                              <span>End</span>
+                              <span>{t('start')}</span>
+                              <span>{t('today')}</span>
+                              <span>{t('end')}</span>
                             </div>
                           </div>
                           {/* Current antardasha */}
                           {antardasha && (
                             <div className="rounded-xl px-3 py-2.5 border border-[#C5A059]/20 bg-[#C5A059]/6 space-y-0.5">
-                              <p className="text-[9px] text-[#C5A059]/60 uppercase font-bold tracking-wider">Current Antardasha</p>
+                              <p className="text-[9px] text-[#C5A059]/60 uppercase font-bold tracking-wider">{t('currentAntardasha')}</p>
                               <p className="text-sm font-bold text-[#C5A059]">{antardasha.planet} Antardasha</p>
                               <p className="text-[10px] text-white/40">
                                 {new Date(antardasha.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -1580,7 +1603,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                       const now = new Date();
                       return (
                         <div className="space-y-2">
-                          <p className="text-[9px] text-white/30 uppercase font-bold tracking-wider">Vimshottari Dasha · विम्शोत्तरी दशा — tap any to explore</p>
+                          <p className="text-[9px] text-white/30 uppercase font-bold tracking-wider">{t('vimshottariDashaExplore')}</p>
                           <div className="overflow-x-auto pb-2 scrollbar-none">
                             <div className="flex gap-2 w-max">
                               {timeline.slice(0, 9).map((d, i) => {
@@ -1626,7 +1649,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                             const isPast   = dEnd < now;
                             let pct = 0;
                             if (isActive) {
-                              pct = Math.min(100, Math.round((now.getTime() - dStart.getTime()) / (dEnd.getTime() - dStart.getTime()) * 100));
+                                pct = Math.min(100, Math.round((now.getTime() - dStart.getTime()) / (dEnd.getTime() - dStart.getTime()) * 100));
                             } else if (isPast) { pct = 100; }
 
                             return (
@@ -1641,7 +1664,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                                   <div className="text-3xl">{wisdom.emoji}</div>
                                   <div className="flex-1">
                                     <p className={`text-xs font-bold ${wisdom.color} uppercase tracking-wider`}>{wisdom.hi}</p>
-                                    <p className="text-lg font-serif font-bold text-white/90">{d.planet} Mahadasha · {wisdom.en}</p>
+                                    <p className="text-lg font-serif font-bold text-white/90">{d.planet} {t('mahadasha')} · {wisdom.en}</p>
                                     <p className="text-[10px] text-white/40 mt-0.5">
                                       {dStart.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
                                       {' – '}
@@ -1664,41 +1687,41 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                                         className="h-full rounded-full bg-gradient-to-r from-[#C5A059] to-amber-300"
                                       />
                                     </div>
-                                    <p className="text-[8px] text-white/25 text-right">{pct}% elapsed</p>
+                                    <p className="text-[8px] text-white/25 text-right">{pct}% {t('elapsed')}</p>
                                   </div>
                                 )}
 
                                 {/* Domains */}
                                 <div className="rounded-xl px-3 py-2.5 bg-white/5 border border-white/5">
-                                  <p className="text-[9px] text-white/35 uppercase font-bold tracking-wider mb-1">Ruling Domains · अधिकार क्षेत्र</p>
+                                  <p className="text-[9px] text-white/35 uppercase font-bold tracking-wider mb-1">{t('rulingDomains')}</p>
                                   <p className="text-[11px] text-white/70 leading-relaxed">{wisdom.domains}</p>
                                 </div>
 
                                 {/* Pros & Cons */}
                                 <div className="grid grid-cols-1 gap-2">
                                   <div className="rounded-xl px-3 py-2.5 bg-emerald-500/8 border border-emerald-500/20">
-                                    <p className="text-[9px] text-emerald-400 uppercase font-bold tracking-wider mb-1">✓ Favourable · शुभ प्रभाव</p>
+                                    <p className="text-[9px] text-emerald-400 uppercase font-bold tracking-wider mb-1">{t('favourable')}</p>
                                     <p className="text-[11px] text-white/70 leading-relaxed">{wisdom.pros}</p>
                                   </div>
                                   <div className="rounded-xl px-3 py-2.5 bg-red-500/8 border border-red-500/20">
-                                    <p className="text-[9px] text-red-400 uppercase font-bold tracking-wider mb-1">⚠ Challenges · कठिनाइयाँ</p>
+                                    <p className="text-[9px] text-red-400 uppercase font-bold tracking-wider mb-1">{t('challenges')}</p>
                                     <p className="text-[11px] text-white/70 leading-relaxed">{wisdom.cons}</p>
                                   </div>
                                   <div className="rounded-xl px-3 py-2.5 bg-[#C5A059]/8 border border-[#C5A059]/20">
-                                    <p className="text-[9px] text-[#C5A059] uppercase font-bold tracking-wider mb-1">🕉 Upaya · उपाय</p>
+                                    <p className="text-[9px] text-[#C5A059] uppercase font-bold tracking-wider mb-1">{t('upaya')}</p>
                                     <p className="text-[11px] text-white/70 leading-relaxed">{wisdom.remedies}</p>
                                   </div>
                                 </div>
 
                                 {/* Beeja Mantra */}
                                 <div className="rounded-xl px-3 py-2.5 bg-violet-500/8 border border-violet-500/15 text-center">
-                                  <p className="text-[9px] text-violet-400 uppercase font-bold tracking-wider mb-1">Beeja Mantra · बीज मंत्र</p>
+                                  <p className="text-[9px] text-violet-400 uppercase font-bold tracking-wider mb-1">{t('beejaMantraLabel')}</p>
                                   <p className="text-[11px] font-semibold text-white/80 tracking-wider leading-relaxed">{wisdom.mantra}</p>
                                 </div>
 
                                 {/* Antardasha sub-periods */}
                                 <div className="space-y-1.5">
-                                  <p className="text-[9px] text-white/30 uppercase font-bold tracking-wider">Antardasha Sub-periods · अन्तर्दशा</p>
+                                  <p className="text-[9px] text-white/30 uppercase font-bold tracking-wider">Antardasha Sub-periods</p>
                                   {antardasha.map((a, ai) => {
                                     const aStart  = new Date(a.startDate);
                                     const aEnd    = new Date(a.endDate);
@@ -1740,75 +1763,119 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                 )}
 
                 {/* Save Chart section */}
-                {isLoggedIn ? (
-                  /* Logged-in: show auto-save status */
-                  chartSaved ? (
-                    <div className="rounded-2xl p-3 border border-green-500/30 bg-green-500/10 text-center text-xs font-semibold text-green-400">
-                      ✓ Chart auto-saved to your profile
+                {chartSaved ? (
+                  /* Saved confirmation */
+                  <div className="rounded-2xl p-3 border border-green-500/30 bg-green-500/10 flex items-center gap-3">
+                    <span className="text-lg">✅</span>
+                    <div className="flex-1">
+                      <p className="text-xs font-bold text-green-400">Chart saved to your profile</p>
+                      {isLoggedIn && savedProfiles.length > 0 && (
+                        <p className="text-[10px] text-white/40 mt-0.5">{savedProfiles.length} chart{savedProfiles.length !== 1 ? 's' : ''} saved · load any from the form</p>
+                      )}
                     </div>
-                  ) : saveError ? (
-                    <div className="rounded-2xl p-3 border border-red-500/30 bg-red-500/10 text-center text-xs font-semibold text-red-400">
-                      ⚠️ Could not save chart: {saveError}
+                  </div>
+                ) : saveError ? (
+                  <div className="rounded-2xl p-3 border border-red-500/30 bg-red-500/10 text-center text-xs font-semibold text-red-400">
+                    ⚠️ {saveError}
+                  </div>
+                ) : isLoggedIn ? (
+                  /* Logged-in: manual save button */
+                  <div className="rounded-2xl p-4 border border-[#C5A059]/25 flex items-center gap-3"
+                    style={{ background: 'rgba(197,160,89,0.06)' }}>
+                    <span className="text-xl flex-shrink-0">💾</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-[#C5A059]">Save this chart</p>
+                      <p className="text-[10px] text-white/50 mt-0.5">
+                        Add to your saved profiles · load instantly next time
+                      </p>
                     </div>
-                  ) : null
+                    <button
+                      onClick={async () => {
+                        setSaveError(null);
+                        try {
+                          const res = await fetch('/api/jyotish/chart', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              label:          kundaliResult.input.name || 'My Chart',
+                              full_name:      kundaliResult.input.name,
+                              date_of_birth:  kundaliResult.input.birthDate,
+                              time_of_birth:  kundaliResult.input.timeUnknown ? null : kundaliResult.input.birthTime,
+                              birth_city:     kundaliResult.input.birthPlace,
+                              birth_lat:      kundaliResult.input.lat,
+                              birth_lng:      kundaliResult.input.lng,
+                              birth_timezone: kundaliResult.input.timezone,
+                              is_primary:     savedProfiles.length === 0,
+                            }),
+                          });
+                          const d = await res.json();
+                          if (d.profile) {
+                            setChartSaved(true);
+                            setSavedProfiles(prev => [d.profile, ...prev.filter((p: any) => p.id !== d.profile.id)]);
+                          } else if (d.error) {
+                            setSaveError(d.error);
+                          }
+                        } catch {
+                          setSaveError('Could not save chart');
+                        }
+                      }}
+                      className="flex-shrink-0 px-3 py-1.5 rounded-lg text-[10px] font-bold bg-[#C5A059] text-[#1c1c1a] hover:opacity-90 transition"
+                    >
+                      Save
+                    </button>
+                  </div>
                 ) : (
-                  /* Guest: show sign-in prompt */
-                  !chartSaved ? (
-                    <div className="rounded-2xl p-4 border border-[#C5A059]/25 flex items-start gap-3"
-                      style={{ background: 'rgba(197,160,89,0.06)' }}>
-                      <span className="text-xl flex-shrink-0">💾</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-[#C5A059]">Save your Kundali</p>
-                        <p className="text-[10px] text-white/50 mt-0.5 leading-relaxed">
-                          Sign in to save this chart and track your Dasha periods, daily Rashiphal, and family charts.
-                        </p>
-                      </div>
-                      <button
-                        onClick={async () => {
-                          try {
-                            let guestToken = sessionStorage.getItem('kundali_guest_token');
-                            if (!guestToken) {
-                              guestToken = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-                              sessionStorage.setItem('kundali_guest_token', guestToken);
-                            }
-                            const res = await fetch('/api/jyotish/chart', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({
-                                label:          kundaliResult.input.name || 'My Chart',
-                                full_name:      kundaliResult.input.name,
-                                date_of_birth:  kundaliResult.input.birthDate,
-                                time_of_birth:  kundaliResult.input.timeUnknown ? null : kundaliResult.input.birthTime,
-                                birth_city:     kundaliResult.input.birthPlace,
-                                birth_lat:      kundaliResult.input.lat,
-                                birth_lng:      kundaliResult.input.lng,
-                                birth_timezone: kundaliResult.input.timezone,
-                                is_primary:     true,
-                                session_token:  guestToken,
-                              }),
-                            });
-                            if (res.status === 401) {
-                              window.location.href = `/auth/signup?next=${encodeURIComponent('/panchang?tab=kundali')}&claim_token=${encodeURIComponent(guestToken)}`;
-                              return;
-                            }
-                            if (res.ok) {
-                              setChartSaved(true);
-                              sessionStorage.removeItem('kundali_guest_token');
-                              const { default: toast } = await import('react-hot-toast');
-                              toast.success('Chart saved! ✨');
-                            }
-                          } catch { /* ignore */ }
-                        }}
-                        className="flex-shrink-0 px-3 py-1.5 rounded-lg text-[10px] font-bold bg-[#C5A059] text-[#1c1c1a] hover:opacity-90 transition"
-                      >
-                        Save
-                      </button>
+                  /* Guest: sign-in prompt */
+                  <div className="rounded-2xl p-4 border border-[#C5A059]/25 flex items-start gap-3"
+                    style={{ background: 'rgba(197,160,89,0.06)' }}>
+                    <span className="text-xl flex-shrink-0">💾</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-[#C5A059]">{t('saveYourKundali')}</p>
+                      <p className="text-[10px] text-white/50 mt-0.5 leading-relaxed">
+                        {t('signInToSaveChart')}
+                      </p>
                     </div>
-                  ) : (
-                    <div className="rounded-2xl p-3 border border-green-500/30 bg-green-500/10 text-center text-xs font-semibold text-green-400">
-                      ✓ Chart saved to your profile
-                    </div>
-                  )
+                    <button
+                      onClick={async () => {
+                        try {
+                          let guestToken = sessionStorage.getItem('kundali_guest_token');
+                          if (!guestToken) {
+                            guestToken = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+                            sessionStorage.setItem('kundali_guest_token', guestToken);
+                          }
+                          const res = await fetch('/api/jyotish/chart', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              label:          kundaliResult.input.name || 'My Chart',
+                              full_name:      kundaliResult.input.name,
+                              date_of_birth:  kundaliResult.input.birthDate,
+                              time_of_birth:  kundaliResult.input.timeUnknown ? null : kundaliResult.input.birthTime,
+                              birth_city:     kundaliResult.input.birthPlace,
+                              birth_lat:      kundaliResult.input.lat,
+                              birth_lng:      kundaliResult.input.lng,
+                              birth_timezone: kundaliResult.input.timezone,
+                              is_primary:     true,
+                              session_token:  guestToken,
+                            }),
+                          });
+                          if (res.status === 401) {
+                            window.location.href = `/auth/signup?next=${encodeURIComponent('/panchang?tab=kundali')}&claim_token=${encodeURIComponent(guestToken)}`;
+                            return;
+                          }
+                          if (res.ok) {
+                            setChartSaved(true);
+                            sessionStorage.removeItem('kundali_guest_token');
+                            const { default: toast } = await import('react-hot-toast');
+                            toast.success('Chart saved! ✨');
+                          }
+                        } catch { /* ignore */ }
+                      }}
+                      className="flex-shrink-0 px-3 py-1.5 rounded-lg text-[10px] font-bold bg-[#C5A059] text-[#1c1c1a] hover:opacity-90 transition"
+                    >
+                      {t('saveBtn')}
+                    </button>
+                  </div>
                 )}
 
                 {/* Sade Sati detection */}
@@ -1819,20 +1886,21 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                     if (moonRashiIndex === undefined || saturnRashiIndex === undefined) return null;
                     const ss = detectSadeSati(moonRashiIndex, saturnRashiIndex);
                     if (!ss.isActive) return null;
-                    const phaseLabel = ss.phase === 'rising' ? '🌑 Rising Phase — Shani approaches your Chandra'
-                                     : ss.phase === 'peak'   ? '🌕 Peak Phase — Shani directly on your Chandra'
-                                     :                         '🌗 Setting Phase — Shani leaving your Chandra';
+                    const phaseLabel = ss.phase === 'rising' ? t('sadeSatiRising')
+                                     : ss.phase === 'peak'   ? t('sadeSatiPeak')
+                                     :                         t('sadeSatiSetting');
                     return (
                       <div className="rounded-2xl p-4 border border-orange-500/30 space-y-2"
                         style={{ background: 'rgba(200,80,20,0.12)' }}>
                         <div className="flex items-center gap-2">
                           <span className="text-lg">⚡</span>
-                          <h4 className="text-xs font-bold text-orange-300 uppercase tracking-wider">Sade Sati Active</h4>
+                          <h4 className="text-xs font-bold text-orange-300 uppercase tracking-wider">{t('sadeSatiActive')}</h4>
                         </div>
                         <p className="text-sm font-semibold text-orange-200">{phaseLabel}</p>
                         <p className="text-[11px] text-white/50 leading-relaxed">
-                          Shani (Saturn) is transiting {ss.saturnRashi} while your natal Chandra is in {ss.moonRashi}.
-                          This 7.5-year period calls for patience, discipline, and inner surrender. Shani rewards sincere effort.
+                          {t('sadeSatiDescription')
+                            .replace('{saturnRashi}', ss.saturnRashi)
+                            .replace('{moonRashi}', ss.moonRashi)}
                         </p>
                       </div>
                     );
@@ -1842,7 +1910,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                 {/* Planet positions */}
                 <div className="rounded-2xl p-4 border border-white/5 space-y-3"
                   style={{ background: 'rgba(10,8,25,0.5)' }}>
-                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Grahas &amp; House Placements</h4>
+                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">{t('grahasHousePlacements')}</h4>
                   <div className="grid grid-cols-2 gap-2">
                     {kundaliResult.placements.map(p => {
                       const grahaData = kundaliResult.chart.planets[p.name];
@@ -1880,8 +1948,8 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                 <div className="rounded-2xl p-4 border border-white/5 space-y-4"
                   style={{ background: 'rgba(10,8,25,0.5)' }}>
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Graha Shadbala Strength Heatmap</h4>
-                    <span className="text-[9px] font-bold text-[#C5A059] bg-[#C5A059]/10 border border-[#C5A059]/20 px-2 py-0.5 rounded-md">Vedic Power Index</span>
+                    <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">{t('grahaShadbalaStrength')}</h4>
+                    <span className="text-[9px] font-bold text-[#C5A059] bg-[#C5A059]/10 border border-[#C5A059]/20 px-2 py-0.5 rounded-md">{t('vedicPowerIndex')}</span>
                   </div>
 
                   <div className="space-y-3">
@@ -1918,7 +1986,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                 {/* Bhava readings */}
                 <div className="rounded-2xl p-4 border border-white/5 space-y-3"
                   style={{ background: 'rgba(10,8,25,0.5)' }}>
-                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Interactive Bhava Readings</h4>
+                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">{t('interactiveBhavaReadings')}</h4>
                   <div className="space-y-2">
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(house => (
                       <details key={house} className="group border border-white/5 rounded-xl overflow-hidden transition-all duration-300">
@@ -1927,7 +1995,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                             <span className="w-5 h-5 rounded-full bg-[#C5A059]/20 flex items-center justify-center text-[10px] text-[#C5A059] font-bold">
                               {house}
                             </span>
-                            House {house} Reading
+                            {t('houseReading').replace('{house}', house.toString())}
                           </span>
                           <span className="text-[#C5A059] group-open:rotate-180 transition-transform duration-300 text-xs">▼</span>
                         </summary>

@@ -12,8 +12,18 @@ create index if not exists idx_birth_profiles_primary_order
   where owner_id is not null;
 
 -- 3. Allow service-role key to bypass RLS (needed for API routes & claim flow).
-create policy if not exists "Service role full access"
-  on birth_profiles for all
-  to service_role
-  using (true)
-  with check (true);
+--    PostgreSQL does not support CREATE POLICY IF NOT EXISTS, so use a DO block.
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename  = 'birth_profiles'
+      and policyname = 'Service role full access'
+  ) then
+    create policy "Service role full access"
+      on birth_profiles for all
+      to service_role
+      using (true)
+      with check (true);
+  end if;
+end $$;
