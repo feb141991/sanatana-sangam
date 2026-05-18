@@ -4,7 +4,7 @@
 // No seeds. No random. Every chart is computed from actual planetary positions.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { generateAstroChart, AstroChart, BirthInput } from './astro-engine';
+import { generateAstroChart, AstroChart, BirthInput, type GrahaAspect, type YogaResult } from './astro-engine';
 
 export interface KundaliInput {
   name:           string;
@@ -19,6 +19,7 @@ export interface KundaliInput {
 }
 
 export interface PlanetPlacement {
+  key:         string;   // canonical key: Surya, Chandra, Mangal, etc.
   name:        string;   // Surya, Chandra, Mangal, etc.
   symbol:      string;   // Su, Mo, Ma, etc.
   sign:        string;   // Sanskrit rashi name
@@ -26,6 +27,15 @@ export interface PlanetPlacement {
   degree:      string;   // e.g. "14° 32'"
   strength:    number;   // Shadbala strength proxy (50-95)
   isRetrograde?: boolean;
+}
+
+export interface KundaliInterpretationSection {
+  id: string;
+  title: string;
+  priority: 'foundation' | 'timing' | 'relationship' | 'sadhana' | 'caution';
+  summary: string;
+  points: string[];
+  actions: string[];
 }
 
 export interface KundaliResult {
@@ -38,6 +48,11 @@ export interface KundaliResult {
   lagnaReading:   string;
   // Pandit AI reading
   panditAiDestinyReading: string;
+  interpretationSections: KundaliInterpretationSection[];
+  navamshaPlacements: PlanetPlacement[];
+  yogaResults: YogaResult[];
+  aspectResults: GrahaAspect[];
+  precisionNotes: string[];
   // Full computed chart (for dasha, nakshatra, etc.)
   chart:          AstroChart;
 }
@@ -95,6 +110,22 @@ function estimateStrength(
 
   // Clamp 50–95
   return Math.max(50, Math.min(95, base + dignityMod + retroBonus + lagnaBonus));
+}
+
+function makePlacement(pname: string, graha: AstroChart['planets'][string], lang: 'en' | 'hi' | 'pa'): PlanetPlacement {
+  const rashiMeta = RASHI_METADATA[graha.rashiIndex] ?? RASHI_METADATA[0];
+  const deg  = Math.floor(graha.degreeInRashi);
+  const min  = Math.round((graha.degreeInRashi - deg) * 60);
+  return {
+    key:         pname,
+    name:        PLANET_NAME_LOCAL[lang][pname] ?? pname,
+    symbol:      PLANET_SYMBOLS[pname] ?? pname.slice(0, 2),
+    sign:        rashiMeta.sa,
+    house:       graha.house,
+    degree:      `${deg}° ${min}'`,
+    strength:    estimateStrength(pname, graha.house, graha.isRetrograde, graha.dignity),
+    isRetrograde: graha.isRetrograde,
+  };
 }
 
 const PLANET_NAME_LOCAL: Record<'en' | 'hi' | 'pa', Record<string, string>> = {
@@ -282,6 +313,102 @@ function generatePanditAiReading(
   return `${p1}\n\n${p2}\n\n${p3}`;
 }
 
+function buildInterpretationSections(
+  lagnaMeta: { num: number; sa: string; en: string; ruler: string },
+  placements: PlanetPlacement[],
+  chart: AstroChart,
+): KundaliInterpretationSection[] {
+  const byKey = Object.fromEntries(placements.map(p => [p.key, p]));
+  const moon = byKey.Chandra;
+  const sun = byKey.Surya;
+  const lagnaLordName = lagnaMeta.ruler.split(' ')[0];
+  const lagnaLord = byKey[lagnaLordName];
+  const currentDasha = chart.dasha.current;
+  const currentAntar = chart.dasha.currentAntardasha;
+  const strongPlanets = placements.filter(p => p.strength >= 78).slice(0, 3);
+  const weakPlanets = placements.filter(p => p.strength <= 55).slice(0, 3);
+
+  return [
+    {
+      id: 'foundation',
+      title: 'Foundation and svabhava',
+      priority: 'foundation',
+      summary: `${lagnaMeta.sa} lagna makes ${lagnaLordName} the chart anchor. The first read should combine Lagna, Lagna lord, Chandra and Surya before judging any single planet.`,
+      points: [
+        lagnaLord ? `Lagna lord ${lagnaLord.name} sits in house ${lagnaLord.house}, giving the life path its strongest practical direction.` : 'Lagna lord could not be resolved.',
+        moon ? `Chandra in ${moon.sign}, house ${moon.house}, shows emotional patterning and the mind's default refuge.` : 'Moon placement unavailable.',
+        sun ? `Surya in ${sun.sign}, house ${sun.house}, shows self-expression, authority, and soul confidence.` : 'Sun placement unavailable.',
+      ],
+      actions: [
+        'Treat this as the base chart signature before reading dasha or remedies.',
+        'Use birth-time confidence before making house-level conclusions.',
+      ],
+    },
+    {
+      id: 'timing',
+      title: 'Timing and dasha',
+      priority: 'timing',
+      summary: currentDasha
+        ? `${currentDasha.planet} Mahadasha is the active timing container${currentAntar ? `, refined by ${currentAntar.planet} Antardasha` : ''}.`
+        : 'Current dasha was not resolved for this chart.',
+      points: [
+        currentDasha ? `${currentDasha.planet} Mahadasha runs until ${currentDasha.endDate}.` : 'No active Mahadasha found.',
+        currentAntar ? `${currentAntar.planet} Antardasha runs ${currentAntar.startDate} to ${currentAntar.endDate}.` : 'No active Antardasha found.',
+        chart.nakshatra ? `Janma Nakshatra ${chart.nakshatra.name}, pada ${chart.nakshatra.pada}, starts the Vimshottari sequence through ${chart.nakshatra.lord}.` : 'Nakshatra unavailable.',
+      ],
+      actions: [
+        'Use dasha as timing, not as a standalone prediction.',
+        'Combine dasha lord condition, house lordship, and gochar for daily guidance.',
+      ],
+    },
+    {
+      id: 'strength',
+      title: 'Graha strength and cautions',
+      priority: 'caution',
+      summary: 'This app shows a Vedic Power Index, not classical full Shadbala. It is useful for product guidance but should be labelled as a proxy.',
+      points: [
+        strongPlanets.length ? `Stronger grahas now: ${strongPlanets.map(p => `${p.name} ${p.strength}%`).join(', ')}.` : 'No standout strong grahas by current proxy.',
+        weakPlanets.length ? `Grahas needing care: ${weakPlanets.map(p => `${p.name} ${p.strength}%`).join(', ')}.` : 'No very weak grahas by current proxy.',
+        chart.aspects.length ? `${chart.aspects.length} close drishti/aspect contacts detected within 5 degrees.` : 'No tight drishti contacts detected within current orb.',
+      ],
+      actions: [
+        'Avoid calling this classical Shadbala until full bala calculations are implemented.',
+        'Use strong grahas for supportive practice suggestions and weaker grahas for gentle discipline.',
+      ],
+    },
+    {
+      id: 'navamsha',
+      title: 'Navamsha and inner maturity',
+      priority: 'relationship',
+      summary: 'D9/Navamsha has been added as a divisional layer. It is especially useful for dharma maturity, marriage themes, and inner refinement.',
+      points: [
+        chart.navamsha?.Lagna ? `Navamsha Lagna falls in ${chart.navamsha.Lagna.rashiName}.` : 'Navamsha Lagna unavailable.',
+        chart.navamsha?.Shukra ? `Shukra Navamsha is ${chart.navamsha.Shukra.rashiName}.` : 'Shukra Navamsha unavailable.',
+        chart.navamsha?.Guru ? `Guru Navamsha is ${chart.navamsha.Guru.rashiName}.` : 'Guru Navamsha unavailable.',
+      ],
+      actions: [
+        'Use Navamsha as a supporting layer, not a replacement for Rashi chart.',
+        'Show D9 only when birth time confidence is acceptable.',
+      ],
+    },
+    {
+      id: 'sadhana',
+      title: 'Sadhana and upaya',
+      priority: 'sadhana',
+      summary: 'Remedies should stay sattvic, low-risk, and practice-oriented unless reviewed by a qualified pandit.',
+      points: [
+        currentDasha ? `Current dasha lord ${currentDasha.planet} can guide mantra, seva, vrata, and discipline suggestions.` : 'Dasha-specific upaya unavailable.',
+        chart.yogas.length ? `Detected yogas: ${chart.yogas.map(y => y.name).join(', ')}.` : 'No major app-level yogas detected yet.',
+        'Avoid fear-based predictions; prefer grounding, japa, seva, study, and discipline.',
+      ],
+      actions: [
+        'Recommend one simple practice instead of many remedies.',
+        'Keep gemstone, major vrata, and ritual prescriptions behind expert review.',
+      ],
+    },
+  ];
+}
+
 const LAGNA_READINGS_LOCAL: Record<'en' | 'hi' | 'pa', Record<number, string>> = {
   en: {
     1:  'Aries (Mesha) Ascendant: You possess immense initiative, vitality, and leading warrior energy. Your path is to channel high passion into focused dharmic action (Karmayoga). Avoid impulsiveness.',
@@ -352,18 +479,14 @@ export function generateKundali(input: KundaliInput, lang: 'en' | 'hi' | 'pa' = 
   for (const pname of PLANET_ORDER) {
     const graha = chart.planets[pname];
     if (!graha) continue;
-    const rashiMeta = RASHI_METADATA[graha.rashiIndex] ?? RASHI_METADATA[0];
-    const deg  = Math.floor(graha.degreeInRashi);
-    const min  = Math.round((graha.degreeInRashi - deg) * 60);
-    placements.push({
-      name:        PLANET_NAME_LOCAL[lang][pname] ?? pname,
-      symbol:      PLANET_SYMBOLS[pname] ?? pname.slice(0, 2),
-      sign:        rashiMeta.sa,
-      house:       graha.house,
-      degree:      `${deg}° ${min}'`,
-      strength:    estimateStrength(pname, graha.house, graha.isRetrograde, graha.dignity),
-      isRetrograde: graha.isRetrograde,
-    });
+    placements.push(makePlacement(pname, graha, lang));
+  }
+
+  const navamshaPlacements: PlanetPlacement[] = [];
+  for (const pname of ['Lagna', ...PLANET_ORDER]) {
+    const graha = chart.navamsha[pname];
+    if (!graha) continue;
+    navamshaPlacements.push(makePlacement(pname, graha, lang));
   }
 
   // ── House readings ──────────────────────────────────────────────────────────
@@ -381,6 +504,7 @@ export function generateKundali(input: KundaliInput, lang: 'en' | 'hi' | 'pa' = 
   }
 
   const panditAiDestinyReading = generatePanditAiReading(lagnaMeta, placements, chart, lang);
+  const interpretationSections = buildInterpretationSections(lagnaMeta, placements, chart);
 
   return {
     input,
@@ -391,6 +515,11 @@ export function generateKundali(input: KundaliInput, lang: 'en' | 'hi' | 'pa' = 
     houseReadings,
     lagnaReading:          LAGNA_READINGS_LOCAL[lang][lagnaNumber] ?? '',
     panditAiDestinyReading,
+    interpretationSections,
+    navamshaPlacements,
+    yogaResults: chart.yogas,
+    aspectResults: chart.aspects,
+    precisionNotes: chart.quality.notes,
     chart,
   };
 }
@@ -406,7 +535,7 @@ export function renderKundaliSVG(result: KundaliResult): string {
   const housePlanets: Record<number, string[]> = {};
   for (let h = 1; h <= 12; h++) housePlanets[h] = [];
   placements.forEach(p => {
-    const alwaysRetro = p.name === 'Rahu' || p.name === 'Ketu';
+    const alwaysRetro = p.key === 'Rahu' || p.key === 'Ketu';
     const label = (p.isRetrograde && !alwaysRetro) ? `${p.symbol}ᴬ` : p.symbol; // ᴿ = U+1D2C
     housePlanets[p.house].push(label);
   });

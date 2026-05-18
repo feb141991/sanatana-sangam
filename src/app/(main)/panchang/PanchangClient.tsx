@@ -1002,6 +1002,39 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                       <p className="text-sm font-medium text-[#F2EAD6]/90 leading-relaxed italic">
                         &ldquo;{(h as any).panditAiOracle}&rdquo;
                       </p>
+                      <p className="text-[10px] text-white/35 leading-relaxed border-t border-white/5 pt-2">
+                        {(h as any).accuracyNote}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* True gochar layer */}
+                  {'transitHighlights' in h && (
+                    <div className="rounded-2xl p-4 border border-white/5 space-y-3"
+                      style={{ background: 'rgba(10,8,25,0.65)' }}>
+                      <div className="flex items-start gap-2">
+                        <span className="text-lg">🪐</span>
+                        <div>
+                          <h3 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">Gochar layer</h3>
+                          <p className="text-[11px] text-white/45 mt-1 leading-relaxed">{(h as any).gocharSummary}</p>
+                          <p className="text-[11px] text-[#F2EAD6]/75 mt-1 leading-relaxed">{(h as any).moonTransit}</p>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        {(h as any).transitHighlights.slice(0, 4).map((item: any, idx: number) => (
+                          <div key={`${item.title}-${idx}`}
+                            className={`rounded-xl px-3 py-2 border ${
+                              item.tone === 'support'
+                                ? 'border-emerald-500/20 bg-emerald-500/8'
+                                : item.tone === 'discipline'
+                                  ? 'border-orange-500/25 bg-orange-500/8'
+                                  : 'border-white/8 bg-white/4'
+                            }`}>
+                            <p className="text-[10px] font-bold text-white/75">{item.title}</p>
+                            <p className="text-[10px] text-white/45 leading-relaxed mt-0.5">{item.detail}</p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
 
@@ -1099,6 +1132,16 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                       <h3 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">Today&apos;s Sadhana Focus</h3>
                     </div>
                     <p className="text-sm font-medium text-[#F2EAD6] leading-relaxed pr-6">{h.sadhanaFocus}</p>
+                    {'sadhanaPlan' in h && (
+                      <div className="grid gap-2 pt-2">
+                        {(h as any).sadhanaPlan.map((step: any) => (
+                          <div key={step.label} className="rounded-xl border border-[#C5A059]/15 bg-[#C5A059]/5 px-3 py-2">
+                            <p className="text-[9px] uppercase tracking-wider font-bold text-[#C5A059]/75">{step.label}</p>
+                            <p className="text-[11px] text-[#F2EAD6]/75 leading-relaxed mt-0.5">{step.action}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* Interpretations for work/life */}
@@ -1470,6 +1513,63 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                   </div>
                 )}
 
+                {/* Precision notes */}
+                {kundaliResult.precisionNotes?.length > 0 && (
+                  <div className="rounded-2xl p-4 border border-sky-400/20 space-y-2"
+                    style={{ background: 'rgba(56, 189, 248, 0.07)' }}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">🧭</span>
+                      <h3 className="text-xs font-bold text-sky-200 uppercase tracking-wider">Calculation confidence</h3>
+                    </div>
+                    <div className="space-y-1">
+                      {kundaliResult.precisionNotes.map((note, index) => (
+                        <p key={index} className="text-[11px] text-white/55 leading-relaxed">• {note}</p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Interactive interpretation sections */}
+                {kundaliResult.interpretationSections?.length > 0 && (
+                  <div className="rounded-2xl p-4 border border-white/5 space-y-3"
+                    style={{ background: 'rgba(10,8,25,0.58)' }}>
+                    <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Pandit-style interpretation sections</h4>
+                    <div className="space-y-2">
+                      {kundaliResult.interpretationSections.map(section => (
+                        <details key={section.id} className="group rounded-2xl border border-white/7 overflow-hidden bg-white/4">
+                          <summary className="list-none cursor-pointer select-none px-4 py-3 flex items-start gap-3">
+                            <span className={`mt-0.5 w-2 h-2 rounded-full flex-shrink-0 ${
+                              section.priority === 'foundation' ? 'bg-[#C5A059]'
+                              : section.priority === 'timing' ? 'bg-sky-400'
+                              : section.priority === 'caution' ? 'bg-orange-400'
+                              : section.priority === 'sadhana' ? 'bg-emerald-400'
+                              : 'bg-violet-400'
+                            }`} />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-bold text-[#F2EAD6]">{section.title}</p>
+                              <p className="text-[11px] text-white/45 leading-relaxed mt-1">{section.summary}</p>
+                            </div>
+                            <span className="text-[#C5A059] group-open:rotate-180 transition-transform duration-300 text-xs">▼</span>
+                          </summary>
+                          <div className="px-4 pb-4 space-y-3 border-t border-white/5">
+                            <div className="space-y-1.5 pt-3">
+                              {section.points.map((point, idx) => (
+                                <p key={idx} className="text-[11px] text-white/65 leading-relaxed">• {point}</p>
+                              ))}
+                            </div>
+                            <div className="rounded-xl border border-[#C5A059]/15 bg-[#C5A059]/5 px-3 py-2 space-y-1">
+                              <p className="text-[9px] text-[#C5A059]/75 uppercase tracking-wider font-bold">Actionable reading</p>
+                              {section.actions.map((action, idx) => (
+                                <p key={idx} className="text-[11px] text-[#F2EAD6]/75 leading-relaxed">• {action}</p>
+                              ))}
+                            </div>
+                          </div>
+                        </details>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Styled North Indian Kundali SVG */}
                 <div className="rounded-2xl p-4 border border-white/5 space-y-3 flex flex-col items-center"
                   style={{ background: 'rgba(10,8,25,0.65)' }}>
@@ -1762,6 +1862,70 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                   </div>
                 )}
 
+                {/* Advanced Jyotish modules */}
+                <div className="grid gap-3">
+                  {kundaliResult.yogaResults?.length > 0 && (
+                    <div className="rounded-2xl p-4 border border-violet-400/20 space-y-3"
+                      style={{ background: 'rgba(124, 58, 237, 0.08)' }}>
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🪷</span>
+                        <h4 className="text-xs font-bold text-violet-200 uppercase tracking-wider">Detected yogas</h4>
+                      </div>
+                      <div className="space-y-2">
+                        {kundaliResult.yogaResults.map(yoga => (
+                          <div key={yoga.id} className="rounded-xl px-3 py-2 border border-white/8 bg-white/4">
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="text-xs font-bold text-[#F2EAD6]">{yoga.name}</p>
+                              <span className="text-[9px] rounded-full border border-violet-300/20 bg-violet-300/10 px-2 py-0.5 text-violet-200">
+                                {yoga.strength}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-white/50 leading-relaxed mt-1">{yoga.description}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {kundaliResult.aspectResults?.length > 0 && (
+                    <div className="rounded-2xl p-4 border border-white/5 space-y-3"
+                      style={{ background: 'rgba(10,8,25,0.5)' }}>
+                      <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Close drishti contacts</h4>
+                      <div className="grid gap-2">
+                        {kundaliResult.aspectResults.slice(0, 8).map((aspect, idx) => (
+                          <div key={`${aspect.from}-${aspect.to}-${idx}`} className="flex items-center gap-3 rounded-xl border border-white/7 bg-white/4 px-3 py-2">
+                            <div className="w-9 h-9 rounded-xl bg-[#C5A059]/12 border border-[#C5A059]/20 flex items-center justify-center text-[10px] font-bold text-[#C5A059]">
+                              {aspect.aspect}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[11px] font-bold text-white/75">{aspect.from} → {aspect.to}</p>
+                              <p className="text-[10px] text-white/40 leading-relaxed">{aspect.note} · orb {aspect.orbDegrees}°</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {kundaliResult.navamshaPlacements?.length > 0 && !kundaliResult.chart.timeUnknown && (
+                    <div className="rounded-2xl p-4 border border-[#C5A059]/20 space-y-3"
+                      style={{ background: 'rgba(197,160,89,0.06)' }}>
+                      <div className="flex items-center justify-between gap-2">
+                        <h4 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">Navamsha D9 layer</h4>
+                        <span className="text-[9px] text-white/35">Inner maturity</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        {kundaliResult.navamshaPlacements.slice(0, 10).map(p => (
+                          <div key={`d9-${p.key}`} className="rounded-xl border border-white/7 bg-black/15 px-3 py-2">
+                            <p className="text-[10px] font-bold text-white/70">{p.name}</p>
+                            <p className="text-[10px] text-[#C5A059]/80 mt-0.5">{p.sign}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 {/* Save Chart section */}
                 {chartSaved ? (
                   /* Saved confirmation */
@@ -1913,7 +2077,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                   <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">{t('grahasHousePlacements')}</h4>
                   <div className="grid grid-cols-2 gap-2">
                     {kundaliResult.placements.map(p => {
-                      const grahaData = kundaliResult.chart.planets[p.name];
+                      const grahaData = kundaliResult.chart.planets[p.key];
                       const dignity   = grahaData?.dignity;
                       const combust   = grahaData?.isCombust;
                       const dignityColor = dignity === 'exalted'     ? 'text-emerald-400'
@@ -1925,7 +2089,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                                          : dignity === 'own'         ? 'Svakshetra'
                                          : null;
                       return (
-                        <div key={p.name} className="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/5">
+                        <div key={p.key} className="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/5">
                           <div className="w-8 h-8 rounded-lg bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center font-bold text-[#C5A059] text-xs flex-shrink-0">
                             {p.symbol}
                           </div>
@@ -1959,7 +2123,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                                      : p.strength >= 60 ? 'from-emerald-600 to-teal-400' 
                                      : 'from-orange-600 to-red-400';
                       return (
-                        <div key={p.name} className="space-y-1">
+                        <div key={p.key} className="space-y-1">
                           <div className="flex justify-between text-xs">
                             <span className="font-semibold text-white/80 flex items-center gap-1.5">
                               <span className="w-5 h-5 rounded-md bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center text-[9px] font-bold text-[#C5A059]">

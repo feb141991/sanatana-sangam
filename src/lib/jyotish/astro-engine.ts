@@ -29,6 +29,28 @@ export interface GrahaPosition {
   isCombust?:   boolean;  // within combustion threshold of Sun
   nakshatra?:   string;   // filled for Moon (and optionally others)
   pada?:        number;
+  navamshaIndex?: number;  // 0=Mesha … 11=Meena, derived from sidereal degree
+  navamshaName?:  string;
+}
+
+export interface GrahaAspect {
+  from: string;
+  to: string;
+  aspect: string;
+  orbDegrees: number;
+  note: string;
+}
+
+export interface YogaResult {
+  id: string;
+  name: string;
+  strength: 'mild' | 'moderate' | 'strong';
+  description: string;
+}
+
+export interface ChartQuality {
+  grade: 'estimate' | 'high';
+  notes: string[];
 }
 
 export interface NakshatraInfo {
@@ -78,6 +100,10 @@ export interface AstroChart {
   planets:       Record<string, GrahaPosition>;
   nakshatra:     NakshatraInfo;
   dasha:         DashaInfo;
+  aspects:       GrahaAspect[];
+  yogas:         YogaResult[];
+  navamsha:      Record<string, GrahaPosition>;
+  quality:       ChartQuality;
   timeUnknown:   boolean;
 }
 
@@ -241,6 +267,23 @@ function rashiFromSidereal(sidDeg: number): { rashiIndex: number; rashiName: str
     rashiName:    RASHIS[idx],
     degreeInRashi: parseFloat((sidDeg % 30).toFixed(4)),
   };
+}
+
+// ── Navamsha/D9 sign from sidereal longitude ─────────────────────────────────
+function navamshaFromSidereal(sidDeg: number): { navamshaIndex: number; navamshaName: string } {
+  const signIndex = Math.floor(sidDeg / 30) % 12;
+  const degreeInSign = sidDeg % 30;
+  const pada = Math.floor(degreeInSign / (30 / 9)); // 0-8
+
+  // Movable signs start from same sign, fixed from 9th, dual from 5th.
+  const modality = signIndex % 3;
+  const start = modality === 0
+    ? signIndex
+    : modality === 1
+      ? (signIndex + 8) % 12
+      : (signIndex + 4) % 12;
+  const navamshaIndex = (start + pada) % 12;
+  return { navamshaIndex, navamshaName: RASHIS[navamshaIndex] };
 }
 
 // ── Nakshatra from Moon sidereal longitude ────────────────────────────────────
@@ -435,6 +478,7 @@ function calcPlanets(
 
     const sidereal = toSidereal(tropical, ayanamsa);
     const rashi    = rashiFromSidereal(sidereal);
+    const navamsha = navamshaFromSidereal(sidereal);
 
     // Whole Sign house: house = (planet_rashi - lagna_rashi + 12) % 12 + 1
     const house = ((rashi.rashiIndex - lagnaRashiIndex + 12) % 12) + 1;
@@ -449,6 +493,7 @@ function calcPlanets(
       tropicalDeg:   parseFloat(tropical.toFixed(4)),
       siderealDeg:   parseFloat(sidereal.toFixed(4)),
       ...rashi,
+      ...navamsha,
       house,
       isRetrograde:  speed < 0,
       dignity,
@@ -472,12 +517,14 @@ function calcPlanets(
   const rahuTropical = norm360(125.0445479 - 0.0529539297 * d);
   const rahuSidereal = toSidereal(rahuTropical, ayanamsa);
   const rahuRashi    = rashiFromSidereal(rahuSidereal);
+  const rahuNavamsha = navamshaFromSidereal(rahuSidereal);
   const rahuHouse    = ((rahuRashi.rashiIndex - lagnaRashiIndex + 12) % 12) + 1;
 
   planets['Rahu'] = {
     tropicalDeg:  parseFloat(rahuTropical.toFixed(4)),
     siderealDeg:  parseFloat(rahuSidereal.toFixed(4)),
     ...rahuRashi,
+    ...rahuNavamsha,
     house:        rahuHouse,
     isRetrograde: true,  // nodes always retrograde in mean-node model
     dignity:      EXALTATION['Rahu'] === rahuRashi.rashiIndex ? 'exalted'
@@ -487,12 +534,14 @@ function calcPlanets(
   // Ketu = exactly opposite Rahu
   const ketuSidereal = norm360(rahuSidereal + 180);
   const ketuRashi    = rashiFromSidereal(ketuSidereal);
+  const ketuNavamsha = navamshaFromSidereal(ketuSidereal);
   const ketuHouse    = ((ketuRashi.rashiIndex - lagnaRashiIndex + 12) % 12) + 1;
 
   planets['Ketu'] = {
     tropicalDeg:  parseFloat(norm360(rahuTropical + 180).toFixed(4)),
     siderealDeg:  parseFloat(ketuSidereal.toFixed(4)),
     ...ketuRashi,
+    ...ketuNavamsha,
     house:        ketuHouse,
     isRetrograde: true,
     dignity:      EXALTATION['Ketu'] === ketuRashi.rashiIndex ? 'exalted'
@@ -506,6 +555,116 @@ function calcPlanets(
   planets['Chandra'].pada      = nak.pada;
 
   return planets;
+}
+
+function signedDistance(a: number, b: number): number {
+  let diff = Math.abs(a - b) % 360;
+  if (diff > 180) diff = 360 - diff;
+  return diff;
+}
+
+function calcAspects(planets: Record<string, GrahaPosition>): GrahaAspect[] {
+  const aspects: GrahaAspect[] = [];
+  const entries = Object.entries(planets);
+  const special: Record<string, number[]> = {
+    Mangal: [90, 180, 210], // 4th, 7th, 8th
+    Guru:   [120, 180, 240], // 5th, 7th, 9th
+    Shani:  [60, 180, 270], // 3rd, 7th, 10th
+  };
+
+  for (const [from, pos] of entries) {
+    const targets = special[from] ?? [180];
+    for (const [to, other] of entries) {
+      if (from === to) continue;
+      const forward = norm360(other.siderealDeg - pos.siderealDeg);
+      for (const exact of targets) {
+        const orb = Math.min(Math.abs(forward - exact), Math.abs(forward - exact + 360), Math.abs(forward - exact - 360));
+        if (orb <= 5) {
+          aspects.push({
+            from,
+            to,
+            aspect: `${Math.round(exact)}°`,
+            orbDegrees: parseFloat(orb.toFixed(2)),
+            note: `${from} casts ${exact === 180 ? 'full' : 'special'} drishti on ${to}`,
+          });
+        }
+      }
+    }
+  }
+
+  return aspects.sort((a, b) => a.orbDegrees - b.orbDegrees).slice(0, 18);
+}
+
+function calcYogas(planets: Record<string, GrahaPosition>, lagna: GrahaPosition): YogaResult[] {
+  const yogas: YogaResult[] = [];
+  const add = (id: string, name: string, strength: YogaResult['strength'], description: string) => {
+    if (!yogas.some(y => y.id === id)) yogas.push({ id, name, strength, description });
+  };
+  const kendras = new Set([1, 4, 7, 10]);
+  const trikonas = new Set([1, 5, 9]);
+  const dusthanas = new Set([6, 8, 12]);
+  const upachayas = new Set([3, 6, 10, 11]);
+
+  const moon = planets.Chandra;
+  const jupiter = planets.Guru;
+  const venus = planets.Shukra;
+  const mercury = planets.Budha;
+  const saturn = planets.Shani;
+  const mars = planets.Mangal;
+
+  if (moon && jupiter && kendras.has(((jupiter.rashiIndex - moon.rashiIndex + 12) % 12) + 1)) {
+    add('gaja-kesari', 'Gaja Kesari Yoga', 'moderate', 'Guru in kendra from Chandra supports wisdom, counsel, learning, and social regard.');
+  }
+
+  const beneficsInKendra = [jupiter, venus, mercury].filter(Boolean).filter(p => kendras.has(p!.house)).length;
+  if (beneficsInKendra >= 2) {
+    add('benefic-kendra', 'Benefic Kendra Support', beneficsInKendra === 3 ? 'strong' : 'moderate', 'Multiple natural benefics in kendras strengthen protection, guidance, and grace in practical life.');
+  }
+
+  const maleficsUpachaya = [saturn, mars].filter(Boolean).filter(p => upachayas.has(p!.house)).length;
+  if (maleficsUpachaya >= 1) {
+    add('upachaya-strength', 'Upachaya Discipline', maleficsUpachaya === 2 ? 'strong' : 'mild', 'Natural malefics in upachaya houses can improve through effort, discipline, and sustained tapasya.');
+  }
+
+  const lagnaLord = {
+    0: 'Mangal', 1: 'Shukra', 2: 'Budha', 3: 'Chandra', 4: 'Surya', 5: 'Budha',
+    6: 'Shukra', 7: 'Mangal', 8: 'Guru', 9: 'Shani', 10: 'Shani', 11: 'Guru',
+  }[lagna.rashiIndex];
+  const lagnaLordPos = lagnaLord ? planets[lagnaLord] : null;
+  if (lagnaLordPos && trikonas.has(lagnaLordPos.house)) {
+    add('lagna-lord-trikona', 'Lagna Lord in Trikona', 'strong', 'The ascendant lord in a trine supports self-direction, dharmic clarity, and resilience.');
+  } else if (lagnaLordPos && dusthanas.has(lagnaLordPos.house)) {
+    add('lagna-lord-dusthana', 'Lagna Lord in Dusthana', 'mild', 'The ascendant lord in a dusthana asks for health discipline, humility, service, and careful life design.');
+  }
+
+  return yogas;
+}
+
+function buildNavamsha(planets: Record<string, GrahaPosition>, lagna: GrahaPosition): Record<string, GrahaPosition> {
+  const source = { Lagna: lagna, ...planets };
+  return Object.fromEntries(
+    Object.entries(source).map(([name, pos]) => [
+      name,
+      {
+        ...pos,
+        rashiIndex: pos.navamshaIndex ?? pos.rashiIndex,
+        rashiName: pos.navamshaName ?? pos.rashiName,
+        degreeInRashi: parseFloat(((pos.degreeInRashi % (30 / 9)) * 9).toFixed(4)),
+        house: 1,
+      },
+    ])
+  );
+}
+
+function buildChartQuality(input: BirthInput): ChartQuality {
+  const notes = [
+    'Astronomical positions use astronomy-engine with a Lahiri-style sidereal conversion.',
+    'Use this as a high-quality consumer Jyotish estimate until Swiss Ephemeris validation is added.',
+  ];
+  if (input.timeUnknown) {
+    notes.push('Birth time is unknown, so Lagna, houses, divisional charts, and house-based readings are not reliable.');
+  }
+  return { grade: input.timeUnknown ? 'estimate' : 'high', notes };
 }
 
 // ── Main export: generate full chart ─────────────────────────────────────────
@@ -526,6 +685,10 @@ export function generateAstroChart(input: BirthInput): AstroChart {
 
   // Dasha
   const dasha = calcDasha(nakshatra, utcDate);
+  const aspects = calcAspects(planets);
+  const yogas = calcYogas(planets, lagna);
+  const navamsha = buildNavamsha(planets, lagna);
+  const quality = buildChartQuality(input);
 
   return {
     utcBirthTime: utcDate.toISOString(),
@@ -535,17 +698,24 @@ export function generateAstroChart(input: BirthInput): AstroChart {
     planets,
     nakshatra,
     dasha,
+    aspects,
+    yogas,
+    navamsha,
+    quality,
     timeUnknown: input.timeUnknown ?? false,
   };
 }
 
 // ── Utility: today's transit positions (shared across all users) ──────────────
-export function getTodayTransits(): Record<string, GrahaPosition> {
-  const now = new Date();
-  const jd  = toJulianDay(now);
+export function getTransitsForDate(date: Date = new Date()): Record<string, GrahaPosition> {
+  const jd  = toJulianDay(date);
   const ay  = getLahiriAyanamsa(jd);
   // Use Aries (rashiIndex=0) as reference for transit house — caller maps to user lagna
-  return calcPlanets(now, jd, ay, 0);
+  return calcPlanets(date, jd, ay, 0);
+}
+
+export function getTodayTransits(): Record<string, GrahaPosition> {
+  return getTransitsForDate(new Date());
 }
 
 // ── Utility: remap transit houses relative to natal Lagna ────────────────────

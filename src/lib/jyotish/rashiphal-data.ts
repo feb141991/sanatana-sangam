@@ -6,6 +6,8 @@
 // and cosmic Graha Beeja Mantras with specific physical sound frequencies (Hz).
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { detectSadeSati, getTransitsForDate, remapTransitHouses, type GrahaPosition } from './astro-engine';
+
 export interface RashiHoroscope {
   rashi:        string; // English name
   rashiSanskrit: string; // Sanskrit name
@@ -25,21 +27,26 @@ export interface RashiHoroscope {
   panditAiOracle:    string; // High-fidelity Pandit AI channeled insight
   beejaMantra:       string; // Planet sound resonance mantra
   beejaFrequency:    number; // Physically matched planetary Hz
+  gocharSummary:     string;
+  moonTransit:       string;
+  transitHighlights: Array<{ title: string; detail: string; tone: 'support' | 'discipline' | 'neutral' }>;
+  sadhanaPlan:       Array<{ label: string; action: string }>;
+  accuracyNote:      string;
 }
 
 export const RASHI_LIST = [
-  { key: 'aries',       en: 'Aries',       sa: 'Mesha',      symbol: '🐏', lord: 'Mars (Mangal)' },
-  { key: 'taurus',      en: 'Taurus',      sa: 'Vrishabha',   symbol: '🐂', lord: 'Venus (Shukra)' },
-  { key: 'gemini',      en: 'Gemini',      sa: 'Mithuna',     symbol: '👥', lord: 'Mercury (Budha)' },
-  { key: 'cancer',      en: 'Cancer',      sa: 'Karka',       symbol: '🦀', lord: 'Moon (Chandra)' },
-  { key: 'leo',         en: 'Leo',         sa: 'Simha',       symbol: '🦁', lord: 'Sun (Surya)' },
-  { key: 'virgo',       en: 'Virgo',       sa: 'Kanya',       symbol: '🌾', lord: 'Mercury (Budha)' },
-  { key: 'libra',       en: 'Libra',       sa: 'Tula',        symbol: '⚖️', lord: 'Venus (Shukra)' },
-  { key: 'scorpio',     en: 'Scorpio',     sa: 'Vrishchika',  symbol: '🦂', lord: 'Mars (Mangal)' },
-  { key: 'sagittarius', en: 'Sagittarius', sa: 'Dhanu',       symbol: '🏹', lord: 'Jupiter (Guru)' },
-  { key: 'capricorn',   en: 'Capricorn',   sa: 'Makara',      symbol: '🐊', lord: 'Saturn (Shani)' },
-  { key: 'aquarius',    en: 'Aquarius',    sa: 'Kumbha',      symbol: '🏺', lord: 'Saturn (Shani)' },
-  { key: 'pisces',      en: 'Pisces',      sa: 'Meena',       symbol: '🐟', lord: 'Jupiter (Guru)' },
+  { key: 'aries',       en: 'Aries',       sa: 'Mesha',      symbol: '🐏', lord: 'Mars (Mangal)',    index: 0 },
+  { key: 'taurus',      en: 'Taurus',      sa: 'Vrishabha',  symbol: '🐂', lord: 'Venus (Shukra)',   index: 1 },
+  { key: 'gemini',      en: 'Gemini',      sa: 'Mithuna',    symbol: '👥', lord: 'Mercury (Budha)',  index: 2 },
+  { key: 'cancer',      en: 'Cancer',      sa: 'Karka',      symbol: '🦀', lord: 'Moon (Chandra)',   index: 3 },
+  { key: 'leo',         en: 'Leo',         sa: 'Simha',      symbol: '🦁', lord: 'Sun (Surya)',      index: 4 },
+  { key: 'virgo',       en: 'Virgo',       sa: 'Kanya',      symbol: '🌾', lord: 'Mercury (Budha)',  index: 5 },
+  { key: 'libra',       en: 'Libra',       sa: 'Tula',       symbol: '⚖️', lord: 'Venus (Shukra)',   index: 6 },
+  { key: 'scorpio',     en: 'Scorpio',     sa: 'Vrishchika', symbol: '🦂', lord: 'Mars (Mangal)',    index: 7 },
+  { key: 'sagittarius', en: 'Sagittarius', sa: 'Dhanu',      symbol: '🏹', lord: 'Jupiter (Guru)',   index: 8 },
+  { key: 'capricorn',   en: 'Capricorn',   sa: 'Makara',     symbol: '🐊', lord: 'Saturn (Shani)',   index: 9 },
+  { key: 'aquarius',    en: 'Aquarius',    sa: 'Kumbha',     symbol: '🏺', lord: 'Saturn (Shani)',   index: 10 },
+  { key: 'pisces',      en: 'Pisces',      sa: 'Meena',      symbol: '🐟', lord: 'Jupiter (Guru)',   index: 11 },
 ];
 
 const SHLOKAS: Record<string, { shloka: string; trans: string }> = {
@@ -173,8 +180,87 @@ const PANDIT_INSIGHTS_POOL = [
   "Your vital aura is glowing with solar strength today, but Mars is casting a minor shadow on your verbal house. Be exceptionally mindful of how you communicate. Use gentle, sweet words (*Satyam Bruyat, Priyam Bruyat*), and let your physical presence act as a source of calm reassurance for those around you."
 ];
 
+const HOUSE_MEANINGS: Record<number, string> = {
+  1: 'self, vitality, confidence, and body',
+  2: 'speech, food, family, and savings',
+  3: 'courage, effort, siblings, and communication',
+  4: 'home, mother, emotional peace, and property',
+  5: 'study, mantra, children, creativity, and purva punya',
+  6: 'health discipline, service, debts, and obstacles',
+  7: 'partnerships, public dealings, and agreements',
+  8: 'transformation, secrecy, research, and vulnerability',
+  9: 'guru, dharma, blessings, father, and higher learning',
+  10: 'karma, profession, reputation, and public duty',
+  11: 'gains, network, elder siblings, and fulfilment',
+  12: 'rest, expenditure, moksha, sleep, and foreign links',
+};
+
+function houseFromRashi(transitRashiIndex: number, referenceRashiIndex: number): number {
+  return ((transitRashiIndex - referenceRashiIndex + 12) % 12) + 1;
+}
+
+function grahaTone(planet: string, house: number): 'support' | 'discipline' | 'neutral' {
+  if (planet === 'Guru' && [1, 2, 5, 7, 9, 11].includes(house)) return 'support';
+  if (planet === 'Shukra' && [1, 4, 5, 7, 9, 11].includes(house)) return 'support';
+  if (planet === 'Shani' && [3, 6, 10, 11].includes(house)) return 'support';
+  if (planet === 'Shani' && [1, 2, 4, 8, 12].includes(house)) return 'discipline';
+  if (['Mangal', 'Rahu', 'Ketu'].includes(planet) && [1, 4, 7, 8, 12].includes(house)) return 'discipline';
+  return 'neutral';
+}
+
+function buildTransitHighlights(
+  rashiIndex: number,
+  transits: Record<string, GrahaPosition>,
+): RashiHoroscope['transitHighlights'] {
+  const selected = ['Chandra', 'Guru', 'Shani', 'Mangal', 'Rahu', 'Ketu'];
+  return selected
+    .filter(p => transits[p])
+    .map(planet => {
+      const pos = transits[planet];
+      const house = houseFromRashi(pos.rashiIndex, rashiIndex);
+      const tone = grahaTone(planet, house);
+      return {
+        title: `${planet} in ${house}${house === 1 ? 'st' : house === 2 ? 'nd' : house === 3 ? 'rd' : 'th'} from ${RASHI_LIST[rashiIndex].sa}`,
+        detail: `${planet} activates ${HOUSE_MEANINGS[house]}. ${tone === 'support' ? 'Use this for constructive action.' : tone === 'discipline' ? 'Move slowly and keep discipline.' : 'Keep the day balanced and observational.'}`,
+        tone,
+      };
+    });
+}
+
+function buildSadhanaPlan(rashiKey: string, transits: Record<string, GrahaPosition>, rashiIndex: number): RashiHoroscope['sadhanaPlan'] {
+  const moonHouse = houseFromRashi(transits.Chandra.rashiIndex, rashiIndex);
+  const saturnHouse = houseFromRashi(transits.Shani.rashiIndex, rashiIndex);
+  const shlokaKey = SHLOKA_MAP[rashiKey] ?? 'surya';
+  const beejaData = BEEJA_MANTRAS[shlokaKey] ?? BEEJA_MANTRAS.surya;
+  return [
+    {
+      label: 'Moon practice',
+      action: moonHouse === 5 || moonHouse === 9
+        ? 'Prioritise mantra, study, and a short gratitude note.'
+        : moonHouse === 8 || moonHouse === 12
+          ? 'Keep practice quiet: breath, journaling, and early rest.'
+          : 'Do 9 minutes of steady japa before starting work.',
+    },
+    {
+      label: 'Discipline',
+      action: [6, 10, 11].includes(saturnHouse)
+        ? 'Shani supports effort today. Finish one pending duty without distraction.'
+        : 'Avoid overloading the schedule. Keep one clear sankalpa.',
+    },
+    {
+      label: 'Beeja anchor',
+      action: `Chant ${beejaData.mantra} 11 or 27 times if it fits your tradition and comfort.`,
+    },
+  ];
+}
+
 export function getDailyHoroscope(rashiKey: string, date: Date = new Date()): RashiHoroscope {
   const rashi = RASHI_LIST.find(r => r.key === rashiKey) ?? RASHI_LIST[0];
+  const transits = getTransitsForDate(date);
+  const moonHouse = houseFromRashi(transits.Chandra.rashiIndex, rashi.index);
+  const moonTransit = `Chandra is transiting ${transits.Chandra.rashiName}, ${moonHouse}${moonHouse === 1 ? 'st' : moonHouse === 2 ? 'nd' : moonHouse === 3 ? 'rd' : 'th'} from ${rashi.sa}.`;
+  const highlights = buildTransitHighlights(rashi.index, transits);
+  const sadeSati = detectSadeSati(rashi.index, transits.Shani.rashiIndex);
   
   const dateString = date.toISOString().split('T')[0];
   const seedKey = `${rashi.key}-${dateString}`;
@@ -194,8 +280,11 @@ export function getDailyHoroscope(rashiKey: string, date: Date = new Date()): Ra
   const shlokaData = SHLOKAS[shlokaKey];
 
   // Resolve Pandit AI Channeled Oracle
-  const baseInsight = PANDIT_INSIGHTS_POOL[Math.floor(rand() * PANDIT_INSIGHTS_POOL.length)];
-  const panditAiOracle = `Pandit AI Daily Channeling: ${baseInsight} Favour your lucky time of ${luckyTime.toLowerCase()} to align your subtle breathing cycles.`;
+  const primary = highlights[0];
+  const guruHouse = houseFromRashi(transits.Guru.rashiIndex, rashi.index);
+  const shaniHouse = houseFromRashi(transits.Shani.rashiIndex, rashi.index);
+  const baseInsight = `Moon's daily movement is activating ${HOUSE_MEANINGS[moonHouse]}, while Guru works through the ${guruHouse} house and Shani through the ${shaniHouse} house from your Chandra rashi.`;
+  const panditAiOracle = `Gochar-based reading: ${baseInsight} ${primary?.detail ?? ''} ${sadeSati.isActive ? `Sade Sati influence is active in the ${sadeSati.phase} phase, so patience and duty matter more than speed.` : 'No Sade Sati trigger is detected by current Saturn transit.'}`;
 
   // Resolve Beeja Mantra Details
   const beejaData = BEEJA_MANTRAS[shlokaKey] ?? BEEJA_MANTRAS.surya;
@@ -216,6 +305,11 @@ export function getDailyHoroscope(rashiKey: string, date: Date = new Date()): Ra
     shlokaTranslation: shlokaData.trans,
     panditAiOracle,
     beejaMantra: beejaData.mantra,
-    beejaFrequency: beejaData.freq
+    beejaFrequency: beejaData.freq,
+    gocharSummary: `Today is calculated from live sidereal graha transits against ${rashi.sa} as the reference Chandra rashi.`,
+    moonTransit,
+    transitHighlights: highlights,
+    sadhanaPlan: buildSadhanaPlan(rashi.key, transits, rashi.index),
+    accuracyNote: 'Rashiphal is now transit-based. For personal precision, connect it to the user’s saved Kundali, active dasha, and exact birth Moon/Lagna.',
   };
 }
