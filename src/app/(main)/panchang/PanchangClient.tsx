@@ -14,6 +14,7 @@ import { createClient } from '@/lib/supabase';
 import { getDailyHoroscope, RASHI_LIST } from '@/lib/jyotish/rashiphal-data';
 import { generateKundali, renderKundaliSVG, type KundaliInput, type KundaliResult } from '@/lib/jyotish/kundali-engine';
 import { getTodayTransits, detectSadeSati } from '@/lib/jyotish/astro-engine';
+import type { AntardashaEntry } from '@/lib/jyotish/astro-engine';
 
 interface Props {
   lat:       number;
@@ -258,6 +259,128 @@ const ELEMENT_COLOR: Record<string, string> = {
   Air:   'text-purple-300 bg-purple-400/10 border-purple-400/20',
 };
 
+// ─── Vimshottari Dasha Wisdom ──────────────────────────────────────────────────
+const DASHA_WISDOM: Record<string, {
+  hi: string;        // Hindi name
+  en: string;        // English planet name
+  years: number;
+  emoji: string;
+  color: string;     // Tailwind text color
+  bg: string;        // Tailwind bg/border
+  domains: string;   // What this dasha rules
+  mantra: string;
+  pros: string;
+  cons: string;
+  remedies: string;
+}> = {
+  Surya: {
+    hi: 'सूर्य महादशा', en: 'Sun', years: 6, emoji: '☀️',
+    color: 'text-amber-300', bg: 'bg-amber-400/10 border-amber-400/30',
+    domains: 'Authority, government, father, health, vitality, career recognition',
+    mantra: 'Om Hraam Hreem Hraum Sah Suryaya Namah',
+    pros: 'Rise in career and social status, recognition from superiors, strong health and vitality, leadership opportunities, clarity of purpose.',
+    cons: 'Ego conflicts, strained relationships with father figures, excessive pride, health issues related to heart and eyes.',
+    remedies: 'Offer water to the rising sun daily, worship at a Shiva temple on Sundays, wear ruby (if well-placed).',
+  },
+  Chandra: {
+    hi: 'चन्द्र महादशा', en: 'Moon', years: 10, emoji: '🌙',
+    color: 'text-slate-300', bg: 'bg-slate-400/10 border-slate-400/30',
+    domains: 'Mind, emotions, mother, home, intuition, water, travel, public',
+    mantra: 'Om Shraam Shreem Shraum Sah Chandraaya Namah',
+    pros: 'Emotional fulfilment, strong intuition, public popularity, peaceful home life, good for spiritual pursuits and creative arts.',
+    cons: 'Emotional instability, mood swings, over-sensitivity, disturbed sleep, issues with mother or women in life.',
+    remedies: 'Fast on Mondays, worship Devi (Durga, Lakshmi), keep silver with you, chant Chandra mantra 108 times at night.',
+  },
+  Mangal: {
+    hi: 'मंगल महादशा', en: 'Mars', years: 7, emoji: '🔴',
+    color: 'text-red-400', bg: 'bg-red-400/10 border-red-400/30',
+    domains: 'Courage, energy, siblings, land, property, discipline, surgery, sports',
+    mantra: 'Om Kraam Kreem Kraum Sah Bhaumaya Namah',
+    pros: 'Surge of physical energy, courage to take bold action, success in sports and physical endeavours, property gains, sibling support.',
+    cons: 'Aggression, accidents, conflicts, surgery risks, impulsiveness, fire/blood-related health issues.',
+    remedies: 'Worship Hanuman on Tuesdays, donate red lentils, avoid anger and haste, wear red coral (if well-placed).',
+  },
+  Rahu: {
+    hi: 'राहु महादशा', en: 'Rahu (North Node)', years: 18, emoji: '🌀',
+    color: 'text-violet-400', bg: 'bg-violet-400/10 border-violet-400/30',
+    domains: 'Ambition, illusion, foreign lands, technology, unconventional paths, sudden events',
+    mantra: 'Om Bhram Bhreem Bhraum Sah Rahave Namah',
+    pros: 'Rapid material gains, success in technology and mass media, foreign travel and connections, breakthroughs via unconventional methods, sudden rise.',
+    cons: 'Confusion, obsession, deception from others, hidden enemies, health issues hard to diagnose, karmic debts surfacing.',
+    remedies: 'Worship Durga or Kali, feed dogs, donate blue/black items on Saturdays, meditate to strengthen inner clarity.',
+  },
+  Guru: {
+    hi: 'गुरु महादशा', en: 'Jupiter', years: 16, emoji: '🪐',
+    color: 'text-yellow-300', bg: 'bg-yellow-400/10 border-yellow-400/30',
+    domains: 'Wisdom, dharma, children, higher education, spirituality, wealth, guru',
+    mantra: 'Om Graam Greem Graum Sah Gurave Namah',
+    pros: 'Spiritual awakening, academic success, wealth and prosperity, children\'s blessings, finding a genuine guru or mentor, deep dharmic clarity.',
+    cons: 'Overconfidence, excess weight gain, liver problems, complacency, over-generosity leading to financial strain.',
+    remedies: 'Worship Vishnu on Thursdays, offer turmeric and yellow flowers, donate to Brahmins, wear yellow sapphire (if suited).',
+  },
+  Shani: {
+    hi: 'शनि महादशा', en: 'Saturn', years: 19, emoji: '⏳',
+    color: 'text-blue-300', bg: 'bg-blue-400/10 border-blue-400/30',
+    domains: 'Karma, discipline, delays, service, longevity, old age, justice, labour',
+    mantra: 'Om Praam Preem Praum Sah Shanaischaraya Namah',
+    pros: 'Karmic purification, lasting rewards for honest effort, discipline and endurance, career stability through merit, spiritual depth through solitude.',
+    cons: 'Slowdowns, delays, hardship and struggle, joint/bone issues, separation from loved ones, heavy responsibilities.',
+    remedies: 'Worship Shani on Saturdays, light sesame oil lamp, serve the elderly and disabled, wear blue sapphire only after expert consultation.',
+  },
+  Budha: {
+    hi: 'बुध महादशा', en: 'Mercury', years: 17, emoji: '☿',
+    color: 'text-emerald-300', bg: 'bg-emerald-400/10 border-emerald-400/30',
+    domains: 'Intellect, communication, business, writing, trade, education, youthfulness',
+    mantra: 'Om Braam Breem Braum Sah Budhaya Namah',
+    pros: 'Sharp intellect, business success, excellent communication, educational achievements, networking, writing and speaking opportunities.',
+    cons: 'Over-thinking, nervous system stress, indecisiveness, skin or speech disorders, trust issues in partnerships.',
+    remedies: 'Worship Vishnu on Wednesdays, donate green clothes or moong dal, read sacred texts, wear emerald (if well-placed).',
+  },
+  Ketu: {
+    hi: 'केतु महादशा', en: 'Ketu (South Node)', years: 6, emoji: '☄️',
+    color: 'text-teal-300', bg: 'bg-teal-400/10 border-teal-400/30',
+    domains: 'Spirituality, liberation, past life karma, mysticism, healing, sudden events',
+    mantra: 'Om Sraam Sreem Sraum Sah Ketave Namah',
+    pros: 'Deep spiritual insights, psychic abilities, liberation from attachments, healing gifts, ancestral blessings, unexpected moksha-related experiences.',
+    cons: 'Confusion about identity and direction, mysterious illnesses, isolation, sudden losses, difficulty in the material world.',
+    remedies: 'Worship Ganesha, donate multi-coloured blankets, perform ancestral rites (Pitru Tarpan), avoid ego-driven ambitions.',
+  },
+  Shukra: {
+    hi: 'शुक्र महादशा', en: 'Venus', years: 20, emoji: '💎',
+    color: 'text-pink-300', bg: 'bg-pink-400/10 border-pink-400/30',
+    domains: 'Love, marriage, beauty, arts, luxury, pleasure, relationships, women',
+    mantra: 'Om Draam Dreem Draum Sah Shukraya Namah',
+    pros: 'Romantic fulfilment, marriage and partnership bliss, artistic creativity, wealth and luxury, social charm, enjoyment of life\'s pleasures.',
+    cons: 'Overindulgence, laziness, relationship complications, kidney or reproductive issues, materialistic attachment.',
+    remedies: 'Worship Lakshmi on Fridays, donate white clothes or sweets, practice brahmacharya in thought, wear diamond or white sapphire (if suited).',
+  },
+};
+
+// Helper: compute antardasha list for any mahadasha (client-side pure function)
+function getAntardashaDates(dashaEntry: { planet: string; startDate: string; endDate: string }): AntardashaEntry[] {
+  const DASHA_ORDER_LOCAL = ['Ketu','Shukra','Surya','Chandra','Mangal','Rahu','Guru','Shani','Budha'];
+  const DASHA_YEARS_LOCAL: Record<string, number> = {
+    Ketu:6, Shukra:20, Surya:6, Chandra:10, Mangal:7, Rahu:18, Guru:16, Shani:19, Budha:17,
+  };
+  const startMs = new Date(dashaEntry.startDate).getTime();
+  const endMs   = new Date(dashaEntry.endDate).getTime();
+  const durMs   = endMs - startMs;
+  const order   = DASHA_ORDER_LOCAL.indexOf(dashaEntry.planet);
+  let cursor    = startMs;
+  return DASHA_ORDER_LOCAL.map((_, i) => {
+    const sub  = DASHA_ORDER_LOCAL[(order + i) % 9];
+    const dur  = (DASHA_YEARS_LOCAL[sub] / 120) * durMs;
+    const end  = Math.min(cursor + dur, endMs);
+    const entry: AntardashaEntry = {
+      planet:    sub,
+      startDate: new Date(cursor).toISOString().split('T')[0],
+      endDate:   new Date(end).toISOString().split('T')[0],
+    };
+    cursor = end;
+    return entry;
+  });
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: Props) {
   const { t } = useLanguage();
@@ -300,8 +423,13 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
   // Text size preference: 'sm' | 'md' | 'lg'
   const [textSize, setTextSize] = useState<'sm' | 'md' | 'lg'>('md');
 
-  // Interactive Dasha — toggle antardasha list
-  const [showAllAntardasha, setShowAllAntardasha] = useState(false);
+  // Interactive Dasha — which mahadasha pill is expanded (index 0-8, or null)
+  const [selectedDashaIdx, setSelectedDashaIdx] = useState<number | null>(null);
+
+  // Location autocomplete
+  const [locationSuggestions, setLocationSuggestions] = useState<Array<{ display: string; lat: number; lng: number; timezone: string }>>([]);
+  const [showLocSuggestions, setShowLocSuggestions] = useState(false);
+  const locTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Memoize today's transit positions — expensive computation, run once per mount
   const todayTransits = useMemo(() => {
@@ -415,6 +543,25 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
       }
     });
   }, []);
+
+  // ── Location autocomplete ─────────────────────────────────────────────────────
+  function handleLocationChange(val: string) {
+    setKundaliInput(prev => ({ ...prev, birthPlace: val }));
+    setShowLocSuggestions(false);
+    if (locTimerRef.current) clearTimeout(locTimerRef.current);
+    if (val.length < 3) { setLocationSuggestions([]); return; }
+    locTimerRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/jyotish/geocode?q=${encodeURIComponent(val)}&multi=1`);
+        if (!res.ok) return;
+        const data = await res.json();
+        // API returns single result — wrap in array for now
+        const results = data.results ?? (data.lat ? [{ display: data.display ?? val, lat: data.lat, lng: data.lng, timezone: data.timezone }] : []);
+        setLocationSuggestions(results.slice(0, 5));
+        setShowLocSuggestions(results.length > 0);
+      } catch { /* ignore */ }
+    }, 400);
+  }
 
   // ── Load recent searches from localStorage ────────────────────────────────────
   useEffect(() => {
@@ -1042,7 +1189,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                   )}
 
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Full Name</label>
+                    <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Full Name · पूरा नाम</label>
                     <input
                       type="text"
                       placeholder="Enter your name"
@@ -1054,7 +1201,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
 
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1">
-                      <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Date of Birth</label>
+                      <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Date of Birth · जन्म तिथि</label>
                       <input
                         type="date"
                         value={kundaliInput.birthDate}
@@ -1063,7 +1210,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Time of Birth</label>
+                      <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Time of Birth · जन्म समय</label>
                       <input
                         type="time"
                         value={kundaliInput.birthTime}
@@ -1073,15 +1220,40 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                     </div>
                   </div>
 
-                  <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Birth Location (City)</label>
+                  <div className="space-y-1 relative">
+                    <label className="text-[10px] uppercase font-bold text-white/40 tracking-wider">Birth Location (City) · जन्म स्थान</label>
                     <input
                       type="text"
-                      placeholder="e.g. New Delhi, India or Mumbai"
+                      placeholder="e.g. New Delhi, Mumbai, London…"
                       value={kundaliInput.birthPlace}
-                      onChange={e => setKundaliInput(prev => ({ ...prev, birthPlace: e.target.value }))}
+                      onChange={e => handleLocationChange(e.target.value)}
+                      onBlur={() => setTimeout(() => setShowLocSuggestions(false), 200)}
                       className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-black/30 outline-none text-white text-sm focus:border-[#C5A059]/50 transition"
                     />
+                    {showLocSuggestions && locationSuggestions.length > 0 && (
+                      <div className="absolute z-50 left-0 right-0 top-full mt-1 rounded-xl border border-white/10 overflow-hidden shadow-xl"
+                        style={{ background: 'rgba(8,6,22,0.97)' }}>
+                        {locationSuggestions.map((s, i) => (
+                          <button
+                            key={i}
+                            onMouseDown={() => {
+                              setKundaliInput(prev => ({
+                                ...prev,
+                                birthPlace: s.display,
+                                lat: s.lat,
+                                lng: s.lng,
+                                timezone: s.timezone,
+                              }));
+                              setShowLocSuggestions(false);
+                            }}
+                            className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:bg-white/8 border-b border-white/5 last:border-0 transition flex items-center gap-2"
+                          >
+                            <span className="text-[#C5A059]">📍</span>
+                            {s.display}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -1140,6 +1312,9 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                       };
                       const result = generateKundali(fullInput);
                       setKundaliResult(result);
+                      // Auto-select current mahadasha so user sees it expanded immediately
+                      const currentIdx = result.chart.dasha?.timeline?.findIndex((d: any) => d.isCurrent) ?? -1;
+                      if (currentIdx >= 0) setSelectedDashaIdx(currentIdx);
 
                       // Save recent search to localStorage (last 5)
                       try {
@@ -1212,6 +1387,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                       setKundaliResult(null);
                       setKundaliError(null);
                       setChartSaved(false);
+                      setSelectedDashaIdx(null);
                       playHaptic('light');
                     }}
                     className="flex items-center gap-1.5 text-xs text-[#C5A059] font-semibold border border-[#C5A059]/20 bg-[#C5A059]/5 rounded-xl px-3.5 py-1.5 hover:bg-[#C5A059]/10 transition"
@@ -1398,31 +1574,168 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                       );
                     })()}
 
-                    {/* ── Dasha timeline strip ── */}
-                    {kundaliResult.chart.dasha?.timeline && (
-                      <div className="space-y-2">
-                        <p className="text-[9px] text-white/30 uppercase font-bold tracking-wider">Vimshottari Dasha Sequence</p>
-                        <div className="overflow-x-auto pb-1 scrollbar-none">
-                          <div className="flex gap-1.5 w-max">
-                            {kundaliResult.chart.dasha.timeline.slice(0, 9).map((d: any, i: number) => {
-                              const isCurrent = d.isCurrent;
-                              return (
-                                <div key={i}
-                                  className={`flex-shrink-0 rounded-lg px-3 py-2 border text-center transition ${
-                                    isCurrent
-                                      ? 'bg-[#C5A059]/20 border-[#C5A059]/50 shadow-sm'
-                                      : 'bg-white/4 border-white/5'
-                                  }`}>
-                                  {isCurrent && <div className="w-1 h-1 rounded-full bg-[#C5A059] mx-auto mb-1" />}
-                                  <p className={`text-[9px] font-bold ${isCurrent ? 'text-[#C5A059]' : 'text-white/40'}`}>{d.planet}</p>
-                                  <p className="text-[8px] text-white/25 mt-0.5">{d.years}y</p>
-                                </div>
-                              );
-                            })}
+                    {/* ── Interactive Dasha timeline ── */}
+                    {kundaliResult.chart.dasha?.timeline && (() => {
+                      const timeline = kundaliResult.chart.dasha.timeline as Array<{ planet: string; startDate: string; endDate: string; years: number; isCurrent: boolean }>;
+                      const now = new Date();
+                      return (
+                        <div className="space-y-2">
+                          <p className="text-[9px] text-white/30 uppercase font-bold tracking-wider">Vimshottari Dasha · विम्शोत्तरी दशा — tap any to explore</p>
+                          <div className="overflow-x-auto pb-2 scrollbar-none">
+                            <div className="flex gap-2 w-max">
+                              {timeline.slice(0, 9).map((d, i) => {
+                                const wisdom = DASHA_WISDOM[d.planet];
+                                const isSelected = selectedDashaIdx === i;
+                                const isActive = d.isCurrent;
+                                const isPast = new Date(d.endDate) < now;
+                                return (
+                                  <button
+                                    key={i}
+                                    onClick={() => setSelectedDashaIdx(isSelected ? null : i)}
+                                    className={`flex-shrink-0 rounded-xl px-3 py-2.5 border text-center transition-all active:scale-95 ${
+                                      isSelected
+                                        ? `${wisdom?.bg ?? 'bg-white/10 border-white/20'} shadow-lg`
+                                        : isActive
+                                        ? 'bg-[#C5A059]/20 border-[#C5A059]/50'
+                                        : isPast
+                                        ? 'bg-white/2 border-white/5 opacity-50'
+                                        : 'bg-white/5 border-white/8 hover:border-white/15'
+                                    }`}
+                                  >
+                                    <div className="text-base mb-0.5">{wisdom?.emoji ?? '🪐'}</div>
+                                    <p className={`text-[9px] font-bold ${isSelected ? (wisdom?.color ?? 'text-white') : isActive ? 'text-[#C5A059]' : 'text-white/50'}`}>
+                                      {d.planet}
+                                    </p>
+                                    <p className="text-[8px] text-white/25 mt-0.5">{d.years}y</p>
+                                    {isActive && <div className="w-1 h-1 rounded-full bg-[#C5A059] mx-auto mt-1 animate-pulse" />}
+                                  </button>
+                                );
+                              })}
+                            </div>
                           </div>
+
+                          {/* Expanded dasha detail panel */}
+                          {selectedDashaIdx !== null && (() => {
+                            const d = timeline[selectedDashaIdx];
+                            const wisdom = DASHA_WISDOM[d.planet];
+                            if (!wisdom) return null;
+                            const antardasha = getAntardashaDates(d);
+                            const dStart = new Date(d.startDate);
+                            const dEnd   = new Date(d.endDate);
+                            const isActive = d.isCurrent;
+                            const isPast   = dEnd < now;
+                            let pct = 0;
+                            if (isActive) {
+                              pct = Math.min(100, Math.round((now.getTime() - dStart.getTime()) / (dEnd.getTime() - dStart.getTime()) * 100));
+                            } else if (isPast) { pct = 100; }
+
+                            return (
+                              <motion.div
+                                key={selectedDashaIdx}
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className={`rounded-2xl p-4 border space-y-4 ${wisdom.bg}`}
+                              >
+                                {/* Header */}
+                                <div className="flex items-start gap-3">
+                                  <div className="text-3xl">{wisdom.emoji}</div>
+                                  <div className="flex-1">
+                                    <p className={`text-xs font-bold ${wisdom.color} uppercase tracking-wider`}>{wisdom.hi}</p>
+                                    <p className="text-lg font-serif font-bold text-white/90">{d.planet} Mahadasha · {wisdom.en}</p>
+                                    <p className="text-[10px] text-white/40 mt-0.5">
+                                      {dStart.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                                      {' – '}
+                                      {dEnd.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                                      {' · '}{d.years} year period
+                                      {isActive && <span className={`ml-2 font-bold ${wisdom.color}`}>● ACTIVE NOW</span>}
+                                      {isPast && <span className="ml-2 text-white/30"> (past)</span>}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {/* Progress bar (active/past) */}
+                                {pct > 0 && (
+                                  <div className="space-y-1">
+                                    <div className="h-2 rounded-full bg-white/8 overflow-hidden">
+                                      <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${pct}%` }}
+                                        transition={{ duration: 1.2, ease: 'easeOut' }}
+                                        className="h-full rounded-full bg-gradient-to-r from-[#C5A059] to-amber-300"
+                                      />
+                                    </div>
+                                    <p className="text-[8px] text-white/25 text-right">{pct}% elapsed</p>
+                                  </div>
+                                )}
+
+                                {/* Domains */}
+                                <div className="rounded-xl px-3 py-2.5 bg-white/5 border border-white/5">
+                                  <p className="text-[9px] text-white/35 uppercase font-bold tracking-wider mb-1">Ruling Domains · अधिकार क्षेत्र</p>
+                                  <p className="text-[11px] text-white/70 leading-relaxed">{wisdom.domains}</p>
+                                </div>
+
+                                {/* Pros & Cons */}
+                                <div className="grid grid-cols-1 gap-2">
+                                  <div className="rounded-xl px-3 py-2.5 bg-emerald-500/8 border border-emerald-500/20">
+                                    <p className="text-[9px] text-emerald-400 uppercase font-bold tracking-wider mb-1">✓ Favourable · शुभ प्रभाव</p>
+                                    <p className="text-[11px] text-white/70 leading-relaxed">{wisdom.pros}</p>
+                                  </div>
+                                  <div className="rounded-xl px-3 py-2.5 bg-red-500/8 border border-red-500/20">
+                                    <p className="text-[9px] text-red-400 uppercase font-bold tracking-wider mb-1">⚠ Challenges · कठिनाइयाँ</p>
+                                    <p className="text-[11px] text-white/70 leading-relaxed">{wisdom.cons}</p>
+                                  </div>
+                                  <div className="rounded-xl px-3 py-2.5 bg-[#C5A059]/8 border border-[#C5A059]/20">
+                                    <p className="text-[9px] text-[#C5A059] uppercase font-bold tracking-wider mb-1">🕉 Upaya · उपाय</p>
+                                    <p className="text-[11px] text-white/70 leading-relaxed">{wisdom.remedies}</p>
+                                  </div>
+                                </div>
+
+                                {/* Beeja Mantra */}
+                                <div className="rounded-xl px-3 py-2.5 bg-violet-500/8 border border-violet-500/15 text-center">
+                                  <p className="text-[9px] text-violet-400 uppercase font-bold tracking-wider mb-1">Beeja Mantra · बीज मंत्र</p>
+                                  <p className="text-[11px] font-semibold text-white/80 tracking-wider leading-relaxed">{wisdom.mantra}</p>
+                                </div>
+
+                                {/* Antardasha sub-periods */}
+                                <div className="space-y-1.5">
+                                  <p className="text-[9px] text-white/30 uppercase font-bold tracking-wider">Antardasha Sub-periods · अन्तर्दशा</p>
+                                  {antardasha.map((a, ai) => {
+                                    const aStart  = new Date(a.startDate);
+                                    const aEnd    = new Date(a.endDate);
+                                    const isNow   = aStart <= now && now < aEnd;
+                                    const aWisdom = DASHA_WISDOM[a.planet];
+                                    return (
+                                      <div key={ai}
+                                        className={`flex items-center gap-2.5 px-3 py-2 rounded-xl border transition ${
+                                          isNow
+                                            ? `${aWisdom?.bg ?? 'border-white/15'} shadow-sm`
+                                            : 'border-white/5 bg-white/3'
+                                        }`}>
+                                        <span className="text-sm flex-shrink-0">{aWisdom?.emoji ?? '🪐'}</span>
+                                        <div className="flex-1 min-w-0">
+                                          <p className={`text-[10px] font-bold ${isNow ? (aWisdom?.color ?? 'text-white') : 'text-white/60'}`}>
+                                            {a.planet} Antardasha
+                                            {isNow && <span className="ml-1 text-[8px] animate-pulse">● NOW</span>}
+                                          </p>
+                                          <p className="text-[9px] text-white/30">
+                                            {aStart.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                            {' – '}
+                                            {aEnd.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                          </p>
+                                        </div>
+                                        <span className="text-[9px] text-white/25 flex-shrink-0">
+                                          {((aEnd.getTime() - aStart.getTime()) / (365.25 * 86400000)).toFixed(1)}y
+                                        </span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </motion.div>
+                            );
+                          })()}
                         </div>
-                      </div>
-                    )}
+                      );
+                    })()}
                   </div>
                 )}
 

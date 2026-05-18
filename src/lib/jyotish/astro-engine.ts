@@ -125,6 +125,8 @@ const DASHA_ORDER = ['Ketu','Shukra','Surya','Chandra','Mangal','Rahu','Guru','S
 const DASHA_YEARS: Record<string,number> = {
   Ketu:6, Shukra:20, Surya:6, Chandra:10, Mangal:7, Rahu:18, Guru:16, Shani:19, Budha:17,
 };
+export const VIMSHOTTARI_ORDER = DASHA_ORDER;
+export const VIMSHOTTARI_YEARS = DASHA_YEARS;
 
 // ── Planet dignity tables ─────────────────────────────────────────────────────
 // rashiIndex (0=Mesha … 11=Meena)
@@ -331,6 +333,28 @@ function calcDasha(nak: NakshatraInfo, birthUtc: Date): DashaInfo {
   }
 
   return { timeline, current, currentAntardasha };
+}
+
+// ── computeAntardashas: expand all 9 sub-periods for any DashaEntry ──────────
+export function computeAntardashas(entry: DashaEntry): AntardashaEntry[] {
+  const dashaStartMs = new Date(entry.startDate).getTime();
+  const dashaEndMs   = new Date(entry.endDate).getTime();
+  const dashaDurMs   = dashaEndMs - dashaStartMs;
+  const antarOrder   = DASHA_ORDER.indexOf(entry.planet);
+  const result: AntardashaEntry[] = [];
+  let cursorMs = dashaStartMs;
+  for (let i = 0; i < 9; i++) {
+    const sub = DASHA_ORDER[(antarOrder + i) % 9];
+    const durMs = (DASHA_YEARS[sub] / 120) * dashaDurMs;
+    const endMs = Math.min(cursorMs + durMs, dashaEndMs);
+    result.push({
+      planet:    sub,
+      startDate: new Date(cursorMs).toISOString().split('T')[0],
+      endDate:   new Date(endMs).toISOString().split('T')[0],
+    });
+    cursorMs += durMs;
+  }
+  return result;
 }
 
 // ── Lagna (Ascendant) ─────────────────────────────────────────────────────────
