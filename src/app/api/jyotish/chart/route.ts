@@ -171,11 +171,19 @@ export async function POST(req: NextRequest) {
     is_public:              false,
   };
 
-  const { data, error } = await db
+  let { data, error } = await db
     .from('birth_profiles')
     .insert(row)
     .select()
     .single();
+
+  // If primary constraint conflict, retry without primary flag
+  if (error?.code === '23505' && String(error.message).includes('one_primary')) {
+    row.is_primary = false;
+    const retry = await db.from('birth_profiles').insert(row).select().single();
+    data  = retry.data;
+    error = retry.error;
+  }
 
   if (error) {
     console.error('[chart/route] DB insert error:', error);

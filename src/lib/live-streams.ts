@@ -255,6 +255,17 @@ export const LIVE_STREAMS: LiveStream[] = [
     youtubeVideoId: 'zs6j9YPeaec', // Verified ISKCON Vrindavan
   },
   {
+    id: 'vrindavan-chandrodaya',
+    title: 'Vrindavan Chandrodaya Mandir',
+    location: 'Vrindavan, UP',
+    schedule: 'Mangala Aarti: 5:15 AM',
+    category: 'mandir',
+    tradition: 'hindu',
+    ishtaDevata: 'Krishna',
+    state: 'Uttar Pradesh',
+    youtubeVideoId: 'IEejiL_7g4c',
+  },
+  {
     id: 'srisailam-temple',
     title: 'Srisailam Shaktipeeth',
     location: 'Andhra Pradesh',

@@ -97,32 +97,169 @@ function estimateStrength(
   return Math.max(50, Math.min(95, base + dignityMod + retroBonus + lagnaBonus));
 }
 
-function generatePanditAiReading(
-  lagnaMeta: { num: number; sa: string; en: string; ruler: string },
-  placements: PlanetPlacement[],
-  chart: AstroChart
-): string {
-  const surya   = placements.find(p => p.name === 'Surya');
-  const chandra = placements.find(p => p.name === 'Chandra');
-  const nakName = chart.nakshatra?.name ?? '';
-  const nakLord = chart.nakshatra?.lord ?? '';
-  const dashaP  = chart.dasha?.current?.planet ?? '';
+const PLANET_NAME_LOCAL: Record<'en' | 'hi' | 'pa', Record<string, string>> = {
+  en: { Surya: 'Surya', Chandra: 'Chandra', Mangal: 'Mangal', Budha: 'Budha', Guru: 'Guru', Shukra: 'Shukra', Shani: 'Shani', Rahu: 'Rahu', Ketu: 'Ketu' },
+  hi: { Surya: 'सूर्य', Chandra: 'चंद्र', Mangal: 'मंगल', Budha: 'बुध', Guru: 'गुरु', Shukra: 'शुक्र', Shani: 'शनि', Rahu: 'राहु', Ketu: 'केतु' },
+  pa: { Surya: 'ਸੂਰਜ', Chandra: 'ਚੰਦਰ', Mangal: 'ਮੰਗਲ', Budha: 'ਬੁੱਧ', Guru: 'ਗੁਰੂ', Shukra: 'ਸ਼ੁੱਕਰ', Shani: 'ਸ਼ਨੀ', Rahu: 'ਰਾਹੂ', Ketu: 'ਕੇਤੂ' }
+};
 
-  const housePurpose: Record<number, string> = {
+const HOUSE_PURPOSE_LOCAL: Record<'en' | 'hi' | 'pa', Record<number, string>> = {
+  en: {
     1:  'shaping your vital expression and raw identity directly',
     2:  'refining your vocal purity and family legacy structure',
     3:  'infusing courage, writing ability, and creative hands-on execution',
     4:  'anchoring your subconscious joy, emotional mother-connection, and home sanctuary',
-    5:  'blessing your creative merits, high intelligence, and past-life karma (*Purvapunya*)',
-    6:  'testing you with daily healing discipline, service (*Seva*), and conquering obstacles',
+    5:  'blessing your creative merits, high intelligence, and past-life karma (Purvapunya)',
+    6:  'testing you with daily healing discipline, service (Seva), and conquering obstacles',
     7:  'refining your mirrors of truth in sacred unions and close collaborations',
     8:  'opening mystical pathways of deep yogic breath, intuition, and cellular rebirth',
-    9:  'revealing higher wisdom, alignment with spiritual gurus, and your ultimate destiny (*Dharma*)',
+    9:  'revealing higher wisdom, alignment with spiritual gurus, and your ultimate destiny (Dharma)',
     10: 'manifesting high-quality public duty, worldly achievements, and noble accomplishments',
     11: 'multiplying community gains, wide aspirations, and noble social impact',
-    12: 'dissolving the ego in solitude, dream-state illumination, and eventual liberation (*Moksha*)',
-  };
+    12: 'dissolving the ego in solitude, dream-state illumination, and eventual liberation (Moksha)',
+  },
+  hi: {
+    1: 'आपके मूल व्यक्तित्व और जीवन शक्ति का सीधा निर्माण करता है',
+    2: 'आपकी वाणी की पवित्रता और पारिवारिक विरासत की संरचना को निखारता है',
+    3: 'साहस, लेखन क्षमता और रचनात्मक कार्यों को प्रेरित करता है',
+    4: 'आपके अवचेतन मन की खुशी, माता के साथ भावनात्मक जुड़ाव और घरेलू सुख को स्थापित करता है',
+    5: 'आपकी रचनात्मक प्रतिभा, उच्च बुद्धि और पूर्व जन्म के संचित पुण्य (पूर्वपुण्य) को जागृत करता है',
+    6: 'दैनिक सेवा भाव, स्वास्थ्य अनुशासन और बाधाओं पर विजय पाने की क्षमता की परीक्षा लेता है',
+    7: 'साझेदारी और पवित्र संबंधों में सत्य के दर्पण को निखारता है',
+    8: 'गहन योग साधना, अंतर्ज्ञान और आध्यात्मिक पुनर्जन्म के रहस्यमयी मार्ग खोलता है',
+    9: 'उच्च ज्ञान, आध्यात्मिक गुरुओं के साथ जुड़ाव और आपके अंतिम धर्म को प्रकट करता है',
+    10: 'उच्च गुणवत्ता वाले सार्वजनिक कर्तव्य, सांसारिक उपलब्धियों और महान कार्यों को प्रकट करता है',
+    11: 'सामुदायिक लाभ, उच्च आकांक्षाओं और महान सामाजिक प्रभाव को बढ़ाता है',
+    12: 'एकांत में अहंकार के विसर्जन, स्वप्न-अवस्था के ज्ञान और मोक्ष का मार्ग प्रशस्त करता है',
+  },
+  pa: {
+    1: 'ਤੁਹਾਡੀ ਅਸਲ ਸ਼ਖਸੀਅਤ ਅਤੇ ਜੀਵਨ ਸ਼ਕਤੀ ਦਾ ਸਿੱਧਾ ਨਿਰਮਾਣ ਕਰਦਾ ਹੈ',
+    2: 'ਤੁਹਾਡੀ ਬੋਲੀ ਦੀ ਸ਼ੁੱਧਤਾ ਅਤੇ ਪਰਿਵਾਰਕ ਵਿਰਾਸਤ ਨੂੰ ਨਿਖਾਰਦਾ ਹੈ',
+    3: 'ਹਿੰਮਤ, ਲੇਖਣ ਯੋਗਤਾ ਅਤੇ ਰਚਨਾਤਮਕ ਕਾਰਜਾਂ ਨੂੰ ਪ੍ਰੇਰਿਤ ਕਰਦਾ ਹੈ',
+    4: 'ਤੁਹਾਡੀ ਅਚੇਤ ਖੁਸ਼ੀ, ਮਾਤਾ ਨਾਲ ਭਾਵਨਾਤਮਕ ਲਗਾਅ ਅਤੇ ਘਰੇਲੂ ਸ਼ਾਂਤੀ ਨੂੰ ਸਥਾਪਿਤ ਕਰਦਾ ਹੈ',
+    5: 'ਤੁਹਾਡੀ ਰਚਨਾਤਮਕ ਪ੍ਰਤਿਭਾ, ਉੱਚ ਬੁੱਧੀ ਅਤੇ ਪੂਰਵ ਜਨਮ ਦੇ ਪੁੰਨ (ਪੂਰਵਪੁੰਨ) ਨੂੰ ਜਾਗ੍ਰਿਤ ਕਰਦਾ ਹੈ',
+    6: 'ਰੋਜ਼ਾਨਾ ਸੇਵਾ ਭਾਵਨਾ, ਸਿਹਤ ਅਨੁਸ਼ਾਸਨ ਅਤੇ ਰੁਕਾਵਟਾਂ ਤੇ ਜਿੱਤ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਪ੍ਰੀਖਿਆ ਲੈਂਦਾ ਹੈ',
+    7: 'ਸਾਂਝੇਦਾਰੀ ਅਤੇ ਪਵਿੱਤਰ ਸਬੰਧਾਂ ਵਿੱਚ ਸੱਚ ਦੇ ਸ਼ੀਸ਼ੇ ਨੂੰ ਨਿਖਾਰਦਾ ਹੈ',
+    8: 'ਡੂੰਘੀ ਯੋਗ ਸਾਧਨਾ, ਅੰਤਰਗਿਆਨ ਅਤੇ ਅਧਿਆਤਮਿਕ ਪੁਨਰਜਨਮ ਦੇ ਰਹੱਸਮਈ ਮਾਰਗ ਖੋਲ੍ਹਦਾ ਹੈ',
+    9: 'ਉੱਚ ਗਿਆਨ, ਅਧਿਆਤਮਿਕ ਗੁਰੂਆਂ ਨਾਲ ਮੇਲ ਅਤੇ ਤੁਹਾਡੇ ਪਰਮ ਧਰਮ ਨੂੰ ਪ੍ਰਗਟ ਕਰਦਾ ਹੈ',
+    10: 'ਉੱਚ ਗੁਣਵੱਤਾ ਵਾਲੇ ਜਨਤਕ ਫਰਜ਼ਾਂ, ਸੰਸਾਰਕ ਪ੍ਰਾਪਤੀਆਂ ਅਤੇ ਮਹਾਨ ਕਾਰਜਾਂ ਨੂੰ ਪ੍ਰਗਟ ਕਰਦਾ ਹੈ',
+    11: 'ਭਾਈਚਾਰਕ ਲਾਭ, ਉੱਚੀਆਂ ਇੱਛਾਵਾਂ ਅਤੇ ਮਹਾਨ ਸਮਾਜਿਕ ਪ੍ਰਭਾਵ ਨੂੰ ਵਧਾਉਂਦਾ ਹੈ',
+    12: 'ਇਕਾਂਤ ਵਿੱਚ ਅਹੰਕਾਰ ਦੇ ਵਿਸਰਜਨ, ਸੁਪਨ-ਅਵਸਥਾ ਦੇ ਗਿਆਨ ਅਤੇ ਮੋਖ ਦਾ ਮਾਰਗ ਪ੍ਰਸ਼ਸਤ ਕਰਦਾ ਹੈ',
+  }
+};
 
+const HOUSE_READINGS_LOCAL: Record<'en' | 'hi' | 'pa', Record<number, string>> = {
+  en: {
+    1: 'House of Self (Tanu Bhava): Occupied by {lagna}. Governs your core vitality, constitution, and worldly expression.',
+    2: 'House of Wealth & Speech (Dhana Bhava): Governed by {sign}. Shapes family inheritance and speech.',
+    3: 'House of Courage & Sibling (Sahaja Bhava): Aligns with inner willpower and effort. Favour energetic physical sadhana (asanas).',
+    4: 'House of Mother & Joy (Sukha Bhava): Gateway to inner contentment, emotional security, and home. Keep your domestic environment sacred.',
+    5: 'House of Intellect & Past Karma (Putra Bhava): Houses creative intelligence and past life merits (Purvapunya). Ideal for mantra recitation.',
+    6: 'House of Obstacles & Health (Shatru Bhava): Represents challenges, healing, and self-discipline. Cultivate a robust morning routine.',
+    7: 'House of Partners (Yuvati Bhava): Governs partnerships and marriage. Look at relationships as mirrors for inner refinement.',
+    8: 'House of Longevity & Secrets (Randhra Bhava): Mystical portal of deep yogic transformation. Favour breathwork (Pranayama).',
+    9: 'House of Wisdom & Father (Dharma Bhava): Governs higher learning, gurus, and spiritual destiny. High potential for sacred wisdom.',
+    10: 'House of Career (Karma Bhava): Governs worldly accomplishments, reputation, and public duty. Dedicate your work selflessly.',
+    11: 'House of Gains (Labha Bhava): Aligns with community, profits, and long-term ambitions. Support charity (Seva) for spiritual merit.',
+    12: 'House of Solitude & Liberation (Vyaya Bhava): Gateway to dreams, subconscious, and spiritual release (Moksha). Excellent for meditation.',
+  },
+  hi: {
+    1: 'प्रथम भाव - स्वयं का भाव (तनू भाव): लग्न {lagna} द्वारा अधिष्ठित। यह आपके मूल व्यक्तित्व, शारीरिक बनावट और सांसारिक अभिव्यक्ति को नियंत्रित करता है।',
+    2: 'द्वितीय भाव - धन और वाणी (धन भाव): {sign} द्वारा शासित। यह पारिवारिक विरासत, संचित धन और वाणी को आकार देता है।',
+    3: 'तृतीय भाव - पराक्रम और भाई-बहन (सहज भाव): आंतरिक इच्छाशक्ति और प्रयासों से जुड़ा है। शारीरिक साधना (योगासन) के लिए उत्तम है।',
+    4: 'चतुर्थ भाव - माता और सुख (सुख भाव): आंतरिक संतोष, मानसिक शांति और घरेलू सुख का प्रवेश द्वार। अपने गृह वातावरण को पवित्र रखें।',
+    5: 'पंचम भाव - बुद्धि और पूर्व कर्म (पुत्र भाव): रचनात्मक बुद्धि और पूर्व जन्म के संचित पुण्य (पूर्वपुण्य) को दर्शाता है। मंत्र जप के लिए आदर्श है।',
+    6: 'षष्ठ भाव - रोग, ऋण और शत्रु (शत्रु भाव): चुनौतियों, उपचार और आत्म-अनुशासन का प्रतिनिधित्व करता है। एक मजबूत सुबह की दिनचर्या अपनाएं।',
+    7: 'सप्तम भाव - विवाह और साझेदारी (युवती भाव): विवाह और जीवन में सभी साझेदारियों को नियंत्रित करता है। रिश्तों को आत्म-सुधार के दर्पण के रूप में देखें।',
+    8: 'अष्टम भाव - आयु और रहस्य (रंध्र भाव): गहरी योग साधना और प्राणायम के लिए एक रहस्यमयी मार्ग। प्राणायाम अभ्यास करें।',
+    9: 'नवम भाव - भाग्य, धर्म और पिता (धर्म भाव): उच्च शिक्षा, गुरुओं और आध्यात्मिक भाग्य को नियंत्रित करता है। पवित्र ज्ञान के लिए सर्वोत्तम भाव।',
+    10: 'दशम भाव - कर्म और आजीविका (कर्म भाव): सांसारिक उपलब्धियों, मान-सम्मान और सार्वजनिक कर्तव्य को नियंत्रित करता है। निष्काम कर्म करें।',
+    11: 'एकादश भाव - लाभ और आय (लाभ भाव): सामाजिक दायरे, लाभ और दीर्घकालिक महत्वाकांक्षाओं से जुड़ा है। आध्यात्मिक प्रगति के लिए निष्काम सेवा (सेवा) का समर्थन करें।',
+    12: 'द्वादश भाव - व्यय और मोक्ष (व्यय भाव): स्वप्न, अवचेतन और आध्यात्मिक मुक्ति (मोक्ष) का प्रवेश द्वार। ध्यान के लिए अत्यंत अनुकूल।',
+  },
+  pa: {
+    1: 'ਪਹਿਲਾ ਭਾਵ - ਸਰੀਰ ਅਤੇ ਆਤਮਾ (ਤਨੂ ਭਾਵ): ਲਗਨ {lagna} ਦੁਆਰਾ ਅਧਿਸ਼ਠਿਤ। ਇਹ ਤੁਹਾਡੀ ਮੂਲ ਸ਼ਖਸੀਅਤ, ਸਰੀਰਕ ਬਣਤਰ ਅਤੇ ਸੰਸਾਰਕ ਪ੍ਰਗਟਾਵੇ ਨੂੰ ਨਿਯੰਤਰਿਤ ਕਰਦਾ ਹੈ।',
+    2: 'ਦੂਜਾ ਭਾਵ - ਧਨ ਅਤੇ ਬੋਲੀ (ਧਨ ਭਾਵ): {sign} ਦੁਆਰਾ ਸ਼ਾਸਿਤ। ਇਹ ਪਰਿਵਾਰਕ ਵਿਰਾਸਤ, ਸੰਚਿਤ ਧਨ ਅਤੇ ਬੋਲੀ ਨੂੰ ਆਕਾਰ ਦਿੰਦਾ ਹੈ।',
+    3: 'ਤੀਜਾ ਭਾਵ - ਹਿੰਮਤ ਅਤੇ ਭੈਣ-ਭਰਾ (ਸਹਿਜ ਭਾਵ): ਅੰਦਰੂਨੀ ਇੱਛਾ ਸ਼ਕਤੀ ਅਤੇ ਯਤਨਾਂ ਨਾਲ ਜੁੜਿਆ ਹੋਇਆ ਹੈ। ਸਰੀਰਕ ਸਾਧਨਾ (ਯੋਗਾਸਨ) ਲਈ ਉੱਤਮ ਹੈ।',
+    4: 'ਚੌਥਾ ਭਾਵ - ਮਾਤਾ ਅਤੇ ਸੁਖ (ਸੁਖ ਭਾਵ): ਅੰਦਰੂਨੀ ਸੰਤੁਸ਼ਟੀ, ਮਾਨਸਿਕ ਸ਼ਾਂਤੀ ਅਤੇ ਘਰੇਲੂ ਸੁਖ ਦਾ ਪ੍ਰਵੇਸ਼ ਦੁਆਰ। ਆਪਣੇ ਘਰ ਦੇ ਵਾਤਾਵਰਣ ਨੂੰ ਪਵਿੱਤਰ ਰੱਖੋ।',
+    5: 'ਪੰਜਵਾਂ ਭਾਵ - ਬੁੱਧੀ ਅਤੇ ਪੂਰਵ ਕਰਮ (ਪੁੱਤਰ ਭਾਵ): ਰਚਨਾਤਮਕ ਬੁੱਧੀ ਅਤੇ ਪੂਰਵ ਜਨਮ ਦੇ ਸੰਚਿਤ ਪੁੰਨ (ਪੂਰਵਪੁੰਨ) ਨੂੰ ਦਰਸਾਉਂਦਾ ਹੈ। ਮੰਤਰ ਜਾਪ ਲਈ ਆਦਰਸ਼ ਹੈ।',
+    6: 'ਛੇਵਾਂ ਭਾਵ - ਰੋਗ ਅਤੇ ਚੁਣੌਤੀਆਂ (ਸ਼ਤਰੂ ਭਾਵ): ਚੁਣੌਤੀਆਂ, ਇਲਾਜ ਅਤੇ ਸਵੈ-ਅਨੁਸ਼ਾਸਨ ਦਾ ਪ੍ਰਤੀਨਿਧਤਾ ਕਰਦਾ ਹੈ। ਇੱਕ ਮਜ਼ਬੂਤ ਸਵੇਰ ਦੀ ਰੁਟੀਨ ਅਪਣਾਓ।',
+    7: 'ਸੱਤਵਾਂ ਭਾਵ - ਵਿਆਹ ਅਤੇ ਸਾਂਝੇਦਾਰੀ (ਯੁਵਤੀ ਭਾਵ): ਵਿਆਹ ਅਤੇ ਜੀਵਨ ਵਿੱਚ ਸਾਰੀਆਂ ਸਾਂਝੇਦਾਰੀਆਂ ਨੂੰ ਨਿਯੰਤਰਿਤ ਕਰਦਾ ਹੈ। ਰਿਸ਼ਤਿਆਂ ਨੂੰ ਸਵੈ-ਸੁਧਾਰ ਦੇ ਸ਼ੀਸ਼ੇ ਵਜੋਂ ਵੇਖੋ।',
+    8: 'ਅੱਠਵਾਂ ਭਾਵ - ਉਮਰ ਅਤੇ ਰਹੱਸ (ਰੰਧਰਾ ਭਾਵ): ਡੂੰਘੀ ਯੋਗ ਸਾਧਨਾ ਅਤੇ ਪ੍ਰਾਣਾਯਾਮ ਲਈ ਇੱਕ ਰਹੱਸਮਈ ਮਾਰਗ। ਪ੍ਰਾਣਾਯਾਮ ਦਾ ਅਭਿਆਸ ਕਰੋ।',
+    9: 'ਨੌਵਾਂ ਭਾਵ - ਕਿਸਮਤ, ਧਰਮ ਅਤੇ ਪਿਤਾ (ਧਰਮ ਭਾਵ): ਉੱਤਰੀ ਸਿੱਖਿਆ, ਗੁਰੂਆਂ ਅਤੇ ਅਧਿਆਤਮਿਕ ਕਿਸਮਤ ਨੂੰ ਨਿਯੰਤਰਿਤ ਕਰਦਾ ਹੈ। ਪਵਿੱਤਰ ਗਿਆਨ ਲਈ ਸਭ ਤੋਂ ਵਧੀਆ ਭਾਵ।',
+    10: 'ਦਸਵਾਂ ਭਾਵ - ਕਰਮ ਅਤੇ ਰੋਜ਼ਗਾਰ (ਕਰਮ ਭਾਵ): ਸੰਸਾਰਕ ਪ੍ਰਾਪਤੀਆਂ, ਮਾਨ-ਸਨਮਾਨ ਅਤੇ ਜਨਤਕ ਫਰਜ਼ਾਂ ਨੂੰ ਨਿਯੰਤਰਿਤ ਕਰਦਾ ਹੈ। ਨਿਰਸਵਾਰਥ ਕਰਮ ਕਰੋ।',
+    11: 'ਗਿਆਰ੍ਹਵਾਂ ਭਾਵ - ਲਾਭ ਅਤੇ ਆਮਦਨ (लाभ भाव): ਸਮਾਜਿਕ ਦਾਇਰੇ, ਲਾਭ ਅਤੇ ਲੰਬੇ ਸਮੇਂ ਦੀਆਂ ਇੱਛਾਵਾਂ ਨਾਲ ਜੁੜਿਆ ਹੋਇਆ ਹੈ। ਅਧਿਆਤਮਿਕ ਤਰੱਕੀ ਲਈ ਨਿਸ਼ਕਾਮ ਸੇਵਾ (ਸੇਵਾ) ਦਾ ਸਮਰਥਨ ਕਰੋ।',
+    12: 'ਬਾਰ੍ਹਵਾਂ ਭਾਵ - ਖਰਚ ਅਤੇ ਮੋਖ (ਵਿਯੇ ਭਾਵ): ਸੁਪਨੇ, ਅਚੇਤ ਮਨ ਅਤੇ ਅਧਿਆਤਮਿਕ ਮੁਕਤੀ (ਮੋਖ) ਦਾ ਪ੍ਰਵੇਸ਼ ਦੁਆਰ। ਧਿਆਨ ਲਈ ਬਹੁਤ ਅਨੁਕੂਲ।',
+  }
+};
+
+function generatePanditAiReading(
+  lagnaMeta: { num: number; sa: string; en: string; ruler: string },
+  placements: PlanetPlacement[],
+  chart: AstroChart,
+  lang: 'en' | 'hi' | 'pa' = 'en'
+): string {
+  const surya   = placements.find(p => p.name === 'Surya' || p.name === 'सूर्य' || p.name === 'ਸੂਰਜ');
+  const chandra = placements.find(p => p.name === 'Chandra' || p.name === 'चंद्र' || p.name === 'ਚੰਦਰ');
+  const nakName = chart.nakshatra?.name ?? '';
+  const nakLord = chart.nakshatra?.lord ?? '';
+  const dashaP  = chart.dasha?.current?.planet ?? '';
+
+  const rulerName = lagnaMeta.ruler.split(' ')[0]; // e.g. "Mangal"
+  const localizedRuler = PLANET_NAME_LOCAL[lang][rulerName] ?? rulerName;
+  const localizedSurya = PLANET_NAME_LOCAL[lang]['Surya'] ?? 'Surya';
+  const localizedChandra = PLANET_NAME_LOCAL[lang]['Chandra'] ?? 'Chandra';
+  const localizedDashaP = PLANET_NAME_LOCAL[lang][dashaP] ?? dashaP;
+
+  const housePurpose = HOUSE_PURPOSE_LOCAL[lang];
+
+  if (lang === 'hi') {
+    const p1 = `पंडित AI भाग्य फल: आपका जन्म ${lagnaMeta.sa} लग्न में हुआ है, जिसके कारण आपके जीवन के मुख्य ब्रह्मांडीय स्वामी ${localizedRuler} हैं। यह ग्रह स्वामी ${
+      lagnaMeta.num % 2 === 0
+        ? 'ग्रहणशील, गहरी और चिंतनशील (स्त्रीवाचक) ऊर्जा'
+        : 'सक्रिय, गत्यात्मक और अग्रणी (पुरुषवाचक) ऊर्जा'
+    } की एक आधारशिला स्थापित करता है जो आपके भाग्य को निरंतर निखारती रहेगी।`;
+
+    const suryaLine = surya
+      ? `आपका ${localizedSurya} (आत्मा) भाव ${surya.house} में विराजमान है, जो ${housePurpose[surya.house]}`
+      : '';
+    const chandraLine = chandra
+      ? ` आपका ${localizedChandra} (मन) भाव ${chandra.house} में स्थित है, जो ${housePurpose[chandra.house]}`
+      : '';
+
+    const p2 = `ग्रह संरेखण: ${suryaLine}${suryaLine && chandraLine ? ' और' : ''}${chandraLine}।${nakName ? ` आपका जन्म नक्षत्र ${nakName} है, जिसके स्वामी ${PLANET_NAME_LOCAL[lang][nakLord] ?? nakLord} हैं।` : ''}`;
+
+    const p3 = dashaP
+      ? `महादशा काल: वर्तमान में आप ${localizedDashaP} की महादशा से गुजर रहे हैं। ग्रहों की ऊर्जा को संतुलित करने के लिए, प्रतिदिन सुबह अपने पूजा स्थल पर ${localizedRuler} से संबंधित बीज मंत्र का 11 बार जप करें।`
+      : `ग्रहों की ऊर्जा को संतुलित करने के लिए, प्रतिदिन सुबह अपने पूजा स्थल पर ${localizedRuler} से संबंधित बीज मंत्र का 11 बार जप करें।`;
+
+    return `${p1}\n\n${p2}\n\n${p3}`;
+  }
+
+  if (lang === 'pa') {
+    const p1 = `ਪੰਡਿਤ AI ਭਾਗ ਫਲ: ਤੁਹਾਡਾ ਜਨਮ ${lagnaMeta.sa} ਲਗਨ ਵਿੱਚ ਹੋਇਆ ਹੈ, ਜਿਸਦੇ ਕਾਰਨ ਤੁਹਾਡੇ ਜੀਵਨ ਦੇ ਮੁੱਖ ਬ੍ਰਹਿਮੰਡੀ ਸੁਆਮੀ ${localizedRuler} ਹਨ। ਇਹ ਗ੍ਰਹਿ ਸੁਆਮੀ ${
+      lagnaMeta.num % 2 === 0
+        ? 'ਗ੍ਰਹਿਣਸ਼ੀਲ, ਡੂੰਘੀ ਅਤੇ ਚਿੰਤਨਸ਼ੀਲ ਊਰਜਾ'
+        : 'ਸਰਗਰਮ, ਗਤੀਸ਼ੀਲ ਅਤੇ ਮੋਹਰੀ ਊਰਜਾ'
+    } ਦੀ ਇੱਕ ਨੀਂਹ ਸਥਾਪਿਤ ਕਰਦਾ ਹੈ ਜੋ ਤੁਹਾਡੀ ਕਿਸਮਤ ਨੂੰ ਨਿਰੰਤਰ ਨਿਖਾਰਦੀ ਰਹੇਗੀ।`;
+
+    const suryaLine = surya
+      ? `ਤੁਹਾਡਾ ${localizedSurya} (ਆਤਮਾ) ਭਾਵ ${surya.house} ਵਿੱਚ ਬਿਰਾਜਮਾਨ ਹੈ, ਜੋ ${housePurpose[surya.house]}`
+      : '';
+    const chandraLine = chandra
+      ? ` ਤੁਹਾਡਾ ${localizedChandra} (ਮਨ) ਭਾਵ ${chandra.house} ਵਿੱਚ ਸਥਿਤ ਹੈ, ਜੋ ${housePurpose[chandra.house]}`
+      : '';
+
+    const p2 = `ਗ੍ਰਹਿ ਸਥਿਤੀ: ${suryaLine}${suryaLine && chandraLine ? ' ਅਤੇ' : ''}${chandraLine}।${nakName ? ` ਤੁਹਾਡਾ ਜਨਮ ਨਕਸ਼ਤਰ ${nakName} ਹੈ, ਜਿਸਦੇ ਸੁਆਮੀ ${PLANET_NAME_LOCAL[lang][nakLord] ?? nakLord} ਹਨ।` : ''}`;
+
+    const p3 = dashaP
+      ? `ਮਹਾਦਸ਼ਾ ਕਾਲ: ਵਰਤਮਾਨ ਵਿੱਚ ਤੁਸੀਂ ${localizedDashaP} ਦੀ ਮਹਾਦਸ਼ਾ ਵਿੱਚੋਂ ਲੰਘ ਰਹੇ ਹੋ। ਗ੍ਰਹਿਆਂ ਦੀ ਊਰਜਾ ਨੂੰ ਸੰਤੁਲਿਤ ਕਰਨ ਲਈ, ਹਰ ਸਵੇਰ ਆਪਣੇ ਘਰ ਦੇ ਪੂਜਾ ਸਥਾਨ ਤੇ ${localizedRuler} ਨਾਲ ਸਬੰਧਿਤ ਬੀਜ ਮੰਤਰ ਦਾ 11 ਵਾਰ ਜਾਪ ਕਰੋ।`
+      : `ਗ੍ਰਹਿਆਂ ਦੀ ਊਰਜਾ ਨੂੰ ਸੰਤੁਲਿਤ ਕਰਨ ਲਈ, ਹਰ ਸਵੇਰ ਆਪਣੇ ਘਰ ਦੇ ਪੂਜਾ ਸਥਾਨ ਤੇ ${localizedRuler} ਨਾਲ ਸਬੰਧਿਤ ਬੀਜ ਮੰਤਰ ਦਾ 11 ਵਾਰ ਜਾਪ ਕਰੋ।`;
+
+    return `${p1}\n\n${p2}\n\n${p3}`;
+  }
+
+  // English default
   const p1 = `Pandit AI Destiny: As a soul incarnated with a ${lagnaMeta.sa} (${lagnaMeta.en}) Lagna, your lifetime's core cosmic governor is ${lagnaMeta.ruler}. This planetary ruler sets a foundational frequency of ${
     lagnaMeta.num % 2 === 0
       ? 'yin, receptive, deep, and reflective energies'
@@ -145,22 +282,52 @@ function generatePanditAiReading(
   return `${p1}\n\n${p2}\n\n${p3}`;
 }
 
-const LAGNA_READINGS: Record<number, string> = {
-  1:  'Aries (Mesha) Ascendant: You possess immense initiative, vitality, and leading warrior energy. Your path is to channel high passion into focused dharmic action (*Karmayoga*). Avoid impulsiveness.',
-  2:  'Taurus (Vrishabha) Ascendant: Stabilizing, artistic, and steady. You possess a natural resonance with sacred environments and family values. Your lesson is to rise above material clinging.',
-  3:  'Gemini (Mithuna) Ascendant: Curious, intellectual, and communicative. Your spiritual growth is accelerated by study of sacred shastras (*Jnana*) and devotional chanting. Ground your thoughts.',
-  4:  'Cancer (Karka) Ascendant: Exceptionally intuitive, emotional, and nurturing. Your spiritual path is through high devotion (*Bhakti*). Create emotional peace inside your lineage network.',
-  5:  'Leo (Simha) Ascendant: Majestic, noble, and self-assured. Ruled by Surya, you have a solar aura meant to light the path for others. Balance authority with deep humility.',
-  6:  'Virgo (Kanya) Ascendant: Analytical, pure-hearted, and service-oriented. You naturally excel in selfless service (*Seva*). Direct your intellectual mastery toward clarifying spiritual truths.',
-  7:  'Libra (Tula) Ascendant: Harmonious, diplomatic, and beauty-loving. Your path is to balance material success with inner spiritual centering. Seek truth in all relationships.',
-  8:  'Scorpio (Vrishchika) Ascendant: Intense, mystical, and transformative. You have a natural affinity for esoteric sciences, deep meditation, and yogic secrets. Channel your energy to conquer desire.',
-  9:  'Sagittarius (Dhanu) Ascendant: Philosophical, optimistic, and highly righteous. Ruled by Guru, you are a natural seeker of ancient wisdom and dharma. Share wisdom selflessly.',
-  10: 'Capricorn (Makara) Ascendant: Disciplined, structured, and hardworking. Under Shani\'s gaze, you excel in patient spiritual endurance (*Tapasya*). Let go of control and trust divine flow.',
-  11: 'Aquarius (Kumbha) Ascendant: Humanitarian, innovative, and meditative. You look at the universe through a cosmic lens. Your sadhana is blessed when working for global elevation.',
-  12: 'Pisces (Meena) Ascendant: Deeply spiritual, artistic, and transcendental. You hold a natural gateway to liberation (*Moksha*) and deep meditation. Favour structured routines to keep grounded.',
+const LAGNA_READINGS_LOCAL: Record<'en' | 'hi' | 'pa', Record<number, string>> = {
+  en: {
+    1:  'Aries (Mesha) Ascendant: You possess immense initiative, vitality, and leading warrior energy. Your path is to channel high passion into focused dharmic action (Karmayoga). Avoid impulsiveness.',
+    2:  'Taurus (Vrishabha) Ascendant: Stabilizing, artistic, and steady. You possess a natural resonance with sacred environments and family values. Your lesson is to rise above material clinging.',
+    3:  'Gemini (Mithuna) Ascendant: Curious, intellectual, and communicative. Your spiritual growth is accelerated by study of sacred shastras (Jnana) and devotional chanting. Ground your thoughts.',
+    4:  'Cancer (Karka) Ascendant: Exceptionally intuitive, emotional, and nurturing. Your spiritual path is through high devotion (Bhakti). Create emotional peace inside your lineage network.',
+    5:  'Leo (Simha) Ascendant: Majestic, noble, and self-assured. Ruled by Surya, you have a solar aura meant to light the path for others. Balance authority with deep humility.',
+    6:  'Virgo (Kanya) Ascendant: Analytical, pure-hearted, and service-oriented. You naturally excel in selfless service (Seva). Direct your intellectual mastery toward clarifying spiritual truths.',
+    7:  'Libra (Tula) Ascendant: Harmonious, diplomatic, and beauty-loving. Your path is to balance material success with inner spiritual centering. Seek truth in all relationships.',
+    8:  'Scorpio (Vrishchika) Ascendant: Intense, mystical, and transformative. You have a natural affinity for esoteric sciences, deep meditation, and yogic secrets. Channel your energy to conquer desire.',
+    9:  'Sagittarius (Dhanu) Ascendant: Philosophical, optimistic, and highly righteous. Ruled by Guru, you are a natural seeker of ancient wisdom and dharma. Share wisdom selflessly.',
+    10: 'Capricorn (Makara) Ascendant: Disciplined, structured, and hardworking. Under Shani\'s gaze, you excel in patient spiritual endurance (Tapasya). Let go of control and trust divine flow.',
+    11: 'Aquarius (Kumbha) Ascendant: Humanitarian, innovative, and meditative. You look at the universe through a cosmic lens. Your sadhana is blessed when working for global elevation.',
+    12: 'Pisces (Meena) Ascendant: Deeply spiritual, artistic, and transcendental. You hold a natural gateway to liberation (Moksha) and deep meditation. Favour structured routines to keep grounded.',
+  },
+  hi: {
+    1: 'मेष लग्न: आपके भीतर अपार पहल, जीवन शक्ति और योद्धा ऊर्जा है। आपका मार्ग उच्च जुनून को केंद्रित धर्म कार्य (कर्मयोग) में लगाना है। जल्दबाजी से बचें।',
+    2: 'वृषभ लग्न: स्थिर, कलात्मक और शांत। आपके पास पवित्र वातावरण और पारिवारिक मूल्यों के साथ एक स्वाभाविक तालमेल है। आपका सबक भौतिक लगाव से ऊपर उठना है।',
+    3: 'मिथुन लग्न: जिज्ञासु, बौद्धिक और मिलनसार। आपकी आध्यात्मिक प्रगति पवित्र शास्त्रों (ज्ञान) के अध्ययन और भक्ति भजनों से तेज होती है। विचारों को केंद्रित रखें।',
+    4: 'कर्क लग्न: अत्यधिक सहज, संवेदनशील और पोषण करने वाले। आपका आध्यात्मिक मार्ग उच्च भक्ति (भक्ति योग) के माध्यम से है। अपने कुल में भावनात्मक शांति लाएं।',
+    5: 'सिंह लग्न: राजसी, महान और आत्मविश्वासी। सूर्य द्वारा शासित, आपके पास दूसरों का मार्गदर्शन करने के लिए एक सौर आभा है। अधिकार को गहरी नम्रता के साथ संतुलित करें।',
+    6: 'कन्या लग्न: विश्लेषणात्मक, शुद्ध हृदय और सेवाभावी। आप निष्काम सेवा (सेवा) में स्वाभाविक रूप से कुशल हैं। आध्यात्मिक सत्यों को स्पष्ट करने में अपनी बुद्धि लगाएं।',
+    7: 'तुला लग्न: सामंजस्यपूर्ण, कूटनीतिक और कलाप्रिय। आपका मार्ग भौतिक सफलता को आंतरिक आध्यात्मिक केंद्र के साथ संतुलित करना है। सभी रिश्तों में सत्य खोजें।',
+    8: 'वृश्चिक लग्न: गहन, रहस्यमयी और परिवर्तनकारी। आपके पास गूढ़ विज्ञान, ध्यान और योग के रहस्यों के लिए एक स्वाभाविक रुचि है। इच्छाओं पर विजय पाने में ऊर्जा लगाएं।',
+    9: 'धनु लग्न: दार्शनिक, आशावादी और अत्यधिक धर्मपरायण। गुरु द्वारा शासित, आप प्राचीन ज्ञान और धर्म के साधक हैं। ज्ञान को निःस्वार्थ भाव से साझा करें।',
+    10: 'मकर लग्न: अनुशासित, संरचित और परिश्रमी। शनि की दृष्टि में, आप धैर्यवान आध्यात्मिक तप (तपस्या) में कुशल हैं। नियंत्रण छोड़ें और ईश्वरीय प्रवाह पर भरोसा करें।',
+    11: 'कुंभ लग्न: मानवीय, अभिनव और ध्यानमग्न। आप ब्रह्मांड को एक व्यापक दृष्टिकोण से देखते हैं। वैश्विक कल्याण के लिए कार्य करते समय आपकी साधना धन्य होती है।',
+    12: 'मीन लग्न: गहराई से आध्यात्मिक, कलात्मक और अलौकिक। आप मोक्ष और गहरे ध्यान का स्वाभाविक मार्ग रखते हैं। खुद को जमीन पर रखने के लिए संरचित दिनचर्या अपनाएं।',
+  },
+  pa: {
+    1: 'ਮੇਸ਼ ਲਗਨ: ਤੁਹਾਡੇ ਅੰਦਰ ਅਥਾਹ ਪਹਿਲਕਦਮੀ, ਜੀਵਨ ਸ਼ਕਤੀ ਅਤੇ ਯੋਧਾ ਊਰਜਾ ਹੈ। ਤੁਹਾਡਾ ਮਾਰਗ ਉੱਚ ਜਨੂੰਨ ਨੂੰ ਕੇਂਦਰਿਤ ਧਰਮ ਕਾਰਜ (ਕਰਮਯੋਗ) ਵਿੱਚ ਲਗਾਉਣਾ ਹੈ। ਜਲਦਬਾਜ਼ੀ ਤੋਂ ਬਚੋ।',
+    2: 'ਵ੍ਰਿਸ਼ਭ ਲਗਨ: ਸਥਿਰ, ਕਲਾਤਮਕ ਅਤੇ ਸ਼ਾਂਤ। ਤੁਹਾਡੇ ਕੋਲ ਪਵਿੱਤਰ ਵਾਤਾਵਰਣ ਅਤੇ ਪਰਿਵਾਰਕ ਕਦਰਾਂ-ਕੀਮਤਾਂ ਨਾਲ ਇੱਕ ਕੁਦਰਤੀ ਤਾਲਮੇਲ ਹੈ। ਤੁਹਾਡਾ ਸਬਕ ਭੌਤਿਕ ਲਗਾਅ ਤੋਂ ਉੱਪਰ ਉੱਠਣਾ ਹੈ।',
+    3: 'ਮਿਥੁਨ ਲਗਨ: ਜਿਗਿਆਸੂ, ਬੌਧਿਕ ਅਤੇ ਮਿਲਣਸਾਰ। ਤੁਹਾਡੀ ਅਧਿਆਤਮਿਕ ਪ੍ਰਗਤੀ ਪਵਿੱਤਰ ਸ਼ਾਸਤਰਾਂ (ਗਿਆਨ) ਦੇ ਅਧਿਐਨ ਅਤੇ ਭਗਤੀ ਭਜਨਾਂ ਨਾਲ ਤੇਜ਼ ਹੁੰਦੀ ਹੈ। ਵਿਚਾਰਾਂ ਨੂੰ ਕੇਂਦਰਿਤ ਰੱਖੋ।',
+    4: 'ਕਰਕ ਲਗਨ: ਬਹੁਤ ਹੀ ਸਹਿਜ, ਸੰਵੇਦਨਸ਼ੀਲ ਅਤੇ ਪਾਲਣ ਪੋਸ਼ਣ ਕਰਨ ਵਾਲੇ। ਤੁਹਾਡਾ ਅਧਿਆਤਮਿਕ ਮਾਰਗ ਉੱਚੀ ਭਗਤੀ (ਭਗਤੀ ਯੋਗ) ਦੇ ਜ਼ਰੀਏ ਹੈ। ਆਪਣੇ ਕੁਲ ਵਿੱਚ ਭਾਵਨਾਤਮਕ ਸ਼ਾਂਤੀ ਲਿਆਓ।',
+    5: 'ਸਿੰਘ ਲਗਨ: ਰਾਜਸੀ, ਮਹਾਨ ਅਤੇ ਆਤਮ ਵਿਸ਼ਵਾਸੀ। ਸੂਰਜ ਦੁਆਰਾ ਸ਼ਾਸਿਤ, ਤੁਹਾਡੇ ਕੋਲ ਦੂਜਿਆਂ ਦਾ ਮਾਰਗਦਰਸ਼ਨ ਕਰਨ ਲਈ ਇੱਕ ਸੂਰਜੀ ਆਭਾ ਹੈ। ਅਧਿਕਾਰ ਨੂੰ ਡੂੰਘੀ ਨਿਮਰਤਾ ਨਾਲ ਸੰਤੁਲਿਤ ਕਰੋ।',
+    6: 'ਕੰਨਿਆ ਲਗਨ: ਵਿਸ਼ਲੇਸ਼ਣਾਤਮਕ, ਸ਼ੁੱਧ ਹਿਰਦੇ ਅਤੇ ਸੇਵਾਭਾਵੀ। ਤੁਸੀਂ ਨਿਸ਼ਕਾਮ ਸੇਵਾ (ਸੇਵਾ) ਵਿੱਚ ਕੁਦਰਤੀ ਤੌਰ ਤੇ ਕੁਸ਼ਲ ਹੋ। ਅਧਿਆਤਮਿਕ ਸੱਚਾਈਆਂ ਨੂੰ ਸਪੱਸ਼ਟ ਕਰਨ ਵਿੱਚ ਆਪਣੀ ਬੁੱਧੀ ਲਗਾਓ।',
+    7: 'ਤੁਲਾ ਲਗਨ: ਇਕਸਾਰ, ਕੂਟਨੀਤਕ ਅਤੇ ਕਲਾ ਪ੍ਰੇਮੀ। ਤੁਹਾਡਾ ਮਾਰਗ ਭੌਤਿਕ ਸਫਲਤਾ ਨੂੰ ਅੰਦਰੂਨੀ ਅਧਿਆਤਮਿਕ ਕੇਂਦਰ ਨਾਲ ਸੰਤੁਲਿਤ ਕਰਨਾ ਹੈ। ਸਾਰੇ ਰਿਸ਼ਤਿਆਂ ਵਿੱਚ ਸੱਚ ਦੀ ਭਾਲ ਕਰੋ।',
+    8: 'ਵ੍ਰਿਸ਼ਚਿਕ ਲਗਨ: ਤੀਬਰ, ਰਹੱਸਮਈ ਅਤੇ ਪਰਿਵਰਤਨਸ਼ੀਲ। ਤੁਹਾਡੇ ਕੋਲ ਗੂੜ੍ਹੇ ਵਿਗਿਆਨ, ਡੂੰਘੇ ਧਿਆਨ ਅਤੇ ਯੋਗਿਕ ਭੇਦਾਂ ਲਈ ਕੁਦਰਤੀ ਖਿੱਚ ਹੈ। ਇੱਛਾਵਾਂ ਤੇ ਕਾਬੂ ਪਾਉਣ ਲਈ ਊਰਜਾ ਲਗਾਓ।',
+    9: 'ਧਨੂ ਲਗਨ: ਦਾਰਸ਼ਨਿਕ, ਆਸ਼ਾਵਾਦੀ ਅਤੇ ਉੱਚੇ ਧਰਮੀ। ਗੁਰੂ ਦੁਆਰਾ ਸ਼ਾਸਿਤ, ਤੁਸੀਂ ਪ੍ਰਾਚੀਨ ਗਿਆਨ ਅਤੇ ਧਰਮ ਦੇ ਖੋਜੀ ਹੋ। ਗਿਆਨ ਨੂੰ ਨਿਰਸਵਾਰਥ ਭਾਵਨਾ ਨਾਲ ਸਾਂਝਾ ਕਰੋ।',
+    10: 'ਮਕਰ ਲਗਨ: ਅਨੁਸ਼ਾਸਿਤ, ਵਿਵਸਥਿਤ ਅਤੇ ਮਿਹਨਤੀ। ਸ਼ਨੀ ਦੀ ਨਜ਼ਰ ਹੇਠ, ਤੁਸੀਂ ਸਬਰ ਨਾਲ ਅਧਿਆਤਮਿਕ ਤਪ (ਤਪੱਸਿਆ) ਵਿੱਚ ਨਿਪੁੰਨ ਹੋ। ਕੰਟਰੋਲ ਛੱਡੋ ਅਤੇ ਬ੍ਰਹਮ ਪ੍ਰਵਾਹ ਤੇ ਭਰੋਸਾ ਕਰੋ।',
+    11: 'ਕੁੰਭ ਲਗਨ: ਮਾਨਵਤਾਵਾਦੀ, ਨਵੀਨਤਾਕਾਰੀ ਅਤੇ ਧਿਆਨਮਗਨ। ਤੁਸੀਂ ਬ੍ਰਹਿਮੰਡ ਨੂੰ ਇੱਕ ਵਿਆਪਕ ਦ੍ਰਿਸ਼ਟੀਕੋਣ ਤੋਂ ਵੇਖਦੇ ਹੋ। ਜਦੋਂ ਤੁਸੀਂ ਵਿਸ਼ਵ ਕਲਿਆਣ ਲਈ ਕੰਮ ਕਰਦੇ ਹੋ ਤਾਂ ਤੁਹਾਡੀ ਸਾਧਨਾ ਸਫਲ ਹੁੰਦੀ ਹੈ।',
+    12: 'ਮੀਨ ਲਗਨ: ਡੂੰਘਾਈ ਨਾਲ ਅਧਿਆਤਮਿਕ, ਕਲਾਤਮਕ ਅਤੇ ਅਲੌਕਿਕ। ਤੁਹਾਡੇ ਕੋਲ ਮੋਖ ਅਤੇ ਡੂੰਘੇ ਧਿਆਨ ਦਾ ਕੁਦਰਤੀ ਮਾਰਗ ਹੈ। ਆਪਣੇ ਆਪ ਨੂੰ ਜ਼ਮੀਨ ਤੇ ਰੱਖਣ ਲਈ ਵਿਵਸਥਿਤ ਰੋਜ਼ਾਨਾ ਦਿਨਚਰਿਆ ਅਪਣਾਓ।',
+  }
 };
 
-export function generateKundali(input: KundaliInput): KundaliResult {
+export function generateKundali(input: KundaliInput, lang: 'en' | 'hi' | 'pa' = 'en'): KundaliResult {
   // ── Real astronomical chart ─────────────────────────────────────────────────
   const birthInput: BirthInput = {
     date:        input.birthDate,
@@ -189,7 +356,7 @@ export function generateKundali(input: KundaliInput): KundaliResult {
     const deg  = Math.floor(graha.degreeInRashi);
     const min  = Math.round((graha.degreeInRashi - deg) * 60);
     placements.push({
-      name:        pname,
+      name:        PLANET_NAME_LOCAL[lang][pname] ?? pname,
       symbol:      PLANET_SYMBOLS[pname] ?? pname.slice(0, 2),
       sign:        rashiMeta.sa,
       house:       graha.house,
@@ -200,22 +367,20 @@ export function generateKundali(input: KundaliInput): KundaliResult {
   }
 
   // ── House readings ──────────────────────────────────────────────────────────
-  const houseReadings: Record<number, string> = {
-    1:  `House of Self (Tanu Bhava): Occupied by ${lagnaMeta.sa}. Governs your core vitality, constitution, and worldly expression.`,
-    2:  `House of Wealth & Speech (Dhana Bhava): Governed by ${RASHI_METADATA[(lagnaRashiIndex + 1) % 12].sa}. Shapes family inheritance and speech.`,
-    3:  'House of Courage & Sibling (Sahaja Bhava): Aligns with inner willpower and effort. Favour energetic physical sadhana (asanas).',
-    4:  'House of Mother & Joy (Sukha Bhava): Gateway to inner contentment, emotional security, and home. Keep your domestic environment sacred.',
-    5:  'House of Intellect & Past Karma (Putra Bhava): Houses creative intelligence and past life merits (*Purvapunya*). Ideal for mantra recitation.',
-    6:  'House of Obstacles & Health (Shatru Bhava): Represents challenges, healing, and self-discipline. Cultivate a robust morning routine.',
-    7:  'House of Partners (Yuvati Bhava): Governs partnerships and marriage. Look at relationships as mirrors for inner refinement.',
-    8:  'House of Longevity & Secrets (Randhra Bhava): Mystical portal of deep yogic transformation. Favour breathwork (*Pranayama*).',
-    9:  'House of Wisdom & Father (Dharma Bhava): Governs higher learning, gurus, and spiritual destiny. High potential for sacred wisdom.',
-    10: 'House of Career (Karma Bhava): Governs worldly accomplishments, reputation, and public duty. Dedicate your work selflessly.',
-    11: 'House of Gains (Labha Bhava): Aligns with community, profits, and long-term ambitions. Support charity (*Seva*) for spiritual merit.',
-    12: 'House of Solitude & Liberation (Vyaya Bhava): Gateway to dreams, subconscious, and spiritual release (*Moksha*). Excellent for meditation.',
-  };
+  const houseReadings: Record<number, string> = {};
+  for (let house = 1; house <= 12; house++) {
+    const tempReading = HOUSE_READINGS_LOCAL[lang][house];
+    if (house === 1) {
+      houseReadings[1] = tempReading.replace('{lagna}', lagnaMeta.sa);
+    } else if (house === 2) {
+      const secondRashiName = RASHI_METADATA[(lagnaRashiIndex + 1) % 12].sa;
+      houseReadings[2] = tempReading.replace('{sign}', secondRashiName);
+    } else {
+      houseReadings[house] = tempReading;
+    }
+  }
 
-  const panditAiDestinyReading = generatePanditAiReading(lagnaMeta, placements, chart);
+  const panditAiDestinyReading = generatePanditAiReading(lagnaMeta, placements, chart, lang);
 
   return {
     input,
@@ -224,7 +389,7 @@ export function generateKundali(input: KundaliInput): KundaliResult {
     lagnaNumber,
     placements,
     houseReadings,
-    lagnaReading:          LAGNA_READINGS[lagnaNumber] ?? '',
+    lagnaReading:          LAGNA_READINGS_LOCAL[lang][lagnaNumber] ?? '',
     panditAiDestinyReading,
     chart,
   };

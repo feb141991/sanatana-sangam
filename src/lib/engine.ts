@@ -41,9 +41,15 @@ export function getSadhanaEngine(): SadhanaEngine {
   // Supabase client creation does not hit the network.
   const { createSadhanaEngine } = require('@sangam/sadhana-engine') as typeof import('@sangam/sadhana-engine')
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl) throw new Error('[engine] Missing env var: NEXT_PUBLIC_SUPABASE_URL')
+  if (!supabaseAnonKey) throw new Error('[engine] Missing env var: NEXT_PUBLIC_SUPABASE_ANON_KEY')
+
   _sadhana = createSadhanaEngine({
-    supabaseUrl:              requireEnv('NEXT_PUBLIC_SUPABASE_URL'),
-    supabaseAnonKey:          requireEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY'),
+    supabaseUrl,
+    supabaseAnonKey,
     aiProvider:               'gemini',
     enableOfflineQueue:       true,
     enablePushNotifications:  false,
@@ -60,9 +66,15 @@ export function getPathshalaEngine(): PathshalaEngine {
 
   const { createPathshalaEngine } = require('@sangam/pathshala-engine') as typeof import('@sangam/pathshala-engine')
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl) throw new Error('[engine] Missing env var: NEXT_PUBLIC_SUPABASE_URL')
+  if (!supabaseAnonKey) throw new Error('[engine] Missing env var: NEXT_PUBLIC_SUPABASE_ANON_KEY')
+
   _pathshala = createPathshalaEngine({
-    supabaseUrl:     requireEnv('NEXT_PUBLIC_SUPABASE_URL'),
-    supabaseAnonKey: requireEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY'),
+    supabaseUrl,
+    supabaseAnonKey,
     debug:           process.env.NODE_ENV === 'development',
   })
 
