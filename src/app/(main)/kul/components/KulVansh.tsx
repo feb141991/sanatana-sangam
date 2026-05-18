@@ -79,6 +79,7 @@ export function KulVansh({
   const graph = useMemo(() => buildFamilyGraph(familyMembers), [familyMembers]);
   const activeMeta = VIEW_OPTIONS.find((option) => option.key === activeView) ?? VIEW_OPTIONS[0];
   const isLocked = activeMeta.pro && !isPro;
+  const isImmersiveView = activeView === 'constellation' || activeView === 'scroll' || activeView === 'courtyard';
 
   function selectView(view: VanshView) {
     const meta = VIEW_OPTIONS.find((option) => option.key === view);
@@ -96,8 +97,8 @@ export function KulVansh({
       <div className="absolute -right-28 top-10 h-72 w-72 rounded-full bg-[var(--brand-primary-soft)]/48 blur-3xl" />
       <div className="absolute -left-24 bottom-20 h-64 w-64 rounded-full bg-[var(--brand-primary-soft)]/36 blur-3xl" />
 
-      <div className="relative z-10 space-y-4 px-1 pt-2 sm:px-2">
-        <header className="space-y-4">
+      <div className={`relative z-10 ${isImmersiveView ? 'space-y-3 pt-2' : 'space-y-4 px-1 pt-2 sm:px-2'}`}>
+        <header className={isImmersiveView ? 'space-y-3 px-3 sm:px-4' : 'space-y-4'}>
           <div className="grid min-h-12 grid-cols-[44px_1fr_44px] items-center gap-2">
             <button
               type="button"
@@ -152,10 +153,10 @@ export function KulVansh({
         {familyMembers.length === 0 && !showAdd ? (
           <EmptyVanshState canManageVansh={canManageVansh} onAdd={() => setShowAdd(true)} />
         ) : (
-          <section className="relative overflow-hidden">
-            <ViewHeader activeMeta={activeMeta} memberCount={familyMembers.length} isLocked={isLocked} />
+          <section className={`relative overflow-hidden ${isImmersiveView ? '' : 'px-1 sm:px-2'}`}>
+            {!isImmersiveView && <ViewHeader activeMeta={activeMeta} memberCount={familyMembers.length} isLocked={isLocked} />}
 
-            <div className="mt-3">
+            <div className={isImmersiveView ? '' : 'mt-3'}>
               {activeView === 'lineage' && (
                 <LineageTree
                   roots={graph.roots}
@@ -178,17 +179,17 @@ export function KulVansh({
               )}
               {activeView === 'constellation' && (
                 <LockedShell locked={isLocked} onUnlock={() => setShowProModal(true)}>
-                  <ConstellationView members={graph.sortedMembers} onSelect={setSelectedMember} />
+                  <ConstellationView members={graph.sortedMembers} onSelect={setSelectedMember} memberCount={familyMembers.length} />
                 </LockedShell>
               )}
               {activeView === 'scroll' && (
                 <LockedShell locked={isLocked} onUnlock={() => setShowProModal(true)}>
-                  <AncestralScrollView generations={graph.generations} onSelect={setSelectedMember} />
+                  <AncestralScrollView generations={graph.generations} onSelect={setSelectedMember} memberCount={familyMembers.length} />
                 </LockedShell>
               )}
               {activeView === 'courtyard' && (
                 <LockedShell locked={isLocked} onUnlock={() => setShowProModal(true)}>
-                  <TempleCourtyardView members={graph.sortedMembers} onSelect={setSelectedMember} />
+                  <TempleCourtyardView members={graph.sortedMembers} onSelect={setSelectedMember} memberCount={familyMembers.length} />
                 </LockedShell>
               )}
             </div>
@@ -548,7 +549,15 @@ function TimelineView({
   );
 }
 
-function ConstellationView({ members, onSelect }: { members: FamilyMember[]; onSelect: (member: FamilyMember) => void }) {
+function ConstellationView({
+  members,
+  onSelect,
+  memberCount,
+}: {
+  members: FamilyMember[];
+  onSelect: (member: FamilyMember) => void;
+  memberCount: number;
+}) {
   const visibleMembers = members.slice(0, 18);
   const positions = visibleMembers.map((member, index) => {
     const angle = (index / Math.max(visibleMembers.length, 1)) * Math.PI * 2 - Math.PI / 2;
@@ -580,7 +589,7 @@ function ConstellationView({ members, onSelect }: { members: FamilyMember[]; onS
   }));
 
   return (
-    <div className="relative h-[560px] overflow-hidden rounded-[2.75rem] bg-[#16130f] text-white shadow-[inset_0_0_80px_rgba(216,138,28,0.12)]">
+    <div className="relative min-h-[calc(100svh-220px)] overflow-hidden bg-[#16130f] text-white shadow-[inset_0_0_80px_rgba(216,138,28,0.12)]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_46%,rgba(250,199,117,0.22),transparent_25%),radial-gradient(circle_at_20%_20%,rgba(255,253,249,0.10),transparent_26%),radial-gradient(circle_at_82%_78%,rgba(216,138,28,0.16),transparent_30%)]" />
       <motion.div
         aria-hidden="true"
@@ -667,12 +676,25 @@ function ConstellationView({ members, onSelect }: { members: FamilyMember[]; onS
           <span className="mt-1 block max-w-24 truncate rounded-full border border-[#FAC775]/20 bg-[#16130f]/62 px-2 py-0.5 text-xs font-medium text-[#FAEEDA] backdrop-blur-md">{member.name}</span>
         </motion.button>
       ))}
+      <div className="absolute left-4 right-4 top-4 flex items-start justify-between gap-3 sm:left-6 sm:right-6 sm:top-5">
+        <div className="max-w-[70%] rounded-[1.75rem] border border-[#FAC775]/16 bg-[#16130f]/24 px-4 py-3 backdrop-blur-xl">
+          <div className="flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FAEEDA]/10 text-[#FAC775]">
+              <Network size={16} />
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-xl font-medium text-[#FAEEDA] premium-serif">Constellation</p>
+              <p className="text-xs text-[#FAEEDA]/68">{memberCount} family members preserved</p>
+            </div>
+          </div>
+        </div>
+        <span className="rounded-full border border-[#FAC775]/24 bg-[#FAEEDA]/10 px-3 py-1 text-xs text-[#FAEEDA]/78 backdrop-blur-md">{visibleMembers.length} stars</span>
+      </div>
       <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.28em] text-[#FAC775]/70">Kul constellation</p>
           <p className="mt-1 max-w-56 text-sm leading-relaxed text-[#FAEEDA]/72">Tap any star to open the family profile.</p>
         </div>
-        <span className="rounded-full border border-[#FAC775]/24 bg-[#FAEEDA]/10 px-3 py-1 text-xs text-[#FAEEDA]/78 backdrop-blur-md">{visibleMembers.length} stars</span>
       </div>
     </div>
   );
@@ -681,18 +703,32 @@ function ConstellationView({ members, onSelect }: { members: FamilyMember[]; onS
 function AncestralScrollView({
   generations,
   onSelect,
+  memberCount,
 }: {
   generations: Array<[number, FamilyMember[]]>;
   onSelect: (member: FamilyMember) => void;
+  memberCount: number;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-[2.75rem] bg-[#efe4d3] p-4 shadow-[inset_0_0_90px_rgba(62,42,31,0.10)] dark:bg-[#2a2720]">
+    <div className="relative min-h-[calc(100svh-220px)] overflow-hidden bg-[#efe4d3] shadow-[inset_0_0_90px_rgba(62,42,31,0.10)] dark:bg-[#2a2720]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_10%,rgba(255,253,249,0.72),transparent_24%),radial-gradient(circle_at_88%_80%,rgba(216,138,28,0.16),transparent_28%)]" />
-      <div className="absolute left-6 top-5 h-[calc(100%-40px)] w-5 rounded-full bg-[linear-gradient(90deg,#8b6238,#c9a35b,#8b6238)] shadow-[0_8px_20px_rgba(62,42,31,0.20)]" />
-      <div className="absolute right-6 top-5 h-[calc(100%-40px)] w-5 rounded-full bg-[linear-gradient(90deg,#8b6238,#c9a35b,#8b6238)] shadow-[0_8px_20px_rgba(62,42,31,0.20)]" />
-      <div className="absolute inset-x-14 top-5 bottom-5 rounded-[2rem] border border-[#c9a35b]/24 bg-[#fffdf9]/56 dark:bg-[#333330]/64" />
-      <div className="absolute inset-x-20 top-8 bottom-8 border-x border-dashed border-[#c9a35b]/32" />
-      <div className="relative mx-9 space-y-6 px-2 py-6">
+      <div className="absolute left-3 top-0 h-full w-5 bg-[linear-gradient(90deg,#8b6238,#c9a35b,#8b6238)] shadow-[0_8px_20px_rgba(62,42,31,0.20)] sm:left-6" />
+      <div className="absolute right-3 top-0 h-full w-5 bg-[linear-gradient(90deg,#8b6238,#c9a35b,#8b6238)] shadow-[0_8px_20px_rgba(62,42,31,0.20)] sm:right-6" />
+      <div className="absolute inset-x-10 top-0 bottom-0 border-x border-dashed border-[#c9a35b]/32 sm:inset-x-20" />
+      <div className="absolute left-4 right-4 top-4 flex items-start justify-between gap-3 sm:left-6 sm:right-6 sm:top-5">
+        <div className="max-w-[72%] rounded-[1.75rem] border border-[#c9a35b]/20 bg-[#fffdf9]/62 px-4 py-3 backdrop-blur-xl dark:bg-[#333330]/62">
+          <div className="flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FAEEDA]/78 text-[#854F0B]">
+              <ScrollText size={16} />
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-xl font-medium text-[#3E2A1F] premium-serif dark:text-[#f0ede6]">Ancestral scroll</p>
+              <p className="text-xs text-[#6C4B35] dark:text-[#b5b0a5]">{memberCount} family members preserved</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="relative mx-9 space-y-6 px-2 pb-10 pt-24 sm:mx-12">
         <div className="mx-auto flex w-fit items-center gap-3 rounded-full border border-[#c9a35b]/30 bg-[#FAEEDA]/78 px-4 py-2 text-[#854F0B]">
           <ScrollText size={16} />
           <span className="text-xs font-medium tracking-[0.22em]">Family record</span>
@@ -729,10 +765,43 @@ function AncestralScrollView({
   );
 }
 
-function TempleCourtyardView({ members, onSelect }: { members: FamilyMember[]; onSelect: (member: FamilyMember) => void }) {
+function TempleCourtyardView({
+  members,
+  onSelect,
+  memberCount,
+}: {
+  members: FamilyMember[];
+  onSelect: (member: FamilyMember) => void;
+  memberCount: number;
+}) {
+  return <TempleCourtyardSurface members={members} onSelect={onSelect} memberCount={memberCount} />;
+}
+
+function TempleCourtyardSurface({
+  members,
+  onSelect,
+  memberCount,
+}: {
+  members: FamilyMember[];
+  onSelect: (member: FamilyMember) => void;
+  memberCount: number;
+}) {
   return (
-    <div className="relative mx-auto h-[560px] max-w-[560px] overflow-hidden rounded-[2.75rem] bg-[radial-gradient(circle_at_50%_18%,rgba(250,199,117,0.24),transparent_26%),linear-gradient(180deg,rgba(250,246,239,0.96),rgba(239,228,211,0.50))] dark:bg-[linear-gradient(180deg,#2a2720,#1c1c1a)]">
+    <div className="relative min-h-[calc(100svh-220px)] overflow-hidden bg-[radial-gradient(circle_at_50%_18%,rgba(250,199,117,0.24),transparent_26%),linear-gradient(180deg,rgba(250,246,239,0.96),rgba(239,228,211,0.50))] dark:bg-[linear-gradient(180deg,#2a2720,#1c1c1a)]">
       <div className="absolute inset-x-0 bottom-0 h-2/3 bg-[radial-gradient(ellipse_at_50%_0%,rgba(216,138,28,0.20),transparent_55%)]" />
+      <div className="absolute left-4 right-4 top-4 flex items-start justify-between gap-3 sm:left-6 sm:right-6 sm:top-5">
+        <div className="max-w-[72%] rounded-[1.75rem] border border-[#C9A35B]/20 bg-[#FFFDF9]/54 px-4 py-3 backdrop-blur-xl dark:bg-[#333330]/54">
+          <div className="flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FAEEDA]/78 text-[#854F0B]">
+              <Crown size={16} />
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-xl font-medium text-[#3E2A1F] premium-serif dark:text-[#f0ede6]">Temple courtyard</p>
+              <p className="text-xs text-[#6C4B35] dark:text-[#b5b0a5]">{memberCount} family members gathered</p>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="absolute left-1/2 top-10 h-20 w-72 -translate-x-1/2 rounded-t-[5rem] border border-[#C9A35B]/30 bg-[#FAEEDA]/58" />
       <div className="absolute left-1/2 top-24 h-20 w-80 -translate-x-1/2 rounded-t-[3rem] border border-[#C9A35B]/28 bg-[#FFFDF9]/62 dark:bg-[#333330]/68" />
       <div className="absolute left-1/2 top-[76px] h-14 w-14 -translate-x-1/2 rotate-45 border-l border-t border-[#C9A35B]/36 bg-[#FAEEDA]/70" />
