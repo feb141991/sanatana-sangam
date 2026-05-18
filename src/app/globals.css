@@ -22,10 +22,18 @@ html {
 
 html[data-practice-immersive='true'] .app-bottom-nav,
 html[data-practice-immersive='true'] .app-ai-fab {
+  display: none !important;
+  visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
   transform: translateY(24px) scale(0.96) !important;
   transition: opacity 180ms ease, transform 180ms ease !important;
+}
+
+html[data-practice-immersive='true'],
+html[data-practice-immersive='true'] body {
+  overscroll-behavior: none;
+  touch-action: manipulation;
 }
 
 :root {

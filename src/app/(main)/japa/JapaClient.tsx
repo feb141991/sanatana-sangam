@@ -1518,7 +1518,7 @@ export default function JapaClient({
   const showControlsBriefly = useCallback(() => {
     setControlsVisible(true);
     if (controlsTimerRef.current) clearTimeout(controlsTimerRef.current);
-    controlsTimerRef.current = setTimeout(() => setControlsVisible(false), 4000);
+    controlsTimerRef.current = setTimeout(() => setControlsVisible(false), 2200);
   }, []);
 
   useEffect(() => {
@@ -1622,8 +1622,6 @@ export default function JapaClient({
     setPulsing(true);
     setTimeout(() => setPulsing(false), 120);
 
-    showControlsBriefly();
-
     const pid = ++floatIdRef.current;
     setFloatParticles(prev => [...prev.slice(-5), { id: pid }]);
     setTimeout(() => setFloatParticles(prev => prev.filter(p => p.id !== pid)), 800);
@@ -1653,7 +1651,7 @@ export default function JapaClient({
       setTotalBeads(t => t + 1);
       return next;
     });
-  }, [paused, showComplete, showControlsBriefly, playHaptic]);
+  }, [paused, showComplete, playHaptic]);
 
   const saveSession = useCallback(async (completedRounds: number, partialBeads = 0) => {
     if (saved || savingSession || (completedRounds === 0 && partialBeads === 0)) return false;
@@ -1916,9 +1914,11 @@ export default function JapaClient({
           style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 100,
+            zIndex: 2147483000,
             background: bg,
             overflow: 'hidden',
+            width: '100vw',
+            height: '100dvh',
           }}
           initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
@@ -1933,6 +1933,31 @@ export default function JapaClient({
               position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
               background: bgC.overlay,
             }} />
+          )}
+
+          {!controlsVisible && (
+            <motion.button
+              type="button"
+              aria-label="Show practice controls"
+              onClick={(e) => {
+                e.stopPropagation();
+                showControlsBriefly();
+              }}
+              className="fixed right-4 top-14 h-11 w-11 rounded-full border flex items-center justify-center"
+              style={{
+                zIndex: 30,
+                background: isDark ? 'rgba(8,6,4,0.28)' : 'rgba(255,253,248,0.36)',
+                borderColor: `${amber}22`,
+                backdropFilter: 'blur(18px)',
+                WebkitBackdropFilter: 'blur(18px)',
+              }}
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 0.72, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.92 }}
+              whileTap={{ scale: 0.94 }}
+            >
+              <Settings2 size={15} style={{ color: amber }} />
+            </motion.button>
           )}
 
           <motion.div
@@ -1957,15 +1982,6 @@ export default function JapaClient({
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowSettings(true)}
-                className="w-11 h-11 rounded-full flex items-center justify-center border"
-                aria-label="Sound settings"
-                style={{ background: isDark ? 'rgba(8,6,4,0.36)' : 'rgba(255,253,248,0.42)', borderColor: `${amber}28`, backdropFilter: 'blur(18px)' }}>
-                {soundId === 'silence'
-                  ? <VolumeX size={15} style={{ color: amber }} />
-                  : <Volume2 size={15} style={{ color: amber }} />}
-              </button>
               <button
                 onClick={() => setShowSettings(true)}
                 className="w-11 h-11 rounded-full flex items-center justify-center border"
@@ -2001,12 +2017,9 @@ export default function JapaClient({
                   ? `${roundsDone}/${targetRounds} malas`
                   : `${beadCount}/108 beads`}
               </p>
-              <button
-                onClick={() => setShowSettings(true)}
-                className="text-[10px] font-semibold flex items-center gap-1 px-2 py-0.5 rounded-full border"
-                style={{ color: amber, borderColor: `${amber}35`, background: `${amber}10` }}>
-                Target: {targetRounds}× <span className="opacity-60">›</span>
-              </button>
+              <p className="text-[10px]" style={{ color: sub }}>
+                Target {targetRounds}×
+              </p>
             </div>
           </div>
           </motion.div>
@@ -2045,14 +2058,7 @@ export default function JapaClient({
                   {streak > 0 ? `${streak} day streak` : 'Start your streak'}
                 </span>
               </div>
-              <Link
-                href="/bhakti/mala/insights"
-                className="flex items-center gap-1"
-                onClick={e => e.stopPropagation()}
-              >
-                <BarChart2 size={13} style={{ color: sub }} />
-                <span className="text-[11px]" style={{ color: sub }}>Insights</span>
-              </Link>
+              <span className="text-[11px]" style={{ color: sub }}>Tap beads to count</span>
             </div>
 
             {/* Floating controls */}
@@ -2064,13 +2070,6 @@ export default function JapaClient({
                 aria-label={paused ? 'Resume practice' : 'Pause practice'}
                 style={{ background: paused ? `${amber}22` : 'transparent', color: text }}>
                 <span className="inline-flex items-center justify-center gap-2">{paused ? <Play size={15} /> : <Pause size={15} />}{paused ? 'Resume' : 'Pause'}</span>
-              </button>
-              <button
-                onClick={handleReset}
-                className="h-11 w-11 rounded-full flex items-center justify-center transition-all active:scale-95"
-                aria-label="Reset session"
-                style={{ background: 'transparent' }}>
-                <RotateCcw size={17} style={{ color: sub }} />
               </button>
               <button
                 onClick={roundsDone > 0 || beadCount > 0 ? handleManualEnd : () => setShowStopSheet(true)}
