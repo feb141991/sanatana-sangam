@@ -91,6 +91,51 @@ ${langNote}`,
   };
 }
 
+export function buildDevotionalStoryExplainPrompt(input: PathshalaExplainInput): {
+  prompt: AIPromptSpec;
+  teacher: string;
+  school: string;
+} {
+  const commentary = getCommentary(input.tradition || 'Bhakti');
+  const langNote = getLanguageInstruction(input.language);
+
+  const passagesText = input.retrievedChunks && input.retrievedChunks.length > 0
+    ? '\n' + serializePramanaContext(input.retrievedChunks, {
+        suffix: '\n=========================================================\nUse the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the story accurately and provide authentic teachings.'
+      })
+    : '';
+
+  return {
+    teacher: commentary.name,
+    school: commentary.school,
+    prompt: {
+      user: `You are a wise ${commentary.school} teacher explaining a devotional story (Katha) to a sincere seeker.
+
+STORY TITLE: ${input.title ?? ''}
+SOURCE: ${input.source ?? ''}
+STORY NARRATIVE: ${input.story ?? ''}
+${passagesText}
+
+Your lens: ${commentary.lens}
+Teach as ${commentary.name} would. Focus on bhakti (devotion), surrender (sharanagati), and divine grace.
+
+Return ONLY this JSON (no markdown, no extra text):
+{
+  "word_by_word": "<Key Sanskrit/original terms from the story or associated mantras and their meanings, 1-2 sentences>",
+  "meaning": "<Synopsis and spiritual message of the devotional story in 2-3 sentences>",
+  "commentary": "<Deep commentary on the devotion, lessons, and divine attributes shown in this story, written in the spirit of ${commentary.name} in 3-4 sentences>",
+  "daily_application": "<How the practitioner can cultivate similar devotion and qualities in daily life, 2-3 sentences>",
+  "contemplation": "<A single reflective question or thought on devotion to sit with>",
+  "related_text": "<Name one other scripture or teacher that echoes the theme of this story>"
+}
+
+${langNote}`,
+      temperature: 0.5,
+      maxOutputTokens: 900,
+    },
+  };
+}
+
 export function buildMeaningGeneratePrompt(input: MeaningGenerateInput): AIPromptSpec {
   return {
     user: `Translate this sacred-text meaning for a devotional learning app.

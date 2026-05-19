@@ -1,8 +1,8 @@
-import { buildMeaningGeneratePrompt, buildPathshalaExplainPrompt } from '@/lib/ai/context-builder';
+import { buildMeaningGeneratePrompt, buildPathshalaExplainPrompt, buildDevotionalStoryExplainPrompt } from '@/lib/ai/context-builder';
 import { assertAiRequestAllowed, validateMeaningGenerateInput, validatePathshalaExplainInput, validateAIChatInput } from '@/lib/ai/policies';
 import { generateWithGemini } from '@/lib/ai/providers/gemini';
 import { retrievePathshalaContext } from '@/lib/ai/retrieval';
-import { GeminiModelAdapter } from '@sangam/pramana-serve';
+import { GeminiModelAdapter, SimpleCorpusSelector } from '@sangam/pramana-serve';
 import { DharmaChatContract, createPramanaRoute } from '@sangam/pramana-core';
 import type {
   AIResponseMetadata,
@@ -31,17 +31,36 @@ export async function runPathshalaExplain(input: PathshalaExplainInput) {
   });
   validatePathshalaExplainInput(input);
 
+  const selector = new SimpleCorpusSelector();
+  const corpusId = selector.selectCorpus(
+    `${input.title ?? ''} ${input.source ?? ''}`.trim(),
+    {
+      source: input.source || null,
+      title: input.title || null,
+      tradition: input.tradition || null,
+      corpus: input.responseMode === 'devotional_story_explain' ? 'bhakti_katha' : null,
+    }
+  );
+
   const chunks = await retrievePathshalaContext({
     source: input.source,
     title: input.title,
     tradition: input.tradition,
   });
 
-  // Keep behavior identical for now, but pass retrieved context if available
-  const built = buildPathshalaExplainPrompt({
-    ...input,
-    retrievedChunks: chunks,
-  });
+  let built;
+  if (corpusId === 'bhakti_katha' || input.responseMode === 'devotional_story_explain') {
+    built = buildDevotionalStoryExplainPrompt({
+      ...input,
+      retrievedChunks: chunks,
+    });
+  } else {
+    built = buildPathshalaExplainPrompt({
+      ...input,
+      retrievedChunks: chunks,
+    });
+  }
+
   const result = await generateWithGemini(built.prompt);
 
   return {

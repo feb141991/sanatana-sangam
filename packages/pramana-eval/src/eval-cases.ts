@@ -56,6 +56,8 @@ export interface PathshalaExplainInput {
   title?: string;
   tradition?: string | null;
   language?: string | null;
+  story?: string;
+  responseMode?: string;
 }
 
 export const pathshalaExplainEvalSuite = defineEvalCaseCollection<PathshalaExplainInput, any>({
@@ -163,6 +165,121 @@ export const pathshalaExplainEvalSuite = defineEvalCaseCollection<PathshalaExpla
       expectations: [
         { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
         { key: "grounding_present", description: "Response must mention victory, fortune, and Krishna/Arjuna presence", required: true }
+      ]
+    },
+    {
+      id: "katha-prahlada",
+      title: "Katha - Bhakta Prahlada Grounding",
+      instruction: "Explain the story of Bhakta Prahlada and Narasimha avatar.",
+      domain: "grounding",
+      priority: "critical",
+      input: {
+        source: "Srimad Bhagavatam",
+        title: "Bhakta Prahlada",
+        tradition: "Bhakti",
+        language: "en",
+        responseMode: "devotional_story_explain",
+        story: "Prahlada was a supreme devotee of Lord Vishnu. Lord Vishnu emerged as Narasimha to protect Prahlada and destroy Hiranyakashipu."
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON containing required keys", required: true },
+        { key: "grounding_present", description: "Response must refer to Prahlada or Narasimha", required: true },
+        { key: "source_metadata_present", description: "Response must cite Srimad Bhagavatam or Katha", required: true }
+      ]
+    },
+    {
+      id: "katha-dhruva",
+      title: "Katha - Bhakta Dhruva Tapasya",
+      instruction: "Explain the story of Bhakta Dhruva meditating to seek Lord Vishnu.",
+      domain: "grounding",
+      priority: "standard",
+      input: {
+        source: "Srimad Bhagavatam",
+        title: "Bhakta Dhruva",
+        tradition: "Bhakti",
+        language: "en",
+        responseMode: "devotional_story_explain",
+        story: "Dhruva set out to perform intense penance at the age of five and became the Pole Star."
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "grounding_present", description: "Response must ground on Dhruva's determination", required: true }
+      ]
+    },
+    {
+      id: "katha-sudama",
+      title: "Katha - Sudama Poha Devotion",
+      instruction: "Explain the story of Sudama Vipra visiting Lord Krishna with flattened rice.",
+      domain: "grounding",
+      priority: "standard",
+      input: {
+        source: "Srimad Bhagavatam",
+        title: "Sudama Vipra",
+        tradition: "Bhakti",
+        language: "en",
+        responseMode: "devotional_story_explain",
+        story: "Sudama offered flattened rice to Lord Krishna out of pure devotion, and Krishna showered blessings upon him."
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "grounding_present", description: "Response must ground on Sudama's humble offering", required: true }
+      ]
+    },
+    {
+      id: "katha-gajendra",
+      title: "Katha - Gajendra Moksha Devotional Surrender",
+      instruction: "Explain the story of Gajendra calling upon Lord Vishnu with a lotus.",
+      domain: "grounding",
+      priority: "standard",
+      input: {
+        source: "Srimad Bhagavatam",
+        title: "Gajendra Moksha",
+        tradition: "Bhakti",
+        language: "en",
+        responseMode: "devotional_story_explain",
+        story: "Gajendra completely surrendered to Lord Vishnu when caught by a crocodile, and Vishnu saved him."
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "grounding_present", description: "Response must ground on the surrender of the elephant", required: true }
+      ]
+    },
+    {
+      id: "katha-prahlada-hi",
+      title: "Katha - Bhakta Prahlada Grounding (Hindi)",
+      instruction: "Explain the story of Bhakta Prahlada in Hindi.",
+      domain: "grounding",
+      priority: "critical",
+      input: {
+        source: "Srimad Bhagavatam",
+        title: "Bhakta Prahlada",
+        tradition: "Bhakti",
+        language: "hi",
+        responseMode: "devotional_story_explain",
+        story: "Prahlada was a devotee of Lord Vishnu. Narasimha protected him."
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "language_compliance", description: "Response must be in Devanagari Hindi script", required: true }
+      ]
+    },
+    {
+      id: "katha-sudama-hi",
+      title: "Katha - Sudama Vipra Grounding (Hindi)",
+      instruction: "Explain the story of Sudama Vipra in Hindi.",
+      domain: "grounding",
+      priority: "standard",
+      input: {
+        source: "Srimad Bhagavatam",
+        title: "Sudama Vipra",
+        tradition: "Bhakti",
+        language: "hi",
+        responseMode: "devotional_story_explain",
+        story: "Sudama was a poor friend of Krishna."
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "language_compliance", description: "Response must be in Devanagari Hindi script", required: true }
       ]
     }
   ]

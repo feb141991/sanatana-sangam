@@ -32,6 +32,8 @@ export type PathshalaExplainInput = PramanaInputBase & {
   translation?: string;
   source?: string;
   title?: string;
+  story?: string;
+  responseMode?: string;
   retrievedChunks?: RetrievalContextDocument[];
 };
 

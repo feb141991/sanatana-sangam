@@ -13,7 +13,7 @@ export type RetrievalChunkMetadata = {
 
 export type RetrievalChunk = PramanaRetrievalDocument<RetrievalChunkMetadata>;
 
-import { PramanaRetrieverSelector } from '@sangam/pramana-serve';
+import { PramanaRetrieverSelector, SimpleCorpusSelector } from '@sangam/pramana-serve';
 
 export interface PramanaManifestRetrieverOptions {
   prefix: string;
@@ -289,7 +289,17 @@ export async function retrievePathshalaContext(input: {
   title?: string;
   tradition?: string | null;
 }): Promise<RetrievalChunk[]> {
-  const retriever = PramanaRetrieverSelector.select('pathshala_gita');
+  const selector = new SimpleCorpusSelector();
+  const corpusId = selector.selectCorpus(
+    `${input.title ?? ''} ${input.source ?? ''}`.trim(),
+    {
+      source: input.source || null,
+      title: input.title || null,
+      tradition: input.tradition || null,
+    }
+  );
+
+  const retriever = PramanaRetrieverSelector.select(corpusId);
   const res = await retriever.retrieve({
     text: `${input.title ?? ''} ${input.source ?? ''}`.trim(),
     filters: {

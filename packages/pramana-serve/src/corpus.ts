@@ -57,3 +57,29 @@ export type PramanaResponseMode =
 export interface PramanaCorpusSelector {
   selectCorpus(queryText: string, filters?: Record<string, unknown>): PramanaCorpusId;
 }
+
+export class SimpleCorpusSelector implements PramanaCorpusSelector {
+  selectCorpus(queryText: string, filters?: Record<string, unknown>): PramanaCorpusId {
+    const text = (queryText || '').toLowerCase();
+    const source = String(filters?.source || '').toLowerCase();
+    const corpusFilter = String(filters?.corpus || '').toLowerCase();
+
+    // Route only bhakti_katha requests explicitly. Otherwise, default to pathshala_gita.
+    if (
+      corpusFilter === 'bhakti_katha' ||
+      source.includes('katha') ||
+      source.includes('story') ||
+      source.includes('purana') ||
+      source.includes('bhagavatam') ||
+      text.includes('katha') ||
+      text.includes('prahlada') ||
+      text.includes('dhruva') ||
+      text.includes('sudama')
+    ) {
+      return 'bhakti_katha';
+    }
+
+    return 'pathshala_gita';
+  }
+}
+
