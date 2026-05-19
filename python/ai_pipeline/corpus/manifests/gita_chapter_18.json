@@ -1,0 +1,488 @@
+{
+  "doc_id": "gita_chapter_18",
+  "title": "Bhagavad Gita - Chapter 18",
+  "tradition": "Sanatana Dharma",
+  "scripture_family": "gita",
+  "section_id": "chapter_18",
+  "source_name": "Wikisource Annie Besant Translation",
+  "source_url": "https://en.wikisource.org/wiki/The_Bhagavad_Gita",
+  "source_owner": "public-domain",
+  "source_class": "translation",
+  "rights_status": "public_domain",
+  "language": "en",
+  "script": "Latn",
+  "is_live_in_app": true,
+  "companion_only": false,
+  "audio_status": "available",
+  "revision_note": "Exported from app gita-full-data.",
+  "content": [
+    {
+      "ref": "18.1",
+      "text": "Arjuna said:\nI desire, O mighty-armed, to know severally the essence of renunciation, O Hrishîkesha, and of relinquishment, O Keshinishûdana. (1)",
+      "sanskrit": "अर्जुन उवाच ।\nसंन्यासस्य महाबाहो तत्त्वमिच्छामि वेदितुम् ।\nत्यागस्य च हृषीकेश पृथक्केशिनिषूदन ॥ १ ॥",
+      "transliteration": "arjuna uvāca | saṃnyāsasya mahābāho tattvamicchāmi veditum | tyāgasya ca hṛṣīkeśa pṛthakkeśiniṣūdana || 1 ||"
+    },
+    {
+      "ref": "18.2",
+      "text": "The Blessed Lord said:\nSages have known as renunciation the renouncing of works with desire; the relinquishing of the fruit of all actions is called relinquishment by the wise. (2)",
+      "sanskrit": "श्रीभगवानुवाच ।\nकाम्यानां कर्मणां न्यासं संन्यासं कवयो विदुः ।\nसर्वकर्मफलत्यागं प्राहुस्त्यागं विचक्षणाः ॥ २ ॥",
+      "transliteration": "śrībhagavānuvāca | kāmyānāṃ karmaṇāṃ nyāsaṃ saṃnyāsaṃ kavayo viduḥ | sarvakarmaphalatyāgaṃ prāhustyāgaṃ vicakṣaṇāḥ || 2 ||"
+    },
+    {
+      "ref": "18.3",
+      "text": "\"Action should be relinquished as an evil,\" declare some thoughtful men; \"acts of sacrifice, gift and austerity should not be relinquished,\" say others. (3)",
+      "sanskrit": "त्याज्यं दोषवदित्येके कर्म प्राहुर्मनीषिणः ।\nयज्ञदानतपः कर्म न त्याज्यमिति चापरे ॥  ३ ॥",
+      "transliteration": "tyājyaṃ doṣavadityeke karma prāhurmanīṣiṇaḥ | yajñadānatapaḥ karma na tyājyamiti cāpare || 3 ||"
+    },
+    {
+      "ref": "18.4",
+      "text": "Hear my conclusions as to that relinquishment, O best of the Bhâratas; since relinquishment, O tiger of men, has been explained as threefold. (4)",
+      "sanskrit": "निश्चयं शृणु मे तत्र त्यागे भरतसत्तम ।\nत्यागो हि पुरुषव्याघ्र त्रिविधः सम्प्रकीर्तितः ॥ ४ ॥",
+      "transliteration": "niścayaṃ śṛṇu me tatra tyāge bharatasattama | tyāgo hi puruṣavyāghra trividhaḥ samprakīrtitaḥ || 4 ||"
+    },
+    {
+      "ref": "18.5",
+      "text": "Acts of sacrifice, gift and austerity should not be relinquished, but should be performed; sacrifice, gift and also austerity are the purifiers of the intelligent. (5)",
+      "sanskrit": "यज्ञदानतपः कर्म न त्याज्यं कार्यमेव तत् ।\nयज्ञो दानं तपश्चैव पावनानि मनीषिणाम् ॥ ५ ॥",
+      "transliteration": "yajñadānatapaḥ karma na tyājyaṃ kāryameva tat | yajño dānaṃ tapaścaiva pāvanāni manīṣiṇām || 5 ||"
+    },
+    {
+      "ref": "18.6",
+      "text": "But even these actions should be done leaving aside attachment and fruit, O Pârtha; that is my certain and best belief. (6)",
+      "sanskrit": "एतान्यपि तु कर्माणि सङ्गं त्यक्त्वा फलानि च ।\nकर्तव्यानीति मे पार्थ निश्चितं मतमुत्तमम् ॥ ६ ॥",
+      "transliteration": "etānyapi tu karmāṇi saṅgaṃ tyaktvā phalāni ca | kartavyānīti me pārtha niścitaṃ matamuttamam || 6 ||"
+    },
+    {
+      "ref": "18.7",
+      "text": "Verily renunciation of actions that are prescribed is not proper; the relinquishment thereof from delusion is said to be of darkness. (7)",
+      "sanskrit": "नियतस्य तु संन्यासः कर्मणो नोपपद्यते ।\nमोहात्तस्य परित्यागस्तामसः परिकीर्तितः ॥ ७ ॥",
+      "transliteration": "niyatasya tu saṃnyāsaḥ karmaṇo nopapadyate | mohāttasya parityāgastāmasaḥ parikīrtitaḥ || 7 ||"
+    },
+    {
+      "ref": "18.8",
+      "text": "He who relinquisheth an action from fear of physical suffering, saying \"Painful,\" thus performing a passionate relinquishment, obtaineth not the fruit of relinquishment. (8)",
+      "sanskrit": "दुःखमित्येव यत्कर्म कायक्लेशभयात्त्यजेत् ।\nस कृत्वा राजसं त्यागं नैव त्यागफलं लभेत् ॥ ८ ॥",
+      "transliteration": "duḥkhamityeva yatkarma kāyakleśabhayāttyajet | sa kṛtvā rājasaṃ tyāgaṃ naiva tyāgaphalaṃ labhet || 8 ||"
+    },
+    {
+      "ref": "18.9",
+      "text": "He who performeth a prescribed action, saying, \"it ought to be done,\" O Arjuna, relinquishing attachment and also fruit, that relinquishment is regarded as pure. (9)",
+      "sanskrit": "कार्यमित्येव यत्कर्म नियतं क्रियतेऽर्जुन ।\nसङ्गं त्यक्त्वा फलं चैव स त्यागः सात्त्विको मतः ॥ ९ ॥",
+      "transliteration": "kāryamityeva yatkarma niyataṃ kriyate'rjuna | saṅgaṃ tyaktvā phalaṃ caiva sa tyāgaḥ sāttviko mataḥ || 9 ||"
+    },
+    {
+      "ref": "18.10",
+      "text": "The relinquisher pervaded by purity, intelligent and with doubts cut away, hateth not unpleasurable action nor is attached to pleasurable. (10)",
+      "sanskrit": "न द्वेष्ट्यकुशलं कर्म कुशले नानुषज्जते ।\nत्यागी सत्त्वसमाविष्टो मेधावी छिन्नसंशयः ॥ १० ॥",
+      "transliteration": "na dveṣṭyakuśalaṃ karma kuśale nānuṣajjate | tyāgī sattvasamāviṣṭo medhāvī chinnasaṃśayaḥ || 10 ||"
+    },
+    {
+      "ref": "18.11",
+      "text": "Nor indeed can embodied beings completely relinquish action; verily he who relinquisheth the fruit of action, he is said to be a relinquisher. (11)",
+      "sanskrit": "न हि देहभृता शक्यं त्यक्तुं कर्माण्यशेषतः ।\nयस्तु कर्मफलत्यागी स त्यागीत्यभिधीयते ॥ ११ ॥",
+      "transliteration": "na hi dehabhṛtā śakyaṃ tyaktuṃ karmāṇyaśeṣataḥ | yastu karmaphalatyāgī sa tyāgītyabhidhīyate || 11 ||"
+    },
+    {
+      "ref": "18.12",
+      "text": "Good, evil and mixed—threefold is the fruit of action hereafter for the non-relinquisher; but there is none ever for the renouncer. (12)",
+      "sanskrit": "अनिष्टमिष्टं मिश्रं च त्रिविधं कर्मणः फलम् ।\nभवत्यत्यागिनां प्रेत्य न तु संन्यासिनां क्वचित् ॥ १२ ॥",
+      "transliteration": "aniṣṭamiṣṭaṃ miśraṃ ca trividhaṃ karmaṇaḥ phalam | bhavatyatyāgināṃ pretya na tu saṃnyāsināṃ kvacit || 12 ||"
+    },
+    {
+      "ref": "18.13",
+      "text": "These five causes, O mighty-armed, learn of Me as declared in the Sâñkhya system for the accomplishment of all actions: (13)",
+      "sanskrit": "पञ्चैतानि महाबाहो कारणानि निबोध मे ।\nसाङ्ख्ये कृतान्ते प्रोक्तानि सिद्धये सर्वकर्मणाम् ॥ १३ ॥",
+      "transliteration": "pañcaitāni mahābāho kāraṇāni nibodha me | sāṅkhye kṛtānte proktāni siddhaye sarvakarmaṇām || 13 ||"
+    },
+    {
+      "ref": "18.14",
+      "text": "The body, the actor, the various organs, the diverse kinds of energies, and the presiding deities also, the fifth. (15)",
+      "sanskrit": "अधिष्ठानं तथा कर्ता करणं च पृथग्विधम् ।\nविविधाश्च पृथक्चेष्टा दैवं चैवात्र पञ्चमम् ॥ १४ ॥",
+      "transliteration": "adhiṣṭhānaṃ tathā kartā karaṇaṃ ca pṛthagvidham | vividhāśca pṛthakceṣṭā daivaṃ caivātra pañcamam || 14 ||"
+    },
+    {
+      "ref": "18.15",
+      "text": "Whatever action a man performeth by his body, speech and mind, whether right or the reverse, these five are the cause thereof. (15)",
+      "sanskrit": "शरीरवाङ्‌मनोभिर्यत्कर्म प्रारभते नरः ।\nन्याय्यं वा विपरीतं वा पञ्चैते तस्य हेतवः ॥ १५ ॥",
+      "transliteration": "śarīravāṅ‌manobhiryatkarma prārabhate naraḥ | nyāyyaṃ vā viparītaṃ vā pañcaite tasya hetavaḥ || 15 ||"
+    },
+    {
+      "ref": "18.16",
+      "text": "That being so, he verily who—owing to untrained Reason—looketh on his Self, which is isolated, as the actor, he of perverted intelligence, seeth not. (16)",
+      "sanskrit": "तत्रैवं सति कर्तारमात्मानं केवलं तु यः ।\nपश्यत्यकृतबुद्धित्वान्न स पश्यति दुर्मतिः ॥ १६ ॥",
+      "transliteration": "tatraivaṃ sati kartāramātmānaṃ kevalaṃ tu yaḥ | paśyatyakṛtabuddhitvānna sa paśyati durmatiḥ || 16 ||"
+    },
+    {
+      "ref": "18.17",
+      "text": "He who is free from the egoistic notion, whose Reason is not affected, though he slay these peoples, he slayeth not, nor is bound. (17)",
+      "sanskrit": "यस्य नाहंकृतो भावो बुद्धिर्यस्य न लिप्यते ।\nहत्वाऽपि स इमाँल्लोकान्न हन्ति न निबध्यते ॥ १७ ॥",
+      "transliteration": "yasya nāhaṃkṛto bhāvo buddhiryasya na lipyate | hatvā'pi sa imām̐llokānna hanti na nibadhyate || 17 ||"
+    },
+    {
+      "ref": "18.18",
+      "text": "Thus in the glorious Upanishads of the Bhagavad-Gita, the science of the Eternal, the scripture of Yoga, the dialogue between Shrî Krishna and Arjuna, the eighteenth discourse, entitled:\nTHE YOGA OF LIBERATION BY RENUNCIATION.",
+      "sanskrit": "इति श्रीमद्भगवद्गीतासूपनिषत्सु ब्रह्मविद्यायां योगशास्त्रे\nश्रीकृष्णार्जुनसंवादे संन्यासयोगो नामाष्टादशोऽध्यायः ॥१८॥",
+      "transliteration": "iti śrīmadbhagavadgītāsūpaniṣatsu brahmavidyāyāṃ yogaśāstre\nśrīkṛṣṇārjunasaṃvāde saṃnyāsayogo nāmāṣṭādaśo'dhyāyaḥ || 18 ||"
+    },
+    {
+      "ref": "18.19",
+      "text": "Knowledge, action and actor in the category of qualities are also said to be severally threefold, from the difference of qualities; hear thou duly these also. (19)",
+      "sanskrit": "ज्ञानं कर्म च कर्ता च त्रिधैव गुणभेदतः ।\nप्रोच्यते गुणसङ्ख्याने यथावच्छृणु तान्यपि ॥ १९ ॥",
+      "transliteration": "jñānaṃ karma ca kartā ca tridhaiva guṇabhedataḥ | procyate guṇasaṅkhyāne yathāvacchṛṇu tānyapi || 19 ||"
+    },
+    {
+      "ref": "18.20",
+      "text": "That by which one indestructible Being is seen in all beings, inseparate in the separated, know thou that knowledge as pure. (20)",
+      "sanskrit": "सर्वभूतेषु येनैकं भावमव्ययमीक्षते ।\nअविभक्तं विभक्तेषु तज्ज्ञानं विद्धि सात्त्विकम् ॥ २० ॥",
+      "transliteration": "sarvabhūteṣu yenaikaṃ bhāvamavyayamīkṣate | avibhaktaṃ vibhakteṣu tajjñānaṃ viddhi sāttvikam || 20 ||"
+    },
+    {
+      "ref": "18.21",
+      "text": "But that knowledge which regardeth the several manifold existences in all beings as separate, that knowledge know thou as of passion; (21)",
+      "sanskrit": "पृथक्त्वेन तु यज्ज्ञानं नानाभावान्पृथग्विधान् ।\nवेत्ति सर्वेषु भूतेषु तज्ज्ञानं विद्धि राजसम् ॥ २१ ॥",
+      "transliteration": "pṛthaktvena tu yajjñānaṃ nānābhāvānpṛthagvidhān | vetti sarveṣu bhūteṣu tajjñānaṃ viddhi rājasam || 21 ||"
+    },
+    {
+      "ref": "18.22",
+      "text": "While that which clingeth to each one thing as if it were the whole, without reason, without grasping the reality, narrow, that is declared to be dark. (22)",
+      "sanskrit": "यत्तु कृत्स्नवदेकस्मिन् कार्ये सक्तमहैतुकम् ।\nअतत्त्वार्थवदल्पं च तत्तामसमुदाहृतम् ॥ २२ ॥",
+      "transliteration": "yattu kṛtsnavadekasmin kārye saktamahaitukam | atattvārthavadalpaṃ ca tattāmasamudāhṛtam || 22 ||"
+    },
+    {
+      "ref": "18.23",
+      "text": "An action which is ordained, done by one undesirous of fruit, devoid of attachment, without love or hate, that is called pure. (23)",
+      "sanskrit": "नियतं सङ्गरहितमरागद्वेषतः कृतम् ।\nअफलप्रेप्सुना कर्म यत्तत्सात्त्विकमुच्यते ॥ २३ ॥",
+      "transliteration": "niyataṃ saṅgarahitamarāgadveṣataḥ kṛtam | aphalaprepsunā karma yattatsāttvikamucyate || 23 ||"
+    },
+    {
+      "ref": "18.24",
+      "text": "But that action that is done by one longing for desires, or again with egoism, or with much effort, that is declared to be passionate. (24)",
+      "sanskrit": "यत्तु कामेप्सुना कर्म साहङ्कारेण वा पुनः ।\nक्रियते बहुलायासं तद्राजसमुदाहृतम् ॥ २४ ॥",
+      "transliteration": "yattu kāmepsunā karma sāhaṅkāreṇa vā punaḥ | kriyate bahulāyāsaṃ tadrājasamudāhṛtam || 24 ||"
+    },
+    {
+      "ref": "18.25",
+      "text": "The action undertaken from delusion, without regard to capacity and consequences—loss and injury to others—that is declared to be dark. (25)",
+      "sanskrit": "अनुबन्धं क्षयं हिंसामनपेक्ष्य च पौरुषम् ।\nमोहादारभ्यते कर्म यत्तत्तामसमुच्यते ॥ २५ ॥",
+      "transliteration": "anubandhaṃ kṣayaṃ hiṃsāmanapekṣya ca pauruṣam | mohādārabhyate karma yattattāmasamucyate || 25 ||"
+    },
+    {
+      "ref": "18.26",
+      "text": "Liberated from attachment, not egoistic, endued with firmness and confidence, unchanged by success or failure, that actor is called pure. (26)",
+      "sanskrit": "मुक्तसङ्गोऽनहंवादी धृत्युत्साहसमन्वितः ।\nसिद्ध्यसिद्ध्योर्निर्विकारः कर्त्ता सात्त्विक उच्यते ॥ २६ ॥",
+      "transliteration": "muktasaṅgo'nahaṃvādī dhṛtyutsāhasamanvitaḥ | siddhyasiddhyornirvikāraḥ karttā sāttvika ucyate || 26 ||"
+    },
+    {
+      "ref": "18.27",
+      "text": "Impassioned, desiring to obtain the fruit of actions, greedy, harmful, impure, moved by joy and sorrow, such an actor is pronounced passionate. (27)",
+      "sanskrit": "रागी कर्मफलप्रेप्सुर्लुब्धो हिंसात्मकोऽशुचिः ।\nहर्षशोकान्वितः कर्ता राजसः परिकीर्तितः ॥ २७ ॥",
+      "transliteration": "rāgī karmaphalaprepsurlubdho hiṃsātmako'śuciḥ | harṣaśokānvitaḥ kartā rājasaḥ parikīrtitaḥ || 27 ||"
+    },
+    {
+      "ref": "18.28",
+      "text": "Discordant, vulgar, stubborn, cheating, malicious, indolent, despairful, procrastinating, that actor is called dark. (28)",
+      "sanskrit": "अयुक्तः प्राकृतः स्तब्धः शठो नैष्कृतिकोऽलसः ।\nविषादी दीर्घसूत्री च कर्ता तामस उच्यते ॥ २८ ॥",
+      "transliteration": "ayuktaḥ prākṛtaḥ stabdhaḥ śaṭho naiṣkṛtiko'lasaḥ | viṣādī dīrghasūtrī ca kartā tāmasa ucyate || 28 ||"
+    },
+    {
+      "ref": "18.29",
+      "text": "The division of Reason and of firmness also, threefold according to the qualities, hear thou related, unreservedly and severally, O Dhananjaya. (29)",
+      "sanskrit": "बुद्धेर्भेदं धृतेश्चैव गुणतस्त्रिविधं शृणु ।\nप्रोच्यमानमशेषेण पृथक्त्वेन धनञ्जय ॥ २९ ॥",
+      "transliteration": "buddherbhedaṃ dhṛteścaiva guṇatastrividhaṃ śṛṇu | procyamānamaśeṣeṇa pṛthaktvena dhanañjaya || 29 ||"
+    },
+    {
+      "ref": "18.30",
+      "text": "That which knoweth energy and abstinence, what ought to be done and what ought not to be done, fear and fearlessness, bondage and liberation, that Reason is pure, O Pârtha. (30)",
+      "sanskrit": "प्रवृत्तिं च निवृत्तिं च कार्याकार्ये भयाभये ।\nबन्धं मोक्षं च या वेत्ति बुद्धिः सा पार्थ सात्त्विकी ॥ ३० ॥",
+      "transliteration": "pravṛttiṃ ca nivṛttiṃ ca kāryākārye bhayābhaye | bandhaṃ mokṣaṃ ca yā vetti buddhiḥ sā pārtha sāttvikī || 30 ||"
+    },
+    {
+      "ref": "18.31",
+      "text": "That by which one understandeth away Right and Wrong and also what ought to be done and what ought not to be done, that Reason, O Pârtha, is passionate. (31)",
+      "sanskrit": "यया धर्ममधर्मं च कार्यं चाकार्यमेव च ।\nअयथावत्प्रजानाति बुद्धिः सा पार्थ राजसी ॥ ३१ ॥",
+      "transliteration": "yayā dharmamadharmaṃ ca kāryaṃ cākāryameva ca | ayathāvatprajānāti buddhiḥ sā pārtha rājasī || 31 ||"
+    },
+    {
+      "ref": "18.32",
+      "text": "That which, enwrapped in darkness, thinketh wrong to be right and seeth all things subverted, that Reason, O Pârtha, is of darkness. 32)",
+      "sanskrit": "अधर्मं धर्ममिति या मन्यते तमसा वृता ।\nसर्वार्थान् विपरीतांश्च बुद्धिः सा पार्थ तामसी ॥ ३२ ॥",
+      "transliteration": "adharmaṃ dharmamiti yā manyate tamasā vṛtā | sarvārthān viparītāṃśca buddhiḥ sā pārtha tāmasī || 32 ||"
+    },
+    {
+      "ref": "18.33",
+      "text": "The unwavering firmness by which, through Yoga, one restraineth the activity of the mind, of the life breaths and of the sense-organs, that firmness, O Pârtha, is pure. (33)",
+      "sanskrit": "धृत्या यया धारयते मनःप्राणेन्द्रियक्रियाः ।\nयोगेनाव्यभिचारिण्या धृतिः सा पार्थ सात्त्विकी ॥ ३३ ॥",
+      "transliteration": "dhṛtyā yayā dhārayate manaḥprāṇendriyakriyāḥ | yogenāvyabhicāriṇyā dhṛtiḥ sā pārtha sāttvikī || 33 ||"
+    },
+    {
+      "ref": "18.34",
+      "text": "But the firmness, O Arjuna, by which, from attachment desirous of fruit, one holdeth fast duty, desire and wealth, that firmness, O Pârtha, is passionate. (34)",
+      "sanskrit": "यया तु धर्मकामार्थान् धृत्या धारयतेऽर्जुन ।\nप्रसङ्गेन फलाकाङ्क्षी धृतिः सा पार्थ राजसी ॥ ३४ ॥",
+      "transliteration": "yayā tu dharmakāmārthān dhṛtyā dhārayate'rjuna | prasaṅgena phalākāṅkṣī dhṛtiḥ sā pārtha rājasī || 34 ||"
+    },
+    {
+      "ref": "18.35",
+      "text": "That by which one from stupidity doth not abandon sleep, fear, grief, despair, and also vanity, that firmness, O Pârtha, is dark. (35)",
+      "sanskrit": "यया स्वप्नं भयं शोकं विषादं मदमेव च ।\nन विमुञ्चति दुर्मेधा धृतिः सा पार्थ तामसी ॥ ३५ ॥",
+      "transliteration": "yayā svapnaṃ bhayaṃ śokaṃ viṣādaṃ madameva ca | na vimuñcati durmedhā dhṛtiḥ sā pārtha tāmasī || 35 ||"
+    },
+    {
+      "ref": "18.36",
+      "text": "And now the threefold kinds of pleasure hear thou from Me, O bull of the Bhâratas. That in which one by practice rejoiceth, and which putteth an end to pain; (36)",
+      "sanskrit": "सुखं त्विदानीं त्रिविधं शृणु मे भरतर्षभ ।\nअभ्यासाद्रमते यत्र दुःखान्तं च निगच्छति ॥ ३६ ॥",
+      "transliteration": "sukhaṃ tvidānīṃ trividhaṃ śṛṇu me bharatarṣabha | abhyāsādramate yatra duḥkhāntaṃ ca nigacchati || 36 ||"
+    },
+    {
+      "ref": "18.37",
+      "text": "Which at first is as venom but in the end is as nectar; that pleasure is said to be pure, born of the blissful knowledge of the Self. (37)",
+      "sanskrit": "यत्तदग्रे विषमिव परिणामेऽमृतोपमम् ।\nतत्सुखं सात्त्विकं प्रोक्तमात्मबुद्धिप्रसादजम् ॥ ३७ ॥",
+      "transliteration": "yattadagre viṣamiva pariṇāme'mṛtopamam | tatsukhaṃ sāttvikaṃ proktamātmabuddhiprasādajam || 37 ||"
+    },
+    {
+      "ref": "18.38",
+      "text": "That which from the union of the senses with their objects at first is as nectar, but in the end is like venom, that pleasure is accounted passionate. (38)",
+      "sanskrit": "विषयेन्द्रियसंयोगाद्यत्तदग्रेऽमृतोपमम् ।\nपरिणामे विषमिव तत्सुखं राजसं स्मृतम् ॥ ३८ ॥",
+      "transliteration": "viṣayendriyasaṃyogādyattadagre'mṛtopamam | pariṇāme viṣamiva tatsukhaṃ rājasaṃ smṛtam || 38 ||"
+    },
+    {
+      "ref": "18.39",
+      "text": "That pleasure which both at first and afterwards is delusive of the self, arising from sleep, indolence and heedlessness, that is declared dark. (39)",
+      "sanskrit": "यदग्रे चानुबन्धे च सुखं मोहनमात्मनः ।\nनिद्रालस्यप्रमादोत्थं तत्तामसमुदाहृतम् ॥ ३९ ॥",
+      "transliteration": "yadagre cānubandhe ca sukhaṃ mohanamātmanaḥ | nidrālasyapramādotthaṃ tattāmasamudāhṛtam || 39 ||"
+    },
+    {
+      "ref": "18.40",
+      "text": "There is not an entity, either on the earth or again in heaven among the Shining Ones, that is liberated from these three qualities, born of Matter. (40)",
+      "sanskrit": "न तदस्ति पृथिव्यां वा दिवि देवेषु वा पुनः ।\nसत्त्वं प्रकृतिजैर्मुक्तं यदेभिः स्यात्त्रिभिर्गुणैः ॥ ४० ॥",
+      "transliteration": "na tadasti pṛthivyāṃ vā divi deveṣu vā punaḥ | sattvaṃ prakṛtijairmuktaṃ yadebhiḥ syāttribhirguṇaiḥ || 40 ||"
+    },
+    {
+      "ref": "18.41",
+      "text": "Of Brâhmanas, Kshattriyas, Vaishyas and Shûdras, O Parantapa, the duties have been distributed, according to the qualities born of their own natures. (41)",
+      "sanskrit": "ब्राह्मणक्षत्रियविशां शूद्राणां च परन्तप ।\nकर्माणि प्रविभक्तानि स्वभावप्रभवैर्गुणैः ॥ ४१ ॥",
+      "transliteration": "brāhmaṇakṣatriyaviśāṃ śūdrāṇāṃ ca parantapa | karmāṇi pravibhaktāni svabhāvaprabhavairguṇaiḥ || 41 ||"
+    },
+    {
+      "ref": "18.42",
+      "text": "Serenity, self-restraint, austerity, purity, forgiveness and also uprightness, wisdom, knowledge, belief in God, are the Brâhmana duty, born of his own nature. (42)",
+      "sanskrit": "शमो दमस्तपः शौचं क्षान्तिरार्जवमेव च ।\nज्ञानं विज्ञानमास्तिक्यं ब्रह्मकर्म स्वभावजम् ॥ ४२ ॥",
+      "transliteration": "śamo damastapaḥ śaucaṃ kṣāntirārjavameva ca | jñānaṃ vijñānamāstikyaṃ brahmakarma svabhāvajam || 42 ||"
+    },
+    {
+      "ref": "18.43",
+      "text": "Prowess, splendour, firmness, dexterity, and also not flying from battle, generosity, the nature of a ruler, are the Kshattriya duty, born of his own nature. (43)",
+      "sanskrit": "शौर्यं तेजो धृतिर्दाक्ष्यं युद्धे चाप्यपलायनम् ।\nदानमीश्वरभावश्च क्षात्रं कर्म स्वभावजम् ॥ ४३ ॥",
+      "transliteration": "śauryaṃ tejo dhṛtirdākṣyaṃ yuddhe cāpyapalāyanam | dānamīśvarabhāvaśca kṣātraṃ karma svabhāvajam || 43 ||"
+    },
+    {
+      "ref": "18.44",
+      "text": "Ploughing, protection of kine, and trade are the Vaishya duty, born of his own nature. Action of the nature of service is the Shûdra duty, born of his own nature. (44)",
+      "sanskrit": "कृषिगौरक्ष्यवाणिज्यं वैश्यकर्म स्वभावजम् ।\nपरिचर्यात्मकं कर्म शूद्रस्यापि स्वभावजम् ॥ ४४ ॥",
+      "transliteration": "kṛṣigaurakṣyavāṇijyaṃ vaiśyakarma svabhāvajam | paricaryātmakaṃ karma śūdrasyāpi svabhāvajam || 44 ||"
+    },
+    {
+      "ref": "18.45",
+      "text": "Man reacheth perfection by each being intent on his own duty. Listen thou how perfection is won by him who is intent on his own duty. (45)",
+      "sanskrit": "स्वे स्वे कर्मण्यभिरतः संसिद्धिं लभते नरः ।\nस्वकर्मनिरतः सिद्धिं यथा विन्दति तच्छृणु ॥ ४५ ॥",
+      "transliteration": "sve sve karmaṇyabhirataḥ saṃsiddhiṃ labhate naraḥ | svakarmanirataḥ siddhiṃ yathā vindati tacchṛṇu || 45 ||"
+    },
+    {
+      "ref": "18.46",
+      "text": "He from whom is the emanation of beings, by Whom all This is pervaded, by worshipping Him in his own duty a man winneth perfection. (46)",
+      "sanskrit": "यतः प्रवृत्तिर्भूतानां येन सर्वमिदं ततम् ।\nस्वकर्मणा तमभ्यर्च्य सिद्धिं विन्दति मानवः ॥ ४६ ॥",
+      "transliteration": "yataḥ pravṛttirbhūtānāṃ yena sarvamidaṃ tatam | svakarmaṇā tamabhyarcya siddhiṃ vindati mānavaḥ || 46 ||"
+    },
+    {
+      "ref": "18.47",
+      "text": "Better is one's own duty though destitute of merits than the well-executed duty of another. He who doeth the duty laid down by his own nature incurreth not sin. (47)",
+      "sanskrit": "श्रेयान् स्वधर्मो विगुणः परधर्मात्स्वनुष्ठितात् ।\nस्वभावनियतं कर्म कुर्वन्नाप्नोति किल्बिषम् ॥ ४७ ॥",
+      "transliteration": "śreyān svadharmo viguṇaḥ paradharmātsvanuṣṭhitāt | svabhāvaniyataṃ karma kurvannāpnoti kilbiṣam || 47 ||"
+    },
+    {
+      "ref": "18.48",
+      "text": "Congenital duty, O son of Kunti, though defective, ought not to be abandoned. All undertakings indeed are clouded by defects as fire by smoke. (48)",
+      "sanskrit": "सहजं कर्म कौन्तेय सदोषमपि न त्यजेत् ।\nसर्वारम्भा हि दोषेण धूमेनाग्निरिवावृताः ॥ ४८ ॥",
+      "transliteration": "sahajaṃ karma kaunteya sadoṣamapi na tyajet | sarvārambhā hi doṣeṇa dhūmenāgnirivāvṛtāḥ || 48 ||"
+    },
+    {
+      "ref": "18.49",
+      "text": "He whose Reason is everywhere unattached, the self-subdued, dead to desires, he goeth by renunciation to the supreme perfection of freedom from obligation. (49)",
+      "sanskrit": "असक्तबुद्धिः सर्वत्र जितात्मा विगतस्पृहः ।\nनैष्कर्म्यसिद्धिं परमां संन्यासेनाधिगच्छति ॥ ४९ ॥",
+      "transliteration": "asaktabuddhiḥ sarvatra jitātmā vigataspṛhaḥ | naiṣkarmyasiddhiṃ paramāṃ saṃnyāsenādhigacchati || 49 ||"
+    },
+    {
+      "ref": "18.50",
+      "text": "How he who hath attained perfection obtaineth the Eternal, that highest state of wisdom, learn thou from Me only succinctly, O Kaunteya. (50)",
+      "sanskrit": "सिद्धिं प्राप्तो यथा ब्रह्म तथाऽऽप्नोति निबोध मे ।\nसमासेनैव कौन्तेय निष्ठा ज्ञानस्य या परा ॥ ५० ॥",
+      "transliteration": "siddhiṃ prāpto yathā brahma tathā''pnoti nibodha me | samāsenaiva kaunteya niṣṭhā jñānasya yā parā || 50 ||"
+    },
+    {
+      "ref": "18.51",
+      "text": "United to this Reason, purified, controlling the self by firmness, having abandoned sound and the other objects of the senses, having laid aside passion and malice, (51)",
+      "sanskrit": "बुद्ध्या विशुद्धया युक्तो धृत्याऽऽत्मानं नियस्य च ।\nशब्दादीन्विषयांस्त्यक्त्वा रागद्वेषौ व्युदस्य च ॥ ५१ ॥",
+      "transliteration": "buddhyā viśuddhayā yukto dhṛtyā''tmānaṃ niyasya ca | śabdādīnviṣayāṃstyaktvā rāgadveṣau vyudasya ca || 51 ||"
+    },
+    {
+      "ref": "18.52",
+      "text": "Dwelling in solitude, abstemious, speech, body and mind subdued, constantly fixed in meditation and yoga, taking refuge in dispassion, (52)",
+      "sanskrit": "विविक्तसेवी लघ्वाशी यतवाक्कायमानसः ।\nध्यानयोगपरो नित्यं वैराग्यं समुपाश्रितः ॥ ५२ ॥",
+      "transliteration": "viviktasevī laghvāśī yatavākkāyamānasaḥ | dhyānayogaparo nityaṃ vairāgyaṃ samupāśritaḥ || 52 ||"
+    },
+    {
+      "ref": "18.53",
+      "text": "Having cast aside egoism, violence, arrogance, desire, wrath, covetousness, selfless and peaceful—he is fit to become the Eternal. (53)",
+      "sanskrit": "अहङ्कारं बलं दर्पं कामं क्रोधं परिग्रहम् ।\nविमुच्य निर्ममः शान्तो ब्रह्मभूयाय कल्पते ॥ ५३ ॥",
+      "transliteration": "ahaṅkāraṃ balaṃ darpaṃ kāmaṃ krodhaṃ parigraham | vimucya nirmamaḥ śānto brahmabhūyāya kalpate || 53 ||"
+    },
+    {
+      "ref": "18.54",
+      "text": "Becoming the Eternal, serene in the Self, he neither grieveth nor desireth; the same to all beings, he obtaineth supreme devotion unto Me. (54)",
+      "sanskrit": "ब्रह्मभूतः प्रसन्नात्मा न शोचति न काङ्क्षति ।\nसमः सर्वेषु भूतेषु मद्भक्तिं लभते पराम् ॥ ५४ ॥",
+      "transliteration": "brahmabhūtaḥ prasannātmā na śocati na kāṅkṣati | samaḥ sarveṣu bhūteṣu madbhaktiṃ labhate parām || 54 ||"
+    },
+    {
+      "ref": "18.55",
+      "text": "By devotion he knoweth Me in essence, who and what I am; having thus known Me in essence he forthwith entereth into the Supreme. (55)",
+      "sanskrit": "भक्त्या मामभिजानाति यावान्यश्चास्मि तत्त्वतः ।\nततो मां तत्त्वतो ज्ञात्वा विशते तदनन्तरम् ॥ ५५ ॥",
+      "transliteration": "bhaktyā māmabhijānāti yāvānyaścāsmi tattvataḥ | tato māṃ tattvato jñātvā viśate tadanantaram || 55 ||"
+    },
+    {
+      "ref": "18.56",
+      "text": "Though ever performing all actions, taking refuge in Me, by My grace he obtaineth the eternal indestructible abode. (56)",
+      "sanskrit": "सर्वकर्माण्यपि सदा कुर्वाणो मद्व्यपाश्रयः ।\nमत्प्रसादादवाप्नोति शाश्वतं पदमव्ययम् ॥ ५६ ॥",
+      "transliteration": "sarvakarmāṇyapi sadā kurvāṇo madvyapāśrayaḥ | matprasādādavāpnoti śāśvataṃ padamavyayam || 56 ||"
+    },
+    {
+      "ref": "18.57",
+      "text": "Renouncing mentally all works in Me, intent on Me, resorting to the yoga of discrimination, have thy thought ever on Me. (57)",
+      "sanskrit": "चेतसा सर्वकर्माणि मयि संन्यस्य मत्परः ।\nबुद्धियोगमुपाश्रित्य मच्चित्तः सततं भव ॥ ५७ ॥",
+      "transliteration": "cetasā sarvakarmāṇi mayi saṃnyasya matparaḥ | buddhiyogamupāśritya maccittaḥ satataṃ bhava || 57 ||"
+    },
+    {
+      "ref": "18.58",
+      "text": "Thinking on Me, thou shalt overcome all obstacles by My grace: but if from egoism thou wilt not listen, thou shalt be destroyed utterly. (58)",
+      "sanskrit": "मच्चित्तः सर्वदुर्गाणि मत्प्रसादात्तरिष्यसि ।\nअथ चेत्त्वमहङ्कारान्न श्रोष्यसि विनङ्क्ष्यसि ॥ ५८ ॥",
+      "transliteration": "maccittaḥ sarvadurgāṇi matprasādāttariṣyasi | atha cettvamahaṅkārānna śroṣyasi vinaṅkṣyasi || 58 ||"
+    },
+    {
+      "ref": "18.59",
+      "text": "Entrenched in egoism, thou thinkest, \"I will not fight;\" to no purpose thy determination; nature will constrain thee. (59)",
+      "sanskrit": "यदहङ्कारमाश्रित्य न योत्स्य इति मन्यसे ।\nमिथ्यैष व्यवसायस्ते प्रकृतिस्त्वां नियोक्ष्यति ॥ ५९ ॥",
+      "transliteration": "yadahaṅkāramāśritya na yotsya iti manyase | mithyaiṣa vyavasāyaste prakṛtistvāṃ niyokṣyati || 59 ||"
+    },
+    {
+      "ref": "18.60",
+      "text": "O son of Kuntî, bound by thine own duty born of thine own nature, that which from delusion thou desirest not to do, even that helplessly thou shalt perform. (60)",
+      "sanskrit": "स्वभावजेन कौन्तेय निबद्धः स्वेन कर्मणा ।\nकर्तुं नेच्छसि यन्मोहात्करिष्यस्यवशोऽपि तत् ॥ ६० ॥",
+      "transliteration": "svabhāvajena kaunteya nibaddhaḥ svena karmaṇā | kartuṃ necchasi yanmohātkariṣyasyavaśo'pi tat || 60 ||"
+    },
+    {
+      "ref": "18.61",
+      "text": "The Lord dwelleth in the hearts of all beings, O Arjuna, by His illusive Power causing all beings to revolve, as though mounted on a potter's wheel. (61)",
+      "sanskrit": "ईश्वरः सर्वभूतानां हृद्देशेऽर्जुन तिष्ठति ।\nभ्रामयन्सर्वभूतानि यन्त्रारूढानि मायया ॥ ६१ ॥",
+      "transliteration": "īśvaraḥ sarvabhūtānāṃ hṛddeśe'rjuna tiṣṭhati | bhrāmayansarvabhūtāni yantrārūḍhāni māyayā || 61 ||"
+    },
+    {
+      "ref": "18.62",
+      "text": "Flee unto Him for shelter with all thy being, O Bhârata; by His grace thou shalt obtain supreme peace, the everlasting dwelling-place. (62)",
+      "sanskrit": "तमेव शरणं गच्छ सर्वभावेन भारत ।\nतत्प्रसादात्परां शान्तिं स्थानं प्राप्स्यसि शाश्वतम् ॥ ६२ ॥",
+      "transliteration": "tameva śaraṇaṃ gaccha sarvabhāvena bhārata | tatprasādātparāṃ śāntiṃ sthānaṃ prāpsyasi śāśvatam || 62 ||"
+    },
+    {
+      "ref": "18.63",
+      "text": "Thus hath wisdom, more secret than secrecy itself, been declared unto thee by Me; having reflected on it fully, then act thou as thou listest. (63)",
+      "sanskrit": "इति ते ज्ञानमाख्यातं गुह्याद्‌गुह्यतरं मया ।\nविमृश्यैतदशेषेण यथेच्छसि तथा कुरु ॥ ६३ ॥",
+      "transliteration": "iti te jñānamākhyātaṃ guhyād‌guhyataraṃ mayā | vimṛśyaitadaśeṣeṇa yathecchasi tathā kuru || 63 ||"
+    },
+    {
+      "ref": "18.64",
+      "text": "Listen thou again to My supreme word, most secret of all; beloved art thou of Me, and steadfast of heart, therefore will I speak for thy benefit. (64)",
+      "sanskrit": "सर्वगुह्यतमं भूयः शृणु मे परमं वचः ।\nइष्टोऽसि मे दृढमिति ततो वक्ष्यामि ते हितम् ॥ ६४ ॥",
+      "transliteration": "sarvaguhyatamaṃ bhūyaḥ śṛṇu me paramaṃ vacaḥ | iṣṭo'si me dṛḍhamiti tato vakṣyāmi te hitam || 64 ||"
+    },
+    {
+      "ref": "18.65",
+      "text": "Merge thy mind in Me, be my devotee, sacrifice to Me, prostrate thyself before Me, thou shalt come even to Me. I pledge thee My troth; thou art dear to Me. (65)",
+      "sanskrit": "मन्मना भव मद्भक्तो मद्याजी मां नमस्कुरु ।\nमामेवैष्यसि सत्यं ते प्रतिजाने प्रियोऽसि मे ॥ ६५ ॥",
+      "transliteration": "manmanā bhava madbhakto madyājī māṃ namaskuru | māmevaiṣyasi satyaṃ te pratijāne priyo'si me || 65 ||"
+    },
+    {
+      "ref": "18.66",
+      "text": "Abandoning all duties come unto Me alone for shelter; sorrow not, I will liberate thee from all sins. (66)",
+      "sanskrit": "सर्वधर्मान्परित्यज्य मामेकं शरणं व्रज ।\nअहं त्वां सर्वपापेभ्यो मोक्षयिष्यामि मा शुचः ॥ ६६ ॥",
+      "transliteration": "sarvadharmānparityajya māmekaṃ śaraṇaṃ vraja | ahaṃ tvāṃ sarvapāpebhyo mokṣayiṣyāmi mā śucaḥ || 66 ||"
+    },
+    {
+      "ref": "18.67",
+      "text": "Never is this to be spoken by thee to anyone who is without asceticism, nor without devotion, nor to one who desireth not to listen, nor yet to him who speaketh evil of Me. (67)",
+      "sanskrit": "इदं ते नातपस्काय नाभक्ताय कदाचन ।\nन चाशुश्रूषवे वाच्यं न च मां योऽभ्यसूयति ॥ ६७ ॥",
+      "transliteration": "idaṃ te nātapaskāya nābhaktāya kadācana | na cāśuśrūṣave vācyaṃ na ca māṃ yo'bhyasūyati || 67 ||"
+    },
+    {
+      "ref": "18.68",
+      "text": "He who shall declare this supreme secret among My devotees, having shown the highest devotion for Me, without doubt he shall come to Me. (68)",
+      "sanskrit": "य इदं परमं गुह्यं मद्भक्तेष्वभिधास्यति ।\nभक्तिं मयि परां कृत्वा मामेवैष्यत्यसंशयम् ॥ ६८ ॥",
+      "transliteration": "ya idaṃ paramaṃ guhyaṃ madbhakteṣvabhidhāsyati | bhaktiṃ mayi parāṃ kṛtvā māmevaiṣyatyasaṃśayam || 68 ||"
+    },
+    {
+      "ref": "18.69",
+      "text": "Nor is there any among men who performeth dearer service to Me than he, nor any other shall be more beloved by Me on earth than he. (69)",
+      "sanskrit": "न च तस्मान्मनुष्येषु कश्चिन्मे प्रियकृत्तमः ।\nभविता न च मे तस्मादन्यः प्रियतरो भुवि ॥ ६९ ॥",
+      "transliteration": "na ca tasmānmanuṣyeṣu kaścinme priyakṛttamaḥ | bhavitā na ca me tasmādanyaḥ priyataro bhuvi || 69 ||"
+    },
+    {
+      "ref": "18.70",
+      "text": "And he who shall study this sacred dialogue of ours, by him I shall be worshipped with the sacrifice of wisdom. Such is My mind. (70)",
+      "sanskrit": "अध्येष्यते च य इमं धर्म्यं संवादमावयोः ।\nज्ञानयज्ञेन तेनाहमिष्टः स्यामिति मे मतिः ॥ ७० ॥",
+      "transliteration": "adhyeṣyate ca ya imaṃ dharmyaṃ saṃvādamāvayoḥ | jñānayajñena tenāhamiṣṭaḥ syāmiti me matiḥ || 70 ||"
+    },
+    {
+      "ref": "18.71",
+      "text": "The man also who, full of faith, merely heareth it unreviling, even he, freed from evil, obtaineth the radiant worlds of the righteous. (71)",
+      "sanskrit": "श्रद्धावाननसूयश्च शृणुयादपि यो नरः ।\nसोऽपि मुक्तः शुभांल्लोकान्प्राप्नुयात्पुण्यकर्मणाम् ॥ ७१ ॥",
+      "transliteration": "śraddhāvānanasūyaśca śṛṇuyādapi yo naraḥ | so'pi muktaḥ śubhāṃllokānprāpnuyātpuṇyakarmaṇām || 71 ||"
+    },
+    {
+      "ref": "18.72",
+      "text": "Hath this been heard, O son of Prithâ, with one-pointed mind? Has thy delusion, caused by unwisdom, been destroyed, O Dhananjaya? (72)",
+      "sanskrit": "कच्चिदेतच्छ्रुतं पार्थ त्वयैकाग्रेण चेतसा ।\nकच्चिदज्ञानसम्मोहः प्रणष्टस्ते धनञ्जय ॥ ७२ ॥",
+      "transliteration": "kaccidetacchrutaṃ pārtha tvayaikāgreṇa cetasā | kaccidajñānasammohaḥ praṇaṣṭaste dhanañjaya || 72 ||"
+    },
+    {
+      "ref": "18.73",
+      "text": "Arjuna said:\nDestroyed is my delusion. I have gained knowledge through Thy grace, O Immutable one. I am firm, my doubts have fled away. I will do according to Thy word. (73)",
+      "sanskrit": "अर्जुन उवाच ।\nनष्टो मोहः स्मूतिर्लब्धा त्वत्प्रसादान्मयाऽच्युत ।\nस्थितोऽस्मि गतसन्देहः करिष्ये वचनं तव ॥ ७३ ॥",
+      "transliteration": "arjuna uvāca | naṣṭo mohaḥ smūtirlabdhā tvatprasādānmayā'cyuta | sthito'smi gatasandehaḥ kariṣye vacanaṃ tava || 73 ||"
+    },
+    {
+      "ref": "18.74",
+      "text": "Sanjaya said:\nI heard this marvellous dialogue of Vâsudeva, and of the great-souled Partha, causing my hair to stand on end. (74)",
+      "sanskrit": "सञ्जय उवाच ।\nइत्यहं वासुदेवस्य पार्थस्य च महात्मनः ।\nसंवादमिममश्रौषमद्भुतं रोमहर्षणम् ॥ ७४ ॥",
+      "transliteration": "sañjaya uvāca | ityahaṃ vāsudevasya pārthasya ca mahātmanaḥ | saṃvādamimamaśrauṣamadbhutaṃ romaharṣaṇam || 74 ||"
+    },
+    {
+      "ref": "18.75",
+      "text": "By the favour of Vyâsa I listened to this secret and supreme yoga from the Lord of Yoga, Krishna Himself, speaking before mine eyes. (75)",
+      "sanskrit": "व्यासप्रसादाच्छ्रुतवानेतद् गुह्यमहं परम् ।\nयोगं योगेश्वरात्कृष्णात्साक्षात्कथयतः स्वयम् ॥ ७५ ॥",
+      "transliteration": "vyāsaprasādācchrutavānetad guhyamahaṃ param | yogaṃ yogeśvarātkṛṣṇātsākṣātkathayataḥ svayam || 75 ||"
+    },
+    {
+      "ref": "18.76",
+      "text": "O King, remembering, remembering this marvellous and holy dialogue between Keshava and Arjuna, I rejoice again and again. (76)",
+      "sanskrit": "राजन्संस्मृत्य संस्मृत्य संवादमिममद्भुतम् ।\nकेशवार्जुनयोः पुण्यं हृष्यामि च मुहुर्मुहुः ॥ ७६ ॥",
+      "transliteration": "rājansaṃsmṛtya saṃsmṛtya saṃvādamimamadbhutam | keśavārjunayoḥ puṇyaṃ hṛṣyāmi ca muhurmuhuḥ || 76 ||"
+    },
+    {
+      "ref": "18.77",
+      "text": "Remembering, remembering, also that most marvellous form of Hari, great is my wonder, O King. I rejoice, again and again. (77)",
+      "sanskrit": "तच्च संस्मृत्य संस्मृत्य रूपमत्यद्भुतं हरेः ।\nविस्मयो मे महान् राजन् हृष्यामि च पुनः पुनः ॥ ७७ ॥",
+      "transliteration": "tacca saṃsmṛtya saṃsmṛtya rūpamatyadbhutaṃ hareḥ | vismayo me mahān rājan hṛṣyāmi ca punaḥ punaḥ || 77 ||"
+    },
+    {
+      "ref": "18.78",
+      "text": "Wherever is Krishna, Yoga's Lord, wherever is Pârtha, the archer, assured are there prosperity, victory and happiness. So I think. (78)",
+      "sanskrit": "यत्र योगेश्वरः कृष्णो यत्र पार्थो धनुर्धरः ।\nतत्र श्रीर्विजयो भूतिर्ध्रुवा नीतिर्मतिर्मम ॥ ७८ ॥",
+      "transliteration": "yatra yogeśvaraḥ kṛṣṇo yatra pārtho dhanurdharaḥ | tatra śrīrvijayo bhūtirdhruvā nītirmatirmama || 78 ||"
+    }
+  ]
+}

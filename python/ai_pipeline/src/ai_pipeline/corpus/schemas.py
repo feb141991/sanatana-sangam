@@ -8,6 +8,9 @@ from typing import Any
 class ContentSegment:
     ref: str
     text: str
+    sanskrit: str | None = None
+    transliteration: str | None = None
+
 
 
 @dataclass(slots=True)
@@ -33,7 +36,12 @@ class DocumentManifest:
     @classmethod
     def from_dict(cls, payload: dict[str, Any]) -> "DocumentManifest":
         segments = [
-            ContentSegment(ref=item["ref"], text=item["text"])
+            ContentSegment(
+                ref=item["ref"],
+                text=item["text"],
+                sanskrit=item.get("sanskrit"),
+                transliteration=item.get("transliteration"),
+            )
             for item in payload.get("content", [])
         ]
         return cls(

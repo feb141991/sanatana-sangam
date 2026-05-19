@@ -1,0 +1,272 @@
+{
+  "doc_id": "gita_chapter_4",
+  "title": "Bhagavad Gita - Chapter 4",
+  "tradition": "Sanatana Dharma",
+  "scripture_family": "gita",
+  "section_id": "chapter_4",
+  "source_name": "Wikisource Annie Besant Translation",
+  "source_url": "https://en.wikisource.org/wiki/The_Bhagavad_Gita",
+  "source_owner": "public-domain",
+  "source_class": "translation",
+  "rights_status": "public_domain",
+  "language": "en",
+  "script": "Latn",
+  "is_live_in_app": true,
+  "companion_only": false,
+  "audio_status": "available",
+  "revision_note": "Exported from app gita-full-data.",
+  "content": [
+    {
+      "ref": "4.1",
+      "text": "The Blessed Lord said:\nThis imperishable yoga I declared to Vivasvân; Vivasvân taught it to Manu; Manu to Ikshvâku told it. (1)",
+      "sanskrit": "श्रीभगवानुवाच ।\nइमं विवस्वते योगं प्रोक्तवानहमव्ययम् ।\nविवस्वान्मनवे प्राह मनुरिक्ष्वाकवेऽब्रवीत् ॥ १ ॥",
+      "transliteration": "śrībhagavānuvāca | imaṃ vivasvate yogaṃ proktavānahamavyayam | vivasvānmanave prāha manurikṣvākave'bravīt || 1 ||"
+    },
+    {
+      "ref": "4.2",
+      "text": "This, handed on down the line, the King-Sages knew. This yoga by great efflux of time decayed in the world, O Parantapa. (2)",
+      "sanskrit": "एवं परम्पराप्राप्तमिमं राजर्षयो विदुः ।\nस कालेनेह महता योगो नष्टः परन्तप ॥ २ ॥",
+      "transliteration": "evaṃ paramparāprāptamimaṃ rājarṣayo viduḥ | sa kāleneha mahatā yogo naṣṭaḥ parantapa || 2 ||"
+    },
+    {
+      "ref": "4.3",
+      "text": "This same ancient yoga hath been to-day declared to thee by Me, for thou art My devotee and My friend; it is the supreme Secret. (3)",
+      "sanskrit": "स एवाऽयं मया तेऽद्य योगः प्रोक्तः पुरातनः ।\nभक्तोऽसि मे सखा चेति रहस्यं ह्येतदुत्तमम् ॥ ३ ॥",
+      "transliteration": "sa evā'yaṃ mayā te'dya yogaḥ proktaḥ purātanaḥ | bhakto'si me sakhā ceti rahasyaṃ hyetaduttamam || 3 ||"
+    },
+    {
+      "ref": "4.4",
+      "text": "Arjuna said:\nLater was Thy birth, earlier the birth of Vivasvân; how then am I to understand that Thou declaredst it in the beginning? (4)",
+      "sanskrit": "अर्जुन उवाच ।\nअपरं भवतो जन्म परं जन्म विवस्वतः ।\nकथमेतद्विजानीयां त्वमादौ प्रोक्तवानिति ॥ ४ ॥",
+      "transliteration": "arjuna uvāca | aparaṃ bhavato janma paraṃ janma vivasvataḥ | kathametadvijānīyāṃ tvamādau proktavāniti || 4 ||"
+    },
+    {
+      "ref": "4.5",
+      "text": "The Blessed Lord said:\nMany births have been left behind by Me and by thee, O Arjuna. I know them all, but thou knowest not thine, O Parantapa. (5)",
+      "sanskrit": "श्रीभगवानुवाच ।\nबहूनि मे व्यतीतानि जन्मानि तव चार्जुन ।\nतान्यहं वेद सर्वाणि न त्वं वेत्थ परन्तप ॥ ५ ॥",
+      "transliteration": "śrībhagavānuvāca | bahūni me vyatītāni janmāni tava cārjuna | tānyahaṃ veda sarvāṇi na tvaṃ vettha parantapa || 5 ||"
+    },
+    {
+      "ref": "4.6",
+      "text": "Though unborn, the imperishable Self, and also the Lord of all beings, brooding over nature which is Mine own, yet I am born through My own Power. (6)",
+      "sanskrit": "अजोऽपि सन्नव्ययात्मा भूतानामीश्वरोऽपि सन् ।\nप्रकृतिं स्वामधिष्टाय सम्भवाम्यात्ममायया ॥ ६ ॥",
+      "transliteration": "ajo'pi sannavyayātmā bhūtānāmīśvaro'pi san | prakṛtiṃ svāmadhiṣṭāya sambhavāmyātmamāyayā || 6 ||"
+    },
+    {
+      "ref": "4.7",
+      "text": "Whenever there is decay of righteousness, O Bhârata, and there is exaltation of unrighteousness, then I Myself come forth; (7)",
+      "sanskrit": "यदा यदा हि धर्मस्य ग्लानिर्भवति भारत ।\nअभ्युत्थानमधर्मस्य तदाऽऽत्मानं सृजाम्यहम् ॥ ७ ॥",
+      "transliteration": "yadā yadā hi dharmasya glānirbhavati bhārata | abhyutthānamadharmasya tadā''tmānaṃ sṛjāmyaham || 7 ||"
+    },
+    {
+      "ref": "4.8",
+      "text": "For the protection of the good, for the destruction of evil-doers, for the sake of firmly establishing righteousness, I am born from age to age. (8)",
+      "sanskrit": "परित्राणाय साधूनां विनाशाय च दुष्कृताम् ।\nधर्मसंस्थापनार्थाय सम्भवामि युगे युगे ॥ ८ ॥",
+      "transliteration": "paritrāṇāya sādhūnāṃ vināśāya ca duṣkṛtām | dharmasaṃsthāpanārthāya sambhavāmi yuge yuge || 8 ||"
+    },
+    {
+      "ref": "4.9",
+      "text": "He who thus knoweth My divine birth and action, in its essence, having abandoned the body, cometh not to birth again, but cometh unto Me, O Arjuna. (9)",
+      "sanskrit": "जन्म कर्म च मे दिव्यमेवं यो वेत्ति तत्त्वतः ।\nत्यक्त्वा देहं पुनर्जन्म नैति मामेति सोऽर्जुन ॥ ९ ॥",
+      "transliteration": "janma karma ca me divyamevaṃ yo vetti tattvataḥ | tyaktvā dehaṃ punarjanma naiti māmeti so'rjuna || 9 ||"
+    },
+    {
+      "ref": "4.10",
+      "text": "Freed from passion, fear and anger, filled with Me, taking refuge in Me, purified in the fire of wisdom, many have entered into My Being. (10)",
+      "sanskrit": "वीतरागभयक्रोधा मन्मया मामुपाश्रिताः ।\nबहवो ज्ञानतपसा पूता मद्भावमागताः ॥ १० ॥",
+      "transliteration": "vītarāgabhayakrodhā manmayā māmupāśritāḥ | bahavo jñānatapasā pūtā madbhāvamāgatāḥ || 10 ||"
+    },
+    {
+      "ref": "4.11",
+      "text": "However men approach Me, even so do I welcome them, for the path men take from every side is Mine, O Pârtha. (11)",
+      "sanskrit": "ये यथा मां प्रपद्यन्ते तांस्तथैव भजाम्यहम् ।\nमम वर्त्मानुवर्तन्ते मनुष्याः पार्थ सर्वशः ॥ ११ ॥",
+      "transliteration": "ye yathā māṃ prapadyante tāṃstathaiva bhajāmyaham | mama vartmānuvartante manuṣyāḥ pārtha sarvaśaḥ || 11 ||"
+    },
+    {
+      "ref": "4.12",
+      "text": "They who long after success in action on earth worship the Shining Ones; for in brief space verily, in this world of men, success is born of action. (12)",
+      "sanskrit": "काङ्क्षन्तः कर्मणां सिद्धिं यजन्त इह देवताः ।\nक्षिप्रं हि मानुषे लोके सिद्धिर्भवति कर्मजा ॥ १२ ॥",
+      "transliteration": "kāṅkṣantaḥ karmaṇāṃ siddhiṃ yajanta iha devatāḥ | kṣipraṃ hi mānuṣe loke siddhirbhavati karmajā || 12 ||"
+    },
+    {
+      "ref": "4.13",
+      "text": "The four castes were emanated by Me, by the different distribution of qualities and actions; know Me to be the author of them, though the actionless and inexhaustible. (13)",
+      "sanskrit": "चातुर्वर्ण्यं मया सृष्टं गुणकर्मविभागशः ।\nतस्य कर्तारमपि मां विद्ध्यकर्तारमव्ययम् ॥ १३ ॥",
+      "transliteration": "cāturvarṇyaṃ mayā sṛṣṭaṃ guṇakarmavibhāgaśaḥ | tasya kartāramapi māṃ viddhyakartāramavyayam || 13 ||"
+    },
+    {
+      "ref": "4.14",
+      "text": "Nor do actions affect Me, nor is the fruit of action desired by Me. He who thus knoweth Me is not bound by actions. (14)",
+      "sanskrit": "न मां कर्माणि लिम्पन्ति न मे कर्मफले स्पृहा ।\nइति मां योऽभिजानाति कर्मभिर्न स बद्ध्यते ॥ १४ ॥",
+      "transliteration": "na māṃ karmāṇi limpanti na me karmaphale spṛhā | iti māṃ yo'bhijānāti karmabhirna sa baddhyate || 14 ||"
+    },
+    {
+      "ref": "4.15",
+      "text": "Having thus known, our forefathers, ever seeking liberation, performed action; therefore do thou also perform action, as did our forefathers in the olden time. (15)",
+      "sanskrit": "एवं ज्ञात्वा कृतं कर्म पूर्वैरपि मुमुक्षुभिः ।\nकुरु कर्मैव तस्मात्त्वं पूर्वैः पूर्वतरं कृतम् ॥ १५ ॥",
+      "transliteration": "evaṃ jñātvā kṛtaṃ karma pūrvairapi mumukṣubhiḥ | kuru karmaiva tasmāttvaṃ pūrvaiḥ pūrvataraṃ kṛtam || 15 ||"
+    },
+    {
+      "ref": "4.16",
+      "text": "\"What is action, what inaction\"? Even the wise are herein perplexed. Therefore I will declare to thee the action by knowing which thou shalt be loosed from evil. (16)",
+      "sanskrit": "किं कर्म किमकर्मेति कवयोऽप्यत्र मोहिताः ।\nतत्ते कर्म प्रवक्ष्यामि यज्ज्ञात्वा मोक्ष्यसेऽशुभात् ॥ १६ ॥",
+      "transliteration": "kiṃ karma kimakarmeti kavayo'pyatra mohitāḥ | tatte karma pravakṣyāmi yajjñātvā mokṣyase'śubhāt || 16 ||"
+    },
+    {
+      "ref": "4.17",
+      "text": "It is needful to discriminate action, to discriminate unlawful action, and to discriminate inaction; mysterious is the path of action. (17)",
+      "sanskrit": "कर्मणो ह्यपि बोद्धव्यं बोद्धव्यं च विकर्मणः ।\nअकर्मणश्च बोद्धव्यं गहना कर्मणो गतिः ॥ १७ ॥",
+      "transliteration": "karmaṇo hyapi boddhavyaṃ boddhavyaṃ ca vikarmaṇaḥ | akarmaṇaśca boddhavyaṃ gahanā karmaṇo gatiḥ || 17 ||"
+    },
+    {
+      "ref": "4.18",
+      "text": "He who seeth inaction in action, and action in inaction, he is wise among men, he is harmonious, even while performing all action. (18)",
+      "sanskrit": "कर्मण्यकर्म यः पश्येदकर्मणि च कर्म यः ।\nस बुद्धिमान्मनुष्येषु स युक्तः कृत्स्नकर्मकृत् ॥ १८ ॥",
+      "transliteration": "karmaṇyakarma yaḥ paśyedakarmaṇi ca karma yaḥ | sa buddhimānmanuṣyeṣu sa yuktaḥ kṛtsnakarmakṛt || 18 ||"
+    },
+    {
+      "ref": "4.19",
+      "text": "Whose works are all free from the moulding of desire, whose actions are burned up by the fire of wisdom, him the wise have called a Sage. (19)",
+      "sanskrit": "यस्य सर्वे समारम्भाः कामसङ्कल्पवर्जिताः ।\nज्ञानाग्निदग्धकर्माणं तमाहुः पण्डितं बुधाः ॥ १९ ॥",
+      "transliteration": "yasya sarve samārambhāḥ kāmasaṅkalpavarjitāḥ | jñānāgnidagdhakarmāṇaṃ tamāhuḥ paṇḍitaṃ budhāḥ || 19 ||"
+    },
+    {
+      "ref": "4.20",
+      "text": "Having abandoned attachment to the fruit of action, always content, nowhere seeking refuge, he is not doing anything, although doing actions. (20)",
+      "sanskrit": "त्यक्त्वा कर्मफलासङ्गं नित्यतृप्तो निराश्रयः ।\nकर्मण्यभिप्रवृत्तोऽपि नैव किञ्चित्करोति सः ॥ २० ॥",
+      "transliteration": "tyaktvā karmaphalāsaṅgaṃ nityatṛpto nirāśrayaḥ | karmaṇyabhipravṛtto'pi naiva kiñcitkaroti saḥ || 20 ||"
+    },
+    {
+      "ref": "4.21",
+      "text": "Hoping for naught, his mind and self controlled, having abandoned all greed, performing action by the body alone, he doth not commit sin. (21)",
+      "sanskrit": "निराशीर्यतचित्तात्मा त्यक्तसर्वपरिग्रहः ।\nशारीरं केवलं कर्म कुर्वन्नाप्नोति किल्बिषम् ॥ २१ ॥",
+      "transliteration": "nirāśīryatacittātmā tyaktasarvaparigrahaḥ | śārīraṃ kevalaṃ karma kurvannāpnoti kilbiṣam || 21 ||"
+    },
+    {
+      "ref": "4.22",
+      "text": "Content with whatsoever he obtaineth without effort, free from the pairs of opposites, without envy, balanced in success and failure, though\nacting he is not bound. (22)",
+      "sanskrit": "यदृच्छालाभसन्तुष्टो द्वन्द्वातीतो विमत्सरः ।\nसमः सिद्धावसिद्धौ च कृत्वाऽपि न निबध्यते ॥ २२ ॥",
+      "transliteration": "yadṛcchālābhasantuṣṭo dvandvātīto vimatsaraḥ | samaḥ siddhāvasiddhau ca kṛtvā'pi na nibadhyate || 22 ||"
+    },
+    {
+      "ref": "4.23",
+      "text": "Of one with attachment dead, harmonious, with his thoughts established in wisdom, his works sacrifices, all action melts away. (23)",
+      "sanskrit": "गतसङ्गस्य मुक्तस्य ज्ञानावस्थितचेतसः ।\nयज्ञायाचरतः कर्म समग्रं प्रविलीयते ॥ २३ ॥",
+      "transliteration": "gatasaṅgasya muktasya jñānāvasthitacetasaḥ | yajñāyācarataḥ karma samagraṃ pravilīyate || 23 ||"
+    },
+    {
+      "ref": "4.24",
+      "text": "The Eternal the oblation, the Eternal the clarified butter, are offered in the Eternal the fire by the Eternal; unto the Eternal verily shall he go who in his action meditateth wholly upon the Eternal. (24)",
+      "sanskrit": "ब्रह्मार्पणं ब्रह्म हविर्ब्रह्माग्नौ ब्रह्मणा हुतम् ।\nब्रह्मैव तेन गन्तव्यं ब्रह्मकर्मसमाधिना ॥ २४ ॥",
+      "transliteration": "brahmārpaṇaṃ brahma havirbrahmāgnau brahmaṇā hutam | brahmaiva tena gantavyaṃ brahmakarmasamādhinā || 24 ||"
+    },
+    {
+      "ref": "4.25",
+      "text": "Some Yogis offer up sacrifice to the Shining Ones; others sacrifice only by pouring sacrifice into the fire of the Eternal; (25)",
+      "sanskrit": "दैवमेवापरे यज्ञं योगिनः पर्युपासते ।\nब्रह्माग्नावपरे यज्ञं यज्ञेनैवोपजुह्वति ॥ २५ ॥",
+      "transliteration": "daivamevāpare yajñaṃ yoginaḥ paryupāsate | brahmāgnāvapare yajñaṃ yajñenaivopajuhvati || 25 ||"
+    },
+    {
+      "ref": "4.26",
+      "text": "Some pour as sacrifice hearing and the other senses into the fires of restraint; some pour sound and the other objects of sense into the fires of the senses as sacrifice; (26)",
+      "sanskrit": "श्रोत्रादीनीन्द्रियाण्यन्ये संयमाग्निषु जुह्वति ।\nशब्दादीन्विषयानन्य इन्द्रियाग्निषु जुह्वति ॥ २६ ॥",
+      "transliteration": "śrotrādīnīndriyāṇyanye saṃyamāgniṣu juhvati | śabdādīnviṣayānanya indriyāgniṣu juhvati || 26 ||"
+    },
+    {
+      "ref": "4.27",
+      "text": "Others again into the wisdom-kindled fire of union attained by self-control, pour as sacrifice all the functions of the senses and the functions of life; (27)",
+      "sanskrit": "सर्वाणीन्द्रियकर्माणि प्राणकर्माणि चापरे ।\nआत्मसंयमयोगाग्नौ जुह्वति ज्ञानदीपिते ॥ २७ ॥",
+      "transliteration": "sarvāṇīndriyakarmāṇi prāṇakarmāṇi cāpare | ātmasaṃyamayogāgnau juhvati jñānadīpite || 27 ||"
+    },
+    {
+      "ref": "4.28",
+      "text": "Yet others the sacrifice of wealth, the sacrifice of austerity, the sacrifice of yoga, the sacrifice of silent reading and wisdom, men concentrated and of effectual vows; (28)",
+      "sanskrit": "द्रव्ययज्ञास्तपोयज्ञा योगयज्ञास्तथाऽपरे ।\nस्वाध्यायज्ञानयज्ञाश्च यतयः संशितव्रताः ॥ २८ ॥",
+      "transliteration": "dravyayajñāstapoyajñā yogayajñāstathā'pare | svādhyāyajñānayajñāśca yatayaḥ saṃśitavratāḥ || 28 ||"
+    },
+    {
+      "ref": "4.29",
+      "text": "Yet others pour as sacrifice the outgoing breath in the incoming, and the incoming in the outgoing, restraining the flow of the outgoing and incoming breaths, solely absorbed in the control of breathing. (29)",
+      "sanskrit": "अपाने जुह्वति प्राणं प्राणेऽपानं तथाऽपरे ।\nप्राणापानगती रुध्वा प्राणायामपरायणाः ॥ २९ ॥",
+      "transliteration": "apāne juhvati prāṇaṃ prāṇe'pānaṃ tathā'pare | prāṇāpānagatī rudhvā prāṇāyāmaparāyaṇāḥ || 29 ||"
+    },
+    {
+      "ref": "4.30",
+      "text": "Others regular in food, pour as sacrifice their life-breaths in life-breaths. All these are knowers of sacrifice, and by sacrifice have destroyed their sins. (30)",
+      "sanskrit": "अपरे नियताहाराः प्राणान्प्राणेषु जुह्वति ।\nसर्वेऽप्येते यज्ञविदो यज्ञक्षपितकल्मषाः ॥ ३० ॥",
+      "transliteration": "apare niyatāhārāḥ prāṇānprāṇeṣu juhvati | sarve'pyete yajñavido yajñakṣapitakalmaṣāḥ || 30 ||"
+    },
+    {
+      "ref": "4.31",
+      "text": "The eaters of the life-giving remains of sacrifice go to the changeless Eternal. This world is not for the non-sacrificer, much less the other, O best of the Kurus. (31)",
+      "sanskrit": "यज्ञशिष्टामृतभुजो यान्ति ब्रह्म सनातनम् ।\nनायं लोकोऽस्त्ययज्ञस्य कुतोऽन्यः कुरुसत्तम ॥ ३१ ॥",
+      "transliteration": "yajñaśiṣṭāmṛtabhujo yānti brahma sanātanam | nāyaṃ loko'styayajñasya kuto'nyaḥ kurusattama || 31 ||"
+    },
+    {
+      "ref": "4.32",
+      "text": "Many and various sacrifices are thus spread out before the Eternal. Know thou that all\nthese are born of action, and thus knowing thou shalt be free. (32)",
+      "sanskrit": "एवं बहुविधा यज्ञा वितता ब्रह्मणो मुखे ।\nकर्मजान्विद्धि तान्सर्वानेवं ज्ञात्वा विमोक्ष्यसे ॥ ३२ ॥",
+      "transliteration": "evaṃ bahuvidhā yajñā vitatā brahmaṇo mukhe | karmajānviddhi tānsarvānevaṃ jñātvā vimokṣyase || 32 ||"
+    },
+    {
+      "ref": "4.33",
+      "text": "Better than the sacrifice of any objects is the sacrifice of wisdom, O Parantapa. All actions in their entirety, O Pârtha, culminate in wisdom. (33)",
+      "sanskrit": "श्रेयान्द्रव्यमयाद्यज्ञाज्ज्ञानयज्ञः परन्तप ।\nसर्वं कर्माखिलं पार्थ ज्ञाने परिसमाप्यते ॥ ३३ ॥",
+      "transliteration": "śreyāndravyamayādyajñājjñānayajñaḥ parantapa | sarvaṃ karmākhilaṃ pārtha jñāne parisamāpyate || 33 ||"
+    },
+    {
+      "ref": "4.34",
+      "text": "Learn thou this by discipleship, by investigation, and by service. The wise, the seers of the essence of things, will instruct thee in wisdom. (34)",
+      "sanskrit": "तद्विद्धि प्रणिपातेन परिप्रश्नेन सेवया ।\nउपदेक्ष्यन्ति ते ज्ञानं ज्ञानिनस्तत्त्वदर्शिनः ॥ ३४ ॥",
+      "transliteration": "tadviddhi praṇipātena paripraśnena sevayā | upadekṣyanti te jñānaṃ jñāninastattvadarśinaḥ || 34 ||"
+    },
+    {
+      "ref": "4.35",
+      "text": "And having known this, thou shalt not again fall into this confusion, O Pândava; for by this thou wilt see all beings without exception in the Self, and thus in Me. (35)",
+      "sanskrit": "यज्ज्ञात्वा न पुनर्मोहमेवं यास्यसि पाण्डव ।\nयेन भूतान्यशेषेण द्रक्ष्यस्यात्मन्यथो मयि ॥ ३५ ॥",
+      "transliteration": "yajjñātvā na punarmohamevaṃ yāsyasi pāṇḍava | yena bhūtānyaśeṣeṇa drakṣyasyātmanyatho mayi || 35 ||"
+    },
+    {
+      "ref": "4.36",
+      "text": "Even if thou art the most sinful of all sinners, yet shalt thou cross over all sin by the raft of wisdom. (36)",
+      "sanskrit": "अपि चेदसि पापेभ्यः सर्वेभ्यः पापकृत्तमः ।\nसर्वं ज्ञानप्लवेनैव वृजिनं सन्तरिष्यसि ॥ ३६ ॥",
+      "transliteration": "api cedasi pāpebhyaḥ sarvebhyaḥ pāpakṛttamaḥ | sarvaṃ jñānaplavenaiva vṛjinaṃ santariṣyasi || 36 ||"
+    },
+    {
+      "ref": "4.37",
+      "text": "As the burning fire reduces fuel to ashes, O Arjuna, so doth the fire of wisdom reduce all actions to ashes. (37)",
+      "sanskrit": "यथैधांसि समिद्धोऽग्निर्भस्मसात्कुरुतेऽर्जुन ।\nज्ञानाग्निः सर्वकर्माणि भस्मसात्कुरुते तथा ॥ ३७ ॥",
+      "transliteration": "yathaidhāṃsi samiddho'gnirbhasmasātkurute'rjuna | jñānāgniḥ sarvakarmāṇi bhasmasātkurute tathā || 37 ||"
+    },
+    {
+      "ref": "4.38",
+      "text": "Verily there is no purifier in this world like wisdom; he that is perfected in yoga finds it in the Self in due season. (38)",
+      "sanskrit": "न हि ज्ञानेन सदृशं पवित्रमिह विद्यते ।\nतत्स्वयं योगसंसिद्धः कालेनात्मनि विन्दति ॥ ३८ ॥",
+      "transliteration": "na hi jñānena sadṛśaṃ pavitramiha vidyate | tatsvayaṃ yogasaṃsiddhaḥ kālenātmani vindati || 38 ||"
+    },
+    {
+      "ref": "4.39",
+      "text": "The man who is full of faith obtaineth wisdom, and he also who hath mastery over his senses; and, having obtained wisdom, he goeth swiftly to the supreme Peace. (39)",
+      "sanskrit": "श्रद्धावाँल्लभते ज्ञानं तत्परः संयतेन्द्रियः ।\nज्ञानं लब्ध्वा परां शान्तिमचिरेणाधिगच्छति ॥ ३९ ॥",
+      "transliteration": "śraddhāvām̐llabhate jñānaṃ tatparaḥ saṃyatendriyaḥ | jñānaṃ labdhvā parāṃ śāntimacireṇādhigacchati || 39 ||"
+    },
+    {
+      "ref": "4.40",
+      "text": "But the ignorant, faithless, doubting self goeth to destruction; nor this world, nor that beyond, nor happiness, is there for the doubting self. (40)",
+      "sanskrit": "अज्ञश्चाश्रद्दधानश्च संशयात्मा विनश्यति ।\nनायं लोकोऽस्ति न परो न सुखं संशयात्मनः ॥ ४० ॥",
+      "transliteration": "ajñaścāśraddadhānaśca saṃśayātmā vinaśyati | nāyaṃ loko'sti na paro na sukhaṃ saṃśayātmanaḥ || 40 ||"
+    },
+    {
+      "ref": "4.41",
+      "text": "He who hath renounced actions by yoga, who hath cloven asunder doubt by wisdom, who is ruled by the Self, actions do not bind him, O Dhananjaya. (41)",
+      "sanskrit": "योगसंन्यस्तकर्माणं ज्ञानसञ्छिन्नसंशयम् ।\nआत्मवन्तं न कर्माणि निबध्नन्ति धनञ्जय ॥ ४१ ॥",
+      "transliteration": "yogasaṃnyastakarmāṇaṃ jñānasañchinnasaṃśayam | ātmavantaṃ na karmāṇi nibadhnanti dhanañjaya || 41 ||"
+    },
+    {
+      "ref": "4.42",
+      "text": "Therefore, with the sword of the wisdom of the Self cleaving asunder this ignorance-born doubt dwelling in thy heart, be established in yoga. Stand up, O Bhârata. (42)",
+      "sanskrit": "तस्मादज्ञानसम्भूतं हृत्स्थं ज्ञानासिनाऽऽत्मनः ।\nछित्त्वैनं संशयं योगमातिष्ठोत्तिष्ठ भारत ॥ ४२ ॥",
+      "transliteration": "tasmādajñānasambhūtaṃ hṛtsthaṃ jñānāsinā''tmanaḥ | chittvainaṃ saṃśayaṃ yogamātiṣṭhottiṣṭha bhārata || 42 ||"
+    }
+  ]
+}
