@@ -51,6 +51,7 @@ const baseProfile: MandaliProfile = {
   meaning_language: 'en',
   wants_festival_reminders: true,
   wants_shloka_reminders: true,
+  wants_nitya_reminders: true,
   wants_community_notifications: true,
   wants_family_notifications: true,
   notification_quiet_hours_start: 22,

@@ -225,6 +225,7 @@ export default function ProfileClient({
   const [notificationPrefs, setNotificationPrefs] = useState({
     wants_festival_reminders: (liveProfile as any)?.wants_festival_reminders ?? true,
     wants_shloka_reminders: (liveProfile as any)?.wants_shloka_reminders ?? true,
+    wants_nitya_reminders: (liveProfile as any)?.wants_nitya_reminders ?? true,
     wants_community_notifications: (liveProfile as any)?.wants_community_notifications ?? true,
     wants_family_notifications: (liveProfile as any)?.wants_family_notifications ?? true,
     notification_quiet_hours_start: (liveProfile as any)?.notification_quiet_hours_start ?? 22,
@@ -1490,6 +1491,7 @@ export default function ProfileClient({
              <p className="text-sm font-medium text-[var(--brand-primary)]">Divine reminders</p>
              <div className="grid grid-cols-2 gap-3">
                 {[
+                  { key: 'wants_nitya_reminders', label: 'Nitya' },
                   { key: 'wants_shloka_reminders', label: 'Daily Wisdom' },
                   { key: 'wants_festival_reminders', label: 'Festivals' },
                   { key: 'wants_community_notifications', label: 'Community' },

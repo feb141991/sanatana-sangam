@@ -38,6 +38,7 @@ export default function FloatingPill({
   countryCode = null,
   wantsFestivalReminders = true,
   wantsShlokaReminders = true,
+  wantsNityaReminders = true,
   wantsCommunityNotifications = true,
   wantsFamilyNotifications = true,
   savedTimezone = null,
@@ -52,6 +53,7 @@ export default function FloatingPill({
   countryCode?: string | null;
   wantsFestivalReminders?: boolean;
   wantsShlokaReminders?: boolean;
+  wantsNityaReminders?: boolean;
   wantsCommunityNotifications?: boolean;
   wantsFamilyNotifications?: boolean;
   savedTimezone?: string | null;
@@ -65,7 +67,7 @@ export default function FloatingPill({
   // Bell + avatar only appear on the Home page to keep inner pages clean
   const isHomePage = pathname === '/home';
   const wantsAnyNotifications = Boolean(
-    wantsFestivalReminders || wantsShlokaReminders || wantsCommunityNotifications || wantsFamilyNotifications
+    wantsFestivalReminders || wantsShlokaReminders || wantsNityaReminders || wantsCommunityNotifications || wantsFamilyNotifications
   );
 
   const [open, setOpen] = useState(false);
@@ -105,12 +107,12 @@ export default function FloatingPill({
     if (!pushConfigured || !userId) return;
     syncOneSignalContext({
       tradition, city, countryCode,
-      wantsFestivalReminders, wantsShlokaReminders,
+      wantsFestivalReminders, wantsShlokaReminders, wantsNityaReminders,
       wantsCommunityNotifications, wantsFamilyNotifications,
     });
   }, [city, countryCode, pushConfigured, tradition, userId,
     wantsCommunityNotifications, wantsFamilyNotifications,
-    wantsFestivalReminders, wantsShlokaReminders]);
+    wantsFestivalReminders, wantsShlokaReminders, wantsNityaReminders]);
 
   // ── Hydrate Pro from server on mount ─────────────────────────────────────────
   useEffect(() => {

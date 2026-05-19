@@ -49,7 +49,7 @@ export async function GET(request: Request) {
     // Fetch users — now also select lat/lon for Panchang engine
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, full_name, tradition, life_stage, gender_context, timezone, latitude, longitude, notification_quiet_hours_start, notification_quiet_hours_end');
+      .select('id, full_name, tradition, life_stage, gender_context, timezone, latitude, longitude, wants_nitya_reminders, notification_quiet_hours_start, notification_quiet_hours_end');
 
     if (usersError) {
       console.error('Nitya cron users query failed:', usersError);
@@ -62,6 +62,7 @@ export async function GET(request: Request) {
 
     // ── Step 1: Timezone window filter (coarse — keeps cron fast) ────────────
     const windowUsers = users.filter((user) => {
+      if ((user as any).wants_nitya_reminders === false) return false;
       const tz = resolveTimeZone((user as any).timezone);
       return canSendInLocalWindow(
         now, tz, TARGET_LOCAL_HOUR,

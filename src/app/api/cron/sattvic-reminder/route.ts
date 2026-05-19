@@ -33,11 +33,12 @@ export async function GET(request: Request) {
   const actionUrl = new URL('/bhakti/zen', new URL(request.url).origin).toString();
 
   try {
-    // Fetch users who have wantsSattvicReminder enabled (fallback: wants_shloka_reminders)
+    // Fetch users who have opted into nitya reminders. Evening Zen follows the
+    // same sacred-practice preference instead of piggybacking on shloka.
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, tradition, timezone, latitude, longitude, wants_shloka_reminders, notification_quiet_hours_start, notification_quiet_hours_end')
-      .eq('wants_shloka_reminders', true); // reuse shloka pref as "evening practice" opt-in
+      .select('id, tradition, timezone, latitude, longitude, wants_nitya_reminders, notification_quiet_hours_start, notification_quiet_hours_end')
+      .eq('wants_nitya_reminders', true);
 
     if (usersError || !users?.length) {
       return NextResponse.json({ message: 'No users or query failed', sent: 0 });
@@ -85,7 +86,7 @@ export async function GET(request: Request) {
         title:            nudge.title,
         body:             nudge.body,
         emoji:            '🕉️',
-        type:             'sattvic-evening',
+        type:             'nitya',
         action_url:       '/bhakti/zen',
         notification_key: `sattvic:evening:${localDate}`,
         local_date:       localDate,
@@ -121,7 +122,7 @@ export async function GET(request: Request) {
     let totalPushTargets = 0;
     for (const [tradition, userIds] of byTradition.entries()) {
       const nudge = SANDHYA_NUDGE[tradition] ?? SANDHYA_NUDGE.hindu;
-      const result = await sendOneSignalPush({ userIds, title: nudge.title, body: nudge.body, url: actionUrl, data: { type: 'sattvic-evening' } });
+      const result = await sendOneSignalPush({ userIds, title: nudge.title, body: nudge.body, url: actionUrl, data: { type: 'nitya', subtype: 'sattvic-evening' } });
       totalPushTargets += result.sent;
     }
 

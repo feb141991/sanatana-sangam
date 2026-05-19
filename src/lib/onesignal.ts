@@ -96,6 +96,7 @@ type OneSignalContext = {
   countryCode?: string | null;
   wantsFestivalReminders?: boolean;
   wantsShlokaReminders?: boolean;
+  wantsNityaReminders?: boolean;
   wantsCommunityNotifications?: boolean;
   wantsFamilyNotifications?: boolean;
 };
@@ -108,6 +109,7 @@ export async function syncOneSignalContext(context: OneSignalContext) {
       country_code: context.countryCode || '',
       wants_festival_reminders: context.wantsFestivalReminders ? '1' : '0',
       wants_shloka_reminders: context.wantsShlokaReminders ? '1' : '0',
+      wants_nitya_reminders: context.wantsNityaReminders ? '1' : '0',
       wants_community_notifications: context.wantsCommunityNotifications ? '1' : '0',
       wants_family_notifications: context.wantsFamilyNotifications ? '1' : '0',
     };

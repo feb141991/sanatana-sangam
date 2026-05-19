@@ -1,6 +1,6 @@
 # Launch Tracker
 
-Last updated: 2026-05-17
+Last updated: 2026-05-19
 
 ## Current Focus
 
@@ -78,6 +78,7 @@ Last updated: 2026-05-17
 - [ ] Production paywall compliance is ready before any real billing: clear benefits, localized price/renewal terms, visible dismiss path where free access exists, restore purchase, manage/cancel subscription, terms/privacy links, and no misleading “free” subscription wording
 - [ ] Global overlay and navigation contract is finalized so bottom nav, top pill, modals, sheets, fullscreen Mala/Sattvic modes, and admin overlays cannot hide or fight each other on mobile safe areas
 - [ ] App store readiness pass is complete for spiritual-content accuracy, report/block/moderation, source provenance, privacy prompts, support contact, demo account, and paywall review notes
+- [ ] Run `migration-v62-nitya-reminder-preference.sql` so morning/evening sacred-practice reminders stop piggybacking on shloka preference
 
 ## P1 Beta Work
 
@@ -192,6 +193,8 @@ Last updated: 2026-05-17
 - `PATHSHALA_SOURCE_POLICY.md` now centralizes the trust rules for what Pathshala may store locally, what must remain companion-only, what should stay catalog-first, and what launch may honestly claim.
 - Gita recitation now has a real in-app audio foundation even before hosted playback: chapter metadata, saved listening state on device, focused recitation mode, and a cleaner handoff into the authoritative companion source.
 - The notification system now has a first real preference layer: sacred-time reminder toggles, quiet hours, and cron filtering, but it still needs live production verification and richer destination targeting.
+- Notification truth as of 2026-05-19: festival, shloka, brahma-muhurta, and nitya/zen reminder lanes exist in code; the missing production step is live device verification plus the new `wants_nitya_reminders` migration so sacred-practice reminders have their own explicit preference.
+- Push/product copy should avoid promising generic offline support until service-worker registration, offline route coverage, and asset completeness are verified end to end.
 - Home should not carry a large “what next” module long term; that guidance is better as notification-driven nudges plus one compact primary action on the dashboard.
 - Vercel Hobby only allows daily cron schedules, so sacred-time delivery is currently less precise than the ideal hourly model; re-evaluate hosting or background job infrastructure later if we want finer reminder timing.
 - `PANCHANG_SOURCE_STRATEGY.md` now tracks how launch copy, future provider strategy, and sacred-time claims should stay aligned.

@@ -432,7 +432,7 @@ export default function LandingPage() {
               </h2>
               <p className="text-amber-100/55 text-sm leading-relaxed mb-8">
                 Add Shoonaya to your home screen for the full app experience —
-                offline access, push notifications for Brahma Muhurta, festival reminders, and more.
+                home-screen install, sacred-time reminders, and a calmer app-shell experience on supported browsers.
               </p>
 
               <div className="space-y-3">

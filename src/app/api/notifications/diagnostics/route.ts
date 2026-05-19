@@ -145,7 +145,7 @@ export async function GET() {
   try {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('timezone, wants_shloka_reminders, wants_festival_reminders, latitude, longitude')
+      .select('timezone, wants_shloka_reminders, wants_festival_reminders, wants_nitya_reminders, latitude, longitude')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -157,10 +157,10 @@ export async function GET() {
     };
 
     checks.profile_notifications_opt_in = {
-      ok: Boolean(profile?.wants_shloka_reminders || profile?.wants_festival_reminders),
-      detail: profile?.wants_shloka_reminders || profile?.wants_festival_reminders
-        ? `wants_shloka_reminders=${profile?.wants_shloka_reminders}, wants_festival_reminders=${profile?.wants_festival_reminders}`
-        : 'Both reminders are disabled in profile — crons will skip you. Enable them in Profile → Notifications.',
+      ok: Boolean(profile?.wants_shloka_reminders || profile?.wants_festival_reminders || profile?.wants_nitya_reminders),
+      detail: profile?.wants_shloka_reminders || profile?.wants_festival_reminders || profile?.wants_nitya_reminders
+        ? `wants_shloka_reminders=${profile?.wants_shloka_reminders}, wants_festival_reminders=${profile?.wants_festival_reminders}, wants_nitya_reminders=${profile?.wants_nitya_reminders}`
+        : 'All reminder lanes are disabled in profile — crons will skip you. Enable them in Profile → Notifications.',
     };
 
     checks.profile_location = {

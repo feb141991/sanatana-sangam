@@ -49,6 +49,7 @@ export default function TopBar({
   countryCode = null,
   wantsFestivalReminders = true,
   wantsShlokaReminders = true,
+  wantsNityaReminders = true,
   wantsCommunityNotifications = true,
   wantsFamilyNotifications = true,
 }: {
@@ -61,6 +62,7 @@ export default function TopBar({
   countryCode?: string | null;
   wantsFestivalReminders?: boolean;
   wantsShlokaReminders?: boolean;
+  wantsNityaReminders?: boolean;
   wantsCommunityNotifications?: boolean;
   wantsFamilyNotifications?: boolean;
 }) {
@@ -72,7 +74,7 @@ export default function TopBar({
   const pushConfigured = isOneSignalConfigured();
   const homeHref = isGuest ? '/guest' : '/home';
   const wantsAnyNotifications = Boolean(
-    wantsFestivalReminders || wantsShlokaReminders || wantsCommunityNotifications || wantsFamilyNotifications
+    wantsFestivalReminders || wantsShlokaReminders || wantsNityaReminders || wantsCommunityNotifications || wantsFamilyNotifications
   );
 
   const [open,       setOpen]       = useState(false);
@@ -124,12 +126,12 @@ export default function TopBar({
     if (!pushConfigured || !userId) return;
     syncOneSignalContext({
       tradition, city, countryCode,
-      wantsFestivalReminders, wantsShlokaReminders,
+      wantsFestivalReminders, wantsShlokaReminders, wantsNityaReminders,
       wantsCommunityNotifications, wantsFamilyNotifications,
     });
   }, [city, countryCode, pushConfigured, tradition, userId,
     wantsCommunityNotifications, wantsFamilyNotifications,
-    wantsFestivalReminders, wantsShlokaReminders]);
+    wantsFestivalReminders, wantsShlokaReminders, wantsNityaReminders]);
 
 
   const unreadCount = notifs.filter((n) => !n.read).length;

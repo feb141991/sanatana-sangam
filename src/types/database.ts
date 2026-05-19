@@ -43,6 +43,7 @@ export interface Database {
           meaning_language: string;
           wants_festival_reminders: boolean;
           wants_shloka_reminders: boolean;
+          wants_nitya_reminders: boolean;
           wants_community_notifications: boolean;
           wants_family_notifications: boolean;
           notification_quiet_hours_start: number | null;
