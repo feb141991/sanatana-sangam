@@ -181,6 +181,6 @@ This report documents the status of the local and live-ish evaluations across th
 
 ## Trust & Mock Status Summary
 
-- **Mock Eval Status**: Active fallback mode is fully supported. All suites run regression checks using high-fidelity mock generators.
+- **Mock Eval Status**: Active fallback mode is fully supported. Katha, Panchatantra, Upanishads, and Gurbani suites run regression checks using high-fidelity mock generators.
 - **Live-ish Eval Status**: Gita suite runs real prompt construction and context serialization against the Gemini 2.0 API when `GEMINI_API_KEY` is provided.
 - **Pramana Output Trust Level**: **High**. Structured response parsing ensures format safety, and coordinate indexing validates that grounding references matches verbatim text.

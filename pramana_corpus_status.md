@@ -37,6 +37,7 @@ This document records the current integration, routing, and evaluation status fo
 4. **Upanishads (`pathshala_upanishads`)**
    - Active chapters: 1 (`upanishad_chapter_1.json`)
    - Themes: Principal Upanishads (*Isha*, *Katha*, *Chandogya*).
+   - Note: The current embedding index (`upanishads_index.json`) is a small sample index generated from `upanishad_chapter_1.json`, not a large corpus build.
 
 5. **Gurbani (`sikh_gurbani`)**
    - Active chapters: 1 (`sikh_gurbani_japji.json`)

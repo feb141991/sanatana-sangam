@@ -13,7 +13,9 @@
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx",
     "compare:gita-retrieval": "npx tsx scripts/compare_retrieval.ts",
-    "compare:upanishads-retrieval": "npx tsx scripts/compare_upanishads_retrieval.ts"
+    "compare:upanishads-retrieval": "npx tsx scripts/compare_upanishads_retrieval.ts",
+    "compare:gurbani-retrieval": "npx tsx scripts/compare_gurbani_retrieval.ts",
+    "eval:run": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.evals.run_evals"
   },
   "dependencies": {
     "@capacitor/core": "^8.0.0",
