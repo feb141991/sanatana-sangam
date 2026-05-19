@@ -777,6 +777,24 @@ const gurbaniManifestRetriever = new PramanaManifestRetriever({
 
 PramanaRetrieverSelector.register('sikh_gurbani', new PramanaGurbaniEmbeddingRetriever(gurbaniManifestRetriever));
 
+const buddhistManifestRetriever = new PramanaManifestRetriever({
+  prefix: 'buddhist_dhamma',
+  sourceName: 'Buddhist Dhamma Texts',
+  sourceClass: 'scripture',
+  tradition: 'Buddhism',
+  maxChapters: 1
+});
+PramanaRetrieverSelector.register('buddhist_dhamma', buddhistManifestRetriever);
+
+const jainManifestRetriever = new PramanaManifestRetriever({
+  prefix: 'jain_dharma',
+  sourceName: 'Jain Dharma Agamas',
+  sourceClass: 'scripture',
+  tradition: 'Jainism',
+  maxChapters: 1
+});
+PramanaRetrieverSelector.register('jain_dharma', jainManifestRetriever);
+
 export async function retrievePathshalaContext(input: {
   source?: string;
   title?: string;

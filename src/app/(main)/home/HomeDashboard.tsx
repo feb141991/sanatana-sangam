@@ -2285,21 +2285,6 @@ export default function HomeDashboard({
                 </div>
               )}
 
-              {/* Streak info */}
-              {streak > 0 && (
-                <p className="text-center text-xs font-semibold" style={{ color: 'var(--brand-primary)' }}>
-                  🔥 {streak}-day {dailyText.streakLabel}
-                </p>
-              )}
-            </div>
-
-            {/* CTA bar */}
-            <div className="relative px-5 py-3 pb-[max(env(safe-area-inset-bottom,0px),12px)]" style={{
-              borderTop: `1px solid ${isDark ? 'rgba(250,238,218,0.12)' : 'rgba(65,36,2,0.10)'}`,
-              background: isDark ? 'rgba(20,20,18,0.62)' : 'rgba(255,253,248,0.62)',
-              backdropFilter: 'blur(18px) saturate(125%)',
-              WebkitBackdropFilter: 'blur(18px) saturate(125%)',
-            }}>
               <motion.button
                 onClick={markShlokaRead}
                 disabled={readToday}
@@ -2311,6 +2296,13 @@ export default function HomeDashboard({
               >
                 {readToday ? `✓ Marked read today` : `${dailyText.icon} Mark as read — earn 5 seva points`}
               </motion.button>
+
+              {/* Streak info */}
+              {streak > 0 && (
+                <p className="text-center text-xs font-semibold" style={{ color: 'var(--brand-primary)' }}>
+                  🔥 {streak}-day {dailyText.streakLabel}
+                </p>
+              )}
             </div>
           </motion.div>
         )}

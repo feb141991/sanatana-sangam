@@ -13,31 +13,36 @@ import type {
  * Expected endpoint contract for a self-hosted Pramana inference server.
  *
  * The self-hosted runtime must expose:
- *   POST /v1/generate
+ *   POST /v1/chat/completions
  *
  * Request payload:
  * ```json
  * {
- *   "prompt": "<string>",
- *   "system": "<string | null>",
+ *   "model": "<string>",
+ *   "messages": [
+ *     { "role": "system", "content": "..." },
+ *     { "role": "user", "content": "..." }
+ *   ],
  *   "temperature": 0.3,
  *   "max_tokens": 800,
- *   "response_format": "text" | "json",
- *   "json_schema": { "type": "object", "properties": {...} },
- *   "grounding_context": [{ "content": "...", "metadata": {...} }],
- *   "stream": false
+ *   "response_format": { "type": "json_object" }
  * }
  * ```
  *
  * Expected response shape:
  * ```json
  * {
- *   "text": "<generated text>",
+ *   "id": "...",
  *   "model": "<model id>",
- *   "finish_reason": "stop" | "length" | "error",
+ *   "choices": [
+ *     {
+ *       "message": { "content": "<generated text>" },
+ *       "finish_reason": "stop" | "length"
+ *     }
+ *   ],
  *   "usage": {
- *     "input_tokens": 100,
- *     "output_tokens": 50,
+ *     "prompt_tokens": 100,
+ *     "completion_tokens": 50,
  *     "total_tokens": 150
  *   }
  * }
@@ -62,14 +67,19 @@ export interface SelfHostedProviderConfig {
   timeoutMs?: number;
 }
 
-/** Raw response body from the self-hosted /v1/generate endpoint. */
+/** Raw response body from the self-hosted /v1/chat/completions endpoint. */
 interface SelfHostedRawResponse {
-  text?: string;
+  id?: string;
   model?: string;
-  finish_reason?: string;
+  choices?: Array<{
+    message?: {
+      content?: string;
+    };
+    finish_reason?: string;
+  }>;
   usage?: {
-    input_tokens?: number;
-    output_tokens?: number;
+    prompt_tokens?: number;
+    completion_tokens?: number;
     total_tokens?: number;
   };
 }
@@ -121,19 +131,31 @@ export class SelfHostedProvider implements PramanaInferenceProvider {
       );
     }
 
-    const url = `${this.config.baseUrl.replace(/\/$/, '')}/v1/generate`;
+    const url = `${this.config.baseUrl.replace(/\/$/, '')}/v1/chat/completions`;
     const timeoutMs = request.timeoutMs ?? this.config.timeoutMs ?? 30_000;
 
     // Build normalized request payload
+    const messages = [];
+    if (request.prompt.system) {
+      messages.push({ role: 'system', content: request.prompt.system });
+    }
+    
+    // Inject grounding context into user prompt if present
+    let finalUserPrompt = request.prompt.user ?? '';
+    if (request.groundingContext && request.groundingContext.length > 0) {
+      const contextText = request.groundingContext
+        .map((c, i) => `Source [${i+1}]: ${c.metadata?.sourceName || ''} - ${c.metadata?.chunkId || ''}\n${c.content}`)
+        .join('\n\n');
+      finalUserPrompt = `${contextText}\n\n====================\n\n${finalUserPrompt}`;
+    }
+    messages.push({ role: 'user', content: finalUserPrompt });
+
     const payload = {
-      prompt: request.prompt.user ?? '',
-      system: request.prompt.system ?? null,
+      model: this.config.model ?? 'default-model',
+      messages,
       temperature: request.prompt.temperature ?? 0.3,
       max_tokens: request.prompt.maxOutputTokens ?? 800,
-      response_format: request.responseFormat ?? 'text',
-      ...(request.jsonSchema ? { json_schema: request.jsonSchema } : {}),
-      grounding_context: request.groundingContext ?? [],
-      stream: false,
+      ...(request.responseFormat === 'json' ? { response_format: { type: 'json_object' } } : {}),
     };
 
     const headers: Record<string, string> = {
@@ -182,21 +204,24 @@ export class SelfHostedProvider implements PramanaInferenceProvider {
       );
     }
 
-    if (typeof data.text !== 'string') {
+    const choice = data.choices?.[0];
+    const generatedText = choice?.message?.content;
+    
+    if (typeof generatedText !== 'string') {
       throw new Error(
-        `[${this.info.id}] Malformed response: missing or non-string 'text' field.`
+        `[${this.info.id}] Malformed response: missing choices[0].message.content.`
       );
     }
 
     return {
-      text: data.text,
+      text: generatedText,
       modelUsed: data.model ?? this.config.model ?? 'self-hosted-unknown',
       provider: this.info.id,
       providerClass: 'self_hosted',
-      finishReason: data.finish_reason,
+      finishReason: choice?.finish_reason,
       usage: data.usage ? {
-        inputTokens: data.usage.input_tokens,
-        outputTokens: data.usage.output_tokens,
+        inputTokens: data.usage.prompt_tokens,
+        outputTokens: data.usage.completion_tokens,
         totalTokens: data.usage.total_tokens,
       } : undefined,
     };

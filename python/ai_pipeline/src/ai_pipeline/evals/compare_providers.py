@@ -310,9 +310,9 @@ def main() -> None:
     parser.add_argument(
         "--modes",
         nargs="+",
-        default=["mock"],
+        default=None,
         choices=["mock", "hosted", "self-hosted"],
-        help="Provider modes to compare (default: mock)",
+        help="Provider modes to compare (default: auto-detect based on env vars)",
     )
     parser.add_argument(
         "--suites",
@@ -322,7 +322,14 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    modes = args.modes
+    if args.modes is not None:
+        modes = args.modes
+    else:
+        modes = ["mock"]
+        if os.environ.get("GEMINI_API_KEY"):
+            modes.append("hosted")
+        if os.environ.get("PRAMANA_SELF_HOSTED_URL"):
+            modes.append("self-hosted")
     suites = args.suites
 
     results: dict[str, dict[str, SuiteResult]] = {}
