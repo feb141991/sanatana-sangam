@@ -1,6 +1,6 @@
 # Pramana Evaluation Summary Report
 
-This report documents the status of the local and live-ish evaluations across the four target Pramana corpora.
+This report documents the status of the local and live-ish evaluations across the active Pramana corpora.
 
 ## Suite Pass/Fail Status
 

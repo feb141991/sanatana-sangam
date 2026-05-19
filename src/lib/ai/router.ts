@@ -2,7 +2,7 @@ import { buildMeaningGeneratePrompt, buildPathshalaExplainPrompt, buildDevotiona
 import { assertAiRequestAllowed, validateMeaningGenerateInput, validatePathshalaExplainInput, validateAIChatInput } from '@/lib/ai/policies';
 import { generateWithProvider, getInferenceProvider } from '@/lib/ai/providers/inference';
 import { retrievePathshalaContext } from '@/lib/ai/retrieval';
-import { GeminiModelAdapter, SimpleCorpusSelector } from '@sangam/pramana-serve';
+import { SimpleCorpusSelector } from '@sangam/pramana-serve';
 import { DharmaChatContract, createPramanaRoute } from '@sangam/pramana-core';
 import type {
   AIResponseMetadata,
@@ -114,24 +114,10 @@ export async function runMeaningGenerate(input: MeaningGenerateInput) {
 }
 
 export async function runDharmaChat(input: AIChatInput) {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error('GEMINI_API_KEY not configured');
-  }
-
-  // Determine model priority: env override → default → fallback
-  const envModel = process.env.GEMINI_MODEL?.trim();
-  const models = envModel
-    ? [envModel, 'gemini-2.0-flash-lite']
-    : ['gemini-2.0-flash', 'gemini-2.0-flash-lite'];
-
-  const adapter = new GeminiModelAdapter({
-    apiKey,
-    models,
-  });
-
   const runner = createPramanaRoute(DharmaChatContract, {
-    adapter,
+    adapter: {
+      generate: async (prompt) => generateWithProvider(prompt)
+    },
     policies: [
       {
         name: 'ai_request_allowed',
@@ -154,14 +140,16 @@ export async function runDharmaChat(input: AIChatInput) {
   });
 
   const res = await runner(input);
+  const providerInfo = getInferenceProvider().info;
+  
   return {
     raw: res.raw,
     metadata: {
       task: 'ai_chat',
       provider: res.metadata.provider,
       model: res.metadata.model,
-      privateStackReady: res.metadata.privateStackReady,
-      usedHostedFallback: res.metadata.usedHostedFallback,
+      privateStackReady: providerInfo.providerClass === 'self_hosted',
+      usedHostedFallback: providerInfo.providerClass === 'hosted',
     }
   };
 }

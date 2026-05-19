@@ -63,9 +63,15 @@ POST /v1/generate
   "response_format": "text",
   "grounding_context": [
     { "content": "...", "metadata": { "sourceName": "...", "chunkId": "..." } }
-  ]
+  ],
+  "stream": false
 }
 ```
+
+### Readiness Status
+- **Scaffolded & Ready**: The `SelfHostedProvider` class exists, the provider selector correctly parses env vars (`PRAMANA_INFERENCE_PROVIDER`, `PRAMANA_SELF_HOSTED_URL`), and the payload transformation code maps `InferenceRequest` to the above expected JSON format (including `response_format` for structured JSON and `grounding_context` for retrieval).
+- **Stubbed**: The actual `fetch` call to `baseUrl` is currently commented out, and calling `generate` throws a "not implemented" error safely. Streaming is declared as `false` in capabilities.
+- **Blocker for Switchover**: An actual external local server (e.g., vLLM or Ollama) must be deployed and the `fetch` block inside `packages/pramana-serve/src/providers/self-hosted.ts` must be uncommented and tested.
 
 **Response:**
 ```json

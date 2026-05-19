@@ -688,7 +688,7 @@ def main() -> None:
 
     # Define thresholds
     # Gita threshold: pass score >= 3 (out of 4)
-    # Katha, Panchatantra, Upanishads threshold: pass score >= 4 (out of 5)
+    # Katha, Panchatantra, Upanishads, Gurbani threshold: pass score >= 4 (out of 5)
     # Suite pass rate threshold: >= 83% case pass rate (at least 5/6 cases must pass)
     
     print("\n" + "=" * 80)
@@ -699,7 +699,7 @@ def main() -> None:
     report_md_lines = [
         "# Pramana Evaluation Summary Report",
         "",
-        "This report documents the status of the local and live-ish evaluations across the four target Pramana corpora.",
+        "This report documents the status of the local and live-ish evaluations across the active Pramana corpora.",
         "",
         "## Suite Pass/Fail Status",
         "",

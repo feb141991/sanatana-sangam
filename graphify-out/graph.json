@@ -323,18 +323,18 @@
       "file_type": "rationale",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/python/ai_pipeline/src/ai_pipeline/embeddings/validate_indexes.py",
       "source_location": "L1",
-      "id": "validate_indexes_rationale_1",
       "community": 2,
-      "norm_label": "pramana corpus index validator  validates the structure, coverage, and integrity"
+      "norm_label": "pramana corpus index validator  validates the structure, coverage, and integrity",
+      "id": "validate_indexes_rationale_1"
     },
     {
       "label": "Validate a single corpus index file and return a summary.",
       "file_type": "rationale",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/python/ai_pipeline/src/ai_pipeline/embeddings/validate_indexes.py",
       "source_location": "L31",
-      "id": "validate_indexes_rationale_31",
       "community": 2,
-      "norm_label": "validate a single corpus index file and return a summary."
+      "norm_label": "validate a single corpus index file and return a summary.",
+      "id": "validate_indexes_rationale_31"
     },
     {
       "label": "embedding_models.py",
@@ -1537,7 +1537,7 @@
       "label": "SimpleCorpusSelector",
       "file_type": "code",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/packages/pramana-serve/src/corpus.ts",
-      "source_location": "L71",
+      "source_location": "L161",
       "id": "corpus_simplecorpusselector",
       "community": 7,
       "norm_label": "simplecorpusselector"
@@ -1546,7 +1546,7 @@
       "label": ".selectCorpus()",
       "file_type": "code",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/packages/pramana-serve/src/corpus.ts",
-      "source_location": "L72",
+      "source_location": "L162",
       "id": "corpus_simplecorpusselector_selectcorpus",
       "community": 7,
       "norm_label": ".selectcorpus()"
@@ -20595,7 +20595,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/packages/pramana-serve/src/corpus.ts",
-      "source_location": "L71",
+      "source_location": "L161",
       "weight": 1.0,
       "_src": "users_business_c_sanatan_sangam_shoonaya_packages_pramana_serve_src_corpus_ts",
       "_tgt": "corpus_simplecorpusselector",
@@ -20607,7 +20607,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/packages/pramana-serve/src/corpus.ts",
-      "source_location": "L72",
+      "source_location": "L162",
       "weight": 1.0,
       "_src": "corpus_simplecorpusselector",
       "_tgt": "corpus_simplecorpusselector_selectcorpus",

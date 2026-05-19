@@ -1,7 +1,7 @@
 # Graph Report - /Users/Business(C)/Sanatan Sangam/Shoonaya  (2026-05-19)
 
 ## Corpus Check
-- 505 files · ~1,672,957 words
+- 505 files · ~1,673,848 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -1539,11 +1539,11 @@ Nodes (0):
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `GET()` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 12`, `Community 13`, `Community 16`, `Community 17`, `Community 20`, `Community 21`, `Community 22`, `Community 27`, `Community 31`, `Community 33`?**
-  _High betweenness centrality (0.252) - this node is a cross-community bridge._
+  _High betweenness centrality (0.237) - this node is a cross-community bridge._
 - **Why does `select()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 9`, `Community 10`, `Community 11`, `Community 14`, `Community 16`, `Community 17`, `Community 19`, `Community 24`, `Community 25`, `Community 29`, `Community 30`, `Community 38`, `Community 48`?**
-  _High betweenness centrality (0.219) - this node is a cross-community bridge._
+  _High betweenness centrality (0.205) - this node is a cross-community bridge._
 - **Why does `POST()` connect `Community 9` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 6`, `Community 7`, `Community 12`, `Community 13`, `Community 14`?**
-  _High betweenness centrality (0.087) - this node is a cross-community bridge._
+  _High betweenness centrality (0.091) - this node is a cross-community bridge._
 - **Are the 176 inferred relationships involving `select()` (e.g. with `runAligner()` and `.listTexts()`) actually correct?**
   _`select()` has 176 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 83 inferred relationships involving `GET()` (e.g. with `score_panchatantra_explain()` and `score_gurbani_explain()`) actually correct?**

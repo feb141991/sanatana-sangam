@@ -23,7 +23,8 @@ import type {
  *   "temperature": 0.3,
  *   "max_tokens": 800,
  *   "response_format": "text" | "json",
- *   "grounding_context": [{ "content": "...", "metadata": {...} }]
+ *   "grounding_context": [{ "content": "...", "metadata": {...} }],
+ *   "stream": false
  * }
  * ```
  *
@@ -120,6 +121,7 @@ export class SelfHostedProvider implements PramanaInferenceProvider {
       max_tokens: request.prompt.maxOutputTokens ?? 800,
       response_format: request.responseFormat ?? 'text',
       grounding_context: request.groundingContext ?? [],
+      stream: false,
     };
 
     // ----- Response normalization (future implementation) -----
