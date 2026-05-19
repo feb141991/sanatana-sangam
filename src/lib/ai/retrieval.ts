@@ -704,7 +704,7 @@ export class PramanaGurbaniEmbeddingRetriever implements PramanaRetriever<Retrie
       const topDocItem = docsWithScores[0];
       augmentedDocs.push(topDocItem);
 
-      if (topDocItem.score >= 0.4) {
+      if (topDocItem.score >= 0.3) {
         const topDoc = topDocItem.doc;
         const refParts = topDoc.ref.split('.');
         if (refParts.length === 2) {
