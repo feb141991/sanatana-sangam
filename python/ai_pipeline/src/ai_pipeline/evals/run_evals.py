@@ -10,6 +10,7 @@ from ai_pipeline.evals.score_translation import score_translation
 
 from ai_pipeline.evals.score_pathshala import score_pathshala_explain
 from ai_pipeline.evals.score_katha import score_katha_explain
+from ai_pipeline.evals.score_panchatantra import score_panchatantra_explain
 
 
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -136,17 +137,81 @@ def run_katha_eval_suite(dataset_path: Path) -> dict[str, Any]:
     }
 
 
+def run_panchatantra_eval_suite(dataset_path: Path) -> dict[str, Any]:
+    cases = load_jsonl(dataset_path)
+    
+    case_results = []
+    for case in cases:
+        story_title = case["prompt"]["chunk_id"]
+        story_text = case["prompt"]["story"]
+        lang = case["prompt"]["language"]
+        case_id = case["case_id"]
+
+        # Generate mock response matching panchatantra criteria
+        if lang == "hi":
+            # Determine monkey or lion for Hindi keywords
+            keywords_hi = "बंदर और मगरमच्छ" if "monkey" in case_id else "शेर और चतुर खरगोश"
+            mock_response = json.dumps({
+                "word_by_word": "शब्द विश्लेषण।",
+                "meaning": f"पंचतंत्र की कहानी {story_title} का अर्थ।",
+                "commentary": f"टिप्पणी। यह कहानी {keywords_hi} की नीति सिखाती है।",
+                "daily_application": "दैनिक जीवन में उपयोग। बुद्धि का सही उपयोग कर संकट से बचें।",
+                "contemplation": "चिंतन प्रश्न। क्या बुद्धि बल से श्रेष्ठ है?",
+                "related_text": "हितोपदेश।"
+            }, ensure_ascii=False)
+        else:
+            # Determine monkey, tortoise, lion, or jackal for English keywords
+            kw = "monkey" if "monkey" in case_id else "tortoise" if "tortoise" in case_id else "lion" if "lion" in case_id else "jackal"
+            mock_response = json.dumps({
+                "word_by_word": "Moral maxims of niti shastra.",
+                "meaning": f"Synopsis of the Panchatantra fable of the {kw} demonstrating practical conduct.",
+                "commentary": f"Detailed commentary on the actions of the {kw} and the importance of intelligence and caution.",
+                "daily_application": "How to cultivate discernment and avoid trusting deceitful associates in daily life.",
+                "contemplation": "Are we being talkative or acting with quick wit like the monkey?",
+                "related_text": "Hitopadesha"
+            }, ensure_ascii=False)
+
+        mock_result = {
+            "raw_response": mock_response,
+            "retrieved_passages": [
+                {
+                    "content": f"Fable content for {story_title}. {story_text}",
+                    "metadata": {
+                        "sourceName": "Panchatantra",
+                        "chunkId": case["prompt"]["chunk_id"]
+                    }
+                }
+            ]
+        }
+
+        score_info = score_panchatantra_explain(mock_result, case)
+        case_results.append({
+            "case_id": case_id,
+            "score_info": score_info
+        })
+
+    return {
+        "dataset": str(dataset_path.name),
+        "case_count": len(cases),
+        "scorer": "score_panchatantra_explain",
+        "results": case_results
+    }
+
+
 def main() -> None:
     root = Path(__file__).resolve().parents[3]
     gita_dataset = root / "datasets" / "evals" / "pathshala_explain.sample.jsonl"
     katha_dataset = root / "datasets" / "evals" / "bhakti_katha.sample.jsonl"
+    panchatantra_dataset = root / "datasets" / "evals" / "bhakti_panchatantra.sample.jsonl"
 
     gita_summary = run_gita_eval_suite(gita_dataset)
     katha_summary = run_katha_eval_suite(katha_dataset)
+    panchatantra_summary = run_panchatantra_eval_suite(panchatantra_dataset)
 
     output = {
         "pathshala_gita": gita_summary,
         "bhakti_katha": katha_summary,
+        "bhakti_panchatantra": panchatantra_summary,
         "global_scorers": {
             "grounding": score_grounding({"sources": [{"doc_id": "placeholder"}]}),
             "translation": score_translation({"answer": "placeholder"}),

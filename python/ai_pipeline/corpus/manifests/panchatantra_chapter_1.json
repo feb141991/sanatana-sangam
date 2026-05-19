@@ -1,0 +1,38 @@
+{
+  "doc_id": "bhakti_panchatantra_chapter_1",
+  "title": "Panchatantra Moral Fables Chapter 1",
+  "tradition": "Moral",
+  "scripture_family": "panchatantra",
+  "section_id": "chapter_1",
+  "source_name": "Panchatantra",
+  "source_class": "narrative",
+  "rights_status": "public_domain",
+  "language": "en",
+  "is_live_in_app": true,
+  "content": [
+    {
+      "ref": "1.1",
+      "sanskrit": "बुद्धिर्यस्य बलं तस्य निर्बुद्धेस्तु कुतो बलम्",
+      "transliteration": "buddhiryasya balaṁ tasya nirbuddhestu kuto balam",
+      "text": "The story of the Monkey and the Crocodile. A clever monkey lived on a rose-apple tree by a riverbank and shared delicious fruits with a crocodile. The crocodile's wife wanted to eat the monkey's heart. The crocodile reluctantly agreed and invited the monkey to his home, carrying him on his back. Mid-river, the crocodile confessed. The monkey quickly lied, saying he kept his heart safe back on the tree. The crocodile turned back, and as soon as they reached the shore, the monkey climbed to safety, teaching that quick wit saves lives."
+    },
+    {
+      "ref": "1.2",
+      "sanskrit": "संसर्गजा दोषगुणा भवन्ति",
+      "transliteration": "saṁsargajā doṣaguṇā bhavanti",
+      "text": "The story of the Tortoise and the Geese. Kambugriva, a talkative tortoise, was friends with two geese, Sankata and Vikata. When their lake began to dry, the geese proposed flying to another lake by carrying a stick in their beaks while the tortoise held onto the middle with his mouth. The geese warned him to keep quiet. As they flew over a town, people pointed and laughed. Unable to resist, the tortoise opened his mouth to reply, fell to the ground, and perished, showing that speaking at the wrong time leads to ruin."
+    },
+    {
+      "ref": "1.3",
+      "sanskrit": "बुद्धिः प्रभावानां कारणम्",
+      "transliteration": "buddhiḥ prabhāvānāṁ kāraṇam",
+      "text": "The story of the Lion and the Clever Rabbit. Bhasuraka, a cruel lion, was killing forest animals indiscriminately. The animals agreed to send one animal daily for his meal. When it was the rabbit's turn, he arrived late on purpose. The furious lion demanded an explanation. The rabbit claimed another lion in a deep well had delayed him. Enraged, Bhasuraka went to the well, saw his own reflection, roared, and leaped in to attack it, drowning. This shows that intelligence defeats brute strength."
+    },
+    {
+      "ref": "1.4",
+      "sanskrit": "स्वभावो नोपदिश्यते",
+      "transliteration": "svabhāvo nopadiśyate",
+      "text": "The story of the Blue Jackal. Chandarava, a jackal, fell into a vat of blue dye while fleeing street dogs. Looking completely different, he returned to the forest and claimed he was sent by the gods to rule over the animals. The animals obeyed him. However, one evening, a pack of jackals began howling. Unable to resist his natural instinct, Chandarava joined in. The other animals realized he was just a jackal and chased him away, proving that one cannot hide their true nature forever."
+    }
+  ]
+}

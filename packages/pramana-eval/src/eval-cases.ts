@@ -281,6 +281,120 @@ export const pathshalaExplainEvalSuite = defineEvalCaseCollection<PathshalaExpla
         { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
         { key: "language_compliance", description: "Response must be in Devanagari Hindi script", required: true }
       ]
+    },
+    {
+      id: "panchatantra-monkey",
+      title: "Panchatantra - Monkey and Crocodile",
+      instruction: "Explain the Panchatantra fable of the Monkey and the Crocodile.",
+      domain: "grounding",
+      priority: "critical",
+      input: {
+        source: "Panchatantra",
+        title: "Monkey and Crocodile",
+        tradition: "Moral",
+        language: "en",
+        responseMode: "moral_story_explain",
+        story: "A monkey and a crocodile were friends. The crocodile wanted to take the monkey's heart. The monkey tricked the crocodile into turning back."
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON containing required keys", required: true },
+        { key: "grounding_present", description: "Response must refer to the monkey or crocodile", required: true }
+      ]
+    },
+    {
+      id: "panchatantra-tortoise",
+      title: "Panchatantra - Talkative Tortoise",
+      instruction: "Explain the moral of the talkative tortoise.",
+      domain: "grounding",
+      priority: "standard",
+      input: {
+        source: "Panchatantra",
+        title: "Talkative Tortoise",
+        tradition: "Moral",
+        language: "en",
+        responseMode: "moral_story_explain",
+        story: "A talkative tortoise held onto a stick held by two geese. He opened his mouth to talk and fell to his death."
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "grounding_present", description: "Response must ground on the tortoise falling", required: true }
+      ]
+    },
+    {
+      id: "panchatantra-lion",
+      title: "Panchatantra - Lion and Clever Rabbit",
+      instruction: "Explain the story of the Lion and the Clever Rabbit.",
+      domain: "grounding",
+      priority: "standard",
+      input: {
+        source: "Panchatantra",
+        title: "Lion and Clever Rabbit",
+        tradition: "Moral",
+        language: "en",
+        responseMode: "moral_story_explain",
+        story: "A clever rabbit tricked a cruel lion into jumping into a well by showing him his own reflection."
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "grounding_present", description: "Response must ground on reflection or well", required: true }
+      ]
+    },
+    {
+      id: "panchatantra-jackal",
+      title: "Panchatantra - Blue Jackal",
+      instruction: "Explain the moral of the Blue Jackal fable.",
+      domain: "grounding",
+      priority: "standard",
+      input: {
+        source: "Panchatantra",
+        title: "Blue Jackal",
+        tradition: "Moral",
+        language: "en",
+        responseMode: "moral_story_explain",
+        story: "A jackal fell into blue dye and pretended to be king of the forest. He howled when other jackals did, revealing his true nature."
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "grounding_present", description: "Response must ground on the blue dye or howling", required: true }
+      ]
+    },
+    {
+      id: "panchatantra-monkey-hi",
+      title: "Panchatantra - Monkey and Crocodile (Hindi)",
+      instruction: "Explain the Monkey and Crocodile fable in Hindi.",
+      domain: "grounding",
+      priority: "critical",
+      input: {
+        source: "Panchatantra",
+        title: "Monkey and Crocodile",
+        tradition: "Moral",
+        language: "hi",
+        responseMode: "moral_story_explain",
+        story: "बंदर और मगरमच्छ की कहानी।"
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "language_compliance", description: "Response must be in Devanagari Hindi script", required: true }
+      ]
+    },
+    {
+      id: "panchatantra-lion-hi",
+      title: "Panchatantra - Lion and Clever Rabbit (Hindi)",
+      instruction: "Explain the Lion and Clever Rabbit fable in Hindi.",
+      domain: "grounding",
+      priority: "standard",
+      input: {
+        source: "Panchatantra",
+        title: "Lion and Clever Rabbit",
+        tradition: "Moral",
+        language: "hi",
+        responseMode: "moral_story_explain",
+        story: "शेर और चतुर खरगोश की कहानी।"
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "language_compliance", description: "Response must be in Devanagari Hindi script", required: true }
+      ]
     }
   ]
 });

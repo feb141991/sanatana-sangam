@@ -64,7 +64,22 @@ export class SimpleCorpusSelector implements PramanaCorpusSelector {
     const source = String(filters?.source || '').toLowerCase();
     const corpusFilter = String(filters?.corpus || '').toLowerCase();
 
-    // Route only bhakti_katha requests explicitly. Otherwise, default to pathshala_gita.
+    if (
+      corpusFilter === 'bhakti_panchatantra' ||
+      source.includes('panchatantra') ||
+      source.includes('fable') ||
+      source.includes('moral') ||
+      text.includes('panchatantra') ||
+      text.includes('fable') ||
+      text.includes('moral') ||
+      text.includes('monkey') ||
+      text.includes('tortoise') ||
+      text.includes('rabbit') ||
+      text.includes('jackal')
+    ) {
+      return 'bhakti_panchatantra';
+    }
+
     if (
       corpusFilter === 'bhakti_katha' ||
       source.includes('katha') ||
@@ -74,7 +89,8 @@ export class SimpleCorpusSelector implements PramanaCorpusSelector {
       text.includes('katha') ||
       text.includes('prahlada') ||
       text.includes('dhruva') ||
-      text.includes('sudama')
+      text.includes('sudama') ||
+      text.includes('gajendra')
     ) {
       return 'bhakti_katha';
     }

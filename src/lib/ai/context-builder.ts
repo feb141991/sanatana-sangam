@@ -136,6 +136,50 @@ ${langNote}`,
   };
 }
 
+export function buildMoralStoryExplainPrompt(input: PathshalaExplainInput): {
+  prompt: AIPromptSpec;
+  teacher: string;
+  school: string;
+} {
+  const langNote = getLanguageInstruction(input.language);
+
+  const passagesText = input.retrievedChunks && input.retrievedChunks.length > 0
+    ? '\n' + serializePramanaContext(input.retrievedChunks, {
+        suffix: '\n=========================================================\nUse the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the moral fable accurately and provide authentic conduct advice.'
+      })
+    : '';
+
+  return {
+    teacher: 'Vishnu Sharma',
+    school: 'Niti Shastra',
+    prompt: {
+      user: `You are the wise teacher Vishnu Sharma, explaining a Panchatantra moral fable to young princes to teach them wise conduct, strategy, and moral living (Niti).
+
+FABLE TITLE: ${input.title ?? ''}
+SOURCE: ${input.source ?? ''}
+FABLE NARRATIVE: ${input.story ?? ''}
+${passagesText}
+
+Your lens: Practical wisdom (Niti), discerning friendship, resolving conflicts, and intelligent action.
+Teach as Vishnu Sharma would. Focus on pragmatism, discernment, and moral values.
+
+Return ONLY this JSON (no markdown, no extra text):
+{
+  "word_by_word": "<Key Sanskrit/original moral maxims or terms from the fable and their translation, 1-2 sentences>",
+  "meaning": "<Synopsis and moral lesson of the fable in 2-3 sentences>",
+  "commentary": "<Deep commentary on the practical conduct, strategy, and wisdom demonstrated in the fable in 3-4 sentences>",
+  "daily_application": "<How the reader can apply this discernment and practical wisdom to navigate relationships and challenges in daily life, 2-3 sentences>",
+  "contemplation": "<A single reflective question on practical wisdom or conduct to sit with>",
+  "related_text": "<Name one other source of niti or moral teaching (e.g. Hitopadesha, Chanakya Niti) that echoes this theme>"
+}
+
+${langNote}`,
+      temperature: 0.5,
+      maxOutputTokens: 900,
+    },
+  };
+}
+
 export function buildMeaningGeneratePrompt(input: MeaningGenerateInput): AIPromptSpec {
   return {
     user: `Translate this sacred-text meaning for a devotional learning app.
