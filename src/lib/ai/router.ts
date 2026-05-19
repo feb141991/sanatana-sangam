@@ -1,6 +1,6 @@
 import { buildMeaningGeneratePrompt, buildPathshalaExplainPrompt, buildDevotionalStoryExplainPrompt, buildMoralStoryExplainPrompt, buildUpanishadsExplainPrompt, buildGurbaniShabadExplainPrompt } from '@/lib/ai/context-builder';
 import { assertAiRequestAllowed, validateMeaningGenerateInput, validatePathshalaExplainInput, validateAIChatInput } from '@/lib/ai/policies';
-import { generateWithGemini } from '@/lib/ai/providers/gemini';
+import { generateWithProvider, getInferenceProvider } from '@/lib/ai/providers/inference';
 import { retrievePathshalaContext } from '@/lib/ai/retrieval';
 import { GeminiModelAdapter, SimpleCorpusSelector } from '@sangam/pramana-serve';
 import { DharmaChatContract, createPramanaRoute } from '@sangam/pramana-core';
@@ -13,12 +13,13 @@ import type {
 } from '@/lib/ai/contracts';
 
 function buildMetadata(task: AIResponseMetadata['task'], result: AITextResult): AIResponseMetadata {
+  const provider = getInferenceProvider();
   return {
     task,
     provider: result.provider,
     model: result.modelUsed,
-    privateStackReady: false,
-    usedHostedFallback: true,
+    privateStackReady: provider.info.providerClass === 'self_hosted',
+    usedHostedFallback: provider.info.providerClass === 'hosted',
   };
 }
 
@@ -85,7 +86,7 @@ export async function runPathshalaExplain(input: PathshalaExplainInput) {
     });
   }
 
-  const result = await generateWithGemini(built.prompt);
+  const result = await generateWithProvider(built.prompt);
 
   return {
     raw: result.text,
@@ -104,7 +105,7 @@ export async function runMeaningGenerate(input: MeaningGenerateInput) {
   validateMeaningGenerateInput(input);
 
   const prompt = buildMeaningGeneratePrompt(input);
-  const result = await generateWithGemini(prompt);
+  const result = await generateWithProvider(prompt);
 
   return {
     raw: result.text,

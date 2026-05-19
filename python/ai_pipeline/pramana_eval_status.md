@@ -181,6 +181,26 @@ This report documents the status of the local and live-ish evaluations across th
 
 ## Trust & Mock Status Summary
 
-- **Mock Eval Status**: Active fallback mode is fully supported. Katha, Panchatantra, Upanishads, and Gurbani suites run regression checks using high-fidelity mock generators.
-- **Live-ish Eval Status**: Gita suite runs real prompt construction and context serialization against the Gemini 2.0 API when `GEMINI_API_KEY` is provided.
-- **Pramana Output Trust Level**: **High**. Structured response parsing ensures format safety, and coordinate indexing validates that grounding references matches verbatim text.
+### Suite Execution Mode Reference
+
+| Suite | Current Mode | Can Run Live-ish | Env/Config Required |
+| :--- | :--- | :--- | :--- |
+| `pathshala_gita` | Mock (live-ish if key set) | ✅ Yes | `GEMINI_API_KEY` |
+| `bhakti_katha` | Mock-only | ❌ Not yet | Prompt builder + live adapter |
+| `bhakti_panchatantra` | Mock-only | ❌ Not yet | Prompt builder + live adapter |
+| `pathshala_upanishads` | Mock-only | ❌ Not yet | Prompt builder + live adapter |
+| `sikh_gurbani` | Mock-only | ❌ Not yet | Prompt builder + live adapter |
+
+### Definitions
+
+- **Mock**: Eval uses deterministic mock generators. No external API calls. Tests regression safety of scoring, JSON parsing, and grounding checks.
+- **Live-ish**: Eval constructs real prompts, serializes real retrieval context, and calls the hosted Gemini API. Validates end-to-end output quality.
+- **Future self-hosted**: Eval will run against a private/self-hosted model runtime (vLLM, Ollama, etc.) when `PRAMANA_INFERENCE_PROVIDER=self-hosted` and `PRAMANA_SELF_HOSTED_URL` are configured.
+
+### What Is Required to Make Live Eval the Default
+
+1. Set `GEMINI_API_KEY` in the environment (or `PRAMANA_SELF_HOSTED_URL` for self-hosted).
+2. Extend Katha, Panchatantra, Upanishads, and Gurbani suites with live prompt builders (currently only Gita has a live path).
+3. Add latency and cost guards to prevent accidental high-volume API spend during CI.
+
+- **Pramana Output Trust Level**: **High**. Structured response parsing ensures format safety, and coordinate indexing validates that grounding references match verbatim text.

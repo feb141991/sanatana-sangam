@@ -6,32 +6,72 @@ Pramana uses a strict, policy-enforced user-context architecture designed to ena
 
 ## 📋 Data Classification Model
 
-| Data Category | Policy Status | Examples of Data | Transmission Policy |
-| :--- | :--- | :--- | :--- |
-| **Public Corpus Context** | ✅ **Always Allowed** | Scripture verses, commentaries, translations, manifest structure, moral fables. | Included in retrieved context block to ground responses. |
-| **User Preference Context** | ✅ **Allowed (Opt-in/Default)** | Preferred tradition, preferred language, theme settings, font size. | Passed as high-level metadata key-value parameters. |
-| **User Behavior Summary** | ✅ **Allowed (Safe Aggregates)** | Morning-user indicator, session duration category (short/long), study vs. devotional leaning indexes. | Handled via summarizers; raw event feeds/clickstreams are strictly excluded. |
-| **Restricted Private Data** | ❌ **Disallowed** | Full name, email address, phone number, lineage/Gotra name, family tree nodes, private journals. | Never passed to LLM prompt builders. |
-| **Never-Send Fields** | 🟥 **Strictly Disallowed** | Secrets, passwords, session tokens, exact GPS coordinate values (latitude/longitude). | Blocked at the schema contract level. |
+| Data Category | Policy Classification | Code Type | Examples | Transmission Policy |
+| :--- | :--- | :--- | :--- | :--- |
+| **Public Corpus** | `PUBLIC_CORPUS` | (no type — corpus data) | Scripture verses, commentaries, translations, moral fables | Always included in retrieval context |
+| **User Preferences** | `USER_PREFERENCE` | `UserPreferenceContext` | `preferredLanguage`, `preferredTradition`, `themePreference`, `fontSizePreference` | Passed as metadata parameters |
+| **Behavior Summary** | `USER_BEHAVIOR_SUMMARY` | `UserBehaviorSummaryContext` | `morningUser`, `shortSessionPreference`, `bhaktiLeaningScore`, `studyLeaningScore`, `sessionCountLast7Days` | Via `summarizeUserSignals()` only |
+| **Restricted Private** | `RESTRICTED_PRIVATE` | `RestrictedPrivateContext` | `fullName`, `email`, `phoneNumber`, `locationName`, `gotraOrLineage`, `privateJournalEntriesCount` | ❌ Never sent to LLM |
+| **Never-Send** | `NEVER_SEND` | `NeverSendContext` | `passwords`, `apiTokens`, `sessionToken`, `latitude`, `longitude` | 🟥 Blocked at schema level |
 
 ---
 
-## 🛡️ Privacy Boundaries & Architectural Rules
+## 🔐 Prompt-Facing Type Boundary
+
+Only `SafeUserSummaryContext` fields may appear in AI prompt text. The allowed fields are:
+
+| Field | Type | Source | Purpose in Prompt |
+| :--- | :--- | :--- | :--- |
+| `preferredLanguage` | `string` | `UserPreferenceContext` | Language instruction hint |
+| `preferredTradition` | `string` | `UserPreferenceContext` | Commentary school selection |
+| `sessionPreference` | `'short' \| 'detailed'` | `UserBehaviorSummaryContext` | Response length guidance |
+| `timeOfDayPreference` | `'morning' \| 'evening' \| 'flexible'` | `UserBehaviorSummaryContext` | Tone adjustment hint |
+| `leaningType` | `'bhakti' \| 'study' \| 'balanced'` | `UserBehaviorSummaryContext` | Devotional vs study emphasis |
+
+**No fields from `RestrictedPrivateContext` or `NeverSendContext` are represented in any prompt-facing type.**
+
+---
+
+## 🛡️ Architectural Rules
 
 ### 1. What Stays Deterministic Only
-* **Panchang & Muhurata Calculations**: Lunar days (tithis), nakshatras, and solar transits are calculated strictly via mathematical algorithms and astronomers' charts. The AI engine is never given access to raw location coordinates or used to dynamically generate astrological predictions.
-* **Lineage & Community Access Controls**: Kul assignment, membership validations, and neighborhood/Sabha visibility are enforced strictly by Supabase RLS (Row Level Security) and database constraints. The LLM never makes access control decisions.
+* **Panchang & Muhurata Calculations**: Computed via mathematical algorithms. No AI access to raw coordinates.
+* **Lineage & Community Access Controls**: Enforced by Supabase RLS. No LLM involvement.
 
 ### 2. Context Summarization Layer
-To prevent raw user logs from bleeding into prompts, the application utilizes a safe summarizer:
+The `summarizeUserSignals()` function in `@sangam/pramana-core` is the **only** pathway from raw user data to prompt context. It reads only `preferences` and `behaviorSummary` fields and ignores `privateData` and `sensitiveNeverSend` entirely.
+
 ```typescript
-export function summarizeUserSignals(signals: Partial<RawUserSignals>): SafeUserSummaryContext {
-  // Converts raw interaction metrics into simple, high-level behavioral tags
-  // (e.g., morningUser: true -> timeOfDayPreference: 'morning')
-}
+function summarizeUserSignals(signals: Partial<RawUserSignals>): SafeUserSummaryContext
 ```
 
-### 3. Future Explicit Opt-In Requirements
-Before extending this context layer to personalized notifications, spiritual suggestions, or daily recommendations, the platform will implement:
-* An explicit UI toggle in the **Settings** view allowing the practitioner to toggle personalized AI suggestions.
-* Granular toggles for each data type (e.g., "Allow time-of-day personalization", "Allow reading reading style leaning indices").
+### 3. getUserSummaryContextNote() — Prompt Injection Point
+The `getUserSummaryContextNote()` helper in `context-builder.ts` converts a `SafeUserSummaryContext` into a human-readable annotation appended to the prompt. If no context is provided (`undefined`), the helper returns an empty string — no personalization note is added.
+
+---
+
+## 📲 Future Feature Boundaries
+
+### Notifications
+Personalized notification content (e.g. "Good morning, start your sadhana") may reference:
+- ✅ `timeOfDayPreference` (to choose morning vs evening phrasing)
+- ✅ `preferredLanguage` (to localize the notification)
+- ❌ Must NOT include `fullName`, `email`, or any `RestrictedPrivateContext` field in notification text sent to AI
+
+### Recommendations
+Personalized content recommendations (e.g. "Try this Upanishad passage next") may reference:
+- ✅ `leaningType` (bhakti vs study)
+- ✅ `sessionPreference` (short vs detailed)
+- ❌ Must NOT use raw session logs, clickstream data, or private journal content
+
+### Reading Personalization
+Adjustments to reading UX (font size, theme) are handled client-side from `UserPreferenceContext` and **never** sent to the LLM.
+
+---
+
+## ⚙️ Explicit Opt-In Requirements
+
+Before activating personalized AI features in production, the platform will implement:
+1. An explicit UI toggle in **Settings** allowing the practitioner to enable/disable AI-assisted personalization.
+2. Granular toggles per data type (e.g. "Allow time-of-day personalization", "Allow devotional/study leaning").
+3. A clear "What Pramana knows about you" transparency view.
