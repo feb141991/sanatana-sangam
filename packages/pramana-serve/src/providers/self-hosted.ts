@@ -23,6 +23,7 @@ import type {
  *   "temperature": 0.3,
  *   "max_tokens": 800,
  *   "response_format": "text" | "json",
+ *   "json_schema": { "type": "object", "properties": {...} },
  *   "grounding_context": [{ "content": "...", "metadata": {...} }],
  *   "stream": false
  * }
@@ -120,6 +121,7 @@ export class SelfHostedProvider implements PramanaInferenceProvider {
       temperature: request.prompt.temperature ?? 0.3,
       max_tokens: request.prompt.maxOutputTokens ?? 800,
       response_format: request.responseFormat ?? 'text',
+      json_schema: request.jsonSchema ?? undefined,
       grounding_context: request.groundingContext ?? [],
       stream: false,
     };
@@ -144,5 +146,13 @@ export class SelfHostedProvider implements PramanaInferenceProvider {
       `[${this.info.id}] Self-hosted inference is scaffolded but not yet implemented. ` +
       `A real vLLM/Ollama/TGI runtime must be deployed before this path can serve traffic.`
     );
+  }
+
+  /**
+   * Streaming inference via self-hosted runtime.
+   * Stubbed for now.
+   */
+  async *generateStream(request: InferenceRequest): AsyncIterable<string> {
+    throw new Error(`[${this.info.id}] generateStream is not yet implemented.`);
   }
 }

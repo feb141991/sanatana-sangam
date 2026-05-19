@@ -44,10 +44,14 @@ export interface InferenceRequest {
   prompt: PromptSpec;
   /** Optional: request structured JSON output instead of free text. */
   responseFormat?: 'text' | 'json';
+  /** Optional: JSON Schema to enforce when responseFormat is 'json'. */
+  jsonSchema?: Record<string, unknown>;
   /** Optional: retrieved context documents to ground the generation. */
   groundingContext?: Array<{ content: string; metadata?: Record<string, unknown> }>;
   /** Optional: timeout in milliseconds. */
   timeoutMs?: number;
+  /** Optional: request streamed response. */
+  stream?: boolean;
 }
 
 /**
@@ -85,6 +89,11 @@ export interface PramanaInferenceProvider {
    * Throws if the provider is unavailable or the request fails.
    */
   generate(request: InferenceRequest): Promise<InferenceResponse>;
+  /**
+   * Optional: Run inference and stream the response back.
+   * Must throw if streaming is not supported (check info.capabilities.streaming).
+   */
+  generateStream?(request: InferenceRequest): AsyncIterable<string>;
 }
 
 /**

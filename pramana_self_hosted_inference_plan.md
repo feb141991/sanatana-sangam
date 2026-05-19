@@ -21,7 +21,9 @@ interface PramanaInferenceProvider {
 |:---|:---|:---|
 | `prompt` | `PromptSpec` | System + user messages, temperature, maxOutputTokens |
 | `responseFormat` | `'text' \| 'json'` | Optional: request structured JSON output |
+| `jsonSchema` | `Record<string, unknown>` | Optional: JSON Schema to enforce when `responseFormat` is JSON |
 | `groundingContext` | `Array<{content, metadata}>` | Optional: retrieval context for grounded generation |
+| `stream` | `boolean` | Optional: request streaming response |
 | `timeoutMs` | `number` | Optional: request timeout |
 
 ### Response Shape (`InferenceResponse`)
@@ -61,6 +63,7 @@ POST /v1/generate
   "temperature": 0.3,
   "max_tokens": 800,
   "response_format": "text",
+  "json_schema": { "type": "object", "properties": {} },
   "grounding_context": [
     { "content": "...", "metadata": { "sourceName": "...", "chunkId": "..." } }
   ],
@@ -69,8 +72,8 @@ POST /v1/generate
 ```
 
 ### Readiness Status
-- **Scaffolded & Ready**: The `SelfHostedProvider` class exists, the provider selector correctly parses env vars (`PRAMANA_INFERENCE_PROVIDER`, `PRAMANA_SELF_HOSTED_URL`), and the payload transformation code maps `InferenceRequest` to the above expected JSON format (including `response_format` for structured JSON and `grounding_context` for retrieval).
-- **Stubbed**: The actual `fetch` call to `baseUrl` is currently commented out, and calling `generate` throws a "not implemented" error safely. Streaming is declared as `false` in capabilities.
+- **Scaffolded & Ready**: The `SelfHostedProvider` class exists, the provider selector correctly parses env vars, and the payload transformation code maps `InferenceRequest` to the above expected JSON format (including `response_format`, `json_schema`, `grounding_context`, and `stream`).
+- **Stubbed**: The actual `fetch` call to `baseUrl` is currently commented out, and calling `generate` or `generateStream` throws a "not implemented" error safely. Streaming is declared as `false` in capabilities.
 - **Blocker for Switchover**: An actual external local server (e.g., vLLM or Ollama) must be deployed and the `fetch` block inside `packages/pramana-serve/src/providers/self-hosted.ts` must be uncommented and tested.
 
 **Response:**
