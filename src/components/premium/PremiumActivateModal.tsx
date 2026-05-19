@@ -212,7 +212,7 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
                   className="text-[10px] font-bold uppercase tracking-[0.22em] mt-2"
                   style={{ color: '#C8924A' }}
                 >
-                  Shoonaya Pro
+                  Shoonaya Pro preview
                 </motion.p>
 
                 {/* Headline — the invitation */}

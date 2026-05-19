@@ -54,6 +54,7 @@ Last updated: 2026-05-19
 - [ ] Build Panchang validation fixtures against trusted references before changing product precision claims
 - [ ] Complete the app-level launch hardening pass from the May 2026 review: safe-area overlays, bottom nav persistence, top pill collapse behavior, native-feeling touch targets, icon-system replacement, and reduced-motion coverage
 - [ ] Convert the current early-access Pro toggle into a production entitlement system before charging: provider adapter, server-side entitlement truth, restore/manage subscription actions, legal copy, and platform-compliant purchase flows
+- [ ] Remove direct early-access Pro activation from production release builds unless `ENABLE_EARLY_ACCESS_PRO=true` is intentionally set for testing
 - [ ] Define shared engine contracts for progress, recommendations, sacred content, calendar output, practice sessions, and entitlements so route UI stops depending on unrelated direct Supabase reads
 
 ## P0 Launch Blockers
@@ -78,6 +79,8 @@ Last updated: 2026-05-19
 - [ ] Production paywall compliance is ready before any real billing: clear benefits, localized price/renewal terms, visible dismiss path where free access exists, restore purchase, manage/cancel subscription, terms/privacy links, and no misleading “free” subscription wording
 - [ ] Global overlay and navigation contract is finalized so bottom nav, top pill, modals, sheets, fullscreen Mala/Sattvic modes, and admin overlays cannot hide or fight each other on mobile safe areas
 - [ ] App store readiness pass is complete for spiritual-content accuracy, report/block/moderation, source provenance, privacy prompts, support contact, demo account, and paywall review notes
+- [ ] Finish a route-by-route permission timing pass before store submission and lock it in `PERMISSION_TIMING_AUDIT.md`
+- [ ] Move Pro gating from raw `is_pro` checks to the shared entitlement model after `migration-v63-entitlement-foundation.sql`
 - [ ] Run `migration-v62-nitya-reminder-preference.sql` so morning/evening sacred-practice reminders stop piggybacking on shloka preference
 
 ## P1 Beta Work
@@ -191,6 +194,7 @@ Last updated: 2026-05-19
 - Paywall posture: `profiles.is_pro` plus `localStorage` is acceptable only as early-access preview. Before charging, entitlements must be server-truth, restorable, manageable, compliant with Apple/Google subscription wording, and connected to provider webhooks.
 - Paywall product line should protect trust: keep core daily practice, basic Mala, basic Pathshala, basic Panchang, and basic Tirtha discovery free; place Pro around deeper insights, advanced AI guidance, premium Kul visualizations, Tirtha Passport/share cards, advanced reminders, richer language/audio, and family collaboration depth.
 - `PATHSHALA_SOURCE_POLICY.md` now centralizes the trust rules for what Pathshala may store locally, what must remain companion-only, what should stay catalog-first, and what launch may honestly claim.
+- `APP_STORE_READINESS_AUDIT.md`, `PERMISSION_TIMING_AUDIT.md`, and `SCHEMA_ALIGNMENT_AUDIT.md` now track the operational launch gaps that still block public billing/store submission.
 - Gita recitation now has a real in-app audio foundation even before hosted playback: chapter metadata, saved listening state on device, focused recitation mode, and a cleaner handoff into the authoritative companion source.
 - The notification system now has a first real preference layer: sacred-time reminder toggles, quiet hours, and cron filtering, but it still needs live production verification and richer destination targeting.
 - Notification truth as of 2026-05-19: festival, shloka, brahma-muhurta, and nitya/zen reminder lanes exist in code; the missing production step is live device verification plus the new `wants_nitya_reminders` migration so sacred-practice reminders have their own explicit preference.

@@ -3,11 +3,16 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 
 // ─── POST /api/premium/activate ──────────────────────────────────────────────
-// Grants Shoonaya Pro to the authenticated user immediately (no payment yet).
-// When billing is integrated, this endpoint will be called by the payment
-// webhook instead of directly from the client.
+// Early-access only. This must be disabled in production billing contexts.
 
 export async function POST() {
+  if (process.env.ENABLE_EARLY_ACCESS_PRO !== 'true') {
+    return NextResponse.json(
+      { error: 'Early-access Pro activation is disabled. Production entitlements must come from the billing provider.' },
+      { status: 409 }
+    );
+  }
+
   const supabase = await createServerSupabaseClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -25,6 +30,9 @@ export async function POST() {
       .from('profiles')
       .update({
         is_pro:           true,
+        subscription_status: 'pro',
+        entitlement_source: 'early_access',
+        entitlement_updated_at: new Date().toISOString(),
         pro_activated_at: new Date().toISOString(),
         pro_note:         'early_access',
       })

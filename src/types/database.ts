@@ -50,6 +50,10 @@ export interface Database {
           notification_quiet_hours_end: number | null;
           is_admin: boolean;
           is_pro: boolean;
+          subscription_status: 'free' | 'pro' | 'kul_pro' | 'grace' | 'expired';
+          subscription_expires_at: string | null;
+          entitlement_source: string | null;
+          entitlement_updated_at: string | null;
           life_stage: string | null;
           life_stage_locked: boolean;
           gender_context: string | null;
