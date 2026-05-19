@@ -50,37 +50,90 @@ export class PathshalaManifestRetriever implements PramanaRetriever<RetrievalChu
       return { documents: [] };
     }
 
-    const cv = this.parseChapterVerse(queryText);
-    const documents: RetrievalChunk[] = [];
+    const filters = query.filters || {};
+    const reqSource = (filters.source as string || '').trim();
+    const reqTitle = (filters.title as string || '').trim();
+    const reqTradition = (filters.tradition as string || '').trim();
 
-    if (cv) {
-      // 1. Direct Verse Matching with Window Context
-      const manifest = this.loadManifest(cv.chapter);
-      if (manifest && manifest.content) {
-        const verses = manifest.content;
-        const targetRef = `${cv.chapter}.${cv.verse}`;
-        const targetIdx = verses.findIndex((v: any) => v.ref === targetRef);
+    // 1. Parse chapter and verse
+    const cv = this.parseChapterVerse(queryText) || this.parseChapterVerse(reqSource) || this.parseChapterVerse(reqTitle);
+    
+    const candidates: Array<{ chunk: RetrievalChunk; baseScore: number }> = [];
 
-        if (targetIdx !== -1) {
-          // Grab target verse and its neighbors (window size of 1 on each side)
-          const startIdx = Math.max(0, targetIdx - 1);
-          const endIdx = Math.min(verses.length - 1, targetIdx + 1);
+    // Load and score verses across all 18 chapters
+    for (let ch = 1; ch <= 18; ch++) {
+      const manifest = this.loadManifest(ch);
+      if (!manifest || !manifest.content) continue;
 
-          for (let i = startIdx; i <= endIdx; i++) {
-            const v = verses[i];
-            const isTarget = i === targetIdx;
-            
-            // Build text context containing Sanskrit, Transliteration, and translation
-            const textContent = [
-              v.sanskrit ? `Sanskrit: ${v.sanskrit}` : '',
-              v.transliteration ? `Transliteration: ${v.transliteration}` : '',
-              v.text ? `Translation: ${v.text}` : ''
-            ].filter(Boolean).join('\n');
+      for (let idx = 0; idx < manifest.content.length; idx++) {
+        const v = manifest.content[idx];
+        
+        let exactVerseScore = 0.0;
+        if (cv) {
+          const targetRef = `${cv.chapter}.${cv.verse}`;
+          if (v.ref === targetRef) {
+            exactVerseScore = 1.0;
+          } else if (v.ref.startsWith(`${cv.chapter}.`)) {
+            const vNum = parseInt(v.ref.split('.')[1], 10);
+            if (Math.abs(vNum - cv.verse) === 1) {
+              exactVerseScore = 0.6;
+            }
+          }
+        }
 
-            documents.push({
+        // Title/Source match score
+        let titleSourceScore = 0.0;
+        const lowercaseSource = (manifest.source_name || '').toLowerCase();
+        const lowercaseDocId = (manifest.doc_id || '').toLowerCase();
+        if (reqSource && (lowercaseSource.includes(reqSource.toLowerCase()) || reqSource.toLowerCase().includes(lowercaseSource))) {
+          titleSourceScore += 0.15;
+        }
+        if (reqTitle && (lowercaseDocId.includes(reqTitle.toLowerCase()) || reqTitle.toLowerCase().includes(lowercaseDocId))) {
+          titleSourceScore += 0.15;
+        }
+
+        // Keyword overlap in translation/text
+        let keywordOverlapScore = 0.0;
+        const textHaystack = [
+          v.text || '',
+          v.sanskrit || '',
+          v.transliteration || ''
+        ].join(' ').toLowerCase();
+
+        const terms = queryText.toLowerCase().split(/\s+/).filter(t => t.length > 2);
+        if (terms.length > 0) {
+          let matches = 0;
+          for (const term of terms) {
+            if (textHaystack.includes(term)) {
+              matches++;
+            }
+          }
+          keywordOverlapScore = (matches / terms.length) * 0.5; // normalized to max 0.5
+        }
+
+        // Tradition/Source-class score
+        let traditionScore = 0.0;
+        if (reqTradition && manifest.tradition && manifest.tradition.toLowerCase() === reqTradition.toLowerCase()) {
+          traditionScore += 0.2;
+        }
+        if (manifest.source_class && manifest.source_class === 'scripture') {
+          traditionScore += 0.1;
+        }
+
+        const totalScore = exactVerseScore + titleSourceScore + keywordOverlapScore + traditionScore;
+
+        if (totalScore > 0) {
+          const textContent = [
+            v.sanskrit ? `Sanskrit: ${v.sanskrit}` : '',
+            v.transliteration ? `Transliteration: ${v.transliteration}` : '',
+            v.text ? `Translation: ${v.text}` : ''
+          ].filter(Boolean).join('\n');
+
+          candidates.push({
+            chunk: {
               id: `${manifest.doc_id}_${v.ref}`,
               content: textContent,
-              score: isTarget ? 1.0 : 0.8, // exact match has higher score
+              score: totalScore,
               metadata: {
                 chunkId: v.ref,
                 docId: manifest.doc_id,
@@ -89,67 +142,39 @@ export class PathshalaManifestRetriever implements PramanaRetriever<RetrievalChu
                 sourceClass: manifest.source_class,
                 rightsStatus: manifest.rights_status,
               }
-            });
-          }
+            },
+            baseScore: totalScore
+          });
         }
       }
-    } else {
-      // 2. Keyword/Fallback Fallback Search across all chapters
-      const terms = queryText.toLowerCase().split(/\s+/).filter(t => t.length > 2);
+    }
+
+    // Sort candidates by score descending
+    candidates.sort((a, b) => b.baseScore - a.baseScore);
+
+    const exactMatchIdx = candidates.findIndex(c => c.chunk.score! >= 1.0);
+    const documents: RetrievalChunk[] = [];
+    
+    if (exactMatchIdx !== -1) {
+      const targetRef = candidates[exactMatchIdx].chunk.metadata!.chunkId;
+      const chNum = parseInt(targetRef.split('.')[0], 10);
+      const vNum = parseInt(targetRef.split('.')[1], 10);
       
-      if (terms.length > 0) {
-        const matches: Array<{ chunk: RetrievalChunk; overlap: number }> = [];
-
-        // Check chapters 1 to 18
-        for (let ch = 1; ch <= 18; ch++) {
-          const manifest = this.loadManifest(ch);
-          if (!manifest || !manifest.content) continue;
-
-          for (const v of manifest.content) {
-            const contentHaystack = [
-              v.text || '',
-              v.sanskrit || '',
-              v.transliteration || ''
-            ].join(' ').toLowerCase();
-
-            let score = 0;
-            for (const term of terms) {
-              if (contentHaystack.includes(term)) {
-                score += 1.0;
-              }
-            }
-
-            if (score > 0) {
-              const textContent = [
-                v.sanskrit ? `Sanskrit: ${v.sanskrit}` : '',
-                v.transliteration ? `Transliteration: ${v.transliteration}` : '',
-                v.text ? `Translation: ${v.text}` : ''
-              ].filter(Boolean).join('\n');
-
-              matches.push({
-                chunk: {
-                  id: `${manifest.doc_id}_${v.ref}`,
-                  content: textContent,
-                  score: score / terms.length, // normalized score
-                  metadata: {
-                    chunkId: v.ref,
-                    docId: manifest.doc_id,
-                    tradition: manifest.tradition,
-                    sourceName: manifest.source_name,
-                    sourceClass: manifest.source_class,
-                    rightsStatus: manifest.rights_status,
-                  }
-                },
-                overlap: score
-              });
-            }
-          }
-        }
-
-        // Sort by overlap score descending, pick top 5
-        matches.sort((a, b) => b.overlap - a.overlap);
-        documents.push(...matches.slice(0, 5).map(m => m.chunk));
-      }
+      const neighbors = candidates.filter(c => {
+        const cRef = c.chunk.metadata!.chunkId;
+        const cCh = parseInt(cRef.split('.')[0], 10);
+        const cV = parseInt(cRef.split('.')[1], 10);
+        return cCh === chNum && Math.abs(cV - vNum) <= 1;
+      });
+      
+      neighbors.sort((a, b) => {
+        const vA = parseInt(a.chunk.metadata!.chunkId.split('.')[1], 10);
+        const vB = parseInt(b.chunk.metadata!.chunkId.split('.')[1], 10);
+        return vA - vB;
+      });
+      documents.push(...neighbors.map(n => n.chunk));
+    } else {
+      documents.push(...candidates.slice(0, 5).map(c => c.chunk));
     }
 
     return { documents };
@@ -164,6 +189,11 @@ export async function retrievePathshalaContext(input: {
   const retriever = new PathshalaManifestRetriever();
   const res = await retriever.retrieve({
     text: `${input.title ?? ''} ${input.source ?? ''}`.trim(),
+    filters: {
+      source: input.source || null,
+      title: input.title || null,
+      tradition: input.tradition || null,
+    }
   });
   return res.documents as RetrievalChunk[];
 }

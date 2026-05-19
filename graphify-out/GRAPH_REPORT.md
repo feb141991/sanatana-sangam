@@ -1,12 +1,12 @@
 # Graph Report - /Users/Business(C)/Sanatan Sangam/Shoonaya  (2026-05-19)
 
 ## Corpus Check
-- 488 files · ~1,644,563 words
+- 489 files · ~1,645,603 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1801 nodes · 2576 edges · 235 communities detected
-- Extraction: 72% EXTRACTED · 28% INFERRED · 0% AMBIGUOUS · INFERRED: 718 edges (avg confidence: 0.8)
+- 1803 nodes · 2581 edges · 235 communities detected
+- Extraction: 72% EXTRACTED · 28% INFERRED · 0% AMBIGUOUS · INFERRED: 723 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -248,7 +248,7 @@
 
 ## God Nodes (most connected - your core abstractions)
 1. `select()` - 176 edges
-2. `GET()` - 108 edges
+2. `GET()` - 109 edges
 3. `POST()` - 71 edges
 4. `createClient()` - 47 edges
 5. `createServerSupabaseClient()` - 35 edges
@@ -274,83 +274,83 @@
 
 ### Community 0 - "Community 0"
 Cohesion: 0.01
-Nodes (52): BadgeManager, checkUser(), addBurst(), Corpus, Enrollment, buildGuidedPathStatusMap(), handleUploadCover(), fetchMandaliData() (+44 more)
+Nodes (54): BadgeManager, checkUser(), addBurst(), Corpus, Enrollment, buildGuidedPathStatusMap(), buildFallbackNudge(), buildFallbackSummary() (+46 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.02
-Nodes (60): getDailyDarshan(), getDharmVeerOfTheDay(), buildFestivalCalendarMeta(), daysUntil(), getFestivalsForDate(), getNextFestivals(), getTodayPanchang(), matches() (+52 more)
+Cohesion: 0.03
+Nodes (48): getGoogleToken(), runAligner(), getDailyDarshan(), getDharmVeerOfTheDay(), buildFestivalCalendarMeta(), daysUntil(), getFestivalsForDate(), getNextFestivals() (+40 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.03
-Nodes (57): generate_embeddings(), load_scripture(), main(), Load scripture JSON file., Generate embeddings for each verse., Upload verses with embeddings to Supabase., upload_to_supabase(), formatError() (+49 more)
+Cohesion: 0.02
+Nodes (49): fmt(), togglePlayback(), handleShare(), handleShare(), formatError(), dismissPushPromptForNow(), markAllRead(), geocodeCity() (+41 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.03
-Nodes (60): createServiceRoleSupabaseClient(), requireAdminAccess(), getGoogleToken(), runAligner(), getPathshalaEngine(), getSadhanaEngine(), main(), createPathshalaEngine() (+52 more)
+Nodes (48): generate_embeddings(), load_scripture(), main(), Load scripture JSON file., Generate embeddings for each verse., Upload verses with embeddings to Supabase., upload_to_supabase(), buildFallbackTask() (+40 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.03
-Nodes (55): buildMeaningGeneratePrompt(), buildPathshalaExplainPrompt(), createStaticPromptBuilder(), getCommentary(), joinPromptSections(), normalizeMeaningTargetLanguage(), GeminiModelAdapter, geminiUrl() (+47 more)
+Cohesion: 0.04
+Nodes (54): createServiceRoleSupabaseClient(), requireAdminAccess(), getPathshalaEngine(), getSadhanaEngine(), createPathshalaEngine(), createSadhanaEngine(), assignKulTask(), completeKulTask() (+46 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.05
-Nodes (46): buildUserContext(), getSystemInstruction(), formatDharmaReferencePack(), getDharmaReferences(), getEntryScore(), tokenize(), createOutput(), decodeEntities() (+38 more)
+Cohesion: 0.04
+Nodes (55): buildUserContext(), getSystemInstruction(), formatDharmaReferencePack(), getDharmaReferences(), getEntryScore(), tokenize(), main(), fetch_all_verses() (+47 more)
 
 ### Community 6 - "Community 6"
 Cohesion: 0.05
-Nodes (28): BuddhistStrategy, getPanchang(), getTithiNumber(), PlannedPanchangPrecisionEngine, JainStrategy, NanakshahiStrategy, addMinutes(), calculatePanchang() (+20 more)
+Nodes (40): adminClearCookieHeader(), adminCookieHeader(), bufToHex(), checkAdminCredentials(), createAdminToken(), encode(), hexToArrayBuffer(), hmacKey() (+32 more)
 
 ### Community 7 - "Community 7"
-Cohesion: 0.04
-Nodes (24): handleShare(), handleShare(), share(), handleShare(), fmt(), handleShare(), monthName(), handleShare() (+16 more)
+Cohesion: 0.05
+Nodes (28): BuddhistStrategy, getPanchang(), getTithiNumber(), PlannedPanchangPrecisionEngine, JainStrategy, NanakshahiStrategy, addMinutes(), calculatePanchang() (+20 more)
 
 ### Community 8 - "Community 8"
+Cohesion: 0.06
+Nodes (41): build_searchable_text(), generate_embeddings(), load_scripture(), main(), Save a sample for inspection., Upload verses with embeddings to Supabase in batches of 50., Build rich text for embedding: translation + transliteration + tags., Generate 384-dim LSA embeddings using TF-IDF + TruncatedSVD. (+33 more)
+
+### Community 9 - "Community 9"
 Cohesion: 0.07
 Nodes (22): NityaKarma, customKey(), getCustom(), getDefaultSteps(), getLocalDone(), handleSave(), load(), loadHistory() (+14 more)
 
-### Community 9 - "Community 9"
+### Community 10 - "Community 10"
 Cohesion: 0.08
 Nodes (4): OfflineQueue, SangamOfflineDB, SyncManager, SadhanaTracker
 
-### Community 10 - "Community 10"
-Cohesion: 0.08
-Nodes (26): build_searchable_text(), generate_embeddings(), load_scripture(), main(), Save a sample for inspection., Upload verses with embeddings to Supabase in batches of 50., Build rich text for embedding: translation + transliteration + tags., Generate 384-dim LSA embeddings using TF-IDF + TruncatedSVD. (+18 more)
-
 ### Community 11 - "Community 11"
-Cohesion: 0.09
-Nodes (12): copyEntry(), getEntryText(), goToLesson(), handleCopy(), load(), markComplete(), formatTime(), handleShare() (+4 more)
+Cohesion: 0.08
+Nodes (25): buildMeaningGeneratePrompt(), buildPathshalaExplainPrompt(), createStaticPromptBuilder(), getCommentary(), joinPromptSections(), normalizeMeaningTargetLanguage(), GeminiModelAdapter, geminiUrl() (+17 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.08
 Nodes (19): getLibraryEntryById(), getLibrarySectionById(), getCanonicalChapter(), getCanonicalChaptersForSection(), getCanonicalVerseLinksForChapter(), getGitaEntriesForChapter(), getOfficialGitaAudioUrl(), getOfficialGitaBaseParams() (+11 more)
 
 ### Community 13 - "Community 13"
-Cohesion: 0.1
-Nodes (22): MainLayout(), distanceKm(), ensurePlace(), getDistanceLabel(), kmToMiles(), safeErrorMessage(), shareVisit(), submitCheckIn() (+14 more)
-
-### Community 14 - "Community 14"
 Cohesion: 0.14
 Nodes (24): birthLocalToUTC(), buildChartQuality(), buildNavamsha(), calcAspects(), calcDasha(), calcLagna(), calcPlanets(), calcYogas() (+16 more)
 
+### Community 14 - "Community 14"
+Cohesion: 0.13
+Nodes (7): copyEntry(), getEntryText(), goToLesson(), handleCopy(), load(), markComplete(), StreakTracker
+
 ### Community 15 - "Community 15"
-Cohesion: 0.14
-Nodes (22): adminClearCookieHeader(), adminCookieHeader(), bufToHex(), checkAdminCredentials(), createAdminToken(), encode(), hexToArrayBuffer(), hmacKey() (+14 more)
+Cohesion: 0.12
+Nodes (15): middleware(), next(), playBell(), playBowlAmbient(), playInstrumentalAmbient(), playOmAmbient(), playTanpuraAmbient(), stopAmbient() (+7 more)
 
 ### Community 16 - "Community 16"
+Cohesion: 0.1
+Nodes (2): handleUploadCover(), ShrutiEngine
+
+### Community 17 - "Community 17"
 Cohesion: 0.11
 Nodes (8): handleKeyDown(), newId(), saveFabPos(), sendMessage(), fetchMessageThreads(), fetchThreadMessages(), sendThreadMessage(), MessagesPage()
 
-### Community 17 - "Community 17"
+### Community 18 - "Community 18"
 Cohesion: 0.1
 Nodes (6): KulSectionTiles(), useLanguage(), EntryCard(), getEntryText(), t(), getUnreadSignature()
 
-### Community 18 - "Community 18"
+### Community 19 - "Community 19"
 Cohesion: 0.11
 Nodes (0): 
-
-### Community 19 - "Community 19"
-Cohesion: 0.15
-Nodes (3): buildFallbackNudge(), buildFallbackSummary(), KulIntelligence
 
 ### Community 20 - "Community 20"
 Cohesion: 0.13
@@ -378,23 +378,23 @@ Nodes (1): NudgeEngine
 
 ### Community 26 - "Community 26"
 Cohesion: 0.2
-Nodes (4): fmt(), togglePlayback(), getAudioContext(), playBeadTapFeedback()
+Nodes (3): malaSessionBeads(), malaSessionMantra(), malaSessionRounds()
 
 ### Community 27 - "Community 27"
 Cohesion: 0.2
-Nodes (3): malaSessionBeads(), malaSessionMantra(), malaSessionRounds()
-
-### Community 28 - "Community 28"
-Cohesion: 0.2
 Nodes (1): Retrieval interfaces, filters, and reranking placeholders.
 
-### Community 29 - "Community 29"
+### Community 28 - "Community 28"
 Cohesion: 0.29
 Nodes (6): RetrievalFilters, Protocol, InMemorySearchBackend, Non-production placeholder backend used for contract wiring., SearchBackend, SearchResult
 
-### Community 30 - "Community 30"
+### Community 29 - "Community 29"
 Cohesion: 0.2
 Nodes (0): 
+
+### Community 30 - "Community 30"
+Cohesion: 0.22
+Nodes (6): getKathaById(), getKathasByOccasion(), getKathasByTradition(), getKathasForVrat(), KathaPage(), KathaReaderPage()
 
 ### Community 31 - "Community 31"
 Cohesion: 0.31
@@ -413,16 +413,16 @@ Cohesion: 0.42
 Nodes (8): cleanExtractedText(), decodeHtmlEntities(), extractContentColumn(), extractOriginalText(), extractVideoText(), htmlToText(), main(), serialize()
 
 ### Community 35 - "Community 35"
+Cohesion: 0.36
+Nodes (1): PersonalisationEngine
+
+### Community 36 - "Community 36"
 Cohesion: 0.25
 Nodes (0): 
 
-### Community 36 - "Community 36"
+### Community 37 - "Community 37"
 Cohesion: 0.29
 Nodes (0): 
-
-### Community 37 - "Community 37"
-Cohesion: 0.47
-Nodes (1): ShlokaOfDayEngine
 
 ### Community 38 - "Community 38"
 Cohesion: 0.33
@@ -486,19 +486,19 @@ Nodes (3): getAppDataRuntime(), prefersMockData(), selectRuntimeAdapter()
 
 ### Community 53 - "Community 53"
 Cohesion: 0.5
-Nodes (2): VratPage(), getVratData()
+Nodes (0): 
 
 ### Community 54 - "Community 54"
 Cohesion: 0.5
 Nodes (0): 
 
 ### Community 55 - "Community 55"
-Cohesion: 0.5
-Nodes (0): 
-
-### Community 56 - "Community 56"
 Cohesion: 0.83
 Nodes (3): closeIntro(), nextStep(), updateTargetPosition()
+
+### Community 56 - "Community 56"
+Cohesion: 0.5
+Nodes (0): 
 
 ### Community 57 - "Community 57"
 Cohesion: 0.5
@@ -510,7 +510,7 @@ Nodes (0):
 
 ### Community 59 - "Community 59"
 Cohesion: 0.5
-Nodes (0): 
+Nodes (2): VratPage(), getVratData()
 
 ### Community 60 - "Community 60"
 Cohesion: 0.83
@@ -1521,16 +1521,16 @@ Nodes (0):
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `GET()` connect `Community 2` to `Community 0`, `Community 33`, `Community 1`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 32`, `Community 9`, `Community 10`, `Community 14`, `Community 15`, `Community 16`, `Community 21`, `Community 22`, `Community 23`, `Community 27`?**
-  _High betweenness centrality (0.204) - this node is a cross-community bridge._
-- **Why does `select()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 7`, `Community 8`, `Community 9`, `Community 11`, `Community 13`, `Community 16`, `Community 19`, `Community 20`, `Community 23`, `Community 24`, `Community 25`, `Community 30`, `Community 37`, `Community 46`?**
-  _High betweenness centrality (0.179) - this node is a cross-community bridge._
-- **Why does `POST()` connect `Community 4` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 5`, `Community 14`, `Community 15`?**
-  _High betweenness centrality (0.072) - this node is a cross-community bridge._
+- **Why does `select()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 8`, `Community 9`, `Community 10`, `Community 14`, `Community 16`, `Community 17`, `Community 20`, `Community 23`, `Community 24`, `Community 25`, `Community 29`, `Community 30`, `Community 35`, `Community 46`?**
+  _High betweenness centrality (0.224) - this node is a cross-community bridge._
+- **Why does `GET()` connect `Community 3` to `Community 0`, `Community 1`, `Community 2`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 10`, `Community 11`, `Community 13`, `Community 15`, `Community 17`, `Community 21`, `Community 22`, `Community 23`, `Community 26`, `Community 32`, `Community 33`, `Community 35`?**
+  _High betweenness centrality (0.219) - this node is a cross-community bridge._
+- **Why does `POST()` connect `Community 6` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 11`, `Community 13`, `Community 16`?**
+  _High betweenness centrality (0.068) - this node is a cross-community bridge._
 - **Are the 175 inferred relationships involving `select()` (e.g. with `runAligner()` and `.listTexts()`) actually correct?**
   _`select()` has 175 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 67 inferred relationships involving `GET()` (e.g. with `score_grounding()` and `score_translation()`) actually correct?**
-  _`GET()` has 67 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 68 inferred relationships involving `GET()` (e.g. with `score_grounding()` and `score_translation()`) actually correct?**
+  _`GET()` has 68 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 25 inferred relationships involving `POST()` (e.g. with `select()` and `.update()`) actually correct?**
   _`POST()` has 25 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 46 inferred relationships involving `createClient()` (e.g. with `createPathshalaEngine()` and `createSadhanaEngine()`) actually correct?**
