@@ -3,7 +3,7 @@ import { assertAiRequestAllowed, validateMeaningGenerateInput, validatePathshala
 import { generateWithGemini } from '@/lib/ai/providers/gemini';
 import { retrievePathshalaContext } from '@/lib/ai/retrieval';
 import { GeminiModelAdapter } from '@sangam/pramana-serve';
-import { DharmaChatContract } from '@sangam/pramana-core';
+import { DharmaChatContract, createPramanaRoute } from '@sangam/pramana-core';
 import type {
   AIResponseMetadata,
   AITextResult,
@@ -70,17 +70,6 @@ export async function runMeaningGenerate(input: MeaningGenerateInput) {
 }
 
 export async function runDharmaChat(input: AIChatInput) {
-  assertAiRequestAllowed({
-    task: 'ai_chat',
-    tradition: input.tradition,
-    language: input.language,
-    scope: ['user_preference_only'],
-  });
-  validateAIChatInput(input);
-
-  const contract = DharmaChatContract;
-  const prompt = contract.buildPrompt(input);
-
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error('GEMINI_API_KEY not configured');
@@ -97,14 +86,38 @@ export async function runDharmaChat(input: AIChatInput) {
     models,
   });
 
-  const result = await adapter.generate(prompt);
+  const runner = createPramanaRoute(DharmaChatContract, {
+    adapter,
+    policies: [
+      {
+        name: 'ai_request_allowed',
+        evaluate(inp) {
+          assertAiRequestAllowed({
+            task: 'ai_chat',
+            tradition: inp.tradition,
+            language: inp.language,
+            scope: ['user_preference_only'],
+          });
+        }
+      },
+      {
+        name: 'validate_input',
+        evaluate(inp) {
+          validateAIChatInput(inp);
+        }
+      }
+    ]
+  });
 
+  const res = await runner(input);
   return {
-    raw: result.text,
-    metadata: buildMetadata('ai_chat', {
-      text: result.text,
-      modelUsed: result.modelUsed,
-      provider: result.provider,
-    }),
+    raw: res.raw,
+    metadata: {
+      task: 'ai_chat',
+      provider: res.metadata.provider,
+      model: res.metadata.model,
+      privateStackReady: res.metadata.privateStackReady,
+      usedHostedFallback: res.metadata.usedHostedFallback,
+    }
   };
 }
