@@ -417,16 +417,175 @@ export class PramanaGitaEmbeddingRetriever implements PramanaRetriever<Retrieval
   }
 }
 
-// Register the four multi-corpus retrievers
-PramanaRetrieverSelector.register('pathshala_gita', new PramanaGitaEmbeddingRetriever(gitaManifestRetriever));
-
-PramanaRetrieverSelector.register('pathshala_upanishads', new PramanaManifestRetriever({
+const upanishadsManifestRetriever = new PramanaManifestRetriever({
   prefix: 'upanishad_chapter',
   sourceName: 'Upanishads',
   sourceClass: 'scripture',
   tradition: 'Sanatana Dharma',
   maxChapters: 10
-}));
+});
+
+export class PramanaUpanishadsEmbeddingRetriever implements PramanaRetriever<RetrievalChunkMetadata> {
+  private fallbackRetriever: PramanaManifestRetriever;
+  private indexPath: string;
+  private indexData: any = null;
+
+  constructor(fallbackRetriever: PramanaManifestRetriever) {
+    this.fallbackRetriever = fallbackRetriever;
+    this.indexPath = path.join(process.cwd(), 'python/ai_pipeline/corpus/upanishads_index.json');
+  }
+
+  private loadIndex() {
+    if (this.indexData) return this.indexData;
+    if (!fs.existsSync(this.indexPath)) return null;
+    try {
+      const data = fs.readFileSync(this.indexPath, 'utf-8');
+      this.indexData = JSON.parse(data);
+      return this.indexData;
+    } catch {
+      return null;
+    }
+  }
+
+  private tokenize(text: string): string[] {
+    return (text.toLowerCase().match(/[a-z0-9\u0900-\u097f]+(?:\.[a-z0-9\u0900-\u097f]+)*/g) || []);
+  }
+
+  async retrieve(query: PramanaRetrievalQuery): Promise<PramanaRetrievalResult<RetrievalChunkMetadata>> {
+    const index = this.loadIndex();
+    if (!index) {
+      return this.fallbackRetriever.retrieve(query);
+    }
+
+    const queryText = query.text.trim();
+    if (!queryText) {
+      return { documents: [] };
+    }
+
+    const tokens = this.tokenize(queryText);
+    if (tokens.length === 0) {
+      return this.fallbackRetriever.retrieve(query);
+    }
+
+    const tf: Record<string, number> = {};
+    for (const t of tokens) {
+      tf[t] = (tf[t] || 0) + 1;
+    }
+
+    const queryVector: Record<string, number> = {};
+    let sumSq = 0;
+    for (const t in tf) {
+      const idf = index.idf[t] || 0;
+      if (idf > 0) {
+        const tfidf = tf[t] * idf;
+        queryVector[t] = tfidf;
+        sumSq += tfidf * tfidf;
+      }
+    }
+
+    const queryNorm = Math.sqrt(sumSq);
+    if (queryNorm === 0) {
+      return this.fallbackRetriever.retrieve(query);
+    }
+
+    const queryUnitVector: Record<string, number> = {};
+    for (const t in queryVector) {
+      queryUnitVector[t] = queryVector[t] / queryNorm;
+    }
+
+    const docsWithScores: Array<{ doc: any; score: number }> = [];
+    for (const doc of index.documents) {
+      let score = 0;
+      for (const t in queryUnitVector) {
+        if (doc.vector[t]) {
+          score += queryUnitVector[t] * doc.vector[t];
+        }
+      }
+
+      if (score > 0) {
+        docsWithScores.push({ doc, score });
+      }
+    }
+
+    if (docsWithScores.length === 0) {
+      return this.fallbackRetriever.retrieve(query);
+    }
+
+    docsWithScores.sort((a, b) => b.score - a.score);
+
+    const limit = query.topK || 5;
+    const augmentedDocs: Array<{ doc: any; score: number }> = [];
+
+    if (docsWithScores.length > 0) {
+      const topDocItem = docsWithScores[0];
+      augmentedDocs.push(topDocItem);
+
+      if (topDocItem.score >= 0.4) {
+        const topDoc = topDocItem.doc;
+        const refParts = topDoc.ref.split('.');
+        if (refParts.length === 2) {
+          const ch = parseInt(refParts[0], 10);
+          const v = parseInt(refParts[1], 10);
+
+          const prevRef = `${ch}.${v - 1}`;
+          const nextRef = `${ch}.${v + 1}`;
+
+          const prevDoc = index.documents.find((d: any) => d.ref === prevRef);
+          const nextDoc = index.documents.find((d: any) => d.ref === nextRef);
+
+          if (prevDoc) {
+            augmentedDocs.push({ doc: prevDoc, score: topDocItem.score - 0.1 });
+          }
+          if (nextDoc) {
+            augmentedDocs.push({ doc: nextDoc, score: topDocItem.score - 0.12 });
+          }
+        }
+      }
+
+      for (const item of docsWithScores.slice(1)) {
+        if (!augmentedDocs.some(x => x.doc.id === item.doc.id)) {
+          if (item.score >= 0.1) {
+            augmentedDocs.push(item);
+          }
+        }
+      }
+    }
+
+    const topDocs = augmentedDocs.slice(0, limit);
+
+    const documents: RetrievalChunk[] = topDocs.map((item) => {
+      const doc = item.doc;
+      const textContent = [
+        doc.sanskrit ? `Sanskrit: ${doc.sanskrit}` : '',
+        doc.transliteration ? `Transliteration: ${doc.transliteration}` : '',
+        doc.text ? `Translation: ${doc.text}` : ''
+      ].filter(Boolean).join('\n');
+
+      return {
+        id: doc.id,
+        content: textContent,
+        score: item.score,
+        metadata: {
+          chunkId: doc.ref,
+          docId: doc.id.split('_').slice(0, -1).join('_'),
+          tradition: 'Sanatana Dharma',
+          sourceName: 'Upanishads',
+          sourceClass: 'scripture',
+          rightsStatus: 'public_domain'
+        }
+      };
+    });
+
+    return {
+      documents,
+      provider: 'embedding-index'
+    };
+  }
+}
+
+// Register the four multi-corpus retrievers
+PramanaRetrieverSelector.register('pathshala_gita', new PramanaGitaEmbeddingRetriever(gitaManifestRetriever));
+PramanaRetrieverSelector.register('pathshala_upanishads', new PramanaUpanishadsEmbeddingRetriever(upanishadsManifestRetriever));
 
 PramanaRetrieverSelector.register('bhakti_katha', new PramanaManifestRetriever({
   prefix: 'katha_chapter',

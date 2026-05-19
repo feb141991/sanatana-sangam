@@ -407,62 +407,220 @@ def run_panchatantra_eval_suite(dataset_path: Path) -> dict[str, Any]:
     }
 
 
-def run_upanishads_eval_suite(dataset_path: Path) -> dict[str, Any]:
+def run_upanishads_eval_suite(dataset_path: Path, root: Path, api_key: str | None) -> dict[str, Any]:
     cases = load_jsonl(dataset_path)
+    index_path = root / "python" / "ai_pipeline" / "corpus" / "upanishads_index.json"
+    
+    # Load Upanishads TF-IDF index for live-ish context retrieval
+    index = None
+    if index_path.exists():
+        try:
+            with open(index_path, "r", encoding="utf-8") as f:
+                index = json.load(f)
+        except Exception:
+            pass
+
     case_results = []
+    live_runs = 0
+    mock_runs = 0
+
     for case in cases:
-        story_title = case["prompt"]["chunk_id"]
-        story_text = case["prompt"]["story"]
+        chunk_id = case["prompt"]["chunk_id"]
         lang = case["prompt"]["language"]
         case_id = case["case_id"]
+        story_text = case["prompt"]["story"]
+        
+        # 1. Context retrieval
+        retrieved_passages = []
+        sanskrit, transliteration, translation = "", "", ""
+        
+        if index:
+            # Tokenize query "Upanishads <chunk_id>"
+            query = f"Upanishads {chunk_id}"
+            tokens = re.findall(r"[a-z0-9\u0900-\u097f]+(?:\.[a-z0-9\u0900-\u097f]+)*", query.lower())
+            
+            # Compute query TF-IDF vector
+            tf = {}
+            for t in tokens:
+                tf[t] = tf.get(t, 0) + 1
+            
+            query_vector = {}
+            sum_sq = 0.0
+            for t, count in tf.items():
+                idf = index["idf"].get(t, 0.0)
+                if idf > 0:
+                    tfidf = count * idf
+                    query_vector[t] = tfidf
+                    sum_sq += tfidf ** 2
+            
+            query_norm = math.sqrt(sum_sq)
+            if query_norm > 0.0:
+                query_unit_vector = {t: val / query_norm for t, val in query_vector.items()}
+                
+                # Search index
+                scored_docs = []
+                for doc in index["documents"]:
+                    score = 0.0
+                    doc_vec = doc["vector"]
+                    for t, val in query_unit_vector.items():
+                        if t in doc_vec:
+                            score += val * doc_vec[t]
+                    if score > 0.0:
+                        scored_docs.append((doc, score))
+                
+                scored_docs.sort(key=lambda x: x[1], reverse=True)
+                
+                # Boosted metadata neighbor augmentation
+                augmented = []
+                if scored_docs:
+                    top_doc, top_score = scored_docs[0]
+                    augmented.append((top_doc, top_score))
+                    
+                    if top_score >= 0.4:
+                        parts = top_doc["ref"].split(".")
+                        if len(parts) == 2:
+                            ch = int(parts[0])
+                            v = int(parts[1])
+                            prev_ref = f"{ch}.{v-1}"
+                            next_ref = f"{ch}.{v+1}"
+                            
+                            prev_doc = next((d for d in index["documents"] if d["ref"] == prev_ref), None)
+                            next_doc = next((d for d in index["documents"] if d["ref"] == next_ref), None)
+                            
+                            if prev_doc:
+                                augmented.append((prev_doc, top_score - 0.1))
+                            if next_doc:
+                                augmented.append((next_doc, top_score - 0.12))
+                                
+                    for doc, score in scored_docs[1:]:
+                        if not any(a[0]["id"] == doc["id"] for a in augmented):
+                            if score >= 0.1:
+                                augmented.append((doc, score))
+                
+                for doc, score in augmented[:5]:
+                    content_str = ""
+                    if doc.get("sanskrit"):
+                        content_str += f"Sanskrit: {doc['sanskrit']}\n"
+                    if doc.get("transliteration"):
+                        content_str += f"Transliteration: {doc['transliteration']}\n"
+                    if doc.get("text"):
+                        content_str += f"Translation: {doc['text']}"
+                    
+                    retrieved_passages.append({
+                        "content": content_str.strip(),
+                        "metadata": {
+                            "sourceName": "Principal Upanishads",
+                            "chunkId": doc["ref"]
+                        }
+                    })
+                    
+                    # Target metadata extraction
+                    if doc["ref"] == chunk_id:
+                        sanskrit = doc.get("sanskrit", "")
+                        transliteration = doc.get("transliteration", "")
+                        translation = doc.get("text", "")
 
-        if lang == "hi":
-            keywords_hi = "ईशावास्योपनिषद" if "isha" in case_id else "तत्त्वमसि"
-            mock_response = json.dumps({
-                "word_by_word": "शब्द विश्लेषण।",
-                "meaning": f"उपनिषद वाक्य {story_title} का आध्यात्मिक अर्थ।",
-                "commentary": f"टिप्पणी। यह ब्रह्म और आत्मा की एकता दर्शाता है। {keywords_hi} का ज्ञान।",
-                "daily_application": "दैनिक जीवन में उपयोग। आत्म-साक्षात्कार और आत्म-चिंतन करें।",
-                "contemplation": "चिंतन प्रश्न। क्या मैं शरीर हूँ या आत्मा?",
-                "related_text": "भगवद्गीता।"
-            }, ensure_ascii=False)
-        else:
-            kw = "renunciation" if "isha" in case_id else "shreya" if "katha-1" in case_id else "arise" if "katha-2" in case_id else "tvam"
-            mock_response = json.dumps({
-                "word_by_word": "Key Sanskrit philosophical terms and self-realization maxims.",
-                "meaning": f"Universal message of the Upanishad regarding Atman and Brahman. Focus on {kw}.",
-                "commentary": f"Advaita Vedanta commentary on self-realization, absolute truth, and the {kw} path.",
-                "daily_application": "Meditate daily and experience the underlying unity of all creation.",
-                "contemplation": "Who am I? Reflect on the reality beyond name and form.",
-                "related_text": "Bhagavad Gita"
-            }, ensure_ascii=False)
-
-        mock_result = {
-            "raw_response": mock_response,
-            "retrieved_passages": [
+        # Fallback if index-based extraction is empty
+        if not retrieved_passages:
+            sanskrit = "Sanskrit placeholder for Upanishads " + chunk_id
+            translation = "Translation placeholder for Upanishads " + chunk_id
+            retrieved_passages = [
                 {
-                    "content": f"Upanishad content for {story_title}. {story_text}",
+                    "content": f"Sanskrit: {sanskrit}\nTranslation: {translation}",
                     "metadata": {
                         "sourceName": "Principal Upanishads",
-                        "chunkId": case["prompt"]["chunk_id"]
+                        "chunkId": chunk_id
                     }
                 }
             ]
-        }
 
-        score_info = score_upanishads_explain(mock_result, case)
+        # 2. Build live-ish prompt (Wisdom teacher template)
+        commentary_lens = "Brahman alone is real, world is maya. Atman = Brahman. Liberation is recognition of this identity. Jnana marga."
+        commentary_school = "Advaita Vedanta"
+        commentary_name = "Adi Shankaracharya"
+        lang_note = "Respond in simple, natural Hindi using Devanagari script." if lang == "hi" else "Respond in clear, warm English."
+        
+        serialized_chunks = []
+        for idx, cp in enumerate(retrieved_passages):
+            serialized_chunks.append(f"Source [{idx+1}]: {cp['metadata']['sourceName']} - {cp['metadata']['chunkId']}\n{cp['content']}")
+        passages_text = "\n".join(serialized_chunks)
+        if passages_text:
+            passages_text = "\n" + passages_text + "\n=========================================================\nUse the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the verse accurately and provide authentic teachings."
+
+        prompt_text = f"""You are a wise {commentary_school} teacher explaining a scripture verse to a sincere practitioner.
+
+SOURCE: Principal Upanishads — {chunk_id}
+ORIGINAL (Sanskrit/text): {sanskrit}
+TRANSLITERATION: {transliteration}
+STANDARD TRANSLATION: {translation}
+{passages_text}
+
+Your lens: {commentary_lens}
+Teach as {commentary_name} would.
+
+Return ONLY this JSON (no markdown, no extra text):
+{{
+  "word_by_word": "<Key Sanskrit/original terms and their meanings, 1-2 sentences>",
+  "meaning": "<Core meaning of the verse in 2-3 sentences>",
+  "commentary": "<{commentary_school} interpretation in 3-4 sentences, in the spirit of {commentary_name}>",
+  "daily_application": "<How to apply this teaching today, 2-3 sentences>",
+  "contemplation": "<A single reflective question or thought to sit with>",
+  "related_text": "<Name one other scripture or teacher that echoes this teaching>"
+}}
+
+{lang_note}"""
+
+        # 3. Dynamic Execution or Mock Fallback
+        raw_response = ""
+        used_mock = True
+        
+        if api_key:
+            raw_response = generate_live_explanation(prompt_text, api_key)
+            if raw_response:
+                used_mock = False
+                live_runs += 1
+
+        if used_mock:
+            mock_runs += 1
+            if lang == "hi":
+                keywords_hi = "ईशावास्योपनिषद" if "isha" in case_id else "तत्त्वमसि"
+                raw_response = json.dumps({
+                    "word_by_word": "शब्द विश्लेषण।",
+                    "meaning": f"उपनिषद वाक्य {chunk_id} का आध्यात्मिक अर्थ: {story_text}.",
+                    "commentary": f"टिप्पणी। यह ब्रह्म और आत्मा की एकता दर्शाता है। {keywords_hi} का ज्ञान।",
+                    "daily_application": "दैनिक जीवन में उपयोग। आत्म-साक्षात्कार और आत्म-चिंतन करें।",
+                    "contemplation": "चिंतन प्रश्न। क्या मैं शरीर हूँ या आत्मा?",
+                    "related_text": "भगवद्गीता।"
+                }, ensure_ascii=False)
+            else:
+                kw = "renunciation" if "isha" in case_id else "shreya" if "katha-1" in case_id else "arise" if "katha-2" in case_id else "tvam"
+                raw_response = json.dumps({
+                    "word_by_word": "Key Sanskrit philosophical terms and self-realization maxims.",
+                    "meaning": f"Universal message of the Upanishad regarding Atman and Brahman. Focus on {kw}.",
+                    "commentary": f"Advaita Vedanta commentary on self-realization, absolute truth, and the {kw} path.",
+                    "daily_application": "Meditate daily and experience the underlying unity of all creation.",
+                    "contemplation": "Who am I? Reflect on the reality beyond name and form.",
+                    "related_text": "Bhagavad Gita"
+                }, ensure_ascii=False)
+
+        eval_result = {
+            "raw_response": raw_response,
+            "retrieved_passages": retrieved_passages
+        }
+        
+        score_info = score_upanishads_explain(eval_result, case)
         case_results.append({
             "case_id": case_id,
             "score_info": score_info,
-            "used_mock": True
+            "used_mock": used_mock
         })
 
     return {
         "dataset": str(dataset_path.name),
         "case_count": len(cases),
         "scorer": "score_upanishads_explain",
-        "live_runs": 0,
-        "mock_runs": len(cases),
+        "live_runs": live_runs,
+        "mock_runs": mock_runs,
         "results": case_results
     }
 
@@ -476,14 +634,14 @@ def main() -> None:
 
     api_key = get_gemini_api_key(root)
     if api_key:
-        print("🔑 GEMINI_API_KEY detected. Running live-ish evaluation path for Gita...")
+        print("🔑 GEMINI_API_KEY detected. Running live-ish evaluation path for Gita and Upanishads...")
     else:
         print("⚠️ GEMINI_API_KEY not configured. Running mock fallbacks...")
 
     gita_summary = run_gita_eval_suite(gita_dataset, root, api_key)
     katha_summary = run_katha_eval_suite(katha_dataset)
     panchatantra_summary = run_panchatantra_eval_suite(panchatantra_dataset)
-    upanishads_summary = run_upanishads_eval_suite(upanishads_dataset)
+    upanishads_summary = run_upanishads_eval_suite(upanishads_dataset, root, api_key)
 
     suites = {
         "pathshala_gita": gita_summary,

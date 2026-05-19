@@ -12,7 +12,8 @@
     "prepare": "npm run build --workspace=@sangam/pramana-core --workspace=@sangam/pramana-serve --workspace=@sangam/pramana-eval",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx",
-    "compare:gita-retrieval": "npx tsx scripts/compare_retrieval.ts"
+    "compare:gita-retrieval": "npx tsx scripts/compare_retrieval.ts",
+    "compare:upanishads-retrieval": "npx tsx scripts/compare_upanishads_retrieval.ts"
   },
   "dependencies": {
     "@capacitor/core": "^8.0.0",
