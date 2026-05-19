@@ -25,4 +25,5 @@ export {
   serializePramanaContext
 } from "./retrieval";
 export { type PramanaGatewayMetadata } from "./gateway-metadata";
+export * from './corpus';
 export * from './providers/gemini';
