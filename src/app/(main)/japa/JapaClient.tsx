@@ -43,8 +43,10 @@ const BEAD_R = 10.5;        // ↑ significantly bigger beads (was 7.0)
 const SUMERU_R = 16;        // ↑ bigger sumeru bead (was 11)
 const STORAGE_MALA   = 'shoonaya-japa-mala';
 const STORAGE_MANTRA = 'shoonaya-japa-mantra';
+const STORAGE_CUSTOM_MANTRA = 'shoonaya-japa-custom-mantra';
 const STORAGE_BG     = 'shoonaya-japa-bg';
 const STORAGE_SOUND  = 'shoonaya-japa-sound';
+const CUSTOM_MANTRA_ID = '__custom__';
 
 function getSpiritualTimeWindow(date: Date) {
   const hour = date.getHours();
@@ -57,6 +59,15 @@ function getSpiritualTimeWindow(date: Date) {
 
 type MalaId = JapaMalaId;
 type MantraId = JapaMantraId;
+type SelectedMantraId = MantraId | typeof CUSTOM_MANTRA_ID;
+type CustomMantra = {
+  label: string;
+  text: string;
+  description: string;
+};
+type PresetMantra = (typeof MANTRAS)[number];
+type CustomMantraCard = ReturnType<typeof buildCustomMantraCard>;
+type MantraOption = PresetMantra | CustomMantraCard;
 
 // ── Sound definitions ──────────────────────────────────────────────────────────
 type SoundId = 'silence' | 'om' | 'bowl' | 'rain' | 'river' | 'bells' | 'forest' | 'dilruba' | 'dhamma' | 'stavan';
@@ -482,6 +493,18 @@ function ConfettiShower() {
   return <ConfettiOverlay show />;
 }
 
+function buildCustomMantraCard(custom: CustomMantra) {
+  return {
+    id: CUSTOM_MANTRA_ID,
+    name: custom.label || 'Custom mantra',
+    devanagari: custom.text,
+    tradition: 'Personal',
+    description: custom.description || 'Your own private mantra focus',
+    full: custom.text,
+    tradColor: '#C8924A',
+  } as const;
+}
+
 // ── SVG Mala ───────────────────────────────────────────────────────────────────
 function beadPos(i: number) {
   const angle = ((i / TOTAL_BEADS) * Math.PI * 2) - Math.PI / 2;
@@ -716,6 +739,91 @@ function MalaSVG({
   );
 }
 
+function MantraStream({
+  mantra,
+  isDark,
+}: {
+  mantra: string;
+  isDark: boolean;
+}) {
+  const lines = mantra.split('\n').map((line) => line.trim()).filter(Boolean).slice(0, 4);
+  const streamLines = lines.length > 0 ? lines : [mantra];
+
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {Array.from({ length: 7 }).map((_, index) => (
+        <motion.div
+          key={`mantra-stream-${index}`}
+          className="absolute left-1/2 whitespace-nowrap"
+          style={{
+            bottom: '-8%',
+            x: '-50%',
+            fontFamily: 'var(--font-devanagari), var(--font-serif)',
+            fontSize: `${1.15 + (index % 3) * 0.18}rem`,
+            letterSpacing: '0.05em',
+            color: isDark ? 'rgba(245,210,150,0.11)' : 'rgba(122,74,30,0.10)',
+            filter: 'blur(0.4px)',
+          }}
+          animate={{
+            y: ['0%', '-118%'],
+            opacity: [0, 0.18, 0.12, 0],
+            scale: [0.98, 1.01, 1.04],
+          }}
+          transition={{
+            duration: 8.4 + index * 0.7,
+            repeat: Infinity,
+            ease: 'linear',
+            delay: index * 1.1,
+          }}
+        >
+          {streamLines[index % streamLines.length]}
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+function TapBloom({
+  particles,
+  isDark,
+}: {
+  particles: { id: number }[];
+  isDark: boolean;
+}) {
+  const color = isDark ? 'rgba(245,210,150,0.75)' : 'rgba(122,74,30,0.55)';
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      <AnimatePresence>
+        {particles.map((particle, index) => (
+          <motion.div
+            key={particle.id}
+            className="absolute left-1/2 top-1/2"
+            initial={{ opacity: 0.9, scale: 0.4, x: 0, y: 0 }}
+            animate={{
+              opacity: 0,
+              scale: 1.8,
+              x: (index % 2 === 0 ? 1 : -1) * (28 + (index % 3) * 10),
+              y: -(20 + (index % 4) * 12),
+            }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div
+              className="rounded-full blur-[1px]"
+              style={{
+                width: 10 + (index % 3) * 4,
+                height: 10 + (index % 3) * 4,
+                background: color,
+                boxShadow: `0 0 28px ${color}`,
+              }}
+            />
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 // ── Screen 0: Ritual launcher ─────────────────────────────────────────────────
 function PracticeLauncherScreen({
   isDark, traditionLabel, currentMala, currentMantra, targetRounds, streak, onTargetChange, onStart, onCustomize, onBack,
@@ -723,7 +831,7 @@ function PracticeLauncherScreen({
   isDark: boolean;
   traditionLabel: string;
   currentMala: typeof MALAS[number];
-  currentMantra: typeof MANTRAS[number];
+  currentMantra: MantraOption;
   targetRounds: number;
   streak: number;
   onTargetChange: (rounds: number) => void;
@@ -975,11 +1083,12 @@ function ChooseMalaScreen({
 
 // ── Screen 2: Choose Mantra ───────────────────────────────────────────────────
 function ChooseMantraScreen({
-  isDark, selected, mantras, onSelect, onBack, onConfirm,
+  isDark, selected, mantras, onSelect, onBack, onConfirm, customMantra, onOpenCustom,
 }: {
-  isDark: boolean; selected: MantraId;
-  mantras: typeof MANTRAS[number][];
-  onSelect: (id: MantraId) => void; onBack: () => void; onConfirm: () => void;
+  isDark: boolean; selected: SelectedMantraId;
+  mantras: readonly MantraOption[];
+  onSelect: (id: SelectedMantraId) => void; onBack: () => void; onConfirm: () => void;
+  customMantra: CustomMantra | null; onOpenCustom: () => void;
 }) {
   const bg    = isDark ? '#08070A' : '#F5F0E8';
   const card  = isDark ? 'var(--card-bg)' : 'rgba(0,0,0,0.04)';
@@ -1007,6 +1116,35 @@ function ChooseMantraScreen({
           <p className="text-[11px] font-semibold tracking-[0.18em] uppercase" style={{ color: amber }}>Choose Your</p>
           <h1 className="text-[1.8rem] font-bold leading-tight" style={{ color: text, fontFamily: 'var(--font-serif)' }}>Mantra</h1>
         </div>
+      </div>
+
+      <div className="px-5 pb-3">
+        <button
+          type="button"
+          onClick={onOpenCustom}
+          className="w-full rounded-2xl border p-4 text-left transition-all active:scale-[0.99]"
+          style={{
+            background: isDark ? 'rgba(200,146,74,0.08)' : 'rgba(122,74,30,0.06)',
+            borderColor: `${amber}35`,
+          }}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: amber }}>
+                {customMantra ? 'Edit personal mantra' : 'Add personal mantra'}
+              </p>
+              <p className="mt-1 text-sm font-semibold" style={{ color: text }}>
+                {customMantra?.label || 'Use your own mantra in mala practice'}
+              </p>
+              <p className="mt-1 text-[11px] leading-5" style={{ color: sub }}>
+                {customMantra?.text || 'Add a name and mantra text. It will animate in practice and save into your mala sessions.'}
+              </p>
+            </div>
+            <span className="rounded-full px-2.5 py-1 text-[10px] font-semibold" style={{ background: `${amber}18`, color: amber }}>
+              Personal
+            </span>
+          </div>
+        </button>
       </div>
 
       {/* Mantra list */}
@@ -1064,6 +1202,100 @@ function ChooseMantraScreen({
           Begin Practice →
         </motion.button>
       </div>
+    </motion.div>
+  );
+}
+
+function CustomMantraSheet({
+  isDark,
+  initialValue,
+  onSave,
+  onClose,
+}: {
+  isDark: boolean;
+  initialValue: CustomMantra | null;
+  onSave: (value: CustomMantra) => void;
+  onClose: () => void;
+}) {
+  const bg = isDark ? 'rgba(10,8,14,0.98)' : 'rgba(248,244,236,0.98)';
+  const cardBg = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)';
+  const border = isDark ? 'rgba(200,146,74,0.14)' : 'rgba(0,0,0,0.07)';
+  const text = isDark ? 'rgba(245,225,185,0.95)' : '#2D1F0E';
+  const sub = isDark ? 'rgba(200,146,74,0.60)' : 'rgba(100,65,25,0.60)';
+  const amber = isDark ? '#C8924A' : '#7A4A1E';
+  const [label, setLabel] = useState(initialValue?.label ?? '');
+  const [mantraText, setMantraText] = useState(initialValue?.text ?? '');
+  const [description, setDescription] = useState(initialValue?.description ?? '');
+  const valid = mantraText.trim().length >= 2;
+
+  return (
+    <motion.div
+      className="fixed inset-0 flex items-end"
+      style={{ zIndex: 130, background: 'rgba(0,0,0,0.62)' }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-2xl mx-auto rounded-t-3xl px-5 pt-3 pb-8"
+        style={{ background: bg, backdropFilter: 'blur(28px)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: `${amber}30` }} />
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: `${amber}80` }}>Personal mantra</p>
+            <h2 className="text-xl font-bold mt-1" style={{ fontFamily: 'var(--font-serif)', color: text }}>Add your own chant</h2>
+            <p className="text-sm mt-2 leading-relaxed" style={{ color: sub }}>
+              This stays private to your device for now and can be used with the same immersive mala flow.
+            </p>
+          </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: cardBg }}>
+            <X size={15} style={{ color: sub }} />
+          </button>
+        </div>
+
+        <div className="space-y-3">
+          <div className="rounded-2xl border p-3" style={{ background: cardBg, borderColor: border }}>
+            <p className="text-[11px] font-semibold mb-2" style={{ color: sub }}>Label</p>
+            <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Example: Guru mantra" className="w-full bg-transparent outline-none text-sm" style={{ color: text }} />
+          </div>
+          <div className="rounded-2xl border p-3" style={{ background: cardBg, borderColor: border }}>
+            <p className="text-[11px] font-semibold mb-2" style={{ color: sub }}>Mantra text</p>
+            <textarea
+              value={mantraText}
+              onChange={(e) => setMantraText(e.target.value)}
+              placeholder="Paste the mantra exactly as you want it shown during practice"
+              rows={4}
+              className="w-full resize-none bg-transparent outline-none text-sm leading-6"
+              style={{ color: text, fontFamily: 'var(--font-devanagari), var(--font-serif)' }}
+            />
+          </div>
+          <div className="rounded-2xl border p-3" style={{ background: cardBg, borderColor: border }}>
+            <p className="text-[11px] font-semibold mb-2" style={{ color: sub }}>Description</p>
+            <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Optional meaning or reminder" className="w-full bg-transparent outline-none text-sm" style={{ color: text }} />
+          </div>
+        </div>
+
+        <button
+          type="button"
+          disabled={!valid}
+          onClick={() => onSave({
+            label: label.trim() || 'Custom mantra',
+            text: mantraText.trim(),
+            description: description.trim() || 'Personal mantra focus',
+          })}
+          className="mt-5 w-full rounded-2xl py-4 text-[15px] font-bold disabled:opacity-50"
+          style={{ background: amber, color: isDark ? '#160F08' : '#fffaf2' }}
+        >
+          Save mantra
+        </button>
+      </motion.div>
     </motion.div>
   );
 }
@@ -1505,7 +1737,9 @@ export default function JapaClient({
   // ── Screen + selection state ─────────────────────────────────────────────
   const [screen,    setScreen]    = useState<Screen>('launcher');
   const [malaId,    setMalaId]    = useState<MalaId>((meta.japaRecommendedMalas[0] ?? 'sandalwood') as MalaId);
-  const [mantraId,  setMantraId]  = useState<MantraId>(defaultMantraId);
+  const [mantraId,  setMantraId]  = useState<SelectedMantraId>(defaultMantraId);
+  const [customMantra, setCustomMantra] = useState<CustomMantra | null>(null);
+  const [showCustomMantraSheet, setShowCustomMantraSheet] = useState(false);
   const [bgSceneId, setBgSceneId] = useState<BgSceneId>('midnight');
   const [targetRounds, setTargetRounds] = useState(1);
   const targetRoundsRef = useRef(1);
@@ -1562,10 +1796,21 @@ export default function JapaClient({
   useEffect(() => {
     try {
       const savedMala   = localStorage.getItem(STORAGE_MALA)   as MalaId | null;
-      const savedMantra = localStorage.getItem(STORAGE_MANTRA) as MantraId | null;
+      const savedMantra = localStorage.getItem(STORAGE_MANTRA) as SelectedMantraId | null;
+      const savedCustomMantra = localStorage.getItem(STORAGE_CUSTOM_MANTRA);
       const savedBg     = localStorage.getItem(STORAGE_BG)     as BgSceneId | null;
       if (savedMala   && MALAS.find(m => m.id === savedMala))         setMalaId(savedMala);
-      if (savedMantra && MANTRAS.find(m => m.id === savedMantra))     setMantraId(savedMantra);
+      if (savedCustomMantra) {
+        try {
+          const parsed = JSON.parse(savedCustomMantra) as CustomMantra;
+          if (parsed?.text) setCustomMantra(parsed);
+        } catch { /* ok */ }
+      }
+      if (savedMantra === CUSTOM_MANTRA_ID) {
+        setMantraId(CUSTOM_MANTRA_ID);
+      } else if (savedMantra && MANTRAS.find(m => m.id === savedMantra)) {
+        setMantraId(savedMantra);
+      }
       if (savedBg     && BG_SCENES.find(s => s.id === savedBg))       setBgSceneId(savedBg);
     } catch { /* ok */ }
   }, []);
@@ -1665,7 +1910,7 @@ export default function JapaClient({
       const completedAt = new Date().toISOString();
       const malaSessionRow = buildMalaSessionInsert({
         userId,
-        mantra: mantraId ?? 'om_namah_shivaya',
+        mantra: currentMantra.full,
         count: totalBeads,
         targetCount: TOTAL_BEADS,
         durationSeconds: duration,
@@ -1747,7 +1992,7 @@ export default function JapaClient({
     } finally {
       setSavingSession(false);
     }
-  }, [saved, savingSession, userId, mantraId, malaId, bgSceneId, duration, tradition, soundId]);
+  }, [saved, savingSession, userId, mantraId, customMantra, malaId, bgSceneId, duration, tradition, soundId]);
 
   const handleBgSceneSelect = (id: BgSceneId) => {
     setBgSceneId(id);
@@ -1845,12 +2090,19 @@ export default function JapaClient({
     setShowComplete(true);
   };
 
-  const currentMantra = MANTRAS.find(m => m.id === mantraId)  ?? MANTRAS[0];
+  const customMantraCard = customMantra ? buildCustomMantraCard(customMantra) : null;
+  const currentMantra = mantraId === CUSTOM_MANTRA_ID
+    ? customMantraCard ?? buildCustomMantraCard({ label: 'Custom mantra', text: 'ॐ', description: 'Personal mantra focus' })
+    : MANTRAS.find(m => m.id === mantraId) ?? MANTRAS[0];
   const currentMala   = MALAS.find(m => m.id === malaId)      ?? MALAS[0];
   const currentBgScene = BG_SCENES.find(s => s.id === bgSceneId) ?? BG_SCENES[0];
   const traditionMantras = useMemo(
     () => getJapaMantrasForTradition(tradition),
     [tradition]
+  );
+  const selectableMantras = useMemo(
+    () => customMantraCard ? [customMantraCard, ...traditionMantras] : traditionMantras,
+    [customMantraCard, traditionMantras]
   );
   const bgC = isDark ? currentBgScene.dark : currentBgScene.light;
 
@@ -1900,10 +2152,12 @@ export default function JapaClient({
           key="chooseMantra"
           isDark={isDark}
           selected={mantraId}
-          mantras={traditionMantras}
+          mantras={selectableMantras}
           onSelect={setMantraId}
           onBack={() => setScreen('chooseMala')}
           onConfirm={handleConfirmMantra}
+          customMantra={customMantra}
+          onOpenCustom={() => setShowCustomMantraSheet(true)}
         />
       )}
 
@@ -2026,6 +2280,8 @@ export default function JapaClient({
 
           <div className="flex-1 flex flex-col items-center justify-center relative">
             <LotusParticles />
+            <MantraStream mantra={currentMantra.full} isDark={isDark} />
+            <TapBloom particles={floatParticles} isDark={isDark} />
             <div className="relative z-10 w-full max-w-sm px-6">
               <motion.div
                 className="w-full flex items-center justify-center"
@@ -2128,6 +2384,24 @@ export default function JapaClient({
                 onContinue={handleContinueAfterComplete}
                 onChangeMala={handleChangeAfterComplete}
                 onViewInsights={handleViewInsights}
+              />
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
+            {showCustomMantraSheet && (
+              <CustomMantraSheet
+                isDark={isDark}
+                initialValue={customMantra}
+                onClose={() => setShowCustomMantraSheet(false)}
+                onSave={(value) => {
+                  setCustomMantra(value);
+                  setMantraId(CUSTOM_MANTRA_ID);
+                  try {
+                    localStorage.setItem(STORAGE_CUSTOM_MANTRA, JSON.stringify(value));
+                    localStorage.setItem(STORAGE_MANTRA, CUSTOM_MANTRA_ID);
+                  } catch { /* ok */ }
+                  setShowCustomMantraSheet(false);
+                }}
               />
             )}
           </AnimatePresence>
