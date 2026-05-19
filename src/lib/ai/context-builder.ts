@@ -201,6 +201,50 @@ Rules:
   };
 }
 
+export function buildUpanishadsExplainPrompt(input: PathshalaExplainInput): {
+  prompt: AIPromptSpec;
+  teacher: string;
+  school: string;
+} {
+  const commentary = getCommentary(input.tradition || 'Advaita');
+  const langNote = getLanguageInstruction(input.language);
+
+  const passagesText = input.retrievedChunks && input.retrievedChunks.length > 0
+    ? '\n' + serializePramanaContext(input.retrievedChunks, {
+        suffix: '\n=========================================================\nUse the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the Upanishadic passage accurately and provide authentic teachings.'
+      })
+    : '';
+
+  return {
+    teacher: commentary.name,
+    school: commentary.school,
+    prompt: {
+      user: `You are a wise ${commentary.school} teacher explaining a profound Upanishadic passage (Scripture Passage) to a sincere seeker.
+
+SOURCE: ${input.source ?? ''} — ${input.title ?? ''}
+PASSAGE TEXT: ${input.story || input.translation || ''}
+${passagesText}
+
+Your lens: ${commentary.lens} Focus on the nature of Brahman, Atman, self-realization, and transcendental knowledge (Jnana).
+Teach as ${commentary.name} would.
+
+Return ONLY this JSON (no markdown, no extra text):
+{
+  "word_by_word": "<Key Sanskrit/original terms from the Upanishad and their meanings, 1-2 sentences>",
+  "meaning": "<Core meaning and spiritual essence of the Upanishadic passage in 2-3 sentences>",
+  "commentary": "<Deep ${commentary.school} commentary on the identity of Atman and Brahman and path to self-realization, written in the spirit of ${commentary.name} in 3-4 sentences>",
+  "daily_application": "<How to cultivate contemplation, mindfulness, and direct inner experience of the Self in daily life, 2-3 sentences>",
+  "contemplation": "<A single reflective question or mahavakya contemplation to sit with>",
+  "related_text": "<Name one other Upanishad, Bhagavad Gita verse, or teacher that echoes this teaching>"
+}
+
+${langNote}`,
+      temperature: 0.5,
+      maxOutputTokens: 900,
+    },
+  };
+}
+
 export function normalizeMeaningTargetLanguage(value?: string | null): 'en' | 'hi' | 'pa' {
   return normalizeContentLanguage(value);
 }

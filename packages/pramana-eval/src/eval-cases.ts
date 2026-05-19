@@ -395,6 +395,120 @@ export const pathshalaExplainEvalSuite = defineEvalCaseCollection<PathshalaExpla
         { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
         { key: "language_compliance", description: "Response must be in Devanagari Hindi script", required: true }
       ]
+    },
+    {
+      id: "upanishads-isha-1",
+      title: "Upanishads - Isha Upanishad 1.1",
+      instruction: "Explain Isha Upanishad 1.1.",
+      domain: "grounding",
+      priority: "critical",
+      input: {
+        source: "Principal Upanishads",
+        title: "1.1",
+        tradition: "Advaita",
+        language: "en",
+        responseMode: "scripture_passage_explain",
+        story: "All this is enveloped by the Lord. Enjoy through renunciation."
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON containing required keys", required: true },
+        { key: "grounding_present", description: "Response must ground on Ishavasya or renunciation", required: true }
+      ]
+    },
+    {
+      id: "upanishads-katha-1",
+      title: "Upanishads - Shreya vs Preya",
+      instruction: "Explain Shreya vs Preya from Katha Upanishad.",
+      domain: "grounding",
+      priority: "standard",
+      input: {
+        source: "Principal Upanishads",
+        title: "1.2",
+        tradition: "Advaita",
+        language: "en",
+        responseMode: "scripture_passage_explain",
+        story: "The good and the pleasant are different. Choose the good."
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "grounding_present", description: "Response must ground on good or Shreya", required: true }
+      ]
+    },
+    {
+      id: "upanishads-katha-2",
+      title: "Upanishads - Arise Awake",
+      instruction: "Explain the teaching Arise, Awake from Katha Upanishad.",
+      domain: "grounding",
+      priority: "standard",
+      input: {
+        source: "Principal Upanishads",
+        title: "1.3",
+        tradition: "Advaita",
+        language: "en",
+        responseMode: "scripture_passage_explain",
+        story: "Arise! Awake! Approach the great teachers and learn from them."
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "grounding_present", description: "Response must ground on razor's edge or arise", required: true }
+      ]
+    },
+    {
+      id: "upanishads-chandogya-1",
+      title: "Upanishads - Tat Tvam Asi",
+      instruction: "Explain Tat Tvam Asi (That thou art) from Chandogya Upanishad.",
+      domain: "grounding",
+      priority: "critical",
+      input: {
+        source: "Principal Upanishads",
+        title: "1.4",
+        tradition: "Advaita",
+        language: "en",
+        responseMode: "scripture_passage_explain",
+        story: "That is the Self. That thou art (Tat Tvam Asi), O Shvetaketu."
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "grounding_present", description: "Response must ground on Tat Tvam Asi", required: true }
+      ]
+    },
+    {
+      id: "upanishads-isha-1-hi",
+      title: "Upanishads - Isha Upanishad 1.1 (Hindi)",
+      instruction: "Explain Isha Upanishad 1.1 in Hindi.",
+      domain: "grounding",
+      priority: "standard",
+      input: {
+        source: "Principal Upanishads",
+        title: "1.1",
+        tradition: "Advaita",
+        language: "hi",
+        responseMode: "scripture_passage_explain",
+        story: "ईशावास्योपनिषद श्लोक १"
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "language_compliance", description: "Response must be in Devanagari Hindi script", required: true }
+      ]
+    },
+    {
+      id: "upanishads-chandogya-1-hi",
+      title: "Upanishads - Tat Tvam Asi (Hindi)",
+      instruction: "Explain Tat Tvam Asi in Hindi.",
+      domain: "grounding",
+      priority: "standard",
+      input: {
+        source: "Principal Upanishads",
+        title: "1.4",
+        tradition: "Advaita",
+        language: "hi",
+        responseMode: "scripture_passage_explain",
+        story: "तत्त्वमसि श्वेतकेतो।"
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "language_compliance", description: "Response must be in Devanagari Hindi script", required: true }
+      ]
     }
   ]
 });

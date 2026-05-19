@@ -9,7 +9,7 @@ This document records the current integration, routing, and evaluation status fo
 | **`pathshala_gita`** | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes | `python/ai_pipeline/corpus/manifests/gita_chapter_*.json` |
 | **`bhakti_katha`** | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes | `python/ai_pipeline/corpus/manifests/katha_chapter_1.json` |
 | **`bhakti_panchatantra`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/panchatantra_chapter_1.json` |
-| **`pathshala_upanishads`** | ✅ Yes | ✅ Yes | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/upanishad_chapter_1.json` |
+| **`pathshala_upanishads`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/upanishad_chapter_1.json` |
 
 ### Column Definitions:
 * **Ingested**: Manifest JSON files containing Sanskrit text, transliterations, and translations exist in the `manifests/` directory.

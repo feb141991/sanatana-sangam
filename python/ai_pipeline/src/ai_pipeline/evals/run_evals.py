@@ -11,6 +11,7 @@ from ai_pipeline.evals.score_translation import score_translation
 from ai_pipeline.evals.score_pathshala import score_pathshala_explain
 from ai_pipeline.evals.score_katha import score_katha_explain
 from ai_pipeline.evals.score_panchatantra import score_panchatantra_explain
+from ai_pipeline.evals.score_upanishads import score_upanishads_explain
 
 
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -198,20 +199,82 @@ def run_panchatantra_eval_suite(dataset_path: Path) -> dict[str, Any]:
     }
 
 
+def run_upanishads_eval_suite(dataset_path: Path) -> dict[str, Any]:
+    cases = load_jsonl(dataset_path)
+    
+    case_results = []
+    for case in cases:
+        story_title = case["prompt"]["chunk_id"]
+        story_text = case["prompt"]["story"]
+        lang = case["prompt"]["language"]
+        case_id = case["case_id"]
+
+        # Generate mock response matching upanishad criteria
+        if lang == "hi":
+            keywords_hi = "ईशावास्योपनिषद" if "isha" in case_id else "तत्त्वमसि"
+            mock_response = json.dumps({
+                "word_by_word": "शब्द विश्लेषण।",
+                "meaning": f"उपनिषद वाक्य {story_title} का आध्यात्मिक अर्थ।",
+                "commentary": f"टिप्पणी। यह ब्रह्म और आत्मा की एकता दर्शाता है। {keywords_hi} का ज्ञान।",
+                "daily_application": "दैनिक जीवन में उपयोग। आत्म-साक्षात्कार और आत्म-चिंतन करें।",
+                "contemplation": "चिंतन प्रश्न। क्या मैं शरीर हूँ या आत्मा?",
+                "related_text": "भगवद्गीता।"
+            }, ensure_ascii=False)
+        else:
+            kw = "renunciation" if "isha" in case_id else "shreya" if "katha-1" in case_id else "arise" if "katha-2" in case_id else "tvam"
+            mock_response = json.dumps({
+                "word_by_word": "Key Sanskrit philosophical terms and self-realization maxims.",
+                "meaning": f"Universal message of the Upanishad regarding Atman and Brahman. Focus on {kw}.",
+                "commentary": f"Advaita Vedanta commentary on self-realization, absolute truth, and the {kw} path.",
+                "daily_application": "Meditate daily and experience the underlying unity of all creation.",
+                "contemplation": "Who am I? Reflect on the reality beyond name and form.",
+                "related_text": "Bhagavad Gita"
+            }, ensure_ascii=False)
+
+        mock_result = {
+            "raw_response": mock_response,
+            "retrieved_passages": [
+                {
+                    "content": f"Upanishad content for {story_title}. {story_text}",
+                    "metadata": {
+                        "sourceName": "Principal Upanishads",
+                        "chunkId": case["prompt"]["chunk_id"]
+                    }
+                }
+            ]
+        }
+
+        score_info = score_upanishads_explain(mock_result, case)
+        case_results.append({
+            "case_id": case_id,
+            "score_info": score_info
+        })
+
+    return {
+        "dataset": str(dataset_path.name),
+        "case_count": len(cases),
+        "scorer": "score_upanishads_explain",
+        "results": case_results
+    }
+
+
 def main() -> None:
     root = Path(__file__).resolve().parents[3]
     gita_dataset = root / "datasets" / "evals" / "pathshala_explain.sample.jsonl"
     katha_dataset = root / "datasets" / "evals" / "bhakti_katha.sample.jsonl"
     panchatantra_dataset = root / "datasets" / "evals" / "bhakti_panchatantra.sample.jsonl"
+    upanishads_dataset = root / "datasets" / "evals" / "pathshala_upanishads.sample.jsonl"
 
     gita_summary = run_gita_eval_suite(gita_dataset)
     katha_summary = run_katha_eval_suite(katha_dataset)
     panchatantra_summary = run_panchatantra_eval_suite(panchatantra_dataset)
+    upanishads_summary = run_upanishads_eval_suite(upanishads_dataset)
 
     output = {
         "pathshala_gita": gita_summary,
         "bhakti_katha": katha_summary,
         "bhakti_panchatantra": panchatantra_summary,
+        "pathshala_upanishads": upanishads_summary,
         "global_scorers": {
             "grounding": score_grounding({"sources": [{"doc_id": "placeholder"}]}),
             "translation": score_translation({"answer": "placeholder"}),

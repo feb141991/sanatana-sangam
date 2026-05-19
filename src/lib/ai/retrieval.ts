@@ -288,9 +288,10 @@ export async function retrievePathshalaContext(input: {
   source?: string;
   title?: string;
   tradition?: string | null;
+  corpus?: string | null;
 }): Promise<RetrievalChunk[]> {
   const selector = new SimpleCorpusSelector();
-  const corpusId = selector.selectCorpus(
+  const corpusId = (input.corpus as any) || selector.selectCorpus(
     `${input.title ?? ''} ${input.source ?? ''}`.trim(),
     {
       source: input.source || null,
@@ -306,6 +307,7 @@ export async function retrievePathshalaContext(input: {
       source: input.source || null,
       title: input.title || null,
       tradition: input.tradition || null,
+      corpus: corpusId || null,
     }
   });
   return res.documents as RetrievalChunk[];

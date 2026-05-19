@@ -1,4 +1,4 @@
-import { buildMeaningGeneratePrompt, buildPathshalaExplainPrompt, buildDevotionalStoryExplainPrompt, buildMoralStoryExplainPrompt } from '@/lib/ai/context-builder';
+import { buildMeaningGeneratePrompt, buildPathshalaExplainPrompt, buildDevotionalStoryExplainPrompt, buildMoralStoryExplainPrompt, buildUpanishadsExplainPrompt } from '@/lib/ai/context-builder';
 import { assertAiRequestAllowed, validateMeaningGenerateInput, validatePathshalaExplainInput, validateAIChatInput } from '@/lib/ai/policies';
 import { generateWithGemini } from '@/lib/ai/providers/gemini';
 import { retrievePathshalaContext } from '@/lib/ai/retrieval';
@@ -42,6 +42,8 @@ export async function runPathshalaExplain(input: PathshalaExplainInput) {
         ? 'bhakti_katha'
         : input.responseMode === 'moral_story_explain'
         ? 'bhakti_panchatantra'
+        : input.responseMode === 'scripture_passage_explain'
+        ? 'pathshala_upanishads'
         : null,
     }
   );
@@ -50,10 +52,16 @@ export async function runPathshalaExplain(input: PathshalaExplainInput) {
     source: input.source,
     title: input.title,
     tradition: input.tradition,
+    corpus: corpusId,
   });
 
   let built;
-  if (corpusId === 'bhakti_panchatantra' || input.responseMode === 'moral_story_explain') {
+  if (corpusId === 'pathshala_upanishads' || input.responseMode === 'scripture_passage_explain') {
+    built = buildUpanishadsExplainPrompt({
+      ...input,
+      retrievedChunks: chunks,
+    });
+  } else if (corpusId === 'bhakti_panchatantra' || input.responseMode === 'moral_story_explain') {
     built = buildMoralStoryExplainPrompt({
       ...input,
       retrievedChunks: chunks,
