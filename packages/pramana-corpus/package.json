@@ -1,0 +1,25 @@
+{
+  "name": "@sangam/pramana-corpus",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Portable corpus metadata contracts and schema types for the Pramana corpus.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

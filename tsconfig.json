@@ -18,7 +18,11 @@
       "@/*": ["./src/*"],
       "@shared-core/*": ["./src/shared-core/*"],
       "@sangam/sadhana-engine": ["./packages/sadhana-engine/src/index.ts"],
-      "@sangam/pathshala-engine": ["./packages/pathshala-engine/src/index.ts"]
+      "@sangam/pathshala-engine": ["./packages/pathshala-engine/src/index.ts"],
+      "@sangam/pramana-core": ["./packages/pramana-core/src/index.ts"],
+      "@sangam/pramana-corpus": ["./packages/pramana-corpus/src/index.ts"],
+      "@sangam/pramana-serve": ["./packages/pramana-serve/src/index.ts"],
+      "@sangam/pramana-eval": ["./packages/pramana-eval/src/index.ts"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
