@@ -21,3 +21,4 @@ export {
   type PramanaRetrievalResult
 } from "./retrieval";
 export { type PramanaGatewayMetadata } from "./gateway-metadata";
+export * from './providers/gemini';
