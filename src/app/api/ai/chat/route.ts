@@ -1,31 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { runDharmaChat } from '@/lib/ai/router';
+import type { PromptMessage } from '@sangam/pramana-core';
 
 // ─── General AI Chat Route ────────────────────────────────────────────────────
 // POST /api/ai/chat
 // Body: { message: string; tradition?: string | null; history: { role: 'user' | 'model'; text: string }[] }
-// Uses Google Gemini Flash — fast, free-tier available, multilingual.
-//
-// Model priority (tries in order on failure):
-//   1. GEMINI_MODEL env var (if set — allows override without code change)
-//   2. gemini-2.0-flash-lite  — higher free-tier RPM, lower quota pressure
-//   3. gemini-1.5-flash        — stable fallback, broad free-tier availability
-//
-// Set GEMINI_MODEL in Vercel → Settings → Environment Variables to override.
+// Uses Google Gemini Flash via the Pramana contract.
 
-const GEMINI_MODEL_DEFAULT  = 'gemini-2.0-flash';
-const GEMINI_MODEL_FALLBACK = 'gemini-2.0-flash-lite';
-
-function geminiUrl(model: string) {
-  return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-}
-
-// ─── Per-user daily limit via Supabase ───────────────────────────────────────
-// The in-memory Map below is NOT reliable on Vercel (cold starts reset it).
-// This Supabase-backed check is the real gate — it persists across invocations.
-//
-// Uses the sadhana_events table to count AI chat requests today.
-// If the sadhana_events table isn't available, it fails open (no block).
 const FREE_DAILY_LIMIT = 5;
 const PRO_DAILY_LIMIT  = 100;
 
@@ -66,164 +48,6 @@ async function recordAiChatEvent(
   } catch { /* fire and forget */ }
 }
 
-// ─── Tradition-aware system instructions ──────────────────────────────────────
-const BASE_RULES = `
-Language: Respond in the same language the user writes in (English, Hindi, Hinglish, Punjabi, etc.) using a natural, conversational tone.
-
-What you do NOT do:
-- Generate harmful content
-- Make negative comparisons between religions or traditions
-- Make authoritative health or medical claims
-- Replace the Guru / Teacher — you are a guide, not an authority
-- Be preachy or overly formal`;
-
-const SYSTEM_INSTRUCTIONS: Record<string, string> = {
-
-  hindu: `You are Dharma Mitra — a warm, knowledgeable AI companion on Shoonaya, a spiritual community app for Sanatani families worldwide.
-
-Your role:
-- Answer questions about life, spirituality, philosophy, culture, and dharma
-- Draw wisdom primarily from Sanatan Dharma — Vedas, Upanishads, Bhagavad Gita, Puranas, and the living tradition
-- Use Sanskrit terms naturally (with brief explanations when first used)
-- Offer perspectives from shastra but ground them in everyday life
-- Respect all paths — Sikh, Buddhist, Jain — as rivers flowing to the same ocean
-- Be encouraging, warm, and non-judgmental
-- For health/legal/financial questions give general guidance but recommend consulting a professional
-${BASE_RULES}
-
-Begin fresh conversations with a warm "Hari Om 🕉️" greeting.`,
-
-  sikh: `You are Dharma Mitra — a warm, knowledgeable AI companion on Shoonaya, serving the Sikh community.
-
-Your role:
-- Answer questions about Sikhi, Gurbani, Sikh history, and spiritual practice
-- Draw wisdom primarily from the Guru Granth Sahib Ji, the Ten Gurus, and Gurmat philosophy
-- Use Gurbani references and Punjabi/Gurmukhi terms naturally (with brief explanations)
-- Ground teachings in everyday Sikh practice — Nitnem, Ardas, Seva, Naam Simran, Sangat
-- Honour all paths while centering the Guru's wisdom for this conversation
-- Be encouraging, warm, and non-judgmental
-- For health/legal/financial questions give general guidance but recommend consulting a professional
-${BASE_RULES}
-
-Begin fresh conversations with a warm "Sat Sri Akal ☬" greeting.`,
-
-  buddhist: `You are Dharma Mitra — a warm, knowledgeable AI companion on Shoonaya, serving the Buddhist community.
-
-Your role:
-- Answer questions about the Dhamma, Buddhist philosophy, meditation, and mindful living
-- Draw wisdom from the Pali Canon, Dhammapada, and across Theravada, Mahayana, and Vajrayana traditions
-- Use Pali/Sanskrit Buddhist terms naturally (with brief explanations)
-- Ground teachings in everyday practice — the Noble Eightfold Path, Five Precepts, meditation, and compassion
-- Honour all paths while centering the Buddha's teachings for this conversation
-- Be encouraging, warm, and non-judgmental
-- For health/legal/financial questions give general guidance but recommend consulting a professional
-${BASE_RULES}
-
-Begin fresh conversations with a warm "Namo Buddhaya ☸️" greeting.`,
-
-  jain: `You are Dharma Mitra — a warm, knowledgeable AI companion on Shoonaya, serving the Jain community.
-
-Your role:
-- Answer questions about Jain philosophy, Agam literature, and spiritual practice
-- Draw wisdom from Mahavir's teachings, the Namokar Mantra, Tattvarthasutra, and the Jain way of life
-- Use Prakrit/Sanskrit Jain terms naturally (with brief explanations)
-- Ground teachings in everyday Jain practice — Ahimsa, Aparigraha, Satya, Pratikraman, and Paryushana observance
-- Honour all paths while centering Jain wisdom for this conversation
-- Be encouraging, warm, and non-judgmental
-- For health/legal/financial questions give general guidance but recommend consulting a professional
-${BASE_RULES}
-
-Begin fresh conversations with a warm "Jai Jinendra 🤲" greeting.`,
-};
-
-/** Build a personalised context block to append to the system instruction. */
-function buildUserContext(opts: {
-  sampradaya?: string | null;
-  city?:       string | null;
-  country?:    string | null;
-  seeking?:    string[];
-}): string {
-  const parts: string[] = [];
-  if (opts.sampradaya) {
-    parts.push(`User's sampradaya / tradition lineage: ${opts.sampradaya}`);
-  }
-  if (opts.city || opts.country) {
-    const loc = [opts.city, opts.country].filter(Boolean).join(', ');
-    parts.push(`User's location: ${loc}`);
-  }
-  if (opts.seeking && opts.seeking.length > 0) {
-    parts.push(`User's spiritual interests / seeking: ${opts.seeking.join(', ')}`);
-  }
-  if (parts.length === 0) return '';
-  return `\n\n--- User context (use to personalise answers, but do not repeat back verbatim) ---\n${parts.join('\n')}`;
-}
-
-function getSystemInstruction(
-  tradition?: string | null,
-  ctx?: { sampradaya?: string | null; city?: string | null; country?: string | null; seeking?: string[] }
-): string {
-  const base = SYSTEM_INSTRUCTIONS[tradition ?? 'hindu'] ?? SYSTEM_INSTRUCTIONS.hindu;
-  return base + (ctx ? buildUserContext(ctx) : '');
-}
-
-// ─── Core Gemini call — tries model list in order ────────────────────────────
-async function callGemini(
-  apiKey: string,
-  models: string[],
-  requestBody: object
-): Promise<{ text: string; modelUsed: string } | { error: string; status: number }> {
-  for (const model of models) {
-    const url = `${geminiUrl(model)}?key=${apiKey}`;
-    let res: Response;
-    try {
-      res = await fetch(url, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(requestBody),
-      });
-    } catch (networkErr) {
-      console.error(`[AI] Network error for model ${model}:`, networkErr);
-      continue; // try next model
-    }
-
-    if (res.ok) {
-      const data = await res.json();
-      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (text) return { text, modelUsed: model };
-      // Gemini returned 200 but no text (e.g. all candidates filtered)
-      return { error: 'No response generated. Please rephrase your question.', status: 502 };
-    }
-
-    const errText = await res.text().catch(() => '');
-    console.warn(`[AI] model=${model} status=${res.status} body=${errText.slice(0, 200)}`);
-
-    if (res.status === 429) {
-      // Quota hit — try next model in the list
-      console.warn(`[AI] Quota hit on ${model}, trying fallback`);
-      continue;
-    }
-    if (res.status === 404) {
-      // Model not found — try next
-      console.warn(`[AI] Model ${model} not found, trying fallback`);
-      continue;
-    }
-    if (res.status === 400) {
-      return { error: 'Invalid request — please try rephrasing your message.', status: 400 };
-    }
-    if (res.status === 403) {
-      return { error: 'AI service key is invalid — please contact support.', status: 503 };
-    }
-    // Other errors — try next model
-    continue;
-  }
-
-  // All models exhausted
-  return {
-    error: '🙏 Dharma Mitra is taking a short rest right now. Please try again in a few minutes.',
-    status: 503,
-  };
-}
-
 export async function POST(req: NextRequest) {
   // Auth check — only logged-in users can use AI chat
   const supabase = await createServerSupabaseClient();
@@ -253,14 +77,6 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: 'AI service not configured. Add GEMINI_API_KEY to Vercel environment variables.' },
-      { status: 503 }
-    );
-  }
-
   let body: {
     message:     string;
     tradition?:  string | null;
@@ -281,55 +97,33 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Message is required' }, { status: 400 });
   }
 
-  // Determine model priority: env override → default → fallback
-  const envModel = process.env.GEMINI_MODEL?.trim();
-  const models = envModel
-    ? [envModel, GEMINI_MODEL_FALLBACK]
-    : [GEMINI_MODEL_DEFAULT, GEMINI_MODEL_FALLBACK];
+  // Map history to Pramana PromptMessage format
+  const mappedHistory: PromptMessage[] = history.map(h => ({
+    role: h.role === 'model' ? 'assistant' : 'user',
+    content: h.text,
+  }));
 
-  // Build Gemini contents array from history + new message
-  const contents = [
-    ...history.map(h => ({
-      role: h.role,
-      parts: [{ text: h.text }],
-    })),
-    {
-      role: 'user' as const,
-      parts: [{ text: message.trim() }],
-    },
-  ];
+  try {
+    const result = await runDharmaChat({
+      message: message.trim(),
+      tradition,
+      sampradaya,
+      city,
+      country,
+      seeking,
+      history: mappedHistory,
+    });
 
-  const requestBody = {
-    system_instruction: {
-      parts: [{ text: getSystemInstruction(tradition, { sampradaya, city, country, seeking }) }],
-    },
-    contents,
-    generationConfig: {
-      temperature:     0.7,
-      topK:            40,
-      topP:            0.95,
-      maxOutputTokens: 1024,
-    },
-    safetySettings: [
-      { category: 'HARM_CATEGORY_HATE_SPEECH',       threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-      { category: 'HARM_CATEGORY_HARASSMENT',         threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',  threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-      { category: 'HARM_CATEGORY_DANGEROUS_CONTENT',  threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-    ],
-  };
+    // Record the successful call so the daily limit increments
+    await recordAiChatEvent(supabase, user.id);
 
-  const result = await callGemini(apiKey, models, requestBody);
-
-  if ('error' in result) {
-    // If it's a soft quota message, return it as a reply (not an error) so the UI shows it gracefully
-    if (result.status === 503) {
-      return NextResponse.json({ reply: result.error });
+    return NextResponse.json({ reply: result.raw });
+  } catch (err: any) {
+    console.error('[AI CHAT ERROR]', err);
+    // If it's a soft quota error or rate limit, return it as a reply (not an error) so the UI shows it gracefully
+    if (err?.message?.includes('taking a short rest') || err?.message?.includes('rest')) {
+      return NextResponse.json({ reply: err.message });
     }
-    return NextResponse.json({ error: result.error }, { status: result.status });
+    return NextResponse.json({ error: err?.message || 'AI service error' }, { status: 500 });
   }
-
-  // Record the successful call so the daily limit increments
-  await recordAiChatEvent(supabase, user.id);
-
-  return NextResponse.json({ reply: result.text });
 }

@@ -1,12 +1,15 @@
 import { buildMeaningGeneratePrompt, buildPathshalaExplainPrompt } from '@/lib/ai/context-builder';
-import { assertAiRequestAllowed, validateMeaningGenerateInput, validatePathshalaExplainInput } from '@/lib/ai/policies';
+import { assertAiRequestAllowed, validateMeaningGenerateInput, validatePathshalaExplainInput, validateAIChatInput } from '@/lib/ai/policies';
 import { generateWithGemini } from '@/lib/ai/providers/gemini';
 import { retrievePathshalaContext } from '@/lib/ai/retrieval';
+import { GeminiModelAdapter } from '@sangam/pramana-serve';
+import { DharmaChatContract } from './contracts/chat';
 import type {
   AIResponseMetadata,
   AITextResult,
   MeaningGenerateInput,
   PathshalaExplainInput,
+  AIChatInput,
 } from '@/lib/ai/contracts';
 
 function buildMetadata(task: AIResponseMetadata['task'], result: AITextResult): AIResponseMetadata {
@@ -28,12 +31,13 @@ export async function runPathshalaExplain(input: PathshalaExplainInput) {
   });
   validatePathshalaExplainInput(input);
 
-  await retrievePathshalaContext({
+  const chunks = await retrievePathshalaContext({
     source: input.source,
     title: input.title,
     tradition: input.tradition,
   });
 
+  // Keep behavior identical for now, but pass retrieved context if available
   const built = buildPathshalaExplainPrompt(input);
   const result = await generateWithGemini(built.prompt);
 
@@ -59,5 +63,45 @@ export async function runMeaningGenerate(input: MeaningGenerateInput) {
   return {
     raw: result.text,
     metadata: buildMetadata('meaning_generate', result),
+  };
+}
+
+export async function runDharmaChat(input: AIChatInput) {
+  assertAiRequestAllowed({
+    task: 'ai_chat',
+    tradition: input.tradition,
+    language: input.language,
+    scope: ['user_preference_only'],
+  });
+  validateAIChatInput(input);
+
+  const contract = DharmaChatContract;
+  const prompt = contract.buildPrompt(input);
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY not configured');
+  }
+
+  // Determine model priority: env override → default → fallback
+  const envModel = process.env.GEMINI_MODEL?.trim();
+  const models = envModel
+    ? [envModel, 'gemini-2.0-flash-lite']
+    : ['gemini-2.0-flash', 'gemini-2.0-flash-lite'];
+
+  const adapter = new GeminiModelAdapter({
+    apiKey,
+    models,
+  });
+
+  const result = await adapter.generate(prompt);
+
+  return {
+    raw: result.text,
+    metadata: buildMetadata('ai_chat', {
+      text: result.text,
+      modelUsed: result.modelUsed,
+      provider: result.provider,
+    }),
   };
 }

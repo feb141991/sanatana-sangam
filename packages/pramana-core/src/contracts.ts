@@ -3,6 +3,7 @@ import type {
   PromptSpec,
   RequestMetadata,
   ResponseMetadata,
+  PromptMessage,
   TextResult,
 } from './types';
 
@@ -24,6 +25,15 @@ export type PathshalaExplainInput = PramanaInputBase & {
   translation?: string;
   source?: string;
   title?: string;
+};
+
+export type AIChatInput = PramanaInputBase & {
+  message: string;
+  sampradaya?: string | null;
+  city?: string | null;
+  country?: string | null;
+  seeking?: string[];
+  history?: PromptMessage[];
 };
 
 export interface PramanaContract<

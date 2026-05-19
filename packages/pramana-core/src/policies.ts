@@ -1,4 +1,4 @@
-import type { MeaningGenerateInput, PathshalaExplainInput, Policy } from './contracts';
+import type { AIChatInput, MeaningGenerateInput, PathshalaExplainInput, Policy } from './contracts';
 import type { RequestMetadata } from './types';
 
 export function assertRequestScope(meta: RequestMetadata<string>) {
@@ -16,6 +16,12 @@ export function validatePathshalaExplainInput(input: PathshalaExplainInput) {
 export function validateMeaningGenerateInput(input: MeaningGenerateInput) {
   if (!input.entryId || !input.sourceMeaning) {
     throw new Error('entryId and sourceMeaning are required');
+  }
+}
+
+export function validateAIChatInput(input: AIChatInput) {
+  if (!input.message?.trim()) {
+    throw new Error('Message is required');
   }
 }
 
