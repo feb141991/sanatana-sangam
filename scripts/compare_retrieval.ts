@@ -22,6 +22,11 @@ async function main() {
 
   const embedding = new PramanaGitaEmbeddingRetriever(heuristic);
 
+  let md = '# Bhagavad Gita Retrieval Comparison Report\n\n';
+  md += 'This report compares the retrieval behavior of the traditional **Heuristic Retriever** against the new **Embedding-Backed Retriever** on the 6 Gita eval cases.\n\n';
+  md += '| Case ID | Query Text | Heuristic Retrieved Chunks (Base Score) | Embedding-Backed Retrieved Chunks (Cosine Similarity Score) | Latency (Heur / Embed) |\n';
+  md += '| :--- | :--- | :--- | :--- | :--- |\n';
+
   console.log('================================================================================');
   console.log('📊 RETRIEVAL ADAPTER COMPARISON REPORT: HEURISTIC VS EMBEDDING-BACKED');
   console.log('================================================================================\n');
@@ -41,7 +46,7 @@ async function main() {
       filters: { source: 'Bhagavad Gita', title: docId }
     });
     const latHeur = Date.now() - startHeur;
-    const heurRefs = resHeur.documents.map(d => `${d.metadata?.chunkId} (Score: ${d.score?.toFixed(2) || 'N/A'})`);
+    const heurRefs = resHeur.documents.map(d => `${d.metadata?.chunkId} (${d.score?.toFixed(2) || 'N/A'})`);
 
     // 2. Run Embedding-Backed Retrieval
     const startEmbed = Date.now();
@@ -50,14 +55,19 @@ async function main() {
       filters: { source: 'Bhagavad Gita', title: docId }
     });
     const latEmbed = Date.now() - startEmbed;
-    const embedRefs = resEmbed.documents.map(d => `${d.metadata?.chunkId} (Score: ${d.score?.toFixed(2) || 'N/A'})`);
+    const embedRefs = resEmbed.documents.map(d => `${d.metadata?.chunkId} (${d.score?.toFixed(2) || 'N/A'})`);
 
     console.log(`   [Heuristic] Latency: ${latHeur}ms`);
     console.log(`               Retrieved: ${heurRefs.join(', ')}`);
-    console.log(`   [Embedding] Latency: ${embedEmbed(latEmbed)}ms (Provider: ${resEmbed.provider})`);
+    console.log(`   [Embedding] Latency: ${latEmbed}ms (Provider: ${resEmbed.provider})`);
     console.log(`               Retrieved: ${embedRefs.join(', ')}`);
     console.log('--------------------------------------------------------------------------------');
+
+    md += `| **\`${c.case_id}\`** | *${queryText}* | ${heurRefs.join(', ')} | ${embedRefs.join(', ')} | ${latHeur}ms / ${latEmbed}ms |\n`;
   }
+
+  fs.writeFileSync(path.join(process.cwd(), 'gita_retrieval_comparison.md'), md, 'utf-8');
+  console.log('📝 Saved comparison report to gita_retrieval_comparison.md');
 }
 
 function embedEmbed(ms: number) {
