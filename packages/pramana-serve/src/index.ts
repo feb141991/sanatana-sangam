@@ -27,3 +27,6 @@ export {
 export { type PramanaGatewayMetadata } from "./gateway-metadata";
 export * from './corpus';
 export * from './providers/gemini';
+export * from './providers/hosted-gemini';
+export * from './providers/self-hosted';
+export * from './provider-selector';

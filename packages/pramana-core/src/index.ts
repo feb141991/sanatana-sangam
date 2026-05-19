@@ -6,4 +6,5 @@ export * from './router';
 export * from './types';
 export * from './chat';
 export * from './user-context';
+export * from './inference-provider';
 

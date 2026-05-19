@@ -4,8 +4,8 @@ This report compares the retrieval behavior of the traditional **Heuristic Retri
 
 | Case ID | Query Text | Heuristic Retrieved Chunks (Base Score) | Embedding-Backed Retrieved Chunks (Cosine Similarity Score) | Latency (Heur / Embed) |
 | :--- | :--- | :--- | :--- | :--- |
-| **`upanishads-isha-1`** | *Upanishads 1.1* | 1.1 (1.40), 1.2 (1.00) | 1.1 (0.49), 1.2 (0.37) | 0ms / 1ms |
-| **`upanishads-katha-1`** | *Upanishads 1.2* | 1.1 (1.00), 1.2 (1.40), 1.3 (1.00) | 1.2 (0.46), 1.1 (0.36), 1.3 (0.34) | 0ms / 0ms |
+| **`upanishads-isha-1`** | *Upanishads 1.1* | 1.1 (1.40), 1.2 (1.00) | 1.1 (0.49), 1.2 (0.37) | 1ms / 0ms |
+| **`upanishads-katha-1`** | *Upanishads 1.2* | 1.1 (1.00), 1.2 (1.40), 1.3 (1.00) | 1.2 (0.46), 1.1 (0.36), 1.3 (0.34) | 1ms / 0ms |
 | **`upanishads-katha-2`** | *Upanishads 1.3* | 1.2 (1.00), 1.3 (1.40), 1.4 (1.00) | 1.3 (0.48), 1.2 (0.38), 1.4 (0.36) | 0ms / 0ms |
 | **`upanishads-chandogya-1`** | *Upanishads 1.4* | 1.3 (1.00), 1.4 (1.40) | 1.4 (0.46), 1.3 (0.36) | 0ms / 0ms |
 | **`upanishads-isha-1-hi`** | *Upanishads 1.1* | 1.1 (1.40), 1.2 (1.00) | 1.1 (0.49), 1.2 (0.37) | 0ms / 0ms |
