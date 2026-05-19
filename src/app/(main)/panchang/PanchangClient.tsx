@@ -1208,7 +1208,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                         </p>
                       </div>
                       <div className="space-y-1.5">
-                        {savedProfiles.slice(0, 6).map((sp: any) => (
+                        {savedProfiles.map((sp: any) => (
                           <div key={sp.id}
                             className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-white/8 bg-white/4 hover:bg-white/8 transition group">
                             <div className="w-8 h-8 rounded-lg bg-[#C5A059]/15 border border-[#C5A059]/25 flex items-center justify-center text-sm flex-shrink-0">
@@ -1241,11 +1241,6 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                             </button>
                           </div>
                         ))}
-                        {savedProfiles.length > 6 && (
-                          <p className="text-[9px] text-white/25 text-center pt-0.5">
-                            +{savedProfiles.length - 6} more · upgrade Pro to manage all
-                          </p>
-                        )}
                       </div>
                     </div>
                   )}

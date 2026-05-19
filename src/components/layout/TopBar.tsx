@@ -12,7 +12,7 @@ import BrandMark from '@/components/BrandMark';
 import { useMarkAllNotificationsReadMutation, useMarkNotificationReadMutation, useNotificationsQuery, useNotificationsRealtime } from '@/hooks/useNotifications';
 import { syncOneSignalContext, loginToOneSignal, isOneSignalConfigured, getPermissionState, getPlayerId, requestNotificationPermission } from '@/lib/onesignal';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
-import type { TranslationKey } from '@/lib/i18n/translations';
+import type { AppLang, TranslationKey } from '@/lib/i18n/translations';
 import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 
 const titles: Record<string, TranslationKey> = {
@@ -68,7 +68,13 @@ export default function TopBar({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, lang, setLang } = useLanguage();
+
+  const LANG_OPTIONS: { value: AppLang; label: string }[] = [
+    { value: 'en', label: 'EN' },
+    { value: 'hi', label: 'हि' },
+    { value: 'pa', label: 'ਪੰ' },
+  ];
   const supabase = useRef(createClient()).current;
   const prefersReducedMotion = useReducedMotion();
   const pushConfigured = isOneSignalConfigured();
@@ -419,8 +425,30 @@ export default function TopBar({
           {/* Spacer */}
           <div className="flex-1" />
 
-          {/* Right — bell + avatar */}
+          {/* Right — lang + bell + avatar */}
           <div className="flex items-center gap-2 flex-shrink-0">
+
+            {/* Language picker — always visible, all 3 langs */}
+            <div className="flex items-center rounded-full p-0.5"
+              style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.14)' }}>
+              {LANG_OPTIONS.map(({ value, label }) => (
+                <button
+                  key={value}
+                  onClick={() => setLang(value)}
+                  className="px-2 py-0.5 rounded-full text-[9px] font-bold transition-all"
+                  style={lang === value ? {
+                    background: 'var(--brand-primary)',
+                    color: '#1c1c1a',
+                  } : {
+                    color: 'var(--brand-muted)',
+                  }}
+                  aria-label={`Switch to ${label}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
             {isGuest ? (
               <div className="flex items-center gap-2">
                 <Link href="/login" className="type-micro hover:text-[color:var(--brand-ink)] transition">{t('signIn')}</Link>
