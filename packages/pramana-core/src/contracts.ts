@@ -26,6 +26,8 @@ export type RetrievalContextDocument = {
   metadata?: Record<string, any>;
 };
 
+import type { SafeUserSummaryContext } from './user-context';
+
 export type PathshalaExplainInput = PramanaInputBase & {
   sanskrit?: string;
   originalText?: string;
@@ -36,6 +38,7 @@ export type PathshalaExplainInput = PramanaInputBase & {
   story?: string;
   responseMode?: string;
   retrievedChunks?: RetrievalContextDocument[];
+  userSummaryContext?: SafeUserSummaryContext;
 };
 
 export type AIChatInput = PramanaInputBase & {

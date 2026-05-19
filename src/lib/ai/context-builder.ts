@@ -1,6 +1,15 @@
 import { getLanguageInstruction, normalizeContentLanguage } from '@/lib/language-runtime';
 import type { AIPromptSpec, MeaningGenerateInput, PathshalaExplainInput } from '@/lib/ai/contracts';
 import { serializePramanaContext } from '@sangam/pramana-serve';
+import type { SafeUserSummaryContext } from '@sangam/pramana-core';
+
+function getUserSummaryContextNote(ctx?: SafeUserSummaryContext): string {
+  if (!ctx) return '';
+  return `\n\n[Practitioner Personalization Context (Subtly tailor response style)]
+- Preferred Tradition: ${ctx.preferredTradition}
+- Learning Pace: ${ctx.sessionPreference === 'short' ? 'Brief, concise highlights preferred.' : 'Comprehensive, deep commentary preferred.'}
+- Devotional focus: ${ctx.leaningType === 'bhakti' ? 'Emphasize devotion (bhakti), surrender, and personal relationship with the Divine.' : ctx.leaningType === 'study' ? 'Emphasize philosophical study (jnana), self-inquiry, and intellectual insights.' : 'Balanced devotion and study approach.'}`;
+}
 
 const COMMENTARY: Record<string, { name: string; school: string; lens: string }> = {
   vaishnava: {
@@ -84,6 +93,8 @@ Return ONLY this JSON (no markdown, no extra text):
   "related_text": "<Name one other scripture or teacher that echoes this teaching>"
 }
 
+${getUserSummaryContextNote(input.userSummaryContext)}
+
 ${langNote}`,
       temperature: 0.5,
       maxOutputTokens: 900,
@@ -129,6 +140,8 @@ Return ONLY this JSON (no markdown, no extra text):
   "related_text": "<Name one other scripture or teacher that echoes the theme of this story>"
 }
 
+${getUserSummaryContextNote(input.userSummaryContext)}
+
 ${langNote}`,
       temperature: 0.5,
       maxOutputTokens: 900,
@@ -172,6 +185,8 @@ Return ONLY this JSON (no markdown, no extra text):
   "contemplation": "<A single reflective question on practical wisdom or conduct to sit with>",
   "related_text": "<Name one other source of niti or moral teaching (e.g. Hitopadesha, Chanakya Niti) that echoes this theme>"
 }
+
+${getUserSummaryContextNote(input.userSummaryContext)}
 
 ${langNote}`,
       temperature: 0.5,
@@ -238,6 +253,8 @@ Return ONLY this JSON (no markdown, no extra text):
   "related_text": "<Name one other Upanishad, Bhagavad Gita verse, or teacher that echoes this teaching>"
 }
 
+${getUserSummaryContextNote(input.userSummaryContext)}
+
 ${langNote}`,
       temperature: 0.5,
       maxOutputTokens: 900,
@@ -287,6 +304,8 @@ Return ONLY this JSON (no markdown, no extra text):
   "contemplation": "<A single reflective question on devotion or selfless service to sit with>",
   "related_text": "<Name one other Gurbani Shabad, text, or Guru that echoes this teaching>"
 }
+
+${getUserSummaryContextNote(input.userSummaryContext)}
 
 ${langNote}`,
       temperature: 0.5,

@@ -4,7 +4,7 @@ This report compares the retrieval behavior of the traditional **Heuristic Retri
 
 | Case ID | Query Text | Heuristic Retrieved Chunks (Base Score) | Embedding-Backed Retrieved Chunks (Cosine Similarity Score) | Latency (Heur / Embed) |
 | :--- | :--- | :--- | :--- | :--- |
-| **`gurbani-mool-mantar`** | *Gurbani 1.1* | 1.1 (1.40), 1.2 (1.00) | 1.1 (0.38), 1.2 (0.26) | 0ms / 1ms |
+| **`gurbani-mool-mantar`** | *Gurbani 1.1* | 1.1 (1.40), 1.2 (1.00) | 1.1 (0.38), 1.2 (0.26) | 1ms / 0ms |
 | **`gurbani-pauri-1`** | *Gurbani 1.2* | 1.1 (1.00), 1.2 (1.40) | 1.2 (0.39), 1.1 (0.29) | 0ms / 0ms |
 | **`gurbani-mool-mantar-hi`** | *Gurbani 1.1* | 1.1 (1.40), 1.2 (1.00) | 1.1 (0.38), 1.2 (0.26) | 0ms / 0ms |
 | **`gurbani-pauri-1-hi`** | *Gurbani 1.2* | 1.1 (1.00), 1.2 (1.40) | 1.2 (0.39), 1.1 (0.29) | 0ms / 0ms |
