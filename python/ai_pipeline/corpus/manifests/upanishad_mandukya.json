@@ -1,0 +1,56 @@
+{
+  "doc_id": "pathshala_upanishads_mandukya",
+  "title": "Mandukya Upanishad",
+  "tradition": "Sanatana Dharma",
+  "scripture_family": "upanishads",
+  "section_id": "mandukya",
+  "source_name": "Principal Upanishads",
+  "source_class": "scripture",
+  "rights_status": "public_domain",
+  "language": "en",
+  "is_live_in_app": true,
+  "content": [
+    {
+      "ref": "1.1",
+      "sanskrit": "ओमित्येतदक्षरमिदं सर्वं तस्योपव्याख्यानं भूतं भवद्भविष्यदिति सर्वमोंकार एव ।",
+      "transliteration": "omityetadakṣaramidaṁ sarvaṁ tasyopavyākhyānaṁ bhūtaṁ bhavadbhaviṣyaditi sarvamoṁkāra eva |",
+      "text": "OM — this syllable is all this. The past, the present, and the future — all that is, is but OM. And whatever transcends the three divisions of time — that also is but OM."
+    },
+    {
+      "ref": "1.2",
+      "sanskrit": "सर्वं ह्येतद्ब्रह्मायमात्मा ब्रह्म सोऽयमात्मा चतुष्पात् ।",
+      "transliteration": "sarvaṁ hyetadbrahm āyamātmā brahma so'yamātmā catuṣpāt |",
+      "text": "All this is, indeed, Brahman. This Atman is Brahman. This same Atman has four quarters (states of consciousness)."
+    },
+    {
+      "ref": "1.3",
+      "sanskrit": "जागरितस्थानो बहिष्प्रज्ञः सप्ताङ्ग एकोनविंशतिमुखः स्थूलभुग्वैश्वानरः प्रथमः पादः ॥",
+      "transliteration": "jāgaritasthāno bahiṣprajñaḥ saptāṅga ekonaviṁśatimukhaḥ sthūlabhugvaiśvānaraḥ prathamaḥ pādaḥ ||",
+      "text": "The first quarter is Vaisvanara (the waker), whose sphere of activity is the waking state, who is conscious of external objects, who has seven limbs and nineteen mouths, and who enjoys gross objects."
+    },
+    {
+      "ref": "1.4",
+      "sanskrit": "स्वप्नस्थानोऽन्तःप्रज्ञः सप्ताङ्ग एकोनविंशतिमुखः प्रविविक्तभुक्तैजसो द्वितीयः पादः ॥",
+      "transliteration": "svapnasthāno'ntaḥprajñaḥ saptāṅga ekonaviṁśatimukhaḥ praviviktabhuktaijaso dvitīyaḥ pādaḥ ||",
+      "text": "The second quarter is Taijasa (the dreamer), whose sphere is the dream state, who is conscious of subtle objects, who has seven limbs and nineteen mouths, and who enjoys subtle objects."
+    },
+    {
+      "ref": "1.5",
+      "sanskrit": "यत्र सुप्तो न कञ्चन कामं कामयते न कञ्चन स्वप्नं पश्यति तत्सुषुप्तम् ।",
+      "transliteration": "yatra supto na kañcana kāmaṁ kāmayate na kañcana svapnaṁ paśyati tatssuṣuptam |",
+      "text": "The state in which the sleeper desires no dreams and experiences no dreams — that is deep sleep (Sushupti)."
+    },
+    {
+      "ref": "1.7",
+      "sanskrit": "नान्तःप्रज्ञं न बहिःप्रज्ञं नोभयतःप्रज्ञं न प्रज्ञानघनं न प्रज्ञं नाप्रज्ञम् ।",
+      "transliteration": "nāntaḥprajñaṁ na bahiḥprajñaṁ nobhayataḥprajñaṁ na prajñānaghaṇaṁ na prajñaṁ nāprajñam |",
+      "text": "The fourth state (Turiya) is not the knower of internal objects, nor the knower of external objects, nor the knower of both, nor a mass of pure consciousness, nor the simple knower, nor the unknown."
+    },
+    {
+      "ref": "2.1",
+      "sanskrit": "द्वैतस्याग्रहणं हि अद्वैतम् अग्रहणं हि तुरीयम् ।",
+      "transliteration": "dvaitasyāgrahaṇaṁ hi advaitam agrahaṇaṁ hi turīyam |",
+      "text": "Non-grasping of duality is non-duality. The non-grasping of any object whatsoever is Turiya."
+    }
+  ]
+}

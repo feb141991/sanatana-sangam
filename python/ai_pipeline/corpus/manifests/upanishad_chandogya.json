@@ -1,0 +1,50 @@
+{
+  "doc_id": "pathshala_upanishads_chandogya",
+  "title": "Chandogya Upanishad (Key Passages)",
+  "tradition": "Sanatana Dharma",
+  "scripture_family": "upanishads",
+  "section_id": "chandogya",
+  "source_name": "Principal Upanishads",
+  "source_class": "scripture",
+  "rights_status": "public_domain",
+  "language": "en",
+  "is_live_in_app": true,
+  "content": [
+    {
+      "ref": "3.14.1",
+      "sanskrit": "सर्वं खल्विदं ब्रह्म तज्जलानिति शान्त उपासीत ।",
+      "transliteration": "sarvaṁ khalvidaṁ brahma tajjalāniti śānta upāsīta |",
+      "text": "All this is Brahman. From Him all things originate, into Him all things dissolve, and in Him they breathe — meditate on that calmly."
+    },
+    {
+      "ref": "6.2.1",
+      "sanskrit": "सदेव सोम्येदमग्र आसीदेकमेवाद्वितीयम् ।",
+      "transliteration": "sadeva somyedamgra āsīdekamevādvitīyam |",
+      "text": "In the beginning, O dear one, this was Existence (Sat) alone, one only, without a second."
+    },
+    {
+      "ref": "6.8.7",
+      "sanskrit": "स य एषोऽणिमैतदात्म्यमिदं सर्वं तत्सत्यं स आत्मा तत्त्वमसि श्वेतकेतो ॥",
+      "transliteration": "sa ya eṣo'ṇimaitadātmyamidaṁ sarvaṁ tatsatyaṁ sa ātmā tattvamasi śvetaketo ||",
+      "text": "That which is the finest essence — in It all that exists has its self. That is the Truth. That is the Self. And that, O Shvetaketu, is what you are. (Tat Tvam Asi)"
+    },
+    {
+      "ref": "7.1.1",
+      "sanskrit": "अध्यापयस्व भगव इति होपससाद सनत्कुमारं नारदः ।",
+      "transliteration": "adhyāpayasva bhagava iti hopasasāda sanatkumāraṁ nāradaḥ |",
+      "text": "Narada approached Sanatkumara and said: 'Teach me, O Revered One.'"
+    },
+    {
+      "ref": "7.23.1",
+      "sanskrit": "यो वै भूमा तत्सुखं नाल्पे सुखमस्ति भूमैव सुखम् ।",
+      "transliteration": "yo vai bhūmā tatsukhaṁ nālpe sukhamasti bhūmaiva sukham |",
+      "text": "That which is infinite (Bhuma) is happiness. There is no happiness in the finite. Only in the Infinite is there happiness."
+    },
+    {
+      "ref": "8.1.1",
+      "sanskrit": "अथ यदिदमस्मिन् ब्रह्मपुरे दहरं पुण्डरीकं वेश्म दहरोऽस्मिन्नन्तराकाशस्तस्मिन्नेतदन्वेष्टव्यं तद्वाव विजिज्ञासितव्यम् ।",
+      "transliteration": "atha yadidamasmin brahma pure daharaṁ puṇḍarīkaṁ veśma daharo'sminnantarākāśastasminnetadanveṣṭavyaṁ tadvāva vijijñāsitavyam |",
+      "text": "Now, in this city of Brahman (the body) there is a small lotus-shaped dwelling. Within it is a small inner space. That which is within that should be sought; that should indeed be known."
+    }
+  ]
+}

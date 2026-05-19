@@ -6,13 +6,13 @@ import type {
 } from '@sangam/pramana-core';
 
 // ---------------------------------------------------------------------------
-// Self-Hosted Inference Provider (Scaffold)
+// Self-Hosted Inference Provider
 // ---------------------------------------------------------------------------
 
 /**
  * Expected endpoint contract for a self-hosted Pramana inference server.
  *
- * The self-hosted runtime is expected to expose a single endpoint:
+ * The self-hosted runtime must expose:
  *   POST /v1/generate
  *
  * Request payload:
@@ -62,14 +62,23 @@ export interface SelfHostedProviderConfig {
   timeoutMs?: number;
 }
 
+/** Raw response body from the self-hosted /v1/generate endpoint. */
+interface SelfHostedRawResponse {
+  text?: string;
+  model?: string;
+  finish_reason?: string;
+  usage?: {
+    input_tokens?: number;
+    output_tokens?: number;
+    total_tokens?: number;
+  };
+}
+
 /**
- * Self-hosted inference provider scaffold.
+ * Self-hosted inference provider.
  *
- * This provider is NOT functional yet — calling generate() will throw
- * a clear "not implemented" error. It exists to:
- *   1. Reserve the adapter contract shape.
- *   2. Define the expected request/response payload for the private runtime.
- *   3. Allow config-based provider selection to reference it.
+ * Implements the real HTTP fetch path when PRAMANA_SELF_HOSTED_URL is configured.
+ * Remains inert and safely throws when no URL is configured.
  */
 export class SelfHostedProvider implements PramanaInferenceProvider {
   readonly info: InferenceProviderInfo = {
@@ -93,7 +102,6 @@ export class SelfHostedProvider implements PramanaInferenceProvider {
 
   /**
    * Returns true only when a self-hosted base URL is configured.
-   * Until a real runtime is deployed, this will return false.
    */
   isAvailable(): boolean {
     return Boolean(this.config?.baseUrl);
@@ -102,9 +110,8 @@ export class SelfHostedProvider implements PramanaInferenceProvider {
   /**
    * Generate text using the self-hosted runtime.
    *
-   * Currently stubbed — throws an error explaining the runtime is not
-   * yet deployed. The request/response normalization code below shows
-   * the exact payload shapes that a future implementation will use.
+   * Makes a real HTTP POST to `baseUrl/v1/generate` when baseUrl is set.
+   * Throws a clear configuration error when no URL is available.
    */
   async generate(request: InferenceRequest): Promise<InferenceResponse> {
     if (!this.config?.baseUrl) {
@@ -114,45 +121,92 @@ export class SelfHostedProvider implements PramanaInferenceProvider {
       );
     }
 
-    // ----- Request payload normalization (future implementation) -----
-    const _payload = {
+    const url = `${this.config.baseUrl.replace(/\/$/, '')}/v1/generate`;
+    const timeoutMs = request.timeoutMs ?? this.config.timeoutMs ?? 30_000;
+
+    // Build normalized request payload
+    const payload = {
       prompt: request.prompt.user ?? '',
       system: request.prompt.system ?? null,
       temperature: request.prompt.temperature ?? 0.3,
       max_tokens: request.prompt.maxOutputTokens ?? 800,
       response_format: request.responseFormat ?? 'text',
-      json_schema: request.jsonSchema ?? undefined,
+      ...(request.jsonSchema ? { json_schema: request.jsonSchema } : {}),
       grounding_context: request.groundingContext ?? [],
       stream: false,
     };
 
-    // ----- Response normalization (future implementation) -----
-    // const res = await fetch(`${this.config.baseUrl}/v1/generate`, { ... });
-    // const data = await res.json();
-    // return {
-    //   text: data.text,
-    //   modelUsed: data.model ?? this.config.model ?? 'unknown',
-    //   provider: this.info.id,
-    //   providerClass: 'self_hosted',
-    //   finishReason: data.finish_reason,
-    //   usage: data.usage ? {
-    //     inputTokens: data.usage.input_tokens,
-    //     outputTokens: data.usage.output_tokens,
-    //     totalTokens: data.usage.total_tokens,
-    //   } : undefined,
-    // };
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    if (this.config.apiKey) {
+      headers['Authorization'] = `Bearer ${this.config.apiKey}`;
+    }
 
-    throw new Error(
-      `[${this.info.id}] Self-hosted inference is scaffolded but not yet implemented. ` +
-      `A real vLLM/Ollama/TGI runtime must be deployed before this path can serve traffic.`
-    );
+    // Abort controller for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    let rawResponse: Response;
+    try {
+      rawResponse = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+    } catch (err: unknown) {
+      clearTimeout(timeoutId);
+      const msg = err instanceof Error ? err.message : String(err);
+      throw new Error(`[${this.info.id}] HTTP request failed: ${msg}`);
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
+    if (!rawResponse.ok) {
+      let errorBody = '';
+      try { errorBody = await rawResponse.text(); } catch { /* ignore */ }
+      throw new Error(
+        `[${this.info.id}] Server returned HTTP ${rawResponse.status}: ${errorBody.slice(0, 300)}`
+      );
+    }
+
+    let data: SelfHostedRawResponse;
+    try {
+      data = await rawResponse.json() as SelfHostedRawResponse;
+    } catch {
+      throw new Error(
+        `[${this.info.id}] Server response is not valid JSON. ` +
+        `Check that the runtime is running and returning application/json.`
+      );
+    }
+
+    if (typeof data.text !== 'string') {
+      throw new Error(
+        `[${this.info.id}] Malformed response: missing or non-string 'text' field.`
+      );
+    }
+
+    return {
+      text: data.text,
+      modelUsed: data.model ?? this.config.model ?? 'self-hosted-unknown',
+      provider: this.info.id,
+      providerClass: 'self_hosted',
+      finishReason: data.finish_reason,
+      usage: data.usage ? {
+        inputTokens: data.usage.input_tokens,
+        outputTokens: data.usage.output_tokens,
+        totalTokens: data.usage.total_tokens,
+      } : undefined,
+    };
   }
 
   /**
    * Streaming inference via self-hosted runtime.
-   * Stubbed for now.
+   * Stubbed — streaming not yet implemented.
    */
-  async *generateStream(request: InferenceRequest): AsyncIterable<string> {
+  async *generateStream(_request: InferenceRequest): AsyncIterable<string> {
     throw new Error(`[${this.info.id}] generateStream is not yet implemented.`);
   }
 }

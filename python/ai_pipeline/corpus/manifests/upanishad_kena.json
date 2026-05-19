@@ -1,0 +1,50 @@
+{
+  "doc_id": "pathshala_upanishads_kena",
+  "title": "Kena Upanishad",
+  "tradition": "Sanatana Dharma",
+  "scripture_family": "upanishads",
+  "section_id": "kena",
+  "source_name": "Principal Upanishads",
+  "source_class": "scripture",
+  "rights_status": "public_domain",
+  "language": "en",
+  "is_live_in_app": true,
+  "content": [
+    {
+      "ref": "1.1",
+      "sanskrit": "केनेषितं पतति प्रेषितं मनः केन प्राणः प्रथमः प्रैति युक्तः । केनेषितां वाचमिमां वदन्ति चक्षुः श्रोत्रं क उ देवो युनक्ति ॥",
+      "transliteration": "keneṣitaṁ patati preṣitaṁ manaḥ kena prāṇaḥ prathamaḥ praiti yuktaḥ | keneṣitāṁ vācamimāṁ vadanti cakṣuḥ śrotraṁ ka u devo yunakti ||",
+      "text": "By whose will directed does the mind fly forth? By whose command does the first breath move? By whose will do people utter speech? What god directs the eye and ear?"
+    },
+    {
+      "ref": "1.2",
+      "sanskrit": "श्रोत्रस्य श्रोत्रं मनसो मनो यद्वाचो ह वाचं स उ प्राणस्य प्राणः । चक्षुषश्चक्षुरतिमुच्य धीराः प्रेत्यास्माल्लोकादमृता भवन्ति ॥",
+      "transliteration": "śrotrasya śrotraṁ manaso mano yadvāco ha vācaṁ sa u prāṇasya prāṇaḥ | cakṣuṣaścakṣuratimucya dhīrāḥ pretyāsmāllokādamṛtā bhavanti ||",
+      "text": "It is the ear of the ear, the mind of the mind, the speech of speech, the life of life, and the eye of the eye. The wise, freed from sense-perceptions, on leaving this world become immortal."
+    },
+    {
+      "ref": "1.3",
+      "sanskrit": "न तत्र चक्षुर्गच्छति न वाग्गच्छति नो मनो न विद्मो न विजानीमो यथैतदनुशिष्यात् ।",
+      "transliteration": "na tatra cakṣurgacchati na vāggacchati no mano na vidmo na vijānīmo yathaitadanuśiṣyāt |",
+      "text": "There the eye does not go, nor speech, nor the mind. We do not know, we do not understand, how anyone can teach this."
+    },
+    {
+      "ref": "2.1",
+      "sanskrit": "यदि मन्यसे सुवेदेति दभ्रमेवापि नूनं त्वं वेत्थ ब्रह्मणो रूपम् । यदस्य त्वं यदस्य देवेष्वथ नु मीमांस्यमेव ते मन्ये विदितम् ॥",
+      "transliteration": "yadi manyase suvedeti dabhramevāpi nūnaṁ tvaṁ vettha brahmaṇo rūpam | yadasya tvaṁ yadasya deveṣvatha nu mīmāṁsyameva te manye viditam ||",
+      "text": "If you think 'I know Brahman well,' then surely you know very little of Its form. What you know of Brahman in yourself, what you know in the gods — that alone is worth contemplating."
+    },
+    {
+      "ref": "2.2",
+      "sanskrit": "नाहं मन्ये सुवेदेति नो न वेदेति वेद च । यो नस्तद्वेद तद्वेद नो न वेदेति वेद च ॥",
+      "transliteration": "nāhaṁ manye suvedeti no na vedeti veda ca | yo nastadveda tadveda no na vedeti veda ca ||",
+      "text": "I do not think that I know Brahman well, nor do I think that I do not know It. He among us who knows what is meant by 'I neither know nor do I not know' — he knows Brahman."
+    },
+    {
+      "ref": "3.1",
+      "sanskrit": "ब्रह्म ह देवेभ्यो विजिग्ये तस्य ह ब्रह्मणो विजये देवा अमहीयन्त ।",
+      "transliteration": "brahma ha devebhyo vijigye tasya ha brahmaṇo vijaye devā amahīyanta |",
+      "text": "Brahman won a victory for the gods. The gods became elated in the victory of Brahman."
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "doc_id": "pathshala_upanishads_brihadaranyaka",
+  "title": "Brihadaranyaka Upanishad (Key Passages)",
+  "tradition": "Sanatana Dharma",
+  "scripture_family": "upanishads",
+  "section_id": "brihadaranyaka",
+  "source_name": "Principal Upanishads",
+  "source_class": "scripture",
+  "rights_status": "public_domain",
+  "language": "en",
+  "is_live_in_app": true,
+  "content": [
+    {
+      "ref": "1.3.28",
+      "sanskrit": "असतो मा सद्गमय । तमसो मा ज्योतिर्गमय । मृत्योर्मा अमृतं गमय ॥",
+      "transliteration": "asato mā sadgamaya | tamaso mā jyotirgamaya | mṛtyormā amṛtaṁ gamaya ||",
+      "text": "Lead me from the unreal to the real. Lead me from darkness to light. Lead me from death to immortality."
+    },
+    {
+      "ref": "1.4.10",
+      "sanskrit": "अहं ब्रह्मास्मि ।",
+      "transliteration": "ahaṁ brahmāsmi |",
+      "text": "I am Brahman (Aham Brahmasmi). This is the great Vedantic Mahavakya — the declaration of the unity of the individual self with the universal Brahman."
+    },
+    {
+      "ref": "3.4.1",
+      "sanskrit": "विज्ञानमानन्दं ब्रह्म रातिर्दातुः परायणम् ।",
+      "transliteration": "vijñānamānandaṁ brahma rātirdātuḥ parāyaṇam |",
+      "text": "Brahman is pure knowledge, pure bliss — the goal of the giver of gifts, the refuge of one who knows and stands firm."
+    },
+    {
+      "ref": "3.8.8",
+      "sanskrit": "एतस्य वा अक्षरस्य प्रशासने गार्गि सूर्यचन्द्रमसौ विधृतौ तिष्ठतः ।",
+      "transliteration": "etasya vā akṣarasya praśāsane gārgi sūryacandramasau vidhṛtau tiṣṭhataḥ |",
+      "text": "O Gargi, by the command of this Imperishable, the sun and the moon are held in their positions."
+    },
+    {
+      "ref": "3.9.26",
+      "sanskrit": "नेति नेति ।",
+      "transliteration": "neti neti |",
+      "text": "Not this, not this (Neti Neti). This is the classical Upanishadic method of approaching Brahman through negation — Brahman transcends all limiting attributes."
+    },
+    {
+      "ref": "4.3.32",
+      "sanskrit": "अयं आत्मा ब्रह्म ।",
+      "transliteration": "ayaṁ ātmā brahma |",
+      "text": "This Atman is Brahman (Ayam Atma Brahma). The third of the four great sayings (Mahavakyas) — the individual soul is identical with the universal consciousness."
+    },
+    {
+      "ref": "4.4.5",
+      "sanskrit": "मन एव मनुष्याणां कारणं बन्धमोक्षयोः ।",
+      "transliteration": "mana eva manuṣyāṇāṁ kāraṇaṁ bandhamokṣayoḥ |",
+      "text": "The mind alone is the cause of bondage and liberation for human beings."
+    }
+  ]
+}

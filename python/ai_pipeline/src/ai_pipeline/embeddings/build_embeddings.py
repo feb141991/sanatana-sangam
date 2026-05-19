@@ -106,11 +106,15 @@ def build_gita_index(manifests_dir: Path, output_file: Path) -> None:
 
 def build_upanishads_index(manifests_dir: Path, output_file: Path) -> None:
     documents = []
-    # 1. Load manifests
-    manifest_path = manifests_dir / "upanishad_chapter_1.json"
-    if manifest_path.exists():
+    # 1. Load all upanishad manifests (upanishad_*.json)
+    upanishad_manifests = sorted(manifests_dir.glob("upanishad_*.json"))
+    manifest_count = 0
+    for manifest_path in upanishad_manifests:
         with open(manifest_path, "r", encoding="utf-8") as f:
             manifest = json.load(f)
+        manifest_count += 1
+        doc_id = manifest.get("doc_id", manifest_path.stem)
+        section_id = manifest.get("section_id", "")
 
         for verse in manifest.get("content", []):
             ref = verse.get("ref", "")
@@ -120,15 +124,16 @@ def build_upanishads_index(manifests_dir: Path, output_file: Path) -> None:
 
             # Inject boosted metadata prefix to prioritize reference matches
             ref_parts = ref.split(".")
-            ref_words = f"upanishad chapter {ref.replace('.', ' verse ')}"
+            ref_words = f"upanishad {section_id} chapter {ref.replace('.', ' verse ')}"
             boosted_metadata = f"{ref_words} {ref} " * 10
             combined_text = f"{boosted_metadata} upanishads principal {sanskrit} {transliteration} {text}"
             tokens = tokenize(combined_text)
 
             documents.append({
-                "id": f"{manifest.get('doc_id')}_{ref}",
+                "id": f"{doc_id}_{ref}",
                 "ref": ref,
                 "chapter": int(ref_parts[0]) if len(ref_parts) > 0 and ref_parts[0].isdigit() else 1,
+                "upanishad": section_id,
                 "sanskrit": sanskrit,
                 "transliteration": transliteration,
                 "text": text,
@@ -183,7 +188,7 @@ def build_upanishads_index(manifests_dir: Path, output_file: Path) -> None:
     # 5. Save index
     index_data = {
         "metadata": {
-            "manifest_count": 1,
+            "manifest_count": manifest_count,
             "document_count": len(documents),
             "scale_readiness": "Production-scale" if len(documents) > 100 else "Sample-scale"
         },
@@ -199,11 +204,15 @@ def build_upanishads_index(manifests_dir: Path, output_file: Path) -> None:
 
 def build_gurbani_index(manifests_dir: Path, output_file: Path) -> None:
     documents = []
-    # 1. Load manifest
-    manifest_path = manifests_dir / "sikh_gurbani_japji.json"
-    if manifest_path.exists():
+    # 1. Load all Gurbani manifests (sikh_gurbani_*.json)
+    gurbani_manifests = sorted(manifests_dir.glob("sikh_gurbani_*.json"))
+    manifest_count = 0
+    for manifest_path in gurbani_manifests:
         with open(manifest_path, "r", encoding="utf-8") as f:
             manifest = json.load(f)
+        manifest_count += 1
+        doc_id = manifest.get("doc_id", manifest_path.stem)
+        section_id = manifest.get("section_id", "gurbani")
 
         for verse in manifest.get("content", []):
             ref = verse.get("ref", "")
@@ -213,15 +222,16 @@ def build_gurbani_index(manifests_dir: Path, output_file: Path) -> None:
 
             # Inject boosted metadata prefix to prioritize reference matches
             ref_parts = ref.split(".")
-            ref_words = f"shabad pauri {ref.replace('.', ' line ')}"
+            ref_words = f"{section_id} shabad pauri {ref.replace('.', ' line ')}"
             boosted_metadata = f"{ref_words} {ref} " * 10
-            combined_text = f"{boosted_metadata} gurbani japji sahib {original} {transliteration} {text}"
+            combined_text = f"{boosted_metadata} gurbani sri guru granth sahib {original} {transliteration} {text}"
             tokens = tokenize(combined_text)
 
             documents.append({
-                "id": f"{manifest.get('doc_id')}_{ref}",
+                "id": f"{doc_id}_{ref}",
                 "ref": ref,
                 "chapter": int(ref_parts[0]) if len(ref_parts) > 0 and ref_parts[0].isdigit() else 1,
+                "bani": section_id,
                 "original": original,
                 "transliteration": transliteration,
                 "text": text,
@@ -276,7 +286,7 @@ def build_gurbani_index(manifests_dir: Path, output_file: Path) -> None:
     # 5. Save index
     index_data = {
         "metadata": {
-            "manifest_count": 1,
+            "manifest_count": manifest_count,
             "document_count": len(documents),
             "scale_readiness": "Production-scale" if len(documents) > 100 else "Sample-scale"
         },

@@ -16,6 +16,8 @@
     "compare:upanishads-retrieval": "npx tsx scripts/compare_upanishads_retrieval.ts",
     "compare:gurbani-retrieval": "npx tsx scripts/compare_gurbani_retrieval.ts",
     "eval:run": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.evals.run_evals",
+    "eval:compare": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.evals.compare_providers",
+    "eval:compare:self-hosted": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.evals.compare_providers --modes mock hosted self-hosted",
     "corpus:build-indexes": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.embeddings.build_embeddings",
     "corpus:validate-indexes": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.embeddings.validate_indexes"
   },

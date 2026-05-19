@@ -1,0 +1,54 @@
+{
+  "suites": [
+    "pathshala_gita",
+    "bhakti_katha",
+    "bhakti_panchatantra",
+    "pathshala_upanishads",
+    "sikh_gurbani"
+  ],
+  "modes": [
+    "mock"
+  ],
+  "results": {
+    "pathshala_gita": {
+      "mock": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "total": 6,
+        "skipped_reason": null
+      }
+    },
+    "bhakti_katha": {
+      "mock": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "total": 6,
+        "skipped_reason": null
+      }
+    },
+    "bhakti_panchatantra": {
+      "mock": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "total": 6,
+        "skipped_reason": null
+      }
+    },
+    "pathshala_upanishads": {
+      "mock": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "total": 6,
+        "skipped_reason": null
+      }
+    },
+    "sikh_gurbani": {
+      "mock": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "total": 6,
+        "skipped_reason": null
+      }
+    }
+  }
+}

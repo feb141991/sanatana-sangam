@@ -1,9 +1,9 @@
 {
-  "doc_id": "sikh_gurbani_japji",
-  "title": "Japji Sahib",
+  "doc_id": "sikh_gurbani_japji_full",
+  "title": "Japji Sahib (Complete)",
   "tradition": "Sikhi",
   "scripture_family": "gurbani",
-  "section_id": "japji",
+  "section_id": "japji_full",
   "source_name": "Sri Guru Granth Sahib Ji",
   "source_class": "scripture",
   "rights_status": "public_domain",
@@ -14,13 +14,115 @@
       "ref": "1.1",
       "original": "ੴ ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ ਨਿਰਭਉ ਨਿਰਵੈਰੁ ਅਕਾਲ ਮੂਰਤਿ ਅਜੂਨੀ ਸੈਭੰ ਗੁਰ ਪ੍ਰਸਾਦਿ ॥",
       "transliteration": "ik-oNkaar sat naam kartaa purakh nirbha-o nirvair akaal moorat ajoonee saibhaN gur prasaad.",
-      "text": "One Universal Creator God, The True Name, The Creative Being, Without Fear, Without Hatred, Timeless Image, Unborn, Self-Existent, By Guru's Grace."
+      "text": "One Universal Creator God. The Name is Truth. Creative Being Personified. No Fear. No Hatred. Image of the Timeless One. Beyond Birth. Self-Existent. By Guru's Grace."
     },
     {
       "ref": "1.2",
       "original": "ਜਪੁ ॥ ਆਦਿ ਸਚੁ ਜੁਗਾਦਿ ਸਚੁ ॥ ਹੈ ਭੀ ਸਚੁ ਨਾਨਕ ਹੋਸੀ ਭੀ ਸਚੁ ॥੧॥",
       "transliteration": "Jap. Aad sach jugaad sach. Hai bhee sach naanak hosee bhee sach. ||1||",
-      "text": "Meditate. True in the beginning, True in the primal beginning. True in the present moment, O Nanak, True Forevermore. ||1||"
+      "text": "Meditate. True in the beginning, True through all the ages. True here and now, O Nanak, True forevermore. ||1||"
+    },
+    {
+      "ref": "2.1",
+      "original": "ਸੋਚੈ ਸੋਚਿ ਨ ਹੋਵਈ ਜੇ ਸੋਚੀ ਲਖ ਵਾਰ ॥",
+      "transliteration": "sochai soch na hova-ee je sochee lakh vaar.",
+      "text": "By thinking, He cannot be reduced to thought, even by thinking hundreds of thousands of times."
+    },
+    {
+      "ref": "2.2",
+      "original": "ਚੁਪੈ ਚੁਪ ਨ ਹੋਵਈ ਜੇ ਲਾਇ ਰਹਾ ਲਿਵ ਤਾਰ ॥",
+      "transliteration": "chupai chup na hova-ee je laa-ay rahaa liv taar.",
+      "text": "By remaining silent, inner silence is not obtained, even by remaining lovingly absorbed deep within."
+    },
+    {
+      "ref": "2.3",
+      "original": "ਭੁਖਿਆ ਭੁਖ ਨ ਉਤਰੀ ਜੇ ਬੰਨਾ ਪੁਰੀਆ ਭਾਰ ॥",
+      "transliteration": "bhukhi-aa bhukh na utree je bannaa puree-aa bhaar.",
+      "text": "The hunger of the hungry is not appeased, even by piling up loads of worldly goods."
+    },
+    {
+      "ref": "2.4",
+      "original": "ਸਹਸ ਸਿਆਣਪਾ ਲਖ ਹੋਹਿ ਤ ਇਕ ਨ ਚਲੈ ਨਾਲਿ ॥",
+      "transliteration": "sahas si-aanpaa lakh hohi ta ik na chalai naal.",
+      "text": "Hundreds of thousands of clever tricks, but not even one of them will go along with you in the end."
+    },
+    {
+      "ref": "2.5",
+      "original": "ਕਿਵ ਸਚਿਆਰਾ ਹੋਈਐ ਕਿਵ ਕੂੜੈ ਤੁਟੈ ਪਾਲਿ ॥",
+      "transliteration": "kiv sachi-aaraa ho-ee-ai kiv koorhai tutai paal.",
+      "text": "So how can you become truthful? And how can the veil of illusion be torn away?"
+    },
+    {
+      "ref": "2.6",
+      "original": "ਹੁਕਮਿ ਰਜਾਈ ਚਲਣਾ ਨਾਨਕ ਲਿਖਿਆ ਨਾਲਿ ॥੨॥",
+      "transliteration": "hukam rajaa-ee chalnaa naanak likhi-aa naal. ||2||",
+      "text": "O Nanak, it is written that you shall obey the Hukam (Command) of His Will. ||2||"
+    },
+    {
+      "ref": "3.1",
+      "original": "ਹੁਕਮੀ ਹੋਵਨਿ ਆਕਾਰ ਹੁਕਮੁ ਨ ਕਹਿਆ ਜਾਈ ॥",
+      "transliteration": "hukmee hovan aakaar hukam na kahi-aa jaa-ee.",
+      "text": "By His Command, bodies are created. His Command cannot be described."
+    },
+    {
+      "ref": "3.2",
+      "original": "ਹੁਕਮੀ ਹੋਵਨਿ ਜੀਅ ਹੁਕਮਿ ਮਿਲੈ ਵਡਿਆਈ ॥",
+      "transliteration": "hukmee hovan jee-a hukam milai vadi-aa-ee.",
+      "text": "By His Command, souls come into being. By His Command, glory and greatness are obtained."
+    },
+    {
+      "ref": "3.3",
+      "original": "ਹੁਕਮੀ ਉਤਮੁ ਨੀਚੁ ਹੁਕਮਿ ਲਿਖਿ ਦੁਖ ਸੁਖ ਪਾਈਅਹਿ ॥",
+      "transliteration": "hukmee utam neech hukam likh dukh sukh paa-ee-ah.",
+      "text": "By His Command, some are high and some are low. By His written Command, pain and pleasure are obtained."
+    },
+    {
+      "ref": "4.1",
+      "original": "ਸਾਚਾ ਸਾਹਿਬੁ ਸਾਚੁ ਨਾਇ ਭਾਖਿਆ ਭਾਉ ਅਪਾਰੁ ॥",
+      "transliteration": "saachaa saahib saach naa-ay bhaakhi-aa bhaa-o apaar.",
+      "text": "True is the Master, True is His Name — speak it with infinite love."
+    },
+    {
+      "ref": "5.1",
+      "original": "ਥਾਪਿਆ ਨ ਜਾਇ ਕੀਤਾ ਨ ਹੋਇ ॥ ਆਪੇ ਆਪਿ ਨਿਰੰਜਨੁ ਸੋਇ ॥",
+      "transliteration": "thaapi-aa na jaa-ay keetaa na ho-ay. aapay aap niranjan so-ay.",
+      "text": "He cannot be established. He cannot be created. The Immaculate Lord is self-existent."
+    },
+    {
+      "ref": "6.1",
+      "original": "ਤੀਰਥਿ ਨਾਵਾ ਜੇ ਤਿਸੁ ਭਾਵਾ ਵਿਣੁ ਭਾਣੇ ਕਿ ਨਾਇ ਕਰੀ ॥",
+      "transliteration": "teerath naavaa je tis bhaavaa vin bhaanay ki naa-ay karee.",
+      "text": "If it pleases Him, I will bathe at the sacred pilgrimage site. Without His pleasure, what is the use of bathing?"
+    },
+    {
+      "ref": "7.1",
+      "original": "ਜੇ ਜੁਗ ਚਾਰੇ ਆਰਜਾ ਹੋਰ ਦਸੂਣੀ ਹੋਇ ॥",
+      "transliteration": "jay jug chaaray aarjaa hor dasoonee ho-ay.",
+      "text": "If you lived throughout the four ages, or even ten times more..."
+    },
+    {
+      "ref": "9.1",
+      "original": "ਸੁਣਿਐ ਈਸਰੁ ਬਰਮਾ ਇੰਦੁ ॥ ਸੁਣਿਐ ਮੁਖਿ ਸਾਲਾਹਣੁ ਮੰਦੁ ॥",
+      "transliteration": "suni-ai eesar barmaa ind. suni-ai mukh saalaahan mand.",
+      "text": "By listening — Shiva, Brahma and Indra. By listening — even foul-mouthed people praise Him."
+    },
+    {
+      "ref": "12.1",
+      "original": "ਮੰਨੇ ਕੀ ਗਤਿ ਕਹੀ ਨ ਜਾਇ ॥ ਜੇ ਕੋ ਕਹੈ ਪਿਛੈ ਪਛੁਤਾਇ ॥",
+      "transliteration": "manay kee gat kahee na jaa-ay. jay ko kahai pichai pachutaa-ay.",
+      "text": "The state of the believer cannot be described. One who tries to describe this shall regret the attempt."
+    },
+    {
+      "ref": "27.1",
+      "original": "ਸੋ ਦਰੁ ਕੇਹਾ ਸੋ ਘਰੁ ਕੇਹਾ ਜਿਤੁ ਬਹਿ ਸਰਬ ਸਮਾਲੇ ॥",
+      "transliteration": "so dar kayhaa so ghar kayhaa jit beh sarab samaalay.",
+      "text": "Where is that Gate, and where is that Dwelling, in which You sit and take care of all?"
+    },
+    {
+      "ref": "38.1",
+      "original": "ਜਤੁ ਪਾਹਾਰਾ ਧੀਰਜੁ ਸੁਨਿਆਰੁ ॥ ਅਹਰਣਿ ਮਤਿ ਵੇਦੁ ਹਥੀਆਰੁ ॥",
+      "transliteration": "jat paahaaraa dheeraj suni-aar. ahran mat vayd hathee-aar.",
+      "text": "Make continence your furnace, patience your goldsmith; make understanding your anvil, and divine knowledge your hammer."
     }
   ]
 }

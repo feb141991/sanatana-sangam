@@ -1,0 +1,56 @@
+{
+  "doc_id": "pathshala_upanishads_mundaka",
+  "title": "Mundaka Upanishad",
+  "tradition": "Sanatana Dharma",
+  "scripture_family": "upanishads",
+  "section_id": "mundaka",
+  "source_name": "Principal Upanishads",
+  "source_class": "scripture",
+  "rights_status": "public_domain",
+  "language": "en",
+  "is_live_in_app": true,
+  "content": [
+    {
+      "ref": "1.1.1",
+      "sanskrit": "ब्रह्मा देवानां प्रथमः संबभूव विश्वस्य कर्ता भुवनस्य गोप्ता ।",
+      "transliteration": "brahmā devānāṁ prathamaḥ saṁbabhūva viśvasya kartā bhuvanasya goptā |",
+      "text": "Brahma was born first among the gods, the maker of all, the protector of the world."
+    },
+    {
+      "ref": "1.1.3",
+      "sanskrit": "द्वे विद्ये वेदितव्ये इति ह स्म यद्ब्रह्मविदो वदन्ति परा चैवापरा च ॥",
+      "transliteration": "dve vidye veditavye iti ha sma yadbrahmavido vadanti parā caivāparā ca ||",
+      "text": "There are two forms of knowledge to be known, as the knowers of Brahman are wont to say — the higher and the lower."
+    },
+    {
+      "ref": "1.1.5",
+      "sanskrit": "यत्तदद्रेश्यमग्राह्यमगोत्रमवर्णमचक्षुःश्रोत्रं तदपाणिपादम् ।",
+      "transliteration": "yattadadreśyamagrāhyamgotramvarṇamacakṣuḥśrotraṁ tadapāṇipādam |",
+      "text": "That which cannot be seen or grasped, which has no family or caste, which has neither eyes nor ears, neither hands nor feet — the eternal, all-pervading, omnipresent, subtle — that is the Unchanging, which the wise behold as the source of all beings."
+    },
+    {
+      "ref": "1.2.12",
+      "sanskrit": "परीक्ष्य लोकान् कर्मचितान् ब्राह्मणो निर्वेदमायात् नास्त्यकृतः कृतेन ।",
+      "transliteration": "parīkṣya lokān karmacitān brāhmaṇo nirvedamāyāt nāstyakṛtaḥ kṛtena |",
+      "text": "Having examined the worlds built by karma, a Brahmana should arrive at indifference. What is not made cannot be attained by what is made."
+    },
+    {
+      "ref": "2.1.1",
+      "sanskrit": "तदेतत्सत्यं यथा सुदीप्तात्पावकाद्विस्फुलिङ्गाः सहस्रशः प्रभवन्ते सरूपाः ।",
+      "transliteration": "tdetatsatyaṁ yathā sudīptātpāvakādvisphuliṅgāḥ sahasraśaḥ prabhavante sarūpāḥ |",
+      "text": "This is the truth: as from a blazing fire sparks of the same nature issue forth by the thousands, so from the imperishable Brahman, diverse living beings come forth and return to Him."
+    },
+    {
+      "ref": "2.2.4",
+      "sanskrit": "ब्रह्मैवेदं विश्वमिदं वरिष्ठम् ।",
+      "transliteration": "brahmaivedam viśvamidaṁ variṣṭham |",
+      "text": "Brahman alone is this universe — this most excellent (Brahman)."
+    },
+    {
+      "ref": "3.1.6",
+      "sanskrit": "नायमात्मा प्रवचनेन लभ्यो न मेधया न बहुना श्रुतेन । यमेवैष वृणुते तेन लभ्यस्तस्यैष आत्मा विवृणुते तनूं स्वाम् ॥",
+      "transliteration": "nāyamātmā pravacanena labhyo na medhayā na bahunā śrutena | yamevaiṣa vṛṇute tena labhyastasyaiṣa ātmā vivṛṇute tanūṁ svām ||",
+      "text": "The Atman cannot be attained by the study of the Vedas, nor by intellect, nor by much hearing. He alone can be attained whom the Self chooses. To him the Self reveals its own form."
+    }
+  ]
+}
