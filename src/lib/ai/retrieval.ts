@@ -149,8 +149,18 @@ export class PathshalaManifestRetriever implements PramanaRetriever<RetrievalChu
       }
     }
 
-    // Sort candidates by score descending
-    candidates.sort((a, b) => b.baseScore - a.baseScore);
+    // Sort candidates by score descending with deterministic tie-breaker
+    candidates.sort((a, b) => {
+      if (Math.abs(b.baseScore - a.baseScore) > 1e-9) {
+        return b.baseScore - a.baseScore;
+      }
+      const refA = a.chunk.metadata!.chunkId;
+      const refB = b.chunk.metadata!.chunkId;
+      const [chA, vA] = refA.split('.').map(Number);
+      const [chB, vB] = refB.split('.').map(Number);
+      if (chA !== chB) return chA - chB;
+      return vA - vB;
+    });
 
     const exactMatchIdx = candidates.findIndex(c => c.chunk.score! >= 1.0);
     const documents: RetrievalChunk[] = [];
