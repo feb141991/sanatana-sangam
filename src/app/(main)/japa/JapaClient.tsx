@@ -1209,12 +1209,14 @@ function ChooseMantraScreen({
 function CustomMantraSheet({
   isDark,
   initialValue,
+  saving = false,
   onSave,
   onClose,
 }: {
   isDark: boolean;
   initialValue: CustomMantra | null;
-  onSave: (value: CustomMantra) => void;
+  saving?: boolean;
+  onSave: (value: CustomMantra) => void | Promise<void>;
   onClose: () => void;
 }) {
   const bg = isDark ? 'rgba(10,8,14,0.98)' : 'rgba(248,244,236,0.98)';
@@ -1284,7 +1286,7 @@ function CustomMantraSheet({
 
         <button
           type="button"
-          disabled={!valid}
+          disabled={!valid || saving}
           onClick={() => onSave({
             label: label.trim() || 'Custom mantra',
             text: mantraText.trim(),
@@ -1293,7 +1295,7 @@ function CustomMantraSheet({
           className="mt-5 w-full rounded-2xl py-4 text-[15px] font-bold disabled:opacity-50"
           style={{ background: amber, color: isDark ? '#160F08' : '#fffaf2' }}
         >
-          Save mantra
+          {saving ? 'Saving...' : 'Save mantra'}
         </button>
       </motion.div>
     </motion.div>
@@ -1740,6 +1742,7 @@ export default function JapaClient({
   const [mantraId,  setMantraId]  = useState<SelectedMantraId>(defaultMantraId);
   const [customMantra, setCustomMantra] = useState<CustomMantra | null>(null);
   const [showCustomMantraSheet, setShowCustomMantraSheet] = useState(false);
+  const [savingCustomMantra, setSavingCustomMantra] = useState(false);
   const [bgSceneId, setBgSceneId] = useState<BgSceneId>('midnight');
   const [targetRounds, setTargetRounds] = useState(1);
   const targetRoundsRef = useRef(1);
@@ -1815,6 +1818,38 @@ export default function JapaClient({
     } catch { /* ok */ }
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSyncedCustomMantra() {
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from('user_custom_japa_mantras')
+          .select('label, mantra_text, description')
+          .eq('user_id', userId)
+          .maybeSingle();
+        if (cancelled || error || !data?.mantra_text) return;
+        const synced: CustomMantra = {
+          label: data.label || 'Custom mantra',
+          text: data.mantra_text,
+          description: data.description || 'Personal mantra focus',
+        };
+        setCustomMantra(synced);
+        try {
+          localStorage.setItem(STORAGE_CUSTOM_MANTRA, JSON.stringify(synced));
+        } catch { /* ok */ }
+      } catch {
+        // Keep local fallback.
+      }
+    }
+
+    loadSyncedCustomMantra();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
   const [beadCount,    setBeadCount]    = useState(0);
   const [roundsDone,   setRoundsDone]   = useState(0);
   const [totalBeads,   setTotalBeads]   = useState(0);
@@ -1860,6 +1895,25 @@ export default function JapaClient({
     startJapaAmbient(id);
   }
 
+  const saveCustomMantraSync = useCallback(async (value: CustomMantra) => {
+    setSavingCustomMantra(true);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.from('user_custom_japa_mantras').upsert({
+        user_id: userId,
+        label: value.label.trim() || 'Custom mantra',
+        mantra_text: value.text.trim(),
+        description: value.description.trim() || 'Personal mantra focus',
+      });
+      if (error) throw error;
+      return true;
+    } catch {
+      return false;
+    } finally {
+      setSavingCustomMantra(false);
+    }
+  }, [userId]);
+
   const countBead = useCallback(() => {
     if (paused || showComplete) return;
     playHaptic('light');
@@ -1903,6 +1957,9 @@ export default function JapaClient({
     setSavingSession(true);
     try {
       const supabase = createClient();
+      const sessionMantraText = mantraId === CUSTOM_MANTRA_ID
+        ? (customMantra?.text?.trim() || 'ॐ')
+        : (MANTRAS.find((m) => m.id === mantraId)?.full || MANTRAS[0].full);
       const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
       const today = localSpiritualDate(tz, 4);
 
@@ -1910,7 +1967,7 @@ export default function JapaClient({
       const completedAt = new Date().toISOString();
       const malaSessionRow = buildMalaSessionInsert({
         userId,
-        mantra: currentMantra.full,
+        mantra: sessionMantraText,
         count: totalBeads,
         targetCount: TOTAL_BEADS,
         durationSeconds: duration,
@@ -2392,14 +2449,16 @@ export default function JapaClient({
               <CustomMantraSheet
                 isDark={isDark}
                 initialValue={customMantra}
+                saving={savingCustomMantra}
                 onClose={() => setShowCustomMantraSheet(false)}
-                onSave={(value) => {
+                onSave={async (value) => {
                   setCustomMantra(value);
                   setMantraId(CUSTOM_MANTRA_ID);
                   try {
                     localStorage.setItem(STORAGE_CUSTOM_MANTRA, JSON.stringify(value));
                     localStorage.setItem(STORAGE_MANTRA, CUSTOM_MANTRA_ID);
                   } catch { /* ok */ }
+                  await saveCustomMantraSync(value);
                   setShowCustomMantraSheet(false);
                 }}
               />

@@ -166,6 +166,21 @@ export interface Database {
         };
         Update: Partial<Database['public']['Tables']['mala_sessions']['Insert']>;
       };
+      user_custom_japa_mantras: {
+        Row: {
+          user_id: string;
+          label: string;
+          mantra_text: string;
+          description: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['user_custom_japa_mantras']['Row'], 'created_at' | 'updated_at'> & {
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['user_custom_japa_mantras']['Insert']>;
+      };
       forum_threads: {
         Row: {
           id: string;
