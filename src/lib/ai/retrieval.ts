@@ -348,7 +348,44 @@ export class PramanaGitaEmbeddingRetriever implements PramanaRetriever<Retrieval
     docsWithScores.sort((a, b) => b.score - a.score);
 
     const limit = query.topK || 5;
-    const topDocs = docsWithScores.slice(0, limit);
+    const augmentedDocs: Array<{ doc: any; score: number }> = [];
+
+    if (docsWithScores.length > 0) {
+      const topDocItem = docsWithScores[0];
+      augmentedDocs.push(topDocItem);
+
+      if (topDocItem.score >= 0.4) {
+        const topDoc = topDocItem.doc;
+        const refParts = topDoc.ref.split('.');
+        if (refParts.length === 2) {
+          const ch = parseInt(refParts[0], 10);
+          const v = parseInt(refParts[1], 10);
+
+          const prevRef = `${ch}.${v - 1}`;
+          const nextRef = `${ch}.${v + 1}`;
+
+          const prevDoc = index.documents.find((d: any) => d.ref === prevRef);
+          const nextDoc = index.documents.find((d: any) => d.ref === nextRef);
+
+          if (prevDoc) {
+            augmentedDocs.push({ doc: prevDoc, score: topDocItem.score - 0.1 });
+          }
+          if (nextDoc) {
+            augmentedDocs.push({ doc: nextDoc, score: topDocItem.score - 0.12 });
+          }
+        }
+      }
+
+      for (const item of docsWithScores.slice(1)) {
+        if (!augmentedDocs.some(x => x.doc.id === item.doc.id)) {
+          if (item.score >= 0.1) {
+            augmentedDocs.push(item);
+          }
+        }
+      }
+    }
+
+    const topDocs = augmentedDocs.slice(0, limit);
 
     const documents: RetrievalChunk[] = topDocs.map((item) => {
       const doc = item.doc;
