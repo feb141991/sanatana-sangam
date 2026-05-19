@@ -1,0 +1,16 @@
+{
+  "corpus_id": "sikh_dasam_granth",
+  "doc_id": "dasam_granth_1",
+  "title": "Dasam Granth",
+  "source_name": "Guru Gobind Singh",
+  "language": "pa",
+  "tradition": "Sikhism",
+  "content": [
+    {
+      "ref": "1.1",
+      "original": "ਚੱਕ੍ਰ ਚਿਹਨ ਅਰੁ ਬਰਨ ਜਾਤਿ ਅਰੁ ਪਾਤਿ ਨਹਿਨ ਜਿਹ ॥",
+      "transliteration": "chakkar chihan ar baran jaat ar paat nahin jih ||",
+      "text": "He who has no mark, no color, no caste, and no lineage."
+    }
+  ]
+}

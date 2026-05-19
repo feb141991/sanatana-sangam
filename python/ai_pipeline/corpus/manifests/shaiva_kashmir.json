@@ -1,0 +1,16 @@
+{
+  "corpus_id": "shaiva_kashmir",
+  "doc_id": "shiva_sutras_1",
+  "title": "Shiva Sutras",
+  "source_name": "Vasugupta",
+  "language": "sa",
+  "tradition": "Kashmir Shaivism",
+  "content": [
+    {
+      "ref": "1.1",
+      "sanskrit": "चैतन्यमात्मा",
+      "transliteration": "caitanyamātmā",
+      "text": "Consciousness is the self."
+    }
+  ]
+}

@@ -3,7 +3,17 @@ export type PramanaCorpusId =
   | 'pathshala_upanishads'
   | 'bhakti_katha'
   | 'bhakti_panchatantra'
-  | 'sikh_gurbani';
+  | 'sikh_gurbani'
+  | 'tamil_tirukkural'
+  | 'tamil_prabandham'
+  | 'tamil_tiruvachakam'
+  | 'mahabharata_shanti'
+  | 'sant_kabir'
+  | 'sikh_dasam_granth'
+  | 'mahayana_bodhicharyavatara'
+  | 'jain_tattvartha_sutra'
+  | 'shaiva_kashmir'
+  | 'jain_kalpa_sutra';
 
 export interface PramanaCorpusMetadata {
   readonly id: PramanaCorpusId;
@@ -54,6 +64,86 @@ export const PRAMANA_CORPUS_REGISTRY: Record<PramanaCorpusId, PramanaCorpusMetad
     tradition: 'Sikhi',
     primaryLanguage: 'pa',
     description: 'Holy scriptures of Gurbani, including Sri Guru Granth Sahib Ji, Nitnem, and other canonical texts.'
+  },
+  tamil_tirukkural: {
+    id: 'tamil_tirukkural',
+    name: 'Tirukkural',
+    type: 'scripture',
+    tradition: 'Tamil Sangam',
+    primaryLanguage: 'ta',
+    description: 'Classic Tamil text containing ethical and moral aphorisms.'
+  },
+  tamil_prabandham: {
+    id: 'tamil_prabandham',
+    name: 'Naalayira Divya Prabandham',
+    type: 'scripture',
+    tradition: 'Sri Vaishnavism',
+    primaryLanguage: 'ta',
+    description: 'Collection of 4,000 Tamil verses composed by the Alvars.'
+  },
+  tamil_tiruvachakam: {
+    id: 'tamil_tiruvachakam',
+    name: 'Tiruvachakam',
+    type: 'scripture',
+    tradition: 'Shaiva Siddhanta',
+    primaryLanguage: 'ta',
+    description: 'Devotional Tamil poetry dedicated to Lord Shiva.'
+  },
+  mahabharata_shanti: {
+    id: 'mahabharata_shanti',
+    name: 'Mahabharata - Shanti Parva',
+    type: 'scripture',
+    tradition: 'Itihasa',
+    primaryLanguage: 'sa',
+    description: 'The Book of Peace, containing discourse on dharma and statecraft.'
+  },
+  sant_kabir: {
+    id: 'sant_kabir',
+    name: 'Kabir Dohe',
+    type: 'scripture',
+    tradition: 'Sant Mat / Bhakti',
+    primaryLanguage: 'hi',
+    description: 'Couplets of Sant Kabir containing deep spiritual and social insights.'
+  },
+  sikh_dasam_granth: {
+    id: 'sikh_dasam_granth',
+    name: 'Dasam Granth',
+    type: 'scripture',
+    tradition: 'Sikhism',
+    primaryLanguage: 'pa',
+    description: 'Scriptures composed by the 10th Sikh Guru, Guru Gobind Singh Ji.'
+  },
+  mahayana_bodhicharyavatara: {
+    id: 'mahayana_bodhicharyavatara',
+    name: 'Bodhicharyavatara',
+    type: 'scripture',
+    tradition: 'Mahayana Buddhism',
+    primaryLanguage: 'sa',
+    description: 'Mahayana Buddhist text on the Bodhisattva path by Shantideva.'
+  },
+  jain_tattvartha_sutra: {
+    id: 'jain_tattvartha_sutra',
+    name: 'Tattvartha Sutra',
+    type: 'scripture',
+    tradition: 'Jainism',
+    primaryLanguage: 'sa',
+    description: 'Foundational text of Jainism summarizing its core philosophy and epistemology.'
+  },
+  shaiva_kashmir: {
+    id: 'shaiva_kashmir',
+    name: 'Kashmir Shaiva Texts',
+    type: 'scripture',
+    tradition: 'Kashmir Shaivism',
+    primaryLanguage: 'sa',
+    description: 'Key texts of Kashmir Shaivism such as the Shiva Sutras and Vijnana Bhairava.'
+  },
+  jain_kalpa_sutra: {
+    id: 'jain_kalpa_sutra',
+    name: 'Kalpa Sutra & Agamas',
+    type: 'scripture',
+    tradition: 'Jainism (Shvetambara)',
+    primaryLanguage: 'prakrit',
+    description: 'Jain texts including biographies of the Tirthankaras.'
   }
 };
 

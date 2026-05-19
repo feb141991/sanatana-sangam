@@ -1,0 +1,16 @@
+{
+  "corpus_id": "tamil_tirukkural",
+  "doc_id": "tirukkural_1",
+  "title": "Tirukkural",
+  "source_name": "Tiruvalluvar",
+  "language": "ta",
+  "tradition": "Tamil Sangam",
+  "content": [
+    {
+      "ref": "1.1",
+      "original": "அகர முதல எழுத்தெல்லாம் ஆதி\nபகவன் முதற்றே உலகு.",
+      "transliteration": "akara muthala ezhuththellam aathi\npakavan mutratre ulaku.",
+      "text": "As the letter A is the first of all letters, so the eternal God is first in the world."
+    }
+  ]
+}

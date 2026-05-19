@@ -1,0 +1,16 @@
+{
+  "corpus_id": "tamil_prabandham",
+  "doc_id": "divya_prabandham",
+  "title": "Naalayira Divya Prabandham",
+  "source_name": "Alvars",
+  "language": "ta",
+  "tradition": "Sri Vaishnavism",
+  "content": [
+    {
+      "ref": "1.1",
+      "original": "பல்லாண்டு பல்லாண்டு பல்லாயிரத்தாண்டு\nபலகோடி நூறாயிரம்...",
+      "transliteration": "pallandu pallandu pallayirathandu\npalakodi noorayiram...",
+      "text": "Many years, many years, many thousands of years, and many millions of years..."
+    }
+  ]
+}

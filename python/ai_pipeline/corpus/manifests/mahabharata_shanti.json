@@ -1,0 +1,16 @@
+{
+  "corpus_id": "mahabharata_shanti",
+  "doc_id": "mb_shanti_1",
+  "title": "Mahabharata - Shanti Parva",
+  "source_name": "Vyasa",
+  "language": "sa",
+  "tradition": "Itihasa",
+  "content": [
+    {
+      "ref": "12.1.1",
+      "sanskrit": "नारायणं नमस्कृत्य नरं चैव नरोत्तमम् ।\nदेवीं सरस्वतीं व्यासं ततो जयमुदीरयेत् ॥",
+      "transliteration": "nārāyaṇaṃ namaskṛtya naraṃ caiva narottamam |\ndevīṃ sarasvatīṃ vyāsaṃ tato jayamudīrayet ||",
+      "text": "Having bowed down to Narayana, and to Nara, the foremost of men, as also to the goddess Sarasvati, and Vyasa, one should utter the word Jaya."
+    }
+  ]
+}

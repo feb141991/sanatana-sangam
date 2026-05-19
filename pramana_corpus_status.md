@@ -11,6 +11,16 @@ This document records the current integration, routing, and evaluation status fo
 | **`bhakti_panchatantra`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/panchatantra_chapter_1.json` |
 | **`pathshala_upanishads`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/upanishad_chapter_1.json` |
 | **`sikh_gurbani`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/sikh_gurbani_japji.json` |
+| **`tamil_tirukkural`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/tamil_tirukkural.json` |
+| **`tamil_prabandham`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/tamil_prabandham.json` |
+| **`tamil_tiruvachakam`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/tamil_tiruvachakam.json` |
+| **`mahabharata_shanti`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/mahabharata_shanti.json` |
+| **`sant_kabir`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/sant_kabir.json` |
+| **`sikh_dasam_granth`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/sikh_dasam_granth.json` |
+| **`mahayana_bodhicharyavatara`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/mahayana_bodhicharyavatara.json` |
+| **`jain_tattvartha_sutra`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/jain_tattvartha_sutra.json` |
+| **`shaiva_kashmir`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/shaiva_kashmir.json` |
+| **`jain_kalpa_sutra`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/jain_kalpa_sutra.json` |
 
 ### Column Definitions:
 * **Ingested**: Manifest JSON files containing Sanskrit text, transliterations, and translations exist in the `manifests/` directory.

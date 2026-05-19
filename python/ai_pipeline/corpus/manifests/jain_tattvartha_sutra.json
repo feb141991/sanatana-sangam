@@ -1,0 +1,16 @@
+{
+  "corpus_id": "jain_tattvartha_sutra",
+  "doc_id": "tattvartha_1",
+  "title": "Tattvartha Sutra",
+  "source_name": "Umaswati",
+  "language": "sa",
+  "tradition": "Jainism",
+  "content": [
+    {
+      "ref": "1.1",
+      "sanskrit": "सम्यग्दर्शनज्ञानचारित्राणि मोक्षमार्गः",
+      "transliteration": "samyagdarśanajñānacāritrāṇi mokṣamārgaḥ",
+      "text": "Right faith, right knowledge, and right conduct constitute the path to liberation."
+    }
+  ]
+}
