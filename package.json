@@ -8,6 +8,8 @@
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",
+    "prebuild": "npm run build --workspace=@sangam/pramana-core --workspace=@sangam/pramana-serve",
+    "prepare": "npm run build --workspace=@sangam/pramana-core --workspace=@sangam/pramana-serve",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx"
   },

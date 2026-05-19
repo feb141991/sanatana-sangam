@@ -19,12 +19,18 @@ export type MeaningGenerateInput = PramanaInputBase & {
   targetLanguage: 'en' | 'hi' | 'pa';
 };
 
+export type RetrievalContextDocument = {
+  content: string;
+  metadata?: Record<string, any>;
+};
+
 export type PathshalaExplainInput = PramanaInputBase & {
   sanskrit?: string;
   transliteration?: string;
   translation?: string;
   source?: string;
   title?: string;
+  retrievedChunks?: RetrievalContextDocument[];
 };
 
 export type AIChatInput = PramanaInputBase & {

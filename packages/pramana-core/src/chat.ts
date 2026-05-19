@@ -1,4 +1,5 @@
-import type { PramanaContract, AIChatInput, PromptSpec, RequestMetadata } from '@sangam/pramana-core';
+import type { PramanaContract, AIChatInput } from './contracts';
+import type { PromptSpec, PromptMessage } from './types';
 
 // ─── Tradition-aware system instructions ──────────────────────────────────────
 const BASE_RULES = `

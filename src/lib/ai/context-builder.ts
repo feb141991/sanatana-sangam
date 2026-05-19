@@ -52,6 +52,19 @@ export function buildPathshalaExplainPrompt(input: PathshalaExplainInput): {
   const commentary = getCommentary(input.tradition);
   const langNote = getLanguageInstruction(input.language);
 
+  const passagesText = input.retrievedChunks && input.retrievedChunks.length > 0
+    ? `
+=== RETRIEVED CONTEXT PASSAGES (GROUNDING SOURCE DATA) ===
+${input.retrievedChunks.map((chunk, idx) => `
+[Passage ${idx + 1}]
+Source: ${chunk.metadata?.sourceName ?? 'Unknown'} (Ref: ${chunk.metadata?.chunkId ?? 'N/A'})
+Content:
+${chunk.content}
+`).join('\n')}
+=========================================================
+Use the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the verse accurately and provide authentic teachings.`
+    : '';
+
   return {
     teacher: commentary.name,
     school: commentary.school,
@@ -62,6 +75,7 @@ SOURCE: ${input.source ?? ''} — ${input.title ?? ''}
 ORIGINAL (Sanskrit/text): ${input.sanskrit ?? ''}
 TRANSLITERATION: ${input.transliteration ?? ''}
 STANDARD TRANSLATION: ${input.translation ?? ''}
+${passagesText}
 
 Your lens: ${commentary.lens}
 Teach as ${commentary.name} would.

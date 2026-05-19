@@ -9,4 +9,5 @@ export type {
   PathshalaExplainInput,
   MeaningGenerateInput,
   AIChatInput,
+  RetrievalContextDocument,
 } from '@sangam/pramana-core';

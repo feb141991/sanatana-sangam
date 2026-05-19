@@ -3,7 +3,7 @@ import { assertAiRequestAllowed, validateMeaningGenerateInput, validatePathshala
 import { generateWithGemini } from '@/lib/ai/providers/gemini';
 import { retrievePathshalaContext } from '@/lib/ai/retrieval';
 import { GeminiModelAdapter } from '@sangam/pramana-serve';
-import { DharmaChatContract } from './contracts/chat';
+import { DharmaChatContract } from '@sangam/pramana-core';
 import type {
   AIResponseMetadata,
   AITextResult,
@@ -38,7 +38,10 @@ export async function runPathshalaExplain(input: PathshalaExplainInput) {
   });
 
   // Keep behavior identical for now, but pass retrieved context if available
-  const built = buildPathshalaExplainPrompt(input);
+  const built = buildPathshalaExplainPrompt({
+    ...input,
+    retrievedChunks: chunks,
+  });
   const result = await generateWithGemini(built.prompt);
 
   return {
