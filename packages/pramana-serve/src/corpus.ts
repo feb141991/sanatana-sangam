@@ -64,24 +64,14 @@ export class SimpleCorpusSelector implements PramanaCorpusSelector {
     const source = String(filters?.source || '').toLowerCase();
     const corpusFilter = String(filters?.corpus || '').toLowerCase();
 
-    if (
-      corpusFilter === 'bhakti_panchatantra' ||
-      source.includes('panchatantra') ||
-      source.includes('fable') ||
-      source.includes('moral') ||
-      text.includes('panchatantra') ||
-      text.includes('fable') ||
-      text.includes('moral') ||
-      text.includes('monkey') ||
-      text.includes('tortoise') ||
-      text.includes('rabbit') ||
-      text.includes('jackal')
-    ) {
-      return 'bhakti_panchatantra';
-    }
+    // 1. Explicit corpus selection
+    if (corpusFilter === 'bhakti_panchatantra') return 'bhakti_panchatantra';
+    if (corpusFilter === 'bhakti_katha') return 'bhakti_katha';
+    if (corpusFilter === 'pathshala_upanishads') return 'pathshala_upanishads';
+    if (corpusFilter === 'pathshala_gita') return 'pathshala_gita';
 
+    // 2. Fallback routing rules for approved active live corpora (Gita and Bhakti Katha only)
     if (
-      corpusFilter === 'bhakti_katha' ||
       source.includes('katha') ||
       source.includes('story') ||
       source.includes('purana') ||
