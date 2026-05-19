@@ -19,7 +19,10 @@
     "eval:compare": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.evals.compare_providers",
     "eval:compare:self-hosted": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.evals.compare_providers --modes mock hosted self-hosted",
     "corpus:build-indexes": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.embeddings.build_embeddings",
-    "corpus:validate-indexes": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.embeddings.validate_indexes"
+    "corpus:validate-indexes": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.embeddings.validate_indexes",
+    "diagnostics": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.diagnostics.pramana_status",
+    "diagnostics:json": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.diagnostics.pramana_status --json-only",
+    "diagnostics:warn": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.diagnostics.pramana_status --fail-on-warn"
   },
   "dependencies": {
     "@capacitor/core": "^8.0.0",
