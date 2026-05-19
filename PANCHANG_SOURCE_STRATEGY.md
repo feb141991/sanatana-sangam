@@ -70,6 +70,44 @@ The next improvement should not be cosmetic. It should be one of:
 - tradition- or region-specific differences must not be flattened into one claim
 - UI must show when exact verification is recommended
 
+## Validation protocol before stronger claims
+
+Before changing launch copy from “daily guidance” to anything stronger, the Panchang layer should pass a simple validation program:
+
+1. Build a fixed validation fixture set
+   - at least `25` dates across the year
+   - at least `8` locations covering India, UK, Europe, North America, and Australia
+   - include edge cases near sunrise, tithi rollover, month rollover, and DST boundaries
+
+2. Compare the app against trusted references
+   - one priest-facing desktop reference such as Swiss Ephemeris-backed software
+   - one widely used public Panchang source
+   - one manually reviewed sample from a tradition-aware human source when observance sensitivity is high
+
+3. Validate each output class separately
+   - sunrise / sunset
+   - tithi at sunrise
+   - nakshatra at sunrise
+   - yoga
+   - rahu kaal / abhijit windows
+   - observance-sensitive festival assignment
+
+4. Define acceptable launch tolerances
+   - sunrise / sunset within a tight minute tolerance
+   - tithi / nakshatra must match at sunrise for the majority of fixtures
+   - festival assignment must not claim exact observance truth until sunrise-overlap logic is verified
+
+5. Track method and confidence visibly
+   - method name
+   - source family
+   - last validation date
+   - confidence label for each major output class
+
+6. Keep stronger claims blocked until the rule layer is validated
+   - especially Ekadashi / parana
+   - sunrise-overlap festival logic
+   - region / sampradaya-sensitive observances
+
 ## Sacred-time relationship
 
 Panchang should eventually sit inside one coherent `Sacred Time` system:

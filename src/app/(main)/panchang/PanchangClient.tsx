@@ -438,12 +438,14 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
 
   // Dynamic Localization: Automatically translate Kundali output when language changes
   useEffect(() => {
-    if (kundaliResult) {
+    setKundaliResult((current) => {
+      if (!current) return current;
       try {
-        const updated = generateKundali(kundaliResult.input, lang);
-        setKundaliResult(updated);
-      } catch {}
-    }
+        return generateKundali(current.input, lang);
+      } catch {
+        return current;
+      }
+    });
   }, [lang]);
 
   const p: SacredCalendarData = useSacredCalendar(selected, lat, lon, tradition);

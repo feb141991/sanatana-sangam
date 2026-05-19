@@ -32,7 +32,7 @@ import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import CircularProgress from '@/components/ui/CircularProgress';
 import {
   ALL_LIBRARY_ENTRIES, LIBRARY_SECTIONS,
-  getEntriesBySection,
+  getEntriesBySection, getPathshalaSectionDetail,
   type LibraryEntry,
 } from '@/lib/library-content';
 import { SEED_PATHS as SEED_PATHS_LIB, PATHSHALA_PATH_IDS } from '@/lib/pathshala-paths';
@@ -632,6 +632,13 @@ function ScriptureTab({
   const cardBorder = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.09)';
   const inkColor   = isDark ? '#f5dfa0' : '#2a1002';
   const mutedColor = isDark ? 'rgba(245,210,130,0.50)' : 'rgba(100,55,10,0.55)';
+  const trustBg    = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.84)';
+
+  const completeLocalCount = sections.filter((section) => getPathshalaSectionDetail(section.id)?.corpusState === 'Complete local text live').length;
+  const companionLedCount = sections.filter((section) => {
+    const state = getPathshalaSectionDetail(section.id)?.corpusState;
+    return state === 'Catalog-first expansion' || state === 'Rights review required';
+  }).length;
 
   const entries = useMemo(() => {
     if (!drillSection) return [];
@@ -649,6 +656,7 @@ function ScriptureTab({
   // ── Drill-in view: inside a specific scripture ────────────────────────────────
   if (drillSection) {
     const section = sections.find(s => s.id === drillSection);
+    const sectionDetail = getPathshalaSectionDetail(drillSection);
     return (
       <div className="space-y-4">
         {/* Back to library */}
@@ -672,6 +680,34 @@ function ScriptureTab({
             {section?.count} passages
           </span>
         </div>
+
+        {sectionDetail && (
+          <div
+            className="rounded-[1.6rem] p-4 space-y-2.5"
+            style={{ background: trustBg, border: `1px solid ${cardBorder}` }}
+          >
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: mutedColor }}>
+                Launch scope
+              </p>
+              <span
+                className="text-[10px] font-bold rounded-full px-2.5 py-1"
+                style={{ background: `${accentColour}15`, color: accentColour }}
+              >
+                {sectionDetail.corpusState}
+              </span>
+            </div>
+            <p className="text-xs leading-relaxed" style={{ color: inkColor }}>
+              {sectionDetail.liveScope}
+            </p>
+            <p className="text-[11px] leading-relaxed" style={{ color: mutedColor }}>
+              Next: {sectionDetail.completeTextGoal}
+            </p>
+            <p className="text-[10px] leading-relaxed" style={{ color: mutedColor }}>
+              Sources: {sectionDetail.sourceTargets.slice(0, 2).join(' · ')}
+            </p>
+          </div>
+        )}
 
         {/* Search toggle (not for epic viewers) */}
         {drillSection !== 'ramayana' && drillSection !== 'bhagavatam' && (
@@ -736,11 +772,32 @@ function ScriptureTab({
   // ── Scripture card grid ───────────────────────────────────────────────────────
   return (
     <div className="space-y-4">
+      <div
+        className="rounded-[1.8rem] p-4 space-y-2"
+        style={{ background: trustBg, border: `1px solid ${cardBorder}` }}
+      >
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: mutedColor }}>
+          Launch scope
+        </p>
+        <p className="text-sm leading-relaxed" style={{ color: inkColor }}>
+          Pathshala mixes fully local study texts with companion-led and rights-review tracks. Open any text family to see whether it is fully in-app or still expanding through trusted companion sources.
+        </p>
+        <div className="flex items-center gap-2 flex-wrap pt-1">
+          <span className="text-[10px] font-bold rounded-full px-2.5 py-1" style={{ background: `${accentColour}15`, color: accentColour }}>
+            {completeLocalCount} fully local
+          </span>
+          <span className="text-[10px] font-bold rounded-full px-2.5 py-1" style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', color: mutedColor }}>
+            {companionLedCount} companion or rights review
+          </span>
+        </div>
+      </div>
       <p className="text-[11px] font-semibold uppercase tracking-wider px-0.5" style={{ color: mutedColor }}>
         {sections.length} Scriptures · {navLabel}
       </p>
       <div className="grid gap-3">
-        {sections.map(section => (
+        {sections.map((section) => {
+          const sectionDetail = getPathshalaSectionDetail(section.id);
+          return (
           <motion.button
             key={section.id}
             whileHover={{ scale: 1.01, translateY: -2 }}
@@ -773,10 +830,10 @@ function ScriptureTab({
                     style={{ background: `${accentColour}15`, color: accentColour }}>
                     {section.count} passages
                   </span>
-                  {(section.id === 'ramayana' || section.id === 'bhagavatam') && (
+                  {sectionDetail && (
                     <span className="text-[10px] font-bold rounded-full px-2.5 py-0.5"
                       style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', color: mutedColor }}>
-                      Full Text
+                      {sectionDetail.corpusState}
                     </span>
                   )}
                 </div>
@@ -787,7 +844,8 @@ function ScriptureTab({
                 style={{ color: accentColour }} />
             </div>
           </motion.button>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
