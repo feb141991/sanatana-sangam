@@ -2,7 +2,8 @@ export type PramanaCorpusId =
   | 'pathshala_gita'
   | 'pathshala_upanishads'
   | 'bhakti_katha'
-  | 'bhakti_panchatantra';
+  | 'bhakti_panchatantra'
+  | 'sikh_gurbani';
 
 export interface PramanaCorpusMetadata {
   readonly id: PramanaCorpusId;
@@ -45,6 +46,14 @@ export const PRAMANA_CORPUS_REGISTRY: Record<PramanaCorpusId, PramanaCorpusMetad
     tradition: 'Moral',
     primaryLanguage: 'sa',
     description: 'Ancient animal fables demonstrating wise conduct and moral principles.'
+  },
+  sikh_gurbani: {
+    id: 'sikh_gurbani',
+    name: 'Gurbani Scriptures',
+    type: 'scripture',
+    tradition: 'Sikhi',
+    primaryLanguage: 'pa',
+    description: 'Holy scriptures of Gurbani, including Sri Guru Granth Sahib Ji, Nitnem, and other canonical texts.'
   }
 };
 
@@ -65,6 +74,7 @@ export class SimpleCorpusSelector implements PramanaCorpusSelector {
     const corpusFilter = String(filters?.corpus || '').toLowerCase();
 
     // 1. Explicit corpus selection
+    if (corpusFilter === 'sikh_gurbani') return 'sikh_gurbani';
     if (corpusFilter === 'bhakti_panchatantra') return 'bhakti_panchatantra';
     if (corpusFilter === 'bhakti_katha') return 'bhakti_katha';
     if (corpusFilter === 'pathshala_upanishads') return 'pathshala_upanishads';
