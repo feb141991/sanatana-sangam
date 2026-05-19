@@ -23469,8 +23469,8 @@
       "source_file": "/Users/Business(C)/Sanatan Sangam/Shoonaya/src/lib/ai/retrieval.ts",
       "source_location": "L619",
       "weight": 1.0,
-      "_src": "retrieval_pramanagurbaniembeddingretriever_constructor",
-      "_tgt": "study_circle_studycirclemanager_join",
+      "_src": "study_circle_studycirclemanager_join",
+      "_tgt": "retrieval_pramanagurbaniembeddingretriever_constructor",
       "source": "study_circle_studycirclemanager_join",
       "target": "retrieval_pramanagurbaniembeddingretriever_constructor"
     },

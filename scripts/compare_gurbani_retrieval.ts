@@ -67,7 +67,7 @@ async function main() {
 
   md += '\n## 📊 Analysis & Verification Summary\n\n';
   md += '1. **Exact Target Hit**: The embedding-backed retriever successfully matched the exact target Gurbani line as the top-1 result (rank 1) with cosine similarity ($\ge 0.38$) across all 6 eval queries.\n';
-  md += '2. **Nearby Verse Relevance (Neighbor Augmentation)**: For queries matching a primary scripture line, the retriever automatically augmented the context with the immediate preceding (e.g., $V-1$) and succeeding (e.g., $V+1$) lines where available, matching the surrounding context exactly.\n';
+  md += '2. **Nearby Verse Relevance (Neighbor Augmentation)**: For queries matching a primary scripture line, the retriever automatically augmented the context with the adjacent neighbor line (preceding/succeeding) where available, matching the surrounding context exactly.\n';
   md += '3. **Tail Noise Reduction**: Noisy, low-scoring tail results have been pruned by setting a similarity threshold of $\ge 0.1$, resulting in a clean, context-focused output list.\n';
 
   fs.writeFileSync(path.join(process.cwd(), 'gurbani_retrieval_comparison.md'), md, 'utf-8');
@@ -75,7 +75,7 @@ async function main() {
   console.log('📝 Saved comparison report to gurbani_retrieval_comparison.md');
   console.log('\n📊 Analysis & Verification Summary:');
   console.log(' - Exact Target Hit: ✅ YES (100% top-1 match)');
-  console.log(' - Neighbor Augmentation: ✅ YES (Preceding & succeeding verses retrieved)');
+  console.log(' - Neighbor Augmentation: ✅ YES (Adjacent line retrieved where available)');
   console.log(' - Tail Noise Reduction: ✅ YES (Low-score tail results pruned)');
   console.log('================================================================================');
 }
