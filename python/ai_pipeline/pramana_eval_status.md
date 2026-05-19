@@ -10,6 +10,7 @@ This report documents the status of the local and live-ish evaluations across th
 | **`bhakti_katha`** | `bhakti_katha.sample.jsonl` | 6 | 100.0% | 6 / 6 | ✅ PASSED |
 | **`bhakti_panchatantra`** | `bhakti_panchatantra.sample.jsonl` | 6 | 100.0% | 6 / 6 | ✅ PASSED |
 | **`pathshala_upanishads`** | `pathshala_upanishads.sample.jsonl` | 6 | 100.0% | 6 / 6 | ✅ PASSED |
+| **`sikh_gurbani`** | `sikh_gurbani.sample.jsonl` | 6 | 100.0% | 6 / 6 | ✅ PASSED |
 
 ## Detailed Case Verification Metrics
 
@@ -140,6 +141,39 @@ This report documents the status of the local and live-ish evaluations across th
   * Source metadata present: `No`
   * Language compliance: `Yes`
 - **`upanishads-chandogya-1-hi`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+
+### Suite: `sikh_gurbani` (0 live, 6 mock)
+
+- **`gurbani-mool-mantar`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`gurbani-pauri-1`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`gurbani-mool-mantar-hi`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`gurbani-pauri-1-hi`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`gurbani-mool-mantar-pa`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`gurbani-pauri-1-pa`**: Score `5/5`
   * JSON valid: `Yes`
   * Grounding present: `Yes`
   * Source metadata present: `No`

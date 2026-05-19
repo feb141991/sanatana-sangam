@@ -12,18 +12,29 @@ function extractExplanation(raw: string) {
 }
 
 export async function POST(req: Request) {
-  const { sanskrit, transliteration, translation, source, title, tradition, language = 'en' } =
-    await req.json().catch(() => ({}));
+  const {
+    sanskrit,
+    originalText,
+    transliteration,
+    translation,
+    source,
+    title,
+    tradition,
+    language = 'en',
+    responseMode,
+  } = await req.json().catch(() => ({}));
 
   try {
     const result = await runPathshalaExplain({
       sanskrit,
+      originalText,
       transliteration,
       translation,
       source,
       title,
       tradition,
       language,
+      responseMode,
     });
 
     let explanation = extractExplanation(result.raw);

@@ -1,4 +1,4 @@
-import { buildMeaningGeneratePrompt, buildPathshalaExplainPrompt, buildDevotionalStoryExplainPrompt, buildMoralStoryExplainPrompt, buildUpanishadsExplainPrompt } from '@/lib/ai/context-builder';
+import { buildMeaningGeneratePrompt, buildPathshalaExplainPrompt, buildDevotionalStoryExplainPrompt, buildMoralStoryExplainPrompt, buildUpanishadsExplainPrompt, buildGurbaniShabadExplainPrompt } from '@/lib/ai/context-builder';
 import { assertAiRequestAllowed, validateMeaningGenerateInput, validatePathshalaExplainInput, validateAIChatInput } from '@/lib/ai/policies';
 import { generateWithGemini } from '@/lib/ai/providers/gemini';
 import { retrievePathshalaContext } from '@/lib/ai/retrieval';
@@ -44,6 +44,8 @@ export async function runPathshalaExplain(input: PathshalaExplainInput) {
         ? 'bhakti_panchatantra'
         : input.responseMode === 'scripture_passage_explain'
         ? 'pathshala_upanishads'
+        : input.responseMode === 'gurbani_shabad_explain'
+        ? 'sikh_gurbani'
         : null,
     }
   );
@@ -58,6 +60,11 @@ export async function runPathshalaExplain(input: PathshalaExplainInput) {
   let built;
   if (corpusId === 'pathshala_upanishads' || input.responseMode === 'scripture_passage_explain') {
     built = buildUpanishadsExplainPrompt({
+      ...input,
+      retrievedChunks: chunks,
+    });
+  } else if (corpusId === 'sikh_gurbani' || input.responseMode === 'gurbani_shabad_explain') {
+    built = buildGurbaniShabadExplainPrompt({
       ...input,
       retrievedChunks: chunks,
     });

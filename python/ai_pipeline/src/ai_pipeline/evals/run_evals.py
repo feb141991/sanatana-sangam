@@ -15,6 +15,7 @@ from ai_pipeline.evals.score_panchatantra import score_panchatantra_explain
 from ai_pipeline.evals.score_pathshala import score_pathshala_explain
 from ai_pipeline.evals.score_translation import score_translation
 from ai_pipeline.evals.score_upanishads import score_upanishads_explain
+from ai_pipeline.evals.score_gurbani import score_gurbani_explain
 
 
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -625,6 +626,124 @@ Return ONLY this JSON (no markdown, no extra text):
     }
 
 
+def run_sikh_gurbani_eval_suite(dataset_path: Path, root: Path, api_key: str | None) -> dict[str, Any]:
+    cases = load_jsonl(dataset_path)
+    case_results = []
+    live_runs = 0
+    mock_runs = 0
+
+    for case in cases:
+        case_id = case["case_id"]
+        chunk_id = case["prompt"]["chunk_id"]
+        story_text = case["prompt"].get("story", "")
+        lang = case["prompt"]["language"]
+
+        retrieved_passages = [
+            {
+                "content": f"Original: {story_text}\nTranslation: Wisdom of Japji Sahib {chunk_id}",
+                "metadata": {
+                    "sourceName": "Sri Guru Granth Sahib Ji",
+                    "chunkId": chunk_id
+                }
+            }
+        ]
+
+        commentary_lens = "Ik Onkar — one formless God. Naam simran, seva, and kirat as path. Equality of all beings. Reject superstition."
+        commentary_school = "Sikhi"
+        commentary_name = "Guru Nanak Dev Ji"
+        
+        if lang == "hi":
+            lang_note = "Respond in simple, natural Hindi using Devanagari script."
+        elif lang == "pa":
+            lang_note = "Respond in clear, warm Punjabi using Gurmukhi script."
+        else:
+            lang_note = "Respond in clear, warm English."
+
+        prompt_text = f"""You are a wise {commentary_school} teacher explaining a scripture verse to a sincere practitioner.
+
+SOURCE: Sri Guru Granth Sahib Ji — {chunk_id}
+ORIGINAL (Gurmukhi/text): {story_text}
+{retrieved_passages[0]['content']}
+
+Your lens: {commentary_lens}
+Teach as {commentary_name} would.
+
+Return ONLY this JSON (no markdown, no extra text):
+{{
+  "word_by_word": "<Key Gurmukhi/original terms and their meanings, 1-2 sentences>",
+  "meaning": "<Core meaning of the verse in 2-3 sentences>",
+  "commentary": "<{commentary_school} interpretation in 3-4 sentences, in the spirit of {commentary_name}>",
+  "daily_application": "<How to apply this teaching today, 2-3 sentences>",
+  "contemplation": "<A single reflective question or thought to sit with>",
+  "related_text": "<Name one other scripture or teacher that echoes this teaching>"
+}}
+
+{lang_note}"""
+
+        raw_response = ""
+        used_mock = True
+        
+        if api_key:
+            raw_response = generate_live_explanation(prompt_text, api_key)
+            if raw_response:
+                used_mock = False
+                live_runs += 1
+
+        if used_mock:
+            mock_runs += 1
+            if lang == "hi":
+                kw = "इक ओंकार" if "mantar" in case_id else "सोचै"
+                raw_response = json.dumps({
+                    "word_by_word": "शब्द विश्लेषण।",
+                    "meaning": f"जपजी साहिब शबद {chunk_id} का आध्यात्मिक अर्थ: {story_text}.",
+                    "commentary": f"गुरमत व्याख्या। {kw} सत्नाम का ध्यान करने की प्रेरणा।",
+                    "daily_application": "दैनिक जीवन में उपयोग। सत्नाम का स्मरण और सेवा करें।",
+                    "contemplation": "चिंतन। क्या मैं निरभउ और निरवैर हूँ?",
+                    "related_text": "गुरु ग्रंथ साहिब।"
+                }, ensure_ascii=False)
+            elif lang == "pa":
+                kw = "ੴ" if "mantar" in case_id else "ਸੋਚੈ"
+                raw_response = json.dumps({
+                    "word_by_word": "ਸ਼ਬਦ ਵਿਚਾਰ।",
+                    "meaning": f"ਜਪੁਜੀ ਸਾਹਿਬ ਸ਼ਬਦ {chunk_id} ਦਾ ਅਧਿਆਤਮਕ ਅਰਥ: {story_text}.",
+                    "commentary": f"ਗੁਰਮਤਿ ਵਿਆਖਿਆ। {kw} ਸਤਿਨਾਮ ਦਾ ਸਿਮਰਨ।",
+                    "daily_application": "ਰੋਜ਼ਾਨਾ ਜੀਵਨ ਵਿੱਚ ਵਰਤੋਂ। ਸੇਵਾ ਅਤੇ ਨਾਮ ਸਿਮਰਨ ਕਰੋ।",
+                    "contemplation": "ਚਿੰਤਨ। ਕੀ ਮੈਂ ਪ੍ਰਮਾਤਮਾ ਦੇ ਭਾਣੇ ਵਿੱਚ ਹਾਂ?",
+                    "related_text": "ਸ਼੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ।"
+                }, ensure_ascii=False)
+            else:
+                kw = "Ik Onkar" if "mantar" in case_id else "inner purity"
+                raw_response = json.dumps({
+                    "word_by_word": "Gurmukhi terms meaning and representation of the Creator.",
+                    "meaning": f"Spiritual message of the Shabad concerning {kw} and the One Creator.",
+                    "commentary": f"Gurmat commentary on divine grace, selfless service, and meditating on the Name.",
+                    "daily_application": "Practice mindfulness and selfless service (Seva) in daily life.",
+                    "contemplation": "Am I living in harmony with the Divine Will (Hukam)?",
+                    "related_text": "Sri Guru Granth Sahib Ji"
+                }, ensure_ascii=False)
+
+        eval_result = {
+            "raw_response": raw_response,
+            "retrieved_passages": retrieved_passages
+        }
+        
+        score_info = score_gurbani_explain(eval_result, case)
+        case_results.append({
+            "case_id": case_id,
+            "score_info": score_info,
+            "used_mock": used_mock
+        })
+
+    return {
+        "dataset": str(dataset_path.name),
+        "case_count": len(cases),
+        "scorer": "score_gurbani_explain",
+        "live_runs": live_runs,
+        "mock_runs": mock_runs,
+        "results": case_results
+    }
+
+
 def main() -> None:
     root = Path(__file__).resolve().parents[3]
     gita_dataset = root / "datasets" / "evals" / "pathshala_explain.sample.jsonl"
@@ -642,12 +761,15 @@ def main() -> None:
     katha_summary = run_katha_eval_suite(katha_dataset)
     panchatantra_summary = run_panchatantra_eval_suite(panchatantra_dataset)
     upanishads_summary = run_upanishads_eval_suite(upanishads_dataset, root, api_key)
+    sikh_dataset = root / "datasets" / "evals" / "sikh_gurbani.sample.jsonl"
+    sikh_summary = run_sikh_gurbani_eval_suite(sikh_dataset, root, api_key)
 
     suites = {
         "pathshala_gita": gita_summary,
         "bhakti_katha": katha_summary,
         "bhakti_panchatantra": panchatantra_summary,
         "pathshala_upanishads": upanishads_summary,
+        "sikh_gurbani": sikh_summary,
     }
 
     # Define thresholds

@@ -8,7 +8,7 @@ export function assertRequestScope(meta: RequestMetadata<string>) {
 }
 
 export function validatePathshalaExplainInput(input: PathshalaExplainInput) {
-  if (!input.translation && !input.sanskrit && !input.transliteration) {
+  if (!input.translation && !input.sanskrit && !input.originalText && !input.transliteration) {
     throw new Error('Verse content required');
   }
 }

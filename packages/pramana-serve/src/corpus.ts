@@ -61,7 +61,8 @@ export type PramanaResponseMode =
   | 'scripture_verse_explain'
   | 'scripture_passage_explain'
   | 'devotional_story_explain'
-  | 'moral_story_explain';
+  | 'moral_story_explain'
+  | 'gurbani_shabad_explain';
 
 export interface PramanaCorpusSelector {
   selectCorpus(queryText: string, filters?: Record<string, unknown>): PramanaCorpusId;

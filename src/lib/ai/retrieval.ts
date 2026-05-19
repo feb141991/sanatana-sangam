@@ -42,7 +42,10 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
   }
 
   private loadManifest(chapterNum: number): any | null {
-    const filePath = path.join(this.manifestsDir, `${this.prefix}_${chapterNum}.json`);
+    let filePath = path.join(this.manifestsDir, `${this.prefix}_${chapterNum}.json`);
+    if (!fs.existsSync(filePath)) {
+      filePath = path.join(this.manifestsDir, `${this.prefix}.json`);
+    }
     if (!fs.existsSync(filePath)) return null;
     try {
       const data = fs.readFileSync(filePath, 'utf-8');
@@ -80,7 +83,7 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
     // Check if we have files matching this prefix. If not, generate high-quality mock data dynamically
     let filesExist = false;
     for (let ch = 1; ch <= this.maxChapters; ch++) {
-      if (fs.existsSync(path.join(this.manifestsDir, `${this.prefix}_${ch}.json`))) {
+      if (fs.existsSync(path.join(this.manifestsDir, `${this.prefix}_${ch}.json`)) || fs.existsSync(path.join(this.manifestsDir, `${this.prefix}.json`))) {
         filesExist = true;
         break;
       }
@@ -145,6 +148,7 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
         const textHaystack = [
           v.text || '',
           v.sanskrit || '',
+          v.original || '',
           v.transliteration || ''
         ].join(' ').toLowerCase();
 
@@ -172,8 +176,10 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
         const totalScore = exactVerseScore + titleSourceScore + keywordOverlapScore + traditionScore;
 
         if (totalScore > 0) {
+          const manifestTradition = manifest.tradition || this.tradition;
+          const origLabel = manifest.source_class === 'scripture' && manifestTradition !== 'Sikhi' ? 'Sanskrit' : 'Original';
           const textContent = [
-            v.sanskrit ? `Sanskrit: ${v.sanskrit}` : '',
+            v.sanskrit ? `Sanskrit: ${v.sanskrit}` : v.original ? `${origLabel}: ${v.original}` : '',
             v.transliteration ? `Transliteration: ${v.transliteration}` : '',
             v.text ? `Translation: ${v.text}` : ''
           ].filter(Boolean).join('\n');
@@ -601,6 +607,14 @@ PramanaRetrieverSelector.register('bhakti_panchatantra', new PramanaManifestRetr
   sourceClass: 'narrative',
   tradition: 'Moral',
   maxChapters: 5
+}));
+
+PramanaRetrieverSelector.register('sikh_gurbani', new PramanaManifestRetriever({
+  prefix: 'sikh_gurbani_japji',
+  sourceName: 'Sri Guru Granth Sahib Ji',
+  sourceClass: 'scripture',
+  tradition: 'Sikhi',
+  maxChapters: 1
 }));
 
 export async function retrievePathshalaContext(input: {

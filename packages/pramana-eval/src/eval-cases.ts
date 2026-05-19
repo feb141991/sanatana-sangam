@@ -513,3 +513,126 @@ export const pathshalaExplainEvalSuite = defineEvalCaseCollection<PathshalaExpla
   ]
 });
 
+export const sikhGurbaniEvalSuite = defineEvalCaseCollection<PathshalaExplainInput, any>({
+  suiteId: "sikh_gurbani_grounding_suite",
+  version: "1.0.0",
+  cases: [
+    {
+      id: "gurbani-mool-mantar",
+      title: "Gurbani - Mool Mantar Grounding",
+      instruction: "Explain the Mool Mantar, focusing on Ik Onkar, the One Universal Creator.",
+      domain: "grounding",
+      priority: "critical",
+      input: {
+        source: "Japji Sahib",
+        title: "Mool Mantar",
+        tradition: "Sikh",
+        language: "en",
+        responseMode: "gurbani_shabad_explain",
+        story: "Ik Onkar Sat Nam Karta Purakh Nirbhau Nirvair Akal Murat Ajuni Saibhan Gur Prasad."
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON containing required keys", required: true },
+        { key: "grounding_present", description: "Response must refer to Ik Onkar or One Creator", required: true },
+        { key: "source_metadata_present", description: "Response must cite Japji Sahib or Gurbani", required: true }
+      ]
+    },
+    {
+      id: "gurbani-pauri-1",
+      title: "Gurbani - Japji Sahib Pauri 1 Grounding",
+      instruction: "Explain Pauri 1 of Japji Sahib, focusing on cleaning the mind through devotion, not physical washing.",
+      domain: "grounding",
+      priority: "standard",
+      input: {
+        source: "Japji Sahib",
+        title: "Pauri 1",
+        tradition: "Sikh",
+        language: "en",
+        responseMode: "gurbani_shabad_explain",
+        story: "Sochai soch na hovai je sochi lakh var."
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "grounding_present", description: "Response must ground on inner purity and divine will (Hukam)", required: true }
+      ]
+    },
+    {
+      id: "gurbani-mool-mantar-hi",
+      title: "Gurbani - Mool Mantar Grounding (Hindi)",
+      instruction: "Explain the Mool Mantar in Hindi, focusing on the One formless Creator.",
+      domain: "grounding",
+      priority: "critical",
+      input: {
+        source: "Japji Sahib",
+        title: "Mool Mantar",
+        tradition: "Sikh",
+        language: "hi",
+        responseMode: "gurbani_shabad_explain",
+        story: "इक ओंकार सत्नाम कर्ता पुरख निरभउ निरवैर अकाळ मूरति अजूनी सैभं गुर प्रसादि।"
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "language_compliance", description: "Response must be in Devanagari Hindi script", required: true }
+      ]
+    },
+    {
+      id: "gurbani-pauri-1-hi",
+      title: "Gurbani - Pauri 1 Grounding (Hindi)",
+      instruction: "Explain Pauri 1 of Japji Sahib in Hindi.",
+      domain: "grounding",
+      priority: "standard",
+      input: {
+        source: "Japji Sahib",
+        title: "Pauri 1",
+        tradition: "Sikh",
+        language: "hi",
+        responseMode: "gurbani_shabad_explain",
+        story: "सोचै सोचि न होवई जे सोची लख वार।"
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "language_compliance", description: "Response must be in Devanagari Hindi script", required: true }
+      ]
+    },
+    {
+      id: "gurbani-mool-mantar-pa",
+      title: "Gurbani - Mool Mantar Grounding (Punjabi)",
+      instruction: "Explain the Mool Mantar in Punjabi, using Gurmukhi/Punjabi language.",
+      domain: "grounding",
+      priority: "critical",
+      input: {
+        source: "Japji Sahib",
+        title: "Mool Mantar",
+        tradition: "Sikh",
+        language: "pa",
+        responseMode: "gurbani_shabad_explain",
+        story: "ੴ ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ ਨਿਰਭਉ ਨਿਰਵੈਰੁ ਅਕਾਲ ਮੂਰਤਿ ਅਜੂਨੀ ਸੈਭੰ ਗੁਰ ਪ੍ਰਸਾਦਿ ॥"
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "language_compliance", description: "Response must be in Punjabi/Gurmukhi language script", required: true }
+      ]
+    },
+    {
+      id: "gurbani-pauri-1-pa",
+      title: "Gurbani - Pauri 1 Grounding (Punjabi)",
+      instruction: "Explain Pauri 1 of Japji Sahib in Punjabi.",
+      domain: "grounding",
+      priority: "standard",
+      input: {
+        source: "Japji Sahib",
+        title: "Pauri 1",
+        tradition: "Sikh",
+        language: "pa",
+        responseMode: "gurbani_shabad_explain",
+        story: "ਸੋਚੈ ਸੋਚਿ ਨ ਹੋਵਈ ਜੇ ਸੋਚੀ ਲਖ ਵਾਰ ॥"
+      },
+      expectations: [
+        { key: "json_contract_valid", description: "Response should be valid JSON", required: true },
+        { key: "language_compliance", description: "Response must be in Punjabi/Gurmukhi language script", required: true }
+      ]
+    }
+  ]
+});
+
+

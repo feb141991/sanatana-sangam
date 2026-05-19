@@ -248,3 +248,49 @@ ${langNote}`,
 export function normalizeMeaningTargetLanguage(value?: string | null): 'en' | 'hi' | 'pa' {
   return normalizeContentLanguage(value);
 }
+
+export function buildGurbaniShabadExplainPrompt(input: PathshalaExplainInput): {
+  prompt: AIPromptSpec;
+  teacher: string;
+  school: string;
+} {
+  const commentary = getCommentary(input.tradition || 'Sikh');
+  const langNote = getLanguageInstruction(input.language);
+
+  const passagesText = input.retrievedChunks && input.retrievedChunks.length > 0
+    ? '\n' + serializePramanaContext(input.retrievedChunks, {
+        suffix: '\n=========================================================\nUse the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the Gurbani passage accurately and provide authentic teachings.'
+      })
+    : '';
+
+  const origText = input.originalText || input.sanskrit || '';
+
+  return {
+    teacher: commentary.name,
+    school: commentary.school,
+    prompt: {
+      user: `You are a wise ${commentary.school} teacher explaining a holy Gurbani Shabad passage (Scripture Passage) to a sincere seeker.
+
+SOURCE: ${input.source ?? ''} — ${input.title ?? ''}
+PASSAGE TEXT: ${origText || input.story || input.translation || ''}
+${passagesText}
+
+Your lens: ${commentary.lens} Focus on the oneness of God, remembrance of the divine name (Naam Simran), selfless service (Seva), and the ultimate goal of merging with the Divine through grace.
+Teach as ${commentary.name} would.
+
+Return ONLY this JSON (no markdown, no extra text):
+{
+  "word_by_word": "<Key Gurmukhi/original terms from the Shabad and their meanings, 1-2 sentences>",
+  "meaning": "<Core meaning and spiritual essence of the Gurbani Shabad in 2-3 sentences>",
+  "commentary": "<Deep ${commentary.school} commentary on the oneness of Creator and path of devotion and surrender, written in the spirit of ${commentary.name} in 3-4 sentences>",
+  "daily_application": "<How to practice remembrance, perform selfless service, and lead a truthful life today, 2-3 sentences>",
+  "contemplation": "<A single reflective question on devotion or selfless service to sit with>",
+  "related_text": "<Name one other Gurbani Shabad, text, or Guru that echoes this teaching>"
+}
+
+${langNote}`,
+      temperature: 0.5,
+      maxOutputTokens: 900,
+    },
+  };
+}

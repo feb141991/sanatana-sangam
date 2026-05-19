@@ -28,6 +28,7 @@ export type RetrievalContextDocument = {
 
 export type PathshalaExplainInput = PramanaInputBase & {
   sanskrit?: string;
+  originalText?: string;
   transliteration?: string;
   translation?: string;
   source?: string;
