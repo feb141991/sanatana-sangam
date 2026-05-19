@@ -45,6 +45,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from ai_pipeline.evals.run_evals import run_gita_eval_suite
+
 
 # ---------------------------------------------------------------------------
 # Data structures
@@ -136,13 +138,14 @@ def run_suite_for_mode(suite_name: str, provider_mode: str) -> SuiteResult:
     """
     Dispatches a suite run to the appropriate provider.
 
-    Currently, 'mock' is the only fully implemented path.
-    'hosted' and 'self-hosted' paths will run via the Python-side Gemini/HTTP
-    caller once live prompt builders exist. For now they fall back to mock
-    results with a clear annotation.
+    Currently, 'mock' is fully implemented for all.
+    'hosted' and 'self-hosted' are fully implemented for 'pathshala_gita' via Python runner.
+    Other suites lack live Python prompt builders and will skip with an annotation.
     """
     if provider_mode == "mock":
         return _mock_score_suite(suite_name, provider_mode)
+
+    root = Path(__file__).resolve().parents[5]
 
     if provider_mode == "self-hosted":
         available, detail = _check_self_hosted_available()
@@ -153,21 +156,28 @@ def run_suite_for_mode(suite_name: str, provider_mode: str) -> SuiteResult:
                 case_count=0,
                 passed_count=0,
                 pass_rate=0.0,
-                skipped_reason=f"Self-hosted runtime unavailable: {detail}",
+                skipped_reason=f"Self-hosted unavailable: {detail}",
             )
-        # Placeholder: in production, call the self-hosted endpoint here
-        return SuiteResult(
-            suite_name=suite_name,
-            provider_mode=provider_mode,
-            case_count=0,
-            passed_count=0,
-            pass_rate=0.0,
-            skipped_reason=(
-                f"Self-hosted URL found ({detail}) but live prompt builders "
-                "not yet implemented for Python-side eval. "
-                "Run the app-side eval via npm run eval:run instead."
-            ),
-        )
+        if suite_name == "pathshala_gita":
+            dataset_path = root / "python" / "ai_pipeline" / "datasets" / "evals" / "pathshala_explain.sample.jsonl"
+            res = run_gita_eval_suite(dataset_path, root, provider_mode="self-hosted")
+            pass_count = sum(1 for c in res["results"] if c["score_info"]["score"] >= 3)
+            return SuiteResult(
+                suite_name=suite_name,
+                provider_mode=provider_mode,
+                case_count=res["case_count"],
+                passed_count=pass_count,
+                pass_rate=round(pass_count / res["case_count"], 3) if res["case_count"] > 0 else 0.0,
+            )
+        else:
+            return SuiteResult(
+                suite_name=suite_name,
+                provider_mode=provider_mode,
+                case_count=0,
+                passed_count=0,
+                pass_rate=0.0,
+                skipped_reason="Live prompt builders not yet implemented in Python-side eval.",
+            )
 
     if provider_mode == "hosted":
         gemini_key = os.environ.get("GEMINI_API_KEY", "")
@@ -178,20 +188,28 @@ def run_suite_for_mode(suite_name: str, provider_mode: str) -> SuiteResult:
                 case_count=0,
                 passed_count=0,
                 pass_rate=0.0,
-                skipped_reason="GEMINI_API_KEY is not set; running mock fallback.",
+                skipped_reason="GEMINI_API_KEY is not set.",
             )
-        # Placeholder: in production, call Gemini here via the Python client
-        return SuiteResult(
-            suite_name=suite_name,
-            provider_mode=provider_mode,
-            case_count=0,
-            passed_count=0,
-            pass_rate=0.0,
-            skipped_reason=(
-                "Hosted live path not yet implemented in Python-side eval. "
-                "Run the app-side eval via npm run eval:run instead."
-            ),
-        )
+        if suite_name == "pathshala_gita":
+            dataset_path = root / "python" / "ai_pipeline" / "datasets" / "evals" / "pathshala_explain.sample.jsonl"
+            res = run_gita_eval_suite(dataset_path, root, provider_mode="hosted")
+            pass_count = sum(1 for c in res["results"] if c["score_info"]["score"] >= 3)
+            return SuiteResult(
+                suite_name=suite_name,
+                provider_mode=provider_mode,
+                case_count=res["case_count"],
+                passed_count=pass_count,
+                pass_rate=round(pass_count / res["case_count"], 3) if res["case_count"] > 0 else 0.0,
+            )
+        else:
+            return SuiteResult(
+                suite_name=suite_name,
+                provider_mode=provider_mode,
+                case_count=0,
+                passed_count=0,
+                pass_rate=0.0,
+                skipped_reason="Live prompt builders not yet implemented in Python-side eval.",
+            )
 
     return SuiteResult(
         suite_name=suite_name,

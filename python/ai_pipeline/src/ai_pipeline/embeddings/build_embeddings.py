@@ -300,6 +300,182 @@ def build_gurbani_index(manifests_dir: Path, output_file: Path) -> None:
     print(f"Successfully generated index for {len(documents)} Gurbani lines at {output_file}")
 
 
+def build_buddhist_index(manifests_dir: Path, output_file: Path) -> None:
+    documents = []
+    manifests = sorted(manifests_dir.glob("buddhist_*.json"))
+    manifest_count = 0
+    for manifest_path in manifests:
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            manifest = json.load(f)
+        manifest_count += 1
+        doc_id = manifest.get("doc_id", manifest_path.stem)
+
+        for verse in manifest.get("content", []):
+            ref = verse.get("ref", "")
+            sanskrit = verse.get("sanskrit", "")
+            transliteration = verse.get("transliteration", "")
+            text = verse.get("text", "")
+
+            ref_parts = ref.split(".")
+            ref_words = f"buddhist dhamma chapter {ref.replace('.', ' verse ')}"
+            boosted_metadata = f"{ref_words} {ref} " * 10
+            combined_text = f"{boosted_metadata} buddhist dhamma {sanskrit} {transliteration} {text}"
+            tokens = tokenize(combined_text)
+
+            documents.append({
+                "id": f"{doc_id}_{ref}",
+                "ref": ref,
+                "chapter": int(ref_parts[0]) if len(ref_parts) > 0 and ref_parts[0].isdigit() else 1,
+                "sanskrit": sanskrit,
+                "transliteration": transliteration,
+                "text": text,
+                "tokens": tokens,
+            })
+
+    if not documents:
+        print("No Buddhist Dhamma documents found.")
+        return
+
+    df = {}
+    for doc in documents:
+        seen = set(doc["tokens"])
+        for token in seen:
+            df[token] = df.get(token, 0) + 1
+
+    num_docs = len(documents)
+    idf = {}
+    for token, count in df.items():
+        idf[token] = math.log((1 + num_docs) / (1 + count)) + 1
+
+    indexed_docs = []
+    for doc in documents:
+        tf = {}
+        for token in doc["tokens"]:
+            tf[token] = tf.get(token, 0) + 1
+
+        tfidf = {}
+        for token, count in tf.items():
+            tfidf[token] = count * idf[token]
+
+        squared_sum = sum(val**2 for val in tfidf.values())
+        norm = math.sqrt(squared_sum) if squared_sum > 0 else 1.0
+
+        normalized_tfidf = {token: val / norm for token, val in tfidf.items()}
+
+        indexed_docs.append({
+            "id": doc["id"],
+            "ref": doc["ref"],
+            "chapter": doc["chapter"],
+            "sanskrit": doc["sanskrit"],
+            "transliteration": doc["transliteration"],
+            "text": doc["text"],
+            "vector": normalized_tfidf,
+        })
+
+    index_data = {
+        "metadata": {
+            "manifest_count": manifest_count,
+            "document_count": len(documents),
+            "scale_readiness": "Production-scale" if len(documents) > 100 else "Sample-scale"
+        },
+        "idf": idf,
+        "documents": indexed_docs,
+    }
+
+    with open(output_file, "w", encoding="utf-8") as f:
+        json.dump(index_data, f, ensure_ascii=False, indent=2)
+
+    print(f"Successfully generated index for {len(documents)} Buddhist Dhamma passages at {output_file}")
+
+
+def build_jain_index(manifests_dir: Path, output_file: Path) -> None:
+    documents = []
+    manifests = sorted(manifests_dir.glob("jain_*.json"))
+    manifest_count = 0
+    for manifest_path in manifests:
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            manifest = json.load(f)
+        manifest_count += 1
+        doc_id = manifest.get("doc_id", manifest_path.stem)
+
+        for verse in manifest.get("content", []):
+            ref = verse.get("ref", "")
+            sanskrit = verse.get("sanskrit", "")
+            transliteration = verse.get("transliteration", "")
+            text = verse.get("text", "")
+
+            ref_parts = ref.split(".")
+            ref_words = f"jain dharma chapter {ref.replace('.', ' verse ')}"
+            boosted_metadata = f"{ref_words} {ref} " * 10
+            combined_text = f"{boosted_metadata} jain dharma {sanskrit} {transliteration} {text}"
+            tokens = tokenize(combined_text)
+
+            documents.append({
+                "id": f"{doc_id}_{ref}",
+                "ref": ref,
+                "chapter": int(ref_parts[0]) if len(ref_parts) > 0 and ref_parts[0].isdigit() else 1,
+                "sanskrit": sanskrit,
+                "transliteration": transliteration,
+                "text": text,
+                "tokens": tokens,
+            })
+
+    if not documents:
+        print("No Jain Dharma documents found.")
+        return
+
+    df = {}
+    for doc in documents:
+        seen = set(doc["tokens"])
+        for token in seen:
+            df[token] = df.get(token, 0) + 1
+
+    num_docs = len(documents)
+    idf = {}
+    for token, count in df.items():
+        idf[token] = math.log((1 + num_docs) / (1 + count)) + 1
+
+    indexed_docs = []
+    for doc in documents:
+        tf = {}
+        for token in doc["tokens"]:
+            tf[token] = tf.get(token, 0) + 1
+
+        tfidf = {}
+        for token, count in tf.items():
+            tfidf[token] = count * idf[token]
+
+        squared_sum = sum(val**2 for val in tfidf.values())
+        norm = math.sqrt(squared_sum) if squared_sum > 0 else 1.0
+
+        normalized_tfidf = {token: val / norm for token, val in tfidf.items()}
+
+        indexed_docs.append({
+            "id": doc["id"],
+            "ref": doc["ref"],
+            "chapter": doc["chapter"],
+            "sanskrit": doc["sanskrit"],
+            "transliteration": doc["transliteration"],
+            "text": doc["text"],
+            "vector": normalized_tfidf,
+        })
+
+    index_data = {
+        "metadata": {
+            "manifest_count": manifest_count,
+            "document_count": len(documents),
+            "scale_readiness": "Production-scale" if len(documents) > 100 else "Sample-scale"
+        },
+        "idf": idf,
+        "documents": indexed_docs,
+    }
+
+    with open(output_file, "w", encoding="utf-8") as f:
+        json.dump(index_data, f, ensure_ascii=False, indent=2)
+
+    print(f"Successfully generated index for {len(documents)} Jain Dharma passages at {output_file}")
+
+
 def main() -> None:
     root = Path(__file__).resolve().parents[3]
     manifests_dir = root / "corpus" / "manifests"
@@ -312,6 +488,12 @@ def main() -> None:
 
     gurbani_output = root / "corpus" / "gurbani_index.json"
     build_gurbani_index(manifests_dir, gurbani_output)
+
+    buddhist_output = root / "corpus" / "buddhist_dhamma_index.json"
+    build_buddhist_index(manifests_dir, buddhist_output)
+
+    jain_output = root / "corpus" / "jain_dharma_index.json"
+    build_jain_index(manifests_dir, jain_output)
 
 
 if __name__ == "__main__":

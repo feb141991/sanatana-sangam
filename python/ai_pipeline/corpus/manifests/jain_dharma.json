@@ -1,16 +1,38 @@
 {
-  "corpus_id": "jain_dharma",
-  "doc_id": "kalpa_sutra_1",
-  "title": "Kalpa Sutra",
-  "source_name": "Bhadrabahu",
-  "language": "prakrit",
+  "doc_id": "jain_dharma",
+  "name": "Jain Dharma Agamas",
   "tradition": "Jainism",
+  "language": "en",
   "content": [
     {
       "ref": "1.1",
-      "original": "नमो अरिहंताणं",
-      "transliteration": "namo arihantāṇaṃ",
-      "text": "Obeisance to the Arihants (conquerors)."
+      "sanskrit": "Ahimsa paramo dharma",
+      "text": "Non-violence is the supreme religion. All beings desire to live; none wish to die. Recognizing this, one who truly knows the Dhamma practices non-injury in thought, word, and deed toward all living beings."
+    },
+    {
+      "ref": "1.2",
+      "sanskrit": "Anekantavada",
+      "text": "Anekantavada — the doctrine of many-sidedness — holds that reality is complex and no single perspective can capture the full truth. From one perspective a thing exists; from another it does not."
+    },
+    {
+      "ref": "1.3",
+      "sanskrit": "Ratnatraya",
+      "text": "Liberation (moksha) is attained through the Three Jewels: Samyak Darshana (right faith), Samyak Jnana (right knowledge), and Samyak Charitra (right conduct). All three must be cultivated together."
+    },
+    {
+      "ref": "1.4",
+      "sanskrit": "Jiva and Karma",
+      "text": "The soul (jiva) is distinct from non-soul (ajiva). Karma is fine matter that clings to the soul through attachment. Through right conduct, the influx of new karma is stopped and existing karma is shed."
+    },
+    {
+      "ref": "2.1",
+      "sanskrit": "Mahavrata",
+      "text": "The five great vows of Jain monastics are: Ahimsa (non-violence), Satya (truth), Asteya (non-stealing), Brahmacharya (celibacy), and Aparigraha (non-possession). These purify the soul."
+    },
+    {
+      "ref": "2.2",
+      "sanskrit": "Samata",
+      "text": "Equanimity (samata) is the essence of Jain ethics. The wise one treats pleasure and pain, gain and loss, praise and blame with equal composure. This is the highest self-mastery."
     }
   ]
 }

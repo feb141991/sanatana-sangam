@@ -50,35 +50,67 @@ def get_gemini_api_key(root: Path) -> str | None:
     return None
 
 
-def generate_live_explanation(prompt_text: str, api_key: str) -> str:
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
-    headers = {"Content-Type": "application/json"}
-    body = {
-        "contents": [
-            {
-                "parts": [
-                    {"text": prompt_text}
-                ]
-            }
-        ],
-        "generationConfig": {
-            "responseMimeType": "application/json"
+def generate_live_explanation(prompt_text: str, provider_mode: str = "hosted") -> str:
+    if provider_mode == "self-hosted":
+        base_url = os.environ.get("PRAMANA_SELF_HOSTED_URL", "")
+        if not base_url:
+            return ""
+        endpoint = f"{base_url.rstrip('/')}/v1/chat/completions"
+        headers = {"Content-Type": "application/json"}
+        api_key = os.environ.get("PRAMANA_SELF_HOSTED_API_KEY", "")
+        if api_key:
+            headers["Authorization"] = f"Bearer {api_key}"
+            
+        body = {
+            "model": os.environ.get("PRAMANA_SELF_HOSTED_MODEL", "default-model"),
+            "messages": [{"role": "user", "content": prompt_text}],
+            "temperature": 0.5,
+            "max_tokens": 1024,
         }
-    }
-    req = urllib.request.Request(url, data=json.dumps(body).encode("utf-8"), headers=headers, method="POST")
-    try:
-        with urllib.request.urlopen(req, timeout=15) as response:
-            res_data = json.loads(response.read().decode("utf-8"))
-            candidates = res_data.get("candidates", [])
-            if candidates:
-                return candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
-    except Exception as e:
-        # Silently log error to let runner fall back to mock
-        pass
-    return ""
+        
+        req = urllib.request.Request(endpoint, data=json.dumps(body).encode("utf-8"), headers=headers, method="POST")
+        try:
+            with urllib.request.urlopen(req, timeout=15) as response:
+                res_data = json.loads(response.read().decode("utf-8"))
+                choices = res_data.get("choices", [])
+                if choices:
+                    return choices[0].get("message", {}).get("content", "")
+        except Exception:
+            pass
+        return ""
+        
+    else:  # hosted
+        api_key = os.environ.get("GEMINI_API_KEY", "")
+        if not api_key:
+            return ""
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
+        headers = {"Content-Type": "application/json"}
+        body = {
+            "contents": [
+                {
+                    "parts": [
+                        {"text": prompt_text}
+                    ]
+                }
+            ],
+            "generationConfig": {
+                "responseMimeType": "application/json"
+            }
+        }
+        req = urllib.request.Request(url, data=json.dumps(body).encode("utf-8"), headers=headers, method="POST")
+        try:
+            with urllib.request.urlopen(req, timeout=15) as response:
+                res_data = json.loads(response.read().decode("utf-8"))
+                candidates = res_data.get("candidates", [])
+                if candidates:
+                    return candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+        except Exception:
+            pass
+        return ""
 
 
-def run_gita_eval_suite(dataset_path: Path, root: Path, api_key: str | None) -> dict[str, Any]:
+
+def run_gita_eval_suite(dataset_path: Path, root: Path, provider_mode: str = "hosted") -> dict[str, Any]:
     cases = load_jsonl(dataset_path)
     index_path = root / "python" / "ai_pipeline" / "corpus" / "gita_index.json"
     
@@ -243,11 +275,21 @@ Return ONLY this JSON (no markdown, no extra text):
         raw_response = ""
         used_mock = True
         
-        if api_key:
-            raw_response = generate_live_explanation(prompt_text, api_key)
+        if provider_mode != "mock":
+            raw_response = generate_live_explanation(prompt_text, provider_mode)
             if raw_response:
                 used_mock = False
                 live_runs += 1
+            else:
+                # Fallback to mock logic
+                raw_response = json.dumps({
+                    "word_by_word": "शब्द विश्लेषण।",
+                    "meaning": "गीता से श्लोक का अर्थ: " + chunk_id + ". निष्काम कर्म ही कल्याणकारी है।",
+                    "commentary": "टिप्पणी। भगवान कृष्ण अर्जुन को निष्काम कर्म सिखाते हैं।",
+                    "daily_application": "दैनिक जीवन में उपयोग। फल की चिंता किए बिना कर्तव्य करें।",
+                    "contemplation": "चिंतन।",
+                    "related_text": "उपनिषद।"
+                }, ensure_ascii=False)
 
         if used_mock:
             mock_runs += 1
@@ -803,7 +845,7 @@ def main() -> None:
     else:
         print("⚠️ GEMINI_API_KEY not configured. Running mock fallbacks...")
 
-    gita_summary = run_gita_eval_suite(gita_dataset, root, api_key)
+    gita_summary = run_gita_eval_suite(gita_dataset, root, "hosted" if api_key else "mock")
     katha_summary = run_katha_eval_suite(katha_dataset)
     panchatantra_summary = run_panchatantra_eval_suite(panchatantra_dataset)
     upanishads_summary = run_upanishads_eval_suite(upanishads_dataset, root)

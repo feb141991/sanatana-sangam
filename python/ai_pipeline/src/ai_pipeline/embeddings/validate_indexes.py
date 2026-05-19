@@ -101,6 +101,8 @@ def main() -> None:
         ("pathshala_gita", corpus_dir / "gita_index.json"),
         ("pathshala_upanishads", corpus_dir / "upanishads_index.json"),
         ("sikh_gurbani", corpus_dir / "gurbani_index.json"),
+        ("buddhist_dhamma", corpus_dir / "buddhist_dhamma_index.json"),
+        ("jain_dharma", corpus_dir / "jain_dharma_index.json"),
     ]
 
     print("=" * 80)
