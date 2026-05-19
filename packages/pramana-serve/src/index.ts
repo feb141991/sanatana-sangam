@@ -18,7 +18,11 @@ export {
   type PramanaRetriever,
   type PramanaRetrievalDocument,
   type PramanaRetrievalQuery,
-  type PramanaRetrievalResult
+  type PramanaRetrievalResult,
+  type PramanaCorpusTarget,
+  PramanaRetrieverSelector,
+  type PramanaContextSerializerOptions,
+  serializePramanaContext
 } from "./retrieval";
 export { type PramanaGatewayMetadata } from "./gateway-metadata";
 export * from './providers/gemini';

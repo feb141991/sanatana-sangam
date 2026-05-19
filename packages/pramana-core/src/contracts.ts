@@ -20,7 +20,9 @@ export type MeaningGenerateInput = PramanaInputBase & {
 };
 
 export type RetrievalContextDocument = {
+  id?: string;
   content: string;
+  score?: number;
   metadata?: Record<string, any>;
 };
 

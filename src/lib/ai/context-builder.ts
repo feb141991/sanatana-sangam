@@ -1,5 +1,6 @@
 import { getLanguageInstruction, normalizeContentLanguage } from '@/lib/language-runtime';
 import type { AIPromptSpec, MeaningGenerateInput, PathshalaExplainInput } from '@/lib/ai/contracts';
+import { serializePramanaContext } from '@sangam/pramana-serve';
 
 const COMMENTARY: Record<string, { name: string; school: string; lens: string }> = {
   vaishnava: {
@@ -53,16 +54,9 @@ export function buildPathshalaExplainPrompt(input: PathshalaExplainInput): {
   const langNote = getLanguageInstruction(input.language);
 
   const passagesText = input.retrievedChunks && input.retrievedChunks.length > 0
-    ? `
-=== RETRIEVED CONTEXT PASSAGES (GROUNDING SOURCE DATA) ===
-${input.retrievedChunks.map((chunk, idx) => `
-[Passage ${idx + 1}]
-Source: ${chunk.metadata?.sourceName ?? 'Unknown'} (Ref: ${chunk.metadata?.chunkId ?? 'N/A'})
-Content:
-${chunk.content}
-`).join('\n')}
-=========================================================
-Use the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the verse accurately and provide authentic teachings.`
+    ? '\n' + serializePramanaContext(input.retrievedChunks, {
+        suffix: '\n=========================================================\nUse the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the verse accurately and provide authentic teachings.'
+      })
     : '';
 
   return {
