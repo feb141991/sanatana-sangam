@@ -241,7 +241,10 @@ export default function BhaktiInsightsClient({ sessions, shlokaStreak, sevaScore
   function handleShare() {
     const t = `🪷 Bhakti Practice — ${stats.activeDays} active days, ${stats.totalRounds} rounds, ${stats.totalBeads.toLocaleString()} beads · 🔥 ${shlokaStreak}-day shloka streak · ⭐ ${sevaScore} Seva points`;
     if (navigator.share) navigator.share({ title: 'My Bhakti Insights', text: t }).catch(() => {});
-    else navigator.clipboard?.writeText(t).then(() => alert('Copied to clipboard'));
+    else navigator.clipboard?.writeText(t).then(async () => {
+      const toast = (await import('react-hot-toast')).default;
+      toast.success('Copied to clipboard');
+    });
   }
 
   return (

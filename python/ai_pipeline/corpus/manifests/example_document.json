@@ -1,0 +1,24 @@
+{
+  "doc_id": "gita_2_47_en_public_domain",
+  "title": "Bhagavad Gita 2.47",
+  "tradition": "Sanatana Dharma",
+  "scripture_family": "gita",
+  "section_id": "2.47",
+  "source_name": "Starter Sample",
+  "source_url": "https://example.com/source",
+  "source_owner": "public-domain-placeholder",
+  "source_class": "translation",
+  "rights_status": "public_domain",
+  "language": "en",
+  "script": "Latn",
+  "is_live_in_app": false,
+  "companion_only": false,
+  "audio_status": "not_available",
+  "revision_note": "Sample manifest for scaffold validation.",
+  "content": [
+    {
+      "ref": "2.47",
+      "text": "You have a right to action alone, never to its fruits."
+    }
+  ]
+}

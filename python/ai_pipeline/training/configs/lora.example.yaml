@@ -1,0 +1,15 @@
+run_name: pathshala-style-v1
+base_model: sarvam-30b
+dataset_path: datasets/instruction/pathshala_style.jsonl
+output_dir: training/artifacts/pathshala-style-v1
+lora:
+  rank: 16
+  alpha: 32
+  dropout: 0.05
+training:
+  num_train_epochs: 1
+  learning_rate: 0.0002
+  per_device_train_batch_size: 1
+notes:
+  - Placeholder config only.
+  - Do not use until eval baselines and dataset contracts are finalized.

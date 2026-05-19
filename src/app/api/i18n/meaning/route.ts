@@ -1,12 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { getLanguageInstruction, normalizeContentLanguage } from '@/lib/language-runtime';
-
-const GEMINI_MODELS = ['gemini-2.0-flash-lite', 'gemini-2.0-flash'];
-
-function geminiUrl(model: string) {
-  return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-}
+import { normalizeMeaningTargetLanguage } from '@/lib/ai/context-builder';
+import { runMeaningGenerate } from '@/lib/ai/router';
 
 function stableHash(input: string) {
   let hash = 0;
@@ -32,11 +27,7 @@ export async function POST(req: Request) {
   const entryId = typeof body?.entryId === 'string' ? body.entryId.trim() : '';
   const sourceMeaning = typeof body?.sourceMeaning === 'string' ? body.sourceMeaning.trim() : '';
   const sourceLabel = typeof body?.sourceLabel === 'string' ? body.sourceLabel.trim() : '';
-  const targetLanguage = normalizeContentLanguage(body?.targetLanguage);
-
-  if (!entryId || !sourceMeaning) {
-    return NextResponse.json({ error: 'entryId and sourceMeaning are required' }, { status: 400 });
-  }
+  const targetLanguage = normalizeMeaningTargetLanguage(body?.targetLanguage);
 
   if (targetLanguage === 'en') {
     return NextResponse.json({ meaning: sourceMeaning, language: 'en', status: 'fallback' });
@@ -59,53 +50,18 @@ export async function POST(req: Request) {
     // The migration may not be applied in older environments. Generation still works.
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json({ error: 'GEMINI_API_KEY not configured' }, { status: 503 });
-  }
-
-  const prompt = `Translate this sacred-text meaning for a devotional learning app.
-
-Target language instruction: ${getLanguageInstruction(targetLanguage)}
-Source label: ${sourceLabel}
-Source meaning:
-${sourceMeaning}
-
-Rules:
-- Translate the meaning, not the original verse.
-- Keep it concise, natural, and respectful.
-- Preserve doctrine and names accurately.
-- Do not add new commentary.
-- Return ONLY valid JSON:
-{ "meaning": "<translated meaning>" }`;
-
-  let raw = '';
-  for (const model of GEMINI_MODELS) {
-    const res = await fetch(`${geminiUrl(model)}?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.25, maxOutputTokens: 500 },
-      }),
+  try {
+    const result = await runMeaningGenerate({
+      entryId,
+      sourceMeaning,
+      sourceLabel,
+      targetLanguage,
     });
-
-    if (res.ok) {
-      const data = await res.json();
-      raw = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
-      break;
+    const meaning = extractJsonMeaning(result.raw);
+    if (!meaning) {
+      return NextResponse.json({ error: 'Could not localize meaning' }, { status: 502 });
     }
 
-    if (res.status === 429 || res.status === 404) continue;
-    return NextResponse.json({ error: `Gemini ${res.status}` }, { status: 502 });
-  }
-
-  const meaning = extractJsonMeaning(raw);
-  if (!meaning) {
-    return NextResponse.json({ error: 'Could not localize meaning' }, { status: 502 });
-  }
-
-  try {
     await supabase
       .from('content_meanings')
       .upsert({
@@ -117,9 +73,10 @@ Rules:
         source_status: 'ai_generated',
         updated_at: new Date().toISOString(),
       }, { onConflict: 'entry_id,language' });
-  } catch {
-    // Best-effort cache write only.
+    return NextResponse.json({ meaning, language: targetLanguage, status: 'generated', ai: result.metadata });
+  } catch (err: any) {
+    const msg = err?.message ?? 'Could not localize meaning';
+    const status = String(msg).includes('required') ? 400 : String(msg).includes('configured') ? 503 : 502;
+    return NextResponse.json({ error: msg }, { status });
   }
-
-  return NextResponse.json({ meaning, language: targetLanguage, status: 'generated' });
 }

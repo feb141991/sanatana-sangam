@@ -1,0 +1,1 @@
+{"case_id":"pathshala-001","feature":"pathshala_explain","prompt":{"doc_id":"gita_2_47_en_public_domain","chunk_id":"gita_2_47_en_public_domain:0001","tradition":"Sanatana Dharma","language":"en"},"expected":{"answer_type":"explanation","must_cite_doc_ids":["gita_2_47_en_public_domain"],"must_not_claim_canonicality":true}}

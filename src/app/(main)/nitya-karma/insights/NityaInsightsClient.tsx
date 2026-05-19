@@ -232,7 +232,10 @@ export default function NityaInsightsClient({ logs }: Props) {
   function handleShare() {
     const text = `🌅 Nitya Karma — ${stats.activeDays} active days, ${stats.completionRate}% completion, ${stats.streak}-day streak 🙏`;
     if (navigator.share) navigator.share({ title: 'My Nitya Karma Insights', text }).catch(() => {});
-    else navigator.clipboard?.writeText(text).then(() => alert('Copied to clipboard'));
+    else navigator.clipboard?.writeText(text).then(async () => {
+      const toast = (await import('react-hot-toast')).default;
+      toast.success('Copied to clipboard');
+    });
   }
 
   return (

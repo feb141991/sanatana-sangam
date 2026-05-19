@@ -178,7 +178,10 @@ export default function PathshalaInsightsClient({ progress }: Props) {
   function handleShare() {
     const t = `📚 Pathshala — ${stats.completedPaths} paths completed, ${stats.totalLessons} lessons, ${stats.daysOnJourney} days of learning 🙏`;
     if (navigator.share) navigator.share({ title: 'My Pathshala Insights', text: t }).catch(() => {});
-    else navigator.clipboard?.writeText(t).then(() => alert('Copied to clipboard'));
+    else navigator.clipboard?.writeText(t).then(async () => {
+      const toast = (await import('react-hot-toast')).default;
+      toast.success('Copied to clipboard');
+    });
   }
 
   return (
