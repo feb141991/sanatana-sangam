@@ -25,6 +25,7 @@ import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { getTransliteration } from '@/lib/transliteration';
 import { getMeaningLabel, resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
+import { useNativeAudio } from '@/hooks/useNativeAudio';
 import SacredReader from '@/components/bhakti/SacredReader';
 import type { SyncToken } from '@/hooks/useSacredSync';
 import type { RecitationResult } from '@sangam/pathshala-engine';
@@ -173,6 +174,7 @@ export default function ReciteClient({
   const pathshala = usePathshala();
   const engine    = useSadhana();
   const isPro     = usePremium();
+  const nativeAudio = useNativeAudio();
   const path      = SEED_PATHS.find(p => p.id === pathId);
   const verses    = useMemo(() => lessons[currentLesson]?.entries ?? [], [lessons, currentLesson]);
 
@@ -469,52 +471,39 @@ export default function ReciteClient({
     setLastResult(null);
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const permGranted = await nativeAudio.requestPermission();
+      if (!permGranted) {
+        setMicGranted(false);
+        toast.error('Microphone access denied. Please allow mic in settings.');
+        setRecordState('idle');
+        return;
+      }
+      
       setMicGranted(true);
-
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-        ? 'audio/webm;codecs=opus'
-        : MediaRecorder.isTypeSupported('audio/webm')
-          ? 'audio/webm'
-          : 'audio/mp4';
-
-      chunksRef.current = [];
-      const mr = new MediaRecorder(stream, { mimeType });
-      mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
-      mr.onstop = () => {
-        // Stop all mic tracks
-        stream.getTracks().forEach(t => t.stop());
-        const blob = new Blob(chunksRef.current, { type: mimeType });
-        if (blob.size < 1000) {
-          toast.error('Recording too short — please recite the verse aloud');
-          setRecordState('idle');
-          return;
-        }
-        // Go to preview — user listens back before submitting for scoring
-        setRecordingBlob(blob);
-        setRecordingMime(mimeType);
-        setRecordState('preview');
-      };
-
-      mr.start(500); // collect chunks every 500ms
-      mediaRecRef.current = mr;
+      await nativeAudio.start();
       setRecordState('recording');
     } catch (err: any) {
       setMicGranted(false);
-      if (err?.name === 'NotAllowedError') {
-        toast.error('Microphone access denied. Please allow mic in browser settings.');
-      } else {
-        toast.error('Could not access microphone: ' + (err?.message ?? 'Unknown error'));
-      }
+      toast.error('Could not access microphone: ' + (err?.message ?? 'Unknown error'));
       setRecordState('idle');
     }
-  }, [verse]);
+  }, [verse, nativeAudio]);
 
-  const stopRecording = useCallback(() => {
-    if (mediaRecRef.current && mediaRecRef.current.state !== 'inactive') {
-      mediaRecRef.current.stop();
+  const stopRecording = useCallback(async () => {
+    const blob = await nativeAudio.stop();
+    if (!blob) {
+      setRecordState('idle');
+      return;
     }
-  }, []);
+    if (blob.size < 1000) {
+      toast.error('Recording too short — please recite the verse aloud');
+      setRecordState('idle');
+      return;
+    }
+    setRecordingBlob(blob);
+    setRecordingMime(blob.type || 'audio/webm');
+    setRecordState('preview');
+  }, [nativeAudio]);
 
   // ─────────────────────────────────────────────────────────────────────────────
   if (!verse) {

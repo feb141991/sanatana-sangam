@@ -863,7 +863,7 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                       Your Sacred<br />Location
                     </h2>
                     <p className="text-sm leading-relaxed" style={{ color: 'rgba(130, 185, 210, 0.48)' }}>
-                      For accurate Panchang, local festivals, and temples near you. Optional.
+                      Used to show nearby temples, connect you with local Mandalis, and calculate accurate sacred-times for your area. Your exact location is never stored. Optional.
                     </p>
                   </div>
 

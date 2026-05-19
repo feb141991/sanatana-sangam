@@ -373,6 +373,9 @@ export default function TirthaMapPage() {
               <p className="mt-3 max-w-md text-sm leading-relaxed text-[color:var(--text-muted)]">
                 Discover, prepare, check in privately, and remember the places that become part of your journey.
               </p>
+              <p className="mt-2 max-w-md text-[10px] leading-relaxed text-[color:var(--text-dim)]">
+                Used to show nearby temples, connect you with local Mandalis, and calculate accurate sacred-times for your area. Your exact location is never stored.
+              </p>
             </div>
 
             <div className="grid grid-cols-3 gap-2">

@@ -482,7 +482,7 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
 
       <div className="flex items-center gap-2 text-xs text-[color:var(--brand-muted)]">
         <Globe size={12} />
-        <span>City-level groups only — your exact location is never shared</span>
+        <span>Used to show nearby temples, connect you with local Mandalis, and calculate accurate sacred-times for your area. Your exact location is never stored.</span>
       </div>
     </div>
   );
