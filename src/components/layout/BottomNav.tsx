@@ -34,12 +34,12 @@ const GUEST_QUICK_ACTIONS: Array<{ icon: LucideIcon; label: string; href: string
 // Glass tokens — computed per-theme
 function useGlass(isDark: boolean) {
   return {
-    bg:     isDark ? 'rgba(12, 10, 8, 0.45)'      : 'rgba(255, 252, 248, 0.52)',
-    border: isDark ? 'rgba(250, 238, 218, 0.10)' : 'rgba(133, 79, 11, 0.10)',
-    blur:   'blur(24px) saturate(180%)',
+    bg:     isDark ? 'rgba(14, 11, 8, 0.28)'      : 'rgba(255, 252, 248, 0.36)',
+    border: isDark ? 'rgba(250, 238, 218, 0.16)' : 'rgba(133, 79, 11, 0.12)',
+    blur:   'blur(30px) saturate(165%)',
     shadow: isDark
-      ? '0 8px 32px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.06)'
-      : '0 8px 32px rgba(180,120,40,0.06), inset 0 1px 0 rgba(255,255,255,0.7)',
+      ? '0 10px 30px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.10)'
+      : '0 10px 28px rgba(180,120,40,0.08), inset 0 1px 0 rgba(255,255,255,0.78)',
   };
 }
 
@@ -209,14 +209,14 @@ export default function BottomNav({ isGuest = false }: Props) {
   const contentDur = prefRM ? 0 : 0.24;
   const shouldShowBar = !collapsed;
   const collapsedBg = isDark
-    ? 'rgba(24, 20, 15, 0.40)'
-    : 'rgba(255, 252, 246, 0.48)';
+    ? 'rgba(20, 17, 13, 0.26)'
+    : 'rgba(255, 252, 246, 0.34)';
   const collapsedBorder = isDark
-    ? 'rgba(250, 238, 218, 0.12)'
-    : 'rgba(133, 79, 11, 0.10)';
+    ? 'rgba(250, 238, 218, 0.16)'
+    : 'rgba(133, 79, 11, 0.12)';
   const collapsedShadow = isDark
-    ? '0 8px 24px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.08)'
-    : '0 8px 24px rgba(97,67,34,0.08), inset 0 1px 0 rgba(255,255,255,0.6)';
+    ? '0 8px 24px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.10)'
+    : '0 8px 24px rgba(97,67,34,0.07), inset 0 1px 0 rgba(255,255,255,0.72)';
 
   function collapsedIcon() {
     const iconSize = 21;

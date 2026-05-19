@@ -1594,6 +1594,17 @@ export default function HomeDashboard({
     .map(f => ({ festival: f, story: getFestivalStory(f.name), daysLeft: daysFromNow(f.date) }))
     .filter(x => x.story && x.daysLeft !== null && x.daysLeft <= 7);
 
+  const upcomingSacredObservance = festivals
+    .map(f => ({ festival: f, daysLeft: daysFromNow(f.date) }))
+    .filter(x => x.daysLeft !== null && x.daysLeft > 0 && x.daysLeft <= 7)
+    .sort((a, b) => a.daysLeft - b.daysLeft)[0] ?? null;
+
+  const upcomingSacredObservanceLabel = upcomingSacredObservance
+    ? upcomingSacredObservance.daysLeft === 1
+      ? 'Tomorrow'
+      : `In ${upcomingSacredObservance.daysLeft} days`
+    : null;
+
   // ── Dharm Veer ───────────────────────────────────────────────────────────────
   // Always shown on home — a forgotten/underappreciated hero of Dharma, rotating
   // every 3 days, tradition-weighted for the user's sampradaya.
@@ -1634,7 +1645,9 @@ export default function HomeDashboard({
     },
     {
       title: t('tithi'),
-      description: t('panchangDesc'),
+      description: upcomingSacredObservance
+        ? `${t('panchangDesc')} · ${upcomingSacredObservance.festival.name} ${upcomingSacredObservanceLabel?.toLowerCase()}`
+        : t('panchangDesc'),
       href: '/panchang',
       icon: CalendarDays,
     },
@@ -1882,6 +1895,92 @@ export default function HomeDashboard({
 
         {/* ── Sacred Day Pulses (Stack) ────────────────────────────────────────────── */}
         <AnimatePresence>
+          {upcomingSacredObservance && (
+            <motion.div
+              key={`upcoming-observance-${upcomingSacredObservance.festival.name}`}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+              className="mb-3"
+            >
+              <Link
+                href={`/vrat/${encodeURIComponent(upcomingSacredObservance.festival.name)}`}
+                className="group relative block overflow-hidden rounded-[1.55rem] border px-4 py-3.5"
+                style={{
+                  background: isDark
+                    ? 'linear-gradient(135deg, rgba(32,24,15,0.72), rgba(62,41,18,0.36))'
+                    : 'linear-gradient(135deg, rgba(255,252,246,0.82), rgba(248,225,182,0.40))',
+                  borderColor: isDark ? 'rgba(235,205,150,0.16)' : 'rgba(197,160,89,0.20)',
+                  boxShadow: isDark
+                    ? '0 18px 42px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.05)'
+                    : '0 18px 34px rgba(197,160,89,0.12), inset 0 1px 0 rgba(255,255,255,0.74)',
+                  backdropFilter: 'blur(20px) saturate(130%)',
+                  WebkitBackdropFilter: 'blur(20px) saturate(130%)',
+                }}
+              >
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 opacity-80"
+                  style={{
+                    background: isDark
+                      ? 'radial-gradient(circle at 12% 18%, rgba(247,212,132,0.18), transparent 32%), radial-gradient(circle at 88% 22%, rgba(197,160,89,0.14), transparent 28%)'
+                      : 'radial-gradient(circle at 12% 18%, rgba(247,212,132,0.26), transparent 34%), radial-gradient(circle at 88% 22%, rgba(197,160,89,0.16), transparent 26%)',
+                  }}
+                />
+                <div className="relative flex items-center gap-3.5">
+                  <div
+                    className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] border"
+                    style={{
+                      background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.62)',
+                      borderColor: isDark ? 'rgba(250,238,218,0.10)' : 'rgba(197,160,89,0.16)',
+                      boxShadow: isDark
+                        ? '0 10px 18px rgba(0,0,0,0.16)'
+                        : '0 10px 18px rgba(197,160,89,0.10)',
+                    }}
+                  >
+                    <SacredIcon name="calendar" size={18} />
+                    <span
+                      className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full"
+                      style={{
+                        background: '#F7D484',
+                        boxShadow: '0 0 10px rgba(247,212,132,0.95)',
+                      }}
+                    />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: '#C5A059' }}>
+                        Upcoming Sacred Time
+                      </span>
+                      <span
+                        className="rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em]"
+                        style={{
+                          color: isDark ? '#F6E2AE' : '#A0622A',
+                          background: isDark ? 'rgba(247,212,132,0.12)' : 'rgba(247,212,132,0.24)',
+                        }}
+                      >
+                        {upcomingSacredObservanceLabel}
+                      </span>
+                    </div>
+                    <p className="mt-1 font-serif text-[1.02rem] leading-tight" style={{ color: 'var(--divine-text)' }}>
+                      {upcomingSacredObservance.festival.name}
+                    </p>
+                    <p className="mt-1 text-[11px] leading-relaxed" style={{ color: heroSecondaryText }}>
+                      Prepare early and open Panchang or vrat details when you are ready.
+                    </p>
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-1 text-[11px] font-semibold" style={{ color: '#C5A059' }}>
+                    <span>View</span>
+                    <ChevronRight size={14} />
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          )}
+
           {sacredPulses.map((pulse, idx) => (
             <motion.div
               key={`pulse-${pulse.label}-${idx}`}
