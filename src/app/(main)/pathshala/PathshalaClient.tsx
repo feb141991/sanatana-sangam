@@ -627,12 +627,12 @@ function ScriptureTab({
   const [query,        setQuery]        = useState('');
   const [showSearch,   setSearch]       = useState(false);
 
-  // Theme tokens
-  const cardBg     = isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.75)';
-  const cardBorder = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.09)';
-  const inkColor   = isDark ? '#f5dfa0' : '#2a1002';
-  const mutedColor = isDark ? 'rgba(245,210,130,0.50)' : 'rgba(100,55,10,0.55)';
-  const trustBg    = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.84)';
+  // Theme tokens — use global CSS vars so they auto-adapt to dark/light
+  const cardBg     = 'var(--card-bg-soft)';
+  const cardBorder = 'var(--card-border)';
+  const inkColor   = 'var(--brand-ink)';
+  const mutedColor = 'var(--brand-muted)';
+  const trustBg    = 'var(--card-bg)';
 
   const completeLocalCount = sections.filter((section) => getPathshalaSectionDetail(section.id)?.corpusState === 'Complete local text live').length;
   const companionLedCount = sections.filter((section) => {
@@ -786,7 +786,7 @@ function ScriptureTab({
           <span className="text-[10px] font-bold rounded-full px-2.5 py-1" style={{ background: `${accentColour}15`, color: accentColour }}>
             {completeLocalCount} fully local
           </span>
-          <span className="text-[10px] font-bold rounded-full px-2.5 py-1" style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', color: mutedColor }}>
+          <span className="text-[10px] font-bold rounded-full px-2.5 py-1" style={{ background: 'var(--card-bg-soft)', color: mutedColor }}>
             {companionLedCount} companion or rights review
           </span>
         </div>
@@ -832,7 +832,7 @@ function ScriptureTab({
                   </span>
                   {sectionDetail && (
                     <span className="text-[10px] font-bold rounded-full px-2.5 py-0.5"
-                      style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', color: mutedColor }}>
+                      style={{ background: 'var(--card-bg-soft)', color: mutedColor }}>
                       {sectionDetail.corpusState}
                     </span>
                   )}
@@ -929,17 +929,14 @@ export default function PathshalaClient({
     return () => obs.disconnect();
   }, []);
 
-  const primaryText = isDark ? '#f5dfa0' : '#2a1002';
-  const secondaryText = isDark ? 'rgba(245,210,130,0.55)' : 'rgba(120,65,10,0.55)';
-  const tertiaryText = isDark ? 'rgba(245,210,130,0.35)' : 'rgba(100,55,10,0.40)';
-  
-  const pageBg = isDark ? 'linear-gradient(180deg,#160b08 0%,#1c1008 40%,#120a05 100%)' : 'linear-gradient(180deg,#fdf6ee 0%,#f7ede0 40%,#f2e8d5 100%)';
-  const glassSurface = isDark ? 'linear-gradient(140deg,rgba(28,20,12,0.92),rgba(18,12,8,0.96))' : 'linear-gradient(140deg,rgba(255,244,228,0.96),rgba(250,235,210,0.98))';
-  const glassSurfaceStrong = isDark ? 'rgba(28,18,10,0.95)' : 'rgba(255,245,230,0.95)';
-  const glassBorder = isDark ? 'rgba(200,146,74,0.14)' : 'rgba(180,110,30,0.15)';
-  const glassShadow = isDark
-    ? '0 4px 24px rgba(200,146,74,0.05), inset 0 1px 0 rgba(255,255,255,0.04)'
-    : '0 4px 24px rgba(180,110,30,0.06), inset 0 1px 0 rgba(255,255,255,0.6)';
+  // ── Use global CSS tokens — automatically handles dark/light theme ──────────
+  const primaryText       = 'var(--brand-ink)';
+  const secondaryText     = 'var(--brand-muted)';
+  const tertiaryText      = 'var(--brand-muted)';
+  const glassSurface      = 'var(--card-bg)';
+  const glassSurfaceStrong = 'var(--card-bg)';
+  const glassBorder       = 'var(--card-border)';
+  const glassShadow       = 'var(--shadow-soft)';
     
   // ── Modal state for immersive reading ──────────────────────────────────────────
   const [readingEntry, setReadingEntry] = useState<LibraryEntry | undefined>();
@@ -1193,7 +1190,7 @@ export default function PathshalaClient({
 
           {/* Animated progress bar */}
           <div className="h-[3px] rounded-full mx-auto max-w-[200px] mb-5 overflow-hidden"
-            style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)' }}>
+            style={{ background: 'var(--ring-track)' }}>
             <motion.div
               className="h-full rounded-full"
               style={{ background: `linear-gradient(to right, ${meta.accentColour}88, ${meta.accentColour})` }}
@@ -1219,7 +1216,7 @@ export default function PathshalaClient({
 
         {/* Quick actions strip — floats below, no hard border-top on left/right */}
         <div className="relative z-10 flex mx-4 rounded-[1.4rem] overflow-hidden mb-2"
-          style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)', border: `1px solid ${glassBorder}` }}>
+          style={{ background: 'var(--card-bg-soft)', border: `1px solid ${glassBorder}` }}>
           <Link
             href={`/pathshala/${enrollment.path_id}/recite`}
             className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold transition-all hover:bg-white/4"
@@ -1247,7 +1244,7 @@ export default function PathshalaClient({
 
         {/* Bottom fade — seamlessly dissolves into page */}
         <div className="absolute bottom-0 left-0 right-0 h-6 pointer-events-none"
-          style={{ background: `linear-gradient(to bottom, transparent, ${pageBg.includes('#') ? pageBg.split(',')[0].replace('linear-gradient(180deg,','').trim() : 'transparent'})` }} />
+          style={{ background: 'linear-gradient(to bottom, transparent, var(--surface-base))' }} />
       </motion.div>
     );
   }
@@ -1274,7 +1271,7 @@ export default function PathshalaClient({
             {meta.dailyVersePrompt.verse}
           </p>
         </div>
-        <div className="p-4" style={{ borderTop: `1px solid ${glassBorder}`, background: isDark ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.38)' }}>
+        <div className="p-4" style={{ borderTop: `1px solid ${glassBorder}`, background: 'var(--card-bg-soft)' }}>
           <p className="text-sm leading-relaxed" style={{ color: secondaryText }}>
             {pulse ? pulse.description : meta.dailyVersePrompt.meaning}
           </p>
@@ -1334,7 +1331,7 @@ export default function PathshalaClient({
               <button
                 onClick={() => unenroll(enrollment.path_id, path.title)}
                 className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center opacity-40 hover:opacity-80 transition"
-                style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.62)', border: `1px solid ${glassBorder}` }}
+                style={{ background: 'var(--card-bg-soft)', border: `1px solid ${glassBorder}` }}
                 title="Leave this path"
               >
                 <X size={13} style={{ color: tertiaryText }} />
@@ -1359,7 +1356,7 @@ export default function PathshalaClient({
           <Link
             href={`/pathshala/${enrollment.path_id}/recite`}
             className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl font-semibold text-sm"
-            style={{ color: meta.accentColour, border: `1px solid ${glassBorder}`, background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.62)' }}
+            style={{ color: meta.accentColour, border: `1px solid ${glassBorder}`, background: 'var(--card-bg-soft)' }}
           >
             <Mic size={14} /> {t('navPathshala')}
           </Link>
@@ -1550,7 +1547,7 @@ export default function PathshalaClient({
                           {meta.symbol} {meta.label} · {meta.navLibraryLabel}
                         </p>
                         <p className="text-[3.2rem] leading-none mb-4 font-medium"
-                          style={{ fontFamily: 'var(--font-deva, serif)', color: isDark ? 'white' : 'var(--divine-text)', opacity: 0.9 }}>
+                          style={{ fontFamily: 'var(--font-deva, serif)', color: 'var(--brand-ink)', opacity: 0.9 }}>
                           {seatMeta.scriptWord}
                         </p>
                         <h2 className="font-bold text-2xl mb-2 text-[var(--divine-text)] dark:text-white" style={{ fontFamily: 'var(--font-serif)' }}>
@@ -1587,7 +1584,7 @@ export default function PathshalaClient({
                     <DailyVersePrompt />
                     {!isPro && (
                       <div className="flex items-center gap-3 rounded-[1.45rem] p-4"
-                        style={{ ...cardStyle, background: isDark ? `${meta.accentColour}10` : `${meta.accentColour}12` }}>
+                        style={{ ...cardStyle, background: `${meta.accentColour}10` }}>
                         <Lock size={18} style={{ color: meta.accentColour }} className="flex-shrink-0" />
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-semibold" style={{ color: primaryText }}>Beginner paths are free</p>

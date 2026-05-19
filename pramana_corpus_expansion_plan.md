@@ -1,60 +1,112 @@
-# Pramana Corpus Expansion Plan
+# Pramana Corpus Ingestion & Expansion Plan
 
-This document outlines the concrete expansion strategy for transitioning currently scaffolded or sample-only corpuses into fully scalable, production-ready runtime lanes. 
+This backlog outlines the structured roadmap for advancing "present and pending" corpora from scaffolded/sample states into full runtime activation.
 
-## 1. Target Expansion Lanes
+## Status Definitions
 
-### 1.1 Upanishads (Larger Ingestion)
-- **Corpus ID**: `pathshala_upanishads` (Existing)
-- **Status**: Currently sample-only (1 chapter active).
-- **Manifest Expectations**: Full ingestion of the 11 Principal Upanishads (Isha, Kena, Katha, Prashna, Munda, Mandukya, Taittiriya, Aitareya, Chandogya, Brihadaranyaka, Shvetashvatara). Each Upanishad requires its own JSON manifest.
-- **Chunking/Index Strategy**: Chunk by *Mantra/Sloka* or logical philosophical paragraph. Keep references hierarchical (e.g., `Mundaka.1.2.3`). Update `build_upanishads_index` to iterate through all 11 manifests.
+- **Sample-only**: Scaffolded manifest exists (1-2 verses/chapters). Not actively used in live routing.
+- **Ingested-ready**: Full text compiled and present in JSON manifests. Embedding pipeline processes it, but it lacks a live prompt builder or full eval suite.
+- **Activation-ready**: Full text ingested, dedicated prompt builder exists, robust eval suite passes. Ready for explicit targeting.
+- **Production-scale target**: Active in auto-routing fallback; high-volume traffic expected and heavily cached.
+
+---
+
+## 1. Pathshala Expansions
+
+### 1.1 Larger Upanishads
+- **Corpus ID**: `pathshala_upanishads`
+- **Tradition**: Sanatana Dharma (Vedanta)
+- **Content Type**: Philosophical Scripture
+- **Manifest Shape**: Chapter-level JSONs mapping to Mantras (`ref: "Isha.1"`).
+- **Retrieval Mode**: Embedding + TF-IDF hybrid.
 - **Response Mode**: `scripture_passage_explain`
-- **Eval Requirement**: Requires an expanded `pathshala_upanishads` dataset (at least 15-20 cases) covering complex philosophical concepts (Atman, Brahman, Maya) across multiple Upanishads before live activation.
-- **Blockers**: Missing full source text compilation for the 10 remaining Upanishads; lack of live prompt builder in `run_evals.py`.
+- **Eval Requirement**: `pathshala_upanishads` suite expanded to 15+ cases covering all 11 Principal Upanishads.
+- **Auto-routing target**: No (Explicit only).
+- **Current State**: Sample-only (1 chapter).
 
-### 1.2 Sikh / Gurbani (Larger Ingestion)
-- **Corpus ID**: `sikh_gurbani` (Existing), `sikh_dasam_granth` (Planned)
-- **Status**: Currently sample-only (Japji Sahib Mool Mantar + Pauri 1). Dasam Granth is scaffolded only.
-- **Manifest Expectations**: Full `sikh_gurbani_japji.json`, expansion to Rehras Sahib, Kirtan Sohila, and Anand Sahib (Nitnem).
-- **Chunking/Index Strategy**: Chunk by *Pauri* or *Shabad*. Keep Gurmukhi text and English transliteration tightly coupled to ensure retrieval precision.
+### 1.2 Ramayana Study Corpus
+- **Corpus ID**: `pathshala_ramayana`
+- **Tradition**: Sanatana Dharma (Itihasa)
+- **Content Type**: Narrative/Ethical Epic
+- **Manifest Shape**: Kanda > Sarga > Shloka mapping.
+- **Retrieval Mode**: Embedding.
+- **Response Mode**: `scripture_passage_explain` or new `itihasa_story_explain`.
+- **Eval Requirement**: New `pathshala_ramayana` suite covering Dharma dilemmas (e.g., Ayodhya Kanda choices).
+- **Auto-routing target**: Yes (Fallback candidate).
+- **Current State**: Missing entirely.
+
+### 1.3 Yoga Sutras
+- **Corpus ID**: `pathshala_yogasutras`
+- **Tradition**: Sanatana Dharma (Yoga Darshana)
+- **Content Type**: Philosophical Scripture
+- **Manifest Shape**: Pada > Sutra mapping.
+- **Retrieval Mode**: Exact Match / Embedding.
+- **Response Mode**: `scripture_verse_explain`
+- **Eval Requirement**: New `pathshala_yogasutras` suite focusing on Ashtanga Yoga mechanics.
+- **Auto-routing target**: No.
+- **Current State**: Missing entirely.
+
+### 1.4 Mahabharata Study Passages (Optional)
+- **Corpus ID**: `mahabharata_shanti`
+- **Tradition**: Sanatana Dharma (Itihasa)
+- **Content Type**: Philosophical/Statecraft
+- **Manifest Shape**: Parva > Chapter > Shloka.
+- **Retrieval Mode**: Embedding.
+- **Response Mode**: `scripture_passage_explain`
+- **Eval Requirement**: Minimum 5 cases covering Rajadharma.
+- **Auto-routing target**: No.
+- **Current State**: Sample-only.
+
+---
+
+## 2. Sikh Expansions
+
+### 2.1 Larger Gurbani & Nitnem
+- **Corpus ID**: `sikh_gurbani`
+- **Tradition**: Sikhi
+- **Content Type**: Devotional Scripture
+- **Manifest Shape**: Bani > Pauri / Shabad (Gurmukhi + Transliteration).
+- **Retrieval Mode**: Embedding.
 - **Response Mode**: `gurbani_shabad_explain`
-- **Eval Requirement**: Expanded dataset covering distinct Banis with a focus on Gurmat philosophy before broad activation.
-- **Blockers**: Missing full Nitnem source JSONs; lack of live prompt builder in `run_evals.py`.
-
-### 1.3 Buddhist Study Lane
-- **Corpus ID**: `mahayana_bodhicharyavatara` (Planned), `theravada_dhammapada` (Future)
-- **Status**: Scaffolded (`mahayana_bodhicharyavatara.json` exists).
-- **Manifest Expectations**: Full verses of the Bodhicharyavatara with Sanskrit, transliteration, and English meaning.
-- **Chunking/Index Strategy**: Chunk by Chapter + Verse.
-- **Response Mode**: `scripture_verse_explain` (or a dedicated `buddhist_sutra_explain` mode).
-- **Eval Requirement**: Needs a new `buddhist_study` eval suite covering Bodhisattva vows and emptiness (Shunyata) concepts.
-- **Blockers**: Requires adding a Buddhist context builder to `context-builder.ts` and `SimpleCorpusSelector` routing heuristics.
-
-### 1.4 Jain Study Lane
-- **Corpus ID**: `jain_tattvartha_sutra` (Planned), `jain_kalpa_sutra` (Planned)
-- **Status**: Scaffolded (single verses exist).
-- **Manifest Expectations**: Full chapters of Tattvartha Sutra.
-- **Chunking/Index Strategy**: Chunk by *Sutra*. 
-- **Response Mode**: `scripture_verse_explain` (or a dedicated `jain_sutra_explain` mode).
-- **Eval Requirement**: Needs a new `jain_study` eval suite covering Anekantavada (non-absolutism) and Ahimsa (non-violence) nuances.
-- **Blockers**: Requires adding a Jain context builder to `context-builder.ts` and `SimpleCorpusSelector` routing heuristics.
+- **Eval Requirement**: Suite expanded to cover Rehras Sahib, Kirtan Sohila.
+- **Auto-routing target**: No.
+- **Current State**: Sample-only (Japji Sahib partial).
 
 ---
 
-## 2. Recommended Build Order
+## 3. Buddhist Study Lane
 
-To move fastest without degrading runtime quality, implement expansions in this order:
-
-1. **Upanishads Full Ingestion**: Easiest path. The routing, response modes, and eval suite structure already exist. Just requires data entry (manifests) and updating the index script.
-2. **Gurbani Full Ingestion**: Same as above. Routing and types exist. Needs data entry for Nitnem.
-3. **Buddhist Study Lane**: Requires a new `ContextBuilder` (`buildBuddhistSutraExplainPrompt`), new prompts, new system instructions, and a new eval suite.
-4. **Jain Study Lane**: Same architectural requirement as the Buddhist lane.
+### 3.1 Buddhist Dhamma
+- **Corpus ID**: `buddhist_dhamma`
+- **Tradition**: Buddhism (Theravada/Mahayana)
+- **Content Type**: Canonical Suttas / Texts
+- **Manifest Shape**: Vagga > Verse (Pali/Sanskrit).
+- **Retrieval Mode**: Embedding.
+- **Response Mode**: `buddhist_sutra_explain` (Planned)
+- **Eval Requirement**: New `buddhist_study` suite.
+- **Auto-routing target**: No.
+- **Current State**: Sample-only.
 
 ---
 
-## 3. Definitions
+## 4. Jain Study Lane
 
-- **Sample-only**: The corpus exists in the code and types, and is actively selected by the router, but only contains 1-2 chapters of data (e.g., Upanishads, Gurbani).
-- **Scaffolded**: A `manifest.json` exists with a single verse, but it is NOT yet added to the app's `SimpleCorpusSelector` routing fallback logic. (e.g., `tamil_tirukkural`, `mahayana_bodhicharyavatara`).
-- **Production-scalable**: Full text is ingested, `build_embeddings.py` processes the whole text, a dedicated live prompt builder exists, and an eval suite with 10+ cases passes. (e.g., `pathshala_gita`).
+### 4.1 Jain Dharma Agamas
+- **Corpus ID**: `jain_dharma`
+- **Tradition**: Jainism
+- **Content Type**: Agamic Texts / Sutras
+- **Manifest Shape**: Chapter > Sutra (Prakrit/Sanskrit).
+- **Retrieval Mode**: Embedding.
+- **Response Mode**: `jain_sutra_explain` (Planned)
+- **Eval Requirement**: New `jain_study` suite covering non-absolutism.
+- **Auto-routing target**: No.
+- **Current State**: Sample-only.
+
+---
+
+## Recommended Build Order & Blockers
+
+1. **Upanishads Full Ingestion**: Easiest path. The routing and response modes already exist. Blocker: Data entry (compiling full manifest texts).
+2. **Gurbani & Nitnem**: Routing exists. Blocker: Data entry.
+3. **Yoga Sutras**: Highly requested. Blocker: Needs new manifest creation and small eval suite.
+4. **Buddhist / Jain Lanes**: Blockers: Requires net-new `context-builder.ts` prompt logic and dedicated eval suites before activation.

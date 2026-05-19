@@ -89,6 +89,11 @@ def build_gita_index(manifests_dir: Path, output_file: Path) -> None:
 
     # 5. Save index
     index_data = {
+        "metadata": {
+            "manifest_count": 18,
+            "document_count": len(documents),
+            "scale_readiness": "Production-scale" if len(documents) > 100 else "Sample-scale"
+        },
         "idf": idf,
         "documents": indexed_docs,
     }
@@ -177,6 +182,11 @@ def build_upanishads_index(manifests_dir: Path, output_file: Path) -> None:
 
     # 5. Save index
     index_data = {
+        "metadata": {
+            "manifest_count": 1,
+            "document_count": len(documents),
+            "scale_readiness": "Production-scale" if len(documents) > 100 else "Sample-scale"
+        },
         "idf": idf,
         "documents": indexed_docs,
     }
@@ -265,6 +275,11 @@ def build_gurbani_index(manifests_dir: Path, output_file: Path) -> None:
 
     # 5. Save index
     index_data = {
+        "metadata": {
+            "manifest_count": 1,
+            "document_count": len(documents),
+            "scale_readiness": "Production-scale" if len(documents) > 100 else "Sample-scale"
+        },
         "idf": idf,
         "documents": indexed_docs,
     }

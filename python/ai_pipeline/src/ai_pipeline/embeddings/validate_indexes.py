@@ -61,9 +61,12 @@ def validate_index(name: str, index_path: Path) -> dict:
 
     idf = data.get("idf", {})
     docs = data.get("documents", [])
+    metadata = data.get("metadata", {})
 
     result["idf_token_count"] = len(idf)
     result["document_count"] = len(docs)
+    result["manifest_count"] = metadata.get("manifest_count", "Unknown")
+    result["scale_readiness"] = metadata.get("scale_readiness", "Unknown")
 
     if len(docs) == 0:
         result["errors"].append("Document list is empty.")
@@ -118,7 +121,9 @@ def main() -> None:
 
         print(f"📁 Index: {name}")
         print(f"   Status: {status}")
+        print(f"   Scale Readiness: {summary.get('scale_readiness', 'Unknown')}")
         print(f"   Path: {summary['path']}")
+        print(f"   Manifests: {summary.get('manifest_count', 'Unknown')}")
         print(f"   Documents: {summary['document_count']}")
         print(f"   IDF tokens: {summary['idf_token_count']}")
         print(f"   Avg vector size: {summary['avg_vector_size']}")

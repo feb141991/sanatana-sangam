@@ -1,0 +1,16 @@
+{
+  "corpus_id": "buddhist_dhamma",
+  "doc_id": "dhammapada_1",
+  "title": "Dhammapada",
+  "source_name": "Buddha",
+  "language": "pi",
+  "tradition": "Theravada Buddhism",
+  "content": [
+    {
+      "ref": "1.1",
+      "original": "मनोपुब्बङ्गमा धम्मा, मनोसेट्ठा मनोमया।",
+      "transliteration": "manopubbangama dhamma, manosettha manomaya.",
+      "text": "Mind precedes all mental states. Mind is their chief; they are all mind-wrought."
+    }
+  ]
+}

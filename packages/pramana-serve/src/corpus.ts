@@ -13,7 +13,9 @@ export type PramanaCorpusId =
   | 'mahayana_bodhicharyavatara'
   | 'jain_tattvartha_sutra'
   | 'shaiva_kashmir'
-  | 'jain_kalpa_sutra';
+  | 'jain_kalpa_sutra'
+  | 'buddhist_dhamma'
+  | 'jain_dharma';
 
 export interface PramanaCorpusMetadata {
   readonly id: PramanaCorpusId;
@@ -144,6 +146,22 @@ export const PRAMANA_CORPUS_REGISTRY: Record<PramanaCorpusId, PramanaCorpusMetad
     tradition: 'Jainism (Shvetambara)',
     primaryLanguage: 'prakrit',
     description: 'Jain texts including biographies of the Tirthankaras.'
+  },
+  buddhist_dhamma: {
+    id: 'buddhist_dhamma',
+    name: 'Buddhist Dhamma Texts',
+    type: 'scripture',
+    tradition: 'Buddhism',
+    primaryLanguage: 'pi',
+    description: 'Core teachings of the Buddha including Dhammapada and Suttas.'
+  },
+  jain_dharma: {
+    id: 'jain_dharma',
+    name: 'Jain Dharma Agamas',
+    type: 'scripture',
+    tradition: 'Jainism',
+    primaryLanguage: 'prakrit',
+    description: 'Canonical texts of Jainism including Agamas.'
   }
 };
 

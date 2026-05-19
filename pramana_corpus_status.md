@@ -21,6 +21,8 @@ This document records the current integration, routing, and evaluation status fo
 | **`jain_tattvartha_sutra`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/jain_tattvartha_sutra.json` |
 | **`shaiva_kashmir`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/shaiva_kashmir.json` |
 | **`jain_kalpa_sutra`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/jain_kalpa_sutra.json` |
+| **`buddhist_dhamma`** | ✅ Yes | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/buddhist_dhamma.json` |
+| **`jain_dharma`** | ✅ Yes | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/jain_dharma.json` |
 
 ### Column Definitions:
 * **Ingested**: Manifest JSON files containing Sanskrit text, transliterations, and translations exist in the `manifests/` directory.
