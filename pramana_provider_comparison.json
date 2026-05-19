@@ -7,24 +7,10 @@
     "sikh_gurbani"
   ],
   "modes": [
-    "hosted",
-    "self-hosted",
     "mock"
   ],
   "results": {
     "pathshala_gita": {
-      "hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
-        "skipped_reason": "GEMINI_API_KEY is not set."
-      },
-      "self-hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
-        "skipped_reason": "Self-hosted unavailable: PRAMANA_SELF_HOSTED_URL is not set"
-      },
       "mock": {
         "pass_rate": 1.0,
         "passed": 6,
@@ -33,18 +19,6 @@
       }
     },
     "bhakti_katha": {
-      "hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
-        "skipped_reason": "GEMINI_API_KEY is not set."
-      },
-      "self-hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
-        "skipped_reason": "Self-hosted unavailable: PRAMANA_SELF_HOSTED_URL is not set"
-      },
       "mock": {
         "pass_rate": 1.0,
         "passed": 6,
@@ -53,18 +27,6 @@
       }
     },
     "bhakti_panchatantra": {
-      "hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
-        "skipped_reason": "GEMINI_API_KEY is not set."
-      },
-      "self-hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
-        "skipped_reason": "Self-hosted unavailable: PRAMANA_SELF_HOSTED_URL is not set"
-      },
       "mock": {
         "pass_rate": 1.0,
         "passed": 6,
@@ -73,18 +35,6 @@
       }
     },
     "pathshala_upanishads": {
-      "hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
-        "skipped_reason": "GEMINI_API_KEY is not set."
-      },
-      "self-hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
-        "skipped_reason": "Self-hosted unavailable: PRAMANA_SELF_HOSTED_URL is not set"
-      },
       "mock": {
         "pass_rate": 1.0,
         "passed": 6,
@@ -93,18 +43,6 @@
       }
     },
     "sikh_gurbani": {
-      "hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
-        "skipped_reason": "GEMINI_API_KEY is not set."
-      },
-      "self-hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
-        "skipped_reason": "Self-hosted unavailable: PRAMANA_SELF_HOSTED_URL is not set"
-      },
       "mock": {
         "pass_rate": 1.0,
         "passed": 6,
