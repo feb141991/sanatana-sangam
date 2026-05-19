@@ -313,3 +313,111 @@ ${langNote}`,
     },
   };
 }
+
+/**
+ * Buddhist Dhamma Sutra Explanation Prompt
+ *
+ * Tradition-correct — uses Nagarjuna / Madhyamaka lens.
+ * Does not apply Vedantic framing (no Brahman/Atman language).
+ * Explicitly targeted: only fires when corpus = 'buddhist_dhamma'.
+ */
+export function buildBuddhistSutraExplainPrompt(input: PathshalaExplainInput): {
+  prompt: AIPromptSpec;
+  teacher: string;
+  school: string;
+} {
+  const commentary = COMMENTARY.buddhist;
+  const langNote = getLanguageInstruction(input.language);
+
+  const passagesText = input.retrievedChunks && input.retrievedChunks.length > 0
+    ? '\n' + serializePramanaContext(input.retrievedChunks, {
+        suffix: '\n=========================================================\nUse the above retrieved Dhamma passages to ground your explanation. Focus on these sources to explain the teaching with authentic Buddhist understanding.'
+      })
+    : '';
+
+  return {
+    teacher: commentary.name,
+    school: commentary.school,
+    prompt: {
+      user: `You are a wise ${commentary.school} teacher explaining a Dhamma teaching (Sutra passage) to a sincere seeker on the path of liberation.
+
+SOURCE: ${input.source ?? ''} — ${input.title ?? ''}
+PASSAGE TEXT: ${input.story || input.translation || input.sanskrit || ''}
+${passagesText}
+
+Your lens: ${commentary.lens}
+Teach as ${commentary.name} would. Focus on the Dhamma, not on Vedantic or Hindu framing. Use Buddhist vocabulary (Dhamma, samsara, nibbana, dukkha, anatta, anicca, dependent origination, the Middle Way, compassion for all sentient beings).
+
+Return ONLY this JSON (no markdown, no extra text):
+{
+  "word_by_word": "<Key Pali/Sanskrit Buddhist terms and their meanings in this teaching, 1-2 sentences>",
+  "meaning": "<Core Dhamma teaching and its spiritual significance in 2-3 sentences>",
+  "commentary": "<${commentary.school} commentary on how this teaching illuminates the nature of reality, suffering, or liberation — written in the spirit of ${commentary.name} in 3-4 sentences>",
+  "daily_application": "<How to apply this teaching through mindfulness, compassion, and non-attachment in daily life, 2-3 sentences>",
+  "contemplation": "<A single reflective inquiry — for example, into impermanence, emptiness, or dependent origination — to sit with>",
+  "related_text": "<Name one other Sutra, teacher, or Dhamma text that echoes this teaching>"
+}
+
+${getUserSummaryContextNote(input.userSummaryContext)}
+
+${langNote}`,
+      temperature: 0.5,
+      maxOutputTokens: 900,
+    },
+  };
+}
+
+/**
+ * Jain Dharma Sutra Explanation Prompt
+ *
+ * Tradition-correct — uses Kundakunda / Jain Dharma lens.
+ * Does not flatten into generic Hindu framing.
+ * Emphasizes ahimsa, anekantavada, self-restraint, liberation ethics.
+ * Explicitly targeted: only fires when corpus = 'jain_dharma'.
+ */
+export function buildJainSutraExplainPrompt(input: PathshalaExplainInput): {
+  prompt: AIPromptSpec;
+  teacher: string;
+  school: string;
+} {
+  const commentary = COMMENTARY.jain;
+  const langNote = getLanguageInstruction(input.language);
+
+  const passagesText = input.retrievedChunks && input.retrievedChunks.length > 0
+    ? '\n' + serializePramanaContext(input.retrievedChunks, {
+        suffix: '\n=========================================================\nUse the above retrieved Jain Dharma passages to ground your explanation. Focus on these sources to explain the teaching with authentic Jain understanding.'
+      })
+    : '';
+
+  return {
+    teacher: commentary.name,
+    school: commentary.school,
+    prompt: {
+      user: `You are a wise ${commentary.school} teacher explaining a Jain Agama or Sutra teaching to a sincere seeker on the path of moksha.
+
+SOURCE: ${input.source ?? ''} — ${input.title ?? ''}
+PASSAGE TEXT: ${input.story || input.translation || input.sanskrit || ''}
+${passagesText}
+
+Your lens: ${commentary.lens}
+Teach as ${commentary.name} would. Use Jain vocabulary (ahimsa, anekantavada, syadvada, moksha, karma, jiva, ajiva, samyak darshana, samyak jnana, samyak charitra — the Ratnatraya). Do not use Vedantic framing (no Brahman, no maya in the Hindu sense).
+
+Return ONLY this JSON (no markdown, no extra text):
+{
+  "word_by_word": "<Key Prakrit/Sanskrit Jain terms and their meanings in this teaching, 1-2 sentences>",
+  "meaning": "<Core Jain teaching on liberation, non-violence, or many-sidedness of truth in 2-3 sentences>",
+  "commentary": "<${commentary.school} commentary on how this teaching illuminates ahimsa, anekantavada, or the path to moksha — written in the spirit of ${commentary.name} in 3-4 sentences>",
+  "daily_application": "<How to live ahimsa, practise self-restraint, and cultivate equanimity in daily life, 2-3 sentences>",
+  "contemplation": "<A single reflective inquiry — for example into non-violence, non-attachment, or the many-sidedness of truth — to sit with>",
+  "related_text": "<Name one other Jain Agama, Sutra, or teacher that echoes this teaching>"
+}
+
+${getUserSummaryContextNote(input.userSummaryContext)}
+
+${langNote}`,
+      temperature: 0.5,
+      maxOutputTokens: 900,
+    },
+  };
+}
+

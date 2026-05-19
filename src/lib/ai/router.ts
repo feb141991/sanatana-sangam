@@ -1,4 +1,4 @@
-import { buildMeaningGeneratePrompt, buildPathshalaExplainPrompt, buildDevotionalStoryExplainPrompt, buildMoralStoryExplainPrompt, buildUpanishadsExplainPrompt, buildGurbaniShabadExplainPrompt } from '@/lib/ai/context-builder';
+import { buildMeaningGeneratePrompt, buildPathshalaExplainPrompt, buildDevotionalStoryExplainPrompt, buildMoralStoryExplainPrompt, buildUpanishadsExplainPrompt, buildGurbaniShabadExplainPrompt, buildBuddhistSutraExplainPrompt, buildJainSutraExplainPrompt } from '@/lib/ai/context-builder';
 import { assertAiRequestAllowed, validateMeaningGenerateInput, validatePathshalaExplainInput, validateAIChatInput } from '@/lib/ai/policies';
 import { generateWithProvider, getInferenceProvider } from '@/lib/ai/providers/inference';
 import { retrievePathshalaContext } from '@/lib/ai/retrieval';
@@ -47,6 +47,10 @@ export async function runPathshalaExplain(input: PathshalaExplainInput) {
         ? 'pathshala_upanishads'
         : input.responseMode === 'gurbani_shabad_explain'
         ? 'sikh_gurbani'
+        : input.responseMode === 'buddhist_sutra_explain'
+        ? 'buddhist_dhamma'
+        : input.responseMode === 'jain_sutra_explain'
+        ? 'jain_dharma'
         : null,
     }
   );
@@ -66,6 +70,16 @@ export async function runPathshalaExplain(input: PathshalaExplainInput) {
     });
   } else if (corpusId === 'sikh_gurbani' || input.responseMode === 'gurbani_shabad_explain') {
     built = buildGurbaniShabadExplainPrompt({
+      ...input,
+      retrievedChunks: chunks,
+    });
+  } else if (corpusId === 'buddhist_dhamma' || input.responseMode === 'buddhist_sutra_explain') {
+    built = buildBuddhistSutraExplainPrompt({
+      ...input,
+      retrievedChunks: chunks,
+    });
+  } else if (corpusId === 'jain_dharma' || input.responseMode === 'jain_sutra_explain') {
+    built = buildJainSutraExplainPrompt({
       ...input,
       retrievedChunks: chunks,
     });

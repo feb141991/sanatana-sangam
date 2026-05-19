@@ -16,6 +16,8 @@ from ai_pipeline.evals.score_pathshala import score_pathshala_explain
 from ai_pipeline.evals.score_translation import score_translation
 from ai_pipeline.evals.score_upanishads import score_upanishads_explain
 from ai_pipeline.evals.score_gurbani import score_gurbani_explain
+from ai_pipeline.evals.score_buddhist import score_buddhist_sutra_explain
+from ai_pipeline.evals.score_jain import score_jain_sutra_explain
 
 
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -657,6 +659,136 @@ def run_sikh_gurbani_eval_suite(dataset_path: Path, root: Path) -> dict[str, Any
     }
 
 
+def run_buddhist_dhamma_eval_suite(dataset_path: Path, root: Path) -> dict[str, Any]:
+    cases = load_jsonl(dataset_path)
+    case_results = []
+    mock_runs = 0
+
+    for case in cases:
+        case_id = case["case_id"]
+        chunk_id = case["prompt"]["chunk_id"]
+        story_text = case["prompt"].get("story", "")
+        lang = case["prompt"]["language"]
+
+        retrieved_passages = [
+            {
+                "content": f"Teaching: {story_text}",
+                "metadata": {
+                    "sourceName": "Buddhist Dhamma",
+                    "chunkId": chunk_id
+                }
+            }
+        ]
+
+        mock_runs += 1
+        # Determine Buddhist keywords for mock response
+        buddhist_vocab = {
+            "dukkha": ("Dhamma, dukkha, suffering, nibbana, five aggregates, noble truth", "The Four Noble Truths teach that suffering (dukkha) is inherent in existence. The cause of suffering is craving."),
+            "anatta": ("Dhamma, anatta, no-self, phenomena, impermanent, disenchanted", "The teaching of anatta (no-self) reveals that all phenomena lack a permanent, independent self."),
+            "dependent": ("Dhamma, dependent origination, paticca-samuppada, arising, cessation", "Dependent origination (paticca-samuppada) is the Buddha's insight into how all phenomena arise in dependence on conditions."),
+            "middle-way": ("Dhamma, middle way, extremes, indulgence, mortification, liberation", "The Middle Way avoids the extremes of sense-indulgence and self-mortification, leading to awakening."),
+            "metta": ("Dhamma, metta, loving-kindness, compassion, sentient beings, happiness", "Metta (loving-kindness) is the practice of extending goodwill to all sentient beings without exception."),
+            "impermanence": ("Dhamma, anicca, impermanence, conditioned, disenchanted, purification", "Anicca (impermanence) teaches that all conditioned phenomena are transient and lead to disenchantment."),
+        }
+        matched_key = next((k for k in buddhist_vocab if k in case_id), "dukkha")
+        word_by_word, meaning = buddhist_vocab[matched_key]
+
+        raw_response = json.dumps({
+            "word_by_word": word_by_word,
+            "meaning": f"Buddhist Dhamma teaching: {meaning}",
+            "commentary": f"Madhyamaka commentary: This teaching illuminates the nature of dependent origination and emptiness (sunyata). The Middle Way points to liberation from samsara.",
+            "daily_application": "Practice mindfulness, compassion, and non-attachment in every action and relationship. Observe impermanence with equanimity.",
+            "contemplation": "In what ways am I clinging to phenomena that are by nature impermanent?",
+            "related_text": "Dhammapada, Majjhima Nikaya"
+        }, ensure_ascii=False)
+
+        eval_result = {
+            "raw_response": raw_response,
+            "retrieved_passages": retrieved_passages
+        }
+
+        score_info = score_buddhist_sutra_explain(eval_result, case)
+        case_results.append({
+            "case_id": case_id,
+            "score_info": score_info,
+            "used_mock": True
+        })
+
+    return {
+        "dataset": str(dataset_path.name),
+        "case_count": len(cases),
+        "scorer": "score_buddhist_sutra_explain",
+        "live_runs": 0,
+        "mock_runs": mock_runs,
+        "results": case_results
+    }
+
+
+def run_jain_dharma_eval_suite(dataset_path: Path, root: Path) -> dict[str, Any]:
+    cases = load_jsonl(dataset_path)
+    case_results = []
+    mock_runs = 0
+
+    for case in cases:
+        case_id = case["case_id"]
+        chunk_id = case["prompt"]["chunk_id"]
+        story_text = case["prompt"].get("story", "")
+        lang = case["prompt"]["language"]
+
+        retrieved_passages = [
+            {
+                "content": f"Teaching: {story_text}",
+                "metadata": {
+                    "sourceName": "Jain Dharma",
+                    "chunkId": chunk_id
+                }
+            }
+        ]
+
+        mock_runs += 1
+        # Determine Jain keywords for mock response
+        jain_vocab = {
+            "ahimsa": ("Ahimsa (non-violence), dharma, jiva, living beings", "Ahimsa is the supreme Jain principle — the commitment to non-violence in thought, word, and deed toward all living beings."),
+            "anekantavada": ("Anekantavada, syadvada, reality, perspective, many-sided, truth", "Anekantavada teaches the many-sidedness of truth. No single perspective can capture the full nature of reality."),
+            "ratnatraya": ("Ratnatraya, samyak darshana, samyak jnana, samyak charitra, moksha", "The Three Jewels — right faith, right knowledge, and right conduct — form the Jain path to liberation."),
+            "karma": ("karma, jiva, ajiva, samvara, nirjara, soul, liberation, moksha", "Karma in Jainism is subtle matter that binds to the soul through attachment and passion, obscuring its pure nature."),
+            "vows": ("Mahavrata, ahimsa, satya, asteya, brahmacharya, aparigraha, non-violence", "The five great vows purify the soul and prevent the influx of new karma."),
+            "equanimity": ("samata, equanimity, self-mastery, composure, soul, equanimous", "Equanimity (samata) is the highest Jain virtue — remaining unshaken by pleasure or pain, praise or blame."),
+        }
+        matched_key = next((k for k in jain_vocab if k in case_id), "ahimsa")
+        word_by_word, meaning = jain_vocab[matched_key]
+
+        raw_response = json.dumps({
+            "word_by_word": word_by_word,
+            "meaning": f"Jain Dharma teaching: {meaning}",
+            "commentary": f"Kundakunda commentary: This teaching from the Jain Agamas illuminates the path to moksha through ahimsa, non-attachment, and self-restraint. The soul (jiva) is inherently pure; karma obscures this purity.",
+            "daily_application": "Practice ahimsa in all actions — food, speech, and relationships. Cultivate non-attachment and reduce possessions (aparigraha) to free the soul.",
+            "contemplation": "In how many ways today have I caused harm — however subtle — through thought, word, or deed?",
+            "related_text": "Tattvartha Sutra, Acaranga Sutra, Kundakunda's Samayasara"
+        }, ensure_ascii=False)
+
+        eval_result = {
+            "raw_response": raw_response,
+            "retrieved_passages": retrieved_passages
+        }
+
+        score_info = score_jain_sutra_explain(eval_result, case)
+        case_results.append({
+            "case_id": case_id,
+            "score_info": score_info,
+            "used_mock": True
+        })
+
+    return {
+        "dataset": str(dataset_path.name),
+        "case_count": len(cases),
+        "scorer": "score_jain_sutra_explain",
+        "live_runs": 0,
+        "mock_runs": mock_runs,
+        "results": case_results
+    }
+
+
 def main() -> None:
     root = Path(__file__).resolve().parents[3]
     gita_dataset = root / "datasets" / "evals" / "pathshala_explain.sample.jsonl"
@@ -667,7 +799,7 @@ def main() -> None:
     api_key = get_gemini_api_key(root)
     if api_key:
         print("🔑 GEMINI_API_KEY detected. Running live-ish evaluation path for Gita...")
-        print("📝 Note: Upanishads, Gurbani, Katha, and Panchatantra suites are mock-based.")
+        print("📝 Note: Upanishads, Gurbani, Katha, Panchatantra, Buddhist, and Jain suites are mock-based.")
     else:
         print("⚠️ GEMINI_API_KEY not configured. Running mock fallbacks...")
 
@@ -677,6 +809,10 @@ def main() -> None:
     upanishads_summary = run_upanishads_eval_suite(upanishads_dataset, root)
     sikh_dataset = root / "datasets" / "evals" / "sikh_gurbani.sample.jsonl"
     sikh_summary = run_sikh_gurbani_eval_suite(sikh_dataset, root)
+    buddhist_dataset = root / "datasets" / "evals" / "buddhist_dhamma.sample.jsonl"
+    buddhist_summary = run_buddhist_dhamma_eval_suite(buddhist_dataset, root)
+    jain_dataset = root / "datasets" / "evals" / "jain_dharma.sample.jsonl"
+    jain_summary = run_jain_dharma_eval_suite(jain_dataset, root)
 
     suites = {
         "pathshala_gita": gita_summary,
@@ -684,6 +820,8 @@ def main() -> None:
         "bhakti_panchatantra": panchatantra_summary,
         "pathshala_upanishads": upanishads_summary,
         "sikh_gurbani": sikh_summary,
+        "buddhist_dhamma": buddhist_summary,
+        "jain_dharma": jain_summary,
     }
 
     # Define thresholds
@@ -783,6 +921,8 @@ def main() -> None:
         "| `bhakti_panchatantra` | Mock-only | ❌ Not yet | Prompt builder + live adapter |",
         "| `pathshala_upanishads` | Mock-only | ❌ Not yet | Prompt builder + live adapter |",
         "| `sikh_gurbani` | Mock-only | ❌ Not yet | Prompt builder + live adapter |",
+        "| `buddhist_dhamma` | Mock-only | ❌ Not yet | Prompt builder + live adapter |",
+        "| `jain_dharma` | Mock-only | ❌ Not yet | Prompt builder + live adapter |",
         "",
         "### Definitions",
         "",

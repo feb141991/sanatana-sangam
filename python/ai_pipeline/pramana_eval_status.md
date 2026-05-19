@@ -9,8 +9,10 @@ This report documents the status of the local and live-ish evaluations across th
 | **`pathshala_gita`** | `pathshala_explain.sample.jsonl` | 6 | 100.0% | 6 / 6 | ✅ PASSED |
 | **`bhakti_katha`** | `bhakti_katha.sample.jsonl` | 6 | 100.0% | 6 / 6 | ✅ PASSED |
 | **`bhakti_panchatantra`** | `bhakti_panchatantra.sample.jsonl` | 6 | 100.0% | 6 / 6 | ✅ PASSED |
-| **`pathshala_upanishads`** | `pathshala_upanishads.sample.jsonl` | 6 | 100.0% | 6 / 6 | ✅ PASSED |
+| **`pathshala_upanishads`** | `pathshala_upanishads.sample.jsonl` | 16 | 100.0% | 16 / 16 | ✅ PASSED |
 | **`sikh_gurbani`** | `sikh_gurbani.sample.jsonl` | 6 | 100.0% | 6 / 6 | ✅ PASSED |
+| **`buddhist_dhamma`** | `buddhist_dhamma.sample.jsonl` | 6 | 100.0% | 6 / 6 | ✅ PASSED |
+| **`jain_dharma`** | `jain_dharma.sample.jsonl` | 6 | 100.0% | 6 / 6 | ✅ PASSED |
 
 ## Detailed Case Verification Metrics
 
@@ -113,7 +115,7 @@ This report documents the status of the local and live-ish evaluations across th
   * Source metadata present: `No`
   * Language compliance: `Yes`
 
-### Suite: `pathshala_upanishads` (0 live, 6 mock)
+### Suite: `pathshala_upanishads` (0 live, 16 mock)
 
 - **`upanishads-isha-1`**: Score `5/5`
   * JSON valid: `Yes`
@@ -130,7 +132,52 @@ This report documents the status of the local and live-ish evaluations across th
   * Grounding present: `Yes`
   * Source metadata present: `No`
   * Language compliance: `Yes`
-- **`upanishads-chandogya-1`**: Score `5/5`
+- **`upanishads-chandogya-tattvamasi`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`upanishads-brihadaranyaka-neti`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`upanishads-brihadaranyaka-aham-brahmasmi`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`upanishads-brihadaranyaka-asato-ma`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`upanishads-mandukya-om`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`upanishads-mandukya-turiya`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`upanishads-mundaka-atman-grace`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`upanishads-kena-ear-of-ear`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`upanishads-chandogya-bhuma`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`upanishads-taittiriya-ananda`**: Score `5/5`
   * JSON valid: `Yes`
   * Grounding present: `Yes`
   * Source metadata present: `No`
@@ -140,7 +187,12 @@ This report documents the status of the local and live-ish evaluations across th
   * Grounding present: `Yes`
   * Source metadata present: `No`
   * Language compliance: `Yes`
-- **`upanishads-chandogya-1-hi`**: Score `5/5`
+- **`upanishads-brihadaranyaka-asato-ma-hi`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`upanishads-chandogya-tattvamasi-hi`**: Score `5/5`
   * JSON valid: `Yes`
   * Grounding present: `Yes`
   * Source metadata present: `No`
@@ -179,6 +231,72 @@ This report documents the status of the local and live-ish evaluations across th
   * Source metadata present: `No`
   * Language compliance: `Yes`
 
+### Suite: `buddhist_dhamma` (0 live, 6 mock)
+
+- **`buddhist-dhamma-dukkha`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`buddhist-dhamma-anatta`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`buddhist-dhamma-dependent-origination`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`buddhist-dhamma-middle-way`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`buddhist-dhamma-metta`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`buddhist-dhamma-impermanence`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+
+### Suite: `jain_dharma` (0 live, 6 mock)
+
+- **`jain-ahimsa-principle`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`jain-anekantavada`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`jain-ratnatraya`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`jain-karma-and-soul`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`jain-five-vows`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+- **`jain-equanimity`**: Score `5/5`
+  * JSON valid: `Yes`
+  * Grounding present: `Yes`
+  * Source metadata present: `No`
+  * Language compliance: `Yes`
+
 ## Trust & Mock Status Summary
 
 ### Suite Execution Mode Reference
@@ -190,6 +308,8 @@ This report documents the status of the local and live-ish evaluations across th
 | `bhakti_panchatantra` | Mock-only | ❌ Not yet | Prompt builder + live adapter |
 | `pathshala_upanishads` | Mock-only | ❌ Not yet | Prompt builder + live adapter |
 | `sikh_gurbani` | Mock-only | ❌ Not yet | Prompt builder + live adapter |
+| `buddhist_dhamma` | Mock-only | ❌ Not yet | Prompt builder + live adapter |
+| `jain_dharma` | Mock-only | ❌ Not yet | Prompt builder + live adapter |
 
 ### Definitions
 

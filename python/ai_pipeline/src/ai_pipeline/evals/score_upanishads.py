@@ -36,20 +36,41 @@ def score_upanishads_explain(result: dict[str, Any], case: dict[str, Any]) -> di
     except Exception:
         json_valid = False
 
-    # 2. Figure/Theme Match
+    # 2. Figure/Theme Match — covers all principal Upanishads in the expanded dataset
     figure_theme_match = False
     if parsed_json:
         combined_text = " ".join([str(val).lower() for val in parsed_json.values()])
-        expected_keywords = []
+        expected_keywords: list[str] = []
+
         if "isha" in case_id:
-            expected_keywords = ["isha", "enveloped", "renunciation", "covet", "ईशा", "त्याग"]
+            expected_keywords = ["isha", "enveloped", "renunciation", "covet", "ईशा", "त्याग", "lord"]
         elif "katha-1" in case_id:
-            expected_keywords = ["katha", "shreya", "preya", "good", "pleasant", "श्रेय", "प्रेय"]
+            expected_keywords = ["shreya", "preya", "good", "pleasant", "श्रेय", "प्रेय"]
         elif "katha-2" in case_id:
-            expected_keywords = ["katha", "arise", "awake", "razor", "उत्तिष्ठत", "जाग्रत"]
+            expected_keywords = ["arise", "awake", "razor", "wise", "उत्तिष्ठत", "जाग्रत"]
+        elif "tattvamasi" in case_id:
+            expected_keywords = ["tat tvam asi", "tvam", "asi", "shvetaketu", "तत्वमसि", "श्वेतकेतु", "तत्त्वमसि"]
+        elif "neti" in case_id:
+            expected_keywords = ["neti", "negation", "brahman", "limiting", "transcend"]
+        elif "aham-brahmasmi" in case_id:
+            expected_keywords = ["aham brahmasmi", "i am brahman", "mahavakya", "unity", "brahman"]
+        elif "asato-ma" in case_id:
+            expected_keywords = ["asato", "unreal", "real", "darkness", "light", "immortality", "असतो", "प्रकाश", "अमृत"]
+        elif "om" in case_id or "mandukya-om" in case_id:
+            expected_keywords = ["om", "syllable", "time", "past", "future"]
+        elif "turiya" in case_id:
+            expected_keywords = ["turiya", "fourth", "consciousness", "waking", "dream"]
+        elif "atman-grace" in case_id or "mundaka" in case_id:
+            expected_keywords = ["atman", "self", "grace", "reveals", "chosen"]
+        elif "ear-of-ear" in case_id or "kena" in case_id:
+            expected_keywords = ["ear", "mind", "speech", "immortal", "sense"]
+        elif "bhuma" in case_id:
+            expected_keywords = ["bhuma", "infinite", "happiness", "finite"]
+        elif "ananda" in case_id or "taittiriya" in case_id:
+            expected_keywords = ["bliss", "brahman", "ananda", "speech", "mind", "fears"]
         elif "chandogya" in case_id:
-            expected_keywords = ["chandogya", "tvam", "asi", "thou", "shvetaketu", "तत्वमसि", "श्वेतकेतु"]
-        
+            expected_keywords = ["chandogya", "brahman", "existence", "all this"]
+
         if any(kw in combined_text for kw in expected_keywords):
             figure_theme_match = True
         else:
