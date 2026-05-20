@@ -228,20 +228,22 @@ export default function SacredReader({
             ))}
           </div>
 
-          {/* Translation Layer */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeIndex}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="text-center px-4"
-            >
-              <p className="text-sm md:text-lg italic theme-muted max-w-lg font-medium leading-relaxed opacity-85">
-                &ldquo;{translation}&rdquo;
-              </p>
-            </motion.div>
-          </AnimatePresence>
+          {/* Translation Layer (gated by canShowMeaning) */}
+          {resolvedReadableContent.capabilities.canShowMeaning && (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeIndex}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                className="text-center px-4"
+              >
+                <p className="text-sm md:text-lg italic theme-muted max-w-lg font-medium leading-relaxed opacity-85">
+                  &ldquo;{translation}&rdquo;
+                </p>
+              </motion.div>
+            </AnimatePresence>
+          )}
         </div>
 
         {/* ─── 4. Controls ─── */}

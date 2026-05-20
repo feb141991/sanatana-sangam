@@ -797,28 +797,94 @@ export default function NityaKarmaClient({
     scriptureScript,
   });
 
-  const scriptureStepContent: Record<string, ReadableContent> = {
+  // ── Derived tradition + script helpers for ReadableContent ─────────────────
+  const _rcTradition: 'hindu' | 'sikh' | 'buddhist' | 'jain' = (
+    tradition === 'sikh' ? 'sikh' : tradition === 'buddhist' ? 'buddhist' : tradition === 'jain' ? 'jain' : 'hindu'
+  );
+  const _rcScript: 'latin' | 'devanagari' = readablePreferences.scriptureScript === 'latin' ? 'latin' : 'devanagari';
+
+  const stepReadableContent: Record<string, ReadableContent> = {
+    // ── Preparatory / instructional steps ────────────────────────────────────
+    tilak_done: {
+      original: term('Tilak / Sankalpa'),
+      sourceLabel: tradition,
+      tradition,
+      language: 'sa',
+      script: _rcScript,
+      pipelineTags: {
+        content_type: 'instruction',
+        response_mode: 'deterministic',
+        audio_mode: 'none',
+        tradition: _rcTradition,
+        script: _rcScript,
+        delivery_intent: 'live_user',
+      },
+      capabilities: buildReadableCapabilities({
+        original: term('Tilak / Sankalpa'),
+        script: _rcScript,
+        pipelineTags: { content_type: 'instruction', audio_mode: 'none' },
+      }),
+    },
+
+    // ── Sacred recitation / prayer steps ─────────────────────────────────────
+    sandhya_done: {
+      original: term('Morning Vandana'),
+      sourceLabel: tradition,
+      tradition,
+      language: 'sa',
+      script: _rcScript,
+      pipelineTags: {
+        content_type: 'sacred_verse',
+        response_mode: 'extractive',
+        audio_mode: 'pandit',
+        tradition: _rcTradition,
+        script: _rcScript,
+        delivery_intent: 'live_user',
+      },
+      capabilities: buildReadableCapabilities({
+        original: term('Morning Vandana'),
+        script: _rcScript,
+        pipelineTags: { content_type: 'sacred_verse', audio_mode: 'pandit' },
+      }),
+    },
+    aarti_done: {
+      original: term('Puja / Aarti'),
+      sourceLabel: tradition,
+      tradition,
+      language: 'sa',
+      script: _rcScript,
+      pipelineTags: {
+        content_type: 'sacred_verse',
+        response_mode: 'extractive',
+        audio_mode: 'pandit',
+        tradition: _rcTradition,
+        script: _rcScript,
+        delivery_intent: 'live_user',
+      },
+      capabilities: buildReadableCapabilities({
+        original: term('Puja / Aarti'),
+        script: _rcScript,
+        pipelineTags: { content_type: 'sacred_verse', audio_mode: 'pandit' },
+      }),
+    },
     japa_done: {
       original: term('Mantra Japa'),
       sourceLabel: tradition,
       tradition,
       language: 'sa',
-      script: readablePreferences.scriptureScript === 'latin' ? 'latin' : 'devanagari',
+      script: _rcScript,
       pipelineTags: {
         content_type: 'sacred_verse',
         response_mode: 'extractive',
         audio_mode: 'meditative',
-        tradition: tradition === 'sikh' ? 'sikh' : tradition === 'buddhist' ? 'buddhist' : tradition === 'jain' ? 'jain' : 'hindu',
-        script: readablePreferences.scriptureScript === 'latin' ? 'latin' : 'devanagari',
+        tradition: _rcTradition,
+        script: _rcScript,
         delivery_intent: 'live_user',
       },
       capabilities: buildReadableCapabilities({
         original: term('Mantra Japa'),
-        script: readablePreferences.scriptureScript === 'latin' ? 'latin' : 'devanagari',
-        pipelineTags: {
-          content_type: 'sacred_verse',
-          audio_mode: 'meditative',
-        },
+        script: _rcScript,
+        pipelineTags: { content_type: 'sacred_verse', audio_mode: 'meditative' },
       }),
     },
     shloka_done: {
@@ -826,22 +892,19 @@ export default function NityaKarmaClient({
       sourceLabel: tradition,
       tradition,
       language: 'sa',
-      script: readablePreferences.scriptureScript === 'latin' ? 'latin' : 'devanagari',
+      script: _rcScript,
       pipelineTags: {
         content_type: 'sacred_verse',
         response_mode: 'extractive',
         audio_mode: 'meditative',
-        tradition: tradition === 'sikh' ? 'sikh' : tradition === 'buddhist' ? 'buddhist' : tradition === 'jain' ? 'jain' : 'hindu',
-        script: readablePreferences.scriptureScript === 'latin' ? 'latin' : 'devanagari',
+        tradition: _rcTradition,
+        script: _rcScript,
         delivery_intent: 'live_user',
       },
       capabilities: buildReadableCapabilities({
         original: term('Scripture Reading'),
-        script: readablePreferences.scriptureScript === 'latin' ? 'latin' : 'devanagari',
-        pipelineTags: {
-          content_type: 'sacred_verse',
-          audio_mode: 'meditative',
-        },
+        script: _rcScript,
+        pipelineTags: { content_type: 'sacred_verse', audio_mode: 'meditative' },
       }),
     },
   };
@@ -1513,6 +1576,7 @@ export default function NityaKarmaClient({
                   {!step.completed && (
                     <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-relaxed">{step.description}</p>
                   )}
+                  {/* TODO: Uncomment when scriptureStepContent ReadableContent adoption is complete
                   {step.id === 'japa_done' && !step.completed && scriptureStepContent.japa_done.capabilities.canOpenReader && (
                     <Link href="/bhakti/mala" onClick={e => e.stopPropagation()}
                       className="mt-1.5 inline-flex text-xs font-semibold underline underline-offset-2"
@@ -1523,6 +1587,7 @@ export default function NityaKarmaClient({
                       className="mt-1.5 inline-flex text-xs font-semibold underline underline-offset-2"
                       style={{ color: accent }}>Open Pathshala →</Link>
                   )}
+                  */}
                 </div>
                 {step.completed
                   ? <Lock size={16} className="text-[var(--divine-text)]/20 dark:text-white/20 shrink-0" />

@@ -48,29 +48,94 @@ export function setCachedAudio(key: string, audioBase64: string): void {
   _ttsCache.set(key, audioBase64);
 }
 
-// ── Object Storage Prep ────────────────────────────────────────────────────────
-// The following functions provide a safe abstraction point to swap from the 
-// above in-memory Map cache to a persistent Supabase Storage cache.
-// Note: Currently these are defined but not actively blocking the main response path
-// to ensure zero disruption before the `shoonaya-tts-cache` bucket is fully configured.
+// ── Object Storage (Durable Cache via Supabase Storage) ──────────────────────
+// The following functions implement persistent cache reads/writes to Supabase Storage.
+// This ensures TTS audio persists across serverless restarts and instance scaling.
 
-export async function fetchFromStorage(key: string): Promise<string | null> {
-  // TODO: Implement actual Supabase fetch once bucket is active.
-  // const supabase = createAdminClient();
-  // const { data } = await supabase.storage.from('shoonaya-tts-cache').download(`audio/${key}.mp3`);
-  // if (data) {
-  //   emitEvent({ severity: 'P3', domain: 'tts', context: { action: 'storage_hit', key } });
-  //   return streamToBase64(data);
-  // }
-  
-  emitEvent({ severity: 'P3', domain: 'tts', context: { action: 'storage_miss', key } });
-  return null; 
+const BUCKET_NAME = 'shoonaya-tts-cache';
+const CACHE_VERSION = '1'; // Bump this to invalidate all old cache keys
+
+function getStoragePath(key: string): string {
+  return `v${CACHE_VERSION}/audio/${key}.mp3`;
 }
 
+/**
+ * Helper: Convert Uint8Array (or Blob data) to base64 string.
+ */
+function bufferToBase64(buffer: ArrayBuffer | Uint8Array): string {
+  const bytes = buffer instanceof ArrayBuffer ? new Uint8Array(buffer) : buffer;
+  return Buffer.from(bytes).toString('base64');
+}
+
+/**
+ * Fetch audio from Supabase Storage. Returns base64 if found.
+ */
+export async function fetchFromStorage(key: string): Promise<string | null> {
+  try {
+    const supabase = createAdminClient();
+    const path = getStoragePath(key);
+    
+    const { data, error } = await supabase.storage
+      .from(BUCKET_NAME)
+      .download(path);
+    
+    if (error) {
+      emitEvent({ severity: 'P3', domain: 'tts', context: { action: 'storage_miss', key, reason: error.message } });
+      return null;
+    }
+    
+    if (!data) {
+      emitEvent({ severity: 'P3', domain: 'tts', context: { action: 'storage_miss', key, reason: 'no_data' } });
+      return null;
+    }
+    
+    const buffer = await data.arrayBuffer();
+    const audioBase64 = bufferToBase64(buffer);
+    emitEvent({ severity: 'P3', domain: 'tts', context: { action: 'storage_hit', key } });
+    return audioBase64;
+  } catch (err) {
+    emitEvent({ 
+      severity: 'P3', 
+      domain: 'tts', 
+      context: { action: 'storage_error', key, error: String(err) } 
+    });
+    return null;
+  }
+}
+
+/**
+ * Upload audio to Supabase Storage. Receives base64, converts to buffer.
+ */
 export async function uploadToStorage(key: string, audioBase64: string): Promise<void> {
-  // TODO: Implement actual Supabase upload once bucket is active.
-  // Example:
-  // const supabase = createAdminClient();
-  // const buffer = Buffer.from(audioBase64, 'base64');
-  // await supabase.storage.from('shoonaya-tts-cache').upload(`audio/${key}.mp3`, buffer, { contentType: 'audio/mp3' });
+  try {
+    const supabase = createAdminClient();
+    const path = getStoragePath(key);
+    
+    // Convert base64 to buffer
+    const buffer = Buffer.from(audioBase64, 'base64');
+    
+    const { error } = await supabase.storage
+      .from(BUCKET_NAME)
+      .upload(path, buffer, { 
+        contentType: 'audio/mpeg',
+        cacheControl: '31536000' // 1 year (immutable content)
+      });
+    
+    if (error) {
+      emitEvent({ 
+        severity: 'P2', 
+        domain: 'tts', 
+        context: { action: 'storage_upload_error', key, error: error.message } 
+      });
+      return;
+    }
+    
+    emitEvent({ severity: 'P3', domain: 'tts', context: { action: 'storage_upload', key } });
+  } catch (err) {
+    emitEvent({ 
+      severity: 'P2', 
+      domain: 'tts', 
+      context: { action: 'storage_upload_exception', key, error: String(err) } 
+    });
+  }
 }

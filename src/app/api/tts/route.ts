@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleAuth } from 'google-auth-library';
-import { generateTTSCacheKey, getCachedAudio, setCachedAudio } from '@/lib/tts/cache';
+import { generateTTSCacheKey, getCachedAudio, setCachedAudio, fetchFromStorage, uploadToStorage } from '@/lib/tts/cache';
 import { preprocessTTS } from '@/lib/tts/preprocessing';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 
@@ -129,16 +129,35 @@ export async function POST(req: NextRequest) {
   const effectiveRate = requestedRate ?? (sarvamKey ? 1.0 : getVoiceConfig(text, quality).rate);
 
   const cacheKey = generateTTSCacheKey(text, providerLabel, effectiveProfileName, effectiveRate, quality);
-  const cachedAudio = getCachedAudio(cacheKey);
+  
+  // ── Cache lookup: Memory → Storage → Generate ──────────────────────────────────
+  let cachedAudio = getCachedAudio(cacheKey);
   if (cachedAudio) {
-    emitEvent({ severity: 'P3', domain: 'tts', route: '/api/tts', context: { status: 'cached' } });
+    emitEvent({ severity: 'P3', domain: 'tts', route: '/api/tts', context: { status: 'memory_cache' } });
     return NextResponse.json({
       audioContent: cachedAudio,
       meta: {
         provider: providerLabel,
         voiceUsed: effectiveProfileName,
         qualityUsed: quality,
-        status: 'cached'
+        status: 'cached_memory'
+      }
+    });
+  }
+  
+  // Try durable storage
+  cachedAudio = await fetchFromStorage(cacheKey);
+  if (cachedAudio) {
+    // Populate memory cache for subsequent requests
+    setCachedAudio(cacheKey, cachedAudio);
+    emitEvent({ severity: 'P3', domain: 'tts', route: '/api/tts', context: { status: 'storage_cache' } });
+    return NextResponse.json({
+      audioContent: cachedAudio,
+      meta: {
+        provider: providerLabel,
+        voiceUsed: effectiveProfileName,
+        qualityUsed: quality,
+        status: 'cached_storage'
       }
     });
   }
@@ -169,6 +188,7 @@ export async function POST(req: NextRequest) {
         if (data.audios && data.audios.length > 0) {
           const audioBase64 = data.audios[0];
           setCachedAudio(cacheKey, audioBase64);
+          await uploadToStorage(cacheKey, audioBase64);
           
           emitEvent({
             severity: 'P3',
@@ -253,6 +273,7 @@ export async function POST(req: NextRequest) {
 
     const data = await gRes.json() as { audioContent: string };
     setCachedAudio(cacheKey, data.audioContent);
+    await uploadToStorage(cacheKey, data.audioContent);
     
     emitEvent({
       severity: 'P3',

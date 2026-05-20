@@ -3,15 +3,18 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Moon, Sun, Type, Share2, ArrowRight, X } from 'lucide-react';
+import type { ReadableCapabilities } from '@/lib/readable-content';
 
 interface IntroStep {
   target: string; // CSS selector
   title: string;
   description: string;
   icon: React.ElementType;
+  /** When set, this step is only shown if the corresponding capability is true */
+  capabilityGate?: keyof ReadableCapabilities;
 }
 
-const STEPS: IntroStep[] = [
+const ALL_STEPS: IntroStep[] = [
   {
     target: '.theme-toggle',
     title: 'Reading Mode',
@@ -28,7 +31,8 @@ const STEPS: IntroStep[] = [
     target: '.lang-toggle',
     title: 'Deep Localization',
     description: 'Toggle between English and your local tradition\'s language (Hindi/Punjabi).',
-    icon: Sun // Using Sun as a placeholder or we can use a custom 'अ' icon
+    icon: Sun, // Using Sun as a placeholder or we can use a custom 'अ' icon
+    capabilityGate: 'canToggleLocalLanguage'
   },
   {
     target: '.share-button',
@@ -38,14 +42,27 @@ const STEPS: IntroStep[] = [
   }
 ];
 
-export function ReaderIntro() {
+interface ReaderIntroProps {
+  /** When provided, intro steps are filtered by capability flags */
+  capabilities?: Partial<ReadableCapabilities>;
+}
+
+export function ReaderIntro({ capabilities }: ReaderIntroProps) {
+  // Filter steps: keep steps with no gate, or whose gate is satisfied
+  const steps = ALL_STEPS.filter(step => {
+    if (!step.capabilityGate) return true;
+    // If no capabilities provided, show all steps (backward-compatible)
+    if (!capabilities) return true;
+    return capabilities[step.capabilityGate] !== false;
+  });
+
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [targetPos, setTargetPos] = useState({ top: 0, left: 0, width: 0, height: 0 });
 
   useEffect(() => {
     const seen = localStorage.getItem('shoonaya_reader_intro_seen');
-    if (!seen) {
+    if (!seen && steps.length > 0) {
       // Delay slightly to ensure layout is ready
       const timer = setTimeout(() => {
         setIsVisible(true);
@@ -53,11 +70,13 @@ export function ReaderIntro() {
       }, 1000);
       return () => clearTimeout(timer);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateTargetPosition = (stepIdx: number) => {
-    const selector = STEPS[stepIdx].target;
-    const el = document.querySelector(selector);
+    const s = steps[stepIdx];
+    if (!s) return;
+    const el = document.querySelector(s.target);
     if (el) {
       const rect = el.getBoundingClientRect();
       setTargetPos({
@@ -70,7 +89,7 @@ export function ReaderIntro() {
   };
 
   const nextStep = () => {
-    if (currentStep < STEPS.length - 1) {
+    if (currentStep < steps.length - 1) {
       const nextIdx = currentStep + 1;
       setCurrentStep(nextIdx);
       updateTargetPosition(nextIdx);
@@ -84,9 +103,10 @@ export function ReaderIntro() {
     localStorage.setItem('shoonaya_reader_intro_seen', 'true');
   };
 
-  if (!isVisible) return null;
+  if (!isVisible || steps.length === 0) return null;
 
-  const step = STEPS[currentStep];
+  const step = steps[currentStep];
+  if (!step) return null;
   const Icon = step.icon;
 
   return (
@@ -142,7 +162,7 @@ export function ReaderIntro() {
 
           <div className="flex items-center justify-between">
             <div className="flex gap-1.5">
-              {STEPS.map((_, i) => (
+              {steps.map((_, i) => (
                 <div 
                   key={i} 
                   className={`h-1 rounded-full transition-all ${i === currentStep ? 'w-4 bg-[var(--brand-primary)]' : 'w-1 bg-[var(--brand-primary-soft)]'}`} 
@@ -153,7 +173,7 @@ export function ReaderIntro() {
               onClick={nextStep}
               className="flex items-center gap-2 text-sm font-bold text-[var(--brand-primary)]"
             >
-              {currentStep === STEPS.length - 1 ? 'Finish' : 'Next'} <ArrowRight size={14} />
+              {currentStep === steps.length - 1 ? 'Finish' : 'Next'} <ArrowRight size={14} />
             </button>
           </div>
         </motion.div>

@@ -222,6 +222,11 @@ export default function ReciteClient({
           title:          verse.title,
           tradition:      _tradition,
           language:       effectiveMeaningLanguage,
+          pipelineTags: {
+            content_type: 'sacred_verse',
+            response_mode: 'conversational',
+            delivery_intent: 'live_user',
+          },
         }),
       });
       if (!res.ok) {
@@ -355,7 +360,15 @@ export default function ReciteClient({
       const res = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, rate: ttsRateRef.current }),
+        body: JSON.stringify({
+          text,
+          rate: ttsRateRef.current,
+          pipelineTags: {
+            content_type: 'sacred_verse',
+            audio_mode: 'pandit',
+            delivery_intent: 'live_user',
+          },
+        }),
       });
       if (!res.ok) throw new Error('TTS fetch failed');
       const { audioContent } = await res.json() as { audioContent: string };
