@@ -108,11 +108,12 @@ CORPUS_REGISTRY: list[dict[str, str]] = [
     {"id": "jain_kalpa_sutra",           "name": "Kalpa Sutra & Agamas",           "tradition": "Jainism",         "lang": "prakrit"},
 ]
 
-# Maps corpus_id -> index filename (relative to corpus/)
 INDEX_MAP: dict[str, str] = {
     "pathshala_gita":       "gita_index.json",
     "pathshala_upanishads": "upanishads_index.json",
     "sikh_gurbani":         "gurbani_index.json",
+    "buddhist_dhamma":      "buddhist_dhamma_index.json",
+    "jain_dharma":          "jain_dharma_index.json",
 }
 
 # Maps corpus_id -> eval JSONL filename (relative to datasets/evals/)
@@ -170,11 +171,24 @@ ROUTING_MAP: dict[str, str] = {
     "jain_dharma":          "explicit-target-only",
 }
 
-# Manifest glob patterns (relative to corpus/manifests/)
 MANIFEST_PATTERNS: dict[str, str] = {
     "pathshala_gita":       "gita_chapter_*.json",
     "pathshala_upanishads": "upanishad_*.json",
     "sikh_gurbani":         "sikh_gurbani_*.json",
+    "buddhist_dhamma":      "buddhist_dhamma.json",
+    "jain_dharma":          "jain_dharma.json",
+    "bhakti_katha":         "katha_*.json",
+    "bhakti_panchatantra":  "panchatantra_*.json",
+    "tamil_tirukkural":     "tamil_tirukkural.json",
+    "tamil_prabandham":     "tamil_prabandham.json",
+    "tamil_tiruvachakam":   "tamil_tiruvachakam.json",
+    "mahabharata_shanti":   "mahabharata_shanti.json",
+    "sant_kabir":           "sant_kabir.json",
+    "sikh_dasam_granth":    "sikh_dasam_granth.json",
+    "mahayana_bodhicharyavatara": "mahayana_bodhicharyavatara.json",
+    "jain_tattvartha_sutra": "jain_tattvartha_sutra.json",
+    "shaiva_kashmir":       "shaiva_kashmir.json",
+    "jain_kalpa_sutra":     "jain_kalpa_sutra.json",
 }
 
 

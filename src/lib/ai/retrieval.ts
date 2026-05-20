@@ -777,6 +777,146 @@ const gurbaniManifestRetriever = new PramanaManifestRetriever({
 
 PramanaRetrieverSelector.register('sikh_gurbani', new PramanaGurbaniEmbeddingRetriever(gurbaniManifestRetriever));
 
+export class PramanaGenericEmbeddingRetriever implements PramanaRetriever<RetrievalChunkMetadata> {
+  private fallbackRetriever: PramanaRetriever<RetrievalChunkMetadata>;
+  private indexPath: string;
+  private tradition: string;
+  private sourceName: string;
+  private indexData: any = null;
+
+  constructor(fallbackRetriever: PramanaRetriever<RetrievalChunkMetadata>, indexPath: string, tradition: string, sourceName: string) {
+    this.fallbackRetriever = fallbackRetriever;
+    this.indexPath = indexPath;
+    this.tradition = tradition;
+    this.sourceName = sourceName;
+  }
+
+  private loadIndex() {
+    if (this.indexData) return this.indexData;
+    if (!fs.existsSync(this.indexPath)) return null;
+    try {
+      const data = fs.readFileSync(this.indexPath, 'utf-8');
+      this.indexData = JSON.parse(data);
+      return this.indexData;
+    } catch {
+      return null;
+    }
+  }
+
+  private tokenize(text: string): string[] {
+    return (text.toLowerCase().match(/[a-z0-9\u0900-\u097f]+(?:\.[a-z0-9\u0900-\u097f]+)*/g) || []);
+  }
+
+  async retrieve(query: PramanaRetrievalQuery): Promise<PramanaRetrievalResult<RetrievalChunkMetadata>> {
+    const index = this.loadIndex();
+    if (!index) {
+      return this.fallbackRetriever.retrieve(query);
+    }
+
+    const queryText = query.text.trim();
+    if (!queryText) return { documents: [] };
+
+    const tokens = this.tokenize(queryText);
+    if (tokens.length === 0) return this.fallbackRetriever.retrieve(query);
+
+    const tf: Record<string, number> = {};
+    for (const t of tokens) {
+      tf[t] = (tf[t] || 0) + 1;
+    }
+
+    const queryVector: Record<string, number> = {};
+    let sumSq = 0;
+    for (const t in tf) {
+      const idf = index.idf[t] || 0;
+      if (idf > 0) {
+        const tfidf = tf[t] * idf;
+        queryVector[t] = tfidf;
+        sumSq += tfidf * tfidf;
+      }
+    }
+
+    const queryNorm = Math.sqrt(sumSq);
+    if (queryNorm === 0) return this.fallbackRetriever.retrieve(query);
+
+    const queryUnitVector: Record<string, number> = {};
+    for (const t in queryVector) {
+      queryUnitVector[t] = queryVector[t] / queryNorm;
+    }
+
+    const docsWithScores: Array<{ doc: any; score: number }> = [];
+    for (const doc of index.documents) {
+      let score = 0;
+      for (const t in queryUnitVector) {
+        if (doc.vector[t]) score += queryUnitVector[t] * doc.vector[t];
+      }
+      if (score > 0) docsWithScores.push({ doc, score });
+    }
+
+    if (docsWithScores.length === 0) return this.fallbackRetriever.retrieve(query);
+
+    docsWithScores.sort((a, b) => b.score - a.score);
+
+    const limit = query.topK || 5;
+    const augmentedDocs: Array<{ doc: any; score: number }> = [];
+
+    if (docsWithScores.length > 0) {
+      const topDocItem = docsWithScores[0];
+      augmentedDocs.push(topDocItem);
+
+      if (topDocItem.score >= 0.3) {
+        const topDoc = topDocItem.doc;
+        const refParts = topDoc.ref.split('.');
+        if (refParts.length >= 2) {
+          const ch = parseInt(refParts[0], 10);
+          const v = parseInt(refParts[1], 10);
+
+          const prevRef = `${ch}.${v - 1}`;
+          const nextRef = `${ch}.${v + 1}`;
+
+          const prevDoc = index.documents.find((d: any) => d.ref === prevRef);
+          const nextDoc = index.documents.find((d: any) => d.ref === nextRef);
+
+          if (prevDoc) augmentedDocs.push({ doc: prevDoc, score: topDocItem.score - 0.1 });
+          if (nextDoc) augmentedDocs.push({ doc: nextDoc, score: topDocItem.score - 0.12 });
+        }
+      }
+
+      for (const item of docsWithScores.slice(1)) {
+        if (!augmentedDocs.some(x => x.doc.id === item.doc.id)) {
+          if (item.score >= 0.1) augmentedDocs.push(item);
+        }
+      }
+    }
+
+    const topDocs = augmentedDocs.slice(0, limit);
+
+    const documents: RetrievalChunk[] = topDocs.map((item) => {
+      const doc = item.doc;
+      const textContent = [
+        doc.sanskrit ? `Sanskrit: ${doc.sanskrit}` : doc.original ? `Original: ${doc.original}` : '',
+        doc.transliteration ? `Transliteration: ${doc.transliteration}` : '',
+        doc.text ? `Translation: ${doc.text}` : ''
+      ].filter(Boolean).join('\n');
+
+      return {
+        id: doc.id,
+        content: textContent,
+        score: item.score,
+        metadata: {
+          chunkId: doc.ref,
+          docId: doc.id.split('_').slice(0, -1).join('_'),
+          tradition: this.tradition,
+          sourceName: this.sourceName,
+          sourceClass: 'scripture',
+          rightsStatus: 'public_domain'
+        }
+      };
+    });
+
+    return { documents, provider: 'embedding-index' };
+  }
+}
+
 const buddhistManifestRetriever = new PramanaManifestRetriever({
   prefix: 'buddhist_dhamma',
   sourceName: 'Buddhist Dhamma Texts',
@@ -784,7 +924,12 @@ const buddhistManifestRetriever = new PramanaManifestRetriever({
   tradition: 'Buddhism',
   maxChapters: 1
 });
-PramanaRetrieverSelector.register('buddhist_dhamma', buddhistManifestRetriever);
+PramanaRetrieverSelector.register('buddhist_dhamma', new PramanaGenericEmbeddingRetriever(
+  buddhistManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/buddhist_dhamma_index.json'),
+  'Buddhism',
+  'Buddhist Dhamma Texts'
+));
 
 const jainManifestRetriever = new PramanaManifestRetriever({
   prefix: 'jain_dharma',
@@ -793,7 +938,29 @@ const jainManifestRetriever = new PramanaManifestRetriever({
   tradition: 'Jainism',
   maxChapters: 1
 });
-PramanaRetrieverSelector.register('jain_dharma', jainManifestRetriever);
+PramanaRetrieverSelector.register('jain_dharma', new PramanaGenericEmbeddingRetriever(
+  jainManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/jain_dharma_index.json'),
+  'Jainism',
+  'Jain Dharma Agamas'
+));
+const buddhistManifestRetriever2 = new PramanaManifestRetriever({
+  prefix: 'buddhist_dhamma',
+  sourceName: 'Buddhist Dhamma Texts',
+  sourceClass: 'scripture',
+  tradition: 'Buddhism',
+  maxChapters: 1
+});
+// Removed duplicate registration
+
+const jainManifestRetriever2 = new PramanaManifestRetriever({
+  prefix: 'jain_dharma',
+  sourceName: 'Jain Dharma Agamas',
+  sourceClass: 'scripture',
+  tradition: 'Jainism',
+  maxChapters: 1
+});
+// Removed duplicate registration
 
 export async function retrievePathshalaContext(input: {
   source?: string;

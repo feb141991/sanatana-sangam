@@ -1,12 +1,12 @@
 # Graph Report - /Users/Business(C)/Sanatan Sangam/Shoonaya  (2026-05-19)
 
 ## Corpus Check
-- 510 files · ~1,685,769 words
+- 510 files · ~1,686,269 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1938 nodes · 2903 edges · 242 communities detected
-- Extraction: 70% EXTRACTED · 30% INFERRED · 0% AMBIGUOUS · INFERRED: 864 edges (avg confidence: 0.8)
+- 1938 nodes · 2905 edges · 242 communities detected
+- Extraction: 70% EXTRACTED · 30% INFERRED · 0% AMBIGUOUS · INFERRED: 866 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -255,7 +255,7 @@
 
 ## God Nodes (most connected - your core abstractions)
 1. `select()` - 177 edges
-2. `GET()` - 138 edges
+2. `GET()` - 139 edges
 3. `POST()` - 71 edges
 4. `createClient()` - 47 edges
 5. `createServerSupabaseClient()` - 35 edges
@@ -1565,15 +1565,15 @@ Nodes (1): Dispatches a suite run to the appropriate provider.      Currently, '
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `GET()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 12`, `Community 13`, `Community 15`, `Community 16`, `Community 18`, `Community 21`, `Community 22`, `Community 23`, `Community 24`, `Community 25`, `Community 28`, `Community 32`, `Community 33`, `Community 35`?**
-  _High betweenness centrality (0.232) - this node is a cross-community bridge._
+  _High betweenness centrality (0.247) - this node is a cross-community bridge._
 - **Why does `select()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 9`, `Community 11`, `Community 12`, `Community 14`, `Community 16`, `Community 18`, `Community 20`, `Community 26`, `Community 27`, `Community 30`, `Community 33`, `Community 39`, `Community 49`?**
-  _High betweenness centrality (0.218) - this node is a cross-community bridge._
+  _High betweenness centrality (0.208) - this node is a cross-community bridge._
 - **Why does `POST()` connect `Community 5` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 6`, `Community 7`, `Community 15`?**
-  _High betweenness centrality (0.088) - this node is a cross-community bridge._
+  _High betweenness centrality (0.070) - this node is a cross-community bridge._
 - **Are the 176 inferred relationships involving `select()` (e.g. with `runAligner()` and `.listTexts()`) actually correct?**
   _`select()` has 176 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 97 inferred relationships involving `GET()` (e.g. with `_mock_score_suite()` and `_check_self_hosted_available()`) actually correct?**
-  _`GET()` has 97 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 98 inferred relationships involving `GET()` (e.g. with `_mock_score_suite()` and `_check_self_hosted_available()`) actually correct?**
+  _`GET()` has 98 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 25 inferred relationships involving `POST()` (e.g. with `select()` and `.update()`) actually correct?**
   _`POST()` has 25 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 46 inferred relationships involving `createClient()` (e.g. with `createPathshalaEngine()` and `createSadhanaEngine()`) actually correct?**

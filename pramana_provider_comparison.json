@@ -7,47 +7,57 @@
     "sikh_gurbani"
   ],
   "modes": [
-    "mock"
+    "hosted"
   ],
   "results": {
     "pathshala_gita": {
-      "mock": {
+      "hosted": {
         "pass_rate": 1.0,
         "passed": 6,
         "total": 6,
+        "mock_runs": 6,
+        "live_runs": 0,
         "skipped_reason": null
       }
     },
     "bhakti_katha": {
-      "mock": {
-        "pass_rate": 1.0,
-        "passed": 6,
-        "total": 6,
-        "skipped_reason": null
+      "hosted": {
+        "pass_rate": 0.0,
+        "passed": 0,
+        "total": 0,
+        "mock_runs": 0,
+        "live_runs": 0,
+        "skipped_reason": "Live prompt builders not yet implemented in Python-side eval."
       }
     },
     "bhakti_panchatantra": {
-      "mock": {
-        "pass_rate": 1.0,
-        "passed": 6,
-        "total": 6,
-        "skipped_reason": null
+      "hosted": {
+        "pass_rate": 0.0,
+        "passed": 0,
+        "total": 0,
+        "mock_runs": 0,
+        "live_runs": 0,
+        "skipped_reason": "Live prompt builders not yet implemented in Python-side eval."
       }
     },
     "pathshala_upanishads": {
-      "mock": {
-        "pass_rate": 1.0,
-        "passed": 6,
-        "total": 6,
-        "skipped_reason": null
+      "hosted": {
+        "pass_rate": 0.0,
+        "passed": 0,
+        "total": 0,
+        "mock_runs": 0,
+        "live_runs": 0,
+        "skipped_reason": "Live prompt builders not yet implemented in Python-side eval."
       }
     },
     "sikh_gurbani": {
-      "mock": {
-        "pass_rate": 1.0,
-        "passed": 6,
-        "total": 6,
-        "skipped_reason": null
+      "hosted": {
+        "pass_rate": 0.0,
+        "passed": 0,
+        "total": 0,
+        "mock_runs": 0,
+        "live_runs": 0,
+        "skipped_reason": "Live prompt builders not yet implemented in Python-side eval."
       }
     }
   }

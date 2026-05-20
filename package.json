@@ -15,6 +15,8 @@
     "compare:gita-retrieval": "npx tsx scripts/compare_retrieval.ts",
     "compare:upanishads-retrieval": "npx tsx scripts/compare_upanishads_retrieval.ts",
     "compare:gurbani-retrieval": "npx tsx scripts/compare_gurbani_retrieval.ts",
+    "compare:buddhist-retrieval": "npx tsx scripts/compare_buddhist_retrieval.ts",
+    "compare:jain-retrieval": "npx tsx scripts/compare_jain_retrieval.ts",
     "eval:run": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.evals.run_evals",
     "eval:compare": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.evals.compare_providers",
     "eval:compare:self-hosted": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.evals.compare_providers --modes mock hosted self-hosted",
@@ -22,7 +24,8 @@
     "corpus:validate-indexes": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.embeddings.validate_indexes",
     "diagnostics": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.diagnostics.pramana_status",
     "diagnostics:json": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.diagnostics.pramana_status --json-only",
-    "diagnostics:warn": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.diagnostics.pramana_status --fail-on-warn"
+    "diagnostics:warn": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.diagnostics.pramana_status --fail-on-warn",
+    "diagnostics:dashboard": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.diagnostics.generate_markdown_dashboard"
   },
   "dependencies": {
     "@capacitor/core": "^8.0.0",

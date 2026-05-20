@@ -70,6 +70,8 @@ class SuiteResult:
     pass_rate: float
     scores: list[CaseScore] = field(default_factory=list)
     skipped_reason: str | None = None
+    mock_runs: int = 0
+    live_runs: int = 0
 
 
 @dataclass
@@ -116,6 +118,8 @@ def _mock_score_suite(suite_name: str, provider_mode: str) -> SuiteResult:
         passed_count=passing,
         pass_rate=round(passing / total, 3) if total > 0 else 0.0,
         scores=scores,
+        mock_runs=total,
+        live_runs=0,
     )
 
 
@@ -168,6 +172,8 @@ def run_suite_for_mode(suite_name: str, provider_mode: str) -> SuiteResult:
                 case_count=res["case_count"],
                 passed_count=pass_count,
                 pass_rate=round(pass_count / res["case_count"], 3) if res["case_count"] > 0 else 0.0,
+                mock_runs=res.get("mock_runs", 0),
+                live_runs=res.get("live_runs", 0),
             )
         else:
             return SuiteResult(
@@ -200,6 +206,8 @@ def run_suite_for_mode(suite_name: str, provider_mode: str) -> SuiteResult:
                 case_count=res["case_count"],
                 passed_count=pass_count,
                 pass_rate=round(pass_count / res["case_count"], 3) if res["case_count"] > 0 else 0.0,
+                mock_runs=res.get("mock_runs", 0),
+                live_runs=res.get("live_runs", 0),
             )
         else:
             return SuiteResult(
@@ -262,7 +270,16 @@ def render_report(report: ComparisonReport) -> None:
                 row += f"{'⚠️ SKIP':>{col_w}}"
             else:
                 pct = f"{result.pass_rate * 100:.0f}%"
-                row += f"{pct + ' (' + str(result.passed_count) + '/' + str(result.case_count) + ')':>{col_w}}"
+                base_str = f"{pct} ({result.passed_count}/{result.case_count})"
+                if mode != "mock":
+                    if result.live_runs == 0:
+                        row += f"{'🛑 MOCK FALLBACK':>{col_w}}"
+                    elif result.mock_runs > 0:
+                        row += f"{f'{base_str} ({result.live_runs}L/{result.mock_runs}M)':>{col_w}}"
+                    else:
+                        row += f"{f'{base_str} [Live]':>{col_w}}"
+                else:
+                    row += f"{base_str:>{col_w}}"
         print(row)
 
     print()
@@ -286,6 +303,8 @@ def render_report(report: ComparisonReport) -> None:
                     "pass_rate": report.results.get(suite, {}).get(mode, SuiteResult("", "", 0, 0, 0)).pass_rate,
                     "passed": report.results.get(suite, {}).get(mode, SuiteResult("", "", 0, 0, 0)).passed_count,
                     "total": report.results.get(suite, {}).get(mode, SuiteResult("", "", 0, 0, 0)).case_count,
+                    "mock_runs": report.results.get(suite, {}).get(mode, SuiteResult("", "", 0, 0, 0)).mock_runs,
+                    "live_runs": report.results.get(suite, {}).get(mode, SuiteResult("", "", 0, 0, 0)).live_runs,
                     "skipped_reason": report.results.get(suite, {}).get(mode, SuiteResult("", "", 0, 0, 0)).skipped_reason,
                 }
                 for mode in modes
