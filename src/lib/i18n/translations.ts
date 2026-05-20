@@ -98,7 +98,17 @@ export type TranslationKey =
   | 'vimshottariDashaExplore' | 'rulingDomains' | 'favourable' | 'challenges' | 'upaya' | 'beejaMantraLabel'
   | 'saveYourKundali' | 'signInToSaveChart' | 'saveBtn' | 'chartAutoSaved' | 'couldNotSaveChart' | 'sadeSatiActive'
   | 'sadeSatiRising' | 'sadeSatiPeak' | 'sadeSatiSetting' | 'sadeSatiDescription' | 'grahasHousePlacements'
-  | 'grahaShadbalaStrength' | 'vedicPowerIndex' | 'interactiveBhavaReadings' | 'houseReading' | 'panditAiDestinyReadingLabel';
+  | 'grahaShadbalaStrength' | 'vedicPowerIndex' | 'interactiveBhavaReadings' | 'houseReading' | 'panditAiDestinyReadingLabel'
+  // Home — previously hardcoded UI strings
+  | 'mandaliRanks' | 'mandaliRanksDesc'
+  | 'upcomingSacredTime' | 'festivalPrepDesc' | 'viewBtn'
+  | 'tomorrow' | 'inNDays'
+  | 'moodChip' | 'feelingPrefix'
+  // Mood keys
+  | 'moodAnxious' | 'moodGrieving' | 'moodAngry' | 'moodScattered' | 'moodLost'
+  | 'moodJoyful' | 'moodSeeking' | 'moodLonely' | 'moodOverwhelmed' | 'moodGrateful'
+  // Mood check-in
+  | 'howAreYouFeeling';
 
 type TranslationMap = Record<TranslationKey, string>;
 
@@ -360,6 +370,29 @@ const en: TranslationMap = {
   interactiveBhavaReadings: 'Interactive Bhava Readings',
   houseReading: 'House {house} Reading',
   panditAiDestinyReadingLabel: '🔮 Pandit AI Destiny Reading',
+  // Home — previously hardcoded UI strings
+  mandaliRanks: 'Mandali Ranks',
+  mandaliRanksDesc: 'See the top disciples globally',
+  upcomingSacredTime: 'Upcoming Sacred Time',
+  festivalPrepDesc: 'Prepare early and open Panchang or vrat details when you are ready.',
+  viewBtn: 'View',
+  tomorrow: 'Tomorrow',
+  inNDays: 'In {n} days',
+  moodChip: 'Mood',
+  feelingPrefix: 'Feeling',
+  // Mood keys
+  moodAnxious: 'Anxious',
+  moodGrieving: 'Grieving',
+  moodAngry: 'Angry',
+  moodScattered: 'Scattered',
+  moodLost: 'Lost',
+  moodJoyful: 'Joyful',
+  moodSeeking: 'Seeking',
+  moodLonely: 'Lonely',
+  moodOverwhelmed: 'Overwhelmed',
+  moodGrateful: 'Grateful',
+  // Mood check-in
+  howAreYouFeeling: 'How are you feeling this morning?',
 };
 
 const hi: TranslationMap = {
@@ -619,6 +652,29 @@ const hi: TranslationMap = {
   interactiveBhavaReadings: 'संवादात्मक भाव फल',
   houseReading: 'भाव {house} का फल',
   panditAiDestinyReadingLabel: '🔮 पंडित AI भाग्य फल',
+  // Home — previously hardcoded UI strings
+  mandaliRanks: 'मंडली रैंक',
+  mandaliRanksDesc: 'विश्व के शीर्ष भक्तों को देखें',
+  upcomingSacredTime: 'आगामी पवित्र समय',
+  festivalPrepDesc: 'पहले से तैयारी करें और जब तैयार हों तो पंचांग या व्रत विवरण खोलें।',
+  viewBtn: 'देखें',
+  tomorrow: 'कल',
+  inNDays: '{n} दिनों में',
+  moodChip: 'मनोदशा',
+  feelingPrefix: 'अनुभव:',
+  // Mood keys
+  moodAnxious: 'चिंतित',
+  moodGrieving: 'दुखी',
+  moodAngry: 'क्रोधित',
+  moodScattered: 'बिखरा',
+  moodLost: 'खोया',
+  moodJoyful: 'आनंदित',
+  moodSeeking: 'खोज में',
+  moodLonely: 'अकेला',
+  moodOverwhelmed: 'अभिभूत',
+  moodGrateful: 'कृतज्ञ',
+  // Mood check-in
+  howAreYouFeeling: 'आज सुबह आप कैसा महसूस कर रहे हैं?',
 };
 
 const pa: TranslationMap = {
@@ -878,6 +934,29 @@ const pa: TranslationMap = {
   interactiveBhavaReadings: 'ਇੰਟਰਐਕਟਿਵ ਭਾਵ ਫਲ',
   houseReading: 'ਭਾਵ {house} ਦਾ ਫਲ',
   panditAiDestinyReadingLabel: '🔮 ਪੰਡਿਤ AI ਭਾਗ ਫਲ',
+  // Home — previously hardcoded UI strings
+  mandaliRanks: 'ਮੰਡਲੀ ਰੈਂਕ',
+  mandaliRanksDesc: 'ਵਿਸ਼ਵ ਭਰ ਵਿੱਚ ਚੋਟੀ ਦੇ ਭਗਤਾਂ ਨੂੰ ਵੇਖੋ',
+  upcomingSacredTime: 'ਆਉਣ ਵਾਲਾ ਪਵਿੱਤਰ ਸਮਾਂ',
+  festivalPrepDesc: 'ਪਹਿਲਾਂ ਤੋਂ ਤਿਆਰ ਕਰੋ ਅਤੇ ਜਦੋਂ ਤੁਸੀਂ ਤਿਆਰ ਹੋਵੋ ਪੰਚਾਂਗ ਜਾਂ ਵਰਤ ਵੇਰਵੇ ਖੋਲ੍ਹੋ।',
+  viewBtn: 'ਵੇਖੋ',
+  tomorrow: 'ਕੱਲ੍ਹ',
+  inNDays: '{n} ਦਿਨਾਂ ਵਿੱਚ',
+  moodChip: 'ਮਨੋਦਸ਼ਾ',
+  feelingPrefix: 'ਮਹਿਸੂਸ:',
+  // Mood keys
+  moodAnxious: 'ਚਿੰਤਤ',
+  moodGrieving: 'ਦੁਖੀ',
+  moodAngry: 'ਗੁੱਸੇਵਾਲਾ',
+  moodScattered: 'ਖਿੰਡਿਆ',
+  moodLost: 'ਭਟਕਿਆ',
+  moodJoyful: 'ਖੁਸ਼',
+  moodSeeking: 'ਖੋਜਦਾ',
+  moodLonely: 'ਇਕੱਲਾ',
+  moodOverwhelmed: 'ਹਾਵੀ',
+  moodGrateful: 'ਕ੍ਰਿਤਜ਼ਗੁਜ਼ਾਰ',
+  // Mood check-in
+  howAreYouFeeling: 'ਤੁਸੀਂ ਅੱਜ ਸਵੇਰੇ ਕਿਵੇਂ ਮਹਿਸੂਸ ਕਰ ਰਹੇ ਹੋ?',
 };
 
 export const TRANSLATIONS: Record<AppLang, TranslationMap> = { en, hi, pa };

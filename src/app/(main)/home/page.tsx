@@ -12,7 +12,7 @@ import {
 } from '@/lib/festivals';
 import { mapHeroAssetToTheme, type HeroAssetRow, type HomeHeroTheme } from '@/config/festivalThemes';
 import { getDailySacredText, getDayOfYear } from '@/lib/sacred-texts';
-import { getTraditionMeta } from '@/lib/tradition-config';
+import { getTraditionMeta, getSacredTextLabel } from '@/lib/tradition-config';
 import { LIVE_STREAMS } from '@/lib/live-streams';
 import type { GuidedPathProgressRow } from '@/lib/guided-paths';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
@@ -140,7 +140,8 @@ export default async function HomePage() {
     return { date: dateStr, japa: sadhanaMap[dateStr] ?? false, nitya: nityaDates.has(dateStr) };
   });
 
-  const meta = getTraditionMeta(tradition ?? 'other');
+  const meta      = getTraditionMeta(tradition ?? 'other');
+  const appLanguage = profile?.app_language ?? 'en';
   const showFirstTimeGuidance = (
     (profile?.shloka_streak ?? 0) === 0
     && !profile?.last_shloka_date
@@ -158,7 +159,7 @@ export default async function HomePage() {
       shloka={shloka}
       sacredText={sacredText}
       sacredTextMeta={{
-        label:       meta.sacredTextLabel,
+        label:       getSacredTextLabel(tradition, appLanguage),
         icon:        meta.sacredTextIcon,
         shareLabel:  meta.sacredTextShareLabel,
         accentColour: meta.accentColour,

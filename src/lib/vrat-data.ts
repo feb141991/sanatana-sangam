@@ -301,26 +301,234 @@ export const VRAT_DATABASE: Record<string, VratData> = {
   }
 };
 
+// ── Additional named festivals ────────────────────────────────────────────────
+const NAMED_VRAT_DATABASE: Record<string, VratData> = {
+
+  'vat-savitri': {
+    id: 'vat-savitri',
+    emoji: '🌳',
+    name: 'Vat Savitri Vrat',
+    nameLocal: 'वट सावित्री व्रत',
+    tagline: 'The vow of a devoted heart — where love overcomes even death.',
+    taglineLocal: 'समर्पित हृदय की प्रतिज्ञा — जहाँ प्रेम मृत्यु को भी जीत लेता है।',
+    significance: `Vat Savitri Vrat celebrates the legendary devotion of Savitri, who through her unwavering love and spiritual resolve brought her husband Satyavan back from the realm of Yama, the god of death.
+
+Observed on the Amavasya of Jyeshtha month (some observe on Purnima), this vrat is performed by married Hindu women for the long life and well-being of their husbands. The banyan tree — sacred, immortal, and shelter of a thousand lives — stands as witness to this eternal vow.
+
+The story of Savitri is not merely romantic legend. It is Dharma embodied: the courage to walk where mortals fear, the purity to question even Yama, and the wisdom to ask for boons that brought back life itself. Savitri's steadfast love is considered the highest form of pativrata — not subservience, but sovereign devotion.`,
+    significanceLocal: `वट सावित्री व्रत सावित्री की महान भक्ति का उत्सव है, जिन्होंने अपने अटूट प्रेम और आध्यात्मिक संकल्प से अपने पति सत्यवान को यम के लोक से वापस लाया था।
+
+ज्येष्ठ मास की अमावस्या को (कुछ पूर्णिमा को) मनाया जाने वाला यह व्रत विवाहित हिन्दू स्त्रियाँ अपने पति की दीर्घायु और सुख-समृद्धि के लिए करती हैं। वटवृक्ष — जो अमर, छायादार और हजारों जीवों का आश्रय है — इस अनंत प्रतिज्ञा का साक्षी बनता है।`,
+    practice: `Wake before sunrise and bathe. Wear fresh or auspicious clothes — red or yellow are traditional.
+
+Gather puja items at the base of a banyan (vat) tree: flowers, raw rice, incense, earthen lamp, red thread, and water in a kalash.
+
+Offer water and flowers to the banyan tree. Tie red or yellow sacred thread around the trunk while walking around it in pradakshina (clockwise circumambulation) — traditionally 108 or 5 rounds while reciting the Savitri story.
+
+Observe nirjala (waterless) or phalahar (fruit) fast from sunrise to moonrise.
+
+Pray for your husband's long life and well-being. Listen to or recite the Savitri-Satyavan katha. Break the fast after offering water to the moon.`,
+    practiceLocal: `सूर्योदय से पहले उठें और स्नान करें। शुभ वस्त्र पहनें — लाल या पीले रंग का परंपरागत महत्व है।
+
+वट वृक्ष के पास पूजा सामग्री रखें: फूल, कच्चे चावल, अगरबत्ती, मिट्टी का दीपक, लाल धागा और कलश में जल।
+
+वट वृक्ष को जल और फूल अर्पित करें। धागा बाँधते हुए 108 या 5 बार परिक्रमा करें और सावित्री कथा का पाठ करें।
+
+निर्जला या फलाहार व्रत रखें। सावित्री-सत्यवान कथा सुनें या पढ़ें। चंद्र दर्शन के बाद व्रत खोलें।`,
+    mantra: 'ॐ सावित्र्यै नमः। सत्यवते नमः। वटाय नमः।',
+    mantraLocal: 'ॐ सावित्र्यै नमः। सत्यवते नमः। वटाय नमः।',
+    fastingType: 'nirjala',
+    breakFastTime: 'After moonrise / chandrodaya',
+    dos: [
+      'Wake before sunrise and bathe',
+      'Perform puja at a banyan tree',
+      'Circumambulate the vat tree 108 or 5 times',
+      'Recite or listen to the Savitri-Satyavan katha',
+      'Offer sindoor, turmeric, and red/yellow thread',
+      'Pray for your husband\'s long life',
+      'Donate food or cloth to the needy after the fast',
+    ],
+    donts: [
+      'Do not eat grains or salt during the fast',
+      'Do not sleep during the day',
+      'Do not speak harshly or argue',
+      'Do not cut hair, nails, or wear black/dark colours',
+      'Avoid activities that create rajasic disturbance',
+    ],
+    pujaItems: [
+      'Fresh flowers (marigold, roses)',
+      'Raw rice (akshat)',
+      'Red or yellow thread (mauli)',
+      'Earthen or brass diya',
+      'Incense sticks',
+      'Sindoor and turmeric',
+      'Water kalash',
+      'Fruits (banana, mango)',
+      'Betel leaves and betel nuts',
+    ],
+  },
+
+  'navratri': {
+    id: 'navratri',
+    emoji: '🔱',
+    name: 'Navratri',
+    nameLocal: 'नवरात्रि',
+    tagline: 'Nine nights of the Divine Mother — the cosmos trembles with her grace.',
+    taglineLocal: 'नौ रातें दिव्य माँ की — उनकी कृपा से ब्रह्मांड कंपित होता है।',
+    significance: `Navratri — the nine sacred nights — celebrates the victory of Shakti over darkness. Across India, nine forms of Devi Durga (the Navadurga) are worshipped: Shailputri, Brahmacharini, Chandraghanta, Kushmanda, Skandamata, Katyayani, Kalaratri, Mahagauri, and Siddhidatri.
+
+This is not merely a festival — it is a cosmic recalibration. The nine nights mark transitional seasons when earth's energies are most potent for spiritual practice. What you plant in prayer during Navratri — intention, discipline, surrender — takes root at a deeper level.
+
+The Devi Mahatmya (Durga Saptashati) describes how Devi annihilated Mahishasura, the buffalo demon of ego and delusion. The real battle is inner: Navratri is an invitation to let the Mother destroy what no longer serves.`,
+    practice: `Begin with sankalpa (intention setting) on the first day. Light an akhand diya (continuously burning lamp) for all nine days if possible.
+
+Fast according to your capacity — sattvic foods, fruits, or nirjala on key days. Recite or listen to the Durga Saptashati, Devi Stotras, or the names of the nine Durgas.
+
+Visit a Devi temple, especially on Ashtami and Navami — the most sacred days. Perform kanya puja (worship of young girls as manifestations of Devi) on Ashtami or Navami.
+
+Participate in Garba or Dandiya (a dance offering to the Divine Mother) if your tradition includes it. Conclude with Dussehra / Vijayadashami — the day Devi triumphed.`,
+    mantra: 'ॐ दुं दुर्गायै नमः | या देवी सर्वभूतेषु शक्तिरूपेण संस्थिता',
+    fastingType: 'sattvic',
+    breakFastTime: 'After Navami puja on the 9th day',
+    dos: ['Light an akhand diya for nine days', 'Recite Durga Saptashati or Devi names', 'Offer red flowers to Devi', 'Perform kanya puja on Ashtami or Navami', 'Wear traditional colours for each day'],
+    donts: ['Avoid non-vegetarian food and alcohol', 'Do not cut hair or nails during the nine days', 'Avoid anger and negative speech', 'Do not extinguish the akhand diya'],
+    pujaItems: ['Red flowers (hibiscus, roses)', 'Coconut and kalash', 'Sindoor', 'Red cloth/dupatta', 'Camphor and incense', 'Durga idol or image', 'Nine types of fruit'],
+  },
+
+  'diwali': {
+    id: 'diwali',
+    emoji: '🪔',
+    name: 'Diwali',
+    nameLocal: 'दीपावली',
+    tagline: 'The festival of lights — darkness retreats where consciousness shines.',
+    taglineLocal: 'दीपों का उत्सव — जहाँ चेतना जलती है, वहाँ अंधकार पीछे हट जाता है।',
+    significance: `Diwali — Deepavali, the "row of lamps" — commemorates Lord Rama's triumphant return to Ayodhya after 14 years of exile and the defeat of Ravana. Every lamp lit is a prayer: may light overcome darkness, truth overcome falsehood, life overcome death.
+
+For Vaishnavites, it is also the day Krishna annihilated the demon Narakasura. For Jains, it marks Mahavira's Nirvana. For Sikhs, it is Bandi Chhor Divas — the day Guru Hargobind ji was released from imprisonment, arriving in Amritsar on this night.
+
+The outer celebration — lamps, sweets, fireworks — mirrors an inner aspiration: may I illuminate every dark corner of my own mind with the light of awareness.`,
+    practice: `Clean and purify the home thoroughly before Diwali — this creates space for Lakshmi's arrival. Light diyas (earthen lamps) around your home and in the four directions.
+
+On Lakshmi Puja (the main evening), bathe, wear fresh clothes, and arrange the puja thali. Invoke Lakshmi, Ganesha, and Saraswati. Offer lotus flowers, white sweets, incense, and gold or silver.
+
+Light the lamps at dusk and keep them burning through the night. Share sweets with family and neighbours. Recite Lakshmi Stotra, Shri Sukta, or Mahalakshmi Ashtakam.`,
+    mantra: 'ॐ श्रीं ह्रीं श्रीं कमले कमलालये प्रसीद प्रसीद श्रीं ह्रीं श्रीं महालक्ष्म्यै नमः',
+    fastingType: 'none',
+    dos: ['Clean and decorate the home', 'Light diyas and keep them burning overnight', 'Perform Lakshmi-Ganesha puja in the evening', 'Share sweets and gifts with neighbours', 'Wear new or fresh clothes'],
+    donts: ['Do not sleep during Lakshmi Puja time', 'Avoid gambling excessively (a distortion of the tradition)', 'Do not leave the home in darkness', 'Avoid harsh speech and disputes on this day'],
+    pujaItems: ['Earthen diyas and oil', 'Lotus flowers', 'Incense and camphor', 'Sweets (kheer, laddoo)', 'Coins and gold/silver', 'Lakshmi and Ganesha idols', 'Red cloth for altar'],
+  },
+
+  'janmashtami': {
+    id: 'janmashtami',
+    emoji: '🦚',
+    name: 'Janmashtami',
+    nameLocal: 'जन्माष्टमी',
+    tagline: 'The night the universe held its breath — and Krishna was born.',
+    taglineLocal: 'वह रात जब ब्रह्मांड ने सांस रोकी — और कृष्ण का जन्म हुआ।',
+    significance: `Janmashtami celebrates the birth of Lord Krishna — the eighth avatar of Vishnu — who took form in Mathura's prison at midnight on the Ashtami of Krishna Paksha in Bhadrapada month.
+
+Krishna's birth was not a coincidence. It was cosmic intervention: Kamsa's reign of darkness had grown unbearable, and the universe called for a force of love, wisdom, and dharma to restore balance. The Bhagavad Gita that emerged from Krishna's life remains the most direct map of the human soul ever given.
+
+To observe Janmashtami is to welcome the inner Krishna — the one who plays the flute of the present moment, who dances on the serpent of ego, who says: "Give up all dharmas, take refuge in me alone, and I shall free you from all sins."`,
+    practice: `Fast until midnight — the sacred birth hour. Chant Krishna's names throughout the day: Hare Krishna, Govinda, Gopala, Madhava.
+
+At midnight, bathe the Krishna idol or image (abhisheka) with panchamrit (milk, curd, honey, ghee, sugar). Dress the idol, offer tulsi leaves, makhan (butter), and flute — symbols of Krishna's life.
+
+Break your fast only after midnight puja is complete. Sing bhajans, kirtans, and the Hare Krishna mahamantra. Read from the Bhagavad Gita or Bhagavata Purana. Celebrate with joy — for Krishna's nature is ananda.`,
+    mantra: 'हरे कृष्ण हरे कृष्ण कृष्ण कृष्ण हरे हरे | हरे राम हरे राम राम राम हरे हरे',
+    mantraLocal: 'हरे कृष्ण हरे कृष्ण कृष्ण कृष्ण हरे हरे | हरे राम हरे राम राम राम हरे हरे',
+    fastingType: 'nirjala',
+    breakFastTime: 'After midnight puja (around 12:00–1:00 AM)',
+    dos: ['Fast until midnight', 'Perform abhisheka (bathing) of the Krishna idol at midnight', 'Chant Hare Krishna mahamantra throughout', 'Sing bhajans and read Bhagavad Gita', 'Decorate with flowers, tulsi, and peacock feathers'],
+    donts: ['Do not eat grains before midnight', 'Avoid tamasic food and intoxicants', 'Do not sleep before the midnight puja', "Avoid anger — Krishna's nature is compassion and joy"],
+    pujaItems: ['Panchamrit (milk, curd, honey, ghee, sugar)', 'Tulsi leaves', 'Makhan (butter) and mishri', 'Yellow and blue flowers', 'Small flute', 'Peacock feather', 'Incense and diya'],
+  },
+
+  'holi': {
+    id: 'holi',
+    emoji: '🎨',
+    name: 'Holi',
+    nameLocal: 'होली',
+    tagline: 'Colour the world as God colours the dawn — with abandon and joy.',
+    significance: `Holi celebrates the triumph of devotion over tyranny. Prahlada, a young devotee of Vishnu, survived every attempt by his demon king father Hiranyakashipu to kill him — protected by divine grace. When Holika (Hiranyakashipu's sister, immune to fire) tried to burn Prahlada alive, she perished and he emerged unharmed. The bonfire of Holika Dahan the night before Holi commemorates this victory.
+
+The next day, in an explosion of colour, Holi expresses what Prahlada embodied: that divine love transcends all divisions. On this one day, all social barriers dissolve — colour touches everyone equally, and the boundary between self and other blurs in laughter and play.
+
+Holi is also associated with Radha and Krishna's love — the spring festival of colour was said to have been Krishna's own playful invention in Vrindavan.`,
+    practice: `On the eve of Holi (Holika Dahan night): light a bonfire, circumambulate it three times, pray for the burning away of ego, hatred, and past hurts. Throw coconut, wheat stalks, and sacred wood into the fire.
+
+On Holi day: play with natural colours (gulal made from flowers). Drink thandai (a traditional drink with milk and spices) — avoid substances that harm the body.
+
+Sing songs of Krishna and Radha. Visit family and elders. Offer forgiveness to all and seek it from those you have wronged. The spirit of Holi is radical inclusion: let down every wall.`,
+    mantra: 'ॐ नमो भगवते वासुदेवाय। राधे राधे गोविन्द गोपाल।',
+    fastingType: 'none',
+    dos: ['Play with natural, flower-based colours', 'Perform Holika Dahan puja the night before', 'Visit elders and seek blessings', 'Share sweets — gujiya, puran poli, thandai', 'Offer forgiveness and reconcile broken relationships'],
+    donts: ['Avoid synthetic chemical colours that harm skin and eyes', 'Do not force colour on those who decline', 'Avoid excessive alcohol', 'Do not disrespect temples or places of worship during play'],
+    pujaItems: ['Firewood for Holika Dahan', 'Coconut and wheat stalks', 'Gulal (natural colours)', 'Incense and flowers', 'Gujiya and sweets'],
+  },
+
+  'gurpurab': {
+    id: 'gurpurab',
+    emoji: '☬',
+    name: 'Gurpurab',
+    nameLocal: 'ਗੁਰਪੁਰਬ',
+    tagline: 'The Guru\'s light never sets — it only changes form.',
+    significance: `Gurpurab marks the birth anniversaries (and other sacred days) of the ten Sikh Gurus. The most celebrated is Guru Nanak Jayanti — the birthday of Guru Nanak Dev Ji, founder of Sikhism and one of the greatest spiritual teachers the world has known.
+
+Guru Nanak's life was a continuous act of breaking walls: between Hindu and Muslim, between rich and poor, between the sacred and the mundane. His three core teachings — Naam Japna (meditate on the Name), Kirat Karni (earn through honest work), Vand Chhakna (share what you have) — are a complete dharma for life.
+
+Gurpurab is not merely a birthday celebration. It is a remembrance of what one human life can accomplish when surrendered entirely to the divine Name.`,
+    practice: `Gurpurab begins with Prabhat Pheri — the pre-dawn procession through the neighbourhood, singing hymns from the Guru Granth Sahib.
+
+Visit the Gurdwara for kirtan (continuous singing of shabads). Listen to the akhand path (48-hour continuous reading of Guru Granth Sahib), or join for any portion. Participate in langar — the free community kitchen that embodies Guru Nanak's principle of equality.
+
+At home: light a diya, recite Japji Sahib (especially at dawn), and sing or listen to gurbani. Reflect on the Guru's life and what one teaching you will carry forward. Serve — volunteering at langar is considered seva of the highest order.`,
+    mantra: 'ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ',
+    mantraLocal: 'ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ',
+    fastingType: 'none',
+    dos: ['Attend the Gurdwara and listen to kirtan', 'Participate in langar seva (volunteering)', 'Recite Japji Sahib at dawn', 'Join or support the Prabhat Pheri', 'Share food and gifts with neighbours'],
+    donts: ['Avoid tobacco and alcohol', 'Do not enter the Gurdwara with shoes or head uncovered', 'Avoid tamasic activities — this is a day of satvik joy and service'],
+    pujaItems: ['Kada prasad ingredients (wheat, ghee, sugar)', 'Fresh flowers for the Gurdwara', 'Donation for langar'],
+  },
+
+};
+
 export function getVratData(slug: string): VratData | null {
-  const normalizedSlug = slug.toLowerCase().trim().replace(/\\s+vrat$/i, '').replace(/\\s+today$/i, '');
-  
-  if (normalizedSlug.includes('ekadashi')) return VRAT_DATABASE['ekadashi'];
-  if (normalizedSlug.includes('purnima')) return VRAT_DATABASE['purnima'];
-  if (normalizedSlug.includes('amavasya')) return VRAT_DATABASE['amavasya'];
-  if (normalizedSlug.includes('pradosh')) return VRAT_DATABASE['pradosh'];
-  if (normalizedSlug.includes('chaturthi')) return VRAT_DATABASE['chaturthi'];
-  if (normalizedSlug.includes('shivaratri')) return VRAT_DATABASE['shivaratri'];
-  if (normalizedSlug.includes('puranmashi')) return VRAT_DATABASE['puranmashi'];
-  if (normalizedSlug.includes('uposatha')) return VRAT_DATABASE['uposatha'];
-  
-  // Generic fallback if we don't have it explicitly
+  const n = slug.toLowerCase().trim();
+
+  // Exact or keyword matches against enriched named database
+  if (n.includes('vat savitri') || n.includes('vat-savitri') || n.includes('savitri'))
+    return NAMED_VRAT_DATABASE['vat-savitri'];
+  if (n.includes('navratri') || n.includes('navaratri'))
+    return NAMED_VRAT_DATABASE['navratri'];
+  if (n.includes('diwali') || n.includes('deepavali') || n.includes('divali'))
+    return NAMED_VRAT_DATABASE['diwali'];
+  if (n.includes('janmashtami') || n.includes('krishna jayanti') || n.includes('gokulashtami'))
+    return NAMED_VRAT_DATABASE['janmashtami'];
+  if (n.includes('holi') || n.includes('holika'))
+    return NAMED_VRAT_DATABASE['holi'];
+  if (n.includes('gurpurab') || n.includes('guru nanak') || n.includes('gurupurab'))
+    return NAMED_VRAT_DATABASE['gurpurab'];
+
+  // Recurring tithis
+  if (n.includes('ekadashi')) return VRAT_DATABASE['ekadashi'];
+  if (n.includes('purnima') || n.includes('poornima')) return VRAT_DATABASE['purnima'];
+  if (n.includes('amavasya') || n.includes('amavasai')) return VRAT_DATABASE['amavasya'];
+  if (n.includes('pradosh') || n.includes('pradosham')) return VRAT_DATABASE['pradosh'];
+  if (n.includes('chaturthi') || n.includes('sankashti')) return VRAT_DATABASE['chaturthi'];
+  if (n.includes('shivaratri') || n.includes('shivratri')) return VRAT_DATABASE['shivaratri'];
+  if (n.includes('puranmashi') || n.includes('sangrand')) return VRAT_DATABASE['puranmashi'];
+  if (n.includes('uposatha')) return VRAT_DATABASE['uposatha'];
+
+  // Generic fallback — remove "Today is" which is wrong when viewing ahead of the date
   return {
-    id: slug.toLowerCase().replace(/\\s+/g, '-'),
+    id: slug.toLowerCase().replace(/\s+/g, '-'),
     emoji: '✨',
-    name: slug.replace(/\\b\\w/g, c => c.toUpperCase()),
+    name: slug.replace(/\b\w/g, c => c.toUpperCase()),
     tagline: 'A Sacred Observance',
-    significance: `Today is an auspicious day for the observance of ${slug}. It is a time for deepened spiritual focus, inner discipline, and alignment with the divine rhythms.`,
-    practice: 'Follow your tradition\'s specific guidelines for this day. This usually involves fasting, increased japa, and visiting a sacred space.',
+    significance: `${slug.replace(/\b\w/g, c => c.toUpperCase())} is a sacred day in the dharmic calendar — a time for deepened spiritual focus, inner discipline, and alignment with the divine rhythms. Prepare your heart through prayer, fasting, and reflection.`,
+    practice: 'Follow your tradition\'s specific guidelines for this observance. This usually involves fasting, increased japa, visiting a sacred space, and sharing with those in need.',
     mantra: 'Om Shanti Shanti Shanti',
   };
 }

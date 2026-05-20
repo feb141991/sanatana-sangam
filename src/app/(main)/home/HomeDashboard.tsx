@@ -1487,9 +1487,7 @@ export default function HomeDashboard({
       transliterationLanguage ?? 'en'
     ),
     meaning: sacredText ? sacredText.meaning : shloka.meaning,
-    actionLabel: sacredText
-      ? sacredTextMeta.label.toLowerCase().replace(/^aaj ka\s+/i, "today’s ")
-      : "today’s shloka",
+    actionLabel: sacredTextMeta.label,
     streakLabel: sacredText ? 'sacred text streak' : 'shloka streak',
   };
 
@@ -1601,8 +1599,8 @@ export default function HomeDashboard({
 
   const upcomingSacredObservanceLabel = upcomingSacredObservance
     ? upcomingSacredObservance.daysLeft === 1
-      ? 'Tomorrow'
-      : `In ${upcomingSacredObservance.daysLeft} days`
+      ? t('tomorrow')
+      : t('inNDays').replace('{n}', String(upcomingSacredObservance.daysLeft))
     : null;
 
   // ── Dharm Veer ───────────────────────────────────────────────────────────────
@@ -1652,8 +1650,8 @@ export default function HomeDashboard({
       icon: CalendarDays,
     },
     {
-      title: 'Mandali Ranks',
-      description: 'See the top disciples globally',
+      title: t('mandaliRanks'),
+      description: t('mandaliRanksDesc'),
       href: '/scoreboard',
       icon: Trophy,
     },
@@ -1799,12 +1797,14 @@ export default function HomeDashboard({
                   {moodToday ? (
                     <>
                       <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={14} />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--divine-text)] dark:text-white/90">Feeling {moodToday.label}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--divine-text)] dark:text-white/90">
+                        {t('feelingPrefix')} {t((`mood${moodToday.key.charAt(0).toUpperCase()}${moodToday.key.slice(1)}`) as any)}
+                      </span>
                     </>
                   ) : (
                     <>
                       <Sparkles size={12} className="text-[#F2EAD6] opacity-70" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#F2EAD6] opacity-80">Mood</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#F2EAD6] opacity-80">{t('moodChip')}</span>
                     </>
                   )}
                 </Link>
@@ -1952,7 +1952,7 @@ export default function HomeDashboard({
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: '#C5A059' }}>
-                        Upcoming Sacred Time
+                        {t('upcomingSacredTime')}
                       </span>
                       <span
                         className="rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em]"
@@ -1968,12 +1968,12 @@ export default function HomeDashboard({
                       {upcomingSacredObservance.festival.name}
                     </p>
                     <p className="mt-1 text-[11px] leading-relaxed" style={{ color: heroSecondaryText }}>
-                      Prepare early and open Panchang or vrat details when you are ready.
+                      {t('festivalPrepDesc')}
                     </p>
                   </div>
 
                   <div className="flex shrink-0 items-center gap-1 text-[11px] font-semibold" style={{ color: '#C5A059' }}>
-                    <span>View</span>
+                    <span>{t('viewBtn')}</span>
                     <ChevronRight size={14} />
                   </div>
                 </div>
@@ -2057,7 +2057,7 @@ export default function HomeDashboard({
               role="group"
               aria-label="Morning mood check-in"
             >
-              <p className="mood-checkin-prompt">How are you feeling this morning?</p>
+              <p className="mood-checkin-prompt">{t('howAreYouFeeling')}</p>
               <div className="mood-checkin-options" role="list">
                 {MOOD_CARD_OPTIONS.map(m => (
                   <button

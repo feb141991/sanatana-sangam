@@ -500,3 +500,23 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
 export function getTraditionMeta(tradition?: string | null): TraditionMeta {
   return TRADITION_CONFIG[(tradition as TraditionKey)] ?? TRADITION_CONFIG.hindu;
 }
+
+/**
+ * Get the language-aware label for the daily sacred text card.
+ * Replaces the old tradition-only `sacredTextLabel` which was always in Hindi-romanized form.
+ *
+ * @param tradition  - e.g. 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'other'
+ * @param lang       - app_language: 'en' | 'hi' | 'pa'
+ */
+export function getSacredTextLabel(tradition?: string | null, lang?: string | null): string {
+  const labels: Record<string, Record<string, string>> = {
+    hindu:    { en: "Today's Verse",        hi: 'आज का श्लोक',       pa: 'ਅੱਜ ਦਾ ਸ਼ਲੋਕ'     },
+    sikh:     { en: "Today's Shabad",       hi: 'आज का शबद',         pa: 'ਅੱਜ ਦਾ ਸ਼ਬਦ'      },
+    buddhist: { en: "Today's Dhamma Verse", hi: 'आज का धम्म वचन',   pa: 'ਅੱਜ ਦਾ ਧੰਮ ਸ਼ਲੋਕ' },
+    jain:     { en: "Today's Sutra",        hi: 'आज का सूत्र',       pa: 'ਅੱਜ ਦਾ ਸੂਤਰ'      },
+    other:    { en: "Today's Wisdom",       hi: 'आज की प्रज्ञा',     pa: 'ਅੱਜ ਦੀ ਸਿਆਣਪ'    },
+  };
+  const tradition_ = tradition ?? 'hindu';
+  const lang_      = (lang ?? 'en') as string;
+  return labels[tradition_]?.[lang_] ?? labels[tradition_]?.en ?? labels.other.en;
+}
