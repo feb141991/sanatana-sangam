@@ -21,6 +21,12 @@ This dashboard provides a weekly status snapshot of all Pramana study lanes, cor
 
 ---
 
+## 🚀 Strategic Plans
+
+- [Sarvam AI Feature Rollout Plan](docs/pramana_sarvam_rollout_plan.md) — Feature-by-feature integration and caching strategies.
+
+---
+
 ## 📚 Study Lane Registry & Rollout Matrix
 
 The matrix below shows the status of each tradition's study lane.

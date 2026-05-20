@@ -1,3 +1,5 @@
+import { createServerSupabaseClient } from '@/lib/supabase-server';
+
 export type SeverityLevel = 'P0' | 'P1' | 'P2' | 'P3';
 export type DomainCategory = 'app' | 'ai' | 'tts' | 'translation' | 'auth' | 'notifications' | 'cron' | 'storage';
 
@@ -20,6 +22,27 @@ export interface MonitoringEvent {
 
 // Global in-memory sink for events (in production, this would pipe to Datadog/CloudWatch)
 export const _eventSink: MonitoringEvent[] = [];
+let _flushBuffer: MonitoringEvent[] = [];
+let _flushTimeout: NodeJS.Timeout | null = null;
+
+async function flushToSupabase() {
+  const batch = [..._flushBuffer];
+  _flushBuffer = [];
+  
+  if (batch.length === 0) return;
+
+  try {
+    const supabase = await createServerSupabaseClient();
+    // This assumes a 'monitoring_events' table exists. 
+    // If it doesn't, this will fail gracefully without crashing the app.
+    const { error } = await supabase.from('monitoring_events').insert(batch);
+    if (error && error.code !== '42P01') { // Ignore table not found error for now
+      console.warn('[Monitoring] Failed to flush to durable backend:', error.message);
+    }
+  } catch (err) {
+    // Fire and forget
+  }
+}
 
 /**
  * Emit a structured monitoring event.
@@ -35,6 +58,15 @@ export function emitEvent(event: Omit<MonitoringEvent, 'timestamp'>): void {
   _eventSink.unshift(fullEvent);
   if (_eventSink.length > 1000) {
     _eventSink.pop();
+  }
+
+  // Add to durable flush buffer
+  _flushBuffer.push(fullEvent);
+  if (!_flushTimeout) {
+    _flushTimeout = setTimeout(() => {
+      _flushTimeout = null;
+      flushToSupabase().catch(() => {});
+    }, 5000); // Flush every 5 seconds
   }
 
   // Print P0/P1 to console immediately

@@ -15,13 +15,51 @@ export interface ProviderHealth {
   fallbackCount: number;
 }
 
+export interface ConfigDriftWarning {
+  severity: 'P1' | 'P2';
+  issue: string;
+  recommendation: string;
+}
+
 export interface AggregatedHealthReport {
   activeIncidents: MonitoringEvent[];
   routes: RouteHealth[];
   providers: ProviderHealth[];
   ttsCacheHits: number;
   ttsTotal: number;
+  driftWarnings: ConfigDriftWarning[];
   lastUpdated: string;
+}
+
+export function detectConfigDrift(): ConfigDriftWarning[] {
+  const warnings: ConfigDriftWarning[] = [];
+  const primaryProvider = process.env.PRAMANA_INFERENCE_PROVIDER?.trim() || 'gemini-hosted';
+  
+  if (primaryProvider === 'sarvam-hosted' && !process.env.SARVAM_API_KEY) {
+    warnings.push({
+      severity: 'P1',
+      issue: 'SARVAM_API_KEY is missing, but PRAMANA_INFERENCE_PROVIDER is set to sarvam-hosted.',
+      recommendation: 'Provide the API key or change the primary provider.'
+    });
+  }
+
+  if (primaryProvider === 'gemini-hosted' && !process.env.GEMINI_API_KEY) {
+    warnings.push({
+      severity: 'P1',
+      issue: 'GEMINI_API_KEY is missing, but PRAMANA_INFERENCE_PROVIDER is set to gemini-hosted.',
+      recommendation: 'Provide the Gemini API key.'
+    });
+  }
+
+  if (!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || !process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+    warnings.push({
+      severity: 'P2',
+      issue: 'Google Service Account credentials missing for TTS.',
+      recommendation: 'TTS will fallback to Sarvam if configured, or fail entirely if not.'
+    });
+  }
+
+  return warnings;
 }
 
 /**
@@ -88,6 +126,7 @@ export function generateHealthReport(): AggregatedHealthReport {
     providers,
     ttsCacheHits,
     ttsTotal,
+    driftWarnings: detectConfigDrift(),
     lastUpdated: new Date().toISOString(),
   };
 }

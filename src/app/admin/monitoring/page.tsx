@@ -58,6 +58,25 @@ export default async function MonitoringPage() {
           )}
         </section>
 
+        {/* Config Drift Analysis */}
+        <section className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Configuration Drift</h2>
+          {report.driftWarnings.length === 0 ? (
+            <div className="p-4 bg-green-50 text-green-800 rounded-md">
+              ✅ Environment configuration is stable.
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {report.driftWarnings.map((warning, idx) => (
+                <div key={idx} className={`p-4 rounded-md border-l-4 ${warning.severity === 'P1' ? 'bg-red-50 border-red-500' : 'bg-yellow-50 border-yellow-500'}`}>
+                  <p className="font-bold text-sm mb-1">{warning.issue}</p>
+                  <p className="text-sm text-gray-600">Action: {warning.recommendation}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
         {/* Route Health */}
         <section className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           <h2 className="text-xl font-semibold mb-4 text-gray-800">Route Health & TTS Cache</h2>
@@ -95,10 +114,10 @@ export default async function MonitoringPage() {
         </section>
       </div>
 
-      {/* Active Incidents */}
-      <section className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+      {/* Active Incidents & Fallback Timeline */}
+      <section className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 mt-8">
         <h2 className="text-xl font-semibold mb-4 text-red-700 flex items-center">
-          <span className="mr-2">🚨</span> Active Incidents (P0/P1)
+          <span className="mr-2">🚨</span> Active Incidents & Fallbacks (P0/P1)
         </h2>
         {report.activeIncidents.length === 0 ? (
           <p className="text-sm text-gray-500">No critical incidents in the current window.</p>

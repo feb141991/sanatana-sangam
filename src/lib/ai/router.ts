@@ -12,14 +12,21 @@ import type {
   AIChatInput,
 } from '@/lib/ai/contracts';
 
-function buildMetadata(task: AIResponseMetadata['task'], result: AITextResult): AIResponseMetadata {
-  const provider = getInferenceProvider();
+function buildMetadata(task: AIResponseMetadata['task'], result: AITextResult): AIResponseMetadata & { requestedProvider?: string; actualProvider?: string; fallbackOccurred?: boolean } {
+  const primaryProvider = getInferenceProvider();
+  const requestedProvider = primaryProvider.info.id;
+  const actualProvider = result.provider;
+  const fallbackOccurred = requestedProvider !== actualProvider;
+
   return {
     task,
     provider: result.provider,
     model: result.modelUsed,
-    privateStackReady: provider.info.providerClass === 'self_hosted',
-    usedHostedFallback: provider.info.providerClass === 'hosted',
+    privateStackReady: primaryProvider.info.providerClass === 'self_hosted',
+    usedHostedFallback: fallbackOccurred || primaryProvider.info.providerClass === 'hosted',
+    requestedProvider,
+    actualProvider,
+    fallbackOccurred
   };
 }
 
@@ -154,7 +161,10 @@ export async function runDharmaChat(input: AIChatInput) {
   });
 
   const res = await runner(input);
-  const providerInfo = getInferenceProvider().info;
+  const primaryProviderInfo = getInferenceProvider().info;
+  const requestedProvider = primaryProviderInfo.id;
+  const actualProvider = res.metadata.provider;
+  const fallbackOccurred = requestedProvider !== actualProvider;
   
   return {
     raw: res.raw,
@@ -162,8 +172,11 @@ export async function runDharmaChat(input: AIChatInput) {
       task: 'ai_chat',
       provider: res.metadata.provider,
       model: res.metadata.model,
-      privateStackReady: providerInfo.providerClass === 'self_hosted',
-      usedHostedFallback: providerInfo.providerClass === 'hosted',
+      privateStackReady: primaryProviderInfo.providerClass === 'self_hosted',
+      usedHostedFallback: fallbackOccurred || primaryProviderInfo.providerClass === 'hosted',
+      requestedProvider,
+      actualProvider,
+      fallbackOccurred
     }
   };
 }
