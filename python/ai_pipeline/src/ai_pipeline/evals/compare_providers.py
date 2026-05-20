@@ -45,7 +45,13 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from ai_pipeline.evals.run_evals import run_gita_eval_suite
+from ai_pipeline.evals.run_evals import (
+    run_gita_eval_suite,
+    run_katha_eval_suite,
+    run_panchatantra_eval_suite,
+    run_upanishads_eval_suite,
+    run_sikh_gurbani_eval_suite,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -142,15 +148,15 @@ def run_suite_for_mode(suite_name: str, provider_mode: str) -> SuiteResult:
     """
     Dispatches a suite run to the appropriate provider.
 
-    Currently, 'mock' is fully implemented for all.
-    'hosted' and 'self-hosted' are fully implemented for 'pathshala_gita' via Python runner.
-    Other suites lack live Python prompt builders and will skip with an annotation.
+    All suites support live execution via 'self-hosted' or 'hosted' modes.
+    Falls back gracefully to mock if the provider is unavailable.
     """
     if provider_mode == "mock":
         return _mock_score_suite(suite_name, provider_mode)
 
     root = Path(__file__).resolve().parents[5]
 
+    # Check provider availability
     if provider_mode == "self-hosted":
         available, detail = _check_self_hosted_available()
         if not available:
@@ -161,28 +167,6 @@ def run_suite_for_mode(suite_name: str, provider_mode: str) -> SuiteResult:
                 passed_count=0,
                 pass_rate=0.0,
                 skipped_reason=f"Self-hosted unavailable: {detail}",
-            )
-        if suite_name == "pathshala_gita":
-            dataset_path = root / "python" / "ai_pipeline" / "datasets" / "evals" / "pathshala_explain.sample.jsonl"
-            res = run_gita_eval_suite(dataset_path, root, provider_mode="self-hosted")
-            pass_count = sum(1 for c in res["results"] if c["score_info"]["score"] >= 3)
-            return SuiteResult(
-                suite_name=suite_name,
-                provider_mode=provider_mode,
-                case_count=res["case_count"],
-                passed_count=pass_count,
-                pass_rate=round(pass_count / res["case_count"], 3) if res["case_count"] > 0 else 0.0,
-                mock_runs=res.get("mock_runs", 0),
-                live_runs=res.get("live_runs", 0),
-            )
-        else:
-            return SuiteResult(
-                suite_name=suite_name,
-                provider_mode=provider_mode,
-                case_count=0,
-                passed_count=0,
-                pass_rate=0.0,
-                skipped_reason="Live prompt builders not yet implemented in Python-side eval.",
             )
 
     if provider_mode == "hosted":
@@ -196,28 +180,51 @@ def run_suite_for_mode(suite_name: str, provider_mode: str) -> SuiteResult:
                 pass_rate=0.0,
                 skipped_reason="GEMINI_API_KEY is not set.",
             )
-        if suite_name == "pathshala_gita":
-            dataset_path = root / "python" / "ai_pipeline" / "datasets" / "evals" / "pathshala_explain.sample.jsonl"
-            res = run_gita_eval_suite(dataset_path, root, provider_mode="hosted")
-            pass_count = sum(1 for c in res["results"] if c["score_info"]["score"] >= 3)
-            return SuiteResult(
-                suite_name=suite_name,
-                provider_mode=provider_mode,
-                case_count=res["case_count"],
-                passed_count=pass_count,
-                pass_rate=round(pass_count / res["case_count"], 3) if res["case_count"] > 0 else 0.0,
-                mock_runs=res.get("mock_runs", 0),
-                live_runs=res.get("live_runs", 0),
-            )
-        else:
-            return SuiteResult(
-                suite_name=suite_name,
-                provider_mode=provider_mode,
-                case_count=0,
-                passed_count=0,
-                pass_rate=0.0,
-                skipped_reason="Live prompt builders not yet implemented in Python-side eval.",
-            )
+
+    # Dataset paths
+    datasets = root / "python" / "ai_pipeline" / "datasets" / "evals"
+
+    def _make_result(res: dict) -> SuiteResult:
+        pass_count = sum(1 for c in res["results"] if c["score_info"]["score"] >= 3)
+        return SuiteResult(
+            suite_name=suite_name,
+            provider_mode=provider_mode,
+            case_count=res["case_count"],
+            passed_count=pass_count,
+            pass_rate=round(pass_count / res["case_count"], 3) if res["case_count"] > 0 else 0.0,
+            mock_runs=res.get("mock_runs", 0),
+            live_runs=res.get("live_runs", 0),
+        )
+
+    if suite_name == "pathshala_gita":
+        res = run_gita_eval_suite(
+            datasets / "pathshala_explain.sample.jsonl", root, provider_mode=provider_mode
+        )
+        return _make_result(res)
+
+    if suite_name == "bhakti_katha":
+        res = run_katha_eval_suite(
+            datasets / "bhakti_katha.sample.jsonl", provider_mode=provider_mode
+        )
+        return _make_result(res)
+
+    if suite_name == "bhakti_panchatantra":
+        res = run_panchatantra_eval_suite(
+            datasets / "bhakti_panchatantra.sample.jsonl", provider_mode=provider_mode
+        )
+        return _make_result(res)
+
+    if suite_name == "pathshala_upanishads":
+        res = run_upanishads_eval_suite(
+            datasets / "pathshala_upanishads.sample.jsonl", root, provider_mode=provider_mode
+        )
+        return _make_result(res)
+
+    if suite_name == "sikh_gurbani":
+        res = run_sikh_gurbani_eval_suite(
+            datasets / "sikh_gurbani.sample.jsonl", root, provider_mode=provider_mode
+        )
+        return _make_result(res)
 
     return SuiteResult(
         suite_name=suite_name,
@@ -225,7 +232,7 @@ def run_suite_for_mode(suite_name: str, provider_mode: str) -> SuiteResult:
         case_count=0,
         passed_count=0,
         pass_rate=0.0,
-        skipped_reason=f"Unknown provider mode: {provider_mode}",
+        skipped_reason=f"Unknown suite: {suite_name}",
     )
 
 

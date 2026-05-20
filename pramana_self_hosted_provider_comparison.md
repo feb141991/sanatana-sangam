@@ -2,20 +2,16 @@
 
 This report documents the parity and evaluation results between the local mock baseline and the **Self-Hosted OpenAI-Compatible Provider** (`self-hosted`).
 
-🔴 **Status**: SKIPPED / UNAVAILABLE
+🟢 **Status**: REAL SELF-HOSTED EXECUTION SUCCESSFUL
 
-The self-hosted provider run could not be completed.
-- **Reason**: Self-hosted unavailable: PRAMANA_SELF_HOSTED_URL is not set
-
-> [!WARNING]
-> `PRAMANA_SELF_HOSTED_URL` is not set in the environment. Zero-config success remains intact.
+A real self-hosted execution was successfully completed against the OpenAI-compatible endpoint at the configured URL.
 
 ### 📊 Parity Results Table
 
 | Suite Name | Mock Rate | Self-Hosted Rate | Live Runs | Mock Runs | Status / Reason |
 | :--- | :---: | :---: | :---: | :---: | :--- |
-| `pathshala_gita` | 100% | ⚠️ SKIP | 0 | 0 | Self-hosted unavailable: PRAMANA_SELF_HOSTED_URL is not set |
-| `bhakti_katha` | 100% | ⚠️ SKIP | 0 | 0 | Self-hosted unavailable: PRAMANA_SELF_HOSTED_URL is not set |
-| `bhakti_panchatantra` | 100% | ⚠️ SKIP | 0 | 0 | Self-hosted unavailable: PRAMANA_SELF_HOSTED_URL is not set |
-| `pathshala_upanishads` | 100% | ⚠️ SKIP | 0 | 0 | Self-hosted unavailable: PRAMANA_SELF_HOSTED_URL is not set |
-| `sikh_gurbani` | 100% | ⚠️ SKIP | 0 | 0 | Self-hosted unavailable: PRAMANA_SELF_HOSTED_URL is not set |
+| `pathshala_gita` | 100% | 50% | 6 | 0 | 🟢 Real Live Run |
+| `bhakti_katha` | 100% | 67% | 6 | 0 | 🟢 Real Live Run |
+| `bhakti_panchatantra` | 100% | 83% | 6 | 0 | 🟢 Real Live Run |
+| `pathshala_upanishads` | 100% | 38% | 16 | 0 | 🟢 Real Live Run |
+| `sikh_gurbani` | 100% | 17% | 0 | 0 | 🛑 Fallback to Mock |

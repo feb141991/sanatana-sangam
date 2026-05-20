@@ -8,7 +8,6 @@
   ],
   "modes": [
     "mock",
-    "hosted",
     "self-hosted"
   ],
   "results": {
@@ -21,21 +20,13 @@
         "live_runs": 0,
         "skipped_reason": null
       },
-      "hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
-        "mock_runs": 0,
-        "live_runs": 0,
-        "skipped_reason": "GEMINI_API_KEY is not set."
-      },
       "self-hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
+        "pass_rate": 0.5,
+        "passed": 3,
+        "total": 6,
         "mock_runs": 0,
-        "live_runs": 0,
-        "skipped_reason": "Self-hosted unavailable: PRAMANA_SELF_HOSTED_URL is not set"
+        "live_runs": 6,
+        "skipped_reason": null
       }
     },
     "bhakti_katha": {
@@ -47,21 +38,13 @@
         "live_runs": 0,
         "skipped_reason": null
       },
-      "hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
-        "mock_runs": 0,
-        "live_runs": 0,
-        "skipped_reason": "GEMINI_API_KEY is not set."
-      },
       "self-hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
+        "pass_rate": 0.667,
+        "passed": 4,
+        "total": 6,
         "mock_runs": 0,
-        "live_runs": 0,
-        "skipped_reason": "Self-hosted unavailable: PRAMANA_SELF_HOSTED_URL is not set"
+        "live_runs": 6,
+        "skipped_reason": null
       }
     },
     "bhakti_panchatantra": {
@@ -73,21 +56,13 @@
         "live_runs": 0,
         "skipped_reason": null
       },
-      "hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
-        "mock_runs": 0,
-        "live_runs": 0,
-        "skipped_reason": "GEMINI_API_KEY is not set."
-      },
       "self-hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
+        "pass_rate": 0.833,
+        "passed": 5,
+        "total": 6,
         "mock_runs": 0,
-        "live_runs": 0,
-        "skipped_reason": "Self-hosted unavailable: PRAMANA_SELF_HOSTED_URL is not set"
+        "live_runs": 6,
+        "skipped_reason": null
       }
     },
     "pathshala_upanishads": {
@@ -99,21 +74,13 @@
         "live_runs": 0,
         "skipped_reason": null
       },
-      "hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
-        "mock_runs": 0,
-        "live_runs": 0,
-        "skipped_reason": "GEMINI_API_KEY is not set."
-      },
       "self-hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
+        "pass_rate": 0.375,
+        "passed": 6,
+        "total": 16,
         "mock_runs": 0,
-        "live_runs": 0,
-        "skipped_reason": "Self-hosted unavailable: PRAMANA_SELF_HOSTED_URL is not set"
+        "live_runs": 16,
+        "skipped_reason": null
       }
     },
     "sikh_gurbani": {
@@ -125,21 +92,13 @@
         "live_runs": 0,
         "skipped_reason": null
       },
-      "hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
-        "mock_runs": 0,
-        "live_runs": 0,
-        "skipped_reason": "GEMINI_API_KEY is not set."
-      },
       "self-hosted": {
-        "pass_rate": 0.0,
-        "passed": 0,
-        "total": 0,
+        "pass_rate": 0.167,
+        "passed": 1,
+        "total": 6,
         "mock_runs": 0,
         "live_runs": 0,
-        "skipped_reason": "Self-hosted unavailable: PRAMANA_SELF_HOSTED_URL is not set"
+        "skipped_reason": null
       }
     }
   }

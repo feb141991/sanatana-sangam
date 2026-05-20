@@ -335,124 +335,177 @@ Return ONLY this JSON (no markdown, no extra text):
     }
 
 
-def run_katha_eval_suite(dataset_path: Path) -> dict[str, Any]:
+def run_katha_eval_suite(dataset_path: Path, provider_mode: str = "mock") -> dict[str, Any]:
     cases = load_jsonl(dataset_path)
     case_results = []
+    live_runs = 0
+    mock_runs = 0
+
     for case in cases:
         story_title = case["prompt"]["chunk_id"]
         story_text = case["prompt"]["story"]
         lang = case["prompt"]["language"]
+        lang_note = "Respond in simple, natural Hindi using Devanagari script." if lang == "hi" else "Respond in clear, warm English."
 
-        if lang == "hi":
-            mock_response = json.dumps({
-                "word_by_word": "शब्द विश्लेषण।",
-                "meaning": f"कथा {story_title} का अर्थ और सारांश।",
-                "commentary": "टिप्पणी। भगवान नरसिंह ने प्रहलाद की रक्षा की और सुदामा पर कृपा की।",
-                "daily_application": "दैनिक जीवन में उपयोग। पूर्ण विश्वास और समर्पण रखें।",
-                "contemplation": "चिंतन प्रश्न।",
-                "related_text": "श्रीमद्भागवत।"
-            }, ensure_ascii=False)
-        else:
-            mock_response = json.dumps({
-                "word_by_word": "Key words of the devotional story.",
-                "meaning": f"Synopsis of the devotional story of {story_title} who was a devotee.",
-                "commentary": f"Commentary on the story of {story_title} demonstrating supreme devotion of Prahlada or Sudama.",
-                "daily_application": "How to apply the lesson of surrender to Lord Krishna/Vishnu in everyday life.",
-                "contemplation": "Do we have deep devotion?",
-                "related_text": "Srimad Bhagavatam"
-            }, ensure_ascii=False)
+        prompt_text = f"""You are a Bhakti teacher explaining a devotional story to a sincere practitioner.
 
-        mock_result = {
-            "raw_response": mock_response,
+STORY: {story_title}
+STORY TEXT: {story_text}
+
+Return ONLY this JSON (no markdown, no extra text):
+{{
+  "word_by_word": "<Key terms and their meanings, 1-2 sentences>",
+  "meaning": "<Core meaning of the story in 2-3 sentences>",
+  "commentary": "<Bhakti interpretation in 3-4 sentences>",
+  "daily_application": "<How to apply this teaching today, 2-3 sentences>",
+  "contemplation": "<A single reflective question or thought to sit with>",
+  "related_text": "<Name one other scripture or teacher that echoes this teaching>"
+}}
+
+{lang_note}"""
+
+        raw_response = ""
+        used_mock = True
+        if provider_mode != "mock":
+            raw_response = generate_live_explanation(prompt_text, provider_mode)
+            if raw_response:
+                used_mock = False
+                live_runs += 1
+
+        if used_mock:
+            mock_runs += 1
+            if lang == "hi":
+                raw_response = json.dumps({
+                    "word_by_word": "शब्द विश्लेषण।",
+                    "meaning": f"कथा {story_title} का अर्थ और सारांश।",
+                    "commentary": "टिप्पणी। भगवान नरसिंह ने प्रहलाद की रक्षा की और सुदामा पर कृपा की।",
+                    "daily_application": "दैनिक जीवन में उपयोग। पूर्ण विश्वास और समर्पण रखें।",
+                    "contemplation": "चिंतन प्रश्न।",
+                    "related_text": "श्रीमद्भागवत।"
+                }, ensure_ascii=False)
+            else:
+                raw_response = json.dumps({
+                    "word_by_word": "Key words of the devotional story.",
+                    "meaning": f"Synopsis of the devotional story of {story_title} who was a devotee.",
+                    "commentary": f"Commentary on the story of {story_title} demonstrating supreme devotion of Prahlada or Sudama.",
+                    "daily_application": "How to apply the lesson of surrender to Lord Krishna/Vishnu in everyday life.",
+                    "contemplation": "Do we have deep devotion?",
+                    "related_text": "Srimad Bhagavatam"
+                }, ensure_ascii=False)
+
+        eval_result = {
+            "raw_response": raw_response,
             "retrieved_passages": [
                 {
                     "content": f"Story content for {story_title}. {story_text}",
-                    "metadata": {
-                        "sourceName": "Srimad Bhagavatam",
-                        "chunkId": case["prompt"]["chunk_id"]
-                    }
+                    "metadata": {"sourceName": "Srimad Bhagavatam", "chunkId": story_title}
                 }
             ]
         }
-
-        score_info = score_katha_explain(mock_result, case)
+        score_info = score_katha_explain(eval_result, case)
         case_results.append({
             "case_id": case["case_id"],
             "score_info": score_info,
-            "used_mock": True
+            "used_mock": used_mock
         })
 
     return {
         "dataset": str(dataset_path.name),
         "case_count": len(cases),
         "scorer": "score_katha_explain",
-        "live_runs": 0,
-        "mock_runs": len(cases),
+        "live_runs": live_runs,
+        "mock_runs": mock_runs,
         "results": case_results
     }
 
 
-def run_panchatantra_eval_suite(dataset_path: Path) -> dict[str, Any]:
+def run_panchatantra_eval_suite(dataset_path: Path, provider_mode: str = "mock") -> dict[str, Any]:
     cases = load_jsonl(dataset_path)
     case_results = []
+    live_runs = 0
+    mock_runs = 0
     for case in cases:
         story_title = case["prompt"]["chunk_id"]
         story_text = case["prompt"]["story"]
         lang = case["prompt"]["language"]
         case_id = case["case_id"]
 
-        if lang == "hi":
-            keywords_hi = "बंदर और मगरमच्छ" if "monkey" in case_id else "शेर और चतुर खरगोश"
-            mock_response = json.dumps({
-                "word_by_word": "शब्द विश्लेषण।",
-                "meaning": f"पंचतंत्र की कहानी {story_title} का अर्थ।",
-                "commentary": f"टिप्पणी। यह कहानी {keywords_hi} की नीति सिखाती है।",
-                "daily_application": "दैनिक जीवन में उपयोग$. बुद्धि का सही उपयोग कर संकट से बचें।",
-                "contemplation": "चिंतन प्रश्न। क्या बुद्धि बल से श्रेष्ठ है?",
-                "related_text": "हितोपदेश।"
-            }, ensure_ascii=False)
-        else:
-            kw = "monkey" if "monkey" in case_id else "tortoise" if "tortoise" in case_id else "lion" if "lion" in case_id else "jackal"
-            mock_response = json.dumps({
-                "word_by_word": "Moral maxims of niti shastra.",
-                "meaning": f"Synopsis of the Panchatantra fable of the {kw} demonstrating practical conduct.",
-                "commentary": f"Detailed commentary on the actions of the {kw} and the importance of intelligence and caution.",
-                "daily_application": "How to cultivate discernment and avoid trusting deceitful associates in daily life.",
-                "contemplation": "Are we being talkative or acting with quick wit like the monkey?",
-                "related_text": "Hitopadesha"
-            }, ensure_ascii=False)
+        lang_note = "Respond in simple, natural Hindi using Devanagari script." if lang == "hi" else "Respond in clear, warm English."
+        prompt_text = f"""You are a Niti Shastra (wisdom ethics) teacher explaining a Panchatantra fable.
 
-        mock_result = {
-            "raw_response": mock_response,
+FABLE: {story_title}
+FABLE TEXT: {story_text}
+
+Return ONLY this JSON (no markdown, no extra text):
+{{
+  "word_by_word": "<Key moral maxims and terms, 1-2 sentences>",
+  "meaning": "<Core lesson of the fable in 2-3 sentences>",
+  "commentary": "<Niti Shastra commentary in 3-4 sentences>",
+  "daily_application": "<How to apply this wisdom today, 2-3 sentences>",
+  "contemplation": "<A single reflective question or thought>",
+  "related_text": "<Name one other wisdom text that echoes this teaching>"
+}}
+
+{lang_note}"""
+
+        raw_response = ""
+        used_mock = True
+        if provider_mode != "mock":
+            raw_response = generate_live_explanation(prompt_text, provider_mode)
+            if raw_response:
+                used_mock = False
+                live_runs += 1
+
+        if used_mock:
+            mock_runs += 1
+            if lang == "hi":
+                keywords_hi = "बंदर और मगरमच्छ" if "monkey" in case_id else "शेर और चतुर खरगोश"
+                raw_response = json.dumps({
+                    "word_by_word": "शब्द विश्लेषण।",
+                    "meaning": f"पंचतंत्र की कहानी {story_title} का अर्थ।",
+                    "commentary": f"टिप्पणी। यह कहानी {keywords_hi} की नीति सिखाती है।",
+                    "daily_application": "दैनिक जीवन में उपयोग। बुद्धि का सही उपयोग कर संकट से बचें।",
+                    "contemplation": "चिंतन प्रश्न। क्या बुद्धि बल से श्रेष्ठ है?",
+                    "related_text": "हितोपदेश।"
+                }, ensure_ascii=False)
+            else:
+                kw = "monkey" if "monkey" in case_id else "tortoise" if "tortoise" in case_id else "lion" if "lion" in case_id else "jackal"
+                raw_response = json.dumps({
+                    "word_by_word": "Moral maxims of niti shastra.",
+                    "meaning": f"Synopsis of the Panchatantra fable of the {kw} demonstrating practical conduct.",
+                    "commentary": f"Detailed commentary on the actions of the {kw} and the importance of intelligence and caution.",
+                    "daily_application": "How to cultivate discernment and avoid trusting deceitful associates in daily life.",
+                    "contemplation": "Are we being talkative or acting with quick wit like the monkey?",
+                    "related_text": "Hitopadesha"
+                }, ensure_ascii=False)
+
+        eval_result = {
+            "raw_response": raw_response,
             "retrieved_passages": [
                 {
                     "content": f"Fable content for {story_title}. {story_text}",
-                    "metadata": {
-                        "sourceName": "Panchatantra",
-                        "chunkId": case["prompt"]["chunk_id"]
-                    }
+                    "metadata": {"sourceName": "Panchatantra", "chunkId": story_title}
                 }
             ]
         }
-
-        score_info = score_panchatantra_explain(mock_result, case)
+        score_info = score_panchatantra_explain(eval_result, case)
         case_results.append({
             "case_id": case_id,
             "score_info": score_info,
-            "used_mock": True
+            "used_mock": used_mock
         })
 
     return {
         "dataset": str(dataset_path.name),
         "case_count": len(cases),
         "scorer": "score_panchatantra_explain",
-        "live_runs": 0,
-        "mock_runs": len(cases),
+        "live_runs": live_runs,
+        "mock_runs": mock_runs,
         "results": case_results
     }
 
 
-def run_upanishads_eval_suite(dataset_path: Path, root: Path) -> dict[str, Any]:
+def run_upanishads_eval_suite(dataset_path: Path, root: Path, provider_mode: str = "mock") -> dict[str, Any]:
     cases = load_jsonl(dataset_path)
     index_path = root / "python" / "ai_pipeline" / "corpus" / "upanishads_index.json"
     
@@ -579,28 +632,61 @@ def run_upanishads_eval_suite(dataset_path: Path, root: Path) -> dict[str, Any]:
                 }
             ]
 
-        # 3. Mock Execution (Strictly mock-based for Upanishads)
-        mock_runs += 1
-        if lang == "hi":
-            keywords_hi = "ईशावास्योपनिषद" if "isha" in case_id else "तत्त्वमसि"
-            raw_response = json.dumps({
-                "word_by_word": "शब्द विश्लेषण।",
-                "meaning": f"उपनिषद वाक्य {chunk_id} का आध्यात्मिक अर्थ: {story_text}.",
-                "commentary": f"टिप्पणी। यह ब्रह्म और आत्मा की एकता दर्शाता है। {keywords_hi} का ज्ञान।",
-                "daily_application": "दैनिक जीवन में उपयोग। आत्म-साक्षात्कार और आत्म-चिंतन करें।",
-                "contemplation": "चिंतन प्रश्न। क्या मैं शरीर हूँ या आत्मा?",
-                "related_text": "भगवद्गीता।"
-            }, ensure_ascii=False)
-        else:
-            kw = "renunciation" if "isha" in case_id else "shreya" if "katha-1" in case_id else "arise" if "katha-2" in case_id else "tvam"
-            raw_response = json.dumps({
-                "word_by_word": "Key Sanskrit philosophical terms and self-realization maxims.",
-                "meaning": f"Universal message of the Upanishad regarding Atman and Brahman. Focus on {kw}.",
-                "commentary": f"Advaita Vedanta commentary on self-realization, absolute truth, and the {kw} path.",
-                "daily_application": "Meditate daily and experience the underlying unity of all creation.",
-                "contemplation": "Who am I? Reflect on the reality beyond name and form.",
-                "related_text": "Bhagavad Gita"
-            }, ensure_ascii=False)
+        # 3. Live or Mock Execution
+        raw_response = ""
+        used_mock = True
+        if provider_mode != "mock":
+            lang_note = "Respond in simple, natural Hindi using Devanagari script." if lang == "hi" else "Respond in clear, warm English."
+            serialized_chunks = []
+            for idx, cp in enumerate(retrieved_passages):
+                serialized_chunks.append(f"Source [{idx+1}]: {cp['metadata']['sourceName']} - {cp['metadata']['chunkId']}\n{cp['content']}")
+            passages_text = "\n".join(serialized_chunks)
+            prompt_text = f"""You are a wise Vedanta teacher explaining an Upanishad verse to a sincere practitioner.
+
+SOURCE: Principal Upanishads — {chunk_id}
+ORIGINAL: {sanskrit}
+TRANSLITERATION: {transliteration}
+STANDARD TRANSLATION: {translation}
+{passages_text}
+
+Return ONLY this JSON (no markdown, no extra text):
+{{
+  "word_by_word": "<Key Sanskrit terms and their meanings, 1-2 sentences>",
+  "meaning": "<Core meaning of the verse in 2-3 sentences>",
+  "commentary": "<Advaita Vedanta interpretation in 3-4 sentences>",
+  "daily_application": "<How to apply this teaching today, 2-3 sentences>",
+  "contemplation": "<A single reflective question or thought to sit with>",
+  "related_text": "<Name one other scripture or teacher that echoes this teaching>"
+}}
+
+{lang_note}"""
+            raw_response = generate_live_explanation(prompt_text, provider_mode)
+            if raw_response:
+                used_mock = False
+                live_runs += 1
+
+        if used_mock:
+            mock_runs += 1
+            if lang == "hi":
+                keywords_hi = "ईशावास्योपनिषद" if "isha" in case_id else "तत्त्वमसि"
+                raw_response = json.dumps({
+                    "word_by_word": "शब्द विश्लेषण।",
+                    "meaning": f"उपनिषद वाक्य {chunk_id} का आध्यात्मिक अर्थ: {story_text}.",
+                    "commentary": f"टिप्पणी। यह ब्रह्म और आत्मा की एकता दर्शाता है। {keywords_hi} का ज्ञान।",
+                    "daily_application": "दैनिक जीवन में उपयोग। आत्म-साक्षात्कार और आत्म-चिंतन करें।",
+                    "contemplation": "चिंतन प्रश्न। क्या मैं शरीर हूँ या आत्मा?",
+                    "related_text": "भगवद्गीता।"
+                }, ensure_ascii=False)
+            else:
+                kw = "renunciation" if "isha" in case_id else "shreya" if "katha-1" in case_id else "arise" if "katha-2" in case_id else "tvam"
+                raw_response = json.dumps({
+                    "word_by_word": "Key Sanskrit philosophical terms and self-realization maxims.",
+                    "meaning": f"Universal message of the Upanishad regarding Atman and Brahman. Focus on {kw}.",
+                    "commentary": f"Advaita Vedanta commentary on self-realization, absolute truth, and the {kw} path.",
+                    "daily_application": "Meditate daily and experience the underlying unity of all creation.",
+                    "contemplation": "Who am I? Reflect on the reality beyond name and form.",
+                    "related_text": "Bhagavad Gita"
+                }, ensure_ascii=False)
 
         eval_result = {
             "raw_response": raw_response,
@@ -611,20 +697,20 @@ def run_upanishads_eval_suite(dataset_path: Path, root: Path) -> dict[str, Any]:
         case_results.append({
             "case_id": case_id,
             "score_info": score_info,
-            "used_mock": True
+            "used_mock": used_mock
         })
 
     return {
         "dataset": str(dataset_path.name),
         "case_count": len(cases),
         "scorer": "score_upanishads_explain",
-        "live_runs": 0,
+        "live_runs": live_runs,
         "mock_runs": mock_runs,
         "results": case_results
     }
 
 
-def run_sikh_gurbani_eval_suite(dataset_path: Path, root: Path) -> dict[str, Any]:
+def run_sikh_gurbani_eval_suite(dataset_path: Path, root: Path, provider_mode: str = "mock") -> dict[str, Any]:
     cases = load_jsonl(dataset_path)
     case_results = []
     live_runs = 0
@@ -646,38 +732,68 @@ def run_sikh_gurbani_eval_suite(dataset_path: Path, root: Path) -> dict[str, Any
             }
         ]
 
-        # Mock Execution (Strictly mock-based for Sikh Gurbani)
-        mock_runs += 1
-        if lang == "hi":
-            kw = "इक ओंकार" if "mantar" in case_id else "सोचै"
-            raw_response = json.dumps({
-                "word_by_word": "शब्द विश्लेषण।",
-                "meaning": f"जपजी साहिब शबद {chunk_id} का आध्यात्मिक अर्थ: {story_text}.",
-                "commentary": f"गुरमत व्याख्या। {kw} सत्नाम का ध्यान करने की प्रेरणा।",
-                "daily_application": "दैनिक जीवन में उपयोग। सत्नाम का स्मरण और सेवा करें।",
-                "contemplation": "चिंतन। क्या मैं निरभउ और निरवैर हूँ?",
-                "related_text": "गुरु ग्रंथ साहिब।"
-            }, ensure_ascii=False)
-        elif lang == "pa":
-            kw = "ੴ" if "mantar" in case_id else "ਸੋਚੈ"
-            raw_response = json.dumps({
-                "word_by_word": "ਸ਼ਬਦ ਵਿਚਾਰ।",
-                "meaning": f"ਜਪੁਜੀ ਸਾਹਿਬ ਸ਼ਬਦ {chunk_id} ਦਾ ਅਧਿਆਤਮਕ ਅਰਥ: {story_text}.",
-                "commentary": f"ਗੁਰਮਤਿ ਵਿਆਖਿਆ। {kw} ਸਤਿਨਾਮ ਦਾ ਸਿਮਰਨ।",
-                "daily_application": "ਰੋਜ਼ਾਨਾ ਜੀਵਨ ਵਿੱਚ ਵਰਤੋਂ। ਸੇਵਾ ਅਤੇ ਨਾਮ ਸਿਮਰਨ ਕਰੋ।",
-                "contemplation": "ਚਿੰਤਨ। ਕੀ ਮੈਂ ਪ੍ਰਮਾਤਮਾ ਦੇ ਭਾਣੇ ਵਿੱਚ ਹਾਂ?",
-                "related_text": "ਸ਼੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ।"
-            }, ensure_ascii=False)
-        else:
-            kw = "Ik Onkar" if "mantar" in case_id else "inner purity"
-            raw_response = json.dumps({
-                "word_by_word": "Gurmukhi terms meaning and representation of the Creator.",
-                "meaning": f"Spiritual message of the Shabad concerning {kw} and the One Creator.",
-                "commentary": f"Gurmat commentary on divine grace, selfless service, and meditating on the Name.",
-                "daily_application": "Practice mindfulness and selfless service (Seva) in daily life.",
-                "contemplation": "Am I living in harmony with the Divine Will (Hukam)?",
-                "related_text": "Sri Guru Granth Sahib Ji"
-            }, ensure_ascii=False)
+        # Live or Mock Execution
+        raw_response = ""
+        used_mock = True
+        if provider_mode != "mock":
+            lang_note = (
+                "Respond in simple, natural Hindi using Devanagari script." if lang == "hi"
+                else "Respond in Punjabi using Gurmukhi script." if lang == "pa"
+                else "Respond in clear, warm English."
+            )
+            prompt_text = f"""You are a Gurmat (Sikh teaching) scholar explaining a Gurbani Shabad to a sincere seeker.
+
+SHABAD: {chunk_id}
+SHABAD TEXT: {story_text}
+
+Return ONLY this JSON (no markdown, no extra text):
+{{
+  "word_by_word": "<Key Gurmukhi terms and their meanings, 1-2 sentences>",
+  "meaning": "<Core spiritual message in 2-3 sentences>",
+  "commentary": "<Gurmat commentary in 3-4 sentences>",
+  "daily_application": "<How to apply this Shabad's teaching today, 2-3 sentences>",
+  "contemplation": "<A single reflective question or thought to sit with>",
+  "related_text": "<Name one other scripture or teaching that echoes this Shabad>"
+}}
+
+{lang_note}"""
+            raw_response = generate_live_explanation(prompt_text, provider_mode)
+            if raw_response:
+                used_mock = False
+                live_runs += 1
+
+        if used_mock:
+            mock_runs += 1
+            if lang == "hi":
+                kw = "इक ओंकार" if "mantar" in case_id else "सोचै"
+                raw_response = json.dumps({
+                    "word_by_word": "शब्द विश्लेषण।",
+                    "meaning": f"जपजी साहिब शबद {chunk_id} का आध्यात्मिक अर्थ: {story_text}.",
+                    "commentary": f"गुरमत व्याख्या। {kw} सत्नाम का ध्यान करने की प्रेरणा।",
+                    "daily_application": "दैनिक जीवन में उपयोग। सत्नाम का स्मरण और सेवा करें।",
+                    "contemplation": "चिंतन। क्या मैं निरभउ और निरवैर हूँ?",
+                    "related_text": "गुरु ग्रंथ साहिब।"
+                }, ensure_ascii=False)
+            elif lang == "pa":
+                kw = "ੴ" if "mantar" in case_id else "ਸੋਚੈ"
+                raw_response = json.dumps({
+                    "word_by_word": "ਸ਼ਬਦ ਵਿਚਾਰ।",
+                    "meaning": f"ਜਪੁਜੀ ਸਾਹਿਬ ਸ਼ਬਦ {chunk_id} ਦਾ ਅਧਿਆਤਮਕ ਅਰਥ: {story_text}.",
+                    "commentary": f"ਗੁਰਮਤਿ ਵਿਆਖਿਆ। {kw} ਸਤਿਨਾਮ ਦਾ ਸਿਮਰਨ।",
+                    "daily_application": "ਰੋਜ਼ਾਨਾ ਜੀਵਨ ਵਿੱਚ ਵਰਤੋਂ। ਸੇਵਾ ਅਤੇ ਨਾਮ ਸਿਮਰਨ ਕਰੋ।",
+                    "contemplation": "ਚਿੰਤਨ। ਕੀ ਮੈਂ ਪ੍ਰਮਾਤਮਾ ਦੇ ਭਾਣੇ ਵਿੱਚ ਹਾਂ?",
+                    "related_text": "ਸ਼੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ।"
+                }, ensure_ascii=False)
+            else:
+                kw = "Ik Onkar" if "mantar" in case_id else "inner purity"
+                raw_response = json.dumps({
+                    "word_by_word": "Gurmukhi terms meaning and representation of the Creator.",
+                    "meaning": f"Spiritual message of the Shabad concerning {kw} and the One Creator.",
+                    "commentary": f"Gurmat commentary on divine grace, selfless service, and meditating on the Name.",
+                    "daily_application": "Practice mindfulness and selfless service (Seva) in daily life.",
+                    "contemplation": "Am I living in harmony with the Divine Will (Hukam)?",
+                    "related_text": "Sri Guru Granth Sahib Ji"
+                }, ensure_ascii=False)
 
         eval_result = {
             "raw_response": raw_response,
@@ -688,7 +804,7 @@ def run_sikh_gurbani_eval_suite(dataset_path: Path, root: Path) -> dict[str, Any
         case_results.append({
             "case_id": case_id,
             "score_info": score_info,
-            "used_mock": True
+            "used_mock": used_mock
         })
 
     return {
