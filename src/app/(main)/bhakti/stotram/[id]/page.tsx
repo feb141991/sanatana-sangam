@@ -12,6 +12,7 @@ import { Suspense, use } from 'react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import { resolveReadablePreferences, type ReadablePreferences } from '@/lib/readable-preferences';
+import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 
 // ─── Direct Translations for Major Stotrams & Mantras ─────────────────────────
 const STOTRAM_TRANSLATIONS: Record<string, Record<number, { hi: string; pa: string }>> = {
@@ -303,6 +304,37 @@ function StotramReader({ id }: { id: string }) {
       alive = false;
     };
   }, [contextLang]);
+
+  // ── Build ReadableContent for each verse ────────────────────────────────────
+  function buildVerseReadableContent(verse: any): ReadableContent {
+    const verseMeaning = getVerseMeaning(stotram!.id, verse.number - 1, verse.meaning, lang);
+    const tradition = stotram!.tradition === 'all' ? 'generic' : stotram!.tradition;
+    return {
+      original: verse.sanskrit,
+      meaning: verseMeaning,
+      sourceLabel: `${stotram!.title} - Verse ${verse.number}`,
+      tradition,
+      language: 'sa',
+      script: 'devanagari',
+      pipelineTags: {
+        content_type: 'sacred_verse',
+        audio_mode: stotram!.audioTrackId ? 'standard' : 'none',
+        tradition,
+        script: 'devanagari',
+        response_mode: 'extractive',
+        delivery_intent: 'live_user'
+      },
+      capabilities: buildReadableCapabilities({
+        original: verse.sanskrit,
+        meaning: verseMeaning,
+        script: 'devanagari',
+        pipelineTags: {
+          content_type: 'sacred_verse',
+          audio_mode: stotram!.audioTrackId ? 'standard' : 'none',
+        }
+      })
+    };
+  }
 
   // ── Tokens ──────────────────────────────────────────────────────────────────
   const pageBg  = isDark ? `linear-gradient(180deg,#0e0a06 0%,#160f08 100%)` : `linear-gradient(180deg,#fdf6ee 0%,#f5e8d5 100%)`;
