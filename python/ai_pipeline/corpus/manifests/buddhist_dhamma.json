@@ -1,38 +1,553 @@
 {
   "doc_id": "buddhist_dhamma",
-  "name": "Buddhist Dhamma Texts",
+  "name": "Buddhist Dhamma Texts (Dhammapada)",
   "tradition": "Buddhism",
   "language": "en",
   "content": [
     {
       "ref": "1.1",
-      "sanskrit": "Dukkha",
-      "text": "Birth is suffering, aging is suffering, illness is suffering, death is suffering, union with what is displeasing is suffering, separation from what is pleasing is suffering. In brief, the five aggregates are suffering."
+      "sanskrit": "Manopubbangama dhamma mano-settha manomaya",
+      "text": "Mind precedes all mental states. Mind is their chief; they are mind-made. If one speaks or acts with an impure mind, suffering follows him even as the wheel follows the hoof of the ox."
     },
     {
       "ref": "1.2",
-      "sanskrit": "Anatta",
-      "text": "All phenomena are without self (anatta). When one sees this with wisdom, one becomes disenchanted with suffering. This is the path to purification."
+      "sanskrit": "Manopubbangama dhamma mano-settha manomaya",
+      "text": "Mind precedes all mental states. Mind is their chief; they are mind-made. If one speaks or acts with a pure mind, happiness follows him like his shadow that never leaves him."
     },
     {
       "ref": "1.3",
-      "sanskrit": "Paticcasamuppada",
-      "text": "When this exists, that comes to be. With the arising of this, that arises. When this does not exist, that does not come to be. With the cessation of this, that ceases."
+      "sanskrit": "Akkocchi mam avadhi mam ajini mam ahasi me",
+      "text": "'He abused me, he struck me, he defeated me, he robbed me'—in those who harbor such thoughts, hatred is never appeased."
     },
     {
       "ref": "1.4",
-      "sanskrit": "Majjhima Patipada",
-      "text": "Monks, these two extremes should not be practiced: devotion to indulgence of pleasure in sensual pleasures, and devotion to self-mortification. Without veering towards either, the Tathagata has awakened to the middle way."
+      "sanskrit": "Akkocchi mam avadhi mam ajini mam ahasi me",
+      "text": "'He abused me, he struck me, he defeated me, he robbed me'—in those who do not harbor such thoughts, hatred is appeased."
+    },
+    {
+      "ref": "1.5",
+      "sanskrit": "Na hi verena verani sammantidha kudacanam",
+      "text": "Hatred is never appeased by hatred in this world. By non-hatred alone is hatred appeased. This is a law eternal."
+    },
+    {
+      "ref": "1.6",
+      "sanskrit": "Pare ca na vijananti mayametham yamamase",
+      "text": "Others do not know that in this world we must all die. But those who realize this, their quarrels are calmed at once."
+    },
+    {
+      "ref": "1.7",
+      "sanskrit": "Subhanupassim viharantam indriyesu asamvutam",
+      "text": "Whoever lives contemplating pleasant things, with senses uncontrolled, immoderate in eating, indolent, and inactive—him Mara certainly overthrows, as the wind overthrows a weak tree."
+    },
+    {
+      "ref": "1.8",
+      "sanskrit": "Asubhanupassim viharantam indriyesu susamvutam",
+      "text": "Whoever lives contemplating the impurities of the body, with senses well-controlled, moderate in eating, full of faith and strength—him Mara cannot overthrow, any more than the wind can overthrow a rocky mountain."
+    },
+    {
+      "ref": "1.9",
+      "sanskrit": "Anikkasavo kasavam yo vattam paridahissati",
+      "text": "Whoever, not free from defilements, devoid of self-control and truth, should don the yellow robe—he is not worthy of the yellow robe."
+    },
+    {
+      "ref": "1.10",
+      "sanskrit": "Yo ca vantakasavassa kilesesu susamahito",
+      "text": "But he who has discarded all defilements, who is well-established in moral virtues, possessed of self-control and truth—he is indeed worthy of the yellow robe."
+    },
+    {
+      "ref": "1.11",
+      "sanskrit": "Asare saramatino sare casaradassino",
+      "text": "Those who mistake the unessential for the essential and the essential for the unessential, never attain the essential, living in the pasture of wrong thoughts."
+    },
+    {
+      "ref": "1.12",
+      "sanskrit": "Saran ca sarato natva asaran ca asarato",
+      "text": "Those who know the essential as the essential and the unessential as the unessential, attain the essential, living in the pasture of right thoughts."
+    },
+    {
+      "ref": "1.13",
+      "sanskrit": "Yatha agaram ducchannam vutthi samativijjhati",
+      "text": "As rain penetrates an ill-thatched house, so lust penetrates an undeveloped mind."
+    },
+    {
+      "ref": "1.14",
+      "sanskrit": "Yatha agaram succhannam vutthi na samativijjhati",
+      "text": "As rain does not penetrate a well-thatched house, so lust does not penetrate a well-developed mind."
+    },
+    {
+      "ref": "1.15",
+      "sanskrit": "Idha socati pecca socati ubhayattha socati",
+      "text": "The evil-doer grieves in this world, and he grieves in the next; he grieves in both worlds. He grieves and is afflicted, seeing the impurity of his own actions."
+    },
+    {
+      "ref": "1.16",
+      "sanskrit": "Idha modati pecca modati ubhayattha modati",
+      "text": "The righteous man rejoices in this world, and he rejoices in the next; he rejoices in both worlds. He rejoices and is delighted, seeing the purity of his own actions."
+    },
+    {
+      "ref": "1.17",
+      "sanskrit": "Idha tappati pecca tappati ubhayattha tappati",
+      "text": "The evil-doer suffers in this world, and he suffers in the next; he suffers in both worlds. He suffers thinking 'I have done evil'; he suffers even more when gone to a state of misery."
+    },
+    {
+      "ref": "1.18",
+      "sanskrit": "Idha nandati pecca nandati ubhayattha nandati",
+      "text": "The righteous man is happy in this world, and he is happy in the next; he is happy in both worlds. He is happy thinking 'I have done good'; he is happier still when gone to a state of bliss."
+    },
+    {
+      "ref": "1.19",
+      "sanskrit": "Bahumpi ce samhitam bhasamano na takkaro hoti naro pamatto",
+      "text": "Though he recites many sacred texts, if he does not act accordingly, that heedless man is like a cowherd counting others' cows; he has no share in the blessings of the monastic life."
+    },
+    {
+      "ref": "1.20",
+      "sanskrit": "Appampi ce samhitam bhasamano dhammassa hoti anudhammacari",
+      "text": "Though he recites but a little of the sacred texts, if he lives according to the Dhamma, having discarded lust, hatred, and delusion, possessing right knowledge and a free mind, clinging to nothing in this world or the next—he shares in the blessings of the monastic life."
     },
     {
       "ref": "2.1",
-      "sanskrit": "Metta",
-      "text": "May all beings be happy. May all beings be safe. May all beings be healthy. May all beings live with ease. This is the practice of loving-kindness (metta) for all sentient beings."
+      "sanskrit": "Appamado amatapadam pamado maccuno padam",
+      "text": "Heedfulness is the path to the Deathless; heedlessness is the path to death. The heedful do not die; the heedless are as if dead already."
     },
     {
       "ref": "2.2",
-      "sanskrit": "Anicca",
-      "text": "All conditioned things are impermanent (anicca). When one sees this with wisdom, one becomes disenchanted with suffering. This is the path to purification."
+      "sanskrit": "Etam visesato natva appamadamhi pandita",
+      "text": "Distinctly understanding this, the wise, rejoiced in heedfulness, delight in the pasture of the Noble Ones."
+    },
+    {
+      "ref": "2.3",
+      "sanskrit": "Te jhayino satatika niccam dalhavarakkama",
+      "text": "These wise ones, meditative, persevering, always struggling strenuously, attain to Nibbana, the supreme peace and freedom."
+    },
+    {
+      "ref": "2.4",
+      "sanskrit": "Utthanavato satimato sucikammassa nisammakarino",
+      "text": "The glory of him who is energetic, mindful, pure in deed, considerate, self-controlled, living according to the law, and heedful, increases steadily."
+    },
+    {
+      "ref": "2.5",
+      "sanskrit": "Utthanenappamadena samyamena damena ca",
+      "text": "By effort, earnestness, discipline, and self-control, let the wise man make for himself an island which no flood can overwhelm."
+    },
+    {
+      "ref": "2.6",
+      "sanskrit": "Pamadam anuyunjanti bala dummedhino jana",
+      "text": "Fools, unwise people, give themselves up to heedlessness. The wise man, however, guards heedfulness as his greatest treasure."
+    },
+    {
+      "ref": "2.7",
+      "sanskrit": "Ma pamadam anuyunjetha ma kamaratisanthavam",
+      "text": "Do not give yourselves up to heedlessness, nor to intimacy with sensual pleasures. The heedful and meditative man obtains abundant happiness."
+    },
+    {
+      "ref": "2.8",
+      "sanskrit": "Pamadam appamadena yada nudati pandito",
+      "text": "When the wise man drives away heedlessness by heedfulness, ascending the tower of wisdom, he looks down upon the sorrowing crowd, himself free from sorrow, as one on a mountain looks down upon those on the plain."
+    },
+    {
+      "ref": "2.9",
+      "sanskrit": "Appamatto pamattesu suttesu bahujagaro",
+      "text": "Heedful among the heedless, awake among the sleeping, the wise man advances like a swift horse leaving a weak hack behind."
+    },
+    {
+      "ref": "2.10",
+      "sanskrit": "Appamadena maghava devanam setthatam gato",
+      "text": "By heedfulness did Magha (Indra) attain the lordship of the gods. People praise heedfulness; heedlessness is always blamed."
+    },
+    {
+      "ref": "2.11",
+      "sanskrit": "Appamadarato bhikkhu pamade bhayadassiva",
+      "text": "A monk who delights in heedfulness and looks with fear on heedlessness moves about like a burning fire, consuming all fetters, great and small."
+    },
+    {
+      "ref": "2.12",
+      "sanskrit": "Appamadarato bhikkhu pamade bhayadassiva",
+      "text": "A monk who delights in heedfulness and looks with fear on heedlessness is not liable to fall away; he is close to Nibbana."
+    },
+    {
+      "ref": "3.1",
+      "sanskrit": "Phandanam capalam cittam durakkham dunnivarayam",
+      "text": "The fluttering, unsteady mind, difficult to guard and difficult to control, the wise man straightens, as a fletcher straightens an arrow."
+    },
+    {
+      "ref": "3.2",
+      "sanskrit": "Varigovo thale khitto okamokata ubbhato",
+      "text": "Like a fish drawn from its watery home and thrown upon the land, this mind flutters all over, in order to escape the dominion of Mara."
+    },
+    {
+      "ref": "3.3",
+      "sanskrit": "Dunniggahassa lahuno yatthakamanipatino",
+      "text": "It is good to control the mind, which is difficult to restrain, fickle, and turning to wherever it desires. A controlled mind brings happiness."
+    },
+    {
+      "ref": "3.4",
+      "sanskrit": "Sududdasam sunipunam yatthakamanipatino",
+      "text": "Let the wise man guard his mind, which is very difficult to perceive, extremely subtle, and wandering wherever it wishes. A guarded mind brings happiness."
+    },
+    {
+      "ref": "3.5",
+      "sanskrit": "Durangamam ekacaram asariram guhasayam",
+      "text": "Those who control their mind, which travels far, wanders alone, is bodiless, and hides in the chamber of the heart, will be free from the bonds of Mara."
+    },
+    {
+      "ref": "3.6",
+      "sanskrit": "Anavatthitacittassa saddhammam avijanato",
+      "text": "If a man's mind is unsteady, if he does not know the true law, if his serenity is troubled, his wisdom will never be perfect."
+    },
+    {
+      "ref": "3.7",
+      "sanskrit": "Anavassutacittassa ananvahatacetaso",
+      "text": "If a man's mind is free from lust, if his mind is free from hatred, if he has discarded both good and evil, there is no fear for such an awake one."
+    },
+    {
+      "ref": "3.8",
+      "sanskrit": "Kumbhupamam kayamimam viditva nagarupamam cittamidam thapetva",
+      "text": "Knowing that this body is fragile like a jar, and making this mind firm like a fortress, let him fight Mara with the weapon of wisdom, guard what he has conquered, and be without attachment."
+    },
+    {
+      "ref": "3.9",
+      "sanskrit": "Aciram vatayam kayo pathavim adhisessati",
+      "text": "Before long, alas! this body will lie on the earth, despised, bereft of consciousness, like a useless log."
+    },
+    {
+      "ref": "3.10",
+      "sanskrit": "Diso disam yan ta kayira veri va pana verinam",
+      "text": "Whatever an enemy may do to an enemy, or a hater to a hater, an ill-directed mind does greater harm to oneself."
+    },
+    {
+      "ref": "3.11",
+      "sanskrit": "Na ta mata pita kayira anne va pi ca nataka",
+      "text": "Neither mother, nor father, nor any other relative can do so much good as a well-directed mind."
+    },
+    {
+      "ref": "4.1",
+      "sanskrit": "Ko imam pathavim vijessati yamalokan ca imam sadevakam",
+      "text": "Who shall conquer this earth, and the world of Yama, and the world of the gods? Who shall find the well-taught path of virtue, even as a skilled garland-maker finds the right flower?"
+    },
+    {
+      "ref": "4.2",
+      "sanskrit": "Sekho pathavim vijessati yamalokan ca imam sadevakam",
+      "text": "The disciple will conquer the earth, and the world of Yama, and the world of the gods. The disciple will find the well-taught path of virtue, even as a skilled garland-maker finds the right flower."
+    },
+    {
+      "ref": "4.3",
+      "sanskrit": "Phenupamam kayamimam viditva marici-dhammam abhisambudhano",
+      "text": "Knowing that this body is like froth, and understanding its nature to be like a mirage, let him break the flower-tipped arrows of Mara, and pass unseen by the King of Death."
+    },
+    {
+      "ref": "4.4",
+      "sanskrit": "Pupphani heva pacinantam vyasattamanasam naram",
+      "text": "The man who gathers flowers (of sensual pleasures), whose mind is distracted, death carries off, as a great flood sweeps away a sleeping village."
+    },
+    {
+      "ref": "4.5",
+      "sanskrit": "Pupphani heva pacinantam vyasattamanasam naram",
+      "text": "The man who gathers flowers, whose mind is distracted, who is insatiable in sensual pleasures—him the Destroyer brings under his sway."
+    },
+    {
+      "ref": "4.6",
+      "sanskrit": "Yathapi bhamaro puppham vannagandham ahethayam",
+      "text": "As the bee collects nectar and departs without injuring the flower or its color or fragrance, so let the sage dwell in the village."
+    },
+    {
+      "ref": "4.7",
+      "sanskrit": "Na paresam vilomani na paresam katakatam",
+      "text": "Let one not examine the faults of others, nor what they have done or left undone, but let one examine what one has oneself done or left undone."
+    },
+    {
+      "ref": "4.8",
+      "sanskrit": "Yathapi ruciram puppham vannavantam agandhakam",
+      "text": "Like a beautiful flower, full of color but without scent, are the fine but fruitless words of him who does not act accordingly."
+    },
+    {
+      "ref": "4.9",
+      "sanskrit": "Yathapi ruciram puppham vannavantam sagandhakam",
+      "text": "Like a beautiful flower, full of color and full of scent, are the fruitful words of him who acts accordingly."
+    },
+    {
+      "ref": "4.10",
+      "sanskrit": "Yathapi puppharasimha kayira malagune bahu",
+      "text": "As from a heap of flowers many garlands can be made, so many good deeds should be done by one born a mortal."
+    },
+    {
+      "ref": "4.11",
+      "sanskrit": "Na pupphagandho vatamanveiti na candanam tagaramallika va",
+      "text": "The scent of flowers does not travel against the wind, nor that of sandalwood, tagara, or jasmine. But the fragrance of the virtuous travels even against the wind. The virtuous man pervades all directions."
+    },
+    {
+      "ref": "4.12",
+      "sanskrit": "Candanam tagaram vav pi uppalam vassiki capi",
+      "text": "Sandalwood, tagara, lotus, and jasmine—of all these kinds of fragrance, the perfume of virtue is by far the best."
+    },
+    {
+      "ref": "4.13",
+      "sanskrit": "Appamatto ayam gandho yoyam tagaracandanam",
+      "text": "Of little account is the fragrance of tagara and sandalwood, but the fragrance of the virtuous rises up to the gods as the supreme scent."
+    },
+    {
+      "ref": "4.14",
+      "sanskrit": "Tesam sannitasilanam appamadaviharinam",
+      "text": "Mara cannot find the path of those who are possessed of virtue, who live heedfully, and who are liberated by right knowledge."
+    },
+    {
+      "ref": "4.15",
+      "sanskrit": "Yatha sankaradhanasmin ujjhitasmin mahapathe",
+      "text": "As upon a heap of rubbish thrown on the highway, a sweet-smelling and lovely lotus may grow,"
+    },
+    {
+      "ref": "4.16",
+      "sanskrit": "Evam sankarabhutesu andhabhute puthujjane",
+      "text": "Even so, among those who are like rubbish, the disciple of the Truly Enlightened One shines forth with wisdom, outshining the blind worldlings."
+    },
+    {
+      "ref": "5.1",
+      "sanskrit": "Digha jagarato ratti digham santassa yojanam",
+      "text": "Long is the night to the wakeful; long is the league to the weary. Long is samsara to fools who do not know the sublime Law."
+    },
+    {
+      "ref": "5.2",
+      "sanskrit": "Carance nadhigaccheyya seyyam sadisamattano",
+      "text": "If a traveler does not find an equal or a better companion, let him firmly pursue his journey alone; there is no companionship with a fool."
+    },
+    {
+      "ref": "5.3",
+      "sanskrit": "Putta matthi dhanammatthi iti balo vihannati",
+      "text": "'These sons are mine, this wealth is mine'—thus the fool is afflicted. He himself does not belong to himself; how then sons, how then wealth?"
+    },
+    {
+      "ref": "5.4",
+      "sanskrit": "Yo balo manyati balyam pandito vapi tena so",
+      "text": "The fool who knows his foolishness is wise to that extent. But the fool who thinks himself wise is indeed called a fool."
+    },
+    {
+      "ref": "5.5",
+      "sanskrit": "Yavajivampi ce balo panditam payirupasati",
+      "text": "Though a fool associates with a wise man all his life, he understands the Dhamma as little as a spoon tastes the soup."
+    },
+    {
+      "ref": "5.6",
+      "sanskrit": "Muhuttamapi ce vinnu panditam payirupasati",
+      "text": "Though a wise man associates with a wise person for only a moment, he quickly understands the Dhamma, as the tongue tastes the soup."
+    },
+    {
+      "ref": "5.7",
+      "sanskrit": "Caranti bala dummedha amitteneva attana",
+      "text": "Fools of poor understanding behave to themselves as enemies, doing evil deeds which bear bitter fruit."
+    },
+    {
+      "ref": "5.8",
+      "sanskrit": "Na tam kammam katam sadhu yam katva anutappati",
+      "text": "That deed is not well done which, when done, causes regret, and the fruit of which one reaps weeping, with a tearful face."
+    },
+    {
+      "ref": "5.9",
+      "sanskrit": "Tanca kammam katam sadhu yam katva nanutappati",
+      "text": "That deed is well done which, when done, causes no regret, and the fruit of which one reaps with joy and delight."
+    },
+    {
+      "ref": "5.10",
+      "sanskrit": "Madhuva manyati balo yava papam na paccati",
+      "text": "As long as the evil deed does not ripen, the fool thinks it is like honey. But when the evil deed ripens, the fool suffers grief."
+    },
+    {
+      "ref": "5.11",
+      "sanskrit": "Mase mase kusaggena balo bhunjetha bhojanam",
+      "text": "Month after month the fool may eat his food with the tip of a blade of kusa grass; yet he is not worth a sixteenth part of those who have valued the Dhamma."
+    },
+    {
+      "ref": "5.12",
+      "sanskrit": "Na hi papam katam kammam saju khiramva muccati",
+      "text": "An evil deed, like freshly drawn milk, does not sour at once. Smoldering like fire covered with ashes, it follows the fool."
+    },
+    {
+      "ref": "5.13",
+      "sanskrit": "Yavadeva anatthaya nattam balassa jayati",
+      "text": "When the fool acquires knowledge, it only leads to his ruin. It destroys his good fortune and cleaves his head."
+    },
+    {
+      "ref": "5.14",
+      "sanskrit": "Asantam bhavanamiccheyya purekkharan ca bhikkhusu",
+      "text": "The fool desires false reputation, precedence among monks, authority in monasteries, and honor among other families."
+    },
+    {
+      "ref": "5.15",
+      "sanskrit": "Mamevamannu manassantu gihi pabbajita ubho",
+      "text": "'Let both laymen and monks think that this was done by me; let them refer to me in all decisions'—such is the desire of the fool, and his pride and ambition increase."
+    },
+    {
+      "ref": "5.16",
+      "sanskrit": "Anna hi labhupanisa anna nibbanagamini",
+      "text": "One is the road that leads to wealth, another the road that leads to Nibbana. Clearly understanding this, let the monk, the disciple of Buddha, not delight in worldly honor, but strive for solitude."
+    },
+    {
+      "ref": "6.1",
+      "sanskrit": "Nidhinamva pavattaram yam passe vajjadassinam",
+      "text": "If one sees a wise man who points out faults and administers reproof as if revealing a treasure, let one follow such a wise man. It is better, not worse, for him who follows such a person."
+    },
+    {
+      "ref": "6.2",
+      "sanskrit": "Ovadeyya anusasayya asajja ca nivaraye",
+      "text": "Let him advise, let him instruct, let him restrain from what is impure. He will be beloved by the good, and hated only by the bad."
+    },
+    {
+      "ref": "6.3",
+      "sanskrit": "Na bhaje papake mitte na bhaje purisadhame",
+      "text": "Do not associate with bad friends, do not associate with low men. Associate with good friends, associate with noble men."
+    },
+    {
+      "ref": "6.4",
+      "sanskrit": "Dhammapiti sukham seti vippasannena cetasa",
+      "text": "He who drinks in the Dhamma lives happily with a serene mind. The wise man always rejoices in the Dhamma, as taught by the Noble Ones."
+    },
+    {
+      "ref": "6.5",
+      "sanskrit": "Udakan hi nayanti nettika usukara namayanti tejanam",
+      "text": "Irrigators lead the water; fletchers bend the arrow; carpenters shape the wood; wise people discipline themselves."
+    },
+    {
+      "ref": "6.6",
+      "sanskrit": "Sela yatha ekaghano vatena na samirati",
+      "text": "As a solid rock is not shaken by the wind, so wise people are not moved by praise or blame."
+    },
+    {
+      "ref": "6.7",
+      "sanskrit": "Yathapi rahado gambhiro vippasanno anavilo",
+      "text": "Like a deep lake, clear and calm, so do the wise become serene after hearing the Dhamma."
+    },
+    {
+      "ref": "6.8",
+      "sanskrit": "Sabbattha ve sappurisa cajanti na kamakama lapayanti santo",
+      "text": "The good indeed give up attachment for everything. The righteous do not speak with desire for sensual pleasures. Whether touched by happiness or sorrow, the wise show neither elation nor depression."
+    },
+    {
+      "ref": "6.9",
+      "sanskrit": "Na attahetu na parahetu na puttamiche na dhanam na rastam",
+      "text": "Neither for one's own sake nor for the sake of another should one desire a son, wealth, or power. One should not desire one's own success by unjust means. Such a person is indeed virtuous, wise, and righteous."
+    },
+    {
+      "ref": "6.10",
+      "sanskrit": "Appaka te manussesu ye jana paragamino",
+      "text": "Few are those among men who cross over to the other shore. The rest of mankind only run up and down this side of the bank."
+    },
+    {
+      "ref": "6.11",
+      "sanskrit": "Ye ca kho sammadakkhate dhamme dhammanuvattino",
+      "text": "But those who live according to the Dhamma, when the Dhamma has been well-taught, will cross over the dominion of Death, which is difficult to cross."
+    },
+    {
+      "ref": "6.12",
+      "sanskrit": "Kanham dhammam vippahaya sukkam bhavetha pandito",
+      "text": "Leaving the way of darkness, let the wise man follow the way of light. Leaving his home for the homeless life, let him seek happiness in solitude, which is difficult to enjoy."
+    },
+    {
+      "ref": "6.13",
+      "sanskrit": "Tatrabhiratimiccheyya hitva kame akincano",
+      "text": "There let him seek delight, having discarded all sensual pleasures, possessing nothing. Let the wise man cleanse himself from all defilements of the mind."
+    },
+    {
+      "ref": "6.14",
+      "sanskrit": "Yesam sambodhiyangesu samma cittam subhavitam",
+      "text": "Those whose minds are well-trained in the factors of enlightenment, who without clinging delight in the freedom of attachment, who have destroyed all defilements—they are fully enlightened, and have attained Nibbana in this world."
+    },
+    {
+      "ref": "7.1",
+      "sanskrit": "Gataddhino visokassa vippamuttassa sabbadhi",
+      "text": "There is no suffering for him who has completed his journey, who is freed from sorrow, who has freed himself on all sides, who has thrown off all fetters."
+    },
+    {
+      "ref": "7.2",
+      "sanskrit": "Uyyunjanti satimanto na nikete ramanti te",
+      "text": "The mindful depart; they do not delight in any home. Like swans that leave their lake, they leave their house and home."
+    },
+    {
+      "ref": "7.3",
+      "sanskrit": "Yesang sannicayo natthi ye parinnatabhojana",
+      "text": "Those who do not accumulate, who reflect well on their food, whose pasture is empty and unconditioned freedom (Nibbana)—their path is difficult to track, like that of birds in the air."
+    },
+    {
+      "ref": "7.4",
+      "sanskrit": "Yassasava parikkhina ahare ca anissito",
+      "text": "He whose appetites are stilled, who is moderate in food, whose pasture is empty and unconditioned freedom—his path is difficult to track, like that of birds in the air."
+    },
+    {
+      "ref": "7.5",
+      "sanskrit": "Yassindriyani samathang gatani assa yatha sarathina sudanta",
+      "text": "Even the gods envy him whose senses are quieted like horses well-broken by a charioteer, who is free from pride, and free from defilements."
+    },
+    {
+      "ref": "7.6",
+      "sanskrit": "Pathavisamo no virujjhati indakhilupamo tadi subrato",
+      "text": "Like the earth, he is not troubled by anger; he is firm like a pillar; he is like a lake free from mud. For such a righteous one, there are no further births."
+    },
+    {
+      "ref": "7.7",
+      "sanskrit": "Santang tassa manang hoti santa vaca ca kamma ca",
+      "text": "Calm is his mind, calm is his speech, calm is his action, when he has obtained freedom by right knowledge."
+    },
+    {
+      "ref": "7.8",
+      "sanskrit": "Assaddho akatannu ca sandhicchedo ca yo naro",
+      "text": "The man who is free from blind faith, who knows the Uncreated, who has cut all bonds, who has ended all temptations—he indeed is the greatest of men."
+    },
+    {
+      "ref": "7.9",
+      "sanskrit": "Game va yadi varanye ninne va yadi va thale",
+      "text": "Whether in a village or in a forest, whether in a deep valley or on the mountain, wherever the Arahats dwell, that place is delightful."
+    },
+    {
+      "ref": "7.10",
+      "sanskrit": "Ramaneyyani aranyani yattha na ramati jano",
+      "text": "Delightful are the forests where the worldly find no pleasure. There the passionless will find delight, for they seek no sensual pleasures."
+    },
+    {
+      "ref": "8.1",
+      "sanskrit": "Sahassampi ce vaca anatthapadasanhita",
+      "text": "Though one should speak a thousand words that are useless, one useful word is better, hearing which one attains peace."
+    },
+    {
+      "ref": "8.2",
+      "sanskrit": "Sahassampi ce gatha anatthapadasanhita",
+      "text": "Though one should recite a thousand verses that are useless, one useful stanza is better, hearing which one attains peace."
+    },
+    {
+      "ref": "8.3",
+      "sanskrit": "Yo ca gathasatang bhase anatthapadasanhita",
+      "text": "Though one should recite a hundred verses, if they are useless, one verse of the Dhamma is better, hearing which one attains peace."
+    },
+    {
+      "ref": "8.4",
+      "sanskrit": "Yo sahassang sahassena sangame manuse jine",
+      "text": "Though one should conquer in battle a thousand times a thousand men, yet he who conquers himself is indeed the greatest conqueror."
+    },
+    {
+      "ref": "8.5",
+      "sanskrit": "Atta have jitam seyyo ya cayam itara paja",
+      "text": "Self-conquest is indeed far better than the conquest of others. Neither a god, nor a gandhabba, nor Mara can defeat the victory of a man who has conquered himself."
+    },
+    {
+      "ref": "8.6",
+      "sanskrit": "Yo ca vassasatang jhe sahassena samam yaje",
+      "text": "If a man month after month for a hundred years should offer a thousand sacrifices, and if he but for one moment should pay homage to a self-cultivated man—that homage is far better than a hundred years of sacrifices."
+    },
+    {
+      "ref": "8.7",
+      "sanskrit": "Yo ca vassasatang jantu aggim paricare vane",
+      "text": "If a man for a hundred years should worship the sacrificial fire in the forest, and if he but for one moment should pay homage to a self-cultivated man—that homage is far better than a hundred years of worship."
+    },
+    {
+      "ref": "8.8",
+      "sanskrit": "Yankinci yitthanva hutanca loke samvatsarang pujaye punnapekkho",
+      "text": "Whatever a man offers in this world as sacrifice or oblation for a whole year in order to gain merit, all of it is not worth a quarter. Homage paid to the righteous is far better."
+    },
+    {
+      "ref": "8.9",
+      "sanskrit": "Abhivadanasilissa niccang vuddhapajayino",
+      "text": "He who always respects and honors the elderly and the virtuous obtains four blessings: long life, beauty, happiness, and strength."
+    },
+    {
+      "ref": "8.10",
+      "sanskrit": "Yo ca vassasatang jive dusilo asamahito",
+      "text": "Better than a hundred years lived viciously and uncontrolled is a single day lived virtuously and meditative."
     }
   ]
 }

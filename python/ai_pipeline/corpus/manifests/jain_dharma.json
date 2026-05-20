@@ -1,38 +1,533 @@
 {
   "doc_id": "jain_dharma",
-  "name": "Jain Dharma Agamas",
+  "name": "Jain Dharma Agamas (Saman Suttam & Tattvartha)",
   "tradition": "Jainism",
   "language": "en",
   "content": [
     {
       "ref": "1.1",
-      "sanskrit": "Ahimsa paramo dharma",
-      "text": "Non-violence is the supreme religion. All beings desire to live; none wish to die. Recognizing this, one who truly knows the Dhamma practices non-injury in thought, word, and deed toward all living beings."
+      "sanskrit": "Samyag-darshana-jnana-charitrani moksha-margah.",
+      "text": "Right faith, right knowledge, and right conduct constitute the path to liberation."
     },
     {
       "ref": "1.2",
-      "sanskrit": "Anekantavada",
-      "text": "Anekantavada — the doctrine of many-sidedness — holds that reality is complex and no single perspective can capture the full truth. From one perspective a thing exists; from another it does not."
+      "sanskrit": "Tattvartha-shraddhanam samyag-darshanam.",
+      "text": "Right faith is belief in the true nature of reality (tattvas)."
     },
     {
       "ref": "1.3",
-      "sanskrit": "Ratnatraya",
-      "text": "Liberation (moksha) is attained through the Three Jewels: Samyak Darshana (right faith), Samyak Jnana (right knowledge), and Samyak Charitra (right conduct). All three must be cultivated together."
+      "sanskrit": "Tan-nisargad-adhigamad-va.",
+      "text": "That faith is attained either by intuition (nisarga) or by acquisition of instruction (adhigama)."
     },
     {
       "ref": "1.4",
-      "sanskrit": "Jiva and Karma",
-      "text": "The soul (jiva) is distinct from non-soul (ajiva). Karma is fine matter that clings to the soul through attachment. Through right conduct, the influx of new karma is stopped and existing karma is shed."
+      "sanskrit": "Jivajivasravabandhasamvaranirjaramokshas tattvam.",
+      "text": "The categories of truth (tattvas) are: soul (jiva), non-soul (ajiva), influx of karma (asrava), bondage (bandha), stoppage of karma (samvara), shedding of karma (nirjara), and liberation (moksha)."
+    },
+    {
+      "ref": "1.5",
+      "sanskrit": "Namanasthapana-dravya-bhava-tatas-nyasah.",
+      "text": "These categories of truth are understood through instruments of knowledge (pramana) and points of view (naya)."
+    },
+    {
+      "ref": "1.6",
+      "sanskrit": "Mati-shruta-vadhimanahparyaya-kevalani jnanam.",
+      "text": "Knowledge is of five kinds: sensory (mati), scriptural (shruta), clairvoyant (avadhi), telepathic (manahparyaya), and omniscient (kevala)."
+    },
+    {
+      "ref": "1.7",
+      "sanskrit": "Tat-paroksham.",
+      "text": "The first two kinds of knowledge are indirect (paroksha) as they require senses and mind."
+    },
+    {
+      "ref": "1.8",
+      "sanskrit": "Pratyaksham-anyat.",
+      "text": "The remaining three kinds of knowledge are direct (pratyaksha) as they are perceived by the soul directly."
+    },
+    {
+      "ref": "1.9",
+      "sanskrit": "Indriyanindriya-nimittam.",
+      "text": "Through sensory perception (mati-jnana) one cognizes through the five senses and the mind."
+    },
+    {
+      "ref": "1.10",
+      "sanskrit": "Shrutam mati-purvam dvy-anekadashabhedam.",
+      "text": "Scriptural knowledge (shruta-jnana) is preceded by sensory knowledge and is of two kinds: scriptural texts (anga-pravista) and non-scriptural texts (anga-bahya)."
+    },
+    {
+      "ref": "1.11",
+      "sanskrit": "Bhava-pratyayo vadhi-deva-narakanam.",
+      "text": "Clairvoyance (avadhi-jnana) is the direct cognition of material objects limited by space and time."
+    },
+    {
+      "ref": "1.12",
+      "sanskrit": "Riju-vipulamatimanahparyayah.",
+      "text": "Telepathy (manahparyaya-jnana) is the direct cognition of the thoughts of others."
+    },
+    {
+      "ref": "1.13",
+      "sanskrit": "Sarva-dravya-paryayeshu kevalasya.",
+      "text": "Omniscience (kevala-jnana) is the infinite, all-embracing direct knowledge of all reality."
+    },
+    {
+      "ref": "1.14",
+      "sanskrit": "Jiva-lakshanam upayogah.",
+      "text": "The soul's characteristic is consciousness (upyoga)."
+    },
+    {
+      "ref": "1.15",
+      "sanskrit": "Sa dvividho shtachatur-bhedah.",
+      "text": "Consciousness is of two kinds: knowledge (jnana) and perception (darshana)."
+    },
+    {
+      "ref": "1.16",
+      "sanskrit": "Samsarino muktash ca.",
+      "text": "The souls are of two types: mundane (samsari) and liberated (mukta)."
+    },
+    {
+      "ref": "1.17",
+      "sanskrit": "Samsarinastrasas-sthavarash-ca.",
+      "text": "Mundane souls are of two types: mobile (trasa) and immobile (sthavara)."
+    },
+    {
+      "ref": "1.18",
+      "sanskrit": "Prithivy-aptejo-vayu-vanaspatayah sthavarah.",
+      "text": "Immobile souls are earth-bodied, water-bodied, fire-bodied, air-bodied, and plant-bodied."
+    },
+    {
+      "ref": "1.19",
+      "sanskrit": "Dvindriyadayas trasah.",
+      "text": "Mobile souls have two, three, four, or five senses."
+    },
+    {
+      "ref": "1.20",
+      "sanskrit": "Sparshana-rasana-ghrana-chakshuh-shrotrani.",
+      "text": "The senses are touch, taste, smell, sight, and hearing."
+    },
+    {
+      "ref": "1.21",
+      "sanskrit": "Ajivakaya dharma-dharmakashapudgalah.",
+      "text": "The non-soul categories are: medium of motion (dharma), medium of rest (adharma), space (akasha), matter (pudgala), and time (kala)."
+    },
+    {
+      "ref": "1.22",
+      "sanskrit": "Sparsha-rasa-gandha-varna-vantah pudgalah.",
+      "text": "Matter (pudgala) possesses touch, taste, smell, and color."
+    },
+    {
+      "ref": "1.23",
+      "sanskrit": "Anavah skandhash ca.",
+      "text": "Matter is found in the form of atoms (anu) and molecules (skandha)."
+    },
+    {
+      "ref": "1.24",
+      "sanskrit": "Gati-parinamad dharma-lakshanam.",
+      "text": "The function of the medium of motion (dharma) is to support movement."
+    },
+    {
+      "ref": "1.25",
+      "sanskrit": "Sthiti-parinamad adharma-lakshanam.",
+      "text": "The function of the medium of rest (adharma) is to support rest."
+    },
+    {
+      "ref": "1.26",
+      "sanskrit": "Akashasyavagahah.",
+      "text": "The function of space (akasha) is to give place to all other substances."
+    },
+    {
+      "ref": "1.27",
+      "sanskrit": "Sukha-duhkha-jivita-maranopagrahah pudgalanam.",
+      "text": "The function of matter (pudgala) is to support pleasure, pain, life, and death."
+    },
+    {
+      "ref": "1.28",
+      "sanskrit": "Vartana-parinama-kriya-paratvaparatve ca kalasya.",
+      "text": "The function of time (kala) is to support change, motion, duration, and succession."
+    },
+    {
+      "ref": "1.29",
+      "sanskrit": "Kaya-van-manah-karma yogah.",
+      "text": "The activities of body, speech, and mind constitute action (yoga)."
+    },
+    {
+      "ref": "1.30",
+      "sanskrit": "Sa asravah.",
+      "text": "This action (yoga) causes the influx (asrava) of karma."
+    },
+    {
+      "ref": "1.31",
+      "sanskrit": "Shubhah punyasya shubhah papasya.",
+      "text": "Virtuous action leads to meritorious karma (punya), while wicked action leads to demeritorious karma (papa)."
+    },
+    {
+      "ref": "1.32",
+      "sanskrit": "Sakashayatvad-jiva karmano yogyan pudgalan-adatte sa bandhah.",
+      "text": "Passion (kashaya) causes the soul to absorb karmic matter, which binds the soul."
+    },
+    {
+      "ref": "1.33",
+      "sanskrit": "Prakriti-sthity-anubhaga-pradeshas tasya bhedah.",
+      "text": "Bondage (bandha) is of four kinds according to: nature (prakriti), duration (sthiti), intensity (anubhaga), and quantity of space occupied (pradesha)."
     },
     {
       "ref": "2.1",
-      "sanskrit": "Mahavrata",
-      "text": "The five great vows of Jain monastics are: Ahimsa (non-violence), Satya (truth), Asteya (non-stealing), Brahmacharya (celibacy), and Aparigraha (non-possession). These purify the soul."
+      "sanskrit": "Ahimsa sasayam saccam, asteyam suddhimaggam.",
+      "text": "Non-violence is the path of peace; truth is the path of purity; non-stealing is the path of honesty."
     },
     {
       "ref": "2.2",
-      "sanskrit": "Samata",
-      "text": "Equanimity (samata) is the essence of Jain ethics. The wise one treats pleasure and pain, gain and loss, praise and blame with equal composure. This is the highest self-mastery."
+      "sanskrit": "Sabbesim jiviyabhilaso, natthi koci maranabhilaso. Taha na haneyya na ghatayeyya.",
+      "text": "All living beings love life; they do not want to suffer or die. Therefore, do not kill or cause others to kill."
+    },
+    {
+      "ref": "2.3",
+      "sanskrit": "Jaha mama dukkham appiyam, taha savva-jivanam pi. Evam janiya samatena pane na haneyya.",
+      "text": "Just as pain is undesirable to you, so is it to all other living beings. Recognizing this equality, practice compassion."
+    },
+    {
+      "ref": "2.4",
+      "sanskrit": "Mana-visuddhi paramam samatarannam. Bhava-himsa savva-pavasya mulam.",
+      "text": "Violence in thought (bhava-himsa) is the root of all physical violence. Purify the mind first to attain true peace."
+    },
+    {
+      "ref": "2.5",
+      "sanskrit": "Ahimsa paramo dharmo, ahimsa loka-nayika. Ahimsa savva-bhutanam rakkha-karaniyam.",
+      "text": "Ahimsa (non-violence) is the highest code of conduct. It is the protector of all living beings and the source of bliss."
+    },
+    {
+      "ref": "2.6",
+      "sanskrit": "Yo pariggaham paricajai, so ahimsam palai. Parigraho bandha-mulam.",
+      "text": "One who is attached to material possessions (parigraha) cannot cultivate non-violence. Non-possession is freedom."
+    },
+    {
+      "ref": "2.7",
+      "sanskrit": "Appano jayo jayo. Jo jayaei appanam, so jayaei savvam.",
+      "text": "He who conquers his own self conquers everything. Self-conquest is the greatest victory in the three worlds."
+    },
+    {
+      "ref": "2.8",
+      "sanskrit": "Savva-bhutesu samada, esa dhammo sanantano. Samada-bhavana nirjara-karanam.",
+      "text": "Equanimity (samata) toward all beings is the essence of religion. It leads to the destruction of all karmic bonds."
+    },
+    {
+      "ref": "2.9",
+      "sanskrit": "Saccam bhanehi madhuram, hitakarayam ca. Parahakaram saccam pi asaccam hoi.",
+      "text": "Truth (satya) must be spoken with sweetness and benefit. Harmful truth is equivalent to untruth."
+    },
+    {
+      "ref": "2.10",
+      "sanskrit": "Adattadanam veramanam, asteyam dhammo. Jo na gayhai, so suhi.",
+      "text": "Do not take anything which is not given by its owner. Taking ungiven things constitutes theft (asteya)."
+    },
+    {
+      "ref": "2.11",
+      "sanskrit": "Bambhaceram paramam thavam. Tam pavananam rakkha-karanam.",
+      "text": "Celibacy (brahmacharya) is the supreme penance. It guards the energy of the body, speech, and mind."
+    },
+    {
+      "ref": "2.12",
+      "sanskrit": "Cittam madta-kayo, tam susamadhinam niyamana-vajjanam.",
+      "text": "The mind is like a wild elephant; control it with the hook of right knowledge and mindfulness."
+    },
+    {
+      "ref": "2.13",
+      "sanskrit": "Kodo mano maya lobho, ca-kashaya jiva-malikaranayam.",
+      "text": "Anger, pride, deceit, and greed are the four passions (kashayas) that pollute the soul."
+    },
+    {
+      "ref": "2.14",
+      "sanskrit": "Kodhala khamaya jine, manam maddavena. Mayam ajjavena jine, lobham tosa-guna.",
+      "text": "Conquer anger with forgiveness; conquer pride with humility; conquer deceit with simplicity; conquer greed with contentment."
+    },
+    {
+      "ref": "2.15",
+      "sanskrit": "Khama virasya bhushanam. Khamemi savva-jive, savve jiva khamantu me.",
+      "text": "Forgiveness (kshama) is the ornament of the strong and the shield of the seeker. Forgive all and seek forgiveness from all."
+    },
+    {
+      "ref": "2.16",
+      "sanskrit": "Mitri me savva-bhutesu, veram majjham na kenaci.",
+      "text": "I have friendship with all beings (mitri) and enmity toward none. This is the ultimate declaration of peace."
+    },
+    {
+      "ref": "2.17",
+      "sanskrit": "Mana-vaya-kayanam kriya asrava-karanam.",
+      "text": "Karmic matter flows into the soul through channels of physical, mental, and vocal activities."
+    },
+    {
+      "ref": "2.18",
+      "sanskrit": "Indriya-niyame samvaro. Samvarena jivo pavena na limpati.",
+      "text": "By controlling the senses and mind, the influx of karma is stopped (samvara). This is the key to spiritual progress."
+    },
+    {
+      "ref": "2.19",
+      "sanskrit": "Tavo kamma-vana-dahano. Tapasa savva-dukkhanam antam hoi.",
+      "text": "Penance (tapa) is the fire that burns away the accumulated karma of countless lifetimes."
+    },
+    {
+      "ref": "2.20",
+      "sanskrit": "Citta-sthirata dhyanam. Dhyanena jivo paramappanam havai.",
+      "text": "Meditation (dhyana) is the concentration of thought on a single object. It is the direct path to liberation."
+    },
+    {
+      "ref": "2.21",
+      "sanskrit": "Appa karta ca bharta ca, duhkhasa ca sukhasa ca. Appa mittam-amittam ca.",
+      "text": "The soul is the master of its own destiny. No external god can give salvation or punishment."
+    },
+    {
+      "ref": "2.22",
+      "sanskrit": "Savva-jiva Paramappa-sarisam, jaha kammam vinassadi.",
+      "text": "Every soul has the potential to become a Paramatman (supreme soul) by destroying its karmic coverings."
+    },
+    {
+      "ref": "2.23",
+      "sanskrit": "Uppada-vvaya-dhovva-juttam sat.",
+      "text": "Reality possesses three characteristics: origination (utpada), destruction (vyaya), and permanence (dhrauvya)."
+    },
+    {
+      "ref": "2.24",
+      "sanskrit": "Guna-paryayavad dravyam.",
+      "text": "A substance (dravya) is that which has qualities (gunas) and modes (paryayas)."
+    },
+    {
+      "ref": "2.25",
+      "sanskrit": "Bahira-bhavas na sukkha-dukkha-karana. Atta-bhavo yeva karanam.",
+      "text": "External things are not the cause of happiness or misery. The cause lies within the soul's own passions."
+    },
+    {
+      "ref": "2.26",
+      "sanskrit": "Satsanga-sutradhyayana-chintanena samyaktvam.",
+      "text": "Right faith is attained by associating with enlightened teachers, listening to scripture, and contemplation."
+    },
+    {
+      "ref": "2.27",
+      "sanskrit": "Samyag-dristi jivo dayavanto, raga-dvesa-virahito.",
+      "text": "He who has right faith looks at the world with compassion and without prejudice."
+    },
+    {
+      "ref": "2.28",
+      "sanskrit": "Carana-hino jnani andho-va, dravya-chintane patu.",
+      "text": "Without right conduct, knowledge is like a lamp in the hands of a blind man."
+    },
+    {
+      "ref": "2.29",
+      "sanskrit": "Daya-bhaven danam. Danam jiva-taranayam.",
+      "text": "Charity (dana) is the giving of wealth, food, knowledge, and protection to others with a pure heart."
+    },
+    {
+      "ref": "2.30",
+      "sanskrit": "Ahara-bhai-shajja-shastra-abhaya-dana-bheda.",
+      "text": "The fourfold charity consists of: food (ahara), medicine (aushadha), knowledge (shastra), and fearlessness (abhaya)."
+    },
+    {
+      "ref": "2.31",
+      "sanskrit": "Bhava-shuddhi paramam dhyanam. Bhavena jivo mucchadi.",
+      "text": "Purity of mind (bhava-shuddhi) is the most important element of any spiritual practice."
+    },
+    {
+      "ref": "2.32",
+      "sanskrit": "Lobho akanksha-rupo, toso paramam sukham. Trishna-vinasho mukti.",
+      "text": "He who is satisfied with what he has is the richest person. Greed is a bottomless pit."
+    },
+    {
+      "ref": "2.33",
+      "sanskrit": "Para-ninda na kattavya, na parathanam thavam. Atta-guna-vibhushanam.",
+      "text": "Do not speak ill of anyone, nor praise yourself. Keep your mind focused on self-correction."
+    },
+    {
+      "ref": "2.34",
+      "sanskrit": "Savve manuya samana, na koi jaccisa bhedah.",
+      "text": "The path of the Jinas is open to all, without distinction of caste, creed, or gender."
+    },
+    {
+      "ref": "2.35",
+      "sanskrit": "Samayam goyam ma pamaye. Ayu-kkhayo divasa-ratti havai.",
+      "text": "Time is passing; do not delay for a single moment in practicing the path of liberation."
+    },
+    {
+      "ref": "2.36",
+      "sanskrit": "Maranambhi bhayam natthi, jiva-nicchataya janiyo. Deho vinassadi, jivo na vinassadi.",
+      "text": "The wise man does not fear death, for death is only the shedding of an old garment by the soul."
+    },
+    {
+      "ref": "2.37",
+      "sanskrit": "Namo Arihantanam, Namo Siddhanam, Namo Ayariyanam, Namo Uvajjhayanam, Namo Loe Savva Sahunam.",
+      "text": "Obeisance to the Arihants, the Siddhas, the Acharyas, the Upadhyayas, and all the Sadhus in the universe."
+    },
+    {
+      "ref": "2.38",
+      "sanskrit": "Eso pancha namokaro, savva-papappanasano. Mangalanan ca savvesin, padhamam havai mangalam.",
+      "text": "These five obeisances (Navkar Mantra) destroy all sins and constitute the foremost auspicious mantra."
+    },
+    {
+      "ref": "2.39",
+      "sanskrit": "Ananta-jnana-darshana-virya-sukha-sahito mokshah.",
+      "text": "Liberation is the state of infinite knowledge, infinite perception, infinite power, and infinite bliss."
+    },
+    {
+      "ref": "2.40",
+      "sanskrit": "Siddha loka-thida nicca, nirupadhi-sukha-bhagino.",
+      "text": "In the state of liberation, the soul resides at the top of the universe (Siddhashila), free from all karma forever."
+    },
+    {
+      "ref": "3.1",
+      "sanskrit": "Sariro nauka-rupo, jivo naviko havai. Sansaro sagaro, tam taranayam appamado.",
+      "text": "The body is the boat, the soul is the sailor, and the samsara is the ocean. Cross the ocean with vigilance."
+    },
+    {
+      "ref": "3.2",
+      "sanskrit": "Vinaya-mula jnana-prapti. Jo vinayi so suhi.",
+      "text": "Knowledge is obtained through humility (vinaya). The disciple who is humble attains the wisdom of the sages."
+    },
+    {
+      "ref": "3.3",
+      "sanskrit": "Vinayo dhammo paramo, uddhata-bhavo bandhanam.",
+      "text": "Humility is the root of all spiritual discipline. An arrogant student learns nothing."
+    },
+    {
+      "ref": "3.4",
+      "sanskrit": "Jayam care jayam cittham jayamase jayam jaye; jayam bhunjanto bhasanto papam kammam na bandhati.",
+      "text": "The monk should walk carefully, stand carefully, sit carefully, lie down carefully, and eat carefully to practice non-violence."
+    },
+    {
+      "ref": "3.5",
+      "sanskrit": "Irya-bhasha-eshana-adana-nikshepana-utsarga-samitayah.",
+      "text": "Carefulness (samiti) is of five kinds: walking, speaking, begging, handling objects, and disposal of waste."
+    },
+    {
+      "ref": "3.6",
+      "sanskrit": "Mana-vaga-kaya-guptayah samvara-karanam.",
+      "text": "Restraint (gupti) is of three kinds: control of mind, control of speech, and control of body."
+    },
+    {
+      "ref": "3.7",
+      "sanskrit": "Grihasthasya anuvratani pancha, ahimsadini.",
+      "text": "The householder should practice the small vows (anuvratas) in daily life to purify his conduct."
+    },
+    {
+      "ref": "3.8",
+      "sanskrit": "Ratri-bhojana-viramanam ahimsa-rakshanayam.",
+      "text": "One should not consume food or drink after sunset (ratri-bhojana-virati) to protect subtle life forms."
+    },
+    {
+      "ref": "3.9",
+      "sanskrit": "Anartha-danda-viramanam anuvrata-guna-vardhanam.",
+      "text": "Avoid unnecessary actions (anartha-danda) which cause injury to others without any benefit."
+    },
+    {
+      "ref": "3.10",
+      "sanskrit": "Samyika-vratam grihasthasya samata-bhavana-vardhanam.",
+      "text": "Daily meditation and self-reflection (samayika) for forty-eight minutes purifies the householder's mind."
+    },
+    {
+      "ref": "3.11",
+      "sanskrit": "Posadhopavaso brahmacarya-chintana-karanam.",
+      "text": "Fast on auspicious days (posadhopavasa) to experience the life of a monk for a day."
+    },
+    {
+      "ref": "3.12",
+      "sanskrit": "Bhogopabhoga-parimana-vrata lobha-niyamana.",
+      "text": "Limiting travel and consumption (dik-vrata and bhogopabhoga-parimana) helps in practicing non-possession."
+    },
+    {
+      "ref": "3.13",
+      "sanskrit": "Sallekhana-vratam samata-bhavena deha-tyagah.",
+      "text": "The final fast unto death (sallekhana) is practiced with equanimity when death is unavoidable."
+    },
+    {
+      "ref": "3.14",
+      "sanskrit": "Daya-anukampa-seva, savva-bhutanam ahimsa.",
+      "text": "Ahimsa is not just non-killing; it is active love, compassion, and service toward all beings."
+    },
+    {
+      "ref": "3.15",
+      "sanskrit": "Syadvada-nayavado reality-complexity-understanding.",
+      "text": "Reality is complex. Avoid dogmatism (naya-vada) and respect the viewpoints of others."
+    },
+    {
+      "ref": "3.16",
+      "sanskrit": "Moksha-margo khadga-dhara-sarisam, dhira jiva tarantam.",
+      "text": "The path of self-realization is difficult, like walking on the edge of a sword, but it is the only path to peace."
+    },
+    {
+      "ref": "3.17",
+      "sanskrit": "Anitya-sharanavarta-ekatva-bheda-bhavana.",
+      "text": "All worldly relationships are temporary (anitya). The soul is solitary (ekatva) in its journey."
+    },
+    {
+      "ref": "3.18",
+      "sanskrit": "Deho shuchir-jivo shuchih, ityanupreksha.",
+      "text": "The physical body is impure (ashuchi) and distinct from the pure soul. Cultivate detachment."
+    },
+    {
+      "ref": "3.19",
+      "sanskrit": "Raga-dvesha-bhavana bandha-karanam.",
+      "text": "Karma is attracted by attachment (raga) and aversion (dvesha). Remove these dualities."
+    },
+    {
+      "ref": "3.20",
+      "sanskrit": "Aruba-agandha-arasa-ajiva-rahito jivo.",
+      "text": "A pure soul has neither color, nor smell, nor taste, nor physical form. It is pure consciousness."
+    },
+    {
+      "ref": "3.21",
+      "sanskrit": "Loko-anadi-nidhanah, natural-law-regulated.",
+      "text": "The universe is eternal, uncreated, and self-regulated by natural laws (loka-bhavana)."
+    },
+    {
+      "ref": "3.22",
+      "sanskrit": "Manushya-janma durlabha-rupo, bodhi-prapti paramam.",
+      "text": "Human birth is extremely rare and precious. Use it to attain spiritual liberation."
+    },
+    {
+      "ref": "3.23",
+      "sanskrit": "Bhava-dharma paramo dhammo, kriya-kando bahiram.",
+      "text": "True religion is not in external rituals, but in the purity of the soul."
+    },
+    {
+      "ref": "3.24",
+      "sanskrit": "Shita-ushna-kshudha-trisha-parishaha-sahana samata-bhavena.",
+      "text": "The monk should bear all hardships (parishahas) like heat, cold, hunger, and insults with equanimity."
+    },
+    {
+      "ref": "3.25",
+      "sanskrit": "Dvavimshati parishahah sodhavya moksha-margena.",
+      "text": "There are twenty-two hardships that a seeker must conquer on the path of self-control."
+    },
+    {
+      "ref": "3.26",
+      "sanskrit": "Prayaschittena jivo shuddham havai.",
+      "text": "By internal penance like confession (prayaschitta), the soul sheds its karmic burdens."
+    },
+    {
+      "ref": "3.27",
+      "sanskrit": "Svadhyayo paramam tapah.",
+      "text": "Study of scriptures (svadhyaya) is the highest form of internal penance."
+    },
+    {
+      "ref": "3.28",
+      "sanskrit": "Vaiyavrityam vinaya-vardhanam, karma-nirjara-karanam.",
+      "text": "Serving the teachers and elderly seekers (vaiyavritya) destroys ego and builds humility."
+    },
+    {
+      "ref": "3.29",
+      "sanskrit": "Vyutsargo paramam tyago, jiva-shuddha-karanam.",
+      "text": "Giving up all attachments (vyutsarga) is the final stage of internal penance."
+    },
+    {
+      "ref": "3.30",
+      "sanskrit": "Siddha-svarupam ananta-sukha-sahitam.",
+      "text": "The Siddhas are free from birth, aging, and death, residing in eternal bliss."
+    },
+    {
+      "ref": "3.31",
+      "sanskrit": "Shivamastu sarva-jagatah, parahita-nirata bhavantu bhutaganah.",
+      "text": "May the entire universe be blessed. May all beings be interested in each other's welfare."
+    },
+    {
+      "ref": "3.32",
+      "sanskrit": "Dosha prayantu nasham, sarvatra sukhi bhavantu lokah.",
+      "text": "May all defects and sufferings vanish. May everyone experience peace and joy."
     }
   ]
 }

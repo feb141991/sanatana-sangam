@@ -9,7 +9,7 @@ This report compares the retrieval behavior of the traditional **Heuristic Retri
 | **`buddhist-dhamma-dependent-origination`** | *Buddhist Dhamma 1.3* | 1.2 (1.00), 1.3 (1.40), 1.4 (1.00) | 1.3 (0.64), 1.2 (0.54), 1.4 (0.52), 2.1 (0.20), 1.1 (0.19) | 0ms / 0ms |
 | **`buddhist-dhamma-middle-way`** | *Buddhist Dhamma 1.4* | 1.3 (1.00), 1.4 (1.40) | 1.4 (0.65), 1.3 (0.55), 1.2 (0.22), 2.1 (0.20), 1.1 (0.19) | 0ms / 0ms |
 | **`buddhist-dhamma-metta`** | *Buddhist Dhamma 2.1* | 1.1 (0.40), 1.2 (0.40), 1.3 (0.40), 1.4 (0.40), 2.1 (0.40) | 2.1 (0.66), 2.2 (0.54), 1.2 (0.22), 1.4 (0.20), 1.1 (0.19) | 0ms / 0ms |
-| **`buddhist-dhamma-impermanence`** | *Buddhist Dhamma 2.2* | 1.1 (0.40), 1.2 (0.40), 1.3 (0.40), 1.4 (0.40), 2.1 (0.40) | 2.2 (0.61), 2.1 (0.51), 1.2 (0.22), 1.4 (0.20), 1.1 (0.19) | 0ms / 0ms |
+| **`buddhist-dhamma-impermanence`** | *Buddhist Dhamma 2.2* | 1.1 (0.40), 1.2 (0.40), 1.3 (0.40), 1.4 (0.40), 2.1 (0.40) | 2.2 (0.61), 2.1 (0.51), 1.2 (0.22), 1.4 (0.20), 1.1 (0.19) | 1ms / 0ms |
 
 ## 📊 Analysis & Verification Summary
 

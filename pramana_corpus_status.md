@@ -21,8 +21,8 @@ This document records the current integration, routing, and evaluation status fo
 | **`jain_tattvartha_sutra`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/jain_tattvartha_sutra.json` |
 | **`shaiva_kashmir`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/shaiva_kashmir.json` |
 | **`jain_kalpa_sutra`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/jain_kalpa_sutra.json` |
-| **`buddhist_dhamma`** | ✅ Yes | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/buddhist_dhamma.json` |
-| **`jain_dharma`** | ✅ Yes | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/jain_dharma.json` |
+| **`buddhist_dhamma`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/buddhist_dhamma.json` |
+| **`jain_dharma`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/jain_dharma.json` |
 
 ### Column Definitions:
 * **Ingested**: Manifest JSON files containing Sanskrit text, transliterations, and translations exist in the `manifests/` directory.
@@ -54,3 +54,13 @@ This document records the current integration, routing, and evaluation status fo
 5. **Gurbani (`sikh_gurbani`)**
    - Active chapters: 1 (`sikh_gurbani_japji.json`)
    - Themes: Gurbani scriptures (Japji Sahib Mool Mantar and Pauri 1). Included for Sikh tradition path schema compatibility.
+
+6. **Buddhist Dhamma (`buddhist_dhamma`)**
+   - Active chapters: 8 (`buddhist_dhamma.json` containing Dhammapada Chapters 1 to 8)
+   - Scale: **Production-scale** (109 passages indexed).
+   - Themes: Foundational Buddhist Dhamma verses (Yamakavagga, Appamadavagga, Cittavagga, Pupphavagga, Balavagga, Panditavagga, Arahantavagga, Sahassavagga).
+
+7. **Jain Dharma (`jain_dharma`)**
+   - Active chapters: 3 (`jain_dharma.json` containing Tattvartha Sutra chapters and Saman Suttam)
+   - Scale: **Production-scale** (107 passages indexed).
+   - Themes: Foundational Jain Dharma Agamas and ethical verses (Three Jewels, Ahimsa, Anekantavada, Mahavratas, Samata, Navkar Mantra).

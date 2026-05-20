@@ -315,6 +315,146 @@ def render_report(report: ComparisonReport) -> None:
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(out_data, f, indent=2)
     print(f"📝 Saved comparison report to {out_path.name}")
+
+    # Generate Hosted MD Report
+    hosted_md_path = root / "pramana_hosted_provider_comparison.md"
+    hosted_lines = [
+        "# ☁️ Pramana Hosted Provider Comparison Report",
+        "",
+        "This report documents the parity and evaluation results between the local mock baseline and the live **Hosted Gemini Provider** (`gemini-hosted`).",
+        "",
+    ]
+    
+    hosted_results = {s: report.results.get(s, {}).get("hosted") for s in suites}
+    has_hosted = any(r is not None for r in hosted_results.values())
+    
+    if not has_hosted:
+        hosted_lines.extend([
+            "⚠️ **Status**: NOT RUN",
+            "",
+            "The comparison harness was not run for the `hosted` provider in this pass. Run with `--modes hosted` to include it.",
+        ])
+    else:
+        all_skipped = all(r.skipped_reason is not None for r in hosted_results.values() if r)
+        any_live = any(r.live_runs > 0 for r in hosted_results.values() if r)
+        
+        if all_skipped:
+            first_skip = next((r.skipped_reason for r in hosted_results.values() if r and r.skipped_reason), "No API Key configured.")
+            hosted_lines.extend([
+                "🔴 **Status**: SKIPPED / UNAVAILABLE",
+                "",
+                "The hosted provider run could not be completed.",
+                f"- **Reason**: {first_skip}",
+                "",
+                "> [!WARNING]",
+                "> `GEMINI_API_KEY` is not set in the environment or `.env.local`. Zero-config mock fallback was used for safety.",
+            ])
+        elif any_live:
+            hosted_lines.extend([
+                "🟢 **Status**: REAL HOSTED EXECUTION SUCCESSFUL",
+                "",
+                "A real hosted execution was successfully completed using the configured `GEMINI_API_KEY` against Google Gemini API.",
+            ])
+        else:
+            hosted_lines.extend([
+                "🟡 **Status**: MOCK FALLBACK MODE",
+                "",
+                "The run completed, but fell back entirely to mock execution because no live API responses were returned.",
+            ])
+            
+        hosted_lines.extend([
+            "",
+            "### 📊 Parity Results Table",
+            "",
+            "| Suite Name | Mock Rate | Hosted Rate | Live Runs | Mock Runs | Status / Reason |",
+            "| :--- | :---: | :---: | :---: | :---: | :--- |",
+        ])
+        for s in suites:
+            res_mock = report.results.get(s, {}).get("mock")
+            res_host = report.results.get(s, {}).get("hosted")
+            mock_rate = f"{res_mock.pass_rate*100:.0f}%" if res_mock else "N/A"
+            if not res_host:
+                hosted_lines.append(f"| `{s}` | {mock_rate} | N/A | - | - | Not run |")
+            elif res_host.skipped_reason:
+                hosted_lines.append(f"| `{s}` | {mock_rate} | ⚠️ SKIP | 0 | 0 | {res_host.skipped_reason} |")
+            else:
+                host_rate = f"{res_host.pass_rate*100:.0f}%"
+                status_note = "🟢 Real Live Run" if res_host.live_runs > 0 else "🛑 Fallback to Mock"
+                hosted_lines.append(f"| `{s}` | {mock_rate} | {host_rate} | {res_host.live_runs} | {res_host.mock_runs} | {status_note} |")
+
+    with open(hosted_md_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(hosted_lines) + "\n")
+    print(f"📝 Saved hosted comparison report to {hosted_md_path.name}")
+
+    # Generate Self-Hosted MD Report
+    sh_md_path = root / "pramana_self_hosted_provider_comparison.md"
+    sh_lines = [
+        "# 🖥️ Pramana Self-Hosted Provider Comparison Report",
+        "",
+        "This report documents the parity and evaluation results between the local mock baseline and the **Self-Hosted OpenAI-Compatible Provider** (`self-hosted`).",
+        "",
+    ]
+    
+    sh_results = {s: report.results.get(s, {}).get("self-hosted") for s in suites}
+    has_sh = any(r is not None for r in sh_results.values())
+    
+    if not has_sh:
+        sh_lines.extend([
+            "⚠️ **Status**: NOT RUN",
+            "",
+            "The comparison harness was not run for the `self-hosted` provider in this pass. Run with `--modes self-hosted` to include it.",
+        ])
+    else:
+        all_skipped = all(r.skipped_reason is not None for r in sh_results.values() if r)
+        any_live = any(r.live_runs > 0 for r in sh_results.values() if r)
+        
+        if all_skipped:
+            first_skip = next((r.skipped_reason for r in sh_results.values() if r and r.skipped_reason), "Self-hosted URL not set.")
+            sh_lines.extend([
+                "🔴 **Status**: SKIPPED / UNAVAILABLE",
+                "",
+                "The self-hosted provider run could not be completed.",
+                f"- **Reason**: {first_skip}",
+                "",
+                "> [!WARNING]",
+                "> `PRAMANA_SELF_HOSTED_URL` is not set in the environment. Zero-config success remains intact.",
+            ])
+        elif any_live:
+            sh_lines.extend([
+                "🟢 **Status**: REAL SELF-HOSTED EXECUTION SUCCESSFUL",
+                "",
+                "A real self-hosted execution was successfully completed against the OpenAI-compatible endpoint at the configured URL.",
+            ])
+        else:
+            sh_lines.extend([
+                "🟡 **Status**: MOCK FALLBACK MODE",
+                "",
+                "The run completed, but fell back entirely to mock execution because no live responses were returned by the self-hosted endpoint.",
+            ])
+            
+        sh_lines.extend([
+            "",
+            "### 📊 Parity Results Table",
+            "",
+            "| Suite Name | Mock Rate | Self-Hosted Rate | Live Runs | Mock Runs | Status / Reason |",
+            "| :--- | :---: | :---: | :---: | :---: | :--- |",
+        ])
+        for s in suites:
+            res_mock = report.results.get(s, {}).get("mock")
+            res_sh = report.results.get(s, {}).get("self-hosted")
+            mock_rate = f"{res_mock.pass_rate*100:.0f}%" if res_mock else "N/A"
+            if not res_sh:
+                sh_lines.append(f"| `{s}` | {mock_rate} | N/A | - | - | Not run |")
+            elif res_sh.skipped_reason:
+                sh_lines.append(f"| `{s}` | {mock_rate} | ⚠️ SKIP | 0 | 0 | {res_sh.skipped_reason} |")
+            else:
+                sh_rate = f"{res_sh.pass_rate*100:.0f}%"
+                status_note = "🟢 Real Live Run" if res_sh.live_runs > 0 else "🛑 Fallback to Mock"
+                sh_lines.append(f"| `{s}` | {mock_rate} | {sh_rate} | {res_sh.live_runs} | {res_sh.mock_runs} | {status_note} |")
+
+    with open(sh_md_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(sh_lines) + "\n")
+    print(f"📝 Saved self-hosted comparison report to {sh_md_path.name}")
     print("=" * 100)
 
 
