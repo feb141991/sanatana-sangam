@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleAuth } from 'google-auth-library';
+import { generateTTSCacheKey, getCachedAudio, setCachedAudio } from '@/lib/tts/cache';
+import { preprocessTTS } from '@/lib/tts/preprocessing';
 
 // Force Node.js runtime — google-auth-library requires it
 export const runtime = 'nodejs';
@@ -41,7 +43,7 @@ const PANDIT_PROFILES: Record<string, VoiceProfile> = {
   }
 };
 
-function getVoiceConfig(text: string, quality: 'standard' | 'pandit'): VoiceProfile {
+function getVoiceConfig(text: string, quality: 'standard' | 'pandit' | 'akash'): VoiceProfile {
   const isPandit = quality === 'pandit';
   
   if (hasDevanagari(text)) {
@@ -73,6 +75,16 @@ function getVoiceConfig(text: string, quality: 'standard' | 'pandit'): VoiceProf
   };
 }
 
+function getSarvamVoiceConfig(text: string, quality: 'standard' | 'pandit' | 'akash'): { languageCode: string, speaker: string } {
+  if (hasDevanagari(text)) {
+    return { languageCode: 'hi-IN', speaker: quality === 'pandit' ? 'aravind' : 'meera' };
+  }
+  if (hasGurmukhi(text)) {
+    return { languageCode: 'pa-IN', speaker: quality === 'pandit' ? 'amrit' : 'simran' };
+  }
+  return { languageCode: 'en-IN', speaker: 'aravind' };
+}
+
 // ── Cached GoogleAuth client ──────────────────────────────────────────────────
 let _auth: GoogleAuth | null = null;
 
@@ -95,13 +107,13 @@ function getAuth(): GoogleAuth {
 // ── POST /api/tts ─────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   let text: string;
-  let quality: 'standard' | 'pandit';
+  let quality: 'standard' | 'pandit' | 'akash';
   let requestedRate: number | null = null;
 
   try {
     const body = await req.json();
     text = String(body.text ?? '').trim();
-    quality = body.quality === 'pandit' ? 'pandit' : 'standard';
+    quality = body.quality === 'pandit' ? 'pandit' : (body.quality === 'akash' ? 'akash' : 'standard');
     requestedRate = body.rate ? Number(body.rate) : null;
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
@@ -109,6 +121,71 @@ export async function POST(req: NextRequest) {
 
   if (!text) return NextResponse.json({ error: 'text is required' }, { status: 400 });
 
+  const sarvamKey = process.env.SARVAM_API_KEY?.trim();
+  const providerLabel = sarvamKey ? 'sarvam' : 'google';
+  const effectiveProfileName = sarvamKey ? getSarvamVoiceConfig(text, quality).speaker : getVoiceConfig(text, quality).name;
+  const effectiveRate = requestedRate ?? (sarvamKey ? 1.0 : getVoiceConfig(text, quality).rate);
+
+  const cacheKey = generateTTSCacheKey(text, providerLabel, effectiveProfileName, effectiveRate, quality);
+  const cachedAudio = getCachedAudio(cacheKey);
+  if (cachedAudio) {
+    return NextResponse.json({
+      audioContent: cachedAudio,
+      meta: {
+        provider: providerLabel,
+        voiceUsed: effectiveProfileName,
+        qualityUsed: quality,
+        status: 'cached'
+      }
+    });
+  }
+
+  const { cleanedText, usesSSML } = preprocessTTS(text, quality);
+
+  if (sarvamKey) {
+    const sarvamProfile = getSarvamVoiceConfig(text, quality);
+    try {
+      const sRes = await fetch('https://api.sarvam.ai/text-to-speech', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'api-subscription-key': sarvamKey,
+        },
+        body: JSON.stringify({
+          inputs: [cleanedText],
+          target_language_code: sarvamProfile.languageCode,
+          speaker: sarvamProfile.speaker,
+          pace: requestedRate ?? 1.0,
+          enable_preprocessing: true,
+          model: 'bulbul:v1'
+        }),
+      });
+
+      if (sRes.ok) {
+        const data = await sRes.json() as { audios: string[] };
+        if (data.audios && data.audios.length > 0) {
+          const audioBase64 = data.audios[0];
+          setCachedAudio(cacheKey, audioBase64);
+          return NextResponse.json({
+            audioContent: audioBase64,
+            meta: {
+              provider: 'sarvam',
+              voiceUsed: sarvamProfile.speaker,
+              qualityUsed: quality,
+              status: 'generated'
+            }
+          });
+        }
+      } else {
+        const errText = await sRes.text();
+        console.error('[TTS] Sarvam API error:', sRes.status, errText);
+      }
+    } catch (err) {
+      console.error('[TTS] Sarvam fetch error:', err);
+    }
+  }
+
+  // Fallback to Google TTS
   // Get OAuth2 access token
   let token: string | null | undefined;
   try {
@@ -123,14 +200,11 @@ export async function POST(req: NextRequest) {
 
   const profile = getVoiceConfig(text, quality);
   
-  // For 'Pandit' quality, we use SSML to add meditative pauses
-  // Sanskrit verses (Shlokas) usually have a break at the half-verse (।).
-  const ssmlText = quality === 'pandit' 
-    ? `<speak>${text.replace(/।/g, '। <break time="1200ms"/>').replace(/॥/g, '॥ <break time="2000ms"/>')}</speak>`
-    : text;
+  // Google TTS SSML handling is now partially driven by preprocessing.
+  const ttsPayloadText = usesSSML ? { ssml: cleanedText } : { text: cleanedText };
 
   const ttsPayload = {
-    input: quality === 'pandit' ? { ssml: ssmlText } : { text },
+    input: ttsPayloadText,
     voice: {
       languageCode: profile.languageCode,
       name: profile.name,
@@ -161,11 +235,14 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await gRes.json() as { audioContent: string };
+    setCachedAudio(cacheKey, data.audioContent);
     return NextResponse.json({ 
       audioContent: data.audioContent,
       meta: {
+        provider: 'google',
         voiceUsed: profile.name,
-        qualityUsed: quality
+        qualityUsed: quality,
+        status: 'generated'
       }
     });
 

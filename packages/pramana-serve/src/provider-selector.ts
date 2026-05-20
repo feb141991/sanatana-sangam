@@ -1,6 +1,7 @@
 import type { PramanaInferenceProvider } from '@sangam/pramana-core';
 import { HostedGeminiProvider } from './providers/hosted-gemini';
 import { SelfHostedProvider } from './providers/self-hosted';
+import { SarvamProvider } from './providers/sarvam';
 
 // ---------------------------------------------------------------------------
 // Provider Registry & Config-Based Selection
@@ -21,6 +22,8 @@ export interface ProviderSelectorConfig {
   activeProvider: string;
   /** API key for hosted Gemini provider. */
   geminiApiKey?: string;
+  /** API key for hosted Sarvam provider. */
+  sarvamApiKey?: string;
   /** Self-hosted runtime base URL, if configured. */
   selfHostedUrl?: string;
   /** Self-hosted model name override. */
@@ -41,6 +44,11 @@ export function buildProviderRegistry(
   // Always register the hosted Gemini provider
   registry.set('gemini-hosted', new HostedGeminiProvider({
     apiKey: config.geminiApiKey,
+  }));
+
+  // Register the Sarvam hosted provider
+  registry.set('sarvam-hosted', new SarvamProvider({
+    apiKey: config.sarvamApiKey,
   }));
 
   // Register the self-hosted provider if a URL is configured

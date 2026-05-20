@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { normalizeMeaningTargetLanguage } from '@/lib/ai/context-builder';
 import { runMeaningGenerate } from '@/lib/ai/router';
+import { generateSarvamTranslation } from '@/lib/ai/providers/sarvam-translate';
 
 function stableHash(input: string) {
   let hash = 0;
@@ -20,6 +21,22 @@ function extractJsonMeaning(raw: string) {
   } catch {
     return '';
   }
+}
+
+function mapToSarvamLangCode(lang: string): string {
+  const map: Record<string, string> = {
+    'hi': 'hi-IN',
+    'ta': 'ta-IN',
+    'te': 'te-IN',
+    'mr': 'mr-IN',
+    'gu': 'gu-IN',
+    'kn': 'kn-IN',
+    'ml': 'ml-IN',
+    'pa': 'pa-IN',
+    'bn': 'bn-IN',
+    'or': 'or-IN',
+  };
+  return map[lang] || 'hi-IN';
 }
 
 export async function POST(req: Request) {
@@ -51,13 +68,36 @@ export async function POST(req: Request) {
   }
 
   try {
-    const result = await runMeaningGenerate({
-      entryId,
-      sourceMeaning,
-      sourceLabel,
-      targetLanguage,
-    });
-    const meaning = extractJsonMeaning(result.raw);
+    let meaning = '';
+    let aiMetadata = undefined;
+    const sarvamKey = process.env.SARVAM_API_KEY?.trim();
+
+    if (sarvamKey) {
+      try {
+        const textToTranslate = sourceMeaning || sourceLabel || entryId;
+        const translated = await generateSarvamTranslation(sarvamKey, {
+          input: textToTranslate,
+          source_language_code: 'en-IN',
+          target_language_code: mapToSarvamLangCode(targetLanguage),
+        });
+        meaning = translated.trim();
+        aiMetadata = { task: 'meaning_generate', provider: 'sarvam-translate', model: 'sarvam-1', privateStackReady: false, usedHostedFallback: false };
+      } catch (err) {
+        console.error('Sarvam translate failed, falling back to inference provider:', err);
+      }
+    }
+
+    if (!meaning) {
+      const result = await runMeaningGenerate({
+        entryId,
+        sourceMeaning,
+        sourceLabel,
+        targetLanguage,
+      });
+      meaning = extractJsonMeaning(result.raw);
+      aiMetadata = result.metadata;
+    }
+
     if (!meaning) {
       return NextResponse.json({ error: 'Could not localize meaning' }, { status: 502 });
     }
@@ -73,7 +113,7 @@ export async function POST(req: Request) {
         source_status: 'ai_generated',
         updated_at: new Date().toISOString(),
       }, { onConflict: 'entry_id,language' });
-    return NextResponse.json({ meaning, language: targetLanguage, status: 'generated', ai: result.metadata });
+    return NextResponse.json({ meaning, language: targetLanguage, status: 'generated', ai: aiMetadata });
   } catch (err: any) {
     const msg = err?.message ?? 'Could not localize meaning';
     const status = String(msg).includes('required') ? 400 : String(msg).includes('configured') ? 503 : 502;
