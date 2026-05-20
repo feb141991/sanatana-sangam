@@ -3,6 +3,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { normalizeMeaningTargetLanguage } from '@/lib/ai/context-builder';
 import { runMeaningGenerate } from '@/lib/ai/router';
 import { generateSarvamTranslation } from '@/lib/ai/providers/sarvam-translate';
+import { emitEvent, emitError } from '@/lib/monitoring/events';
 
 function stableHash(input: string) {
   let hash = 0;
@@ -61,11 +62,14 @@ export async function POST(req: Request) {
       .maybeSingle();
 
     if (typeof data?.meaning === 'string' && data.meaning.trim()) {
+      emitEvent({ severity: 'P3', domain: 'translation', route: '/api/i18n/meaning', context: { status: 'cached' } });
       return NextResponse.json({ meaning: data.meaning, language: targetLanguage, status: 'cached' });
     }
   } catch {
     // The migration may not be applied in older environments. Generation still works.
   }
+
+  const startTime = Date.now();
 
   try {
     let meaning = '';
@@ -113,8 +117,20 @@ export async function POST(req: Request) {
         source_status: 'ai_generated',
         updated_at: new Date().toISOString(),
       }, { onConflict: 'entry_id,language' });
+
+    emitEvent({
+      severity: 'P3',
+      domain: 'translation',
+      route: '/api/i18n/meaning',
+      latency_ms: Date.now() - startTime,
+      provider: aiMetadata?.provider,
+      model: aiMetadata?.model,
+      fallback_used: aiMetadata?.usedHostedFallback
+    });
+
     return NextResponse.json({ meaning, language: targetLanguage, status: 'generated', ai: aiMetadata });
   } catch (err: any) {
+    emitError('translation', err, 'P2', { route: '/api/i18n/meaning' });
     const msg = err?.message ?? 'Could not localize meaning';
     const status = String(msg).includes('required') ? 400 : String(msg).includes('configured') ? 503 : 502;
     return NextResponse.json({ error: msg }, { status });

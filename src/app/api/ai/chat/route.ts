@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { runDharmaChat } from '@/lib/ai/router';
 import type { PromptMessage } from '@sangam/pramana-core';
+import { emitEvent, emitError } from '@/lib/monitoring/events';
 
 // ─── General AI Chat Route ────────────────────────────────────────────────────
 // POST /api/ai/chat
@@ -103,6 +104,7 @@ export async function POST(req: NextRequest) {
     content: h.text,
   }));
 
+  const startTime = Date.now();
   try {
     const result = await runDharmaChat({
       message: message.trim(),
@@ -114,11 +116,22 @@ export async function POST(req: NextRequest) {
       history: mappedHistory,
     });
 
+    emitEvent({
+      severity: 'P3',
+      domain: 'ai',
+      route: '/api/ai/chat',
+      latency_ms: Date.now() - startTime,
+      provider: result.metadata?.provider,
+      model: result.metadata?.model,
+      fallback_used: result.metadata?.usedHostedFallback
+    });
+
     // Record the successful call so the daily limit increments
     await recordAiChatEvent(supabase, user.id);
 
     return NextResponse.json({ reply: result.raw });
   } catch (err: any) {
+    emitError('ai', err, 'P2', { route: '/api/ai/chat', latency_ms: Date.now() - startTime });
     console.error('[AI CHAT ERROR]', err);
     // If it's a soft quota error or rate limit, return it as a reply (not an error) so the UI shows it gracefully
     if (err?.message?.includes('taking a short rest') || err?.message?.includes('rest')) {

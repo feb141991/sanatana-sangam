@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { runPathshalaExplain } from '@/lib/ai/router';
+import { emitEvent, emitError } from '@/lib/monitoring/events';
 
 function extractExplanation(raw: string) {
   const jsonMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/) || raw.match(/(\{[\s\S]*\})/);
@@ -24,6 +25,7 @@ export async function POST(req: Request) {
     responseMode,
   } = await req.json().catch(() => ({}));
 
+  const startTime = Date.now();
   try {
     const result = await runPathshalaExplain({
       sanskrit,
@@ -49,6 +51,16 @@ export async function POST(req: Request) {
       };
     }
 
+    emitEvent({
+      severity: 'P3',
+      domain: 'ai',
+      route: '/api/pathshala/explain',
+      latency_ms: Date.now() - startTime,
+      provider: result.metadata?.provider,
+      model: result.metadata?.model,
+      fallback_used: result.metadata?.usedHostedFallback
+    });
+
     return NextResponse.json({
       explanation,
       tradition: result.school,
@@ -58,6 +70,7 @@ export async function POST(req: Request) {
       ai: result.metadata,
     });
   } catch (err: any) {
+    emitError('ai', err, 'P2', { route: '/api/pathshala/explain', latency_ms: Date.now() - startTime });
     const msg = err?.message ?? 'Explain failed';
     const status = String(msg).includes('required') ? 400 : String(msg).includes('configured') ? 503 : 500;
     return NextResponse.json({ error: msg }, { status });

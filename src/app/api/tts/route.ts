@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleAuth } from 'google-auth-library';
 import { generateTTSCacheKey, getCachedAudio, setCachedAudio } from '@/lib/tts/cache';
 import { preprocessTTS } from '@/lib/tts/preprocessing';
+import { emitEvent, emitError } from '@/lib/monitoring/events';
 
 // Force Node.js runtime — google-auth-library requires it
 export const runtime = 'nodejs';
@@ -109,6 +110,7 @@ export async function POST(req: NextRequest) {
   let text: string;
   let quality: 'standard' | 'pandit' | 'akash';
   let requestedRate: number | null = null;
+  const startTime = Date.now();
 
   try {
     const body = await req.json();
@@ -129,6 +131,7 @@ export async function POST(req: NextRequest) {
   const cacheKey = generateTTSCacheKey(text, providerLabel, effectiveProfileName, effectiveRate, quality);
   const cachedAudio = getCachedAudio(cacheKey);
   if (cachedAudio) {
+    emitEvent({ severity: 'P3', domain: 'tts', route: '/api/tts', context: { status: 'cached' } });
     return NextResponse.json({
       audioContent: cachedAudio,
       meta: {
@@ -166,6 +169,16 @@ export async function POST(req: NextRequest) {
         if (data.audios && data.audios.length > 0) {
           const audioBase64 = data.audios[0];
           setCachedAudio(cacheKey, audioBase64);
+          
+          emitEvent({
+            severity: 'P3',
+            domain: 'tts',
+            route: '/api/tts',
+            latency_ms: Date.now() - startTime,
+            provider: 'sarvam',
+            model: 'bulbul:v1'
+          });
+
           return NextResponse.json({
             audioContent: audioBase64,
             meta: {
@@ -178,9 +191,11 @@ export async function POST(req: NextRequest) {
         }
       } else {
         const errText = await sRes.text();
+        emitError('tts', new Error(`Sarvam API error: ${errText}`), 'P2', { route: '/api/tts', provider: 'sarvam' });
         console.error('[TTS] Sarvam API error:', sRes.status, errText);
       }
     } catch (err) {
+      emitError('tts', err, 'P2', { route: '/api/tts', provider: 'sarvam' });
       console.error('[TTS] Sarvam fetch error:', err);
     }
   }
@@ -195,6 +210,7 @@ export async function POST(req: NextRequest) {
     token = res.token;
     if (!token) throw new Error('Empty token returned');
   } catch (err: any) {
+    emitError('tts', err, 'P1', { route: '/api/tts', provider: 'google', error_message: 'TTS auth failed' });
     return NextResponse.json({ error: 'TTS auth failed' }, { status: 503 });
   }
 
@@ -230,12 +246,24 @@ export async function POST(req: NextRequest) {
 
     if (!gRes.ok) {
       const errText = await gRes.text();
+      emitError('tts', new Error(`Google API error: ${errText}`), 'P1', { route: '/api/tts', provider: 'google' });
       console.error('[TTS] Google API error:', gRes.status, errText);
       return NextResponse.json({ error: 'TTS upstream error' }, { status: 502 });
     }
 
     const data = await gRes.json() as { audioContent: string };
     setCachedAudio(cacheKey, data.audioContent);
+    
+    emitEvent({
+      severity: 'P3',
+      domain: 'tts',
+      route: '/api/tts',
+      latency_ms: Date.now() - startTime,
+      provider: 'google',
+      model: profile.name,
+      fallback_used: !!sarvamKey
+    });
+
     return NextResponse.json({ 
       audioContent: data.audioContent,
       meta: {
@@ -247,6 +275,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (err) {
+    emitError('tts', err, 'P1', { route: '/api/tts', provider: 'google' });
     console.error('[TTS] Fetch error:', err);
     return NextResponse.json({ error: 'TTS unavailable' }, { status: 503 });
   }

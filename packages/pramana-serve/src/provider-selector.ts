@@ -79,24 +79,43 @@ export function buildProviderRegistry(
 export function selectProvider(
   config: ProviderSelectorConfig
 ): PramanaInferenceProvider {
+  const providers = selectProviders(config);
+  if (providers.length > 0) {
+    return providers[0];
+  }
+  throw new Error(`No available Pramana inference provider.`);
+}
+
+/**
+ * Returns a prioritized array of inference providers for failover.
+ * The primary provider is first. The fallback provider is second.
+ */
+export function selectProviders(
+  config: ProviderSelectorConfig
+): PramanaInferenceProvider[] {
   const registry = buildProviderRegistry(config);
+  const providers: PramanaInferenceProvider[] = [];
 
   const requested = registry.get(config.activeProvider);
   if (requested && requested.isAvailable()) {
-    return requested;
+    providers.push(requested);
   }
 
-  // Fallback to hosted Gemini
+  // Fallback to hosted Gemini if it's not already the requested one
   const fallback = registry.get('gemini-hosted');
-  if (fallback && fallback.isAvailable()) {
-    return fallback;
+  if (fallback && fallback.isAvailable() && config.activeProvider !== 'gemini-hosted') {
+    providers.push(fallback);
   }
 
-  throw new Error(
-    `No available Pramana inference provider. ` +
-    `Requested: "${config.activeProvider}". ` +
-    `Ensure geminiApiKey or selfHostedUrl is configured.`
-  );
+  if (providers.length === 0) {
+    throw new Error(
+      `No available Pramana inference provider. ` +
+      `Requested: "${config.activeProvider}". ` +
+      `Ensure geminiApiKey or selfHostedUrl is configured.`
+    );
+  }
+
+  return providers;
 }
 
 /**
