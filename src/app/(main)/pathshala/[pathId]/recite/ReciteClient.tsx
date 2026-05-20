@@ -29,6 +29,7 @@ import { useNativeAudio } from '@/hooks/useNativeAudio';
 import SacredReader from '@/components/bhakti/SacredReader';
 import type { SyncToken } from '@/hooks/useSacredSync';
 import type { RecitationResult } from '@sangam/pathshala-engine';
+import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 
 // ─── Font size steps (same scale as LessonClient) ─────────────────────────────
 const READER_FONT_STEPS = [1.1, 1.25, 1.4, 1.58, 1.78] as const;
@@ -268,7 +269,39 @@ export default function ReciteClient({
   const verseTransliteration = verse
     ? getTransliteration(verse.original, verse.transliteration, transliterationLanguage ?? 'en')
     : '';
-  const showVerseTransliteration = showTransliteration && verseTransliteration !== verse?.original;
+  const verseReadableContent: ReadableContent | null = verse
+    ? {
+        original: verse.original,
+        transliteration: verseTransliteration,
+        meaning: localizedMeaning.meaning,
+        sourceLabel: verse.source || verse.title,
+        tradition: _tradition,
+        language: 'sa',
+        script: 'devanagari',
+        pipelineTags: {
+          content_type: 'sacred_verse',
+          response_mode: 'extractive',
+          audio_mode: 'pandit',
+          tradition: 'hindu',
+          script: 'devanagari',
+          delivery_intent: 'live_user',
+        },
+        capabilities: buildReadableCapabilities({
+          original: verse.original,
+          transliteration: verseTransliteration,
+          meaning: localizedMeaning.meaning,
+          script: 'devanagari',
+          pipelineTags: {
+            content_type: 'sacred_verse',
+            audio_mode: 'pandit',
+          },
+        }),
+      }
+    : null;
+  const showVerseTransliteration =
+    showTransliteration &&
+    !!verseReadableContent?.capabilities.canToggleTransliteration &&
+    verseTransliteration !== verse?.original;
 
   const handleCopy = () => {
     const textToCopy = `${verse.title} (${verse.source})\n\n${verse.original}\n\nMeaning: ${localizedMeaning.meaning}`;
@@ -602,31 +635,33 @@ export default function ReciteClient({
           </div>
 
           {/* Language Toggle */}
-          <div className="flex items-center gap-1">
-            <span className="text-[9px] uppercase font-bold tracking-wider text-[color:var(--brand-muted)]">Lang:</span>
-            <button
-              onClick={() => setCustomLang('en')}
-              className="px-2 py-0.5 rounded-full text-[9px] font-bold transition-all"
-              style={{
-                backgroundColor: customLang === 'en' ? accentColour : 'rgba(255,255,255,0.06)',
-                color: customLang === 'en' ? '#1c1c1a' : 'var(--brand-muted)',
-                border: `1px solid ${customLang === 'en' ? accentColour : 'rgba(255,255,255,0.08)'}`
-              }}
-            >
-              EN
-            </button>
-            <button
-              onClick={() => setCustomLang('hi')}
-              className="px-2 py-0.5 rounded-full text-[9px] font-bold transition-all"
-              style={{
-                backgroundColor: customLang === 'hi' ? accentColour : 'rgba(255,255,255,0.06)',
-                color: customLang === 'hi' ? '#1c1c1a' : 'var(--brand-muted)',
-                border: `1px solid ${customLang === 'hi' ? accentColour : 'rgba(255,255,255,0.08)'}`
-              }}
-            >
-              हिं/Local
-            </button>
-          </div>
+          {verseReadableContent?.capabilities.canToggleLocalLanguage ? (
+            <div className="flex items-center gap-1">
+              <span className="text-[9px] uppercase font-bold tracking-wider text-[color:var(--brand-muted)]">Lang:</span>
+              <button
+                onClick={() => setCustomLang('en')}
+                className="px-2 py-0.5 rounded-full text-[9px] font-bold transition-all"
+                style={{
+                  backgroundColor: customLang === 'en' ? accentColour : 'rgba(255,255,255,0.06)',
+                  color: customLang === 'en' ? '#1c1c1a' : 'var(--brand-muted)',
+                  border: `1px solid ${customLang === 'en' ? accentColour : 'rgba(255,255,255,0.08)'}`
+                }}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => setCustomLang('hi')}
+                className="px-2 py-0.5 rounded-full text-[9px] font-bold transition-all"
+                style={{
+                  backgroundColor: customLang === 'hi' ? accentColour : 'rgba(255,255,255,0.06)',
+                  color: customLang === 'hi' ? '#1c1c1a' : 'var(--brand-muted)',
+                  border: `1px solid ${customLang === 'hi' ? accentColour : 'rgba(255,255,255,0.08)'}`
+                }}
+              >
+                हिं/Local
+              </button>
+            </div>
+          ) : <div />}
         </div>
 
         {/* Progress */}
@@ -703,6 +738,7 @@ export default function ReciteClient({
                 audioUrl="" // Will be generated via togglePanditVoice
                 tokens={verse.sync_metadata || []}
                 source={verse.source || verse.title}
+                readableContent={verseReadableContent ?? undefined}
               />
             ) : (
               <div className="space-y-4">
@@ -736,30 +772,32 @@ export default function ReciteClient({
                   </AnimatePresence>
 
                   {/* Play / Stop TTS button */}
-                  <button
-                    onClick={() => {
-                      if (isSpeaking) {
-                        stopTTS();
-                      } else {
-                        speakCurrent(verse.original || verse.transliteration || '');
+                  {verseReadableContent?.capabilities.canGenerateTTS ? (
+                    <button
+                      onClick={() => {
+                        if (isSpeaking) {
+                          stopTTS();
+                        } else {
+                          speakCurrent(verse.original || verse.transliteration || '');
+                        }
+                      }}
+                      disabled={ttsLoading}
+                      className="w-9 h-9 rounded-full border flex items-center justify-center transition-all flex-shrink-0"
+                      style={{
+                        color: accentColour,
+                        background: isSpeaking ? `${accentColour}25` : `${accentColour}10`,
+                        borderColor: isSpeaking ? `${accentColour}50` : 'rgba(255,255,255,0.10)',
+                      }}
+                      title={isSpeaking ? 'Stop reading' : 'Listen — Sanskrit voice'}
+                    >
+                      {ttsLoading
+                        ? <Loader2 size={15} className="animate-spin" />
+                        : isSpeaking
+                          ? <VolumeX size={15} />
+                          : <Volume2 size={15} />
                       }
-                    }}
-                    disabled={ttsLoading}
-                    className="w-9 h-9 rounded-full border flex items-center justify-center transition-all flex-shrink-0"
-                    style={{
-                      color: accentColour,
-                      background: isSpeaking ? `${accentColour}25` : `${accentColour}10`,
-                      borderColor: isSpeaking ? `${accentColour}50` : 'rgba(255,255,255,0.10)',
-                    }}
-                    title={isSpeaking ? 'Stop reading' : 'Listen — Sanskrit voice'}
-                  >
-                    {ttsLoading
-                      ? <Loader2 size={15} className="animate-spin" />
-                      : isSpeaking
-                        ? <VolumeX size={15} />
-                        : <Volume2 size={15} />
-                    }
-                  </button>
+                    </button>
+                  ) : null}
                 </div>
 
                 {/* Speed selector — compact tap cycle */}
@@ -822,7 +860,7 @@ export default function ReciteClient({
                 )}
 
                 {/* Translation accordion — transliteration + meaning in one toggle */}
-                {mode !== 'hidden' && (
+                {mode !== 'hidden' && verseReadableContent?.capabilities.canShowMeaning && (
                   <div>
                     <button
                       onClick={() => setShowExplan(s => !s)}
@@ -848,7 +886,7 @@ export default function ReciteClient({
                               </p>
                             </div>
                           )}
-                          {verse.meaning && (
+                          {verseReadableContent.capabilities.canShowMeaning && (
                             <div className="px-4 py-4">
                               <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.7 }}>
                                 {getMeaningLabel(effectiveMeaningLanguage)}
@@ -865,23 +903,25 @@ export default function ReciteClient({
                 )}
 
                 {/* ── Explain button ───────────────────────────────────────────────── */}
-                <div className="pt-1 border-t border-white/6">
-                  <button
-                    onClick={explainVerse}
-                    disabled={explainLoading}
-                    className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full transition-all w-full justify-center"
-                    style={{
-                      background: explainResult ? `${accentColour}18` : 'rgba(255,255,255,0.06)',
-                      color: explainLoading ? 'var(--brand-muted)' : accentColour,
-                      border: `1px solid ${explainResult ? accentColour + '40' : 'rgba(255,255,255,0.10)'}`,
-                    }}
-                  >
-                    {explainLoading
-                      ? <><Loader2 size={12} className="animate-spin" /> Asking teacher…</>
-                      : <><Sparkles size={12} /> {explainResult ? 'Refresh explanation' : 'Explain this verse'}</>
-                    }
-                  </button>
-                </div>
+                {verseReadableContent?.capabilities.canShowExplain ? (
+                  <div className="pt-1 border-t border-white/6">
+                    <button
+                      onClick={explainVerse}
+                      disabled={explainLoading}
+                      className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full transition-all w-full justify-center"
+                      style={{
+                        background: explainResult ? `${accentColour}18` : 'rgba(255,255,255,0.06)',
+                        color: explainLoading ? 'var(--brand-muted)' : accentColour,
+                        border: `1px solid ${explainResult ? accentColour + '40' : 'rgba(255,255,255,0.10)'}`,
+                      }}
+                    >
+                      {explainLoading
+                        ? <><Loader2 size={12} className="animate-spin" /> Asking teacher…</>
+                        : <><Sparkles size={12} /> {explainResult ? 'Refresh explanation' : 'Explain this verse'}</>
+                      }
+                    </button>
+                  </div>
+                ) : null}
               </div>
             )}
           </motion.div>

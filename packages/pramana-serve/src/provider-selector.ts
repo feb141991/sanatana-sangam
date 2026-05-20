@@ -95,16 +95,27 @@ export function selectProviders(
 ): PramanaInferenceProvider[] {
   const registry = buildProviderRegistry(config);
   const providers: PramanaInferenceProvider[] = [];
+  const seen = new Set<string>();
 
-  const requested = registry.get(config.activeProvider);
-  if (requested && requested.isAvailable()) {
-    providers.push(requested);
-  }
+  const addProvider = (id: string) => {
+    const provider = registry.get(id);
+    if (!provider || !provider.isAvailable() || seen.has(id)) return;
+    providers.push(provider);
+    seen.add(id);
+  };
 
-  // Fallback to hosted Gemini if it's not already the requested one
-  const fallback = registry.get('gemini-hosted');
-  if (fallback && fallback.isAvailable() && config.activeProvider !== 'gemini-hosted') {
-    providers.push(fallback);
+  addProvider(config.activeProvider);
+
+  const fallbackOrder = config.activeProvider === 'gemini-hosted'
+    ? ['sarvam-hosted', 'self-hosted']
+    : config.activeProvider === 'sarvam-hosted'
+      ? ['gemini-hosted', 'self-hosted']
+      : config.activeProvider === 'self-hosted'
+        ? ['sarvam-hosted', 'gemini-hosted']
+        : ['gemini-hosted', 'sarvam-hosted', 'self-hosted'];
+
+  for (const id of fallbackOrder) {
+    addProvider(id);
   }
 
   if (providers.length === 0) {

@@ -39,6 +39,8 @@ import NityaHeroBanner from '@/components/nitya/NityaHeroBanner';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import type { NityaSequenceStep, NityaKarmaStreak } from '@sangam/sadhana-engine';
 import { useVocabulary } from '@/hooks/useVocabulary';
+import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
+import { resolveReadablePreferences } from '@/lib/readable-preferences';
 
 // ── Tradition greetings ─────────────────────────────────────────────────────────
 // TRADITION_MORNING moved to TRADITION_CONFIG
@@ -755,10 +757,27 @@ interface Props {
   lifeStage:     string | null;
   genderContext: string | null;
   timezone:      string | null;
+  appLanguage?:  string | null;
+  meaningLanguage?: string | null;
+  transliterationLanguage?: string | null;
+  showTransliteration?: boolean;
+  scriptureScript?: string | null;
   isPro?:        boolean;
 }
 
-export default function NityaKarmaClient({ userId, userName, tradition, lifeStage, genderContext, timezone }: Omit<Props, 'isPro'>) {
+export default function NityaKarmaClient({
+  userId,
+  userName,
+  tradition,
+  lifeStage,
+  genderContext,
+  timezone,
+  appLanguage,
+  meaningLanguage,
+  transliterationLanguage,
+  showTransliteration,
+  scriptureScript,
+}: Omit<Props, 'isPro'>) {
   // Compute "today" as a spiritual date: before 4 AM local = still yesterday.
   // This is re-evaluated each render — if the app is left open across Brahma
   // Muhurta it will naturally shift to the new day on next interaction.
@@ -770,6 +789,62 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
   const accent              = meta.accentColour;
   const isPro               = usePremium();
   const { term }            = useVocabulary(tradition);
+  const readablePreferences = resolveReadablePreferences({
+    appLanguage,
+    meaningLanguage,
+    transliterationLanguage,
+    showTransliteration,
+    scriptureScript,
+  });
+
+  const scriptureStepContent: Record<string, ReadableContent> = {
+    japa_done: {
+      original: term('Mantra Japa'),
+      sourceLabel: tradition,
+      tradition,
+      language: 'sa',
+      script: readablePreferences.scriptureScript === 'latin' ? 'latin' : 'devanagari',
+      pipelineTags: {
+        content_type: 'sacred_verse',
+        response_mode: 'extractive',
+        audio_mode: 'meditative',
+        tradition: tradition === 'sikh' ? 'sikh' : tradition === 'buddhist' ? 'buddhist' : tradition === 'jain' ? 'jain' : 'hindu',
+        script: readablePreferences.scriptureScript === 'latin' ? 'latin' : 'devanagari',
+        delivery_intent: 'live_user',
+      },
+      capabilities: buildReadableCapabilities({
+        original: term('Mantra Japa'),
+        script: readablePreferences.scriptureScript === 'latin' ? 'latin' : 'devanagari',
+        pipelineTags: {
+          content_type: 'sacred_verse',
+          audio_mode: 'meditative',
+        },
+      }),
+    },
+    shloka_done: {
+      original: term('Scripture Reading'),
+      sourceLabel: tradition,
+      tradition,
+      language: 'sa',
+      script: readablePreferences.scriptureScript === 'latin' ? 'latin' : 'devanagari',
+      pipelineTags: {
+        content_type: 'sacred_verse',
+        response_mode: 'extractive',
+        audio_mode: 'meditative',
+        tradition: tradition === 'sikh' ? 'sikh' : tradition === 'buddhist' ? 'buddhist' : tradition === 'jain' ? 'jain' : 'hindu',
+        script: readablePreferences.scriptureScript === 'latin' ? 'latin' : 'devanagari',
+        delivery_intent: 'live_user',
+      },
+      capabilities: buildReadableCapabilities({
+        original: term('Scripture Reading'),
+        script: readablePreferences.scriptureScript === 'latin' ? 'latin' : 'devanagari',
+        pipelineTags: {
+          content_type: 'sacred_verse',
+          audio_mode: 'meditative',
+        },
+      }),
+    },
+  };
 
   const [steps,         setSteps]        = useState<NityaSequenceStep[]>([]);
   const [greeting,      setGreeting]     = useState('');
@@ -1438,12 +1513,12 @@ export default function NityaKarmaClient({ userId, userName, tradition, lifeStag
                   {!step.completed && (
                     <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-relaxed">{step.description}</p>
                   )}
-                  {step.id === 'japa_done' && !step.completed && (
+                  {step.id === 'japa_done' && !step.completed && scriptureStepContent.japa_done.capabilities.canOpenReader && (
                     <Link href="/bhakti/mala" onClick={e => e.stopPropagation()}
                       className="mt-1.5 inline-flex text-xs font-semibold underline underline-offset-2"
                       style={{ color: accent }}>Open Japa Counter →</Link>
                   )}
-                  {step.id === 'shloka_done' && !step.completed && (
+                  {step.id === 'shloka_done' && !step.completed && scriptureStepContent.shloka_done.capabilities.canOpenReader && (
                     <Link href="/pathshala" onClick={e => e.stopPropagation()}
                       className="mt-1.5 inline-flex text-xs font-semibold underline underline-offset-2"
                       style={{ color: accent }}>Open Pathshala →</Link>

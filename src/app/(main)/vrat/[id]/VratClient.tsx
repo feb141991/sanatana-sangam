@@ -13,20 +13,49 @@ import { t as translateFn, type AppLang } from '@/lib/i18n/translations';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import toast from 'react-hot-toast';
 import { ReaderIntro } from '@/components/ui/ReaderIntro';
+import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
+import { getInitialReaderDisplayMode, resolveReadablePreferences } from '@/lib/readable-preferences';
 
 type ReadingTheme = 'light' | 'dark' | 'sepia';
 type FontSize = 'sm' | 'md' | 'lg' | 'xl';
 
-export default function VratClient({ vrat, originalSlug }: { vrat: VratData, originalSlug: string }) {
+interface VratClientProps {
+  vrat: VratData;
+  originalSlug: string;
+  appLanguage?: string;
+  meaningLanguage?: string;
+  transliterationLanguage?: string;
+  showTransliteration?: boolean;
+  scriptureScript?: string;
+}
+
+export default function VratClient({
+  vrat,
+  originalSlug,
+  appLanguage,
+  meaningLanguage,
+}: VratClientProps) {
   const router = useRouter();
   const [theme, setTheme] = useState<ReadingTheme>('light');
   const [fontSize, setFontSize] = useState<FontSize>('md');
   const [showSettings, setShowSettings] = useState(false);
   
-  const { t, lang: appLang } = useLanguage();
-  const [lang, setLang] = useState<'en' | 'local'>(appLang === 'en' ? 'en' : 'local');
+  const { t, lang: contextLang } = useLanguage();
+  const canToggleLocalLanguage =
+    !!vrat.nameLocal ||
+    !!vrat.taglineLocal ||
+    !!vrat.significanceLocal ||
+    !!vrat.practiceLocal ||
+    !!vrat.mantraLocal;
+  const preferences = resolveReadablePreferences({
+    appLanguage: appLanguage ?? contextLang,
+    meaningLanguage,
+  });
+  const [lang, setLang] = useState<'en' | 'local'>(
+    getInitialReaderDisplayMode(preferences, canToggleLocalLanguage)
+  );
 
-  const effectiveLang: AppLang = lang === 'en' ? 'en' : (appLang === 'en' ? 'hi' : appLang);
+  const effectiveLang: AppLang = lang === 'en' ? 'en' : preferences.effectiveMeaningLanguage;
 
   // ── Localization ──
   const localizedSignificance = useLocalizedMeaning({
@@ -60,6 +89,99 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
     targetLanguage: effectiveLang,
     enabled: lang === 'local'
   });
+
+  const significanceContent: ReadableContent = {
+    original: vrat.significance,
+    meaning: vrat.significanceLocal,
+    sourceLabel: vrat.name,
+    tradition: 'hindu',
+    language: 'en',
+    script: 'latin',
+    pipelineTags: {
+      content_type: 'instruction',
+      response_mode: 'extractive',
+      audio_mode: 'none',
+      tradition: 'hindu',
+      script: 'latin',
+      delivery_intent: 'live_user',
+    },
+    capabilities: buildReadableCapabilities(
+      {
+        original: vrat.significance,
+        meaning: vrat.significanceLocal,
+        script: 'latin',
+        pipelineTags: {
+          content_type: 'instruction',
+          audio_mode: 'none',
+        },
+      },
+      {
+        canToggleLocalLanguage: canToggleLocalLanguage,
+      }
+    ),
+  };
+
+  const practiceContent: ReadableContent = {
+    original: vrat.practice,
+    meaning: vrat.practiceLocal,
+    sourceLabel: vrat.name,
+    tradition: 'hindu',
+    language: 'en',
+    script: 'latin',
+    pipelineTags: {
+      content_type: 'instruction',
+      response_mode: 'extractive',
+      audio_mode: 'none',
+      tradition: 'hindu',
+      script: 'latin',
+      delivery_intent: 'live_user',
+    },
+    capabilities: buildReadableCapabilities(
+      {
+        original: vrat.practice,
+        meaning: vrat.practiceLocal,
+        script: 'latin',
+        pipelineTags: {
+          content_type: 'instruction',
+          audio_mode: 'none',
+        },
+      },
+      {
+        canToggleLocalLanguage: canToggleLocalLanguage,
+      }
+    ),
+  };
+
+  const mantraContent: ReadableContent = {
+    original: vrat.mantra,
+    meaning: vrat.mantraLocal,
+    sourceLabel: vrat.name,
+    tradition: 'hindu',
+    language: 'sa',
+    script: vrat.mantraLocal?.match(/[ऀ-ॿ]/) ? 'devanagari' : 'latin',
+    pipelineTags: {
+      content_type: 'sacred_verse',
+      response_mode: 'extractive',
+      audio_mode: 'meditative',
+      tradition: 'hindu',
+      script: vrat.mantraLocal?.match(/[ऀ-ॿ]/) ? 'devanagari' : 'latin',
+      delivery_intent: 'live_user',
+    },
+    capabilities: buildReadableCapabilities(
+      {
+        original: vrat.mantra,
+        meaning: vrat.mantraLocal,
+        script: vrat.mantraLocal?.match(/[ऀ-ॿ]/) ? 'devanagari' : 'latin',
+        pipelineTags: {
+          content_type: 'sacred_verse',
+          audio_mode: 'meditative',
+        },
+      },
+      {
+        canToggleLocalLanguage: canToggleLocalLanguage,
+      }
+    ),
+  };
 
   const fontStyles: Record<FontSize, string> = {
     sm: 'text-sm leading-relaxed',
@@ -146,7 +268,7 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
           </button>
 
           {/* Language Toggle */}
-          {vrat.nameLocal && (
+          {significanceContent.capabilities.canToggleLocalLanguage && (
             <button 
               onClick={() => setLang(l => l === 'en' ? 'local' : 'en')}
               className="lang-toggle w-9 h-9 rounded-full flex items-center justify-center transition font-[family:var(--font-deva)] text-sm font-bold"
@@ -213,7 +335,9 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
               <Book size={14} /> {translateFn(effectiveLang, 'significance')}
             </div>
             <p className={`${fontStyles[fontSize]} whitespace-pre-wrap ${localizedSignificance.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
-              {lang === 'local' ? localizedSignificance.meaning : vrat.significance}
+              {lang === 'local' && significanceContent.capabilities.canShowMeaning
+                ? localizedSignificance.meaning
+                : vrat.significance}
             </p>
           </div>
 
@@ -223,7 +347,9 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
               <Flame size={14} /> {translateFn(effectiveLang, 'howToObserve')}
             </div>
             <p className={`${fontStyles[fontSize]} font-medium italic ${localizedPractice.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
-              {lang === 'local' ? localizedPractice.meaning : vrat.practice}
+              {lang === 'local' && practiceContent.capabilities.canShowMeaning
+                ? localizedPractice.meaning
+                : vrat.practice}
             </p>
           </div>
 
@@ -233,7 +359,9 @@ export default function VratClient({ vrat, originalSlug }: { vrat: VratData, ori
               <Info size={14} /> {translateFn(effectiveLang, 'sacredMantra')}
             </div>
             <p className={`${fontStyles[fontSize]} text-center premium-serif text-xl font-bold mt-4 ${localizedMantra.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
-              {lang === 'local' ? localizedMantra.meaning : vrat.mantra}
+              {lang === 'local' && mantraContent.capabilities.canShowMeaning
+                ? localizedMantra.meaning
+                : vrat.mantra}
             </p>
           </div>
 

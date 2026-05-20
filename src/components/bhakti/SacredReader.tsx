@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, RotateCcw, CheckCircle2, BookOpen, Music, Loader2 } from 'lucide-react';
 import { useSacredSync, SyncToken } from '@/hooks/useSacredSync';
 import { useState, useEffect } from 'react';
+import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 
 interface SacredReaderProps {
   shlokaId: string;
@@ -12,6 +13,7 @@ interface SacredReaderProps {
   audioUrl: string;
   tokens: SyncToken[];
   source: string;
+  readableContent?: ReadableContent;
 }
 
 /**
@@ -21,7 +23,7 @@ interface SacredReaderProps {
  * Dynamically resolves both Standard TTS and high-fidelity Pandit AI voice.
  */
 export default function SacredReader({ 
-  shlokaId, sanskrit, translation, audioUrl, tokens, source 
+  shlokaId, sanskrit, translation, audioUrl, tokens, source, readableContent
 }: SacredReaderProps) {
   const [isCompleted, setIsCompleted] = useState(false);
   const [mastery, setMastery] = useState(0.65); 
@@ -29,6 +31,32 @@ export default function SacredReader({
   const [standardAudio, setStandardAudio] = useState<string | null>(audioUrl || null);
   const [panditAudio, setPanditAudio] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  const resolvedReadableContent = readableContent ?? {
+    original: sanskrit,
+    meaning: translation,
+    sourceLabel: source,
+    tradition: 'hindu',
+    language: 'sa',
+    script: 'devanagari' as const,
+    pipelineTags: {
+      content_type: 'sacred_verse',
+      response_mode: 'extractive',
+      audio_mode: 'pandit',
+      tradition: 'hindu',
+      script: 'devanagari',
+      delivery_intent: 'live_user',
+    },
+    capabilities: buildReadableCapabilities({
+      original: sanskrit,
+      meaning: translation,
+      script: 'devanagari',
+      pipelineTags: {
+        content_type: 'sacred_verse',
+        audio_mode: 'pandit',
+      },
+    }),
+  };
 
   const currentAudioUrl = (voiceQuality === 'pandit' ? panditAudio : (standardAudio || audioUrl)) || '';
 
@@ -55,7 +83,7 @@ export default function SacredReader({
     setPanditAudio(null);
     setVoiceQuality('standard');
 
-    if (!audioUrl && sanskrit) {
+    if (!audioUrl && resolvedReadableContent.capabilities.canGenerateTTS) {
       const fetchStandardTTS = async () => {
         setIsGenerating(true);
         try {
@@ -79,12 +107,16 @@ export default function SacredReader({
       };
       fetchStandardTTS();
     }
-  }, [sanskrit, audioUrl]);
+  }, [sanskrit, audioUrl, resolvedReadableContent.capabilities.canGenerateTTS]);
 
   // Voice quality toggler
   const togglePanditVoice = async () => {
     if (voiceQuality === 'pandit') {
       setVoiceQuality('standard');
+      return;
+    }
+
+    if (!resolvedReadableContent.capabilities.canGenerateTTS) {
       return;
     }
 
@@ -242,9 +274,13 @@ export default function SacredReader({
             {/* Pandit AI (HD) Toggle */}
             <button 
               onClick={togglePanditVoice}
-              disabled={isGenerating}
+              disabled={isGenerating || !resolvedReadableContent.capabilities.canGenerateTTS}
               className={`group relative flex flex-col items-center gap-1 transition-all ${
-                voiceQuality === 'pandit' ? 'scale-105' : 'opacity-65 hover:opacity-100'
+                !resolvedReadableContent.capabilities.canGenerateTTS
+                  ? 'opacity-35 cursor-not-allowed'
+                  : voiceQuality === 'pandit'
+                    ? 'scale-105'
+                    : 'opacity-65 hover:opacity-100'
               }`}
             >
               <div className={`relative p-3.5 rounded-xl border transition-all duration-300 ${

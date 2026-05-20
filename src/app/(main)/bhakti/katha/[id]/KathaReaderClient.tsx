@@ -284,7 +284,11 @@ export default function KathaReaderClient({ katha }: Props) {
         body: JSON.stringify({
           text: trimmedText,
           quality: 'pandit',
-          rate: isPanchatantra ? 0.86 : 0.78,
+          rate: katha.tags.includes('panchatantra') ? 0.86 : 0.78, // Fallback if no tag
+          pipelineTags: {
+            content_type: 'katha',
+            audio_mode: katha.tags.includes('panchatantra') ? 'story' : 'meditative'
+          }
         }),
       });
       if (!res.ok) throw new Error('TTS failed');
@@ -507,10 +511,10 @@ export default function KathaReaderClient({ katha }: Props) {
             </div>
             <div className="min-w-0">
               <p className="text-[13px] font-semibold text-[var(--text-main)]">
-                {speaking ? 'Stop Akash narration' : isPanchatantra ? 'Listen with Akash' : 'Listen to this katha'}
+                {speaking ? 'Stop Akash narration' : 'Listen with Akash'}
               </p>
               <p className="text-[11px] text-[var(--text-dim)] mt-0.5">
-                {lang === 'hi' ? 'Hindi narration' : lang === 'pa' ? 'Punjabi narration' : 'English narration'} · {isPanchatantra ? 'Story pace' : 'Meditative pace'}
+                {lang === 'hi' ? 'Hindi narration' : lang === 'pa' ? 'Punjabi narration' : 'English narration'} · {katha.tags.includes('panchatantra') ? 'Story pace' : 'Meditative pace'}
               </p>
             </div>
           </div>

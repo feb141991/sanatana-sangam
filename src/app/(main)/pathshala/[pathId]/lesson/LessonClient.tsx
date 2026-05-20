@@ -23,6 +23,7 @@ import { getMeaningLabel, resolveEffectiveMeaningLanguage } from '@/lib/language
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import type { LibraryEntry, LibraryTradition } from '@/lib/library-content';
 import type { Lesson } from '@/lib/pathshala-lessons';
+import { buildReadableCapabilities } from '@/lib/readable-content';
 
 // ─── Parchment palette — solid, no opacity tricks ────────────────────────────
 const P = {
@@ -149,7 +150,14 @@ export default function LessonClient({
   const translitText = entry
     ? getTransliteration(entry.original, entry.transliteration, transliterationLanguage ?? 'en')
     : '';
-  const showTranslit = showTransliteration && translitText && translitText !== entry?.original;
+
+  const capabilities = buildReadableCapabilities({
+    original: entry?.original,
+    transliteration: entry?.transliteration,
+    meaning: entry?.meaning
+  });
+
+  const showTranslit = showTransliteration && capabilities.canToggleTransliteration && translitText && translitText !== entry?.original;
 
   const [customLang, setCustomLang] = useState<'en' | 'hi'>(appLanguage === 'hi' || meaningLanguage === 'hi' ? 'hi' : 'en');
   const [copied, setCopied] = useState(false);
@@ -240,7 +248,14 @@ export default function LessonClient({
       const res = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: e.original, rate: 0.78 }),
+        body: JSON.stringify({ 
+          text: e.original, 
+          rate: 0.78,
+          pipelineTags: {
+            content_type: 'sacred_verse',
+            audio_mode: 'pandit'
+          }
+        }),
       });
       if (!res.ok) throw new Error('TTS failed');
       const { audioContent } = await res.json() as { audioContent: string };
@@ -787,28 +802,37 @@ export default function LessonClient({
         <div className="flex items-center justify-around px-4 pt-3 pb-1 max-w-xl mx-auto">
 
           {/* Listen */}
-          <button
-            onClick={() => speakEntry(entry)}
-            className="flex flex-col items-center gap-1 min-w-[52px] motion-press"
-          >
-            <div
-              className="w-11 h-11 rounded-full flex items-center justify-center"
-              style={{
-                background: speakingId === entry.id ? P.accent : P.accentBg,
-                border:     `1px solid ${P.border}`,
-              }}
+          {capabilities.canGenerateTTS ? (
+            <button
+              onClick={() => speakEntry(entry)}
+              className="flex flex-col items-center gap-1 min-w-[52px] motion-press"
             >
-              {ttsLoadingId === entry.id
-                ? <Loader2 size={17} className="animate-spin" style={{ color: P.accentDeep }} />
-                : speakingId === entry.id
-                  ? <VolumeX size={17} style={{ color: P.btnText }} />
-                  : <Volume2 size={17} style={{ color: P.accentDeep }} />
-              }
+              <div
+                className="w-11 h-11 rounded-full flex items-center justify-center"
+                style={{
+                  background: speakingId === entry.id ? P.accent : P.accentBg,
+                  border:     `1px solid ${P.border}`,
+                }}
+              >
+                {ttsLoadingId === entry.id
+                  ? <Loader2 size={17} className="animate-spin" style={{ color: P.accentDeep }} />
+                  : speakingId === entry.id
+                    ? <VolumeX size={17} style={{ color: P.btnText }} />
+                    : <Volume2 size={17} style={{ color: P.accentDeep }} />
+                }
+              </div>
+              <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>
+                {speakingId === entry.id ? 'Stop' : 'Listen'}
+              </span>
+            </button>
+          ) : (
+            <div className="flex flex-col items-center gap-1 min-w-[52px] opacity-30">
+              <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: P.accentBg, border: `1px solid ${P.border}` }}>
+                <VolumeX size={17} style={{ color: P.accentDeep }} />
+              </div>
+              <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>Audio N/A</span>
             </div>
-            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>
-              {speakingId === entry.id ? 'Stop' : 'Listen'}
-            </span>
-          </button>
+          )}
 
           {/* Save / Bookmark */}
           <button

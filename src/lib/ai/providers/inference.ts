@@ -71,6 +71,21 @@ export async function generateWithProvider(
   const breakerConfig = { failureThreshold: 3, cooldownMs: 30000 };
   let lastError: Error | null = null;
 
+  const isProviderFailure = (err: any) => {
+    const status = err?.status || err?.statusCode;
+    const message = String(err?.message || '');
+    return (
+      status === 429 ||
+      status >= 500 ||
+      err?.name === 'TimeoutError' ||
+      err?.code === 'ECONNREFUSED' ||
+      /No response generated/i.test(message) ||
+      /model.*not found/i.test(message) ||
+      /overloaded/i.test(message) ||
+      /temporarily unavailable/i.test(message)
+    );
+  };
+
   for (const provider of providers) {
     const providerId = provider.info.id;
     
@@ -90,8 +105,7 @@ export async function generateWithProvider(
       };
     } catch (err: any) {
       lastError = err;
-      const status = err.status || err.statusCode;
-      const isUpstreamFailure = status === 429 || status >= 500 || err.name === 'TimeoutError' || err.code === 'ECONNREFUSED';
+      const isUpstreamFailure = isProviderFailure(err);
       
       if (isUpstreamFailure) {
         recordFailure(providerId, err.message, breakerConfig);

@@ -10,6 +10,8 @@ import { DEVOTIONAL_STARTER_TRACKS } from '@/lib/devotional-audio';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { Suspense, use } from 'react';
 import toast from 'react-hot-toast';
+import { createClient } from '@/lib/supabase';
+import { resolveReadablePreferences, type ReadablePreferences } from '@/lib/readable-preferences';
 
 // ─── Direct Translations for Major Stotrams & Mantras ─────────────────────────
 const STOTRAM_TRANSLATIONS: Record<string, Record<number, { hi: string; pa: string }>> = {
@@ -235,7 +237,7 @@ function StotramReader({ id }: { id: string }) {
   const stotram = getStotramById(id);
   const deityMeta = stotram ? (DEITY_META[stotram.deity] ?? DEITY_META.universal) : null;
   const accentColor = deityMeta?.color ?? '#C8924A';
-  const { t } = useLanguage();
+  const { t, lang: contextLang } = useLanguage();
 
   const [activeVerse, setActiveVerse] = useState<number | null>(null);
   const [showAll,     setShowAll]     = useState(false);
@@ -255,8 +257,52 @@ function StotramReader({ id }: { id: string }) {
     xs: '0.65rem', sm: '0.72rem', md: '0.8rem', lg: '0.92rem', xl: '1.05rem', xxl: '1.2rem'
   };
 
-  const [lang,        setLang]        = useState<'en' | 'hi' | 'pa'>('en');
+  const [preferences, setPreferences] = useState<ReadablePreferences>(() =>
+    resolveReadablePreferences({ appLanguage: contextLang, meaningLanguage: contextLang })
+  );
+  const [lang,        setLang]        = useState<'en' | 'hi' | 'pa'>(() =>
+    resolveReadablePreferences({ appLanguage: contextLang, meaningLanguage: contextLang }).effectiveMeaningLanguage
+  );
   const [copied,      setCopied]      = useState(false);
+  const shouldShowTransliteration = preferences.showTransliteration;
+
+  useEffect(() => {
+    let alive = true;
+
+    async function loadPreferences() {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user || !alive) return;
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('app_language, meaning_language, transliteration_language, show_transliteration, scripture_script')
+          .eq('id', user.id)
+          .single();
+
+        if (!alive || !profile) return;
+
+        const nextPreferences = resolveReadablePreferences({
+          appLanguage: (profile as any)?.app_language ?? contextLang,
+          meaningLanguage: (profile as any)?.meaning_language ?? 'en',
+          transliterationLanguage: (profile as any)?.transliteration_language ?? 'en',
+          showTransliteration: (profile as any)?.show_transliteration ?? true,
+          scriptureScript: (profile as any)?.scripture_script ?? 'original',
+        });
+
+        setPreferences(nextPreferences);
+        setLang(nextPreferences.effectiveMeaningLanguage);
+      } catch {
+        // Fail open; the reader still works off context defaults.
+      }
+    }
+
+    loadPreferences();
+    return () => {
+      alive = false;
+    };
+  }, [contextLang]);
 
   // ── Tokens ──────────────────────────────────────────────────────────────────
   const pageBg  = isDark ? `linear-gradient(180deg,#0e0a06 0%,#160f08 100%)` : `linear-gradient(180deg,#fdf6ee 0%,#f5e8d5 100%)`;
@@ -571,6 +617,7 @@ function StotramReader({ id }: { id: string }) {
                             </p>
                           </div>
                           {/* Transliteration */}
+                          {shouldShowTransliteration ? (
                           <div>
                             <p className="text-[9px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: `${accentColor}55` }}>{t('transliteration')}</p>
                             <p className="leading-relaxed italic whitespace-pre-line text-center transition-all duration-300"
@@ -581,6 +628,7 @@ function StotramReader({ id }: { id: string }) {
                               {verse.transliteration}
                             </p>
                           </div>
+                          ) : null}
                           {/* Meaning */}
                           <div className="rounded-xl px-4 py-3" style={{ background: `${accentColor}08` }}>
                             <p className="text-[9px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: `${accentColor}55` }}>{t('wisdom')}</p>

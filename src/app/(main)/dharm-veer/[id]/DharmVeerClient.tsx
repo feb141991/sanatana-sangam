@@ -14,19 +14,47 @@ import { t as translateFn, type AppLang } from '@/lib/i18n/translations';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import toast from 'react-hot-toast';
 import { ReaderIntro } from '@/components/ui/ReaderIntro';
+import { getInitialReaderDisplayMode, resolveReadablePreferences } from '@/lib/readable-preferences';
 
 type ReadingTheme = 'light' | 'dark' | 'sepia';
 type FontSize = 'sm' | 'md' | 'lg' | 'xl';
 
-export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
+interface DharmVeerClientProps {
+  hero: DharmVeer;
+  appLanguage?: string;
+  meaningLanguage?: string;
+  transliterationLanguage?: string;
+  showTransliteration?: boolean;
+  scriptureScript?: string;
+}
+
+export default function DharmVeerClient({
+  hero,
+  appLanguage,
+  meaningLanguage,
+}: DharmVeerClientProps) {
   const router = useRouter();
   const [theme, setTheme] = useState<ReadingTheme>('light');
   const [fontSize, setFontSize] = useState<FontSize>('md');
-  const { lang: appLang } = useLanguage();
-  const [lang, setLang] = useState<'en' | 'local'>(appLang === 'en' ? 'en' : 'local');
+  const { lang: contextLang } = useLanguage();
+  const hasLocalContent =
+    !!hero.nameLocal ||
+    !!hero.taglineLocal ||
+    !!hero.journeyLocal ||
+    !!hero.trialLocal ||
+    !!hero.teachingLocal ||
+    !!hero.moralLocal ||
+    !!hero.quoteLocal?.text;
+  const preferences = resolveReadablePreferences({
+    appLanguage: appLanguage ?? contextLang,
+    meaningLanguage,
+  });
+  const [lang, setLang] = useState<'en' | 'local'>(
+    getInitialReaderDisplayMode(preferences, hasLocalContent)
+  );
   const [copied, setCopied] = useState(false);
 
-  const effectiveLang: AppLang = lang === 'en' ? 'en' : (appLang === 'en' ? 'hi' : appLang);
+  const effectiveLang: AppLang = lang === 'en' ? 'en' : preferences.effectiveMeaningLanguage;
   const meta = TRADITION_META[hero.tradition];
 
   // ── Localization ──
@@ -194,7 +222,7 @@ export default function DharmVeerClient({ hero }: { hero: DharmVeer }) {
           </div>
 
           {/* Language Toggle */}
-          {hero.nameLocal && (
+          {hasLocalContent && (
             <div className="flex items-center gap-1 px-2 py-0.5 rounded-full" style={{ backgroundColor: activeTheme.border }}>
               <span className="text-[9px] uppercase font-bold tracking-wider px-1 opacity-70">Lang:</span>
               <button
