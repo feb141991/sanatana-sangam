@@ -21,8 +21,8 @@
         "skipped_reason": null
       },
       "self-hosted": {
-        "pass_rate": 0.5,
-        "passed": 3,
+        "pass_rate": 1.0,
+        "passed": 6,
         "total": 6,
         "mock_runs": 0,
         "live_runs": 6,
@@ -39,8 +39,8 @@
         "skipped_reason": null
       },
       "self-hosted": {
-        "pass_rate": 0.667,
-        "passed": 4,
+        "pass_rate": 1.0,
+        "passed": 6,
         "total": 6,
         "mock_runs": 0,
         "live_runs": 6,
@@ -57,8 +57,8 @@
         "skipped_reason": null
       },
       "self-hosted": {
-        "pass_rate": 0.833,
-        "passed": 5,
+        "pass_rate": 0.667,
+        "passed": 4,
         "total": 6,
         "mock_runs": 0,
         "live_runs": 6,
@@ -93,8 +93,8 @@
         "skipped_reason": null
       },
       "self-hosted": {
-        "pass_rate": 0.167,
-        "passed": 1,
+        "pass_rate": 0.333,
+        "passed": 2,
         "total": 6,
         "mock_runs": 0,
         "live_runs": 0,

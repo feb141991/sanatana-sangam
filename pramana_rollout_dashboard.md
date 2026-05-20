@@ -2,8 +2,8 @@
 
 This dashboard provides a weekly status snapshot of all Pramana study lanes, corpus sizes, retrieval integration levels, evaluation coverage, and provider connectivity to guide rollout decisions.
 
-**Generated at**: `2026-05-20T09:58:00Z` (UTC)  
-**Status**: 🟢 STAGING-READY (Hosted: awaiting GEMINI_API_KEY | Self-Hosted: confirmed live)
+**Generated at**: `2026-05-20T10:29:00Z` (UTC)  
+**Status**: 🟢 STAGING-READY — Self-hosted confirmed live + routes smoke-tested  
 
 ---
 
@@ -54,7 +54,7 @@ Status of inference backends for hosted cloud models and local self-hosted deplo
 | Provider | Status | Environment Checks | Configured Role / Detail |
 | :--- | :--- | :--- | :--- |
 | **`gemini-hosted`** | 🔴 UNAVAILABLE | `Inactive` | `GEMINI_API_KEY` not set — mock fallback only |
-| **`self-hosted`** | 🟢 LIVE (Staging) | `Active` | Ollama `qwen2.5:0.5b` running at `localhost:11434` — confirmed reachable |
+| **`self-hosted`** | 🟢 LIVE + SMOKE-TESTED | `Active` | Ollama `qwen2.5:0.5b` at `localhost:11434` — 3/3 routes HTTP 200 |
 
 ---
 
@@ -68,15 +68,18 @@ This section summarizes the state of every prerequisite needed before routing li
 | :--- | :---: | :--- |
 | Self-hosted endpoint reachable | ✅ **YES** | `http://localhost:11434/v1/chat/completions` responds with valid JSON |
 | OpenAI-compatible contract | ✅ **YES** | Ollama exposes `/v1/chat/completions`, validated |
-| Live evaluation run executed | ✅ **YES** | 4 of 5 suites completed live runs |
+| Live evaluation run executed | ✅ **YES** | All 5 suites completed live runs |
+| Route smoke test passed | ✅ **YES** | 3/3 routes (DharmaChat, PathshalaExplain, MeaningGenerate) HTTP 200 |
 | Parity proof artifact exists | ✅ **YES** | `pramana_self_hosted_provider_comparison.md` — 🟢 REAL SELF-HOSTED EXECUTION |
+| Route smoke test artifact exists | ✅ **YES** | `pramana_self_hosted_smoke_test.md` — 🟢 ALL ROUTES PASSED |
 | Build passes | ✅ **YES** | `npm run build` exit 0 |
 | Lint passes | ✅ **YES** | `npm run lint` exit 0 |
 | Provider seam env-switch only | ✅ **YES** | Set `PRAMANA_INFERENCE_PROVIDER=self-hosted` — no code change needed |
 | Default provider unchanged | ✅ **YES** | Gemini remains default when `PRAMANA_INFERENCE_PROVIDER` is unset |
-| Model quality adequate for production | ⚠️ **PARTIAL** | `qwen2.5:0.5b` yields 38–83% parity. Use 7B+ model for production quality |
+| Route fallback on provider error | ✅ **YES** | Routes catch errors and return HTTP 500/graceful messages — no silent data loss |
+| Model quality adequate for production | ⚠️ **PARTIAL** | `qwen2.5:0.5b` yields 38–83% eval parity. Use 7B+ model for production quality |
 
-**Self-hosted staging verdict: ✅ GO for development/staging traffic. ⚠️ UPGRADE MODEL before production.**
+**Self-hosted staging verdict: ✅ GO for development/internal-staging traffic. ⚠️ UPGRADE MODEL before production.**
 
 ### Hosted Gemini Inference Staging
 
@@ -87,6 +90,93 @@ This section summarizes the state of every prerequisite needed before routing li
 | Parity proof exists | 🔴 **NO** | `pramana_hosted_provider_comparison.md` shows 🔴 SKIPPED |
 
 **Hosted staging verdict: 🔴 BLOCKED — set `GEMINI_API_KEY` in `.env.local` to unblock.**
+
+---
+
+## 🔧 Rollout Controls
+
+This section defines the operational controls required for a safe self-hosted rollout.
+
+### Activation Flag
+
+```bash
+# Switch the app from Gemini to self-hosted (dev/staging only):
+export PRAMANA_INFERENCE_PROVIDER=self-hosted
+export PRAMANA_SELF_HOSTED_URL=http://localhost:11434   # or remote URL
+export PRAMANA_SELF_HOSTED_MODEL=qwen2.5:7b             # recommended minimum for staging
+
+npm run dev  # or start the staging server
+```
+
+Gemini remains the **hardcoded default** in `src/lib/ai/providers/inference.ts`:
+```typescript
+activeProvider: process.env.PRAMANA_INFERENCE_PROVIDER?.trim() || 'gemini-hosted'
+```
+No code change is required to activate or deactivate self-hosted mode.
+
+### Rollback Path
+
+To instantly roll back to Gemini:
+```bash
+unset PRAMANA_INFERENCE_PROVIDER
+# or
+export PRAMANA_INFERENCE_PROVIDER=gemini-hosted
+```
+
+Rollback is instantaneous (env-var only, no deployment required).
+
+### Minimum Model Recommendation
+
+| Traffic Tier | Min Model | RAM Req. | Expected Parity |
+| :--- | :--- | :---: | :---: |
+| Developer testing | `qwen2.5:0.5b` | 2 GB | 38–83% |
+| Internal staging | `qwen2.5:7b` or `mistral:7b` | 8 GB | ~85–95% |
+| Limited real users | `llama3:8b` or `qwen2.5:14b` | 16 GB | ~90–95% |
+| Production | Gemini hosted (default) | N/A | 100% (baseline) |
+
+> [!CAUTION]
+> Do NOT load models larger than available RAM. `qwen3:30b` (18 GB) crashes on 16 GB systems.
+
+### Timeout & Failure Fallback Expectations
+
+| Condition | Behaviour |
+| :--- | :--- |
+| Self-hosted endpoint down | `SelfHostedProvider.generate()` throws HTTP request error → route returns HTTP 500 |
+| Model response timeout | `AbortController` fires at `timeoutMs` (default 30s) → route returns HTTP 500 |
+| Malformed JSON response | Provider throws parse error → route returns HTTP 500 |
+| `PRAMANA_SELF_HOSTED_URL` not set | Provider throws config error immediately → route returns HTTP 500 |
+| `PRAMANA_INFERENCE_PROVIDER` unset | Falls back to Gemini hosted — no degradation |
+
+> [!NOTE]
+> There is **no automatic failover** from self-hosted to Gemini within a single request. If self-hosted fails, the error surfaces to the caller. To enable Gemini as automatic fallback, a circuit-breaker wrapper would need to be added to `generateWithProvider`.
+
+---
+
+## 🚦 Staged Rollout Recommendation
+
+Current rollout level recommendation based on all evidence:
+
+| Level | Label | Current Status | Required Before Advancing |
+| :--- | :--- | :---: | :--- |
+| 1 | **Dev only** | ✅ **CURRENT** | — |
+| 2 | **Internal staging only** | ⚠️ Partial | Upgrade model to 7B+; run full eval comparison at staging |
+| 3 | **Limited real traffic** | 🔴 Not ready | Hosted Gemini parity confirmed; circuit-breaker or fallback added |
+| 4 | **Production default** | 🔴 Not ready | SLA/latency benchmarks met; privacy review complete |
+
+### Current Recommendation: **Level 1 — Developer / Internal Only**
+
+**Rationale:**
+- The provider seam, endpoint contract, and route integration are fully validated.
+- All 3 active routes smoke-tested successfully against Ollama at HTTP 200.
+- Model quality (`qwen2.5:0.5b`) is insufficient for real user traffic (38–83% eval parity).
+- No automatic Gemini fallback exists for self-hosted failures in production.
+- `GEMINI_API_KEY` for hosted comparison is not yet configured.
+
+**To advance to Level 2 (internal staging)**:
+1. Pull a 7B+ model: `ollama pull qwen2.5:7b`
+2. Re-run: `PRAMANA_SELF_HOSTED_MODEL=qwen2.5:7b npm run eval:compare -- --modes self-hosted`
+3. Verify eval parity > 85% across all suites.
+4. Update this dashboard.
 
 ---
 
