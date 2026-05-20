@@ -3,6 +3,7 @@ import { GoogleAuth } from 'google-auth-library';
 import { generateTTSCacheKey, getCachedAudio, setCachedAudio, fetchFromStorage, uploadToStorage } from '@/lib/tts/cache';
 import { preprocessTTS } from '@/lib/tts/preprocessing';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
+import { validatePipelineTags, getDefaultTags, mergeTags, resolveScript, canGenerateTTS, logValidationResult } from '@/lib/ai/validate-pipeline-tags';
 
 // Force Node.js runtime — google-auth-library requires it
 export const runtime = 'nodejs';
@@ -117,6 +118,23 @@ export async function POST(req: NextRequest) {
     text = String(body.text ?? '').trim();
     quality = body.quality === 'pandit' ? 'pandit' : (body.quality === 'akash' ? 'akash' : 'standard');
     requestedRate = body.rate ? Number(body.rate) : null;
+
+    // Validate and normalize incoming pipeline tags
+    const tagValidation = validatePipelineTags(body.pipelineTags ?? body.tags, { context: 'tts_request' });
+    logValidationResult(tagValidation, 'TTS');
+    const providedTags = tagValidation.tags;
+
+    // Merge with defaults
+    const defaultTags = getDefaultTags({ text });
+    const effectiveTags = mergeTags(providedTags, defaultTags);
+
+    // Check if TTS is allowed based on audio_mode
+    if (!canGenerateTTS(effectiveTags.audio_mode)) {
+      return NextResponse.json(
+        { error: `TTS not allowed for audio_mode: ${effectiveTags.audio_mode}` },
+        { status: 400 }
+      );
+    }
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
@@ -133,7 +151,18 @@ export async function POST(req: NextRequest) {
   // ── Cache lookup: Memory → Storage → Generate ──────────────────────────────────
   let cachedAudio = getCachedAudio(cacheKey);
   if (cachedAudio) {
-    emitEvent({ severity: 'P3', domain: 'tts', route: '/api/tts', context: { status: 'memory_cache' } });
+    emitEvent({ 
+      severity: 'P3', 
+      domain: 'tts', 
+      route: '/api/tts', 
+      latency_ms: Date.now() - startTime,
+      context: { 
+        status: 'memory_cache',
+        quality,
+        provider: providerLabel,
+        text_length: text.length,
+      } 
+    });
     return NextResponse.json({
       audioContent: cachedAudio,
       meta: {
@@ -150,7 +179,18 @@ export async function POST(req: NextRequest) {
   if (cachedAudio) {
     // Populate memory cache for subsequent requests
     setCachedAudio(cacheKey, cachedAudio);
-    emitEvent({ severity: 'P3', domain: 'tts', route: '/api/tts', context: { status: 'storage_cache' } });
+    emitEvent({ 
+      severity: 'P3', 
+      domain: 'tts', 
+      route: '/api/tts', 
+      latency_ms: Date.now() - startTime,
+      context: { 
+        status: 'storage_cache',
+        quality,
+        provider: providerLabel,
+        text_length: text.length,
+      } 
+    });
     return NextResponse.json({
       audioContent: cachedAudio,
       meta: {
@@ -196,7 +236,13 @@ export async function POST(req: NextRequest) {
             route: '/api/tts',
             latency_ms: Date.now() - startTime,
             provider: 'sarvam',
-            model: 'bulbul:v1'
+            model: 'bulbul:v1',
+            context: {
+              status: 'generated',
+              quality,
+              text_length: text.length,
+              cache_status: 'miss'
+            }
           });
 
           return NextResponse.json({
@@ -282,7 +328,13 @@ export async function POST(req: NextRequest) {
       latency_ms: Date.now() - startTime,
       provider: 'google',
       model: profile.name,
-      fallback_used: !!sarvamKey
+      context: {
+        status: 'generated',
+        quality,
+        text_length: text.length,
+        cache_status: 'miss',
+        fallback_used: !!sarvamKey
+      }
     });
 
     return NextResponse.json({ 

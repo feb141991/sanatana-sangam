@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { runPathshalaExplain } from '@/lib/ai/router';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
+import { validatePipelineTags, getDefaultTags, mergeTags, canExplain, logValidationResult } from '@/lib/ai/validate-pipeline-tags';
 
 function extractExplanation(raw: string) {
   const jsonMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/) || raw.match(/(\{[\s\S]*\})/);
@@ -23,10 +24,29 @@ export async function POST(req: Request) {
     tradition,
     language = 'en',
     responseMode,
+    pipelineTags,
+    tags,
   } = await req.json().catch(() => ({}));
 
   const startTime = Date.now();
   try {
+    // Validate and normalize incoming pipeline tags
+    const tagValidation = validatePipelineTags(pipelineTags ?? tags, { context: 'explain_request' });
+    logValidationResult(tagValidation, 'Explain');
+    const providedTags = tagValidation.tags;
+
+    // Merge with defaults
+    const defaultTags = getDefaultTags({ text: originalText ?? sanskrit });
+    const effectiveTags = mergeTags(providedTags, defaultTags);
+
+    // Check if explain is allowed for this content_type
+    if (!canExplain(effectiveTags.content_type)) {
+      return NextResponse.json(
+        { error: `Explain not allowed for content_type: ${effectiveTags.content_type}` },
+        { status: 400 }
+      );
+    }
+
     const result = await runPathshalaExplain({
       sanskrit,
       originalText,
@@ -58,7 +78,13 @@ export async function POST(req: Request) {
       latency_ms: Date.now() - startTime,
       provider: result.metadata?.provider,
       model: result.metadata?.model,
-      fallback_used: result.metadata?.usedHostedFallback
+      context: {
+        fallback_used: result.metadata?.usedHostedFallback ?? false,
+        cached: result._cached === true,
+        content_type: effectiveTags.content_type ?? 'unknown',
+        response_mode: responseMode ?? 'unknown',
+        tradition: tradition ?? 'unknown'
+      }
     });
 
     return NextResponse.json({
