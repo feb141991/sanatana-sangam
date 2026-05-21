@@ -81,6 +81,8 @@ export async function generateWithProvider(
       err?.name === 'TimeoutError' ||
       err?.code === 'ECONNREFUSED' ||
       /No response generated/i.test(message) ||
+      /Malformed response/i.test(message) ||
+      /missing usable assistant text/i.test(message) ||
       /model.*not found/i.test(message) ||
       /overloaded/i.test(message) ||
       /temporarily unavailable/i.test(message)
