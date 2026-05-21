@@ -494,32 +494,46 @@ At home: light a diya, recite Japji Sahib (especially at dawn), and sing or list
 
 };
 
-export function getVratData(slug: string): VratData | null {
+function resolveCanonicalVratKey(slug: string): string | null {
   const n = slug.toLowerCase().trim();
 
   // Exact or keyword matches against enriched named database
   if (n.includes('vat savitri') || n.includes('vat-savitri') || n.includes('savitri'))
-    return NAMED_VRAT_DATABASE['vat-savitri'];
+    return 'vat-savitri';
   if (n.includes('navratri') || n.includes('navaratri'))
-    return NAMED_VRAT_DATABASE['navratri'];
+    return 'navratri';
   if (n.includes('diwali') || n.includes('deepavali') || n.includes('divali'))
-    return NAMED_VRAT_DATABASE['diwali'];
+    return 'diwali';
   if (n.includes('janmashtami') || n.includes('krishna jayanti') || n.includes('gokulashtami'))
-    return NAMED_VRAT_DATABASE['janmashtami'];
+    return 'janmashtami';
   if (n.includes('holi') || n.includes('holika'))
-    return NAMED_VRAT_DATABASE['holi'];
+    return 'holi';
   if (n.includes('gurpurab') || n.includes('guru nanak') || n.includes('gurupurab'))
-    return NAMED_VRAT_DATABASE['gurpurab'];
+    return 'gurpurab';
 
   // Recurring tithis
-  if (n.includes('ekadashi')) return VRAT_DATABASE['ekadashi'];
-  if (n.includes('purnima') || n.includes('poornima')) return VRAT_DATABASE['purnima'];
-  if (n.includes('amavasya') || n.includes('amavasai')) return VRAT_DATABASE['amavasya'];
-  if (n.includes('pradosh') || n.includes('pradosham')) return VRAT_DATABASE['pradosh'];
-  if (n.includes('chaturthi') || n.includes('sankashti')) return VRAT_DATABASE['chaturthi'];
-  if (n.includes('shivaratri') || n.includes('shivratri')) return VRAT_DATABASE['shivaratri'];
-  if (n.includes('puranmashi') || n.includes('sangrand')) return VRAT_DATABASE['puranmashi'];
-  if (n.includes('uposatha')) return VRAT_DATABASE['uposatha'];
+  if (n.includes('ekadashi')) return 'ekadashi';
+  if (n.includes('purnima') || n.includes('poornima')) return 'purnima';
+  if (n.includes('amavasya') || n.includes('amavasai')) return 'amavasya';
+  if (n.includes('pradosh') || n.includes('pradosham')) return 'pradosh';
+  if (n.includes('chaturthi') || n.includes('sankashti')) return 'chaturthi';
+  if (n.includes('shivaratri') || n.includes('shivratri')) return 'shivaratri';
+  if (n.includes('puranmashi') || n.includes('sangrand')) return 'puranmashi';
+  if (n.includes('uposatha')) return 'uposatha';
+
+  return null;
+}
+
+export function resolveVratSlug(slug: string): string | null {
+  return resolveCanonicalVratKey(slug);
+}
+
+export function getVratData(slug: string): VratData | null {
+  const canonical = resolveCanonicalVratKey(slug);
+  if (canonical) {
+    if (canonical in NAMED_VRAT_DATABASE) return NAMED_VRAT_DATABASE[canonical as keyof typeof NAMED_VRAT_DATABASE];
+    if (canonical in VRAT_DATABASE) return VRAT_DATABASE[canonical as keyof typeof VRAT_DATABASE];
+  }
 
   // Generic fallback — remove "Today is" which is wrong when viewing ahead of the date
   return {

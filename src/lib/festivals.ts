@@ -20,10 +20,22 @@ export interface Festival {
   type:        'major' | 'vrat' | 'regional';
   /** Which tradition this festival belongs to */
   tradition:   'hindu' | 'sikh' | 'buddhist' | 'jain' | 'all';
+  source_name?: string | null;
+  source_kind?: FestivalSourceKind | null;
+  review_status?: FestivalReviewStatus | null;
+  verification_status?: FestivalVerificationStoredStatus | null;
+  verification_confidence?: FestivalVerificationConfidence | null;
+  verification_note?: string | null;
+  suggested_date?: string | null;
+  verification_run_at?: string | null;
+  verification_type?: FestivalVerificationType | null;
 }
 
 export type FestivalSourceKind = 'curated' | 'official' | 'partner' | 'community_reviewed';
 export type FestivalReviewStatus = 'needs_review' | 'reviewed';
+export type FestivalVerificationStoredStatus = 'verified' | 'mismatch' | 'uncertain' | 'not_checked' | 'manual_review';
+export type FestivalVerificationConfidence = 'high' | 'medium' | 'low';
+export type FestivalVerificationType = 'solar_fixed' | 'lunar_tithi' | 'nakshatra_based' | 'regional_calendar' | 'historical_commemoration';
 
 export interface FestivalSourceRow {
   name: string;
@@ -35,6 +47,12 @@ export interface FestivalSourceRow {
   source_name?: string | null;
   source_kind?: FestivalSourceKind | null;
   review_status?: FestivalReviewStatus | null;
+  verification_status?: FestivalVerificationStoredStatus | null;
+  verification_confidence?: FestivalVerificationConfidence | null;
+  verification_note?: string | null;
+  suggested_date?: string | null;
+  verification_run_at?: string | null;
+  verification_type?: FestivalVerificationType | null;
 }
 
 export interface FestivalCalendarMeta {
@@ -129,6 +147,11 @@ export const FESTIVAL_CALENDAR_FALLBACK_META: FestivalCalendarMeta = {
   isFallback: true,
 };
 
+export function getFallbackFestivalCalendar(year: number): Festival[] {
+  if (year === 2026) return FESTIVALS_2026;
+  return [];
+}
+
 export function buildFestivalCalendarMeta(
   source: 'database' | 'fallback',
   festivals: Array<Pick<Festival, 'date'> & Partial<Pick<FestivalSourceRow, 'source_name' | 'source_kind' | 'review_status'>>>,
@@ -169,6 +192,12 @@ export function attachFestivalTrust(row: FestivalSourceRow): Festival & Pick<Fes
     source_name: row.source_name ?? null,
     source_kind: row.source_kind ?? null,
     review_status: row.review_status ?? null,
+    verification_status: row.verification_status ?? null,
+    verification_confidence: row.verification_confidence ?? null,
+    verification_note: row.verification_note ?? null,
+    suggested_date: row.suggested_date ?? null,
+    verification_run_at: row.verification_run_at ?? null,
+    verification_type: row.verification_type ?? null,
   };
 }
 

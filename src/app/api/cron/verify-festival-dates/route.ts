@@ -1,25 +1,26 @@
 import { NextResponse } from 'next/server';
-import { FESTIVALS_2026 } from '@/lib/festivals';
+import { createAdminClient } from '@/lib/supabase-admin';
+import { attachFestivalTrust, getFallbackFestivalCalendar, type FestivalSourceRow } from '@/lib/festivals';
 import { verifyFestivalDatesWithAI, type VerificationReport } from '@/lib/festival-verify';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
+import type { Database } from '@/types/database';
 
-// ─── Festival Date Verification Cron ─────────────────────────────────────────
-// Schedule: 0 8 5 1 *  (8 AM UTC, 5th January every year)
-//
-// Runs once a year — early January, well before any major festivals — so any
-// date errors in the hardcoded festival calendar can be caught and corrected
-// before they affect users.
-//
-// Flow:
-//   1. Calls verifyFestivalDatesWithAI() against FESTIVALS_YYYY
-//   2. If mismatches found → sends a push notification to admin + logs to console
-//   3. Full report is returned in the response for manual review
-//
-// The admin can also trigger this on demand from the Festival Manager tab.
-// ─────────────────────────────────────────────────────────────────────────────
+type FestivalVerificationRow = Pick<
+  Database['public']['Tables']['festivals']['Row'],
+  | 'id'
+  | 'name'
+  | 'date'
+  | 'emoji'
+  | 'description'
+  | 'type'
+  | 'tradition'
+  | 'year'
+  | 'source_name'
+  | 'source_kind'
+  | 'review_status'
+>;
 
 export async function GET(request: Request) {
-  // Verify cron secret
   const cronSecret = process.env.CRON_SECRET;
   if (cronSecret) {
     const authHeader = request.headers.get('authorization');
@@ -29,23 +30,57 @@ export async function GET(request: Request) {
   }
 
   const year = new Date().getFullYear();
-
-  // Pick festival list for current year (extend when 2027+ lists are added)
-  const festivals = FESTIVALS_2026;
+  const supabase = createAdminClient();
 
   let report: VerificationReport;
+  let usedFallback = false;
+
   try {
+    const { data: rows, error } = await supabase
+      .from('festivals')
+      .select('id, name, date, emoji, description, type, tradition, year, source_name, source_kind, review_status')
+      .eq('year', year)
+      .order('date', { ascending: true });
+
+    if (error) throw error;
+
+    const dbRows = (rows ?? []) as FestivalVerificationRow[];
+    const festivals = dbRows.length > 0
+      ? dbRows.map((row) => attachFestivalTrust(row as FestivalSourceRow))
+      : getFallbackFestivalCalendar(year);
+    usedFallback = dbRows.length === 0;
+
     report = await verifyFestivalDatesWithAI(festivals, year);
+
+    if (dbRows.length > 0) {
+      await Promise.all(report.results.map(async (result) => {
+        const row = dbRows.find((candidate) => (
+          candidate.name === result.name && candidate.date === result.storedDate
+        ));
+        if (!row) return;
+        await (supabase
+          .from('festivals') as any)
+          .update({
+            verification_status: result.status,
+            verification_confidence: result.confidence,
+            verification_note: result.note,
+            suggested_date: result.suggestedDate ?? null,
+            verification_run_at: report.runAt,
+            verification_type: result.verificationType,
+          })
+          .eq('id', row.id);
+      }));
+    }
   } catch (err: any) {
     console.error('[verify-festival-dates cron] Error:', err);
     return NextResponse.json({ error: err?.message || 'Verification failed' }, { status: 500 });
   }
 
-  const mismatches = report.results.filter(r => r.status === 'mismatch');
-  const uncertain  = report.results.filter(r => r.status === 'uncertain');
-  const allClear   = mismatches.length === 0 && uncertain.length === 0;
+  const mismatches = report.results.filter((r) => r.status === 'mismatch');
+  const uncertain = report.results.filter((r) => r.status === 'uncertain');
+  const manualReview = report.results.filter((r) => r.status === 'manual_review');
+  const allClear = mismatches.length === 0 && uncertain.length === 0;
 
-  // Emit to monitoring events (visible in /admin logs + sadhana_events table)
   emitEvent({
     severity: allClear ? 'P3' : 'P1',
     domain: 'cron',
@@ -53,12 +88,15 @@ export async function GET(request: Request) {
     context: {
       action: 'festival_date_verification',
       year: String(year),
+      source: usedFallback ? 'fallback' : 'database',
       totalChecked: String(report.totalChecked),
       verified: String(report.verified),
       mismatches: String(report.mismatches),
       uncertain: String(report.uncertain),
-      mismatchSummary: mismatches.map(m => `${m.name}: ${m.storedDate}→${m.suggestedDate ?? '?'}`).join(' | ') || 'none',
-      uncertainSummary: uncertain.map(u => u.name).join(', ') || 'none',
+      manualReview: String(report.manualReview),
+      mismatchSummary: mismatches.map((m) => `${m.name}: ${m.storedDate}→${m.suggestedDate ?? '?'}`).join(' | ') || 'none',
+      uncertainSummary: uncertain.map((u) => u.name).join(', ') || 'none',
+      manualReviewSummary: manualReview.map((entry) => entry.name).join(', ') || 'none',
     },
   });
 
@@ -66,18 +104,25 @@ export async function GET(request: Request) {
     emitError(
       'cron',
       new Error(
-        `Festival calendar has ${mismatches.length} mismatch(es) and ${uncertain.length} uncertain date(s) for ${year}. ` +
-        `Mismatches: ${mismatches.map(m => `${m.name} (stored ${m.storedDate} → ${m.suggestedDate ?? '?'})`).join('; ')}`
+        `Festival calendar has ${mismatches.length} mismatch(es), ${uncertain.length} uncertain date(s), and ${manualReview.length} manual-review item(s) for ${year}.`,
       ),
       'P1',
-      { route: '/api/cron/verify-festival-dates', context: { action: 'festival_date_mismatch', year: String(year) } }
+      {
+        route: '/api/cron/verify-festival-dates',
+        context: {
+          action: 'festival_date_mismatch',
+          year: String(year),
+          source: usedFallback ? 'fallback' : 'database',
+        },
+      },
     );
   }
 
   return NextResponse.json({
-    message: mismatches.length === 0 && uncertain.length === 0
-      ? `All ${report.totalChecked} lunar festival dates verified ✅`
-      : `Found ${mismatches.length} mismatch(es) and ${uncertain.length} uncertain date(s) — review needed`,
+    message: allClear
+      ? `All ${report.totalChecked} AI-checkable festival dates verified`
+      : `Found ${mismatches.length} mismatch(es), ${uncertain.length} uncertain date(s), and ${manualReview.length} manual-review item(s)`,
+    source: usedFallback ? 'fallback' : 'database',
     report,
   });
 }

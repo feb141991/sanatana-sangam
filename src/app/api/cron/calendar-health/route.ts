@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { resolveVratSlug } from '@/lib/vrat-data';
 
 // ─── Calendar Health Cron ─────────────────────────────────────────────────────
 // Schedule: 0 9 1 11 * (9 AM UTC, 1st November every year)
@@ -38,19 +39,36 @@ export async function GET(request: Request) {
 
   const today = new Date().toISOString().split('T')[0];
 
-  // Count upcoming festivals
-  const { count: upcomingCount, error: countError } = await supabase
-    .from('festivals')
-    .select('id', { count: 'exact', head: true })
-    .gte('date', today);
+  const currentYear = new Date().getFullYear();
 
-  if (countError) {
-    return NextResponse.json({ error: countError.message }, { status: 500 });
+  const { data: festivalRows, error: festivalError } = await supabase
+    .from('festivals')
+    .select('id, date, year, name, type, review_status, verification_status, suggested_date, verification_run_at')
+    .order('date', { ascending: true });
+
+  if (festivalError) {
+    return NextResponse.json({ error: festivalError.message }, { status: 500 });
   }
 
-  const remaining = upcomingCount ?? 0;
-  const nextYear  = new Date().getFullYear() + 1;
+  const festivals = festivalRows ?? [];
+  const remaining = festivals.filter((festival) => festival.date >= today).length;
+  const nextYear  = currentYear + 1;
   const needsRefresh = remaining < LOW_THRESHOLD;
+  const rowsByYear = festivals.reduce<Record<string, number>>((acc, festival) => {
+    const key = String(festival.year);
+    acc[key] = (acc[key] ?? 0) + 1;
+    return acc;
+  }, {});
+  const pendingReview = festivals.filter((festival) => festival.review_status !== 'reviewed').length;
+  const mismatches = festivals.filter((festival) => festival.verification_status === 'mismatch').length;
+  const suggestedDatePending = festivals.filter((festival) => Boolean(festival.suggested_date)).length;
+  const unsafeObservanceRoutes = festivals.filter((festival) => (
+    festival.type === 'vrat' && resolveVratSlug(festival.name) === null
+  )).length;
+  const verificationRuns = festivals
+    .map((festival) => festival.verification_run_at)
+    .filter((value): value is string => Boolean(value))
+    .sort((a, b) => b.localeCompare(a));
 
   // Always log to the response
   const report = {
@@ -59,6 +77,12 @@ export async function GET(request: Request) {
     threshold:     LOW_THRESHOLD,
     needs_refresh: needsRefresh,
     next_year:     nextYear,
+    rows_by_year: rowsByYear,
+    pending_review: pendingReview,
+    ai_mismatches: mismatches,
+    suggested_date_pending: suggestedDatePending,
+    unsafe_observance_routes: unsafeObservanceRoutes,
+    last_verification_run_at: verificationRuns[0] ?? null,
   };
 
   if (!needsRefresh) {

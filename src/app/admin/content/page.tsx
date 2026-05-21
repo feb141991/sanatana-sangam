@@ -9,13 +9,29 @@ import {
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 
-type VerificationStatus = 'verified' | 'mismatch' | 'uncertain' | 'not_checked';
+type VerificationStatus = 'verified' | 'mismatch' | 'uncertain' | 'not_checked' | 'manual_review';
+
+interface FestivalRow {
+  id?: string;
+  name: string;
+  date: string;
+  emoji?: string | null;
+  description: string;
+  type: 'major' | 'vrat' | 'regional';
+  review_status?: 'needs_review' | 'reviewed' | null;
+  verification_status?: VerificationStatus | null;
+  verification_confidence?: 'high' | 'medium' | 'low' | null;
+  verification_note?: string | null;
+  suggested_date?: string | null;
+  verification_run_at?: string | null;
+}
 
 interface VerificationResult {
   name: string;
   storedDate: string;
   rule: string;
   status: VerificationStatus;
+  verificationType: string;
   suggestedDate?: string;
   confidence: 'high' | 'medium' | 'low';
   note: string;
@@ -28,28 +44,65 @@ interface VerificationReport {
   verified: number;
   mismatches: number;
   uncertain: number;
+  manualReview: number;
   results: VerificationResult[];
+  source?: 'database' | 'fallback';
+}
+
+interface FestivalAdminStats {
+  total: number;
+  reviewed: number;
+  pendingReview: number;
+  aiVerified: number;
+  aiMismatches: number;
+  aiUncertain: number;
+  aiManualReview: number;
+  suggestedDatePending: number;
+  unsafeObservanceRoutes: number;
+  lastVerificationRunAt: string | null;
+}
+
+interface FestivalAdminPayload {
+  festivals: FestivalRow[];
+  year: number;
+  source: 'database' | 'fallback';
+  availableYears: number[];
+  stats: FestivalAdminStats;
 }
 
 export default function FestivalManagement() {
-  const [festivals, setFestivals]           = useState<any[]>([]);
+  const [festivals, setFestivals]           = useState<FestivalRow[]>([]);
   const [loading, setLoading]               = useState(true);
   const [verifying, setVerifying]           = useState(false);
   const [report, setReport]                 = useState<VerificationReport | null>(null);
   const [reportOpen, setReportOpen]         = useState(false);
   const [reportError, setReportError]       = useState<string | null>(null);
+  const [selectedYear, setSelectedYear]     = useState(new Date().getFullYear());
+  const [availableYears, setAvailableYears] = useState<number[]>([]);
+  const [stats, setStats]                   = useState<FestivalAdminStats | null>(null);
+  const [source, setSource]                 = useState<'database' | 'fallback'>('fallback');
 
   useEffect(() => {
-    fetchFestivals();
-  }, []);
+    fetchFestivals(selectedYear);
+  }, [selectedYear]);
 
-  async function fetchFestivals() {
+  async function fetchFestivals(year: number) {
+    setLoading(true);
     try {
-      const res  = await fetch('/api/admin/festivals');
-      const data = await res.json();
-      setFestivals(data || []);
+      const res = await fetch(`/api/admin/festivals?year=${year}`);
+      const data: FestivalAdminPayload | { error: string } = await res.json();
+      if (!res.ok || !('festivals' in data)) {
+        throw new Error('error' in data ? data.error : 'Failed to load festivals');
+      }
+      setFestivals(data.festivals ?? []);
+      setSelectedYear(data.year);
+      setAvailableYears(data.availableYears ?? [year]);
+      setStats(data.stats);
+      setSource(data.source);
     } catch {
       toast.error('Failed to load festivals');
+      setFestivals([]);
+      setStats(null);
     } finally {
       setLoading(false);
     }
@@ -64,7 +117,7 @@ export default function FestivalManagement() {
       const res = await fetch('/api/admin/verify-festivals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ year: 2026 }),
+        body: JSON.stringify({ year: selectedYear }),
       });
       if (!res.ok) {
         const err = await res.json();
@@ -72,10 +125,11 @@ export default function FestivalManagement() {
       }
       const data: VerificationReport = await res.json();
       setReport(data);
-      if (data.mismatches === 0 && data.uncertain === 0) {
+      await fetchFestivals(selectedYear);
+      if (data.mismatches === 0 && data.uncertain === 0 && data.manualReview === 0) {
         toast.success(`All ${data.totalChecked} dates verified ✅`);
       } else {
-        toast.error(`${data.mismatches} mismatch(es) + ${data.uncertain} uncertain — review needed`);
+        toast.error(`${data.mismatches} mismatch(es), ${data.uncertain} uncertain, ${data.manualReview} manual review`);
       }
     } catch (err: any) {
       setReportError(err.message || 'Verification failed');
@@ -89,6 +143,7 @@ export default function FestivalManagement() {
     if (s === 'verified')   return <CheckCircle size={14} className="text-emerald-500 shrink-0" />;
     if (s === 'mismatch')   return <XCircle     size={14} className="text-rose-500 shrink-0" />;
     if (s === 'uncertain')  return <AlertCircle size={14} className="text-amber-500 shrink-0" />;
+    if (s === 'manual_review') return <AlertCircle size={14} className="text-violet-500 shrink-0" />;
     return                         <AlertCircle size={14} className="text-slate-400 shrink-0" />;
   };
 
@@ -96,6 +151,7 @@ export default function FestivalManagement() {
     if (s === 'verified')   return 'bg-emerald-500/10 text-emerald-600';
     if (s === 'mismatch')   return 'bg-rose-500/10 text-rose-600';
     if (s === 'uncertain')  return 'bg-amber-500/10 text-amber-600';
+    if (s === 'manual_review') return 'bg-violet-500/10 text-violet-600';
     return 'bg-slate-100 text-slate-500';
   };
 
@@ -118,6 +174,15 @@ export default function FestivalManagement() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <select
+              value={selectedYear}
+              onChange={(event) => setSelectedYear(Number(event.target.value))}
+              className="rounded-full border border-black/10 bg-white/80 px-3 py-2 text-xs font-bold text-[var(--brand-muted)]"
+            >
+              {(availableYears.length > 0 ? availableYears : [selectedYear]).map((year) => (
+                <option key={year} value={year}>{year}</option>
+              ))}
+            </select>
             {/* AI Verify Button */}
             <button
               onClick={runVerification}
@@ -130,14 +195,53 @@ export default function FestivalManagement() {
               }
               {verifying ? 'Verifying…' : 'Verify Dates with AI'}
             </button>
-            <button className="bg-emerald-500 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg shadow-emerald-500/20">
-              <Plus size={16} /> Add Festival
+            <button
+              disabled
+              className="bg-emerald-500/50 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg shadow-emerald-500/10 cursor-not-allowed"
+              title="Festival create/edit flow is staged; verification and review are live."
+            >
+              <Plus size={16} /> Add Festival (staged)
             </button>
           </div>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-10 space-y-10">
+        {stats && (
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+            {[
+              { label: 'Rows', value: stats.total, tone: 'text-slate-700' },
+              { label: 'Pending review', value: stats.pendingReview, tone: 'text-amber-600' },
+              { label: 'AI mismatches', value: stats.aiMismatches, tone: 'text-rose-600' },
+              { label: 'Manual review', value: stats.aiManualReview, tone: 'text-violet-600' },
+              { label: 'Unsafe Vrat routes', value: stats.unsafeObservanceRoutes, tone: 'text-orange-600' },
+            ].map((card) => (
+              <div key={card.label} className="glass-panel rounded-3xl p-4 border border-black/5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand-muted)]">{card.label}</p>
+                <p className={`mt-2 text-2xl font-bold ${card.tone}`}>{card.value}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="rounded-3xl border border-black/5 bg-black/[0.02] px-5 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--brand-muted)]">Calendar source</p>
+              <p className="mt-1 text-sm theme-ink">
+                {source === 'database' ? 'Live festival table' : 'Static fallback calendar'}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--brand-muted)]">Last verification</p>
+              <p className="mt-1 text-sm theme-ink">
+                {stats?.lastVerificationRunAt
+                  ? new Date(stats.lastVerificationRunAt).toLocaleString('en-GB')
+                  : 'No persisted verification yet'}
+              </p>
+            </div>
+          </div>
+        </div>
 
         {/* ── Verification Report Panel ── */}
         <AnimatePresence>
@@ -165,6 +269,7 @@ export default function FestivalManagement() {
                       <span className="px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-600">✅ {report.verified} ok</span>
                       {report.mismatches > 0 && <span className="px-2 py-1 rounded-full bg-rose-500/10 text-rose-600">❌ {report.mismatches} wrong</span>}
                       {report.uncertain  > 0 && <span className="px-2 py-1 rounded-full bg-amber-500/10 text-amber-600">⚠️ {report.uncertain} uncertain</span>}
+                      {report.manualReview > 0 && <span className="px-2 py-1 rounded-full bg-violet-500/10 text-violet-600">📝 {report.manualReview} manual</span>}
                     </div>
                   )}
                   <button onClick={() => setReportOpen(false)} className="p-1 rounded-lg hover:bg-black/5 text-[var(--brand-muted)]">
@@ -197,7 +302,7 @@ export default function FestivalManagement() {
                   {report.results
                     .slice()
                     .sort((a, b) => {
-                      const order: Record<VerificationStatus, number> = { mismatch: 0, uncertain: 1, not_checked: 2, verified: 3 };
+                      const order: Record<VerificationStatus, number> = { mismatch: 0, uncertain: 1, manual_review: 2, not_checked: 3, verified: 4 };
                       return order[a.status] - order[b.status];
                     })
                     .map((r) => (
@@ -208,6 +313,9 @@ export default function FestivalManagement() {
                             <span className="text-sm font-bold theme-ink">{r.name}</span>
                             <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${statusLabel(r.status)}`}>
                               {r.status}
+                            </span>
+                            <span className="text-[9px] font-bold text-[var(--brand-muted)] uppercase tracking-widest">
+                              {r.verificationType.replace(/_/g, ' ')}
                             </span>
                             <span className="text-[9px] font-bold text-[var(--brand-muted)] uppercase tracking-widest">
                               conf: {r.confidence}
@@ -238,13 +346,16 @@ export default function FestivalManagement() {
           <>
             <div className="flex items-center justify-between px-2">
               <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--brand-muted)]">
-                {festivals.length} festivals in calendar
+                {festivals.length} festivals in {selectedYear}
               </h2>
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand-muted)]">
+                {source === 'database' ? 'live source' : 'fallback source'}
+              </span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {festivals.map((fest) => (
                 <motion.div
-                  key={fest.id}
+                  key={fest.id ?? `${fest.name}-${fest.date}`}
                   className="glass-panel rounded-3xl p-6 border border-black/5 hover:border-emerald-500/30 transition-all"
                 >
                   <div className="flex items-start justify-between mb-4">
@@ -261,20 +372,45 @@ export default function FestivalManagement() {
 
                   <div className="mt-6 pt-6 border-t border-black/5 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <button className="p-2 rounded-xl bg-black/5 text-[var(--brand-muted)] hover:text-emerald-500 transition-colors">
+                      <button
+                        disabled
+                        className="p-2 rounded-xl bg-black/5 text-[var(--brand-muted)] opacity-50 cursor-not-allowed"
+                        title="Editing is staged; this admin surface is currently review-first."
+                      >
                         <Edit2 size={16} />
                       </button>
-                      <button className="p-2 rounded-xl bg-black/5 text-[var(--brand-muted)] hover:text-red-500 transition-colors">
+                      <button
+                        disabled
+                        className="p-2 rounded-xl bg-black/5 text-[var(--brand-muted)] opacity-50 cursor-not-allowed"
+                        title="Deletion is staged; this admin surface is currently review-first."
+                      >
                         <Trash2 size={16} />
                       </button>
                     </div>
-                    <span className={`text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 ${fest.review_status === 'reviewed' ? 'text-emerald-500' : 'text-amber-500'}`}>
-                      {fest.review_status === 'reviewed'
-                        ? <><CheckCircle size={12} /> Reviewed</>
-                        : <><AlertCircle size={12} /> Pending</>
-                      }
-                    </span>
+                    <div className="text-right space-y-1">
+                      <span className={`text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 justify-end ${fest.review_status === 'reviewed' ? 'text-emerald-500' : 'text-amber-500'}`}>
+                        {fest.review_status === 'reviewed'
+                          ? <><CheckCircle size={12} /> Reviewed</>
+                          : <><AlertCircle size={12} /> Pending</>
+                        }
+                      </span>
+                      {fest.verification_status && (
+                        <span className={`inline-flex text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${statusLabel(fest.verification_status)}`}>
+                          AI {fest.verification_status.replace('_', ' ')}
+                        </span>
+                      )}
+                    </div>
                   </div>
+                  {fest.suggested_date && (
+                    <p className="mt-3 text-[11px] text-rose-600 font-semibold">
+                      Suggested date: {fest.suggested_date}
+                    </p>
+                  )}
+                  {fest.verification_note && (
+                    <p className="mt-2 text-[11px] text-[var(--brand-muted)] leading-relaxed">
+                      {fest.verification_note}
+                    </p>
+                  )}
                 </motion.div>
               ))}
             </div>

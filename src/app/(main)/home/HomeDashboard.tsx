@@ -41,7 +41,7 @@ import { calculatePanchang, PANCHANG_TRUST_META, getTodaySpiritualPulses } from 
 import { getFestivalStory, type FestivalStory } from '@/lib/festival-stories';
 import { getDharmVeerOfTheDay, TRADITION_META, type DharmVeer } from '@/lib/dharm-veer';
 import { getPitruPakshaDay, getPitruPakshaBannerCopy } from '@/lib/pitru-paksha';
-import { getVratData } from '@/lib/vrat-data';
+import { getVratData, resolveVratSlug } from '@/lib/vrat-data';
 import { getGreeting, getGreetingPool, isGreetingCompatibleWithTradition } from '@/lib/traditions';
 import { SACRED_RELICS, getUnlockedRelics } from '@/lib/relics';
 import type { GuidedPathProgressRow } from '@/lib/guided-paths';
@@ -1604,6 +1604,9 @@ export default function HomeDashboard({
       ? t('tomorrow')
       : t('inNDays').replace('{n}', String(upcomingSacredObservance.daysLeft))
     : null;
+  const upcomingObservanceHref = upcomingSacredObservance
+    ? resolveVratSlug(upcomingSacredObservance.festival.name)
+    : null;
 
   // ── Dharm Veer ───────────────────────────────────────────────────────────────
   // Always shown on home — a forgotten/underappreciated hero of Dharma, rotating
@@ -1906,8 +1909,9 @@ export default function HomeDashboard({
               transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
               className="mb-3"
             >
+              {upcomingObservanceHref ? (
               <Link
-                href={`/vrat/${encodeURIComponent(upcomingSacredObservance.festival.name)}`}
+                href={`/vrat/${encodeURIComponent(upcomingObservanceHref)}`}
                 className="group relative block overflow-hidden rounded-[1.55rem] border px-4 py-3.5"
                 style={{
                   background: isDark
@@ -1989,11 +1993,95 @@ export default function HomeDashboard({
                   </div>
                 </div>
               </Link>
+              ) : (
+              <div
+                className="group relative block overflow-hidden rounded-[1.55rem] border px-4 py-3.5"
+                style={{
+                  background: isDark
+                    ? 'linear-gradient(135deg, rgba(32,24,15,0.72), rgba(62,41,18,0.36))'
+                    : 'linear-gradient(135deg, rgba(255,252,246,0.82), rgba(248,225,182,0.40))',
+                  borderColor: isDark ? 'rgba(235,205,150,0.16)' : 'rgba(197,160,89,0.20)',
+                  boxShadow: isDark
+                    ? '0 18px 42px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.05)'
+                    : '0 18px 34px rgba(197,160,89,0.12), inset 0 1px 0 rgba(255,255,255,0.74)',
+                  backdropFilter: 'blur(20px) saturate(130%)',
+                  WebkitBackdropFilter: 'blur(20px) saturate(130%)',
+                }}
+              >
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 opacity-80"
+                  style={{
+                    background: isDark
+                      ? 'radial-gradient(circle at 12% 18%, rgba(247,212,132,0.18), transparent 32%), radial-gradient(circle at 88% 22%, rgba(197,160,89,0.14), transparent 28%)'
+                      : 'radial-gradient(circle at 12% 18%, rgba(247,212,132,0.26), transparent 34%), radial-gradient(circle at 88% 22%, rgba(197,160,89,0.16), transparent 26%)',
+                  }}
+                />
+                <div className="relative flex items-center gap-3.5">
+                  <div
+                    className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] border"
+                    style={{
+                      background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.62)',
+                      borderColor: isDark ? 'rgba(250,238,218,0.10)' : 'rgba(197,160,89,0.16)',
+                      boxShadow: isDark
+                        ? '0 10px 18px rgba(0,0,0,0.16)'
+                        : '0 10px 18px rgba(197,160,89,0.10)',
+                    }}
+                  >
+                    <SacredIcon name="calendar" size={18} />
+                    <span
+                      className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full"
+                      style={{
+                        background: '#F7D484',
+                        boxShadow: '0 0 10px rgba(247,212,132,0.95)',
+                      }}
+                    />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: '#C5A059' }}>
+                        {t('upcomingSacredTime')}
+                      </span>
+                      <span
+                        className="rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em]"
+                        style={{
+                          color: isDark ? '#F6E2AE' : '#A0622A',
+                          background: isDark ? 'rgba(247,212,132,0.12)' : 'rgba(247,212,132,0.24)',
+                        }}
+                      >
+                        {upcomingSacredObservanceLabel}
+                      </span>
+                    </div>
+                    {(() => {
+                      const vData = getVratData(upcomingSacredObservance.festival.name);
+                      const upcomingName = (effectiveAppLanguage !== 'en' && vData?.nameLocal) ? vData.nameLocal : upcomingSacredObservance.festival.name;
+                      const upcomingDesc = (effectiveAppLanguage !== 'en' && vData?.taglineLocal) ? vData.taglineLocal : t('festivalPrepDesc');
+                      return (
+                        <>
+                          <p className="mt-1 font-serif text-[1.02rem] leading-tight" style={{ color: 'var(--divine-text)' }}>
+                            {upcomingName}
+                          </p>
+                          <p className="mt-1 text-[11px] leading-relaxed" style={{ color: heroSecondaryText }}>
+                            {upcomingDesc}
+                          </p>
+                        </>
+                      );
+                    })()}
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-1 text-[11px] font-semibold" style={{ color: '#C5A059' }}>
+                    <span>Prepare</span>
+                  </div>
+                </div>
+              </div>
+              )}
             </motion.div>
           )}
 
           {sacredPulses.map((pulse, idx) => {
             const pulseVratData = getVratData(pulse.label);
+            const pulseHref = resolveVratSlug(pulse.label);
             const pulseName = (effectiveAppLanguage !== 'en' && pulseVratData?.nameLocal) ? pulseVratData.nameLocal : (pulse.translationKey ? t(pulse.translationKey as any) : pulse.label);
             const pulseLabelText = effectiveAppLanguage === 'hi' ? `आज ${pulseName} है` : effectiveAppLanguage === 'pa' ? `ਅੱਜ ${pulseName} ਹੈ` : `${pulseName} Today`;
             const pulseDescText = (effectiveAppLanguage !== 'en' && pulseVratData?.taglineLocal) ? pulseVratData.taglineLocal : (pulse.descKey ? t(pulse.descKey as any) : pulse.description);
@@ -2006,8 +2094,9 @@ export default function HomeDashboard({
                 transition={{ duration: 0.4, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
                 className="mb-2"
               >
+                {pulseHref ? (
                 <Link 
-                  href={`/vrat/${encodeURIComponent(pulse.label)}`}
+                  href={`/vrat/${encodeURIComponent(pulseHref)}`}
                   className="sacred-pulse-banner group relative hover:scale-[1.02] transition-transform duration-300 block overflow-hidden"
                   role="status"
                   aria-live="polite"
@@ -2027,6 +2116,23 @@ export default function HomeDashboard({
                     <ChevronRight size={16} className="text-[#A0622A]/80 shrink-0" />
                   </div>
                 </Link>
+                ) : (
+                <div className="sacred-pulse-banner group relative block overflow-hidden" role="status" aria-live="polite">
+                  <div className="flex items-center gap-3 w-full pr-6">
+                    <span className="sacred-pulse-emoji" aria-hidden="true">
+                      <SacredIcon name="calendar" size={18} />
+                    </span>
+                    <div className="sacred-pulse-body flex-1 min-w-0">
+                      <span className="sacred-pulse-label">
+                        {pulseLabelText}
+                      </span>
+                      <span className="sacred-pulse-desc">
+                        {pulseDescText}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                )}
               </motion.div>
             );
           })}

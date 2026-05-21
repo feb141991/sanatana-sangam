@@ -313,6 +313,12 @@ export interface Database {
           review_status: 'needs_review' | 'reviewed' | null;
           reviewed_at: string | null;
           review_notes: string | null;
+          verification_status: 'verified' | 'mismatch' | 'uncertain' | 'not_checked' | 'manual_review' | null;
+          verification_confidence: 'high' | 'medium' | 'low' | null;
+          verification_note: string | null;
+          suggested_date: string | null;
+          verification_run_at: string | null;
+          verification_type: 'solar_fixed' | 'lunar_tithi' | 'nakshatra_based' | 'regional_calendar' | 'historical_commemoration' | null;
         };
         Insert: Omit<Database['public']['Tables']['festivals']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['festivals']['Insert']>;

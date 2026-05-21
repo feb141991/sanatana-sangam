@@ -42,7 +42,7 @@ import { useVocabulary } from '@/hooks/useVocabulary';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 import { resolveReadablePreferences } from '@/lib/readable-preferences';
 import { useReaderControls } from '@/hooks/useReaderControls';
-import { getVratData } from '@/lib/vrat-data';
+import { getVratData, resolveVratSlug } from '@/lib/vrat-data';
 
 // ── Tradition greetings ─────────────────────────────────────────────────────────
 // TRADITION_MORNING moved to TRADITION_CONFIG
@@ -1341,6 +1341,7 @@ export default function NityaKarmaClient({
               {/* Vrat alert */}
               {vataDays && (() => {
                 const vData = getVratData(vataDays);
+                const vratSlug = resolveVratSlug(vataDays);
                 const name = (appLanguage !== 'en' && vData?.nameLocal) ? vData.nameLocal : vataDays;
                 const titleText = appLanguage === 'hi' ? `आज ${name} है` : appLanguage === 'pa' ? `ਅੱਜ ${name} ਹੈ` : `Today is ${name}`;
                 const descText = appLanguage === 'hi' 
@@ -1348,8 +1349,8 @@ export default function NityaKarmaClient({
                   : appLanguage === 'pa'
                   ? 'ਵਰਤ ਦਾ ਦਿਨ ਵਾਧੂ ਅਧਿਆਤਮਿਕ ਪੁੰਨ ਲਿਆਉਂਦਾ ਹੈ। ਨਿਰਜਲਾ ਜਾਂ ਫਲਾਹਾਰ ਦਾ ਪਾਲਣ ਕਰੋ ਅਤੇ ਵਧੇਰੇ ਜਪ ਕਰੋ। ਮਹੱਤਵ ਦੇਖਣ ਲਈ ਟੈਪ ਕਰੋ।'
                   : 'A vrat day adds extra spiritual merit. Observe nirjala or phalahar and add extended japa. Tap to view significance.';
-                return (
-                  <Link href={`/vrat/${encodeURIComponent(vataDays)}`} className="rounded-2xl border px-4 py-3 flex items-center gap-3 relative overflow-hidden block group"
+                const content = (
+                  <div className="rounded-2xl border px-4 py-3 flex items-center gap-3 relative overflow-hidden block group"
                     style={{ background: `${accent}10`, borderColor: `${accent}30` }}>
                     <span className="text-xl shrink-0">🌟</span>
                     <div className="flex-1 min-w-0 pr-6">
@@ -1359,8 +1360,11 @@ export default function NityaKarmaClient({
                       </p>
                     </div>
                     <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2" style={{ color: accent, transform: 'rotate(-90deg)', flexShrink: 0 }} />
-                  </Link>
+                  </div>
                 );
+                return vratSlug ? (
+                  <Link href={`/vrat/${encodeURIComponent(vratSlug)}`}>{content}</Link>
+                ) : content;
               })()}
 
               {/* Sacred Day Pulse — tradition-aware nudge above practice cards */}
