@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { FESTIVALS_2026 } from '@/lib/festivals';
 import { verifyFestivalDatesWithAI, type VerificationReport } from '@/lib/festival-verify';
+import { emitEvent, emitError } from '@/lib/monitoring/events';
 
 // ─── Festival Date Verification Cron ─────────────────────────────────────────
 // Schedule: 0 8 5 1 *  (8 AM UTC, 5th January every year)
@@ -16,8 +17,6 @@ import { verifyFestivalDatesWithAI, type VerificationReport } from '@/lib/festiv
 //
 // The admin can also trigger this on demand from the Festival Manager tab.
 // ─────────────────────────────────────────────────────────────────────────────
-
-const ADMIN_EMAIL = 'career.prince@gmail.com';
 
 export async function GET(request: Request) {
   // Verify cron secret
@@ -44,30 +43,34 @@ export async function GET(request: Request) {
 
   const mismatches = report.results.filter(r => r.status === 'mismatch');
   const uncertain  = report.results.filter(r => r.status === 'uncertain');
+  const allClear   = mismatches.length === 0 && uncertain.length === 0;
 
-  // Log summary
-  console.log(`[verify-festival-dates] ${year} — Checked: ${report.totalChecked} | ✅ ${report.verified} | ❌ ${report.mismatches} mismatches | ⚠️ ${report.uncertain} uncertain`);
+  // Emit to monitoring events (visible in /admin logs + sadhana_events table)
+  emitEvent({
+    severity: allClear ? 'P3' : 'P1',
+    domain: 'cron',
+    route: '/api/cron/verify-festival-dates',
+    context: {
+      action: 'festival_date_verification',
+      year: String(year),
+      totalChecked: String(report.totalChecked),
+      verified: String(report.verified),
+      mismatches: String(report.mismatches),
+      uncertain: String(report.uncertain),
+      mismatchSummary: mismatches.map(m => `${m.name}: ${m.storedDate}→${m.suggestedDate ?? '?'}`).join(' | ') || 'none',
+      uncertainSummary: uncertain.map(u => u.name).join(', ') || 'none',
+    },
+  });
 
-  if (mismatches.length > 0) {
-    console.warn('[verify-festival-dates] MISMATCHES FOUND:');
-    for (const m of mismatches) {
-      console.warn(`  ❌ ${m.name}: stored ${m.storedDate} → AI suggests ${m.suggestedDate ?? '?'} | ${m.note}`);
-    }
-  }
-
-  if (uncertain.length > 0) {
-    console.warn('[verify-festival-dates] UNCERTAIN DATES:');
-    for (const u of uncertain) {
-      console.warn(`  ⚠️  ${u.name}: ${u.storedDate} | ${u.note}`);
-    }
-  }
-
-  // Log issues prominently — visible in Vercel function logs
-  if (mismatches.length > 0 || uncertain.length > 0) {
-    console.warn(
-      `[verify-festival-dates] ACTION REQUIRED: ${mismatches.length} mismatch(es), ` +
-      `${uncertain.length} uncertain. Check admin panel at /admin → Festival Verify. ` +
-      `Admin email: ${ADMIN_EMAIL}`
+  if (!allClear) {
+    emitError(
+      'cron',
+      new Error(
+        `Festival calendar has ${mismatches.length} mismatch(es) and ${uncertain.length} uncertain date(s) for ${year}. ` +
+        `Mismatches: ${mismatches.map(m => `${m.name} (stored ${m.storedDate} → ${m.suggestedDate ?? '?'})`).join('; ')}`
+      ),
+      'P1',
+      { route: '/api/cron/verify-festival-dates', context: { action: 'festival_date_mismatch', year: String(year) } }
     );
   }
 
