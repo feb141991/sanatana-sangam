@@ -368,6 +368,185 @@ Pray for your husband's long life and well-being. Listen to or recite the Savitr
     ],
   },
 
+  'vat-savitri-purnima': {
+    id: 'vat-savitri-purnima',
+    emoji: '🌳',
+    name: 'Vat Savitri Purnima',
+    nameLocal: 'वट सावित्री पूर्णिमा',
+    tagline: 'A regional full-moon observance of Savitri’s vow, rooted in western and southern practice.',
+    taglineLocal: 'सावित्री की प्रतिज्ञा का क्षेत्रीय पूर्णिमा-व्रत, जो पश्चिमी और दक्षिणी परंपराओं में जीवित है।',
+    significance: `Vat Savitri Purnima is the Jyeshtha Purnima observance followed in Maharashtra, Gujarat, and parts of Karnataka. It honours the same Savitri-Satyavan katha, but follows the full-moon calendar practice rather than the North Indian Amavasya observance.
+
+This is not a contradiction in Dharma. It is a legitimate regional calendar variation preserved by living sampradayas. The spiritual centre remains the same: steadfast devotion, protection of family life, and prayer for the long life and well-being of one's husband.`,
+    significanceLocal: `वट सावित्री पूर्णिमा ज्येष्ठ पूर्णिमा पर मनाया जाने वाला वह क्षेत्रीय व्रत है जिसे महाराष्ट्र, गुजरात और कर्नाटक के कुछ भागों में माना जाता है। इसमें वही सावित्री-सत्यवान कथा पूजित होती है, पर पालन पूर्णिमा पर होता है, न कि उत्तर भारतीय अमावस्या पर।
+
+यह धर्म में विरोध नहीं, बल्कि जीवित क्षेत्रीय परंपरा है। इसका आध्यात्मिक केन्द्र वही है: अटूट समर्पण, गृहस्थ जीवन की रक्षा, और पति की दीर्घायु व कल्याण की प्रार्थना।`,
+    practice: `Wake before sunrise, bathe, and wear auspicious clothes. Worship the vat tree or a home altar with flowers, diya, akshat, turmeric, and thread. Listen to or recite the Savitri-Satyavan katha, offer water, and do pradakshina around the banyan tree.
+
+Observe the fast according to family practice — many keep phalahar or a day-long vrat until the evening puja is complete. Offer charity and complete the vrat with prayer for long marital well-being and inner strength.`,
+    practiceLocal: `सूर्योदय से पहले उठें, स्नान करें और शुभ वस्त्र धारण करें। वट वृक्ष या गृह-वेदी की पूजा फूल, दीपक, अक्षत, हल्दी और धागे से करें। सावित्री-सत्यवान कथा सुनें या पढ़ें, जल अर्पित करें और वट-वृक्ष की परिक्रमा करें।
+
+परिवार की परंपरा के अनुसार व्रत रखें — कई लोग फलाहार या संध्या-पूजा तक व्रत करते हैं। दान दें और पति के कल्याण तथा आंतरिक धैर्य की प्रार्थना के साथ व्रत पूर्ण करें।`,
+    mantra: 'ॐ सावित्र्यै नमः। वटवृक्षाय नमः। सत्यवते नमः।',
+    mantraLocal: 'ॐ सावित्र्यै नमः। वटवृक्षाय नमः। सत्यवते नमः।',
+    fastingType: 'partial',
+    breakFastTime: 'After evening puja, according to family tradition',
+    dos: [
+      'Follow the Purnima observance if that is your family or regional tradition',
+      'Offer water, flowers, and sacred thread to the vat tree',
+      'Recite the Savitri-Satyavan katha',
+      'Do pradakshina around the banyan tree',
+      'Give charity after the puja',
+    ],
+    donts: [
+      'Do not treat the Purnima observance as incorrect just because another region follows Amavasya',
+      'Avoid harsh speech and unnecessary conflict on the vrat day',
+      'Avoid tamasic food and intoxicants',
+    ],
+    pujaItems: [
+      'Fresh flowers',
+      'Akshat (raw rice)',
+      'Turmeric and kumkum',
+      'Sacred thread (mauli)',
+      'Diya and incense',
+      'Water kalash',
+      'Fruits and sweets for naivedya',
+    ],
+  },
+
+  'hartalika-teej': {
+    id: 'hartalika-teej',
+    emoji: '🌿',
+    name: 'Hartalika Teej',
+    nameLocal: 'हरतालिका तीज',
+    tagline: 'The vow of Parvati’s resolve — austerity offered for sacred companionship.',
+    taglineLocal: 'पार्वती के संकल्प का व्रत — पवित्र दांपत्य के लिए तपस्वी अर्पण।',
+    significance: `Hartalika Teej commemorates Goddess Parvati's intense tapas to attain Lord Shiva as her husband. It is observed on Bhadrapada Shukla Tritiya, especially in North India and Nepal, by women praying for marital harmony, steadfast companionship, and spiritual strength.
+
+The vrat is not merely about worldly marriage. It honours Parvati's uncompromising resolve, self-mastery, and devotion — the inner strength required to choose Dharma consciously.`,
+    significanceLocal: `हरतालिका तीज भाद्रपद शुक्ल तृतीया को मनाया जाने वाला वह व्रत है जो माता पार्वती के उस कठोर तप की स्मृति है जिससे उन्होंने भगवान शिव को पति रूप में प्राप्त किया। यह उत्तर भारत और नेपाल में विशेष रूप से मनाया जाता है।
+
+यह व्रत केवल सांसारिक दांपत्य के लिए नहीं है। यह पार्वती के संकल्प, आत्मसंयम और धर्मपूर्ण चयन की स्मृति है।`,
+    practice: `Observe a fast according to your tradition — many keep nirjala or strict phalahar. Worship Shiva and Parvati together with flowers, bel leaves, fruits, and clay or metal murti forms. Listen to the Hartalika Teej katha and pray for a stable, dharmic, and compassionate household life.
+
+Evening puja, songs, and mehendi are traditional in many regions. The vrat is completed with prayer, seva, and, where customary, moon sighting or the next morning break-fast.`,
+    practiceLocal: `अपनी परंपरा के अनुसार व्रत रखें — कई स्त्रियाँ निर्जला या कठोर फलाहार रखती हैं। शिव-पार्वती की संयुक्त पूजा फूल, बेलपत्र, फल और प्रतिमा के साथ करें। हरतालिका तीज कथा सुनें और धर्ममय, करुणामय गृहस्थ जीवन की प्रार्थना करें।
+
+अनेक क्षेत्रों में संध्या-पूजा, गीत और मेहंदी की परंपरा है। व्रत प्रार्थना, सेवा और, जहाँ प्रचलन हो, चंद्र-दर्शन या अगले दिन पारण के साथ पूर्ण होता है।`,
+    mantra: 'ॐ पार्वत्यै नमः। ॐ नमः शिवाय।',
+    mantraLocal: 'ॐ पार्वत्यै नमः। ॐ नमः शिवाय।',
+    fastingType: 'nirjala',
+    breakFastTime: 'After the vrat completion according to local tradition, often next morning',
+    dos: [
+      'Worship Shiva and Parvati together',
+      'Recite or hear the Hartalika Teej katha',
+      'Keep the fast according to family tradition',
+      'Pray for a dharmic and compassionate marriage',
+      'Offer seva or charity after the vrat',
+    ],
+    donts: [
+      'Do not mock or flatten regional custom into a single fixed pattern',
+      'Avoid tamasic food and intoxicants',
+      'Avoid anger and argument on the vrat day',
+    ],
+    pujaItems: [
+      'Flowers and fruits',
+      'Bel leaves',
+      'Mehendi',
+      'Diya and incense',
+      'Clay or metal murti of Shiva-Parvati',
+      'Kumkum and turmeric',
+    ],
+  },
+
+  'karva-chauth': {
+    id: 'karva-chauth',
+    emoji: '🌙',
+    name: 'Karva Chauth',
+    nameLocal: 'करवा चौथ',
+    tagline: 'A moon-bound fast of devotion, restraint, and prayer for household well-being.',
+    taglineLocal: 'चंद्र-दर्शन से पूर्ण होने वाला संयम, समर्पण और गृहस्थ-कल्याण का व्रत।',
+    significance: `Karva Chauth is observed on Kartik Krishna Chaturthi, especially in North India, by married women praying for the long life and well-being of their husbands. The fast culminates with moonrise, when the moon is offered arghya and the vrat is completed.
+
+Its emotional language is familiar, but the deeper current is discipline, sankalpa, and the sacred guarding of household bonds. It is a vow of restraint linked to prayer, not spectacle.`,
+    significanceLocal: `करवा चौथ कार्तिक कृष्ण चतुर्थी को विशेष रूप से उत्तर भारत में रखा जाने वाला व्रत है। विवाहित स्त्रियाँ अपने पति की दीर्घायु और कल्याण के लिए यह उपवास रखती हैं। चंद्र-दर्शन और अर्घ्य के बाद व्रत पूर्ण होता है।
+
+इसका गहरा अर्थ अनुशासन, संकल्प और गृहस्थ-बंधन की रक्षा में है। यह केवल उत्सव नहीं, प्रार्थना से जुड़ा संयम का व्रत है।`,
+    practice: `Begin with sargi or the customary pre-dawn meal if your family observes it. Keep the fast through the day, often nirjala, while maintaining prayerful awareness. In the evening, gather for puja with the karva, diya, sieve, and offerings.
+
+At moonrise, offer arghya to the moon, see the moon through the sieve if that is your custom, and then complete the vrat. The form varies by region and family, but the prayerful centre remains the same.`,
+    practiceLocal: `यदि परिवार में प्रथा हो तो प्रातःकाल सर्गी ग्रहण करें। दिन भर उपवास रखें, कई घरों में निर्जला व्रत होता है। संध्या में करवा, दीपक, छलनी और पूजन-सामग्री के साथ पूजा करें।
+
+चंद्र-दर्शन के समय चंद्रमा को अर्घ्य दें, और यदि परिवार में प्रचलन हो तो छलनी से चंद्र-दर्शन करें। फिर व्रत पूर्ण करें। रूप-भेद हो सकते हैं, पर प्रार्थना का केन्द्र एक ही है।`,
+    mantra: 'ॐ सोमाय नमः। ॐ नमः शिवाय।',
+    mantraLocal: 'ॐ सोमाय नमः। ॐ नमः शिवाय।',
+    fastingType: 'nirjala',
+    breakFastTime: 'After moonrise and arghya',
+    dos: [
+      'Follow your family’s Karva Chauth puja sequence',
+      'Offer arghya to the moon before breaking the fast',
+      'Keep the day prayerful and restrained',
+      'Use the vrat to cultivate gratitude rather than social comparison',
+    ],
+    donts: [
+      'Do not break the fast before moonrise if your tradition requires moonrise completion',
+      'Avoid reducing the vrat to appearance or performance',
+      'Avoid anger, gossip, and unnecessary strain during the fast',
+    ],
+    pujaItems: [
+      'Karva (ritual pot)',
+      'Diya',
+      'Sieve (where customary)',
+      'Kumkum and rice',
+      'Water for moon arghya',
+      'Sweets and fruits',
+    ],
+  },
+
+  'vaikunta-ekadashi': {
+    id: 'vaikunta-ekadashi',
+    emoji: '🏵️',
+    name: 'Vaikunta Ekadashi',
+    nameLocal: 'वैकुण्ठ एकादशी',
+    tagline: 'The Ekadashi of the open gate — Vishnu devotion intensified by temple tradition.',
+    taglineLocal: 'वह एकादशी जब वैकुण्ठ-द्वार प्रतीकात्मक रूप से खुलते हैं — विष्णु-भक्ति का उत्कर्ष।',
+    significance: `Vaikunta Ekadashi is one of the most revered Vishnu observances, especially in Sri Vaishnava and South Indian temple traditions. It carries the theology of the Vaikunta Dwaram — the opening of the Lord's gate to the sincere devotee.
+
+Different calendar traditions can place its observance slightly differently relative to Mokshada Ekadashi or Dhanurmasa practice. The devotional heart, however, remains unambiguous: vrata, nama, darshan, and surrender to Narayana.`,
+    significanceLocal: `वैकुण्ठ एकादशी विष्णु-भक्ति की अत्यंत पूज्य एकादशी है, विशेषकर श्रीवैष्णव और दक्षिण भारतीय मंदिर-परंपराओं में। इसमें वैकुण्ठ-द्वार के खुलने की प्रतीकात्मक भावना जुड़ी है।
+
+कुछ परंपराओं में इसकी तिथि-गणना में हल्का अंतर हो सकता है, पर भक्ति का केन्द्र स्पष्ट है — व्रत, नाम, दर्शन और नारायण में शरण।`,
+    practice: `Observe an Ekadashi fast according to your sampradaya. Increase Vishnu nama-japa, read the Gita or Vishnu Sahasranama, and, if possible, attend temple darshan, especially where Vaikunta Dwaram processions are held.
+
+This observance is best treated as a named Vishnu festival, not merely a generic fast day. Temple tradition and sampradaya guidance should lead the exact practice.`,
+    practiceLocal: `अपनी संप्रदाय-परंपरा के अनुसार एकादशी-व्रत रखें। विष्णु-नाम जप बढ़ाएँ, गीता या विष्णु सहस्रनाम का पाठ करें, और जहाँ संभव हो, मंदिर-दर्शन करें — विशेषकर जहाँ वैकुण्ठ-द्वार की परंपरा होती है।
+
+इसे केवल सामान्य उपवास-दिवस नहीं, बल्कि नामित विष्णु-उत्सव की तरह मानें। सटीक विधि में मंदिर-परंपरा और संप्रदाय का मार्गदर्शन प्रधान होना चाहिए।`,
+    mantra: 'ॐ नमो नारायणाय।',
+    mantraLocal: 'ॐ नमो नारायणाय।',
+    fastingType: 'nirjala',
+    breakFastTime: 'Ekadashi parana on the following Dwadashi, per sampradaya',
+    dos: [
+      'Follow Ekadashi discipline and parana timing carefully',
+      'Increase Vishnu nama-japa and stotra recitation',
+      'Attend temple darshan if possible',
+      'Follow sampradaya guidance where dates vary slightly',
+    ],
+    donts: [
+      'Do not flatten the observance into “just another Ekadashi” when temple tradition gives it a distinct place',
+      'Avoid grains and tamasic food',
+      'Do not break the fast outside the Dwadashi parana window',
+    ],
+    pujaItems: [
+      'Tulsi leaves',
+      'Yellow flowers',
+      'Vishnu image or saligrama',
+      'Ghee lamp',
+      'Panchamrit',
+      'Fruits for naivedya',
+    ],
+  },
+
   'navratri': {
     id: 'navratri',
     emoji: '🔱',
@@ -494,46 +673,76 @@ At home: light a diya, recite Japji Sahib (especially at dawn), and sing or list
 
 };
 
+const NAMED_VRAT_ALIASES: Array<{ canonical: string; aliases: string[] }> = [
+  { canonical: 'vat-savitri-purnima', aliases: ['vat savitri purnima', 'vat-savitri-purnima'] },
+  { canonical: 'vat-savitri', aliases: ['vat savitri vrat', 'vat savitri', 'vat-savitri', 'savitri vrat', 'savitri'] },
+  { canonical: 'hartalika-teej', aliases: ['hartalika teej', 'hartalika-teej', 'hartalika'] },
+  { canonical: 'karva-chauth', aliases: ['karva chauth', 'karwa chauth', 'karva-chauth', 'karwa-chauth'] },
+  { canonical: 'vaikunta-ekadashi', aliases: ['vaikunta ekadashi', 'vaikuntha ekadashi', 'vaikunta-ekadashi', 'vaikuntha-ekadashi', 'mokshada ekadashi'] },
+  { canonical: 'navratri', aliases: ['navratri', 'navaratri'] },
+  { canonical: 'diwali', aliases: ['diwali', 'deepavali', 'divali'] },
+  { canonical: 'janmashtami', aliases: ['janmashtami', 'krishna jayanti', 'gokulashtami'] },
+  { canonical: 'holi', aliases: ['holi', 'holika'] },
+  { canonical: 'gurpurab', aliases: ['gurpurab', 'guru nanak', 'gurupurab'] },
+];
+
+const RECURRING_VRAT_ALIASES: Array<{ canonical: string; aliases: string[] }> = [
+  { canonical: 'ekadashi', aliases: ['ekadashi'] },
+  { canonical: 'purnima', aliases: ['purnima', 'poornima'] },
+  { canonical: 'amavasya', aliases: ['amavasya', 'amavasai'] },
+  { canonical: 'pradosh', aliases: ['pradosh', 'pradosham'] },
+  { canonical: 'chaturthi', aliases: ['chaturthi', 'sankashti'] },
+  { canonical: 'shivaratri', aliases: ['shivaratri', 'shivratri'] },
+  { canonical: 'puranmashi', aliases: ['puranmashi', 'sangrand'] },
+  { canonical: 'uposatha', aliases: ['uposatha'] },
+];
+
+function includesAlias(value: string, aliases: string[]): boolean {
+  return aliases.some((alias) => value.includes(alias));
+}
+
 function resolveCanonicalVratKey(slug: string): string | null {
   const n = slug.toLowerCase().trim();
 
-  // Exact or keyword matches against enriched named database
-  if (n.includes('vat savitri') || n.includes('vat-savitri') || n.includes('savitri'))
-    return 'vat-savitri';
-  if (n.includes('navratri') || n.includes('navaratri'))
-    return 'navratri';
-  if (n.includes('diwali') || n.includes('deepavali') || n.includes('divali'))
-    return 'diwali';
-  if (n.includes('janmashtami') || n.includes('krishna jayanti') || n.includes('gokulashtami'))
-    return 'janmashtami';
-  if (n.includes('holi') || n.includes('holika'))
-    return 'holi';
-  if (n.includes('gurpurab') || n.includes('guru nanak') || n.includes('gurupurab'))
-    return 'gurpurab';
+  for (const entry of NAMED_VRAT_ALIASES) {
+    if (includesAlias(n, entry.aliases)) return entry.canonical;
+  }
 
-  // Recurring tithis
-  if (n.includes('ekadashi')) return 'ekadashi';
-  if (n.includes('purnima') || n.includes('poornima')) return 'purnima';
-  if (n.includes('amavasya') || n.includes('amavasai')) return 'amavasya';
-  if (n.includes('pradosh') || n.includes('pradosham')) return 'pradosh';
-  if (n.includes('chaturthi') || n.includes('sankashti')) return 'chaturthi';
-  if (n.includes('shivaratri') || n.includes('shivratri')) return 'shivaratri';
-  if (n.includes('puranmashi') || n.includes('sangrand')) return 'puranmashi';
-  if (n.includes('uposatha')) return 'uposatha';
+  for (const entry of RECURRING_VRAT_ALIASES) {
+    if (includesAlias(n, entry.aliases)) return entry.canonical;
+  }
 
   return null;
 }
 
+export function lookupVratData(slug: string): VratData | null {
+  if (slug in NAMED_VRAT_DATABASE) {
+    return NAMED_VRAT_DATABASE[slug as keyof typeof NAMED_VRAT_DATABASE];
+  }
+  if (slug in VRAT_DATABASE) {
+    return VRAT_DATABASE[slug as keyof typeof VRAT_DATABASE];
+  }
+
+  const canonical = resolveCanonicalVratKey(slug);
+  if (!canonical) return null;
+
+  if (canonical in NAMED_VRAT_DATABASE) {
+    return NAMED_VRAT_DATABASE[canonical as keyof typeof NAMED_VRAT_DATABASE];
+  }
+  if (canonical in VRAT_DATABASE) {
+    return VRAT_DATABASE[canonical as keyof typeof VRAT_DATABASE];
+  }
+  return null;
+}
+
 export function resolveVratSlug(slug: string): string | null {
-  return resolveCanonicalVratKey(slug);
+  const canonical = resolveCanonicalVratKey(slug);
+  return canonical && lookupVratData(canonical) ? canonical : null;
 }
 
 export function getVratData(slug: string): VratData | null {
-  const canonical = resolveCanonicalVratKey(slug);
-  if (canonical) {
-    if (canonical in NAMED_VRAT_DATABASE) return NAMED_VRAT_DATABASE[canonical as keyof typeof NAMED_VRAT_DATABASE];
-    if (canonical in VRAT_DATABASE) return VRAT_DATABASE[canonical as keyof typeof VRAT_DATABASE];
-  }
+  const resolved = lookupVratData(slug);
+  if (resolved) return resolved;
 
   // Generic fallback — remove "Today is" which is wrong when viewing ahead of the date
   return {

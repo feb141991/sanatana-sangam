@@ -1,7 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { notFound } from 'next/navigation';
 import VratClient from './VratClient';
-import { getVratData } from '@/lib/vrat-data';
+import { lookupVratData } from '@/lib/vrat-data';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -10,7 +10,7 @@ interface Props {
 export default async function VratPage({ params }: Props) {
   const p = await params;
   const decodedId = decodeURIComponent(p.id);
-  const vratData = getVratData(decodedId);
+  const vratData = lookupVratData(decodedId);
   const supabase = await createServerSupabaseClient();
 
   if (!vratData) {
