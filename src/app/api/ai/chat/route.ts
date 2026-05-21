@@ -7,10 +7,10 @@ import { emitEvent, emitError } from '@/lib/monitoring/events';
 // ─── General AI Chat Route ────────────────────────────────────────────────────
 // POST /api/ai/chat
 // Body: { message: string; tradition?: string | null; history: { role: 'user' | 'model'; text: string }[] }
-// Uses Google Gemini Flash via the Pramana contract.
+// Uses the Pramana provider stack (Gemini by default, self-hosted when available).
 
-const FREE_DAILY_LIMIT = 5;
-const PRO_DAILY_LIMIT  = 100;
+const FREE_DAILY_LIMIT = 20;   // raised from 5 — enough for a meaningful daily practice
+const PRO_DAILY_LIMIT  = 200;  // raised from 100 — suits deep daily sadhana conversations
 
 async function isDailyLimitReached(
   supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
@@ -68,8 +68,8 @@ export async function POST(req: NextRequest) {
   // Daily limit check (Supabase-backed, survives cold starts)
   if (await isDailyLimitReached(supabase, user.id, isPro)) {
     const limitMsg = isPro
-      ? "🙏 You've had a rich conversation with Dharma Mitra today! Your daily limit (100 messages) has been reached. Come back tomorrow for more guidance."
-      : "🙏 You've used your 5 free messages for today. Upgrade to Shoonaya Pro for 100+ daily messages and deeper guidance!";
+      ? "🙏 You've had a rich conversation with Dharma Mitra today! Your daily limit (200 messages) has been reached. Come back tomorrow for more guidance."
+      : "🙏 You've used your 20 free messages for today. Upgrade to Shoonaya Pro for 200 daily messages and deeper guidance!";
     
     return NextResponse.json({
       reply: limitMsg,

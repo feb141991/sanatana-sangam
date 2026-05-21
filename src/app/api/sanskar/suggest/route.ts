@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { generateWithProvider } from '@/lib/ai/providers/inference';
 
 // ─── POST /api/sanskar/suggest ────────────────────────────────────────────────
 // Returns an AI-generated personalised next-step suggestion for the user's
-// 16 Sanskara lifecycle journey.
+// 16 Sanskara lifecycle journey. Uses the Pramana provider stack.
 //
 // Body: {
 //   completed: string[];       // array of completed sanskara IDs
@@ -33,16 +34,10 @@ const ALL_SANSKARAS = [
   { id: 'antyesti',        name: 'Antyesti',         stage: 'Death',           number: 16 },
 ];
 
-const GEMINI_URL = (model: string) =>
-  `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 });
-
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return NextResponse.json({ error: 'AI not configured' }, { status: 503 });
 
   let body: { completed: string[]; birth_date?: string; tradition?: string; member_name?: string };
   try { body = await req.json(); }
@@ -63,14 +58,13 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // Build context for Gemini
   const completedNames = ALL_SANSKARAS.filter(s => completedSet.has(s.id)).map(s => s.name).join(', ');
   const ageContext = birth_date
     ? `The person was born on ${birth_date}, making them approximately ${Math.floor((Date.now() - new Date(birth_date).getTime()) / (1000 * 60 * 60 * 24 * 365))} years old.`
     : '';
   const forWhom = member_name ? `for ${member_name}` : 'for the user';
 
-  const prompt = `You are Dharma Mitra, a spiritual guide for Sanatana Dharma.
+  const userPrompt = `You are Dharma Mitra, a spiritual guide for Sanatana Dharma.
 
 The user is tracking the 16 Sanskaras (Shodasha Samskaras) ${forWhom} in a ${tradition} family.
 ${ageContext}
@@ -83,58 +77,30 @@ Keep it concise, warm, and dharmic in tone. Do NOT use markdown. Reply in plain 
 Also assess urgency as one of: "now" (should be done soon, within weeks), "soon" (within a few months), or "later" (years away or not yet applicable).
 Respond in this exact JSON format: {"message": "...", "urgency": "now|soon|later"}`;
 
+  let message = `Next on your journey: ${nextSanskara.name}. May this sacred rite bring blessings to your family.`;
+  let urgency: 'now' | 'soon' | 'later' = 'soon';
+
   try {
-    const models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite'];
-    let responseText = '';
+    const result = await generateWithProvider(
+      { user: userPrompt, temperature: 0.7, maxOutputTokens: 256 },
+      { responseFormat: 'json' },
+    );
 
-    for (const model of models) {
-      const res = await fetch(`${GEMINI_URL(model)}?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 256 },
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        responseText = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
-        if (responseText) break;
-      }
-      if (res.status === 429 || res.status === 404) continue;
-      break;
+    const match = result.text.match(/\{[\s\S]*?\}/);
+    if (match) {
+      const parsed = JSON.parse(match[0]);
+      if (parsed.message) message = parsed.message;
+      if (['now', 'soon', 'later'].includes(parsed.urgency)) urgency = parsed.urgency;
     }
-
-    // Parse the JSON from Gemini's response
-    let message = `Next on your journey: ${nextSanskara.name}. May this sacred rite bring blessings to your family.`;
-    let urgency: 'now' | 'soon' | 'later' = 'soon';
-
-    if (responseText) {
-      const match = responseText.match(/\{[\s\S]*?\}/);
-      if (match) {
-        try {
-          const parsed = JSON.parse(match[0]);
-          if (parsed.message) message = parsed.message;
-          if (['now', 'soon', 'later'].includes(parsed.urgency)) urgency = parsed.urgency;
-        } catch { /* use defaults */ }
-      }
-    }
-
-    return NextResponse.json({
-      next_sanskara: nextSanskara.id,
-      next_sanskara_name: nextSanskara.name,
-      message,
-      urgency,
-    });
-
   } catch (e) {
-    console.error('[sanskar/suggest] Error:', e);
-    return NextResponse.json({
-      next_sanskara: nextSanskara.id,
-      next_sanskara_name: nextSanskara.name,
-      message: `Your next milestone is ${nextSanskara.name}. Continue the sacred journey. 🙏`,
-      urgency: 'soon',
-    });
+    console.error('[sanskar/suggest] provider error:', e);
+    // Fall through to defaults — better a fallback message than an error
   }
+
+  return NextResponse.json({
+    next_sanskara: nextSanskara.id,
+    next_sanskara_name: nextSanskara.name,
+    message,
+    urgency,
+  });
 }

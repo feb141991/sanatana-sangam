@@ -210,7 +210,7 @@ ${langInstruct}
 Return ONLY the JSON object.`;
 
       const geminiRes = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
         {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -269,7 +269,7 @@ ${t.lens}
 Write a 3–4 sentence commentary in the voice of ${t.name}. Be specific to your school's philosophical position. ${langInstruct}`;
 
         const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
           {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },

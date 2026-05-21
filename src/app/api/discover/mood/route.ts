@@ -1,22 +1,14 @@
 import { NextResponse } from 'next/server';
 import { ALL_LIBRARY_ENTRIES } from '@/lib/library-content';
+import { generateWithProvider } from '@/lib/ai/providers/inference';
 
 // POST /api/discover/mood
 // Body: { mood: string, tradition?: string }
-// Returns up to 6 curated verses matching the mood via keyword scoring.
-// Optional Gemini re-ranking/commentary if API key is set.
-//
-// Uses gemini-2.0-flash-lite (30 RPM free tier) with fallback to gemini-2.0-flash.
-// Results are cached in-memory for 1 hour per mood+tradition to reduce quota pressure.
-
-function geminiUrl(model: string) {
-  return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-}
-const GEMINI_MODELS = ['gemini-2.0-flash-lite', 'gemini-2.0-flash'];
+// Returns up to 6 curated verses matching the mood via keyword scoring
+// + a one-line AI insight per verse via the Pramana provider stack.
+// Results are cached in-memory for 1 hour per mood+tradition.
 
 // ── Simple 1-hour in-memory cache (keyed by mood:tradition) ──────────────────
-// Not shared across Vercel cold starts, but dramatically reduces calls within
-// a warm function instance when users tap multiple moods in a session.
 type LibraryEntry = (typeof ALL_LIBRARY_ENTRIES)[number];
 interface CacheEntry { insights: string[]; top6: LibraryEntry[]; ts: number }
 const _moodCache = new Map<string, CacheEntry>();
@@ -53,8 +45,6 @@ export async function POST(req: Request) {
   if (!mood) return NextResponse.json({ error: 'mood required' }, { status: 400 });
 
   const moodKey = `${mood.toLowerCase()}:${tradition ?? ''}`;
-  const apiKey = process.env.GEMINI_API_KEY;
-
   const keywords = MOOD_SEEDS[mood.toLowerCase()] ?? MOOD_SEEDS.seeking;
 
   // Filter by tradition if given, otherwise all
@@ -68,31 +58,28 @@ export async function POST(req: Request) {
     .filter(x => x.score > 0)
     .sort((a, b) => b.score - a.score);
 
-  // Take top 20 candidates
-  const candidates = scored.slice(0, 20).map(x => x.entry);
-
-  // Shuffle top 6 from candidates to add variety across sessions
-  const top6 = candidates
+  // Shuffle top 12 candidates and take 6 for variety across sessions
+  const top6 = scored
     .slice(0, 12)
+    .map(x => x.entry)
     .sort(() => Math.random() - 0.5)
     .slice(0, 6);
 
-  if (!apiKey || top6.length === 0) {
-    return NextResponse.json({ results: top6.map(e => ({ entry: e, insight: null })) });
+  if (top6.length === 0) {
+    return NextResponse.json({ results: [] });
   }
 
-  // ── Check in-memory cache ────────────────────────────────────────────────────
+  // ── Check in-memory cache ─────────────────────────────────────────────────
   const cached = _moodCache.get(moodKey);
   if (cached && Date.now() - cached.ts < CACHE_TTL_MS) {
-    // Return the cached verse+insight pairs together — insights are verse-specific,
-    // so we must use the same top6 they were generated for (not a new shuffle).
+    // Insights are verse-specific — return the cached verse+insight pairs together
     return NextResponse.json({
       results: cached.top6.map((entry, i) => ({ entry, insight: cached.insights[i] ?? null })),
     });
   }
 
-  // ── Gemini: one-line insight per verse (flash-lite → flash fallback) ─────────
-  const prompt = `You are a wise dharmic guide. For each verse below, write a single warm sentence (max 18 words) connecting it to the mood: "${mood}".
+  // ── Pramana provider stack: one-line insight per verse ───────────────────
+  const insightPrompt = `You are a wise dharmic guide. For each verse below, write a single warm sentence (max 18 words) connecting it to the mood: "${mood}".
 
 Return ONLY a JSON array of exactly ${top6.length} strings — one per verse, in the same order:
 ${top6.map((e, i) => `${i + 1}. [${e.source}] ${e.meaning.slice(0, 120)}`).join('\n')}
@@ -102,43 +89,20 @@ Return: ["insight1", "insight2", ...]`;
   let insights: string[] = top6.map(() => '');
 
   try {
-    for (const model of GEMINI_MODELS) {
-      const res = await fetch(`${geminiUrl(model)}?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.55, maxOutputTokens: 400 },
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
-        const match = raw.match(/\[[\s\S]*\]/);
-        if (match) {
-          try {
-            const parsed = JSON.parse(match[0]);
-            if (Array.isArray(parsed)) insights = parsed.map(String);
-          } catch { /* use empty */ }
-        }
-        break; // success — stop trying models
-      }
-
-      // 429 = quota hit, 404 = model not found — try next
-      if (res.status === 429 || res.status === 404) {
-        console.warn(`[mood] ${model} → ${res.status}, trying fallback`);
-        continue;
-      }
-      break; // other errors — don't retry
+    const result = await generateWithProvider(
+      { user: insightPrompt, temperature: 0.55, maxOutputTokens: 400 },
+      { responseFormat: 'json' },
+    );
+    const match = result.text.match(/\[[\s\S]*\]/);
+    if (match) {
+      const parsed = JSON.parse(match[0]);
+      if (Array.isArray(parsed)) insights = parsed.map(String);
     }
-
     // Cache the insights for this mood+tradition for 1 hour
     _moodCache.set(moodKey, { insights, top6, ts: Date.now() });
-
   } catch (e) {
-    console.error('[mood] Gemini fetch error:', e);
-    // Return results without insights rather than failing
+    console.error('[mood] provider error:', e);
+    // Gracefully return verses without insights rather than failing the request
   }
 
   return NextResponse.json({
