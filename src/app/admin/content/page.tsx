@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar, Plus, Edit2, Trash2, CheckCircle, AlertCircle,
@@ -71,6 +72,7 @@ interface FestivalAdminPayload {
 }
 
 export default function FestivalManagement() {
+  const router = useRouter();
   const [festivals, setFestivals]           = useState<FestivalRow[]>([]);
   const [loading, setLoading]               = useState(true);
   const [verifying, setVerifying]           = useState(false);
@@ -82,15 +84,15 @@ export default function FestivalManagement() {
   const [stats, setStats]                   = useState<FestivalAdminStats | null>(null);
   const [source, setSource]                 = useState<'database' | 'fallback'>('fallback');
 
-  useEffect(() => {
-    fetchFestivals(selectedYear);
-  }, [selectedYear]);
-
-  async function fetchFestivals(year: number) {
+  const fetchFestivals = useCallback(async (year: number) => {
     setLoading(true);
     try {
       const res = await fetch(`/api/admin/festivals?year=${year}`);
-      const data: FestivalAdminPayload | { error: string } = await res.json();
+      const data: FestivalAdminPayload | { error?: string } = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        router.push('/admin/login');
+        return;
+      }
       if (!res.ok || !('festivals' in data)) {
         throw new Error('error' in data ? data.error : 'Failed to load festivals');
       }
@@ -99,14 +101,19 @@ export default function FestivalManagement() {
       setAvailableYears(data.availableYears ?? [year]);
       setStats(data.stats);
       setSource(data.source);
-    } catch {
-      toast.error('Failed to load festivals');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to load festivals';
+      toast.error(message);
       setFestivals([]);
       setStats(null);
     } finally {
       setLoading(false);
     }
-  }
+  }, [router]);
+
+  useEffect(() => {
+    fetchFestivals(selectedYear);
+  }, [fetchFestivals, selectedYear]);
 
   async function runVerification() {
     setVerifying(true);
@@ -119,8 +126,12 @@ export default function FestivalManagement() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ year: selectedYear }),
       });
+      if (res.status === 401) {
+        router.push('/admin/login');
+        return;
+      }
       if (!res.ok) {
-        const err = await res.json();
+        const err = await res.json().catch(() => ({}));
         throw new Error(err.error || `HTTP ${res.status}`);
       }
       const data: VerificationReport = await res.json();
