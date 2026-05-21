@@ -4,6 +4,7 @@ import { normalizeMeaningTargetLanguage } from '@/lib/ai/context-builder';
 import { runMeaningGenerate } from '@/lib/ai/router';
 import { generateSarvamTranslation } from '@/lib/ai/providers/sarvam-translate';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
+import { generateReasoningCacheKey, fetchReasoningCache, storeReasoningCache } from '@/lib/ai/reasoning-cache';
 
 function stableHash(input: string) {
   let hash = 0;
@@ -72,6 +73,29 @@ export async function POST(req: Request) {
   const startTime = Date.now();
 
   try {
+    // Check reasoning cache first (before generating new meaning)
+    const cacheKey = generateReasoningCacheKey('meaning_generate', {
+      entryId,
+      sourceMeaning,
+      sourceLabel,
+      targetLanguage,
+    });
+    const reasoningCached = await fetchReasoningCache('meaning_generate', cacheKey);
+    if (reasoningCached && reasoningCached.meaning) {
+      emitEvent({
+        severity: 'P3',
+        domain: 'translation',
+        route: '/api/i18n/meaning',
+        context: { status: 'reasoning_cached', latency_ms: Date.now() - startTime }
+      });
+      return NextResponse.json({
+        meaning: reasoningCached.meaning,
+        language: targetLanguage,
+        status: 'reasoning_cached',
+        ai: reasoningCached.aiMetadata
+      });
+    }
+
     let meaning = '';
     let aiMetadata = undefined;
     const sarvamKey = process.env.SARVAM_API_KEY?.trim();
@@ -105,6 +129,9 @@ export async function POST(req: Request) {
     if (!meaning) {
       return NextResponse.json({ error: 'Could not localize meaning' }, { status: 502 });
     }
+
+    // Store to reasoning cache (non-blocking)
+    storeReasoningCache('meaning_generate', cacheKey, { meaning, aiMetadata }).catch(() => {});
 
     await supabase
       .from('content_meanings')
