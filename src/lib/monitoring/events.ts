@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createAdminClient } from '@/lib/supabase-admin';
 
 export type SeverityLevel = 'P0' | 'P1' | 'P2' | 'P3';
 export type DomainCategory = 'app' | 'ai' | 'tts' | 'translation' | 'auth' | 'notifications' | 'cron' | 'storage';
@@ -32,10 +32,11 @@ async function flushToSupabase() {
   if (batch.length === 0) return;
 
   try {
-    const supabase = await createServerSupabaseClient();
-    // This assumes a 'monitoring_events' table exists. 
-    // If it doesn't, this will fail gracefully without crashing the app.
-    const { error } = await supabase.from('monitoring_events').insert(batch);
+    const supabase = createAdminClient();
+    const monitoringTable = supabase.from('monitoring_events' as never) as unknown as {
+      insert: (values: MonitoringEvent[]) => PromiseLike<{ error: { code?: string; message: string } | null }>;
+    };
+    const { error } = await monitoringTable.insert(batch);
     if (error && error.code !== '42P01') { // Ignore table not found error for now
       console.warn('[Monitoring] Failed to flush to durable backend:', error.message);
     }
