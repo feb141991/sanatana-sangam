@@ -2,7 +2,7 @@ import { buildMeaningGeneratePrompt, buildPathshalaExplainPrompt, buildDevotiona
 import { assertAiRequestAllowed, validateMeaningGenerateInput, validatePathshalaExplainInput, validateAIChatInput } from '@/lib/ai/policies';
 import { generateWithProvider, getInferenceProvider } from '@/lib/ai/providers/inference';
 import { retrievePathshalaContext } from '@/lib/ai/retrieval';
-import { withReasoningCache, generateReasoningCacheKey } from '@/lib/ai/reasoning-cache';
+import { withReasoningCache } from '@/lib/ai/reasoning-cache';
 import { SimpleCorpusSelector } from '@sangam/pramana-serve';
 import { DharmaChatContract, createPramanaRoute } from '@sangam/pramana-core';
 import type {
@@ -131,13 +131,15 @@ export async function runMeaningGenerate(input: MeaningGenerateInput) {
   });
   validateMeaningGenerateInput(input);
 
-  const prompt = buildMeaningGeneratePrompt(input);
-  const result = await generateWithProvider(prompt);
+  return withReasoningCache('meaning_generate', input, async () => {
+    const prompt = buildMeaningGeneratePrompt(input);
+    const result = await generateWithProvider(prompt);
 
-  return {
-    raw: result.text,
-    metadata: buildMetadata('meaning_generate', result),
-  };
+    return {
+      raw: result.text,
+      metadata: buildMetadata('meaning_generate', result),
+    };
+  });
 }
 
 export async function runDharmaChat(input: AIChatInput) {

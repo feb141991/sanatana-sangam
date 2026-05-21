@@ -22,8 +22,11 @@ export function generateReasoningCacheKey(
   // Normalize input for deterministic hashing
   const normalized = {
     task,
+    entryId: input.entryId || '',
     source: input.source || '',
     title: input.title || '',
+    sourceLabel: input.sourceLabel || '',
+    sourceMeaning: input.sourceMeaning || '',
     originalText: input.originalText || input.text || '',
     responseMode: input.responseMode || '',
     language: input.language || input.targetLanguage || 'en',

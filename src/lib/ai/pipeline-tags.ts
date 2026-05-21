@@ -8,7 +8,17 @@ export type PramanaPipelineTags = {
    * The nature of the content being processed. 
    * Maps to Reasoning pipeline logic (e.g. strict translation vs storytelling).
    */
-  content_type?: 'scripture' | 'commentary' | 'chat' | 'ui_text' | 'sacred_verse' | 'katha' | 'instruction';
+  content_type?:
+    | 'scripture'
+    | 'commentary'
+    | 'chat'
+    | 'ui_text'
+    | 'sacred_verse'
+    | 'katha'
+    | 'instruction'
+    | 'stotram'
+    | 'mantra'
+    | 'prayer';
   
   /** 
    * How the response should be structured. 
@@ -20,7 +30,15 @@ export type PramanaPipelineTags = {
    * TTS voice profile and pacing preference. 
    * Maps directly to the TTS pipeline pacing and voice selection (e.g. Sarvam).
    */
-  audio_mode?: 'pandit' | 'akash' | 'standard' | 'story' | 'meditative' | 'none';
+  audio_mode?:
+    | 'pandit'
+    | 'akash'
+    | 'standard'
+    | 'story'
+    | 'meditative'
+    | 'recitation'
+    | 'prerecorded'
+    | 'none';
   
   /** The religious or cultural tradition context. */
   tradition?: 'hindu' | 'buddhist' | 'jain' | 'sikh' | 'generic';
@@ -32,5 +50,5 @@ export type PramanaPipelineTags = {
    * Indicates if this is a live user request or a background precomputation job. 
    * Maps to priority and caching rules.
    */
-  delivery_intent?: 'live_user' | 'background_precompute';
+  delivery_intent?: 'live_user' | 'background_precompute' | 'recitation';
 };

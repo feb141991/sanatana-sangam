@@ -2,12 +2,12 @@
  * Precompute hot content for TTS and explanation cache.
  * 
  * Usage:
- *   npx ts-node scripts/precompute-hot-content.ts [--domain] [--limit] [--dry-run]
+ *   npx tsx scripts/precompute-hot-content.ts [--domain] [--limit] [--dry-run]
  * 
  * Examples:
- *   npx ts-node scripts/precompute-hot-content.ts --domain bhakti --limit 10
- *   npx ts-node scripts/precompute-hot-content.ts --domain pathshala --dry-run
- *   npx ts-node scripts/precompute-hot-content.ts
+ *   npx tsx scripts/precompute-hot-content.ts --domain bhakti --limit 10
+ *   npx tsx scripts/precompute-hot-content.ts --domain pathshala --dry-run
+ *   npx tsx scripts/precompute-hot-content.ts
  * 
  * Domains: bhakti, pathshala, vrat, all (default)
  * Default limit: 20 items per domain
@@ -152,9 +152,10 @@ async function generateTTS(item: PrecomputeItem, dryRun: boolean): Promise<{ cac
         text: item.content,
         language: item.language || 'en',
         tags: {
-          content_type: item.type,
-          audio_mode: 'speech',
-          tradition: item.tradition,
+          content_type: item.type === 'stotram' ? 'stotram' : item.type === 'katha' ? 'katha' : 'sacred_verse',
+          audio_mode: item.type === 'katha' ? 'story' : 'standard',
+          tradition: item.tradition === 'all' ? 'generic' : item.tradition,
+          delivery_intent: 'background_precompute',
         },
       }),
     });
@@ -192,14 +193,15 @@ async function generateExplanation(item: PrecomputeItem, dryRun: boolean): Promi
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        text: item.content,
+        originalText: item.content,
         responseMode: 'conversational',
         language: item.language || 'en',
-        tradition: item.tradition,
+        tradition: item.tradition === 'all' ? 'generic' : item.tradition,
         tags: {
-          content_type: item.type,
+          content_type: item.type === 'katha' ? 'katha' : item.type === 'stotram' ? 'stotram' : 'sacred_verse',
           response_mode: 'conversational',
-          tradition: item.tradition,
+          tradition: item.tradition === 'all' ? 'generic' : item.tradition,
+          delivery_intent: 'background_precompute',
         },
       }),
     });

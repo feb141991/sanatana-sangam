@@ -13,6 +13,8 @@ import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import { resolveReadablePreferences, type ReadablePreferences } from '@/lib/readable-preferences';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
+import { useReaderControls } from '@/hooks/useReaderControls';
+import { trackReaderEvent } from '@/lib/analytics/reader-events';
 
 // ─── Direct Translations for Major Stotrams & Mantras ─────────────────────────
 const STOTRAM_TRANSLATIONS: Record<string, Record<number, { hi: string; pa: string }>> = {
@@ -264,9 +266,6 @@ function StotramReader({ id }: { id: string }) {
   const [lang,        setLang]        = useState<'en' | 'hi' | 'pa'>(() =>
     resolveReadablePreferences({ appLanguage: contextLang, meaningLanguage: contextLang }).effectiveMeaningLanguage
   );
-  const [copied,      setCopied]      = useState(false);
-  const shouldShowTransliteration = preferences.showTransliteration;
-
   useEffect(() => {
     let alive = true;
 
@@ -304,6 +303,50 @@ function StotramReader({ id }: { id: string }) {
       alive = false;
     };
   }, [contextLang]);
+
+  const baseReadableContent: ReadableContent = {
+    original: stotram?.verses?.[0]?.sanskrit ?? '',
+    transliteration: stotram?.verses?.[0]?.transliteration,
+    meaning: stotram ? getVerseMeaning(stotram.id, 0, stotram.verses?.[0]?.meaning ?? '', lang) : '',
+    sourceLabel: stotram?.title,
+    tradition: stotram?.tradition === 'all' ? 'generic' : stotram?.tradition,
+    language: 'sa',
+    script: 'devanagari',
+    pipelineTags: {
+      content_type: 'stotram',
+      audio_mode: stotram?.audioTrackId ? 'prerecorded' : 'none',
+      tradition: stotram?.tradition === 'all' ? 'generic' : stotram?.tradition,
+      script: 'devanagari',
+      response_mode: 'extractive',
+      delivery_intent: 'recitation',
+    },
+    capabilities: buildReadableCapabilities({
+      original: stotram?.verses?.[0]?.sanskrit ?? '',
+      transliteration: stotram?.verses?.[0]?.transliteration,
+      meaning: stotram ? getVerseMeaning(stotram.id, 0, stotram.verses?.[0]?.meaning ?? '', lang) : '',
+      script: 'devanagari',
+      pipelineTags: {
+        content_type: 'stotram',
+        audio_mode: stotram?.audioTrackId ? 'prerecorded' : 'none',
+      },
+    }),
+  };
+  const readerControls = useReaderControls(baseReadableContent.capabilities);
+  const copied = readerControls.state.isCopied;
+  const shouldShowTransliteration = preferences.showTransliteration && readerControls.state.showTransliteration;
+  const shouldShowMeaning = readerControls.state.showMeaning;
+
+  useEffect(() => {
+    if (!stotram) return;
+    trackReaderEvent('reader_opened', {
+      content_type: 'stotram',
+      source: stotram.title,
+      tradition: stotram.tradition === 'all' ? 'generic' : stotram.tradition,
+      language: lang,
+      has_transliteration: !!stotram.verses?.[0]?.transliteration,
+      has_meaning: true,
+    });
+  }, [lang, stotram]);
 
   // ── Build ReadableContent for each verse ────────────────────────────────────
   function buildVerseReadableContent(verse: any): ReadableContent {
@@ -356,12 +399,10 @@ function StotramReader({ id }: { id: string }) {
       const successful = document.execCommand('copy');
       document.body.removeChild(textArea);
       if (successful) {
-        setCopied(true);
         toast.success(successMessage, {
           icon: '📋',
           style: { background: '#2e1710', color: '#f5dfa0' }
         });
-        setTimeout(() => setCopied(false), 2000);
       } else {
         throw new Error('Copy command unsuccessful');
       }
@@ -375,40 +416,24 @@ function StotramReader({ id }: { id: string }) {
       `Verse ${v.number}\n${v.sanskrit}\n${v.transliteration}\nMeaning: ${getVerseMeaning(stotram!.id, v.number - 1, v.meaning, lang)}`
     ).join('\n\n');
     const textToCopy = `${stotram!.title} (${stotram!.titleDevanagari})\n${stotram!.description}\n\n${versesText}`;
-    const successMsg = 'Stotram copied to clipboard! 🙏';
-
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(textToCopy)
-        .then(() => {
-          setCopied(true);
-          toast.success(successMsg, {
-            icon: '📋',
-            style: { background: '#2e1710', color: '#f5dfa0' }
-          });
-          setTimeout(() => setCopied(false), 2000);
-        })
-        .catch(() => fallbackCopy(textToCopy, successMsg));
-    } else {
-      fallbackCopy(textToCopy, successMsg);
-    }
+    readerControls.handlers.copyText(textToCopy, 'Stotram');
+    trackReaderEvent('content_copied', {
+      content_type: 'stotram',
+      source: stotram!.title,
+      tradition: stotram!.tradition === 'all' ? 'generic' : stotram!.tradition,
+      language: lang,
+    });
   }
 
   function copyVerse(v: any) {
     const textToCopy = `Verse ${v.number}\n${v.sanskrit}\n${v.transliteration}\nMeaning: ${getVerseMeaning(stotram!.id, v.number - 1, v.meaning, lang)}`;
-    const successMsg = `Verse ${v.number} copied! 🙏`;
-
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(textToCopy)
-        .then(() => {
-          toast.success(successMsg, {
-            icon: '📋',
-            style: { background: '#2e1710', color: '#f5dfa0' }
-          });
-        })
-        .catch(() => fallbackCopy(textToCopy, successMsg));
-    } else {
-      fallbackCopy(textToCopy, successMsg);
-    }
+    readerControls.handlers.copyText(textToCopy, `Verse ${v.number}`);
+    trackReaderEvent('content_copied', {
+      content_type: 'stotram',
+      source: `${stotram!.title}#${v.number}`,
+      tradition: stotram!.tradition === 'all' ? 'generic' : stotram!.tradition,
+      language: lang,
+    });
   }
 
   function copyShareText(text: string, successMsg: string) {
@@ -429,45 +454,25 @@ function StotramReader({ id }: { id: string }) {
   async function shareStotram() {
     const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
     const shareText = `🙏 Radhe Radhe! Check out this divine Stotram on Shoonaya: '${stotram!.title}' (${stotram!.titleDevanagari}). Chanted in devotion. Read here: ${shareUrl} to elevate your Sadhana.`;
-    const successMsg = 'Stotram share link copied! Send it via WhatsApp or Messages. 🙏';
-
-    if (typeof navigator !== 'undefined' && navigator.share) {
-      try {
-        await navigator.share({
-          title: `Shoonaya - ${stotram!.title}`,
-          text: shareText,
-          url: shareUrl
-        });
-      } catch (err) {
-        if ((err as Error).name !== 'AbortError') {
-          copyShareText(shareText, successMsg);
-        }
-      }
-    } else {
-      copyShareText(shareText, successMsg);
-    }
+    await readerControls.handlers.share(shareText, `Shoonaya - ${stotram!.title}`, shareUrl);
+    trackReaderEvent('content_shared', {
+      content_type: 'stotram',
+      source: stotram!.title,
+      tradition: stotram!.tradition === 'all' ? 'generic' : stotram!.tradition,
+      language: lang,
+    });
   }
 
   async function shareVerse(v: any) {
     const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
     const shareText = `🙏 Radhe Radhe! Check out Verse ${v.number} of '${stotram!.title}' on Shoonaya:\n\n"${v.sanskrit}"\n\nRead full: ${shareUrl}`;
-    const successMsg = `Verse ${v.number} share link copied! 🙏`;
-
-    if (typeof navigator !== 'undefined' && navigator.share) {
-      try {
-        await navigator.share({
-          title: `Shoonaya - ${stotram!.title} Verse ${v.number}`,
-          text: shareText,
-          url: shareUrl
-        });
-      } catch (err) {
-        if ((err as Error).name !== 'AbortError') {
-          copyShareText(shareText, successMsg);
-        }
-      }
-    } else {
-      copyShareText(shareText, successMsg);
-    }
+    await readerControls.handlers.share(shareText, `Shoonaya - ${stotram!.title} Verse ${v.number}`, shareUrl);
+    trackReaderEvent('content_shared', {
+      content_type: 'stotram',
+      source: `${stotram!.title}#${v.number}`,
+      tradition: stotram!.tradition === 'all' ? 'generic' : stotram!.tradition,
+      language: lang,
+    });
   }
 
   if (!stotram) return (
@@ -560,6 +565,45 @@ function StotramReader({ id }: { id: string }) {
                 {ln === 'en' ? 'EN' : ln === 'hi' ? 'हिं' : 'ਪੰ'}
               </button>
             ))}
+          </div>
+
+          <div className="flex items-center gap-1 bg-[var(--surface-base)]/10 px-2 py-0.5 rounded-full border border-[var(--divine-border)]/5">
+            {baseReadableContent.capabilities.canToggleTransliteration ? (
+              <button
+                onClick={() => {
+                  readerControls.handlers.toggleTransliteration();
+                  trackReaderEvent('transliteration_toggled', {
+                    content_type: 'stotram',
+                    source: stotram.title,
+                    tradition: stotram.tradition === 'all' ? 'generic' : stotram.tradition,
+                    language: lang,
+                    has_transliteration: true,
+                  });
+                }}
+                className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all ${shouldShowTransliteration ? 'text-black shadow-sm' : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'}`}
+                style={{ backgroundColor: shouldShowTransliteration ? accentColor : 'transparent' }}
+              >
+                Transliteration
+              </button>
+            ) : null}
+            {baseReadableContent.capabilities.canShowMeaning ? (
+              <button
+                onClick={() => {
+                  readerControls.handlers.toggleMeaning();
+                  trackReaderEvent('language_toggled', {
+                    content_type: 'stotram',
+                    source: stotram.title,
+                    tradition: stotram.tradition === 'all' ? 'generic' : stotram.tradition,
+                    language: lang,
+                    has_meaning: true,
+                  });
+                }}
+                className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all ${shouldShowMeaning ? 'text-black shadow-sm' : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'}`}
+                style={{ backgroundColor: shouldShowMeaning ? accentColor : 'transparent' }}
+              >
+                Meaning
+              </button>
+            ) : null}
           </div>
         </div>
       </div>
@@ -662,6 +706,7 @@ function StotramReader({ id }: { id: string }) {
                           </div>
                           ) : null}
                           {/* Meaning */}
+                          {shouldShowMeaning ? (
                           <div className="rounded-xl px-4 py-3" style={{ background: `${accentColor}08` }}>
                             <p className="text-[9px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: `${accentColor}55` }}>{t('wisdom')}</p>
                             <p className="leading-relaxed transition-all duration-300" 
@@ -672,6 +717,7 @@ function StotramReader({ id }: { id: string }) {
                               {getVerseMeaning(stotram.id, verse.number - 1, verse.meaning, lang)}
                             </p>
                           </div>
+                          ) : null}
 
                           {/* Verse Action panel */}
                           <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--divine-border)]/5">

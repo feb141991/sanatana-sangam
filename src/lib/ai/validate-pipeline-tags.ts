@@ -38,7 +38,7 @@ export function validatePipelineTags(
 
   // Validate content_type
   if (incoming_obj.content_type) {
-    const validValues = ['scripture', 'commentary', 'chat', 'ui_text', 'sacred_verse', 'katha', 'instruction'];
+    const validValues = ['scripture', 'commentary', 'chat', 'ui_text', 'sacred_verse', 'katha', 'instruction', 'stotram', 'mantra', 'prayer'];
     if (validValues.includes(String(incoming_obj.content_type))) {
       tags.content_type = String(incoming_obj.content_type) as any;
     } else {
@@ -58,7 +58,7 @@ export function validatePipelineTags(
 
   // Validate audio_mode
   if (incoming_obj.audio_mode) {
-    const validValues = ['pandit', 'akash', 'standard', 'story', 'meditative', 'none'];
+    const validValues = ['pandit', 'akash', 'standard', 'story', 'meditative', 'recitation', 'prerecorded', 'none'];
     if (validValues.includes(String(incoming_obj.audio_mode))) {
       tags.audio_mode = String(incoming_obj.audio_mode) as any;
     } else {
@@ -88,7 +88,7 @@ export function validatePipelineTags(
 
   // Validate delivery_intent
   if (incoming_obj.delivery_intent) {
-    const validValues = ['live_user', 'background_precompute'];
+    const validValues = ['live_user', 'background_precompute', 'recitation'];
     if (validValues.includes(String(incoming_obj.delivery_intent))) {
       tags.delivery_intent = String(incoming_obj.delivery_intent) as any;
     } else {
@@ -165,7 +165,7 @@ export function resolveScript(
  */
 export function canExplain(contentType?: string): boolean {
   if (!contentType) return false;
-  const explainableTypes = ['sacred_verse', 'katha', 'scripture', 'commentary'];
+  const explainableTypes = ['sacred_verse', 'katha', 'scripture', 'commentary', 'stotram', 'prayer', 'mantra'];
   return explainableTypes.includes(contentType);
 }
 
@@ -174,8 +174,8 @@ export function canExplain(contentType?: string): boolean {
  */
 export function canGenerateTTS(audioMode?: string): boolean {
   if (!audioMode) return false;
-  if (audioMode === 'none') return false;
-  // All other modes allow TTS: pandit, akash, standard, story, meditative
+  if (audioMode === 'none' || audioMode === 'prerecorded') return false;
+  // Other modes allow TTS generation: pandit, akash, standard, story, meditative, recitation
   return true;
 }
 
