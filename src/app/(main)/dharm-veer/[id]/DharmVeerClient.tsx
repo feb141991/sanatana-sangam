@@ -12,9 +12,10 @@ import { TRADITION_META } from '@/lib/dharm-veer';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { t as translateFn, type AppLang } from '@/lib/i18n/translations';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
-import toast from 'react-hot-toast';
 import { ReaderIntro } from '@/components/ui/ReaderIntro';
 import { getInitialReaderDisplayMode, resolveReadablePreferences } from '@/lib/readable-preferences';
+import { buildReadableCapabilities } from '@/lib/readable-content';
+import { useReaderControls } from '@/hooks/useReaderControls';
 
 type ReadingTheme = 'light' | 'dark' | 'sepia';
 type FontSize = 'sm' | 'md' | 'lg' | 'xl';
@@ -52,7 +53,6 @@ export default function DharmVeerClient({
   const [lang, setLang] = useState<'en' | 'local'>(
     getInitialReaderDisplayMode(preferences, hasLocalContent)
   );
-  const [copied, setCopied] = useState(false);
 
   const effectiveLang: AppLang = lang === 'en' ? 'en' : preferences.effectiveMeaningLanguage;
   const meta = TRADITION_META[hero.tradition];
@@ -113,6 +113,17 @@ export default function DharmVeerClient({
   };
 
   const activeTheme = themeColors[theme];
+  const readerControls = useReaderControls(
+    buildReadableCapabilities({
+      original: hero.journey,
+      meaning: hero.journeyLocal,
+      script: 'latin',
+      pipelineTags: {
+        content_type: 'instruction',
+        audio_mode: 'none',
+      },
+    })
+  );
 
   const handleCopy = () => {
     const title = lang === 'local' && hero.nameLocal ? hero.nameLocal : hero.name;
@@ -124,13 +135,7 @@ export default function DharmVeerClient({
 
     const textToCopy = `${title}\n${tagline}\n\n[Journey]\n${journeyText}\n\n[Trial]\n${trialText}\n\n[Teaching]\n${teachingText}\n\n[Moral]\n${moralText}`;
     
-    navigator.clipboard.writeText(textToCopy);
-    setCopied(true);
-    toast.success('Story copied to clipboard! 🙏', {
-      icon: '📋',
-      style: { background: activeTheme.bg === '#FAF6EF' ? '#ffffff' : '#2e1710', color: activeTheme.text }
-    });
-    setTimeout(() => setCopied(false), 2000);
+    void readerControls.handlers.copyText(textToCopy, 'Story');
   };
 
   const handleShare = () => {
@@ -138,12 +143,7 @@ export default function DharmVeerClient({
     const title = lang === 'local' && hero.nameLocal ? hero.nameLocal : hero.name;
     const text = `🙏 Jai Shri Hari! Read this inspiring Dharm Veer story of '${title}' and check your daily rashiphal following the link to open those features: ${link} to grow your Sadhana.`;
     
-    if (navigator.share) {
-      navigator.share({ title: hero.name, text, url: link }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(text);
-      toast.success('Story link copied! 🙏');
-    }
+    void readerControls.handlers.share(text, hero.name, link);
   };
 
   return (
@@ -188,7 +188,7 @@ export default function DharmVeerClient({
               style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
               title="Copy Story"
             >
-              {copied ? <Check size={14} color="#2D9E4A" /> : <Copy size={14} />}
+              {readerControls.state.isCopied ? <Check size={14} color="#2D9E4A" /> : <Copy size={14} />}
             </button>
             <button
               onClick={handleShare}

@@ -134,10 +134,8 @@ export default function KathaReaderClient({
   const [sankalpaDismissed, setSankalpaDismissed] = useState(false);
   const [liked, setLiked] = useState(false);
   const [showPhal, setShowPhal] = useState(false);
-  const [ttsLoading, setTtsLoading] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioUrlRef = useRef<string | null>(null);
 
   const isPanchatantra = katha.tags.includes('panchatantra');
   const isHero = katha.tags.some(t => ['warriors', 'saints', 'heroes', 'martyrdom', 'seva', 'sacrifice'].includes(t)) && !isPanchatantra;
@@ -254,18 +252,13 @@ export default function KathaReaderClient({
       audioRef.current.src = '';
       audioRef.current = null;
     }
-    if (audioUrlRef.current) {
-      URL.revokeObjectURL(audioUrlRef.current);
-      audioUrlRef.current = null;
-    }
     setSpeaking(false);
-    setTtsLoading(false);
   }, []);
 
   useEffect(() => () => stopTTS(), [stopTTS]);
 
   async function speakKatha() {
-    if (speaking || ttsLoading) {
+    if (speaking || readerControls.state.isGeneratingTTS) {
       stopTTS();
       return;
     }
@@ -274,7 +267,6 @@ export default function KathaReaderClient({
     const text = [title, ...bodyToShow, phalToShow].join('\n\n');
     const trimmedText = text.length > 4600 ? `${text.slice(0, 4550)}.` : text;
 
-    setTtsLoading(true);
     trackReaderEvent('tts_requested', {
       content_type: 'katha',
       source: `katha:${katha.id}`,
@@ -282,35 +274,29 @@ export default function KathaReaderClient({
       language: lang,
     });
     try {
-      const res = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: trimmedText,
-          quality: 'pandit',
-          rate: katha.tags.includes('panchatantra') ? 0.86 : 0.78, // Fallback if no tag
-          pipelineTags: {
-            content_type: 'katha',
-            audio_mode: katha.tags.includes('panchatantra') ? 'story' : 'meditative'
-          }
-        }),
+      const audioUrl = await readerControls.handlers.requestTTS(trimmedText, {
+        quality: 'pandit',
+        speed: katha.tags.includes('panchatantra') ? 0.86 : 0.78,
+        pipelineTags: {
+          content_type: 'katha',
+          audio_mode: katha.tags.includes('panchatantra') ? 'story' : 'meditative'
+        },
       });
-      if (!res.ok) throw new Error('TTS failed');
-      const { audioContent } = await res.json() as { audioContent: string };
-      const bytes = Uint8Array.from(atob(audioContent), c => c.charCodeAt(0));
-      const blob = new Blob([bytes], { type: 'audio/mpeg' });
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
+      if (!audioUrl) throw new Error('TTS failed');
+      const audio = new Audio(audioUrl);
       audioRef.current = audio;
-      audioUrlRef.current = url;
-      audio.onended = stopTTS;
-      audio.onerror = stopTTS;
+      audio.onended = () => {
+        setSpeaking(false);
+        audioRef.current = null;
+      };
+      audio.onerror = () => {
+        setSpeaking(false);
+        audioRef.current = null;
+      };
       await audio.play();
       setSpeaking(true);
     } catch {
       stopTTS();
-    } finally {
-      setTtsLoading(false);
     }
   }
 
@@ -522,7 +508,7 @@ export default function KathaReaderClient({
         <motion.button
           whileTap={{ scale: 0.98 }}
           onClick={speakKatha}
-          disabled={ttsLoading}
+          disabled={readerControls.state.isGeneratingTTS}
           className="w-full rounded-[1.6rem] p-4 border flex items-center justify-between text-left disabled:opacity-70"
           style={{ borderColor: `${tradColor}28`, background: `${tradColor}0d` }}
         >
@@ -531,7 +517,7 @@ export default function KathaReaderClient({
               className="h-11 w-11 rounded-2xl flex items-center justify-center border"
               style={{ borderColor: `${tradColor}28`, background: speaking ? tradColor : `${tradColor}16` }}
             >
-              {ttsLoading
+              {readerControls.state.isGeneratingTTS
                 ? <Loader2 size={18} className="animate-spin" color={speaking ? '#fff' : tradColor} />
                 : speaking
                   ? <VolumeX size={18} color="#fff" />

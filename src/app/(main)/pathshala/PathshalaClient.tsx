@@ -46,6 +46,8 @@ import { getMeaningLabel, resolveEffectiveMeaningLanguage } from '@/lib/language
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import { getTransliteration } from '@/lib/transliteration';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { buildReadableCapabilities } from '@/lib/readable-content';
+import { useReaderControls } from '@/hooks/useReaderControls';
 
 // ── Difficulty badges — theme-aware so they read clearly on dark and light ─────
 function getDiffStyle(difficulty: string, isDark: boolean) {
@@ -233,7 +235,6 @@ function ScriptureReader({
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
 
   // ── TTS ────────────────────────────────────────────────────────────────────
-  const [ttsLoadingId, setTtsLoadingId] = useState<string | null>(null);
   const [speakingId,   setSpeakingId]   = useState<string | null>(null);
 
   // ── AI Explain ─────────────────────────────────────────────────────────────
@@ -268,6 +269,17 @@ function ScriptureReader({
     ? getTransliteration(activeVerse.original, activeVerse.transliteration, transliterationLanguage ?? 'en')
     : '';
   const showActiveTransliteration = showTransliteration && activeTransliteration && activeTransliteration !== activeVerse?.original;
+  const activeCapabilities = buildReadableCapabilities({
+    original: activeVerse?.original ?? '',
+    transliteration: activeTransliteration,
+    meaning: activeVerse?.meaning,
+    script: 'devanagari',
+    pipelineTags: {
+      content_type: 'sacred_verse',
+      audio_mode: 'pandit',
+    },
+  });
+  const readerControls = useReaderControls(activeCapabilities);
 
   useEffect(() => {
     if (sattvaMode) {
@@ -291,30 +303,28 @@ function ScriptureReader({
   const stopTTS = useCallback(() => {
     if (audioRef.current) { audioRef.current.pause(); audioRef.current.src = ''; }
     setSpeakingId(null);
-    setTtsLoadingId(null);
   }, []);
 
   useEffect(() => () => stopTTS(), [stopTTS]);
 
   async function speakEntry(v: any) {
-    if (speakingId === v.id || ttsLoadingId === v.id) { stopTTS(); return; }
+    if (speakingId === v.id || readerControls.state.isGeneratingTTS) { stopTTS(); return; }
     stopTTS();
-    setTtsLoadingId(v.id);
     try {
-      const res = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: v.original, rate: 0.78 }),
+      const audioUrl = await readerControls.handlers.requestTTS(v.original, {
+        quality: 'pandit',
+        pipelineTags: {
+          content_type: 'sacred_verse',
+          audio_mode: 'pandit',
+        },
       });
-      const { audioContent } = await res.json();
-      const bytes = Uint8Array.from(atob(audioContent), c => c.charCodeAt(0));
-      const url = URL.createObjectURL(new Blob([bytes], { type: 'audio/mpeg' }));
-      const audio = new Audio(url);
+      if (!audioUrl) return;
+      const audio = new Audio(audioUrl);
       audioRef.current = audio;
-      audio.onended = () => { setSpeakingId(null); URL.revokeObjectURL(url); };
+      audio.onended = () => { setSpeakingId(null); };
       await audio.play();
       setSpeakingId(v.id);
-    } catch { toast.error('Audio unavailable'); } finally { setTtsLoadingId(null); }
+    } catch { toast.error('Audio unavailable'); }
   }
 
   async function toggleBookmark(v: any) {
@@ -337,20 +347,17 @@ function ScriptureReader({
     if (!activeVerse || explainLoading) return;
     setExplainLoading(true);
     try {
-      const res = await fetch('/api/pathshala/explain', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sanskrit: activeVerse.original,
-          transliteration: activeVerse.transliteration,
-          translation: activeVerse.meaning,
-          source: activeVerse.source,
-          title: activeVerse.title,
-          tradition,
-          language: effectiveMeaningLanguage,
-        }),
+      const result = await readerControls.handlers.requestExplain(activeVerse.original, {
+        source: activeVerse.source,
+        title: activeVerse.title,
+        tradition,
+        language: effectiveMeaningLanguage,
+        transliteration: activeVerse.transliteration,
+        translation: activeVerse.meaning,
+        contentType: 'sacred_verse',
       });
-      setExplainResult(await res.json());
+      if (result) setExplainResult(result as ExplainResult);
+      else toast.error('Could not generate explanation');
     } catch { toast.error('Could not generate explanation'); } finally { setExplainLoading(false); }
   }
 
@@ -477,7 +484,7 @@ function ScriptureReader({
           {/* Listen */}
           <button onClick={() => speakEntry(activeVerse)} className="flex flex-col items-center gap-1 min-w-[52px]">
             <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: speakingId === activeVerse?.id ? '#2563EB' : P.accentBg, border: `1px solid ${P.border}` }}>
-              {ttsLoadingId === activeVerse?.id ? <Loader2 size={17} className="animate-spin" style={{ color: speakingId === activeVerse?.id ? '#fff' : P.accentDeep }} /> : speakingId === activeVerse?.id ? <VolumeX size={17} style={{ color: '#fff' }} /> : <Volume2 size={17} style={{ color: P.accentDeep }} />}
+              {readerControls.state.isGeneratingTTS ? <Loader2 size={17} className="animate-spin" style={{ color: speakingId === activeVerse?.id ? '#fff' : P.accentDeep }} /> : speakingId === activeVerse?.id ? <VolumeX size={17} style={{ color: '#fff' }} /> : <Volume2 size={17} style={{ color: P.accentDeep }} />}
             </div>
             <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{speakingId === activeVerse?.id ? t('done') : t('listen')}</span>
           </button>
@@ -491,7 +498,7 @@ function ScriptureReader({
           </button>
 
           {/* Copy */}
-          <button onClick={() => { if (activeVerse) { navigator.clipboard.writeText(getEntryText(activeVerse)); toast.success('Copied'); } }} className="flex flex-col items-center gap-1 min-w-[52px]">
+          <button onClick={() => { if (activeVerse) { void readerControls.handlers.copyText(getEntryText(activeVerse), 'Verse'); } }} className="flex flex-col items-center gap-1 min-w-[52px]">
             <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: P.accentBg, border: `1px solid ${P.border}` }}>
               <Copy size={17} style={{ color: P.accentDeep }} />
             </div>
@@ -1799,4 +1806,3 @@ export default function PathshalaClient({
     </div>
   );
 }
-

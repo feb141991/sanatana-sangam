@@ -192,7 +192,6 @@ export default function ReciteClient({
 
   // TTS state
   const [isSpeaking,  setIsSpeaking]  = useState(false);
-  const [ttsLoading,  setTtsLoading]  = useState(false);
   const [ttsRate,     setTtsRate]     = useState<0.5 | 0.75 | 1 | 1.25>(0.75);
   const [autoPlay,    setAutoPlay]    = useState(false);
   const ttsRateRef    = useRef<number>(0.75);
@@ -218,30 +217,26 @@ export default function ReciteClient({
       language: effectiveMeaningLanguage,
     });
     try {
-      const res = await fetch('/api/pathshala/explain', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sanskrit:       verse.original,
-          transliteration: verse.transliteration,
-          translation:    verse.meaning,
-          source:         verse.source,
-          title:          verse.title,
-          tradition:      _tradition,
-          language:       effectiveMeaningLanguage,
-          pipelineTags: {
-            content_type: 'sacred_verse',
-            response_mode: 'conversational',
-            delivery_intent: 'live_user',
-          },
-        }),
+      const data = await readerControls.handlers.requestExplain(verse.original, {
+        source: verse.source,
+        title: verse.title,
+        tradition: _tradition,
+        language: effectiveMeaningLanguage,
+        transliteration: verse.transliteration,
+        translation: verse.meaning,
+        responseMode: 'conversational',
+        pipelineTags: {
+          content_type: 'sacred_verse',
+          response_mode: 'conversational',
+          delivery_intent: 'live_user',
+        },
       });
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData?.error ?? `Explain failed (${res.status})`);
-      }
-      const data = await res.json();
-      setExplainResult(data);
+      if (!data?.explanation) throw new Error('Could not generate explanation');
+      setExplainResult({
+        explanation: data.explanation,
+        tradition: data.tradition ?? _tradition,
+        teacher: data.teacher ?? 'Shoonaya',
+      });
     } catch (err: any) {
       const msg = err?.message ?? 'Could not generate explanation';
       toast.error(msg.includes('503') ? 'Explain unavailable — GEMINI_API_KEY not set in Vercel' : msg);
@@ -381,14 +376,12 @@ export default function ReciteClient({
       audioRef.current.src = '';
     }
     setIsSpeaking(false);
-    setTtsLoading(false);
   }, []);
 
   const speakCurrent = useCallback(async (textOverride?: string) => {
     const text = (textOverride || '').trim();
     if (!text) return;
     stopTTS();
-    setTtsLoading(true);
     trackReaderEvent('tts_requested', {
       content_type: 'sacred_verse',
       source: verse?.source || verse?.title,
@@ -396,41 +389,30 @@ export default function ReciteClient({
       language: effectiveMeaningLanguage,
     });
     try {
-      const res = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text,
-          rate: ttsRateRef.current,
-          pipelineTags: {
-            content_type: 'sacred_verse',
-            audio_mode: 'pandit',
-            delivery_intent: 'live_user',
-          },
-        }),
+      const audioUrl = await readerControls.handlers.requestTTS(text, {
+        quality: 'pandit',
+        speed: ttsRateRef.current,
+        pipelineTags: {
+          content_type: 'sacred_verse',
+          audio_mode: 'pandit',
+          delivery_intent: 'live_user',
+        },
       });
-      if (!res.ok) throw new Error('TTS fetch failed');
-      const { audioContent } = await res.json() as { audioContent: string };
-      // Decode base64 MP3 and play
-      const bytes = Uint8Array.from(atob(audioContent), c => c.charCodeAt(0));
-      const blob  = new Blob([bytes], { type: 'audio/mpeg' });
-      const url   = URL.createObjectURL(blob);
-      const audio = new Audio(url);
+      if (!audioUrl) throw new Error('TTS fetch failed');
+      const audio = new Audio(audioUrl);
       audioRef.current = audio;
-      audio.onended = () => { setIsSpeaking(false); URL.revokeObjectURL(url); };
-      audio.onerror = () => { setIsSpeaking(false); URL.revokeObjectURL(url); };
+      audio.onended = () => { setIsSpeaking(false); audioRef.current = null; };
+      audio.onerror = () => { setIsSpeaking(false); audioRef.current = null; };
       await audio.play();
       setIsSpeaking(true);
     } catch {
       setIsSpeaking(false);
-    } finally {
-      setTtsLoading(false);
     }
     // Fire-and-forget engine listen tracking
     if (engine) {
       engine.tracker.track('shloka_listen', { path_id: pathId, lesson: currentLesson, verse_index: verseIndex }).catch(() => {});
     }
-  }, [stopTTS, engine, pathId, currentLesson, verseIndex, verse?.source, verse?.title, _tradition, effectiveMeaningLanguage]);
+  }, [stopTTS, engine, pathId, currentLesson, verseIndex, verse?.source, verse?.title, _tradition, effectiveMeaningLanguage, readerControls.handlers]);
 
   // Stop TTS on unmount
   useEffect(() => () => { stopTTS(); }, [stopTTS]);
@@ -849,7 +831,7 @@ export default function ReciteClient({
                           speakCurrent(verse.original || verse.transliteration || '');
                         }
                       }}
-                      disabled={ttsLoading}
+                      disabled={readerControls.state.isGeneratingTTS}
                       className="w-9 h-9 rounded-full border flex items-center justify-center transition-all flex-shrink-0"
                       style={{
                         color: accentColour,
@@ -858,7 +840,7 @@ export default function ReciteClient({
                       }}
                       title={isSpeaking ? 'Stop reading' : 'Listen — Sanskrit voice'}
                     >
-                      {ttsLoading
+                      {readerControls.state.isGeneratingTTS
                         ? <Loader2 size={15} className="animate-spin" />
                         : isSpeaking
                           ? <VolumeX size={15} />

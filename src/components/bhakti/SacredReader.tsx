@@ -5,6 +5,7 @@ import { Play, Pause, RotateCcw, CheckCircle2, BookOpen, Music, Loader2 } from '
 import { useSacredSync, SyncToken } from '@/hooks/useSacredSync';
 import { useState, useEffect } from 'react';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
+import { useReaderControls } from '@/hooks/useReaderControls';
 
 interface SacredReaderProps {
   shlokaId: string;
@@ -59,6 +60,8 @@ export default function SacredReader({
   };
 
   const currentAudioUrl = (voiceQuality === 'pandit' ? panditAudio : (standardAudio || audioUrl)) || '';
+  const readerControls = useReaderControls(resolvedReadableContent.capabilities);
+  const requestTTS = readerControls.handlers.requestTTS;
 
   // Synchronized Recitation Engine
   const { isPlaying, activeIndex, toggle, seek, progress } = useSacredSync({
@@ -87,14 +90,12 @@ export default function SacredReader({
       const fetchStandardTTS = async () => {
         setIsGenerating(true);
         try {
-          const res = await fetch('/api/tts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: sanskrit, quality: 'standard' })
+          const generatedAudio = await requestTTS(sanskrit, {
+            quality: 'standard',
+            pipelineTags: resolvedReadableContent.pipelineTags,
           });
-          const data = await res.json();
-          if (data.audioContent) {
-            setStandardAudio(`data:audio/mp3;base64,${data.audioContent}`);
+          if (generatedAudio) {
+            setStandardAudio(generatedAudio);
           } else {
             throw new Error('Google Cloud TTS returned no audio content');
           }
@@ -107,7 +108,7 @@ export default function SacredReader({
       };
       fetchStandardTTS();
     }
-  }, [sanskrit, audioUrl, resolvedReadableContent.capabilities.canGenerateTTS]);
+  }, [sanskrit, audioUrl, requestTTS, resolvedReadableContent.capabilities.canGenerateTTS, resolvedReadableContent.pipelineTags]);
 
   // Voice quality toggler
   const togglePanditVoice = async () => {
@@ -127,14 +128,12 @@ export default function SacredReader({
 
     setIsGenerating(true);
     try {
-      const res = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: sanskrit, quality: 'pandit' })
+      const generatedAudio = await requestTTS(sanskrit, {
+        quality: 'pandit',
+        pipelineTags: resolvedReadableContent.pipelineTags,
       });
-      const data = await res.json();
-      if (data.audioContent) {
-        setPanditAudio(`data:audio/mp3;base64,${data.audioContent}`);
+      if (generatedAudio) {
+        setPanditAudio(generatedAudio);
         setVoiceQuality('pandit');
       } else {
         throw new Error('Google Cloud TTS returned no audio content');
