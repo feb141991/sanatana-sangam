@@ -48,6 +48,9 @@ export type AIChatInput = PramanaInputBase & {
   country?: string | null;
   seeking?: string[];
   history?: PromptMessage[];
+  appLanguage?: string | null;
+  meaningLanguage?: string | null;
+  transliterationLanguage?: string | null;
 };
 
 export interface PramanaContract<

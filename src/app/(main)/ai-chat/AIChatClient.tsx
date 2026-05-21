@@ -44,7 +44,19 @@ interface Props {
   initialPrompt?: string;
   /** Short context label shown in header (e.g. "From Pathshala") */
   contextLabel?:  string;
+  appLanguage?:   string;
+  meaningLanguage?: string;
   transliterationLanguage?: string;
+}
+
+function detectScriptLanguage(text: string): 'hi' | 'pa' | null {
+  if (/[\u0900-\u097F]/.test(text)) return 'hi';
+  if (/[\u0A00-\u0A7F]/.test(text)) return 'pa';
+  return null;
+}
+
+function resolveChatResponseLanguage(preferredLanguage: string | undefined, text: string): string {
+  return detectScriptLanguage(text) ?? preferredLanguage ?? 'en';
 }
 
 // ─── Tradition-aware suggestions ──────────────────────────────────────────────
@@ -92,7 +104,7 @@ const SUGGESTIONS_BY_TRADITION: Record<string, string[]> = {
 };
 
 // ─── Message Bubble ───────────────────────────────────────────────────────────
-function MessageBubble({ msg }: { msg: Message }) {
+function MessageBubble({ msg, transliterationLanguage }: { msg: Message; transliterationLanguage?: string }) {
   const isUser = msg.role === 'user';
   return (
     <motion.div
@@ -142,7 +154,7 @@ function MessageBubble({ msg }: { msg: Message }) {
                 <VerseChip
                   key={i}
                   verse={v}
-                  transliterationLanguage={(msg as any).transliterationLanguage}
+                  transliterationLanguage={transliterationLanguage}
                 />
               ))}
             </div>
@@ -264,6 +276,8 @@ export default function AIChatClient({
   seeking,
   initialPrompt,
   contextLabel,
+  appLanguage,
+  meaningLanguage,
   transliterationLanguage,
 }: Props) {
   const router = useRouter();
@@ -277,6 +291,9 @@ export default function AIChatClient({
   const isPro = usePremium();
   const { playHaptic } = useZenithSensory();
   const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const [responseLanguage, setResponseLanguage] = useState<string>(() =>
+    resolveChatResponseLanguage(appLanguage ?? 'en', initialPrompt ?? '')
+  );
 
   // Tradition-aware content
   const suggestions = SUGGESTIONS_BY_TRADITION[tradition ?? 'hindu'] ?? SUGGESTIONS_BY_TRADITION.hindu;
@@ -299,6 +316,7 @@ export default function AIChatClient({
   async function sendMessage(text?: string) {
     const msgText = (text ?? input).trim();
     if (!msgText || loading) return;
+    const resolvedResponseLanguage = resolveChatResponseLanguage(responseLanguage, msgText);
 
     setInput('');
     setShowSuggestions(false);
@@ -311,7 +329,7 @@ export default function AIChatClient({
     // ── Path A: RAG via engine.search.ask() ──────────────────────────────────
     // Uses pgvector to find relevant scripture chunks, then Gemini explains them.
     // Falls through to Path B if engine not ready or user has no scripture indexed.
-    if (isReady && engine) {
+    if (resolvedResponseLanguage === 'en' && isReady && engine) {
       try {
         const ragResult = await engine.search.ask(msgText, userId, {
           matchCount:      5,
@@ -362,6 +380,10 @@ export default function AIChatClient({
           city:        city        ?? null,
           country:     country     ?? null,
           seeking:     seeking     ?? [],
+          language:    resolvedResponseLanguage,
+          appLanguage,
+          meaningLanguage,
+          transliterationLanguage,
         }),
       });
       const data = await res.json();
@@ -444,14 +466,30 @@ export default function AIChatClient({
             )}
           </div>
         </div>
-        {!isEmpty && (
-          <button onClick={clearChat}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs border transition"
-            style={{ background: 'var(--surface-raised)', borderColor: 'var(--card-border)', color: 'var(--text-dim)' }}>
-            <RotateCcw size={12} />
-            New chat
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          <select
+            value={responseLanguage}
+            onChange={(e) => setResponseLanguage(e.target.value)}
+            className="px-2 py-1.5 rounded-xl text-xs border transition outline-none cursor-pointer"
+            style={{
+              background: 'var(--surface-raised)',
+              borderColor: 'var(--card-border)',
+              color: 'var(--text-dim)',
+            }}
+          >
+            <option value="en">English</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+            <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+          </select>
+          {!isEmpty && (
+            <button onClick={clearChat}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs border transition"
+              style={{ background: 'var(--surface-raised)', borderColor: 'var(--card-border)', color: 'var(--text-dim)' }}>
+              <RotateCcw size={12} />
+              New chat
+            </button>
+          )}
+        </div>
       </div>
 
       {/* ── Messages area ──────────────────────────────────────────────────── */}
@@ -490,7 +528,7 @@ export default function AIChatClient({
           </div>
         )}
 
-        {messages.map(msg => <MessageBubble key={msg.id} msg={msg} />)}
+        {messages.map(msg => <MessageBubble key={msg.id} msg={msg} transliterationLanguage={transliterationLanguage} />)}
         {loading && <TypingIndicator />}
         <div ref={messagesEndRef} />
       </div>

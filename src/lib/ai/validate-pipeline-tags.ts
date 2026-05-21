@@ -153,6 +153,59 @@ export function mergeTags(provided: ValidatedTags, defaults: ValidatedTags): Val
 }
 
 /**
+ * Converts validated pipeline tags into lightweight prompt guidance so routes
+ * that do not yet have dedicated tag-aware adapters still apply the intent.
+ */
+export function buildPipelinePromptHint(tags: ValidatedTags): string {
+  const hints: string[] = [];
+
+  switch (tags.content_type) {
+    case 'ui_text':
+      hints.push('Return concise, polished UI-facing copy suitable for direct product display.');
+      break;
+    case 'instruction':
+      hints.push('Prefer practical, actionable instruction over abstract exposition.');
+      break;
+    case 'stotram':
+    case 'mantra':
+    case 'prayer':
+    case 'sacred_verse':
+      hints.push('Preserve devotional tone and avoid flattening sacred phrasing into generic prose.');
+      break;
+    case 'chat':
+      hints.push('Keep the response conversational and grounded.');
+      break;
+  }
+
+  switch (tags.response_mode) {
+    case 'deterministic':
+      hints.push('Prefer stable, literal output. Avoid decorative flourishes, invented details, or extra framing.');
+      break;
+    case 'extractive':
+      hints.push('Stay close to the source material and keep interpretation restrained.');
+      break;
+    case 'conversational':
+      hints.push('Use natural conversational phrasing without losing precision.');
+      break;
+  }
+
+  switch (tags.script) {
+    case 'devanagari':
+      hints.push('If Indic text is needed, use Devanagari script.');
+      break;
+    case 'gurmukhi':
+      hints.push('If Indic text is needed, use Gurmukhi script.');
+      break;
+    case 'latin':
+      hints.push('Use Latin script unless source quoting requires otherwise.');
+      break;
+  }
+
+  if (hints.length === 0) return '';
+  return `Pipeline guidance:\n- ${hints.join('\n- ')}`;
+}
+
+/**
  * Extract script from tags or text if tags are missing.
  * Used for voice profile selection (TTS).
  */

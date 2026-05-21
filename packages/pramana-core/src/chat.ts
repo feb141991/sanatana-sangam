@@ -93,9 +93,37 @@ function buildUserContext(opts: {
 
 export function getSystemInstruction(
   tradition?: string | null,
-  ctx?: { sampradaya?: string | null; city?: string | null; country?: string | null; seeking?: string[] }
+  ctx?: { sampradaya?: string | null; city?: string | null; country?: string | null; seeking?: string[] },
+  language?: string | null,
+  userMessage?: string
 ): string {
-  const base = SYSTEM_INSTRUCTIONS[tradition ?? 'hindu'] ?? SYSTEM_INSTRUCTIONS.hindu;
+  const langMap: Record<string, string> = {
+    en: 'English',
+    hi: 'Hindi',
+    pa: 'Punjabi',
+  };
+
+  let resolvedLanguage = language || 'en';
+  if (userMessage) {
+    if (/[\u0900-\u097F]/.test(userMessage)) {
+      resolvedLanguage = 'hi';
+    } else if (/[\u0A00-\u0A7F]/.test(userMessage)) {
+      resolvedLanguage = 'pa';
+    }
+  }
+
+  const preferred = langMap[resolvedLanguage] || 'English';
+  const customRules = `Language: Respond in ${preferred} using a natural, conversational tone. You must write your response in ${preferred}. Even if the user's message is ambiguous, short, or in Hinglish/mix, prefer responding in ${preferred}. However, if the user explicitly asks you to respond in a different language, please respect their choice and respond in that language.
+
+What you do NOT do:
+- Generate harmful content
+- Make negative comparisons between religions or traditions
+- Make authoritative health or medical claims
+- Replace the Guru / Teacher — you are a guide, not an authority
+- Be preachy or overly formal`;
+
+  const rawTemplate = SYSTEM_INSTRUCTIONS[tradition ?? 'hindu'] ?? SYSTEM_INSTRUCTIONS.hindu;
+  const base = rawTemplate.replace(BASE_RULES.trim(), customRules.trim());
   return base + (ctx ? buildUserContext(ctx) : '');
 }
 
@@ -116,12 +144,17 @@ export const DharmaChatContract: PramanaContract<'ai_chat', AIChatInput, string>
   },
   buildPrompt(input) {
     return {
-      system: getSystemInstruction(input.tradition, {
-        sampradaya: input.sampradaya,
-        city: input.city,
-        country: input.country,
-        seeking: input.seeking,
-      }),
+      system: getSystemInstruction(
+        input.tradition,
+        {
+          sampradaya: input.sampradaya,
+          city: input.city,
+          country: input.country,
+          seeking: input.seeking,
+        },
+        input.language,
+        input.message
+      ),
       messages: input.history || [],
       user: input.message,
       temperature: 0.7,

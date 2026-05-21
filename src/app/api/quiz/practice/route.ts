@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
+import { validatePipelineTags, getDefaultTags, mergeTags, logValidationResult, buildPipelinePromptHint } from '@/lib/ai/validate-pipeline-tags';
 
 // ─── GET /api/quiz/practice ───────────────────────────────────────────────────
 // Generates a batch of 5 practice questions for a given topic + difficulty.
@@ -117,9 +118,25 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url);
-  const tradition = searchParams.get('tradition') ?? 'hindu';
-  const topic     = searchParams.get('topic')     ?? 'deities';
-  const difficulty = searchParams.get('difficulty') ?? 'seeker';
+  const rawTradition = searchParams.get('tradition') ?? 'hindu';
+  const topic        = searchParams.get('topic')     ?? 'deities';
+  const difficulty   = searchParams.get('difficulty') ?? 'seeker';
+
+  const tagValidation = validatePipelineTags(
+    {
+      tradition: rawTradition,
+      content_type: 'ui_text',
+    },
+    { context: 'practice_quiz' }
+  );
+  logValidationResult(tagValidation, 'PracticeQuiz');
+  const effectiveTags = mergeTags(
+    tagValidation.tags,
+    getDefaultTags({ contentType: 'ui_text' })
+  );
+
+  const tradition = effectiveTags.tradition ?? 'hindu';
+  const pipelinePromptHint = buildPipelinePromptHint(effectiveTags);
 
   const prompt = buildPracticePrompt(tradition, topic, difficulty);
   const startTime = Date.now();
@@ -127,7 +144,10 @@ export async function GET(req: NextRequest) {
   try {
     const result = await generateWithProvider(
       {
-        system: 'You generate valid JSON batches of structured spiritual quiz questions.',
+        system: [
+          'You generate valid JSON batches of structured spiritual quiz questions.',
+          pipelinePromptHint,
+        ].filter(Boolean).join('\n\n'),
         user: prompt,
         temperature: 0.9,
         maxOutputTokens: 2048,
@@ -172,6 +192,10 @@ export async function GET(req: NextRequest) {
         tradition,
         topic,
         difficulty,
+        pipeline_content_type: effectiveTags.content_type ?? null,
+        pipeline_audio_mode: effectiveTags.audio_mode ?? null,
+        pipeline_tradition: effectiveTags.tradition ?? null,
+        pipeline_script: effectiveTags.script ?? null,
       },
     });
 

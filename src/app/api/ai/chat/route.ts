@@ -86,6 +86,10 @@ export async function POST(req: NextRequest) {
     country?:    string | null;
     seeking?:    string[];
     history?:    { role: 'user' | 'model'; text: string }[];
+    language?:   string | null;
+    appLanguage?: string | null;
+    meaningLanguage?: string | null;
+    transliterationLanguage?: string | null;
   };
   try {
     body = await req.json();
@@ -93,7 +97,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
 
-  const { message, tradition = null, sampradaya, city, country, seeking, history = [] } = body;
+  const { message, tradition = null, sampradaya, city, country, seeking, history = [], language = null, appLanguage = null, meaningLanguage = null, transliterationLanguage = null } = body;
   if (!message?.trim()) {
     return NextResponse.json({ error: 'Message is required' }, { status: 400 });
   }
@@ -114,6 +118,10 @@ export async function POST(req: NextRequest) {
       country,
       seeking,
       history: mappedHistory,
+      language: language || appLanguage || null,
+      appLanguage,
+      meaningLanguage,
+      transliterationLanguage,
     });
 
     emitEvent({

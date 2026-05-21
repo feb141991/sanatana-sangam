@@ -24,6 +24,8 @@ import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import type { LibraryEntry, LibraryTradition } from '@/lib/library-content';
 import type { Lesson } from '@/lib/pathshala-lessons';
 import { buildReadableCapabilities } from '@/lib/readable-content';
+import { useReaderControls } from '@/hooks/useReaderControls';
+
 
 // ─── Parchment palette — solid, no opacity tricks ────────────────────────────
 const P = {
@@ -130,7 +132,6 @@ export default function LessonClient({
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
 
   // ── TTS ────────────────────────────────────────────────────────────────────
-  const [ttsLoadingId, setTtsLoadingId] = useState<string | null>(null);
   const [speakingId,   setSpeakingId]   = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -157,10 +158,11 @@ export default function LessonClient({
     meaning: entry?.meaning
   });
 
+  const readerControls = useReaderControls(capabilities);
+
   const showTranslit = showTransliteration && capabilities.canToggleTransliteration && translitText && translitText !== entry?.original;
 
   const [customLang, setCustomLang] = useState<'en' | 'hi'>(appLanguage === 'hi' || meaningLanguage === 'hi' ? 'hi' : 'en');
-  const [copied, setCopied] = useState(false);
 
   const effectiveMeaningLanguage = customLang;
   const reviewedMeaning = entry && effectiveMeaningLanguage === 'hi' ? hindiMeanings?.[entry.id] : undefined;
@@ -175,22 +177,13 @@ export default function LessonClient({
   const meaningLabel = getMeaningLabel(effectiveMeaningLanguage);
 
   const handleCopy = () => {
-    const textToCopy = getEntryText(entry);
-    navigator.clipboard.writeText(textToCopy);
-    setCopied(true);
-    toast.success('Scripture verse copied! 🙏');
-    setTimeout(() => setCopied(false), 2000);
+    readerControls.handlers.copyText(getEntryText(entry), 'Scripture verse');
   };
 
   const handleShare = () => {
     const link = typeof window !== 'undefined' ? window.location.href : '';
     const text = `🙏 Radhe Radhe! Check out this profound Pathshala lesson on Shoonaya: '${lesson.title}' from path '${pathTitle}'. Check your rashiphal following this link: ${link}`;
-    if (navigator.share) {
-      navigator.share({ title: lesson.title, text, url: link }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(text);
-      toast.success('Lesson link copied! 🙏');
-    }
+    readerControls.handlers.share(text, lesson.title, link);
   };
 
   const askHref = entry
@@ -235,43 +228,31 @@ export default function LessonClient({
   const stopTTS = useCallback(() => {
     if (audioRef.current) { audioRef.current.pause(); audioRef.current.src = ''; }
     setSpeakingId(null);
-    setTtsLoadingId(null);
   }, []);
 
   useEffect(() => () => stopTTS(), [stopTTS]);
 
   async function speakEntry(e: LibraryEntry) {
-    if (speakingId === e.id || ttsLoadingId === e.id) { stopTTS(); return; }
+    if (speakingId === e.id || readerControls.state.isGeneratingTTS) { stopTTS(); return; }
     stopTTS();
-    setTtsLoadingId(e.id);
     try {
-      const res = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          text: e.original, 
-          rate: 0.78,
-          pipelineTags: {
-            content_type: 'sacred_verse',
-            audio_mode: 'pandit'
-          }
-        }),
+      const audioUrl = await readerControls.handlers.requestTTS(e.original, {
+        quality: 'pandit',
+        pipelineTags: {
+          content_type: 'sacred_verse',
+          audio_mode: 'pandit'
+        }
       });
-      if (!res.ok) throw new Error('TTS failed');
-      const { audioContent } = await res.json() as { audioContent: string };
-      const bytes = Uint8Array.from(atob(audioContent), c => c.charCodeAt(0));
-      const blob  = new Blob([bytes], { type: 'audio/mpeg' });
-      const url   = URL.createObjectURL(blob);
-      const audio = new Audio(url);
+      if (!audioUrl) return;
+
+      const audio = new Audio(audioUrl);
       audioRef.current = audio;
-      audio.onended = () => { setSpeakingId(null); URL.revokeObjectURL(url); };
-      audio.onerror = () => { setSpeakingId(null); URL.revokeObjectURL(url); };
+      audio.onended = () => { setSpeakingId(null); };
+      audio.onerror = () => { setSpeakingId(null); };
       await audio.play();
       setSpeakingId(e.id);
     } catch {
       toast.error('Audio unavailable right now');
-    } finally {
-      setTtsLoadingId(null);
     }
   }
 
@@ -299,12 +280,7 @@ export default function LessonClient({
 
   // ── Copy ───────────────────────────────────────────────────────────────────
   async function copyEntry(e: LibraryEntry) {
-    try {
-      await navigator.clipboard.writeText(getEntryText(e));
-      toast.success('Copied');
-    } catch {
-      toast.error('Copy unavailable');
-    }
+    await readerControls.handlers.copyText(getEntryText(e), 'Verse');
   }
 
   // ── AI Explain ─────────────────────────────────────────────────────────────
@@ -313,21 +289,20 @@ export default function LessonClient({
     setExplainResult(null);
     setExplainLoading(true);
     try {
-      const res = await fetch('/api/pathshala/explain', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sanskrit:        entry.original,
-          transliteration: entry.transliteration,
-          translation:     entry.meaning,
-          source:          entry.source,
-          title:           entry.title,
-          tradition,
-          language:        effectiveMeaningLanguage,
-        }),
+      const result = await readerControls.handlers.requestExplain(entry.original, {
+        source:          entry.source,
+        title:           entry.title,
+        tradition,
+        language:        effectiveMeaningLanguage,
+        transliteration: entry.transliteration,
+        translation:     entry.meaning,
+        contentType:     'sacred_verse',
       });
-      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? `Error ${res.status}`);
-      setExplainResult(await res.json());
+      if (result) {
+        setExplainResult(result as ExplainResult);
+      } else {
+        toast.error('Could not generate explanation');
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Could not generate explanation';
       toast.error(msg);
@@ -465,7 +440,7 @@ export default function LessonClient({
               className="w-8 h-8 rounded-full flex items-center justify-center bg-[rgba(200,146,74,0.12)] border border-[rgba(200,146,74,0.2)] transition active:scale-90"
               title="Copy Scripture"
             >
-              {copied ? <Check size={13} style={{ color: P.accentDeep }} /> : <Copy size={13} style={{ color: P.accentDeep }} />}
+              {readerControls.state.isCopied ? <Check size={13} style={{ color: P.accentDeep }} /> : <Copy size={13} style={{ color: P.accentDeep }} />}
             </button>
             <button
               onClick={handleShare}
@@ -814,7 +789,7 @@ export default function LessonClient({
                   border:     `1px solid ${P.border}`,
                 }}
               >
-                {ttsLoadingId === entry.id
+                {readerControls.state.isGeneratingTTS
                   ? <Loader2 size={17} className="animate-spin" style={{ color: P.accentDeep }} />
                   : speakingId === entry.id
                     ? <VolumeX size={17} style={{ color: P.btnText }} />

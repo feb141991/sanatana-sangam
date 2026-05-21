@@ -3,6 +3,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
+import { validatePipelineTags, getDefaultTags, mergeTags, logValidationResult, buildPipelinePromptHint } from '@/lib/ai/validate-pipeline-tags';
 
 // GET /api/home/personalise
 // Returns today's personalised shloka + practice suggestion for the authenticated user.
@@ -70,7 +71,25 @@ export async function GET() {
       .maybeSingle();
 
     // ── 3. Generate via active provider ──────────────────────────────────────────
-    const tradition = profile?.tradition ?? 'general';
+    const rawTradition = profile?.tradition ?? 'general';
+    const tagValidation = validatePipelineTags(
+      {
+        tradition: rawTradition === 'general' ? 'generic' : rawTradition,
+        content_type: 'instruction',
+      },
+      { context: 'personalise' }
+    );
+    logValidationResult(tagValidation, 'Personalise');
+    const effectiveTags = mergeTags(
+      tagValidation.tags,
+      getDefaultTags({ contentType: 'instruction' })
+    );
+
+    const tradition = (rawTradition === 'general' && effectiveTags.tradition === 'generic')
+      ? 'general'
+      : (effectiveTags.tradition ?? 'general');
+    const pipelinePromptHint = buildPipelinePromptHint(effectiveTags);
+
     const level     = profile?.spiritual_level ?? 'beginner';
     const seeking   = (profile?.seeking as string[])?.join(', ') ?? '';
     const name      = profile?.full_name ?? profile?.username ?? 'Seeker';
@@ -104,7 +123,10 @@ Keep the tone warm, grounded, and personal — not preachy. No shloka text neede
     try {
       const result = await generateWithProvider(
         {
-          system: 'You generate warm, structured JSON for personalized spiritual guidance.',
+          system: [
+            'You generate warm, structured JSON for personalized spiritual guidance.',
+            pipelinePromptHint,
+          ].filter(Boolean).join('\n\n'),
           user: prompt,
           temperature: 0.7,
           maxOutputTokens: 500,
@@ -125,6 +147,10 @@ Keep the tone warm, grounded, and personal — not preachy. No shloka text neede
           feature: 'daily_personalise',
           tradition,
           level,
+          pipeline_content_type: effectiveTags.content_type ?? null,
+          pipeline_audio_mode: effectiveTags.audio_mode ?? null,
+          pipeline_tradition: effectiveTags.tradition ?? null,
+          pipeline_script: effectiveTags.script ?? null,
         },
       });
     } catch (err) {

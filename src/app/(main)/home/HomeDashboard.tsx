@@ -41,6 +41,7 @@ import { calculatePanchang, PANCHANG_TRUST_META, getTodaySpiritualPulses } from 
 import { getFestivalStory, type FestivalStory } from '@/lib/festival-stories';
 import { getDharmVeerOfTheDay, TRADITION_META, type DharmVeer } from '@/lib/dharm-veer';
 import { getPitruPakshaDay, getPitruPakshaBannerCopy } from '@/lib/pitru-paksha';
+import { getVratData } from '@/lib/vrat-data';
 import { getGreeting, getGreetingPool, isGreetingCompatibleWithTradition } from '@/lib/traditions';
 import { SACRED_RELICS, getUnlockedRelics } from '@/lib/relics';
 import type { GuidedPathProgressRow } from '@/lib/guided-paths';
@@ -1475,6 +1476,7 @@ export default function HomeDashboard({
   const meta = getTraditionMeta(tradition);
   const sacredTextTheme = meta.homeSacredTextTheme === 'pathshala' ? HOME_THEMES.pathshala : HOME_THEMES.bhakti;
   const effectiveMeaningLanguage = resolveEffectiveMeaningLanguage(appLanguage, meaningLanguage);
+  const effectiveAppLanguage = appLanguage === 'hi' || appLanguage === 'pa' ? appLanguage : 'en';
   const dailyTextBase = {
     label: sacredTextMeta.label,
     icon: sacredTextMeta.icon,
@@ -1510,7 +1512,7 @@ export default function HomeDashboard({
   // ── Context for Sacred Text — resolve meaning + transliteration in background
   const heroPrimaryText = isDark ? 'var(--text-cream)' : '#211B14';
   const heroSecondaryText = isDark ? 'var(--text-muted-warm)' : '#4D4035';
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
   const heroGlassSurface = isDark ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.72)';
   const heroGlassBorder = isDark ? 'rgba(250,238,218,0.12)' : 'rgba(65,36,2,0.12)';
   const dailyTextLine = dailyText.original.split('\n')[0];
@@ -1964,12 +1966,21 @@ export default function HomeDashboard({
                         {upcomingSacredObservanceLabel}
                       </span>
                     </div>
-                    <p className="mt-1 font-serif text-[1.02rem] leading-tight" style={{ color: 'var(--divine-text)' }}>
-                      {upcomingSacredObservance.festival.name}
-                    </p>
-                    <p className="mt-1 text-[11px] leading-relaxed" style={{ color: heroSecondaryText }}>
-                      {t('festivalPrepDesc')}
-                    </p>
+                    {(() => {
+                      const vData = getVratData(upcomingSacredObservance.festival.name);
+                      const upcomingName = (effectiveAppLanguage !== 'en' && vData?.nameLocal) ? vData.nameLocal : upcomingSacredObservance.festival.name;
+                      const upcomingDesc = (effectiveAppLanguage !== 'en' && vData?.taglineLocal) ? vData.taglineLocal : t('festivalPrepDesc');
+                      return (
+                        <>
+                          <p className="mt-1 font-serif text-[1.02rem] leading-tight" style={{ color: 'var(--divine-text)' }}>
+                            {upcomingName}
+                          </p>
+                          <p className="mt-1 text-[11px] leading-relaxed" style={{ color: heroSecondaryText }}>
+                            {upcomingDesc}
+                          </p>
+                        </>
+                      );
+                    })()}
                   </div>
 
                   <div className="flex shrink-0 items-center gap-1 text-[11px] font-semibold" style={{ color: '#C5A059' }}>
@@ -1981,38 +1992,44 @@ export default function HomeDashboard({
             </motion.div>
           )}
 
-          {sacredPulses.map((pulse, idx) => (
-            <motion.div
-              key={`pulse-${pulse.label}-${idx}`}
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.4, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="mb-2"
-            >
-              <Link 
-                href={`/vrat/${encodeURIComponent(pulse.label)}`}
-                className="sacred-pulse-banner group relative hover:scale-[1.02] transition-transform duration-300 block overflow-hidden"
-                role="status"
-                aria-live="polite"
+          {sacredPulses.map((pulse, idx) => {
+            const pulseVratData = getVratData(pulse.label);
+            const pulseName = (effectiveAppLanguage !== 'en' && pulseVratData?.nameLocal) ? pulseVratData.nameLocal : (pulse.translationKey ? t(pulse.translationKey as any) : pulse.label);
+            const pulseLabelText = effectiveAppLanguage === 'hi' ? `आज ${pulseName} है` : effectiveAppLanguage === 'pa' ? `ਅੱਜ ${pulseName} ਹੈ` : `${pulseName} Today`;
+            const pulseDescText = (effectiveAppLanguage !== 'en' && pulseVratData?.taglineLocal) ? pulseVratData.taglineLocal : (pulse.descKey ? t(pulse.descKey as any) : pulse.description);
+            return (
+              <motion.div
+                key={`pulse-${pulse.label}-${idx}`}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.4, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className="mb-2"
               >
-                <div className="flex items-center gap-3 w-full pr-6">
-                  <span className="sacred-pulse-emoji" aria-hidden="true">
-                    <SacredIcon name="calendar" size={18} />
-                  </span>
-                  <div className="sacred-pulse-body flex-1 min-w-0">
-                    <span className="sacred-pulse-label">
-                      {pulse.translationKey ? t(pulse.translationKey as any) : pulse.label} {t('today')}
+                <Link 
+                  href={`/vrat/${encodeURIComponent(pulse.label)}`}
+                  className="sacred-pulse-banner group relative hover:scale-[1.02] transition-transform duration-300 block overflow-hidden"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <div className="flex items-center gap-3 w-full pr-6">
+                    <span className="sacred-pulse-emoji" aria-hidden="true">
+                      <SacredIcon name="calendar" size={18} />
                     </span>
-                    <span className="sacred-pulse-desc">
-                      {pulse.descKey ? t(pulse.descKey as any) : pulse.description} {t('viewDetails')}
-                    </span>
+                    <div className="sacred-pulse-body flex-1 min-w-0">
+                      <span className="sacred-pulse-label">
+                        {pulseLabelText}
+                      </span>
+                      <span className="sacred-pulse-desc">
+                        {pulseDescText} {t('viewDetails')}
+                      </span>
+                    </div>
+                    <ChevronRight size={16} className="text-[#A0622A]/80 shrink-0" />
                   </div>
-                  <ChevronRight size={16} className="text-[#A0622A]/80 shrink-0" />
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                </Link>
+              </motion.div>
+            );
+          })}
         </AnimatePresence>
 
         {/* ── Pitru Paksha Banner ─────────────────────────────────────────── */}
@@ -2130,10 +2147,10 @@ export default function HomeDashboard({
             </span>
             <div className="sacred-pulse-body flex-1 min-w-0">
               <span className="sacred-pulse-label">
-                {lang !== 'en' && dharmVeer.nameLocal ? dharmVeer.nameLocal : dharmVeer.name}
+                {effectiveAppLanguage !== 'en' && dharmVeer.nameLocal ? dharmVeer.nameLocal : dharmVeer.name}
               </span>
               <span className="sacred-pulse-desc line-clamp-1">
-                {lang !== 'en' && dharmVeerTradMeta.dharmVeerLocal ? dharmVeerTradMeta.dharmVeerLocal : t('journeyLabel')} · {lang !== 'en' && dharmVeerTradMeta.labelLocal ? dharmVeerTradMeta.labelLocal : dharmVeerTradMeta.label}
+                {effectiveAppLanguage !== 'en' && dharmVeerTradMeta.dharmVeerLocal ? dharmVeerTradMeta.dharmVeerLocal : t('journeyLabel')} · {effectiveAppLanguage !== 'en' && dharmVeerTradMeta.labelLocal ? dharmVeerTradMeta.labelLocal : dharmVeerTradMeta.label}
               </span>
             </div>
             <ChevronRight size={16} className="text-[#A0622A]/80 shrink-0" aria-hidden="true" />

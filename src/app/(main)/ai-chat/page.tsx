@@ -20,7 +20,7 @@ export default async function AIChatPage({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, avatar_url, tradition, sampradaya, city, country, seeking, transliteration_language')
+    .select('full_name, username, avatar_url, tradition, sampradaya, city, country, seeking, app_language, meaning_language, transliteration_language')
     .eq('id', user.id)
     .single();
 
@@ -35,6 +35,8 @@ export default async function AIChatPage({
       seeking={profile?.seeking ?? []}
       initialPrompt={readSingleParam(resolvedSearchParams.prefill, 600)}
       contextLabel={readSingleParam(resolvedSearchParams.context, 120)}
+      appLanguage={(profile as any)?.app_language ?? 'en'}
+      meaningLanguage={(profile as any)?.meaning_language ?? 'en'}
       transliterationLanguage={(profile as any)?.transliteration_language ?? 'en'}
     />
   );

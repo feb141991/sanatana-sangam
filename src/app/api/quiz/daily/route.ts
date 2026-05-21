@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
+import { validatePipelineTags, getDefaultTags, mergeTags, logValidationResult, buildPipelinePromptHint } from '@/lib/ai/validate-pipeline-tags';
 
 // ─── GET /api/quiz/daily ──────────────────────────────────────────────────────
 // Returns a tradition-aware "Do You Know?" question for the current UTC date.
@@ -62,8 +63,26 @@ function extractJsonBlock(raw: string): string {
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const tradition = searchParams.get('tradition') ?? 'hindu';
-  const dateStr   = searchParams.get('date') ?? new Date().toISOString().split('T')[0];
+  const rawTradition = searchParams.get('tradition') ?? 'hindu';
+  const dateStr      = searchParams.get('date') ?? new Date().toISOString().split('T')[0];
+
+  const tagValidation = validatePipelineTags(
+    {
+      tradition: rawTradition === 'all' ? 'generic' : rawTradition,
+      content_type: 'ui_text',
+    },
+    { context: 'daily_quiz' }
+  );
+  logValidationResult(tagValidation, 'DailyQuiz');
+  const effectiveTags = mergeTags(
+    tagValidation.tags,
+    getDefaultTags({ contentType: 'ui_text' })
+  );
+
+  const tradition = (rawTradition === 'all' && effectiveTags.tradition === 'generic')
+    ? 'all'
+    : (effectiveTags.tradition ?? 'hindu');
+  const pipelinePromptHint = buildPipelinePromptHint(effectiveTags);
 
   const prompt = buildPrompt(tradition, dateStr);
   const startTime = Date.now();
@@ -71,7 +90,10 @@ export async function GET(req: NextRequest) {
   try {
     const result = await generateWithProvider(
       {
-        system: 'You generate precise, valid JSON for structured spiritual quiz content.',
+        system: [
+          'You generate precise, valid JSON for structured spiritual quiz content.',
+          pipelinePromptHint,
+        ].filter(Boolean).join('\n\n'),
         user: prompt,
         temperature: 0.8,
         maxOutputTokens: 512,
@@ -111,6 +133,10 @@ export async function GET(req: NextRequest) {
       context: {
         feature: 'daily_quiz',
         tradition,
+        pipeline_content_type: effectiveTags.content_type ?? null,
+        pipeline_audio_mode: effectiveTags.audio_mode ?? null,
+        pipeline_tradition: effectiveTags.tradition ?? null,
+        pipeline_script: effectiveTags.script ?? null,
       },
     });
 

@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronLeft, Settings, Sun, Moon, 
-  Book, Flame, Share2, Info, Copy, Check
+  Book, Flame, Share2, Info, Copy, Check,
+  Volume2, VolumeX, Loader2
 } from 'lucide-react';
 import type { VratData } from '@/lib/vrat-data';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
@@ -14,6 +15,7 @@ import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import toast from 'react-hot-toast';
 import { ReaderIntro } from '@/components/ui/ReaderIntro';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
+import { useReaderControls } from '@/hooks/useReaderControls';
 import { getInitialReaderDisplayMode, resolveReadablePreferences } from '@/lib/readable-preferences';
 
 type ReadingTheme = 'light' | 'dark' | 'sepia';
@@ -34,6 +36,9 @@ export default function VratClient({
   originalSlug,
   appLanguage,
   meaningLanguage,
+  transliterationLanguage,
+  showTransliteration,
+  scriptureScript,
 }: VratClientProps) {
   const router = useRouter();
   const [theme, setTheme] = useState<ReadingTheme>('light');
@@ -50,6 +55,9 @@ export default function VratClient({
   const preferences = resolveReadablePreferences({
     appLanguage: appLanguage ?? contextLang,
     meaningLanguage,
+    transliterationLanguage,
+    showTransliteration,
+    scriptureScript,
   });
   const [lang, setLang] = useState<'en' | 'local'>(
     getInitialReaderDisplayMode(preferences, canToggleLocalLanguage)
@@ -198,25 +206,64 @@ export default function VratClient({
 
   const activeTheme = themeColors[theme];
 
-  const handleShare = () => {
-    const link = typeof window !== 'undefined' ? window.location.href : '';
-    const text = `Read & check this sacred Vrat observance following this link to open those features: ${link}\n\nToday's Sacred Observance: ${vrat.name}\n${vrat.tagline}\nRead more on Shoonaya.`;
-    if (navigator.share) {
-      navigator.share({ title: vrat.name, text, url: link }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(text);
-      toast.success('Link copied to clipboard!');
+  const readerControls = useReaderControls(mantraContent.capabilities);
+
+  // ── TTS playback ──
+  const [speaking, setSpeaking] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const stopTTS = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = '';
+    }
+    setSpeaking(false);
+  }, []);
+
+  useEffect(() => {
+    return () => stopTTS();
+  }, [stopTTS]);
+
+  const speakMantra = async () => {
+    const textToSpeak = lang === 'local' && mantraContent.capabilities.canShowMeaning
+      ? localizedMantra.meaning
+      : vrat.mantra;
+
+    if (speaking || readerControls.state.isGeneratingTTS) {
+      stopTTS();
+      return;
+    }
+
+    try {
+      const audioUrl = await readerControls.handlers.requestTTS(textToSpeak, {
+        quality: 'standard',
+        pipelineTags: mantraContent.pipelineTags,
+      });
+
+      if (!audioUrl) return;
+
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+      audio.onended = () => setSpeaking(false);
+      audio.onerror = () => setSpeaking(false);
+      await audio.play();
+      setSpeaking(true);
+    } catch {
+      toast.error('Audio unavailable right now');
+      setSpeaking(false);
     }
   };
 
-  const [copied, setCopied] = useState(false);
+  const handleShare = () => {
+    const link = typeof window !== 'undefined' ? window.location.href : '';
+    const text = `Read & check this sacred Vrat observance following this link to open those features: ${link}\n\nToday's Sacred Observance: ${vrat.name}\n${vrat.tagline}\nRead more on Shoonaya.`;
+    readerControls.handlers.share(text, vrat.name, link);
+  };
+
   const handleCopy = () => {
     const link = typeof window !== 'undefined' ? window.location.href : '';
     const textToCopy = `🙏 Today's Sacred Observance: ${vrat.name}\n"${vrat.tagline}"\n\nSignificance:\n${vrat.significance}\n\nHow to observe:\n${vrat.practice}\n\nMantra:\n${vrat.mantra}\n\nRead more on Shoonaya: ${link}`;
-    navigator.clipboard.writeText(textToCopy);
-    setCopied(true);
-    toast.success('Sacred Vrat details copied! 🙏');
-    setTimeout(() => setCopied(false), 2000);
+    readerControls.handlers.copyText(textToCopy, 'Sacred Vrat details');
   };
 
   return (
@@ -285,7 +332,7 @@ export default function VratClient({
             style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
             title="Copy Vrat Details"
           >
-            {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
+            {readerControls.state.isCopied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
           </button>
 
           {/* Share Button */}
@@ -355,8 +402,30 @@ export default function VratClient({
 
           {/* Mantra */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-              <Info size={14} /> {translateFn(effectiveLang, 'sacredMantra')}
+            <div className="flex items-center justify-between gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
+              <span className="flex items-center gap-2">
+                <Info size={14} /> {translateFn(effectiveLang, 'sacredMantra')}
+              </span>
+              {mantraContent.capabilities.canGenerateTTS && (
+                <button
+                  onClick={speakMantra}
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-full border transition active:scale-95 font-semibold tracking-wider text-[9px]"
+                  style={{
+                    backgroundColor: speaking ? 'rgba(200,146,74,0.15)' : 'transparent',
+                    borderColor: 'rgba(200,146,74,0.3)',
+                    color: activeTheme.text,
+                  }}
+                >
+                  {readerControls.state.isGeneratingTTS ? (
+                    <Loader2 size={12} className="animate-spin" />
+                  ) : speaking ? (
+                    <VolumeX size={12} />
+                  ) : (
+                    <Volume2 size={12} />
+                  )}
+                  <span>{speaking ? 'STOP' : 'LISTEN'}</span>
+                </button>
+              )}
             </div>
             <p className={`${fontStyles[fontSize]} text-center premium-serif text-xl font-bold mt-4 ${localizedMantra.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
               {lang === 'local' && mantraContent.capabilities.canShowMeaning

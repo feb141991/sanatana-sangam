@@ -41,6 +41,8 @@ import type { NityaSequenceStep, NityaKarmaStreak } from '@sangam/sadhana-engine
 import { useVocabulary } from '@/hooks/useVocabulary';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 import { resolveReadablePreferences } from '@/lib/readable-preferences';
+import { useReaderControls } from '@/hooks/useReaderControls';
+import { getVratData } from '@/lib/vrat-data';
 
 // ── Tradition greetings ─────────────────────────────────────────────────────────
 // TRADITION_MORNING moved to TRADITION_CONFIG
@@ -908,6 +910,11 @@ export default function NityaKarmaClient({
       }),
     },
   };
+  const stepReaderControls = useReaderControls(stepReadableContent.japa_done.capabilities);
+
+  const buildStepReminderText = (step: NityaSequenceStep) => (
+    `${step.label}\n${step.description}`
+  );
 
   const [steps,         setSteps]        = useState<NityaSequenceStep[]>([]);
   const [greeting,      setGreeting]     = useState('');
@@ -1332,51 +1339,67 @@ export default function NityaKarmaClient({
               style={{ background: 'linear-gradient(180deg, transparent 0%, var(--divine-bg) 64px)' }}
             >
               {/* Vrat alert */}
-              {vataDays && (
-                <Link href={`/vrat/${encodeURIComponent(vataDays)}`} className="rounded-2xl border px-4 py-3 flex items-center gap-3 relative overflow-hidden block group"
-                  style={{ background: `${accent}10`, borderColor: `${accent}30` }}>
-                  <span className="text-xl shrink-0">🌟</span>
-                  <div className="flex-1 min-w-0 pr-6">
-                    <p className="text-sm font-semibold text-[color:var(--brand-ink)]">Today is {vataDays}</p>
-                    <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-relaxed">
-                      A vrat day adds extra spiritual merit. Observe nirjala or phalahar and add extended japa. Tap to view significance.
-                    </p>
-                  </div>
-                  <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2" style={{ color: accent, transform: 'rotate(-90deg)', flexShrink: 0 }} />
-                </Link>
-              )}
+              {vataDays && (() => {
+                const vData = getVratData(vataDays);
+                const name = (appLanguage !== 'en' && vData?.nameLocal) ? vData.nameLocal : vataDays;
+                const titleText = appLanguage === 'hi' ? `आज ${name} है` : appLanguage === 'pa' ? `ਅੱਜ ${name} ਹੈ` : `Today is ${name}`;
+                const descText = appLanguage === 'hi' 
+                  ? 'व्रत का दिन अतिरिक्त आध्यात्मिक पुण्य लाता है। निर्जला या फलाहार का पालन करें और अधिक जप करें। महत्व देखने के लिए टैप करें।'
+                  : appLanguage === 'pa'
+                  ? 'ਵਰਤ ਦਾ ਦਿਨ ਵਾਧੂ ਅਧਿਆਤਮਿਕ ਪੁੰਨ ਲਿਆਉਂਦਾ ਹੈ। ਨਿਰਜਲਾ ਜਾਂ ਫਲਾਹਾਰ ਦਾ ਪਾਲਣ ਕਰੋ ਅਤੇ ਵਧੇਰੇ ਜਪ ਕਰੋ। ਮਹੱਤਵ ਦੇਖਣ ਲਈ ਟੈਪ ਕਰੋ।'
+                  : 'A vrat day adds extra spiritual merit. Observe nirjala or phalahar and add extended japa. Tap to view significance.';
+                return (
+                  <Link href={`/vrat/${encodeURIComponent(vataDays)}`} className="rounded-2xl border px-4 py-3 flex items-center gap-3 relative overflow-hidden block group"
+                    style={{ background: `${accent}10`, borderColor: `${accent}30` }}>
+                    <span className="text-xl shrink-0">🌟</span>
+                    <div className="flex-1 min-w-0 pr-6">
+                      <p className="text-sm font-semibold text-[color:var(--brand-ink)]">{titleText}</p>
+                      <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-relaxed">
+                        {descText}
+                      </p>
+                    </div>
+                    <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2" style={{ color: accent, transform: 'rotate(-90deg)', flexShrink: 0 }} />
+                  </Link>
+                );
+              })()}
 
               {/* Sacred Day Pulse — tradition-aware nudge above practice cards */}
-              {sacredPulse && !vataDays && (
-                <motion.div
-                  initial={{ opacity: 0, y: -6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                  className="rounded-2xl border px-4 py-3 flex items-start gap-3"
-                  style={{ background: `${accent}0D`, borderColor: `${accent}28` }}
-                >
-                  <span className="text-2xl shrink-0">{sacredPulse.emoji}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold" style={{ color: accent }}>
-                      {sacredPulse.label} Today
-                    </p>
-                    <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-relaxed">
-                      {sacredPulse.description}
-                    </p>
-                  </div>
-                  <span
-                    className="w-2 h-2 rounded-full mt-1 shrink-0"
-                    style={{
-                      background: sacredPulse.intensity === 'high'
-                        ? accent
-                        : sacredPulse.intensity === 'medium'
-                          ? `${accent}99`
-                          : `${accent}55`,
-                      boxShadow: sacredPulse.intensity === 'high' ? `0 0 6px ${accent}80` : 'none',
-                    }}
-                  />
-                </motion.div>
-              )}
+              {sacredPulse && !vataDays && (() => {
+                const pulseVratData = getVratData(sacredPulse.label);
+                const name = (appLanguage !== 'en' && pulseVratData?.nameLocal) ? pulseVratData.nameLocal : sacredPulse.label;
+                const titleText = appLanguage === 'hi' ? `आज ${name} है` : appLanguage === 'pa' ? `ਅੱਜ ${name} ਹੈ` : `${name} Today`;
+                const descText = (appLanguage !== 'en' && pulseVratData?.taglineLocal) ? pulseVratData.taglineLocal : sacredPulse.description;
+                return (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    className="rounded-2xl border px-4 py-3 flex items-start gap-3"
+                    style={{ background: `${accent}0D`, borderColor: `${accent}28` }}
+                  >
+                    <span className="text-2xl shrink-0">{sacredPulse.emoji}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold" style={{ color: accent }}>
+                        {titleText}
+                      </p>
+                      <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-relaxed">
+                        {descText}
+                      </p>
+                    </div>
+                    <span
+                      className="w-2 h-2 rounded-full mt-1 shrink-0"
+                      style={{
+                        background: sacredPulse.intensity === 'high'
+                          ? accent
+                          : sacredPulse.intensity === 'medium'
+                            ? `${accent}99`
+                            : `${accent}55`,
+                        boxShadow: sacredPulse.intensity === 'high' ? `0 0 6px ${accent}80` : 'none',
+                      }}
+                    />
+                  </motion.div>
+                );
+              })()}
 
               {/* 3 practice mode cards */}
               <div className="space-y-3">
@@ -1576,18 +1599,46 @@ export default function NityaKarmaClient({
                   {!step.completed && (
                     <p className="text-xs text-[color:var(--brand-muted)] mt-0.5 leading-relaxed">{step.description}</p>
                   )}
-                  {/* TODO: Uncomment when scriptureStepContent ReadableContent adoption is complete
-                  {step.id === 'japa_done' && !step.completed && scriptureStepContent.japa_done.capabilities.canOpenReader && (
+                  {!!stepReadableContent[step.id] && !step.completed && (
+                    <div className="mt-1.5 flex flex-wrap items-center gap-3">
+                      <button
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          await stepReaderControls.handlers.copyText(
+                            buildStepReminderText(step),
+                            `${step.label} reminder`
+                          );
+                        }}
+                        className="text-xs font-semibold underline underline-offset-2"
+                        style={{ color: accent }}
+                      >
+                        {stepReaderControls.state.isCopied ? 'Copied ✓' : 'Copy note'}
+                      </button>
+                      <button
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          await stepReaderControls.handlers.share(
+                            buildStepReminderText(step),
+                            step.label
+                          );
+                        }}
+                        className="text-xs font-semibold underline underline-offset-2"
+                        style={{ color: accent }}
+                      >
+                        Share note
+                      </button>
+                    </div>
+                  )}
+                  {step.id === 'japa_done' && !step.completed && stepReadableContent.japa_done?.capabilities.canOpenReader && (
                     <Link href="/bhakti/mala" onClick={e => e.stopPropagation()}
                       className="mt-1.5 inline-flex text-xs font-semibold underline underline-offset-2"
                       style={{ color: accent }}>Open Japa Counter →</Link>
                   )}
-                  {step.id === 'shloka_done' && !step.completed && scriptureStepContent.shloka_done.capabilities.canOpenReader && (
+                  {step.id === 'shloka_done' && !step.completed && stepReadableContent.shloka_done?.capabilities.canOpenReader && (
                     <Link href="/pathshala" onClick={e => e.stopPropagation()}
                       className="mt-1.5 inline-flex text-xs font-semibold underline underline-offset-2"
                       style={{ color: accent }}>Open Pathshala →</Link>
                   )}
-                  */}
                 </div>
                 {step.completed
                   ? <Lock size={16} className="text-[var(--divine-text)]/20 dark:text-white/20 shrink-0" />
