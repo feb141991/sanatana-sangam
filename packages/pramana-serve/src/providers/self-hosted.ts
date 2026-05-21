@@ -6,7 +6,9 @@ import type {
 } from '@sangam/pramana-core';
 import {
   extractAssistantText,
+  classifyMissingContent,
   summarizeOpenAICompatibleResponse,
+  PramanaOutputTruncatedError,
 } from './openai-compatible';
 
 // ---------------------------------------------------------------------------
@@ -25,7 +27,9 @@ import {
  *   "model": "<string>",
  *   "messages": [
  *     { "role": "system", "content": "..." },
- *     { "role": "user", "content": "..." }
+ *     { "role": "user",   "content": "..." },
+ *     { "role": "assistant", "content": "..." },
+ *     { "role": "user",   "content": "<current message>" }
  *   ],
  *   "temperature": 0.3,
  *   "max_tokens": 800,
@@ -99,6 +103,11 @@ interface SelfHostedRawResponse {
  *
  * Implements the real HTTP fetch path when PRAMANA_SELF_HOSTED_URL is configured.
  * Remains inert and safely throws when no URL is configured.
+ *
+ * Changes vs. previous version:
+ * - Multi-turn chat history: prompt.messages is injected between system and current user
+ * - prompt.reasoningEffort is silently ignored (generic backends don't support thinking control)
+ * - Typed errors: PramanaOutputTruncatedError is thrown when finish_reason === 'length'
  */
 export class SelfHostedProvider implements PramanaInferenceProvider {
   readonly info: InferenceProviderInfo = {
@@ -130,7 +139,7 @@ export class SelfHostedProvider implements PramanaInferenceProvider {
   /**
    * Generate text using the self-hosted runtime.
    *
-   * Makes a real HTTP POST to `baseUrl/v1/generate` when baseUrl is set.
+   * Makes a real HTTP POST to `baseUrl/v1/chat/completions` when baseUrl is set.
    * Throws a clear configuration error when no URL is available.
    */
   async generate(request: InferenceRequest): Promise<InferenceResponse> {
@@ -144,28 +153,48 @@ export class SelfHostedProvider implements PramanaInferenceProvider {
     const url = `${this.config.baseUrl.replace(/\/$/, '')}/v1/chat/completions`;
     const timeoutMs = request.timeoutMs ?? this.config.timeoutMs ?? 30_000;
 
-    // Build normalized request payload
-    const messages = [];
+    // ── Build message list ─────────────────────────────────────────────────
+    const messages: Array<{ role: string; content: string }> = [];
+
+    // 1. System instruction
     if (request.prompt.system) {
       messages.push({ role: 'system', content: request.prompt.system });
     }
-    
-    // Inject grounding context into user prompt if present
+
+    // 2. Prior conversation turns (multi-turn history parity with Gemini + Sarvam)
+    //    PromptMessage roles are 'user' | 'assistant' — OpenAI-compatible as-is.
+    if (request.prompt.messages && request.prompt.messages.length > 0) {
+      for (const msg of request.prompt.messages) {
+        messages.push({ role: msg.role, content: msg.content });
+      }
+    }
+
+    // 3. Current user message, optionally prepended with grounding context
     let finalUserPrompt = request.prompt.user ?? '';
     if (request.groundingContext && request.groundingContext.length > 0) {
       const contextText = request.groundingContext
-        .map((c, i) => `Source [${i+1}]: ${c.metadata?.sourceName || ''} - ${c.metadata?.chunkId || ''}\n${c.content}`)
+        .map(
+          (c, i) =>
+            `Source [${i + 1}]: ${c.metadata?.sourceName || ''} - ${c.metadata?.chunkId || ''}\n${c.content}`
+        )
         .join('\n\n');
       finalUserPrompt = `${contextText}\n\n====================\n\n${finalUserPrompt}`;
     }
     messages.push({ role: 'user', content: finalUserPrompt });
 
-    const payload = {
+    // ── Build payload ──────────────────────────────────────────────────────
+    // Note: prompt.reasoningEffort is intentionally not forwarded.
+    // Generic self-hosted backends (vLLM, Ollama, llama.cpp, TGI) do not
+    // uniformly support thinking-budget parameters, so we omit it to stay
+    // compatible across all runtimes.
+    const payload: Record<string, unknown> = {
       model: this.config.model ?? 'default-model',
       messages,
       temperature: request.prompt.temperature ?? 0.3,
       max_tokens: request.prompt.maxOutputTokens ?? 800,
-      ...(request.responseFormat === 'json' ? { response_format: { type: 'json_object' } } : {}),
+      ...(request.responseFormat === 'json'
+        ? { response_format: { type: 'json_object' } }
+        : {}),
     };
 
     const headers: Record<string, string> = {
@@ -176,7 +205,6 @@ export class SelfHostedProvider implements PramanaInferenceProvider {
       headers['Authorization'] = `Bearer ${this.config.apiKey}`;
     }
 
-    // Abort controller for timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -216,8 +244,16 @@ export class SelfHostedProvider implements PramanaInferenceProvider {
 
     const choice = data.choices?.[0];
     const generatedText = extractAssistantText(data);
-    
+
     if (typeof generatedText !== 'string') {
+      const reason = classifyMissingContent(choice);
+
+      if (reason === 'truncated') {
+        throw new PramanaOutputTruncatedError(this.info.id);
+      }
+
+      // For self-hosted: 'no_final_answer' and 'empty' both use a generic message
+      // (self-hosted models rarely emit reasoning_content, so the distinction is moot)
       throw new Error(
         `[${this.info.id}] Malformed response: missing usable assistant text. Raw: ${summarizeOpenAICompatibleResponse(data)}`
       );
@@ -229,11 +265,13 @@ export class SelfHostedProvider implements PramanaInferenceProvider {
       provider: this.info.id,
       providerClass: 'self_hosted',
       finishReason: choice?.finish_reason,
-      usage: data.usage ? {
-        inputTokens: data.usage.prompt_tokens,
-        outputTokens: data.usage.completion_tokens,
-        totalTokens: data.usage.total_tokens,
-      } : undefined,
+      usage: data.usage
+        ? {
+            inputTokens: data.usage.prompt_tokens,
+            outputTokens: data.usage.completion_tokens,
+            totalTokens: data.usage.total_tokens,
+          }
+        : undefined,
     };
   }
 

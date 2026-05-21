@@ -96,7 +96,8 @@ export async function GET(req: NextRequest) {
         ].filter(Boolean).join('\n\n'),
         user: prompt,
         temperature: 0.8,
-        maxOutputTokens: 512,
+        reasoningEffort: 'none',
+        maxOutputTokens: 640,
       },
       { responseFormat: 'json' }
     );

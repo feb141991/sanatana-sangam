@@ -77,6 +77,10 @@ export async function generateWithProvider(
     const parsedStatus = message.match(/HTTP\s+(\d{3})\b/i)?.[1];
     const status = Number(err?.status || err?.statusCode || parsedStatus || 0);
     return (
+      err?.code === 'OUTPUT_TRUNCATED' ||
+      err?.code === 'NO_FINAL_ANSWER' ||
+      err?.name === 'PramanaOutputTruncatedError' ||
+      err?.name === 'PramanaNoFinalAnswerError' ||
       status === 401 ||
       status === 403 ||
       status === 404 ||
@@ -87,6 +91,8 @@ export async function generateWithProvider(
       err?.name === 'TimeoutError' ||
       err?.code === 'ECONNREFUSED' ||
       /No response generated/i.test(message) ||
+      /No final answer/i.test(message) ||
+      /Output truncated/i.test(message) ||
       /Malformed response/i.test(message) ||
       /missing usable assistant text/i.test(message) ||
       /model.*not found/i.test(message) ||

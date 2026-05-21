@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
+import { emitEvent, emitError } from '@/lib/monitoring/events';
 
 // ─── POST /api/sanskar/suggest ────────────────────────────────────────────────
 // Returns an AI-generated personalised next-step suggestion for the user's
@@ -79,10 +80,16 @@ Respond in this exact JSON format: {"message": "...", "urgency": "now|soon|later
 
   let message = `Next on your journey: ${nextSanskara.name}. May this sacred rite bring blessings to your family.`;
   let urgency: 'now' | 'soon' | 'later' = 'soon';
+  const startTime = Date.now();
 
   try {
     const result = await generateWithProvider(
-      { user: userPrompt, temperature: 0.7, maxOutputTokens: 256 },
+      {
+        user: userPrompt,
+        temperature: 0.7,
+        reasoningEffort: 'none',
+        maxOutputTokens: 320,
+      },
       { responseFormat: 'json' },
     );
 
@@ -92,8 +99,23 @@ Respond in this exact JSON format: {"message": "...", "urgency": "now|soon|later
       if (parsed.message) message = parsed.message;
       if (['now', 'soon', 'later'].includes(parsed.urgency)) urgency = parsed.urgency;
     }
+    emitEvent({
+      severity: 'P3',
+      domain: 'ai',
+      route: '/api/sanskar/suggest',
+      latency_ms: Date.now() - startTime,
+      provider: result.provider,
+      model: result.modelUsed,
+      fallback_used: result.provider !== process.env.PRAMANA_INFERENCE_PROVIDER?.trim(),
+      context: {
+        feature: 'sanskar_suggest',
+        tradition,
+        next_sanskara: nextSanskara.id,
+      },
+    });
   } catch (e) {
     console.error('[sanskar/suggest] provider error:', e);
+    emitError('ai', e, 'P2', { route: '/api/sanskar/suggest', latency_ms: Date.now() - startTime });
     // Fall through to defaults — better a fallback message than an error
   }
 

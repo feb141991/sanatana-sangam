@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { ALL_LIBRARY_ENTRIES } from '@/lib/library-content';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
+import { emitEvent, emitError } from '@/lib/monitoring/events';
 
 // POST /api/discover/mood
 // Body: { mood: string, tradition?: string }
@@ -87,10 +88,16 @@ ${top6.map((e, i) => `${i + 1}. [${e.source}] ${e.meaning.slice(0, 120)}`).join(
 Return: ["insight1", "insight2", ...]`;
 
   let insights: string[] = top6.map(() => '');
+  const startTime = Date.now();
 
   try {
     const result = await generateWithProvider(
-      { user: insightPrompt, temperature: 0.55, maxOutputTokens: 400 },
+      {
+        user: insightPrompt,
+        temperature: 0.55,
+        reasoningEffort: 'none',
+        maxOutputTokens: 320,
+      },
       { responseFormat: 'json' },
     );
     const match = result.text.match(/\[[\s\S]*\]/);
@@ -100,8 +107,23 @@ Return: ["insight1", "insight2", ...]`;
     }
     // Cache the insights for this mood+tradition for 1 hour
     _moodCache.set(moodKey, { insights, top6, ts: Date.now() });
+    emitEvent({
+      severity: 'P3',
+      domain: 'ai',
+      route: '/api/discover/mood',
+      latency_ms: Date.now() - startTime,
+      provider: result.provider,
+      model: result.modelUsed,
+      fallback_used: result.provider !== process.env.PRAMANA_INFERENCE_PROVIDER?.trim(),
+      context: {
+        feature: 'discover_mood',
+        mood,
+        tradition: tradition ?? 'all',
+      },
+    });
   } catch (e) {
     console.error('[mood] provider error:', e);
+    emitError('ai', e, 'P2', { route: '/api/discover/mood', latency_ms: Date.now() - startTime });
     // Gracefully return verses without insights rather than failing the request
   }
 

@@ -6,7 +6,10 @@ import type {
 } from '@sangam/pramana-core';
 import {
   extractAssistantText,
+  classifyMissingContent,
   summarizeOpenAICompatibleResponse,
+  PramanaOutputTruncatedError,
+  PramanaNoFinalAnswerError,
 } from './openai-compatible';
 
 /**
@@ -44,10 +47,76 @@ interface SarvamRawResponse {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Reasoning effort → Sarvam thinking parameter
+// ---------------------------------------------------------------------------
+
+type SarvamThinkingParam =
+  | { type: 'disabled' }
+  | { type: 'enabled'; budget_tokens: number };
+
+function buildThinkingParam(
+  effort: 'none' | 'low' | 'medium' | 'high' | undefined
+): SarvamThinkingParam | undefined {
+  switch (effort) {
+    case 'none':
+      return { type: 'disabled' };
+    case 'low':
+      return { type: 'enabled', budget_tokens: 1024 };
+    case 'medium':
+      return { type: 'enabled', budget_tokens: 4096 };
+    case 'high':
+      return { type: 'enabled', budget_tokens: 8192 };
+    default:
+      // undefined → omit the parameter, use Sarvam's server-side default
+      return undefined;
+  }
+}
+
+/**
+ * Returns the minimum max_tokens budget needed given a reasoning effort.
+ *
+ * When reasoning is enabled, some of the token budget is consumed by the
+ * chain-of-thought before the final answer. We add the thinking budget on
+ * top of the caller's requested output tokens so the final answer is never
+ * squeezed out by the reasoning chain.
+ */
+function resolveMaxTokens(
+  requestedTokens: number | undefined,
+  effort: 'none' | 'low' | 'medium' | 'high' | undefined
+): number {
+  const base = requestedTokens ?? 800;
+  switch (effort) {
+    case 'none':
+      return base;
+    case 'low':
+      // 1024 thinking + base for response
+      return Math.max(base, base + 1024);
+    case 'medium':
+      return Math.max(base, base + 4096);
+    case 'high':
+      return Math.max(base, base + 8192);
+    default:
+      // Unknown effort or not set — use safe default that covers a reasoning chain
+      return Math.max(base, 4000);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Provider
+// ---------------------------------------------------------------------------
+
 /**
  * Sarvam inference provider.
  *
  * Implements the real HTTP fetch path when SARVAM_API_KEY is configured.
+ *
+ * Supports:
+ * - Multi-turn chat history via prompt.messages
+ * - Per-request reasoning effort via prompt.reasoningEffort → thinking param
+ * - Automatic single retry with reasoning disabled on no-final-answer condition
+ * - Typed errors (PramanaNoFinalAnswerError / PramanaOutputTruncatedError)
+ *   so inference.ts can classify and fall through to Gemini
  */
 export class SarvamProvider implements PramanaInferenceProvider {
   readonly info: InferenceProviderInfo = {
@@ -81,38 +150,112 @@ export class SarvamProvider implements PramanaInferenceProvider {
       );
     }
 
-    const url = 'https://api.sarvam.ai/v1/chat/completions';
-    const timeoutMs = request.timeoutMs ?? this.config.timeoutMs ?? 30_000;
+    const effort = request.prompt.reasoningEffort;
 
-    // Build normalized request payload
-    const messages = [];
+    // First attempt with the caller's stated reasoning effort
+    try {
+      return await this._doGenerate(request, effort);
+    } catch (err) {
+      // Bounded single retry: if the model completed reasoning but produced
+      // no final answer, try once more with thinking disabled.
+      // This frequently recovers: the model that "forgot" to emit content
+      // will produce a direct response when its reasoning chain is suppressed.
+      if (err instanceof PramanaNoFinalAnswerError) {
+        console.warn(
+          `[${this.info.id}] retry_due_to_no_final_answer: ` +
+          `first attempt produced no final answer (reasoningEffort=${effort ?? 'default'}). ` +
+          `Retrying once with thinking disabled.`
+        );
+        try {
+          const retryResult = await this._doGenerate(request, 'none');
+          console.info(
+            `[${this.info.id}] final_success_after_retry: ` +
+            `recovered with thinking disabled.`
+          );
+          return retryResult;
+        } catch (retryErr) {
+          // Retry also failed — re-throw the original typed error so
+          // inference.ts can fall through to the Gemini fallback.
+          console.warn(
+            `[${this.info.id}] retry_failed: ` +
+            `second attempt also produced no final answer. ` +
+            `Falling through to next provider.`
+          );
+          throw err;
+        }
+      }
+      throw err;
+    }
+  }
+
+  /**
+   * Executes one HTTP round-trip to the Sarvam completions endpoint.
+   *
+   * @param request      - The inference request
+   * @param effortOverride - If supplied, overrides request.prompt.reasoningEffort
+   *                         for this specific call (used by the retry path).
+   */
+  private async _doGenerate(
+    request: InferenceRequest,
+    effortOverride?: 'none' | 'low' | 'medium' | 'high' | undefined
+  ): Promise<InferenceResponse> {
+    const effort = effortOverride !== undefined ? effortOverride : request.prompt.reasoningEffort;
+    const url = 'https://api.sarvam.ai/v1/chat/completions';
+    const timeoutMs = request.timeoutMs ?? this.config!.timeoutMs ?? 30_000;
+
+    // ── Build message list ─────────────────────────────────────────────────
+    const messages: Array<{ role: string; content: string }> = [];
+
+    // 1. System instruction
     if (request.prompt.system) {
       messages.push({ role: 'system', content: request.prompt.system });
     }
-    
-    // Inject grounding context into user prompt if present
+
+    // 2. Prior conversation turns (multi-turn history)
+    //    PromptMessage roles are 'user' | 'assistant' — OpenAI-compatible as-is.
+    if (request.prompt.messages && request.prompt.messages.length > 0) {
+      for (const msg of request.prompt.messages) {
+        messages.push({ role: msg.role, content: msg.content });
+      }
+    }
+
+    // 3. Current user message, optionally prepended with grounding context
     let finalUserPrompt = request.prompt.user ?? '';
     if (request.groundingContext && request.groundingContext.length > 0) {
       const contextText = request.groundingContext
-        .map((c, i) => `Source [${i+1}]: ${c.metadata?.sourceName || ''} - ${c.metadata?.chunkId || ''}\n${c.content}`)
+        .map(
+          (c, i) =>
+            `Source [${i + 1}]: ${c.metadata?.sourceName || ''} - ${c.metadata?.chunkId || ''}\n${c.content}`
+        )
         .join('\n\n');
       finalUserPrompt = `${contextText}\n\n====================\n\n${finalUserPrompt}`;
     }
     messages.push({ role: 'user', content: finalUserPrompt });
 
-    const payload = {
-      model: this.config.model ?? 'sarvam-30b',
+    // ── Build payload ──────────────────────────────────────────────────────
+    const thinking = buildThinkingParam(effort);
+    const maxTokens = effortOverride === 'none'
+      // Retry path: use the raw requested budget (no reasoning headroom needed)
+      ? (request.prompt.maxOutputTokens ?? 800)
+      : resolveMaxTokens(request.prompt.maxOutputTokens, effort);
+
+    const payload: Record<string, unknown> = {
+      model: this.config!.model ?? 'sarvam-30b',
       messages,
       temperature: request.prompt.temperature ?? 0.3,
-      // sarvam-30b is a reasoning model — default 800 would be consumed by the
-      // chain-of-thought alone. 4000 is the safe minimum for a reasoning + reply.
-      max_tokens: request.prompt.maxOutputTokens ?? 4000,
-      ...(request.responseFormat === 'json' ? { response_format: { type: 'json_object' } } : {}),
+      max_tokens: maxTokens,
+      ...(request.responseFormat === 'json'
+        ? { response_format: { type: 'json_object' } }
+        : {}),
     };
+
+    if (thinking !== undefined) {
+      payload['thinking'] = thinking;
+    }
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'api-subscription-key': this.config.apiKey,
+      'api-subscription-key': this.config!.apiKey!,
     };
 
     const controller = new AbortController();
@@ -146,15 +289,24 @@ export class SarvamProvider implements PramanaInferenceProvider {
     try {
       data = await rawResponse.json() as SarvamRawResponse;
     } catch {
-      throw new Error(
-        `[${this.info.id}] Server response is not valid JSON.`
-      );
+      throw new Error(`[${this.info.id}] Server response is not valid JSON.`);
     }
 
     const choice = data.choices?.[0];
     const generatedText = extractAssistantText(data);
-    
+
     if (typeof generatedText !== 'string') {
+      // Classify why content is absent and throw a typed error.
+      const reason = classifyMissingContent(choice);
+
+      if (reason === 'truncated') {
+        throw new PramanaOutputTruncatedError(this.info.id);
+      }
+      if (reason === 'no_final_answer') {
+        throw new PramanaNoFinalAnswerError(this.info.id);
+      }
+
+      // Fallback: genuinely empty response
       const rawSnippet = summarizeOpenAICompatibleResponse(data);
       throw new Error(
         `[${this.info.id}] Malformed response: missing usable assistant text. Raw: ${rawSnippet}`
@@ -163,15 +315,17 @@ export class SarvamProvider implements PramanaInferenceProvider {
 
     return {
       text: generatedText,
-      modelUsed: data.model ?? this.config.model ?? 'sarvam-30b',
+      modelUsed: data.model ?? this.config!.model ?? 'sarvam-30b',
       provider: this.info.id,
       providerClass: 'hosted',
       finishReason: choice?.finish_reason,
-      usage: data.usage ? {
-        inputTokens: data.usage.prompt_tokens,
-        outputTokens: data.usage.completion_tokens,
-        totalTokens: data.usage.total_tokens,
-      } : undefined,
+      usage: data.usage
+        ? {
+            inputTokens: data.usage.prompt_tokens,
+            outputTokens: data.usage.completion_tokens,
+            totalTokens: data.usage.total_tokens,
+          }
+        : undefined,
     };
   }
 

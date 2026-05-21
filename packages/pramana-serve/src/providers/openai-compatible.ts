@@ -22,6 +22,79 @@ type OpenAICompatibleResponse = {
   }>;
 };
 
+// ---------------------------------------------------------------------------
+// Typed errors — thrown when a reasoning model emits no usable final answer
+// ---------------------------------------------------------------------------
+
+/**
+ * Thrown when the model hit its max_tokens limit before producing a final
+ * answer. The output was truncated mid-generation (finish_reason === 'length').
+ */
+export class PramanaOutputTruncatedError extends Error {
+  readonly code = 'OUTPUT_TRUNCATED';
+  constructor(providerId: string) {
+    super(
+      `[${providerId}] Output truncated: model hit max_tokens limit before generating a final answer. ` +
+      `Consider increasing maxOutputTokens or reducing reasoningEffort.`
+    );
+    this.name = 'PramanaOutputTruncatedError';
+  }
+}
+
+/**
+ * Thrown when a reasoning model completed its chain-of-thought (finish_reason !== 'length')
+ * but emitted no final-answer content. The chain-of-thought is in reasoning_content
+ * and MUST NOT be returned to the user.
+ */
+export class PramanaNoFinalAnswerError extends Error {
+  readonly code = 'NO_FINAL_ANSWER';
+  constructor(providerId: string) {
+    super(
+      `[${providerId}] No final answer: model completed reasoning without generating a response. ` +
+      `Retry with lower reasoningEffort or fall through to a non-reasoning provider.`
+    );
+    this.name = 'PramanaNoFinalAnswerError';
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Content classifier — determines why content is absent
+// ---------------------------------------------------------------------------
+
+type MissingContentReason = 'truncated' | 'no_final_answer' | 'empty';
+
+/**
+ * Classifies why a response choice has no usable content.
+ *
+ * - 'truncated'      — finish_reason === 'length' (ran out of tokens)
+ * - 'no_final_answer'— finish_reason !== 'length' AND reasoning_content present
+ *                      (model reasoned but produced no answer)
+ * - 'empty'          — no content and no reasoning context
+ */
+export function classifyMissingContent(
+  choice:
+    | {
+        message?: { content?: unknown; reasoning_content?: string };
+        finish_reason?: string;
+      }
+    | undefined
+): MissingContentReason {
+  if (choice?.finish_reason === 'length') {
+    return 'truncated';
+  }
+  if (
+    typeof choice?.message?.reasoning_content === 'string' &&
+    choice.message.reasoning_content.trim()
+  ) {
+    return 'no_final_answer';
+  }
+  return 'empty';
+}
+
+// ---------------------------------------------------------------------------
+// Content extractor
+// ---------------------------------------------------------------------------
+
 function extractFromContent(content: unknown): string | null {
   if (typeof content === 'string' && content.trim()) {
     return content;
@@ -56,6 +129,16 @@ function extractFromContent(content: unknown): string | null {
   return null;
 }
 
+/**
+ * Extracts the final assistant answer text from an OpenAI-compatible response.
+ *
+ * Returns the content string when present.
+ * Returns null when content is absent — the caller must classify why
+ * (truncated, no_final_answer, or empty) and throw an appropriate typed error.
+ *
+ * IMPORTANT: reasoning_content (chain-of-thought) is NEVER returned here,
+ * even when content is missing. The thinking trace must not be shown to users.
+ */
 export function extractAssistantText(
   data: OpenAICompatibleResponse
 ): string | null {
@@ -75,19 +158,9 @@ export function extractAssistantText(
     return data.output_text;
   }
 
-  // Fallback: sarvam-30b (and other reasoning models) put the chain-of-thought
-  // in reasoning_content and the final answer in content. When content is present
-  // it is always returned above. If we reach here, content was empty — use
-  // reasoning_content ONLY when finish_reason is not "length" (truncated output
-  // would give us an incomplete chain-of-thought, not a real answer).
-  if (
-    typeof message?.reasoning_content === 'string' &&
-    message.reasoning_content.trim() &&
-    choice?.finish_reason !== 'length'
-  ) {
-    return message.reasoning_content.trim();
-  }
-
+  // Content is absent. Do NOT fall back to reasoning_content.
+  // The caller should use classifyMissingContent() to determine
+  // whether to throw PramanaOutputTruncatedError or PramanaNoFinalAnswerError.
   return null;
 }
 

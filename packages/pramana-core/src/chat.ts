@@ -158,11 +158,8 @@ export const DharmaChatContract: PramanaContract<'ai_chat', AIChatInput, string>
       messages: input.history || [],
       user: input.message,
       temperature: 0.7,
-      // sarvam-30b is a reasoning model — it generates a thinking chain before
-      // the answer. 1024 tokens is consumed by the CoT, leaving nothing for the
-      // actual reply (content: null, finish_reason: "length"). 4000 gives enough
-      // headroom for both the reasoning chain and a full conversational response.
-      maxOutputTokens: 4000,
+      reasoningEffort: 'none',
+      maxOutputTokens: 1400,
     };
   },
   parseResult(result) {

@@ -23,6 +23,15 @@ export type PromptSpec = {
   messages?: PromptMessage[];
   temperature?: number;
   maxOutputTokens?: number;
+  /**
+   * Provider-agnostic reasoning effort hint.
+   * - 'none'   → disable chain-of-thought (fastest, lowest token cost)
+   * - 'low'    → light reasoning (~1024 thinking tokens on Sarvam)
+   * - 'medium' → moderate reasoning (~4096 thinking tokens on Sarvam)
+   * - 'high'   → deep reasoning (~8192 thinking tokens on Sarvam)
+   * Providers that do not support thinking (Gemini, generic self-hosted) ignore this field.
+   */
+  reasoningEffort?: 'none' | 'low' | 'medium' | 'high';
 };
 
 export type RequestMetadata<TTask extends string = PramanaFeatureTask> = {

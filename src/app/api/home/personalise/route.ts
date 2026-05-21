@@ -126,11 +126,12 @@ Keep the tone warm, grounded, and personal — not preachy. No shloka text neede
           system: [
             'You generate warm, structured JSON for personalized spiritual guidance.',
             pipelinePromptHint,
-          ].filter(Boolean).join('\n\n'),
-          user: prompt,
-          temperature: 0.7,
-          maxOutputTokens: 500,
-        },
+        ].filter(Boolean).join('\n\n'),
+        user: prompt,
+        temperature: 0.7,
+        reasoningEffort: 'none',
+        maxOutputTokens: 450,
+      },
         { responseFormat: 'json' }
       );
       raw = result.text;
