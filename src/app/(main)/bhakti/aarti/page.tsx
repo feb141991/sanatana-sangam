@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+import { ReadableContent } from '@/lib/readable-content';
+import { buildReadableCapabilities } from '@/lib/readable-content';
 
 // ─── Bell tone via WebAudio ───────────────────────────────────────────────────
 function playBell(freq = 432, dur = 2.5, vol = 0.22) {
@@ -111,6 +113,35 @@ const AARTI_STEPS = [
     onTap: () => { playBell(432, 3.5, 0.20); haptic([30, 50, 30, 50, 60]); },
   },
 ] as const;
+
+// ─── Build ReadableContent for each step ───────────────────────────────────────
+function buildStepReadableContent(step: typeof AARTI_STEPS[0]): ReadableContent {
+  return {
+    original: step.instruction,
+    meaning: undefined,
+    sourceLabel: `Aarti — ${step.title}`,
+    tradition: 'hindu',
+    language: 'en',
+    script: 'latin',
+    pipelineTags: {
+      content_type: 'instruction',
+      audio_mode: 'none',
+      tradition: 'hindu',
+      script: 'latin',
+      response_mode: 'extractive',
+      delivery_intent: 'live_user'
+    },
+    capabilities: buildReadableCapabilities({
+      original: step.instruction,
+      meaning: undefined,
+      script: 'latin',
+      pipelineTags: {
+        content_type: 'instruction',
+        audio_mode: 'none'
+      }
+    })
+  };
+}
 
 // ─── Animated diya (step 2) ───────────────────────────────────────────────────
 function AnimatedDiya({ lit }: { lit: boolean }) {
