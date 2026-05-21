@@ -43,6 +43,14 @@ type FestivalAdminStats = {
   lastVerificationRunAt: string | null;
 };
 
+const FESTIVAL_SELECT_FULL = 'id, name, date, emoji, description, type, tradition, year, source_name, source_kind, review_status, verification_status, verification_confidence, verification_note, suggested_date, verification_run_at, verification_type';
+const FESTIVAL_SELECT_LEGACY = 'id, name, date, emoji, description, type, tradition, year, source_name, source_kind, review_status';
+
+function isMissingVerificationColumn(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error ?? '');
+  return /verification_status|verification_confidence|verification_note|suggested_date|verification_run_at|verification_type/i.test(message);
+}
+
 function buildFestivalAdminStats(festivals: Festival[]): FestivalAdminStats {
   const unsafeObservanceRoutes = festivals.filter((festival) => {
     if (festival.type !== 'vrat') return false;
@@ -80,25 +88,39 @@ export async function GET(request: NextRequest) {
     : new Date().getFullYear();
 
   try {
-    const [{ data: rows, error }, { data: yearsData, error: yearsError }] = await Promise.all([
-      admin.supabase
-        .from('festivals')
-        .select('id, name, date, emoji, description, type, tradition, year, source_name, source_kind, review_status, verification_status, verification_confidence, verification_note, suggested_date, verification_run_at, verification_type')
-        .eq('year', requestedYear)
-        .order('date', { ascending: true }),
-      admin.supabase
-        .from('festivals')
-        .select('year')
-        .order('year', { ascending: true }),
-    ]);
-
-    if (error) throw error;
+    const { data: yearsData, error: yearsError } = await admin.supabase
+      .from('festivals')
+      .select('year')
+      .order('year', { ascending: true });
     if (yearsError) throw yearsError;
 
-    const dbFestivals = ((rows ?? []) as FestivalRow[]).map((row) =>
+    let rows: FestivalRow[] | null = null;
+    let source: 'database' | 'fallback' = 'database';
+    const primary = await admin.supabase
+      .from('festivals')
+      .select(FESTIVAL_SELECT_FULL)
+      .eq('year', requestedYear)
+      .order('date', { ascending: true });
+
+    if (primary.error && isMissingVerificationColumn(primary.error)) {
+      const legacy = await admin.supabase
+        .from('festivals')
+        .select(FESTIVAL_SELECT_LEGACY)
+        .eq('year', requestedYear)
+        .order('date', { ascending: true });
+      if (legacy.error) throw legacy.error;
+      rows = (legacy.data ?? []) as FestivalRow[];
+    } else if (primary.error) {
+      throw primary.error;
+    } else {
+      rows = (primary.data ?? []) as FestivalRow[];
+    }
+
+    const dbFestivals = (rows ?? []).map((row) =>
       attachFestivalTrust(row as FestivalSourceRow)
     );
     const festivals = dbFestivals.length > 0 ? dbFestivals : getFallbackFestivalCalendar(requestedYear);
+    if (dbFestivals.length === 0) source = 'fallback';
     const availableYears = Array.from(
       new Set([
         ...((yearsData ?? []).map((row) => row.year).filter((value): value is number => Number.isFinite(value))),
@@ -109,7 +131,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       festivals,
       year: requestedYear,
-      source: dbFestivals.length > 0 ? 'database' : 'fallback',
+      source,
       availableYears,
       stats: buildFestivalAdminStats(festivals),
     });

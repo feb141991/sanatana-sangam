@@ -20,6 +20,13 @@ type FestivalVerificationRow = Pick<
   | 'review_status'
 >;
 
+const FESTIVAL_SELECT_LEGACY = 'id, name, date, emoji, description, type, tradition, year, source_name, source_kind, review_status';
+
+function isMissingVerificationColumn(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error ?? '');
+  return /verification_status|verification_confidence|verification_note|suggested_date|verification_run_at|verification_type/i.test(message);
+}
+
 export async function GET(request: Request) {
   const cronSecret = process.env.CRON_SECRET;
   if (cronSecret) {
@@ -38,7 +45,7 @@ export async function GET(request: Request) {
   try {
     const { data: rows, error } = await supabase
       .from('festivals')
-      .select('id, name, date, emoji, description, type, tradition, year, source_name, source_kind, review_status')
+      .select(FESTIVAL_SELECT_LEGACY)
       .eq('year', year)
       .order('date', { ascending: true });
 
@@ -53,23 +60,29 @@ export async function GET(request: Request) {
     report = await verifyFestivalDatesWithAI(festivals, year);
 
     if (dbRows.length > 0) {
-      await Promise.all(report.results.map(async (result) => {
-        const row = dbRows.find((candidate) => (
-          candidate.name === result.name && candidate.date === result.storedDate
-        ));
-        if (!row) return;
-        await (supabase
-          .from('festivals') as any)
-          .update({
-            verification_status: result.status,
-            verification_confidence: result.confidence,
-            verification_note: result.note,
-            suggested_date: result.suggestedDate ?? null,
-            verification_run_at: report.runAt,
-            verification_type: result.verificationType,
-          })
-          .eq('id', row.id);
-      }));
+      try {
+        await Promise.all(report.results.map(async (result) => {
+          const row = dbRows.find((candidate) => (
+            candidate.name === result.name && candidate.date === result.storedDate
+          ));
+          if (!row) return;
+          await (supabase
+            .from('festivals') as any)
+            .update({
+              verification_status: result.status,
+              verification_confidence: result.confidence,
+              verification_note: result.note,
+              suggested_date: result.suggestedDate ?? null,
+              verification_run_at: report.runAt,
+              verification_type: result.verificationType,
+            })
+            .eq('id', row.id);
+        }));
+      } catch (persistError) {
+        if (!isMissingVerificationColumn(persistError)) {
+          throw persistError;
+        }
+      }
     }
   } catch (err: any) {
     console.error('[verify-festival-dates cron] Error:', err);

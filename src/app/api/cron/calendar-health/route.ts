@@ -3,6 +3,11 @@ import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
 import { resolveVratSlug } from '@/lib/vrat-data';
 
+function isMissingVerificationColumn(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error ?? '');
+  return /verification_status|suggested_date|verification_run_at/i.test(message);
+}
+
 // ─── Calendar Health Cron ─────────────────────────────────────────────────────
 // Schedule: 0 9 1 11 * (9 AM UTC, 1st November every year)
 //
@@ -41,13 +46,38 @@ export async function GET(request: Request) {
 
   const currentYear = new Date().getFullYear();
 
-  const { data: festivalRows, error: festivalError } = await supabase
+  let festivalRows:
+    | Array<{
+        id: string;
+        date: string;
+        year: number;
+        name: string;
+        type: string;
+        review_status: string | null;
+        verification_status?: string | null;
+        suggested_date?: string | null;
+        verification_run_at?: string | null;
+      }>
+    | null = null;
+
+  const primary = await supabase
     .from('festivals')
     .select('id, date, year, name, type, review_status, verification_status, suggested_date, verification_run_at')
     .order('date', { ascending: true });
 
-  if (festivalError) {
-    return NextResponse.json({ error: festivalError.message }, { status: 500 });
+  if (primary.error && isMissingVerificationColumn(primary.error)) {
+    const legacy = await supabase
+      .from('festivals')
+      .select('id, date, year, name, type, review_status')
+      .order('date', { ascending: true });
+    if (legacy.error) {
+      return NextResponse.json({ error: legacy.error.message }, { status: 500 });
+    }
+    festivalRows = legacy.data;
+  } else if (primary.error) {
+    return NextResponse.json({ error: primary.error.message }, { status: 500 });
+  } else {
+    festivalRows = primary.data;
   }
 
   const festivals = festivalRows ?? [];
