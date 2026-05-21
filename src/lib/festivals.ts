@@ -13,6 +13,7 @@
  */
 
 export interface Festival {
+  id?:         string;
   name:        string;
   date:        string;   // YYYY-MM-DD
   emoji:       string;
@@ -29,6 +30,17 @@ export interface Festival {
   suggested_date?: string | null;
   verification_run_at?: string | null;
   verification_type?: FestivalVerificationType | null;
+  route_kind?: string | null;
+  route_slug?: string | null;
+  year?: number;
+  slug?: string | null;
+  final_date_source?: string | null;
+  manual_date_override?: string | null;
+  locked_for_regeneration?: boolean | null;
+  audit_status?: string | null;
+  audit_failure_reason?: string | null;
+  audit_retry_count?: number | null;
+  last_audited_at?: string | null;
 }
 
 export type FestivalSourceKind = 'curated' | 'official' | 'partner' | 'community_reviewed';
@@ -53,6 +65,8 @@ export interface FestivalSourceRow {
   suggested_date?: string | null;
   verification_run_at?: string | null;
   verification_type?: FestivalVerificationType | null;
+  year?: number;
+  slug?: string | null;
 }
 
 export interface FestivalCalendarMeta {
@@ -198,6 +212,8 @@ export function attachFestivalTrust(row: FestivalSourceRow): Festival & Pick<Fes
     suggested_date: row.suggested_date ?? null,
     verification_run_at: row.verification_run_at ?? null,
     verification_type: row.verification_type ?? null,
+    year: row.year ?? staticMatch?.year ?? (row.date ? new Date(row.date).getFullYear() : undefined),
+    slug: row.slug ?? null,
   };
 }
 
@@ -254,5 +270,40 @@ export function getTodayPanchang(
     sunrise:   '6:00 AM',
     sunset:    '6:00 PM',
     rahuKaal:  'Loading…',
+  };
+}
+
+export function mapOccurrenceToFestival(row: any): Festival {
+  const def = row.observance_definitions || {};
+  const provenance = row.source_provenance || {};
+  const effectiveDate = row.manual_date_override || row.date;
+  return {
+    id: row.id,
+    name: def.display_name || '',
+    date: effectiveDate,
+    emoji: def.emoji || '🪔',
+    description: def.description || '',
+    type: def.kind || 'major',
+    tradition: def.tradition || 'all',
+    source_name: provenance.source_name || null,
+    source_kind: provenance.source_kind || null,
+    review_status: row.review_status || null,
+    verification_status: row.verification_status || null,
+    verification_confidence: row.verification_confidence || null,
+    verification_note: row.verification_note || null,
+    suggested_date: row.suggested_date || null,
+    verification_run_at: row.verification_run_at || null,
+    verification_type: def.verification_type || null,
+    route_kind: def.route_kind || null,
+    route_slug: def.route_slug || null,
+    year: row.year,
+    slug: def.slug || null,
+    final_date_source: row.final_date_source || null,
+    manual_date_override: row.manual_date_override || null,
+    locked_for_regeneration: row.locked_for_regeneration ?? null,
+    audit_status: row.audit_status || null,
+    audit_failure_reason: row.audit_failure_reason || null,
+    audit_retry_count: row.audit_retry_count ?? null,
+    last_audited_at: row.last_audited_at || null,
   };
 }

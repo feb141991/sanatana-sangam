@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
-import { attachFestivalTrust, getFallbackFestivalCalendar, type FestivalSourceRow } from '@/lib/festivals';
+import { attachFestivalTrust, mapOccurrenceToFestival, getFallbackFestivalCalendar, type FestivalSourceRow } from '@/lib/festivals';
 import { verifyFestivalDatesWithAI } from '@/lib/festival-verify';
 import type { Database } from '@/types/database';
 
-type FestivalVerificationRow = Pick<
+type LegacyFestivalRow = Pick<
   Database['public']['Tables']['festivals']['Row'],
   | 'id'
   | 'name'
@@ -17,13 +17,19 @@ type FestivalVerificationRow = Pick<
   | 'source_name'
   | 'source_kind'
   | 'review_status'
+  | 'verification_status'
+  | 'verification_confidence'
+  | 'verification_note'
+  | 'suggested_date'
+  | 'verification_run_at'
+  | 'verification_type'
 >;
 
-const FESTIVAL_SELECT_LEGACY = 'id, name, date, emoji, description, type, tradition, year, source_name, source_kind, review_status';
+const LEGACY_FESTIVAL_SELECT = 'id, name, date, emoji, description, type, tradition, year, source_name, source_kind, review_status, verification_status, verification_confidence, verification_note, suggested_date, verification_run_at, verification_type';
 
-function isMissingVerificationColumn(error: unknown): boolean {
+function isMissingObservanceModel(error: unknown): boolean {
   const message = error instanceof Error ? error.message : String(error ?? '');
-  return /verification_status|verification_confidence|verification_note|suggested_date|verification_run_at|verification_type/i.test(message);
+  return /observance_occurrences|observance_definitions/i.test(message);
 }
 
 export async function POST(req: Request) {
@@ -41,50 +47,85 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { data: rows, error } = await adminCheck.supabase
-      .from('festivals')
-      .select(FESTIVAL_SELECT_LEGACY)
+    const occRows = await adminCheck.supabase
+      .from('observance_occurrences')
+      .select('*, observance_definitions(*)')
       .eq('year', year)
       .order('date', { ascending: true });
 
-    if (error) throw error;
+    let festivals = getFallbackFestivalCalendar(year);
+    let source: 'database' | 'fallback' = 'fallback';
+    let dbRows: any[] = [];
+    let usingOccurrenceModel = false;
 
-    const dbRows = (rows ?? []) as FestivalVerificationRow[];
-    const festivals = dbRows.length > 0
-      ? dbRows.map((row) => attachFestivalTrust(row as FestivalSourceRow))
-      : getFallbackFestivalCalendar(year);
+    if (!occRows.error) {
+      usingOccurrenceModel = true;
+      dbRows = occRows.data ?? [];
+      if (dbRows.length > 0) {
+        festivals = dbRows.map((row) => mapOccurrenceToFestival(row));
+        source = 'database';
+      }
+    } else if (isMissingObservanceModel(occRows.error)) {
+      const legacyRows = await adminCheck.supabase
+        .from('festivals')
+        .select(LEGACY_FESTIVAL_SELECT)
+        .eq('year', year)
+        .order('date', { ascending: true });
+
+      if (legacyRows.error) throw legacyRows.error;
+
+      dbRows = (legacyRows.data ?? []) as LegacyFestivalRow[];
+      if (dbRows.length > 0) {
+        festivals = dbRows.map((row) => attachFestivalTrust(row as FestivalSourceRow));
+        source = 'database';
+      }
+    } else {
+      throw occRows.error;
+    }
 
     const report = await verifyFestivalDatesWithAI(festivals, year);
 
-    if (dbRows.length > 0) {
-      try {
-        await Promise.all(report.results.map(async (result) => {
-          const row = dbRows.find((candidate) => (
-            candidate.name === result.name && candidate.date === result.storedDate
-          ));
-          if (!row) return;
-          await (adminCheck.supabase
-            .from('festivals') as any)
-            .update({
-              verification_status: result.status,
-              verification_confidence: result.confidence,
-              verification_note: result.note,
-              suggested_date: result.suggestedDate ?? null,
-              verification_run_at: report.runAt,
-              verification_type: result.verificationType,
-            })
-            .eq('id', row.id);
-        }));
-      } catch (persistError) {
-        if (!isMissingVerificationColumn(persistError)) {
-          throw persistError;
-        }
-      }
+    if (usingOccurrenceModel && dbRows.length > 0) {
+      await Promise.all(report.results.map(async (result) => {
+        const row = dbRows.find((candidate: any) => (
+          candidate.id === result.id
+          || (() => {
+            const def = candidate.observance_definitions || {};
+            return def.display_name === result.name && candidate.date === result.storedDate;
+          })()
+        ));
+        if (!row) return;
+        const requiresAiAudit = result.verificationType === 'lunar_tithi';
+        const nextAuditStatus = requiresAiAudit
+          ? (report.auditStatus === 'failed' ? 'failed' : 'completed')
+          : 'skipped';
+        const currentRetryCount = typeof (row as any).audit_retry_count === 'number'
+          ? (row as any).audit_retry_count
+          : 0;
+        await adminCheck.supabase
+          .from('observance_occurrences')
+          .update({
+            verification_status: result.status,
+            verification_confidence: result.confidence,
+            verification_note: result.note,
+            suggested_date: result.suggestedDate ?? null,
+            verification_run_at: report.runAt,
+            audit_status: nextAuditStatus,
+            audit_failure_reason: requiresAiAudit && report.auditStatus === 'failed'
+              ? (report.auditFailureReason ?? 'AI verification unavailable')
+              : null,
+            audit_retry_count: requiresAiAudit && report.auditStatus === 'failed'
+              ? currentRetryCount + 1
+              : 0,
+            last_audited_at: report.runAt,
+          })
+          .eq('id', row.id);
+      }));
     }
 
     return NextResponse.json({
       ...report,
-      source: dbRows.length > 0 ? 'database' : 'fallback',
+      source,
     });
   } catch (err: any) {
     console.error('[verify-festivals] Error:', err);

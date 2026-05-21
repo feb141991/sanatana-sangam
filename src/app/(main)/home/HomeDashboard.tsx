@@ -944,6 +944,15 @@ function SkyBackground({ hour }: { hour: number }) {
   );
 }
 
+function getVratHref(festival: Festival): string | null {
+  if (festival.route_kind === 'vrat') {
+    return festival.route_slug || resolveVratSlug(festival.name);
+  }
+  if (festival.route_kind === null || festival.route_kind === undefined) {
+    return resolveVratSlug(festival.name);
+  }
+  return null;
+}
 
 // ── Main Dashboard ────────────────────────────────────────────────────────────
 export default function HomeDashboard({
@@ -1605,7 +1614,7 @@ export default function HomeDashboard({
       : t('inNDays').replace('{n}', String(upcomingSacredObservance.daysLeft))
     : null;
   const upcomingObservanceHref = upcomingSacredObservance
-    ? resolveVratSlug(upcomingSacredObservance.festival.name)
+    ? getVratHref(upcomingSacredObservance.festival)
     : null;
 
   // ── Dharm Veer ───────────────────────────────────────────────────────────────

@@ -46,6 +46,8 @@ interface VerificationReport {
   mismatches: number;
   uncertain: number;
   manualReview: number;
+  auditStatus?: 'completed' | 'failed';
+  auditFailureReason?: string | null;
   results: VerificationResult[];
   source?: 'database' | 'fallback';
 }
@@ -57,7 +59,9 @@ interface FestivalAdminStats {
   aiVerified: number;
   aiMismatches: number;
   aiUncertain: number;
+  aiNotChecked: number;
   aiManualReview: number;
+  auditFailed: number;
   suggestedDatePending: number;
   unsafeObservanceRoutes: number;
   lastVerificationRunAt: string | null;
@@ -137,6 +141,12 @@ export default function FestivalManagement() {
       const data: VerificationReport = await res.json();
       setReport(data);
       await fetchFestivals(selectedYear);
+      if (data.auditStatus === 'failed') {
+        const reason = data.auditFailureReason || 'AI verification failed before a usable audit result was returned';
+        setReportError(reason);
+        toast.error(`AI audit failed: ${reason}`);
+        return;
+      }
       if (data.mismatches === 0 && data.uncertain === 0 && data.manualReview === 0) {
         toast.success(`All ${data.totalChecked} dates verified ✅`);
       } else {
@@ -219,12 +229,14 @@ export default function FestivalManagement() {
 
       <div className="max-w-6xl mx-auto px-6 py-10 space-y-10">
         {stats && (
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-4">
             {[
               { label: 'Rows', value: stats.total, tone: 'text-slate-700' },
               { label: 'Pending review', value: stats.pendingReview, tone: 'text-amber-600' },
               { label: 'AI mismatches', value: stats.aiMismatches, tone: 'text-rose-600' },
+              { label: 'AI not checked', value: stats.aiNotChecked, tone: 'text-slate-600' },
               { label: 'Manual review', value: stats.aiManualReview, tone: 'text-violet-600' },
+              { label: 'Audit failed', value: stats.auditFailed, tone: 'text-red-700' },
               { label: 'Unsafe Vrat routes', value: stats.unsafeObservanceRoutes, tone: 'text-orange-600' },
             ].map((card) => (
               <div key={card.label} className="glass-panel rounded-3xl p-4 border border-black/5">

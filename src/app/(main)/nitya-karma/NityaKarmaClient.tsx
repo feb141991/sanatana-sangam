@@ -917,6 +917,7 @@ export default function NityaKarmaClient({
   );
 
   const [steps,         setSteps]        = useState<NityaSequenceStep[]>([]);
+  const [vratRouteInfo, setVratRouteInfo] = useState<{ route_kind: string | null; route_slug: string | null } | null>(null);
   const [greeting,      setGreeting]     = useState('');
   const [panchang,      setPanchang]     = useState<any>(null);
   const [streak,        setStreak]       = useState<NityaKarmaStreak | null>(null);
@@ -1190,6 +1191,46 @@ export default function NityaKarmaClient({
   const allDone        = completedCount === totalSteps && totalSteps > 0;
   const vataDays       = panchang?.vrata ?? null;
 
+  function getVratHref(festival: { name: string; route_kind?: string | null; route_slug?: string | null }): string | null {
+    if (festival.route_kind === 'vrat') {
+      return festival.route_slug || resolveVratSlug(festival.name);
+    }
+    if (festival.route_kind === null || festival.route_kind === undefined) {
+      return resolveVratSlug(festival.name);
+    }
+    return null;
+  }
+
+  useEffect(() => {
+    if (!vataDays) {
+      setVratRouteInfo(null);
+      return;
+    }
+    let active = true;
+    async function fetchVratRoute() {
+      try {
+        const { data, error } = await supabase
+          .from('observance_definitions')
+          .select('route_kind, route_slug')
+          .eq('display_name', vataDays)
+          .maybeSingle();
+
+        if (active && !error && data) {
+          setVratRouteInfo({
+            route_kind: data.route_kind,
+            route_slug: data.route_slug,
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching vrat route info:', err);
+      }
+    }
+    fetchVratRoute();
+    return () => {
+      active = false;
+    };
+  }, [vataDays, supabase]);
+
   // ── Sacred Day Pulse (tradition-aware, computed from live astronomy) ────────
   // Calculate once from the astronomy engine — tithiIndex drives all traditions.
   const sacredPulse = (() => {
@@ -1341,7 +1382,11 @@ export default function NityaKarmaClient({
               {/* Vrat alert */}
               {vataDays && (() => {
                 const vData = getVratData(vataDays);
-                const vratSlug = resolveVratSlug(vataDays);
+                const vratSlug = getVratHref({
+                  name: vataDays,
+                  route_kind: vratRouteInfo?.route_kind,
+                  route_slug: vratRouteInfo?.route_slug,
+                });
                 const name = (appLanguage !== 'en' && vData?.nameLocal) ? vData.nameLocal : vataDays;
                 const titleText = appLanguage === 'hi' ? `आज ${name} है` : appLanguage === 'pa' ? `ਅੱਜ ${name} ਹੈ` : `Today is ${name}`;
                 const descText = appLanguage === 'hi' 

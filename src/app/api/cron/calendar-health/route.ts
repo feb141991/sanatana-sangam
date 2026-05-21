@@ -2,10 +2,11 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
 import { resolveVratSlug } from '@/lib/vrat-data';
+import { mapOccurrenceToFestival, FESTIVALS_2026 } from '@/lib/festivals';
 
-function isMissingVerificationColumn(error: unknown): boolean {
+function isMissingObservanceModel(error: unknown): boolean {
   const message = error instanceof Error ? error.message : String(error ?? '');
-  return /verification_status|suggested_date|verification_run_at/i.test(message);
+  return /observance_occurrences|observance_definitions/i.test(message);
 }
 
 // ─── Calendar Health Cron ─────────────────────────────────────────────────────
@@ -46,54 +47,36 @@ export async function GET(request: Request) {
 
   const currentYear = new Date().getFullYear();
 
-  let festivalRows:
-    | Array<{
-        id: string;
-        date: string;
-        year: number;
-        name: string;
-        type: string;
-        review_status: string | null;
-        verification_status?: string | null;
-        suggested_date?: string | null;
-        verification_run_at?: string | null;
-      }>
-    | null = null;
-
-  const primary = await supabase
-    .from('festivals')
-    .select('id, date, year, name, type, review_status, verification_status, suggested_date, verification_run_at')
+  let festivals = FESTIVALS_2026;
+  const occRows = await supabase
+    .from('observance_occurrences')
+    .select('*, observance_definitions(*)')
     .order('date', { ascending: true });
 
-  if (primary.error && isMissingVerificationColumn(primary.error)) {
-    const legacy = await supabase
-      .from('festivals')
-      .select('id, date, year, name, type, review_status')
-      .order('date', { ascending: true });
-    if (legacy.error) {
-      return NextResponse.json({ error: legacy.error.message }, { status: 500 });
-    }
-    festivalRows = legacy.data;
-  } else if (primary.error) {
-    return NextResponse.json({ error: primary.error.message }, { status: 500 });
-  } else {
-    festivalRows = primary.data;
+  if (!occRows.error) {
+    const festivalsFromDb = (occRows.data ?? []).map((row) => mapOccurrenceToFestival(row));
+    festivals = festivalsFromDb.length > 0 ? festivalsFromDb : FESTIVALS_2026;
+  } else if (!isMissingObservanceModel(occRows.error)) {
+    return NextResponse.json({ error: occRows.error.message }, { status: 500 });
   }
 
-  const festivals = festivalRows ?? [];
   const remaining = festivals.filter((festival) => festival.date >= today).length;
   const nextYear  = currentYear + 1;
   const needsRefresh = remaining < LOW_THRESHOLD;
   const rowsByYear = festivals.reduce<Record<string, number>>((acc, festival) => {
-    const key = String(festival.year);
+    const key = String(festival.year ?? (festival.date ? new Date(festival.date).getFullYear() : currentYear));
     acc[key] = (acc[key] ?? 0) + 1;
     return acc;
   }, {});
   const pendingReview = festivals.filter((festival) => festival.review_status !== 'reviewed').length;
   const mismatches = festivals.filter((festival) => festival.verification_status === 'mismatch').length;
+  const notChecked = festivals.filter((festival) => festival.verification_status === 'not_checked').length;
+  const auditFailed = festivals.filter((festival) => festival.audit_status === 'failed').length;
   const suggestedDatePending = festivals.filter((festival) => Boolean(festival.suggested_date)).length;
   const unsafeObservanceRoutes = festivals.filter((festival) => (
-    festival.type === 'vrat' && resolveVratSlug(festival.name) === null
+    (festival.type === 'vrat' || festival.route_kind === 'vrat') &&
+    festival.route_slug === null &&
+    resolveVratSlug(festival.name) === null
   )).length;
   const verificationRuns = festivals
     .map((festival) => festival.verification_run_at)
@@ -110,6 +93,8 @@ export async function GET(request: Request) {
     rows_by_year: rowsByYear,
     pending_review: pendingReview,
     ai_mismatches: mismatches,
+    ai_not_checked: notChecked,
+    audit_failed: auditFailed,
     suggested_date_pending: suggestedDatePending,
     unsafe_observance_routes: unsafeObservanceRoutes,
     last_verification_run_at: verificationRuns[0] ?? null,

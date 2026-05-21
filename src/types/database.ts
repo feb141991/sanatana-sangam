@@ -323,6 +323,59 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['festivals']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['festivals']['Insert']>;
       };
+      observance_definitions: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          slug: string;
+          display_name: string;
+          kind: 'major' | 'vrat' | 'regional' | null;
+          tradition: 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'all' | null;
+          calendar_rule_type: string | null;
+          verification_type: 'solar_fixed' | 'lunar_tithi' | 'nakshatra_based' | 'regional_calendar' | 'historical_commemoration' | null;
+          route_kind: string | null;
+          route_slug: string | null;
+          region: string | null;
+          active: boolean;
+          emoji: string | null;
+          description: string | null;
+          is_shared: boolean;
+        };
+        Insert: Omit<Database['public']['Tables']['observance_definitions']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['observance_definitions']['Insert']>;
+      };
+      observance_occurrences: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          definition_id: string;
+          year: number;
+          date: string;
+          calculation_version: string;
+          calculated_by: string;
+          manual_date_override: string | null;
+          manual_override_reason: string | null;
+          locked_for_regeneration: boolean;
+          final_date_source: 'legacy_seed' | 'manual_override' | 'calculation_engine' | 'calculation_engine_reviewed' | 'fallback';
+          audit_status: 'not_run' | 'completed' | 'failed' | 'skipped';
+          audit_failure_reason: string | null;
+          audit_retry_count: number;
+          last_audited_at: string | null;
+          verification_status: 'verified' | 'mismatch' | 'uncertain' | 'not_checked' | 'manual_review' | null;
+          verification_note: string | null;
+          suggested_date: string | null;
+          review_status: 'needs_review' | 'reviewed' | null;
+          source_provenance: Json;
+          verification_confidence: 'high' | 'medium' | 'low' | null;
+          verification_run_at: string | null;
+          reviewed_at: string | null;
+          review_notes: string | null;
+        };
+        Insert: Omit<Database['public']['Tables']['observance_occurrences']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['observance_occurrences']['Insert']>;
+      };
       guided_path_progress: {
         Row: {
           id: string;
@@ -446,3 +499,6 @@ export type CronLog = Database['public']['Tables']['cron_logs']['Row'];
 export type PostWithAuthor = Post & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'spiritual_level'> };
 export type ThreadWithAuthor = ForumThread & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya'> };
 export type PostCommentWithAuthor = PostComment & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url'> };
+
+export type ObservanceDefinition = Database['public']['Tables']['observance_definitions']['Row'];
+export type ObservanceOccurrence = Database['public']['Tables']['observance_occurrences']['Row'];

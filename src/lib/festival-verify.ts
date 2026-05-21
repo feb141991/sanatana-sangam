@@ -21,6 +21,7 @@
 
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import type { Festival, FestivalVerificationConfidence, FestivalVerificationStoredStatus, FestivalVerificationType } from '@/lib/festivals';
+import { CANONICAL_RULES } from '@/lib/calendar/rules';
 
 // ─── Tithi Rule Definitions ───────────────────────────────────────────────────
 
@@ -212,6 +213,7 @@ export const LUNAR_FESTIVAL_RULES: LunarFestivalRule[] = [
 export type VerificationStatus = FestivalVerificationStoredStatus;
 
 export interface FestivalVerificationResult {
+  id?: string;
   name: string;
   storedDate: string;
   rule: string;
@@ -233,7 +235,44 @@ export interface VerificationReport {
   mismatches: number;
   uncertain: number;
   manualReview: number;
+  auditStatus: 'completed' | 'failed';
+  auditFailureReason?: string | null;
   results: FestivalVerificationResult[];
+}
+
+function getTithiName(index: number): string {
+  const names = [
+    'Pratipada', 'Dwitiya', 'Tritiya', 'Chaturthi', 'Panchami',
+    'Shashthi', 'Saptami', 'Ashtami', 'Navami', 'Dashami',
+    'Ekadashi', 'Dwadashi', 'Trayodashi', 'Chaturdashi', 'Purnima',
+    'Pratipada', 'Dwitiya', 'Tritiya', 'Chaturthi', 'Panchami',
+    'Shashthi', 'Saptami', 'Ashtami', 'Navami', 'Dashami',
+    'Ekadashi', 'Dwadashi', 'Trayodashi', 'Chaturdashi', 'Amavasya'
+  ];
+  if (index < 1 || index > 30) return `Tithi ${index}`;
+  const paksha = index <= 15 ? 'Shukla' : 'Krishna';
+  return `${paksha} ${names[index - 1]}`;
+}
+
+function formatCanonicalRuleText(rule: any): string {
+  if (rule.rule_family === 'solar_fixed') {
+    return `Solar fixed date: Month ${rule.solar_month}, Day ${rule.solar_day}`;
+  }
+  if (rule.rule_family === 'lunar_tithi') {
+    if (rule.lunar_masa_name && rule.lunar_tithi_index !== undefined) {
+      return `${rule.lunar_masa_name} ${getTithiName(rule.lunar_tithi_index)} (${rule.lunar_masa_name} Masa, Tithi Index ${rule.lunar_tithi_index})`;
+    }
+  }
+  if (rule.rule_family === 'relative_to_other_observance') {
+    return `Relative to ${rule.relative_base_slug} by ${rule.relative_offset_days} days`;
+  }
+  if (rule.rule_family === 'nakshatra_based') {
+    return `Nakshatra based: Masa ${rule.lunar_masa_name || 'any'}, Nakshatra ${rule.nakshatra_name}`;
+  }
+  if (rule.rule_family === 'regional_calendar') {
+    return `Regional calendar rule: Masa ${rule.lunar_masa_name || 'any'}, Tithi Index ${rule.lunar_tithi_index || 'any'}`;
+  }
+  return `Rule type: ${rule.rule_family}`;
 }
 
 // ─── Core Verification Function ───────────────────────────────────────────────
@@ -251,13 +290,47 @@ export async function verifyFestivalDatesWithAI(
   festivals: Festival[],
   year: number,
 ): Promise<VerificationReport> {
-  // Build the list of festivals that have a lunar rule
-  const toCheck: Array<{ festival: Festival; rule: LunarFestivalRule }> = [];
+  const toCheck: Array<{
+    festival: Festival;
+    ruleText: string;
+    verificationType: FestivalVerificationType;
+    note?: string;
+  }> = [];
+
   for (const festival of festivals) {
-    const rule = LUNAR_FESTIVAL_RULES.find(r => r.name === festival.name);
-    if (rule) {
-      toCheck.push({ festival, rule });
+    let ruleText = '';
+    let verificationType: FestivalVerificationType | null = festival.verification_type || null;
+    let ruleNote = '';
+
+    const lRule = LUNAR_FESTIVAL_RULES.find(r => r.name === festival.name);
+    const cRule = CANONICAL_RULES.find(r =>
+      (festival.slug && r.slug === festival.slug) ||
+      (festival.route_slug && r.route_slug === festival.route_slug) ||
+      r.display_name === festival.name ||
+      r.slug === festival.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+    );
+
+    if (lRule) {
+      ruleText = lRule.rule;
+      if (!verificationType) verificationType = lRule.verificationType;
+      ruleNote = lRule.note || '';
+    } else if (cRule) {
+      ruleText = formatCanonicalRuleText(cRule);
+      if (!verificationType) verificationType = cRule.verification_type;
+      ruleNote = cRule.region ? `Regional: ${cRule.region}` : '';
+    } else {
+      if (!verificationType) {
+        verificationType = 'manual_review' as any;
+      }
+      ruleText = `Unknown rule for ${festival.name}`;
     }
+
+    toCheck.push({
+      festival,
+      ruleText,
+      verificationType: verificationType!,
+      note: ruleNote || undefined
+    });
   }
 
   if (toCheck.length === 0) {
@@ -269,29 +342,61 @@ export async function verifyFestivalDatesWithAI(
       mismatches: 0,
       uncertain: 0,
       manualReview: 0,
+      auditStatus: 'completed',
+      auditFailureReason: null,
       results: [],
     };
   }
 
-  const aiCheckable = toCheck.filter((item) => item.rule.verificationType === 'lunar_tithi');
-  const manualReviewResults: FestivalVerificationResult[] = toCheck
-    .filter((item) => item.rule.verificationType !== 'lunar_tithi')
-    .map((item) => ({
-      name: item.festival.name,
-      storedDate: item.festival.date,
-      rule: item.rule.rule,
-      status: 'manual_review',
-      verificationType: item.rule.verificationType,
-      confidence: 'medium',
-      note: item.rule.verificationType === 'nakshatra_based'
-        ? 'Needs manual calendar review — this observance is nakshatra-based.'
-        : 'Needs manual review because regional calendar practice can legitimately vary.',
-    }));
+  const solarFixedResults: FestivalVerificationResult[] = [];
+  const aiCheckable: Array<{
+    festival: Festival;
+    ruleText: string;
+    verificationType: FestivalVerificationType;
+    note?: string;
+  }> = [];
+  const manualReviewResults: FestivalVerificationResult[] = [];
+
+  for (const item of toCheck) {
+    if (item.verificationType === 'solar_fixed') {
+      solarFixedResults.push({
+        id: item.festival.id,
+        name: item.festival.name,
+        storedDate: item.festival.date,
+        rule: item.ruleText,
+        status: 'verified',
+        verificationType: 'solar_fixed',
+        confidence: 'high',
+        note: 'Solar fixed date — verified automatically.',
+      });
+    } else if (item.verificationType === 'lunar_tithi') {
+      aiCheckable.push(item);
+    } else {
+      let customNote = 'Needs manual review because regional calendar practice can legitimately vary.';
+      if (item.verificationType === 'nakshatra_based') {
+        customNote = 'Needs manual calendar review — this observance is nakshatra-based.';
+      } else if (item.verificationType === 'historical_commemoration') {
+        customNote = 'Needs manual review — historical commemoration date.';
+      } else if (item.note) {
+        customNote = `Needs manual review. ${item.note}`;
+      }
+      manualReviewResults.push({
+        id: item.festival.id,
+        name: item.festival.name,
+        storedDate: item.festival.date,
+        rule: item.ruleText,
+        status: 'manual_review',
+        verificationType: item.verificationType,
+        confidence: 'medium',
+        note: customNote,
+      });
+    }
+  }
 
   // Build the verification prompt
   const festivalList = aiCheckable.map((item, i) => {
-    const ruleNote = item.rule.note ? ` [Note: ${item.rule.note}]` : '';
-    return `${i + 1}. "${item.festival.name}" | Rule: ${item.rule.rule}${ruleNote} | Stored date: ${item.festival.date}`;
+    const ruleNote = item.note ? ` [Note: ${item.note}]` : '';
+    return `${i + 1}. "${item.festival.name}" | Rule: ${item.ruleText}${ruleNote} | Stored date: ${item.festival.date}`;
   }).join('\n');
 
   const prompt = `You are an expert in the Hindu Panchang (lunar calendar) with precise knowledge of tithi calculations for ${year}.
@@ -349,23 +454,26 @@ Respond with the JSON array only:`;
     } catch (err) {
       console.error('[festival-verify] AI call failed:', err);
       const notChecked: FestivalVerificationResult[] = aiCheckable.map((item) => ({
+        id: item.festival.id,
         name: item.festival.name,
         storedDate: item.festival.date,
-        rule: item.rule.rule,
+        rule: item.ruleText,
         status: 'not_checked',
-        verificationType: item.rule.verificationType,
+        verificationType: item.verificationType,
         confidence: 'low',
         note: 'AI verification unavailable — check manually',
       }));
-      const combined = [...notChecked, ...manualReviewResults];
+      const combined = [...solarFixedResults, ...notChecked, ...manualReviewResults];
       return {
         year,
         runAt: new Date().toISOString(),
         totalChecked: combined.length,
-        verified: 0,
+        verified: solarFixedResults.length,
         mismatches: 0,
         uncertain: 0,
         manualReview: manualReviewResults.length,
+        auditStatus: 'failed',
+        auditFailureReason: err instanceof Error ? err.message : String(err ?? 'AI verification unavailable'),
         results: combined,
       };
     }
@@ -373,31 +481,33 @@ Respond with the JSON array only:`;
 
   // Merge AI results back with rule metadata
   const results: FestivalVerificationResult[] = aiCheckable.map(item => {
-    const aiResult = aiResults.find(r => r.name === item.festival.name);
+    const aiResult = aiResults.find(r => r.name === item.festival.name && r.storedDate === item.festival.date);
     if (!aiResult) {
       return {
+        id: item.festival.id,
         name: item.festival.name,
         storedDate: item.festival.date,
-        rule: item.rule.rule,
+        rule: item.ruleText,
         status: 'not_checked',
-        verificationType: item.rule.verificationType,
+        verificationType: item.verificationType,
         confidence: 'low',
         note: 'Not returned by AI — verify manually',
       };
     }
     return {
+      id: item.festival.id,
       name: item.festival.name,
       storedDate: item.festival.date,
-      rule: item.rule.rule,
+      rule: item.ruleText,
       status: aiResult.status,
-      verificationType: item.rule.verificationType,
+      verificationType: item.verificationType,
       suggestedDate: aiResult.suggestedDate ?? undefined,
       confidence: aiResult.confidence ?? 'medium',
       note: aiResult.note ?? '',
     };
   });
 
-  const combinedResults = [...results, ...manualReviewResults];
+  const combinedResults = [...solarFixedResults, ...results, ...manualReviewResults];
   const verified = combinedResults.filter(r => r.status === 'verified').length;
   const mismatches = combinedResults.filter(r => r.status === 'mismatch').length;
   const uncertain = combinedResults.filter(r => r.status === 'uncertain').length;
@@ -411,6 +521,8 @@ Respond with the JSON array only:`;
     mismatches,
     uncertain,
     manualReview,
+    auditStatus: 'completed',
+    auditFailureReason: null,
     results: combinedResults,
   };
 }

@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import HomeDashboard from './HomeDashboard';
 import { getTodayShloka } from '@/lib/shlokas';
 import {
-  attachFestivalTrust,
+  mapOccurrenceToFestival,
   buildFestivalCalendarMeta,
   daysUntil,
   FESTIVALS_2026,
@@ -39,8 +39,8 @@ export default async function HomePage() {
   const dayIndex  = getDayOfYear();
 
   const { data: calendarRows } = await supabase
-    .from('festivals')
-    .select('name, date, emoji, description, type, tradition, source_name, source_kind, review_status')
+    .from('observance_occurrences')
+    .select('*, observance_definitions(*)')
     .order('date', { ascending: true })
     .limit(160);
 
@@ -49,8 +49,7 @@ export default async function HomePage() {
   const shloka     = getTodayShloka(profile?.timezone ?? undefined);
   const sacredText = getDailySacredText(tradition, dayIndex);
 
-  const calendarFromDb = ((calendarRows ?? []) as Pick<Database['public']['Tables']['festivals']['Row'], 'name' | 'date' | 'emoji' | 'description' | 'type' | 'tradition' | 'source_name' | 'source_kind' | 'review_status'>[])
-    .map((row) => attachFestivalTrust(row));
+  const calendarFromDb = (calendarRows ?? []).map((row) => mapOccurrenceToFestival(row));
 
   const festivalCalendar = calendarFromDb.length > 0 ? calendarFromDb : FESTIVALS_2026;
   const festivalCalendarMeta: FestivalCalendarMeta = buildFestivalCalendarMeta(

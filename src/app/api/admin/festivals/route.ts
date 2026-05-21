@@ -3,6 +3,7 @@ import { requireAdminAccess } from '@/lib/admin';
 import {
   attachFestivalTrust,
   getFallbackFestivalCalendar,
+  mapOccurrenceToFestival,
   type Festival,
   type FestivalSourceRow,
 } from '@/lib/festivals';
@@ -37,7 +38,9 @@ type FestivalAdminStats = {
   aiVerified: number;
   aiMismatches: number;
   aiUncertain: number;
+  aiNotChecked: number;
   aiManualReview: number;
+  auditFailed: number;
   suggestedDatePending: number;
   unsafeObservanceRoutes: number;
   lastVerificationRunAt: string | null;
@@ -51,8 +54,16 @@ function isMissingVerificationColumn(error: unknown): boolean {
   return /verification_status|verification_confidence|verification_note|suggested_date|verification_run_at|verification_type/i.test(message);
 }
 
+function isMissingObservanceModel(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error ?? '');
+  return /observance_occurrences|observance_definitions/i.test(message);
+}
+
 function buildFestivalAdminStats(festivals: Festival[]): FestivalAdminStats {
   const unsafeObservanceRoutes = festivals.filter((festival) => {
+    if (festival.route_kind === 'vrat') {
+      return !festival.route_slug;
+    }
     if (festival.type !== 'vrat') return false;
     return resolveVratSlug(festival.name) === null;
   }).length;
@@ -69,7 +80,9 @@ function buildFestivalAdminStats(festivals: Festival[]): FestivalAdminStats {
     aiVerified: festivals.filter((festival) => festival.verification_status === 'verified').length,
     aiMismatches: festivals.filter((festival) => festival.verification_status === 'mismatch').length,
     aiUncertain: festivals.filter((festival) => festival.verification_status === 'uncertain').length,
+    aiNotChecked: festivals.filter((festival) => festival.verification_status === 'not_checked').length,
     aiManualReview: festivals.filter((festival) => festival.verification_status === 'manual_review').length,
+    auditFailed: festivals.filter((festival) => festival.audit_status === 'failed').length,
     suggestedDatePending: festivals.filter((festival) => Boolean(festival.suggested_date)).length,
     unsafeObservanceRoutes,
     lastVerificationRunAt: verificationRuns[0] ?? null,
@@ -88,39 +101,68 @@ export async function GET(request: NextRequest) {
     : new Date().getFullYear();
 
   try {
-    const { data: yearsData, error: yearsError } = await admin.supabase
-      .from('festivals')
+    let yearsData: Array<{ year: number }> | null = null;
+    let festivals: Festival[] = [];
+    let source: 'database' | 'fallback' = 'database';
+
+    const occYears = await admin.supabase
+      .from('observance_occurrences')
       .select('year')
       .order('year', { ascending: true });
-    if (yearsError) throw yearsError;
 
-    let rows: FestivalRow[] | null = null;
-    let source: 'database' | 'fallback' = 'database';
-    const primary = await admin.supabase
-      .from('festivals')
-      .select(FESTIVAL_SELECT_FULL)
-      .eq('year', requestedYear)
-      .order('date', { ascending: true });
-
-    if (primary.error && isMissingVerificationColumn(primary.error)) {
-      const legacy = await admin.supabase
-        .from('festivals')
-        .select(FESTIVAL_SELECT_LEGACY)
+    if (!occYears.error) {
+      yearsData = (occYears.data ?? []) as Array<{ year: number }>;
+      const occRows = await admin.supabase
+        .from('observance_occurrences')
+        .select('*, observance_definitions(*)')
         .eq('year', requestedYear)
         .order('date', { ascending: true });
-      if (legacy.error) throw legacy.error;
-      rows = (legacy.data ?? []) as FestivalRow[];
-    } else if (primary.error) {
-      throw primary.error;
+
+      if (occRows.error) throw occRows.error;
+
+      const dbFestivals = (occRows.data ?? []).map((row) => mapOccurrenceToFestival(row));
+      festivals = dbFestivals.length > 0 ? dbFestivals : getFallbackFestivalCalendar(requestedYear);
+      if (dbFestivals.length === 0) source = 'fallback';
     } else {
-      rows = (primary.data ?? []) as FestivalRow[];
+      if (!isMissingObservanceModel(occYears.error)) {
+        throw occYears.error;
+      }
+
+      const legacyYears = await admin.supabase
+        .from('festivals')
+        .select('year')
+        .order('year', { ascending: true });
+      if (legacyYears.error) throw legacyYears.error;
+      yearsData = (legacyYears.data ?? []) as Array<{ year: number }>;
+
+      let rows: FestivalRow[] | null = null;
+      const primary = await admin.supabase
+        .from('festivals')
+        .select(FESTIVAL_SELECT_FULL)
+        .eq('year', requestedYear)
+        .order('date', { ascending: true });
+
+      if (primary.error && isMissingVerificationColumn(primary.error)) {
+        const legacy = await admin.supabase
+          .from('festivals')
+          .select(FESTIVAL_SELECT_LEGACY)
+          .eq('year', requestedYear)
+          .order('date', { ascending: true });
+        if (legacy.error) throw legacy.error;
+        rows = (legacy.data ?? []) as FestivalRow[];
+      } else if (primary.error) {
+        throw primary.error;
+      } else {
+        rows = (primary.data ?? []) as FestivalRow[];
+      }
+
+      const dbFestivals = (rows ?? []).map((row) =>
+        attachFestivalTrust(row as FestivalSourceRow)
+      );
+      festivals = dbFestivals.length > 0 ? dbFestivals : getFallbackFestivalCalendar(requestedYear);
+      if (dbFestivals.length === 0) source = 'fallback';
     }
 
-    const dbFestivals = (rows ?? []).map((row) =>
-      attachFestivalTrust(row as FestivalSourceRow)
-    );
-    const festivals = dbFestivals.length > 0 ? dbFestivals : getFallbackFestivalCalendar(requestedYear);
-    if (dbFestivals.length === 0) source = 'fallback';
     const availableYears = Array.from(
       new Set([
         ...((yearsData ?? []).map((row) => row.year).filter((value): value is number => Number.isFinite(value))),
@@ -135,7 +177,8 @@ export async function GET(request: NextRequest) {
       availableYears,
       stats: buildFestivalAdminStats(festivals),
     });
-  } catch {
-    return NextResponse.json({ error: 'Failed to fetch festivals' }, { status: 500 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to fetch festivals';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

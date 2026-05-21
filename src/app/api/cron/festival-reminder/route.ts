@@ -2,6 +2,12 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
 import { canSendInLocalWindow, getLocalDateIso, isoDateDiff, resolveTimeZone } from '@/lib/sacred-time';
+import { mapOccurrenceToFestival, FESTIVALS_2026 } from '@/lib/festivals';
+
+function isMissingObservanceModel(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error ?? '');
+  return /observance_occurrences|observance_definitions/i.test(message);
+}
 
 function buildFestivalReminderBody(tradition: string | null | undefined, festivalName: string, festivalDescription: string, festivalDate: string, daysAway: number) {
   const tomorrowTailByTradition: Record<string, string> = {
@@ -57,17 +63,26 @@ export async function GET(request: Request) {
     const now = new Date();
     const targetLocalHour = 9;
 
-    const { data: festivals, error: festivalsError } = await supabase
-      .from('festivals')
-      .select('*')
+    const occRows = await supabase
+      .from('observance_occurrences')
+      .select('*, observance_definitions(*)')
       .order('date', { ascending: true });
 
-    if (festivalsError) {
-      console.error('Festival cron festivals query failed:', festivalsError);
+    if (occRows.error && !isMissingObservanceModel(occRows.error)) {
+      console.error('Festival cron occurrences query failed:', occRows.error);
       return NextResponse.json(
-        { error: `Festival query failed: ${festivalsError.message}` },
+        { error: `Occurrences query failed: ${occRows.error.message}` },
         { status: 500 }
       );
+    }
+
+    const festivalsFromDb = !occRows.error
+      ? (occRows.data ?? []).map((row) => mapOccurrenceToFestival(row))
+      : [];
+    const festivals = festivalsFromDb.length > 0 ? festivalsFromDb : FESTIVALS_2026;
+
+    if (occRows.error && isMissingObservanceModel(occRows.error)) {
+      console.warn('Festival cron observance model missing; falling back to static calendar');
     }
 
     if (!festivals || festivals.length === 0) {
