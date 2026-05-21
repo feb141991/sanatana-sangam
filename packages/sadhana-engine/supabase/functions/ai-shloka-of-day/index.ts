@@ -14,8 +14,8 @@
 // ============================================================
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { generateText } from '../_shared/pramana-client.ts';
 
-const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY') ?? '';
 const SUPABASE_URL   = Deno.env.get('SUPABASE_URL')   ?? '';
 const SERVICE_KEY    = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 
@@ -282,19 +282,8 @@ Be warm, direct, and inspiring. Address them as a sincere seeker. Respond in Eng
 
     let reflection = `On this ${panchang.tithi}, reflect on this teaching from ${chunk.text_id}. ${chunk.translation ?? ''}`;
 
-    if (GEMINI_API_KEY) {
-      const geminiRes = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.7, maxOutputTokens: 350 },
-          }),
-        }
-      );
 
+          const geminiText = await generateText(prompt, { temperature: 0.7, maxTokens: 350 });
       if (geminiRes.ok) {
         const d = await geminiRes.json();
         reflection = d?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? reflection;

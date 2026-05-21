@@ -22,9 +22,8 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { generateText } from '../_shared/pramana-client.ts';
 
-const GEMINI_URL =
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -358,7 +357,6 @@ interface GeminiInput {
 async function callGemini(
   input: GeminiInput
 ): Promise<{ greeting: string; shloka_context: string; practice_suggestion: string; nudge?: string }> {
-  const geminiKey = Deno.env.get('GEMINI_API_KEY');
 
   const { panchang, shlokaRef, shlokaText, currentStreak, nudgeStyle } = input;
 
@@ -406,15 +404,7 @@ Generate a JSON object (pure JSON, no markdown) with exactly these keys:
   "nudge": "Only if streak is 0: short motivational message matching their style. Omit this key entirely if streak > 0."
 }`;
 
-  const resp = await fetch(`${GEMINI_URL}?key=${geminiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: 500, temperature: 0.6, responseMimeType: 'application/json' },
-    }),
-  });
-
+      const text = await generateText(prompt, { temperature: 0.6, maxTokens: 500 });
   if (!resp.ok) {
     console.error('Gemini error:', await resp.text());
     return {

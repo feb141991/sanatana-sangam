@@ -12,9 +12,9 @@
 // ============================================================
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { generateText } from '../_shared/pramana-client.ts';
 
 const SUPABASE_URL = 'https://mnbwodcswxoojndytngu.supabase.co';
-const GEMINI_URL   = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 // J2000 panchang for muhurta context
 const J2000_NEW_MOON_MS = 947182440000;
@@ -56,7 +56,6 @@ Deno.serve(async (req) => {
     if (!sanskar_slug) return new Response(JSON.stringify({ error: 'sanskar_slug required' }), { status: 400 });
 
     const supabase  = createClient(SUPABASE_URL, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '');
-    const geminiKey = Deno.env.get('GEMINI_API_KEY');
 
     // Fetch sanskar
     const { data: sanskar } = await supabase
@@ -136,11 +135,7 @@ Provide a comprehensive, warm, and practical guide in this exact JSON format (no
   "diaspora_note": "Practical guidance for families outside India who may not have easy access to all items or priests"
 }`;
 
-    const resp  = await fetch(`${GEMINI_URL}?key=${geminiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-    });
+        const text = await generateText(prompt, { temperature: 0.7, maxTokens: 800 });
     const gData = await resp.json();
     const raw   = gData.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? '';
 

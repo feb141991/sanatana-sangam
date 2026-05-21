@@ -11,9 +11,9 @@
 // ============================================================
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { generateText } from '../_shared/pramana-client.ts';
 
 const SUPABASE_URL = 'https://mnbwodcswxoojndytngu.supabase.co';
-const GEMINI_URL   = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, content-type' } });
@@ -24,7 +24,6 @@ Deno.serve(async (req) => {
     if (!tirtha_slug && !tirtha_id) return new Response(JSON.stringify({ error: 'tirtha_slug or tirtha_id required' }), { status: 400 });
 
     const supabase  = createClient(SUPABASE_URL, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '');
-    const geminiKey = Deno.env.get('GEMINI_API_KEY');
 
     // Fetch tirtha
     let tirthaQuery = supabase.from('tirthas').select('*');
@@ -104,11 +103,7 @@ Provide a practical and spiritually rich guide in this exact JSON format (no mar
   "post_visit": "What to do after leaving — gratitude practice, prasad distribution, etc."
 }`;
 
-    const resp  = await fetch(`${GEMINI_URL}?key=${geminiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-    });
+        const text = await generateText(prompt, { temperature: 0.7, maxTokens: 800 });
     const gData = await resp.json();
     const raw   = gData.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? '';
 

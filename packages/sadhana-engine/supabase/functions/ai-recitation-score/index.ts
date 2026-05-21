@@ -16,9 +16,9 @@
 // ============================================================
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { generateText } from '../_shared/pramana-client.ts';
 
 const GROQ_API_KEY   = Deno.env.get('GROQ_API_KEY')   ?? '';
-const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY') ?? '';
 const SUPABASE_URL   = Deno.env.get('SUPABASE_URL')   ?? '';
 const SERVICE_KEY    = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 
@@ -331,23 +331,10 @@ Feedback: be encouraging — address the student as a sincere practitioner. Note
 
     let scores: GeminiScore = buildFallbackScore(diffs);
 
-    if (GEMINI_API_KEY) {
-      const geminiRes = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.3, maxOutputTokens: 1024 },
-          }),
-        }
-      );
 
+          const geminiText = await generateText(prompt, { temperature: 0.3, maxTokens: 1024 });
       if (geminiRes.ok) {
-        const geminiData = await geminiRes.json();
-        const raw = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
-        scores = extractJSON(raw) ?? buildFallbackScore(diffs);
+                scores = extractJSON(raw) ?? buildFallbackScore(diffs);
       }
     }
 

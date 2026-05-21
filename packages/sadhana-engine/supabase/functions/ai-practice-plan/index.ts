@@ -10,9 +10,9 @@
 // ============================================================
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { generateText } from '../_shared/pramana-client.ts';
 
 const SUPABASE_URL = 'https://mnbwodcswxoojndytngu.supabase.co';
-const GEMINI_URL   = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 const J2000_NEW_MOON_MS = 947182440000;
 const LUNAR_MONTH_MS    = 29.53058867 * 86400000;
@@ -66,7 +66,6 @@ Deno.serve(async (req) => {
     if (!user_id) return new Response(JSON.stringify({ error: 'user_id required' }), { status: 400 });
 
     const supabase  = createClient(SUPABASE_URL, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '');
-    const geminiKey = Deno.env.get('GEMINI_API_KEY');
 
     // Week starts today or given date
     const startDate = week_start_date ? new Date(week_start_date) : (() => {
@@ -188,11 +187,7 @@ Respond in this exact JSON (no markdown):
   ]
 }`;
 
-    const resp  = await fetch(`${GEMINI_URL}?key=${geminiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-    });
+        const text = await generateText(prompt, { temperature: 0.7, maxTokens: 800 });
     const gData = await resp.json();
     const raw   = gData.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? '';
 

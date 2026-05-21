@@ -20,9 +20,8 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { generateText } from '../_shared/pramana-client.ts';
 
-const GEMINI_URL =
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 const ONESIGNAL_API = 'https://onesignal.com/api/v1/notifications';
 
 const CORS_HEADERS = {
@@ -194,7 +193,6 @@ async function generateKulNudge(opts: {
   deity: string;
   path: string;
 }): Promise<{ message: string; call_to_action: string }> {
-  const geminiKey = Deno.env.get('GEMINI_API_KEY');
 
   const { kulName, kulEmoji, membersCount, totalJapa, tradition, deity } = opts;
 
@@ -222,15 +220,7 @@ Return JSON only:
   "call_to_action": "Button text (max 25 characters)"
 }`;
 
-  const resp = await fetch(`${GEMINI_URL}?key=${geminiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: 120, temperature: 0.7, responseMimeType: 'application/json' },
-    }),
-  });
-
+      const text = await generateText(prompt, { temperature: 0.7, maxTokens: 120 });
   if (!resp.ok) {
     return {
       message: `${membersCount} member(s) of ${kulName} have practiced today. Come join them.`,

@@ -35,9 +35,8 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { generateText } from '../_shared/pramana-client.ts';
 
-const GEMINI_URL =
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 const ONESIGNAL_API = 'https://onesignal.com/api/v1/notifications';
 
@@ -335,7 +334,6 @@ async function generateStreakRecovery(
   nudgeStyle: string,
   daysMissed: number
 ): Promise<{ message: string; call_to_action: string }> {
-  const geminiKey = Deno.env.get('GEMINI_API_KEY');
 
   const styleGuide: Record<string, string> = {
     gentle: 'Warm, compassionate, no pressure. Remind them of the joy of practice, not the obligation.',
@@ -385,19 +383,7 @@ Write a push notification (JSON, no markdown):
 
 Important: Keep it brief — this is a mobile push notification, not an essay.`;
 
-  const resp = await fetch(`${GEMINI_URL}?key=${geminiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: {
-        maxOutputTokens: 150,
-        temperature: 0.7,
-        responseMimeType: 'application/json',
-      },
-    }),
-  });
-
+      const text = await generateText(prompt, { temperature: 0.7, maxTokens: 150 });
   if (!resp.ok) {
     return { message: "Your practice is waiting. Come back today.", call_to_action: "Open Sangam" };
   }
@@ -419,7 +405,6 @@ async function generateVrataReminder(
   vrataName: string,
   tithi: string
 ): Promise<{ message: string; call_to_action: string }> {
-  const geminiKey = Deno.env.get('GEMINI_API_KEY');
 
   if (!geminiKey) {
     return {
@@ -436,15 +421,7 @@ async function generateVrataReminder(
   "call_to_action": "Max 25 characters"
 }`;
 
-  const resp = await fetch(`${GEMINI_URL}?key=${geminiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: 100, temperature: 0.5, responseMimeType: 'application/json' },
-    }),
-  });
-
+      const text = await generateText(prompt, { temperature: 0.7, maxTokens: 150 });
   if (!resp.ok) return { message: `Tomorrow is ${vrataName}. Prepare with devotion.`, call_to_action: 'See vrata guide' };
 
   const json = await resp.json();

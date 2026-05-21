@@ -9,9 +9,9 @@
 // ============================================================
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { generateText } from '../_shared/pramana-client.ts';
 
 const SUPABASE_URL = 'https://mnbwodcswxoojndytngu.supabase.co';
-const GEMINI_URL   = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 // J2000 astronomical panchang (same as ai-personalise)
 const J2000_NEW_MOON_MS  = 947182440000;
@@ -121,7 +121,6 @@ Deno.serve(async (req) => {
       panchang.vaara_vrata && `Day observance: ${panchang.vaara_vrata}`,
     ].filter(Boolean).join(' · ');
 
-    const geminiKey = Deno.env.get('GEMINI_API_KEY');
     let greeting    = `Hari Om. ${panchangLine}. Begin your sadhana with devotion.`;
 
     if (geminiKey) {
@@ -143,11 +142,7 @@ Guidelines:
 Reply with the greeting only, no extra formatting.`;
 
       try {
-        const resp = await fetch(`${GEMINI_URL}?key=${geminiKey}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-        });
+            const text = await generateText(prompt, { temperature: 0.6, maxTokens: 200 });
         const gData = await resp.json();
         const text = gData.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
         if (text) greeting = text;

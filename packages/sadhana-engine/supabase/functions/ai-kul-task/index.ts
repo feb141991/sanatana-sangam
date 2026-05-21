@@ -22,9 +22,8 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { generateText } from '../_shared/pramana-client.ts';
 
-const GEMINI_URL =
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -206,17 +205,12 @@ async function generateTaskSuggestion(opts: {
   activeTasks: Array<{ title: string; task_type: string }>;
   override: Record<string, unknown>;
 }): Promise<TaskSuggestion> {
-  const geminiKey = Deno.env.get('GEMINI_API_KEY');
   const { memberProfile: p, recentTasks, activeTasks, override } = opts;
 
   const consistencyPct = Math.round((p.consistency_score ?? 0) * 100);
   const avgMinutes     = Math.round((p.avg_session_duration_s ?? 0) / 60);
 
   // Fallback suggestion
-  if (!geminiKey) {
-    return buildFallbackTask(p);
-  }
-
   const recentStr = recentTasks.length
     ? recentTasks.map(t => `${t.task_type}: ${t.title}`).join(', ')
     : 'none yet';
@@ -261,15 +255,7 @@ Return JSON only:
   "guardian_note": "A warm, personal 1-sentence note from the guardian to this member. Like a guru encouraging a student."
 }`;
 
-  const resp = await fetch(`${GEMINI_URL}?key=${geminiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: 400, temperature: 0.6, responseMimeType: 'application/json' },
-    }),
-  });
-
+      const text = await generateText(prompt, { temperature: 0.6, maxTokens: 400 });
   if (!resp.ok) return buildFallbackTask(p);
 
   const json = await resp.json();

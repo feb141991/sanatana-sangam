@@ -18,9 +18,8 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { generateText } from '../_shared/pramana-client.ts';
 
-const GEMINI_URL =
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -147,7 +146,6 @@ async function generateExplanation(
   verses: Array<{ text_id: string; chapter: number; verse: number; translation: string; transliteration: string }>,
   profile: Record<string, unknown> | null
 ): Promise<string> {
-  const geminiKey = Deno.env.get('GEMINI_API_KEY');
   if (!geminiKey) return verses.map(v => `${v.text_id.toUpperCase()} ${v.chapter}.${v.verse}: ${v.translation}`).join('\n\n');
 
   const tradition = profile?.tradition ?? 'general';
@@ -176,15 +174,7 @@ Please provide a thoughtful, concise answer (3-5 sentences) that:
 
 Write in a warm, scholarly tone — like a trusted guru speaking directly to the devotee.`;
 
-  const resp = await fetch(`${GEMINI_URL}?key=${geminiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: 400, temperature: 0.4 },
-    }),
-  });
-
+      const text = await generateText(prompt, { temperature: 0.4, maxTokens: 400 });
   if (!resp.ok) {
     console.error('Gemini error:', await resp.text());
     return verses[0]?.translation ?? '';

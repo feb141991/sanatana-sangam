@@ -18,9 +18,8 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { generateText } from '../_shared/pramana-client.ts';
 
-const GEMINI_URL =
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -183,7 +182,6 @@ async function generateWeeklyDigest(opts: {
   pendingTasks: Array<{ title: string; task_type: string; urgency: string }>;
   upcomingEvents: Array<{ title: string; event_type: string; event_date: string }>;
 }): Promise<{ kul_message: string; member_notification: string }> {
-  const geminiKey = Deno.env.get('GEMINI_API_KEY');
 
   const {
     kulName, kulEmoji, totalMembers, activeMembers, totalJapa,
@@ -225,15 +223,7 @@ Generate two things (JSON, no markdown):
   "member_notification": "A short push notification body (max 100 chars) teasing the weekly summary. Should make members want to open the app and see full stats."
 }`;
 
-  const resp = await fetch(`${GEMINI_URL}?key=${geminiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: 300, temperature: 0.7, responseMimeType: 'application/json' },
-    }),
-  });
-
+      const text = await generateText(prompt, { temperature: 0.7, maxTokens: 300 });
   if (!resp.ok) {
     return {
       kul_message: `${activeMembers} of ${totalMembers} members practiced this week with ${totalJapa.toLocaleString()} total japa. ${topStreak > 0 ? `Best streak: ${topStreak} days.` : ''} Keep going! 🙏`,
