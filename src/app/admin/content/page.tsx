@@ -313,7 +313,9 @@ export default function FestivalManagement() {
               {reportError && !verifying && (
                 <div className="px-6 py-8 text-center">
                   <AlertCircle size={32} className="text-rose-500 mx-auto mb-3" />
-                  <p className="text-sm font-bold text-rose-600">Verification failed</p>
+                  <p className="text-sm font-bold text-rose-600">
+                    {report ? 'Verification completed with audit failures' : 'Verification failed'}
+                  </p>
                   <p className="text-xs text-[var(--brand-muted)] mt-1">{reportError}</p>
                 </div>
               )}

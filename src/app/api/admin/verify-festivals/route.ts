@@ -96,9 +96,14 @@ export async function POST(req: Request) {
         ));
         if (!row) return;
         const requiresAiAudit = result.verificationType === 'lunar_tithi';
-        const nextAuditStatus = requiresAiAudit
-          ? (report.auditStatus === 'failed' ? 'failed' : 'completed')
-          : 'skipped';
+        const rowAuditFailed = requiresAiAudit
+          && result.status === 'not_checked'
+          && /AI verification unavailable|AI did not return a result|Not returned by AI/i.test(result.note);
+        const nextAuditStatus = !requiresAiAudit
+          ? 'skipped'
+          : rowAuditFailed
+            ? 'failed'
+            : 'completed';
         const currentRetryCount = typeof (row as any).audit_retry_count === 'number'
           ? (row as any).audit_retry_count
           : 0;
@@ -111,10 +116,10 @@ export async function POST(req: Request) {
             suggested_date: result.suggestedDate ?? null,
             verification_run_at: report.runAt,
             audit_status: nextAuditStatus,
-            audit_failure_reason: requiresAiAudit && report.auditStatus === 'failed'
-              ? (report.auditFailureReason ?? 'AI verification unavailable')
+            audit_failure_reason: rowAuditFailed
+              ? result.note
               : null,
-            audit_retry_count: requiresAiAudit && report.auditStatus === 'failed'
+            audit_retry_count: rowAuditFailed
               ? currentRetryCount + 1
               : 0,
             last_audited_at: report.runAt,

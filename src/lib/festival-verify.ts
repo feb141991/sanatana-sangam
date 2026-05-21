@@ -240,6 +240,67 @@ export interface VerificationReport {
   results: FestivalVerificationResult[];
 }
 
+const AI_VERIFICATION_BATCH_SIZE = 8;
+
+function chunkArray<T>(items: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let index = 0; index < items.length; index += size) {
+    chunks.push(items.slice(index, index + size));
+  }
+  return chunks;
+}
+
+function buildVerificationPrompt(
+  year: number,
+  batch: Array<{
+    festival: Festival;
+    ruleText: string;
+    verificationType: FestivalVerificationType;
+    note?: string;
+  }>
+): string {
+  const festivalList = batch.map((item, i) => {
+    const ruleNote = item.note ? ` [Note: ${item.note}]` : '';
+    return `${i + 1}. "${item.festival.name}" | Rule: ${item.ruleText}${ruleNote} | Stored date: ${item.festival.date}`;
+  }).join('\n');
+
+  return `You are an expert in the Hindu Panchang (lunar calendar) with precise knowledge of tithi calculations for ${year}.
+
+Your task: verify whether each festival date below matches its traditional tithi rule for the year ${year}.
+
+For each festival:
+- Check if the stored Gregorian date correctly corresponds to the tithi rule
+- If correct, mark as verified
+- If wrong, provide the correct Gregorian date
+- If you are unsure (e.g. regional variation or ambiguous tithi boundary), mark as uncertain
+
+IMPORTANT RULES:
+- Tithi boundaries are determined by sunrise at a standard IST location (Ujjain/Varanasi)
+- If the tithi spans midnight, the date when it prevails at sunrise is the observance day
+- Regional variations are valid — flag them in the note, do not mark as mismatch if both dates are legitimate
+
+Respond ONLY with a JSON array. No explanation outside the JSON.
+Each object must have these exact fields:
+  "name": string (exact festival name from input),
+  "storedDate": string (the date from input, YYYY-MM-DD),
+  "status": "verified" | "mismatch" | "uncertain",
+  "suggestedDate": string | null (YYYY-MM-DD, only if mismatch),
+  "confidence": "high" | "medium" | "low",
+  "note": string (brief explanation, max 30 words)
+
+Festivals to verify for ${year}:
+${festivalList}
+
+Respond with the JSON array only:`;
+}
+
+function extractJsonArray(text: string): any[] {
+  const match = text.match(/\[[\s\S]*\]/);
+  if (!match) return [];
+  const parsed = JSON.parse(match[0]);
+  return Array.isArray(parsed) ? parsed : [];
+}
+
 function getTithiName(index: number): string {
   const names = [
     'Pratipada', 'Dwitiya', 'Tritiya', 'Chaturthi', 'Panchami',
@@ -393,41 +454,6 @@ export async function verifyFestivalDatesWithAI(
     }
   }
 
-  // Build the verification prompt
-  const festivalList = aiCheckable.map((item, i) => {
-    const ruleNote = item.note ? ` [Note: ${item.note}]` : '';
-    return `${i + 1}. "${item.festival.name}" | Rule: ${item.ruleText}${ruleNote} | Stored date: ${item.festival.date}`;
-  }).join('\n');
-
-  const prompt = `You are an expert in the Hindu Panchang (lunar calendar) with precise knowledge of tithi calculations for ${year}.
-
-Your task: verify whether each festival date below matches its traditional tithi rule for the year ${year}.
-
-For each festival:
-- Check if the stored Gregorian date correctly corresponds to the tithi rule
-- If correct, mark as verified
-- If wrong, provide the correct Gregorian date
-- If you are unsure (e.g. regional variation or ambiguous tithi boundary), mark as uncertain
-
-IMPORTANT RULES:
-- Tithi boundaries are determined by sunrise at a standard IST location (Ujjain/Varanasi)
-- If the tithi spans midnight, the date when it prevails at sunrise is the observance day
-- Regional variations are valid — flag them in the note, do not mark as mismatch if both dates are legitimate
-
-Respond ONLY with a JSON array. No explanation outside the JSON.
-Each object must have these exact fields:
-  "name": string (exact festival name from input),
-  "storedDate": string (the date from input, YYYY-MM-DD),
-  "status": "verified" | "mismatch" | "uncertain",
-  "suggestedDate": string | null (YYYY-MM-DD, only if mismatch),
-  "confidence": "high" | "medium" | "low",
-  "note": string (brief explanation, max 30 words)
-
-Festivals to verify for ${year}:
-${festivalList}
-
-Respond with the JSON array only:`;
-
   let aiResults: Array<{
     name: string;
     storedDate: string;
@@ -436,50 +462,61 @@ Respond with the JSON array only:`;
     confidence: FestivalVerificationConfidence;
     note: string;
   }> = [];
+  let auditStatus: 'completed' | 'failed' = 'completed';
+  let auditFailureReason: string | null = null;
 
   if (aiCheckable.length > 0) {
-    try {
-      const response = await generateWithProvider(
-        { user: prompt, temperature: 0.1, reasoningEffort: 'low', maxOutputTokens: 1800 },
-        { responseFormat: 'json' },
-      );
+    const batchFailures: string[] = [];
+    for (const batch of chunkArray(aiCheckable, AI_VERIFICATION_BATCH_SIZE)) {
+      const prompt = buildVerificationPrompt(year, batch);
+      try {
+        const response = await generateWithProvider(
+          { user: prompt, temperature: 0.1, reasoningEffort: 'none', maxOutputTokens: 1200 },
+          { responseFormat: 'json' },
+        );
 
-      const match = response.text.match(/\[[\s\S]*\]/);
-      if (match) {
-        const parsed = JSON.parse(match[0]);
-        if (Array.isArray(parsed)) {
-          aiResults = parsed;
+        const parsed = extractJsonArray(response.text);
+        const parsedByKey = new Map(
+          parsed.map((row: any) => [`${row?.name ?? ''}::${row?.storedDate ?? ''}`, row])
+        );
+
+        for (const item of batch) {
+          const key = `${item.festival.name}::${item.festival.date}`;
+          const aiResult = parsedByKey.get(key);
+          if (aiResult) {
+            aiResults.push(aiResult);
+          } else {
+            const reason = 'AI did not return a result for this festival in the verification batch';
+            batchFailures.push(`${item.festival.name}: ${reason}`);
+            aiResults.push({
+              name: item.festival.name,
+              storedDate: item.festival.date,
+              status: 'not_checked',
+              confidence: 'low',
+              note: reason,
+            });
+          }
         }
+      } catch (err) {
+        console.error('[festival-verify] AI call failed:', err);
+        const reason = err instanceof Error ? err.message : String(err ?? 'AI verification unavailable');
+        batchFailures.push(reason);
+        aiResults.push(...batch.map((item) => ({
+          name: item.festival.name,
+          storedDate: item.festival.date,
+          status: 'not_checked' as VerificationStatus,
+          confidence: 'low' as FestivalVerificationConfidence,
+          note: `AI verification unavailable — ${reason}`,
+        })));
       }
-    } catch (err) {
-      console.error('[festival-verify] AI call failed:', err);
-      const notChecked: FestivalVerificationResult[] = aiCheckable.map((item) => ({
-        id: item.festival.id,
-        name: item.festival.name,
-        storedDate: item.festival.date,
-        rule: item.ruleText,
-        status: 'not_checked',
-        verificationType: item.verificationType,
-        confidence: 'low',
-        note: 'AI verification unavailable — check manually',
-      }));
-      const combined = [...solarFixedResults, ...notChecked, ...manualReviewResults];
-      return {
-        year,
-        runAt: new Date().toISOString(),
-        totalChecked: combined.length,
-        verified: solarFixedResults.length,
-        mismatches: 0,
-        uncertain: 0,
-        manualReview: manualReviewResults.length,
-        auditStatus: 'failed',
-        auditFailureReason: err instanceof Error ? err.message : String(err ?? 'AI verification unavailable'),
-        results: combined,
-      };
+    }
+
+    if (batchFailures.length > 0) {
+      auditStatus = 'failed';
+      auditFailureReason = batchFailures.slice(0, 3).join(' | ');
     }
   }
 
-  // Merge AI results back with rule metadata
   const results: FestivalVerificationResult[] = aiCheckable.map(item => {
     const aiResult = aiResults.find(r => r.name === item.festival.name && r.storedDate === item.festival.date);
     if (!aiResult) {
@@ -521,8 +558,8 @@ Respond with the JSON array only:`;
     mismatches,
     uncertain,
     manualReview,
-    auditStatus: 'completed',
-    auditFailureReason: null,
+    auditStatus,
+    auditFailureReason,
     results: combinedResults,
   };
 }

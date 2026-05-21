@@ -11,11 +11,38 @@ function geminiUrl(model: string) {
   return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 }
 
+function extractGeminiText(data: any): string {
+  const candidates = Array.isArray(data?.candidates) ? data.candidates : [];
+  const parts = candidates.flatMap((candidate: any) =>
+    Array.isArray(candidate?.content?.parts) ? candidate.content.parts : []
+  );
+  const text = parts
+    .map((part: any) => (typeof part?.text === 'string' ? part.text : ''))
+    .filter(Boolean)
+    .join('\n')
+    .trim();
+  return text;
+}
+
+function summarizeGeminiEmptyResponse(model: string, data: any): string {
+  const candidates = Array.isArray(data?.candidates) ? data.candidates : [];
+  const finishReasons = candidates
+    .map((candidate: any) => candidate?.finishReason || candidate?.finish_reason)
+    .filter(Boolean)
+    .join(',');
+  const blockReason = data?.promptFeedback?.blockReason || data?.prompt_feedback?.block_reason || null;
+  const pieces = [`${model}: empty response`];
+  if (finishReasons) pieces.push(`finishReason=${finishReasons}`);
+  if (blockReason) pieces.push(`blockReason=${blockReason}`);
+  return pieces.join(' ');
+}
+
 export class GeminiModelAdapter implements ModelAdapter {
   constructor(private readonly options: GeminiAdapterOptions) {}
 
   async generate(prompt: PromptSpec): Promise<TextResult> {
     const models = this.options.models?.length ? this.options.models : DEFAULT_MODELS;
+    const attempts: string[] = [];
 
     for (const model of models) {
       const contents: any[] = [];
@@ -62,7 +89,7 @@ export class GeminiModelAdapter implements ModelAdapter {
 
       if (res.ok) {
         const data = await res.json();
-        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+        const text = extractGeminiText(data);
         if (text) {
           return {
             text,
@@ -70,13 +97,19 @@ export class GeminiModelAdapter implements ModelAdapter {
             provider: 'gemini',
           };
         }
+        attempts.push(summarizeGeminiEmptyResponse(model, data));
+        continue;
       }
 
-      if (res.status === 429 || res.status === 404) continue;
+      if (res.status === 429 || res.status === 404) {
+        attempts.push(`${model}: HTTP ${res.status}`);
+        continue;
+      }
       const errText = await res.text().catch(() => '');
       throw new Error(`Gemini ${res.status}: ${errText.slice(0, 200)}`);
     }
 
-    throw new Error('No response generated. Please try again.');
+    const detail = attempts.length > 0 ? ` Attempts: ${attempts.join(' | ')}` : '';
+    throw new Error(`No response generated. Please try again.${detail}`);
   }
 }
