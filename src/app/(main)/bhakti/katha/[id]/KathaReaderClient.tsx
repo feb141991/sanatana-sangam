@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -8,10 +8,19 @@ import {
   Star, ExternalLink, ChevronDown, ChevronUp, Loader2, Volume2, VolumeX, Copy, Check
 } from 'lucide-react';
 import Link from 'next/link';
-import toast from 'react-hot-toast';
 import type { Katha } from '@/lib/katha-library';
+import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
+import { resolveReadablePreferences } from '@/lib/readable-preferences';
+import { trackReaderEvent } from '@/lib/analytics/reader-events';
+import { useReaderControls } from '@/hooks/useReaderControls';
 
-interface Props { katha: Katha; }
+interface Props {
+  katha: Katha;
+  appLanguage?: string;
+  meaningLanguage?: string;
+  transliterationLanguage?: string;
+  showTransliteration?: boolean;
+}
 
 const THEME = {
   bg: 'var(--divine-bg)',
@@ -102,9 +111,24 @@ const FONT_SIZES: Record<FontSize, string> = {
 };
 const SIZES: FontSize[] = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
 
-export default function KathaReaderClient({ katha }: Props) {
+export default function KathaReaderClient({
+  katha,
+  appLanguage,
+  meaningLanguage,
+}: Props) {
   const router = useRouter();
-  const [lang, setLang] = useState<Lang>('en');
+  const hasHindi = (katha.bodyHi?.length ?? 0) > 0;
+  const hasPunjabi = true; // Always true to make Punjabi dynamic script selection fully available
+  const readablePreferences = useMemo(() => resolveReadablePreferences({
+    appLanguage,
+    meaningLanguage,
+  }), [appLanguage, meaningLanguage]);
+  const [lang, setLang] = useState<Lang>(() => {
+    if (!readablePreferences.preferLocalLanguage) return 'en';
+    if (hasHindi) return 'hi';
+    if (hasPunjabi) return 'pa';
+    return 'en';
+  });
   const [sizeIndex, setSizeIndex] = useState(2); // Default to 'md' (index 2)
   const fontSize = SIZES[sizeIndex];
   const [sankalpaDismissed, setSankalpaDismissed] = useState(false);
@@ -112,7 +136,6 @@ export default function KathaReaderClient({ katha }: Props) {
   const [showPhal, setShowPhal] = useState(false);
   const [ttsLoading, setTtsLoading] = useState(false);
   const [speaking, setSpeaking] = useState(false);
-  const [copied, setCopied] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioUrlRef = useRef<string | null>(null);
 
@@ -130,9 +153,32 @@ export default function KathaReaderClient({ katha }: Props) {
     : isHero
       ? { label: 'Heroes of Bharat', termKatha: 'Hero Legend' }
       : (TRADITION_LABELS[katha.tradition] ?? TRADITION_LABELS.hindu);
-
-  const hasHindi = (katha.bodyHi?.length ?? 0) > 0;
-  const hasPunjabi = true; // Always true to make Punjabi dynamic script selection fully available
+  const kathaReadableContent: ReadableContent = useMemo(() => ({
+    original: [katha.title, ...katha.body, katha.phal].join('\n\n'),
+    meaning: hasHindi ? [katha.titleHi ?? '', ...(katha.bodyHi ?? []), katha.phalHi ?? ''].filter(Boolean).join('\n\n') : undefined,
+    sourceLabel: `Katha — ${katha.title}`,
+    tradition: katha.tradition,
+    language: 'en',
+    script: 'latin',
+    pipelineTags: {
+      content_type: 'katha',
+      response_mode: 'conversational',
+      audio_mode: isPanchatantra ? 'story' : 'meditative',
+      tradition: katha.tradition === 'all' ? 'generic' : katha.tradition,
+      script: 'latin',
+      delivery_intent: 'live_user',
+    },
+    capabilities: buildReadableCapabilities({
+      original: [katha.title, ...katha.body].join('\n\n'),
+      meaning: hasHindi ? katha.bodyHi?.join('\n\n') : undefined,
+      script: 'latin',
+      pipelineTags: {
+        content_type: 'katha',
+        audio_mode: isPanchatantra ? 'story' : 'meditative',
+      },
+    }),
+  }), [hasHindi, isPanchatantra, katha]);
+  const readerControls = useReaderControls(kathaReadableContent.capabilities);
 
   // Which body / phal to show based on selected language
   const nativePaBody = katha.bodyPa;
@@ -168,86 +214,38 @@ export default function KathaReaderClient({ katha }: Props) {
 
   const hasAnyLocal = hasHindi || hasPunjabi;
 
-  function fallbackCopy(text: string, successMessage: string) {
-    try {
-      const textArea = document.createElement('textarea');
-      textArea.value = text;
-      textArea.style.position = 'fixed';
-      textArea.style.opacity = '0';
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      const successful = document.execCommand('copy');
-      document.body.removeChild(textArea);
-      if (successful) {
-        setCopied(true);
-        toast.success(successMessage, {
-          icon: '📋',
-          style: { background: '#2e1710', color: '#f5dfa0' }
-        });
-        setTimeout(() => setCopied(false), 2000);
-      } else {
-        throw new Error('Copy command unsuccessful');
-      }
-    } catch (err) {
-      toast.error('Failed to copy. Please select and copy manually.');
-    }
-  }
+  useEffect(() => {
+    trackReaderEvent('reader_opened', {
+      content_type: 'katha',
+      source: `katha:${katha.id}`,
+      tradition: katha.tradition,
+      language: lang,
+      has_meaning: hasHindi,
+      has_transliteration: false,
+    });
+  }, [hasHindi, katha.id, katha.tradition, lang]);
 
-  function copyToClipboard() {
+  async function copyToClipboard() {
     const textToCopy = `${titleToShow}\n\n${bodyToShow.join('\n\n')}\n\nPhal:\n${phalToShow}`;
-    const successMsg = 'Katha copied to clipboard! 🙏';
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(textToCopy)
-        .then(() => {
-          setCopied(true);
-          toast.success(successMsg, {
-            icon: '📋',
-            style: { background: '#2e1710', color: '#f5dfa0' }
-          });
-          setTimeout(() => setCopied(false), 2000);
-        })
-        .catch(() => fallbackCopy(textToCopy, successMsg));
-    } else {
-      fallbackCopy(textToCopy, successMsg);
-    }
-  }
-
-  function copyShareText(text: string) {
-    const successMsg = 'Share link & text copied! Send it via WhatsApp or Messages. 🙏';
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text)
-        .then(() => {
-          toast.success(successMsg, {
-            icon: '🔗',
-            style: { background: '#2e1710', color: '#f5dfa0' }
-          });
-        })
-        .catch(() => fallbackCopy(text, successMsg));
-    } else {
-      fallbackCopy(text, successMsg);
-    }
+    await readerControls.handlers.copyText(textToCopy, 'Katha');
+    trackReaderEvent('content_copied', {
+      content_type: 'katha',
+      source: `katha:${katha.id}`,
+      tradition: katha.tradition,
+      language: lang,
+    });
   }
 
   async function shareKatha() {
     const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
     const shareText = `🙏 Radhe Radhe! Check out this inspiring ${trad.termKatha} on Shoonaya: '${titleToShow}'. Read here: ${shareUrl} to elevate your Sadhana.`;
-    
-    if (typeof navigator !== 'undefined' && navigator.share) {
-      try {
-        await navigator.share({
-          title: `Shoonaya - ${titleToShow}`,
-          text: shareText,
-          url: shareUrl
-        });
-      } catch (err) {
-        if ((err as Error).name !== 'AbortError') {
-          copyShareText(shareText);
-        }
-      }
-    } else {
-      copyShareText(shareText);
-    }
+    await readerControls.handlers.share(shareText, `Shoonaya - ${titleToShow}`, shareUrl);
+    trackReaderEvent('content_shared', {
+      content_type: 'katha',
+      source: `katha:${katha.id}`,
+      tradition: katha.tradition,
+      language: lang,
+    });
   }
 
   const stopTTS = useCallback(() => {
@@ -277,6 +275,12 @@ export default function KathaReaderClient({ katha }: Props) {
     const trimmedText = text.length > 4600 ? `${text.slice(0, 4550)}.` : text;
 
     setTtsLoading(true);
+    trackReaderEvent('tts_requested', {
+      content_type: 'katha',
+      source: `katha:${katha.id}`,
+      tradition: katha.tradition,
+      language: lang,
+    });
     try {
       const res = await fetch('/api/tts', {
         method: 'POST',
@@ -338,7 +342,7 @@ export default function KathaReaderClient({ katha }: Props) {
               className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-90"
               title="Copy Katha"
             >
-              {copied ? <Check size={14} color="#2D9E4A" /> : <Copy size={14} color={THEME.gold} />}
+              {readerControls.state.isCopied ? <Check size={14} color="#2D9E4A" /> : <Copy size={14} color={THEME.gold} />}
             </button>
             <button
               onClick={shareKatha}
@@ -378,7 +382,15 @@ export default function KathaReaderClient({ katha }: Props) {
           <div className="flex items-center gap-1.5 bg-[var(--surface-base)]/10 px-2 py-1 rounded-full border border-[var(--divine-border)]/5">
             <span className="text-[10px] uppercase font-bold tracking-wider px-1 text-[var(--text-dim)]">Lang:</span>
             <button
-              onClick={() => setLang('en')}
+              onClick={() => {
+                setLang('en');
+                trackReaderEvent('language_toggled', {
+                  content_type: 'katha',
+                  source: `katha:${katha.id}`,
+                  tradition: katha.tradition,
+                  language: 'en',
+                });
+              }}
               className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${
                 lang === 'en'
                   ? 'bg-[#C5A059] text-black shadow-md shadow-[#C5A059]/20'
@@ -389,7 +401,15 @@ export default function KathaReaderClient({ katha }: Props) {
             </button>
             {hasHindi && (
               <button
-                onClick={() => setLang('hi')}
+                onClick={() => {
+                  setLang('hi');
+                  trackReaderEvent('language_toggled', {
+                    content_type: 'katha',
+                    source: `katha:${katha.id}`,
+                    tradition: katha.tradition,
+                    language: 'hi',
+                  });
+                }}
                 className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${
                   lang === 'hi'
                     ? 'bg-[#C5A059] text-black shadow-md shadow-[#C5A059]/20'
@@ -401,7 +421,15 @@ export default function KathaReaderClient({ katha }: Props) {
             )}
             {hasPunjabi && (
               <button
-                onClick={() => setLang('pa')}
+                onClick={() => {
+                  setLang('pa');
+                  trackReaderEvent('language_toggled', {
+                    content_type: 'katha',
+                    source: `katha:${katha.id}`,
+                    tradition: katha.tradition,
+                    language: 'pa',
+                  });
+                }}
                 className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${
                   lang === 'pa'
                     ? 'bg-[#C5A059] text-black shadow-md shadow-[#C5A059]/20'

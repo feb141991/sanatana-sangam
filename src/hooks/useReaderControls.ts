@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import type { ReadableCapabilities } from '@/lib/readable-content';
+import type { PramanaPipelineTags } from '@/lib/ai/pipeline-tags';
 
 export interface ReaderControlsState {
   showTransliteration: boolean;
@@ -18,19 +19,36 @@ export interface TTSRequestOptions {
   language?: string;
   voice?: 'male' | 'female';
   speed?: number;
+  pipelineTags?: Partial<PramanaPipelineTags>;
 }
 
 export interface ExplainContext {
   source?: string;
+  title?: string;
   tradition?: string;
+  language?: string;
   contentType?: string;
   responseMode?: string;
+  transliteration?: string;
+  translation?: string;
+  pipelineTags?: Partial<PramanaPipelineTags>;
 }
 
 export interface ExplainResult {
-  raw: string;
+  raw?: string;
+  explanation?: {
+    word_by_word: string;
+    meaning: string;
+    commentary: string;
+    daily_application: string;
+    contemplation: string;
+    related_text: string;
+  };
   teacher?: string;
-  school?: string;
+  tradition?: string;
+  source?: string;
+  title?: string;
+  ai?: Record<string, unknown>;
   metadata?: Record<string, unknown>;
 }
 
@@ -109,6 +127,7 @@ export function useReaderControls(capabilities: ReadableCapabilities) {
           language: options?.language,
           voice: options?.voice,
           speed: options?.speed,
+          pipelineTags: options?.pipelineTags,
         })
       });
 
@@ -179,11 +198,19 @@ export function useReaderControls(capabilities: ReadableCapabilities) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          text,
+          originalText: text,
           source: context?.source,
+          title: context?.title,
           tradition: context?.tradition,
-          contentType: context?.contentType,
+          language: context?.language,
+          transliteration: context?.transliteration,
+          translation: context?.translation,
           responseMode: context?.responseMode,
+          pipelineTags: context?.pipelineTags ?? {
+            content_type: context?.contentType,
+            response_mode: context?.responseMode,
+            tradition: context?.tradition as PramanaPipelineTags['tradition'] | undefined,
+          },
         })
       });
 

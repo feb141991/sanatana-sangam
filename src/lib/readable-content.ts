@@ -1,4 +1,5 @@
 import { PramanaPipelineTags } from './ai/pipeline-tags';
+import { canExplain, canGenerateTTS } from './ai/validate-pipeline-tags';
 
 export type TextScript = 'devanagari' | 'gurmukhi' | 'latin' | 'tibetan' | 'unknown';
 export type TextLanguage = 'sa' | 'hi' | 'pa' | 'en' | 'unknown';
@@ -53,11 +54,9 @@ export function buildReadableCapabilities(
     canOpenReader: !!content.original,
     canToggleLocalLanguage: !!content.meaning,
     canToggleTransliteration: !!content.transliteration && script !== 'latin',
-    canGenerateTTS: !!content.original && audioMode !== 'none',
+    canGenerateTTS: !!content.original && canGenerateTTS(audioMode),
     canShowMeaning: !!content.meaning,
-    canShowExplain:
-      !!content.original &&
-      (contentType === 'sacred_verse' || contentType === 'katha' || contentType === 'scripture'),
+    canShowExplain: !!content.original && canExplain(contentType),
     ...overrides,
   };
 }

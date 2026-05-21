@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, Loader2, Volume2, VolumeX, Copy, Share2, Sparkles } from 'lucide-react';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { ReadableContent } from '@/lib/readable-content';
 import { buildReadableCapabilities } from '@/lib/readable-content';
+import { useReaderControls } from '@/hooks/useReaderControls';
+import { trackReaderEvent } from '@/lib/analytics/reader-events';
 
 // ─── Bell tone via WebAudio ───────────────────────────────────────────────────
 function playBell(freq = 432, dur = 2.5, vol = 0.22) {
@@ -115,7 +117,7 @@ const AARTI_STEPS = [
 ] as const;
 
 // ─── Build ReadableContent for each step ───────────────────────────────────────
-function buildStepReadableContent(step: typeof AARTI_STEPS[0]): ReadableContent {
+function buildStepReadableContent(step: (typeof AARTI_STEPS)[number]): ReadableContent {
   return {
     original: step.instruction,
     meaning: undefined,
@@ -125,7 +127,7 @@ function buildStepReadableContent(step: typeof AARTI_STEPS[0]): ReadableContent 
     script: 'latin',
     pipelineTags: {
       content_type: 'instruction',
-      audio_mode: 'none',
+      audio_mode: 'standard',
       tradition: 'hindu',
       script: 'latin',
       response_mode: 'extractive',
@@ -137,7 +139,7 @@ function buildStepReadableContent(step: typeof AARTI_STEPS[0]): ReadableContent 
       script: 'latin',
       pipelineTags: {
         content_type: 'instruction',
-        audio_mode: 'none'
+        audio_mode: 'standard'
       }
     })
   };
@@ -185,9 +187,18 @@ export default function AartiPage() {
   const [done,      setDone]     = useState<Set<number>>(new Set());
   const [dyiaLit,   setDiyaLit]  = useState(false);
   const [finished,  setFinished] = useState(false);
+  const [speaking,  setSpeaking] = useState(false);
+  const [explainResult, setExplainResult] = useState<{
+    explanation?: { meaning: string; commentary: string; daily_application: string };
+    teacher?: string;
+    tradition?: string;
+  } | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const current = AARTI_STEPS[step];
   const isLast  = step === AARTI_STEPS.length - 1;
+  const currentReadableContent = buildStepReadableContent(current);
+  const readerControls = useReaderControls(currentReadableContent.capabilities);
 
   // ── Tokens ──────────────────────────────────────────────────────────────────
   const pageBg = isDark ? 'linear-gradient(180deg,#100808 0%,#1a1005 60%,#0e0c06 100%)' : 'linear-gradient(180deg,#fdf6ee 0%,#f5e8d5 100%)';
@@ -202,9 +213,115 @@ export default function AartiPage() {
     setDone(prev => new Set([...prev, step]));
   }, [current, step]);
 
+  const stopTTS = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = '';
+      audioRef.current = null;
+    }
+    setSpeaking(false);
+  }, []);
+
+  useEffect(() => () => stopTTS(), [stopTTS]);
+
+  useEffect(() => {
+    setExplainResult(null);
+    stopTTS();
+    trackReaderEvent('reader_opened', {
+      content_type: 'instruction',
+      source: `aarti:${current.id}`,
+      tradition: 'hindu',
+      language: 'en',
+      has_meaning: false,
+      has_transliteration: false,
+    });
+  }, [current.id, stopTTS]);
+
   function next() {
     if (isLast) { setFinished(true); return; }
     setStep(s => s + 1);
+  }
+
+  async function speakCurrentStep() {
+    if (speaking) {
+      stopTTS();
+      return;
+    }
+    trackReaderEvent('tts_requested', {
+      content_type: 'instruction',
+      source: `aarti:${current.id}`,
+      tradition: 'hindu',
+      language: 'en',
+    });
+    const audioUrl = await readerControls.handlers.requestTTS(current.instruction, {
+      quality: 'standard',
+      language: 'en',
+      pipelineTags: currentReadableContent.pipelineTags,
+    });
+    if (!audioUrl) return;
+
+    const audio = new Audio(audioUrl);
+    audioRef.current = audio;
+    audio.onended = stopTTS;
+    audio.onerror = stopTTS;
+    await audio.play().catch(() => stopTTS());
+    setSpeaking(true);
+  }
+
+  async function explainCurrentStep() {
+    const result = await readerControls.handlers.requestExplain(current.instruction, {
+      source: `Aarti — ${current.title}`,
+      title: current.title,
+      tradition: 'hindu',
+      language: 'en',
+      contentType: 'instruction',
+      responseMode: 'extractive',
+      pipelineTags: currentReadableContent.pipelineTags,
+    });
+    if (result) {
+      setExplainResult({
+        explanation: result.explanation
+          ? {
+              meaning: result.explanation.meaning,
+              commentary: result.explanation.commentary,
+              daily_application: result.explanation.daily_application,
+            }
+          : undefined,
+        teacher: result.teacher,
+        tradition: result.tradition,
+      });
+    }
+    trackReaderEvent('explain_requested', {
+      content_type: 'instruction',
+      source: `aarti:${current.id}`,
+      tradition: 'hindu',
+      language: 'en',
+    });
+  }
+
+  async function copyCurrentStep() {
+    await readerControls.handlers.copyText(`${current.title}\n\n${current.instruction}`, current.title);
+    trackReaderEvent('content_copied', {
+      content_type: 'instruction',
+      source: `aarti:${current.id}`,
+      tradition: 'hindu',
+      language: 'en',
+    });
+  }
+
+  async function shareCurrentStep() {
+    const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+    await readerControls.handlers.share(
+      `🪔 ${current.title}\n\n${current.instruction}`,
+      `Shoonaya - ${current.title}`,
+      shareUrl,
+    );
+    trackReaderEvent('content_shared', {
+      content_type: 'instruction',
+      source: `aarti:${current.id}`,
+      tradition: 'hindu',
+      language: 'en',
+    });
   }
 
   if (finished) {
@@ -296,6 +413,41 @@ export default function AartiPage() {
               <div className="px-5 py-5">
                 <h2 className="text-lg font-bold mb-3" style={{ fontFamily: 'var(--font-serif)', color: textH }}>{current.title}</h2>
                 <p className="text-[12.5px] leading-relaxed" style={{ color: textS }}>{current.instruction}</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <button
+                    onClick={speakCurrentStep}
+                    disabled={readerControls.state.isGeneratingTTS}
+                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold"
+                    style={{ background: `${current.color}16`, color: current.color, border: `1px solid ${current.color}24` }}
+                  >
+                    {readerControls.state.isGeneratingTTS ? <Loader2 size={12} className="animate-spin" /> : speaking ? <VolumeX size={12} /> : <Volume2 size={12} />}
+                    {speaking ? 'Stop audio' : 'Listen'}
+                  </button>
+                  <button
+                    onClick={explainCurrentStep}
+                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold"
+                    style={{ background: `${current.color}10`, color: textH, border: `1px solid ${current.color}22` }}
+                  >
+                    <Sparkles size={12} />
+                    Explain
+                  </button>
+                  <button
+                    onClick={copyCurrentStep}
+                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold"
+                    style={{ background: `${current.color}10`, color: textH, border: `1px solid ${current.color}22` }}
+                  >
+                    {readerControls.state.isCopied ? <Check size={12} /> : <Copy size={12} />}
+                    Copy
+                  </button>
+                  <button
+                    onClick={shareCurrentStep}
+                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold"
+                    style={{ background: `${current.color}10`, color: textH, border: `1px solid ${current.color}22` }}
+                  >
+                    <Share2 size={12} />
+                    Share
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -309,6 +461,27 @@ export default function AartiPage() {
                 ? <span className="flex items-center justify-center gap-2"><Check size={16} /> {current.action} — done</span>
                 : <span>{current.hint} ✦ {current.action}</span>}
             </motion.button>
+
+            {explainResult?.explanation ? (
+              <div className="rounded-2xl px-4 py-4" style={{ background: cardBg, border: `1px solid ${current.color}20` }}>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: `${current.color}cc` }}>
+                  {explainResult.tradition ?? 'Hindu'} Guidance{explainResult.teacher ? ` · ${explainResult.teacher}` : ''}
+                </p>
+                <p className="text-sm leading-relaxed mb-3" style={{ color: textH }}>
+                  {explainResult.explanation.meaning}
+                </p>
+                {explainResult.explanation.commentary ? (
+                  <p className="text-[12px] leading-relaxed mb-3" style={{ color: textS }}>
+                    {explainResult.explanation.commentary}
+                  </p>
+                ) : null}
+                {explainResult.explanation.daily_application ? (
+                  <p className="text-[11px] leading-relaxed" style={{ color: textD }}>
+                    {explainResult.explanation.daily_application}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
 
             {/* Navigation */}
             <div className="flex items-center justify-between">

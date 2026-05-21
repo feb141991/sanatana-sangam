@@ -30,6 +30,8 @@ import SacredReader from '@/components/bhakti/SacredReader';
 import type { SyncToken } from '@/hooks/useSacredSync';
 import type { RecitationResult } from '@sangam/pathshala-engine';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
+import { useReaderControls } from '@/hooks/useReaderControls';
+import { trackReaderEvent } from '@/lib/analytics/reader-events';
 
 // ─── Font size steps (same scale as LessonClient) ─────────────────────────────
 const READER_FONT_STEPS = [1.1, 1.25, 1.4, 1.58, 1.78] as const;
@@ -183,7 +185,6 @@ export default function ReciteClient({
   const [mode,         setMode]         = useState<ReciteMode>('read');
   const [fontStep,     setFontStep]     = useState(2); // 1.4rem default — comfortable for all ages
   const fontScale = READER_FONT_STEPS[fontStep];
-  const [showExplan,   setShowExplan]   = useState(false);
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
   const [completed,    setCompleted]    = useState<number[]>([]);
@@ -210,6 +211,12 @@ export default function ReciteClient({
     if (!verse || explainLoading) return;
     setExplainResult(null);
     setExplainLoading(true);
+    trackReaderEvent('explain_requested', {
+      content_type: 'sacred_verse',
+      source: verse.source || verse.title,
+      tradition: _tradition,
+      language: effectiveMeaningLanguage,
+    });
     try {
       const res = await fetch('/api/pathshala/explain', {
         method:  'POST',
@@ -260,7 +267,6 @@ export default function ReciteClient({
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const verse = verses[verseIndex];
   const [customLang, setCustomLang] = useState<'en' | 'hi'>(appLanguage === 'hi' || meaningLanguage === 'hi' ? 'hi' : 'en');
-  const [copied, setCopied] = useState(false);
 
   const effectiveMeaningLanguage = customLang;
   const reviewedMeaning = effectiveMeaningLanguage === 'hi' ? hindiMeanings?.[verse?.id] : undefined;
@@ -307,24 +313,51 @@ export default function ReciteClient({
     showTransliteration &&
     !!verseReadableContent?.capabilities.canToggleTransliteration &&
     verseTransliteration !== verse?.original;
+  const readerControls = useReaderControls(
+    verseReadableContent?.capabilities ??
+      buildReadableCapabilities({
+        original: verse?.original ?? '',
+        script: 'devanagari',
+        pipelineTags: {
+          content_type: 'sacred_verse',
+          audio_mode: 'pandit',
+        },
+      })
+  );
 
-  const handleCopy = () => {
+  useEffect(() => {
+    if (!verse) return;
+    trackReaderEvent('reader_opened', {
+      content_type: 'sacred_verse',
+      source: verse.source || verse.title,
+      tradition: _tradition,
+      language: effectiveMeaningLanguage,
+      has_meaning: !!localizedMeaning.meaning,
+      has_transliteration: showVerseTransliteration,
+    });
+  }, [effectiveMeaningLanguage, localizedMeaning.meaning, showVerseTransliteration, verse, _tradition]);
+
+  const handleCopy = async () => {
     const textToCopy = `${verse.title} (${verse.source})\n\n${verse.original}\n\nMeaning: ${localizedMeaning.meaning}`;
-    navigator.clipboard.writeText(textToCopy);
-    setCopied(true);
-    toast.success('Scripture verse copied! 🙏');
-    setTimeout(() => setCopied(false), 2000);
+    await readerControls.handlers.copyText(textToCopy, 'Scripture verse');
+    trackReaderEvent('content_copied', {
+      content_type: 'sacred_verse',
+      source: verse.source || verse.title,
+      tradition: _tradition,
+      language: effectiveMeaningLanguage,
+    });
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const link = typeof window !== 'undefined' ? window.location.href : '';
     const text = `🙏 Radhe Radhe! Practice scripture recitation on Shoonaya with the Shruti engine! Check Verse ${verseIndex + 1} of '${path?.title ?? pathId}' following the link: ${link}`;
-    if (navigator.share) {
-      navigator.share({ title: verse.title, text, url: link }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(text);
-      toast.success('Recitation link copied! 🙏');
-    }
+    await readerControls.handlers.share(text, verse.title, link);
+    trackReaderEvent('content_shared', {
+      content_type: 'sacred_verse',
+      source: verse.source || verse.title,
+      tradition: _tradition,
+      language: effectiveMeaningLanguage,
+    });
   };
 
   // Engine timeout — if pathshala isn't ready after ENGINE_TIMEOUT_MS, unlock mic anyway
@@ -356,6 +389,12 @@ export default function ReciteClient({
     if (!text) return;
     stopTTS();
     setTtsLoading(true);
+    trackReaderEvent('tts_requested', {
+      content_type: 'sacred_verse',
+      source: verse?.source || verse?.title,
+      tradition: _tradition,
+      language: effectiveMeaningLanguage,
+    });
     try {
       const res = await fetch('/api/tts', {
         method: 'POST',
@@ -391,7 +430,7 @@ export default function ReciteClient({
     if (engine) {
       engine.tracker.track('shloka_listen', { path_id: pathId, lesson: currentLesson, verse_index: verseIndex }).catch(() => {});
     }
-  }, [stopTTS, engine, pathId, currentLesson, verseIndex]);
+  }, [stopTTS, engine, pathId, currentLesson, verseIndex, verse?.source, verse?.title, _tradition, effectiveMeaningLanguage]);
 
   // Stop TTS on unmount
   useEffect(() => () => { stopTTS(); }, [stopTTS]);
@@ -599,7 +638,7 @@ export default function ReciteClient({
               style={{ background: 'rgba(255,255,255,0.06)' }}
               title="Copy scripture"
             >
-              {copied ? <Check size={13} style={{ color: accentColour }} /> : <Copy size={13} style={{ color: accentColour }} />}
+              {readerControls.state.isCopied ? <Check size={13} style={{ color: accentColour }} /> : <Copy size={13} style={{ color: accentColour }} />}
             </button>
             <button
               onClick={handleShare}
@@ -652,7 +691,15 @@ export default function ReciteClient({
             <div className="flex items-center gap-1">
               <span className="text-[9px] uppercase font-bold tracking-wider text-[color:var(--brand-muted)]">Lang:</span>
               <button
-                onClick={() => setCustomLang('en')}
+                onClick={() => {
+                  setCustomLang('en');
+                  trackReaderEvent('language_toggled', {
+                    content_type: 'sacred_verse',
+                    source: verse.source || verse.title,
+                    tradition: _tradition,
+                    language: 'en',
+                  });
+                }}
                 className="px-2 py-0.5 rounded-full text-[9px] font-bold transition-all"
                 style={{
                   backgroundColor: customLang === 'en' ? accentColour : 'rgba(255,255,255,0.06)',
@@ -663,7 +710,15 @@ export default function ReciteClient({
                 EN
               </button>
               <button
-                onClick={() => setCustomLang('hi')}
+                onClick={() => {
+                  setCustomLang('hi');
+                  trackReaderEvent('language_toggled', {
+                    content_type: 'sacred_verse',
+                    source: verse.source || verse.title,
+                    tradition: _tradition,
+                    language: 'hi',
+                  });
+                }}
                 className="px-2 py-0.5 rounded-full text-[9px] font-bold transition-all"
                 style={{
                   backgroundColor: customLang === 'hi' ? accentColour : 'rgba(255,255,255,0.06)',
@@ -876,14 +931,22 @@ export default function ReciteClient({
                 {mode !== 'hidden' && verseReadableContent?.capabilities.canShowMeaning && (
                   <div>
                     <button
-                      onClick={() => setShowExplan(s => !s)}
+                      onClick={() => {
+                        readerControls.handlers.toggleMeaning();
+                        trackReaderEvent('language_toggled', {
+                          content_type: 'sacred_verse',
+                          source: verse.source || verse.title,
+                          tradition: _tradition,
+                          language: readerControls.state.showMeaning ? 'hidden' : effectiveMeaningLanguage,
+                        });
+                      }}
                       className="flex items-center gap-1.5 text-xs text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition mb-2"
                     >
-                      {showExplan ? <EyeOff size={12} /> : <Eye size={12} />}
-                      {showExplan ? 'Hide' : 'Show'} translation
+                      {readerControls.state.showMeaning ? <EyeOff size={12} /> : <Eye size={12} />}
+                      {readerControls.state.showMeaning ? 'Hide' : 'Show'} translation
                     </button>
                     <AnimatePresence>
-                      {showExplan && (
+                      {readerControls.state.showMeaning && (
                         <motion.div
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: 'auto', opacity: 1 }}

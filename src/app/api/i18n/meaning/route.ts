@@ -5,6 +5,7 @@ import { runMeaningGenerate } from '@/lib/ai/router';
 import { generateSarvamTranslation } from '@/lib/ai/providers/sarvam-translate';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 import { generateReasoningCacheKey, fetchReasoningCache, storeReasoningCache } from '@/lib/ai/reasoning-cache';
+import { getDefaultTags, logValidationResult, mergeTags, validatePipelineTags } from '@/lib/ai/validate-pipeline-tags';
 
 function stableHash(input: string) {
   let hash = 0;
@@ -47,6 +48,12 @@ export async function POST(req: Request) {
   const sourceMeaning = typeof body?.sourceMeaning === 'string' ? body.sourceMeaning.trim() : '';
   const sourceLabel = typeof body?.sourceLabel === 'string' ? body.sourceLabel.trim() : '';
   const targetLanguage = normalizeMeaningTargetLanguage(body?.targetLanguage);
+  const tagValidation = validatePipelineTags(body?.pipelineTags ?? body?.tags, { context: 'meaning_request' });
+  logValidationResult(tagValidation, 'Meaning');
+  const effectiveTags = mergeTags(
+    tagValidation.tags,
+    getDefaultTags({ text: sourceMeaning || sourceLabel, contentType: 'scripture' }),
+  );
 
   if (targetLanguage === 'en') {
     return NextResponse.json({ meaning: sourceMeaning, language: 'en', status: 'fallback' });
@@ -86,7 +93,12 @@ export async function POST(req: Request) {
         severity: 'P3',
         domain: 'translation',
         route: '/api/i18n/meaning',
-        context: { status: 'reasoning_cached', latency_ms: Date.now() - startTime }
+        context: {
+          status: 'reasoning_cached',
+          latency_ms: Date.now() - startTime,
+          content_type: effectiveTags.content_type ?? null,
+          tradition: effectiveTags.tradition ?? null,
+        }
       });
       return NextResponse.json({
         meaning: reasoningCached.meaning,
@@ -152,7 +164,11 @@ export async function POST(req: Request) {
       latency_ms: Date.now() - startTime,
       provider: aiMetadata?.provider,
       model: aiMetadata?.model,
-      fallback_used: aiMetadata?.usedHostedFallback
+      fallback_used: aiMetadata?.usedHostedFallback,
+      context: {
+        content_type: effectiveTags.content_type ?? null,
+        tradition: effectiveTags.tradition ?? null,
+      }
     });
 
     return NextResponse.json({ meaning, language: targetLanguage, status: 'generated', ai: aiMetadata });

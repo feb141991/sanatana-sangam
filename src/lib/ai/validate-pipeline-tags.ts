@@ -128,6 +128,20 @@ export function getDefaultTags(context?: {
     }
   }
 
+  if (context?.contentType) {
+    const validated = validatePipelineTags({ content_type: context.contentType });
+    if (validated.tags.content_type) {
+      defaults.content_type = validated.tags.content_type;
+    }
+  }
+
+  if (context?.audioMode) {
+    const validated = validatePipelineTags({ audio_mode: context.audioMode });
+    if (validated.tags.audio_mode) {
+      defaults.audio_mode = validated.tags.audio_mode;
+    }
+  }
+
   return defaults;
 }
 
@@ -165,7 +179,7 @@ export function resolveScript(
  */
 export function canExplain(contentType?: string): boolean {
   if (!contentType) return false;
-  const explainableTypes = ['sacred_verse', 'katha', 'scripture', 'commentary', 'stotram', 'prayer', 'mantra'];
+  const explainableTypes = ['sacred_verse', 'katha', 'scripture', 'commentary', 'stotram', 'prayer', 'mantra', 'instruction'];
   return explainableTypes.includes(contentType);
 }
 
