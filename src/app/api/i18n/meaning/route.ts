@@ -121,7 +121,7 @@ export async function POST(req: Request) {
           target_language_code: mapToSarvamLangCode(targetLanguage),
         });
         meaning = translated.trim();
-        aiMetadata = { task: 'meaning_generate', provider: 'sarvam-translate', model: 'sarvam-1', privateStackReady: false, usedHostedFallback: false };
+        aiMetadata = { task: 'meaning_generate', provider: 'sarvam-translate', model: 'sarvam-translate:v1', privateStackReady: false, usedHostedFallback: false };
       } catch (err) {
         console.error('Sarvam translate failed, falling back to inference provider:', err);
       }

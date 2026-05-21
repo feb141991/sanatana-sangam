@@ -4,6 +4,10 @@ import type {
   InferenceRequest,
   InferenceResponse,
 } from '@sangam/pramana-core';
+import {
+  extractAssistantText,
+  summarizeOpenAICompatibleResponse,
+} from './openai-compatible';
 
 // ---------------------------------------------------------------------------
 // Self-Hosted Inference Provider
@@ -72,11 +76,17 @@ interface SelfHostedRawResponse {
   id?: string;
   model?: string;
   choices?: Array<{
+    text?: string;
     message?: {
-      content?: string;
+      content?:
+        | string
+        | Array<{ type?: string; text?: string; content?: string }>
+        | { text?: string; content?: string };
+      reasoning_content?: string;
     };
     finish_reason?: string;
   }>;
+  output_text?: string;
   usage?: {
     prompt_tokens?: number;
     completion_tokens?: number;
@@ -205,11 +215,11 @@ export class SelfHostedProvider implements PramanaInferenceProvider {
     }
 
     const choice = data.choices?.[0];
-    const generatedText = choice?.message?.content;
+    const generatedText = extractAssistantText(data);
     
     if (typeof generatedText !== 'string') {
       throw new Error(
-        `[${this.info.id}] Malformed response: missing choices[0].message.content.`
+        `[${this.info.id}] Malformed response: missing usable assistant text. Raw: ${summarizeOpenAICompatibleResponse(data)}`
       );
     }
 

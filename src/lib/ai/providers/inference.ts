@@ -73,9 +73,15 @@ export async function generateWithProvider(
   let lastError: Error | null = null;
 
   const isProviderFailure = (err: any) => {
-    const status = err?.status || err?.statusCode;
     const message = String(err?.message || '');
+    const parsedStatus = message.match(/HTTP\s+(\d{3})\b/i)?.[1];
+    const status = Number(err?.status || err?.statusCode || parsedStatus || 0);
     return (
+      status === 401 ||
+      status === 403 ||
+      status === 404 ||
+      status === 408 ||
+      status === 409 ||
       status === 429 ||
       status >= 500 ||
       err?.name === 'TimeoutError' ||
@@ -84,6 +90,9 @@ export async function generateWithProvider(
       /Malformed response/i.test(message) ||
       /missing usable assistant text/i.test(message) ||
       /model.*not found/i.test(message) ||
+      /not_found_error/i.test(message) ||
+      /forbidden/i.test(message) ||
+      /unauthori[sz]ed/i.test(message) ||
       /overloaded/i.test(message) ||
       /temporarily unavailable/i.test(message)
     );

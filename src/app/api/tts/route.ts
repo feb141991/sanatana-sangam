@@ -79,12 +79,12 @@ function getVoiceConfig(text: string, quality: 'standard' | 'pandit' | 'akash'):
 
 function getSarvamVoiceConfig(text: string, quality: 'standard' | 'pandit' | 'akash'): { languageCode: string, speaker: string } {
   if (hasDevanagari(text)) {
-    return { languageCode: 'hi-IN', speaker: quality === 'pandit' ? 'aravind' : 'meera' };
+    return { languageCode: 'hi-IN', speaker: quality === 'pandit' || quality === 'akash' ? 'shubh' : 'priya' };
   }
   if (hasGurmukhi(text)) {
-    return { languageCode: 'pa-IN', speaker: quality === 'pandit' ? 'amrit' : 'simran' };
+    return { languageCode: 'pa-IN', speaker: quality === 'pandit' || quality === 'akash' ? 'mani' : 'roopa' };
   }
-  return { languageCode: 'en-IN', speaker: 'aravind' };
+  return { languageCode: 'en-IN', speaker: quality === 'pandit' || quality === 'akash' ? 'ratan' : 'ishita' };
 }
 
 // ── Cached GoogleAuth client ──────────────────────────────────────────────────
@@ -219,7 +219,7 @@ export async function POST(req: NextRequest) {
           speaker: sarvamProfile.speaker,
           pace: requestedRate ?? 1.0,
           enable_preprocessing: true,
-          model: 'bulbul:v1'
+          model: 'bulbul:v3'
         }),
       });
 
@@ -236,7 +236,7 @@ export async function POST(req: NextRequest) {
             route: '/api/tts',
             latency_ms: Date.now() - startTime,
             provider: 'sarvam',
-            model: 'bulbul:v1',
+            model: 'bulbul:v3',
             context: {
               status: 'generated',
               quality,

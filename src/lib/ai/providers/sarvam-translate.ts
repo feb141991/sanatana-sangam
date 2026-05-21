@@ -29,7 +29,7 @@ export async function generateSarvamTranslation(
     target_language_code: request.target_language_code,
     speaker_gender: request.speaker_gender ?? 'Male',
     mode: request.mode ?? 'formal',
-    model: request.model ?? 'sarvam-1',
+    model: request.model ?? 'sarvam-translate:v1',
     enable_preprocessing: true,
   };
 

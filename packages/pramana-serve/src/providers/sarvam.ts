@@ -4,6 +4,10 @@ import type {
   InferenceRequest,
   InferenceResponse,
 } from '@sangam/pramana-core';
+import {
+  extractAssistantText,
+  summarizeOpenAICompatibleResponse,
+} from './openai-compatible';
 
 /**
  * Configuration for the Sarvam provider.
@@ -63,47 +67,6 @@ export class SarvamProvider implements PramanaInferenceProvider {
 
   constructor(config?: SarvamProviderConfig) {
     this.config = config;
-  }
-
-  private extractText(data: SarvamRawResponse): string | null {
-    const choice = data.choices?.[0];
-    const message = choice?.message;
-    const content = message?.content;
-
-    if (typeof content === 'string' && content.trim()) {
-      return content;
-    }
-
-    if (Array.isArray(content)) {
-      const joined = content
-        .map((part) => {
-          if (typeof part?.text === 'string') return part.text;
-          if (typeof part?.content === 'string') return part.content;
-          return '';
-        })
-        .join('')
-        .trim();
-      if (joined) return joined;
-    }
-
-    if (content && typeof content === 'object' && !Array.isArray(content)) {
-      if (typeof content.text === 'string' && content.text.trim()) {
-        return content.text;
-      }
-      if (typeof content.content === 'string' && content.content.trim()) {
-        return content.content;
-      }
-    }
-
-    if (typeof choice?.text === 'string' && choice.text.trim()) {
-      return choice.text;
-    }
-
-    if (typeof data.output_text === 'string' && data.output_text.trim()) {
-      return data.output_text;
-    }
-
-    return null;
   }
 
   isAvailable(): boolean {
@@ -187,10 +150,10 @@ export class SarvamProvider implements PramanaInferenceProvider {
     }
 
     const choice = data.choices?.[0];
-    const generatedText = this.extractText(data);
+    const generatedText = extractAssistantText(data);
     
     if (typeof generatedText !== 'string') {
-      const rawSnippet = JSON.stringify(data).slice(0, 500);
+      const rawSnippet = summarizeOpenAICompatibleResponse(data);
       throw new Error(
         `[${this.info.id}] Malformed response: missing usable assistant text. Raw: ${rawSnippet}`
       );
