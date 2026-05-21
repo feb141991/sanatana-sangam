@@ -11,13 +11,13 @@ import type {
 export interface SarvamProviderConfig {
   /** API key / bearer token for the Sarvam API. */
   apiKey?: string;
-  /** Sarvam model name override (default: sarvam-1). */
+  /** Sarvam model name override (default: sarvam-30b). */
   model?: string;
   /** Request timeout in milliseconds. Default: 30000. */
   timeoutMs?: number;
 }
 
-/** Raw response body from the Sarvam /chat/completions endpoint. */
+/** Raw response body from the Sarvam /v1/chat/completions endpoint. */
 interface SarvamRawResponse {
   id?: string;
   model?: string;
@@ -71,7 +71,7 @@ export class SarvamProvider implements PramanaInferenceProvider {
       );
     }
 
-    const url = 'https://api.sarvam.ai/chat/completions';
+    const url = 'https://api.sarvam.ai/v1/chat/completions';
     const timeoutMs = request.timeoutMs ?? this.config.timeoutMs ?? 30_000;
 
     // Build normalized request payload
@@ -91,7 +91,7 @@ export class SarvamProvider implements PramanaInferenceProvider {
     messages.push({ role: 'user', content: finalUserPrompt });
 
     const payload = {
-      model: this.config.model ?? 'sarvam-1',
+      model: this.config.model ?? 'sarvam-30b',
       messages,
       temperature: request.prompt.temperature ?? 0.3,
       max_tokens: request.prompt.maxOutputTokens ?? 800,
@@ -150,7 +150,7 @@ export class SarvamProvider implements PramanaInferenceProvider {
 
     return {
       text: generatedText,
-      modelUsed: data.model ?? this.config.model ?? 'sarvam-1',
+      modelUsed: data.model ?? this.config.model ?? 'sarvam-30b',
       provider: this.info.id,
       providerClass: 'hosted',
       finishReason: choice?.finish_reason,

@@ -24,6 +24,8 @@ export interface ProviderSelectorConfig {
   geminiApiKey?: string;
   /** API key for hosted Sarvam provider. */
   sarvamApiKey?: string;
+  /** Hosted Sarvam model override. */
+  sarvamModel?: string;
   /** Self-hosted runtime base URL, if configured. */
   selfHostedUrl?: string;
   /** Self-hosted model name override. */
@@ -49,6 +51,7 @@ export function buildProviderRegistry(
   // Register the Sarvam hosted provider
   registry.set('sarvam-hosted', new SarvamProvider({
     apiKey: config.sarvamApiKey,
+    model: config.sarvamModel,
   }));
 
   // Register the self-hosted provider if a URL is configured

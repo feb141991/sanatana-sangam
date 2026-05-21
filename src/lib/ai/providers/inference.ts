@@ -19,6 +19,7 @@ function readEnvConfig() {
     activeProvider: process.env.PRAMANA_INFERENCE_PROVIDER?.trim() || 'gemini-hosted',
     geminiApiKey: process.env.GEMINI_API_KEY?.trim() || undefined,
     sarvamApiKey: process.env.SARVAM_API_KEY?.trim() || undefined,
+    sarvamModel: process.env.PRAMANA_SARVAM_MODEL?.trim() || undefined,
     selfHostedUrl: process.env.PRAMANA_SELF_HOSTED_URL?.trim() || undefined,
     selfHostedModel: process.env.PRAMANA_SELF_HOSTED_MODEL?.trim() || undefined,
     selfHostedApiKey: process.env.PRAMANA_SELF_HOSTED_API_KEY?.trim() || undefined,
