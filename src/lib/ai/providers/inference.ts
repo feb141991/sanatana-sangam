@@ -26,12 +26,26 @@ function readEnvConfig() {
   };
 }
 
+type InferenceProviderOverride =
+  | 'gemini-hosted'
+  | 'sarvam-hosted'
+  | 'self-hosted';
+
 /**
  * Returns the active inference providers, resolved from environment config.
  * The result is cached for the lifetime of the process to avoid repeated
  * environment reads.
  */
-export function getInferenceProviders(): PramanaInferenceProvider[] {
+export function getInferenceProviders(
+  providerOverride?: InferenceProviderOverride
+): PramanaInferenceProvider[] {
+  if (providerOverride) {
+    return selectProviders({
+      ...readEnvConfig(),
+      activeProvider: providerOverride,
+    });
+  }
+
   if (!_cachedProviders) {
     _cachedProviders = selectProviders(readEnvConfig());
   }
@@ -61,9 +75,12 @@ export function resetInferenceProvider(): void {
  */
 export async function generateWithProvider(
   prompt: AIPromptSpec,
-  options?: { responseFormat?: 'text' | 'json' }
+  options?: {
+    responseFormat?: 'text' | 'json';
+    providerOverride?: InferenceProviderOverride;
+  }
 ): Promise<AITextResult> {
-  const providers = getInferenceProviders();
+  const providers = getInferenceProviders(options?.providerOverride);
   const request: InferenceRequest = {
     prompt,
     responseFormat: options?.responseFormat,
