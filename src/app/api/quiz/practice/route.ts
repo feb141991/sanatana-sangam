@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { generateWithProvider } from '@/lib/ai/providers/inference';
+import { emitEvent, emitError } from '@/lib/monitoring/events';
 
 // ─── GET /api/quiz/practice ───────────────────────────────────────────────────
 // Generates a batch of 5 practice questions for a given topic + difficulty.
@@ -13,13 +15,6 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 // POST /api/quiz/practice (save session result)
 //   Body: { tradition, topic, difficulty, questions_correct, questions_total, karma_earned }
 // ─────────────────────────────────────────────────────────────────────────────
-
-const GEMINI_MODEL_DEFAULT  = 'gemini-2.0-flash';
-const GEMINI_MODEL_FALLBACK = 'gemini-2.0-flash-lite';
-
-function geminiUrl(model: string) {
-  return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-}
 
 const TOPIC_CONTEXT: Record<string, Record<string, string>> = {
   deities: {
@@ -101,18 +96,8 @@ Respond ONLY with valid JSON:
 }`;
 }
 
-async function callGemini(apiKey: string, model: string, prompt: string): Promise<string> {
-  const res = await fetch(`${geminiUrl(model)}?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.9, maxOutputTokens: 2048 },
-    }),
-  });
-  if (!res.ok) throw new Error(`Gemini ${model} HTTP ${res.status}`);
-  const json = await res.json();
-  return json.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+function extractJsonBlock(raw: string): string {
+  return raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
 }
 
 export async function GET(req: NextRequest) {
@@ -131,54 +116,71 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Pro required', upgrade: true }, { status: 403 });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return NextResponse.json({ error: 'Gemini not configured' }, { status: 503 });
-
   const { searchParams } = new URL(req.url);
   const tradition = searchParams.get('tradition') ?? 'hindu';
   const topic     = searchParams.get('topic')     ?? 'deities';
   const difficulty = searchParams.get('difficulty') ?? 'seeker';
 
   const prompt = buildPracticePrompt(tradition, topic, difficulty);
+  const startTime = Date.now();
 
-  let raw = '';
   try {
-    raw = await callGemini(apiKey, GEMINI_MODEL_DEFAULT, prompt);
-  } catch {
+    const result = await generateWithProvider(
+      {
+        system: 'You generate valid JSON batches of structured spiritual quiz questions.',
+        user: prompt,
+        temperature: 0.9,
+        maxOutputTokens: 2048,
+      },
+      { responseFormat: 'json' }
+    );
+
+    const cleaned = extractJsonBlock(result.text);
+
+    let parsed: { questions: Array<{ question: string; options: string[]; answerIndex: number; explanation: string; fact: string; source: string }> };
     try {
-      raw = await callGemini(apiKey, GEMINI_MODEL_FALLBACK, prompt);
-    } catch (err2) {
-      console.error('[quiz/practice] Gemini failed:', err2);
-      return NextResponse.json({ error: 'AI unavailable' }, { status: 503 });
+      parsed = JSON.parse(cleaned);
+    } catch {
+      console.error('[quiz/practice] JSON parse failed. Raw:', result.text.slice(0, 300));
+      return NextResponse.json({ error: 'Invalid AI response' }, { status: 502 });
     }
+
+    if (!Array.isArray(parsed.questions) || parsed.questions.length === 0) {
+      return NextResponse.json({ error: 'Malformed AI response' }, { status: 502 });
+    }
+
+    const questions = parsed.questions.slice(0, 5).filter(q =>
+      typeof q.question === 'string' &&
+      Array.isArray(q.options) && q.options.length === 4 &&
+      typeof q.answerIndex === 'number' && q.answerIndex >= 0 && q.answerIndex <= 3
+    );
+
+    if (questions.length === 0) {
+      return NextResponse.json({ error: 'No valid questions generated' }, { status: 502 });
+    }
+
+    emitEvent({
+      severity: 'P3',
+      domain: 'ai',
+      route: '/api/quiz/practice',
+      latency_ms: Date.now() - startTime,
+      provider: result.provider,
+      model: result.modelUsed,
+      fallback_used: result.provider !== process.env.PRAMANA_INFERENCE_PROVIDER?.trim(),
+      context: {
+        feature: 'practice_quiz',
+        tradition,
+        topic,
+        difficulty,
+      },
+    });
+
+    return NextResponse.json({ questions, tradition, topic, difficulty });
+  } catch (err: any) {
+    emitError('ai', err, 'P2', { route: '/api/quiz/practice', latency_ms: Date.now() - startTime });
+    console.error('[quiz/practice] Provider generation failed:', err);
+    return NextResponse.json({ error: 'AI unavailable' }, { status: 503 });
   }
-
-  const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
-
-  let parsed: { questions: Array<{ question: string; options: string[]; answerIndex: number; explanation: string; fact: string; source: string }> };
-  try {
-    parsed = JSON.parse(cleaned);
-  } catch {
-    console.error('[quiz/practice] JSON parse failed. Raw:', raw.slice(0, 300));
-    return NextResponse.json({ error: 'Invalid AI response' }, { status: 502 });
-  }
-
-  if (!Array.isArray(parsed.questions) || parsed.questions.length === 0) {
-    return NextResponse.json({ error: 'Malformed AI response' }, { status: 502 });
-  }
-
-  // Validate and normalise each question
-  const questions = parsed.questions.slice(0, 5).filter(q =>
-    typeof q.question === 'string' &&
-    Array.isArray(q.options) && q.options.length === 4 &&
-    typeof q.answerIndex === 'number' && q.answerIndex >= 0 && q.answerIndex <= 3
-  );
-
-  if (questions.length === 0) {
-    return NextResponse.json({ error: 'No valid questions generated' }, { status: 502 });
-  }
-
-  return NextResponse.json({ questions, tradition, topic, difficulty });
 }
 
 // ─── POST — save completed practice session ───────────────────────────────────

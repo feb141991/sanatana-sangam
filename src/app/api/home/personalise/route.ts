@@ -1,16 +1,12 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { localSpiritualDate } from '@/lib/sacred-time';
+import { generateWithProvider } from '@/lib/ai/providers/inference';
+import { emitEvent, emitError } from '@/lib/monitoring/events';
 
 // GET /api/home/personalise
 // Returns today's personalised shloka + practice suggestion for the authenticated user.
-// Checks the recommendations cache first; generates via Gemini if stale.
-
-// Model priority: lite first (higher free-tier RPM), flash as fallback
-const GEMINI_MODELS = ['gemini-2.0-flash-lite', 'gemini-2.0-flash'];
-function geminiUrl(model: string) {
-  return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-}
+// Checks the recommendations cache first; generates via the active Pramana provider if stale.
 
 // Curated fallback shlokas (tradition-neutral; used when Gemini is unavailable)
 const FALLBACK_SHLOKAS = [
@@ -35,8 +31,6 @@ const FALLBACK_SHLOKAS = [
 ];
 
 export async function GET() {
-  const apiKey = process.env.GEMINI_API_KEY;
-
   try {
     const supabase = await createServerSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -75,18 +69,14 @@ export async function GET() {
       .eq('id', user.id)
       .maybeSingle();
 
-    if (!apiKey) {
-      const fallback = FALLBACK_SHLOKAS[new Date().getDate() % FALLBACK_SHLOKAS.length];
-      return NextResponse.json({ suggestion: fallback.suggestion, nudge: null, context_label: 'Today\'s practice', from_cache: false });
-    }
-
-    // ── 3. Generate via Gemini ───────────────────────────────────────────────────
+    // ── 3. Generate via active provider ──────────────────────────────────────────
     const tradition = profile?.tradition ?? 'general';
     const level     = profile?.spiritual_level ?? 'beginner';
     const seeking   = (profile?.seeking as string[])?.join(', ') ?? '';
     const name      = profile?.full_name ?? profile?.username ?? 'Seeker';
 
     const dayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
+    const startTime = Date.now();
 
     const prompt = `You are a warm, wise spiritual guide. Generate a personalised daily practice suggestion for ${name}.
 
@@ -111,25 +101,35 @@ Return ONLY this JSON (no markdown fences, no extra keys):
 Keep the tone warm, grounded, and personal — not preachy. No shloka text needed.`;
 
     let raw = '';
-    for (const model of GEMINI_MODELS) {
-      const res = await fetch(`${geminiUrl(model)}?key=${apiKey}`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 500 },
-        }),
+    try {
+      const result = await generateWithProvider(
+        {
+          system: 'You generate warm, structured JSON for personalized spiritual guidance.',
+          user: prompt,
+          temperature: 0.7,
+          maxOutputTokens: 500,
+        },
+        { responseFormat: 'json' }
+      );
+      raw = result.text;
+
+      emitEvent({
+        severity: 'P3',
+        domain: 'ai',
+        route: '/api/home/personalise',
+        latency_ms: Date.now() - startTime,
+        provider: result.provider,
+        model: result.modelUsed,
+        fallback_used: result.provider !== process.env.PRAMANA_INFERENCE_PROVIDER?.trim(),
+        context: {
+          feature: 'daily_personalise',
+          tradition,
+          level,
+        },
       });
-
-      if (res.ok) {
-        const data = await res.json();
-        raw = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
-        break;
-      }
-
-      console.warn(`[personalise] model=${model} status=${res.status}`);
-      if (res.status === 429 || res.status === 404) continue;
-      break; // other error — fall through to fallback
+    } catch (err) {
+      emitError('ai', err, 'P2', { route: '/api/home/personalise', latency_ms: Date.now() - startTime });
+      console.warn('[personalise] Provider generation failed, falling back to curated local content:', err);
     }
 
     if (!raw) {

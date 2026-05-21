@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { generateWithProvider } from '@/lib/ai/providers/inference';
+import { emitEvent, emitError } from '@/lib/monitoring/events';
 
 // ─── GET /api/quiz/daily ──────────────────────────────────────────────────────
 // Returns a tradition-aware "Do You Know?" question for the current UTC date.
@@ -9,20 +11,13 @@ import { NextRequest, NextResponse } from 'next/server';
 //
 // Response: { question, options: string[], answerIndex: number, fact: string, source: string }
 //
-// The server generates via Gemini and returns a structured JSON quiz item.
+// The server generates via the active Pramana inference provider and returns a structured JSON quiz item.
 // The client caches the result in localStorage keyed by tradition + date so
 // the question is consistent for the whole day without repeated API calls.
 //
 // Cache-Control: stale-while-revalidate 86400 so repeated calls within the day
 // are served from edge cache.
 // ─────────────────────────────────────────────────────────────────────────────
-
-const GEMINI_MODEL_DEFAULT  = 'gemini-2.0-flash';
-const GEMINI_MODEL_FALLBACK = 'gemini-2.0-flash-lite';
-
-function geminiUrl(model: string) {
-  return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-}
 
 const TRADITION_CONTEXT: Record<string, string> = {
   hindu:    'Hindu scriptures, deities, festivals, temples, philosophy (Vedanta, Yoga, Bhakti), rivers, sacred geography, Sanskrit terms, and Puranic stories',
@@ -61,74 +56,75 @@ Respond ONLY with valid JSON matching this schema exactly:
 }`;
 }
 
-async function callGemini(apiKey: string, model: string, prompt: string): Promise<string> {
-  const res = await fetch(`${geminiUrl(model)}?key=${apiKey}`, {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents:         [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.8, maxOutputTokens: 512 },
-    }),
-  });
-  if (!res.ok) throw new Error(`Gemini ${model} HTTP ${res.status}`);
-  const json = await res.json();
-  return json.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+function extractJsonBlock(raw: string): string {
+  return raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
 }
 
 export async function GET(req: NextRequest) {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json({ error: 'Gemini not configured' }, { status: 503 });
-  }
-
   const { searchParams } = new URL(req.url);
   const tradition = searchParams.get('tradition') ?? 'hindu';
   const dateStr   = searchParams.get('date') ?? new Date().toISOString().split('T')[0];
 
   const prompt = buildPrompt(tradition, dateStr);
+  const startTime = Date.now();
 
-  let raw = '';
   try {
-    raw = await callGemini(apiKey, GEMINI_MODEL_DEFAULT, prompt);
-  } catch {
-    try {
-      raw = await callGemini(apiKey, GEMINI_MODEL_FALLBACK, prompt);
-    } catch (err2) {
-      console.error('[quiz/daily] Gemini failed:', err2);
-      return NextResponse.json({ error: 'AI unavailable' }, { status: 503 });
-    }
-  }
-
-  // Strip markdown code fences if Gemini wraps the JSON
-  const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
-
-  let quiz: { question: string; options: string[]; answerIndex: number; explanation: string; fact: string; source: string };
-  try {
-    quiz = JSON.parse(cleaned);
-  } catch {
-    console.error('[quiz/daily] JSON parse failed. Raw:', raw.slice(0, 200));
-    return NextResponse.json({ error: 'Invalid AI response' }, { status: 502 });
-  }
-
-  // Validate shape
-  if (
-    typeof quiz.question !== 'string' ||
-    !Array.isArray(quiz.options) ||
-    quiz.options.length !== 4 ||
-    typeof quiz.answerIndex !== 'number' ||
-    quiz.answerIndex < 0 ||
-    quiz.answerIndex > 3
-  ) {
-    return NextResponse.json({ error: 'Malformed quiz response' }, { status: 502 });
-  }
-
-  return NextResponse.json(
-    { ...quiz, tradition, date: dateStr },
-    {
-      headers: {
-        // Cache at edge for 24 h; revalidate in background
-        'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600',
+    const result = await generateWithProvider(
+      {
+        system: 'You generate precise, valid JSON for structured spiritual quiz content.',
+        user: prompt,
+        temperature: 0.8,
+        maxOutputTokens: 512,
       },
-    },
-  );
+      { responseFormat: 'json' }
+    );
+
+    const cleaned = extractJsonBlock(result.text);
+
+    let quiz: { question: string; options: string[]; answerIndex: number; explanation: string; fact: string; source: string };
+    try {
+      quiz = JSON.parse(cleaned);
+    } catch {
+      console.error('[quiz/daily] JSON parse failed. Raw:', result.text.slice(0, 200));
+      return NextResponse.json({ error: 'Invalid AI response' }, { status: 502 });
+    }
+
+    if (
+      typeof quiz.question !== 'string' ||
+      !Array.isArray(quiz.options) ||
+      quiz.options.length !== 4 ||
+      typeof quiz.answerIndex !== 'number' ||
+      quiz.answerIndex < 0 ||
+      quiz.answerIndex > 3
+    ) {
+      return NextResponse.json({ error: 'Malformed quiz response' }, { status: 502 });
+    }
+
+    emitEvent({
+      severity: 'P3',
+      domain: 'ai',
+      route: '/api/quiz/daily',
+      latency_ms: Date.now() - startTime,
+      provider: result.provider,
+      model: result.modelUsed,
+      fallback_used: result.provider !== process.env.PRAMANA_INFERENCE_PROVIDER?.trim(),
+      context: {
+        feature: 'daily_quiz',
+        tradition,
+      },
+    });
+
+    return NextResponse.json(
+      { ...quiz, tradition, date: dateStr },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600',
+        },
+      },
+    );
+  } catch (err: any) {
+    emitError('ai', err, 'P2', { route: '/api/quiz/daily', latency_ms: Date.now() - startTime });
+    console.error('[quiz/daily] Provider generation failed:', err);
+    return NextResponse.json({ error: 'AI unavailable' }, { status: 503 });
+  }
 }
