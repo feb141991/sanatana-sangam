@@ -46,9 +46,11 @@ CREATE TABLE IF NOT EXISTS public.observance_occurrences (
 
 -- 3. Row Level Security (RLS) policies
 ALTER TABLE public.observance_definitions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Anyone can read observance_definitions" ON public.observance_definitions;
 CREATE POLICY "Anyone can read observance_definitions" ON public.observance_definitions FOR SELECT USING (true);
 
 ALTER TABLE public.observance_occurrences ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Anyone can read observance_occurrences" ON public.observance_occurrences;
 CREATE POLICY "Anyone can read observance_occurrences" ON public.observance_occurrences FOR SELECT USING (true);
 
 -- 4. Indexes for optimal query performance
@@ -290,6 +292,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_sync_festival_to_observance ON public.festivals;
 CREATE TRIGGER trg_sync_festival_to_observance
   AFTER INSERT OR UPDATE OR DELETE ON public.festivals
   FOR EACH ROW EXECUTE FUNCTION public.sync_festival_to_observance();
@@ -389,6 +392,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_sync_occurrence_to_festival ON public.observance_occurrences;
 CREATE TRIGGER trg_sync_occurrence_to_festival
   AFTER INSERT OR UPDATE OR DELETE ON public.observance_occurrences
   FOR EACH ROW EXECUTE FUNCTION public.sync_occurrence_to_festival();
@@ -420,6 +424,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_sync_definition_to_festival ON public.observance_definitions;
 CREATE TRIGGER trg_sync_definition_to_festival
   AFTER UPDATE ON public.observance_definitions
   FOR EACH ROW EXECUTE FUNCTION public.sync_definition_to_festival();
