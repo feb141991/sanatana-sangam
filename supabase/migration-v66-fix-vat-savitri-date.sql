@@ -19,15 +19,18 @@ WHERE name = 'Vat Savitri Vrat'
   AND date = '2026-05-22';
 
 -- 2. Insert the Maharashtra / Gujarat / Karnataka Purnima variant
---    Use INSERT ... ON CONFLICT to make the migration safe to re-run
+--    Guard with NOT EXISTS so re-running is safe (no unique constraint on name+date)
 INSERT INTO festivals (name, date, emoji, description, type, tradition, year)
-VALUES (
+SELECT
   'Vat Savitri Purnima',
-  '2026-05-31',
+  '2026-05-31'::date,
   '🌳',
   'Vrat observed by married women for the well-being of their husbands (Jyeshtha Purnima — Maharashtra, Gujarat, Karnataka)',
   'vrat',
   'hindu',
   2026
-)
-ON CONFLICT (name, date) DO NOTHING;
+WHERE NOT EXISTS (
+  SELECT 1 FROM festivals
+  WHERE name = 'Vat Savitri Purnima'
+    AND date = '2026-05-31'
+);
