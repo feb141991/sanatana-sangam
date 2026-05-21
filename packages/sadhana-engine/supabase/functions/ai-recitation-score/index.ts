@@ -330,12 +330,11 @@ Corrections: include only the most important errors (max 8). Be specific about t
 Feedback: be encouraging — address the student as a sincere practitioner. Note what they did well first.`;
 
     let scores: GeminiScore = buildFallbackScore(diffs);
-
-
-          const geminiText = await generateText(prompt, { temperature: 0.3, maxTokens: 1024 });
-      if (geminiRes.ok) {
-                scores = extractJSON(raw) ?? buildFallbackScore(diffs);
-      }
+    try {
+      const geminiText = await generateText(prompt, { temperature: 0.3, maxTokens: 1024 });
+      scores = extractJSON(geminiText) ?? buildFallbackScore(diffs);
+    } catch (err) {
+      console.warn('[ai-recitation-score] Gemini call failed, using fallback score:', err);
     }
 
     // ── 6. Persist results ────────────────────────────────────────────────────

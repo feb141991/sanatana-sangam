@@ -281,13 +281,10 @@ ${sankalpa ? `4. If natural, connect this to their sankalpa: "${sankalpa.descrip
 Be warm, direct, and inspiring. Address them as a sincere seeker. Respond in English.`;
 
     let reflection = `On this ${panchang.tithi}, reflect on this teaching from ${chunk.text_id}. ${chunk.translation ?? ''}`;
-
-
-          const geminiText = await generateText(prompt, { temperature: 0.7, maxTokens: 350 });
-      if (geminiRes.ok) {
-        const d = await geminiRes.json();
-        reflection = d?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? reflection;
-      }
+    try {
+      reflection = await generateText(prompt, { temperature: 0.7, maxTokens: 350 });
+    } catch (err) {
+      console.warn('[ai-shloka-of-day] Gemini call failed, using fallback reflection:', err);
     }
 
     // ── 8. Build response payload ─────────────────────────────────────────────
