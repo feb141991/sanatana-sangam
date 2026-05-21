@@ -104,7 +104,9 @@ export class SarvamProvider implements PramanaInferenceProvider {
       model: this.config.model ?? 'sarvam-30b',
       messages,
       temperature: request.prompt.temperature ?? 0.3,
-      max_tokens: request.prompt.maxOutputTokens ?? 800,
+      // sarvam-30b is a reasoning model — default 800 would be consumed by the
+      // chain-of-thought alone. 4000 is the safe minimum for a reasoning + reply.
+      max_tokens: request.prompt.maxOutputTokens ?? 4000,
       ...(request.responseFormat === 'json' ? { response_format: { type: 'json_object' } } : {}),
     };
 

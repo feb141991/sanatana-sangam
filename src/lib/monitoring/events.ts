@@ -36,7 +36,9 @@ async function flushToSupabase() {
     const monitoringTable = supabase.from('monitoring_events' as never) as unknown as {
       insert: (values: MonitoringEvent[]) => PromiseLike<{ error: { code?: string; message: string } | null }>;
     };
-    const { error } = await monitoringTable.insert(batch);
+    // Ensure context is never null — DB column is NOT NULL, default to empty object
+    const batchWithContext = batch.map(e => ({ ...e, context: e.context ?? {} }));
+    const { error } = await monitoringTable.insert(batchWithContext);
     if (error && error.code !== '42P01') { // Ignore table not found error for now
       console.warn('[Monitoring] Failed to flush to durable backend:', error.message);
     }

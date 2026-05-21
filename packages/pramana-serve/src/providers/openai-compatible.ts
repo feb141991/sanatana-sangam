@@ -75,6 +75,19 @@ export function extractAssistantText(
     return data.output_text;
   }
 
+  // Fallback: sarvam-30b (and other reasoning models) put the chain-of-thought
+  // in reasoning_content and the final answer in content. When content is present
+  // it is always returned above. If we reach here, content was empty — use
+  // reasoning_content ONLY when finish_reason is not "length" (truncated output
+  // would give us an incomplete chain-of-thought, not a real answer).
+  if (
+    typeof message?.reasoning_content === 'string' &&
+    message.reasoning_content.trim() &&
+    choice?.finish_reason !== 'length'
+  ) {
+    return message.reasoning_content.trim();
+  }
+
   return null;
 }
 
