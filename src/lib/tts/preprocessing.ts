@@ -37,3 +37,16 @@ export function preprocessTTS(text: string, quality: 'standard' | 'pandit' | 'ak
 
   return { cleanedText, usesSSML };
 }
+
+/**
+ * Converts SSML-enhanced text back into plain text for providers that do not
+ * support SSML input reliably.
+ */
+export function stripSSMLForPlainTTS(text: string): string {
+  return text
+    .replace(/<break\b[^>]*\/>/gi, ' ')
+    .replace(/<\/?speak>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}

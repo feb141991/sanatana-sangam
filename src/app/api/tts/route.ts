@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleAuth } from 'google-auth-library';
 import { generateTTSCacheKey, getCachedAudio, setCachedAudio, fetchFromStorage, uploadToStorage } from '@/lib/tts/cache';
-import { preprocessTTS } from '@/lib/tts/preprocessing';
+import { preprocessTTS, stripSSMLForPlainTTS } from '@/lib/tts/preprocessing';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 import { validatePipelineTags, getDefaultTags, mergeTags, resolveScript, canGenerateTTS, logValidationResult } from '@/lib/ai/validate-pipeline-tags';
 
@@ -206,6 +206,7 @@ export async function POST(req: NextRequest) {
 
   if (sarvamKey) {
     const sarvamProfile = getSarvamVoiceConfig(text, quality);
+    const sarvamText = usesSSML ? stripSSMLForPlainTTS(cleanedText) : cleanedText;
     try {
       const sRes = await fetch('https://api.sarvam.ai/text-to-speech', {
         method: 'POST',
@@ -214,7 +215,7 @@ export async function POST(req: NextRequest) {
           'api-subscription-key': sarvamKey,
         },
         body: JSON.stringify({
-          inputs: [cleanedText],
+          inputs: [sarvamText],
           target_language_code: sarvamProfile.languageCode,
           speaker: sarvamProfile.speaker,
           pace: requestedRate ?? 1.0,
