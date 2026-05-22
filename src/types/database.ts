@@ -475,6 +475,27 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['nitya_karma_logs']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['nitya_karma_logs']['Insert']>;
       };
+      user_mood_checkins: {
+        Row: {
+          id: string;
+          user_id: string;
+          created_at: string;
+          before_mood: string | null;
+          source_surface: string | null;
+          recommended_action_type: string | null;
+          recommended_action_target: string | null;
+          clicked_action: string | null;
+          completed_action: string | null;
+          after_mood: string | null;
+          reflection_note: string | null;
+          dismissed: boolean;
+          completed_at: string | null;
+        };
+        Insert: Omit<Database['public']['Tables']['user_mood_checkins']['Row'], 'id' | 'created_at' | 'dismissed'> & {
+          dismissed?: boolean;
+        };
+        Update: Partial<Database['public']['Tables']['user_mood_checkins']['Insert']>;
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

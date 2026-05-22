@@ -69,6 +69,9 @@ import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
+import DailyMoodCard from '@/components/mood/DailyMoodCard';
+import MoodRecommendationSheet from '@/components/mood/MoodRecommendationSheet';
+import MoodFollowupSheet, { type PendingMoodFollowup } from '@/components/mood/MoodFollowupSheet';
 
 interface Panchang {
   tithi:      string;
@@ -169,6 +172,8 @@ const MOOD_QUICK_MAP: Record<string, { key: string; label: string; colour: strin
   overwhelmed: { key: 'overwhelmed', label: 'Overwhelmed', colour: '#6b8ab0' },
   grateful:    { key: 'grateful',    label: 'Grateful',    colour: '#b09a6a' },
 };
+
+const PENDING_MOOD_FOLLOWUP_KEY = 'shoonaya_mood_pending_followup';
 
 const HOME_THEMES: Record<string, FeatureTheme> = {
   // Dawn amber — Panchang, daily ritual
@@ -1025,6 +1030,8 @@ export default function HomeDashboard({
   const [editHomeOpen,     setEditHomeOpen]     = useState(false);
   const [activeStoryFestival, setActiveStoryFestival] = useState<import('@/lib/festivals').Festival | null>(null);
   const [isQuizModalOpen,  setQuizModalOpen]    = useState(false);
+  const [selectedMoodForSheet, setSelectedMoodForSheet] = useState<string | null>(null);
+  const [pendingMoodFollowup, setPendingMoodFollowup] = useState<PendingMoodFollowup | null>(null);
 
   // showDeeksha / handleDeekshaComplete removed
 
@@ -1244,6 +1251,26 @@ export default function HomeDashboard({
       setMoodToday(MOOD_QUICK_MAP[moodKey]);
     } else {
       setMoodToday(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(PENDING_MOOD_FOLLOWUP_KEY);
+      if (!raw) return;
+
+      const parsed = JSON.parse(raw) as PendingMoodFollowup;
+      const createdDay = new Date(parsed.createdAt).toISOString().split('T')[0];
+      const today = new Date().toISOString().split('T')[0];
+
+      if (createdDay !== today || !parsed.checkinId || !parsed.actionId) {
+        localStorage.removeItem(PENDING_MOOD_FOLLOWUP_KEY);
+        return;
+      }
+
+      setPendingMoodFollowup(parsed);
+    } catch {
+      localStorage.removeItem(PENDING_MOOD_FOLLOWUP_KEY);
     }
   }, []);
 
@@ -1573,19 +1600,33 @@ export default function HomeDashboard({
     : [];
 
   // ── Mood check-in card ───────────────────────────────────────────────────────
-  // Visible from 5 AM to 1 PM local if the user hasn't set a mood today.
-  const showMoodCard = (() => {
-    if (moodToday !== null) return false; // already set or still loading
-    const h = new Date().getHours();
-    return h >= 5 && h < 13;
-  })();
-
   function handleMoodCardPick(moodKey: string) {
+    if (MOOD_QUICK_MAP[moodKey]) {
+      setMoodToday(MOOD_QUICK_MAP[moodKey]);
+    }
+
     const today = new Date().toISOString().split('T')[0];
     localStorage.setItem('home_mood_date', today);
     localStorage.setItem('home_mood_key', moodKey);
-    if (MOOD_QUICK_MAP[moodKey]) setMoodToday(MOOD_QUICK_MAP[moodKey]);
-    router.push(`/discover?mood=${moodKey}`);
+    localStorage.setItem('shoonaya_mood_dismissed', today);
+    setSelectedMoodForSheet(moodKey);
+  }
+
+  function handleMoodFollowupClose() {
+    setPendingMoodFollowup(null);
+  }
+
+  function handleMoodFollowupCompleted(afterMood: string) {
+    const today = new Date().toISOString().split('T')[0];
+    localStorage.removeItem(PENDING_MOOD_FOLLOWUP_KEY);
+    localStorage.setItem('home_mood_date', today);
+    localStorage.setItem('home_mood_key', afterMood);
+
+    if (MOOD_QUICK_MAP[afterMood]) {
+      setMoodToday(MOOD_QUICK_MAP[afterMood]);
+    }
+
+    setPendingMoodFollowup(null);
   }
 
   // ── Pitru Paksha ────────────────────────────────────────────────────────────
@@ -2177,42 +2218,7 @@ export default function HomeDashboard({
         </AnimatePresence>
 
         {/* ── Mood Check-In Card ───────────────────────────────────────────── */}
-        <AnimatePresence>
-          {showMoodCard && (
-            <motion.div
-              key="mood-checkin-card"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 6, scale: 0.97 }}
-              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-              className="mood-checkin-card"
-              role="group"
-              aria-label="Morning mood check-in"
-            >
-              <p className="mood-checkin-prompt">{t('howAreYouFeeling')}</p>
-              <div className="mood-checkin-options" role="list">
-                {MOOD_CARD_OPTIONS.map(m => (
-                  <button
-                    key={m.key}
-                    type="button"
-                    onClick={() => handleMoodCardPick(m.key)}
-                    className="mood-checkin-option motion-press"
-                    role="listitem"
-                    aria-label={m.label}
-                  >
-                    <span className="mood-checkin-emoji" aria-hidden="true">
-                      <MoodGlyph mood={m.key} color="currentColor" size={19} />
-                    </span>
-                    <span className="mood-checkin-label">{m.label}</span>
-                  </button>
-                ))}
-              </div>
-              <Link href="/discover" className="mood-checkin-skip">
-                More moods →
-              </Link>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <DailyMoodCard userName={userName} onSelectMood={handleMoodCardPick} />
 
         {/* ── Festival Story Cards (Stack) ────────────────────────────────────────── */}
         <AnimatePresence>
@@ -2830,7 +2836,24 @@ export default function HomeDashboard({
 
 
 
+      <AnimatePresence>
+        {selectedMoodForSheet && (
+          <MoodRecommendationSheet
+            mood={selectedMoodForSheet}
+            onClose={() => setSelectedMoodForSheet(null)}
+          />
+        )}
+      </AnimatePresence>
 
+      <AnimatePresence>
+        {pendingMoodFollowup && !selectedMoodForSheet && (
+          <MoodFollowupSheet
+            pending={pendingMoodFollowup}
+            onClose={handleMoodFollowupClose}
+            onCompleted={handleMoodFollowupCompleted}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

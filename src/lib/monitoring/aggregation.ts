@@ -33,7 +33,7 @@ export interface AggregatedHealthReport {
 
 export function detectConfigDrift(): ConfigDriftWarning[] {
   const warnings: ConfigDriftWarning[] = [];
-  const primaryProvider = process.env.PRAMANA_INFERENCE_PROVIDER?.trim() || 'gemini-hosted';
+  const primaryProvider = process.env.PRAMANA_INFERENCE_PROVIDER?.trim() || 'sarvam-hosted';
   
   if (primaryProvider === 'sarvam-hosted' && !process.env.SARVAM_API_KEY) {
     warnings.push({
