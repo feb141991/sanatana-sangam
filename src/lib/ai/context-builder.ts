@@ -61,6 +61,7 @@ export function buildPathshalaExplainPrompt(input: PathshalaExplainInput): {
 } {
   const commentary = getCommentary(input.tradition);
   const langNote = getLanguageInstruction(input.language);
+  const origText = input.originalText || input.sanskrit || '';
 
   const passagesText = input.retrievedChunks && input.retrievedChunks.length > 0
     ? '\n' + serializePramanaContext(input.retrievedChunks, {
@@ -75,7 +76,7 @@ export function buildPathshalaExplainPrompt(input: PathshalaExplainInput): {
       user: `You are a wise ${commentary.school} teacher explaining a scripture verse to a sincere practitioner.
 
 SOURCE: ${input.source ?? ''} — ${input.title ?? ''}
-ORIGINAL (Sanskrit/text): ${input.sanskrit ?? ''}
+ORIGINAL (Sanskrit/text): ${origText}
 TRANSLITERATION: ${input.transliteration ?? ''}
 STANDARD TRANSLATION: ${input.translation ?? ''}
 ${passagesText}

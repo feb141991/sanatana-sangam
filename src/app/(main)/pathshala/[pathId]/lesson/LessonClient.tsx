@@ -153,9 +153,10 @@ export default function LessonClient({
   const translitText = entry
     ? getTransliteration(entry.original, entry.transliteration, transliterationLanguage ?? 'en')
     : '';
+  const readableText = entry?.original || entry?.transliteration || entry?.fullText || '';
 
   const capabilities = buildReadableCapabilities({
-    original: entry?.original,
+    original: entry?.original || entry?.fullText,
     transliteration: entry?.transliteration,
     meaning: entry?.meaning,
     pipelineTags: {
@@ -166,7 +167,7 @@ export default function LessonClient({
 
   const readerControls = useReaderControls(capabilities);
 
-  const showTranslit = showTransliteration && capabilities.canToggleTransliteration && translitText && translitText !== entry?.original;
+  const showTranslit = showTransliteration && capabilities.canToggleTransliteration && translitText && translitText !== (entry?.original || entry?.fullText);
 
   const { t } = useLanguage();
   const {
@@ -255,7 +256,7 @@ export default function LessonClient({
 
   async function speakEntry(e: LibraryEntry) {
     if (speakingId === e.id || readerControls.state.isGeneratingTTS) { stopTTS(); return; }
-    const ttsText = e.original || e.transliteration || '';
+    const ttsText = e.original || e.transliteration || e.fullText || '';
     if (!ttsText) {
       toast.error(labels.audioUnavailableRightNow);
       return;
@@ -314,7 +315,7 @@ export default function LessonClient({
     setExplainResult(null);
     setExplainLoading(true);
     try {
-      const explainText = entry.original || entry.transliteration || '';
+      const explainText = entry.original || entry.transliteration || entry.fullText || '';
       const result = await readerControls.handlers.requestExplain(explainText, {
         source:          entry.source,
         title:           entry.title,

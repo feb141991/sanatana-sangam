@@ -473,7 +473,7 @@ export async function verifyFestivalDatesWithAI(
       try {
         const response = await generateWithProvider(
           { user: prompt, temperature: 0.1, reasoningEffort: 'none', maxOutputTokens: 1200 },
-          { responseFormat: 'json', providerOverride: 'gemini-hosted' },
+          { responseFormat: 'json', providerOverride: 'sarvam-hosted' },
         );
 
         const parsed = extractJsonArray(response.text);

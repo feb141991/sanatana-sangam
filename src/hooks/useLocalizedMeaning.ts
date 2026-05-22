@@ -80,6 +80,11 @@ export function useLocalizedMeaning({
         sourceMeaning: baseMeaning,
         sourceLabel,
         targetLanguage: language,
+        pipelineTags: {
+          content_type: 'scripture',
+          response_mode: 'deterministic',
+          delivery_intent: 'live_user',
+        },
       }),
     })
       .then(async (res) => {

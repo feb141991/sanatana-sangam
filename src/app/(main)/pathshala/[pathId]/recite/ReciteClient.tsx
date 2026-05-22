@@ -235,7 +235,7 @@ export default function ReciteClient({
       language: effectiveMeaningLanguage,
     });
     try {
-      const explainText = verse.original || verse.transliteration || '';
+      const explainText = verse.original || verse.transliteration || verse.fullText || '';
       const data = await readerControls.handlers.requestExplain(explainText, {
         source: verse.source,
         title: verse.title,
@@ -294,7 +294,7 @@ export default function ReciteClient({
     : '';
   const verseReadableContent: ReadableContent | null = verse
     ? {
-        original: verse.original,
+        original: verse.original || verse.fullText || '',
         transliteration: verseTransliteration,
         meaning: localizedMeaning.meaning,
         sourceLabel: verse.source || verse.title,
@@ -310,7 +310,7 @@ export default function ReciteClient({
           delivery_intent: 'live_user',
         },
         capabilities: buildReadableCapabilities({
-          original: verse.original,
+          original: verse.original || verse.fullText,
           transliteration: verseTransliteration,
           meaning: localizedMeaning.meaning,
           script: 'devanagari',
@@ -328,7 +328,7 @@ export default function ReciteClient({
   const readerControls = useReaderControls(
     verseReadableContent?.capabilities ??
       buildReadableCapabilities({
-        original: verse?.original ?? '',
+        original: verse?.original || verse?.fullText || '',
         script: 'devanagari',
         pipelineTags: {
           content_type: 'sacred_verse',
@@ -351,7 +351,7 @@ export default function ReciteClient({
 
   const handleCopy = async () => {
     if (!verse) return;
-    const textToCopy = `${verse.title} (${verse.source})\n\n${verse.original}\n\n${labels.meaning}: ${localizedMeaning.meaning}`;
+    const textToCopy = `${verse.title} (${verse.source})\n\n${verse.original || verse.fullText || ''}\n\n${labels.meaning}: ${localizedMeaning.meaning}`;
     await readerControls.handlers.copyText(textToCopy, 'Scripture verse');
     trackReaderEvent('content_copied', {
       content_type: 'sacred_verse',
@@ -519,7 +519,7 @@ export default function ReciteClient({
     // Auto-play the incoming verse after a brief settle delay
     // Prefer original Devanagari for sa-IN voice; fall back to transliteration
     if (autoPlayRef.current && verse) {
-      const text = verse.original || verse.transliteration || '';
+      const text = verse.original || verse.transliteration || verse.fullText || '';
       const t = setTimeout(() => { speakCurrent(text); }, 400);
       return () => clearTimeout(t);
     }
@@ -831,7 +831,7 @@ export default function ReciteClient({
                         if (isSpeaking) {
                           stopTTS();
                         } else {
-                          speakCurrent(verse.original || verse.transliteration || '');
+                          speakCurrent(verse.original || verse.transliteration || verse.fullText || '');
                         }
                       }}
                       disabled={readerControls.state.isGeneratingTTS}

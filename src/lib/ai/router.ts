@@ -112,7 +112,7 @@ export async function runPathshalaExplain(input: PathshalaExplainInput) {
 
     const result = await generateWithProvider(built.prompt, {
       responseFormat: 'json',
-      providerOverride: 'gemini-hosted',
+      providerOverride: 'sarvam-hosted',
     });
 
     return {

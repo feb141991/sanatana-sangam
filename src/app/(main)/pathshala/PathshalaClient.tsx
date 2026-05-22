@@ -233,15 +233,16 @@ function ScriptureReader({
   const [explainLoading, setExplainLoading] = useState(false);
   const [explainResult,  setExplainResult]  = useState<ExplainResult | null>(null);
 
-  const verses = initialEntry 
-    ? [{ ...initialEntry }] 
-    : chapter?.verses?.map(v => ({ 
+  const verses: LibraryEntry[] = initialEntry
+    ? [{ ...initialEntry }]
+    : chapter?.verses?.map(v => ({
         id: `${chapter.id}-v${v.verseNumber}`,
         title: chapter.title,
         source: `${chapter.kandaTitle} · Chapter ${chapter.chapterNumber}`,
         original: v.original,
         transliteration: v.transliteration,
         meaning: v.meaning,
+        fullText: '',
         category: 'scripture' as LibraryEntry['category'],
         tradition: tradition as LibraryEntry['tradition'],
         tags: [] as string[],
@@ -259,9 +260,9 @@ function ScriptureReader({
   const activeTransliteration = activeVerse
     ? getTransliteration(activeVerse.original, activeVerse.transliteration, transliterationLanguage ?? 'en')
     : '';
-  const showActiveTransliteration = showTransliteration && activeTransliteration && activeTransliteration !== activeVerse?.original;
+  const showActiveTransliteration = showTransliteration && activeTransliteration && activeTransliteration !== (activeVerse?.original || activeVerse?.fullText);
   const activeCapabilities = buildReadableCapabilities({
-    original: activeVerse?.original ?? '',
+    original: activeVerse?.original || activeVerse?.fullText || '',
     transliteration: activeTransliteration,
     meaning: activeVerse?.meaning,
     script: 'devanagari',
@@ -300,7 +301,7 @@ function ScriptureReader({
 
   async function speakEntry(v: any) {
     if (speakingId === v.id || readerControls.state.isGeneratingTTS) { stopTTS(); return; }
-    const ttsText = v.original || v.transliteration || '';
+    const ttsText = v.original || v.transliteration || v.fullText || '';
     if (!ttsText) {
       toast.error(labels.audioUnavailableRightNow);
       return;
@@ -343,7 +344,7 @@ function ScriptureReader({
     if (!activeVerse || explainLoading) return;
     setExplainLoading(true);
     try {
-      const explainText = activeVerse.original || activeVerse.transliteration || '';
+      const explainText = activeVerse.original || activeVerse.transliteration || activeVerse.fullText || '';
       const result = await readerControls.handlers.requestExplain(explainText, {
         source: activeVerse.source,
         title: activeVerse.title,

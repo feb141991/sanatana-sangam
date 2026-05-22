@@ -13,6 +13,36 @@ function extractExplanation(raw: string) {
   }
 }
 
+function buildFallbackExplanation(input: {
+  translation?: string;
+  originalText?: string;
+  transliteration?: string;
+  source?: string;
+  title?: string;
+  tradition?: string;
+}) {
+  const baseMeaning = input.translation?.trim()
+    || input.originalText?.trim()
+    || input.transliteration?.trim()
+    || 'This verse is available for reflection, but a richer explanation could not be generated right now.';
+
+  const sourceLabel = [input.source, input.title].filter(Boolean).join(' — ');
+  const traditionLabel = input.tradition ? `${input.tradition} tradition` : 'this tradition';
+
+  return {
+    word_by_word: input.transliteration?.trim()
+      ? `Key terms can be read through the transliteration: ${input.transliteration.trim().slice(0, 180)}${input.transliteration.trim().length > 180 ? '…' : ''}`
+      : 'A word-by-word breakdown is unavailable right now.',
+    meaning: baseMeaning,
+    commentary: sourceLabel
+      ? `This teaching from ${sourceLabel} should be read in the context of the ${traditionLabel}. Focus first on the plain meaning, then return to the verse again for deeper reflection.`
+      : `This teaching should be read in the context of the ${traditionLabel}. Focus first on the plain meaning, then return to the verse again for deeper reflection.`,
+    daily_application: 'Carry one line of this teaching into the day and use it to steady one decision, reaction, or conversation.',
+    contemplation: 'What in this verse applies directly to the state of your mind today?',
+    related_text: input.source || 'Return to this same passage after practice for a deeper reading.',
+  };
+}
+
 export async function POST(req: Request) {
   const {
     sanskrit,
@@ -98,6 +128,29 @@ export async function POST(req: Request) {
   } catch (err: any) {
     emitError('ai', err, 'P2', { route: '/api/pathshala/explain', latency_ms: Date.now() - startTime });
     const msg = err?.message ?? 'Explain failed';
+
+    if (translation || originalText || transliteration) {
+      return NextResponse.json({
+        explanation: buildFallbackExplanation({
+          translation,
+          originalText,
+          transliteration,
+          source,
+          title,
+          tradition,
+        }),
+        tradition: tradition ?? 'fallback',
+        teacher: 'Shoonaya',
+        source,
+        title,
+        ai: {
+          provider: 'fallback',
+          degraded: true,
+          warning: msg,
+        },
+      });
+    }
+
     const status = String(msg).includes('required') ? 400 : String(msg).includes('configured') ? 503 : 500;
     return NextResponse.json({ error: msg }, { status });
   }

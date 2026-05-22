@@ -16,7 +16,7 @@ let _cachedProviders: PramanaInferenceProvider[] | null = null;
  */
 function readEnvConfig() {
   return {
-    activeProvider: process.env.PRAMANA_INFERENCE_PROVIDER?.trim() || 'gemini-hosted',
+    activeProvider: process.env.PRAMANA_INFERENCE_PROVIDER?.trim() || 'sarvam-hosted',
     geminiApiKey: process.env.GEMINI_API_KEY?.trim() || undefined,
     sarvamApiKey: process.env.SARVAM_API_KEY?.trim() || undefined,
     sarvamModel: process.env.PRAMANA_SARVAM_MODEL?.trim() || undefined,
