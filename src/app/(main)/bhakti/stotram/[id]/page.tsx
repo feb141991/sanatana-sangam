@@ -15,6 +15,7 @@ import { resolveReadablePreferences, type ReadablePreferences } from '@/lib/read
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
 import { trackReaderEvent } from '@/lib/analytics/reader-events';
+import { useReaderDisplayPreferences } from '@/lib/i18n/reader-display';
 
 // ─── Direct Translations for Major Stotrams & Mantras ─────────────────────────
 const STOTRAM_TRANSLATIONS: Record<string, Record<number, { hi: string; pa: string }>> = {
@@ -244,28 +245,22 @@ function StotramReader({ id }: { id: string }) {
 
   const [activeVerse, setActiveVerse] = useState<number | null>(null);
   const [showAll,     setShowAll]     = useState(false);
-  
-  type StotramFontSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
-  const STOTRAM_SIZES: StotramFontSize[] = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
-  const [sizeIndex, setSizeIndex] = useState(2); // Default to 'md' (index 2)
-  const fontSize = STOTRAM_SIZES[sizeIndex];
-
-  const SHLOKA_FONT_SIZES: Record<StotramFontSize, string> = {
-    xs: '0.85rem', sm: '0.95rem', md: '1.1rem', lg: '1.3rem', xl: '1.5rem', xxl: '1.8rem'
-  };
-  const TRANSLIT_FONT_SIZES: Record<StotramFontSize, string> = {
-    xs: '0.7rem', sm: '0.8rem', md: '0.9rem', lg: '1.05rem', xl: '1.2rem', xxl: '1.4rem'
-  };
-  const MEANING_FONT_SIZES: Record<StotramFontSize, string> = {
-    xs: '0.65rem', sm: '0.72rem', md: '0.8rem', lg: '0.92rem', xl: '1.05rem', xxl: '1.2rem'
-  };
 
   const [preferences, setPreferences] = useState<ReadablePreferences>(() =>
     resolveReadablePreferences({ appLanguage: contextLang, meaningLanguage: contextLang })
   );
-  const [lang,        setLang]        = useState<'en' | 'hi' | 'pa'>(() =>
-    resolveReadablePreferences({ appLanguage: contextLang, meaningLanguage: contextLang }).effectiveMeaningLanguage
-  );
+  const {
+    language: lang,
+    setLanguage: setLang,
+    labels,
+    fontPresets,
+    fontStep,
+    setFontStep,
+    fontScale,
+  } = useReaderDisplayPreferences({
+    resolvedLanguage: preferences.effectiveMeaningLanguage,
+    initialFontStep: 1,
+  });
   useEffect(() => {
     let alive = true;
 
@@ -292,7 +287,6 @@ function StotramReader({ id }: { id: string }) {
         });
 
         setPreferences(nextPreferences);
-        setLang(nextPreferences.effectiveMeaningLanguage);
       } catch {
         // Fail open; the reader still works off context defaults.
       }
@@ -314,7 +308,7 @@ function StotramReader({ id }: { id: string }) {
     script: 'devanagari',
     pipelineTags: {
       content_type: 'stotram',
-      audio_mode: stotram?.audioTrackId ? 'prerecorded' : 'none',
+      audio_mode: 'standard',
       tradition: stotram?.tradition === 'all' ? 'generic' : stotram?.tradition,
       script: 'devanagari',
       response_mode: 'extractive',
@@ -327,7 +321,7 @@ function StotramReader({ id }: { id: string }) {
       script: 'devanagari',
       pipelineTags: {
         content_type: 'stotram',
-        audio_mode: stotram?.audioTrackId ? 'prerecorded' : 'none',
+        audio_mode: 'standard',
       },
     }),
   };
@@ -361,7 +355,7 @@ function StotramReader({ id }: { id: string }) {
       script: 'devanagari',
       pipelineTags: {
         content_type: 'sacred_verse',
-        audio_mode: stotram!.audioTrackId ? 'standard' : 'none',
+        audio_mode: 'standard',
         tradition,
         script: 'devanagari',
         response_mode: 'extractive',
@@ -373,7 +367,7 @@ function StotramReader({ id }: { id: string }) {
         script: 'devanagari',
         pipelineTags: {
           content_type: 'sacred_verse',
-          audio_mode: stotram!.audioTrackId ? 'standard' : 'none',
+          audio_mode: 'standard',
         }
       })
     };
@@ -522,47 +516,25 @@ function StotramReader({ id }: { id: string }) {
           </div>
         </div>
 
-        {/* ── Dynamic Controls Bar (Zoom & Language toggles) ── */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[var(--divine-border)]/5">
-          {/* Zoom Control */}
-          <div className="flex items-center gap-1.5 bg-[var(--surface-base)]/10 px-2 py-1 rounded-full border border-[var(--divine-border)]/5">
-            <span className="text-[10px] uppercase font-bold tracking-wider px-1 text-[var(--text-dim)]">Zoom:</span>
-            <button
-              onClick={() => setSizeIndex(i => Math.max(0, i - 1))}
-              disabled={sizeIndex === 0}
-              className="w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center transition-all bg-[var(--surface-base)]/20 text-[var(--text-main)] hover:bg-[var(--surface-base)]/40 disabled:opacity-30"
-              style={{ border: `1px solid ${accentColor}18` }}
-            >
-              A-
-            </button>
-            <span className="text-xs font-bold px-1 min-w-[1.8rem] text-center" style={{ color: accentColor }}>
-              {sizeIndex + 1}
-            </span>
-            <button
-              onClick={() => setSizeIndex(i => Math.min(STOTRAM_SIZES.length - 1, i + 1))}
-              disabled={sizeIndex === STOTRAM_SIZES.length - 1}
-              className="w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center transition-all bg-[var(--surface-base)]/20 text-[var(--text-main)] hover:bg-[var(--surface-base)]/40 disabled:opacity-30"
-              style={{ border: `1px solid ${accentColor}18` }}
-            >
-              A+
-            </button>
-          </div>
 
-          {/* Language Toggle */}
-          <div className="flex items-center gap-1 bg-[var(--surface-base)]/10 px-2 py-0.5 rounded-full border border-[var(--divine-border)]/5">
-            <span className="text-[9px] uppercase font-bold tracking-wider px-1 text-[var(--text-dim)]">Lang:</span>
-            {(['en', 'hi', 'pa'] as const).map(ln => (
+        {/* ── Action Bar ── */}
+        <div className="flex flex-wrap items-center justify-between gap-4 px-6 pb-4">
+          <div className="flex items-center gap-1.5 bg-[var(--surface-base)]/30 px-2 py-1.5 rounded-full border border-[var(--divine-border)]/5">
+            <span className="text-[10px] uppercase font-bold tracking-wider px-1 text-[var(--text-dim)]">{labels.textSize}:</span>
+            {fontPresets.map((step, idx) => (
               <button
-                key={ln}
-                onClick={() => setLang(ln)}
-                className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all ${
-                  lang === ln
-                    ? 'text-black shadow-sm'
+                key={idx}
+                onClick={() => setFontStep(idx)}
+                className={`px-2 py-1 rounded-full text-[10px] font-bold flex items-center justify-center transition-all ${
+                  fontStep === idx
+                    ? 'text-[#1c1c1a] shadow-md'
                     : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'
                 }`}
-                style={{ backgroundColor: lang === ln ? accentColor : 'transparent' }}
+                style={{
+                  background: fontStep === idx ? accentColor : 'transparent',
+                }}
               >
-                {ln === 'en' ? 'EN' : ln === 'hi' ? 'हिं' : 'ਪੰ'}
+                {step.label}
               </button>
             ))}
           </div>
@@ -583,7 +555,7 @@ function StotramReader({ id }: { id: string }) {
                 className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all ${shouldShowTransliteration ? 'text-black shadow-sm' : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'}`}
                 style={{ backgroundColor: shouldShowTransliteration ? accentColor : 'transparent' }}
               >
-                Transliteration
+                {labels.transliteration}
               </button>
             ) : null}
             {baseReadableContent.capabilities.canShowMeaning ? (
@@ -601,7 +573,7 @@ function StotramReader({ id }: { id: string }) {
                 className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all ${shouldShowMeaning ? 'text-black shadow-sm' : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'}`}
                 style={{ backgroundColor: shouldShowMeaning ? accentColor : 'transparent' }}
               >
-                Meaning
+                {labels.meaning}
               </button>
             ) : null}
           </div>
@@ -683,37 +655,38 @@ function StotramReader({ id }: { id: string }) {
                           {/* Sanskrit */}
                           <div className="pt-4">
                             <p className="text-[9px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: `${accentColor}55` }}>{t('shloka')}</p>
-                            <p className="leading-loose whitespace-pre-line text-center transition-all duration-300"
-                              style={{ 
-                                fontFamily: 'var(--font-deva,serif)', 
-                                color: isDark ? 'rgba(245,220,150,0.85)' : 'rgba(60,30,5,0.85)',
-                                fontSize: SHLOKA_FONT_SIZES[fontSize]
-                              }}>
-                              {verse.sanskrit}
-                            </p>
+                            <span className={`block font-medium ${preferences.scriptureScript === 'gurmukhi' ? 'punjabi-serif' : 'premium-serif'} leading-relaxed`}
+                                style={{ 
+                                  color: isDark ? 'rgba(255, 246, 232, 0.95)' : 'rgba(42, 16, 2, 0.9)',
+                                  fontSize: `${fontScale * 1.1}rem` 
+                                }}
+                              >
+                                {verse.sanskrit}
+                              </span>
                           </div>
                           {/* Transliteration */}
                           {shouldShowTransliteration ? (
                           <div>
                             <p className="text-[9px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: `${accentColor}55` }}>{t('transliteration')}</p>
                             <p className="leading-relaxed italic whitespace-pre-line text-center transition-all duration-300"
-                              style={{ 
-                                color: isDark ? 'rgba(245,210,130,0.55)' : 'rgba(80,40,8,0.60)',
-                                fontSize: TRANSLIT_FONT_SIZES[fontSize]
-                              }}>
-                              {verse.transliteration}
-                            </p>
+                                  style={{ 
+                                    color: isDark ? 'rgba(255, 246, 232, 0.55)' : 'rgba(42, 16, 2, 0.5)',
+                                    fontSize: `${fontScale * 0.9}rem` 
+                                  }}
+                                >
+                                  {verse.transliteration}
+                                </p>
                           </div>
                           ) : null}
                           {/* Meaning */}
                           {shouldShowMeaning ? (
                           <div className="rounded-xl px-4 py-3" style={{ background: `${accentColor}08` }}>
                             <p className="text-[9px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: `${accentColor}55` }}>{t('wisdom')}</p>
-                            <p className="leading-relaxed transition-all duration-300" 
-                              style={{ 
-                                color: textS,
-                                fontSize: MEANING_FONT_SIZES[fontSize]
-                              }}>
+                              <p className="leading-relaxed transition-all duration-300" 
+                                style={{ 
+                                  color: textS,
+                                  fontSize: `${fontScale * 0.8}rem`
+                                }}>
                               {getVerseMeaning(stotram.id, verse.number - 1, verse.meaning, lang)}
                             </p>
                           </div>

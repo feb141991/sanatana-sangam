@@ -23,7 +23,12 @@ import { usePremium } from '@/hooks/usePremium';
 import CircularProgress from '@/components/ui/CircularProgress';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { getTransliteration } from '@/lib/transliteration';
-import { getMeaningLabel, resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useReaderDisplayPreferences } from '@/lib/i18n/reader-display';
+import {
+  getMeaningLabel,
+  normalizeContentLanguage
+} from '@/lib/language-runtime';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import { useNativeAudio } from '@/hooks/useNativeAudio';
 import SacredReader from '@/components/bhakti/SacredReader';
@@ -32,9 +37,9 @@ import type { RecitationResult } from '@sangam/pathshala-engine';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
 import { trackReaderEvent } from '@/lib/analytics/reader-events';
+import { useReaderLabels } from '@/lib/i18n/reader-labels';
 
-// ─── Font size steps (same scale as LessonClient) ─────────────────────────────
-const READER_FONT_STEPS = [1.1, 1.25, 1.4, 1.58, 1.78] as const;
+
 
 // TTS is now stateful — managed inside ReciteClient via speakCurrent/stopTTS ─
 
@@ -53,9 +58,10 @@ function ScorePanel({ result, accent, onDismiss }: {
   accent: string;
   onDismiss: () => void;
 }) {
+  const labels = useReaderLabels();
   const score  = result.scores?.overall ?? 0;
   const color  = scoreColor(score);
-  const label  = score >= 80 ? '🌟 Excellent' : score >= 60 ? '👍 Good' : '💪 Keep Practising';
+  const label  = score >= 80 ? labels.shrutiExcellent : score >= 60 ? labels.shrutiGood : labels.shrutiKeepPractising;
 
   const subScores = result.scores
     ? Object.entries(result.scores).filter(([k, v]) => k !== 'overall' && v !== null) as [string, number][]
@@ -69,8 +75,8 @@ function ScorePanel({ result, accent, onDismiss }: {
       className="glass-panel rounded-2xl border border-white/10 p-4 space-y-3"
     >
       <div className="flex items-center justify-between">
-        <p className="text-sm font-bold text-[color:var(--brand-ink)]">Shruti Feedback</p>
-        <button onClick={onDismiss} className="text-xs text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition">Dismiss</button>
+        <p className="text-sm font-bold text-[color:var(--brand-ink)]">{labels.shrutiFeedback}</p>
+        <button onClick={onDismiss} className="text-xs text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition">{labels.dismiss}</button>
       </div>
 
       {/* Score ring */}
@@ -183,8 +189,20 @@ export default function ReciteClient({
 
   const [verseIndex,   setVerseIndex]   = useState(0);
   const [mode,         setMode]         = useState<ReciteMode>('read');
-  const [fontStep,     setFontStep]     = useState(2); // 1.4rem default — comfortable for all ages
-  const fontScale = READER_FONT_STEPS[fontStep];
+  const { t } = useLanguage();
+  const {
+    language: customLang,
+    setLanguage: setCustomLang,
+    labels,
+    languages,
+    fontPresets,
+    fontStep,
+    setFontStep,
+    fontScale,
+  } = useReaderDisplayPreferences({
+    resolvedLanguage: normalizeContentLanguage(meaningLanguage || appLanguage),
+    initialFontStep: 2,
+  });
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
   const [completed,    setCompleted]    = useState<number[]>([]);
@@ -231,15 +249,15 @@ export default function ReciteClient({
           delivery_intent: 'live_user',
         },
       });
-      if (!data?.explanation) throw new Error('Could not generate explanation');
+      if (!data?.explanation) throw new Error(labels.couldNotGenerateExplanation);
       setExplainResult({
         explanation: data.explanation,
         tradition: data.tradition ?? _tradition,
         teacher: data.teacher ?? 'Shoonaya',
       });
     } catch (err: any) {
-      const msg = err?.message ?? 'Could not generate explanation';
-      toast.error(msg.includes('503') ? 'Explain unavailable — GEMINI_API_KEY not set in Vercel' : msg);
+      const msg = err?.message ?? labels.couldNotGenerateExplanation;
+      toast.error(msg.includes('503') ? labels.explainUnavailable : msg);
     } finally {
       setExplainLoading(false);
     }
@@ -261,8 +279,6 @@ export default function ReciteClient({
   const chunksRef      = useRef<Blob[]>([]);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const verse = verses[verseIndex];
-  const [customLang, setCustomLang] = useState<'en' | 'hi'>(appLanguage === 'hi' || meaningLanguage === 'hi' ? 'hi' : 'en');
-
   const effectiveMeaningLanguage = customLang;
   const reviewedMeaning = effectiveMeaningLanguage === 'hi' ? hindiMeanings?.[verse?.id] : undefined;
   const localizedMeaning = useLocalizedMeaning({
@@ -333,7 +349,8 @@ export default function ReciteClient({
   }, [effectiveMeaningLanguage, localizedMeaning.meaning, showVerseTransliteration, verse, _tradition]);
 
   const handleCopy = async () => {
-    const textToCopy = `${verse.title} (${verse.source})\n\n${verse.original}\n\nMeaning: ${localizedMeaning.meaning}`;
+    if (!verse) return;
+    const textToCopy = `${verse.title} (${verse.source})\n\n${verse.original}\n\n${labels.meaning}: ${localizedMeaning.meaning}`;
     await readerControls.handlers.copyText(textToCopy, 'Scripture verse');
     trackReaderEvent('content_copied', {
       content_type: 'sacred_verse',
@@ -344,6 +361,7 @@ export default function ReciteClient({
   };
 
   const handleShare = async () => {
+    if (!verse) return;
     const link = typeof window !== 'undefined' ? window.location.href : '';
     const text = `🙏 Radhe Radhe! Practice scripture recitation on Shoonaya with the Shruti engine! Check Verse ${verseIndex + 1} of '${path?.title ?? pathId}' following the link: ${link}`;
     await readerControls.handlers.share(text, verse.title, link);
@@ -448,7 +466,7 @@ export default function ReciteClient({
     setRecordState('uploading');
     try {
       if (!pathshala) {
-        toast('Practice recorded ✓ (Shruti scoring offline — engine loading)', {
+        toast(labels.practiceRecordedOffline, {
           icon: '🎤', duration: 3500,
           style: { background: '#1c1c1a', color: 'var(--brand-ink)' },
         });
@@ -469,16 +487,16 @@ export default function ReciteClient({
       setRecordingBlob(null);
       const score = result.scores?.overall ?? 0;
       const emoji = score >= 80 ? '🌟' : score >= 60 ? '👍' : '💪';
-      toast.success(`${emoji} Shruti score: ${Math.round(score)}/100`, { duration: 3500 });
+      toast.success(`${emoji} ${labels.shrutiScore}: ${Math.round(score)}/100`, { duration: 3500 });
       if (engine) {
         engine.tracker.track('shloka_listen', { path_id: pathId, lesson: currentLesson, verse_index: verseIndex }).catch(() => {});
       }
     } catch (err: any) {
       console.error('[Shruti] submitRecording error:', err);
-      toast.error(err?.message?.slice(0, 80) ?? 'Scoring failed — please try again');
+      toast.error(err?.message?.slice(0, 80) ?? labels.scoringFailed);
       setRecordState('error');
     }
-  }, [recordingBlob, verse, stopPreview, pathshala, pathId, verseIndex, userId, engine, currentLesson]);
+  }, [recordingBlob, verse, stopPreview, pathshala, pathId, verseIndex, userId, engine, currentLesson, labels.practiceRecordedOffline, labels.scoringFailed, labels.shrutiScore]);
 
   // Timer
   useEffect(() => {
@@ -518,7 +536,7 @@ export default function ReciteClient({
     if (!completed.includes(verseIndex)) {
       setCompleted(c => [...c, verseIndex]);
       setShowConfetti(true);
-      toast.success('Verse marked ✓', { duration: 1500 });
+      toast.success(labels.verseMarked, { duration: 1500 });
       // Fire-and-forget engine tracking
       if (engine) {
         engine.tracker.trackShlokaRead(pathId, currentLesson, verseIndex, timerSeconds).catch(() => {});
@@ -541,7 +559,7 @@ export default function ReciteClient({
       const permGranted = await nativeAudio.requestPermission();
       if (!permGranted) {
         setMicGranted(false);
-        toast.error('Microphone access denied. Please allow mic in settings.');
+        toast.error(labels.micAccessDenied);
         setRecordState('idle');
         return;
       }
@@ -551,10 +569,10 @@ export default function ReciteClient({
       setRecordState('recording');
     } catch (err: any) {
       setMicGranted(false);
-      toast.error('Could not access microphone: ' + (err?.message ?? 'Unknown error'));
+      toast.error(`${labels.micAccessError}: ` + (err?.message ?? 'Unknown error'));
       setRecordState('idle');
     }
-  }, [verse, nativeAudio]);
+  }, [verse, nativeAudio, labels.micAccessDenied, labels.micAccessError]);
 
   const stopRecording = useCallback(async () => {
     const blob = await nativeAudio.stop();
@@ -563,23 +581,23 @@ export default function ReciteClient({
       return;
     }
     if (blob.size < 1000) {
-      toast.error('Recording too short — please recite the verse aloud');
+      toast.error(labels.recordingTooShort);
       setRecordState('idle');
       return;
     }
     setRecordingBlob(blob);
     setRecordingMime(blob.type || 'audio/webm');
     setRecordState('preview');
-  }, [nativeAudio]);
+  }, [nativeAudio, labels.recordingTooShort]);
 
   // ─────────────────────────────────────────────────────────────────────────────
   if (!verse) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4 text-center">
         <BookOpen size={40} className="text-[color:var(--brand-muted)]" />
-        <p className="text-[color:var(--brand-ink)] font-semibold">No recitation content found</p>
+        <p className="text-[color:var(--brand-ink)] font-semibold">{labels.noRecitationContent}</p>
         <Link href="/pathshala" style={{ color: accentColour }} className="text-sm underline">
-          Back to Pathshala
+          {labels.backToPathshala}
         </Link>
       </div>
     );
@@ -618,7 +636,7 @@ export default function ReciteClient({
               onClick={handleCopy}
               className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center transition hover:bg-white/10 active:scale-90"
               style={{ background: 'rgba(255,255,255,0.06)' }}
-              title="Copy scripture"
+              title={t(customLang, 'copy')}
             >
               {readerControls.state.isCopied ? <Check size={13} style={{ color: accentColour }} /> : <Copy size={13} style={{ color: accentColour }} />}
             </button>
@@ -626,7 +644,7 @@ export default function ReciteClient({
               onClick={handleShare}
               className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center transition hover:bg-white/10 active:scale-90"
               style={{ background: 'rgba(255,255,255,0.06)' }}
-              title="Share recitation link"
+              title={t(customLang, 'share')}
             >
               <Share2 size={13} style={{ color: accentColour }} />
             </button>
@@ -651,19 +669,19 @@ export default function ReciteClient({
         <div className="flex items-center justify-between pt-2 border-t border-white/5">
           {/* Zoom Selector */}
           <div className="flex items-center gap-1">
-            <span className="text-[9px] uppercase font-bold tracking-wider text-[color:var(--brand-muted)]">Zoom:</span>
-            {READER_FONT_STEPS.map((step, idx) => (
+            <span className="text-[9px] uppercase font-bold tracking-wider text-[color:var(--brand-muted)]">{labels.zoom}:</span>
+            {fontPresets.map((step, idx) => (
               <button
                 key={idx}
                 onClick={() => setFontStep(idx)}
-                className="w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center transition-all"
+                className="px-2 py-1 rounded-full text-[10px] font-bold flex items-center justify-center transition-all"
                 style={{
                   backgroundColor: fontStep === idx ? accentColour : 'rgba(255,255,255,0.06)',
                   color: fontStep === idx ? '#1c1c1a' : 'var(--brand-muted)',
                   border: `1px solid ${fontStep === idx ? accentColour : 'rgba(255,255,255,0.08)'}`
                 }}
               >
-                {idx === 0 ? 'A-' : idx === 2 ? 'A' : idx === 4 ? 'A+' : idx + 1}
+                {step.label}
               </button>
             ))}
           </div>
@@ -671,45 +689,29 @@ export default function ReciteClient({
           {/* Language Toggle */}
           {verseReadableContent?.capabilities.canToggleLocalLanguage ? (
             <div className="flex items-center gap-1">
-              <span className="text-[9px] uppercase font-bold tracking-wider text-[color:var(--brand-muted)]">Lang:</span>
-              <button
-                onClick={() => {
-                  setCustomLang('en');
-                  trackReaderEvent('language_toggled', {
-                    content_type: 'sacred_verse',
-                    source: verse.source || verse.title,
-                    tradition: _tradition,
-                    language: 'en',
-                  });
-                }}
-                className="px-2 py-0.5 rounded-full text-[9px] font-bold transition-all"
-                style={{
-                  backgroundColor: customLang === 'en' ? accentColour : 'rgba(255,255,255,0.06)',
-                  color: customLang === 'en' ? '#1c1c1a' : 'var(--brand-muted)',
-                  border: `1px solid ${customLang === 'en' ? accentColour : 'rgba(255,255,255,0.08)'}`
-                }}
-              >
-                EN
-              </button>
-              <button
-                onClick={() => {
-                  setCustomLang('hi');
-                  trackReaderEvent('language_toggled', {
-                    content_type: 'sacred_verse',
-                    source: verse.source || verse.title,
-                    tradition: _tradition,
-                    language: 'hi',
-                  });
-                }}
-                className="px-2 py-0.5 rounded-full text-[9px] font-bold transition-all"
-                style={{
-                  backgroundColor: customLang === 'hi' ? accentColour : 'rgba(255,255,255,0.06)',
-                  color: customLang === 'hi' ? '#1c1c1a' : 'var(--brand-muted)',
-                  border: `1px solid ${customLang === 'hi' ? accentColour : 'rgba(255,255,255,0.08)'}`
-                }}
-              >
-                हिं/Local
-              </button>
+              <span className="text-[9px] uppercase font-bold tracking-wider text-[color:var(--brand-muted)]">{labels.language}:</span>
+              {languages.map(({ code, label }) => (
+                <button
+                  key={code}
+                  onClick={() => {
+                    setCustomLang(code);
+                    trackReaderEvent('language_toggled', {
+                      content_type: 'sacred_verse',
+                      source: verse.source || verse.title,
+                      tradition: _tradition,
+                      language: code,
+                    });
+                  }}
+                  className="px-2 py-0.5 rounded-full text-[9px] font-bold transition-all"
+                  style={{
+                    backgroundColor: customLang === code ? accentColour : 'rgba(255,255,255,0.06)',
+                    color: customLang === code ? '#1c1c1a' : 'var(--brand-muted)',
+                    border: `1px solid ${customLang === code ? accentColour : 'rgba(255,255,255,0.08)'}`
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
           ) : <div />}
         </div>
@@ -733,9 +735,9 @@ export default function ReciteClient({
       <div className="px-4 pt-4 pb-2">
         <div className="flex gap-1.5">
           {([
-            { id: 'read'   as ReciteMode, label: 'Read-Along', icon: BookOpen, pro: false },
-            { id: 'hidden' as ReciteMode, label: 'From Memory', icon: EyeOff,  pro: true  },
-            { id: 'timed'  as ReciteMode, label: 'Timed',       icon: Timer,   pro: true  },
+            { id: 'read'   as ReciteMode, label: labels.readAlong, icon: BookOpen, pro: false },
+            { id: 'hidden' as ReciteMode, label: labels.fromMemory, icon: EyeOff,  pro: true  },
+            { id: 'timed'  as ReciteMode, label: labels.timed,       icon: Timer,   pro: true  },
           ] as { id: ReciteMode; label: string; icon: any; pro: boolean }[]).map(({ id, label, icon: Icon, pro }) => {
             const locked = pro && !isPro;
             return (
@@ -743,7 +745,7 @@ export default function ReciteClient({
                 key={id}
                 onClick={() => {
                   if (locked) {
-                    toast('🔒 Upgrade to Shoonaya Pro to unlock', {
+                    toast(labels.upgradeToShoonayaPro, {
                       style: { background: '#1c1c1a', color: 'var(--brand-ink)' },
                     });
                     return;
@@ -838,7 +840,7 @@ export default function ReciteClient({
                         background: isSpeaking ? `${accentColour}25` : `${accentColour}10`,
                         borderColor: isSpeaking ? `${accentColour}50` : 'rgba(255,255,255,0.10)',
                       }}
-                      title={isSpeaking ? 'Stop reading' : 'Listen — Sanskrit voice'}
+                      title={isSpeaking ? labels.stopReading : labels.listen}
                     >
                       {readerControls.state.isGeneratingTTS
                         ? <Loader2 size={15} className="animate-spin" />
@@ -852,7 +854,7 @@ export default function ReciteClient({
 
                 {/* Speed selector — compact tap cycle */}
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-[color:var(--brand-muted)] uppercase tracking-wider font-medium">Speed</span>
+                  <span className="text-[10px] text-[color:var(--brand-muted)] uppercase tracking-wider font-medium">{labels.speed}</span>
                   <button
                     onClick={() => {
                       const steps: (0.5 | 0.75 | 1 | 1.25)[] = [0.5, 0.75, 1, 1.25];
@@ -873,7 +875,7 @@ export default function ReciteClient({
                       border: autoPlay ? `1px solid ${accentColour}40` : '1px solid rgba(255,255,255,0.08)',
                     }}
                   >
-                    <Play size={9} /> Auto
+                    <Play size={9} /> {labels.auto}
                   </button>
                 </div>
 
@@ -897,14 +899,14 @@ export default function ReciteClient({
                   <div className="text-center py-8 border border-dashed rounded-2xl"
                     style={{ borderColor: `${accentColour}30` }}>
                     <EyeOff size={28} className="mx-auto mb-2" style={{ color: accentColour }} />
-                    <p className="text-sm font-semibold text-[color:var(--brand-ink)]">Recite from memory</p>
-                    <p className="text-xs text-[color:var(--brand-muted)] mt-1">Tap &ldquo;Reveal&rdquo; to check yourself</p>
+                    <p className="text-sm font-semibold text-[color:var(--brand-ink)]">{labels.reciteFromMemory}</p>
+                    <p className="text-xs text-[color:var(--brand-muted)] mt-1">{labels.tapRevealToCheck}</p>
                     <button
                       onClick={() => setMode('read')}
                       className="mt-3 px-4 py-1.5 rounded-full text-xs font-semibold"
                       style={{ background: `${accentColour}18`, color: accentColour }}
                     >
-                      Reveal
+                      {labels.reveal}
                     </button>
                   </div>
                 )}
@@ -925,7 +927,7 @@ export default function ReciteClient({
                       className="flex items-center gap-1.5 text-xs text-[color:var(--brand-muted)] hover:text-[color:var(--brand-ink)] transition mb-2"
                     >
                       {readerControls.state.showMeaning ? <EyeOff size={12} /> : <Eye size={12} />}
-                      {readerControls.state.showMeaning ? 'Hide' : 'Show'} translation
+                      {readerControls.state.showMeaning ? labels.hideTranslation : labels.showTranslation}
                     </button>
                     <AnimatePresence>
                       {readerControls.state.showMeaning && (
@@ -938,7 +940,7 @@ export default function ReciteClient({
                         >
                           {showVerseTransliteration && (
                             <div className="px-4 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(200,146,74,0.12)' }}>
-                              <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.6 }}>Transliteration</p>
+                              <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.6 }}>{labels.transliteration}</p>
                               <p className="italic leading-relaxed" style={{ color: 'var(--brand-muted)', fontSize: `${fontScale * 0.95}rem` }}>
                                 {verseTransliteration}
                               </p>
@@ -974,8 +976,8 @@ export default function ReciteClient({
                       }}
                     >
                       {explainLoading
-                        ? <><Loader2 size={12} className="animate-spin" /> Asking teacher…</>
-                        : <><Sparkles size={12} /> {explainResult ? 'Refresh explanation' : 'Explain this verse'}</>
+                        ? <><Loader2 size={12} className="animate-spin" /> {labels.askingTeacher}</>
+                        : <><Sparkles size={12} /> {explainResult ? labels.refreshExplanation : labels.explainVerse}</>
                       }
                     </button>
                   </div>
@@ -1019,7 +1021,7 @@ export default function ReciteClient({
               {/* Meaning */}
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: accentColour + '88' }}>
-                  Meaning
+                  {labels.meaning}
                 </p>
                 <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed">
                   {explainResult.explanation.meaning}
@@ -1030,7 +1032,7 @@ export default function ReciteClient({
               {explainResult.explanation.commentary && (
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: accentColour + '88' }}>
-                    Commentary
+                    {labels.commentary}
                   </p>
                   <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">
                     {explainResult.explanation.commentary}
@@ -1042,7 +1044,7 @@ export default function ReciteClient({
               {explainResult.explanation.daily_application && (
                 <div className="rounded-2xl px-4 py-3" style={{ background: `${accentColour}10`, border: `1px solid ${accentColour}25` }}>
                   <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: accentColour }}>
-                    Today&apos;s Practice
+                    {t(customLang, 'dailyApp')}
                   </p>
                   <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed">
                     {explainResult.explanation.daily_application}
@@ -1087,7 +1089,7 @@ export default function ReciteClient({
                     : `linear-gradient(135deg, ${accentColour}, ${accentColour}cc)`,
                   boxShadow: isRecording ? '0 0 0 4px rgba(239,68,68,0.25)' : 'none',
                 }}
-                title={isRecording ? 'Stop recording' : 'Start recording'}
+                title={isRecording ? labels.stopRecording : labels.startRecording}
               >
                 {isUploading
                   ? <Loader2 size={18} className="text-white animate-spin" />
@@ -1107,7 +1109,7 @@ export default function ReciteClient({
                 animate={{ opacity: [1, 0.2, 1] }}
                 transition={{ duration: 0.9, repeat: Infinity }}
               />
-              <span className="text-xs text-red-300 font-medium">Recording… tap ⏹ to stop</span>
+              <span className="text-xs text-red-300 font-medium">{labels.recordingTapToStop}</span>
             </motion.div>
           )}
 
@@ -1130,18 +1132,17 @@ export default function ReciteClient({
                   }
                 </button>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-[color:var(--brand-ink)]">Your recording</p>
+                  <p className="text-xs font-semibold text-[color:var(--brand-ink)]">{labels.yourRecording}</p>
                   <p className="text-[10px] text-[color:var(--brand-muted)]">
-                    {previewPlaying ? 'Playing…' : 'Tap to listen back'}
+                    {previewPlaying ? labels.playing : labels.tapListenBack}
                   </p>
                 </div>
-                {/* Re-record */}
                 <button
                   onClick={resetRecording}
                   className="text-[10px] font-semibold px-3 py-1.5 rounded-full"
                   style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--brand-muted)', border: '1px solid rgba(255,255,255,0.10)' }}
                 >
-                  Re-record
+                  {labels.reRecord}
                 </button>
               </div>
               {/* Submit button */}
@@ -1151,7 +1152,7 @@ export default function ReciteClient({
                 style={{ background: `linear-gradient(135deg, ${accentColour}, ${accentColour}cc)`, color: '#1c1c1a' }}
               >
                 <CheckCircle2 size={13} />
-                Submit for Shruti scoring
+                {labels.submitForShrutiScoring}
               </button>
             </motion.div>
           )}
@@ -1159,20 +1160,18 @@ export default function ReciteClient({
           {isUploading && (
             <div className="flex items-center gap-2">
               <Loader2 size={13} className="animate-spin text-[color:var(--brand-muted)]" />
-              <p className="text-xs text-[color:var(--brand-muted)]">Uploading and scoring…</p>
+              <p className="text-xs text-[color:var(--brand-muted)]">{labels.uploadingAndScoring}</p>
             </div>
           )}
 
           {micGranted === false && (
-            <p className="text-xs text-orange-300">
-              Mic access denied. Allow microphone in your browser settings and reload.
-            </p>
+              <p className="text-xs text-orange-300">{labels.micAccessDenied}</p>
           )}
 
           {recordState === 'error' && (
             <div className="flex items-center gap-2">
-              <p className="text-xs text-red-300 flex-1">Scoring failed. Check your connection.</p>
-              <button onClick={resetRecording} className="text-[10px] text-[color:var(--brand-muted)] underline">Retry</button>
+              <p className="text-xs text-red-300 flex-1">{labels.scoringFailedConnection}</p>
+              <button onClick={resetRecording} className="text-[10px] text-[color:var(--brand-muted)] underline">{labels.retry}</button>
             </div>
           )}
         </div>
@@ -1204,8 +1203,8 @@ export default function ReciteClient({
             style={{ background: accentColour }}
           >
             {completed.includes(verseIndex)
-              ? <><CheckCircle2 size={15} /> Done · Next Verse</>
-              : <><CheckCircle2 size={15} /> Mark & Continue</>
+              ? <><CheckCircle2 size={15} /> {labels.doneNextVerse}</>
+              : <><CheckCircle2 size={15} /> {labels.markAndContinue}</>
             }
           </button>
 

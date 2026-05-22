@@ -19,7 +19,12 @@ import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { useSadhana } from '@/contexts/EngineContext';
 import { getAIChatHref } from '@/lib/pathshala-links';
 import { getTransliteration } from '@/lib/transliteration';
-import { getMeaningLabel, resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useReaderDisplayPreferences } from '@/lib/i18n/reader-display';
+import {
+  getMeaningLabel,
+  normalizeContentLanguage
+} from '@/lib/language-runtime';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import type { LibraryEntry, LibraryTradition } from '@/lib/library-content';
 import type { Lesson } from '@/lib/pathshala-lessons';
@@ -44,15 +49,14 @@ const P = {
   btnText:     '#FFFDF6',   // text on filled amber button
 } as const;
 
-// ─── Font steps — generous range for all ages ─────────────────────────────────
-const READER_FONT_STEPS = [1.0, 1.15, 1.32, 1.5, 1.7] as const;
+
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-function getEntryText(entry: LibraryEntry) {
+function getEntryText(entry: LibraryEntry, meaningLabel: string) {
   return [
     `${entry.title} — ${entry.source}`,
     entry.original,
-    entry.meaning ? `Meaning: ${entry.meaning}` : '',
+    entry.meaning ? `${meaningLabel}: ${entry.meaning}` : '',
   ].filter(Boolean).join('\n\n');
 }
 
@@ -92,6 +96,7 @@ interface Props {
   hindiMeanings?: Record<string, string>;
 }
 
+
 // ─── Main Component ────────────────────────────────────────────────────────────
 export default function LessonClient({
   userId,
@@ -125,9 +130,6 @@ export default function LessonClient({
   const [slideDir,   setSlideDir]   = useState<1 | -1>(1);
 
   // ── Reader settings ────────────────────────────────────────────────────────
-  const [fontStep, setFontStep] = useState(2); // 1.32rem — readable default
-  const fontScale = READER_FONT_STEPS[fontStep];
-
   // ── Bookmarks ──────────────────────────────────────────────────────────────
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
 
@@ -155,14 +157,31 @@ export default function LessonClient({
   const capabilities = buildReadableCapabilities({
     original: entry?.original,
     transliteration: entry?.transliteration,
-    meaning: entry?.meaning
+    meaning: entry?.meaning,
+    pipelineTags: {
+      content_type: 'sacred_verse',
+      audio_mode: 'pandit',
+    },
   });
 
   const readerControls = useReaderControls(capabilities);
 
   const showTranslit = showTransliteration && capabilities.canToggleTransliteration && translitText && translitText !== entry?.original;
 
-  const [customLang, setCustomLang] = useState<'en' | 'hi'>(appLanguage === 'hi' || meaningLanguage === 'hi' ? 'hi' : 'en');
+  const { t } = useLanguage();
+  const {
+    language: customLang,
+    setLanguage: setCustomLang,
+    labels,
+    languages,
+    fontPresets,
+    fontStep,
+    setFontStep,
+    fontScale,
+  } = useReaderDisplayPreferences({
+    resolvedLanguage: normalizeContentLanguage(meaningLanguage || appLanguage),
+    initialFontStep: 2,
+  });
 
   const effectiveMeaningLanguage = customLang;
   const reviewedMeaning = entry && effectiveMeaningLanguage === 'hi' ? hindiMeanings?.[entry.id] : undefined;
@@ -177,19 +196,21 @@ export default function LessonClient({
   const meaningLabel = getMeaningLabel(effectiveMeaningLanguage);
 
   const handleCopy = () => {
-    readerControls.handlers.copyText(getEntryText(entry), 'Scripture verse');
+    if (!entry) return;
+    readerControls.handlers.copyText(getEntryText(entry, labels.meaning), 'Scripture verse');
   };
 
   const handleShare = () => {
+    if (!lesson) return;
     const link = typeof window !== 'undefined' ? window.location.href : '';
-    const text = `🙏 Radhe Radhe! Check out this profound Pathshala lesson on Shoonaya: '${lesson.title}' from path '${pathTitle}'. Check your rashiphal following this link: ${link}`;
+    const text = `Pathshala lesson on Shoonaya: "${lesson.title}" from "${pathTitle}". Read here: ${link}`;
     readerControls.handlers.share(text, lesson.title, link);
   };
 
   const askHref = entry
     ? getAIChatHref(
         `Explain this scripture verse in simple language with practical guidance: ${entry.title}`,
-        getEntryText(entry)
+        getEntryText(entry, labels.meaning)
       )
     : '/ai-chat';
 
@@ -252,7 +273,7 @@ export default function LessonClient({
       await audio.play();
       setSpeakingId(e.id);
     } catch {
-      toast.error('Audio unavailable right now');
+      toast.error(labels.audioUnavailableRightNow);
     }
   }
 
@@ -273,14 +294,13 @@ export default function LessonClient({
         last_opened_at: ts,
         bookmarked_at: next ? ts : null,
       }, { onConflict: 'user_id,entry_id' });
-
     if (error) { setBookmarkedIds(prev); toast.error(error.message); return; }
-    toast.success(next ? 'Saved for later' : 'Removed from saved');
+    toast.success(next ? labels.savedForLater : labels.removedFromSaved);
   }
 
   // ── Copy ───────────────────────────────────────────────────────────────────
   async function copyEntry(e: LibraryEntry) {
-    await readerControls.handlers.copyText(getEntryText(e), 'Verse');
+    await readerControls.handlers.copyText(getEntryText(e, labels.meaning), 'Verse');
   }
 
   // ── AI Explain ─────────────────────────────────────────────────────────────
@@ -298,13 +318,12 @@ export default function LessonClient({
         translation:     entry.meaning,
         contentType:     'sacred_verse',
       });
-      if (result) {
-        setExplainResult(result as ExplainResult);
-      } else {
-        toast.error('Could not generate explanation');
+      if (result) setExplainResult(result as ExplainResult);
+      else {
+        toast.error(labels.couldNotGenerateExplanation);
       }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Could not generate explanation';
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : labels.couldNotGenerateExplanation;
       toast.error(msg);
     } finally {
       setExplainLoading(false);
@@ -330,7 +349,7 @@ export default function LessonClient({
       if (error) throw error;
       setCompleted(newCompleted);
       const isPathDone = newCompleted.length === totalLessons;
-      toast.success(isPathDone ? 'Path completed! 🎉 Jai Ho!' : 'Lesson complete 🙏');
+      toast.success(isPathDone ? labels.pathCompleted : labels.lessonComplete);
       if (isPathDone) setShowConfetti(true);
       if (engine) {
         engine.tracker.trackShlokaRead(pathId, lessonIndex, 0, 0).catch(() => {});
@@ -338,7 +357,7 @@ export default function LessonClient({
       }
       if (newCompleted.length < totalLessons) goToLesson(nextLesson);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Could not save progress';
+      const msg = err instanceof Error ? err.message : labels.couldNotSaveProgress;
       toast.error(msg);
     } finally {
       setSaving(false);
@@ -376,9 +395,10 @@ export default function LessonClient({
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-4"
            style={{ background: P.bg }}>
         <BookOpen size={40} style={{ color: P.inkMuted }} />
-        <p className="font-semibold" style={{ color: P.ink }}>No lessons found for this path</p>
-        <Link href="/pathshala" className="text-sm underline" style={{ color: P.accent }}>
-          Back to Pathshala
+        <p className="font-semibold" style={{ color: P.ink }}>{labels.noLessonsFound}</p>
+        <Link href="/pathshala" className="text-sm underline flex items-center gap-1" style={{ color: P.accent }}>
+          <ChevronLeft size={16} />
+          {labels.backToPathshala}
         </Link>
       </div>
     );
@@ -393,11 +413,11 @@ export default function LessonClient({
 
   const ctaLabel = isLastVerse
     ? isCompleted
-      ? <><span>Next Lesson</span><ChevronRight size={15} /></>
+      ? <><span>{labels.nextLesson}</span><ChevronRight size={15} /></>
       : saving
         ? <Loader2 size={15} className="animate-spin" />
-        : <><CheckCircle2 size={15} /><span>Mark Lesson Complete</span></>
-    : <><span>Next Verse</span><ChevronRight size={15} /></>;
+        : <><CheckCircle2 size={15} /><span>{labels.markLessonComplete}</span></>
+    : <><span>{labels.nextVerse}</span><ChevronRight size={15} /></>;
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
@@ -456,12 +476,12 @@ export default function LessonClient({
         <div className="flex items-center justify-between pt-2 border-t border-[rgba(200,146,74,0.1)]">
           {/* Zoom Selector */}
           <div className="flex items-center gap-1">
-            <span className="text-[9px] uppercase font-bold tracking-wider" style={{ color: P.inkMuted }}>Zoom:</span>
-            {READER_FONT_STEPS.map((step, idx) => (
+            <span className="text-[9px] uppercase font-bold tracking-wider" style={{ color: P.inkMuted }}>{labels.zoom}:</span>
+            {fontPresets.map((step, idx) => (
               <button
                 key={idx}
                 onClick={() => setFontStep(idx)}
-                className={`w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center transition-all ${
+                className={`px-2 py-1 rounded-full text-[10px] font-bold flex items-center justify-center transition-all ${
                   fontStep === idx
                     ? 'text-white shadow-sm'
                     : ''
@@ -471,42 +491,31 @@ export default function LessonClient({
                   color: fontStep === idx ? P.btnText : P.accentDeep
                 }}
               >
-                {idx === 0 ? 'A-' : idx === 2 ? 'A' : idx === 4 ? 'A+' : idx + 1}
+                {step.label}
               </button>
             ))}
           </div>
 
           {/* Language Toggle */}
           <div className="flex items-center gap-1">
-            <span className="text-[9px] uppercase font-bold tracking-wider" style={{ color: P.inkMuted }}>Lang:</span>
-            <button
-              onClick={() => setCustomLang('en')}
-              className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all ${
-                customLang === 'en'
-                  ? 'text-white'
-                  : ''
-              }`}
-              style={{
-                backgroundColor: customLang === 'en' ? P.accent : P.accentBg,
-                color: customLang === 'en' ? P.btnText : P.accentDeep
-              }}
-            >
-              EN
-            </button>
-            <button
-              onClick={() => setCustomLang('hi')}
-              className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all ${
-                customLang === 'hi'
-                  ? 'text-white'
-                  : ''
-              }`}
-              style={{
-                backgroundColor: customLang === 'hi' ? P.accent : P.accentBg,
-                color: customLang === 'hi' ? P.btnText : P.accentDeep
-              }}
-            >
-              हिं/Local
-            </button>
+            <span className="text-[9px] uppercase font-bold tracking-wider" style={{ color: P.inkMuted }}>{labels.language}:</span>
+            {languages.map(({ code, label }) => (
+              <button
+                key={code}
+                onClick={() => setCustomLang(code)}
+                className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all ${
+                  customLang === code
+                    ? 'text-white'
+                    : ''
+                }`}
+                style={{
+                  backgroundColor: customLang === code ? P.accent : P.accentBg,
+                  color: customLang === code ? P.btnText : P.accentDeep
+                }}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         </div>
       </header>
@@ -611,7 +620,7 @@ export default function LessonClient({
                     className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2"
                     style={{ color: P.inkMuted }}
                   >
-                    Transliteration
+                    {t('transliteration')}
                   </p>
                   <p
                     className="italic leading-relaxed"
@@ -659,10 +668,10 @@ export default function LessonClient({
                   }}
                 >
                   {explainLoading
-                    ? <><Loader2 size={14} className="animate-spin" /> Asking teacher…</>
+                    ? <><Loader2 size={14} className="animate-spin" /> {labels.askingTeacher}</>
                     : showExplain
-                      ? <><EyeOff size={14} /> Hide explanation</>
-                      : <><Sparkles size={14} /> Explain this verse</>
+                      ? <><EyeOff size={14} /> {labels.hideExplanation}</>
+                      : <><Sparkles size={14} /> {labels.explainVerse}</>
                   }
                 </button>
 
@@ -695,7 +704,7 @@ export default function LessonClient({
                         {/* Meaning */}
                         {explainResult.explanation.meaning && (
                           <div>
-                            <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: P.accentDeep }}>Meaning</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: P.accentDeep }}>{labels.meaning}</p>
                             <p className="text-sm leading-relaxed" style={{ color: P.ink }}>{explainResult.explanation.meaning}</p>
                           </div>
                         )}
@@ -703,7 +712,7 @@ export default function LessonClient({
                         {/* Commentary */}
                         {explainResult.explanation.commentary && (
                           <div>
-                            <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: P.accentDeep }}>Commentary</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: P.accentDeep }}>{labels.commentary}</p>
                             <p className="text-sm leading-relaxed" style={{ color: P.ink, opacity: 0.85 }}>{explainResult.explanation.commentary}</p>
                           </div>
                         )}
@@ -714,7 +723,7 @@ export default function LessonClient({
                             className="rounded-xl px-4 py-3"
                             style={{ background: P.accentBg, border: `1px solid ${P.border}` }}
                           >
-                            <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: P.accentDeep }}>Today&apos;s Practice</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: P.accentDeep }}>{t(customLang, 'dailyApp')}</p>
                             <p className="text-sm leading-relaxed" style={{ color: P.ink }}>{explainResult.explanation.daily_application}</p>
                           </div>
                         )}
@@ -797,7 +806,7 @@ export default function LessonClient({
                 }
               </div>
               <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>
-                {speakingId === entry.id ? 'Stop' : 'Listen'}
+                {speakingId === entry.id ? labels.stopReading : labels.listen}
               </span>
             </button>
           ) : (
@@ -805,7 +814,7 @@ export default function LessonClient({
               <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: P.accentBg, border: `1px solid ${P.border}` }}>
                 <VolumeX size={17} style={{ color: P.accentDeep }} />
               </div>
-              <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>Audio N/A</span>
+              <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{labels.audioUnavailable}</span>
             </div>
           )}
 
@@ -828,7 +837,7 @@ export default function LessonClient({
               />
             </div>
             <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>
-              {bookmarkedIds.has(entry.id) ? 'Saved' : 'Save'}
+              {bookmarkedIds.has(entry.id) ? t('done') : t('save')}
             </span>
           </button>
 
@@ -843,7 +852,7 @@ export default function LessonClient({
             >
               <Copy size={17} style={{ color: P.accentDeep }} />
             </div>
-            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>Copy</span>
+            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{t('copy')}</span>
           </button>
 
           {/* Ask AI */}
@@ -857,7 +866,7 @@ export default function LessonClient({
             >
               <Sparkles size={17} style={{ color: P.accentDeep }} />
             </div>
-            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>Ask AI</span>
+            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{t('askAI')}</span>
           </Link>
         </div>
 

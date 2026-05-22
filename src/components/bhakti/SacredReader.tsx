@@ -6,6 +6,7 @@ import { useSacredSync, SyncToken } from '@/hooks/useSacredSync';
 import { useState, useEffect } from 'react';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
+import { useReaderDisplay } from '@/lib/i18n/reader-display';
 
 interface SacredReaderProps {
   shlokaId: string;
@@ -62,6 +63,7 @@ export default function SacredReader({
   const currentAudioUrl = (voiceQuality === 'pandit' ? panditAudio : (standardAudio || audioUrl)) || '';
   const readerControls = useReaderControls(resolvedReadableContent.capabilities);
   const requestTTS = readerControls.handlers.requestTTS;
+  const { labels } = useReaderDisplay();
 
   // Synchronized Recitation Engine
   const { isPlaying, activeIndex, toggle, seek, progress } = useSacredSync({
@@ -173,7 +175,7 @@ export default function SacredReader({
               <BookOpen size={20} />
             </div>
             <div>
-              <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-primary)] opacity-70">Guided Study</p>
+              <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-primary)] opacity-70">{labels.guidedStudy}</p>
               <h4 className="text-base font-bold premium-serif theme-ink leading-tight">{source}</h4>
             </div>
           </div>
@@ -252,7 +254,7 @@ export default function SacredReader({
             <button 
               onClick={() => seek(0)} 
               className="w-10 h-10 rounded-full flex items-center justify-center bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
-              title="Reset Recitation"
+              title={labels.resetRecitation}
             >
               <RotateCcw size={16} className="text-[var(--text-dim)]" />
             </button>
@@ -304,7 +306,7 @@ export default function SacredReader({
                 <span className={`text-[8px] font-black uppercase tracking-widest ${
                   voiceQuality === 'pandit' ? 'text-[#FF9933]' : 'theme-muted'
                 }`}>
-                  {voiceQuality === 'pandit' ? 'Pandit AI' : 'Standard'}
+                  {voiceQuality === 'pandit' ? labels.panditVoice : labels.standardVoice}
                 </span>
                 {voiceQuality === 'pandit' && (
                   <span className="bg-[#FF9933] text-[7px] font-black text-white px-1 py-0.2 rounded-sm leading-none">HD</span>
@@ -330,13 +332,13 @@ export default function SacredReader({
             >
               <CheckCircle2 size={32} />
             </motion.div>
-            <h2 className="text-2xl font-bold premium-serif theme-ink mb-2">Recitation Complete</h2>
-            <p className="theme-muted mb-8 max-w-xs text-xs leading-relaxed">Your recitation practice has been successfully registered. You have earned sadhana points. Keep moving forward!</p>
+            <h2 className="text-2xl font-bold premium-serif theme-ink mb-2">{labels.recitationComplete}</h2>
+            <p className="theme-muted mb-8 max-w-xs text-xs leading-relaxed">{labels.recitationSuccess}</p>
             <button 
               onClick={() => setIsCompleted(false)}
               className="px-8 py-3 rounded-full bg-[var(--brand-primary)] text-white font-bold tracking-widest uppercase text-[10px]"
             >
-              Continue Practice
+              {labels.continuePractice}
             </button>
           </motion.div>
         )}

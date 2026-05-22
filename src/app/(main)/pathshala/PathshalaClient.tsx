@@ -46,6 +46,7 @@ import { getMeaningLabel, resolveEffectiveMeaningLanguage } from '@/lib/language
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import { getTransliteration } from '@/lib/transliteration';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useReaderDisplayPreferences } from '@/lib/i18n/reader-display';
 import { buildReadableCapabilities } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
 
@@ -114,13 +115,13 @@ function getReaderPalette(tradition: string, accent: string) {
   return base;
 }
 
-const READER_FONT_STEPS = [1.0, 1.15, 1.32, 1.5, 1.7] as const;
 
-function getEntryText(entry: LibraryEntry) {
+
+function getEntryText(entry: LibraryEntry, meaningLabel: string) {
   return [
     `${entry.title} — ${entry.source}`,
     entry.original,
-    entry.meaning ? `Meaning: ${entry.meaning}` : '',
+    entry.meaning ? `${meaningLabel}: ${entry.meaning}` : '',
   ].filter(Boolean).join('\n\n');
 }
 
@@ -129,18 +130,6 @@ export const SEED_PATHS = SEED_PATHS_LIB as unknown as {
   id: string; title: string; description: string;
   difficulty: string; tradition: string; total_lessons: number; duration_days: number;
 }[];
-
-// ── Share helper ───────────────────────────────────────────────────────────────
-async function shareEntry(entry: LibraryEntry) {
-  const text = `${entry.title} — ${entry.source}\n\n${entry.original}\n\n${entry.transliteration}\n\nMeaning: ${entry.meaning}\n\n— Shared via Shoonaya`;
-  if (navigator.share) {
-    try { await navigator.share({ title: entry.title, text }); return; } catch { /* cancelled */ }
-  }
-  try {
-    await navigator.clipboard.writeText(text);
-    toast.success('Copied to clipboard!');
-  } catch { toast.error('Unable to share'); }
-}
 
 // ── Scripture Entry Card ───────────────────────────────────────────────────────
 function EntryCard({ entry, accentColour }: { entry: LibraryEntry; accentColour: string }) {
@@ -224,11 +213,13 @@ function ScriptureReader({
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const effectiveMeaningLanguage = resolveEffectiveMeaningLanguage(appLanguage, meaningLanguage);
+  const { labels, fontPresets, fontStep, setFontStep, fontScale } = useReaderDisplayPreferences({
+    resolvedLanguage: effectiveMeaningLanguage,
+    initialFontStep: 2,
+  });
   const P = getReaderPalette(tradition, _accentColour);
 
-  // ── Reader settings ────────────────────────────────────────────────────────
-  const [fontStep, setFontStep] = useState(2);
-  const fontScale = READER_FONT_STEPS[fontStep];
   const [verseIndex, setVerseIndex] = useState(0);
 
   // ── Bookmarks ──────────────────────────────────────────────────────────────
@@ -258,7 +249,7 @@ function ScriptureReader({
 
   const activeVerse = verses[verseIndex];
   const totalVerses = verses.length;
-  const effectiveMeaningLanguage = resolveEffectiveMeaningLanguage(appLanguage, meaningLanguage);
+
   const localizedMeaning = useLocalizedMeaning({
     entryId: activeVerse?.id,
     sourceMeaning: activeVerse?.meaning,
@@ -297,7 +288,7 @@ function ScriptureReader({
   const toggleSattva = () => {
     if (!isPro) { setShowPremiumModal(true); return; }
     setSattvaMode(!sattvaMode);
-    if (!sattvaMode) toast('Sattva Mode active ✦ Deep immersion enabled', { icon: '✨' });
+    if (!sattvaMode) toast(labels.sattvaModeActive, { icon: '✨' });
   };
 
   const stopTTS = useCallback(() => {
@@ -324,7 +315,7 @@ function ScriptureReader({
       audio.onended = () => { setSpeakingId(null); };
       await audio.play();
       setSpeakingId(v.id);
-    } catch { toast.error('Audio unavailable'); }
+    } catch { toast.error(labels.audioUnavailableRightNow); }
   }
 
   async function toggleBookmark(v: any) {
@@ -340,7 +331,7 @@ function ScriptureReader({
         bookmarked_at: next ? new Date().toISOString() : null,
       }, { onConflict: 'user_id,entry_id' });
     if (error) { setBookmarkedIds(prev); toast.error(error.message); return; }
-    toast.success(next ? 'Saved for later' : 'Removed from saved');
+    toast.success(next ? labels.savedForLater : labels.removedFromSaved);
   }
 
   async function explainVerse() {
@@ -357,8 +348,8 @@ function ScriptureReader({
         contentType: 'sacred_verse',
       });
       if (result) setExplainResult(result as ExplainResult);
-      else toast.error('Could not generate explanation');
-    } catch { toast.error('Could not generate explanation'); } finally { setExplainLoading(false); }
+      else toast.error(labels.couldNotGenerateExplanation);
+    } catch { toast.error(labels.couldNotGenerateExplanation); } finally { setExplainLoading(false); }
   }
 
   return (
@@ -390,7 +381,7 @@ function ScriptureReader({
           <Sparkles size={16} style={{ color: sattvaMode ? '#f59e0b' : P.accentDeep }} />
         </button>
         <button
-          onClick={() => setFontStep(s => (s + 1) % READER_FONT_STEPS.length)}
+          onClick={() => setFontStep(s => (s + 1) % Math.max(fontPresets.length, 1))}
           className="px-2 py-1 rounded-lg text-[11px] font-bold"
           style={{ background: P.accentBg, color: P.accentDeep, border: `1px solid ${P.border}` }}
         >
@@ -454,7 +445,7 @@ function ScriptureReader({
               style={{ background: showExplain ? P.accentBg : P.bgCard, color: P.accentDeep, border: `1.5px solid ${P.border}` }}
             >
               {explainLoading ? <Loader2 size={14} className="animate-spin" /> : showExplain ? <EyeOff size={14} /> : <Sparkles size={14} />}
-              {explainLoading ? 'Asking teacher…' : showExplain ? 'Hide explanation' : 'Explain this verse'}
+              {explainLoading ? labels.askingTeacher : showExplain ? labels.hideExplanation : labels.explainVerse}
             </button>
 
             <AnimatePresence>
@@ -486,7 +477,7 @@ function ScriptureReader({
             <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: speakingId === activeVerse?.id ? '#2563EB' : P.accentBg, border: `1px solid ${P.border}` }}>
               {readerControls.state.isGeneratingTTS ? <Loader2 size={17} className="animate-spin" style={{ color: speakingId === activeVerse?.id ? '#fff' : P.accentDeep }} /> : speakingId === activeVerse?.id ? <VolumeX size={17} style={{ color: '#fff' }} /> : <Volume2 size={17} style={{ color: P.accentDeep }} />}
             </div>
-            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{speakingId === activeVerse?.id ? t('done') : t('listen')}</span>
+            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{speakingId === activeVerse?.id ? labels.stopReading : labels.listen}</span>
           </button>
 
           {/* Save */}
@@ -498,11 +489,11 @@ function ScriptureReader({
           </button>
 
           {/* Copy */}
-          <button onClick={() => { if (activeVerse) { void readerControls.handlers.copyText(getEntryText(activeVerse), 'Verse'); } }} className="flex flex-col items-center gap-1 min-w-[52px]">
+          <button onClick={() => { if (activeVerse) { void readerControls.handlers.copyText(getEntryText(activeVerse, labels.meaning), 'Verse'); } }} className="flex flex-col items-center gap-1 min-w-[52px]">
             <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: P.accentBg, border: `1px solid ${P.border}` }}>
               <Copy size={17} style={{ color: P.accentDeep }} />
             </div>
-            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{t('copy')}</span>
+            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{labels.copy}</span>
           </button>
 
           {/* Ask AI */}
@@ -525,6 +516,7 @@ function ScriptureReader({
 
 // ── Epic Viewer — for massive texts ───────────────────────────────────────────
 function EpicViewer({ structure, accentColour }: { structure: EpicStructure; accentColour: string }) {
+  const { t, lang } = useLanguage();
   const [selectedKanda, setKanda] = useState<EpicKanda>(structure.kandas[0]);
 
   const handleOpenChapter = async (c: EpicChapter) => {
@@ -545,7 +537,7 @@ function EpicViewer({ structure, accentColour }: { structure: EpicStructure; acc
     if (verses.length === 0) {
       // Chapter content not yet transcribed — show a friendly toast
       const { default: toast } = await import('react-hot-toast');
-      toast('This chapter is being transcribed. Check back soon! 🙏', { icon: '📖', duration: 3000 });
+      toast(t(lang, 'chapterBeingTranscribed'), { icon: '📖', duration: 3000 });
       return;
     }
     window.dispatchEvent(new CustomEvent('open-reader', {
@@ -1002,7 +994,6 @@ export default function PathshalaClient({
   // PATHSHALA_PATH_IDS is imported from @/lib/pathshala-paths.
   // It scopes all queries away from NityaKarma guided-plan rows (brahma-muhurta-7 etc.)
   // which share the guided_path_progress table. Without it those rows inflate the badge.
-
   useEffect(() => {
     async function loadEnrollments() {
       try {
@@ -1055,7 +1046,7 @@ export default function PathshalaClient({
 
     // Intermediate & Advanced paths require Pro
     if (!isPro && pathToEnroll && pathToEnroll.difficulty !== 'beginner') {
-      toast('🔒 Intermediate & Advanced paths require Shoonaya Pro. Upgrade to unlock all paths.', {
+      toast(t('upgradeToShoonayaPro'), {
         duration: 4000,
         style: { background: '#1c1c1a', color: 'var(--brand-ink)' },
       });
@@ -1083,12 +1074,14 @@ export default function PathshalaClient({
         .in('path_id', PATHSHALA_PATH_IDS);
 
       setActive(data ?? []);
-      toast.success('Enrolled! Your journey begins. 🙏');
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 4000);
+      toast.success('Enrollment successful!');
       // Scroll to gurukul section (single-scroll page — no tabs)
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err: any) {
       console.error('[Pathshala] enroll failed:', err);
-      toast.error(err?.message ?? 'Could not enroll. Please try again.');
+      toast.error(err?.message ?? 'Failed to enroll');
     } finally {
       setEnrolling(null);
     }
@@ -1106,9 +1099,9 @@ export default function PathshalaClient({
         .eq('path_id', pathId);
       if (error) throw error;
       setActive(prev => prev.filter(e => e.path_id !== pathId));
-      toast.success('Removed from active paths. You can re-enroll anytime.');
+      toast.success('Path removed');
     } catch (err: any) {
-      toast.error(err?.message ?? 'Could not unenroll. Please try again.');
+      toast.error(err?.message ?? 'Failed to leave path');
     }
   }
 
@@ -1128,9 +1121,9 @@ export default function PathshalaClient({
           ? { ...e, current_lesson: 0, completed_lessons: [] }
           : e
       ));
-      toast.success('Path reset! Starting fresh from Lesson 1. 🙏');
+      toast.success('Progress reset');
     } catch (err: any) {
-      toast.error(err?.message ?? 'Could not reset. Please try again.');
+      toast.error(err?.message ?? 'Failed to reset progress');
     }
   }
 
@@ -1155,10 +1148,10 @@ export default function PathshalaClient({
       ? Math.round((doneLessons / path.total_lessons) * 100)
       : 0;
     const resumeLesson = enrollment.current_lesson ?? 0;
-    const lessonLabel  = resumeLesson > 0 ? `Lesson ${resumeLesson + 1}` : 'Begin';
+    const lessonLabel  = resumeLesson > 0 ? `Resume · Lesson ${resumeLesson + 1}` : 'Begin';
     const masterySignal = doneLessons > 0
-      ? `${doneLessons} ${meta.vocabulary?.shloka ?? 'lesson'}${doneLessons === 1 ? '' : 's'} mastered`
-      : `${path.total_lessons} lessons ahead`;
+      ? `${doneLessons} ${meta.vocabulary?.shloka ?? 'Lesson'}${doneLessons === 1 ? '' : 's'} Mastered`
+      : `${path.total_lessons} Lessons Ahead`;
 
     return (
       <motion.div
@@ -1205,7 +1198,7 @@ export default function PathshalaClient({
               label={
                 <div className="text-center leading-none">
                   <div className="text-[1.35rem] font-bold" style={{ color: meta.accentColour }}>{progressPct}%</div>
-                  <div className="text-[7px] mt-0.5 uppercase tracking-wider" style={{ color: tertiaryText }}>done</div>
+                  <div className="text-[7px] mt-0.5 uppercase tracking-wider" style={{ color: tertiaryText }}>Done</div>
                 </div>
               }
             />
@@ -1220,7 +1213,7 @@ export default function PathshalaClient({
             {path.description}
           </p>
           <p className="text-[10px] font-semibold mb-5" style={{ color: meta.accentColour, opacity: 0.7 }}>
-            {masterySignal} · {path.duration_days}-day journey
+            {masterySignal} · {path.duration_days}-Day Journey
           </p>
 
           {/* Animated progress bar */}
@@ -1245,7 +1238,7 @@ export default function PathshalaClient({
             }}
           >
             <Play size={14} fill="currentColor" />
-            {lessonLabel === 'Begin' ? 'Begin First Lesson' : `Resume · ${lessonLabel}`}
+            {lessonLabel}
           </Link>
         </div>
 
@@ -1367,7 +1360,7 @@ export default function PathshalaClient({
                 onClick={() => unenroll(enrollment.path_id, path.title)}
                 className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center opacity-40 hover:opacity-80 transition"
                 style={{ background: 'var(--card-bg-soft)', border: `1px solid ${glassBorder}` }}
-                title="Leave this path"
+                title="Leave this Path"
               >
                 <X size={13} style={{ color: tertiaryText }} />
               </button>
@@ -1375,7 +1368,7 @@ export default function PathshalaClient({
             <div className="mt-1.5 flex items-center gap-2">
               <span className="text-xs font-semibold" style={{ color: meta.accentColour }}>{progressPct}%</span>
               <span className="text-xs" style={{ color: secondaryText }}>
-                {doneLessons}/{path.total_lessons} lessons · {path.duration_days} days
+                {doneLessons}/{path.total_lessons} Lessons · {path.duration_days} Days
               </span>
             </div>
           </div>
@@ -1412,6 +1405,12 @@ export default function PathshalaClient({
         animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
         transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
       >
+        {isProGated && !isEnrolled && (
+          <div className="absolute top-3 right-3 text-[9px] font-bold uppercase tracking-widest text-white px-2 py-1 rounded-full shadow-md z-10 flex items-center gap-1"
+            style={{ background: 'linear-gradient(135deg,#c5a059,#a07830)' }}>
+            <Lock size={8} /> Pro
+          </div>
+        )}
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0"
             style={{ background: `${meta.accentColour}14` }}>
@@ -1424,16 +1423,10 @@ export default function PathshalaClient({
                 style={{ background: diff.bg, color: diff.text, border: `1px solid ${diff.border}` }}>
                 {diff.label}
               </span>
-              {isProGated && !isEnrolled && (
-                <span className="text-[10px] font-semibold rounded-full px-2 py-0.5 flex items-center gap-0.5"
-                  style={{ background: `${meta.accentColour}15`, color: meta.accentColour, border: `1px solid ${meta.accentColour}25` }}>
-                  <Lock size={8} /> Pro
-                </span>
-              )}
             </div>
             <p className="text-xs mt-0.5 line-clamp-2" style={{ color: secondaryText }}>{path.description}</p>
             <p className="text-xs mt-1" style={{ color: tertiaryText }}>
-              {path.total_lessons} lessons · {path.duration_days}-day journey
+              {path.total_lessons} Lessons · {path.duration_days}-Day Journey
             </p>
           </div>
         </div>
@@ -1458,7 +1451,7 @@ export default function PathshalaClient({
           {enrolling === path.id
             ? <Loader2 size={14} className="animate-spin" />
             : isEnrolled
-              ? <><Star size={14} /> {t('enrolled')}</>
+              ? <><Star size={14} /> Enrolled</>
               : isProGated
                 ? <><Lock size={14} /> Unlock with Pro</>
                 : <><Plus size={14} /> Enroll</>
@@ -1628,7 +1621,7 @@ export default function PathshalaClient({
           {loading ? (
             <motion.div variants={itemVariants} className="flex items-center justify-center gap-3 py-8">
               <Loader2 size={20} className="animate-spin" style={{ color: meta.accentColour }} />
-              <span className="text-sm" style={{ color: 'var(--brand-muted)' }}>Loading your gurukul…</span>
+              <span className="text-sm" style={{ color: 'var(--brand-muted)' }}>Loading Gurukul...</span>
             </motion.div>
           ) : activePaths.length > 0 ? (
             <motion.section variants={itemVariants} className="px-4 mb-6">
@@ -1643,7 +1636,7 @@ export default function PathshalaClient({
               {activePaths.slice(1).length > 0 && (
                 <div className="mt-3 space-y-3">
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] px-1" style={{ color: 'var(--brand-muted)' }}>
-                    Also enrolled
+                    Also enrolled in
                   </p>
                   {activePaths.slice(1).map(e => (
                     <ActivePathCard key={e.path_id} enrollment={e} />
@@ -1655,9 +1648,9 @@ export default function PathshalaClient({
                   style={{ background: `${meta.accentColour}0c`, borderColor: `${meta.accentColour}22` }}>
                   <Lock size={16} style={{ color: meta.accentColour }} className="flex-shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-[12px] font-semibold" style={{ color: 'var(--brand-ink)' }}>Beginner paths are free</p>
+                    <p className="text-[12px] font-semibold" style={{ color: 'var(--brand-ink)' }}>Free Beginner Paths</p>
                     <p className="text-[10px] mt-0.5" style={{ color: 'var(--brand-muted)' }}>
-                      Intermediate &amp; Advanced paths require Pro. Upgrade for all {allPaths.length} paths + analytics.
+                      Intermediate & Advanced paths require Shoonaya Pro
                     </p>
                   </div>
                   <Link href="/profile"

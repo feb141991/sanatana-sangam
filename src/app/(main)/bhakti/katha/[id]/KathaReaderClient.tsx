@@ -13,6 +13,8 @@ import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-
 import { resolveReadablePreferences } from '@/lib/readable-preferences';
 import { trackReaderEvent } from '@/lib/analytics/reader-events';
 import { useReaderControls } from '@/hooks/useReaderControls';
+import { useReaderDisplayPreferences } from '@/lib/i18n/reader-display';
+import type { AppContentLanguage } from '@/lib/language-runtime';
 
 interface Props {
   katha: Katha;
@@ -98,19 +100,6 @@ function transliterateDevanagariToGurmukhi(input: string): string {
   return result;
 }
 
-type Lang = 'en' | 'hi' | 'pa';
-type FontSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
-
-const FONT_SIZES: Record<FontSize, string> = {
-  xs: 'text-[12px] sm:text-[13px]',
-  sm: 'text-[14px] sm:text-[15px]',
-  md: 'text-[16px] sm:text-[17px]',
-  lg: 'text-[19px] sm:text-[20px]',
-  xl: 'text-[22px] sm:text-[24px]',
-  xxl: 'text-[26px] sm:text-[28px]',
-};
-const SIZES: FontSize[] = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
-
 export default function KathaReaderClient({
   katha,
   appLanguage,
@@ -123,14 +112,26 @@ export default function KathaReaderClient({
     appLanguage,
     meaningLanguage,
   }), [appLanguage, meaningLanguage]);
-  const [lang, setLang] = useState<Lang>(() => {
+  const resolvedLanguage = useMemo<AppContentLanguage>(() => {
     if (!readablePreferences.preferLocalLanguage) return 'en';
     if (hasHindi) return 'hi';
     if (hasPunjabi) return 'pa';
     return 'en';
+  }, [hasHindi, hasPunjabi, readablePreferences.preferLocalLanguage]);
+
+  const {
+    language: lang,
+    setLanguage: setLang,
+    labels,
+    fontPresets,
+    languages,
+    fontStep,
+    setFontStep,
+    fontScale,
+  } = useReaderDisplayPreferences({
+    resolvedLanguage,
+    initialFontStep: 1,
   });
-  const [sizeIndex, setSizeIndex] = useState(2); // Default to 'md' (index 2)
-  const fontSize = SIZES[sizeIndex];
   const [sankalpaDismissed, setSankalpaDismissed] = useState(false);
   const [liked, setLiked] = useState(false);
   const [showPhal, setShowPhal] = useState(false);
@@ -326,227 +327,59 @@ export default function KathaReaderClient({
             <button
               onClick={copyToClipboard}
               className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-90"
-              title="Copy Katha"
+              title={labels.copy}
             >
               {readerControls.state.isCopied ? <Check size={14} color="#2D9E4A" /> : <Copy size={14} color={THEME.gold} />}
             </button>
             <button
               onClick={shareKatha}
               className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-90"
-              title="Share Katha"
+              title={labels.share}
             >
               <Share2 size={14} color={THEME.gold} />
             </button>
           </div>
         </div>
 
-        {/* ── Dynamic Controls Bar (Zoom, Language & Script toggles) ── */}
+        {/* ── Dynamic Controls Bar ── */}
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[var(--divine-border)]/5">
-          {/* Zoom Control */}
+          {/* Font Presets */}
           <div className="flex items-center gap-1.5 bg-[var(--surface-base)]/10 px-2 py-1 rounded-full border border-[var(--divine-border)]/5">
-            <span className="text-[10px] uppercase font-bold tracking-wider px-1 text-[var(--text-dim)]">Zoom:</span>
-            <button
-              onClick={() => setSizeIndex(i => Math.max(0, i - 1))}
-              disabled={sizeIndex === 0}
-              className="w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center transition-all bg-[var(--surface-base)]/20 text-[var(--text-main)] hover:bg-[var(--surface-base)]/40 disabled:opacity-30"
-            >
-              A-
-            </button>
-            <span className="text-xs font-bold px-1 text-[#C5A059] min-w-[2rem] text-center">
-              {sizeIndex + 1}
-            </span>
-            <button
-              onClick={() => setSizeIndex(i => Math.min(SIZES.length - 1, i + 1))}
-              disabled={sizeIndex === SIZES.length - 1}
-              className="w-7 h-7 rounded-full text-xs font-semibold flex items-center justify-center transition-all bg-[var(--surface-base)]/20 text-[var(--text-main)] hover:bg-[var(--surface-base)]/40 disabled:opacity-30"
-            >
-              A+
-            </button>
+            <span className="text-[10px] uppercase font-bold tracking-wider px-1 text-[var(--text-dim)]">{labels.textSize}:</span>
+            {fontPresets.map((step, idx) => (
+              <button
+                key={idx}
+                onClick={() => setFontStep(idx)}
+                className={`px-2 py-1 rounded-full text-[10px] font-bold flex items-center justify-center transition-all ${
+                  fontStep === idx
+                    ? 'bg-[#C5A059] text-black shadow-md shadow-[#C5A059]/20'
+                    : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'
+                }`}
+              >
+                {step.label}
+              </button>
+            ))}
           </div>
 
-          {/* Language Toggle (Local and English) */}
           <div className="flex items-center gap-1.5 bg-[var(--surface-base)]/10 px-2 py-1 rounded-full border border-[var(--divine-border)]/5">
-            <span className="text-[10px] uppercase font-bold tracking-wider px-1 text-[var(--text-dim)]">Lang:</span>
-            <button
-              onClick={() => {
-                setLang('en');
-                trackReaderEvent('language_toggled', {
-                  content_type: 'katha',
-                  source: `katha:${katha.id}`,
-                  tradition: katha.tradition,
-                  language: 'en',
-                });
-              }}
-              className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${
-                lang === 'en'
-                  ? 'bg-[#C5A059] text-black shadow-md shadow-[#C5A059]/20'
-                  : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'
-              }`}
-            >
-              EN
-            </button>
-            {hasHindi && (
-              <button
-                onClick={() => {
-                  setLang('hi');
-                  trackReaderEvent('language_toggled', {
-                    content_type: 'katha',
-                    source: `katha:${katha.id}`,
-                    tradition: katha.tradition,
-                    language: 'hi',
-                  });
-                }}
-                className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${
-                  lang === 'hi'
-                    ? 'bg-[#C5A059] text-black shadow-md shadow-[#C5A059]/20'
-                    : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'
-                }`}
-              >
-                हिं
-              </button>
-            )}
-            {hasPunjabi && (
-              <button
-                onClick={() => {
-                  setLang('pa');
-                  trackReaderEvent('language_toggled', {
-                    content_type: 'katha',
-                    source: `katha:${katha.id}`,
-                    tradition: katha.tradition,
-                    language: 'pa',
-                  });
-                }}
-                className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${
-                  lang === 'pa'
-                    ? 'bg-[#C5A059] text-black shadow-md shadow-[#C5A059]/20'
-                    : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'
-                }`}
-              >
-                ਪੰ
-              </button>
-            )}
+            <span className="text-[10px] uppercase font-bold tracking-wider px-1 text-[var(--text-dim)]">{labels.language}:</span>
+            {languages
+              .filter(l => l.code === 'en' || (l.code === 'hi' && hasHindi) || (l.code === 'pa' && hasPunjabi))
+              .map(l => (
+                <button
+                  key={l.code}
+                  onClick={() => {
+                    setLang(l.code);
+                    trackReaderEvent('language_toggled', { content_type: 'katha', source: `katha:${katha.id}`, tradition: katha.tradition, language: l.code });
+                  }}
+                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${lang === l.code ? 'bg-[#C5A059] text-black shadow-md shadow-[#C5A059]/20' : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'}`}
+                >
+                  {l.label}
+                </button>
+              ))}
           </div>
         </div>
       </div>
-
-      {/* ── Sankalpa Nudge ── */}
-      <AnimatePresence>
-        {!sankalpaDismissed && katha.occasion !== 'general' && (
-          <motion.section
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, height: 0, marginTop: 0 }}
-            className="mx-6 mt-4"
-          >
-            <div
-              className="rounded-2xl p-4 border flex items-start gap-3"
-              style={{ borderColor: `${tradColor}25`, background: `${tradColor}08` }}
-            >
-              <Sparkles size={14} color={tradColor} className="mt-0.5 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-widest mb-1" style={{ color: tradColor }}>
-                  Sankalpa Moment
-                </p>
-                <p className="text-[var(--text-dim)] text-[12px] leading-relaxed">
-                  Before you begin, take a breath. Set your intention — read this katha with an open heart and let its wisdom guide your practice of{' '}
-                  <span className="text-[var(--text-main)] font-semibold">{OCCASION_LABELS[katha.occasion]}</span>.
-                </p>
-              </div>
-              <button onClick={() => setSankalpaDismissed(true)} className="text-[var(--text-dim)] text-xs mt-0.5 hover:text-[var(--text-main)]">✕</button>
-            </div>
-          </motion.section>
-        )}
-      </AnimatePresence>
-
-      {/* ── Title Block ── */}
-      <section className="px-6 mt-8 space-y-4">
-        {/* Tags */}
-        <div className="flex flex-wrap gap-2">
-          <span
-            className="text-[9px] font-bold uppercase tracking-[0.25em] px-3 py-1.5 rounded-full border"
-            style={{ color: tradColor, borderColor: `${tradColor}30`, background: `${tradColor}10` }}
-          >
-            {trad.label}
-          </span>
-          <span className="text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border border-[var(--divine-border)]/15 text-[var(--text-dim)]">
-            {OCCASION_LABELS[katha.occasion] ?? katha.occasion}
-          </span>
-          {katha.deity && (
-            <span className="text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border border-[#C5A059]/15 text-[#C5A059]/80">
-              {katha.deity.charAt(0).toUpperCase() + katha.deity.slice(1)}
-            </span>
-          )}
-        </div>
-
-        {/* Title */}
-        <h1 className="text-3xl sm:text-4xl font-serif text-[var(--text-main)] leading-tight">
-          {titleToShow}
-        </h1>
-
-        {/* Meta */}
-        <div className="flex items-center gap-4 text-[var(--text-dim)] text-[11px]">
-          <div className="flex items-center gap-1.5">
-            <Clock size={11} className="text-[#C5A059]" />
-            <span>{katha.durationMin} min read</span>
-          </div>
-          {katha.relatedJapaMantra && (
-            <div className="flex items-center gap-1.5">
-              <Star size={10} className="text-[#C5A059]" />
-              <span className="font-semibold text-[#C5A059]">{katha.relatedJapaMantra}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Divider */}
-        <div className="flex items-center gap-3 pt-2">
-          <div className="flex-1 h-px bg-[var(--divine-border)]/10" />
-          <span className="text-2xl opacity-40">🕉️</span>
-          <div className="flex-1 h-px bg-[var(--divine-border)]/10" />
-        </div>
-
-        {/* Akash narration */}
-        <motion.button
-          whileTap={{ scale: 0.98 }}
-          onClick={speakKatha}
-          disabled={readerControls.state.isGeneratingTTS}
-          className="w-full rounded-[1.6rem] p-4 border flex items-center justify-between text-left disabled:opacity-70"
-          style={{ borderColor: `${tradColor}28`, background: `${tradColor}0d` }}
-        >
-          <div className="flex items-center gap-3 min-w-0">
-            <div
-              className="h-11 w-11 rounded-2xl flex items-center justify-center border"
-              style={{ borderColor: `${tradColor}28`, background: speaking ? tradColor : `${tradColor}16` }}
-            >
-              {readerControls.state.isGeneratingTTS
-                ? <Loader2 size={18} className="animate-spin" color={speaking ? '#fff' : tradColor} />
-                : speaking
-                  ? <VolumeX size={18} color="#fff" />
-                  : <Volume2 size={18} color={tradColor} />}
-            </div>
-            <div className="min-w-0">
-              <p className="text-[13px] font-semibold text-[var(--text-main)]">
-                {speaking ? 'Stop Akash narration' : 'Listen with Akash'}
-              </p>
-              <p className="text-[11px] text-[var(--text-dim)] mt-0.5">
-                {lang === 'hi' ? 'Hindi narration' : lang === 'pa' ? 'Punjabi narration' : 'English narration'} · {katha.tags.includes('panchatantra') ? 'Story pace' : 'Meditative pace'}
-              </p>
-            </div>
-          </div>
-          {speaking && (
-            <div className="flex items-end gap-1 h-7" aria-hidden="true">
-              {[0, 1, 2].map(i => (
-                <motion.span
-                  key={i}
-                  className="w-1 rounded-full"
-                  style={{ background: tradColor }}
-                  animate={{ height: [6, 22, 10, 18, 6] }}
-                  transition={{ duration: 1.1, repeat: Infinity, delay: i * 0.16 }}
-                />
-              ))}
-            </div>
-          )}
-        </motion.button>
-      </section>
 
       {/* ── Katha Body ── */}
       <section className="px-6 mt-8 space-y-6">
@@ -556,8 +389,11 @@ export default function KathaReaderClient({
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.04, duration: 0.4 }}
-            className={`text-[var(--text-main)]/85 ${FONT_SIZES[fontSize]} leading-[1.8] font-light`}
-            style={{ fontFamily: lang !== 'en' ? 'inherit' : 'var(--font-serif, Georgia, serif)' }}
+            className={`text-[var(--text-main)]/85 leading-[1.8] font-light`}
+            style={{ 
+                fontFamily: lang !== 'en' ? 'inherit' : 'var(--font-serif, Georgia, serif)',
+                fontSize: `${fontScale * 1}rem` 
+            }}
           >
             {para}
           </motion.p>
@@ -577,8 +413,8 @@ export default function KathaReaderClient({
               <Star size={16} color={THEME.gold} />
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[#C5A059] mb-0.5">Phal — Fruit of the Katha</p>
-              <p className="text-[var(--text-dim)] text-[12px]">Tap to reveal the blessing and moral</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#C5A059] mb-0.5">{labels.kathaFruitOfKatha}</p>
+              <p className="text-[var(--text-dim)] text-[12px]">{labels.kathaRevealBlessing}</p>
             </div>
           </div>
           {showPhal ? <ChevronUp size={16} color={THEME.gold} /> : <ChevronDown size={16} color={THEME.gold} />}
@@ -594,9 +430,12 @@ export default function KathaReaderClient({
               className="overflow-hidden"
             >
               <div className="mt-3 rounded-[2rem] p-6 border border-[#C5A059]/15 bg-[#C5A059]/5">
-                <p className="text-[var(--text-main)]/85 text-[14px] leading-[1.8] font-light italic">
-                  &ldquo;{phalToShow}&rdquo;
-                </p>
+                <h3 className="text-xl font-bold premium-serif" style={{ color: THEME.gold }}>{labels.kathaPhalShruti}</h3>
+                <div className={`text-[var(--text-dim)] leading-relaxed mt-4 ${lang !== 'en' ? (lang === 'pa' ? 'punjabi-serif' : 'katha-local') : 'premium-serif'}`}
+                  style={{ fontSize: `${fontScale * 1}rem` }}
+                >
+                  {phalToShow}
+                </div>
               </div>
             </motion.div>
           )}
@@ -605,7 +444,7 @@ export default function KathaReaderClient({
 
       {/* ── Cross-links ── */}
       <section className="px-6 mt-10 space-y-4">
-        <h3 className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-dim)]">Continue Your Practice</h3>
+        <h3 className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-dim)]">{labels.continuePractice}</h3>
 
         {katha.relatedJapaMantra && (
           <Link href="/japa">
@@ -618,7 +457,7 @@ export default function KathaReaderClient({
                   📿
                 </div>
                 <div>
-                  <p className="text-[var(--text-main)] text-[13px] font-semibold">Start Japa</p>
+                  <p className="text-[var(--text-main)] text-[13px] font-semibold">{labels.startJapa}</p>
                   <p className="text-[var(--text-dim)] text-[11px] mt-0.5">{katha.relatedJapaMantra}</p>
                 </div>
               </div>
@@ -637,8 +476,8 @@ export default function KathaReaderClient({
                 📚
               </div>
               <div>
-                <p className="text-[var(--text-main)] text-[13px] font-semibold">More Kathas</p>
-                <p className="text-[var(--text-dim)] text-[11px] mt-0.5">Explore the sacred library</p>
+                <p className="text-[var(--text-main)] text-[13px] font-semibold">{labels.moreKathas}</p>
+                <p className="text-[var(--text-dim)] text-[11px] mt-0.5">{labels.exploreSacredLibrary}</p>
               </div>
             </div>
             <ExternalLink size={14} color={THEME.gold} className="opacity-60" />
@@ -658,7 +497,7 @@ export default function KathaReaderClient({
           }`}
         >
           <Heart size={15} fill={liked ? 'currentColor' : 'none'} />
-          <span>{liked ? 'Jai Shri Hari 🙏' : 'Appreciate this Katha'}</span>
+          <span>{liked ? labels.jaiShriHari : labels.appreciateThisKatha}</span>
         </motion.button>
       </section>
     </div>

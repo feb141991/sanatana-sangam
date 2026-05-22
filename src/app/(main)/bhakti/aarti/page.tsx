@@ -1,14 +1,16 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Check, Loader2, Volume2, VolumeX, Copy, Share2, Sparkles } from 'lucide-react';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
-import { ReadableContent } from '@/lib/readable-content';
-import { buildReadableCapabilities } from '@/lib/readable-content';
+import { ReadableContent, buildReadableCapabilities } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
 import { trackReaderEvent } from '@/lib/analytics/reader-events';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useReaderDisplayPreferences } from '@/lib/i18n/reader-display';
+import type { AppContentLanguage } from '@/lib/language-runtime';
 
 // ─── Bell tone via WebAudio ───────────────────────────────────────────────────
 function playBell(freq = 432, dur = 2.5, vol = 0.22) {
@@ -33,11 +35,11 @@ const AARTI_STEPS = [
   {
     id: 'bell',
     emoji: '🔔',
-    title: 'Ghantā — Ring the Bell',
-    titleDevanagari: 'घण्टा',
-    instruction: 'Ring the temple bell to announce your worship and awaken the divine presence. The sound of the bell dispels negative energies and calls the mind to stillness.',
-    action: 'Ring the bell',
-    hint: 'Tap to ring',
+    titleKey: 'aartiBellTitle' as const,
+    titleDevaKey: 'aartiBellTitleDeva' as const,
+    instructionKey: 'aartiBellInstruction' as const,
+    actionKey: 'aartiBellAction' as const,
+    hintKey: 'aartiBellHint' as const,
     color: '#d4a645',
     bg: 'rgba(212,166,70,0.10)',
     onTap: () => { playBell(432, 2.5); haptic([30, 50, 20]); },
@@ -45,11 +47,11 @@ const AARTI_STEPS = [
   {
     id: 'diya',
     emoji: '🪔',
-    title: 'Dīpa — Light the Diya',
-    titleDevanagari: 'दीप',
-    instruction: 'Light the diya (oil lamp) and offer it to the deity. The flame represents the eternal light of consciousness — jyoti. As you light it, offer your prayers for illumination.',
-    action: 'Light the diya',
-    hint: 'Offer the flame',
+    titleKey: 'aartiDiyaTitle' as const,
+    titleDevaKey: 'aartiDiyaTitleDeva' as const,
+    instructionKey: 'aartiDiyaInstruction' as const,
+    actionKey: 'aartiDiyaAction' as const,
+    hintKey: 'aartiDiyaHint' as const,
     color: '#e07b3a',
     bg: 'rgba(220,120,50,0.10)',
     onTap: () => { playBell(528, 1.5, 0.15); haptic([20]); },
@@ -57,11 +59,11 @@ const AARTI_STEPS = [
   {
     id: 'dhoop',
     emoji: '🌿',
-    title: 'Dhūpa — Offer Incense',
-    titleDevanagari: 'धूप',
-    instruction: 'Offer fragrant incense to the deity. The rising smoke carries your prayers upward. The fragrance purifies the space and the mind, preparing it for deeper worship.',
-    action: 'Offer incense',
-    hint: 'Wave the dhoop',
+    titleKey: 'aartiDhoopTitle' as const,
+    titleDevaKey: 'aartiDhoopTitleDeva' as const,
+    instructionKey: 'aartiDhoopInstruction' as const,
+    actionKey: 'aartiDhoopAction' as const,
+    hintKey: 'aartiDhoopHint' as const,
     color: '#5c8e4a',
     bg: 'rgba(80,140,70,0.09)',
     onTap: () => { playBell(396, 1.2, 0.12); haptic([15, 30, 15]); },
@@ -69,11 +71,11 @@ const AARTI_STEPS = [
   {
     id: 'pushpa',
     emoji: '🌸',
-    title: 'Puṣpa — Offer Flowers',
-    titleDevanagari: 'पुष्प',
-    instruction: 'Offer fresh flowers at the feet of the deity. Flowers represent beauty, purity, and the blossoming of the heart. With each flower, offer a quality — love, gratitude, surrender.',
-    action: 'Offer flowers',
-    hint: 'Place the flowers',
+    titleKey: 'aartiPushpaTitle' as const,
+    titleDevaKey: 'aartiPushpaTitleDeva' as const,
+    instructionKey: 'aartiPushpaInstruction' as const,
+    actionKey: 'aartiPushpaAction' as const,
+    hintKey: 'aartiPushpaHint' as const,
     color: '#c4789a',
     bg: 'rgba(196,120,154,0.09)',
     onTap: () => { haptic([10, 20, 10, 20]); },
@@ -81,11 +83,11 @@ const AARTI_STEPS = [
   {
     id: 'jal',
     emoji: '🌊',
-    title: 'Jala — Water Offering',
-    titleDevanagari: 'जल',
-    instruction: 'Offer pure water (Ganga jal if available) to the deity. Water represents the purifying grace of the divine. This is the offering of life itself — all of nature flows from divine grace.',
-    action: 'Offer water',
-    hint: 'Pour the jal',
+    titleKey: 'aartiJalTitle' as const,
+    titleDevaKey: 'aartiJalTitleDeva' as const,
+    instructionKey: 'aartiJalInstruction' as const,
+    actionKey: 'aartiJalAction' as const,
+    hintKey: 'aartiJalHint' as const,
     color: '#3a8bcd',
     bg: 'rgba(58,140,200,0.09)',
     onTap: () => { playBell(639, 1.0, 0.10); haptic([10]); },
@@ -93,11 +95,11 @@ const AARTI_STEPS = [
   {
     id: 'naivedya',
     emoji: '🍬',
-    title: 'Naivedya — Food Offering',
-    titleDevanagari: 'नैवेद्य',
-    instruction: 'Offer a sweet or sattvic food (fruit, sugar, or prasad) to the deity. Whatever you offer becomes prasad — blessed food. Eat what you offer only after this moment of surrender.',
-    action: 'Offer naivedya',
-    hint: 'Place the offering',
+    titleKey: 'aartiNaivedyaTitle' as const,
+    titleDevaKey: 'aartiNaivedyaTitleDeva' as const,
+    instructionKey: 'aartiNaivedyaInstruction' as const,
+    actionKey: 'aartiNaivedyaAction' as const,
+    hintKey: 'aartiNaivedyaHint' as const,
     color: '#a07830',
     bg: 'rgba(160,120,48,0.09)',
     onTap: () => { haptic([20, 40, 20]); },
@@ -105,11 +107,11 @@ const AARTI_STEPS = [
   {
     id: 'namaskar',
     emoji: '🙏',
-    title: 'Namaskāra — Prostration',
-    titleDevanagari: 'नमस्कार',
-    instruction: 'Complete the aarti with a full namaskar (prostration). Surrender the ego completely before the divine. You may circle the deity (pradakshina) three times and then bow deeply. The aarti is complete — Jai!',
-    action: 'Complete aarti',
-    hint: 'Bow and surrender',
+    titleKey: 'aartiNamaskarTitle' as const,
+    titleDevaKey: 'aartiNamaskarTitleDeva' as const,
+    instructionKey: 'aartiNamaskarInstruction' as const,
+    actionKey: 'aartiNamaskarAction' as const,
+    hintKey: 'aartiNamaskarHint' as const,
     color: '#8b7de0',
     bg: 'rgba(139,125,224,0.09)',
     onTap: () => { playBell(432, 3.5, 0.20); haptic([30, 50, 30, 50, 60]); },
@@ -117,26 +119,34 @@ const AARTI_STEPS = [
 ] as const;
 
 // ─── Build ReadableContent for each step ───────────────────────────────────────
-function buildStepReadableContent(step: (typeof AARTI_STEPS)[number]): ReadableContent {
+// ─── Build ReadableContent for each step ───────────────────────────────────────
+function buildStepReadableContent(
+  step: (typeof AARTI_STEPS)[number],
+  lang: AppContentLanguage,
+  t: Function
+): ReadableContent {
+  const instruction = t(lang, step.instructionKey);
+  const title = t(lang, step.titleKey);
+  const script = lang === 'pa' ? 'gurmukhi' : lang === 'hi' ? 'devanagari' : 'latin';
   return {
-    original: step.instruction,
+    original: instruction,
     meaning: undefined,
-    sourceLabel: `Aarti — ${step.title}`,
+    sourceLabel: `Aarti — ${title}`,
     tradition: 'hindu',
-    language: 'en',
-    script: 'latin',
+    language: lang,
+    script,
     pipelineTags: {
       content_type: 'instruction',
       audio_mode: 'standard',
       tradition: 'hindu',
-      script: 'latin',
+      script,
       response_mode: 'extractive',
       delivery_intent: 'live_user'
     },
     capabilities: buildReadableCapabilities({
-      original: step.instruction,
+      original: instruction,
       meaning: undefined,
-      script: 'latin',
+      script,
       pipelineTags: {
         content_type: 'instruction',
         audio_mode: 'standard'
@@ -183,6 +193,12 @@ export default function AartiPage() {
   const { resolvedTheme } = useThemePreference();
   const isDark = resolvedTheme === 'dark';
 
+  const { t, lang: appLang } = useLanguage();
+  const { language: customLang, setLanguage: setCustomLang, labels, languages } = useReaderDisplayPreferences({
+    resolvedLanguage: appLang,
+    initialFontStep: 2,
+  });
+
   const [step,      setStep]     = useState(0);
   const [done,      setDone]     = useState<Set<number>>(new Set());
   const [dyiaLit,   setDiyaLit]  = useState(false);
@@ -197,7 +213,14 @@ export default function AartiPage() {
 
   const current = AARTI_STEPS[step];
   const isLast  = step === AARTI_STEPS.length - 1;
-  const currentReadableContent = buildStepReadableContent(current);
+
+  const currentTitle = t(customLang, current.titleKey);
+  const currentTitleDevanagari = t(customLang, current.titleDevaKey);
+  const currentInstruction = t(customLang, current.instructionKey);
+  const currentAction = t(customLang, current.actionKey);
+  const currentHint = t(customLang, current.hintKey);
+
+  const currentReadableContent = useMemo(() => buildStepReadableContent(current, customLang, t), [current, customLang, t]);
   const readerControls = useReaderControls(currentReadableContent.capabilities);
 
   // ── Tokens ──────────────────────────────────────────────────────────────────
@@ -231,11 +254,11 @@ export default function AartiPage() {
       content_type: 'instruction',
       source: `aarti:${current.id}`,
       tradition: 'hindu',
-      language: 'en',
+      language: customLang,
       has_meaning: false,
       has_transliteration: false,
     });
-  }, [current.id, stopTTS]);
+  }, [current.id, customLang, stopTTS]);
 
   function next() {
     if (isLast) { setFinished(true); return; }
@@ -251,11 +274,11 @@ export default function AartiPage() {
       content_type: 'instruction',
       source: `aarti:${current.id}`,
       tradition: 'hindu',
-      language: 'en',
+      language: customLang,
     });
-    const audioUrl = await readerControls.handlers.requestTTS(current.instruction, {
+    const audioUrl = await readerControls.handlers.requestTTS(currentInstruction, {
       quality: 'standard',
-      language: 'en',
+      language: customLang,
       pipelineTags: currentReadableContent.pipelineTags,
     });
     if (!audioUrl) return;
@@ -269,11 +292,11 @@ export default function AartiPage() {
   }
 
   async function explainCurrentStep() {
-    const result = await readerControls.handlers.requestExplain(current.instruction, {
-      source: `Aarti — ${current.title}`,
-      title: current.title,
+    const result = await readerControls.handlers.requestExplain(currentInstruction, {
+      source: `Aarti — ${currentTitle}`,
+      title: currentTitle,
       tradition: 'hindu',
-      language: 'en',
+      language: customLang,
       contentType: 'instruction',
       responseMode: 'extractive',
       pipelineTags: currentReadableContent.pipelineTags,
@@ -295,32 +318,32 @@ export default function AartiPage() {
       content_type: 'instruction',
       source: `aarti:${current.id}`,
       tradition: 'hindu',
-      language: 'en',
+      language: customLang,
     });
   }
 
   async function copyCurrentStep() {
-    await readerControls.handlers.copyText(`${current.title}\n\n${current.instruction}`, current.title);
+    await readerControls.handlers.copyText(`${currentTitle}\n\n${currentInstruction}`, currentTitle);
     trackReaderEvent('content_copied', {
       content_type: 'instruction',
       source: `aarti:${current.id}`,
       tradition: 'hindu',
-      language: 'en',
+      language: customLang,
     });
   }
 
   async function shareCurrentStep() {
     const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
     await readerControls.handlers.share(
-      `🪔 ${current.title}\n\n${current.instruction}`,
-      `Shoonaya - ${current.title}`,
+      `🪔 ${currentTitle}\n\n${currentInstruction}`,
+      `Shoonaya - ${currentTitle}`,
       shareUrl,
     );
     trackReaderEvent('content_shared', {
       content_type: 'instruction',
       source: `aarti:${current.id}`,
       tradition: 'hindu',
-      language: 'en',
+      language: customLang,
     });
   }
 
@@ -329,19 +352,19 @@ export default function AartiPage() {
       <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center" style={{ background: pageBg }}>
         <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 180 }}>
           <div className="text-7xl mb-6">🙏</div>
-          <h1 className="text-2xl font-bold mb-3" style={{ fontFamily: 'var(--font-serif)', color: textH }}>Aarti Complete</h1>
-          <p className="text-sm leading-relaxed mb-2" style={{ color: textS }}>Jai! Your aarti is offered with devotion.</p>
-          <p className="text-xs mb-8" style={{ color: textD }}>भक्तिर्भगवतो सेवा — Devotion is service to the divine.</p>
+          <h1 className="text-2xl font-bold mb-3" style={{ fontFamily: 'var(--font-serif)', color: textH }}>{t(customLang, 'aartiComplete')}</h1>
+          <p className="text-sm leading-relaxed mb-2" style={{ color: textS }}>{t(customLang, 'aartiCompleteDesc')}</p>
+          <p className="text-xs mb-8" style={{ color: textD }}>{t(customLang, 'aartiCompleteQuote')}</p>
           <div className="flex gap-3 justify-center">
             <button onClick={() => { setStep(0); setDone(new Set()); setDiyaLit(false); setFinished(false); }}
               className="rounded-2xl px-6 py-3 text-sm font-semibold"
               style={{ background: 'rgba(200,146,74,0.15)', border: '1px solid rgba(200,146,74,0.30)', color: '#C8924A' }}>
-              Offer again
+              {t(customLang, 'offerAgain')}
             </button>
             <button onClick={() => router.back()}
               className="rounded-2xl px-6 py-3 text-sm font-semibold text-white"
               style={{ background: 'linear-gradient(135deg,#d4a645,#a07830)' }}>
-              Done 🙏
+              {t(customLang, 'donePranam')}
             </button>
           </div>
         </motion.div>
@@ -361,10 +384,30 @@ export default function AartiPage() {
           <ChevronLeft size={18} style={{ color: '#C8924A' }} />
         </button>
         <div className="text-center">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: 'rgba(200,146,74,0.5)' }}>Guided Aarti</p>
-          <p className="text-sm font-semibold" style={{ color: textH }}>Step {step + 1} of {AARTI_STEPS.length}</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: 'rgba(200,146,74,0.5)' }}>{t(customLang, 'guidedAarti')}</p>
+          <p className="text-sm font-semibold" style={{ color: textH }}>{t(customLang, 'aartiStepOf').replace('{step}', String(step + 1)).replace('{total}', String(AARTI_STEPS.length))}</p>
         </div>
-        <div className="w-9" /> {/* spacer */}
+        
+        {/* Language selector in top right */}
+        <div className="flex items-center gap-1 bg-[var(--surface-base)]/10 px-1.5 py-0.5 rounded-full border border-[var(--divine-border)]/5" style={{ background: isDark ? 'rgba(24,14,8,0.5)' : 'rgba(255,246,232,0.5)' }}>
+          {languages.map(l => (
+            <button
+              key={l.code}
+              onClick={() => {
+                setCustomLang(l.code);
+                trackReaderEvent('language_toggled', { content_type: 'instruction', source: `aarti:${current.id}`, tradition: 'hindu', language: l.code });
+              }}
+              className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${
+                customLang === l.code
+                  ? 'bg-[#C8924A] text-white shadow-sm'
+                  : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'
+              }`}
+              style={customLang === l.code ? { background: '#C8924A', color: '#fff' } : { color: textS }}
+            >
+              {l.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Progress dots */}
@@ -406,13 +449,13 @@ export default function AartiPage() {
                 )}
 
                 <p className="relative z-10 text-xs mt-4 font-bold uppercase tracking-[0.2em]"
-                  style={{ color: `${current.color}80` }}>{current.titleDevanagari}</p>
+                  style={{ color: `${current.color}80` }}>{currentTitleDevanagari}</p>
               </div>
 
               {/* Text */}
               <div className="px-5 py-5">
-                <h2 className="text-lg font-bold mb-3" style={{ fontFamily: 'var(--font-serif)', color: textH }}>{current.title}</h2>
-                <p className="text-[12.5px] leading-relaxed" style={{ color: textS }}>{current.instruction}</p>
+                <h2 className="text-lg font-bold mb-3" style={{ fontFamily: 'var(--font-serif)', color: textH }}>{currentTitle}</h2>
+                <p className="text-[12.5px] leading-relaxed" style={{ color: textS }}>{currentInstruction}</p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <button
                     onClick={speakCurrentStep}
@@ -421,7 +464,7 @@ export default function AartiPage() {
                     style={{ background: `${current.color}16`, color: current.color, border: `1px solid ${current.color}24` }}
                   >
                     {readerControls.state.isGeneratingTTS ? <Loader2 size={12} className="animate-spin" /> : speaking ? <VolumeX size={12} /> : <Volume2 size={12} />}
-                    {speaking ? 'Stop audio' : 'Listen'}
+                    {speaking ? labels.stopReading : labels.listen}
                   </button>
                   <button
                     onClick={explainCurrentStep}
@@ -429,7 +472,7 @@ export default function AartiPage() {
                     style={{ background: `${current.color}10`, color: textH, border: `1px solid ${current.color}22` }}
                   >
                     <Sparkles size={12} />
-                    Explain
+                    {labels.explainVerse}
                   </button>
                   <button
                     onClick={copyCurrentStep}
@@ -437,7 +480,7 @@ export default function AartiPage() {
                     style={{ background: `${current.color}10`, color: textH, border: `1px solid ${current.color}22` }}
                   >
                     {readerControls.state.isCopied ? <Check size={12} /> : <Copy size={12} />}
-                    Copy
+                    {labels.copy}
                   </button>
                   <button
                     onClick={shareCurrentStep}
@@ -445,7 +488,7 @@ export default function AartiPage() {
                     style={{ background: `${current.color}10`, color: textH, border: `1px solid ${current.color}22` }}
                   >
                     <Share2 size={12} />
-                    Share
+                    {labels.share}
                   </button>
                 </div>
               </div>
@@ -458,8 +501,8 @@ export default function AartiPage() {
               className="w-full rounded-2xl py-4 font-semibold text-sm transition-all relative overflow-hidden"
               style={{ background: done.has(step) ? `${current.color}18` : `linear-gradient(135deg,${current.color},${current.color}cc)`, border: `1px solid ${current.color}${done.has(step) ? '40' : '00'}`, color: done.has(step) ? current.color : '#fff' }}>
               {done.has(step)
-                ? <span className="flex items-center justify-center gap-2"><Check size={16} /> {current.action} — done</span>
-                : <span>{current.hint} ✦ {current.action}</span>}
+                ? <span className="flex items-center justify-center gap-2"><Check size={16} /> {currentAction} — {t(customLang, 'aartiDoneLabel')}</span>
+                : <span>{currentHint} ✦ {currentAction}</span>}
             </motion.button>
 
             {explainResult?.explanation ? (
@@ -488,27 +531,30 @@ export default function AartiPage() {
               <button onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0}
                 className="flex items-center gap-1.5 text-sm font-medium disabled:opacity-30"
                 style={{ color: textS }}>
-                <ChevronLeft size={16} /> Previous
+                <ChevronLeft size={16} /> {t(customLang, 'previous')}
               </button>
               <button onClick={next}
                 className="flex items-center gap-1.5 rounded-2xl px-5 py-2.5 text-sm font-semibold"
                 style={{ background: 'rgba(200,146,74,0.12)', border: '1px solid rgba(200,146,74,0.25)', color: '#C8924A' }}>
-                {isLast ? 'Complete aarti 🙏' : <><span>Next step</span><ChevronRight size={16} /></>}
+                {isLast ? t(customLang, 'completeAarti') : <><span>{t(customLang, 'nextStep')}</span><ChevronRight size={16} /></>}
               </button>
             </div>
 
             {/* Step mini-map */}
             <div className="rounded-2xl px-4 py-3" style={{ background: isDark ? 'rgba(14,9,5,0.8)' : 'rgba(255,240,220,0.8)', border: `1px solid rgba(200,146,74,0.08)` }}>
-              <p className="text-[9px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: 'rgba(200,146,74,0.40)' }}>Aarti sequence</p>
+              <p className="text-[9px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: 'rgba(200,146,74,0.40)' }}>{t(customLang, 'aartiSequence')}</p>
               <div className="flex flex-wrap gap-x-3 gap-y-1">
-                {AARTI_STEPS.map((s, i) => (
-                  <button key={s.id} onClick={() => setStep(i)}
-                    className="flex items-center gap-1 text-[10px]"
-                    style={{ color: i === step ? s.color : done.has(i) ? `${s.color}80` : textD }}>
-                    {done.has(i) ? <Check size={9} /> : <span>{i + 1}.</span>}
-                    {s.emoji} {s.title.split(' — ')[0]}
-                  </button>
-                ))}
+                {AARTI_STEPS.map((s, i) => {
+                  const localizedTitle = t(customLang, s.titleKey);
+                  return (
+                    <button key={s.id} onClick={() => setStep(i)}
+                      className="flex items-center gap-1 text-[10px]"
+                      style={{ color: i === step ? s.color : done.has(i) ? `${s.color}80` : textD }}>
+                      {done.has(i) ? <Check size={9} /> : <span>{i + 1}.</span>}
+                      {s.emoji} {localizedTitle.split(' — ')[0]}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </motion.div>
