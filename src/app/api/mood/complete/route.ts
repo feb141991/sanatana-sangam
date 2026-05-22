@@ -4,9 +4,9 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 export async function POST(request: Request) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    if (!session) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
       .from('user_mood_checkins')
       .update(updatePayload)
       .eq('id', checkin_id)
-      .eq('user_id', session.user.id);
+      .eq('user_id', user.id);
 
     if (error) {
       console.error('Error completing mood checkin:', error);
