@@ -110,7 +110,10 @@ export async function runPathshalaExplain(input: PathshalaExplainInput) {
       });
     }
 
-    const result = await generateWithProvider(built.prompt);
+    const result = await generateWithProvider(built.prompt, {
+      responseFormat: 'json',
+      providerOverride: 'gemini-hosted',
+    });
 
     return {
       raw: result.text,

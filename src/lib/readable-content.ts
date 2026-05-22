@@ -49,12 +49,13 @@ export function buildReadableCapabilities(
   const contentType = content.pipelineTags?.content_type;
   const audioMode = content.pipelineTags?.audio_mode;
   const script = content.script ?? 'unknown';
+  const ttsSource = content.original || content.transliteration;
 
   return {
     canOpenReader: !!content.original,
     canToggleLocalLanguage: !!content.meaning,
     canToggleTransliteration: !!content.transliteration && script !== 'latin',
-    canGenerateTTS: !!content.original && canGenerateTTS(audioMode),
+    canGenerateTTS: !!ttsSource && canGenerateTTS(audioMode),
     canShowMeaning: !!content.meaning,
     canShowExplain: !!content.original && canExplain(contentType),
     ...overrides,

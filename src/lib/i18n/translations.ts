@@ -238,7 +238,7 @@ const en: TranslationMap = {
   practiceRecordedOffline: 'Practice recorded ✓ (Shruti scoring offline — engine loading)',
   shrutiScore: 'Shruti score',
   upgradeToShoonayaPro: '🔒 Upgrade to Shoonaya Pro to unlock',
-  explainUnavailable: 'Explain unavailable — GEMINI_API_KEY not set in Vercel',
+  explainUnavailable: 'Explain unavailable right now. Please try again shortly.',
 
   loadingGurukul: 'Loading your gurukul…', alsoEnrolled: 'Also enrolled', freeBeginnerPaths: 'Beginner paths are free',
   guidedStudy: 'Guided Study', recitationComplete: 'Recitation Complete', recitationSuccess: 'Your recitation practice has been successfully registered. You have earned sadhana points. Keep moving forward!', continuePractice: 'Continue Practice', resetRecitation: 'Reset Recitation',
@@ -653,7 +653,7 @@ const hi: TranslationMap = {
   practiceRecordedOffline: 'अभ्यास रिकॉर्ड किया गया ✓ (श्रुति स्कोरिंग ऑफ़लाइन)',
   shrutiScore: 'श्रुति स्कोर',
   upgradeToShoonayaPro: '🔒 अनलॉक करने के लिए शून्य प्रो में अपग्रेड करें',
-  explainUnavailable: 'व्याख्या अनुपलब्ध — Vercel में GEMINI_API_KEY सेट नहीं है',
+  explainUnavailable: 'व्याख्या अभी उपलब्ध नहीं है। कृपया थोड़ी देर बाद फिर प्रयास करें।',
 
   loadingGurukul: 'आपका गुरुकुल लोड हो रहा है…', alsoEnrolled: 'इसमें भी नामांकित', freeBeginnerPaths: 'शुरुआती पथ मुफ्त हैं',
   guidedStudy: 'निर्देशित अध्ययन', recitationComplete: 'पाठ पूर्ण', recitationSuccess: 'आपका पाठ अभ्यास सफलतापूर्वक दर्ज कर लिया गया है। आपने साधना अंक अर्जित किए हैं। आगे बढ़ते रहें!', continuePractice: 'अभ्यास जारी रखें', resetRecitation: 'पाठ रीसेट करें',
@@ -1067,7 +1067,7 @@ const pa: TranslationMap = {
   practiceRecordedOffline: 'ਅਭਿਆਸ ਰਿਕਾਰਡ ਕੀਤਾ ਗਿਆ ✓ (ਸ਼ਰੁਤੀ ਸਕੋਰਿੰਗ ਔਫਲਾਈਨ)',
   shrutiScore: 'ਸ਼ਰੁਤੀ ਸਕੋਰ',
   upgradeToShoonayaPro: '🔒 ਅਨਲੌਕ ਕਰਨ ਲਈ ਸ਼ੂਨਯਾ ਪ੍ਰੋ ਵਿੱਚ ਅੱਪਗ੍ਰੇਡ ਕਰੋ',
-  explainUnavailable: 'ਵਿਆਖਿਆ ਉਪਲਬਧ ਨਹੀਂ — Vercel ਵਿੱਚ GEMINI_API_KEY ਸੈੱਟ ਨਹੀਂ ਹੈ',
+  explainUnavailable: 'ਵਿਆਖਿਆ ਇਸ ਵੇਲੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਕੁਝ ਸਮੇਂ ਬਾਅਦ ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ।',
 
   loadingGurukul: 'ਤੁਹਾਡਾ ਗੁਰੂਕੁਲ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ…', alsoEnrolled: 'ਇਸ ਵਿੱਚ ਵੀ ਨਾਮਾਂਕਿਤ', freeBeginnerPaths: 'ਸ਼ੁਰੂਆਤੀ ਮਾਰਗ ਮੁਫਤ ਹਨ',
   guidedStudy: 'ਨਿਰਦੇਸ਼ਿਤ ਅਧਿਐਨ', recitationComplete: 'ਪਾਠ ਪੂਰਾ', recitationSuccess: 'ਤੁਹਾਡਾ ਪਾਠ ਅਭਿਆਸ ਸਫਲਤਾਪੂਰਵਕ ਦਰਜ ਕੀਤਾ ਗਿਆ ਹੈ। ਤੁਸੀਂ ਸਾਧਨਾ ਅੰਕ ਹਾਸਲ ਕੀਤੇ ਹਨ। ਅੱਗੇ ਵਧਦੇ ਰਹੋ!', continuePractice: 'ਅਭਿਆਸ ਜਾਰੀ ਰੱਖੋ', resetRecitation: 'ਪਾਠ ਰੀਸੈਟ ਕਰੋ',

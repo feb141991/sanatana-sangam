@@ -235,7 +235,8 @@ export default function ReciteClient({
       language: effectiveMeaningLanguage,
     });
     try {
-      const data = await readerControls.handlers.requestExplain(verse.original, {
+      const explainText = verse.original || verse.transliteration || '';
+      const data = await readerControls.handlers.requestExplain(explainText, {
         source: verse.source,
         title: verse.title,
         tradition: _tradition,

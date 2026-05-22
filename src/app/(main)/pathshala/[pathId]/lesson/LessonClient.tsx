@@ -255,9 +255,14 @@ export default function LessonClient({
 
   async function speakEntry(e: LibraryEntry) {
     if (speakingId === e.id || readerControls.state.isGeneratingTTS) { stopTTS(); return; }
+    const ttsText = e.original || e.transliteration || '';
+    if (!ttsText) {
+      toast.error(labels.audioUnavailableRightNow);
+      return;
+    }
     stopTTS();
     try {
-      const audioUrl = await readerControls.handlers.requestTTS(e.original, {
+      const audioUrl = await readerControls.handlers.requestTTS(ttsText, {
         quality: 'pandit',
         pipelineTags: {
           content_type: 'sacred_verse',
@@ -309,7 +314,8 @@ export default function LessonClient({
     setExplainResult(null);
     setExplainLoading(true);
     try {
-      const result = await readerControls.handlers.requestExplain(entry.original, {
+      const explainText = entry.original || entry.transliteration || '';
+      const result = await readerControls.handlers.requestExplain(explainText, {
         source:          entry.source,
         title:           entry.title,
         tradition,

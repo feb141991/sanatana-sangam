@@ -157,13 +157,14 @@ export class SarvamProvider implements PramanaInferenceProvider {
       return await this._doGenerate(request, effort);
     } catch (err) {
       // Bounded single retry: if the model completed reasoning but produced
-      // no final answer, try once more with thinking disabled.
-      // This frequently recovers: the model that "forgot" to emit content
-      // will produce a direct response when its reasoning chain is suppressed.
-      if (err instanceof PramanaNoFinalAnswerError) {
+      // no final answer, or it spent its budget before emitting the final
+      // answer, try once more with thinking disabled.
+      // This frequently recovers because a direct completion can use the full
+      // output budget instead of burning it on hidden reasoning.
+      if (err instanceof PramanaNoFinalAnswerError || err instanceof PramanaOutputTruncatedError) {
         console.warn(
-          `[${this.info.id}] retry_due_to_no_final_answer: ` +
-          `first attempt produced no final answer (reasoningEffort=${effort ?? 'default'}). ` +
+          `[${this.info.id}] retry_due_to_incomplete_answer: ` +
+          `first attempt did not produce a complete final answer (reasoningEffort=${effort ?? 'default'}). ` +
           `Retrying once with thinking disabled.`
         );
         try {
@@ -178,7 +179,7 @@ export class SarvamProvider implements PramanaInferenceProvider {
           // inference.ts can fall through to the Gemini fallback.
           console.warn(
             `[${this.info.id}] retry_failed: ` +
-            `second attempt also produced no final answer. ` +
+            `second attempt also failed to produce a complete final answer. ` +
             `Falling through to next provider.`
           );
           throw err;

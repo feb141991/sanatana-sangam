@@ -214,15 +214,23 @@ export function useReaderControls(capabilities: ReadableCapabilities) {
         })
       });
 
+      const data = await res.json().catch(() => null);
+
       if (!res.ok) {
-        throw new Error(`Explain request failed: ${res.status}`);
+        const message = typeof data?.error === 'string'
+          ? data.error
+          : `Explain request failed: ${res.status}`;
+        throw new Error(message);
       }
 
-      const data = await res.json();
+      if (typeof data?.error === 'string') {
+        throw new Error(data.error);
+      }
+
       return data as ExplainResult;
     } catch (err) {
       console.error('[useReaderControls] Explain request failed:', err);
-      return null;
+      throw err instanceof Error ? err : new Error('Explain request failed');
     }
   }, [capabilities.canShowExplain]);
 

@@ -300,9 +300,14 @@ function ScriptureReader({
 
   async function speakEntry(v: any) {
     if (speakingId === v.id || readerControls.state.isGeneratingTTS) { stopTTS(); return; }
+    const ttsText = v.original || v.transliteration || '';
+    if (!ttsText) {
+      toast.error(labels.audioUnavailableRightNow);
+      return;
+    }
     stopTTS();
     try {
-      const audioUrl = await readerControls.handlers.requestTTS(v.original, {
+      const audioUrl = await readerControls.handlers.requestTTS(ttsText, {
         quality: 'pandit',
         pipelineTags: {
           content_type: 'sacred_verse',
@@ -338,7 +343,8 @@ function ScriptureReader({
     if (!activeVerse || explainLoading) return;
     setExplainLoading(true);
     try {
-      const result = await readerControls.handlers.requestExplain(activeVerse.original, {
+      const explainText = activeVerse.original || activeVerse.transliteration || '';
+      const result = await readerControls.handlers.requestExplain(explainText, {
         source: activeVerse.source,
         title: activeVerse.title,
         tradition,

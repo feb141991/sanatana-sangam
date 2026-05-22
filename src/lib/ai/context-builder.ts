@@ -96,9 +96,9 @@ Return ONLY this JSON (no markdown, no extra text):
 ${getUserSummaryContextNote(input.userSummaryContext)}
 
 ${langNote}`,
-      temperature: 0.5,
-      reasoningEffort: 'medium',
-      maxOutputTokens: 900,
+      temperature: 0.4,
+      reasoningEffort: 'none',
+      maxOutputTokens: 1200,
     },
   };
 }
@@ -144,9 +144,9 @@ Return ONLY this JSON (no markdown, no extra text):
 ${getUserSummaryContextNote(input.userSummaryContext)}
 
 ${langNote}`,
-      temperature: 0.5,
-      reasoningEffort: 'medium',
-      maxOutputTokens: 900,
+      temperature: 0.4,
+      reasoningEffort: 'none',
+      maxOutputTokens: 1200,
     },
   };
 }
@@ -191,9 +191,9 @@ Return ONLY this JSON (no markdown, no extra text):
 ${getUserSummaryContextNote(input.userSummaryContext)}
 
 ${langNote}`,
-      temperature: 0.5,
-      reasoningEffort: 'medium',
-      maxOutputTokens: 900,
+      temperature: 0.4,
+      reasoningEffort: 'none',
+      maxOutputTokens: 1200,
     },
   };
 }
@@ -260,9 +260,9 @@ Return ONLY this JSON (no markdown, no extra text):
 ${getUserSummaryContextNote(input.userSummaryContext)}
 
 ${langNote}`,
-      temperature: 0.5,
-      reasoningEffort: 'medium',
-      maxOutputTokens: 900,
+      temperature: 0.4,
+      reasoningEffort: 'none',
+      maxOutputTokens: 1200,
     },
   };
 }
@@ -313,9 +313,9 @@ Return ONLY this JSON (no markdown, no extra text):
 ${getUserSummaryContextNote(input.userSummaryContext)}
 
 ${langNote}`,
-      temperature: 0.5,
-      reasoningEffort: 'medium',
-      maxOutputTokens: 900,
+      temperature: 0.4,
+      reasoningEffort: 'none',
+      maxOutputTokens: 1200,
     },
   };
 }
@@ -367,9 +367,9 @@ Return ONLY this JSON (no markdown, no extra text):
 ${getUserSummaryContextNote(input.userSummaryContext)}
 
 ${langNote}`,
-      temperature: 0.5,
-      reasoningEffort: 'medium',
-      maxOutputTokens: 900,
+      temperature: 0.4,
+      reasoningEffort: 'none',
+      maxOutputTokens: 1200,
     },
   };
 }
@@ -422,9 +422,9 @@ Return ONLY this JSON (no markdown, no extra text):
 ${getUserSummaryContextNote(input.userSummaryContext)}
 
 ${langNote}`,
-      temperature: 0.5,
-      reasoningEffort: 'medium',
-      maxOutputTokens: 900,
+      temperature: 0.4,
+      reasoningEffort: 'none',
+      maxOutputTokens: 1200,
     },
   };
 }
