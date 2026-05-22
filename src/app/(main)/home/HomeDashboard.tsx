@@ -174,6 +174,8 @@ const MOOD_QUICK_MAP: Record<string, { key: string; label: string; colour: strin
 };
 
 const PENDING_MOOD_FOLLOWUP_KEY = 'shoonaya_mood_pending_followup';
+const MOOD_WORKFLOW_VERSION = '2';
+const MOOD_WORKFLOW_VERSION_KEY = 'shoonaya_mood_workflow_version';
 
 const HOME_THEMES: Record<string, FeatureTheme> = {
   // Dawn amber — Panchang, daily ritual
@@ -1175,7 +1177,8 @@ export default function HomeDashboard({
     // Fetch fresh
     setQuiz('loading');
     const trad = tradition ?? 'hindu';
-    fetch(`/api/quiz/daily?tradition=${trad}`)
+    const langParam = appLanguage ? `&language=${appLanguage}` : '';
+    fetch(`/api/quiz/daily?tradition=${trad}${langParam}`)
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then(data => {
         const quizData = { ...data, type: 'quiz' as const };
@@ -1185,7 +1188,7 @@ export default function HomeDashboard({
       })
       .catch(() => setQuiz('error'));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tradition]);
+  }, [tradition, appLanguage]);
 
   async function handleQuizAnswer(idx: number) {
     if (!quiz || typeof quiz === 'string' || quizAnswered !== null) return;
@@ -1244,6 +1247,17 @@ export default function HomeDashboard({
   const [moodToday, setMoodToday] = useState<{ key: string; label: string; colour: string } | null | undefined>(undefined);
 
   useEffect(() => {
+    const savedVersion = localStorage.getItem(MOOD_WORKFLOW_VERSION_KEY);
+    if (savedVersion !== MOOD_WORKFLOW_VERSION) {
+      localStorage.removeItem('shoonaya_mood_dismissed');
+      localStorage.removeItem('home_mood_date');
+      localStorage.removeItem('home_mood_key');
+      localStorage.removeItem(PENDING_MOOD_FOLLOWUP_KEY);
+      localStorage.setItem(MOOD_WORKFLOW_VERSION_KEY, MOOD_WORKFLOW_VERSION);
+      setMoodToday(null);
+      return;
+    }
+
     const today = new Date().toISOString().split('T')[0];
     const moodDate = localStorage.getItem('home_mood_date');
     const moodKey  = localStorage.getItem('home_mood_key');
@@ -2297,7 +2311,7 @@ export default function HomeDashboard({
                   </div>
                   <div>
                     <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--brand-primary)] opacity-80">
-                      {tradition ? `${tradition} Quiz` : 'Do You Know?'}
+                      {tradition ? `${tradition} ${effectiveAppLanguage === 'hi' ? 'क्विज़' : effectiveAppLanguage === 'pa' ? 'ਕੁਇਜ਼' : 'Quiz'}` : effectiveAppLanguage === 'hi' ? 'क्या आप जानते हैं?' : effectiveAppLanguage === 'pa' ? 'ਕੀ ਤੁਸੀਂ ਜਾਣਦੇ ਹੋ?' : 'Do You Know?'}
                     </span>
                     <h3 className="text-sm font-bold theme-ink line-clamp-1 mt-0.5">{quiz.question}</h3>
                   </div>
@@ -2744,9 +2758,9 @@ export default function HomeDashboard({
                 <div className="flex items-center justify-between mb-8">
                   <div>
                     <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--brand-primary)]">
-                      {tradition ? `${tradition} Spark` : 'Daily Spark'}
+                      {tradition ? `${tradition} ${effectiveAppLanguage === 'hi' ? 'स्पार्क' : effectiveAppLanguage === 'pa' ? 'ਸਪਾਰਕ' : 'Spark'}` : effectiveAppLanguage === 'hi' ? 'दैनिक स्पार्क' : effectiveAppLanguage === 'pa' ? 'ਰੋਜ਼ਾਨਾ ਸਪਾਰਕ' : 'Daily Spark'}
                     </span>
-                    <h2 className="text-2xl font-bold theme-ink font-serif mt-1">Do You Know?</h2>
+                    <h2 className="text-2xl font-bold theme-ink font-serif mt-1">{effectiveAppLanguage === 'hi' ? 'क्या आप जानते हैं?' : effectiveAppLanguage === 'pa' ? 'ਕੀ ਤੁਸੀਂ ਜਾਣਦੇ ਹੋ?' : 'Do You Know?'}</h2>
                   </div>
                   <button
                     onClick={() => setQuizModalOpen(false)}
@@ -2758,6 +2772,14 @@ export default function HomeDashboard({
 
                 <div className="space-y-8">
                   <p className="text-xl font-medium leading-tight theme-ink">{quiz.question}</p>
+
+                  {(quiz as any).fallbackLanguage === 'en' && appLanguage && appLanguage !== 'en' && (
+                    <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+                      <span className="text-[10px] font-medium text-amber-700 dark:text-amber-400">
+                        Translation unavailable today. Showing English fallback.
+                      </span>
+                    </div>
+                  )}
 
                   {/* Type: Fact */}
                   {quiz.type === 'fact' && (
@@ -2824,7 +2846,7 @@ export default function HomeDashboard({
                 {quizAnswered !== null && (
                    <div className="mt-12 text-center">
                       <p className="text-xs text-muted-foreground">
-                        Wisdom grows when shared. Come back tomorrow for a new spark.
+                        {effectiveAppLanguage === 'hi' ? 'ज्ञान बांटने से बढ़ता है। एक नई स्पार्क के लिए कल वापस आएं।' : effectiveAppLanguage === 'pa' ? 'ਗਿਆਨ ਵੰਡਣ ਨਾਲ ਵਧਦਾ ਹੈ। ਇੱਕ ਨਵੀਂ ਸਪਾਰਕ ਲਈ ਕੱਲ੍ਹ ਵਾਪਸ ਆਓ।' : 'Wisdom grows when shared. Come back tomorrow for a new spark.'}
                       </p>
                    </div>
                 )}

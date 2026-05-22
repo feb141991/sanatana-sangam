@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, RotateCcw, CheckCircle2, XCircle, Zap, Loader2 } from 'lucide-react';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -69,6 +70,8 @@ function SetupScreen({
   const meta = getTraditionMeta(tradition);
   const [topic,      setTopic]      = useState<TopicKey | null>((initialTopic as TopicKey) ?? null);
   const [difficulty, setDifficulty] = useState<DifficultyKey>((initialDifficulty as DifficultyKey) ?? 'seeker');
+  const { lang, t } = useLanguage();
+  const effectiveAppLanguage = lang === 'hi' || lang === 'pa' ? lang : 'en';
 
   return (
     <div className="min-h-screen pb-28 px-5" style={{ background: '#0a0a08', color: 'var(--text-cream)' }}>
@@ -77,7 +80,7 @@ function SetupScreen({
         <Link href="/quiz"
           className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest transition-opacity hover:opacity-70"
           style={{ color: 'var(--text-dim)' }}>
-          <ChevronLeft size={12} /> Mastery
+          <ChevronLeft size={12} /> {effectiveAppLanguage === 'hi' ? 'महारत' : effectiveAppLanguage === 'pa' ? 'ਮਹਾਰਤ' : 'Mastery'}
         </Link>
       </div>
 
@@ -88,30 +91,30 @@ function SetupScreen({
             <Zap size={18} style={{ color: meta.accentColour }} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-serif)' }}>Practice Mode</h1>
-            <p className="text-[12px]" style={{ color: 'var(--text-dim)' }}>5 questions · Earn 8 karma each correct</p>
+            <h1 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-serif)' }}>{effectiveAppLanguage === 'hi' ? 'अभ्यास मोड' : effectiveAppLanguage === 'pa' ? 'ਅਭਿਆਸ ਮੋਡ' : 'Practice Mode'}</h1>
+            <p className="text-[12px]" style={{ color: 'var(--text-dim)' }}>{effectiveAppLanguage === 'hi' ? '5 प्रश्न · 8 कर्म अंक प्रति सही उत्तर' : effectiveAppLanguage === 'pa' ? '5 ਸਵਾਲ · 8 ਕਰਮ ਅੰਕ ਹਰੇਕ ਸਹੀ ਉੱਤਰ ਲਈ' : '5 questions · Earn 8 karma each correct'}</p>
           </div>
         </div>
 
         {/* Topic picker */}
         <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] mt-8 mb-3" style={{ color: 'var(--text-dim)' }}>
-          Choose Topic
+          {effectiveAppLanguage === 'hi' ? 'विषय चुनें' : effectiveAppLanguage === 'pa' ? 'ਵਿਸ਼ਾ ਚੁਣੋ' : 'Choose Topic'}
         </h2>
         <div className="grid grid-cols-2 gap-3 mb-8">
-          {TOPICS.map((t) => (
+          {TOPICS.map((tItem) => (
             <button
-              key={t.key}
-              onClick={() => setTopic(t.key)}
+              key={tItem.key}
+              onClick={() => setTopic(tItem.key)}
               className="rounded-[1.4rem] p-4 text-left transition-all"
               style={{
-                background: topic === t.key ? `${t.color}20` : 'rgba(255,255,255,0.03)',
-                border: topic === t.key ? `1px solid ${t.color}50` : '1px solid rgba(255,255,255,0.07)',
-                boxShadow: topic === t.key ? `0 0 16px ${t.color}18` : 'none',
+                background: topic === tItem.key ? `${tItem.color}20` : 'rgba(255,255,255,0.03)',
+                border: topic === tItem.key ? `1px solid ${tItem.color}50` : '1px solid rgba(255,255,255,0.07)',
+                boxShadow: topic === tItem.key ? `0 0 16px ${tItem.color}18` : 'none',
               }}
             >
-              <span className="text-2xl block mb-2" aria-hidden="true">{t.emoji}</span>
-              <p className="text-[13px] font-semibold leading-tight" style={{ color: topic === t.key ? t.color : 'var(--text-cream)' }}>
-                {t.label}
+              <span className="text-2xl block mb-2" aria-hidden="true">{tItem.emoji}</span>
+              <p className="text-[13px] font-semibold leading-tight" style={{ color: topic === tItem.key ? tItem.color : 'var(--text-cream)' }}>
+                {tItem.label}
               </p>
             </button>
           ))}
@@ -119,27 +122,27 @@ function SetupScreen({
 
         {/* Difficulty picker */}
         <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] mb-3" style={{ color: 'var(--text-dim)' }}>
-          Choose Difficulty
+          {effectiveAppLanguage === 'hi' ? 'कठिनाई चुनें' : effectiveAppLanguage === 'pa' ? 'ਮੁਸ਼ਕਲ ਚੁਣੋ' : 'Choose Difficulty'}
         </h2>
         <div className="space-y-2.5 mb-10">
-          {DIFFICULTIES.map((d) => (
+          {DIFFICULTIES.map((dItem) => (
             <button
-              key={d.key}
-              onClick={() => setDifficulty(d.key)}
+              key={dItem.key}
+              onClick={() => setDifficulty(dItem.key)}
               className="w-full flex items-center gap-4 rounded-2xl p-4 text-left transition-all"
               style={{
-                background: difficulty === d.key ? 'rgba(200,146,74,0.12)' : 'rgba(255,255,255,0.03)',
-                border: difficulty === d.key ? '1px solid rgba(200,146,74,0.35)' : '1px solid rgba(255,255,255,0.07)',
+                background: difficulty === dItem.key ? 'rgba(200,146,74,0.12)' : 'rgba(255,255,255,0.03)',
+                border: difficulty === dItem.key ? '1px solid rgba(200,146,74,0.35)' : '1px solid rgba(255,255,255,0.07)',
               }}
             >
-              <span className="text-xl" aria-hidden="true">{d.emoji}</span>
+              <span className="text-xl" aria-hidden="true">{dItem.emoji}</span>
               <div>
-                <p className="text-[14px] font-bold" style={{ color: difficulty === d.key ? 'var(--brand-primary)' : 'var(--text-cream)' }}>
-                  {d.label}
+                <p className="text-[14px] font-bold" style={{ color: difficulty === dItem.key ? 'var(--brand-primary)' : 'var(--text-cream)' }}>
+                  {dItem.label}
                 </p>
-                <p className="text-[11px] leading-snug" style={{ color: 'var(--text-dim)' }}>{d.desc}</p>
+                <p className="text-[11px] leading-snug" style={{ color: 'var(--text-dim)' }}>{dItem.desc}</p>
               </div>
-              {difficulty === d.key && (
+              {difficulty === dItem.key && (
                 <CheckCircle2 size={16} className="ml-auto flex-shrink-0" style={{ color: 'var(--brand-primary)' }} />
               )}
             </button>
@@ -152,7 +155,7 @@ function SetupScreen({
           className="w-full py-4 rounded-[1.4rem] font-bold text-[15px] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           style={{ background: topic ? `linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))` : 'rgba(255,255,255,0.08)', color: topic ? '#1a1610' : 'var(--text-dim)' }}
         >
-          {topic ? `Start — ${TOPICS.find(t => t.key === topic)?.label}` : 'Select a topic to begin'}
+          {topic ? `${effectiveAppLanguage === 'hi' ? 'शुरू करें' : effectiveAppLanguage === 'pa' ? 'ਸ਼ੁਰੂ ਕਰੋ' : 'Start'} — ${TOPICS.find(tItem => tItem.key === topic)?.label}` : effectiveAppLanguage === 'hi' ? 'शुरू करने के लिए एक विषय चुनें' : effectiveAppLanguage === 'pa' ? 'ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਇੱਕ ਵਿਸ਼ਾ ਚੁਣੋ' : 'Select a topic to begin'}
         </button>
       </motion.div>
     </div>
@@ -166,16 +169,20 @@ function QuestionScreen({
   questionNumber,
   total,
   topic,
+  fallbackLanguage,
   onAnswer,
 }: {
   question: PracticeQuestion;
   questionNumber: number;
   total: number;
   topic: TopicKey;
+  fallbackLanguage?: string;
   onAnswer: (isCorrect: boolean) => void;
 }) {
   const [chosen, setChosen] = useState<number | null>(null);
   const topicMeta = TOPICS.find(t => t.key === topic)!;
+  const { lang } = useLanguage();
+  const effectiveAppLanguage = lang === 'hi' || lang === 'pa' ? lang : 'en';
 
   function handleAnswer(idx: number) {
     if (chosen !== null) return;
@@ -198,89 +205,88 @@ function QuestionScreen({
       <div className="pt-safe pt-4 mb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-lg" aria-hidden="true">{topicMeta.emoji}</span>
-            <span className="text-[12px] font-semibold" style={{ color: topicMeta.color }}>{topicMeta.label}</span>
+            <span className="text-xl" aria-hidden="true">{topicMeta.emoji}</span>
+            <span className="text-[12px] font-bold uppercase tracking-widest" style={{ color: topicMeta.color }}>
+              {topicMeta.label}
+            </span>
           </div>
-          <span className="text-[12px] font-bold" style={{ color: 'var(--text-dim)' }}>
+          <div className="px-3 py-1 rounded-full text-[11px] font-bold" style={{ background: 'rgba(255,255,255,0.06)' }}>
             {questionNumber} / {total}
-          </span>
+          </div>
         </div>
 
-        {/* Progress bar */}
-        <div className="mt-3 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
-          <div
-            className="h-1 rounded-full transition-all duration-500"
-            style={{ width: `${((questionNumber - 1) / total) * 100}%`, background: topicMeta.color }}
-          />
-        </div>
+        {fallbackLanguage === 'en' && effectiveAppLanguage !== 'en' && (
+          <div className="mt-4 text-[11px] py-2 px-3 rounded-lg flex items-start gap-2" style={{ backgroundColor: 'rgba(212, 120, 74, 0.08)', color: 'var(--brand-primary-strong)' }}>
+            <span className="shrink-0 mt-0.5">🌐</span>
+            <p>{effectiveAppLanguage === 'hi' ? 'यह प्रश्न अभी केवल अंग्रेजी में उपलब्ध है।' : 'ਇਹ ਸਵਾਲ ਅਜੇ ਸਿਰਫ਼ ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ ਉਪਲਬਧ ਹੈ।'}</p>
+          </div>
+        )}
       </div>
 
       {/* Question */}
-      <p className="text-[11px] font-bold uppercase tracking-[0.16em] mb-3" style={{ color: 'var(--text-dim)' }}>
-        {question.source}
-      </p>
-      <h2 className="text-[1.2rem] font-semibold leading-relaxed mb-8" style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-cream)', lineHeight: 1.45 }}>
+      <h2 className="text-2xl font-semibold mb-8 leading-snug" style={{ fontFamily: 'var(--font-serif)' }}>
         {question.question}
       </h2>
 
       {/* Options */}
-      <div className="space-y-3">
-        {question.options.map((opt, i) => {
-          const isChosen  = chosen === i;
-          const isCorrect = i === question.answerIndex;
-          const showResult = chosen !== null && (isChosen || isCorrect);
+      <div className="space-y-3 mb-8">
+        {question.options.map((opt, idx) => {
+          let state: 'idle' | 'correct' | 'incorrect' = 'idle';
+          if (chosen !== null) {
+            if (idx === question.answerIndex) state = 'correct';
+            else if (idx === chosen) state = 'incorrect';
+          }
 
-          let borderColor = 'rgba(255,255,255,0.08)';
-          let bgColor     = 'rgba(255,255,255,0.03)';
-          let textColor   = 'var(--text-cream)';
-          if (showResult) {
-            if (isCorrect)               { borderColor = 'rgba(100,200,100,0.50)'; bgColor = 'rgba(100,200,100,0.10)'; textColor = '#7acd7a'; }
-            else if (isChosen)           { borderColor = 'rgba(200,80,80,0.50)';   bgColor = 'rgba(200,80,80,0.10)';   textColor = '#cd7a7a'; }
+          let bg = 'rgba(255,255,255,0.04)';
+          let border = '1px solid rgba(255,255,255,0.08)';
+          let color = 'var(--text-cream)';
+          if (state === 'correct') {
+            bg = 'rgba(100,200,100,0.12)';
+            border = '1px solid rgba(100,200,100,0.4)';
+            color = '#7acd7a';
+          } else if (state === 'incorrect') {
+            bg = 'rgba(200,80,80,0.1)';
+            border = '1px solid rgba(200,80,80,0.3)';
+            color = '#cd7a7a';
+          } else if (chosen !== null) {
+            color = 'rgba(255,255,255,0.3)';
           }
 
           return (
             <button
-              key={i}
-              onClick={() => handleAnswer(i)}
-              disabled={chosen !== null}
-              className="w-full flex items-center gap-4 rounded-2xl p-4 text-left transition-all"
-              style={{ border: `1px solid ${borderColor}`, background: bgColor }}
+              key={idx}
+              onClick={() => handleAnswer(idx)}
+              className="w-full text-left p-4 rounded-[1.4rem] flex items-center justify-between transition-all"
+              style={{ background: bg, border, color }}
             >
-              <span
-                className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0"
-                style={{ background: 'rgba(255,255,255,0.06)', color: textColor }}
-              >
-                {String.fromCharCode(65 + i)}
-              </span>
-              <span className="text-[14px] flex-1 leading-snug" style={{ color: textColor }}>{opt}</span>
-              {showResult && isCorrect && <CheckCircle2 size={16} style={{ color: '#7acd7a', flexShrink: 0 }} />}
-              {showResult && isChosen && !isCorrect && <XCircle size={16} style={{ color: '#cd7a7a', flexShrink: 0 }} />}
+              <span className="text-[15px] font-medium leading-tight pr-4">{opt}</span>
+              {state === 'correct' && <CheckCircle2 size={18} className="flex-shrink-0" />}
+              {state === 'incorrect' && <XCircle size={18} className="flex-shrink-0" />}
             </button>
           );
         })}
       </div>
 
-      {/* Explanation after answering */}
+      {/* Explanation Reveal */}
       <AnimatePresence>
         {chosen !== null && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
-            transition={{ duration: 0.3 }}
-            className="mt-5 rounded-[1.2rem] p-4 overflow-hidden"
-            style={{ background: 'rgba(100,140,220,0.10)', border: '1px solid rgba(100,140,220,0.20)' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
           >
-            <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: '#8888cc' }}>
-              {chosen === question.answerIndex ? '✨ Correct!' : '💡 Explanation'}
-            </p>
-            <p className="text-[13px] leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>
-              {question.explanation}
-            </p>
-            {question.fact && (
-              <p className="text-[12px] leading-relaxed mt-2 italic" style={{ color: 'var(--text-dim)' }}>
-                Did you know: {question.fact}
+            <div className="p-5 rounded-[1.4rem] border" style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.06)' }}>
+              <p className="text-[14px] leading-relaxed mb-3" style={{ color: 'var(--text-muted-warm)' }}>
+                {question.explanation}
               </p>
-            )}
+              <div className="flex gap-2 p-3 rounded-xl" style={{ background: 'rgba(200,146,74,0.08)' }}>
+                <span className="text-lg leading-none" aria-hidden="true">💡</span>
+                <p className="text-[13px] leading-relaxed" style={{ color: 'var(--brand-primary-light)' }}>
+                  {question.fact}
+                </p>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -307,11 +313,13 @@ function SummaryScreen({
 }) {
   const topicMeta = TOPICS.find(t => t.key === topic)!;
   const pct = Math.round((correct / total) * 100);
+  const { lang } = useLanguage();
+  const effectiveAppLanguage = lang === 'hi' || lang === 'pa' ? lang : 'en';
 
-  const message = pct === 100 ? 'Perfect score! You\'re a true Pandit! 🏵️'
-    : pct >= 80 ? 'Excellent! Deep knowledge flows through you. 🧿'
-    : pct >= 60 ? 'Good effort! Keep studying to deepen your understanding. 🪔'
-    : 'Every question is a lesson. Return again tomorrow! 🌱';
+  const message = pct === 100 ? (effectiveAppLanguage === 'hi' ? 'बिल्कुल सही! आप एक सच्चे पंडित हैं! 🏵️' : effectiveAppLanguage === 'pa' ? 'ਬਿਲਕੁਲ ਸਹੀ! ਤੁਸੀਂ ਸੱਚੇ ਪੰਡਿਤ ਹੋ! 🏵️' : 'Perfect score! You\'re a true Pandit! 🏵️')
+    : pct >= 80 ? (effectiveAppLanguage === 'hi' ? 'उत्कृष्ट! आपमें गहरा ज्ञान है। 🧿' : effectiveAppLanguage === 'pa' ? 'ਬਹੁਤ ਵਧੀਆ! ਤੁਹਾਡੇ ਕੋਲ ਡੂੰਘਾ ਗਿਆਨ ਹੈ। 🧿' : 'Excellent! Deep knowledge flows through you. 🧿')
+    : pct >= 60 ? (effectiveAppLanguage === 'hi' ? 'अच्छा प्रयास! अपनी समझ बढ़ाने के लिए अध्ययन करते रहें। 🪔' : effectiveAppLanguage === 'pa' ? 'ਵਧੀਆ ਕੋਸ਼ਿਸ਼! ਆਪਣੀ ਸਮਝ ਵਧਾਉਣ ਲਈ ਅਧਿਐਨ ਕਰਦੇ ਰਹੋ। 🪔' : 'Good effort! Keep studying to deepen your understanding. 🪔')
+    : (effectiveAppLanguage === 'hi' ? 'हर प्रश्न एक सबक है। कल फिर वापस आएं! 🌱' : effectiveAppLanguage === 'pa' ? 'ਹਰ ਸਵਾਲ ਇੱਕ ਸਬਕ ਹੈ। ਕੱਲ੍ਹ ਫਿਰ ਵਾਪਸ ਆਓ! 🌱' : 'Every question is a lesson. Return again tomorrow! 🌱');
 
   return (
     <motion.div
@@ -341,7 +349,7 @@ function SummaryScreen({
           <span className="text-[13px] font-semibold" style={{ color: topicMeta.color }}>{topicMeta.label}</span>
         </div>
 
-        <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: 'var(--font-serif)' }}>Session Complete</h2>
+        <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: 'var(--font-serif)' }}>{effectiveAppLanguage === 'hi' ? 'सत्र पूर्ण' : effectiveAppLanguage === 'pa' ? 'ਸੈਸ਼ਨ ਪੂਰਾ' : 'Session Complete'}</h2>
         <p className="text-[14px] leading-relaxed max-w-xs mx-auto mb-6" style={{ color: 'var(--text-muted-warm)' }}>
           {message}
         </p>
@@ -355,7 +363,7 @@ function SummaryScreen({
             +{karmaEarned} ✨
           </p>
           <p className="text-[11px] font-bold uppercase tracking-widest mt-0.5" style={{ color: 'var(--text-dim)' }}>
-            Karma Earned
+            {effectiveAppLanguage === 'hi' ? 'कर्म अंक' : effectiveAppLanguage === 'pa' ? 'ਕਰਮ ਅੰਕ' : 'Karma Earned'}
           </p>
         </div>
 
@@ -367,14 +375,14 @@ function SummaryScreen({
             style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))', color: '#1a1610' }}
           >
             <RotateCcw size={16} />
-            Practice Again
+            {effectiveAppLanguage === 'hi' ? 'फिर अभ्यास करें' : effectiveAppLanguage === 'pa' ? 'ਫਿਰ ਅਭਿਆਸ ਕਰੋ' : 'Practice Again'}
           </button>
           <Link
             href="/quiz"
             className="block w-full py-4 rounded-[1.4rem] font-bold text-[15px] text-center"
             style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.10)', color: 'var(--text-muted-warm)' }}
           >
-            Back to Mastery
+            {effectiveAppLanguage === 'hi' ? 'महारत पर वापस' : effectiveAppLanguage === 'pa' ? 'ਮਹਾਰਤ ਤੇ ਵਾਪਸ' : 'Back to Mastery'}
           </Link>
         </div>
       </div>
@@ -392,6 +400,9 @@ export default function PracticeClient({ userId, tradition, initialTopic, initia
   const [topic,      setTopic]      = useState<TopicKey | null>((initialTopic as TopicKey) ?? null);
   const [difficulty, setDifficulty] = useState<DifficultyKey>('seeker');
   const [karmaEarned, setKarmaEarned] = useState(0);
+  const [fallbackLanguage, setFallbackLanguage] = useState<string | undefined>();
+  const { lang } = useLanguage();
+  const appLanguage = lang === 'hi' || lang === 'pa' ? lang : 'en';
 
   const startSession = useCallback(async (t: TopicKey, d: DifficultyKey) => {
     setTopic(t);
@@ -401,16 +412,17 @@ export default function PracticeClient({ userId, tradition, initialTopic, initia
     setCorrect(0);
 
     try {
-      const res = await fetch(`/api/quiz/practice?tradition=${tradition}&topic=${t}&difficulty=${d}`);
+      const res = await fetch(`/api/quiz/practice?tradition=${tradition}&topic=${t}&difficulty=${d}&language=${appLanguage}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setQuestions(data.questions);
+      setFallbackLanguage(data.fallbackLanguage);
       setStage('playing');
     } catch (err) {
       console.error('[practice] Failed to load questions:', err);
       setStage('error');
     }
-  }, [tradition]);
+  }, [tradition, appLanguage]);
 
   const handleAnswer = useCallback(async (isCorrect: boolean) => {
     const newCorrect = correct + (isCorrect ? 1 : 0);
@@ -483,6 +495,7 @@ export default function PracticeClient({ userId, tradition, initialTopic, initia
           questionNumber={currentQ + 1}
           total={questions.length}
           topic={topic!}
+          fallbackLanguage={fallbackLanguage}
           onAnswer={handleAnswer}
         />
       )}

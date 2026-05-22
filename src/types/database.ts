@@ -482,6 +482,9 @@ export interface Database {
           created_at: string;
           before_mood: string | null;
           source_surface: string | null;
+          context_need: string | null;
+          context_time: string | null;
+          context_type: string | null;
           recommended_action_type: string | null;
           recommended_action_target: string | null;
           clicked_action: string | null;
@@ -490,6 +493,8 @@ export interface Database {
           reflection_note: string | null;
           dismissed: boolean;
           completed_at: string | null;
+          recommendations_shown: Json | null;
+          skipped_actions: Json | null;
         };
         Insert: Omit<Database['public']['Tables']['user_mood_checkins']['Row'], 'id' | 'created_at' | 'dismissed'> & {
           dismissed?: boolean;

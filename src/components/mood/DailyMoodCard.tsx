@@ -13,6 +13,10 @@ const MOOD_CARD_OPTIONS = [
   { key: 'scattered',   label: 'Scattered',colour: '#7aab94' },
 ] as const;
 
+const MOOD_WORKFLOW_VERSION = '2';
+const MOOD_WORKFLOW_VERSION_KEY = 'shoonaya_mood_workflow_version';
+const PENDING_FOLLOWUP_KEY = 'shoonaya_mood_pending_followup';
+
 interface DailyMoodCardProps {
   onSelectMood: (mood: string) => void;
   userName: string;
@@ -23,7 +27,15 @@ export default function DailyMoodCard({ onSelectMood, userName }: DailyMoodCardP
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
-    // Check if dismissed today
+    const savedVersion = localStorage.getItem(MOOD_WORKFLOW_VERSION_KEY);
+    if (savedVersion !== MOOD_WORKFLOW_VERSION) {
+      localStorage.removeItem('shoonaya_mood_dismissed');
+      localStorage.removeItem('home_mood_date');
+      localStorage.removeItem('home_mood_key');
+      localStorage.removeItem(PENDING_FOLLOWUP_KEY);
+      localStorage.setItem(MOOD_WORKFLOW_VERSION_KEY, MOOD_WORKFLOW_VERSION);
+    }
+
     const lastDismissed = localStorage.getItem('shoonaya_mood_dismissed');
     const today = new Date().toISOString().split('T')[0];
     if (lastDismissed !== today) {
@@ -56,9 +68,9 @@ export default function DailyMoodCard({ onSelectMood, userName }: DailyMoodCardP
       exit={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.95 }}
       className="relative mx-4 mt-4 mb-2 p-5 rounded-3xl border overflow-hidden"
       style={{
-        background: 'linear-gradient(145deg, rgba(36, 32, 26, 0.95), rgba(28, 24, 20, 0.95))',
-        borderColor: 'rgba(200, 146, 74, 0.22)',
-        boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+        background: 'var(--card-bg)',
+        borderColor: 'var(--card-border, rgba(200, 146, 74, 0.22))',
+        boxShadow: 'var(--shadow-soft, 0 8px 24px rgba(0,0,0,0.1))',
       }}
     >
       <div className="flex items-start justify-between mb-4">
@@ -88,8 +100,8 @@ export default function DailyMoodCard({ onSelectMood, userName }: DailyMoodCardP
             }}
             className="flex items-center gap-2 px-4 py-2 rounded-2xl border motion-press"
             style={{
-              background: 'rgba(255, 255, 255, 0.03)',
-              borderColor: 'rgba(255, 255, 255, 0.08)',
+              background: 'var(--card-bg-soft, rgba(255, 255, 255, 0.03))',
+              borderColor: 'var(--card-border, rgba(255, 255, 255, 0.08))',
             }}
           >
             <MoodGlyph mood={mood.key} color={mood.colour} size={16} />

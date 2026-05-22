@@ -119,8 +119,8 @@ export default function MoodFollowupSheet({ pending, onClose, onCompleted }: Moo
                 onClick={() => setSelectedMood(option.key)}
                 className="px-4 py-2 rounded-2xl border text-sm font-medium transition-colors"
                 style={{
-                  background: isSelected ? 'rgba(200, 146, 74, 0.16)' : 'rgba(255, 255, 255, 0.03)',
-                  borderColor: isSelected ? 'rgba(200, 146, 74, 0.32)' : 'rgba(255, 255, 255, 0.08)',
+                  background: isSelected ? 'rgba(200, 146, 74, 0.16)' : 'var(--card-bg-soft, rgba(255, 255, 255, 0.03))',
+                  borderColor: isSelected ? 'rgba(200, 146, 74, 0.32)' : 'var(--card-border, rgba(255, 255, 255, 0.08))',
                   color: 'var(--text-cream)',
                 }}
               >
@@ -146,8 +146,8 @@ export default function MoodFollowupSheet({ pending, onClose, onCompleted }: Moo
             rows={3}
             className="w-full rounded-2xl border px-4 py-3 text-sm resize-none"
             style={{
-              background: 'rgba(44, 38, 28, 0.88)',
-              borderColor: 'rgba(200, 146, 74, 0.20)',
+              background: 'var(--card-bg, rgba(44, 38, 28, 0.88))',
+              borderColor: 'var(--card-border, rgba(200, 146, 74, 0.20))',
               color: 'var(--text-cream)',
             }}
           />
@@ -158,8 +158,8 @@ export default function MoodFollowupSheet({ pending, onClose, onCompleted }: Moo
             onClick={onClose}
             className="flex-1 rounded-2xl px-4 py-3 border text-sm font-medium"
             style={{
-              background: 'rgba(255, 255, 255, 0.03)',
-              borderColor: 'rgba(255, 255, 255, 0.08)',
+              background: 'var(--card-bg-soft, rgba(255, 255, 255, 0.03))',
+              borderColor: 'var(--card-border, rgba(255, 255, 255, 0.08))',
               color: 'var(--text-muted-warm)',
             }}
           >

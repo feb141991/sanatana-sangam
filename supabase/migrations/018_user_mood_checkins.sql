@@ -8,6 +8,9 @@ CREATE TABLE IF NOT EXISTS public.user_mood_checkins (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     before_mood TEXT,
     source_surface TEXT,
+    context_need TEXT,
+    context_time TEXT,
+    context_type TEXT,
     recommended_action_type TEXT,
     recommended_action_target TEXT,
     clicked_action TEXT,
@@ -15,7 +18,9 @@ CREATE TABLE IF NOT EXISTS public.user_mood_checkins (
     after_mood TEXT,
     reflection_note TEXT,
     dismissed BOOLEAN NOT NULL DEFAULT false,
-    completed_at TIMESTAMPTZ
+    completed_at TIMESTAMPTZ,
+    recommendations_shown JSONB,
+    skipped_actions JSONB
 );
 
 -- If the table existed previously, we use ALTER to safely modify it
@@ -50,7 +55,27 @@ BEGIN
   EXCEPTION WHEN duplicate_column THEN END;
 
   BEGIN
+    ALTER TABLE public.user_mood_checkins ADD COLUMN context_need TEXT;
+  EXCEPTION WHEN duplicate_column THEN END;
+
+  BEGIN
+    ALTER TABLE public.user_mood_checkins ADD COLUMN context_time TEXT;
+  EXCEPTION WHEN duplicate_column THEN END;
+
+  BEGIN
+    ALTER TABLE public.user_mood_checkins ADD COLUMN context_type TEXT;
+  EXCEPTION WHEN duplicate_column THEN END;
+
+  BEGIN
     ALTER TABLE public.user_mood_checkins ADD COLUMN dismissed BOOLEAN NOT NULL DEFAULT false;
+  EXCEPTION WHEN duplicate_column THEN END;
+
+  BEGIN
+    ALTER TABLE public.user_mood_checkins ADD COLUMN recommendations_shown JSONB;
+  EXCEPTION WHEN duplicate_column THEN END;
+
+  BEGIN
+    ALTER TABLE public.user_mood_checkins ADD COLUMN skipped_actions JSONB;
   EXCEPTION WHEN duplicate_column THEN END;
 
   -- Migrate old data (if any) to new columns before dropping

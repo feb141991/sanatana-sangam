@@ -55,7 +55,7 @@ export async function getMoodInsights(days: number): Promise<MoodInsightMetrics>
       moodCounts[checkin.before_mood] = (moodCounts[checkin.before_mood] || 0) + 1;
     }
     
-    // Actions
+    // Actions - count only actual completions for metrics
     const action = checkin.completed_action;
     if (action && checkin.completed_at) {
       completedActions++;
@@ -93,9 +93,21 @@ export async function getMoodInsights(days: number): Promise<MoodInsightMetrics>
     }
   }
 
+  const formatActionName = (act: string) => {
+    const map: Record<string, string> = {
+      'stotram': 'Chant Stotrams',
+      'katha': 'Read Stories',
+      'dhyana': 'Meditation',
+      'discover': 'Discover Chants',
+      'japa': 'Japa Practice',
+      'pathshala': 'Learn Scripture'
+    };
+    return map[act] || act.replace(/-/g, ' ');
+  };
+
   // Format preferred actions
   const preferredActions = Object.entries(actionCounts)
-    .map(([action, count]) => ({ action, count }))
+    .map(([action, count]) => ({ action: formatActionName(action), count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 3);
 

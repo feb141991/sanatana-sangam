@@ -14,22 +14,31 @@ interface MoodRecommendationSheetProps {
 const PENDING_FOLLOWUP_KEY = 'shoonaya_mood_pending_followup';
 
 export default function MoodRecommendationSheet({ mood, onClose }: MoodRecommendationSheetProps) {
+  const [step, setStep] = useState<'need' | 'time' | 'type' | 'loading' | 'recommendations'>('need');
+  const [need, setNeed] = useState<string | null>(null);
+  const [time, setTime] = useState<string | null>(null);
+  const [type, setType] = useState<string | null>(null);
+  
   const [recommendations, setRecommendations] = useState<MoodRecommendation[]>([]);
   const [checkinId, setCheckinId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const prefersReducedMotion = useReducedMotion();
   const router = useRouter();
 
   useEffect(() => {
-    async function initCheckin() {
+    if (step !== 'loading') return;
+
+    async function submitAndFetch() {
       try {
-        // 1. Record checkin
+        // 1. Record checkin with context
         const checkinRes = await fetch('/api/mood/checkin', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
             before_mood: mood,
-            source_surface: 'home_dashboard'
+            source_surface: 'home_dashboard',
+            context_need: need,
+            context_time: time,
+            context_type: type,
           }),
         });
         
@@ -40,8 +49,14 @@ export default function MoodRecommendationSheet({ mood, onClose }: MoodRecommend
           setCheckinId(checkin_id);
         }
 
-        // 2. Fetch recommendations (pass checkin_id so backend can persist top rec)
-        const recRes = await fetch(`/api/mood/recommendations?mood=${mood}${newCheckinId ? `&checkin_id=${newCheckinId}` : ''}`);
+        // 2. Fetch recommendations (pass context and checkin_id)
+        const params = new URLSearchParams({ mood });
+        if (need) params.append('need', need);
+        if (time) params.append('time', time);
+        if (type) params.append('type', type);
+        if (newCheckinId) params.append('checkin_id', newCheckinId);
+
+        const recRes = await fetch(`/api/mood/recommendations?${params.toString()}`);
         if (recRes.ok) {
           const data = await recRes.json();
           setRecommendations(data.recommendations || []);
@@ -49,12 +64,12 @@ export default function MoodRecommendationSheet({ mood, onClose }: MoodRecommend
       } catch (error) {
         console.error('Failed to init mood checkin', error);
       } finally {
-        setIsLoading(false);
+        setStep('recommendations');
       }
     }
     
-    initCheckin();
-  }, [mood]);
+    submitAndFetch();
+  }, [step, mood, need, time, type]);
 
   const handleActionClick = async (rec: MoodRecommendation) => {
     if (checkinId) {
@@ -89,6 +104,10 @@ export default function MoodRecommendationSheet({ mood, onClose }: MoodRecommend
     router.push(rec.href);
   };
 
+  const handleNeedSelect = (value: string) => { setNeed(value); setStep('time'); };
+  const handleTimeSelect = (value: string) => { setTime(value); setStep('type'); };
+  const handleTypeSelect = (value: string) => { setType(value); setStep('loading'); };
+
   return (
     <motion.div
       className="fixed inset-0 z-[100] flex items-end"
@@ -116,7 +135,10 @@ export default function MoodRecommendationSheet({ mood, onClose }: MoodRecommend
 
         <div className="flex items-center justify-between">
           <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-cream)' }}>
-            For your {mood} mood
+            {step === 'need' && 'What do you need right now?'}
+            {step === 'time' && 'How much time do you have?'}
+            {step === 'type' && 'What are you drawn to?'}
+            {(step === 'loading' || step === 'recommendations') && `For your ${mood} mood`}
           </h3>
           <button onClick={onClose}
             className="w-8 h-8 rounded-full flex items-center justify-center motion-press"
@@ -125,11 +147,70 @@ export default function MoodRecommendationSheet({ mood, onClose }: MoodRecommend
           </button>
         </div>
 
-        {isLoading ? (
+        {step === 'need' && (
+          <div className="grid grid-cols-2 gap-3 pb-6">
+            {['calm', 'clarity', 'devotion', 'focus', 'comfort'].map(option => (
+              <button
+                key={option}
+                onClick={() => handleNeedSelect(option)}
+                className="p-4 rounded-2xl border text-sm font-medium motion-press capitalize"
+                style={{ 
+                  background: 'var(--card-bg-soft, rgba(255, 255, 255, 0.03))', 
+                  borderColor: 'var(--card-border, rgba(255, 255, 255, 0.08))',
+                  color: 'var(--text-cream)'
+                }}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {step === 'time' && (
+          <div className="flex flex-col gap-3 pb-6">
+            {['2 min', '5 min', '10+ min'].map(option => (
+              <button
+                key={option}
+                onClick={() => handleTimeSelect(option)}
+                className="p-4 rounded-2xl border text-sm font-medium motion-press text-left"
+                style={{ 
+                  background: 'var(--card-bg-soft, rgba(255, 255, 255, 0.03))', 
+                  borderColor: 'var(--card-border, rgba(255, 255, 255, 0.08))',
+                  color: 'var(--text-cream)'
+                }}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {step === 'type' && (
+          <div className="grid grid-cols-2 gap-3 pb-6">
+            {['read', 'chant', 'listen', 'reflect'].map(option => (
+              <button
+                key={option}
+                onClick={() => handleTypeSelect(option)}
+                className="p-4 rounded-2xl border text-sm font-medium motion-press capitalize"
+                style={{ 
+                  background: 'var(--card-bg-soft, rgba(255, 255, 255, 0.03))', 
+                  borderColor: 'var(--card-border, rgba(255, 255, 255, 0.08))',
+                  color: 'var(--text-cream)'
+                }}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {step === 'loading' && (
           <div className="flex justify-center py-8">
             <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--brand-primary)' }} />
           </div>
-        ) : (
+        )}
+
+        {step === 'recommendations' && (
           <div className="space-y-3 pb-6">
             {recommendations.map(rec => (
               <button
@@ -137,8 +218,8 @@ export default function MoodRecommendationSheet({ mood, onClose }: MoodRecommend
                 onClick={() => handleActionClick(rec)}
                 className="w-full flex items-center justify-between p-4 rounded-2xl border motion-lift text-left"
                 style={{ 
-                  background: 'rgba(44, 38, 28, 0.88)', 
-                  borderColor: 'rgba(200, 146, 74, 0.20)'
+                  background: 'var(--card-bg, rgba(44, 38, 28, 0.88))', 
+                  borderColor: 'var(--card-border, rgba(200, 146, 74, 0.20))'
                 }}
               >
                 <div className="flex items-center gap-4">
