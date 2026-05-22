@@ -107,14 +107,17 @@ END $$;
 ALTER TABLE public.user_mood_checkins ENABLE ROW LEVEL SECURITY;
 
 -- Users can see their own checkins
+DROP POLICY IF EXISTS "Users can see their own checkins" ON public.user_mood_checkins;
 CREATE POLICY "Users can see their own checkins" ON public.user_mood_checkins
     FOR SELECT USING (user_id = auth.uid());
 
 -- Users can insert their own checkins
+DROP POLICY IF EXISTS "Users can insert their own checkins" ON public.user_mood_checkins;
 CREATE POLICY "Users can insert their own checkins" ON public.user_mood_checkins
     FOR INSERT WITH CHECK (user_id = auth.uid());
 
 -- Users can update their own checkins
+DROP POLICY IF EXISTS "Users can update their own checkins" ON public.user_mood_checkins;
 CREATE POLICY "Users can update their own checkins" ON public.user_mood_checkins
     FOR UPDATE USING (user_id = auth.uid());
 

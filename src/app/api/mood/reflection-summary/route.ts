@@ -5,9 +5,9 @@ import { generateWithProvider } from '@/lib/ai/providers/inference';
 export async function GET(request: Request) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
     
-    if (!session) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     const { data: checkins, error } = await supabase
       .from('user_mood_checkins')
       .select('*')
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .eq('dismissed', false)
       .gte('created_at', cutoffDate.toISOString())
       .order('created_at', { ascending: false });

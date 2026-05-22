@@ -107,13 +107,13 @@ USER PROFILE:
 
 Return ONLY this JSON (no markdown fences, no extra keys):
 {
-  "suggestion": "<A specific, actionable practice for today matching their level and seeking. 2-3 sentences. Concrete — not vague. For example: 'Spend 10 minutes with Pranayama before breakfast today' or 'Read one chapter of the Gita and journal one insight.' Vary by day and level.>",
-  "nudge": "<One warm, personal sentence of encouragement. Optional — null is fine.>",
-  "context_label": "<A 2-4 word label for the type of practice, e.g. 'Morning sadhana', 'Contemplative reading', 'Breathwork focus'. Used as the section eyebrow.>",
+  "suggestion": "<A specific, actionable practice for today. 2-3 short sentences.>",
+  "nudge": "<One short warm sentence of encouragement>",
+  "context_label": "<A 2-4 word label>",
   "action": {
-    "label": "<Short CTA label, e.g. 'Open Mantra' or 'Start Mala'>",
-    "href": "<A valid internal route, e.g. '/pathshala?tab=scripture&entryId=[id]' for scripture or '/bhakti/mala' for tools>",
-    "type": "<'link' | 'primary'> "
+    "label": "<Short CTA label>",
+    "href": "<A valid internal route>",
+    "type": "<'link' | 'primary'>"
   }
 }
 
@@ -126,13 +126,16 @@ Keep the tone warm, grounded, and personal — not preachy. No shloka text neede
           system: [
             'You generate warm, structured JSON for personalized spiritual guidance.',
             pipelinePromptHint,
-        ].filter(Boolean).join('\n\n'),
-        user: prompt,
-        temperature: 0.7,
-        reasoningEffort: 'none',
-        maxOutputTokens: 450,
-      },
-        { responseFormat: 'json' }
+          ].filter(Boolean).join('\n\n'),
+          user: prompt,
+          temperature: 0.7,
+          reasoningEffort: 'none',
+          maxOutputTokens: 250,
+        },
+        { 
+          responseFormat: 'json',
+          providerOverride: 'sarvam-hosted'
+        }
       );
       raw = result.text;
 
