@@ -29,6 +29,8 @@ export async function POST(request: Request) {
     const hasAfterMood = typeof after_mood === 'string' && after_mood.trim().length > 0;
     const updatePayload: Record<string, string | null> = {};
 
+    let isCompletingSession = false;
+
     if (clickedActionValue) {
       updatePayload.clicked_action = clickedActionValue;
     }
@@ -36,14 +38,22 @@ export async function POST(request: Request) {
     if (completedActionValue) {
       updatePayload.completed_action = completedActionValue;
       updatePayload.completed_at = new Date().toISOString();
+      isCompletingSession = true;
     }
 
     if (hasAfterMood) {
       updatePayload.after_mood = after_mood;
+      isCompletingSession = true;
     }
 
     if (hasReflectionNote) {
       updatePayload.reflection_note = reflection_note.trim();
+      isCompletingSession = true;
+    }
+
+    if (isCompletingSession) {
+      updatePayload.session_status = 'completed';
+      updatePayload.closed_at = new Date().toISOString();
     }
 
     if (Object.keys(updatePayload).length === 0) {

@@ -2,6 +2,8 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import PathshalaClient from './PathshalaClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function PathshalaPage({
   searchParams,
 }: {

@@ -95,11 +95,6 @@ export default function MoodRecommendationSheet({ mood, onClose }: MoodRecommend
       }).catch(console.error);
     }
     
-    const today = new Date().toISOString().split('T')[0];
-    localStorage.setItem('shoonaya_mood_dismissed', today);
-    localStorage.setItem('home_mood_date', today);
-    localStorage.setItem('home_mood_key', mood);
-    
     onClose();
     router.push(rec.href);
   };

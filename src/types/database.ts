@@ -495,6 +495,8 @@ export interface Database {
           completed_at: string | null;
           recommendations_shown: Json | null;
           skipped_actions: Json | null;
+          session_status: string | null;
+          closed_at: string | null;
         };
         Insert: Omit<Database['public']['Tables']['user_mood_checkins']['Row'], 'id' | 'created_at' | 'dismissed'> & {
           dismissed?: boolean;

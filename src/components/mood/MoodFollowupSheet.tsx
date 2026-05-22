@@ -4,13 +4,8 @@ import { useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { X } from 'lucide-react';
 
-const MOOD_FOLLOWUP_OPTIONS = [
-  { key: 'grateful', label: 'Grateful' },
-  { key: 'seeking', label: 'Seeking' },
-  { key: 'anxious', label: 'Anxious' },
-  { key: 'joyful', label: 'Joyful' },
-  { key: 'scattered', label: 'Scattered' },
-] as const;
+import { MOODS_CONFIG } from '@/lib/mood/registry';
+import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 export interface PendingMoodFollowup {
   checkinId: string;
@@ -32,10 +27,12 @@ export default function MoodFollowupSheet({ pending, onClose, onCompleted }: Moo
   const [reflectionNote, setReflectionNote] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const prefersReducedMotion = useReducedMotion();
+  const { resolvedTheme } = useThemePreference();
+  const MOODS = MOODS_CONFIG[resolvedTheme] || MOODS_CONFIG.dark;
 
   const initialMoodLabel = useMemo(() => {
-    return MOOD_FOLLOWUP_OPTIONS.find(option => option.key === pending.mood)?.label || pending.mood;
-  }, [pending.mood]);
+    return MOODS.find(option => option.key === pending.mood)?.label || pending.mood;
+  }, [pending.mood, MOODS]);
 
   const handleSave = async () => {
     if (!selectedMood || isSaving) return;
@@ -110,24 +107,27 @@ export default function MoodFollowupSheet({ pending, onClose, onCompleted }: Moo
           </button>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          {MOOD_FOLLOWUP_OPTIONS.map(option => {
-            const isSelected = selectedMood === option.key;
-            return (
-              <button
-                key={option.key}
-                onClick={() => setSelectedMood(option.key)}
-                className="px-4 py-2 rounded-2xl border text-sm font-medium transition-colors"
-                style={{
-                  background: isSelected ? 'rgba(200, 146, 74, 0.16)' : 'var(--card-bg-soft, rgba(255, 255, 255, 0.03))',
-                  borderColor: isSelected ? 'rgba(200, 146, 74, 0.32)' : 'var(--card-border, rgba(255, 255, 255, 0.08))',
-                  color: 'var(--text-cream)',
-                }}
-              >
-                {option.label}
-              </button>
-            );
-          })}
+        <div className="flex flex-wrap justify-center gap-2">
+          {MOODS.map((m) => (
+            <button
+              key={m.key}
+              onClick={() => setSelectedMood(m.key)}
+              className="px-3 py-2 rounded-xl text-sm font-medium border transition-colors"
+              style={{
+                background: selectedMood === m.key 
+                  ? m.colour 
+                  : m.bg,
+                color: selectedMood === m.key 
+                  ? '#000' 
+                  : 'var(--text-cream)',
+                borderColor: selectedMood === m.key 
+                  ? m.colour 
+                  : 'var(--card-border, rgba(255, 255, 255, 0.08))'
+              }}
+            >
+              {m.label}
+            </button>
+          ))}
         </div>
 
         <div className="space-y-2">

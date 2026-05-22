@@ -10,9 +10,9 @@ export interface MoodInsightMetrics {
 
 export async function getMoodInsights(days: number): Promise<MoodInsightMetrics> {
   const supabase = await createServerSupabaseClient();
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
   
-  if (!session) {
+  if (!user) {
     throw new Error('Unauthorized');
   }
 
@@ -23,8 +23,9 @@ export async function getMoodInsights(days: number): Promise<MoodInsightMetrics>
   const { data: checkins, error } = await supabase
     .from('user_mood_checkins')
     .select('*')
-    .eq('user_id', session.user.id)
+    .eq('user_id', user.id)
     .eq('dismissed', false)
+    .neq('session_status', 'abandoned')
     .gte('created_at', cutoffDate.toISOString())
     .order('created_at', { ascending: false });
 

@@ -20,6 +20,7 @@ export async function GET(request: Request) {
       .select('*')
       .eq('user_id', user.id)
       .eq('dismissed', false)
+      .neq('session_status', 'abandoned')
       .gte('created_at', cutoffDate.toISOString())
       .order('created_at', { ascending: false });
 

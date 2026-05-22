@@ -20,7 +20,9 @@ CREATE TABLE IF NOT EXISTS public.user_mood_checkins (
     dismissed BOOLEAN NOT NULL DEFAULT false,
     completed_at TIMESTAMPTZ,
     recommendations_shown JSONB,
-    skipped_actions JSONB
+    skipped_actions JSONB,
+    session_status TEXT DEFAULT 'open' CHECK (session_status IN ('open', 'completed', 'dismissed', 'abandoned')),
+    closed_at TIMESTAMPTZ
 );
 
 -- If the table existed previously, we use ALTER to safely modify it
@@ -76,6 +78,18 @@ BEGIN
 
   BEGIN
     ALTER TABLE public.user_mood_checkins ADD COLUMN skipped_actions JSONB;
+  EXCEPTION WHEN duplicate_column THEN END;
+
+  BEGIN
+    ALTER TABLE public.user_mood_checkins ADD COLUMN session_status TEXT DEFAULT 'open';
+  EXCEPTION WHEN duplicate_column THEN END;
+
+  BEGIN
+    ALTER TABLE public.user_mood_checkins ADD CONSTRAINT chk_session_status CHECK (session_status IN ('open', 'completed', 'dismissed', 'abandoned'));
+  EXCEPTION WHEN duplicate_object THEN END;
+
+  BEGIN
+    ALTER TABLE public.user_mood_checkins ADD COLUMN closed_at TIMESTAMPTZ;
   EXCEPTION WHEN duplicate_column THEN END;
 
   -- Migrate old data (if any) to new columns before dropping

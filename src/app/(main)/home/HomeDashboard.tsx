@@ -72,6 +72,7 @@ import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import DailyMoodCard from '@/components/mood/DailyMoodCard';
 import MoodRecommendationSheet from '@/components/mood/MoodRecommendationSheet';
 import MoodFollowupSheet, { type PendingMoodFollowup } from '@/components/mood/MoodFollowupSheet';
+import { MOODS_CONFIG } from '@/lib/mood/registry';
 
 interface Panchang {
   tithi:      string;
@@ -148,30 +149,7 @@ const DEFAULT_QUICK_ACCESS = [
   { label: 'Discover',   icon: '🌿', href: '/discover',       desc: 'Scripture for your mood',        theme: 'bhakti'    },
   { label: 'Jyotish Hub', icon: '📅', href: '/panchang',       desc: 'Panchang, Rashiphal & Kundali',  theme: 'panchang'  },
 ];
-// Mood quick-lookup (mirrors DiscoverClient MOODS)
-
-// Five moods surfaced in the home card (subset of MOOD_QUICK_MAP)
-const MOOD_CARD_OPTIONS = [
-  { key: 'grateful',    label: 'Grateful' },
-  { key: 'seeking',     label: 'Seeking'  },
-  { key: 'anxious',     label: 'Anxious'  },
-  { key: 'joyful',      label: 'Joyful'   },
-  { key: 'scattered',   label: 'Scattered' },
-] as const;
-
-// Mood quick-lookup (mirrors DiscoverClient MOODS)
-const MOOD_QUICK_MAP: Record<string, { key: string; label: string; colour: string }> = {
-  anxious:     { key: 'anxious',     label: 'Anxious',     colour: '#7b6f9e' },
-  grieving:    { key: 'grieving',    label: 'Grieving',    colour: '#6b8aad' },
-  angry:       { key: 'angry',       label: 'Angry',       colour: '#c86a3a' },
-  scattered:   { key: 'scattered',   label: 'Scattered',   colour: '#7aab94' },
-  lost:        { key: 'lost',        label: 'Lost',        colour: '#8e8e7a' },
-  joyful:      { key: 'joyful',      label: 'Joyful',      colour: '#c8923a' },
-  seeking:     { key: 'seeking',     label: 'Seeking',     colour: '#c8925e' },
-  lonely:      { key: 'lonely',      label: 'Lonely',      colour: '#8aadad' },
-  overwhelmed: { key: 'overwhelmed', label: 'Overwhelmed', colour: '#6b8ab0' },
-  grateful:    { key: 'grateful',    label: 'Grateful',    colour: '#b09a6a' },
-};
+// Dead constants removed: MOOD_CARD_OPTIONS and MOOD_QUICK_MAP
 
 const PENDING_MOOD_FOLLOWUP_KEY = 'shoonaya_mood_pending_followup';
 const MOOD_WORKFLOW_VERSION = '2';
@@ -1246,6 +1224,61 @@ export default function HomeDashboard({
   // Mood pill — null = not set today, undefined = loading
   const [moodToday, setMoodToday] = useState<{ key: string; label: string; colour: string } | null | undefined>(undefined);
 
+  const resolvedTheme = isDark ? 'dark' : 'light';
+  const MOODS = MOODS_CONFIG[resolvedTheme] || MOODS_CONFIG.dark;
+
+  const [backendMoodState, setBackendMoodState] = useState<{
+    hasCompletedToday: boolean;
+    hasDismissedToday: boolean;
+    isLoaded: boolean;
+  }>({ hasCompletedToday: false, hasDismissedToday: false, isLoaded: false });
+
+  // ── Fetch authoritative mood state from backend ──────────────────────────────
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchMoodState() {
+      try {
+        const res = await fetch('/api/mood/checkin');
+        if (!res.ok) throw new Error('Failed to fetch mood status');
+        const data = await res.json();
+        if (!cancelled) {
+          setBackendMoodState({
+            hasCompletedToday: data.hasCompletedToday || false,
+            hasDismissedToday: data.hasDismissedToday || false,
+            isLoaded: true
+          });
+
+          // Resolve pending followup if open session has clicked_action but not completed
+          if (data.openSession?.clicked_action && !data.openSession?.completed_action) {
+            setPendingMoodFollowup({
+              checkinId: data.openSession.id,
+              mood: data.openSession.before_mood,
+              actionId: data.openSession.clicked_action,
+              actionTitle: 'Spiritual Action',
+              actionHref: '#',
+              createdAt: data.openSession.created_at
+            });
+          } else {
+            setPendingMoodFollowup(null);
+          }
+
+          // If they completed a session today, update mood badge
+          if (data.lastCompletedMood) {
+            const moodConf = MOODS.find(m => m.key === data.lastCompletedMood);
+            if (moodConf) {
+              setMoodToday({ key: moodConf.key, label: moodConf.label, colour: moodConf.colour });
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to fetch backend mood state:', err);
+      }
+    }
+    fetchMoodState();
+    return () => { cancelled = true; };
+  }, [MOODS]);
+
+  // Legacy local storage clean-up and fallback visual continuity
   useEffect(() => {
     const savedVersion = localStorage.getItem(MOOD_WORKFLOW_VERSION_KEY);
     if (savedVersion !== MOOD_WORKFLOW_VERSION) {
@@ -1254,16 +1287,6 @@ export default function HomeDashboard({
       localStorage.removeItem('home_mood_key');
       localStorage.removeItem(PENDING_MOOD_FOLLOWUP_KEY);
       localStorage.setItem(MOOD_WORKFLOW_VERSION_KEY, MOOD_WORKFLOW_VERSION);
-      setMoodToday(null);
-      return;
-    }
-
-    const today = new Date().toISOString().split('T')[0];
-    const moodDate = localStorage.getItem('home_mood_date');
-    const moodKey  = localStorage.getItem('home_mood_key');
-    if (moodDate === today && moodKey && MOOD_QUICK_MAP[moodKey]) {
-      setMoodToday(MOOD_QUICK_MAP[moodKey]);
-    } else {
       setMoodToday(null);
     }
   }, []);
@@ -1615,13 +1638,12 @@ export default function HomeDashboard({
 
   // ── Mood check-in card ───────────────────────────────────────────────────────
   function handleMoodCardPick(moodKey: string) {
-    if (MOOD_QUICK_MAP[moodKey]) {
-      setMoodToday(MOOD_QUICK_MAP[moodKey]);
+    const moodConf = MOODS.find(m => m.key === moodKey);
+    if (moodConf) {
+      setMoodToday({ key: moodConf.key, label: moodConf.label, colour: moodConf.colour });
     }
 
     const today = new Date().toISOString().split('T')[0];
-    localStorage.setItem('home_mood_date', today);
-    localStorage.setItem('home_mood_key', moodKey);
     localStorage.setItem('shoonaya_mood_dismissed', today);
     setSelectedMoodForSheet(moodKey);
   }
@@ -1631,13 +1653,11 @@ export default function HomeDashboard({
   }
 
   function handleMoodFollowupCompleted(afterMood: string) {
-    const today = new Date().toISOString().split('T')[0];
     localStorage.removeItem(PENDING_MOOD_FOLLOWUP_KEY);
-    localStorage.setItem('home_mood_date', today);
-    localStorage.setItem('home_mood_key', afterMood);
 
-    if (MOOD_QUICK_MAP[afterMood]) {
-      setMoodToday(MOOD_QUICK_MAP[afterMood]);
+    const moodConf = MOODS.find(m => m.key === afterMood);
+    if (moodConf) {
+      setMoodToday({ key: moodConf.key, label: moodConf.label, colour: moodConf.colour });
     }
 
     setPendingMoodFollowup(null);
@@ -2232,7 +2252,11 @@ export default function HomeDashboard({
         </AnimatePresence>
 
         {/* ── Mood Check-In Card ───────────────────────────────────────────── */}
-        <DailyMoodCard userName={userName} onSelectMood={handleMoodCardPick} />
+        <DailyMoodCard 
+          onSelectMood={handleMoodCardPick} 
+          userName={userName}
+          backendState={backendMoodState}
+        />
 
         {/* ── Festival Story Cards (Stack) ────────────────────────────────────────── */}
         <AnimatePresence>
