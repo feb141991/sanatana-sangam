@@ -62,6 +62,36 @@ const DIFFICULTY_CONTEXT: Record<string, string> = {
   pandit:  'advanced level — rare, specialist-grade facts that only a dedicated practitioner or scholar would know. Can reference obscure texts, regional variations, or subtle doctrinal distinctions.',
 };
 
+type PracticeQuestion = {
+  question: string;
+  options: string[];
+  answerIndex: number;
+  explanation: string;
+  fact: string;
+  source: string;
+};
+
+const PRACTICE_FALLBACKS: Record<string, Record<string, PracticeQuestion[]>> = {
+  scriptures: {
+    hindu: [
+      { question: 'Which text is called the "Gitopanishad"?', options: ['Bhagavad Gita', 'Yoga Sutras', 'Isha Upanishad', 'Vishnu Purana'], answerIndex: 0, explanation: 'The Bhagavad Gita is often described as the Gitopanishad because it condenses major Upanishadic teachings into a dialogue format.', fact: 'It appears in the Bhishma Parva of the Mahabharata.', source: 'Bhagavad Gita' },
+      { question: 'Which Upanishad opens with "Ishavasyam idam sarvam"?', options: ['Isha Upanishad', 'Katha Upanishad', 'Mundaka Upanishad', 'Prashna Upanishad'], answerIndex: 0, explanation: 'The Isha Upanishad begins with the famous line "Ishavasyam idam sarvam," framing the world as pervaded by the Divine.', fact: 'It is one of the shortest principal Upanishads.', source: 'Isha Upanishad 1' },
+      { question: 'Which epic contains the Bhagavad Gita?', options: ['Mahabharata', 'Ramayana', 'Skanda Purana', 'Harivamsha'], answerIndex: 0, explanation: 'The Bhagavad Gita appears in the Mahabharata as a dialogue between Krishna and Arjuna on the battlefield of Kurukshetra.', fact: 'It is located in the Bhishma Parva.', source: 'Mahabharata' },
+      { question: 'How many Vedas are traditionally recognized in Hindu learning?', options: ['4', '3', '6', '8'], answerIndex: 0, explanation: 'The traditional count is four: Rigveda, Yajurveda, Samaveda, and Atharvaveda.', fact: 'Each Veda has associated Brahmana, Aranyaka, and Upanishad layers.', source: 'Vedic tradition' },
+      { question: 'Which scripture is structured as a dialogue between Nachiketa and Yama?', options: ['Katha Upanishad', 'Kena Upanishad', 'Mandukya Upanishad', 'Taittiriya Upanishad'], answerIndex: 0, explanation: 'The Katha Upanishad presents the dialogue between Nachiketa and Yama on the nature of the Self and liberation.', fact: 'It is one of the most philosophically influential Upanishads.', source: 'Katha Upanishad' },
+    ],
+  },
+  philosophy: {
+    hindu: [
+      { question: 'In Advaita Vedanta, what is ultimately identical with Brahman?', options: ['Atman', 'Prakriti', 'Karma', 'Indriyas'], answerIndex: 0, explanation: 'Advaita teaches that Atman and Brahman are ultimately non-different, and liberation comes through realizing this identity.', fact: 'This is reinforced through mahavakyas across the Upanishads.', source: 'Advaita Vedanta' },
+      { question: 'Which darshana is most directly associated with Patanjali?', options: ['Yoga', 'Nyaya', 'Mimamsa', 'Vaisheshika'], answerIndex: 0, explanation: 'Patanjali is traditionally associated with the Yoga darshana through the Yoga Sutras.', fact: 'The Yoga system is often studied alongside Samkhya due to shared metaphysical structure.', source: 'Yoga Sutras' },
+      { question: 'What does moksha refer to in Hindu philosophy?', options: ['Liberation from the cycle of birth and death', 'A ritual fire altar', 'A vow of silence', 'A seasonal festival'], answerIndex: 0, explanation: 'Moksha is liberation from samsara and is treated as the highest human goal in many Hindu philosophical systems.', fact: 'Different schools describe its realization differently: knowledge, devotion, or divine grace.', source: 'Hindu philosophy' },
+      { question: 'What is the core meaning of dharma in a philosophical context?', options: ['Right order, duty, and sustaining law', 'Only temple ritual', 'A specific caste rank', 'Monastic withdrawal'], answerIndex: 0, explanation: 'Dharma refers to sustaining order, right conduct, duty, and moral-spiritual alignment depending on context.', fact: 'The term shifts in nuance across Vedic, epic, and philosophical texts.', source: 'Dharma traditions' },
+      { question: 'Which school emphasizes dualism between Purusha and Prakriti?', options: ['Samkhya', 'Advaita Vedanta', 'Purva Mimamsa', 'Nyaya'], answerIndex: 0, explanation: 'Samkhya teaches a foundational distinction between Purusha, pure consciousness, and Prakriti, primordial nature.', fact: 'Its categories strongly influenced classical Yoga.', source: 'Samkhya' },
+    ],
+  },
+};
+
 function buildPracticePrompt(tradition: string, topic: string, difficulty: string): string {
   const topicCtx    = TOPIC_CONTEXT[topic]?.[tradition] ?? TOPIC_CONTEXT[topic]?.['hindu'] ?? topic;
   const difficultyCtx = DIFFICULTY_CONTEXT[difficulty] ?? DIFFICULTY_CONTEXT.seeker;
@@ -140,6 +170,7 @@ export async function GET(req: NextRequest) {
 
   const prompt = buildPracticePrompt(tradition, topic, difficulty);
   const startTime = Date.now();
+  const fallbackQuestions = (PRACTICE_FALLBACKS[topic]?.[tradition] ?? PRACTICE_FALLBACKS[topic]?.hindu ?? []).slice(0, 5);
 
   try {
     const result = await generateWithProvider(
@@ -149,11 +180,11 @@ export async function GET(req: NextRequest) {
           pipelinePromptHint,
         ].filter(Boolean).join('\n\n'),
         user: prompt,
-        temperature: 0.9,
-        reasoningEffort: 'low',
-        maxOutputTokens: 1400,
+        temperature: 0.4,
+        reasoningEffort: 'none',
+        maxOutputTokens: 2200,
       },
-      { responseFormat: 'json' }
+      { responseFormat: 'json', providerOverride: 'sarvam-hosted' }
     );
 
     const cleaned = extractJsonBlock(result.text);
@@ -163,6 +194,9 @@ export async function GET(req: NextRequest) {
       parsed = JSON.parse(cleaned);
     } catch {
       console.error('[quiz/practice] JSON parse failed. Raw:', result.text.slice(0, 300));
+      if (fallbackQuestions.length > 0) {
+        return NextResponse.json({ questions: fallbackQuestions, tradition, topic, difficulty, ai: { provider: 'fallback', degraded: true } });
+      }
       return NextResponse.json({ error: 'Invalid AI response' }, { status: 502 });
     }
 
@@ -177,6 +211,9 @@ export async function GET(req: NextRequest) {
     );
 
     if (questions.length === 0) {
+      if (fallbackQuestions.length > 0) {
+        return NextResponse.json({ questions: fallbackQuestions, tradition, topic, difficulty, ai: { provider: 'fallback', degraded: true } });
+      }
       return NextResponse.json({ error: 'No valid questions generated' }, { status: 502 });
     }
 
@@ -204,6 +241,9 @@ export async function GET(req: NextRequest) {
   } catch (err: any) {
     emitError('ai', err, 'P2', { route: '/api/quiz/practice', latency_ms: Date.now() - startTime });
     console.error('[quiz/practice] Provider generation failed:', err);
+    if (fallbackQuestions.length > 0) {
+      return NextResponse.json({ questions: fallbackQuestions, tradition, topic, difficulty, ai: { provider: 'fallback', degraded: true } });
+    }
     return NextResponse.json({ error: 'AI unavailable' }, { status: 503 });
   }
 }

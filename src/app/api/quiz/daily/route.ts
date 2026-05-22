@@ -28,6 +28,56 @@ const TRADITION_CONTEXT: Record<string, string> = {
   all:      'the shared spiritual heritage of India — covering Hindu, Sikh, Buddhist and Jain traditions, common sacred rivers, pilgrimage sites, and inter-tradition concepts',
 };
 
+const DAILY_FALLBACK_QUIZ: Record<string, {
+  question: string;
+  options: string[];
+  answerIndex: number;
+  explanation: string;
+  fact: string;
+  source: string;
+}> = {
+  hindu: {
+    question: 'Which Upanishad contains the mahavakya "Tat Tvam Asi"?',
+    options: ['Chandogya Upanishad', 'Kena Upanishad', 'Mundaka Upanishad', 'Isha Upanishad'],
+    answerIndex: 0,
+    explanation: 'The mahavakya "Tat Tvam Asi" appears in the Chandogya Upanishad as part of the teaching of Uddalaka to Shvetaketu. It is one of the most cited statements in Vedantic teaching.',
+    fact: 'Different Vedanta schools interpret this mahavakya differently, but all treat it as a foundational Upanishadic statement.',
+    source: 'Chandogya Upanishad 6.8.7',
+  },
+  sikh: {
+    question: 'Who compiled the Adi Granth, which later became Guru Granth Sahib Ji?',
+    options: ['Guru Arjan Dev Ji', 'Guru Gobind Singh Ji', 'Guru Ram Das Ji', 'Guru Tegh Bahadur Ji'],
+    answerIndex: 0,
+    explanation: 'Guru Arjan Dev Ji compiled the Adi Granth in 1604 and installed it at Harmandir Sahib. It later came to be revered as Guru Granth Sahib Ji.',
+    fact: 'The scripture includes not only the Gurus’ bani but also compositions of Bhagats and saints from diverse backgrounds.',
+    source: 'Sikh tradition',
+  },
+  buddhist: {
+    question: 'Which teaching is grouped as the first sermon traditionally delivered by the Buddha at Sarnath?',
+    options: ['The Four Noble Truths', 'The Five Precepts', 'The Brahmaviharas', 'The Ten Paramitas'],
+    answerIndex: 0,
+    explanation: 'The Buddha’s first sermon at Sarnath is traditionally associated with the Four Noble Truths and the Middle Way. This marks the turning of the wheel of Dhamma.',
+    fact: 'This discourse is commonly referred to as the Dhammacakkappavattana Sutta in the Pali tradition.',
+    source: 'Buddhist tradition',
+  },
+  jain: {
+    question: 'Which principle is most centrally associated with Jain ethical life?',
+    options: ['Ahimsa', 'Yajna', 'Bhakti', 'Rajadharma'],
+    answerIndex: 0,
+    explanation: 'Ahimsa, or non-violence, is the central ethical principle in Jain dharma. It shapes conduct in speech, thought, livelihood, and daily discipline.',
+    fact: 'Jain practice extends non-violence with unusual rigor, including care toward even the smallest life forms.',
+    source: 'Jain tradition',
+  },
+  all: {
+    question: 'Which river is widely revered across multiple Indian traditions as sacred?',
+    options: ['Ganga', 'Thames', 'Volga', 'Danube'],
+    answerIndex: 0,
+    explanation: 'The Ganga holds sacred status across Hindu traditions and is also culturally significant in the wider spiritual heritage of India. It appears in pilgrimage, ritual memory, and sacred geography.',
+    fact: 'Cities like Varanasi, Haridwar, and Prayagraj are deeply tied to the sacred imagination around the Ganga.',
+    source: 'Indian sacred geography',
+  },
+};
+
 function buildPrompt(tradition: string, dateStr: string): string {
   const ctx = TRADITION_CONTEXT[tradition] ?? TRADITION_CONTEXT.all;
   return `You are a precise and engaging spiritual quiz writer for a dharma app.
@@ -87,6 +137,8 @@ export async function GET(req: NextRequest) {
   const prompt = buildPrompt(tradition, dateStr);
   const startTime = Date.now();
 
+  const fallbackQuiz = DAILY_FALLBACK_QUIZ[tradition] ?? DAILY_FALLBACK_QUIZ.all;
+
   try {
     const result = await generateWithProvider(
       {
@@ -95,11 +147,11 @@ export async function GET(req: NextRequest) {
           pipelinePromptHint,
         ].filter(Boolean).join('\n\n'),
         user: prompt,
-        temperature: 0.8,
+        temperature: 0.35,
         reasoningEffort: 'none',
-        maxOutputTokens: 640,
+        maxOutputTokens: 900,
       },
-      { responseFormat: 'json' }
+      { responseFormat: 'json', providerOverride: 'sarvam-hosted' }
     );
 
     const cleaned = extractJsonBlock(result.text);
@@ -109,7 +161,7 @@ export async function GET(req: NextRequest) {
       quiz = JSON.parse(cleaned);
     } catch {
       console.error('[quiz/daily] JSON parse failed. Raw:', result.text.slice(0, 200));
-      return NextResponse.json({ error: 'Invalid AI response' }, { status: 502 });
+      quiz = fallbackQuiz;
     }
 
     if (
@@ -120,7 +172,7 @@ export async function GET(req: NextRequest) {
       quiz.answerIndex < 0 ||
       quiz.answerIndex > 3
     ) {
-      return NextResponse.json({ error: 'Malformed quiz response' }, { status: 502 });
+      quiz = fallbackQuiz;
     }
 
     emitEvent({
@@ -152,6 +204,13 @@ export async function GET(req: NextRequest) {
   } catch (err: any) {
     emitError('ai', err, 'P2', { route: '/api/quiz/daily', latency_ms: Date.now() - startTime });
     console.error('[quiz/daily] Provider generation failed:', err);
-    return NextResponse.json({ error: 'AI unavailable' }, { status: 503 });
+    return NextResponse.json(
+      { ...fallbackQuiz, tradition, date: dateStr, ai: { provider: 'fallback', degraded: true } },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600',
+        },
+      },
+    );
   }
 }
