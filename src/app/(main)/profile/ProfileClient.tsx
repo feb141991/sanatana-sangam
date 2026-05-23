@@ -1,5 +1,6 @@
-import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 'use client';
+
+import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
