@@ -23,7 +23,7 @@ export default async function LessonPage({
   const [{ data: profile }, { data: enrollment }] = await Promise.all([
     supabase
       .from('profiles')
-      .select('tradition, full_name, username, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script')
+      .select('tradition, full_name, username, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script, is_pro')
       .eq('id', user.id)
       .single(),
     supabase
@@ -36,6 +36,12 @@ export default async function LessonPage({
 
   if (!enrollment || enrollment.status !== 'active') {
     redirect('/pathshala');
+  }
+
+  const pathMeta = (SEED_PATHS as unknown as { id: string; difficulty: string }[]).find(p => p.id === pathId);
+  const userIsPro = (profile as any)?.is_pro ?? false;
+  if (pathMeta && pathMeta.difficulty !== 'beginner' && !userIsPro) {
+    redirect('/pathshala?upgrade=1');
   }
 
   const tradition = profile?.tradition ?? 'hindu';

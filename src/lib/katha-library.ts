@@ -1246,6 +1246,7 @@ export const SIKH_SAKHIS: Katha[] = [
   },
   {
     id: 'sakhi-guru-tegh-bahadur-martyrdom',
+    portrait: '☬',
     tradition: 'sikh',
     occasion: 'gurpurab',
     title: 'Guru Tegh Bahadur Ji — Hind Di Chadar',
@@ -1364,6 +1365,7 @@ export const SIKH_SAKHIS: Katha[] = [
   },
   {
     id: 'sakhi-mai-bhago',
+    portrait: '⚔️',
     tradition: 'sikh',
     occasion: 'general',
     title: 'Mai Bhago — The Lioness of Punjab',
@@ -1472,6 +1474,7 @@ export const SIKH_SAKHIS: Katha[] = [
   },
   {
     id: 'sakhi-sahibzade-martyrdom',
+    portrait: '🌸',
     tradition: 'sikh',
     occasion: 'general',
     title: 'Martyrdom of the Chote Sahibzade',
@@ -1499,6 +1502,7 @@ export const SIKH_SAKHIS: Katha[] = [
   },
   {
     id: 'sakhi-bhai-taru-singh',
+    portrait: '☬',
     tradition: 'sikh',
     occasion: 'general',
     title: 'Bhai Taru Singh — Scalped for Dharam',
@@ -1716,6 +1720,7 @@ export const SIKH_SAKHIS: Katha[] = [
   },
   {
     id: 'sakhi-arjan-dev-martyrdom',
+    portrait: '🪷',
     tradition: 'sikh',
     occasion: 'general',
     title: 'Martyrdom of Guru Arjan Dev Ji',
@@ -1825,6 +1830,7 @@ export const SIKH_SAKHIS: Katha[] = [
   },
   {
     id: 'sakhi-mani-singh',
+    portrait: '📿',
     tradition: 'sikh',
     occasion: 'general',
     title: 'Martyrdom of Bhai Mani Singh',
@@ -1853,6 +1859,7 @@ export const SIKH_SAKHIS: Katha[] = [
   },
   {
     id: 'sakhi-baba-deep-singh',
+    portrait: '🗡️',
     tradition: 'sikh',
     occasion: 'general',
     title: 'Baba Deep Singh\'s Vow',

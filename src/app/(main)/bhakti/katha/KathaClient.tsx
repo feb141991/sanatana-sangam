@@ -282,7 +282,11 @@ export default function KathaClient({
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
                       <span className="text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1 rounded-full bg-[var(--card-bg)] border border-[var(--card-border)] theme-muted">
-                        {TRADITION_LABELS[activeTodayKatha.tradition]?.label}
+                        {activeTodayKatha.tags.includes('heroes')
+                          ? 'Hero Legend'
+                          : activeTodayKatha.tags.includes('panchatantra')
+                          ? 'Wisdom Tale'
+                          : TRADITION_LABELS[activeTodayKatha.tradition]?.label}
                       </span>
                       <span className="text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1 rounded-full bg-[var(--card-bg)] border border-[var(--card-border)] theme-muted">
                         {OCCASION_LABELS[activeTodayKatha.occasion]}
@@ -445,7 +449,7 @@ function KathaCard({ katha, size = 'normal' }: { katha: Katha; size?: 'normal' |
             className="text-[9px] font-black uppercase tracking-[0.3em] px-2.5 py-1 rounded-full border self-start"
             style={{ color: trad.color, borderColor: `${trad.color}30`, background: `${trad.color}10` }}
           >
-            {trad.label}
+            {katha.tags.includes('heroes') ? 'Hero Legend' : katha.tags.includes('panchatantra') ? 'Wisdom Tale' : trad.label}
           </div>
 
           {/* Title */}
@@ -475,7 +479,7 @@ function KathaCard({ katha, size = 'normal' }: { katha: Katha; size?: 'normal' |
             className="text-[9px] font-black uppercase tracking-[0.3em] px-2.5 py-1 rounded-full border"
             style={{ color: trad.color, borderColor: `${trad.color}30`, background: `${trad.color}10` }}
           >
-            {trad.label}
+            {katha.tags.includes('heroes') ? 'Hero Legend' : katha.tags.includes('panchatantra') ? 'Wisdom Tale' : trad.label}
           </div>
           <div className="flex items-center gap-1 text-[10px] font-bold theme-muted">
             <Clock size={11} className="text-[var(--brand-primary)] opacity-50" />

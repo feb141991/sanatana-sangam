@@ -36,15 +36,15 @@ function BrowseInner() {
   // ── Tokens ──────────────────────────────────────────────────────────────────
   const pageBg  = isDark ? '#110a06' : '#fdf6ee';
   const cardBg  = isDark ? 'rgba(28,18,10,0.9)' : 'rgba(255,244,228,0.97)';
-  const cardBdr = isDark ? 'rgba(200,146,74,0.12)' : 'rgba(180,110,30,0.14)';
+  const cardBdr = isDark ? 'rgba(197,160,89,0.12)' : 'rgba(180,110,30,0.14)';
   const pillIn  = isDark ? 'rgba(28,18,10,0.7)'  : 'rgba(235,215,185,0.8)';
-  const pillInB = isDark ? 'rgba(200,146,74,0.10)': 'rgba(180,120,40,0.18)';
-  const pillAct = 'rgba(200,146,74,0.16)';
-  const pillActB= 'rgba(200,146,74,0.40)';
+  const pillInB = isDark ? 'rgba(197,160,89,0.10)': 'rgba(180,120,40,0.18)';
+  const pillAct = 'rgba(197,160,89,0.16)';
+  const pillActB= 'rgba(197,160,89,0.40)';
   const textH   = isDark ? '#f5dfa0' : '#2a1002';
   const textS   = isDark ? 'rgba(245,210,130,0.48)' : 'rgba(100,55,10,0.52)';
   const textD   = isDark ? 'rgba(245,210,130,0.32)' : 'rgba(100,55,10,0.38)';
-  const amber   = '#C8924A';
+  const amber   = '#C5A059';
 
   // ── Filter ──────────────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
@@ -82,16 +82,19 @@ function BrowseInner() {
   return (
     <div className="min-h-screen pb-28" style={{ background: pageBg }}>
       {/* Header */}
-      <div style={{ height: 'max(env(safe-area-inset-top,0px),16px)' }} />
-      <div className="flex items-center gap-3 px-4 pb-3">
+      <div className="sticky top-0 z-40 backdrop-blur-xl border-b border-[var(--divine-border)]/10"
+        style={{ background: isDark ? 'rgba(17,10,6,0.88)' : 'rgba(253,246,238,0.88)' }}>
+        <div style={{ height: 'max(env(safe-area-inset-top,0px),16px)' }} />
+        <div className="flex items-center gap-3 px-4 pb-3 pt-1">
         <button onClick={() => router.back()} className="w-9 h-9 rounded-full flex items-center justify-center"
-          style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.18)' }}>
+          style={{ background: 'rgba(197,160,89,0.10)', border: '1px solid rgba(197,160,89,0.18)' }}>
           <ChevronLeft size={18} style={{ color: amber }} />
         </button>
         <div>
           <h1 className="text-lg font-semibold" style={{ fontFamily: 'var(--font-serif)', color: textH }}>Sacred Library</h1>
           <p className="text-[11px]" style={{ color: textS }}>Mantras, stotrams & bhajans</p>
         </div>
+      </div>
       </div>
 
       {/* Filters */}
@@ -112,9 +115,10 @@ function BrowseInner() {
         <PillRow
           items={TYPES.map(t => ({ id: t.id, label: t.label }))}
           active={type} onSelect={setType} title="Type" />
-        <PillRow
+        {/* Mood filter hidden — mood field not yet populated in stotrams data */}
+        {/* <PillRow
           items={MOODS.map(m => ({ id: m.id, label: m.label, emoji: m.emoji }))}
-          active={mood} onSelect={setMood} title="Mood" />
+          active={mood} onSelect={setMood} title="Mood" /> */}
       </div>
 
       {/* Results count */}
@@ -178,7 +182,7 @@ function BrowseInner() {
                         {stotram.audioTrackId && (
                           <Link href={`/bhakti/stotram/${stotram.id}?autoplay=1`}
                             className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all"
-                            style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.22)', color: amber }}>
+                            style={{ background: 'rgba(197,160,89,0.10)', border: '1px solid rgba(197,160,89,0.22)', color: amber }}>
                             <Play size={11} /> Listen
                           </Link>
                         )}

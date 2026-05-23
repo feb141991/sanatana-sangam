@@ -132,14 +132,16 @@ export default function KathaReaderClient({
     resolvedLanguage,
     initialFontStep: 1,
   });
-  const [sankalpaDismissed, setSankalpaDismissed] = useState(false);
+
   const [liked, setLiked] = useState(false);
   const [showPhal, setShowPhal] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const isPanchatantra = katha.tags.includes('panchatantra');
-  const isHero = katha.tags.some(t => ['warriors', 'saints', 'heroes', 'martyrdom', 'seva', 'sacrifice'].includes(t)) && !isPanchatantra;
+  const isHero = katha.tradition !== 'sikh' &&
+    katha.tags.some(t => ['warriors', 'saints', 'heroes', 'martyrdom', 'seva', 'sacrifice'].includes(t)) &&
+    !isPanchatantra;
 
   const tradColor = isPanchatantra
     ? '#8B9E6E'
@@ -314,9 +316,9 @@ export default function KathaReaderClient({
         <div className="flex items-center justify-between">
           <button
             onClick={() => router.back()}
-            className="w-10 h-10 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 text-[var(--text-main)] transition-all hover:bg-[var(--surface-base)]/40 active:scale-90"
+            className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 text-[var(--text-main)] transition-all hover:bg-[var(--surface-base)]/40 active:scale-90"
           >
-            <ChevronLeft size={20} color={THEME.gold} />
+            <ChevronLeft size={18} color={THEME.gold} />
           </button>
           <div className="text-center">
             <p className="text-[10px] font-bold uppercase tracking-[0.5em]" style={{ color: tradColor }}>
@@ -324,6 +326,19 @@ export default function KathaReaderClient({
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={speakKatha}
+              disabled={readerControls.state.isGeneratingTTS}
+              className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-90 disabled:opacity-40"
+              title={speaking ? labels.stopReading : labels.listen}
+            >
+              {readerControls.state.isGeneratingTTS
+                ? <Loader2 size={14} color={THEME.gold} className="animate-spin" />
+                : speaking
+                  ? <VolumeX size={14} color={THEME.gold} />
+                  : <Volume2 size={14} color={THEME.gold} />
+              }
+            </button>
             <button
               onClick={copyToClipboard}
               className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-90"
@@ -408,7 +423,7 @@ export default function KathaReaderClient({
         >
           <div className="flex items-center gap-3">
             <div
-              className="w-10 h-10 rounded-full flex items-center justify-center bg-[#C5A059]/10 border border-[#C5A059]/30"
+              className="w-9 h-9 rounded-full flex items-center justify-center bg-[#C5A059]/10 border border-[#C5A059]/30"
             >
               <Star size={16} color={THEME.gold} />
             </div>
@@ -453,7 +468,7 @@ export default function KathaReaderClient({
               className="rounded-[2rem] p-5 border border-[var(--divine-border)]/10 bg-[var(--surface-base)]/30 flex items-center justify-between hover:bg-[var(--surface-base)]/50 transition-colors"
             >
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-2xl bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-xl">
+                <div className="w-9 h-9 rounded-2xl bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-xl">
                   📿
                 </div>
                 <div>
@@ -472,7 +487,7 @@ export default function KathaReaderClient({
             className="rounded-[2rem] p-5 border border-[var(--divine-border)]/10 bg-[var(--surface-base)]/30 flex items-center justify-between hover:bg-[var(--surface-base)]/50 transition-colors"
           >
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-2xl bg-[var(--surface-base)] border border-[var(--divine-border)]/20 flex items-center justify-center text-xl">
+              <div className="w-9 h-9 rounded-2xl bg-[var(--surface-base)] border border-[var(--divine-border)]/20 flex items-center justify-center text-xl">
                 📚
               </div>
               <div>

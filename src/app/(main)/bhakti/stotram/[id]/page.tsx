@@ -257,6 +257,7 @@ function StotramReader({ id }: { id: string }) {
     fontStep,
     setFontStep,
     fontScale,
+    languages,
   } = useReaderDisplayPreferences({
     resolvedLanguage: preferences.effectiveMeaningLanguage,
     initialFontStep: 1,
@@ -576,6 +577,27 @@ function StotramReader({ id }: { id: string }) {
                 {labels.meaning}
               </button>
             ) : null}
+          </div>
+
+          <div className="flex items-center gap-1 bg-[var(--surface-base)]/10 px-2 py-0.5 rounded-full border border-[var(--divine-border)]/5">
+            {languages.map(l => (
+              <button
+                key={l.code}
+                onClick={() => {
+                  setLang(l.code);
+                  trackReaderEvent('language_toggled', {
+                    content_type: 'stotram',
+                    source: stotram?.title ?? '',
+                    tradition: stotram?.tradition === 'all' ? 'generic' : stotram?.tradition ?? 'generic',
+                    language: l.code,
+                  });
+                }}
+                className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all ${lang === l.code ? 'text-black shadow-sm' : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'}`}
+                style={{ backgroundColor: lang === l.code ? accentColor : 'transparent' }}
+              >
+                {l.label}
+              </button>
+            ))}
           </div>
         </div>
       </div>

@@ -518,6 +518,7 @@ interface Props {
   meaningLanguage?: string;
   transliterationLanguage?: string;
   showTransliteration?: boolean;
+  isPro: boolean;
 }
 
 // ── Active enrollment record ───────────────────────────────────────────────────
@@ -541,11 +542,11 @@ export default function PathshalaClient({
   meaningLanguage,
   transliterationLanguage,
   showTransliteration = true,
+  isPro,
 }: Props) {
   const router    = useRouter();
   const supabase  = useRef(createClient()).current;
   const meta      = getTraditionMeta(tradition);
-  const isPro     = usePremium();
   const prefersReducedMotion = useReducedMotion();
   const { playHaptic } = useZenithSensory();
   const { t } = useLanguage();
