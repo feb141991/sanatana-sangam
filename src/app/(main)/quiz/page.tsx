@@ -7,6 +7,8 @@ export const metadata = {
   description: 'Deepen your knowledge of dharma, one day at a time.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function QuizPage() {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();

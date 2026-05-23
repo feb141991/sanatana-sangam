@@ -6,6 +6,8 @@ import { SEED_PATHS } from '@/lib/pathshala-paths';
 import { resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
 import LessonClient from './LessonClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function LessonPage({
   params,
 }: {

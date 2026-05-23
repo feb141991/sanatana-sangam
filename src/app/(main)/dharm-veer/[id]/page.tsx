@@ -3,6 +3,8 @@ import DharmVeerClient from './DharmVeerClient';
 import { notFound } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 
+export const dynamic = 'force-dynamic';
+
 export default async function DharmVeerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const hero = DHARM_VEERS.find(h => h.id === id);

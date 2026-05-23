@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { checkAdminAuth } from '@/lib/admin-auth';
+import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
 import { attachFestivalTrust, mapOccurrenceToFestival, getFallbackFestivalCalendar, type FestivalSourceRow } from '@/lib/festivals';
 import { verifyFestivalDatesWithAI } from '@/lib/festival-verify';
@@ -33,6 +34,9 @@ function isMissingObservanceModel(error: unknown): boolean {
 }
 
 export async function POST(req: Request) {
+  const authError = checkAdminAuth(req as any);
+  if (authError) return authError;
+
   const adminCheck = await requireAdminAccess();
   if ('response' in adminCheck) {
     return adminCheck.response;

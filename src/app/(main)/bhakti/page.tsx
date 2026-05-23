@@ -3,6 +3,8 @@ import { getTodayShloka } from '@/lib/shlokas';
 import { getStotramsByTradition, STOTRAMS } from '@/lib/stotrams';
 import BhaktiClient from './BhaktiClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function BhaktiPage() {
   const shloka = getTodayShloka();
 

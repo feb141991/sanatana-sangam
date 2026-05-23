@@ -2,6 +2,8 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import BhaktiInsightsClient from './BhaktiInsightsClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function BhaktiInsightsPage() {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();

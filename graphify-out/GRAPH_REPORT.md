@@ -1,11 +1,11 @@
 # Graph Report - /Users/Business(C)/Sanatan Sangam/Shoonaya  (2026-05-23)
 
 ## Corpus Check
-- 592 files · ~1,848,628 words
+- 605 files · ~1,875,678 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2185 nodes · 3362 edges · 283 communities detected
+- 2205 nodes · 3369 edges · 296 communities detected
 - Extraction: 68% EXTRACTED · 32% INFERRED · 0% AMBIGUOUS · INFERRED: 1067 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
@@ -293,6 +293,19 @@
 - [[_COMMUNITY_Community 280|Community 280]]
 - [[_COMMUNITY_Community 281|Community 281]]
 - [[_COMMUNITY_Community 282|Community 282]]
+- [[_COMMUNITY_Community 283|Community 283]]
+- [[_COMMUNITY_Community 284|Community 284]]
+- [[_COMMUNITY_Community 285|Community 285]]
+- [[_COMMUNITY_Community 286|Community 286]]
+- [[_COMMUNITY_Community 287|Community 287]]
+- [[_COMMUNITY_Community 288|Community 288]]
+- [[_COMMUNITY_Community 289|Community 289]]
+- [[_COMMUNITY_Community 290|Community 290]]
+- [[_COMMUNITY_Community 291|Community 291]]
+- [[_COMMUNITY_Community 292|Community 292]]
+- [[_COMMUNITY_Community 293|Community 293]]
+- [[_COMMUNITY_Community 294|Community 294]]
+- [[_COMMUNITY_Community 295|Community 295]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `select()` - 183 edges
@@ -325,48 +338,48 @@ Cohesion: 0.01
 Nodes (67): BadgeManager, checkUser(), addBurst(), Corpus, Enrollment, buildGuidedPathStatusMap(), handleCoverUpload(), getMoodInsights() (+59 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.03
-Nodes (94): build_buddhist_index(), build_gita_index(), build_gurbani_index(), build_jain_index(), build_upanishads_index(), main(), tokenize(), load() (+86 more)
+Cohesion: 0.02
+Nodes (107): build_buddhist_index(), build_gita_index(), build_gurbani_index(), build_jain_index(), build_upanishads_index(), main(), tokenize(), load() (+99 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.02
-Nodes (89): adminCookieHeader(), bufToHex(), checkAdminCredentials(), createAdminToken(), encode(), hexToArrayBuffer(), hmacKey(), secretBuf() (+81 more)
+Nodes (88): adminClearCookieHeader(), adminCookieHeader(), bufToHex(), checkAdminCredentials(), createAdminToken(), encode(), hexToArrayBuffer(), hmacKey() (+80 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.03
-Nodes (55): getDailyDarshan(), getDharmVeerOfTheDay(), buildFestivalCalendarMeta(), daysUntil(), getFallbackFestivalCalendar(), getFestivalsForDate(), getNextFestivals(), getTodayPanchang() (+47 more)
+Nodes (52): getGoogleToken(), runAligner(), getDailyDarshan(), getDharmVeerOfTheDay(), buildFestivalCalendarMeta(), daysUntil(), getFallbackFestivalCalendar(), getFestivalsForDate() (+44 more)
 
 ### Community 4 - "Community 4"
 Cohesion: 0.03
-Nodes (59): adminClearCookieHeader(), getGoogleToken(), runAligner(), setCachedAudio(), getPathshalaEngine(), getSadhanaEngine(), createPathshalaEngine(), createSadhanaEngine() (+51 more)
+Nodes (49): copyEntry(), getEntryText(), handleCopy(), handleShare(), handleShare(), handleShare(), share(), copyToClipboard() (+41 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.04
-Nodes (61): buildBuddhistSutraExplainPrompt(), buildDevotionalStoryExplainPrompt(), buildGurbaniShabadExplainPrompt(), buildJainSutraExplainPrompt(), buildMeaningGeneratePrompt(), buildMoralStoryExplainPrompt(), buildPathshalaExplainPrompt(), buildUpanishadsExplainPrompt() (+53 more)
+Nodes (55): createServiceRoleSupabaseClient(), requireAdminAccess(), setCachedAudio(), getPathshalaEngine(), getSadhanaEngine(), createPathshalaEngine(), createSadhanaEngine(), assignKulTask() (+47 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.03
-Nodes (43): copyEntry(), getEntryText(), handleCopy(), handleShare(), handleShare(), handleShare(), share(), copyToClipboard() (+35 more)
+Cohesion: 0.04
+Nodes (40): buildUserContext(), getSystemInstruction(), main(), main(), main(), main(), main(), formatDharmaReferencePack() (+32 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.05
-Nodes (35): buildUserContext(), getSystemInstruction(), main(), main(), main(), main(), main(), formatDharmaReferencePack() (+27 more)
+Nodes (22): buildFallbackQuiz(), buildFallbackTask(), buildPanchang(), callGemini(), computeAstroPanchang(), errorResponse(), generateExplanation(), generateKulNudge() (+14 more)
 
 ### Community 8 - "Community 8"
 Cohesion: 0.06
-Nodes (33): BuddhistStrategy, calculateObservancesForYear(), formatUtcDate(), isLeapYear(), precomputePanchangForYear(), PlannedPanchangPrecisionEngine, JainStrategy, canUpdateGeneratedRow() (+25 more)
+Nodes (32): BuddhistStrategy, calculateObservancesForYear(), formatUtcDate(), isLeapYear(), precomputePanchangForYear(), JainStrategy, canUpdateGeneratedRow(), makeYearSummary() (+24 more)
 
 ### Community 9 - "Community 9"
+Cohesion: 0.08
+Nodes (39): buildBuddhistSutraExplainPrompt(), buildDevotionalStoryExplainPrompt(), buildGurbaniShabadExplainPrompt(), buildJainSutraExplainPrompt(), buildMeaningGeneratePrompt(), buildMoralStoryExplainPrompt(), buildPathshalaExplainPrompt(), buildUpanishadsExplainPrompt() (+31 more)
+
+### Community 10 - "Community 10"
 Cohesion: 0.07
 Nodes (34): createOutput(), decodeEntities(), extractParagraphs(), fetchChapterHtml(), main(), normalizeDigits(), parseVersesFromHtml(), stripTags() (+26 more)
 
-### Community 10 - "Community 10"
-Cohesion: 0.08
-Nodes (18): buildFallbackQuiz(), buildFallbackTask(), buildPanchang(), callGemini(), computeAstroPanchang(), errorResponse(), generateExplanation(), generateKulNudge() (+10 more)
-
 ### Community 11 - "Community 11"
 Cohesion: 0.07
-Nodes (14): KulSectionTiles(), useLanguage(), markComplete(), buildStepReadableContent(), EntryCard(), getEntryText(), handleOpenChapter(), clampFontStep() (+6 more)
+Nodes (15): KulSectionTiles(), useLanguage(), markComplete(), buildStepReadableContent(), EntryCard(), getEntryText(), handleOpenChapter(), clampFontStep() (+7 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.08
@@ -377,32 +390,32 @@ Cohesion: 0.08
 Nodes (4): OfflineQueue, SangamOfflineDB, SyncManager, SadhanaTracker
 
 ### Community 14 - "Community 14"
+Cohesion: 0.09
+Nodes (17): getInferenceProvider(), getInferenceProviders(), readEnvConfig(), classifyMissingContent(), extractAssistantText(), extractFromContent(), PramanaNoFinalAnswerError, PramanaOutputTruncatedError (+9 more)
+
+### Community 15 - "Community 15"
 Cohesion: 0.08
 Nodes (19): getLibraryEntryById(), getLibrarySectionById(), getCanonicalChapter(), getCanonicalChaptersForSection(), getCanonicalVerseLinksForChapter(), getGitaEntriesForChapter(), getOfficialGitaAudioUrl(), getOfficialGitaBaseParams() (+11 more)
 
-### Community 15 - "Community 15"
+### Community 16 - "Community 16"
 Cohesion: 0.14
 Nodes (24): birthLocalToUTC(), buildChartQuality(), buildNavamsha(), calcAspects(), calcDasha(), calcLagna(), calcPlanets(), calcYogas() (+16 more)
 
-### Community 16 - "Community 16"
+### Community 17 - "Community 17"
 Cohesion: 0.07
 Nodes (7): handleQuizAnswer(), markShlokaRead(), saveGreeting(), getUnlockedRelics(), getGreeting(), getGreetingPool(), isGreetingCompatibleWithTradition()
 
-### Community 17 - "Community 17"
+### Community 18 - "Community 18"
 Cohesion: 0.11
 Nodes (7): detectScriptLanguage(), handleKeyDown(), newId(), resolveChatResponseLanguage(), sendMessage(), PramanaRetrieverSelector, ScriptureSearch
 
-### Community 18 - "Community 18"
+### Community 19 - "Community 19"
 Cohesion: 0.11
 Nodes (8): handleKeyDown(), newId(), saveFabPos(), sendMessage(), fetchMessageThreads(), fetchThreadMessages(), sendThreadMessage(), MessagesPage()
 
-### Community 19 - "Community 19"
+### Community 20 - "Community 20"
 Cohesion: 0.11
 Nodes (0): 
-
-### Community 20 - "Community 20"
-Cohesion: 0.12
-Nodes (8): detectConfigDrift(), generateHealthReport(), fmt(), togglePlayback(), getAllCircuitStates(), MonitoringPage(), getAudioContext(), playBeadTapFeedback()
 
 ### Community 21 - "Community 21"
 Cohesion: 0.13
@@ -413,80 +426,80 @@ Cohesion: 0.23
 Nodes (15): assignMockKulTask(), clone(), completeMockKulTask(), createMockKul(), deleteMockKulFamilyMember(), ensureState(), fetchMockKulData(), leaveMockKul() (+7 more)
 
 ### Community 23 - "Community 23"
-Cohesion: 0.21
-Nodes (12): build_corpus_lane_status(), build_provider_status(), build_summary(), CorpusLaneStatus, count_jsonl(), count_manifests(), DiagnosticsReport, load_index_meta() (+4 more)
+Cohesion: 0.12
+Nodes (8): detectConfigDrift(), generateHealthReport(), fmt(), togglePlayback(), getAllCircuitStates(), MonitoringPage(), getAudioContext(), playBeadTapFeedback()
 
 ### Community 24 - "Community 24"
 Cohesion: 0.21
 Nodes (8): RetrievalFilters, Protocol, GitaEmbeddingSearchBackend, InMemorySearchBackend, Non-production placeholder backend used for contract wiring., Non-production placeholder backend used for contract wiring., SearchBackend, SearchResult
 
 ### Community 25 - "Community 25"
+Cohesion: 0.22
+Nodes (11): build_corpus_lane_status(), build_provider_status(), build_summary(), CorpusLaneStatus, count_jsonl(), count_manifests(), DiagnosticsReport, main() (+3 more)
+
+### Community 26 - "Community 26"
 Cohesion: 0.24
 Nodes (14): call_self_hosted(), check_runtime(), extract_text(), main(), Mirrors runPathshalaExplain → buildPathshalaExplainPrompt (Gita 2.47)., Mirrors runMeaningGenerate → buildMeaningGeneratePrompt., Quick reachability check on /api/tags or equivalent., POST to /v1/chat/completions and return (status, body, latency_s, error). (+6 more)
 
-### Community 26 - "Community 26"
+### Community 27 - "Community 27"
 Cohesion: 0.19
 Nodes (9): chunk_manifest(), main(), build_chunk_id(), ChunkRecord, load_manifest(), normalize_text(), ContentSegment, DocumentManifest (+1 more)
 
-### Community 27 - "Community 27"
-Cohesion: 0.27
-Nodes (3): buildFallbackPlan(), localPanchang(), PracticePlan
-
 ### Community 28 - "Community 28"
-Cohesion: 0.23
-Nodes (7): formatClock(), playBell(), playBowlAmbient(), playInstrumentalAmbient(), playOmAmbient(), playTanpuraAmbient(), stopAmbient()
-
-### Community 29 - "Community 29"
-Cohesion: 0.26
-Nodes (11): fetch_all_verses(), fetch_json(), fetch_translations(), generate_embeddings(), main(), Fetch translation data., Transform API data into Sangam scripture_chunks format., Generate embeddings using local HuggingFace model. (+3 more)
-
-### Community 30 - "Community 30"
 Cohesion: 0.22
 Nodes (1): NudgeEngine
 
-### Community 31 - "Community 31"
+### Community 29 - "Community 29"
 Cohesion: 0.2
 Nodes (3): malaSessionBeads(), malaSessionMantra(), malaSessionRounds()
 
-### Community 32 - "Community 32"
+### Community 30 - "Community 30"
 Cohesion: 0.2
 Nodes (1): Retrieval interfaces, filters, and reranking placeholders.
 
-### Community 33 - "Community 33"
+### Community 31 - "Community 31"
 Cohesion: 0.2
 Nodes (0): 
 
-### Community 34 - "Community 34"
+### Community 32 - "Community 32"
 Cohesion: 0.38
 Nodes (8): getPlatform(), hapticLight(), hapticMedium(), hapticSuccess(), isAndroid(), isIOS(), isNative(), isWeb()
 
-### Community 35 - "Community 35"
+### Community 33 - "Community 33"
 Cohesion: 0.31
 Nodes (6): getPlayerId(), loginToOneSignal(), logoutFromOneSignal(), requestNotificationPermission(), syncOneSignalContext(), withOneSignal()
 
-### Community 36 - "Community 36"
+### Community 34 - "Community 34"
 Cohesion: 0.4
 Nodes (9): clone(), createMockMandaliComment(), createMockMandaliPost(), ensureState(), fetchMockMandaliData(), joinMockMandaliForLocation(), leaveMockMandali(), toggleMockMandaliPostUpvote() (+1 more)
 
-### Community 37 - "Community 37"
+### Community 35 - "Community 35"
 Cohesion: 0.42
 Nodes (8): cleanExtractedText(), decodeHtmlEntities(), extractContentColumn(), extractOriginalText(), extractVideoText(), htmlToText(), main(), serialize()
 
-### Community 38 - "Community 38"
+### Community 36 - "Community 36"
+Cohesion: 0.36
+Nodes (1): PersonalisationEngine
+
+### Community 37 - "Community 37"
 Cohesion: 0.43
 Nodes (6): generateExplanation(), generateTTS(), getBhaktiContent(), getPathshalaContent(), getVratContent(), precomputeContent()
+
+### Community 38 - "Community 38"
+Cohesion: 0.25
+Nodes (0): 
 
 ### Community 39 - "Community 39"
 Cohesion: 0.25
 Nodes (0): 
 
 ### Community 40 - "Community 40"
-Cohesion: 0.25
+Cohesion: 0.29
 Nodes (0): 
 
 ### Community 41 - "Community 41"
-Cohesion: 0.29
-Nodes (0): 
+Cohesion: 0.52
+Nodes (6): cleanSlice(), extractTexts(), fetchCorpus(), main(), normalizeText(), serialize()
 
 ### Community 42 - "Community 42"
 Cohesion: 0.4
@@ -1430,421 +1443,499 @@ Nodes (0):
 
 ### Community 277 - "Community 277"
 Cohesion: 1.0
-Nodes (1): Returns a mock SuiteResult based on the known mock-based eval behavior.     Mock
+Nodes (0): 
 
 ### Community 278 - "Community 278"
 Cohesion: 1.0
-Nodes (1): Dispatches a suite run to the appropriate provider.      Currently, 'mock' is fu
+Nodes (0): 
 
 ### Community 279 - "Community 279"
 Cohesion: 1.0
-Nodes (1): Returns a mock SuiteResult based on the known mock-based eval behavior.     Mock
+Nodes (0): 
 
 ### Community 280 - "Community 280"
 Cohesion: 1.0
-Nodes (1): Dispatches a suite run to the appropriate provider.      Currently, 'mock' is fu
+Nodes (0): 
 
 ### Community 281 - "Community 281"
 Cohesion: 1.0
-Nodes (1): Returns a mock SuiteResult based on the known mock-based eval behavior.     Mock
+Nodes (0): 
 
 ### Community 282 - "Community 282"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 283 - "Community 283"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 284 - "Community 284"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 285 - "Community 285"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 286 - "Community 286"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 287 - "Community 287"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 288 - "Community 288"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 289 - "Community 289"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 290 - "Community 290"
+Cohesion: 1.0
+Nodes (1): Returns a mock SuiteResult based on the known mock-based eval behavior.     Mock
+
+### Community 291 - "Community 291"
+Cohesion: 1.0
+Nodes (1): Dispatches a suite run to the appropriate provider.      Currently, 'mock' is fu
+
+### Community 292 - "Community 292"
+Cohesion: 1.0
+Nodes (1): Returns a mock SuiteResult based on the known mock-based eval behavior.     Mock
+
+### Community 293 - "Community 293"
+Cohesion: 1.0
+Nodes (1): Dispatches a suite run to the appropriate provider.      Currently, 'mock' is fu
+
+### Community 294 - "Community 294"
+Cohesion: 1.0
+Nodes (1): Returns a mock SuiteResult based on the known mock-based eval behavior.     Mock
+
+### Community 295 - "Community 295"
 Cohesion: 1.0
 Nodes (1): Dispatches a suite run to the appropriate provider.      Currently, 'mock' is th
 
 ## Knowledge Gaps
 - **34 isolated node(s):** `Pramana Provider Comparison Harness  Runs eval suites against multiple inference`, `Returns a mock SuiteResult based on the known mock-based eval behavior.     Mock`, `Dispatches a suite run to the appropriate provider.      All suites support live`, `Scores a Jain Dharma sutra explanation response.      Checks:     1. JSON contra`, `Scores a Buddhist Dhamma sutra explanation response.      Checks:     1. JSON co` (+29 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 93`** (2 nodes): `describe_training_run()`, `trainer.py`
+- **Thin community `Community 93`** (2 nodes): `replace_span()`, `update_nitya_karma.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 94`** (2 nodes): `rerank_results()`, `rerank.py`
+- **Thin community `Community 94`** (2 nodes): `replace_icon()`, `update_paths.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 95`** (2 nodes): `inferenceResponseToTextResult()`, `inference-provider.ts`
+- **Thin community `Community 95`** (2 nodes): `replace_duty_icon()`, `update_ashrama.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 96`** (2 nodes): `summarizeUserSignals()`, `user-context.ts`
+- **Thin community `Community 96`** (2 nodes): `replace_emoji()`, `final_fix.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 97`** (2 nodes): `useRecitation.ts`, `useRecitation()`
+- **Thin community `Community 97`** (2 nodes): `replace_emoji()`, `fix_nitya_karma_emojis.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 98`** (2 nodes): `defineRegressionSuite()`, `regression-suites.ts`
+- **Thin community `Community 98`** (2 nodes): `replace_emoji()`, `update_ashrama_emojis_2.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 99`** (2 nodes): `defineGroundingCheck()`, `grounding-checks.ts`
+- **Thin community `Community 99`** (2 nodes): `replace_emoji()`, `update_ashrama_emojis.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 100`** (2 nodes): `summarizePassRate()`, `scoring-summaries.ts`
+- **Thin community `Community 100`** (2 nodes): `describe_training_run()`, `trainer.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 101`** (2 nodes): `defineTranslationCheck()`, `translation-checks.ts`
+- **Thin community `Community 101`** (2 nodes): `rerank_results()`, `rerank.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 102`** (2 nodes): `QueryProvider()`, `QueryProvider.tsx`
+- **Thin community `Community 102`** (2 nodes): `inferenceResponseToTextResult()`, `inference-provider.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 103`** (2 nodes): `PrivacyPage()`, `page.tsx`
+- **Thin community `Community 103`** (2 nodes): `summarizeUserSignals()`, `user-context.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 104`** (2 nodes): `TermsPage()`, `page.tsx`
+- **Thin community `Community 104`** (2 nodes): `useRecitation.ts`, `useRecitation()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 105`** (2 nodes): `AdminLayout()`, `layout.tsx`
+- **Thin community `Community 105`** (2 nodes): `defineRegressionSuite()`, `regression-suites.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 106`** (2 nodes): `GlobalSettings()`, `page.tsx`
+- **Thin community `Community 106`** (2 nodes): `defineGroundingCheck()`, `grounding-checks.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 107`** (2 nodes): `fetchMandalis()`, `page.tsx`
+- **Thin community `Community 107`** (2 nodes): `summarizePassRate()`, `scoring-summaries.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 108`** (2 nodes): `handleSend()`, `page.tsx`
+- **Thin community `Community 108`** (2 nodes): `defineTranslationCheck()`, `translation-checks.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 109`** (2 nodes): `AboutPage()`, `page.tsx`
+- **Thin community `Community 109`** (2 nodes): `QueryProvider()`, `QueryProvider.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 110`** (2 nodes): `GuidelinesPage()`, `page.tsx`
+- **Thin community `Community 110`** (2 nodes): `PrivacyPage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 111`** (2 nodes): `markDayComplete()`, `GuidedPlansClient.tsx`
+- **Thin community `Community 111`** (2 nodes): `TermsPage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 112`** (2 nodes): `Ring()`, `InsightsClient.tsx`
+- **Thin community `Community 112`** (2 nodes): `AdminLayout()`, `layout.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 113`** (2 nodes): `handleSend()`, `KulSabha.tsx`
+- **Thin community `Community 113`** (2 nodes): `GlobalSettings()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 114`** (2 nodes): `MarkForm()`, `SanskaraClient.tsx`
+- **Thin community `Community 114`** (2 nodes): `fetchMandalis()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 115`** (2 nodes): `GitaReaderDemo()`, `page.tsx`
+- **Thin community `Community 115`** (2 nodes): `handleSend()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 116`** (2 nodes): `JapaRedirectPage()`, `page.tsx`
+- **Thin community `Community 116`** (2 nodes): `AboutPage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 117`** (2 nodes): `JapaInsightsRedirectPage()`, `page.tsx`
+- **Thin community `Community 117`** (2 nodes): `GuidelinesPage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 118`** (2 nodes): `handleLogin()`, `page.tsx`
+- **Thin community `Community 118`** (2 nodes): `markDayComplete()`, `GuidedPlansClient.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 119`** (2 nodes): `getPracticePathOptions()`, `OnboardingClient.tsx`
+- **Thin community `Community 119`** (2 nodes): `Ring()`, `InsightsClient.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 120`** (2 nodes): `cn()`, `BrandMark.tsx`
+- **Thin community `Community 120`** (2 nodes): `handleSend()`, `KulSabha.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 121`** (2 nodes): `makeMarkerHtml()`, `TirthaMapComponent.tsx`
+- **Thin community `Community 121`** (2 nodes): `MarkForm()`, `SanskaraClient.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 122`** (2 nodes): `CircularProgress()`, `CircularProgress.tsx`
+- **Thin community `Community 122`** (2 nodes): `GitaReaderDemo()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 123`** (2 nodes): `Card()`, `Card.tsx`
+- **Thin community `Community 123`** (2 nodes): `JapaRedirectPage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 124`** (2 nodes): `MoodGlyph()`, `MoodGlyph.tsx`
+- **Thin community `Community 124`** (2 nodes): `JapaInsightsRedirectPage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 125`** (2 nodes): `SurfaceSection.tsx`, `SurfaceSection()`
+- **Thin community `Community 125`** (2 nodes): `handleLogin()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 126`** (2 nodes): `MetricTile()`, `MetricTile.tsx`
+- **Thin community `Community 126`** (2 nodes): `getPracticePathOptions()`, `OnboardingClient.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 127`** (2 nodes): `AsyncStateCard()`, `AsyncStateCard.tsx`
+- **Thin community `Community 127`** (2 nodes): `cn()`, `BrandMark.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 128`** (2 nodes): `Badge()`, `Badge.tsx`
+- **Thin community `Community 128`** (2 nodes): `makeMarkerHtml()`, `TirthaMapComponent.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 129`** (2 nodes): `Button()`, `Button.tsx`
+- **Thin community `Community 129`** (2 nodes): `CircularProgress()`, `CircularProgress.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 130`** (2 nodes): `EmptyState()`, `EmptyState.tsx`
+- **Thin community `Community 130`** (2 nodes): `Card()`, `Card.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 131`** (2 nodes): `Spinner.tsx`, `Spinner()`
+- **Thin community `Community 131`** (2 nodes): `MoodGlyph()`, `MoodGlyph.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 132`** (2 nodes): `Input()`, `Input.tsx`
+- **Thin community `Community 132`** (2 nodes): `SurfaceSection.tsx`, `SurfaceSection()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 133`** (2 nodes): `Skeleton.tsx`, `Skeleton()`
+- **Thin community `Community 133`** (2 nodes): `MetricTile()`, `MetricTile.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 134`** (2 nodes): `check()`, `SpiritualMetricsSection.tsx`
+- **Thin community `Community 134`** (2 nodes): `AsyncStateCard()`, `AsyncStateCard.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 135`** (2 nodes): `AppProviders()`, `AppProviders.tsx`
+- **Thin community `Community 135`** (2 nodes): `Badge()`, `Badge.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 136`** (2 nodes): `ContentSafetyMenu()`, `ContentSafetyMenu.tsx`
+- **Thin community `Community 136`** (2 nodes): `Button()`, `Button.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 137`** (2 nodes): `handleLight()`, `DivineDiya.tsx`
+- **Thin community `Community 137`** (2 nodes): `EmptyState()`, `EmptyState.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 138`** (2 nodes): `handleDismiss()`, `DailyMoodCard.tsx`
+- **Thin community `Community 138`** (2 nodes): `Spinner.tsx`, `Spinner()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 139`** (2 nodes): `handleSave()`, `MoodFollowupSheet.tsx`
+- **Thin community `Community 139`** (2 nodes): `Input()`, `Input.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 140`** (2 nodes): `handleActivate()`, `PremiumActivateModal.tsx`
+- **Thin community `Community 140`** (2 nodes): `Skeleton.tsx`, `Skeleton()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 141`** (2 nodes): `usePremium()`, `usePremium.ts`
+- **Thin community `Community 141`** (2 nodes): `check()`, `SpiritualMetricsSection.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 142`** (2 nodes): `useNativeAudio.ts`, `useNativeAudio()`
+- **Thin community `Community 142`** (2 nodes): `AppProviders()`, `AppProviders.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 143`** (2 nodes): `useSacredCalendar.ts`, `useSacredCalendar()`
+- **Thin community `Community 143`** (2 nodes): `ContentSafetyMenu()`, `ContentSafetyMenu.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 144`** (2 nodes): `useReaderControls()`, `useReaderControls.ts`
+- **Thin community `Community 144`** (2 nodes): `handleLight()`, `DivineDiya.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 145`** (2 nodes): `useVocabulary.ts`, `useVocabulary()`
+- **Thin community `Community 145`** (2 nodes): `handleDismiss()`, `DailyMoodCard.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 146`** (2 nodes): `getLanguageLabel()`, `language-preferences.ts`
+- **Thin community `Community 146`** (2 nodes): `handleSave()`, `MoodFollowupSheet.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 147`** (2 nodes): `buildMalaShareText()`, `bhakti-practice.ts`
+- **Thin community `Community 147`** (2 nodes): `handleActivate()`, `PremiumActivateModal.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 148`** (2 nodes): `resolveEntitlement()`, `entitlements.ts`
+- **Thin community `Community 148`** (2 nodes): `usePremium()`, `usePremium.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 149`** (2 nodes): `isThemePreference()`, `theme-preferences.ts`
+- **Thin community `Community 149`** (2 nodes): `useNativeAudio.ts`, `useNativeAudio()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 150`** (2 nodes): `getFestivalStory()`, `festival-stories.ts`
+- **Thin community `Community 150`** (2 nodes): `useSacredCalendar.ts`, `useSacredCalendar()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 151`** (2 nodes): `getLibrarySourceMeta()`, `library-provenance.ts`
+- **Thin community `Community 151`** (2 nodes): `useReaderControls()`, `useReaderControls.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 152`** (2 nodes): `getSacredPlaceholder()`, `sacred-assets.ts`
+- **Thin community `Community 152`** (2 nodes): `useVocabulary.ts`, `useVocabulary()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 153`** (2 nodes): `updateAppIcon()`, `app-icon.ts`
+- **Thin community `Community 153`** (2 nodes): `getLanguageLabel()`, `language-preferences.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 154`** (2 nodes): `getGitaAudioTrack()`, `gita-audio.ts`
+- **Thin community `Community 154`** (2 nodes): `buildMalaShareText()`, `bhakti-practice.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 155`** (2 nodes): `getHindiMeaning()`, `hindi-meanings.ts`
+- **Thin community `Community 155`** (2 nodes): `resolveEntitlement()`, `entitlements.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 156`** (2 nodes): `MobileScreen()`, `MobileScreen.tsx`
+- **Thin community `Community 156`** (2 nodes): `isThemePreference()`, `theme-preferences.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 157`** (2 nodes): `MobileCard()`, `MobileCard.tsx`
+- **Thin community `Community 157`** (2 nodes): `getFestivalStory()`, `festival-stories.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 158`** (2 nodes): `MobileScreenHeader()`, `MobileScreenHeader.tsx`
+- **Thin community `Community 158`** (2 nodes): `getLibrarySourceMeta()`, `library-provenance.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 159`** (1 nodes): `parse_asa.py`
+- **Thin community `Community 159`** (2 nodes): `getSacredPlaceholder()`, `sacred-assets.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 160`** (1 nodes): `fix-all.js`
+- **Thin community `Community 160`** (2 nodes): `updateAppIcon()`, `app-icon.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 161`** (1 nodes): `next.config.js`
+- **Thin community `Community 161`** (2 nodes): `getGitaAudioTrack()`, `gita-audio.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 162`** (1 nodes): `next-env.d.ts`
+- **Thin community `Community 162`** (2 nodes): `getHindiMeaning()`, `hindi-meanings.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 163`** (1 nodes): `tailwind.config.ts`
+- **Thin community `Community 163`** (2 nodes): `MobileScreen()`, `MobileScreen.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 164`** (1 nodes): `scratch-directory.js`
+- **Thin community `Community 164`** (2 nodes): `MobileCard()`, `MobileCard.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 165`** (1 nodes): `postcss.config.js`
+- **Thin community `Community 165`** (2 nodes): `MobileScreenHeader()`, `MobileScreenHeader.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 166`** (1 nodes): `capacitor.config.ts`
+- **Thin community `Community 166`** (1 nodes): `parse_asa.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 167`** (1 nodes): `__init__.py`
+- **Thin community `Community 167`** (1 nodes): `update_engine.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 168`** (1 nodes): `check_divs.js`
+- **Thin community `Community 168`** (1 nodes): `fix_remaining.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 169`** (1 nodes): `fix_pathshala.py`
+- **Thin community `Community 169`** (1 nodes): `next.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 170`** (1 nodes): `OneSignalSDKWorker.js`
+- **Thin community `Community 170`** (1 nodes): `update_my_progress.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 171`** (1 nodes): `OneSignalSDKUpdaterWorker.js`
+- **Thin community `Community 171`** (1 nodes): `update_discover.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 172`** (1 nodes): `sw.js`
+- **Thin community `Community 172`** (1 nodes): `next-env.d.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 173`** (1 nodes): `contracts.ts`
+- **Thin community `Community 173`** (1 nodes): `update_profile.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 174`** (1 nodes): `feature-tasks.ts`
+- **Thin community `Community 174`** (1 nodes): `tailwind.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 175`** (1 nodes): `types.ts`
+- **Thin community `Community 175`** (1 nodes): `update_pathshala.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 176`** (1 nodes): `index.ts`
+- **Thin community `Community 176`** (1 nodes): `fix_types.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 177`** (1 nodes): `gateway-metadata.ts`
+- **Thin community `Community 177`** (1 nodes): `postcss.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 178`** (1 nodes): `provider-ids.ts`
+- **Thin community `Community 178`** (1 nodes): `fix_types_2.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 179`** (1 nodes): `model-routing.ts`
+- **Thin community `Community 179`** (1 nodes): `capacitor.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 180`** (1 nodes): `index.ts`
+- **Thin community `Community 180`** (1 nodes): `__init__.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 181`** (1 nodes): `generation.ts`
+- **Thin community `Community 181`** (1 nodes): `check_divs.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 182`** (1 nodes): `index.ts`
+- **Thin community `Community 182`** (1 nodes): `fix_pathshala.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 183`** (1 nodes): `phase1.test.ts`
+- **Thin community `Community 183`** (1 nodes): `OneSignalSDKWorker.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 184`** (1 nodes): `seed-mantras.js`
+- **Thin community `Community 184`** (1 nodes): `OneSignalSDKUpdaterWorker.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 185`** (1 nodes): `index.ts`
+- **Thin community `Community 185`** (1 nodes): `sw.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 186`** (1 nodes): `index.ts`
+- **Thin community `Community 186`** (1 nodes): `contracts.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 187`** (1 nodes): `index.ts`
+- **Thin community `Community 187`** (1 nodes): `feature-tasks.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 188`** (1 nodes): `database.ts`
+- **Thin community `Community 188`** (1 nodes): `types.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 189`** (1 nodes): `layout.tsx`
+- **Thin community `Community 189`** (1 nodes): `index.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 190`** (1 nodes): `page.tsx`
+- **Thin community `Community 190`** (1 nodes): `gateway-metadata.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 191`** (1 nodes): `PrivacyClient.tsx`
+- **Thin community `Community 191`** (1 nodes): `provider-ids.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 192`** (1 nodes): `page.tsx`
+- **Thin community `Community 192`** (1 nodes): `model-routing.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 193`** (1 nodes): `TermsClient.tsx`
+- **Thin community `Community 193`** (1 nodes): `index.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 194`** (1 nodes): `page.tsx`
+- **Thin community `Community 194`** (1 nodes): `generation.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 195`** (1 nodes): `page.tsx`
+- **Thin community `Community 195`** (1 nodes): `index.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 196`** (1 nodes): `page.tsx`
+- **Thin community `Community 196`** (1 nodes): `phase1.test.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 197`** (1 nodes): `page.tsx`
+- **Thin community `Community 197`** (1 nodes): `seed-mantras.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 198`** (1 nodes): `SevaClient.tsx`
+- **Thin community `Community 198`** (1 nodes): `index.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 199`** (1 nodes): `types.ts`
+- **Thin community `Community 199`** (1 nodes): `index.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 200`** (1 nodes): `KulSanskara.tsx`
+- **Thin community `Community 200`** (1 nodes): `index.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 201`** (1 nodes): `KulMembers.tsx`
+- **Thin community `Community 201`** (1 nodes): `database.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 202`** (1 nodes): `KulVanshForm.tsx`
+- **Thin community `Community 202`** (1 nodes): `layout.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 203`** (1 nodes): `KulEventForm.tsx`
+- **Thin community `Community 203`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 204`** (1 nodes): `KulTasks.tsx`
+- **Thin community `Community 204`** (1 nodes): `PrivacyClient.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 205`** (1 nodes): `KulEvents.tsx`
+- **Thin community `Community 205`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 206`** (1 nodes): `KulTaskForm.tsx`
+- **Thin community `Community 206`** (1 nodes): `TermsClient.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 207`** (1 nodes): `FamilyKeepsakeStage.tsx`
+- **Thin community `Community 207`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 208`** (1 nodes): `KulFamilyProfileSheet.tsx`
+- **Thin community `Community 208`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 209`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 210`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 211`** (1 nodes): `BhaktiClient.tsx`
+- **Thin community `Community 211`** (1 nodes): `SevaClient.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 212`** (1 nodes): `BhaktiInsightsClient.tsx`
+- **Thin community `Community 212`** (1 nodes): `types.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 213`** (1 nodes): `KathaClient.tsx`
+- **Thin community `Community 213`** (1 nodes): `KulSanskara.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 214`** (1 nodes): `page.tsx`
+- **Thin community `Community 214`** (1 nodes): `KulMembers.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 215`** (1 nodes): `ShieldsClient.tsx`
+- **Thin community `Community 215`** (1 nodes): `KulVanshForm.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 216`** (1 nodes): `LiveDarshanClient.tsx`
+- **Thin community `Community 216`** (1 nodes): `KulEventForm.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 217`** (1 nodes): `PanchangWidget.tsx`
+- **Thin community `Community 217`** (1 nodes): `KulTasks.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 218`** (1 nodes): `SectionHeading.tsx`
+- **Thin community `Community 218`** (1 nodes): `KulEvents.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 219`** (1 nodes): `RadialRing.tsx`
+- **Thin community `Community 219`** (1 nodes): `KulTaskForm.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 220`** (1 nodes): `index.ts`
+- **Thin community `Community 220`** (1 nodes): `FamilyKeepsakeStage.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 221`** (1 nodes): `DarshanPrompt.tsx`
+- **Thin community `Community 221`** (1 nodes): `KulFamilyProfileSheet.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 222`** (1 nodes): `PublicPageShell.tsx`
+- **Thin community `Community 222`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 223`** (1 nodes): `PremiumGate.tsx`
+- **Thin community `Community 223`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 224`** (1 nodes): `DigitalDeeksha.tsx`
+- **Thin community `Community 224`** (1 nodes): `BhaktiClient.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 225`** (1 nodes): `epics-registry.ts`
+- **Thin community `Community 225`** (1 nodes): `BhaktiInsightsClient.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 226`** (1 nodes): `upanishads-original-data.ts`
+- **Thin community `Community 226`** (1 nodes): `KathaClient.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 227`** (1 nodes): `guidelines-content.ts`
+- **Thin community `Community 227`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 228`** (1 nodes): `upanishads-full-data.ts`
+- **Thin community `Community 228`** (1 nodes): `ShieldsClient.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 229`** (1 nodes): `curated-bhakti.ts`
+- **Thin community `Community 229`** (1 nodes): `LiveDarshanClient.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 230`** (1 nodes): `live-streams.ts`
+- **Thin community `Community 230`** (1 nodes): `PanchangWidget.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 231`** (1 nodes): `pathshala-paths.ts`
+- **Thin community `Community 231`** (1 nodes): `SectionHeading.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 232`** (1 nodes): `devotional-audio.ts`
+- **Thin community `Community 232`** (1 nodes): `RadialRing.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 233`** (1 nodes): `query-keys.ts`
+- **Thin community `Community 233`** (1 nodes): `index.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 234`** (1 nodes): `terms-content.ts`
+- **Thin community `Community 234`** (1 nodes): `DarshanPrompt.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 235`** (1 nodes): `gita-full-data.ts`
+- **Thin community `Community 235`** (1 nodes): `PublicPageShell.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 236`** (1 nodes): `config.ts`
+- **Thin community `Community 236`** (1 nodes): `PremiumGate.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 237`** (1 nodes): `privacy-content.ts`
+- **Thin community `Community 237`** (1 nodes): `DigitalDeeksha.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 238`** (1 nodes): `messages.ts`
+- **Thin community `Community 238`** (1 nodes): `epics-registry.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 239`** (1 nodes): `rules.ts`
+- **Thin community `Community 239`** (1 nodes): `upanishads-original-data.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 240`** (1 nodes): `CalendarStrategy.ts`
+- **Thin community `Community 240`** (1 nodes): `guidelines-content.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 241`** (1 nodes): `messages.ts`
+- **Thin community `Community 241`** (1 nodes): `upanishads-full-data.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 242`** (1 nodes): `policies.ts`
+- **Thin community `Community 242`** (1 nodes): `curated-bhakti.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 243`** (1 nodes): `contracts.ts`
+- **Thin community `Community 243`** (1 nodes): `live-streams.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 244`** (1 nodes): `pipeline-tags.ts`
+- **Thin community `Community 244`** (1 nodes): `pathshala-paths.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 245`** (1 nodes): `registry.ts`
+- **Thin community `Community 245`** (1 nodes): `devotional-audio.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 246`** (1 nodes): `jain-namokar.ts`
+- **Thin community `Community 246`** (1 nodes): `query-keys.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 247`** (1 nodes): `devi-mahatmyam.ts`
+- **Thin community `Community 247`** (1 nodes): `terms-content.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 248`** (1 nodes): `sikh-chaupai-sahib.ts`
+- **Thin community `Community 248`** (1 nodes): `gita-full-data.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 249`** (1 nodes): `buddhist-noble-truths.ts`
+- **Thin community `Community 249`** (1 nodes): `config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 250`** (1 nodes): `sikh-nitnem-banis.ts`
+- **Thin community `Community 250`** (1 nodes): `privacy-content.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 251`** (1 nodes): `buddhist-jataka-tales.ts`
+- **Thin community `Community 251`** (1 nodes): `messages.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 252`** (1 nodes): `buddhist-satipatthana.ts`
+- **Thin community `Community 252`** (1 nodes): `rules.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 253`** (1 nodes): `sikh-asa-di-var.ts`
+- **Thin community `Community 253`** (1 nodes): `CalendarStrategy.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 254`** (1 nodes): `bhagavatam-canto-1-ch-2.ts`
+- **Thin community `Community 254`** (1 nodes): `messages.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 255`** (1 nodes): `jain-karma-doctrine.ts`
+- **Thin community `Community 255`** (1 nodes): `policies.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 256`** (1 nodes): `jain-tattvartha-sutra.ts`
+- **Thin community `Community 256`** (1 nodes): `contracts.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 257`** (1 nodes): `sikh-sukhmani-sahib.ts`
+- **Thin community `Community 257`** (1 nodes): `pipeline-tags.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 258`** (1 nodes): `vedic-suktas.ts`
+- **Thin community `Community 258`** (1 nodes): `registry.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 259`** (1 nodes): `sikh-anand-sahib.ts`
+- **Thin community `Community 259`** (1 nodes): `jain-namokar.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 260`** (1 nodes): `jain-acharanga-sutra.ts`
+- **Thin community `Community 260`** (1 nodes): `devi-mahatmyam.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 261`** (1 nodes): `ramayana-complete.ts`
+- **Thin community `Community 261`** (1 nodes): `sikh-chaupai-sahib.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 262`** (1 nodes): `jain-bhaktamar-stotra.ts`
+- **Thin community `Community 262`** (1 nodes): `buddhist-noble-truths.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 263`** (1 nodes): `bhagavatam-canto-1-ch-3.ts`
+- **Thin community `Community 263`** (1 nodes): `sikh-nitnem-banis.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 264`** (1 nodes): `chanakya-neeti.ts`
+- **Thin community `Community 264`** (1 nodes): `buddhist-jataka-tales.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 265`** (1 nodes): `shiva-purana.ts`
+- **Thin community `Community 265`** (1 nodes): `buddhist-satipatthana.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 266`** (1 nodes): `bhagavatam-canto-1-ch-1.ts`
+- **Thin community `Community 266`** (1 nodes): `sikh-asa-di-var.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 267`** (1 nodes): `sikh-jaap-sahib.ts`
+- **Thin community `Community 267`** (1 nodes): `bhagavatam-canto-1-ch-2.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 268`** (1 nodes): `jain-cosmology.ts`
+- **Thin community `Community 268`** (1 nodes): `jain-karma-doctrine.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 269`** (1 nodes): `buddhist-eightfold-path.ts`
+- **Thin community `Community 269`** (1 nodes): `jain-tattvartha-sutra.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 270`** (1 nodes): `ramcharitmanas.ts`
+- **Thin community `Community 270`** (1 nodes): `sikh-sukhmani-sahib.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 271`** (1 nodes): `sikh-japji-sahib.ts`
+- **Thin community `Community 271`** (1 nodes): `vedic-suktas.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 272`** (1 nodes): `bhagavatam-complete.ts`
+- **Thin community `Community 272`** (1 nodes): `sikh-anand-sahib.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 273`** (1 nodes): `ramayana-bal-kanda-1.ts`
+- **Thin community `Community 273`** (1 nodes): `jain-acharanga-sutra.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 274`** (1 nodes): `buddhist-heart-sutra.ts`
+- **Thin community `Community 274`** (1 nodes): `ramayana-complete.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 275`** (1 nodes): `buddhist-metta-sutta.ts`
+- **Thin community `Community 275`** (1 nodes): `jain-bhaktamar-stotra.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 276`** (1 nodes): `index.ts`
+- **Thin community `Community 276`** (1 nodes): `bhagavatam-canto-1-ch-3.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 277`** (1 nodes): `Returns a mock SuiteResult based on the known mock-based eval behavior.     Mock`
+- **Thin community `Community 277`** (1 nodes): `chanakya-neeti.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 278`** (1 nodes): `Dispatches a suite run to the appropriate provider.      Currently, 'mock' is fu`
+- **Thin community `Community 278`** (1 nodes): `shiva-purana.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 279`** (1 nodes): `Returns a mock SuiteResult based on the known mock-based eval behavior.     Mock`
+- **Thin community `Community 279`** (1 nodes): `bhagavatam-canto-1-ch-1.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 280`** (1 nodes): `Dispatches a suite run to the appropriate provider.      Currently, 'mock' is fu`
+- **Thin community `Community 280`** (1 nodes): `sikh-jaap-sahib.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 281`** (1 nodes): `Returns a mock SuiteResult based on the known mock-based eval behavior.     Mock`
+- **Thin community `Community 281`** (1 nodes): `jain-cosmology.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 282`** (1 nodes): `Dispatches a suite run to the appropriate provider.      Currently, 'mock' is th`
+- **Thin community `Community 282`** (1 nodes): `buddhist-eightfold-path.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 283`** (1 nodes): `ramcharitmanas.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 284`** (1 nodes): `sikh-japji-sahib.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 285`** (1 nodes): `bhagavatam-complete.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 286`** (1 nodes): `ramayana-bal-kanda-1.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 287`** (1 nodes): `buddhist-heart-sutra.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 288`** (1 nodes): `buddhist-metta-sutta.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 289`** (1 nodes): `index.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 290`** (1 nodes): `Returns a mock SuiteResult based on the known mock-based eval behavior.     Mock`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 291`** (1 nodes): `Dispatches a suite run to the appropriate provider.      Currently, 'mock' is fu`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 292`** (1 nodes): `Returns a mock SuiteResult based on the known mock-based eval behavior.     Mock`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 293`** (1 nodes): `Dispatches a suite run to the appropriate provider.      Currently, 'mock' is fu`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 294`** (1 nodes): `Returns a mock SuiteResult based on the known mock-based eval behavior.     Mock`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 295`** (1 nodes): `Dispatches a suite run to the appropriate provider.      Currently, 'mock' is th`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `GET()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 12`, `Community 13`, `Community 15`, `Community 17`, `Community 18`, `Community 20`, `Community 22`, `Community 23`, `Community 24`, `Community 25`, `Community 26`, `Community 29`, `Community 31`, `Community 36`?**
-  _High betweenness centrality (0.231) - this node is a cross-community bridge._
-- **Why does `select()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 16`, `Community 17`, `Community 18`, `Community 21`, `Community 27`, `Community 30`, `Community 33`, `Community 53`?**
-  _High betweenness centrality (0.195) - this node is a cross-community bridge._
-- **Why does `POST()` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 4`, `Community 5`, `Community 7`, `Community 8`, `Community 15`?**
-  _High betweenness centrality (0.092) - this node is a cross-community bridge._
+- **Why does `GET()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 12`, `Community 13`, `Community 14`, `Community 16`, `Community 18`, `Community 19`, `Community 22`, `Community 23`, `Community 24`, `Community 25`, `Community 26`, `Community 27`, `Community 29`, `Community 34`, `Community 36`?**
+  _High betweenness centrality (0.261) - this node is a cross-community bridge._
+- **Why does `select()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 17`, `Community 18`, `Community 19`, `Community 21`, `Community 28`, `Community 31`, `Community 36`, `Community 53`?**
+  _High betweenness centrality (0.147) - this node is a cross-community bridge._
+- **Why does `POST()` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 5`, `Community 6`, `Community 8`, `Community 9`, `Community 16`?**
+  _High betweenness centrality (0.084) - this node is a cross-community bridge._
 - **Are the 182 inferred relationships involving `select()` (e.g. with `runAligner()` and `run()`) actually correct?**
   _`select()` has 182 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 121 inferred relationships involving `GET()` (e.g. with `POST()` and `_mock_score_suite()`) actually correct?**

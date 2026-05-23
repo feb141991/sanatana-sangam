@@ -7,6 +7,8 @@ export const metadata = {
   description: 'On-demand dharmic knowledge sessions by topic and difficulty.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function PracticePage({
   searchParams,
 }: {

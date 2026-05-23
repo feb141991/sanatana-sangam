@@ -1,3 +1,4 @@
+import { checkAdminAuth } from '@/lib/admin-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
 
@@ -5,6 +6,9 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
 ) {
+  const authError = checkAdminAuth(request as any);
+  if (authError) return authError;
+
   const admin = await requireAdminAccess();
   if ('response' in admin) return admin.response;
   const { userId } = await params;

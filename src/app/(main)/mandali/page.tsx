@@ -6,6 +6,8 @@ import MandaliClient from './MandaliClient';
 // If the local Mandali has fewer than this many members, blend in Sangam-wide posts
 const BLEND_THRESHOLD = 5;
 
+export const dynamic = 'force-dynamic';
+
 export default async function MandaliPage() {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();

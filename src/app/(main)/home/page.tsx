@@ -18,6 +18,8 @@ import type { GuidedPathProgressRow } from '@/lib/guided-paths';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { Database } from '@/types/database';
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();

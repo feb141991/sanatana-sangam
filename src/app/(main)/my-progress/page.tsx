@@ -27,6 +27,8 @@ function monthEndISO(monthsBack = 0) {
   return d.toISOString().slice(0, 10);
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function MyProgressPage() {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();

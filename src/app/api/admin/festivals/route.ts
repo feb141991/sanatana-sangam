@@ -1,3 +1,4 @@
+import { checkAdminAuth } from '@/lib/admin-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
 import {
@@ -90,6 +91,9 @@ function buildFestivalAdminStats(festivals: Festival[]): FestivalAdminStats {
 }
 
 export async function GET(request: NextRequest) {
+  const authError = checkAdminAuth(request as any);
+  if (authError) return authError;
+
   const admin = await requireAdminAccess();
   if ('response' in admin) {
     return admin.response;

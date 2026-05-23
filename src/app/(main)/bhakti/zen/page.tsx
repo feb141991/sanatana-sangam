@@ -410,6 +410,8 @@ function EnvParticles({ env }: { env: EnvId }) {
 }
 
 // ─── Main Page ─────────────────────────────────────────────────────────────
+export const dynamic = 'force-dynamic';
+
 export default function SattvicModePage() {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();

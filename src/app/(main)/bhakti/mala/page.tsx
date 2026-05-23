@@ -2,6 +2,8 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import JapaClient from '../../japa/JapaClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function MalaPage() {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();

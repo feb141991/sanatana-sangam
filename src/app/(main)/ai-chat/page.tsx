@@ -7,6 +7,8 @@ function readSingleParam(value: string | string[] | undefined, maxLength: number
   return value.slice(0, maxLength);
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function AIChatPage({
   searchParams,
 }: {

@@ -1,3 +1,4 @@
+import { checkAdminAuth } from '@/lib/admin-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
 
@@ -14,6 +15,9 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ reportId: string }> }
 ) {
+  const authError = checkAdminAuth(request as any);
+  if (authError) return authError;
+
   const admin = await requireAdminAccess();
   if ('response' in admin) return admin.response;
   const { reportId } = await params;

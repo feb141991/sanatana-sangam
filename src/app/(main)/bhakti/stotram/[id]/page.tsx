@@ -720,6 +720,8 @@ function StotramReader({ id }: { id: string }) {
   );
 }
 
+export const dynamic = 'force-dynamic';
+
 export default function StotramPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   return (

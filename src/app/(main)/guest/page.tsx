@@ -43,6 +43,8 @@ const memberBenefits = [
   },
 ];
 
+export const dynamic = 'force-dynamic';
+
 export default async function GuestPage() {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();

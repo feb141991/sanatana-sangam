@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { checkAdminAuth } from '@/lib/admin-auth';
+import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
 import { getPanchangTimes, getTithiReminder } from '@/lib/panchang';
 
@@ -7,6 +8,9 @@ import { getPanchangTimes, getTithiReminder } from '@/lib/panchang';
 // Used by the admin Notifications tab to verify the engine is computing correctly.
 
 export async function GET(request: Request) {
+  const authError = checkAdminAuth(request as any);
+  if (authError) return authError;
+
   const admin = await requireAdminAccess();
   if ('response' in admin) return admin.response;
 

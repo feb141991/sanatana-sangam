@@ -3,6 +3,8 @@ import { filterAuthoredItems, getUserSafetyState } from '@/lib/user-safety';
 import { notFound } from 'next/navigation';
 import ThreadDetailClient from './ThreadDetailClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ThreadPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createServerSupabaseClient();

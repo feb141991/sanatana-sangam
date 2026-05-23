@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { checkAdminAuth } from '@/lib/admin-auth';
+import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
 
@@ -7,6 +8,9 @@ import { sendOneSignalPush } from '@/lib/onesignal-server';
 // table and fires a OneSignal push. Admin-only (cookie-gated by middleware).
 
 export async function POST(request: Request) {
+  const authError = checkAdminAuth(request as any);
+  if (authError) return authError;
+
   const admin = await requireAdminAccess();
   if ('response' in admin) return admin.response;
 

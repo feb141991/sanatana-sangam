@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
+import nextDynamic from 'next/dynamic';
 import {
   Bookmark,
   CalendarDays,
@@ -42,7 +42,7 @@ import {
   type TirthaVisitRow,
 } from '@/lib/tirtha-companion';
 
-const TirthaMapComponent = dynamic(
+const TirthaMapComponent = nextDynamic(
   () => import('@/components/TirthaMapComponent'),
   {
     ssr: false,
@@ -100,6 +100,8 @@ function safeErrorMessage(error: unknown) {
   if (error && typeof error === 'object' && 'message' in error) return String((error as { message?: unknown }).message);
   return 'Something went wrong.';
 }
+
+export const dynamic = 'force-dynamic';
 
 export default function TirthaMapPage() {
   const router = useRouter();

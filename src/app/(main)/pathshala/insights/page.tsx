@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation';
 import { PATHSHALA_PATH_IDS } from '@/lib/pathshala-paths';
 import PathshalaInsightsClient from './PathshalaInsightsClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function PathshalaInsightsPage() {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();

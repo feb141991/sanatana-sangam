@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { checkAdminAuth } from '@/lib/admin-auth';
+import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
 
 // ─── POST /api/admin/run-cron ─────────────────────────────────────────────────
@@ -14,6 +15,9 @@ const ALLOWED_CRONS = [
 ] as const;
 
 export async function POST(request: Request) {
+  const authError = checkAdminAuth(request as any);
+  if (authError) return authError;
+
   const admin = await requireAdminAccess();
   if ('response' in admin) return admin.response;
 

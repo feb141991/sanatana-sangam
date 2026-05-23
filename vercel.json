@@ -15,6 +15,7 @@
     { "path": "/api/cron/verify-festival-dates",   "schedule": "0 8 5 1 *"   },
     { "path": "/api/cron/mood-reminder-evening",    "schedule": "30 14 * * *" },
     { "path": "/api/cron/pitru-paksha-reminder",   "schedule": "0 3 * * *"   },
-    { "path": "/api/cron/vrat-reminder",            "schedule": "30 4 * * *"  }
+    { "path": "/api/cron/vrat-reminder",            "schedule": "30 4 * * *"  },
+    { "path": "/api/cron/materialize-occurrences", "schedule": "0 2 * * *" }
   ]
 }

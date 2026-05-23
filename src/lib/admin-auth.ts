@@ -97,3 +97,18 @@ export function checkAdminCredentials(username: string, password: string): boole
   if (!envUser || !envPass) return false;
   return username === envUser && password === envPass;
 }
+
+import { NextRequest, NextResponse } from 'next/server';
+
+export function checkAdminAuth(req: NextRequest): NextResponse | null {
+  const secret = process.env.ADMIN_SECRET;
+  if (!secret) {
+    return NextResponse.json({ error: 'Admin not configured' }, { status: 503 });
+  }
+  const authHeader = req.headers.get('x-admin-secret');
+  const cookieSecret = req.cookies.get('admin_secret')?.value;
+  if (authHeader !== secret && cookieSecret !== secret) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  return null; // auth passed
+}
