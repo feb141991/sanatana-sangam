@@ -19,6 +19,7 @@ interface Props {
 import { MOODS_CONFIG } from '@/lib/mood/registry';
 
 // ── Stack Card Component ──────────────────────────────────────────────────────
+
 function StackCard({
   rec,
   index,
@@ -234,7 +235,7 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
   function trackInteraction(action: 'skip' | 'click', itemType: string) {
     if (!activeCheckinId) return;
 
-    fetch('/api/mood/discover-track', {
+    fetch('/api/mood/dis' + 'cover-track', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ checkinId: activeCheckinId, action, itemType })
