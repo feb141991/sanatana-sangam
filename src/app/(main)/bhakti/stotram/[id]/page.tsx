@@ -185,7 +185,7 @@ function AudioPanel({ trackId, autoplay, accentColor }: {
   if (!track?.audioUrl) return (
     <div className="rounded-2xl px-4 py-4 text-center text-[11px]"
       style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.12)', color: 'rgba(200,146,74,0.5)' }}>
-      🎵 Audio coming soon — uploading to Supabase
+      Audio not available for this stotram.
     </div>
   );
 

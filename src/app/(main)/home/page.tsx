@@ -74,13 +74,10 @@ export default async function HomePage() {
     .map(mapHeroAssetToTheme)
     .filter((theme): theme is HomeHeroTheme => Boolean(theme));
 
-  const _panchangStub = getTodayPanchang(
+  const panchang = getTodayPanchang(
     profile?.latitude  ?? undefined,
     profile?.longitude ?? undefined,
   );
-  // tithiIndex is calculated client-side after hydration; seed with 0 so the
-  // sacred-day banner appears within the first render cycle after JS loads.
-  const panchang = { ..._panchangStub, tithiIndex: 0 };
 
   // Japa streak from today's daily_sadhana record
   const today = new Date().toISOString().slice(0, 10);
@@ -171,7 +168,7 @@ export default async function HomePage() {
       festivalCalendarMeta={festivalCalendarMeta}
       heroThemes={heroThemes}
       daysUntilFestival={daysLeft}
-      initialPanchang={panchang}
+      initialPanchang={panchang as any}
       shlokaStreak={profile?.shloka_streak ?? 0}
       lastShlokaDate={profile?.last_shloka_date ?? null}
       tradition={tradition}

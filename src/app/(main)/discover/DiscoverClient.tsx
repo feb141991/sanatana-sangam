@@ -42,20 +42,22 @@ function StackCard({
 }) {
   return (
     <motion.div
-      className="absolute inset-0 rounded-[1.6rem] p-4 flex flex-col overflow-hidden"
+      className="absolute left-1/2 w-full max-w-sm rounded-[1.6rem] p-4 flex flex-col overflow-hidden"
       style={{
+        height: 420,
         background: 'var(--card-bg)',
         border: '1px solid var(--card-border)',
         boxShadow: isActive ? '0 12px 40px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.1)',
         zIndex: total - index,
       }}
-      initial={{ scale: 0.9, y: 40, opacity: 0 }}
+      initial={{ scale: 0.9, x: '-50%', y: 40, opacity: 0 }}
       animate={{
         scale: isActive ? 1 : Math.max(0.9, 1 - index * 0.05),
-        y: isActive ? 0 : index * 12,
+        x: '-50%',
+        y: isActive ? 0 : index * 14,
         opacity: 1 - index * 0.2,
       }}
-      exit={{ scale: 1.05, y: -40, opacity: 0 }}
+      exit={{ scale: 1.05, x: '-50%', y: -40, opacity: 0 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
     >
       {/* Glow */}
@@ -312,7 +314,7 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
           ) : (
             <motion.div
               key="stack"
-              className="absolute inset-0 flex flex-col px-5 pb-8 pt-4"
+              className="absolute w-full h-full flex flex-col px-5 pb-8 pt-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -332,7 +334,7 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
               </div>
 
               {/* Cards Container */}
-              <div className="flex-1 relative">
+              <div className="relative flex-1 flex items-center justify-center">
                 <AnimatePresence>
                   {stack.slice(activeIndex, activeIndex + 3).map((rec, renderIndex) => {
                     const actualIndex = activeIndex + renderIndex;
@@ -365,9 +367,9 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
                 {/* End of stack state */}
                 {activeIndex >= stack.length && (
                   <motion.div
-                    className="absolute inset-0 rounded-[2rem] p-6 flex flex-col items-center justify-center text-center"
-                    style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                    className="absolute left-1/2 w-full max-w-sm rounded-[2rem] p-6 flex flex-col items-center justify-center text-center"
+                    style={{ height: 420, background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
+                    initial={{ opacity: 0, x: '-50%' }} animate={{ opacity: 1, x: '-50%' }}
                   >
                     <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: 'var(--brand-primary-soft)' }}>
                       <RotateCcw size={24} style={{ color: 'var(--brand-primary)' }} />

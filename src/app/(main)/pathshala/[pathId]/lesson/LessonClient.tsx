@@ -186,16 +186,17 @@ export default function LessonClient({
             <button
               onClick={() => {
                 setShowBridge(false);
-                if (completed.length === totalLessons) {
+                const nextIndex = lessonIndex + 1;
+                if (nextIndex >= totalLessons) {
                   router.push('/pathshala');
                 } else {
-                  goToLesson(lessonIndex + 1);
+                  goToLesson(nextIndex);
                 }
               }}
               className="px-10 py-4 rounded-full text-lg font-medium text-white shadow-md transition-transform hover:scale-105 active:scale-95"
               style={{ backgroundColor: accentColour || '#8b2e16' }}
             >
-              {completed.length === totalLessons ? "पथ पूर्ण" : "आगे बढ़ें"}
+              {lessonIndex + 1 >= totalLessons ? "पथ पूर्ण" : "आगे बढ़ें"}
             </button>
           </div>
         </div>
