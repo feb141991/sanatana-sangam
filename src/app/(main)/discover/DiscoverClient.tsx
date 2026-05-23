@@ -11,7 +11,7 @@ import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { getFullRecommendationsForMood, MoodRecommendation, MoodContext } from '@/lib/mood/engine';
 
 interface Props {
-  tradition:     string | null;
+  tradition: string | null;
   spiritualLevel: string | null;
   transliterationLanguage?: string;
 }
@@ -49,9 +49,9 @@ function StackCard({
         zIndex: total - index,
       }}
       initial={{ scale: 0.9, y: 40, opacity: 0 }}
-      animate={{ 
-        scale: isActive ? 1 : Math.max(0.9, 1 - index * 0.05), 
-        y: isActive ? 0 : index * 12, 
+      animate={{
+        scale: isActive ? 1 : Math.max(0.9, 1 - index * 0.05),
+        y: isActive ? 0 : index * 12,
         opacity: 1 - index * 0.2,
       }}
       exit={{ scale: 1.05, y: -40, opacity: 0 }}
@@ -85,7 +85,7 @@ function StackCard({
         <h3 className="text-xl font-bold mb-2 leading-tight" style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-cream)' }}>
           {rec.title}
         </h3>
-        
+
         <p className="text-[13px] leading-relaxed mb-3" style={{ color: 'var(--text-muted-warm)' }}>
           {rec.description}
         </p>
@@ -164,8 +164,8 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
         .then(r => r.json())
         .then(data => {
           if (!cancelled && data?.openSession) {
-             setActiveCheckinId(data.openSession.id);
-             setSelectedMood(data.openSession.before_mood);
+            setActiveCheckinId(data.openSession.id);
+            setSelectedMood(data.openSession.before_mood);
           }
         })
         .catch(console.warn);
@@ -220,7 +220,7 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
         console.warn('Failed to start organic checkin session', e);
       }
     }
-    
+
     setSelectedMood(moodKey);
     setContext({});
   }
@@ -280,7 +280,7 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
               <p className="text-sm leading-relaxed mb-6" style={{ color: 'var(--text-muted-warm)', fontSize: '0.83rem' }}>
                 Pick what resonates right now. The scripture speaks to every state of the soul.
               </p>
-              
+
               <div className="grid grid-cols-2 gap-2.5">
                 {MOODS.map(mood => (
                   <motion.button
@@ -360,10 +360,10 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
                     );
                   })}
                 </AnimatePresence>
-                
+
                 {/* End of stack state */}
                 {activeIndex >= stack.length && (
-                  <motion.div 
+                  <motion.div
                     className="absolute inset-0 rounded-[2rem] p-6 flex flex-col items-center justify-center text-center"
                     style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }}
