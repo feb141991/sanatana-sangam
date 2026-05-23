@@ -40,3 +40,6 @@ __pycache__/
 .venv/
 venv/
 
+*.py
+*.js.bak
+.idea/
