@@ -1,3 +1,4 @@
+import React from 'react';
 'use client';
 
 import {
@@ -31,6 +32,7 @@ import {
   Users,
   Waves,
   Wind,
+  Flame,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -66,7 +68,8 @@ export type SacredIconName =
   | 'sunset'
   | 'tree'
   | 'water'
-  | 'wind';
+  | 'wind'
+  | 'flame';
 
 const ICONS: Record<SacredIconName, LucideIcon> = {
   activity: Activity,
@@ -101,12 +104,14 @@ const ICONS: Record<SacredIconName, LucideIcon> = {
   tree: TreePine,
   water: Waves,
   wind: Wind,
+  flame: Flame,
 };
 
 interface SacredIconProps {
   name: SacredIconName;
   size?: number;
   className?: string;
+  style?: React.CSSProperties;
   strokeWidth?: number;
   'aria-hidden'?: boolean;
 }
@@ -119,9 +124,10 @@ export default function SacredIcon({
   name,
   size = 18,
   className,
+  style,
   strokeWidth = 1.8,
   'aria-hidden': ariaHidden = true,
 }: SacredIconProps) {
   const Icon = ICONS[name];
-  return <Icon aria-hidden={ariaHidden} className={className} size={size} strokeWidth={strokeWidth} />;
+  return <Icon aria-hidden={ariaHidden} className={className} style={style} size={size} strokeWidth={strokeWidth} />;
 }

@@ -1,3 +1,4 @@
+import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 'use client';
 
 import Image from 'next/image';
@@ -38,23 +39,23 @@ function getPracticePathOptions(tradition: TraditionKey | '') {
   switch (tradition) {
     case 'sikh':
       return [
-        { key: 'general' as GenderContext, icon: '☬', label: 'Sangat path', sub: 'Nitnem, simran, seva and sangat' },
-        { key: 'female'  as GenderContext, icon: '🌸', label: 'Kaur path', sub: 'Life-stage guidance with Sikh context' },
+        { key: 'general' as GenderContext, icon: 'sparkles' as SacredIconName, label: 'Sangat path', sub: 'Nitnem, simran, seva and sangat' },
+        { key: 'female'  as GenderContext, icon: 'flower' as SacredIconName, label: 'Kaur path', sub: 'Life-stage guidance with Sikh context' },
       ];
     case 'buddhist':
       return [
-        { key: 'general' as GenderContext, icon: '☸️', label: 'Dharma path', sub: 'Refuge, mindfulness and daily practice' },
-        { key: 'female'  as GenderContext, icon: '🪷', label: 'Householder path', sub: 'Life-stage guidance with Buddhist context' },
+        { key: 'general' as GenderContext, icon: 'compass' as SacredIconName, label: 'Dharma path', sub: 'Refuge, mindfulness and daily practice' },
+        { key: 'female'  as GenderContext, icon: 'flower' as SacredIconName, label: 'Householder path', sub: 'Life-stage guidance with Buddhist context' },
       ];
     case 'jain':
       return [
-        { key: 'general' as GenderContext, icon: '🤲', label: 'Jain path', sub: 'Ahimsa, svadhyaya and daily reflection' },
-        { key: 'female'  as GenderContext, icon: '🌸', label: 'Shravika path', sub: 'Life-stage guidance with Jain context' },
+        { key: 'general' as GenderContext, icon: 'heart' as SacredIconName, label: 'Jain path', sub: 'Ahimsa, svadhyaya and daily reflection' },
+        { key: 'female'  as GenderContext, icon: 'flower' as SacredIconName, label: 'Shravika path', sub: 'Life-stage guidance with Jain context' },
       ];
     default:
       return [
-        { key: 'general' as GenderContext, icon: '🌿', label: 'General path', sub: 'Traditional practice for all' },
-        { key: 'female'  as GenderContext, icon: '🌸', label: 'Stridharma path', sub: "Women’s tradition-specific duties" },
+        { key: 'general' as GenderContext, icon: 'tree' as SacredIconName, label: 'General path', sub: 'Traditional practice for all' },
+        { key: 'female'  as GenderContext, icon: 'flower' as SacredIconName, label: 'Stridharma path', sub: "Women’s tradition-specific duties" },
       ];
   }
 }
@@ -1180,7 +1181,7 @@ export default function ProfileClient({
                       const meta      = getAshramaMeta(activeTradition, suggested as LifeStage, form.gender_context);
                       return (
                         <div className="flex items-center gap-2 mt-3 px-3 py-2 rounded-xl bg-[#C5A059]/5 border border-[#C5A059]/10">
-                          <span className="text-sm">{meta.icon}</span>
+                          <SacredIcon name={meta.icon} size={16} strokeWidth={1.7} />
                           <p className="text-xs font-medium theme-muted">
                             Age {age} · Suggested stage: <span style={{ color: meta.accent }}>{meta.label}</span>
                           </p>
@@ -1205,7 +1206,7 @@ export default function ProfileClient({
                                 : 'bg-[var(--card-bg-soft)] border-[var(--card-border)] theme-muted hover:border-[var(--brand-primary)]'
                             }`}
                           >
-                            <div className="text-xl mb-2">{opt.icon}</div>
+                            <div className="mb-2"><SacredIcon name={opt.icon} size={22} strokeWidth={1.6} /></div>
                             <p className={`text-sm font-medium ${sel ? 'text-[var(--brand-primary-strong)]' : 'theme-ink'}`}>{opt.label}</p>
                             <p className="text-xs theme-muted mt-1 leading-snug">{opt.sub}</p>
                           </button>

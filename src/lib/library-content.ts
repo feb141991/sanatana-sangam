@@ -6,6 +6,41 @@ import { GITA_FULL_DATA } from '@/lib/gita-full-data';
 import { UPANISHADS_FULL_DATA } from '@/lib/upanishads-full-data';
 import { UPANISHAD_STUDY_META } from '@/lib/upanishad-study';
 
+import { RAMAYANA_COMPLETE_ENTRIES } from '@/lib/data/ramayana-complete';
+import { BHAGAVATAM_COMPLETE_ENTRIES } from '@/lib/data/bhagavatam-complete';
+import { RAMCHARITMANAS_ENTRIES } from '@/lib/data/ramcharitmanas';
+import { DEVI_MAHATMYAM_ENTRIES } from '@/lib/data/devi-mahatmyam';
+import { VEDIC_SUKTA_ENTRIES } from '@/lib/data/vedic-suktas';
+import { CHANAKYA_ENTRIES } from '@/lib/data/chanakya-neeti';
+import { SHIVA_PURANA_ENTRIES } from '@/lib/data/shiva-purana';
+
+
+import { NAMOKAR_ENTRIES } from '@/lib/data/jain-namokar';
+import { BHAKTAMAR_ENTRIES } from '@/lib/data/jain-bhaktamar-stotra';
+import { TATTVARTHA_ENTRIES } from '@/lib/data/jain-tattvartha-sutra';
+import { ACHARANGA_ENTRIES } from '@/lib/data/jain-acharanga-sutra';
+import { KARMA_DOCTRINE_ENTRIES } from '@/lib/data/jain-karma-doctrine';
+import { JAIN_COSMOLOGY_ENTRIES } from '@/lib/data/jain-cosmology';
+
+
+import { DHAMMAPADA_ENTRIES } from '@/lib/data/buddhist-dhammapada';
+import { NOBLE_TRUTHS_ENTRIES } from '@/lib/data/buddhist-noble-truths';
+import { HEART_SUTRA_ENTRIES } from '@/lib/data/buddhist-heart-sutra';
+import { METTA_SUTTA_ENTRIES } from '@/lib/data/buddhist-metta-sutta';
+import { SATIPATTHANA_ENTRIES } from '@/lib/data/buddhist-satipatthana';
+import { EIGHTFOLD_PATH_ENTRIES } from '@/lib/data/buddhist-eightfold-path';
+import { JATAKA_TALES_ENTRIES } from '@/lib/data/buddhist-jataka-tales';
+
+
+import { JAPJI_SAHIB_ENTRIES } from '@/lib/data/sikh-japji-sahib';
+import { SUKHMANI_SAHIB_ENTRIES } from '@/lib/data/sikh-sukhmani-sahib';
+import { ASA_DI_VAR_ENTRIES } from '@/lib/data/sikh-asa-di-var';
+import { JAAP_SAHIB_ENTRIES } from '@/lib/data/sikh-jaap-sahib';
+import { CHAUPAI_SAHIB_ENTRIES } from '@/lib/data/sikh-chaupai-sahib';
+import { ANAND_SAHIB_ENTRIES } from '@/lib/data/sikh-anand-sahib';
+import { NITNEM_ENTRIES } from '@/lib/data/sikh-nitnem-banis';
+
+
 export type LibraryTradition = 'hindu' | 'sikh' | 'buddhist' | 'jain';
 
 export type LibraryCategory =
@@ -804,48 +839,7 @@ export const VISHNU_SAHASRANAMA_ENTRIES: LibraryEntry[] = [
 ];
 
 // ─── RAMCHARITMANAS ───────────────────────────────────────────────────────────
-export const RAMCHARITMANAS_ENTRIES: LibraryEntry[] = [
-  {
-    id: 'rcm-mangal-1',
-    title: 'Ramcharitmanas — Mangalacharana',
-    source: 'Ramcharitmanas — Balkand Doha 1 (Tulsidas)',
-    original: 'जय राम रमा रमण समन भव ताप भयानि भजे ।\nअब राम कृपा करि हरहु दुख दारिद्र्य अज्ञान ॥',
-    transliteration: 'jay rāma ramā ramaṇa samana bhava tāpa bhyāni bhaje\naba rāma kṛpā kari harahu dukha dāridya ajñāna',
-    meaning: 'Victory to Rama, the beloved of Ramaa (Sita), who dispels the three-fold afflictions of worldly existence. Now, O Rama, by Your grace, please remove suffering, poverty, and ignorance.',
-    tradition: 'hindu', category: 'ramcharitmanas',
-    tags: ['rama', 'tulsidas', 'mangal', 'ramcharitmanas', 'prayer'],
-  },
-  {
-    id: 'rcm-hanuman-1',
-    title: 'Hanuman Chalisa — Chaupai 1',
-    source: 'Hanuman Chalisa — Chaupais (Tulsidas)',
-    original: 'जय हनुमान ज्ञान गुन सागर ।\nजय कपीस तिहुँ लोक उजागर ॥\nराम दूत अतुलित बल धामा ।\nअञ्जनि पुत्र पवनसुत नामा ॥',
-    transliteration: 'jaya hanumāna jñāna guna sāgara\njaya kapīsa tihuṁ loka ujāgara\nrāma dūta atulita bala dhāmā\nañjani-putra pavana-suta nāmā',
-    meaning: 'Victory to Hanuman, the ocean of wisdom and virtue! Victory to the king of monkeys who illuminates the three worlds! He is the messenger of Rama, the abode of incomparable strength — son of Anjani, known as the Son of the Wind.',
-    tradition: 'hindu', category: 'ramcharitmanas',
-    tags: ['hanuman', 'chalisa', 'tulsidas', 'strength', 'devotion'],
-  },
-  {
-    id: 'rcm-hanuman-2',
-    title: 'Hanuman Chalisa — Chaupai 7–8',
-    source: 'Hanuman Chalisa — Chaupais 7–8 (Tulsidas)',
-    original: 'सूक्ष्म रूप धरि सियहिं दिखावा ।\nविकट रूप धरि लंक जरावा ॥\nभीम रूप धरि असुर सँहारे ।\nरामचन्द्र के काज सँवारे ॥',
-    transliteration: 'sūkṣma rūpa dhari siyahiṁ dikhāvā\nvikaṭa rūpa dhari laṅka jarāvā\nbhīma rūpa dhari asura saṁhāre\nrāmacandra ke kāja saṁvāre',
-    meaning: 'You took a subtle form to appear before Sita, then a formidable form to burn Lanka. In your fierce form you destroyed the demons — and accomplished all the works of Lord Rama.',
-    tradition: 'hindu', category: 'ramcharitmanas',
-    tags: ['hanuman', 'chalisa', 'sita', 'lanka', 'rama'],
-  },
-  {
-    id: 'rcm-sundara-1',
-    title: 'Tulsidas on Devotion',
-    source: 'Ramcharitmanas — Uttarkand (Tulsidas)',
-    original: 'भगत हेतु भगवान प्रभु राम धरेउ तनु भूप ।\nकिए चरित पावन परम प्राकृत नर अनुरूप ॥',
-    transliteration: 'bhagata hetu bhagavāna prabhu rāma dhaeu tanu bhūpa\nkīe carita pāvana parama prākṛta nara anurūpa',
-    meaning: 'For the sake of His devotees, the divine Lord Rama assumed the form of a king, and performed supremely purifying deeds in the manner of an ordinary human being.',
-    tradition: 'hindu', category: 'ramcharitmanas',
-    tags: ['rama', 'devotion', 'incarnation', 'tulsidas', 'bhakti'],
-  },
-];
+
 
 // ─── SHAIVA SCRIPTURES ────────────────────────────────────────────────────────
 export const SHAIVA_ENTRIES: LibraryEntry[] = [
@@ -1106,202 +1100,10 @@ export const YOGA_SUTRA_ENTRIES: LibraryEntry[] = [
 ];
 
 // ─── CHANAKYA NITI ────────────────────────────────────────────────────────────
-export const CHANAKYA_ENTRIES: LibraryEntry[] = [
-  {
-    id: 'chanakya-1-1',
-    title: 'The Root of Knowledge',
-    source: 'Chanakya Niti — Chapter 1, Verse 1',
-    original: 'प्रणम्य शिरसा विष्णुं त्रैलोक्याधिपतिं प्रभुम् ।\nनानाशास्त्रोद्धृतं वक्ष्ये राजनीतिसमुच्चयम् ॥',
-    transliteration: 'praṇamya śirasā viṣṇuṁ trailokya-adhipatiṁ prabhum\nnānā-śāstroddṛtaṁ vakṣye rājanīti-samuccayam',
-    meaning: 'Bowing my head to Lord Vishnu, the master of the three worlds, I shall speak the collected essence of political wisdom drawn from various scriptures. — Chanakya begins his treatise with humility and invocation, reminding us that all wisdom flows from the Divine.',
-    tradition: 'hindu', category: 'chanakya',
-    tags: ['chanakya', 'niti', 'wisdom', 'politics', 'governance'],
-  },
-  {
-    id: 'chanakya-education',
-    title: 'Education is the Best Wealth',
-    source: 'Chanakya Niti — Chapter 2',
-    original: 'माता शत्रुः पिता वैरी येन बालो न पाठितः ।\nन शोभते सभामध्ये हंसमध्ये बको यथा ॥',
-    transliteration: 'mātā śatruḥ pitā vairī yena bālo na pāṭhitaḥ\nna śobhate sabhā-madhye haṁsa-madhye bako yathā',
-    meaning: 'A mother who does not educate her child is an enemy, a father a foe — for the uneducated child does not shine in an assembly, just as a crane does not shine among swans. Chanakya\'s emphasis on education as the most essential gift parents give their children.',
-    tradition: 'hindu', category: 'chanakya',
-    tags: ['chanakya', 'education', 'parents', 'wisdom', 'knowledge'],
-  },
-  {
-    id: 'chanakya-character',
-    title: 'Protect the Self Above All',
-    source: 'Chanakya Niti — Chapter 4',
-    original: 'आपदर्थे धनं रक्षेद् दारान् रक्षेद् धनैरपि ।\nआत्मानं सततं रक्षेद् दारैरपि धनैरपि ॥',
-    transliteration: 'āpad-arthe dhanaṁ rakṣed dārān rakṣed dhanair api\nātmānaṁ satataṁ rakṣed dārair api dhanair api',
-    meaning: 'Preserve wealth for adversity. Protect the family even at the cost of wealth. And always protect the Self (Atman) — even at the cost of family and wealth. A hierarchy of values: material, relational, and ultimately spiritual.',
-    tradition: 'hindu', category: 'chanakya',
-    tags: ['chanakya', 'wealth', 'self', 'protection', 'values'],
-  },
-  {
-    id: 'chanakya-friendship',
-    title: 'Test Before You Trust',
-    source: 'Chanakya Niti — Chapter 3',
-    original: 'परीक्ष्य कारयेत् कर्म किञ्चिच्चिन्त्य च कारयेत् ।\nपश्चात्तापो नेच्छेत् या सा चाभ्याससाधनी ॥',
-    transliteration: 'parīkṣya kārayet karma kiñcic cintya ca kārayet\npaścāttāpo necchet yā sā cābhyāsa-sādhanī',
-    meaning: 'Before undertaking any work, test it; and before executing it, think carefully. For whoever does not wish for remorse afterward — that is the way of systematic practice. Chanakya\'s call for deliberation, testing, and foresight in all undertakings.',
-    tradition: 'hindu', category: 'chanakya',
-    tags: ['chanakya', 'wisdom', 'deliberation', 'action', 'foresight'],
-  },
-  {
-    id: 'chanakya-time',
-    title: 'Time Destroys All',
-    source: 'Chanakya Niti — Chapter 6',
-    original: 'कालः पचति भूतानि कालः संहरते प्रजाः ।\nकालः सुप्तेषु जागर्ति कालो हि दुरतिक्रमः ॥',
-    transliteration: 'kālaḥ pacati bhūtāni kālaḥ saṁharate prajāḥ\nkālaḥ supteṣu jāgarti kālo hi duratikramaḥ',
-    meaning: 'Time ripens all beings; time destroys all beings. Time is awake even when all sleep. Time is impossible to overcome. — Chanakya\'s meditation on the nature of time, perhaps the most sobering of all his teachings. It is a call to act now.',
-    tradition: 'hindu', category: 'chanakya',
-    tags: ['chanakya', 'time', 'impermanence', 'action', 'urgency'],
-  },
-  {
-    id: 'chanakya-enemy-within',
-    title: 'The Six Enemies Within',
-    source: 'Chanakya Niti — Chapter 8',
-    original: 'षड् दोषाः पुरुषेणेह हातव्या भूतिमिच्छता ।\nनिद्रा तन्द्रा भयं क्रोधः आलस्यं दीर्घसूत्रता ॥',
-    transliteration: 'ṣaḍ doṣāḥ puruṣeṇeha hātavyā bhūtim icchatā\nnidrā tandrā bhayaṁ krodhaḥ ālasyaṁ dīrgha-sūtratā',
-    meaning: 'Six faults must be abandoned by the person who seeks prosperity: excessive sleep, drowsiness, fear, anger, laziness, and procrastination. — Chanakya\'s practical list of inner enemies that silently destroy potential.',
-    tradition: 'hindu', category: 'chanakya',
-    tags: ['chanakya', 'faults', 'self-improvement', 'inner-enemy', 'discipline'],
-  },
-  {
-    id: 'chanakya-knowledge-virtue',
-    title: 'The Lamp of Learning',
-    source: 'Chanakya Niti — Chapter 12',
-    original: 'दानं भोगो नाशस्तिस्रो गतयो भवन्ति वित्तस्य ।\nयो न ददाति न भुङ्क्ते तस्य तृतीया गतिर्भवेत् ॥',
-    transliteration: 'dānaṁ bhogo nāśas tisro gatayo bhavanti vittasya\nyo na dadāti na bhuṅkte tasya tṛtīyā gatir bhavet',
-    meaning: 'Wealth has only three paths: charity, enjoyment, or destruction. He who neither gives nor enjoys — the third path (destruction) awaits him. Chanakya\'s teaching that wealth hoarded without use or generosity destroys itself.',
-    tradition: 'hindu', category: 'chanakya',
-    tags: ['chanakya', 'wealth', 'charity', 'generosity', 'destruction'],
-  },
-  {
-    id: 'chanakya-guru',
-    title: 'The Guru is the Boat',
-    source: 'Chanakya Niti — Chapter 13',
-    original: 'गुरुरग्निर्द्विजातीनां वर्णानां ब्राह्मणो गुरुः ।\nपतिरेव गुरुः स्त्रीणां सर्वस्याभ्यागतो गुरुः ॥',
-    transliteration: 'gurur agnir dvijātīnāṁ varṇānāṁ brāhmaṇo guruḥ\npatir eva guruḥ strīṇāṁ sarvasyābhyāgato guruḥ',
-    meaning: 'Fire is the guru of the twice-born; the brahmin is the guru of the varnas; the husband is the guru for the wife; and the guest is the guru for all. — Chanakya articulates the living forms through which knowledge and grace flow to each person in their station.',
-    tradition: 'hindu', category: 'chanakya',
-    tags: ['chanakya', 'guru', 'teacher', 'fire', 'wisdom'],
-  },
-  {
-    id: 'chanakya-living-present',
-    title: 'Live in the Present',
-    source: 'Chanakya Neeti',
-    original: 'गते शोको न कर्तव्यो भविष्यं नैव चिन्तयेत् ।\nवर्तमानेन कालेन वर्तयन्ति विचक्षणाः ॥',
-    transliteration: 'gate śoko na kartavyo bhaviṣyaṃ naiva cintayet\nvartamānena kālena वर्तयन्ति vicakṣaṇāḥ',
-    meaning: 'One should not grieve for the past nor worry about the future; the wise spend their lives attending to the present moment.',
-    tradition: 'hindu', category: 'chanakya',
-    tags: ['chanakya', 'mindfulness', 'wisdom', 'present'],
-  },
-  {
-    id: 'chanakya-secrecy',
-    title: 'The Power of Secrecy',
-    source: 'Chanakya Neeti',
-    original: 'मनसा चिन्तितं कार्यं वाचा नैव प्रकाशयेत् ।\nमन्त्रेण रक्षयेद् गूढं कार्यं चापि नियोजयेत् ॥',
-    transliteration: 'manasā cintitaṃ kāryaṃ vācā naiva prakāśayet\nmantreṇa rakṣayed gūḍhaṃ kāryaṃ cāpi niyojayet',
-    meaning: 'A work thought of in the mind should not be revealed by speech. It should be kept secret like a mantra and put into action silently. Success comes to those who act without premature announcement.',
-    tradition: 'hindu', category: 'chanakya',
-    tags: ['chanakya', 'success', 'strategy', 'focus'],
-  },
-];
+
 
 // ─── ADDITIONAL GURBANI / NITNEM ───────────────────────────────────────────────
-export const NITNEM_ENTRIES: LibraryEntry[] = [
-  {
-    id: 'sikh-rehras-1',
-    title: 'Rehras Sahib — Evening Prayer Opening',
-    source: 'Sri Guru Granth Sahib — Rehras Sahib (Guru Nanak Dev Ji)',
-    original: 'ਸੋ ਦਰੁ ਤੇਰਾ ਕੇਹਾ ਸੋ ਘਰੁ ਕੇਹਾ ਜਿਤੁ ਬਹਿ ਸਰਬ ਸਮਾਲੇ ॥\nਵਾਜੇ ਤੇਰੇ ਨਾਦ ਅਨੇਕ ਅਸੰਖਾ ਕੇਤੇ ਤੇਰੇ ਵਾਵਣਹਾਰੇ ॥',
-    transliteration: 'so daru terā kehā so ghar kehā jitu bahi sarab samāle\nvāje tere nād anek asaṅkhā kete tere vāvaṇhāre',
-    meaning: 'How beautiful is Your Gate, O Lord, and how glorious is Your Abode, where You sit and care for all! The sound of Your musical instruments is unstruck — countless are those who play for You. — The opening verses of Rehras Sahib, recited at dusk as the evening prayer.',
-    tradition: 'sikh', category: 'nitnem',
-    tags: ['rehras', 'guru-nanak', 'evening-prayer', 'nitnem', 'waheguru'],
-  },
-  {
-    id: 'sikh-kirtan-sohila-1',
-    title: 'Kirtan Sohila — Night Prayer',
-    source: 'Sri Guru Granth Sahib — Kirtan Sohila (Guru Nanak Dev Ji)',
-    original: 'ਜੈ ਘਰਿ ਕੀਰਤਿ ਆਖੀਐ ਕਰਤੇ ਕਾ ਹੋਇ ਬੀਚਾਰੋ ॥\nਤਿਤੁ ਘਰਿ ਗਾਵਹੁ ਸੋਹਲਾ ਸਿਵਰਿਹੁ ਸਿਰਜਣਹਾਰੋ ॥',
-    transliteration: 'jai ghar kīrati ākhī-ai karte kā hoi bīcāro\ntitu ghar gāvahu sohalā sivarihu sirajaṇhāro',
-    meaning: 'In that house where the praises of the Creator are sung and contemplated — in that house, sing the songs of joy and remember the Creator. — The opening of Kirtan Sohila, the bedtime prayer of Sikhs, celebrating that every home becomes sacred through the singing of God\'s praises.',
-    tradition: 'sikh', category: 'nitnem',
-    tags: ['kirtan-sohila', 'night-prayer', 'guru-nanak', 'waheguru', 'nitnem'],
-  },
-  {
-    id: 'sikh-japji-32',
-    title: 'Japji Sahib — Pauri 32: The One Name',
-    source: 'Sri Guru Granth Sahib — Japji Sahib, Pauri 32',
-    original: 'ਇਕ ਦੂ ਜੀਭੌ ਲਖ ਹੋਹਿ ਲਖ ਹੋਵਹਿ ਲਖ ਵੀਸ ॥\nਲਖੁ ਲਖੁ ਗੇੜਾ ਆਖੀਅਹਿ ਏਕੁ ਨਾਮੁ ਜਗਦੀਸ ॥',
-    transliteration: 'ik dū jībhau lakh hohi lakh hovahi lakh vīs\nlakhu lakhu geṛā ākhī-ahi eku nāmu jagadīs',
-    meaning: 'If I had a hundred thousand tongues, and then multiplied them twenty times more — with each tongue, I would repeat, hundreds of thousands of times, the One Name of the Lord of the Universe. — Guru Nanak\'s ecstatic expression of the infinite glory of God\'s name that surpasses all human capacity to praise.',
-    tradition: 'sikh', category: 'nitnem',
-    tags: ['japji', 'naam', 'waheguru', 'guru-nanak', 'praise'],
-  },
-  {
-    id: 'sikh-chaupai-1',
-    title: 'Chaupai Sahib — Protection Prayer',
-    source: 'Dasam Granth — Chaupai Sahib (Guru Gobind Singh)',
-    original: 'ਹਮਰੀ ਕਰੋ ਹਾਥ ਦੇ ਰੱਛਾ ॥\nਪੂਰਨ ਹੋਇ ਚਿੱਤ ਕੀ ਇੱਛਾ ॥\nਤਵ ਚਰਨਨ ਮਨ ਰਹੇ ਹਮਾਰਾ ॥\nਅਪਨਾ ਜਾਨ ਕਰੋ ਪ੍ਰਤਿਪਾਰਾ ॥',
-    transliteration: 'hamarī karo hāth de racchā\npūran hoi citt kī icchā\ntav caranan man rahe hamārā\napanā jān karo pratipārā',
-    meaning: 'Extend Your hand and protect us. May the desires of our minds be fulfilled. May our minds remain at Your feet. Consider us as Your own and protect us. — From Chaupai Sahib, composed by Guru Gobind Singh Ji, a prayer for divine protection and grace, recited daily by Sikhs.',
-    tradition: 'sikh', category: 'nitnem',
-    tags: ['chaupai', 'protection', 'guru-gobind-singh', 'daily', 'nitnem'],
-  },
-  {
-    id: 'sikh-japji-11',
-    title: 'Japji Sahib — Pauri 11: Truth Beyond Truth',
-    source: 'Sri Guru Granth Sahib — Japji Sahib, Pauri 11',
-    original: 'ਸੁਣਿਐ ਸਿਧ ਪੀਰ ਸੁਰਿ ਨਾਥ ॥\nਸੁਣਿਐ ਧਰਤਿ ਧਵਲ ਆਕਾਸ ॥\nਸੁਣਿਐ ਦੀਪ ਲੋਅ ਪਾਤਾਲ ॥\nਸੁਣਿਐ ਪੋਹਿ ਨ ਸਕੈ ਕਾਲੁ ॥',
-    transliteration: 'suṇiai sidh pīr sur nāth\nsuṇiai dharat dhaval ākās\nsuṇiai dīp lo-a pātāl\nsuṇiai pohi na sakai kāl',
-    meaning: 'By listening — the Siddhas, spiritual masters, heroes and Nathas (yogis). By listening — the earth, its support and the sky. By listening — the continents, worlds and nether regions. By listening — death cannot touch you. One of several pauris in which Guru Nanak praises the transformative power of listening to the Nam with full attention.',
-    tradition: 'sikh', category: 'nitnem',
-    tags: ['japji', 'listening', 'naam', 'guru-nanak', 'liberation'],
-  },
-  {
-    id: 'sikh-sukhmani-2',
-    title: 'Sukhmani Sahib — The Name Sustains All',
-    source: 'Sri Guru Granth Sahib — Sukhmani Sahib, Ashtapadee 1 (Guru Arjan Dev)',
-    original: 'ਸੁਖਮਨੀ ਸੁਖ ਅੰਮ੍ਰਿਤ ਪ੍ਰਭ ਨਾਮੁ ॥\nਭਗਤ ਜਨਾ ਕੈ ਮਨਿ ਬਿਸ੍ਰਾਮੁ ॥ ਰਹਾਉ ॥',
-    transliteration: 'sukhmanī sukh amrit prabh nāmu\nbhagat janā kai man bisrāmu. rahāu',
-    meaning: 'Sukhmani — peace of mind — is the ambrosial Name of God. It is the resting place of the minds of God\'s devotees. Pause. — The refrain (rahāu) of Sukhmani Sahib, which Guru Arjan Dev calls the "jewel of peace" — the Name of God is itself the seat of rest for the devotee\'s restless mind.',
-    tradition: 'sikh', category: 'gurbani',
-    tags: ['sukhmani', 'naam', 'peace', 'guru-arjan-dev', 'devotion'],
-  },
-  {
-    id: 'sikh-guru-nanak-teaching',
-    title: 'Guru Nanak — Truth Is the Name',
-    source: 'Sri Guru Granth Sahib — SGGS p. 1153 (Guru Nanak)',
-    original: 'ਸਚੁ ਕਹੋ ਸਚੁ ਸੁਣਹੁ ਜਨਹੁ ਸਚ ਕੀ ਬੇਲਾ ॥\nਸੁਖੁ ਦੇਵੈ ਦੁਖੁ ਲੇ ਜਾਇ ਕਰੇ ਅਪਨੇ ਚੇਲਾ ॥',
-    transliteration: 'sacu kaho sacu suṇahu janahu sac kī belā\nsukhu devai dukhu le jāi kare apane celā',
-    meaning: 'Speak the Truth; listen to the Truth, O people — this is the time of Truth. He bestows peace and takes away pain — He makes us His own disciples. — Guru Nanak\'s direct exhortation: Truth is not merely a concept but the living name of God, and the hour to embody it is always now.',
-    tradition: 'sikh', category: 'gurbani',
-    tags: ['guru-nanak', 'truth', 'naam', 'sach', 'teaching'],
-  },
-  {
-    id: 'sikh-guru-gobind-singh-teaching',
-    title: 'Guru Gobind Singh — The Saint-Soldier',
-    source: 'Dasam Granth — Zafarnama, Guru Gobind Singh',
-    original: 'ਚੁ ਕਾਰ ਅਜ਼ ਹਮਹ ਹੀਲਤੇ ਦਰ ਗੁਜ਼ਸ਼ਤ ॥\nਹਲਾਲ ਅਸਤ ਬੁਰਦਨ ਬ ਸ਼ਮਸ਼ੀਰ ਦਸਤ ॥',
-    transliteration: 'cu kār az hamah hīlate dar guzasht\nhalāl ast burdan ba śamśīr dast',
-    meaning: 'When all other means have been exhausted and every avenue tried — then it is righteous to pick up the sword. — From the Zafarnama (Letter of Victory), Guru Gobind Singh\'s Persian letter to Emperor Aurangzeb. A teaching that establishes the principle of just resistance only after all peaceful means are exhausted.',
-    tradition: 'sikh', category: 'gurbani',
-    tags: ['guru-gobind-singh', 'justice', 'zafarnama', 'courage', 'righteousness'],
-  },
-  {
-    id: 'sikh-guru-tegh-bahadur',
-    title: 'Guru Tegh Bahadur — Beyond Fear and Craving',
-    source: 'Sri Guru Granth Sahib — Salok Mahalla 9 (Guru Tegh Bahadur)',
-    original: 'ਭੈ ਕਾਹੂ ਕਉ ਦੇਤ ਨਹਿ ਨਹਿ ਭੈ ਮਾਨਤ ਆਨ ॥\nਕਹੁ ਨਾਨਕ ਸੁਨਿ ਰੇ ਮਨਾ ਗਿਆਨੀ ਤਾਹਿ ਬਖਾਨਿ ॥',
-    transliteration: 'bhai kāhū kau det nahi nahi bhai mānat ān\nkahu nānak sun re manā giānī tāhi bakhāni',
-    meaning: 'One who does not cause fear in others and who does not fear anyone else — says Nanak, listen O mind, call such a one truly wise. — Guru Tegh Bahadur\'s definition of the jñāni (wise one): not the scholar, but the one who has transcended both the giving of fear and the reception of it. A verse that defined his own martyrdom.',
-    tradition: 'sikh', category: 'gurbani',
-    tags: ['guru-tegh-bahadur', 'fearlessness', 'wisdom', 'salok', 'courage'],
-  },
-];
+
 
 // ─── ADDITIONAL BUDDHIST ──────────────────────────────────────────────────────
 export const BUDDHIST_ADDITIONAL_ENTRIES: LibraryEntry[] = [
@@ -1489,9 +1291,24 @@ export const ALL_LIBRARY_ENTRIES: LibraryEntry[] = [
   // Buddhist
   ...BUDDHIST_ENTRIES,
   ...BUDDHIST_ADDITIONAL_ENTRIES,
+  ...DHAMMAPADA_ENTRIES,
+  ...NOBLE_TRUTHS_ENTRIES,
+  ...HEART_SUTRA_ENTRIES,
+  ...METTA_SUTTA_ENTRIES,
+  ...SATIPATTHANA_ENTRIES,
+  ...EIGHTFOLD_PATH_ENTRIES,
+  ...JATAKA_TALES_ENTRIES,
+
   // Jain
   ...JAIN_ENTRIES,
   ...JAIN_ADDITIONAL_ENTRIES,
+  ...NAMOKAR_ENTRIES,
+  ...BHAKTAMAR_ENTRIES,
+  ...TATTVARTHA_ENTRIES,
+  ...ACHARANGA_ENTRIES,
+  ...KARMA_DOCTRINE_ENTRIES,
+  ...JAIN_COSMOLOGY_ENTRIES,
+
 ];
 
 // ─── Pathshala sections (for tracks / navigation) ─────────────────────────────

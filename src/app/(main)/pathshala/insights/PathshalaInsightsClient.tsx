@@ -1,3 +1,4 @@
+import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -14,10 +15,10 @@ interface ProgressRow {
 interface Props { progress: ProgressRow[]; tradition: string; }
 
 // Path metadata derived from central SEED_PATHS
-const PATH_INFO_MAP = new Map<string, { name: string; icon: string; total_lessons: number }>(
+const PATH_INFO_MAP = new Map<string, { name: string; icon: SacredIconName; total_lessons: number }>(
   SEED_PATHS.map(p => [p.id, { 
     name: p.title, 
-    icon: '📖', 
+    icon: 'book', 
     total_lessons: (p as any).total_lessons || 0 
   }])
 );
@@ -25,14 +26,14 @@ const PATH_INFO_MAP = new Map<string, { name: string; icon: string; total_lesson
 function getPathInfo(id: string) {
   return PATH_INFO_MAP.get(id) ?? { 
     name: id.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), 
-    icon: '📚', 
+    icon: 'book', 
     total_lessons: 0 
   };
 }
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
 function StatCard({ label, value, icon, sub, detail, isDark, amber }: {
-  label: string; value: string; icon: string; sub: string; detail?: string; isDark: boolean; amber: string;
+  label: string; value: string; icon: SacredIconName; sub: string; detail?: string; isDark: boolean; amber: string;
 }) {
   const [open, setOpen] = useState(false);
   const border = isDark ? 'rgba(200,146,74,0.12)' : 'rgba(0,0,0,0.07)';
@@ -99,7 +100,7 @@ function PathCard({ row, isDark, amber }: { row: ProgressRow; isDark: boolean; a
         opacity: left ? 0.65 : 1,
       }}>
       <div className="flex items-center gap-3">
-        <span className="text-3xl">{info.icon}</span>
+        <SacredIcon name={info.icon} size={28} strokeWidth={1.5} style={{ color: 'var(--brand-primary)' }} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <p className="text-[13px] font-semibold truncate" style={{ color: text }}>{info.name}</p>
@@ -221,13 +222,13 @@ export default function PathshalaInsightsClient({ progress }: Props) {
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3">
-          <StatCard label="Paths Enrolled" value={String(stats.totalPaths)} icon="🗺️" sub={sub} isDark={isDark} amber={amber}
+          <StatCard label="Paths Enrolled" value={String(stats.totalPaths)} icon="location" sub={sub} isDark={isDark} amber={amber}
             detail={`${stats.totalPaths} paths started. ${stats.completedPaths > 0 ? `You've completed ${stats.completedPaths} of them — excellent!` : 'Complete your first path to earn your first milestone.'}`} />
-          <StatCard label="Paths Complete" value={String(stats.completedPaths)} icon="🏆" sub={sub} isDark={isDark} amber={amber}
+          <StatCard label="Paths Complete" value={String(stats.completedPaths)} icon="sparkles" sub={sub} isDark={isDark} amber={amber}
             detail={`${stats.completedPaths} complete path${stats.completedPaths !== 1 ? 's' : ''}. Each completion is a milestone in your knowledge journey.`} />
-          <StatCard label="Lessons Done" value={String(stats.totalLessons)} icon="✅" sub={sub} isDark={isDark} amber={amber}
+          <StatCard label="Lessons Done" value={String(stats.totalLessons)} icon="star" sub={sub} isDark={isDark} amber={amber}
             detail={`${stats.totalLessons} individual lessons completed across all your paths.`} />
-          <StatCard label="Active Paths" value={String(stats.active.length)} icon="📚" sub={sub} isDark={isDark} amber={amber}
+          <StatCard label="Active Paths" value={String(stats.active.length)} icon="book" sub={sub} isDark={isDark} amber={amber}
             detail={stats.active.length > 0 ? `${stats.active.length} path${stats.active.length !== 1 ? 's' : ''} in progress. Continue your studies daily.` : 'No active paths — start a new study journey.'} />
         </div>
 

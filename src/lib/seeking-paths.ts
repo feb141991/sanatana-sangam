@@ -1,10 +1,11 @@
+import type { SacredIconName } from '@/components/ui/SacredIcon';
 export type SeekingKey = 'community' | 'knowledge' | 'events' | 'mentorship' | 'youth';
 export type PersonalizedPathId = 'new-to-dharma' | 'city-anchor' | `seeking-${SeekingKey}`;
 
 export interface PersonalizedPathAction {
   label: string;
   href: string;
-  icon: string;
+  icon: SacredIconName;
 }
 
 export interface PersonalizedPath {
@@ -32,8 +33,8 @@ const PATH_DEFINITIONS: Record<SeekingKey, Omit<PersonalizedPath, 'id' | 'badges
     description: 'Start nearby: see your Mandali, explore sacred places, and move toward your first real-world connection.',
     accentClass: 'clay-card-community',
     actions: [
-      { label: 'Open My Mandali', href: '/mandali', icon: '🏡' },
-      { label: 'Explore Tirtha Map', href: '/tirtha-map', icon: '🛕' },
+      { label: 'Open My Mandali', href: '/mandali', icon: 'mandali' },
+      { label: 'Explore Tirtha Map', href: '/tirtha-map', icon: 'landmark' },
     ],
   },
   knowledge: {
@@ -42,8 +43,8 @@ const PATH_DEFINITIONS: Record<SeekingKey, Omit<PersonalizedPath, 'id' | 'badges
     description: 'Begin with one text, one question, and one place to return tomorrow so learning feels grounded, not overwhelming.',
     accentClass: 'clay-card-knowledge',
     actions: [
-      { label: 'Open Pathshala', href: '/pathshala', icon: '📚' },
-      { label: 'Enter Vichaar Sabha', href: '/vichaar-sabha', icon: '💬' },
+      { label: 'Open Pathshala', href: '/pathshala', icon: 'book' },
+      { label: 'Enter Vichaar Sabha', href: '/vichaar-sabha', icon: 'mandali' },
     ],
   },
   events: {
@@ -52,8 +53,8 @@ const PATH_DEFINITIONS: Record<SeekingKey, Omit<PersonalizedPath, 'id' | 'badges
     description: 'Use the map and festival calendar as your local pulse, then pick one event or mandir to anchor your month.',
     accentClass: 'clay-card-events',
     actions: [
-      { label: 'Open Tirtha Map', href: '/tirtha-map', icon: '📍' },
-      { label: 'Check Panchang', href: '/panchang', icon: '🪔' },
+      { label: 'Open Tirtha Map', href: '/tirtha-map', icon: 'landmark' },
+      { label: 'Check Panchang', href: '/panchang', icon: 'calendar' },
     ],
   },
   mentorship: {
@@ -62,8 +63,8 @@ const PATH_DEFINITIONS: Record<SeekingKey, Omit<PersonalizedPath, 'id' | 'badges
     description: 'Start with thoughtful questions, trusted reading, and community wisdom before looking for deeper mentorship.',
     accentClass: 'clay-card-mentorship',
     actions: [
-      { label: 'Ask in Vichaar Sabha', href: '/vichaar-sabha', icon: '🙏' },
-      { label: 'Read in Pathshala', href: '/pathshala', icon: '📖' },
+      { label: 'Ask in Vichaar Sabha', href: '/vichaar-sabha', icon: 'mandali' },
+      { label: 'Read in Pathshala', href: '/pathshala', icon: 'book' },
     ],
   },
   youth: {
@@ -72,8 +73,8 @@ const PATH_DEFINITIONS: Record<SeekingKey, Omit<PersonalizedPath, 'id' | 'badges
     description: 'Use shorter, friendlier entry points first: simple explanations, local discovery, and one clear next step.',
     accentClass: 'clay-card-youth',
     actions: [
-      { label: 'Start beginner Pathshala', href: '/pathshala', icon: '🌱' },
-      { label: 'Explore community questions', href: '/vichaar-sabha', icon: '💭' },
+      { label: 'Start beginner Pathshala', href: '/pathshala', icon: 'book' },
+      { label: 'Explore community questions', href: '/vichaar-sabha', icon: 'mandali' },
     ],
   },
 };
@@ -86,8 +87,8 @@ const ASHRAMA_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> = {
     description: 'Focus on structured study and daily discipline. One text, one practice, one return each morning.',
     accentClass: 'clay-card-knowledge',
     actions: [
-      { label: 'Start a study path', href: '/pathshala', icon: '📖' },
-      { label: 'Ask in Vichaar Sabha', href: '/vichaar-sabha', icon: '💬' },
+      { label: 'Start a study path', href: '/pathshala', icon: 'book' },
+      { label: 'Ask in Vichaar Sabha', href: '/vichaar-sabha', icon: 'mandali' },
     ],
   },
   grihastha: {
@@ -96,8 +97,8 @@ const ASHRAMA_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> = {
     description: 'Practice within family, work, and community. Small, steady rhythms make the difference.',
     accentClass: 'clay-card-community',
     actions: [
-      { label: 'Open Kul', href: '/kul', icon: '❤️' },
-      { label: 'Open My Mandali', href: '/mandali', icon: '🏡' },
+      { label: 'Open Kul', href: '/kul', icon: 'heart' },
+      { label: 'Open My Mandali', href: '/mandali', icon: 'mandali' },
     ],
   },
   vanaprastha: {
@@ -106,8 +107,8 @@ const ASHRAMA_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> = {
     description: 'Shift from doing to guiding. Mentorship, wisdom exchange, and deeper study are your path now.',
     accentClass: 'clay-card-mentorship',
     actions: [
-      { label: 'Answer in Vichaar Sabha', href: '/vichaar-sabha', icon: '🙏' },
-      { label: 'Explore Pathshala', href: '/pathshala', icon: '📚' },
+      { label: 'Answer in Vichaar Sabha', href: '/vichaar-sabha', icon: 'mandali' },
+      { label: 'Explore Pathshala', href: '/pathshala', icon: 'book' },
     ],
   },
   sannyasa: {
@@ -116,8 +117,8 @@ const ASHRAMA_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> = {
     description: 'Let go of outcomes. Daily japa, sacred study, and being a quiet presence for others.',
     accentClass: 'clay-card-guided',
     actions: [
-      { label: 'Open Japa', href: '/bhakti/mala', icon: '📿' },
-      { label: 'Study scripture', href: '/pathshala', icon: '📖' },
+      { label: 'Open Japa', href: '/bhakti/mala', icon: 'music' },
+      { label: 'Study scripture', href: '/pathshala', icon: 'book' },
     ],
   },
 };
@@ -130,8 +131,8 @@ const TRADITION_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> =
     description: 'Begin each day with Nitnem, study Guru Granth Sahib, and connect with your local Sangat.',
     accentClass: 'clay-card-knowledge',
     actions: [
-      { label: 'Study Gurbani', href: '/pathshala', icon: '🙏' },
-      { label: 'Find Sangat', href: '/mandali', icon: '🏡' },
+      { label: 'Study Gurbani', href: '/pathshala', icon: 'book' },
+      { label: 'Find Sangat', href: '/mandali', icon: 'mandali' },
     ],
   },
   buddhist: {
@@ -140,8 +141,8 @@ const TRADITION_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> =
     description: 'Cultivate mindfulness, study the suttas, and find your local Sangha for shared practice.',
     accentClass: 'clay-card-guided',
     actions: [
-      { label: 'Study Dhamma', href: '/pathshala', icon: '☸️' },
-      { label: 'Find Sangha', href: '/mandali', icon: '🏡' },
+      { label: 'Study Dhamma', href: '/pathshala', icon: 'book' },
+      { label: 'Find Sangha', href: '/mandali', icon: 'mandali' },
     ],
   },
   jain: {
@@ -150,8 +151,8 @@ const TRADITION_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> =
     description: 'Daily study of Agam, Samayika practice, and community — the three pillars of Jain sadhana.',
     accentClass: 'clay-card-knowledge',
     actions: [
-      { label: 'Study Agam', href: '/pathshala', icon: '📖' },
-      { label: 'Open Mandali', href: '/mandali', icon: '🏡' },
+      { label: 'Study Agam', href: '/pathshala', icon: 'book' },
+      { label: 'Open Mandali', href: '/mandali', icon: 'mandali' },
     ],
   },
 };
@@ -211,8 +212,8 @@ export function buildPersonalizedPaths({
       badges: ['Beginner-friendly', 'First week'],
       accentClass: 'clay-card-guided',
       actions: [
-        { label: 'Read today\'s sacred text', href: '/home?focus=shloka', icon: '🪷' },
-        { label: 'Browse Vichaar Sabha', href: '/vichaar-sabha', icon: '💬' },
+        { label: 'Read today\'s sacred text', href: '/home?focus=shloka', icon: 'flower' },
+        { label: 'Browse Vichaar Sabha', href: '/vichaar-sabha', icon: 'mandali' },
       ],
     });
   }
@@ -230,8 +231,8 @@ export function buildPersonalizedPaths({
       badges: cityIsEntryPath ? ['Local discovery', 'Diaspora-friendly'] : ['Local rhythm', 'This week'],
       accentClass: 'clay-card-city',
       actions: [
-        { label: 'Find nearby tirthas', href: '/tirtha-map', icon: '🛕' },
-        { label: 'Open My Mandali', href: '/mandali', icon: '🏡' },
+        { label: 'Find nearby tirthas', href: '/tirtha-map', icon: 'landmark' },
+        { label: 'Open My Mandali', href: '/mandali', icon: 'mandali' },
       ],
     });
   }

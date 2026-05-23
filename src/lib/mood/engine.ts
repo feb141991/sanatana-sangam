@@ -1,3 +1,4 @@
+import type { SacredIconName } from '@/components/ui/SacredIcon';
 export interface MoodRecommendation {
   id: string;
   title: string;
@@ -5,7 +6,7 @@ export interface MoodRecommendation {
   actionLabel: string;
   href: string;
   type: 'stotram' | 'katha' | 'dhyana' | 'discover' | 'japa' | 'pathshala';
-  icon: string;
+  icon: SacredIconName;
   explanation?: string;
 }
 
@@ -18,7 +19,7 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       actionLabel: 'Chant Now',
       href: '/bhakti/stotram/ganesha-pancharatnam',
       type: 'stotram',
-      icon: '🙏',
+      icon: 'flower',
       explanation: 'Expressing gratitude through chanting creates a lasting positive vibration.',
     },
     {
@@ -26,9 +27,9 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       title: 'Gratitude Reflection',
       description: 'Sit in silence and acknowledge the blessings in your life.',
       actionLabel: 'Meditate',
-      href: '/pathshala/dhyana',
+      href: '/pathshala',
       type: 'dhyana',
-      icon: '🧘',
+      icon: 'sunrise',
       explanation: 'Silent reflection deepens the feeling of thankfulness in your core.',
     },
     {
@@ -36,9 +37,9 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       title: 'Krishna & Sudama',
       description: 'Read the beautiful story of true friendship and unspoken gratitude.',
       actionLabel: 'Read',
-      href: '/bhakti/katha/krishna-sudama',
+      href: '/bhakti/katha/katha-janmashtami',
       type: 'katha',
-      icon: '🦚',
+      icon: 'heart',
       explanation: 'This story perfectly captures the essence of divine grace and gratitude.',
     },
     {
@@ -48,7 +49,7 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       actionLabel: 'Start Japa',
       href: '/japa',
       type: 'japa',
-      icon: '📿',
+      icon: 'sparkles',
       explanation: 'A simple japa helps anchor your joyful energy.',
     },
     {
@@ -58,7 +59,7 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       actionLabel: 'Learn',
       href: '/pathshala',
       type: 'pathshala',
-      icon: '📖',
+      icon: 'scroll',
       explanation: 'When grateful, learning about dharma gives direction to your energy.',
     },
     {
@@ -66,9 +67,9 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       title: 'Bhakti Collection',
       description: 'Listen to devotional chants to deepen your feeling of gratitude.',
       actionLabel: 'Listen',
-      href: '/discover',
+      href: '/bhakti',
       type: 'discover',
-      icon: '🎵',
+      icon: 'music',
       explanation: 'Music is the most natural expression of a grateful heart.',
     },
   ],
@@ -80,7 +81,7 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       actionLabel: 'Explore',
       href: '/pathshala',
       type: 'pathshala',
-      icon: '📖',
+      icon: 'star',
       explanation: 'The Upanishads are designed precisely for seekers of truth.',
     },
     {
@@ -88,9 +89,9 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       title: 'Ramayana Katha',
       description: 'Find answers through the timeless stories of Lord Rama.',
       actionLabel: 'Read',
-      href: '/bhakti/katha/ramayana',
+      href: '/bhakti/katha/katha-ram-navami',
       type: 'katha',
-      icon: '🏹',
+      icon: 'compass',
       explanation: 'Lord Rama’s life provides practical answers to complex moral dilemmas.',
     },
     {
@@ -98,9 +99,9 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       title: 'Self-Inquiry',
       description: 'Turn your seeking inward with guided reflection.',
       actionLabel: 'Meditate',
-      href: '/pathshala/dhyana',
+      href: '/pathshala',
       type: 'dhyana',
-      icon: '🧘',
+      icon: 'sun',
       explanation: 'Sometimes the answers you seek are already within you.',
     },
     {
@@ -110,7 +111,7 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       actionLabel: 'Chant',
       href: '/bhakti/stotram/guru-stotram',
       type: 'stotram',
-      icon: '🙏',
+      icon: 'sparkles',
       explanation: 'Honoring the Guru principle opens the mind to receiving knowledge.',
     },
     {
@@ -120,7 +121,7 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       actionLabel: 'Start Japa',
       href: '/japa',
       type: 'japa',
-      icon: '📿',
+      icon: 'sun',
       explanation: 'The Gayatri mantra specifically prays for an illuminated intellect.',
     },
     {
@@ -128,9 +129,9 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       title: 'Discover Scripture',
       description: 'Browse the library for verses that speak to your condition.',
       actionLabel: 'Explore',
-      href: '/discover',
+      href: '/pathshala',
       type: 'discover',
-      icon: '🌿',
+      icon: 'compass',
       explanation: 'A broad search can often spark unexpected insights.',
     },
   ],
@@ -142,7 +143,7 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       actionLabel: 'Chant',
       href: '/bhakti/stotram/hanuman-chalisa',
       type: 'stotram',
-      icon: '💪',
+      icon: 'shield',
       explanation: 'Lord Hanuman represents absolute strength and freedom from fear.',
     },
     {
@@ -150,9 +151,9 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       title: 'Mindful Breathing',
       description: 'Take a few minutes to center yourself and calm your mind.',
       actionLabel: 'Practice',
-      href: '/pathshala/dhyana',
+      href: '/pathshala',
       type: 'dhyana',
-      icon: '🧘',
+      icon: 'wind',
       explanation: 'Slowing the breath immediately calms the nervous system.',
     },
     {
@@ -162,7 +163,7 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       actionLabel: 'Start Japa',
       href: '/japa',
       type: 'japa',
-      icon: '📿',
+      icon: 'mountain',
       explanation: 'Rhythmic repetition provides an anchor for an anxious mind.',
     },
     {
@@ -170,9 +171,9 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       title: 'Gajendra Moksha',
       description: 'Read the story of surrender when all seems lost.',
       actionLabel: 'Read',
-      href: '/bhakti/katha/gajendra-moksha',
+      href: '/bhakti/katha/katha-satyanarayan',
       type: 'katha',
-      icon: '🐘',
+      icon: 'water',
       explanation: 'This story teaches that ultimate surrender brings divine protection.',
     },
     {
@@ -182,7 +183,7 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       actionLabel: 'Learn',
       href: '/pathshala',
       type: 'pathshala',
-      icon: '📖',
+      icon: 'scroll',
       explanation: 'Anxiety often comes from worrying about the future; the Gita teaches focus on the present.',
     },
     {
@@ -190,9 +191,9 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       title: 'Calming Chants',
       description: 'Listen to soothing mantras to settle your spirit.',
       actionLabel: 'Listen',
-      href: '/discover',
+      href: '/bhakti',
       type: 'discover',
-      icon: '🎵',
+      icon: 'music',
       explanation: 'Sound vibrations have a direct calming effect on the mind.',
     },
   ],
@@ -202,9 +203,9 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       title: 'Shiva Tandava Stotram',
       description: 'Channel your energy and joy with the vigorous Shiva Tandava.',
       actionLabel: 'Chant',
-      href: '/bhakti/stotram/shiva-tandava-stotram',
+      href: '/bhakti/stotram/shiva-tandava',
       type: 'stotram',
-      icon: '🔱',
+      icon: 'flame',
       explanation: 'This stotram matches your high energy with its powerful rhythm.',
     },
     {
@@ -212,9 +213,9 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       title: 'Krishna Leela',
       description: 'Celebrate your joy with the playful stories of Lord Krishna.',
       actionLabel: 'Read',
-      href: '/bhakti/katha/krishna-leela',
+      href: '/bhakti/katha/katha-janmashtami',
       type: 'katha',
-      icon: '🦚',
+      icon: 'flower',
       explanation: 'Lord Krishna is the embodiment of divine bliss and playfulness.',
     },
     {
@@ -224,7 +225,7 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       actionLabel: 'Start Japa',
       href: '/japa',
       type: 'japa',
-      icon: '📿',
+      icon: 'heart',
       explanation: 'Joy naturally flows outward in the form of divine names.',
     },
     {
@@ -232,9 +233,9 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       title: 'Radiating Joy',
       description: 'Share your positive energy with the world through meditation.',
       actionLabel: 'Meditate',
-      href: '/pathshala/dhyana',
+      href: '/pathshala',
       type: 'dhyana',
-      icon: '🧘',
+      icon: 'sun',
       explanation: 'Joy grows when it is shared intentionally with others.',
     },
     {
@@ -244,7 +245,7 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       actionLabel: 'Learn',
       href: '/pathshala',
       type: 'pathshala',
-      icon: '📖',
+      icon: 'scroll',
       explanation: 'Understanding the roots of devotion gives depth to your joy.',
     },
     {
@@ -252,9 +253,9 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       title: 'Celebration Collection',
       description: 'Upbeat bhajans and kirtans to elevate your mood.',
       actionLabel: 'Listen',
-      href: '/discover',
+      href: '/bhakti',
       type: 'discover',
-      icon: '🎵',
+      icon: 'music',
       explanation: 'Music amplifies a joyous state of mind.',
     },
   ],
@@ -264,9 +265,9 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       title: 'Trataka Dhyana',
       description: 'Focus your mind and gather your thoughts with a short meditation.',
       actionLabel: 'Meditate',
-      href: '/pathshala/dhyana',
+      href: '/pathshala',
       type: 'dhyana',
-      icon: '👁️',
+      icon: 'water',
       explanation: 'A single point of focus brings scattered thoughts together.',
     },
     {
@@ -274,9 +275,9 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       title: 'Vishnu Sahasranamam',
       description: 'Bring order to a scattered mind by listening to the 1000 names.',
       actionLabel: 'Listen',
-      href: '/bhakti/stotram/vishnu-sahasranamam',
+      href: '/bhakti/stotram/vishnu-sahasranama',
       type: 'stotram',
-      icon: '🐚',
+      icon: 'star',
       explanation: 'The structured discipline of 1000 names trains the mind to stay attentive.',
     },
     {
@@ -286,7 +287,7 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       actionLabel: 'Start Japa',
       href: '/japa',
       type: 'japa',
-      icon: '📿',
+      icon: 'compass',
       explanation: 'Physical movement combined with mantra grounds a wandering mind.',
     },
     {
@@ -296,7 +297,7 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       actionLabel: 'Learn',
       href: '/pathshala',
       type: 'pathshala',
-      icon: '📖',
+      icon: 'mountain',
       explanation: 'Understanding the mechanics of the mind helps you regain control.',
     },
     {
@@ -304,9 +305,9 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       title: 'Story of Dhruva',
       description: 'Read about the ultimate example of unwavering determination.',
       actionLabel: 'Read',
-      href: '/bhakti/katha/dhruva',
+      href: '/bhakti/katha/katha-ram-navami',
       type: 'katha',
-      icon: '🌟',
+      icon: 'star',
       explanation: 'Dhruva’s singular focus is the antidote to scattered energy.',
     },
     {
@@ -314,9 +315,9 @@ export const MOOD_RECOMMENDATION_MAP: Record<string, MoodRecommendation[]> = {
       title: 'Focus Collection',
       description: 'Explore chants specifically designed to aid concentration.',
       actionLabel: 'Explore',
-      href: '/discover',
+      href: '/bhakti',
       type: 'discover',
-      icon: '🌿',
+      icon: 'tree',
       explanation: 'Targeted practices can help rebuild your attention span.',
     },
   ],

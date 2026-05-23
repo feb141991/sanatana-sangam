@@ -5,6 +5,7 @@ import { retrievePathshalaContext } from '@/lib/ai/retrieval';
 import { withReasoningCache } from '@/lib/ai/reasoning-cache';
 import { SimpleCorpusSelector } from '@sangam/pramana-serve';
 import { DharmaChatContract, createPramanaRoute } from '@sangam/pramana-core';
+import { getLanguageInstruction } from '@/lib/language-runtime';
 import type {
   AIResponseMetadata,
   AITextResult,
@@ -190,4 +191,71 @@ export async function runDharmaChat(input: AIChatInput) {
       fallbackOccurred
     }
   };
+}
+
+export async function runPathshalaBridge(input: { lessonTitle: string; pathTitle: string; tradition: string; language: string; lastEntryMeaning?: string; completedCount: number; totalLessons: number; }) {
+  assertAiRequestAllowed({
+    task: 'pathshala_explain', // we use explain privileges for bridging
+    tradition: input.tradition,
+    language: input.language,
+    scope: ['user_preference_only'],
+  });
+
+  return withReasoningCache('pathshala_bridge', input, async () => {
+    const langInstruction = getLanguageInstruction(input.language);
+    
+    const system = `You are a warm, wise guide in the ${input.tradition} tradition.`;
+    let userPrompt = `The user just completed a lesson titled "${input.lessonTitle}" in the path "${input.pathTitle}".\nThis was lesson ${input.completedCount} out of ${input.totalLessons}.\n`;
+    if (input.lastEntryMeaning) {
+      userPrompt += `The final verse they read meant: "${input.lastEntryMeaning}"\n`;
+    }
+    userPrompt += `\nTask:\nWrite a 2-sentence post-lesson reflection bridge. Return exactly JSON.\n`;
+    userPrompt += `1. "bridge": One sentence connecting this lesson to the user's day.\n`;
+    userPrompt += `2. "next_step": One sentence pointing gently to what comes next in the path. (If ${input.completedCount} == ${input.totalLessons}, tell them they have completed the path and should sit with it).\n\n`;
+    userPrompt += `${langInstruction}\n\n`;
+    userPrompt += `Output strictly JSON with keys "bridge" and "next_step".`;
+
+    const result = await generateWithProvider({ system, user: userPrompt }, {
+      responseFormat: 'json',
+      providerOverride: 'sarvam-hosted',
+    });
+
+    return {
+      raw: result.text,
+      metadata: buildMetadata('pathshala_explain', result),
+    };
+  });
+}
+
+export async function runPathshalaRecommend(input: { tradition: string; completedPathIds: string[]; currentMood?: string; language: string; pathTitle: string; }) {
+  assertAiRequestAllowed({
+    task: 'pathshala_explain',
+    tradition: input.tradition,
+    language: input.language,
+    scope: ['user_preference_only'],
+  });
+
+  return withReasoningCache('pathshala_recommend', input, async () => {
+    const langInstruction = getLanguageInstruction(input.language);
+    
+    const system = `You are a warm, wise guide in the ${input.tradition} tradition.`;
+    let userPrompt = `We are recommending the path "${input.pathTitle}" to the user.\n`;
+    if (input.currentMood) {
+      userPrompt += `The user's current mood or state is: ${input.currentMood}.\n`;
+    }
+    userPrompt += `\nTask:\nWrite a ONE sentence reason explaining why this path suits this person right now. Return exactly JSON.\n`;
+    userPrompt += `1. "reason": The one sentence explanation.\n\n`;
+    userPrompt += `${langInstruction}\n\n`;
+    userPrompt += `Output strictly JSON with key "reason".`;
+
+    const result = await generateWithProvider({ system, user: userPrompt }, {
+      responseFormat: 'json',
+      providerOverride: 'sarvam-hosted',
+    });
+
+    return {
+      raw: result.text,
+      metadata: buildMetadata('pathshala_explain', result),
+    };
+  });
 }

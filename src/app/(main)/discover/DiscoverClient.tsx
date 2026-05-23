@@ -24,7 +24,7 @@ function StackCard({
   index,
   total,
   accentColour,
-  onNext,
+  onNext, onPrev,
   onClose,
   onClickAction,
   isActive
@@ -34,13 +34,14 @@ function StackCard({
   total: number;
   accentColour: string;
   onNext: () => void;
+  onPrev?: () => void;
   onClose: () => void;
   onClickAction: () => void;
   isActive: boolean;
 }) {
   return (
     <motion.div
-      className="absolute inset-0 rounded-[2rem] p-6 flex flex-col overflow-hidden"
+      className="absolute inset-0 rounded-[1.6rem] p-4 flex flex-col overflow-hidden"
       style={{
         background: 'var(--card-bg)',
         border: '1px solid var(--card-border)',
@@ -61,7 +62,7 @@ function StackCard({
         style={{ background: accentColour, transform: 'translate(30%, -30%)' }} />
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full"
             style={{ background: `${accentColour}15`, color: accentColour }}>
@@ -76,23 +77,23 @@ function StackCard({
       </div>
 
       <div className="flex-1 flex flex-col justify-center">
-        <div className="w-16 h-16 rounded-3xl flex items-center justify-center mb-6"
+        <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
           style={{ background: `${accentColour}15` }}>
-          <span className="text-3xl" aria-hidden="true">{rec.icon}</span>
+          <SacredIcon name={rec.icon} size={26} strokeWidth={1.6} style={{ color: accentColour }} />
         </div>
 
-        <h3 className="text-2xl font-bold mb-3 leading-tight" style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-cream)' }}>
+        <h3 className="text-xl font-bold mb-2 leading-tight" style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-cream)' }}>
           {rec.title}
         </h3>
         
-        <p className="text-[14px] leading-relaxed mb-4" style={{ color: 'var(--text-muted-warm)' }}>
+        <p className="text-[13px] leading-relaxed mb-3" style={{ color: 'var(--text-muted-warm)' }}>
           {rec.description}
         </p>
 
         {rec.explanation && (
-          <div className="rounded-2xl p-4 mt-2" style={{ background: 'var(--card-bg-soft)', border: '1px solid var(--card-border)' }}>
+          <div className="rounded-2xl p-3 mt-1" style={{ background: 'var(--card-bg-soft)', border: '1px solid var(--card-border)' }}>
             <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: accentColour }}>Why this fits</p>
-            <p className="text-[12px] leading-relaxed" style={{ color: 'var(--text-dim)' }}>
+            <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-dim)' }}>
               {rec.explanation}
             </p>
           </div>
@@ -100,18 +101,28 @@ function StackCard({
       </div>
 
       {isActive && (
-        <div className="mt-6 flex items-center gap-3">
+        <div className="mt-4 flex items-center gap-2">
+          {onPrev && (
+            <button
+              onClick={onPrev}
+              className="w-10 h-10 rounded-[1rem] flex items-center justify-center transition-transform active:scale-95"
+              style={{ border: '1px solid var(--card-border)' }}
+              aria-label="Previous recommendation"
+            >
+              <ChevronLeft size={16} style={{ color: 'var(--text-dim)' }} />
+            </button>
+          )}
           <Link
             href={rec.href}
             onClick={onClickAction}
-            className="flex-1 py-3.5 rounded-[1.2rem] text-center text-[13px] font-bold transition-transform active:scale-95"
+            className="flex-1 py-2.5 rounded-[1.2rem] text-center text-[13px] font-bold transition-transform active:scale-95"
             style={{ background: accentColour, color: 'var(--surface-base)' }}
           >
             {rec.actionLabel}
           </Link>
           <button
             onClick={onNext}
-            className="w-12 h-12 rounded-[1.2rem] flex items-center justify-center transition-transform active:scale-95"
+            className="w-10 h-10 rounded-[1rem] flex items-center justify-center transition-transform active:scale-95"
             style={{ border: '1px solid var(--card-border)' }}
             aria-label="Next recommendation"
           >
@@ -340,6 +351,7 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
                             reset();
                           }
                         }}
+                        onPrev={activeIndex > 0 ? () => setActiveIndex(prev => Math.max(0, prev - 1)) : undefined}
                         onClickAction={() => {
                           trackInteraction('click', rec.type);
                         }}

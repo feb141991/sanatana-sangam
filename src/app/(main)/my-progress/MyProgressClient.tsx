@@ -1,3 +1,4 @@
+import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 'use client';
 
 import { useState, useRef, useMemo, useCallback } from 'react';
@@ -1068,12 +1069,12 @@ export default function MyProgressClient({
 
             <div className="grid grid-cols-3 gap-4 mb-6">
               {[
-                { label: 'Current Cycle', val: `${(streak % 9) + 1}/9`, icon: '🕉️' },
-                { label: 'Intensity', val: streak > 40 ? 'High' : 'Steady', icon: '🔥' },
-                { label: 'Focus', val: 'Devotion', icon: '🙏' },
+                { label: 'Current Cycle', val: `${(streak % 9) + 1}/9`, icon: 'sparkles' as SacredIconName },
+                { label: 'Intensity', val: streak > 40 ? 'High' : 'Steady', icon: 'flame' as SacredIconName },
+                { label: 'Focus', val: 'Devotion', icon: 'heart' as SacredIconName },
               ].map(item => (
                 <div key={item.label} className="text-center">
-                  <p className="text-xl mb-1">{item.icon}</p>
+                  <div className="mb-1"><SacredIcon name={item.icon} size={22} strokeWidth={1.6} style={{ color: 'var(--brand-primary)' }} /></div>
                   <p className="text-lg font-bold" style={{ color: h1 }}>{item.val}</p>
                   <p className="text-[9px] uppercase tracking-tighter text-white/30 font-bold">{item.label}</p>
                 </div>

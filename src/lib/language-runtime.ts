@@ -27,9 +27,9 @@ export function getMeaningLabel(language?: string | null): string {
 export function getLanguageInstruction(language?: string | null): string {
   switch (normalizeContentLanguage(language)) {
     case 'hi':
-      return 'Respond in simple, natural Hindi using Devanagari script.';
+      return "Respond entirely in Hindi. Do not use English unless language is 'en'.";
     case 'pa':
-      return 'Respond in simple, natural Punjabi using Gurmukhi script.';
+      return "Respond entirely in Punjabi. Do not use English unless language is 'en'.";
     default:
       return 'Respond in clear, warm English.';
   }

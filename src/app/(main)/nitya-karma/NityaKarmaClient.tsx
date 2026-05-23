@@ -1,3 +1,4 @@
+import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 'use client';
 
 // ─── Nitya Karma — Daily Morning Sequence ────────────────────────────────────
@@ -102,48 +103,48 @@ function getStepMessage(stepId: string): string {
 //   6. Japa           — mantra repetition with mala in a purified and worshipped space
 //   7. Shloka Paath   — Svadhyaya (self-study) closes the Nitya cycle; scripture read last
 const FALLBACK_STEPS: NityaSequenceStep[] = [
-  { id: 'woke_brahma_muhurta', label: 'Brahma Muhurta', icon: '🌙', minutes: 0,  description: 'Wake in the pre-dawn hour — the veil between the human and the divine is thinnest here', completed: false },
-  { id: 'snana_done',          label: 'Snana',          icon: '🌊', minutes: 10, description: 'Sacred bath — water purifies body, prana, and subtle body before you enter the worship space', completed: false },
-  { id: 'tilak_done',          label: 'Tilak',          icon: '🔱', minutes: 2,  description: 'Apply the sacred mark and set your sankalpa — this is the threshold gesture that opens the day\'s worship', completed: false },
-  { id: 'sandhya_done',        label: 'Vandana',        icon: '🙏', minutes: 15, description: 'Morning salutation — offer arghya to Surya, recite Gayatri, and greet the dawn with your tradition\'s prayers', completed: false },
-  { id: 'aarti_done',          label: 'Puja / Aarti',   icon: '🪔', minutes: 20, description: 'Worship your ishtadevata with panchopachar or shodashopachara; conclude with Aarti — the lamp of devotion', completed: false },
-  { id: 'japa_done',           label: 'Japa',           icon: '📿', minutes: 30, description: 'Mantra japa — one mala (108 repetitions) in the purified space, mind anchored by the naam', completed: false },
-  { id: 'shloka_done',         label: 'Shloka Paath',   icon: '📖', minutes: 10, description: 'Svadhyaya — read or recite a passage from your tradition\'s scripture; let the word enter the day', completed: false },
+  { id: 'woke_brahma_muhurta', label: 'Brahma Muhurta', icon: 'moon' as SacredIconName, minutes: 0,  description: 'Wake in the pre-dawn hour — the veil between the human and the divine is thinnest here', completed: false },
+  { id: 'snana_done',          label: 'Snana',          icon: 'water' as SacredIconName, minutes: 10, description: 'Sacred bath — water purifies body, prana, and subtle body before you enter the worship space', completed: false },
+  { id: 'tilak_done',          label: 'Tilak',          icon: 'flame' as SacredIconName, minutes: 2,  description: 'Apply the sacred mark and set your sankalpa — this is the threshold gesture that opens the day\'s worship', completed: false },
+  { id: 'sandhya_done',        label: 'Vandana',        icon: 'heart' as SacredIconName, minutes: 15, description: 'Morning salutation — offer arghya to Surya, recite Gayatri, and greet the dawn with your tradition\'s prayers', completed: false },
+  { id: 'aarti_done',          label: 'Puja / Aarti',   icon: 'flame' as SacredIconName, minutes: 20, description: 'Worship your ishtadevata with panchopachar or shodashopachara; conclude with Aarti — the lamp of devotion', completed: false },
+  { id: 'japa_done',           label: 'Japa',           icon: 'music' as SacredIconName, minutes: 30, description: 'Mantra japa — one mala (108 repetitions) in the purified space, mind anchored by the naam', completed: false },
+  { id: 'shloka_done',         label: 'Shloka Paath',   icon: 'book' as SacredIconName, minutes: 10, description: 'Svadhyaya — read or recite a passage from your tradition\'s scripture; let the word enter the day', completed: false },
 ];
 
 // ── Tradition-aware step labels ────────────────────────────────────────────────
 // Keys mirror FALLBACK_STEPS ids. Order in this map does not matter — it is
 // applied as an overlay. Each tradition follows its own equivalent sequence logic.
-const STEP_LABELS: Record<string, Record<string, { label: string; icon: string; description: string }>> = {
+const STEP_LABELS: Record<string, Record<string, { label: string; icon: SacredIconName; description: string }>> = {
   sikh: {
     // Sikh Nitnem sequence: Amrit Vela → Ishnan → Naam Simran → Japji Sahib → Ardas → Jaap+Chaupai → Hukamnama
-    woke_brahma_muhurta: { label: 'Amrit Vela',    icon: '🌙', description: 'Rise before dawn — the ambrosial hour for naam simran, before the mind is touched by the world' },
-    snana_done:          { label: 'Ishnan',         icon: '🌊', description: 'Bathe and purify body and mind — Sikhi teaches that inner cleanliness begins with outer' },
-    tilak_done:          { label: 'Naam Simran',    icon: '☬',  description: 'Begin Waheguru naam simran — the Gurmantar settles the mind before the banis begin' },
-    sandhya_done:        { label: 'Japji Sahib',    icon: '📖', description: 'Recite Japji Sahib — the morning bani of Guru Nanak Dev Ji, foundation of all Nitnem' },
-    aarti_done:          { label: 'Ardas',          icon: '🙏', description: 'Offer Ardas — the Sikh prayer of supplication for the sangat, the panth, and all of creation' },
-    japa_done:           { label: 'Jaap + Chaupai', icon: '📿', description: 'Recite Jaap Sahib and Chaupai Sahib — the banis of power, protection, and divine praise' },
-    shloka_done:         { label: 'Hukamnama',      icon: '📜', description: 'Receive today\'s Hukamnama — the divine order from Guru Granth Sahib Ji; this word is your guidance for the day' },
+    woke_brahma_muhurta: { label: 'Amrit Vela',    icon: 'moon' as SacredIconName, description: 'Rise before dawn — the ambrosial hour for naam simran, before the mind is touched by the world' },
+    snana_done:          { label: 'Ishnan',         icon: 'water' as SacredIconName, description: 'Bathe and purify body and mind — Sikhi teaches that inner cleanliness begins with outer' },
+    tilak_done:          { label: 'Naam Simran',    icon: 'sparkles' as SacredIconName,  description: 'Begin Waheguru naam simran — the Gurmantar settles the mind before the banis begin' },
+    sandhya_done:        { label: 'Japji Sahib',    icon: 'book' as SacredIconName, description: 'Recite Japji Sahib — the morning bani of Guru Nanak Dev Ji, foundation of all Nitnem' },
+    aarti_done:          { label: 'Ardas',          icon: 'heart' as SacredIconName, description: 'Offer Ardas — the Sikh prayer of supplication for the sangat, the panth, and all of creation' },
+    japa_done:           { label: 'Jaap + Chaupai', icon: 'music' as SacredIconName, description: 'Recite Jaap Sahib and Chaupai Sahib — the banis of power, protection, and divine praise' },
+    shloka_done:         { label: 'Hukamnama',      icon: 'scroll' as SacredIconName, description: 'Receive today\'s Hukamnama — the divine order from Guru Granth Sahib Ji; this word is your guidance for the day' },
   },
   buddhist: {
     // Buddhist morning sequence: Early Rising → Purification → Precepts → Metta → Puja/Offerings → Sitting → Dhamma
-    woke_brahma_muhurta: { label: 'Early Rising',       icon: '🌙', description: 'Rise before the world stirs — a fresh, uncontaminated mind is the best ground for meditation' },
-    snana_done:          { label: 'Purification',       icon: '🌊', description: 'Wash body and rinse mouth — outer cleanliness reflects the inner intention of purity (sila)' },
-    tilak_done:          { label: 'Precept Renewal',    icon: '☸️', description: 'Silently renew the Five Precepts — this is your threshold gesture before approaching the shrine' },
-    sandhya_done:        { label: 'Metta Bhavana',      icon: '💛', description: 'Loving-kindness practice — radiate goodwill outward: self, loved ones, neutrals, difficult beings, all sentient life' },
-    aarti_done:          { label: 'Puja / Offerings',   icon: '🪔', description: 'Offer flowers, incense, and light before the Buddha image — the three gems are honoured, merit is made' },
-    japa_done:           { label: 'Sitting Practice',   icon: '🧘', description: 'Silent breath or mantra meditation — cultivate samatha and vipassana in a purified and worshipped space' },
-    shloka_done:         { label: 'Dhamma Reading',     icon: '📖', description: 'Study a passage from the Dhammapada, Sutta Pitaka, or a teacher\'s commentary — let the teaching close the practice' },
+    woke_brahma_muhurta: { label: 'Early Rising',       icon: 'moon' as SacredIconName, description: 'Rise before the world stirs — a fresh, uncontaminated mind is the best ground for meditation' },
+    snana_done:          { label: 'Purification',       icon: 'water' as SacredIconName, description: 'Wash body and rinse mouth — outer cleanliness reflects the inner intention of purity (sila)' },
+    tilak_done:          { label: 'Precept Renewal',    icon: 'compass' as SacredIconName, description: 'Silently renew the Five Precepts — this is your threshold gesture before approaching the shrine' },
+    sandhya_done:        { label: 'Metta Bhavana',      icon: 'heart' as SacredIconName, description: 'Loving-kindness practice — radiate goodwill outward: self, loved ones, neutrals, difficult beings, all sentient life' },
+    aarti_done:          { label: 'Puja / Offerings',   icon: 'flame' as SacredIconName, description: 'Offer flowers, incense, and light before the Buddha image — the three gems are honoured, merit is made' },
+    japa_done:           { label: 'Sitting Practice',   icon: 'moon' as SacredIconName, description: 'Silent breath or mantra meditation — cultivate samatha and vipassana in a purified and worshipped space' },
+    shloka_done:         { label: 'Dhamma Reading',     icon: 'book' as SacredIconName, description: 'Study a passage from the Dhammapada, Sutta Pitaka, or a teacher\'s commentary — let the teaching close the practice' },
   },
   jain: {
     // Jain morning sequence: Brahma Muhurta → Shaucha → Sthapana → Samayika → Puja → Navkar → Agam
-    woke_brahma_muhurta: { label: 'Brahma Muhurta', icon: '🌙', description: 'Rise before dawn — the auspicious hour for pratikraman, reflection, and setting the mind in ahimsa' },
-    snana_done:          { label: 'Shaucha',         icon: '🌊', description: 'Physical purification — cleanse body completely before entering the worship space' },
-    tilak_done:          { label: 'Sthapana',        icon: '🤲', description: 'Set up the Jina image or symbol and offer flowers, rice, or saffron — the altar is opened for the day' },
-    sandhya_done:        { label: 'Samayika',        icon: '🙏', description: '48-minute vow of equanimity — the supreme Jain sadhana; the mind is set to pratikraman mode' },
-    aarti_done:          { label: 'Puja / Aarti',    icon: '🪔', description: 'Ashtaprakari Puja (eight offerings) before the Tirthankar; conclude with diya Aarti' },
-    japa_done:           { label: 'Navkar Mantra',   icon: '📿', description: 'Recite Navkar Mantra 108 times — salutation to the five supreme beings who have conquered the self' },
-    shloka_done:         { label: 'Agam Path',       icon: '📖', description: 'Study from the Agam — the canonical Jain texts; let scripture seal the morning and seed the intellect' },
+    woke_brahma_muhurta: { label: 'Brahma Muhurta', icon: 'moon' as SacredIconName, description: 'Rise before dawn — the auspicious hour for pratikraman, reflection, and setting the mind in ahimsa' },
+    snana_done:          { label: 'Shaucha',         icon: 'water' as SacredIconName, description: 'Physical purification — cleanse body completely before entering the worship space' },
+    tilak_done:          { label: 'Sthapana',        icon: 'heart' as SacredIconName, description: 'Set up the Jina image or symbol and offer flowers, rice, or saffron — the altar is opened for the day' },
+    sandhya_done:        { label: 'Samayika',        icon: 'heart' as SacredIconName, description: '48-minute vow of equanimity — the supreme Jain sadhana; the mind is set to pratikraman mode' },
+    aarti_done:          { label: 'Puja / Aarti',    icon: 'flame' as SacredIconName, description: 'Ashtaprakari Puja (eight offerings) before the Tirthankar; conclude with diya Aarti' },
+    japa_done:           { label: 'Navkar Mantra',   icon: 'music' as SacredIconName, description: 'Recite Navkar Mantra 108 times — salutation to the five supreme beings who have conquered the self' },
+    shloka_done:         { label: 'Agam Path',       icon: 'book' as SacredIconName, description: 'Study from the Agam — the canonical Jain texts; let scripture seal the morning and seed the intellect' },
   },
 };
 
@@ -239,7 +240,7 @@ interface NityaCustom {
   /** Preferred alert time e.g. "04:30" */
   alertTime: string;
   /** Extra user-defined steps (Pro-only) */
-  extraSteps: { id: string; label: string; icon: string; minutes: number }[];
+  extraSteps: { id: string; label: string; icon: SacredIconName; minutes: number }[];
 }
 
 function customKey(userId: string) {
@@ -287,7 +288,7 @@ function NityaCustomSheet({
     const extra = {
       id:      `custom_${Date.now()}`,
       label:   newStepLabel.trim(),
-      icon:    newStepIcon || '🙏',
+      icon:    (newStepIcon || 'heart') as SacredIconName,
       minutes: newStepMins,
     };
     setDraft(prev => ({ ...prev, extraSteps: [...prev.extraSteps, extra] }));
@@ -399,7 +400,7 @@ function NityaCustomSheet({
                   className="flex items-center gap-3 rounded-2xl px-4 py-3"
                   style={{ background: 'rgba(200,146,74,0.05)', border: '1px solid rgba(200,146,74,0.1)' }}
                 >
-                  <span className="text-xl flex-shrink-0">{step.icon}</span>
+                  <SacredIcon name={step.icon as SacredIconName} size={20} strokeWidth={1.7} style={{ color: 'var(--brand-primary)' }} />
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] mb-1" style={{ color: 'var(--brand-muted)' }}>Default: {step.label}</p>
                     <input
@@ -436,7 +437,7 @@ function NityaCustomSheet({
                     className="flex items-center gap-3 rounded-xl px-3 py-2.5"
                     style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.12)' }}
                   >
-                    <span className="text-lg">{es.icon}</span>
+                    <SacredIcon name={es.icon as SacredIconName} size={20} strokeWidth={1.7} style={{ color: 'var(--brand-primary)' }} />
                     <span className="flex-1 text-sm" style={{ color: 'var(--brand-ink)' }}>{es.label}</span>
                     <span className="text-xs" style={{ color: 'var(--brand-muted)' }}>{es.minutes}m</span>
                     <button onClick={() => removeExtraStep(es.id)}>
@@ -615,11 +616,11 @@ function ProUpgradeSheet({ onClose, accent }: { onClose: () => void; accent: str
 // ── Ashrama Setup Prompt ──────────────────────────────────────────────────────
 // Shown inline on Nitya Karma for existing users who completed onboarding
 // before the life_stage step was added (life_stage = null in DB).
-const ASHRAMA_STAGES: { key: string; icon: string; label: string; subtitle: string }[] = [
-  { key: 'brahmacharya', icon: '🌱', label: 'Student / Youth',      subtitle: 'Learning, building, growing' },
-  { key: 'grihastha',    icon: '🏡', label: 'Householder',           subtitle: 'Family, work, dharma' },
-  { key: 'vanaprastha',  icon: '🍃', label: 'Forest Dweller',        subtitle: 'Transition, wisdom, letting go' },
-  { key: 'sannyasa',     icon: '🌅', label: 'Renunciant',            subtitle: 'Surrender, liberation, moksha' },
+const ASHRAMA_STAGES: { key: string; icon: SacredIconName; label: string; subtitle: string }[] = [
+  { key: 'brahmacharya', icon: 'flower' as SacredIconName, label: 'Student / Youth',      subtitle: 'Learning, building, growing' },
+  { key: 'grihastha',    icon: 'kul' as SacredIconName, label: 'Householder',           subtitle: 'Family, work, dharma' },
+  { key: 'vanaprastha',  icon: 'tree' as SacredIconName, label: 'Forest Dweller',        subtitle: 'Transition, wisdom, letting go' },
+  { key: 'sannyasa',     icon: 'sunrise' as SacredIconName, label: 'Renunciant',            subtitle: 'Surrender, liberation, moksha' },
 ];
 
 function AshramaSetupPrompt({
@@ -691,7 +692,7 @@ function AshramaSetupPrompt({
                 className="w-full flex items-center gap-3 rounded-2xl px-4 py-3.5 text-left transition-all"
                 style={{ background: `${accent}0e`, border: `1px solid ${accent}20` }}
               >
-                <span className="text-2xl">{s.icon}</span>
+                <SacredIcon name={s.icon as SacredIconName} size={20} strokeWidth={1.7} style={{ color: 'var(--brand-primary)' }} />
                 <div>
                   <p className="text-[13px] font-semibold text-[color:var(--brand-ink)]">{s.label}</p>
                   <p className="text-[11px]" style={{ color: 'var(--brand-muted)' }}>{s.subtitle}</p>
@@ -714,8 +715,8 @@ function AshramaSetupPrompt({
             </p>
             <div className="grid grid-cols-2 gap-3">
               {[
-                { key: 'male',   icon: '🔱', label: 'Traditional male duties' },
-                { key: 'female', icon: '🌸', label: 'Traditional female duties' },
+                { key: 'male',   icon: 'flame' as SacredIconName, label: 'Traditional male duties' },
+                { key: 'female', icon: 'flower' as SacredIconName, label: 'Traditional female duties' },
               ].map(g => (
                 <motion.button
                   key={g.key}
@@ -725,7 +726,7 @@ function AshramaSetupPrompt({
                   className="flex flex-col items-center gap-2 rounded-2xl px-3 py-4 transition-all"
                   style={{ background: `${accent}0e`, border: `1px solid ${accent}20` }}
                 >
-                  <span className="text-3xl">{g.icon}</span>
+                  <SacredIcon name={g.icon as SacredIconName} size={20} strokeWidth={1.7} style={{ color: 'var(--brand-primary)' }} />
                   <p className="text-[11px] text-center font-medium text-[color:var(--brand-ink)]">{g.label}</p>
                 </motion.button>
               ))}
@@ -1158,7 +1159,7 @@ export default function NityaKarmaClient({
       } else {
         // Use hardcoded colors — CSS variables don't work inside toast portals
         toast(getStepMessage(stepId), {
-          icon: '🙏',
+          icon: 'heart' as SacredIconName,
           duration: 3500,
           style: {
             background: '#1c1c1a',
@@ -1533,7 +1534,9 @@ export default function NityaKarmaClient({
               >
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0"
                   style={{ background: isPro ? `${(_stageMeta?.accent ?? accent)}18` : 'rgba(251,191,36,0.10)' }}>
-                  {isPro && _stageMeta ? _stageMeta.icon : '🏡'}
+                  {isPro && _stageMeta
+  ? <SacredIcon name={_stageMeta.icon} size={20} strokeWidth={1.7} />
+  : <SacredIcon name="kul" size={20} strokeWidth={1.7} />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
@@ -1631,7 +1634,7 @@ export default function NityaKarmaClient({
                     ? <Loader2 size={18} className="animate-spin" style={{ color: accent }} />
                     : step.completed
                       ? <CheckCircle2 size={22} className="text-green-400" />
-                      : <span>{step.icon}</span>
+                      : <SacredIcon name={step.icon as SacredIconName} size={20} strokeWidth={1.7} style={{ color: 'var(--brand-primary)' }} />
                   }
                 </motion.div>
                 <div className="flex-1 min-w-0">
@@ -1774,7 +1777,7 @@ export default function NityaKarmaClient({
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-[0.7rem] flex items-center justify-center text-xl shrink-0"
                         style={{ background: `${_stageMeta.accent}18` }}>
-                        {_stageMeta.icon}
+                        <SacredIcon name={_stageMeta.icon} size={20} strokeWidth={1.7} />
                       </div>
                       <div>
                         <p className="text-[10px] font-bold uppercase tracking-[0.16em]"
@@ -1836,7 +1839,7 @@ export default function NityaKarmaClient({
                           style={{ background: done ? `${_stageMeta.accent}18` : 'var(--card-bg)' }}>
                           {done
                             ? <CheckCircle2 size={18} style={{ color: _stageMeta.accent }} />
-                            : <span>{duty.icon}</span>
+                            : <SacredIcon name={duty.icon} size={20} strokeWidth={1.7} style={{ color: 'var(--brand-primary)' }} />
                           }
                         </div>
                         <div className="flex-1 min-w-0">
