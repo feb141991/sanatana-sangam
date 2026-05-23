@@ -7,12 +7,9 @@ import Link from 'next/link';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import type { SacredContentItem } from '@/lib/sacred-content';
-import type { Shloka } from '@/lib/shlokas';
 
 interface Props {
-  shloka: Shloka;               // kept in Props for page.tsx compat — not used on page
   tradition: string;
-  userName: string;
   japaStreak: number;
   sessionCountToday: number;
   dailyStotramId: string;

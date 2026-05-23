@@ -92,7 +92,12 @@ function BrowseInner() {
         </button>
         <div>
           <h1 className="text-lg font-semibold" style={{ fontFamily: 'var(--font-serif)', color: textH }}>Sacred Library</h1>
-          <p className="text-[11px]" style={{ color: textS }}>Mantras, stotrams & bhajans</p>
+          <p className="text-[11px]" style={{ color: textS }}>{
+            tradition === 'sikh'     ? 'Banis, kirtans & simran'      :
+            tradition === 'buddhist' ? 'Sutras, chants & dhamma'       :
+            tradition === 'jain'     ? 'Stotrams, mantras & bhajans'   :
+            'Mantras, stotrams & bhajans'
+          }</p>
         </div>
       </div>
       </div>

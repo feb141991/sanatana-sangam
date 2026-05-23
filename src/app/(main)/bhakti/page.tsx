@@ -1,16 +1,12 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { getTodayShloka } from '@/lib/shlokas';
 import { getStotramsByTradition, STOTRAMS } from '@/lib/stotrams';
 import BhaktiClient from './BhaktiClient';
 
 export const dynamic = 'force-dynamic';
 
 export default async function BhaktiPage() {
-  const shloka = getTodayShloka();
-
   // Attempt to load user data — gracefully falls back for guests
   let tradition = 'hindu';
-  let userName  = 'Sadhak';
   let japaStreak = 0;
   let sessionCountToday = 0;
 
@@ -41,7 +37,6 @@ export default async function BhaktiPage() {
       ]);
 
       tradition  = profile?.tradition ?? 'hindu';
-      userName   = profile?.full_name ?? profile?.username ?? 'Sadhak';
       japaStreak = sadhana?.streak_count ?? 0;
       sessionCountToday = count ?? 0;
     }
@@ -58,9 +53,7 @@ export default async function BhaktiPage() {
 
   return (
     <BhaktiClient
-      shloka={shloka}
       tradition={tradition}
-      userName={userName}
       japaStreak={japaStreak}
       sessionCountToday={sessionCountToday}
       dailyStotramId={dailyStotram.id}

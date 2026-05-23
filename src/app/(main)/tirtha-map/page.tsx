@@ -27,6 +27,7 @@ import { useLocation } from '@/lib/LocationContext';
 import { API, MAP, MANDIR } from '@/lib/config';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { createClient } from '@/lib/supabase';
+import { mapOccurrenceToFestival, FESTIVALS_2026, type Festival } from '@/lib/festivals';
 import {
   buildTirthaShareText,
   getSeasonalTirthaCue,
@@ -106,6 +107,7 @@ export const dynamic = 'force-dynamic';
 export default function TirthaMapPage() {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
+  const [festivals, setFestivals] = useState<Festival[]>(FESTIVALS_2026);
   const { coords, city: liveCity, loading: locLoading, refresh: refreshLocation } = useLocation();
 
   const [userId, setUserId] = useState<string | null>(null);
@@ -132,6 +134,18 @@ export default function TirthaMapPage() {
   const [reflection, setReflection] = useState('');
   const [companions, setCompanions] = useState('');
   const [pradakshinaCount, setPradakshinaCount] = useState(0);
+
+  useEffect(() => {
+    const supabaseClient = createClient();
+    supabaseClient
+      .from('observance_occurrences')
+      .select('*, observance_definitions(*)')
+      .order('date', { ascending: true })
+      .limit(160)
+      .then(({ data }) => {
+        if (data && data.length > 0) setFestivals(data.map(mapOccurrenceToFestival));
+      });
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -315,7 +329,7 @@ export default function TirthaMapPage() {
     }
   }
 
-  const seasonalCue = useMemo(() => getSeasonalTirthaCue(tradition), [tradition]);
+  const seasonalCue = useMemo(() => getSeasonalTirthaCue(tradition, new Date(), festivals), [tradition, festivals]);
   const savedIds = useMemo(() => new Set(saves.map((save) => save.place_id)), [saves]);
   const visitedIds = useMemo(() => new Set(visits.map((visit) => visit.place_id)), [visits]);
 

@@ -12,7 +12,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, useReducedMotion, AnimatePresence } from 'framer-motion';
 import {
@@ -129,7 +129,7 @@ function getEntryText(entry: LibraryEntry, meaningLabel: string) {
 // ── Static seed paths — sourced from shared lib so server components can import too ──
 export const SEED_PATHS = SEED_PATHS_LIB as unknown as {
   id: string; title: string; description: string;
-  difficulty: string; tradition: string; total_lessons: number; duration_days: number;
+  difficulty: string; proRequired: boolean; tradition: string; total_lessons: number; duration_days: number;
 }[];
 
 // ── Scripture Entry Card ───────────────────────────────────────────────────────
@@ -544,7 +544,11 @@ export default function PathshalaClient({
   showTransliteration = true,
   isPro,
 }: Props) {
-  const router    = useRouter();
+  const router        = useRouter();
+  const searchParams  = useSearchParams();
+  useEffect(() => {
+    if (searchParams.get('upgrade') === '1') setShowUpgradeModal(true);
+  }, [searchParams]);
   const supabase  = useRef(createClient()).current;
   const meta      = getTraditionMeta(tradition);
   const prefersReducedMotion = useReducedMotion();
@@ -564,6 +568,7 @@ export default function PathshalaClient({
   // ── Premium UX state ──────────────────────────────────────────────────────────
   const [displayedVerse, setDisplayedVerse] = useState('');
   const [diffFilter, setDiffFilter] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>('all');
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const scriptureRef = useRef<HTMLDivElement>(null);
   const pathsRef     = useRef<HTMLDivElement>(null);
   
@@ -577,7 +582,7 @@ export default function PathshalaClient({
   // Show all 44 paths across all traditions in the Explore tab
   const allPaths = SEED_PATHS as unknown as {
     id: string; title: string; description: string;
-    difficulty: string; tradition: string; total_lessons: number; duration_days: number;
+    difficulty: string; proRequired: boolean; tradition: string; total_lessons: number; duration_days: number;
   }[];
 
   useEffect(() => {
@@ -1515,6 +1520,10 @@ export default function PathshalaClient({
 
         {/* ── Reader modal ──────────────────────────────────────────────────────── */}
         <ReaderModal />
+        <PremiumActivateModal
+          open={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+        />
         <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
       </div>
     </div>
