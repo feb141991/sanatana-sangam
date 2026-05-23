@@ -751,7 +751,7 @@ export default function PathshalaClient({
     const pathToEnroll = allPaths.find(p => p.id === pathId);
 
     // Intermediate & Advanced paths require Pro
-    if (!isPro && pathToEnroll && pathToEnroll.difficulty !== 'beginner') {
+    if (!isPro && pathToEnroll && pathToEnroll.proRequired) {
       toast(t('upgradeToShoonayaPro'), {
         duration: 4000,
         style: { background: '#1c1c1a', color: 'var(--brand-ink)' },
@@ -1101,7 +1101,7 @@ export default function PathshalaClient({
   // ── Browse Path Card ──────────────────────────────────────────
   function BrowsePathCard({ path }: { path: typeof allPaths[0] }) {
     const isEnrolled = activePaths.some(e => e.path_id === path.id);
-    const isProGated = !isPro && path.difficulty !== 'beginner';
+    const isProGated = !isPro && path.proRequired;
     const diff       = getDiffStyle(path.difficulty, isDark);
     return (
       <motion.div

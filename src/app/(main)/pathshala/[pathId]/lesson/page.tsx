@@ -38,9 +38,9 @@ export default async function LessonPage({
     redirect('/pathshala');
   }
 
-  const pathMeta = (SEED_PATHS as unknown as { id: string; difficulty: string; title: string }[]).find(p => p.id === pathId);
+  const pathMeta = (SEED_PATHS as unknown as { id: string; difficulty: string; title: string; proRequired: boolean }[]).find(p => p.id === pathId);
   const userIsPro = (profile as any)?.is_pro ?? false;
-  if (pathMeta && pathMeta.difficulty !== 'beginner' && !userIsPro) {
+  if (pathMeta && pathMeta.proRequired && !userIsPro) {
     redirect('/pathshala?upgrade=1');
   }
 
