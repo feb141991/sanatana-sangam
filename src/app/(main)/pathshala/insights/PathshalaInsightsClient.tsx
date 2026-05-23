@@ -1,5 +1,6 @@
-import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 'use client';
+
+import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';

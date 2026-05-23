@@ -1,5 +1,6 @@
-import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 'use client';
+
+import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 
 // ─── Nitya Karma — Daily Morning Sequence ────────────────────────────────────
 //
