@@ -9,8 +9,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronRight, CheckCircle2, BookOpen, Mic,
-  Sparkles, Copy, Loader2, Bookmark, Volume2, VolumeX, EyeOff, Share2, Check,
-  Globe, Type
+  Globe, Type, Loader2, EyeOff, Sparkles, Bookmark
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
@@ -19,6 +18,7 @@ import { getAIChatHref } from '@/lib/pathshala-links';
 import { getTransliteration } from '@/lib/transliteration';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useReaderDisplayPreferences } from '@/lib/i18n/reader-display';
+import ReaderShell from '@/components/reader/ReaderShell';
 import {
   getMeaningLabel,
   normalizeContentLanguage
@@ -38,7 +38,7 @@ const P = {
   ink:         '#2C1A0E',   // deep brown — body text
   inkMuted:    '#7A5C3A',   // mid-brown — secondary text
   sanskrit:    '#8B3A0F',   // deep terracotta — Sanskrit text
-  accent:      '#C8924A',   // amber — buttons, chips
+  accent:      '#C5A059',   // amber — buttons, chips
   accentDeep:  '#9B6B2A',   // darker amber for icons on light bg
   accentBg:    '#F2D9A8',   // amber chip background
   white:       '#FFFDF6',
@@ -345,41 +345,31 @@ export default function CanonicalReader({
     );
   }
 
-  // ── CTA text & action ──────────────────────────────────────────────────────
-  const defaultCtaAction = isLastVerse ? (onClose || (() => {})) : goNextVerse;
-  const defaultCtaLabel = isLastVerse 
-    ? <><CheckCircle2 size={15} /><span>{t('done')}</span></>
-    : <><span>{labels.nextVerse}</span><ChevronRight size={15} /></>;
+  const handleBack = () => {
+    if (isModal && onClose) onClose();
+  };
 
-  const activeCtaAction = isLastVerse && ctaConfig ? ctaConfig.action : defaultCtaAction;
-  const activeCtaLabel = isLastVerse && ctaConfig ? ctaConfig.label : defaultCtaLabel;
-  const activeCtaDisabled = isLastVerse && ctaConfig ? ctaConfig.disabled : false;
-
-  // ── Render ─────────────────────────────────────────────────────────────────
-  const content = (
-    <div className="min-h-dvh flex flex-col" style={{ background: P.bg }}>
-      {/* ════════════ HEADER ════════════════════════════════════════════════ */}
-      <header
-        className="sticky top-0 z-30 px-4 py-3 flex flex-col gap-2"
-        style={{ background: P.bgCard, borderBottom: `1px solid ${P.border}` }}
-      >
-        <div className="flex items-center gap-3">
-          {/* Back */}
-          <button
-            onClick={onClose}
-            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 motion-press"
-            style={{ background: P.accentBg, border: `1px solid ${P.border}` }}
-          >
-            <ChevronLeft size={18} style={{ color: P.accentDeep }} />
-          </button>
-
-          {/* Titles */}
-          <div className="flex-1 min-w-0">
-            {subtitle && <p className="text-[10px] truncate font-medium" style={{ color: P.inkMuted }}>{subtitle}</p>}
-            <p className="text-sm font-bold truncate" style={{ color: P.ink }}>{title}</p>
+  const readerContent = (
+    <ReaderShell
+      title={title}
+      subtitle={subtitle}
+      fallbackBackUrl="/pathshala"
+      onBack={isModal || onClose ? handleBack : undefined}
+      themeColor={P.accent}
+      shellBackgroundColor={P.bg}
+      shellHeaderBackgroundColor={P.bg}
+      headerCenterContent={
+        <div className="flex items-center justify-center gap-3">
+          <div className="text-center min-w-0 flex-1">
+              {subtitle && (
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] truncate" style={{ color: P.accent }}>
+                  {subtitle}
+                </p>
+              )}
+              <h1 className="text-sm font-semibold truncate" style={{ color: P.ink }}>
+                {title}
+              </h1>
           </div>
-
-          {/* Progress ring */}
           {lessonsNavigation && (
             <CircularProgress
               pct={lessonsNavigation.progressPct}
@@ -389,79 +379,29 @@ export default function CanonicalReader({
               label={<span className="text-[8px] font-bold" style={{ color: P.accentDeep }}>{lessonsNavigation.progressPct}%</span>}
             />
           )}
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleCopy}
-              className="w-8 h-8 rounded-full flex items-center justify-center bg-[rgba(200,146,74,0.12)] border border-[rgba(200,146,74,0.2)] transition active:scale-90"
-              title="Copy Scripture"
-            >
-              {readerControls.state.isCopied ? <Check size={13} style={{ color: P.accentDeep }} /> : <Copy size={13} style={{ color: P.accentDeep }} />}
-            </button>
-            <button
-              onClick={handleShare}
-              className="w-8 h-8 rounded-full flex items-center justify-center bg-[rgba(200,146,74,0.12)] border border-[rgba(200,146,74,0.2)] transition active:scale-90"
-              title="Share Lesson"
-            >
-              <Share2 size={13} style={{ color: P.accentDeep }} />
-            </button>
-          </div>
         </div>
-
-        {/* ── Subheader Controls row for Zoom & Language ── */}
-        <div className="flex items-center justify-between pt-2 border-t border-[rgba(200,146,74,0.1)]">
-          {/* Zoom Selector */}
-          <div className="flex items-center gap-1">
-            <Type size={12} style={{ color: P.inkMuted, marginRight: 2 }} />
-            {fontPresets.map((step, idx) => (
-              <button
-                key={idx}
-                onClick={() => setFontStep(idx)}
-                className={`px-2 py-1 rounded-full text-[10px] font-bold flex items-center justify-center transition-all ${
-                  fontStep === idx
-                    ? 'text-white shadow-sm'
-                    : ''
-                }`}
-                style={{
-                  backgroundColor: fontStep === idx ? P.accent : P.accentBg,
-                  color: fontStep === idx ? P.btnText : P.accentDeep
-                }}
-              >
-                {['A−', 'A', 'A+', 'A++', 'A+++'][idx]}
-              </button>
-            ))}
-          </div>
-
-          {/* Language Toggle */}
-          <div className="flex items-center gap-1">
-            <Globe size={12} style={{ color: P.inkMuted, marginRight: 2 }} />
-            {languages.map(({ code, label }) => (
-              <button
-                key={code}
-                onClick={() => setCustomLang(code)}
-                className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all ${
-                  customLang === code
-                    ? 'text-white'
-                    : ''
-                }`}
-                style={{
-                  backgroundColor: customLang === code ? P.accent : P.accentBg,
-                  color: customLang === code ? P.btnText : P.accentDeep
-                }}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </header>
-
+      }
+      fontPresets={fontPresets}
+      fontStep={fontStep}
+      setFontStep={setFontStep}
+      languages={languages}
+      currentLanguage={customLang}
+      setLanguage={setCustomLang}
+      showTransliterationToggle={false}
+      showMeaningToggle={false}
+      onTTS={() => entry && speakEntry(entry)}
+      isSpeaking={!!speakingId}
+      isTTSGenerating={readerControls.state.isGeneratingTTS}
+      onCopy={handleCopy}
+      isCopied={readerControls.state.isCopied}
+      onShare={handleShare}
+      contentClassName="flex-1 overflow-auto overscroll-contain"
+    >
       {/* ════════════ SCROLLABLE CONTENT ════════════════════════════════════ */}
-      <div className="flex-1 overflow-auto overscroll-contain">
-        <div className="max-w-xl mx-auto px-5 pt-8 pb-56">
+      <div className="max-w-xl mx-auto px-5 pt-8 pb-56">
 
-          {/* ── Verse progress dots ────────────────────────────────────── */}
-          <div className="flex items-center justify-center gap-2 mb-10">
+        {/* ── Verse progress dots ────────────────────────────────────── */}
+        <div className="flex items-center justify-center gap-2 mb-10">
             {entries.map((_, i) => (
               <button
                 key={i}
@@ -710,125 +650,80 @@ export default function CanonicalReader({
             </div>
           )}
         </div>
-      </div>
 
-      {/* ════════════ FIXED BOTTOM BAR ══════════════════════════════════════ */}
+
+
+      {/* ════════════ BOTTOM FIXED ACTIONS ══════════════════════════════════ */}
       <div
-        className="fixed bottom-0 inset-x-0 z-40"
-        style={{ background: P.bgCard, borderTop: `1.5px solid ${P.border}` }}
+        className="fixed bottom-0 left-0 right-0 z-50 px-5 pb-[env(safe-area-inset-bottom)] pointer-events-none"
       >
-        {/* ── Quick actions ────────────────────────────────────────────── */}
-        <div className="flex items-center justify-around px-4 pt-3 pb-1 max-w-xl mx-auto">
+        {/* Background gradient for the bottom area */}
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: `linear-gradient(to top, ${P.bg} 85%, transparent)` }}
+        />
+        <div className="max-w-xl mx-auto pt-8 pb-5 relative pointer-events-auto">
+          <div className="flex items-center justify-between gap-3">
+            {/* Primary CTA (Next/Complete) */}
+            <div className="flex-1">
+              {ctaConfig ? (
+                <button
+                  onClick={ctaConfig.action}
+                  disabled={ctaConfig.disabled}
+                  className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all motion-press shadow-md disabled:opacity-40"
+                  style={{ background: P.accent, color: P.btnText }}
+                >
+                  {ctaConfig.label}
+                </button>
+              ) : isLastVerse ? (
+                <button
+                  onClick={() => handleBack()}
+                  className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all motion-press shadow-md"
+                  style={{ background: P.accent, color: P.btnText }}
+                >
+                  <CheckCircle2 size={18} />
+                  <span>{t(customLang, 'donePranam') || 'Done'}</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => { setSlideDir(1); setVerseIndex(i => i + 1); setShowExplain(false); setExplainResult(null); }}
+                  className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all motion-press"
+                  style={{ background: P.bgCard, color: P.accentDeep, border: `2px solid ${P.borderSoft}` }}
+                >
+                  <span>{t(customLang, 'nextVerse') || 'Next Verse'}</span>
+                  <ChevronRight size={18} />
+                </button>
+              )}
+            </div>
 
-          {/* Listen */}
-          {capabilities.canGenerateTTS ? (
-            <button
-              onClick={() => speakEntry(entry)}
-              className="flex flex-col items-center gap-1 min-w-[52px] motion-press"
-            >
-              <div
-                className="w-11 h-11 rounded-full flex items-center justify-center"
-                style={{
-                  background: speakingId === entry.id ? P.accent : P.accentBg,
-                  border:     `1px solid ${P.border}`,
-                }}
+            {/* Quick Actions container */}
+            <div className="flex gap-2 shrink-0">
+              <button
+                onClick={() => entry && toggleBookmark(entry)}
+                className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all motion-press"
+                style={{ background: P.bgCard, border: `1px solid ${P.borderSoft}` }}
+                aria-label="Save for later"
               >
-                {readerControls.state.isGeneratingTTS
-                  ? <Loader2 size={17} className="animate-spin" style={{ color: P.accentDeep }} />
-                  : speakingId === entry.id
-                    ? <VolumeX size={17} style={{ color: P.btnText }} />
-                    : <Volume2 size={17} style={{ color: P.accentDeep }} />
-                }
-              </div>
-              <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>
-                {speakingId === entry.id ? labels.stopReading : labels.listen}
-              </span>
-            </button>
-          ) : (
-            <div className="flex flex-col items-center gap-1 min-w-[52px] opacity-30">
-              <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: P.accentBg, border: `1px solid ${P.border}` }}>
-                <VolumeX size={17} style={{ color: P.accentDeep }} />
-              </div>
-              <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{labels.audioUnavailable}</span>
+                <Bookmark
+                  size={20}
+                  className="transition-all"
+                  style={{ color: P.accentDeep }}
+                  fill={entry && bookmarkedIds.has(entry.id) ? P.accentDeep : 'none'}
+                />
+              </button>
+              <Link
+                href={askHref}
+                className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all motion-press"
+                style={{ background: P.bgCard, border: `1px solid ${P.borderSoft}` }}
+                aria-label="Ask Guruji"
+              >
+                <Sparkles size={20} style={{ color: P.accentDeep }} />
+              </Link>
             </div>
-          )}
-
-          {/* Save / Bookmark */}
-          <button
-            onClick={() => toggleBookmark(entry)}
-            className="flex flex-col items-center gap-1 min-w-[52px] motion-press"
-          >
-            <div
-              className="w-11 h-11 rounded-full flex items-center justify-center"
-              style={{
-                background: bookmarkedIds.has(entry.id) ? P.accent : P.accentBg,
-                border:     `1px solid ${P.border}`,
-              }}
-            >
-              <Bookmark
-                size={17}
-                style={{ color: bookmarkedIds.has(entry.id) ? P.btnText : P.accentDeep }}
-                className={bookmarkedIds.has(entry.id) ? 'fill-current' : ''}
-              />
-            </div>
-            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>
-              {bookmarkedIds.has(entry.id) ? t('done') : t('save')}
-            </span>
-          </button>
-
-          {/* Copy */}
-          <button
-            onClick={() => copyEntry(entry)}
-            className="flex flex-col items-center gap-1 min-w-[52px] motion-press"
-          >
-            <div
-              className="w-11 h-11 rounded-full flex items-center justify-center"
-              style={{ background: P.accentBg, border: `1px solid ${P.border}` }}
-            >
-              <Copy size={17} style={{ color: P.accentDeep }} />
-            </div>
-            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{t('copy')}</span>
-          </button>
-
-          {/* Ask AI */}
-          <Link
-            href={askHref}
-            className="flex flex-col items-center gap-1 min-w-[52px] motion-press"
-          >
-            <div
-              className="w-11 h-11 rounded-full flex items-center justify-center"
-              style={{ background: P.accentBg, border: `1px solid ${P.border}` }}
-            >
-              <Sparkles size={17} style={{ color: P.accentDeep }} />
-            </div>
-            <span className="text-[10px] font-semibold" style={{ color: P.inkMuted }}>{t('askAI')}</span>
-          </Link>
-        </div>
-
-        {/* ── Navigation row ────────────────────────────────────────── */}
-        <div className="flex gap-2.5 px-4 pt-2 pb-5 max-w-xl mx-auto">
-          {/* Prev */}
-          <button
-            onClick={goPrevVerse}
-            disabled={verseIndex === 0}
-            className="w-12 flex items-center justify-center rounded-2xl disabled:opacity-30 transition-opacity motion-press"
-            style={{ border: `1.5px solid ${P.border}`, background: P.accentBg, height: '52px' }}
-          >
-            <ChevronLeft size={20} style={{ color: P.accentDeep }} />
-          </button>
-
-          {/* Main CTA */}
-          <button
-            onClick={activeCtaAction}
-            disabled={activeCtaDisabled}
-            className="flex-1 flex items-center justify-center gap-2 rounded-2xl text-sm font-bold disabled:opacity-40 transition-all motion-press shadow-md"
-            style={{ background: P.accent, color: P.btnText, height: '52px' }}
-          >
-            {activeCtaLabel}
-          </button>
+          </div>
         </div>
       </div>
-    </div>
+    </ReaderShell>
   );
 
   if (isModal) {
@@ -837,12 +732,12 @@ export default function CanonicalReader({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
-        className="fixed inset-0 z-[999] bg-[var(--background)] flex flex-col"
+        className="fixed inset-0 z-[999] flex flex-col"
       >
-        {content}
+        {readerContent}
       </motion.div>
     );
   }
 
-  return content;
+  return readerContent;
 }

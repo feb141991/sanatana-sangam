@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, Search } from 'lucide-react';
@@ -57,7 +58,7 @@ export function KulInviteSheet({ inviteCode, onClose }: { inviteCode: string; on
             <h2 className="font-bold theme-ink">Invite Family</h2>
             <p className="text-[10px] theme-muted uppercase tracking-widest mt-0.5">Expand the circle</p>
           </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center">
+          <button onClick={onClose} className="w-11 h-11 rounded-full bg-black/5 flex items-center justify-center">
             <X size={16} className="theme-muted" />
           </button>
         </div>
@@ -87,8 +88,7 @@ export function KulInviteSheet({ inviteCode, onClose }: { inviteCode: string; on
             <div key={r.id} className="flex items-center gap-3 py-3 border-b border-black/[0.03] last:border-0">
               <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
                 {r.avatar_url ? (
-                   // eslint-disable-next-line @next/next/no-img-element
-                   <img src={r.avatar_url} alt="" className="w-full h-full object-cover" />
+                   <Image width={120} height={120} src={r.avatar_url} alt="" className="w-full h-full object-cover" />
                 ) : (
                    <div className="w-full h-full flex items-center justify-center text-xs font-bold text-slate-400">
                      {(r.full_name || r.username || '?')[0].toUpperCase()}
@@ -104,9 +104,9 @@ export function KulInviteSheet({ inviteCode, onClose }: { inviteCode: string; on
                 disabled={invited.has(r.id)}
                 className="px-4 py-1.5 rounded-xl text-[10px] font-bold transition disabled:opacity-50"
                 style={{ 
-                  background: invited.has(r.id) ? 'rgba(34,197,94,0.1)' : 'rgba(200,146,74,0.1)', 
+                  background: invited.has(r.id) ? 'rgba(34,197,94,0.1)' : 'rgba(197, 160, 89,0.1)', 
                   color: invited.has(r.id) ? '#16a34a' : 'var(--brand-primary-strong)',
-                  border: `1px solid ${invited.has(r.id) ? 'rgba(34,197,94,0.2)' : 'rgba(200,146,74,0.2)'}`
+                  border: `1px solid ${invited.has(r.id) ? 'rgba(34,197,94,0.2)' : 'rgba(197, 160, 89,0.2)'}`
                 }}
               >
                 {invited.has(r.id) ? '✓ Invited' : 'Invite'}

@@ -210,9 +210,11 @@ async function ensureFoundingNumber(row: WaitlistRow): Promise<number> {
     .select('founding_number')
     .not('founding_number', 'is', null)
     .order('founding_number', { ascending: false })
-    .limit(1);
+    .limit(1)
+    .maybeSingle();
 
-  const nextNumber = ((latest?.[0]?.founding_number as number | null | undefined) ?? 0) + 1;
+  const nextNumber = ((latest?.founding_number as number | null | undefined) ?? 0) + 1;
+
 
   const { data: updated, error } = await supabase
     .from('waitlist')

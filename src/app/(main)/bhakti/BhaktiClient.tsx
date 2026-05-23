@@ -92,7 +92,7 @@ const CONTENT_CARDS: ContentCard[] = [
     title: 'Stotrams & Hymns',
     description: 'Sanskrit chants, chalisa, ashtakam',
     href:  '/bhakti/browse',
-    tint:  'rgba(200,146,74,0.10)',
+    tint:  'rgba(197, 160, 89,0.10)',
     traditions: ['hindu', 'jain'],
     tags: ['stotram', 'hymn', 'chant'],
   },

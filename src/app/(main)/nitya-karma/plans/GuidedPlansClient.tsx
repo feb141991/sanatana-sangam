@@ -46,9 +46,9 @@ function DayView({
       <div className="flex items-center gap-3 px-5 pt-4 pb-3 flex-shrink-0">
         <button
           onClick={onBack}
-          className="w-8 h-8 rounded-full flex items-center justify-center"
-          style={{ background: 'var(--surface-raised)', border: '1px solid rgba(200,146,74,0.15)' }}
-        >
+          className="w-11 h-11 rounded-full flex items-center justify-center"
+          style={{ background: 'var(--surface-raised)', border: '1px solid rgba(197, 160, 89,0.15)' }}
+         aria-label="Go back">
           <ChevronLeft size={14} style={{ color: 'var(--brand-muted)' }} />
         </button>
         <p className="text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: plan.accentColor }}>
@@ -101,7 +101,7 @@ function DayView({
       {/* Mark complete footer */}
       <div
         className="flex-shrink-0 px-5 pt-4 pb-3"
-        style={{ borderTop: '1px solid rgba(200,146,74,0.1)', background: 'var(--surface-base)' }}
+        style={{ borderTop: '1px solid rgba(197, 160, 89,0.1)', background: 'var(--surface-base)' }}
       >
         <motion.button
           onClick={onComplete}
@@ -232,15 +232,15 @@ function PlanDetailSheet({
       >
         {/* Handle */}
         <div className="flex justify-center pt-3.5 flex-shrink-0">
-          <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(200,146,74,0.2)' }} />
+          <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(197, 160, 89,0.2)' }} />
         </div>
 
         {/* Close */}
         <div className="absolute top-4 right-4 z-10">
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center"
-            style={{ background: 'var(--surface-raised)', border: '1px solid rgba(200,146,74,0.15)' }}
+            className="w-11 h-11 rounded-full flex items-center justify-center"
+            style={{ background: 'var(--surface-raised)', border: '1px solid rgba(197, 160, 89,0.15)' }}
           >
             <X size={14} style={{ color: 'var(--brand-muted)' }} />
           </button>
@@ -348,12 +348,12 @@ function PlanDetailSheet({
                             ? `${plan.accentColor}12`
                             : isDone
                               ? 'rgba(80,200,80,0.05)'
-                              : 'rgba(200,146,74,0.04)',
+                              : 'rgba(197, 160, 89,0.04)',
                           border: isToday
                             ? `1px solid ${plan.accentColor}33`
                             : isDone
                               ? '1px solid rgba(80,200,80,0.15)'
-                              : '1px solid rgba(200,146,74,0.08)',
+                              : '1px solid rgba(197, 160, 89,0.08)',
                           opacity: isFuture ? 0.55 : 1,
                         }}
                       >
@@ -393,7 +393,7 @@ function PlanDetailSheet({
               {/* Footer */}
               <div
                 className="flex-shrink-0 px-5 pt-4 pb-3 space-y-3"
-                style={{ borderTop: '1px solid rgba(200,146,74,0.1)', background: 'var(--surface-base)' }}
+                style={{ borderTop: '1px solid rgba(197, 160, 89,0.1)', background: 'var(--surface-base)' }}
               >
                 {!isActive && !isCompleted && (
                   <motion.button
@@ -433,14 +433,14 @@ function PlanDetailSheet({
                       <button
                         onClick={onRestart}
                         className="flex-1 py-2.5 rounded-[0.9rem] text-xs font-semibold"
-                        style={{ background: 'var(--surface-raised)', color: 'var(--brand-muted)', border: '1px solid rgba(200,146,74,0.12)' }}
+                        style={{ background: 'var(--surface-raised)', color: 'var(--brand-muted)', border: '1px solid rgba(197, 160, 89,0.12)' }}
                       >
                         🔄 Start Over
                       </button>
                       <button
                         onClick={onAbandon}
                         className="flex-1 py-2.5 rounded-[0.9rem] text-xs font-semibold"
-                        style={{ background: 'var(--surface-raised)', color: 'var(--brand-muted)', border: '1px solid rgba(200,146,74,0.12)' }}
+                        style={{ background: 'var(--surface-raised)', color: 'var(--brand-muted)', border: '1px solid rgba(197, 160, 89,0.12)' }}
                       >
                         ⏸ Pause
                       </button>
@@ -615,7 +615,7 @@ export default function GuidedPlansClient({ userId, tradition, plans, statusMap,
           onClick={() => router.back()}
           className="w-9 h-9 rounded-full glass-panel border border-white/10 flex items-center justify-center"
         >
-          <ChevronLeft size={20} style={{ color: '#C8924A' }} />
+          <ChevronLeft size={20} style={{ color: '#C5A059' }} />
         </button>
         <div className="flex-1">
           <h1 className="font-bold text-lg" style={{ color: 'var(--brand-ink)' }}>Sadhana Patha</h1>
@@ -626,7 +626,7 @@ export default function GuidedPlansClient({ userId, tradition, plans, statusMap,
           className="w-9 h-9 rounded-full glass-panel border border-white/10 flex items-center justify-center"
           title="View insights"
         >
-          <BarChart2 size={17} style={{ color: '#C8924A' }} />
+          <BarChart2 size={17} style={{ color: '#C5A059' }} />
         </button>
       </div>
 
@@ -677,12 +677,12 @@ export default function GuidedPlansClient({ userId, tradition, plans, statusMap,
       {!activePlan && (
         <div
           className="mx-4 mb-5 rounded-[1.75rem] px-5 pt-5 pb-6 relative overflow-hidden"
-          style={{ background: 'var(--surface-raised)', border: '1px solid rgba(200,146,74,0.16)' }}
+          style={{ background: 'var(--surface-raised)', border: '1px solid rgba(197, 160, 89,0.16)' }}
         >
           <div className="absolute top-0 right-0 w-40 h-40 rounded-full pointer-events-none"
-            style={{ background: 'radial-gradient(circle, rgba(200,146,74,0.10) 0%, transparent 70%)', transform: 'translate(25%, -25%)' }} />
+            style={{ background: 'radial-gradient(circle, rgba(197, 160, 89,0.10) 0%, transparent 70%)', transform: 'translate(25%, -25%)' }} />
 
-          <p className="text-[10px] font-bold uppercase tracking-[0.22em] mb-3" style={{ color: 'rgba(200,146,74,0.65)' }}>
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] mb-3" style={{ color: 'rgba(197, 160, 89,0.65)' }}>
             Structured Practice
           </p>
           <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.35rem', fontWeight: 600, color: 'var(--brand-ink)', lineHeight: 1.22 }}>
@@ -702,8 +702,8 @@ export default function GuidedPlansClient({ userId, tradition, plans, statusMap,
             onClick={() => setFilter(f)}
             className="rounded-full px-4 py-1.5 text-xs font-semibold transition-all"
             style={filter === f
-              ? { background: 'rgba(200,146,74,0.18)', color: 'var(--brand-ink)', border: '1px solid rgba(200,146,74,0.35)' }
-              : { background: 'var(--surface-raised)', color: 'var(--text-dim)', border: '1px solid rgba(200,146,74,0.12)' }
+              ? { background: 'rgba(197, 160, 89,0.18)', color: 'var(--brand-ink)', border: '1px solid rgba(197, 160, 89,0.35)' }
+              : { background: 'var(--surface-raised)', color: 'var(--text-dim)', border: '1px solid rgba(197, 160, 89,0.12)' }
             }
           >
             {f === 'all' ? 'All Plans' : `${f}-Day`}
@@ -734,7 +734,7 @@ export default function GuidedPlansClient({ userId, tradition, plans, statusMap,
               className="w-full text-left rounded-[1.75rem] overflow-hidden border relative"
               style={{
                 background: `linear-gradient(160deg, ${plan.accentColor}14 0%, var(--surface-raised) 100%)`,
-                borderColor: isActive ? plan.borderColor : 'rgba(200,146,74,0.1)',
+                borderColor: isActive ? plan.borderColor : 'rgba(197, 160, 89,0.1)',
                 boxShadow: isActive ? `0 4px 20px ${plan.accentColor}18` : 'none',
               }}
             >

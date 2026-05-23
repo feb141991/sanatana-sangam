@@ -7,8 +7,8 @@ import { sendOneSignalPush } from '@/lib/onesignal-server';
 // Sends a broadcast notification to all users — inserts into the notifications
 // table and fires a OneSignal push. Admin-only (cookie-gated by middleware).
 
-export async function POST(request: Request) {
-  const authError = checkAdminAuth(request as any);
+export async function POST(request: NextRequest) {
+  const authError = checkAdminAuth(request);
   if (authError) return authError;
 
   const admin = await requireAdminAccess();

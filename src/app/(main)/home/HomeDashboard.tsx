@@ -59,6 +59,7 @@ import { getTraditionMeta } from '@/lib/tradition-config';
 import { getDailyDarshan, DARSHAN_REGISTRY } from '@/lib/darshan-registry';
 import DarshanOverlay from '@/components/home/DarshanOverlay';
 import DarshanPrompt from '@/components/home/DarshanPrompt';
+import DailySadhanaStrip from '@/components/home/DailySadhanaStrip';
 import { getTransliteration } from '@/lib/transliteration';
 import { resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
@@ -139,6 +140,7 @@ interface Props {
   liveStreams:         any[];
   isAdmin?:            boolean;
   sevaScore?:          number;
+  pathshalaDoneToday?: boolean;
 }
 
 const DEFAULT_QUICK_ACCESS = [
@@ -159,15 +161,15 @@ const HOME_THEMES: Record<string, FeatureTheme> = {
   // Dawn amber — Panchang, daily ritual
   panchang: {
     surface: 'linear-gradient(150deg, rgba(52, 42, 28, 0.98) 0%, rgba(38, 32, 22, 0.96) 100%)',
-    border: 'rgba(200, 146, 74, 0.22)',
-    iconWell: 'rgba(200, 146, 74, 0.14)',
+    border: 'rgba(197, 160, 89, 0.22)',
+    iconWell: 'rgba(197, 160, 89, 0.14)',
     accent: 'var(--brand-primary)',
   },
   // Deep ink — sacred text, pathshala
   pathshala: {
     surface: 'linear-gradient(150deg, rgba(30, 30, 28, 0.99) 0%, rgba(24, 24, 22, 0.97) 100%)',
-    border: 'rgba(200, 146, 74, 0.18)',
-    iconWell: 'rgba(200, 146, 74, 0.12)',
+    border: 'rgba(197, 160, 89, 0.18)',
+    iconWell: 'rgba(197, 160, 89, 0.12)',
     accent: 'var(--brand-primary)',
   },
   // Soft terracotta — bhakti, shloka
@@ -245,7 +247,7 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
         onClick={e => e.stopPropagation()}
         style={{
           background: 'linear-gradient(180deg, var(--surface-raised), var(--card-bg))',
-          borderTop: '1px solid rgba(200, 146, 74, 0.20)',
+          borderTop: '1px solid rgba(197, 160, 89, 0.20)',
           boxShadow: '0 -20px 48px rgba(0, 0, 0, 0.24)',
           backdropFilter: 'blur(22px) saturate(125%)',
           WebkitBackdropFilter: 'blur(22px) saturate(125%)',
@@ -256,15 +258,15 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
         transition={{ duration: 0.32, ease: [0.34, 1.26, 0.64, 1] }}
       >
         {/* Drag handle */}
-        <div className="w-10 h-1 rounded-full mx-auto mb-1" style={{ background: 'rgba(200, 146, 74, 0.28)' }} />
+        <div className="w-10 h-1 rounded-full mx-auto mb-1" style={{ background: 'rgba(197, 160, 89, 0.28)' }} />
 
         <div className="flex items-center justify-between">
           <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-cream)' }}>
             Invite Friends &amp; Family
           </h3>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center motion-press"
-            style={{ background: 'rgba(200, 146, 74, 0.10)' }}>
+            className="w-11 h-11 rounded-full flex items-center justify-center motion-press"
+            style={{ background: 'rgba(197, 160, 89, 0.10)' }}>
             <X size={15} style={{ color: 'var(--text-muted-warm)' }} />
           </button>
         </div>
@@ -277,8 +279,8 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
         <div
           className="rounded-[1.4rem] p-5 text-center border"
           style={{
-            background: 'linear-gradient(135deg, rgba(200, 146, 74, 0.12), var(--card-bg))',
-            borderColor: 'rgba(200, 146, 74, 0.18)',
+            background: 'linear-gradient(135deg, rgba(197, 160, 89, 0.12), var(--card-bg))',
+            borderColor: 'rgba(197, 160, 89, 0.18)',
           }}
         >
           <p className="text-[10px] mb-2 font-semibold uppercase tracking-[0.16em]" style={{ color: 'var(--text-dim)' }}>Your Invite Code</p>
@@ -300,7 +302,7 @@ function InviteModal({ userId, onClose }: { userId: string; onClose: () => void 
             className="py-3 font-semibold rounded-2xl border text-sm motion-lift"
             style={{
               color: 'var(--brand-primary)',
-              borderColor: 'rgba(200, 146, 74, 0.20)',
+              borderColor: 'rgba(197, 160, 89, 0.20)',
               background: 'rgba(44, 38, 28, 0.88)',
             }}>
             Copy Code
@@ -406,7 +408,7 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
         onClick={e => e.stopPropagation()}
         style={{
           background: 'linear-gradient(160deg, rgba(40, 36, 28, 0.99), rgba(30, 28, 22, 0.99))',
-          border: '1px solid rgba(200, 146, 74, 0.18)',
+          border: '1px solid rgba(197, 160, 89, 0.18)',
           boxShadow: '0 24px 48px rgba(0, 0, 0, 0.44)',
         }}
         initial={prefersReducedMotion ? undefined : { y: 12, opacity: 0, scale: 0.97 }}
@@ -415,10 +417,10 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
         transition={{ duration: 0.28, ease: [0.34, 1.26, 0.64, 1] }}
       >
         {/* Month nav row */}
-        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b flex-shrink-0" style={{ borderColor: 'rgba(200, 146, 74, 0.14)' }}>
+        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b flex-shrink-0" style={{ borderColor: 'rgba(197, 160, 89, 0.14)' }}>
           <button onClick={() => setViewDate(v => subMonths(v, 1))}
             className="w-8 h-8 rounded-full flex items-center justify-center motion-press"
-            style={{ background: 'rgba(200, 146, 74, 0.12)' }}>
+            style={{ background: 'rgba(197, 160, 89, 0.12)' }}>
             <ChevronLeft size={15} style={{ color: 'var(--text-cream)' }} />
           </button>
           <button onClick={() => setShowYearPicker(v => !v)}
@@ -429,7 +431,7 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
           </button>
           <button onClick={() => setViewDate(v => addMonths(v, 1))}
             className="w-8 h-8 rounded-full flex items-center justify-center motion-press"
-            style={{ background: 'rgba(200, 146, 74, 0.12)' }}>
+            style={{ background: 'rgba(197, 160, 89, 0.12)' }}>
             <ChevronRight size={15} style={{ color: 'var(--text-cream)' }} />
           </button>
         </div>
@@ -442,7 +444,7 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
                 className="py-2 rounded-xl text-xs font-medium motion-press"
                 style={y === viewDate.getFullYear()
                   ? { background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))', color: '#1a1610' }
-                  : { background: 'rgba(200, 146, 74, 0.08)', color: 'var(--text-muted-warm)' }}>
+                  : { background: 'rgba(197, 160, 89, 0.08)', color: 'var(--text-muted-warm)' }}>
                 {y}
               </button>
             ))}
@@ -477,7 +479,7 @@ function DatePickerModal({ selectedDate, onSelect, onClose }: {
             <div className="mt-3 flex justify-center">
               <button onClick={() => { onSelect(new Date()); onClose(); }}
                 className="text-xs px-5 py-1.5 rounded-full border font-medium motion-press"
-                style={{ borderColor: 'rgba(200, 146, 74, 0.20)', color: 'var(--brand-primary)', background: 'rgba(200, 146, 74, 0.08)' }}>
+                style={{ borderColor: 'rgba(197, 160, 89, 0.20)', color: 'var(--brand-primary)', background: 'rgba(197, 160, 89, 0.08)' }}>
                 Today
               </button>
             </div>
@@ -554,7 +556,7 @@ function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onC
           <div className="max-h-[calc(100dvh-1.5rem)] overflow-y-auto">
             {/* Dark-themed header */}
             <div className="sticky top-0 z-10 px-5 py-4 border-b flex items-center justify-between"
-              style={{ background: 'rgba(30, 28, 22, 0.97)', borderColor: 'rgba(200, 146, 74, 0.14)', backdropFilter: 'blur(16px)' }}>
+              style={{ background: 'rgba(30, 28, 22, 0.97)', borderColor: 'rgba(197, 160, 89, 0.14)', backdropFilter: 'blur(16px)' }}>
               <div>
                 <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 600, color: '#f0ede6' }}>
                   Choose your greeting
@@ -564,15 +566,15 @@ function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onC
                 </p>
               </div>
               <button onClick={onClose}
-                className="w-9 h-9 rounded-full flex items-center justify-center motion-press"
-                style={{ background: 'rgba(200, 146, 74, 0.10)' }}>
+                className="w-11 h-11 rounded-full flex items-center justify-center motion-press"
+                style={{ background: 'rgba(197, 160, 89, 0.10)' }}>
                 <X size={15} style={{ color: '#f0ede6' }} />
               </button>
             </div>
 
             <div className="p-5 space-y-4">
               {/* Preview */}
-              <div className="rounded-[1.4rem] p-4 border" style={{ background: 'rgba(200, 146, 74, 0.07)', borderColor: 'rgba(200, 146, 74, 0.16)' }}>
+              <div className="rounded-[1.4rem] p-4 border" style={{ background: 'rgba(197, 160, 89, 0.07)', borderColor: 'rgba(197, 160, 89, 0.16)' }}>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.18em] mb-1" style={{ color: 'var(--brand-primary)' }}>
                   {previewTone}
                 </p>
@@ -586,10 +588,10 @@ function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onC
                   className="w-full text-left px-4 py-3 rounded-2xl border text-sm motion-press"
                   style={selected === null ? {
                     borderColor: 'var(--brand-primary)',
-                    background: 'rgba(200, 146, 74, 0.10)',
+                    background: 'rgba(197, 160, 89, 0.10)',
                     color: 'var(--brand-primary)',
                   } : {
-                    borderColor: 'rgba(200, 146, 74, 0.12)',
+                    borderColor: 'rgba(197, 160, 89, 0.12)',
                     color: 'var(--text-muted-warm)',
                   }}
                 >
@@ -609,10 +611,10 @@ function GreetingEditSheet({ tradition, sampradaya, currentGreeting, onSave, onC
                         className="w-full text-left px-4 py-3 rounded-2xl border text-sm motion-press"
                         style={selected === g ? {
                           borderColor: 'var(--brand-primary)',
-                          background: 'rgba(200, 146, 74, 0.10)',
+                          background: 'rgba(197, 160, 89, 0.10)',
                           color: 'var(--brand-primary)',
                         } : {
-                          borderColor: 'rgba(200, 146, 74, 0.10)',
+                          borderColor: 'rgba(197, 160, 89, 0.10)',
                           color: 'var(--text-muted-warm)',
                         }}
                       >
@@ -685,7 +687,7 @@ function CalendarModal({
         onClick={e => e.stopPropagation()}
         style={{
           background: 'linear-gradient(180deg, rgba(36, 32, 24, 0.99), rgba(28, 26, 20, 0.99))',
-          borderTop: '1px solid rgba(200, 146, 74, 0.18)',
+          borderTop: '1px solid rgba(197, 160, 89, 0.18)',
           boxShadow: '0 -20px 48px rgba(0, 0, 0, 0.38)',
         }}
         initial={prefersReducedMotion ? undefined : { y: 32, opacity: 0 }}
@@ -694,12 +696,12 @@ function CalendarModal({
         transition={{ duration: 0.32, ease: [0.34, 1.26, 0.64, 1] }}
       >
         {/* Drag handle */}
-        <div className="w-10 h-1 rounded-full mx-auto mt-3 mb-0" style={{ background: 'rgba(200, 146, 74, 0.28)' }} />
+        <div className="w-10 h-1 rounded-full mx-auto mt-3 mb-0" style={{ background: 'rgba(197, 160, 89, 0.28)' }} />
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b" style={{ borderColor: 'rgba(200, 146, 74, 0.14)' }}>
+        <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b" style={{ borderColor: 'rgba(197, 160, 89, 0.14)' }}>
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(200, 146, 74, 0.13)' }}>
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(197, 160, 89, 0.13)' }}>
               <CalendarDays size={16} style={{ color: 'var(--brand-primary)' }} />
             </div>
             <div>
@@ -713,8 +715,8 @@ function CalendarModal({
             )}
           </div>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center motion-press"
-            style={{ background: 'rgba(200, 146, 74, 0.10)' }}>
+            className="w-11 h-11 rounded-full flex items-center justify-center motion-press"
+            style={{ background: 'rgba(197, 160, 89, 0.10)' }}>
             <X size={15} style={{ color: 'var(--text-muted-warm)' }} />
           </button>
         </div>
@@ -729,9 +731,9 @@ function CalendarModal({
                   <div key={f.name + f.date}
                     onClick={() => { if (onDateSelect) { onDateSelect(new Date(f.date + 'T00:00:00')); onClose(); } }}
                     className="flex items-center gap-3 rounded-2xl p-3 cursor-pointer motion-lift border"
-                    style={{ background: 'rgba(48, 44, 34, 0.80)', borderColor: 'rgba(200, 146, 74, 0.12)' }}>
+                    style={{ background: 'rgba(48, 44, 34, 0.80)', borderColor: 'rgba(197, 160, 89, 0.12)' }}>
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-                      style={{ background: 'rgba(200, 146, 74, 0.12)' }}>
+                      style={{ background: 'rgba(197, 160, 89, 0.12)' }}>
                       {f.emoji}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -758,9 +760,9 @@ function CalendarModal({
               {past.map(f => (
                 <div key={f.name + f.date}
                   className="flex items-center gap-3 rounded-2xl p-3 border opacity-50"
-                  style={{ background: 'rgba(36, 34, 26, 0.60)', borderColor: 'rgba(200, 146, 74, 0.08)' }}>
+                  style={{ background: 'rgba(36, 34, 26, 0.60)', borderColor: 'rgba(197, 160, 89, 0.08)' }}>
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-                    style={{ background: 'rgba(200, 146, 74, 0.07)' }}>{f.emoji}</div>
+                    style={{ background: 'rgba(197, 160, 89, 0.07)' }}>{f.emoji}</div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm leading-tight" style={{ color: 'var(--text-muted-warm)' }}>{f.name}</p>
                     <p className="text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>{formatFestDate(f.date)}</p>
@@ -978,6 +980,7 @@ export default function HomeDashboard({
   showTransliteration = true,
   isAdmin = false,
   sevaScore = 0,
+  pathshalaDoneToday = false,
 }: Props) {
   const supabase = useRef(createClient()).current;
   const queryClient = useQueryClient();
@@ -1978,6 +1981,13 @@ export default function HomeDashboard({
           </motion.button>
         </div>
 
+        {/* ── Daily Sadhana Progress Strip ── */}
+        <DailySadhanaStrip 
+          japaDone={japaAlreadyDoneToday} 
+          nityaDone={nityaDoneToday} 
+          pathshalaDone={pathshalaDoneToday} 
+        />
+
         {/* Daily Darshan — hidden until content is fully prepared */}
       </div>
 
@@ -2330,7 +2340,7 @@ export default function HomeDashboard({
             >
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[rgba(200,146,74,0.12)] flex items-center justify-center text-lg">
+                  <div className="w-8 h-8 rounded-lg bg-[rgba(197, 160, 89,0.12)] flex items-center justify-center text-lg">
                     🧠
                   </div>
                   <div>
@@ -2467,8 +2477,8 @@ export default function HomeDashboard({
               </div>
               <div className="flex items-center gap-2">
                 <button onClick={shareShloka}
-                  className="w-9 h-9 rounded-full flex items-center justify-center"
-                  style={{ background: sacredTextTheme.iconWell }}>
+                  className="w-11 h-11 rounded-full flex items-center justify-center"
+                  style={{ background: sacredTextTheme.iconWell }} aria-label="Share">
                   <Share2 size={15} style={{ color: 'var(--text-cream)' }} />
                 </button>
                 <button onClick={() => setShlokaModalOpen(false)}
@@ -2483,7 +2493,7 @@ export default function HomeDashboard({
             <div className="relative min-h-0 overflow-y-auto px-5 py-2 flex w-full max-w-2xl mx-auto flex-col justify-start gap-2">
               {/* Source badge */}
               <span className="self-start text-[10px] font-semibold px-3 py-1 rounded-full"
-                style={{ background: 'rgba(200,146,74,0.14)', color: 'var(--brand-primary)' }}>
+                style={{ background: 'rgba(197, 160, 89,0.14)', color: 'var(--brand-primary)' }}>
                 {dailyText.source}
               </span>
 
@@ -2525,7 +2535,7 @@ export default function HomeDashboard({
                 backdropFilter: 'blur(14px) saturate(120%)',
                 WebkitBackdropFilter: 'blur(14px) saturate(120%)',
               }}>
-                <p className="text-[9px] font-semibold uppercase tracking-[0.16em] mb-1" style={{ color: 'rgba(200,146,74,0.65)' }}>
+                <p className="text-[9px] font-semibold uppercase tracking-[0.16em] mb-1" style={{ color: 'rgba(197, 160, 89,0.65)' }}>
                   {dailyText.meaningLabel}
                 </p>
                 <p className="text-xs leading-relaxed" style={{ color: heroSecondaryText }}>
@@ -2535,21 +2545,21 @@ export default function HomeDashboard({
 
               {/* AI suggestion */}
               {personalContent?.suggestion && (
-                <div className="rounded-[1.2rem] px-4 py-3.5" style={{ background: 'rgba(200,146,74,0.07)', borderLeft: '2px solid rgba(200,146,74,0.35)' }}>
-                  <p className="text-[9px] font-semibold uppercase tracking-[0.12em] mb-1.5" style={{ color: 'rgba(200,146,74,0.65)' }}>
+                <div className="rounded-[1.2rem] px-4 py-3.5" style={{ background: 'rgba(197, 160, 89,0.07)', borderLeft: '2px solid rgba(197, 160, 89,0.35)' }}>
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.12em] mb-1.5" style={{ color: 'rgba(197, 160, 89,0.65)' }}>
                     ✨ {personalContent.context_label ?? 'Today\'s Practice'}
                   </p>
                   <p className="text-sm leading-relaxed" style={{ color: heroSecondaryText }}>{personalContent.suggestion}</p>
-                  {personalContent.nudge && <p className="text-xs mt-1.5 italic" style={{ color: 'rgba(200,146,74,0.55)' }}>{personalContent.nudge}</p>}
+                  {personalContent.nudge && <p className="text-xs mt-1.5 italic" style={{ color: 'rgba(197, 160, 89,0.55)' }}>{personalContent.nudge}</p>}
                   {(personalContent as any).action && (
                     <div className="mt-3">
                       <Link
                         href={(personalContent as any).action.href}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-colors"
                         style={{
-                          background: (personalContent as any).action.type === 'primary' ? 'var(--brand-primary)' : 'rgba(200,146,74,0.12)',
+                          background: (personalContent as any).action.type === 'primary' ? 'var(--brand-primary)' : 'rgba(197, 160, 89,0.12)',
                           color: (personalContent as any).action.type === 'primary' ? '#1c1c1a' : 'var(--brand-primary)',
-                          border: (personalContent as any).action.type === 'primary' ? 'none' : '1px solid rgba(200,146,74,0.2)'
+                          border: (personalContent as any).action.type === 'primary' ? 'none' : '1px solid rgba(197, 160, 89,0.2)'
                         }}
                       >
                         {(personalContent as any).action.label}
@@ -2565,7 +2575,7 @@ export default function HomeDashboard({
                 disabled={readToday}
                 className="w-full rounded-full py-3 text-sm font-semibold flex items-center justify-center gap-2"
                 style={readToday
-                  ? { background: 'rgba(200,146,74,0.12)', color: 'var(--brand-primary)', border: '1px solid rgba(200,146,74,0.22)' }
+                  ? { background: 'rgba(197, 160, 89,0.12)', color: 'var(--brand-primary)', border: '1px solid rgba(197, 160, 89,0.22)' }
                   : { background: 'rgba(250,199,117,0.90)', color: '#1c1208', boxShadow: '0 14px 30px rgba(239,159,39,0.20)' }}
                 whileTap={readToday ? undefined : { scale: 0.97 }}
               >
@@ -2645,7 +2655,7 @@ export default function HomeDashboard({
               style={{
                 maxHeight: '88dvh',
                 background: 'linear-gradient(180deg, var(--surface-raised) 0%, var(--card-bg) 100%)',
-                borderTop: '1px solid rgba(200, 146, 74, 0.22)',
+                borderTop: '1px solid rgba(197, 160, 89, 0.22)',
                 boxShadow: '0 -24px 60px rgba(0,0,0,0.28)',
               }}
               onClick={e => e.stopPropagation()}
@@ -2657,7 +2667,7 @@ export default function HomeDashboard({
               {/* Drag handle */}
               <div className="sticky top-0 flex justify-center pt-3 pb-2 z-10"
                 style={{ background: 'var(--surface-raised)' }}>
-                <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(200,146,74,0.30)' }} />
+                <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(197, 160, 89,0.30)' }} />
               </div>
 
               {/* Header */}
@@ -2677,7 +2687,7 @@ export default function HomeDashboard({
                 <button
                   onClick={() => setActiveStoryFestival(null)}
                   className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 mt-1"
-                  style={{ background: 'rgba(200,146,74,0.10)' }}
+                  style={{ background: 'rgba(197, 160, 89,0.10)' }}
                   aria-label="Close"
                 >
                   <X size={16} style={{ color: 'var(--text-muted-warm)' }} />
@@ -2700,7 +2710,7 @@ export default function HomeDashboard({
                 {/* Shloka block */}
                 <section
                   className="rounded-[1.4rem] p-5"
-                  style={{ background: 'rgba(200,146,74,0.09)', border: '1px solid rgba(200,146,74,0.18)' }}
+                  style={{ background: 'rgba(197, 160, 89,0.09)', border: '1px solid rgba(197, 160, 89,0.18)' }}
                 >
                   <p className="text-[10px] font-semibold uppercase tracking-[0.16em] mb-3"
                     style={{ color: 'var(--brand-primary)' }}>
@@ -2764,7 +2774,7 @@ export default function HomeDashboard({
               className="relative w-full max-h-[90dvh] rounded-t-[2.5rem] overflow-y-auto"
               style={{
                 background: 'linear-gradient(180deg, var(--surface-raised) 0%, var(--card-bg) 100%)',
-                borderTop: '1px solid rgba(200, 146, 74, 0.25)',
+                borderTop: '1px solid rgba(197, 160, 89, 0.25)',
                 boxShadow: '0 -24px 64px rgba(0,0,0,0.4)',
               }}
               onClick={e => e.stopPropagation()}
@@ -2775,7 +2785,7 @@ export default function HomeDashboard({
             >
               {/* Handle */}
               <div className="sticky top-0 z-20 flex justify-center pt-3 pb-2 bg-inherit">
-                <div className="w-12 h-1.5 rounded-full bg-[rgba(200,146,74,0.2)]" />
+                <div className="w-12 h-1.5 rounded-full bg-[rgba(197, 160, 89,0.2)]" />
               </div>
 
               <div className="px-7 pt-2 pb-12">
@@ -2808,7 +2818,7 @@ export default function HomeDashboard({
                   {/* Type: Fact */}
                   {quiz.type === 'fact' && (
                     <div className="space-y-6">
-                      <div className="p-6 rounded-3xl bg-[rgba(200,146,74,0.06)] border border-[rgba(200,146,74,0.12)]">
+                      <div className="p-6 rounded-3xl bg-[rgba(197, 160, 89,0.06)] border border-[rgba(197, 160, 89,0.12)]">
                         <p className="text-base leading-relaxed theme-ink">{quiz.fact}</p>
                       </div>
                       <p className="text-[11px] uppercase tracking-widest text-center opacity-40">Source: {quiz.source}</p>

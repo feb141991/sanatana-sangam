@@ -4,7 +4,6 @@ import { GUIDED_PLANS, buildGuidedPathStatusMap } from '@/lib/guided-paths';
 import type { GuidedPathProgressRow } from '@/lib/guided-paths';
 import InsightsClient from './InsightsClient';
 
-export const dynamic = 'force-dynamic';
 
 export default async function PlanInsightsPage() {
   const supabase = await createServerSupabaseClient();

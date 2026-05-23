@@ -12,7 +12,7 @@ const RINGS = [
     id:        'japa',
     labelKey:  'japa',
     href:      '/japa',
-    accent:    '#C8924A',
+    accent:    '#C5A059',
     accentEnd: '#E8A860',
     scoreKey:  'presence' as const,
   },
@@ -107,7 +107,7 @@ export default function SpiritualMetricsSection({
       className="rounded-[1.7rem] px-4 py-4 relative overflow-hidden"
       style={{
         background:  containerBg,
-        border:      '1px solid rgba(200,146,74,0.14)',
+        border:      '1px solid rgba(197, 160, 89,0.14)',
         boxShadow:   containerShadow,
       }}
     >

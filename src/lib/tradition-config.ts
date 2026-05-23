@@ -104,14 +104,14 @@ export const JAPA_MALAS = [
     id: 'sandalwood',
     name: 'Sandalwood',
     subtitle: 'Calming · all traditions',
-    dark:  { thread: 'rgba(120,80,40,0.20)', bead: '#5A3218', counted: '#C8924A', sumeru: '#2E1508', glow: 'rgba(200,146,74,0.55)' },
+    dark:  { thread: 'rgba(120,80,40,0.20)', bead: '#5A3218', counted: '#C5A059', sumeru: '#2E1508', glow: 'rgba(197, 160, 89,0.55)' },
     light: { thread: 'rgba(80,50,20,0.15)',  bead: '#C8A070', counted: '#7A4A1E', sumeru: '#5A3010', glow: 'rgba(122,74,30,0.45)' },
   },
   {
     id: 'rudraksha',
     name: 'Rudraksha',
     subtitle: 'Sacred · Shaiva',
-    dark:  { thread: 'rgba(80,40,20,0.20)', bead: '#3A1A08', counted: '#C8924A', sumeru: '#1A0802', glow: 'rgba(200,100,60,0.55)' },
+    dark:  { thread: 'rgba(80,40,20,0.20)', bead: '#3A1A08', counted: '#C5A059', sumeru: '#1A0802', glow: 'rgba(200,100,60,0.55)' },
     light: { thread: 'rgba(60,30,10,0.15)', bead: '#A07050', counted: '#5A2E10', sumeru: '#3A1A02', glow: 'rgba(90,46,16,0.45)' },
   },
   {
@@ -125,14 +125,14 @@ export const JAPA_MALAS = [
     id: 'tulsi',
     name: 'Tulsi',
     subtitle: 'Pure · Vaishnava',
-    dark:  { thread: 'rgba(40,100,40,0.20)', bead: '#1E3E1E', counted: '#C8924A', sumeru: '#0E2A0E', glow: 'rgba(60,160,60,0.40)' },
+    dark:  { thread: 'rgba(40,100,40,0.20)', bead: '#1E3E1E', counted: '#C5A059', sumeru: '#0E2A0E', glow: 'rgba(60,160,60,0.40)' },
     light: { thread: 'rgba(30,80,30,0.15)',  bead: '#90C090', counted: '#3A7A3A', sumeru: '#1E5A1E', glow: 'rgba(58,122,58,0.40)' },
   },
   {
     id: 'crystal',
     name: 'Crystal',
     subtitle: 'Clarity · breath practice',
-    dark:  { thread: 'rgba(180,200,220,0.12)', bead: 'rgba(200,215,235,0.12)', counted: '#C8924A', sumeru: 'rgba(200,220,240,0.22)', glow: 'rgba(180,200,240,0.50)' },
+    dark:  { thread: 'rgba(180,200,220,0.12)', bead: 'rgba(200,215,235,0.12)', counted: '#C5A059', sumeru: 'rgba(200,220,240,0.22)', glow: 'rgba(180,200,240,0.50)' },
     light: { thread: 'rgba(100,120,160,0.15)',  bead: 'rgba(160,180,210,0.35)', counted: '#6878A8', sumeru: 'rgba(140,160,200,0.55)', glow: 'rgba(104,120,168,0.40)' },
   },
 ] as const satisfies readonly {

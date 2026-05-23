@@ -18,7 +18,6 @@ import type { GuidedPathProgressRow } from '@/lib/guided-paths';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { Database } from '@/types/database';
 
-export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   const supabase = await createServerSupabaseClient();
@@ -146,6 +145,10 @@ export default async function HomePage() {
     && ((guidedPathProgress?.length ?? 0) === 0)
   );
 
+  const pathshalaDoneToday = (guidedPathProgress ?? []).some(
+    (p: GuidedPathProgressRow) => p.updated_at && p.updated_at.startsWith(today)
+  );
+
   return (
     <HomeDashboard
       userId={user.id}
@@ -192,6 +195,7 @@ export default async function HomePage() {
       liveStreams={allStreams}
       isAdmin={profile?.is_admin ?? false}
       sevaScore={(profile as any)?.seva_score ?? 0}
+      pathshalaDoneToday={pathshalaDoneToday}
     />
   );
 }

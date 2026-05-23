@@ -184,7 +184,7 @@ export default function DharmVeerClient({
             </button>
             <button
               onClick={handleCopy}
-              className="w-9 h-9 rounded-full flex items-center justify-center transition hover:bg-[var(--surface-base)]/20 active:scale-90"
+              className="w-11 h-11 rounded-full flex items-center justify-center transition hover:bg-[var(--surface-base)]/20 active:scale-90"
               style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
               title="Copy Story"
             >
@@ -192,10 +192,10 @@ export default function DharmVeerClient({
             </button>
             <button
               onClick={handleShare}
-              className="w-9 h-9 rounded-full flex items-center justify-center transition hover:bg-[var(--surface-base)]/20 active:scale-90"
+              className="w-11 h-11 rounded-full flex items-center justify-center transition hover:bg-[var(--surface-base)]/20 active:scale-90"
               style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
               title="Share Story"
-            >
+             aria-label="Share">
               <Share2 size={14} />
             </button>
           </div>
@@ -293,7 +293,7 @@ export default function DharmVeerClient({
           </div>
 
           {/* The Trial */}
-          <div className="clay-card rounded-[2rem] p-6 space-y-4" style={{ backgroundColor: 'rgba(200,146,74,0.05)', border: '1px solid rgba(200,146,74,0.1)' }}>
+          <div className="clay-card rounded-[2rem] p-6 space-y-4" style={{ backgroundColor: 'rgba(197, 160, 89,0.05)', border: '1px solid rgba(197, 160, 89,0.1)' }}>
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--brand-primary)]">
               <Shield size={14} /> {translateFn(effectiveLang, 'testOfDharma')}
             </div>

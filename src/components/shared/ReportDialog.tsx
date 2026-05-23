@@ -65,7 +65,7 @@ export default function ReportDialog({ isOpen, onClose, reporterId, targetId, ta
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-md bg-[var(--divine-bg)] border border-[rgba(200,146,74,0.3)] rounded-3xl p-6 shadow-2xl overflow-hidden"
+            className="relative w-full max-w-md bg-[var(--divine-bg)] border border-[rgba(197, 160, 89,0.3)] rounded-3xl p-6 shadow-2xl overflow-hidden"
           >
             {isDone ? (
               <div className="py-8 text-center space-y-4">
@@ -104,7 +104,7 @@ export default function ReportDialog({ isOpen, onClose, reporterId, targetId, ta
                           onClick={() => setReason(r)}
                           className={`w-full text-left px-4 py-3 rounded-xl border text-sm transition-all ${
                             reason === r 
-                              ? 'bg-[rgba(200,146,74,0.1)] border-[#C5A059] theme-ink' 
+                              ? 'bg-[rgba(197, 160, 89,0.1)] border-[#C5A059] theme-ink' 
                               : 'bg-black/5 dark:bg-white/5 border-transparent text-[var(--text-muted-warm)] hover:border-black/10 dark:hover:border-white/10'
                           }`}
                         >

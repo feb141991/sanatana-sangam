@@ -49,7 +49,7 @@ interface Props {
 const RANK_META = {
   Seeker:  { emoji: '🌱', color: 'rgba(100,140,100,0.20)',  border: 'rgba(100,160,100,0.35)', text: '#7aab7a',  desc: 'Beginning the journey' },
   Jigyasu: { emoji: '📖', color: 'rgba(180,140,80,0.20)',   border: 'rgba(180,140,80,0.40)',  text: '#c8a050',  desc: 'Curious learner' },
-  Shishya: { emoji: '🪔', color: 'rgba(200,146,74,0.22)',   border: 'rgba(200,146,74,0.44)',  text: '#c8924a',  desc: 'Devoted student' },
+  Shishya: { emoji: '🪔', color: 'rgba(197, 160, 89,0.22)',   border: 'rgba(197, 160, 89,0.44)',  text: '#C5A059',  desc: 'Devoted student' },
   Gyani:   { emoji: '🧿', color: 'rgba(100,140,220,0.20)',  border: 'rgba(100,140,220,0.40)', text: '#6a9cd4',  desc: 'Knowledgeable one' },
   Pandit:  { emoji: '🏵️', color: 'rgba(220,180,60,0.22)',  border: 'rgba(220,180,60,0.50)',  text: '#d4b840',  desc: 'Master of tradition' },
 } as const;
@@ -82,7 +82,7 @@ function nextRankInfo(rank: RankKey, total: number, accuracy: number) {
 // ── Topic meta ────────────────────────────────────────────────────────────────
 
 const TOPICS = [
-  { key: 'deities',    emoji: '🙏', label: 'Deities & Stories',   color: '#c8924a' },
+  { key: 'deities',    emoji: '🙏', label: 'Deities & Stories',   color: '#C5A059' },
   { key: 'scriptures', emoji: '📖', label: 'Scriptures & Texts',   color: '#9898dd' },
   { key: 'philosophy', emoji: '🧘', label: 'Philosophy',           color: '#7aab7a' },
   { key: 'festivals',  emoji: '🪔', label: 'Festivals & Calendar', color: '#d4843a' },
@@ -99,8 +99,8 @@ const glass = {
 } as const;
 
 const glassAmber = {
-  background: 'rgba(200,146,74,0.07)',
-  border: '1px solid rgba(200,146,74,0.18)',
+  background: 'rgba(197, 160, 89,0.07)',
+  border: '1px solid rgba(197, 160, 89,0.18)',
 } as const;
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -196,7 +196,7 @@ export default function QuizDashboardClient({
               </span>
               {isPro && (
                 <span className="text-[10px] font-bold uppercase tracking-[0.14em] px-2 py-1 rounded-full flex items-center gap-1"
-                  style={{ background: 'rgba(200,146,74,0.20)', color: '#c8924a', border: '1px solid rgba(200,146,74,0.30)' }}>
+                  style={{ background: 'rgba(197, 160, 89,0.20)', color: '#C5A059', border: '1px solid rgba(197, 160, 89,0.30)' }}>
                   <Star size={9} className="fill-current" /> Pro
                 </span>
               )}
@@ -321,7 +321,7 @@ export default function QuizDashboardClient({
                 <p className="font-bold text-[15px] flex items-center gap-2" style={{ color: 'var(--text-cream)' }}>
                   Practice Mode
                   <span className="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-full"
-                    style={{ background: 'rgba(200,146,74,0.18)', color: '#c8924a' }}>
+                    style={{ background: 'rgba(197, 160, 89,0.18)', color: '#C5A059' }}>
                     Pro
                   </span>
                 </p>
@@ -332,7 +332,7 @@ export default function QuizDashboardClient({
             </div>
             <div
               className="text-[11px] font-semibold px-3 py-1.5 rounded-full"
-              style={{ background: 'rgba(200,146,74,0.15)', color: '#c8924a' }}
+              style={{ background: 'rgba(197, 160, 89,0.15)', color: '#C5A059' }}
             >
               Unlock
             </div>
@@ -410,7 +410,7 @@ export default function QuizDashboardClient({
               <button
                 onClick={() => setProModalOpen(true)}
                 className="mt-1 px-4 py-2 rounded-full text-[11px] font-bold"
-                style={{ background: 'rgba(200,146,74,0.20)', color: '#c8924a', border: '1px solid rgba(200,146,74,0.30)' }}
+                style={{ background: 'rgba(197, 160, 89,0.20)', color: '#C5A059', border: '1px solid rgba(197, 160, 89,0.30)' }}
               >
                 Go Pro
               </button>
@@ -495,7 +495,7 @@ export default function QuizDashboardClient({
             <button
               onClick={() => setProModalOpen(true)}
               className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
-              style={{ background: 'rgba(200,146,74,0.15)', color: '#c8924a' }}
+              style={{ background: 'rgba(197, 160, 89,0.15)', color: '#C5A059' }}
             >
               Full history (Pro)
             </button>
@@ -516,7 +516,7 @@ export default function QuizDashboardClient({
               <Link
                 href="/home"
                 className="inline-block mt-4 px-4 py-2 rounded-full text-[11px] font-bold"
-                style={{ background: 'rgba(200,146,74,0.15)', color: '#c8924a' }}
+                style={{ background: 'rgba(197, 160, 89,0.15)', color: '#C5A059' }}
               >
                 Go to Home
               </Link>
@@ -578,10 +578,10 @@ export default function QuizDashboardClient({
                 <button
                   onClick={() => setProModalOpen(true)}
                   className="w-full rounded-[1.4rem] py-4 text-center mt-2"
-                  style={{ border: '1px dashed rgba(200,146,74,0.28)', background: 'rgba(200,146,74,0.05)' }}
+                  style={{ border: '1px dashed rgba(197, 160, 89,0.28)', background: 'rgba(197, 160, 89,0.05)' }}
                 >
                   <Lock size={14} className="mx-auto mb-1.5" style={{ color: 'var(--text-dim)' }} />
-                  <p className="text-[12px] font-semibold" style={{ color: '#c8924a' }}>
+                  <p className="text-[12px] font-semibold" style={{ color: '#C5A059' }}>
                     See your full history with Pro
                   </p>
                   <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-dim)' }}>

@@ -189,7 +189,7 @@ export default function FloatingPill({
               background: 'var(--surface-raised)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(200,146,74,0.14)',
+              border: '1px solid rgba(197, 160, 89,0.14)',
               borderBottom: 'none',
               maxHeight: '85dvh',
               paddingBottom: 'env(safe-area-inset-bottom, 0px)',
@@ -199,7 +199,7 @@ export default function FloatingPill({
           >
             {/* Drag handle */}
             <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
-              <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(200,146,74,0.25)' }} />
+              <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(197, 160, 89,0.25)' }} />
             </div>
 
             {/* Header */}
@@ -217,7 +217,7 @@ export default function FloatingPill({
                 {unreadCount > 0 && (
                   <button onClick={markAllRead}
                     className="text-xs font-semibold px-3 py-1.5 rounded-xl transition"
-                    style={{ background: 'rgba(200,146,74,0.12)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(200,146,74,0.2)' }}>
+                    style={{ background: 'rgba(197, 160, 89,0.12)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(197, 160, 89,0.2)' }}>
                     Mark all read
                   </button>
                 )}
@@ -235,7 +235,7 @@ export default function FloatingPill({
             {/* Push permission prompt */}
             {shouldShowPushPrompt && (
               <div className="mx-4 mt-4 flex-shrink-0 rounded-2xl px-4 py-3.5 flex items-start gap-3"
-                style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.18)' }}>
+                style={{ background: 'rgba(197, 160, 89,0.08)', border: '1px solid rgba(197, 160, 89,0.18)' }}>
                 <span className="text-xl mt-0.5">{isIosSafariNonPwa ? '📲' : '🔔'}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold" style={{ color: 'var(--text-cream)' }}>
@@ -312,7 +312,7 @@ export default function FloatingPill({
                     <motion.div key={n.id}
                       variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.2 } } }}
                       className="px-5 py-4 flex items-start gap-3.5 cursor-pointer active:opacity-80 transition-opacity"
-                      style={{ background: !n.read ? 'rgba(200,146,74,0.05)' : 'transparent' }}
+                      style={{ background: !n.read ? 'rgba(197, 160, 89,0.05)' : 'transparent' }}
                       onClick={async () => {
                         if (!n.read) await markOneReadMutation.mutateAsync(n.id);
                         if (!n.action_url) return;
@@ -322,7 +322,7 @@ export default function FloatingPill({
                       }}
                     >
                       <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl flex-shrink-0"
-                        style={{ background: 'rgba(200,146,74,0.1)', border: '1px solid rgba(200,146,74,0.15)' }}>
+                        style={{ background: 'rgba(197, 160, 89,0.1)', border: '1px solid rgba(197, 160, 89,0.15)' }}>
                         {n.emoji}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -358,12 +358,12 @@ export default function FloatingPill({
       <div className="fixed top-3 right-3 z-50 flex items-center gap-2">
         <Link href="/login"
           className="px-4 py-2 rounded-full text-xs font-semibold transition"
-          style={{ background: 'rgba(28,26,22,0.85)', border: '1px solid rgba(200,146,74,0.2)', color: 'var(--text-dim)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
+          style={{ background: 'rgba(28,26,22,0.85)', border: '1px solid rgba(197, 160, 89,0.2)', color: 'var(--text-dim)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
           Sign in
         </Link>
         <Link href="/signup"
           className="px-4 py-2 rounded-full text-xs font-semibold transition"
-          style={{ background: 'rgba(200,146,74,0.15)', border: '1px solid rgba(200,146,74,0.3)', color: 'var(--brand-primary)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
+          style={{ background: 'rgba(197, 160, 89,0.15)', border: '1px solid rgba(197, 160, 89,0.3)', color: 'var(--brand-primary)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
           Join Free
         </Link>
       </div>
@@ -382,7 +382,7 @@ export default function FloatingPill({
           background:           'rgba(18, 14, 8, 0.52)',
           backdropFilter:       'blur(28px) saturate(180%)',
           WebkitBackdropFilter: 'blur(28px) saturate(180%)',
-          border:               '1px solid rgba(200,146,74,0.20)',
+          border:               '1px solid rgba(197, 160, 89,0.20)',
           boxShadow:            '0 4px 20px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,220,140,0.06)',
           overflow:             'hidden',
         }}
@@ -398,7 +398,7 @@ export default function FloatingPill({
                 onClick={handleBellClick}
                 aria-label="Notifications"
                 className="relative flex items-center justify-center transition"
-                style={{ width: 48, height: 44, color: 'rgba(200,146,74,0.88)', flexShrink: 0 }}
+                style={{ width: 48, height: 44, color: 'rgba(197, 160, 89,0.88)', flexShrink: 0 }}
                 initial={prefersReducedMotion ? false : { opacity: 0, x: 10 }}
                 animate={prefersReducedMotion ? undefined : { opacity: 1, x: 0 }}
                 exit={prefersReducedMotion ? undefined : { opacity: 0, x: 8 }}
@@ -416,14 +416,14 @@ export default function FloatingPill({
                 )}
                 {unreadCount === 0 && pushConfigured && permission !== 'granted' && !isIosSafariNonPwa && (
                   <span className="absolute top-2 right-2 w-2 h-2 rounded-full"
-                    style={{ background: 'rgba(230,150,60,0.9)', boxShadow: '0 0 0 2px rgba(200,146,74,0.22)', animation: 'pulse 2s ease-in-out infinite' }} />
+                    style={{ background: 'rgba(230,150,60,0.9)', boxShadow: '0 0 0 2px rgba(197, 160, 89,0.22)', animation: 'pulse 2s ease-in-out infinite' }} />
                 )}
               </motion.button>
 
               {/* ── Divider ────────────────────────────────────────────────── */}
               <motion.div
                 key="home-pill-divider"
-                style={{ width: 1, height: 26, background: 'rgba(200,146,74,0.18)', flexShrink: 0 }}
+                style={{ width: 1, height: 26, background: 'rgba(197, 160, 89,0.18)', flexShrink: 0 }}
                 initial={prefersReducedMotion ? false : { opacity: 0 }}
                 animate={prefersReducedMotion ? undefined : { opacity: 1 }}
                 exit={prefersReducedMotion ? undefined : { opacity: 0 }}
@@ -442,8 +442,8 @@ export default function FloatingPill({
             style={{
               width: 44,
               height: 44,
-              background: 'rgba(200,146,74,0.10)',
-              border: avatarUrl && !avatarFailed ? '2px solid rgba(200,146,74,0.50)' : '1px solid rgba(200,146,74,0.18)',
+              background: 'rgba(197, 160, 89,0.10)',
+              border: avatarUrl && !avatarFailed ? '2px solid rgba(197, 160, 89,0.50)' : '1px solid rgba(197, 160, 89,0.18)',
             }}
           >
             {avatarUrl && !avatarFailed ? (
@@ -458,7 +458,7 @@ export default function FloatingPill({
                 onError={() => setAvatarFailed(true)}
               />
             ) : (
-              <span className="text-sm font-bold" style={{ color: 'rgba(200,146,74,0.88)' }}>
+              <span className="text-sm font-bold" style={{ color: 'rgba(197, 160, 89,0.88)' }}>
                 {userInitials}
               </span>
             )}
@@ -477,8 +477,8 @@ export default function FloatingPill({
             style={{
               width: 48,
               height: 44,
-              background: 'rgba(200,146,74,0.10)',
-              border: avatarUrl && !avatarFailed ? '2px solid rgba(200,146,74,0.50)' : '1px solid rgba(200,146,74,0.18)',
+              background: 'rgba(197, 160, 89,0.10)',
+              border: avatarUrl && !avatarFailed ? '2px solid rgba(197, 160, 89,0.50)' : '1px solid rgba(197, 160, 89,0.18)',
             }}
             aria-label="Open profile"
           >
@@ -494,7 +494,7 @@ export default function FloatingPill({
                 onError={() => setAvatarFailed(true)}
               />
             ) : (
-              <span className="text-sm font-bold" style={{ color: 'rgba(200,146,74,0.88)' }}>
+              <span className="text-sm font-bold" style={{ color: 'rgba(197, 160, 89,0.88)' }}>
                 {userInitials}
               </span>
             )}
@@ -556,7 +556,7 @@ function NotificationsEmptyState({ userId, onNotificationSent }: { userId: strin
       {/* Header */}
       <div className="flex flex-col items-center w-full text-center gap-3">
         <div className="w-16 h-16 rounded-3xl flex items-center justify-center text-3xl"
-          style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.15)' }}>
+          style={{ background: 'rgba(197, 160, 89,0.08)', border: '1px solid rgba(197, 160, 89,0.15)' }}>
           <SacredIcon name="bell" size={26} />
         </div>
         <div>
@@ -571,7 +571,7 @@ function NotificationsEmptyState({ userId, onNotificationSent }: { userId: strin
       <div className="flex flex-col gap-2 w-full">
         <button onClick={sendTest} disabled={sending}
           className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition disabled:opacity-50"
-          style={{ background: 'rgba(200,146,74,0.1)', border: '1px solid rgba(200,146,74,0.22)', color: 'var(--brand-primary-strong)' }}>
+          style={{ background: 'rgba(197, 160, 89,0.1)', border: '1px solid rgba(197, 160, 89,0.22)', color: 'var(--brand-primary-strong)' }}>
           <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
           </svg>
@@ -622,7 +622,7 @@ function NotificationsEmptyState({ userId, onNotificationSent }: { userId: strin
           {/* Next steps */}
           {!diagResult.all_ok && (
             <div className="px-4 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(0,0,0,0.12)' }}>
-              <p className="text-[10.5px] font-bold uppercase tracking-wide mb-2" style={{ color: 'rgba(200,146,74,0.6)' }}>
+              <p className="text-[10.5px] font-bold uppercase tracking-wide mb-2" style={{ color: 'rgba(197, 160, 89,0.6)' }}>
                 Fix these first
               </p>
               {diagResult.next_steps.map((step, i) => (

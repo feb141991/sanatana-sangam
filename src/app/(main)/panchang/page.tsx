@@ -1,7 +1,6 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import PanchangClient from './PanchangClient';
 
-export const dynamic = 'force-dynamic';
 
 export default async function PanchangPage() {
   const supabase = await createServerSupabaseClient();

@@ -635,7 +635,7 @@ export default function ReciteClient({
           <div className="flex items-center gap-2">
             <button
               onClick={handleCopy}
-              className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center transition hover:bg-white/10 active:scale-90"
+              className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center transition hover:bg-white/10 active:scale-90"
               style={{ background: 'rgba(255,255,255,0.06)' }}
               title={t(customLang, 'copy')}
             >
@@ -643,10 +643,10 @@ export default function ReciteClient({
             </button>
             <button
               onClick={handleShare}
-              className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center transition hover:bg-white/10 active:scale-90"
+              className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center transition hover:bg-white/10 active:scale-90"
               style={{ background: 'rgba(255,255,255,0.06)' }}
               title={t(customLang, 'share')}
-            >
+             aria-label="Share">
               <Share2 size={13} style={{ color: accentColour }} />
             </button>
           </div>
@@ -937,10 +937,10 @@ export default function ReciteClient({
                           animate={{ height: 'auto', opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
                           className="overflow-hidden rounded-2xl overflow-hidden"
-                          style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.16)' }}
+                          style={{ background: 'rgba(197, 160, 89,0.06)', border: '1px solid rgba(197, 160, 89,0.16)' }}
                         >
                           {showVerseTransliteration && (
-                            <div className="px-4 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(200,146,74,0.12)' }}>
+                            <div className="px-4 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(197, 160, 89,0.12)' }}>
                               <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: accentColour, opacity: 0.6 }}>{labels.transliteration}</p>
                               <p className="italic leading-relaxed" style={{ color: 'var(--brand-muted)', fontSize: `${fontScale * 0.95}rem` }}>
                                 {verseTransliteration}
@@ -1124,7 +1124,7 @@ export default function ReciteClient({
               <div className="flex items-center gap-3 py-1">
                 <button
                   onClick={previewPlaying ? stopPreview : playPreview}
-                  className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                  className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
                   style={{ background: `${accentColour}20`, border: `1px solid ${accentColour}40` }}
                 >
                   {previewPlaying

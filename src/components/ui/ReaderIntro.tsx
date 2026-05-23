@@ -180,7 +180,7 @@ export function ReaderIntro({ capabilities }: ReaderIntroProps) {
 
         {/* Pulsing Highlight Border */}
         <motion.div 
-          animate={{ outlineWidth: [1, 4, 1], outlineColor: ['rgba(200,146,74,0.3)', 'rgba(200,146,74,0.8)', 'rgba(200,146,74,0.3)'] }}
+          animate={{ outlineWidth: [1, 4, 1], outlineColor: ['rgba(197, 160, 89,0.3)', 'rgba(197, 160, 89,0.8)', 'rgba(197, 160, 89,0.3)'] }}
           transition={{ duration: 2, repeat: Infinity }}
           className="absolute rounded-full pointer-events-none"
           style={{

@@ -73,7 +73,7 @@ function StackCard({
           </span>
         </div>
         {isActive && (
-          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center transition hover:bg-white/5">
+          <button onClick={onClose} className="w-11 h-11 rounded-full flex items-center justify-center transition hover:bg-white/5">
             <X size={16} style={{ color: 'var(--text-dim)' }} />
           </button>
         )}
@@ -108,7 +108,7 @@ function StackCard({
           {onPrev && (
             <button
               onClick={onPrev}
-              className="w-10 h-10 rounded-[1rem] flex items-center justify-center transition-transform active:scale-95"
+              className="w-11 h-11 rounded-[1rem] flex items-center justify-center transition-transform active:scale-95"
               style={{ border: '1px solid var(--card-border)' }}
               aria-label="Previous recommendation"
             >
@@ -125,7 +125,7 @@ function StackCard({
           </Link>
           <button
             onClick={onNext}
-            className="w-10 h-10 rounded-[1rem] flex items-center justify-center transition-transform active:scale-95"
+            className="w-11 h-11 rounded-[1rem] flex items-center justify-center transition-transform active:scale-95"
             style={{ border: '1px solid var(--card-border)' }}
             aria-label="Next recommendation"
           >

@@ -79,7 +79,7 @@ export default function MoodFollowupSheet({ pending, onClose, onCompleted }: Moo
         onClick={event => event.stopPropagation()}
         style={{
           background: 'linear-gradient(180deg, var(--surface-raised), var(--card-bg))',
-          borderTop: '1px solid rgba(200, 146, 74, 0.20)',
+          borderTop: '1px solid rgba(197, 160, 89, 0.20)',
           boxShadow: '0 -20px 48px rgba(0, 0, 0, 0.4)',
         }}
         initial={prefersReducedMotion ? undefined : { y: 32, opacity: 0 }}
@@ -87,7 +87,7 @@ export default function MoodFollowupSheet({ pending, onClose, onCompleted }: Moo
         exit={prefersReducedMotion ? undefined : { y: 20, opacity: 0 }}
         transition={{ duration: 0.32, ease: [0.34, 1.26, 0.64, 1] }}
       >
-        <div className="w-10 h-1 rounded-full mx-auto mb-1" style={{ background: 'rgba(200, 146, 74, 0.28)' }} />
+        <div className="w-10 h-1 rounded-full mx-auto mb-1" style={{ background: 'rgba(197, 160, 89, 0.28)' }} />
 
         <div className="flex items-center justify-between gap-3">
           <div>
@@ -100,8 +100,8 @@ export default function MoodFollowupSheet({ pending, onClose, onCompleted }: Moo
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center motion-press"
-            style={{ background: 'rgba(200, 146, 74, 0.10)' }}
+            className="w-11 h-11 rounded-full flex items-center justify-center motion-press"
+            style={{ background: 'rgba(197, 160, 89, 0.10)' }}
           >
             <X size={15} style={{ color: 'var(--text-muted-warm)' }} />
           </button>
@@ -147,7 +147,7 @@ export default function MoodFollowupSheet({ pending, onClose, onCompleted }: Moo
             className="w-full rounded-2xl border px-4 py-3 text-sm resize-none"
             style={{
               background: 'var(--card-bg, rgba(44, 38, 28, 0.88))',
-              borderColor: 'var(--card-border, rgba(200, 146, 74, 0.20))',
+              borderColor: 'var(--card-border, rgba(197, 160, 89, 0.20))',
               color: 'var(--text-cream)',
             }}
           />
@@ -170,7 +170,7 @@ export default function MoodFollowupSheet({ pending, onClose, onCompleted }: Moo
             disabled={!selectedMood || isSaving}
             className="flex-1 rounded-2xl px-4 py-3 text-sm font-semibold disabled:opacity-50"
             style={{
-              background: 'linear-gradient(135deg, rgba(200,146,74,0.95), rgba(212,120,74,0.95))',
+              background: 'linear-gradient(135deg, rgba(197, 160, 89,0.95), rgba(212,120,74,0.95))',
               color: '#1a1208',
             }}
           >

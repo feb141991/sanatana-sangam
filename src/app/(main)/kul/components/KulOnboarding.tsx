@@ -83,7 +83,7 @@ export function KulOnboarding({ onComplete }: { onComplete: () => void }) {
            
            <button 
              onClick={onComplete}
-             className="absolute top-6 right-6 w-8 h-8 rounded-full bg-black/20 flex items-center justify-center text-white/60 hover:text-white transition-colors"
+             className="absolute top-6 right-6 w-11 h-11 rounded-full bg-black/20 flex items-center justify-center text-white/60 hover:text-white transition-colors"
            >
              <X size={16} />
            </button>
@@ -133,8 +133,8 @@ export function KulOnboarding({ onComplete }: { onComplete: () => void }) {
               {step > 0 && (
                 <button 
                   onClick={prev}
-                  className="w-10 h-10 rounded-full border border-black/5 flex items-center justify-center theme-muted hover:bg-black/5 transition-all"
-                >
+                  className="w-11 h-11 rounded-full border border-black/5 flex items-center justify-center theme-muted hover:bg-black/5 transition-all"
+                 aria-label="Go back">
                   <ChevronLeft size={18} />
                 </button>
               )}

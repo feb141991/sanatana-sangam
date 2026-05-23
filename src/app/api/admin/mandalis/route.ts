@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase-admin';
 
 export async function GET(request: NextRequest) {
-  const authError = checkAdminAuth(request as any);
+  const authError = checkAdminAuth(request);
   if (authError) return authError;
 
   const supabase = createAdminClient();

@@ -55,7 +55,7 @@ export default function MoodInsightsPage() {
   const h1 = isDark ? '#f5dfa0' : '#1a0a02';
   const muted = isDark ? 'rgba(245,210,130,0.45)' : 'rgba(100,55,10,0.50)';
   const cardBg = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.92)';
-  const border = isDark ? 'rgba(200,146,74,0.14)' : 'rgba(180,120,40,0.14)';
+  const border = isDark ? 'rgba(197, 160, 89,0.14)' : 'rgba(180,120,40,0.14)';
 
   return (
     <div className="min-h-screen pb-24" style={{ background: 'var(--bg-colour)' }}>
@@ -83,7 +83,7 @@ export default function MoodInsightsPage() {
               onClick={() => setTimeframe(tf as 'weekly' | 'monthly')}
               className="flex-1 rounded-full py-2 text-sm font-semibold capitalize transition-all"
               style={{
-                background: timeframe === tf ? (isDark ? 'rgba(200,146,74,0.15)' : 'rgba(200,146,74,0.12)') : 'transparent',
+                background: timeframe === tf ? (isDark ? 'rgba(197, 160, 89,0.15)' : 'rgba(197, 160, 89,0.12)') : 'transparent',
                 color: timeframe === tf ? h1 : muted,
                 boxShadow: timeframe === tf ? '0 2px 8px rgba(0,0,0,0.05)' : 'none'
               }}
@@ -112,7 +112,7 @@ export default function MoodInsightsPage() {
             >
               {/* AI Reflection Card */}
               <div className="rounded-[1.5rem] p-5 relative overflow-hidden" 
-                   style={{ background: isDark ? 'linear-gradient(135deg, rgba(200,146,74,0.1) 0%, rgba(30,20,10,0.5) 100%)' : 'linear-gradient(135deg, rgba(251,191,36,0.1) 0%, rgba(255,255,255,0.9) 100%)', border: `1px solid ${border}` }}>
+                   style={{ background: isDark ? 'linear-gradient(135deg, rgba(197, 160, 89,0.1) 0%, rgba(30,20,10,0.5) 100%)' : 'linear-gradient(135deg, rgba(251,191,36,0.1) 0%, rgba(255,255,255,0.9) 100%)', border: `1px solid ${border}` }}>
                 <div className="absolute -top-3 -right-3 text-amber-500/20">
                   <Sparkles size={64} />
                 </div>
@@ -129,7 +129,7 @@ export default function MoodInsightsPage() {
               <div className="grid grid-cols-2 gap-3">
                 
                 <div className="rounded-2xl p-4 flex flex-col justify-between" style={{ background: cardBg, border: `1px solid ${border}` }}>
-                  <div className="w-8 h-8 rounded-full mb-3 flex items-center justify-center" style={{ background: 'rgba(200,146,74,0.1)' }}>
+                  <div className="w-8 h-8 rounded-full mb-3 flex items-center justify-center" style={{ background: 'rgba(197, 160, 89,0.1)' }}>
                     <CalendarDays size={16} className="text-amber-500" />
                   </div>
                   <div>

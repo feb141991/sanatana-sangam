@@ -100,7 +100,7 @@ export default function ChantAudioPlayer({
 
   if (!activeTrack) {
     return (
-      <div className="surface-card px-4 py-4 text-center text-xs" style={{ color: 'rgba(200,146,74,0.5)' }}>
+      <div className="surface-card px-4 py-4 text-center text-xs" style={{ color: 'rgba(197, 160, 89,0.5)' }}>
         🎵 Audio coming soon
       </div>
     );
@@ -121,20 +121,20 @@ export default function ChantAudioPlayer({
           {/* Loop */}
           <button type="button" onClick={() => setLoop(l => !l)}
             className="flex h-8 w-8 items-center justify-center rounded-full transition-all"
-            style={{ background: loop ? 'rgba(200,146,74,0.18)' : 'transparent', border: '1px solid rgba(200,146,74,0.20)' }}
+            style={{ background: loop ? 'rgba(197, 160, 89,0.18)' : 'transparent', border: '1px solid rgba(197, 160, 89,0.20)' }}
             aria-label="Toggle loop">
-            <Repeat size={13} style={{ color: loop ? 'var(--brand-primary)' : 'rgba(200,146,74,0.40)' }} />
+            <Repeat size={13} style={{ color: loop ? 'var(--brand-primary)' : 'rgba(197, 160, 89,0.40)' }} />
           </button>
           {/* Restart */}
           <button type="button" onClick={restart}
-            className="flex h-8 w-8 items-center justify-center rounded-full"
-            style={{ border: '1px solid rgba(200,146,74,0.18)' }}
+            className="flex h-11 w-11 items-center justify-center rounded-full"
+            style={{ border: '1px solid rgba(197, 160, 89,0.18)' }}
             aria-label="Restart track">
-            <RotateCcw size={13} style={{ color: 'rgba(200,146,74,0.40)' }} />
+            <RotateCcw size={13} style={{ color: 'rgba(197, 160, 89,0.40)' }} />
           </button>
           {/* Play/Pause */}
           <button type="button" onClick={togglePlayback}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-white shadow-sacred"
+            className="flex h-11 w-11 items-center justify-center rounded-full text-white shadow-sacred"
             style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}
             aria-label={playing ? 'Pause chant' : 'Play chant'}>
             {playing ? <Pause size={16} /> : <Play size={16} className="ml-0.5" />}
@@ -148,7 +148,7 @@ export default function ChantAudioPlayer({
           <input type="range" min={0} max={duration} value={current} step={0.5} onChange={seek}
             className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
             style={{ accentColor: 'var(--brand-primary)' }} />
-          <div className="flex justify-between text-[9px]" style={{ color: 'rgba(200,146,74,0.45)' }}>
+          <div className="flex justify-between text-[9px]" style={{ color: 'rgba(197, 160, 89,0.45)' }}>
             <span>{fmt(current)}</span>
             <span>{fmt(duration)}</span>
           </div>
@@ -168,15 +168,15 @@ export default function ChantAudioPlayer({
               }}
               className="w-full flex items-center gap-3 rounded-xl px-3 py-2 text-left transition-all"
               style={{
-                background: track.id === trackId ? 'rgba(200,146,74,0.12)' : 'transparent',
-                border: `1px solid ${track.id === trackId ? 'rgba(200,146,74,0.28)' : 'transparent'}`,
+                background: track.id === trackId ? 'rgba(197, 160, 89,0.12)' : 'transparent',
+                border: `1px solid ${track.id === trackId ? 'rgba(197, 160, 89,0.28)' : 'transparent'}`,
               }}>
               <span className="text-base leading-none">{track.id === trackId && playing ? '▶' : '○'}</span>
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-semibold truncate" style={{ color: track.id === trackId ? 'var(--brand-primary)' : 'var(--brand-muted)' }}>
                   {track.title}
                 </p>
-                <p className="text-[10px]" style={{ color: 'rgba(200,146,74,0.40)' }}>
+                <p className="text-[10px]" style={{ color: 'rgba(197, 160, 89,0.40)' }}>
                   {track.creator} · {track.durationLabel}
                 </p>
               </div>

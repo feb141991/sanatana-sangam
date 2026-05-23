@@ -6,7 +6,7 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ postId: string }> }
 ) {
-  const authError = checkAdminAuth(_request as any);
+  const authError = checkAdminAuth(_request);
   if (authError) return authError;
 
   const admin = await requireAdminAccess();

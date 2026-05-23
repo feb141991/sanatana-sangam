@@ -91,7 +91,7 @@ function FloatingQuickMenu({
               </span>
               <button 
                 onClick={onClose}
-                className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                className="w-11 h-11 rounded-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
               >
                 <X size={14} className="text-[var(--text-dim)]" />
               </button>
@@ -300,7 +300,7 @@ export default function BottomNav({ isGuest = false }: Props) {
                       className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer"
                       style={{
                         background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))',
-                        boxShadow: '0 8px 24px rgba(200, 146, 74, 0.35)',
+                        boxShadow: '0 8px 24px rgba(197, 160, 89, 0.35)',
                       }}
                     >
                       <Plus size={24} className="text-[#1c1812]" />
@@ -355,7 +355,7 @@ export default function BottomNav({ isGuest = false }: Props) {
                       className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer"
                       style={{
                         background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-strong))',
-                        boxShadow: '0 8px 24px rgba(200, 146, 74, 0.35)',
+                        boxShadow: '0 8px 24px rgba(197, 160, 89, 0.35)',
                       }}
                     >
                       <motion.div

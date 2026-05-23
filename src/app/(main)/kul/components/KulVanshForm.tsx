@@ -49,7 +49,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
           </div>
           <button 
             onClick={onClose} 
-            className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-[#F2EAD6]/40 hover:bg-white/10 hover:text-[#F2EAD6] transition-all"
+            className="w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center text-[#F2EAD6]/40 hover:bg-white/10 hover:text-[#F2EAD6] transition-all"
           >
             <X size={20} />
           </button>

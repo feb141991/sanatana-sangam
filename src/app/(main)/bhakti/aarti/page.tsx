@@ -11,6 +11,7 @@ import { trackReaderEvent } from '@/lib/analytics/reader-events';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useReaderDisplayPreferences } from '@/lib/i18n/reader-display';
 import type { AppContentLanguage } from '@/lib/language-runtime';
+import ReaderShell from '@/components/reader/ReaderShell';
 
 // ─── Bell tone via WebAudio ───────────────────────────────────────────────────
 function playBell(freq = 432, dur = 2.5, vol = 0.22) {
@@ -349,97 +350,78 @@ export default function AartiPage() {
 
   if (finished) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center" style={{ background: pageBg }}>
-        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 180 }}>
-          <div className="text-7xl mb-6">🙏</div>
-          <h1 className="text-2xl font-bold mb-3" style={{ fontFamily: 'var(--font-serif)', color: textH }}>{t(customLang, 'aartiComplete')}</h1>
-          <p className="text-sm leading-relaxed mb-2" style={{ color: textS }}>{t(customLang, 'aartiCompleteDesc')}</p>
-          <p className="text-xs mb-8" style={{ color: textD }}>{t(customLang, 'aartiCompleteQuote')}</p>
-          <div className="flex gap-3 justify-center">
-            <button onClick={() => { setStep(0); setDone(new Set()); setDiyaLit(false); setFinished(false); }}
-              className="rounded-2xl px-6 py-3 text-sm font-semibold"
-              style={{ background: 'rgba(200,146,74,0.15)', border: '1px solid rgba(200,146,74,0.30)', color: '#C5A059' }}>
-              {t(customLang, 'offerAgain')}
-            </button>
-            <button onClick={() => router.back()}
-              className="rounded-2xl px-6 py-3 text-sm font-semibold text-white"
-              style={{ background: 'linear-gradient(135deg,#d4a645,#a07830)' }}>
-              {t(customLang, 'donePranam')}
-            </button>
-          </div>
-        </motion.div>
-      </div>
+      <ReaderShell
+        title={t(customLang, 'aartiComplete')}
+        fallbackBackUrl="/bhakti"
+        themeColor="#C5A059"
+      >
+        <div className="flex flex-col items-center justify-center text-center mt-20">
+          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 180 }}>
+            <div className="text-7xl mb-6">🙏</div>
+            <h1 className="text-2xl font-bold mb-3" style={{ fontFamily: 'var(--font-serif)', color: textH }}>{t(customLang, 'aartiComplete')}</h1>
+            <p className="text-sm leading-relaxed mb-2" style={{ color: textS }}>{t(customLang, 'aartiCompleteDesc')}</p>
+            <p className="text-xs mb-8" style={{ color: textD }}>{t(customLang, 'aartiCompleteQuote')}</p>
+            <div className="flex gap-3 justify-center">
+              <button onClick={() => { setStep(0); setDone(new Set()); setDiyaLit(false); setFinished(false); }}
+                className="rounded-2xl px-6 py-3 text-sm font-semibold"
+                style={{ background: 'rgba(197, 160, 89,0.15)', border: '1px solid rgba(197, 160, 89,0.30)', color: '#C5A059' }}>
+                {t(customLang, 'offerAgain')}
+              </button>
+              <button onClick={() => router.back()}
+                className="rounded-2xl px-6 py-3 text-sm font-semibold text-white"
+                style={{ background: 'linear-gradient(135deg,#d4a645,#a07830)' }}>
+                {t(customLang, 'donePranam')}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      </ReaderShell>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: pageBg }}>
-      {/* Top bar */}
-      <div className="sticky top-0 z-40 px-4 pb-3 pt-3 backdrop-blur-xl border-b border-[var(--divine-border)]/10"
-        style={{ background: isDark ? 'rgba(24,14,8,0.85)' : 'rgba(255,246,232,0.85)', paddingTop: 'max(env(safe-area-inset-top,0px),12px)' }}>
-        <div className="flex items-center justify-between">
-          <button onClick={() => router.back()} className="w-9 h-9 rounded-full flex items-center justify-center"
-            style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.18)' }}>
-            <ChevronLeft size={18} style={{ color: '#C5A059' }} />
+    <ReaderShell
+      title={t(customLang, 'guidedAarti')}
+      subtitle={t(customLang, 'aartiStepOf').replace('{step}', String(step + 1)).replace('{total}', String(AARTI_STEPS.length))}
+      fallbackBackUrl="/bhakti"
+      themeColor="#C5A059"
+      ambientGlowColor={`${current.color}15`}
+      fontPresets={fontPresets}
+      fontStep={fontStep}
+      setFontStep={setFontStep}
+      languages={languages}
+      currentLanguage={customLang}
+      setLanguage={(l) => {
+        setCustomLang(l);
+        trackReaderEvent('language_toggled', { content_type: 'instruction', source: `aarti:${current.id}`, tradition: 'hindu', language: l });
+      }}
+      bottomBar={
+        <div className="px-6 py-3 flex justify-between items-center max-w-xl mx-auto">
+          <button onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0}
+            className="flex items-center gap-1.5 text-sm font-medium disabled:opacity-30"
+            style={{ color: textS }}>
+            <ChevronLeft size={16} /> {t(customLang, 'previous')}
           </button>
-          <div className="text-center">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: 'rgba(200,146,74,0.5)' }}>{t(customLang, 'guidedAarti')}</p>
-            <p className="text-sm font-semibold" style={{ color: textH }}>{t(customLang, 'aartiStepOf').replace('{step}', String(step + 1)).replace('{total}', String(AARTI_STEPS.length))}</p>
-          </div>
-          
-          {/* Language selector in top right */}
-          <div className="flex items-center gap-1 bg-[var(--surface-base)]/10 px-1.5 py-0.5 rounded-full border border-[var(--divine-border)]/5" style={{ background: isDark ? 'rgba(24,14,8,0.5)' : 'rgba(255,246,232,0.5)' }}>
-            {languages.map(l => (
-              <button
-                key={l.code}
-                onClick={() => {
-                  setCustomLang(l.code);
-                  trackReaderEvent('language_toggled', { content_type: 'instruction', source: `aarti:${current.id}`, tradition: 'hindu', language: l.code });
-                }}
-                className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${
-                  customLang === l.code
-                    ? 'bg-[#C5A059] text-white shadow-sm'
-                    : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'
-                }`}
-                style={customLang === l.code ? { background: '#C5A059', color: '#fff' } : { color: textS }}
-              >
-                {l.label}
-              </button>
-            ))}
-          </div>
+          <button onClick={next}
+            className="flex items-center gap-1.5 rounded-2xl px-5 py-2.5 text-sm font-semibold"
+            style={{ background: 'rgba(197, 160, 89,0.12)', border: '1px solid rgba(197, 160, 89,0.25)', color: '#C5A059' }}>
+            {isLast ? t(customLang, 'completeAarti') : <><span>{t(customLang, 'nextStep')}</span><ChevronRight size={16} /></>}
+          </button>
         </div>
-
-        {/* Font size controls */}
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-3 pt-3 border-t border-[var(--divine-border)]/5">
-          <div className="flex items-center gap-1.5 bg-[var(--surface-base)]/10 px-2 py-1 rounded-full border border-[var(--divine-border)]/5">
-            <span className="text-[10px] uppercase font-bold tracking-wider px-1 text-[var(--text-dim)]">{labels.textSize}:</span>
-            {fontPresets.map((preset, idx) => (
-              <button
-                key={idx}
-                onClick={() => setFontStep(idx)}
-                className={`px-2 py-1 rounded-full text-[10px] font-bold flex items-center justify-center transition-all ${
-                  fontStep === idx ? 'text-black shadow-md' : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'
-                }`}
-                style={{ background: fontStep === idx ? current.color : 'transparent' }}
-              >
-                {preset.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
+      }
+      contentClassName="flex-1 px-4 pb-28 pt-6"
+    >
       {/* Progress dots */}
       <div className="flex items-center justify-center gap-2 pb-5">
         {AARTI_STEPS.map((s, i) => (
           <motion.div key={s.id} className="rounded-full transition-all"
-            animate={{ width: i === step ? 20 : 7, background: done.has(i) ? s.color : i === step ? current.color : (isDark ? 'rgba(200,146,74,0.15)' : 'rgba(180,110,30,0.15)') }}
+            animate={{ width: i === step ? 20 : 7, background: done.has(i) ? s.color : i === step ? current.color : (isDark ? 'rgba(197, 160, 89,0.15)' : 'rgba(180,110,30,0.15)') }}
             style={{ height: 7 }} />
         ))}
       </div>
 
       {/* Main content */}
-      <div className="flex-1 px-4 pb-28">
+      <div>
         <AnimatePresence mode="wait">
           <motion.div key={step}
             initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
@@ -545,23 +527,9 @@ export default function AartiPage() {
               </div>
             ) : null}
 
-            {/* Navigation */}
-            <div className="flex items-center justify-between">
-              <button onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0}
-                className="flex items-center gap-1.5 text-sm font-medium disabled:opacity-30"
-                style={{ color: textS }}>
-                <ChevronLeft size={16} /> {t(customLang, 'previous')}
-              </button>
-              <button onClick={next}
-                className="flex items-center gap-1.5 rounded-2xl px-5 py-2.5 text-sm font-semibold"
-                style={{ background: 'rgba(200,146,74,0.12)', border: '1px solid rgba(200,146,74,0.25)', color: '#C5A059' }}>
-                {isLast ? t(customLang, 'completeAarti') : <><span>{t(customLang, 'nextStep')}</span><ChevronRight size={16} /></>}
-              </button>
-            </div>
-
             {/* Step mini-map */}
-            <div className="rounded-2xl px-4 py-3" style={{ background: isDark ? 'rgba(14,9,5,0.8)' : 'rgba(255,240,220,0.8)', border: `1px solid rgba(200,146,74,0.08)` }}>
-              <p className="text-[9px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: 'rgba(200,146,74,0.40)' }}>{t(customLang, 'aartiSequence')}</p>
+            <div className="rounded-2xl px-4 py-3" style={{ background: isDark ? 'rgba(14,9,5,0.8)' : 'rgba(255,240,220,0.8)', border: `1px solid rgba(197, 160, 89,0.08)` }}>
+              <p className="text-[9px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: 'rgba(197, 160, 89,0.40)' }}>{t(customLang, 'aartiSequence')}</p>
               <div className="flex flex-wrap gap-x-3 gap-y-1">
                 {AARTI_STEPS.map((s, i) => {
                   const localizedTitle = t(customLang, s.titleKey);
@@ -579,6 +547,6 @@ export default function AartiPage() {
           </motion.div>
         </AnimatePresence>
       </div>
-    </div>
+    </ReaderShell>
   );
 }

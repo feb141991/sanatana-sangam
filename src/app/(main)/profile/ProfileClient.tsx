@@ -427,12 +427,12 @@ export default function ProfileClient({
   .card { background: #fff; border-radius: 16px; padding: 18px; margin-bottom: 16px; border: 1px solid rgba(0,0,0,0.07); box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
   .meta { font-size: 13px; color: #888; margin-top: 4px; }
   .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .stat { text-align: center; padding: 12px; background: #fef9ef; border-radius: 12px; border: 1px solid rgba(200,146,74,0.2); }
+  .stat { text-align: center; padding: 12px; background: #fef9ef; border-radius: 12px; border: 1px solid rgba(197, 160, 89,0.2); }
   .stat .num { font-size: 28px; font-weight: 800; color: #c8920a; }
   .stat .label { font-size: 11px; color: #888; margin-top: 3px; }
   .heatmap { display: flex; flex-wrap: wrap; gap: 3px; }
   ul { padding-left: 18px; font-size: 14px; line-height: 2; }
-  .badge { display: inline-block; background: rgba(200,146,74,0.15); color: #7B1A1A; border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 600; margin-left: 8px; }
+  .badge { display: inline-block; background: rgba(197, 160, 89,0.15); color: #7B1A1A; border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 600; margin-left: 8px; }
   .footer { text-align: center; font-size: 11px; color: #aaa; margin-top: 24px; }
   @media print { body { padding: 0; } }
 </style>
@@ -1252,7 +1252,7 @@ export default function ProfileClient({
                 onClick={signOut}
                 className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 transition-all active:scale-90 hover:bg-red-500/20 shadow-lg shadow-red-900/10"
                 title="Sign Out"
-              >
+               aria-label="Action">
                 <LogOut size={18} />
               </button>
             </div>

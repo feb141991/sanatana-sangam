@@ -82,13 +82,13 @@ function VerseChip({ verse }: { verse: ScriptureRef }) {
     <div className="mt-2">
       <button onClick={() => setOpen(o => !o)}
         className="flex items-center gap-1.5 text-xs text-[color:var(--brand-primary)] font-medium rounded-full px-2.5 py-0.5 transition-colors"
-        style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.18)' }}>
+        style={{ background: 'rgba(197, 160, 89,0.10)', border: '1px solid rgba(197, 160, 89,0.18)' }}>
         <BookOpen size={10} />
         {formatVerseLabel(verse)}
         <ChevronDown size={10} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && verse.sanskrit && (
-        <div className="mt-1.5 rounded-xl p-2.5 text-xs" style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.16)' }}>
+        <div className="mt-1.5 rounded-xl p-2.5 text-xs" style={{ background: 'rgba(197, 160, 89,0.08)', border: '1px solid rgba(197, 160, 89,0.16)' }}>
           <p className="font-[family:var(--font-deva)] font-medium leading-relaxed" style={{ color: 'var(--text-cream)' }}>{verse.sanskrit}</p>
           {verse.transliteration && <p className="text-[color:var(--brand-muted)] italic mt-0.5">{verse.transliteration}</p>}
         </div>
@@ -107,7 +107,7 @@ function MessageBubble({ msg }: { msg: Message }) {
       </div>
       <div className={`max-w-[82%] ${isUser ? 'items-end' : 'items-start'} flex flex-col gap-0.5`}>
         <div className={`px-3 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${isUser ? 'bg-[#7B1A1A] text-white rounded-tr-sm' : 'rounded-tl-sm border'}`}
-          style={!isUser ? { background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.16)', color: 'var(--brand-ink)' } : undefined}>
+          style={!isUser ? { background: 'var(--surface-raised)', borderColor: 'rgba(197, 160, 89,0.16)', color: 'var(--brand-ink)' } : undefined}>
           {msg.text}
           {!isUser && msg.verses && msg.verses.length > 0 && (
             <div className="mt-1">{msg.verses.map((v, i) => <VerseChip key={i} verse={v} />)}</div>
@@ -129,7 +129,7 @@ function TypingIndicator() {
         style={{ background: 'linear-gradient(135deg, #c8920a 0%, #d4a818 100%)' }}>
         <ZenithMitraLogo size={15} color="#1c1c1a" />
       </div>
-      <div className="border rounded-2xl rounded-tl-sm px-3 py-2.5" style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.16)' }}>
+      <div className="border rounded-2xl rounded-tl-sm px-3 py-2.5" style={{ background: 'var(--surface-raised)', borderColor: 'rgba(197, 160, 89,0.16)' }}>
         <div className="flex gap-1 items-center h-4">
           {[0, 150, 300].map(delay => (
             <span key={delay} className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-bounce" style={{ animationDelay: `${delay}ms` }} />
@@ -276,7 +276,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
             style={{
               zIndex: 9991,
               background: 'var(--surface-raised)',
-              border: '1px solid rgba(200,146,74,0.14)',
+              border: '1px solid rgba(197, 160, 89,0.14)',
               maxHeight: '92dvh',
               paddingBottom: 'env(safe-area-inset-bottom, 0px)',
             }}
@@ -285,15 +285,15 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
           >
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-0 flex-shrink-0">
-              <div className="w-10 h-1 rounded-full opacity-25" style={{ background: '#C8924A' }} />
+              <div className="w-10 h-1 rounded-full opacity-25" style={{ background: '#C5A059' }} />
             </div>
 
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 flex-shrink-0 border-b" style={{ borderColor: 'rgba(200,146,74,0.12)' }}>
+            <div className="flex items-center justify-between px-4 py-3 flex-shrink-0 border-b" style={{ borderColor: 'rgba(197, 160, 89,0.12)' }}>
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-2xl flex items-center justify-center"
-                  style={{ background: 'linear-gradient(135deg, #c8920a22, #d4a81822)', border: '1px solid rgba(200,146,74,0.22)' }}>
-                  <ZenithMitraLogo size={20} color="rgba(200,146,74,0.90)" />
+                  style={{ background: 'linear-gradient(135deg, #c8920a22, #d4a81822)', border: '1px solid rgba(197, 160, 89,0.22)' }}>
+                  <ZenithMitraLogo size={20} color="rgba(197, 160, 89,0.90)" />
                 </div>
                 <div>
                   <h2 className="font-display font-bold text-[color:var(--text-cream)] text-base leading-tight">Dharma Mitra</h2>
@@ -304,7 +304,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
                 {!isEmpty && (
                   <button onClick={clearChat}
                     className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs border transition"
-                    style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.18)', color: 'var(--brand-muted)' }}>
+                    style={{ background: 'var(--surface-raised)', borderColor: 'rgba(197, 160, 89,0.18)', color: 'var(--brand-muted)' }}>
                     <RotateCcw size={11} /> New
                   </button>
                 )}
@@ -335,7 +335,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
                       {suggestions.slice(0, 4).map(s => (
                         <button key={s} onClick={() => sendMessage(s)}
                           className="text-left p-2.5 rounded-xl text-xs transition leading-snug border"
-                          style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.18)', color: 'var(--brand-muted)' }}>
+                          style={{ background: 'var(--surface-raised)', borderColor: 'rgba(197, 160, 89,0.18)', color: 'var(--brand-muted)' }}>
                           {s}
                         </button>
                       ))}
@@ -352,7 +352,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
             </div>
 
             {/* Input */}
-            <div className="flex-shrink-0 px-3 py-2 border-t" style={{ borderColor: 'rgba(200,146,74,0.12)', background: 'var(--surface-base)' }}>
+            <div className="flex-shrink-0 px-3 py-2 border-t" style={{ borderColor: 'rgba(197, 160, 89,0.12)', background: 'var(--surface-base)' }}>
               <div className="flex items-end gap-2">
                 <textarea
                   ref={inputRef}
@@ -363,7 +363,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
                   placeholder="Ask a dharmic question…"
                   disabled={loading}
                   className="flex-1 resize-none rounded-2xl border px-3.5 py-2.5 text-sm focus:outline-none transition disabled:opacity-50"
-                  style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.2)', color: 'var(--brand-ink)', minHeight: '40px', maxHeight: '120px' } as React.CSSProperties}
+                  style={{ background: 'var(--surface-raised)', borderColor: 'rgba(197, 160, 89,0.2)', color: 'var(--brand-ink)', minHeight: '40px', maxHeight: '120px' } as React.CSSProperties}
                 />
                 <motion.button
                   onClick={() => sendMessage()}
@@ -426,7 +426,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
           className="w-full h-full rounded-full flex items-center justify-center shadow-lg select-none relative overflow-hidden"
           style={{
             background:  'linear-gradient(135deg, #2A1B0A 0%, #1c1c1a 100%)',
-            border:      '1px solid rgba(200,146,74,0.22)',
+            border:      '1px solid rgba(197, 160, 89,0.22)',
             boxShadow:   '0 8px 32px rgba(0,0,0,0.4)',
           }}
           animate={!fabHidden ? {
@@ -446,7 +446,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
           {/* Animated glow ring */}
           <motion.span
             className="absolute inset-0 rounded-full"
-            style={{ border: '1.5px solid rgba(200,146,74,0.45)' }}
+            style={{ border: '1.5px solid rgba(197, 160, 89,0.45)' }}
             animate={{ scale: [1, 1.3, 1], opacity: [0.6, 0, 0.6] }}
             transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
           />

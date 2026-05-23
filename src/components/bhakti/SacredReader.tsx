@@ -183,7 +183,7 @@ export default function SacredReader({
           <div className="flex-1 max-w-xs w-full sm:px-4">
             <div className="relative h-1 w-full bg-[var(--brand-primary-soft)] rounded-full overflow-hidden">
               <motion.div 
-                className="absolute inset-y-0 left-0 bg-gradient-to-r from-[var(--brand-primary)] to-[#FFCC33] shadow-[0_0_8px_rgba(200,146,74,0.4)]"
+                className="absolute inset-y-0 left-0 bg-gradient-to-r from-[var(--brand-primary)] to-[#FFCC33] shadow-[0_0_8px_rgba(197, 160, 89,0.4)]"
                 style={{ width: `${progress}%` }}
                 transition={{ type: 'spring', bounce: 0, duration: 0.2 }}
               />

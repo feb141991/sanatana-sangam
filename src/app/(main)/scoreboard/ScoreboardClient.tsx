@@ -50,7 +50,7 @@ export default function ScoreboardClient({ initialUsers, currentUserId }: { init
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] pb-24 selection:bg-[#C5A059]/30">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-[rgba(200,146,74,0.15)] px-6 py-4">
+      <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-[rgba(197, 160, 89,0.15)] px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/home" className="p-2 -ml-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
@@ -58,7 +58,7 @@ export default function ScoreboardClient({ initialUsers, currentUserId }: { init
             </Link>
             <h1 className="text-xl font-bold font-serif theme-ink">Mandali Ranks</h1>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgba(200,146,74,0.1)] border border-[rgba(200,146,74,0.2)]">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgba(197, 160, 89,0.1)] border border-[rgba(197, 160, 89,0.2)]">
             <Trophy size={14} className="text-[#C5A059]" />
             <span className="text-[10px] font-bold uppercase tracking-widest text-[#C5A059]">Top Performers</span>
           </div>

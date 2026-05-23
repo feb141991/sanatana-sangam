@@ -243,14 +243,14 @@ function VerseChip({ verse, transliterationLanguage }: { verse: ScriptureRef; tr
       <button
         onClick={() => setOpen(o => !o)}
         className="flex items-center gap-1.5 text-xs font-medium rounded-full px-3 py-1 transition-colors"
-        style={{ background: 'rgba(200,146,74,0.12)', borderColor: 'rgba(200,146,74,0.25)', color: 'rgba(200,146,74,0.90)', border: '1px solid rgba(200,146,74,0.25)' }}
+        style={{ background: 'rgba(197, 160, 89,0.12)', borderColor: 'rgba(197, 160, 89,0.25)', color: 'rgba(197, 160, 89,0.90)', border: '1px solid rgba(197, 160, 89,0.25)' }}
       >
         <BookOpen size={11} />
         {label}
         <ChevronDown size={11} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && verse.sanskrit && (
-        <div className="mt-2 rounded-xl p-3 text-xs space-y-1" style={{ background: 'rgba(200,146,74,0.07)', borderColor: 'rgba(200,146,74,0.18)', border: '1px solid rgba(200,146,74,0.18)' }}>
+        <div className="mt-2 rounded-xl p-3 text-xs space-y-1" style={{ background: 'rgba(197, 160, 89,0.07)', borderColor: 'rgba(197, 160, 89,0.18)', border: '1px solid rgba(197, 160, 89,0.18)' }}>
           <p className="font-[family:var(--font-deva)] font-medium leading-relaxed" style={{ color: 'var(--text-cream)' }}>
             {verse.sanskrit}
           </p>
@@ -437,8 +437,8 @@ export default function AIChatClient({
             aria-label="Go back"
             className="w-9 h-9 rounded-full flex items-center justify-center transition-all flex-shrink-0"
             style={{
-              background: 'rgba(200,146,74,0.10)',
-              border: '1px solid rgba(200,146,74,0.20)',
+              background: 'rgba(197, 160, 89,0.10)',
+              border: '1px solid rgba(197, 160, 89,0.20)',
             }}
           >
             <ChevronLeft size={18} style={{ color: 'var(--brand-primary)' }} />
@@ -534,14 +534,14 @@ export default function AIChatClient({
       </div>
 
       {/* ── Input area ─────────────────────────────────────────────────────── */}
-      <div className="pt-3 border-t mt-2" style={{ borderColor: 'rgba(200,146,74,0.12)' }}>
+      <div className="pt-3 border-t mt-2" style={{ borderColor: 'rgba(197, 160, 89,0.12)' }}>
         {/* Quick suggestion chips (after conversation starts) */}
         {!isEmpty && !loading && (
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {suggestions.slice(4).map(s => (
               <button key={s} onClick={() => sendMessage(s)}
                 className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs border transition whitespace-nowrap"
-                style={{ background: 'rgba(38,30,18,0.7)', borderColor: 'rgba(200,146,74,0.16)', color: 'rgba(200,146,74,0.7)', borderLeft: '2px solid rgba(200,146,74,0.30)' }}>
+                style={{ background: 'rgba(38,30,18,0.7)', borderColor: 'rgba(197, 160, 89,0.16)', color: 'rgba(197, 160, 89,0.7)', borderLeft: '2px solid rgba(197, 160, 89,0.30)' }}>
                 {s}
               </button>
             ))}

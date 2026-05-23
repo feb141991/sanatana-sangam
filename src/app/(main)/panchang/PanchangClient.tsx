@@ -742,8 +742,8 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
             </p>
           </div>
           <button onClick={share}
-            className="w-9 h-9 rounded-xl flex items-center justify-center transition"
-            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}>
+            className="w-11 h-11 rounded-xl flex items-center justify-center transition"
+            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }} aria-label="Share">
             <Share2 size={15} className="text-white/80" />
           </button>
         </div>
@@ -802,8 +802,8 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
               <div className="flex items-center justify-between px-4 py-3"
                 style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
                 <button onClick={prevMonth}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center"
-                  style={{ background: 'rgba(255,255,255,0.08)' }}>
+                  className="w-11 h-11 rounded-lg flex items-center justify-center"
+                  style={{ background: 'rgba(255,255,255,0.08)' }} aria-label="Go back">
                   <ChevronLeft size={15} className="text-white/70" />
                 </button>
                 <div className="text-center">
@@ -813,8 +813,8 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
                   </p>
                 </div>
                 <button onClick={nextMonth}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center"
-                  style={{ background: 'rgba(255,255,255,0.08)' }}>
+                  className="w-11 h-11 rounded-lg flex items-center justify-center"
+                  style={{ background: 'rgba(255,255,255,0.08)' }} aria-label="Next">
                   <ChevronRight size={15} className="text-white/70" />
                 </button>
               </div>

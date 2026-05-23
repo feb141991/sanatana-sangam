@@ -30,7 +30,7 @@ interface Props {
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const TOPICS = [
-  { key: 'deities',    emoji: '🙏', label: 'Deities & Stories',   color: '#c8924a' },
+  { key: 'deities',    emoji: '🙏', label: 'Deities & Stories',   color: '#C5A059' },
   { key: 'scriptures', emoji: '📖', label: 'Scriptures & Texts',   color: '#9898dd' },
   { key: 'philosophy', emoji: '🧘', label: 'Philosophy',           color: '#7aab7a' },
   { key: 'festivals',  emoji: '🪔', label: 'Festivals & Calendar', color: '#d4843a' },
@@ -131,8 +131,8 @@ function SetupScreen({
               onClick={() => setDifficulty(dItem.key)}
               className="w-full flex items-center gap-4 rounded-2xl p-4 text-left transition-all"
               style={{
-                background: difficulty === dItem.key ? 'rgba(200,146,74,0.12)' : 'rgba(255,255,255,0.03)',
-                border: difficulty === dItem.key ? '1px solid rgba(200,146,74,0.35)' : '1px solid rgba(255,255,255,0.07)',
+                background: difficulty === dItem.key ? 'rgba(197, 160, 89,0.12)' : 'rgba(255,255,255,0.03)',
+                border: difficulty === dItem.key ? '1px solid rgba(197, 160, 89,0.35)' : '1px solid rgba(255,255,255,0.07)',
               }}
             >
               <span className="text-xl" aria-hidden="true">{dItem.emoji}</span>
@@ -280,7 +280,7 @@ function QuestionScreen({
               <p className="text-[14px] leading-relaxed mb-3" style={{ color: 'var(--text-muted-warm)' }}>
                 {question.explanation}
               </p>
-              <div className="flex gap-2 p-3 rounded-xl" style={{ background: 'rgba(200,146,74,0.08)' }}>
+              <div className="flex gap-2 p-3 rounded-xl" style={{ background: 'rgba(197, 160, 89,0.08)' }}>
                 <span className="text-lg leading-none" aria-hidden="true">💡</span>
                 <p className="text-[13px] leading-relaxed" style={{ color: 'var(--brand-primary-light)' }}>
                   {question.fact}
@@ -334,8 +334,8 @@ function SummaryScreen({
         <div
           className="w-32 h-32 rounded-full flex flex-col items-center justify-center mb-6"
           style={{
-            background: pct >= 80 ? 'rgba(100,200,100,0.12)' : pct >= 60 ? 'rgba(200,146,74,0.12)' : 'rgba(200,80,80,0.10)',
-            border: pct >= 80 ? '2px solid rgba(100,200,100,0.40)' : pct >= 60 ? '2px solid rgba(200,146,74,0.40)' : '2px solid rgba(200,80,80,0.30)',
+            background: pct >= 80 ? 'rgba(100,200,100,0.12)' : pct >= 60 ? 'rgba(197, 160, 89,0.12)' : 'rgba(200,80,80,0.10)',
+            border: pct >= 80 ? '2px solid rgba(100,200,100,0.40)' : pct >= 60 ? '2px solid rgba(197, 160, 89,0.40)' : '2px solid rgba(200,80,80,0.30)',
           }}
         >
           <p className="text-4xl font-bold" style={{ fontFamily: 'var(--font-serif)', color: pct >= 80 ? '#7acd7a' : pct >= 60 ? 'var(--brand-primary)' : '#cd7a7a' }}>
@@ -357,7 +357,7 @@ function SummaryScreen({
         {/* Karma earned */}
         <div
           className="rounded-2xl px-6 py-4 mb-8"
-          style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.22)' }}
+          style={{ background: 'rgba(197, 160, 89,0.10)', border: '1px solid rgba(197, 160, 89,0.22)' }}
         >
           <p className="text-3xl font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--brand-primary)' }}>
             +{karmaEarned} ✨
@@ -530,7 +530,7 @@ export default function PracticeClient({ userId, tradition, initialTopic, initia
           <button
             onClick={reset}
             className="mt-4 px-6 py-3 rounded-[1.2rem] font-bold text-[13px]"
-            style={{ background: 'rgba(200,146,74,0.15)', color: '#c8924a', border: '1px solid rgba(200,146,74,0.25)' }}
+            style={{ background: 'rgba(197, 160, 89,0.15)', color: '#C5A059', border: '1px solid rgba(197, 160, 89,0.25)' }}
           >
             Try Again
           </button>

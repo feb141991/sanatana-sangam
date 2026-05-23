@@ -94,7 +94,7 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
             <p className="text-xs theme-dim mt-0.5">Search by name or username</p>
           </div>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/[0.06] flex items-center justify-center">
+            className="w-11 h-11 rounded-full bg-black/5 dark:bg-white/[0.06] flex items-center justify-center">
             <X size={16} className="theme-dim" />
           </button>
         </div>
@@ -1261,9 +1261,9 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
             <button
               onClick={() => router.back()}
               className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center mt-0.5"
-              style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.20)' }}
+              style={{ background: 'rgba(197, 160, 89,0.10)', border: '1px solid rgba(197, 160, 89,0.20)' }}
               aria-label="Go back">
-              <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.80)' }} />
+              <ChevronLeft size={18} style={{ color: 'rgba(197, 160, 89,0.80)' }} />
             </button>
             <div className="flex-1 min-w-0">
             <div className="mb-1 flex items-center gap-2">
@@ -1357,14 +1357,14 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
             style={{
               zIndex: 9991,
               background: 'linear-gradient(180deg, rgba(28,26,22,0.99) 0%, rgba(22,20,17,0.99) 100%)',
-              border: '1px solid rgba(200,146,74,0.14)',
+              border: '1px solid rgba(197, 160, 89,0.14)',
               borderBottom: 'none',
               paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 20px)',
             }}
           >
             {/* Handle */}
             <div className="flex justify-center mb-3">
-              <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(200,146,74,0.25)' }} />
+              <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(197, 160, 89,0.25)' }} />
             </div>
             <p className="text-xs font-semibold theme-dim uppercase tracking-widest px-1 pb-2">Mandali options</p>
             <button
@@ -1375,7 +1375,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
               className="w-full flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm theme-ink transition hover:bg-white/[0.06]"
               style={{ border: '1px solid rgba(255,255,255,0.06)', background: 'var(--card-bg)' }}
             >
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(200,146,74,0.1)' }}>
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(197, 160, 89,0.1)' }}>
                 <MapPin size={15} style={{ color: 'var(--brand-primary)' }} />
               </div>
               <div className="text-left">
@@ -1407,7 +1407,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
 
       {/* ── Scope Toggle: Nearby | Sabha ── */}
       <div className="relative flex rounded-2xl p-1 gap-1"
-        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(200,146,74,0.12)' }}>
+        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(197, 160, 89,0.12)' }}>
         {([
           { key: 'nearby' as Scope, label: 'Nearby',  icon: <MapPin size={13} strokeWidth={2.2} /> },
           { key: 'sabha'  as Scope, label: 'Sabha',   icon: <Globe  size={13} strokeWidth={2.2} /> },
@@ -1419,7 +1419,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
             style={scope === key ? {
               background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))',
               color: '#fff',
-              boxShadow: '0 2px 10px rgba(200,146,74,0.25)',
+              boxShadow: '0 2px 10px rgba(197, 160, 89,0.25)',
             } : {
               color: 'var(--text-dim)',
             }}

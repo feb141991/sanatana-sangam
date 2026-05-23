@@ -30,7 +30,7 @@ function DowChart({ data, amber, isDark }: { data: number[]; amber: string; isDa
             initial={{ height: 0 }}
             animate={{ height: `${Math.max(4, (v / max) * 58)}px` }}
             transition={{ duration: 0.5, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }} />
-          <span className="text-[10px] font-semibold" style={{ color: isDark ? 'rgba(200,146,74,0.5)' : 'rgba(100,65,25,0.5)' }}>
+          <span className="text-[10px] font-semibold" style={{ color: isDark ? 'rgba(197, 160, 89,0.5)' : 'rgba(100,65,25,0.5)' }}>
             {DAY_LABELS[i]}
           </span>
         </div>
@@ -45,7 +45,7 @@ function StatCard({ label, value, sub, icon, detail, isDark, amber }: {
   detail?: string; isDark: boolean; amber: string;
 }) {
   const [open, setOpen] = useState(false);
-  const border = isDark ? 'rgba(200,146,74,0.12)' : 'rgba(0,0,0,0.07)';
+  const border = isDark ? 'rgba(197, 160, 89,0.12)' : 'rgba(0,0,0,0.07)';
   const bg     = isDark ? 'var(--card-bg)'          : 'rgba(255,255,255,0.90)';
   const text   = isDark ? 'rgba(245,225,185,0.97)'  : '#1A1208';
 
@@ -166,11 +166,11 @@ export default function NityaInsightsClient({ logs }: Props) {
   const { resolvedTheme } = useThemePreference();
   const isDark = resolvedTheme === 'dark';
 
-  const amber  = '#C8924A';
+  const amber  = '#C5A059';
   const green  = '#6BAE75';
   const text   = isDark ? 'rgba(245,225,185,0.97)' : '#1A1208';
   const sub    = isDark ? 'rgba(200,165,110,0.55)'  : 'rgba(100,65,25,0.55)';
-  const border = isDark ? 'rgba(200,146,74,0.12)'   : 'rgba(0,0,0,0.07)';
+  const border = isDark ? 'rgba(197, 160, 89,0.12)'   : 'rgba(0,0,0,0.07)';
   const bg     = isDark ? 'var(--card-bg)'           : 'rgba(255,255,255,0.90)';
   const pageBg = isDark ? '#120d07'                  : '#fdf6ec';
 
@@ -250,8 +250,8 @@ export default function NityaInsightsClient({ logs }: Props) {
           <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: `${amber}99` }}>Nitya Karma</p>
           <h1 className="text-lg font-semibold" style={{ fontFamily: 'var(--font-serif)', color: text }}>Insights</h1>
         </div>
-        <button onClick={handleShare} className="w-9 h-9 rounded-full flex items-center justify-center"
-          style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
+        <button onClick={handleShare} className="w-11 h-11 rounded-full flex items-center justify-center"
+          style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }} aria-label="Share">
           <Share2 size={16} style={{ color: amber }} />
         </button>
       </div>

@@ -934,7 +934,7 @@ function FamilyMemberSheet({
             <p className="mt-1 text-sm theme-muted">{member.role || relationFallback(member)}</p>
             {member.linked_user_id && <p className="mt-1 text-xs font-medium text-[var(--brand-primary)]">On Shoonaya</p>}
           </div>
-          <button onClick={onClose} className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--card-bg-soft)] theme-muted">
+          <button onClick={onClose} className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--card-bg-soft)] theme-muted">
             <span className="sr-only">Close</span>
             x
           </button>

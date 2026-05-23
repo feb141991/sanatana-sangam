@@ -4,7 +4,6 @@ import DiscoverClient from './DiscoverClient';
 
 export const metadata = { title: 'Discover — Mood-Based Guidance' };
 
-export const dynamic = 'force-dynamic';
 
 export default async function DiscoverPage() {
   const supabase = await createServerSupabaseClient();

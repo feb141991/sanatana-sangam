@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Smile, Sparkles, MessageSquare, Heart, Lightbulb } from 'lucide-react';
@@ -109,8 +110,7 @@ export function KulSabha({
               className="w-9 h-9 rounded-full border-2 border-[var(--surface-soft)] overflow-hidden bg-slate-200 shadow-md"
             >
               {m.profiles?.avatar_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={m.profiles.avatar_url} alt={m.profiles.username ?? ''} className="w-full h-full object-cover" />
+                <Image width={120} height={120} src={m.profiles.avatar_url} alt={m.profiles.username ?? ''} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-[11px] font-bold text-slate-500">
                   {(m.profiles?.full_name ?? m.profiles?.username ?? '?')[0]}
@@ -177,8 +177,7 @@ export function KulSabha({
                   <div className="w-9 h-9 rounded-2xl overflow-hidden flex-shrink-0 bg-white/20 backdrop-blur-md border border-white/10 shadow-sm">
                     {showAvatar && (
                       msg.profiles?.avatar_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={msg.profiles.avatar_url} alt="" className="w-full h-full object-cover" />
+                        <Image width={120} height={120} src={msg.profiles.avatar_url} alt="" className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-[12px] font-bold theme-muted uppercase">
                           {(msg.profiles?.full_name ?? msg.profiles?.username ?? '?')[0]}

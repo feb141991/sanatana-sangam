@@ -87,7 +87,7 @@ function SacredFlame() {
       {/* Mid glow */}
       <motion.div
         className="absolute rounded-full"
-        style={{ width: 136, height: 136, background: 'radial-gradient(circle, rgba(200,146,74,0.38) 0%, transparent 70%)' }}
+        style={{ width: 136, height: 136, background: 'radial-gradient(circle, rgba(197, 160, 89,0.38) 0%, transparent 70%)' }}
         animate={prefersReducedMotion ? {} : { scale: [1, 1.2, 0.95, 1], opacity: [0.6, 1, 0.65, 0.6] }}
         transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
       />
@@ -147,7 +147,7 @@ function AmbientParticles({ count = 16 }: { count?: number }) {
             height: 1 + (i % 2),
             left: `${(i * 6.2 + 3) % 97}%`,
             top: `${(i * 7.1 + 5) % 85}%`,
-            background: i % 3 === 0 ? 'rgba(200,146,74,0.7)' : 'rgba(255,230,160,0.5)',
+            background: i % 3 === 0 ? 'rgba(197, 160, 89,0.7)' : 'rgba(255,230,160,0.5)',
           }}
           animate={{ opacity: [0.05, 0.55, 0.05], y: [0, -4, 0] }}
           transition={{ duration: 3 + (i % 5), repeat: Infinity, delay: i * 0.22, ease: 'easeInOut' }}
@@ -171,10 +171,10 @@ function ProgressPills({ step, total }: { step: Step; total: number }) {
             animate={{
               width: isActive ? 28 : 6,
               background: isActive
-                ? '#C8924A'
+                ? '#C5A059'
                 : isDone
-                  ? 'rgba(200, 146, 74, 0.45)'
-                  : 'rgba(200, 146, 74, 0.15)',
+                  ? 'rgba(197, 160, 89, 0.45)'
+                  : 'rgba(197, 160, 89, 0.15)',
             }}
             style={{ height: 5 }}
             transition={{ duration: 0.32, ease: [0.34, 1.26, 0.64, 1] }}
@@ -421,13 +421,13 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                     >
                       <p
                         className="text-[2rem] font-semibold tracking-wide leading-tight"
-                        style={{ color: 'rgba(240,180,100,0.95)', fontFamily: 'var(--font-devanagari)', textShadow: '0 0 30px rgba(200,146,74,0.4)' }}
+                        style={{ color: 'rgba(240,180,100,0.95)', fontFamily: 'var(--font-devanagari)', textShadow: '0 0 30px rgba(197, 160, 89,0.4)' }}
                       >
                         {wg.script}
                       </p>
                       <p
                         className="text-[12px] font-medium tracking-[0.25em] uppercase"
-                        style={{ color: 'rgba(200,146,74,0.45)' }}
+                        style={{ color: 'rgba(197, 160, 89,0.45)' }}
                       >
                         {wg.roman}
                       </p>
@@ -439,7 +439,7 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                       animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1.2 }}
                       transition={{ delay: 0.4, duration: 0.8, type: 'spring' }}
                       className="text-lg tracking-[0.35em] font-medium"
-                      style={{ color: 'rgba(200, 146, 74, 0.70)', fontFamily: 'var(--font-devanagari)', textShadow: '0 0 20px rgba(200,146,74,0.3)' }}
+                      style={{ color: 'rgba(197, 160, 89, 0.70)', fontFamily: 'var(--font-devanagari)', textShadow: '0 0 20px rgba(197, 160, 89,0.3)' }}
                     >
                       शून्य
                     </motion.p>
@@ -489,7 +489,7 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                       <div
                         key={p.label}
                         className="rounded-[1.1rem] px-2 py-3 text-center"
-                        style={{ background: 'rgba(200, 146, 74, 0.07)', border: '1px solid rgba(200, 146, 74, 0.12)' }}
+                        style={{ background: 'rgba(197, 160, 89, 0.07)', border: '1px solid rgba(197, 160, 89, 0.12)' }}
                       >
                         <div className="text-xl mb-1">{p.icon}</div>
                         <p className="text-[11px] font-semibold" style={{ color: 'rgba(240,210,150,0.75)' }}>{p.label}</p>
@@ -510,7 +510,7 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                   className="space-y-6"
                 >
                   <div className="space-y-2">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(200,146,74,0.55)' }}>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(197, 160, 89,0.55)' }}>
                       Step 1 of 5
                     </p>
                     <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: 600, color: '#f0e2c0', lineHeight: 1.15, letterSpacing: '-0.01em' }}>
@@ -531,9 +531,9 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                           className="w-full flex items-center gap-4 rounded-[1.1rem] px-4 py-3.5 text-left relative overflow-hidden"
                           style={{
                             background: selected
-                              ? 'rgba(200, 146, 74, 0.14)'
+                              ? 'rgba(197, 160, 89, 0.14)'
                               : 'rgba(255, 255, 255, 0.03)',
-                            border: `1.5px solid ${selected ? 'rgba(200, 146, 74, 0.45)' : 'rgba(255, 255, 255, 0.07)'}`,
+                            border: `1.5px solid ${selected ? 'rgba(197, 160, 89, 0.45)' : 'rgba(255, 255, 255, 0.07)'}`,
                             transition: 'all 220ms cubic-bezier(0.34, 1.26, 0.64, 1)',
                           }}
                           initial={prefersReducedMotion ? undefined : { opacity: 0, x: 12 }}
@@ -543,7 +543,7 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                           {/* Selection glow */}
                           {selected && (
                             <div className="absolute inset-0 pointer-events-none" style={{
-                              background: 'radial-gradient(ellipse at left, rgba(200,146,74,0.12), transparent 60%)',
+                              background: 'radial-gradient(ellipse at left, rgba(197, 160, 89,0.12), transparent 60%)',
                             }} />
                           )}
 
@@ -551,9 +551,9 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                           <div
                             className="relative flex-shrink-0 w-20 h-20 rounded-[1.2rem] flex items-center justify-center"
                             style={{ 
-                              background: selected ? 'rgba(200,146,74,0.22)' : 'rgba(255,255,255,0.05)',
+                              background: selected ? 'rgba(197, 160, 89,0.22)' : 'rgba(255,255,255,0.05)',
                               color: selected ? '#f0c870' : 'rgba(230, 200, 130, 0.72)',
-                              boxShadow: selected ? '0 0 30px rgba(200,146,74,0.25)' : 'none'
+                              boxShadow: selected ? '0 0 30px rgba(197, 160, 89,0.25)' : 'none'
                             }}
                           >
                             <motion.span
@@ -581,7 +581,7 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                                 exit={{ scale: 0, opacity: 0 }}
                                 transition={{ type: 'spring', stiffness: 400, damping: 20 }}
                                 className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center"
-                                style={{ background: '#C8924A' }}
+                                style={{ background: '#C5A059' }}
                               >
                                 <Check size={11} color="#1a0e04" strokeWidth={2.5} />
                               </motion.div>
@@ -1010,7 +1010,7 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                           setIsVerified(true);
                           toast.success('WhatsApp Verified! 🙏');
                         }}
-                        className="w-full py-4 rounded-2xl bg-[#C8924A] text-black font-bold text-sm"
+                        className="w-full py-4 rounded-2xl bg-[#C5A059] text-black font-bold text-sm"
                       >
                         Verify & Continue
                       </button>
@@ -1051,7 +1051,7 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                   className="space-y-6"
                 >
                   <div className="space-y-2">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(200,146,74,0.55)' }}>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(197, 160, 89,0.55)' }}>
                       Step 5 of 5
                     </p>
                     <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: 600, color: '#f0e2c0', lineHeight: 1.15, letterSpacing: '-0.01em' }}>
@@ -1071,8 +1071,8 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                           onClick={() => toggleGoal(goal.id)}
                           className="rounded-[1.1rem] px-3 py-4 text-left relative overflow-hidden"
                           style={{
-                            background: selected ? 'rgba(200, 146, 74, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                            border: `1.5px solid ${selected ? 'rgba(200, 146, 74, 0.40)' : 'rgba(255, 255, 255, 0.07)'}`,
+                            background: selected ? 'rgba(197, 160, 89, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                            border: `1.5px solid ${selected ? 'rgba(197, 160, 89, 0.40)' : 'rgba(255, 255, 255, 0.07)'}`,
                             transition: 'all 220ms cubic-bezier(0.34, 1.26, 0.64, 1)',
                           }}
                           initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.95 }}
@@ -1082,7 +1082,7 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                         >
                           {selected && (
                             <div className="absolute inset-0 pointer-events-none" style={{
-                              background: 'radial-gradient(circle at top right, rgba(200,146,74,0.10), transparent 55%)',
+                              background: 'radial-gradient(circle at top right, rgba(197, 160, 89,0.10), transparent 55%)',
                             }} />
                           )}
                           <div className="flex items-start justify-between gap-1 mb-2">
@@ -1093,7 +1093,7 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                                   initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
                                   transition={{ type: 'spring', stiffness: 450, damping: 20 }}
                                   className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
-                                  style={{ background: '#C8924A' }}
+                                  style={{ background: '#C5A059' }}
                                 >
                                   <Check size={9} color="#1a0e04" strokeWidth={2.5} />
                                 </motion.div>
@@ -1116,7 +1116,7 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                   </p>
 
                   <div className="space-y-2">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(200,146,74,0.55)' }}>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(197, 160, 89,0.55)' }}>
                       App theme
                     </p>
                     <div className="grid grid-cols-3 gap-2">
@@ -1130,8 +1130,8 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                             onClick={() => setThemePreference(option.value)}
                             className="rounded-[1rem] px-3 py-3 text-left"
                             style={{
-                              background: selected ? 'rgba(200, 146, 74, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                              border: `1px solid ${selected ? 'rgba(200, 146, 74, 0.38)' : 'rgba(255, 255, 255, 0.07)'}`,
+                              background: selected ? 'rgba(197, 160, 89, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                              border: `1px solid ${selected ? 'rgba(197, 160, 89, 0.38)' : 'rgba(255, 255, 255, 0.07)'}`,
                             }}
                           >
                             <Icon size={15} style={{ color: selected ? '#f0c870' : 'rgba(200,170,110,0.45)' }} />
@@ -1182,7 +1182,7 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                       transition={{ delay: 0.3, duration: 0.5 }}
                       className="space-y-3"
                     >
-                      <p className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: 'rgba(200,146,74,0.5)' }}>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: 'rgba(197, 160, 89,0.5)' }}>
                         Digital Deeksha
                       </p>
                       <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.55rem', fontWeight: 600, color: '#f0e2c0', lineHeight: 1.2 }}>
@@ -1197,10 +1197,10 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                       transition={{ delay: 0.45, duration: 0.6, type: 'spring' }}
                       className="w-full rounded-2xl px-6 py-8 space-y-4"
                       style={{
-                        background: 'rgba(200,146,74,0.12)',
-                        border: '1px solid rgba(200,146,74,0.30)',
+                        background: 'rgba(197, 160, 89,0.12)',
+                        border: '1px solid rgba(197, 160, 89,0.30)',
                         backdropFilter: 'blur(16px)',
-                        boxShadow: '0 0 50px rgba(200,146,74,0.15)',
+                        boxShadow: '0 0 50px rgba(197, 160, 89,0.15)',
                       }}
                     >
                       <p className="text-4xl font-semibold leading-relaxed" style={{ color: '#f5dfa0', fontFamily: 'var(--font-deva, serif)', textShadow: '0 0 30px rgba(245,223,160,0.4)' }}>
@@ -1263,8 +1263,8 @@ export default function OnboardingClient({ userId, traditionValue = '', phoneVal
                 className="w-full flex items-center justify-center gap-2 rounded-[1.1rem] py-4 text-sm font-semibold relative overflow-hidden disabled:opacity-35"
                 style={{
                   background: canAdvance()
-                    ? 'linear-gradient(135deg, rgba(200,120,24,0.92), rgba(200,146,74,0.85))'
-                    : 'rgba(200,146,74,0.10)',
+                    ? 'linear-gradient(135deg, rgba(200,120,24,0.92), rgba(197, 160, 89,0.85))'
+                    : 'rgba(197, 160, 89,0.10)',
                   color: canAdvance() ? '#1a0c04' : 'rgba(220,190,120,0.4)',
                   boxShadow: canAdvance() ? '0 6px 24px rgba(200,120,24,0.28), inset 0 1px 0 rgba(255,230,180,0.18)' : 'none',
                   transition: 'all 240ms cubic-bezier(0.34, 1.26, 0.64, 1)',

@@ -2,7 +2,6 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import KathaClient from './KathaClient';
 import { ALL_KATHAS, getKathasByTradition } from '@/lib/katha-library';
 
-export const dynamic = 'force-dynamic';
 
 export default async function KathaPage() {
   const supabase = await createServerSupabaseClient();

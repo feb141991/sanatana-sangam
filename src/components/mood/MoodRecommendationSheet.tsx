@@ -118,7 +118,7 @@ export default function MoodRecommendationSheet({ mood, onClose }: MoodRecommend
         onClick={e => e.stopPropagation()}
         style={{
           background: 'linear-gradient(180deg, var(--surface-raised), var(--card-bg))',
-          borderTop: '1px solid rgba(200, 146, 74, 0.20)',
+          borderTop: '1px solid rgba(197, 160, 89, 0.20)',
           boxShadow: '0 -20px 48px rgba(0, 0, 0, 0.4)',
         }}
         initial={prefersReducedMotion ? undefined : { y: 32, opacity: 0 }}
@@ -126,7 +126,7 @@ export default function MoodRecommendationSheet({ mood, onClose }: MoodRecommend
         exit={prefersReducedMotion ? undefined : { y: 20, opacity: 0 }}
         transition={{ duration: 0.32, ease: [0.34, 1.26, 0.64, 1] }}
       >
-        <div className="w-10 h-1 rounded-full mx-auto mb-1" style={{ background: 'rgba(200, 146, 74, 0.28)' }} />
+        <div className="w-10 h-1 rounded-full mx-auto mb-1" style={{ background: 'rgba(197, 160, 89, 0.28)' }} />
 
         <div className="flex items-center justify-between">
           <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-cream)' }}>
@@ -136,8 +136,8 @@ export default function MoodRecommendationSheet({ mood, onClose }: MoodRecommend
             {(step === 'loading' || step === 'recommendations') && `For your ${mood} mood`}
           </h3>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center motion-press"
-            style={{ background: 'rgba(200, 146, 74, 0.10)' }}>
+            className="w-11 h-11 rounded-full flex items-center justify-center motion-press"
+            style={{ background: 'rgba(197, 160, 89, 0.10)' }}>
             <X size={15} style={{ color: 'var(--text-muted-warm)' }} />
           </button>
         </div>
@@ -214,7 +214,7 @@ export default function MoodRecommendationSheet({ mood, onClose }: MoodRecommend
                 className="w-full flex items-center justify-between p-4 rounded-2xl border motion-lift text-left"
                 style={{ 
                   background: 'var(--card-bg, rgba(44, 38, 28, 0.88))', 
-                  borderColor: 'var(--card-border, rgba(200, 146, 74, 0.20))'
+                  borderColor: 'var(--card-border, rgba(197, 160, 89, 0.20))'
                 }}
               >
                 <div className="flex items-center gap-4">

@@ -2,7 +2,6 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import SevaClient from './SevaClient';
 
-export const dynamic = 'force-dynamic';
 
 export default async function SevaPage() {
   const supabase = await createServerSupabaseClient();

@@ -2,7 +2,6 @@ import { generateHealthReport } from '@/lib/monitoring/aggregation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 
-export const dynamic = 'force-dynamic';
 
 export default async function MonitoringPage() {
   const supabase = await createServerSupabaseClient();

@@ -43,9 +43,9 @@ function HeatDot({
   const any  = japa || nitya;
 
   const bg = both
-    ? 'linear-gradient(135deg, #C8924A 40%, #7ec87e 100%)'
+    ? 'linear-gradient(135deg, #C5A059 40%, #7ec87e 100%)'
     : japa
-      ? 'rgba(200,146,74,0.85)'
+      ? 'rgba(197, 160, 89,0.85)'
       : nitya
         ? 'rgba(126,200,126,0.80)'
         : 'rgba(255,255,255,0.07)';
@@ -61,7 +61,7 @@ function HeatDot({
         height:   any ? 10 : 9,
         background: bg,
         boxShadow: isToday
-          ? '0 0 0 1.5px rgba(200,146,74,0.55)'
+          ? '0 0 0 1.5px rgba(197, 160, 89,0.55)'
           : any
             ? '0 1px 4px rgba(0,0,0,0.18)'
             : 'none',
@@ -126,14 +126,14 @@ export default function PracticePulse({
       className="rounded-[1.7rem] px-4 py-4 relative overflow-hidden"
       style={{
         background:  containerBg,
-        border:      '1px solid rgba(200,146,74,0.14)',
+        border:      '1px solid rgba(197, 160, 89,0.14)',
         boxShadow:   containerShadow,
       }}
     >
       {/* Ambient glow */}
       <div
         className="absolute top-0 right-0 w-28 h-28 pointer-events-none"
-        style={{ background: 'radial-gradient(circle at top right, rgba(200,146,74,0.08), transparent 70%)' }}
+        style={{ background: 'radial-gradient(circle at top right, rgba(197, 160, 89,0.08), transparent 70%)' }}
       />
 
       {/* ── Top row: label + insights link ─────────────────────────────────── */}
@@ -147,7 +147,7 @@ export default function PracticePulse({
         <Link
           href="/bhakti/mala/insights"
           className="flex items-center gap-0.5 text-[10px] font-semibold"
-          style={{ color: 'rgba(200,146,74,0.75)' }}
+          style={{ color: 'rgba(197, 160, 89,0.75)' }}
         >
           Insights <ChevronRight size={11} />
         </Link>
@@ -159,18 +159,18 @@ export default function PracticePulse({
         <div
           className="flex items-center gap-1.5 rounded-full px-3 py-1.5"
           style={{
-            background: japaStreak > 0 ? 'rgba(200,146,74,0.12)' : 'rgba(255,255,255,0.05)',
-            border:     `1px solid ${japaStreak > 0 ? 'rgba(200,146,74,0.25)' : 'rgba(255,255,255,0.08)'}`,
+            background: japaStreak > 0 ? 'rgba(197, 160, 89,0.12)' : 'rgba(255,255,255,0.05)',
+            border:     `1px solid ${japaStreak > 0 ? 'rgba(197, 160, 89,0.25)' : 'rgba(255,255,255,0.08)'}`,
           }}
         >
           <Flame
             size={13}
-            style={{ color: japaStreak > 0 ? '#C8924A' : 'var(--text-dim)' }}
-            fill={japaStreak > 0 ? 'rgba(200,146,74,0.35)' : 'none'}
+            style={{ color: japaStreak > 0 ? '#C5A059' : 'var(--text-dim)' }}
+            fill={japaStreak > 0 ? 'rgba(197, 160, 89,0.35)' : 'none'}
           />
           <span
             className="text-[11px] font-bold"
-            style={{ color: japaStreak > 0 ? '#C8924A' : 'var(--text-dim)' }}
+            style={{ color: japaStreak > 0 ? '#C5A059' : 'var(--text-dim)' }}
           >
             {streakLabel}
           </span>
@@ -181,7 +181,7 @@ export default function PracticePulse({
 
         {/* Today's check marks */}
         <div className="flex items-center gap-1.5">
-          <TodayBadge done={japaAlreadyDoneToday} label="Japa" color="#C8924A" />
+          <TodayBadge done={japaAlreadyDoneToday} label="Japa" color="#C5A059" />
           <TodayBadge done={nityaDoneToday}        label="Nitya" color="#7ec87e" />
         </div>
       </div>
@@ -216,7 +216,7 @@ export default function PracticePulse({
       <div className="flex items-center justify-between mt-3 pt-2.5" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         {/* Legend */}
         <div className="flex items-center gap-3">
-          <LegendDot color="rgba(200,146,74,0.85)" label="Japa" />
+          <LegendDot color="rgba(197, 160, 89,0.85)" label="Japa" />
           <LegendDot color="rgba(126,200,126,0.80)" label="Nitya" />
         </div>
         {/* 28-day % */}

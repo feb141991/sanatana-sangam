@@ -114,11 +114,11 @@ export default function MessagesClient({
           aria-label="Go back"
           className="w-9 h-9 rounded-full flex items-center justify-center transition-all flex-shrink-0"
           style={{
-            background: 'rgba(200,146,74,0.10)',
-            border: '1px solid rgba(200,146,74,0.20)',
+            background: 'rgba(197, 160, 89,0.10)',
+            border: '1px solid rgba(197, 160, 89,0.20)',
           }}
         >
-          <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.80)' }} />
+          <ChevronLeft size={18} style={{ color: 'rgba(197, 160, 89,0.80)' }} />
         </button>
       </div>
 

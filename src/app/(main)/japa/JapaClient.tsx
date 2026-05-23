@@ -501,7 +501,7 @@ function buildCustomMantraCard(custom: CustomMantra) {
     tradition: 'Personal',
     description: custom.description || 'Your own private mantra focus',
     full: custom.text,
-    tradColor: '#C8924A',
+    tradColor: '#C5A059',
   } as const;
 }
 
@@ -719,7 +719,7 @@ function MalaSVG({
         x={SVG_CX} y={SVG_CY + 32}
         textAnchor="middle" fontSize={14}
         fontFamily="system-ui, -apple-system, sans-serif"
-        fill={isDark ? 'rgba(200,146,74,0.65)' : 'rgba(100,65,25,0.65)'}
+        fill={isDark ? 'rgba(197, 160, 89,0.65)' : 'rgba(100,65,25,0.65)'}
         letterSpacing="1"
       >
         / 108
@@ -730,7 +730,7 @@ function MalaSVG({
           x={SVG_CX} y={SVG_CY + 54}
           textAnchor="middle" fontSize={11}
           fontFamily="system-ui, -apple-system, sans-serif"
-          fill={isDark ? 'rgba(200,146,74,0.40)' : 'rgba(100,65,25,0.40)'}
+          fill={isDark ? 'rgba(197, 160, 89,0.40)' : 'rgba(100,65,25,0.40)'}
         >
           tap anywhere to begin
         </text>
@@ -843,7 +843,7 @@ function PracticeLauncherScreen({
   const card = isDark ? 'rgba(28,25,20,0.84)' : 'rgba(255,253,249,0.88)';
   const text = isDark ? 'rgba(245,232,210,0.96)' : '#2D1F0E';
   const sub = isDark ? 'rgba(205,178,130,0.68)' : 'rgba(96,66,34,0.66)';
-  const amber = isDark ? '#C8924A' : '#8A5A18';
+  const amber = isDark ? '#C5A059' : '#8A5A18';
 
   return (
     <motion.div
@@ -859,7 +859,7 @@ function PracticeLauncherScreen({
         </div>
 
         <div className="relative flex items-center justify-between">
-          <button onClick={onBack} className="h-10 w-10 rounded-full border flex items-center justify-center" style={{ borderColor: `${amber}22`, background: card }}>
+          <button onClick={onBack} className="h-11 w-11 rounded-full border flex items-center justify-center" style={{ borderColor: `${amber}22`, background: card }} aria-label="Go back">
             <ChevronLeft size={18} style={{ color: amber }} />
           </button>
           <Link href="/bhakti/mala/insights" className="rounded-full border px-3 py-2 text-[12px] font-medium" style={{ borderColor: `${amber}22`, color: sub, background: card }}>
@@ -943,8 +943,8 @@ function ChooseMalaScreen({
   const bg    = isDark ? '#08070A' : '#F5F0E8';
   const card  = isDark ? 'var(--card-bg)' : 'rgba(0,0,0,0.04)';
   const text  = isDark ? 'rgba(245,225,185,0.95)' : '#2D1F0E';
-  const sub   = isDark ? 'rgba(200,146,74,0.60)' : 'rgba(100,65,25,0.60)';
-  const amber = isDark ? '#C8924A' : '#7A4A1E';
+  const sub   = isDark ? 'rgba(197, 160, 89,0.60)' : 'rgba(100,65,25,0.60)';
+  const amber = isDark ? '#C5A059' : '#7A4A1E';
 
   return (
     <motion.div
@@ -957,9 +957,9 @@ function ChooseMalaScreen({
       <div className="flex items-center gap-3 px-5 pt-14 pb-2">
         <button
           onClick={onBack}
-          className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+          className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
           style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}
-        >
+         aria-label="Go back">
           <ChevronLeft size={20} style={{ color: amber }} />
         </button>
         <div>
@@ -983,7 +983,7 @@ function ChooseMalaScreen({
               whileTap={{ scale: 0.975 }}
               className="w-full text-left rounded-2xl p-4 flex items-center gap-4 border transition-all"
               style={{
-                background: isSelected ? (isDark ? 'rgba(200,146,74,0.10)' : 'rgba(122,74,30,0.08)') : card,
+                background: isSelected ? (isDark ? 'rgba(197, 160, 89,0.10)' : 'rgba(122,74,30,0.08)') : card,
                 borderColor: isSelected ? malaC.glow : (isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)'),
                 boxShadow: isSelected ? `0 0 0 1.5px ${malaC.glow}` : 'none',
               }}
@@ -1069,9 +1069,9 @@ function ChooseMalaScreen({
           whileTap={{ scale: 0.97 }}
           className="w-full py-4 rounded-2xl font-bold text-[15px]"
           style={{
-            background: isDark ? 'linear-gradient(135deg, #C8924A, #8a5818)' : 'linear-gradient(135deg, #8B5E3C, #5a3010)',
+            background: isDark ? 'linear-gradient(135deg, #C5A059, #8a5818)' : 'linear-gradient(135deg, #8B5E3C, #5a3010)',
             color: isDark ? '#fde8c8' : '#fff8f0',
-            boxShadow: '0 4px 24px rgba(200,146,74,0.25)',
+            boxShadow: '0 4px 24px rgba(197, 160, 89,0.25)',
           }}
         >
           Continue →
@@ -1093,8 +1093,8 @@ function ChooseMantraScreen({
   const bg    = isDark ? '#08070A' : '#F5F0E8';
   const card  = isDark ? 'var(--card-bg)' : 'rgba(0,0,0,0.04)';
   const text  = isDark ? 'rgba(245,225,185,0.95)' : '#2D1F0E';
-  const sub   = isDark ? 'rgba(200,146,74,0.60)' : 'rgba(100,65,25,0.60)';
-  const amber = isDark ? '#C8924A' : '#7A4A1E';
+  const sub   = isDark ? 'rgba(197, 160, 89,0.60)' : 'rgba(100,65,25,0.60)';
+  const amber = isDark ? '#C5A059' : '#7A4A1E';
 
   return (
     <motion.div
@@ -1107,9 +1107,9 @@ function ChooseMantraScreen({
       <div className="flex items-center gap-3 px-5 pt-14 pb-4">
         <button
           onClick={onBack}
-          className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+          className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
           style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}
-        >
+         aria-label="Go back">
           <ChevronLeft size={20} style={{ color: amber }} />
         </button>
         <div>
@@ -1124,7 +1124,7 @@ function ChooseMantraScreen({
           onClick={onOpenCustom}
           className="w-full rounded-2xl border p-4 text-left transition-all active:scale-[0.99]"
           style={{
-            background: isDark ? 'rgba(200,146,74,0.08)' : 'rgba(122,74,30,0.06)',
+            background: isDark ? 'rgba(197, 160, 89,0.08)' : 'rgba(122,74,30,0.06)',
             borderColor: `${amber}35`,
           }}
         >
@@ -1158,7 +1158,7 @@ function ChooseMantraScreen({
               whileTap={{ scale: 0.975 }}
               className="w-full text-left rounded-2xl p-4 border transition-all"
               style={{
-                background: isSelected ? (isDark ? 'rgba(200,146,74,0.09)' : 'rgba(122,74,30,0.07)') : card,
+                background: isSelected ? (isDark ? 'rgba(197, 160, 89,0.09)' : 'rgba(122,74,30,0.07)') : card,
                 borderColor: isSelected ? `${m.tradColor}55` : (isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)'),
                 boxShadow: isSelected ? `0 0 0 1.5px ${m.tradColor}44` : 'none',
               }}
@@ -1194,9 +1194,9 @@ function ChooseMantraScreen({
           whileTap={{ scale: 0.97 }}
           className="w-full py-4 rounded-2xl font-bold text-[15px]"
           style={{
-            background: isDark ? 'linear-gradient(135deg, #C8924A, #8a5818)' : 'linear-gradient(135deg, #8B5E3C, #5a3010)',
+            background: isDark ? 'linear-gradient(135deg, #C5A059, #8a5818)' : 'linear-gradient(135deg, #8B5E3C, #5a3010)',
             color: isDark ? '#fde8c8' : '#fff8f0',
-            boxShadow: '0 4px 24px rgba(200,146,74,0.25)',
+            boxShadow: '0 4px 24px rgba(197, 160, 89,0.25)',
           }}
         >
           Begin Practice →
@@ -1221,10 +1221,10 @@ function CustomMantraSheet({
 }) {
   const bg = isDark ? 'rgba(10,8,14,0.98)' : 'rgba(248,244,236,0.98)';
   const cardBg = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)';
-  const border = isDark ? 'rgba(200,146,74,0.14)' : 'rgba(0,0,0,0.07)';
+  const border = isDark ? 'rgba(197, 160, 89,0.14)' : 'rgba(0,0,0,0.07)';
   const text = isDark ? 'rgba(245,225,185,0.95)' : '#2D1F0E';
-  const sub = isDark ? 'rgba(200,146,74,0.60)' : 'rgba(100,65,25,0.60)';
-  const amber = isDark ? '#C8924A' : '#7A4A1E';
+  const sub = isDark ? 'rgba(197, 160, 89,0.60)' : 'rgba(100,65,25,0.60)';
+  const amber = isDark ? '#C5A059' : '#7A4A1E';
   const [label, setLabel] = useState(initialValue?.label ?? '');
   const [mantraText, setMantraText] = useState(initialValue?.text ?? '');
   const [description, setDescription] = useState(initialValue?.description ?? '');
@@ -1257,7 +1257,7 @@ function CustomMantraSheet({
               This stays private to your device for now and can be used with the same immersive mala flow.
             </p>
           </div>
-          <button onClick={onClose} className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: cardBg }}>
+          <button onClick={onClose} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: cardBg }}>
             <X size={15} style={{ color: sub }} />
           </button>
         </div>
@@ -1311,7 +1311,7 @@ function SoundsSheet({
 }) {
   const bg   = isDark ? 'rgba(12,10,16,0.97)' : 'rgba(245,240,232,0.97)';
   const text = isDark ? 'rgba(245,225,185,0.95)' : '#2D1F0E';
-  const sub  = isDark ? 'rgba(200,146,74,0.60)' : 'rgba(100,65,25,0.60)';
+  const sub  = isDark ? 'rgba(197, 160, 89,0.60)' : 'rgba(100,65,25,0.60)';
 
   return (
     <motion.div
@@ -1328,13 +1328,13 @@ function SoundsSheet({
         onClick={e => e.stopPropagation()}
       >
         <div className="w-10 h-1 rounded-full mx-auto mb-5"
-          style={{ background: isDark ? 'rgba(200,146,74,0.25)' : 'rgba(100,65,25,0.20)' }} />
+          style={{ background: isDark ? 'rgba(197, 160, 89,0.25)' : 'rgba(100,65,25,0.20)' }} />
         <div className="flex items-center justify-between mb-5">
           <div>
             <p className="text-[11px] font-semibold tracking-widest uppercase" style={{ color: sub }}>Ambience</p>
             <h2 className="text-[1.3rem] font-bold" style={{ color: text, fontFamily: 'var(--font-serif)' }}>Sacred Sounds</h2>
           </div>
-          <button onClick={onClose} className="w-9 h-9 rounded-full flex items-center justify-center"
+          <button onClick={onClose} className="w-11 h-11 rounded-full flex items-center justify-center"
             style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M1 1l12 12M13 1L1 13" stroke={isDark ? 'rgba(245,225,185,0.7)' : '#2D1F0E'} strokeWidth="1.5" strokeLinecap="round"/>
@@ -1349,21 +1349,21 @@ function SoundsSheet({
                 className="flex flex-col items-center gap-2 rounded-2xl py-4 border transition-all"
                 style={{
                   background: isActive
-                    ? (isDark ? 'rgba(200,146,74,0.14)' : 'rgba(122,74,30,0.10)')
+                    ? (isDark ? 'rgba(197, 160, 89,0.14)' : 'rgba(122,74,30,0.10)')
                     : (isDark ? 'var(--card-bg)' : 'rgba(0,0,0,0.04)'),
                   borderColor: isActive
-                    ? (isDark ? 'rgba(200,146,74,0.40)' : 'rgba(122,74,30,0.35)')
+                    ? (isDark ? 'rgba(197, 160, 89,0.40)' : 'rgba(122,74,30,0.35)')
                     : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'),
                 }}>
                 <span className="text-[1.6rem] leading-none">{s.icon}</span>
                 <span className="text-[9px] font-semibold text-center"
-                  style={{ color: isActive ? (isDark ? '#C8924A' : '#7A4A1E') : sub }}>
+                  style={{ color: isActive ? (isDark ? '#C5A059' : '#7A4A1E') : sub }}>
                   {s.label}
                 </span>
                 {isActive && (
                   <motion.div
                     className="w-1.5 h-1.5 rounded-full"
-                    style={{ background: isDark ? '#C8924A' : '#7A4A1E' }}
+                    style={{ background: isDark ? '#C5A059' : '#7A4A1E' }}
                     animate={{ scale: [1, 1.3, 1] }}
                     transition={{ duration: 1.4, repeat: Infinity }}
                   />
@@ -1388,8 +1388,8 @@ function CompletionOverlay({
   const secs  = durationSecs % 60;
   const bg    = isDark ? 'rgba(8,6,12,0.97)' : 'rgba(245,240,232,0.97)';
   const text  = isDark ? 'rgba(245,225,185,0.97)' : '#2D1F0E';
-  const sub   = isDark ? 'rgba(200,146,74,0.60)' : 'rgba(100,65,25,0.60)';
-  const amber = isDark ? '#C8924A' : '#7A4A1E';
+  const sub   = isDark ? 'rgba(197, 160, 89,0.60)' : 'rgba(100,65,25,0.60)';
+  const amber = isDark ? '#C5A059' : '#7A4A1E';
   const isGoalMet = rounds >= targetRounds;
   const totalBeadsShown = rounds * TOTAL_BEADS + partialBeads;
 
@@ -1470,9 +1470,9 @@ function CompletionOverlay({
               whileTap={{ scale: 0.97 }}
               className="w-full py-4 rounded-2xl font-bold text-[15px]"
               style={{
-                background: isDark ? 'linear-gradient(135deg, #C8924A, #8a5818)' : 'linear-gradient(135deg, #8B5E3C, #5a3010)',
+                background: isDark ? 'linear-gradient(135deg, #C5A059, #8a5818)' : 'linear-gradient(135deg, #8B5E3C, #5a3010)',
                 color: isDark ? '#fde8c8' : '#fff8f0',
-                boxShadow: '0 4px 24px rgba(200,146,74,0.28)',
+                boxShadow: '0 4px 24px rgba(197, 160, 89,0.28)',
               }}>
               Continue another mala
             </motion.button>
@@ -1516,9 +1516,9 @@ function StopPracticeSheet({
 }) {
   const bg     = isDark ? 'rgba(10,8,14,0.97)' : 'rgba(248,244,236,0.97)';
   const text   = isDark ? 'rgba(245,225,185,0.95)' : '#2D1F0E';
-  const sub    = isDark ? 'rgba(200,146,74,0.60)' : 'rgba(100,65,25,0.60)';
-  const amber  = isDark ? '#C8924A' : '#7A4A1E';
-  const border = isDark ? 'rgba(200,146,74,0.14)' : 'rgba(0,0,0,0.07)';
+  const sub    = isDark ? 'rgba(197, 160, 89,0.60)' : 'rgba(100,65,25,0.60)';
+  const amber  = isDark ? '#C5A059' : '#7A4A1E';
+  const border = isDark ? 'rgba(197, 160, 89,0.14)' : 'rgba(0,0,0,0.07)';
 
   return (
     <motion.div
@@ -1556,7 +1556,7 @@ function StopPracticeSheet({
           <button
             type="button"
             onClick={onContinue}
-            className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+            className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
             style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}
             aria-label="Continue practice"
           >
@@ -1572,7 +1572,7 @@ function StopPracticeSheet({
               disabled={saving}
               className="w-full py-4 rounded-2xl font-bold text-[15px] disabled:opacity-60"
               style={{
-                background: isDark ? 'linear-gradient(135deg, #C8924A, #8a5818)' : 'linear-gradient(135deg, #8B5E3C, #5a3010)',
+                background: isDark ? 'linear-gradient(135deg, #C5A059, #8a5818)' : 'linear-gradient(135deg, #8B5E3C, #5a3010)',
                 color: isDark ? '#fde8c8' : '#fff8f0',
               }}
             >
@@ -1616,9 +1616,9 @@ function PracticeSettingsSheet({
 }) {
   const bg   = isDark ? 'rgba(10,8,14,0.97)' : 'rgba(248,244,236,0.97)';
   const text = isDark ? 'rgba(245,225,185,0.95)' : '#2D1F0E';
-  const sub  = isDark ? 'rgba(200,146,74,0.60)' : 'rgba(100,65,25,0.60)';
-  const amber = isDark ? '#C8924A' : '#7A4A1E';
-  const border = isDark ? 'rgba(200,146,74,0.14)' : 'rgba(0,0,0,0.07)';
+  const sub  = isDark ? 'rgba(197, 160, 89,0.60)' : 'rgba(100,65,25,0.60)';
+  const amber = isDark ? '#C5A059' : '#7A4A1E';
+  const border = isDark ? 'rgba(197, 160, 89,0.14)' : 'rgba(0,0,0,0.07)';
   const cardBg = isDark ? 'var(--card-bg)' : 'rgba(0,0,0,0.04)';
 
   const [localSound, setLocalSound] = useState<SoundId>(soundId);
@@ -1645,7 +1645,7 @@ function PracticeSettingsSheet({
             <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: `${amber}80` }}>Practice</p>
             <h2 className="text-xl font-bold" style={{ fontFamily: 'var(--font-serif)', color: text }}>Settings</h2>
           </div>
-          <button onClick={onClose} className="w-9 h-9 rounded-full flex items-center justify-center"
+          <button onClick={onClose} className="w-11 h-11 rounded-full flex items-center justify-center"
             style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M1 1l12 12M13 1L1 13" stroke={text} strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
@@ -2165,8 +2165,8 @@ export default function JapaClient({
 
   const bg      = bgC.bg;
   const text     = isDark ? 'rgba(245,225,185,0.97)' : '#2D1F0E';
-  const sub      = isDark ? 'rgba(200,146,74,0.60)'  : 'rgba(100,65,25,0.60)';
-  const amber    = isDark ? '#C8924A' : '#7A4A1E';
+  const sub      = isDark ? 'rgba(197, 160, 89,0.60)'  : 'rgba(100,65,25,0.60)';
+  const amber    = isDark ? '#C5A059' : '#7A4A1E';
   const cardBg   = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
 
   const progressPct = targetRounds > 1
@@ -2390,7 +2390,7 @@ export default function JapaClient({
                 className="h-11 rounded-full px-4 font-semibold text-[13px] transition-all active:scale-95 disabled:opacity-60"
                 aria-label="End and save session"
                 style={{
-                  background: isDark ? 'rgba(200,146,74,0.14)' : 'rgba(122,74,30,0.10)',
+                  background: isDark ? 'rgba(197, 160, 89,0.14)' : 'rgba(122,74,30,0.10)',
                   color: amber,
                 }}>
                 {savingSession ? 'Saving...' : 'End'}

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase-admin';
 
 export async function GET(req: NextRequest) {
-  const authError = checkAdminAuth(req as any);
+  const authError = checkAdminAuth(req);
   if (authError) return authError;
 
   const { searchParams } = new URL(req.url);
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const authError = checkAdminAuth(req as any);
+  const authError = checkAdminAuth(req);
   if (authError) return authError;
 
   const { userId, action } = await req.json();

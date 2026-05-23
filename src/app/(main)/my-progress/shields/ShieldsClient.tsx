@@ -51,10 +51,10 @@ export default function ShieldsClient({ streak, totalJapaSessions, userName }: P
   // Theme
   const pageBg  = isDark ? 'linear-gradient(180deg,#130e08 0%,#1a1208 100%)' : 'linear-gradient(180deg,#fdf6ee 0%,#f7ede0 100%)';
   const cardBg  = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.90)';
-  const cardBdr = isDark ? 'rgba(200,146,74,0.12)' : 'rgba(180,120,40,0.14)';
+  const cardBdr = isDark ? 'rgba(197, 160, 89,0.12)' : 'rgba(180,120,40,0.14)';
   const h1      = isDark ? '#f5dfa0' : '#1a0a02';
   const muted   = isDark ? 'rgba(245,210,130,0.45)' : 'rgba(100,55,10,0.50)';
-  const amber   = 'rgba(200,146,74,';
+  const amber   = 'rgba(197, 160, 89,';
 
   return (
     <div className="min-h-screen pb-28" style={{ background: pageBg }}>
@@ -64,8 +64,8 @@ export default function ShieldsClient({ streak, totalJapaSessions, userName }: P
       <div className="flex items-center gap-3 px-4 pb-4">
         <button onClick={() => router.back()}
           className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-          style={{ background: 'rgba(200,146,74,0.10)', border: '1px solid rgba(200,146,74,0.18)' }}>
-          <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.85)' }} />
+          style={{ background: 'rgba(197, 160, 89,0.10)', border: '1px solid rgba(197, 160, 89,0.18)' }}>
+          <ChevronLeft size={18} style={{ color: 'rgba(197, 160, 89,0.85)' }} />
         </button>
         <div className="flex-1">
           <p className="text-[10px] tracking-[0.18em] uppercase font-medium" style={{ color: muted }}>My Progress</p>
@@ -113,8 +113,8 @@ export default function ShieldsClient({ streak, totalJapaSessions, userName }: P
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               className="flex-1 rounded-xl py-2.5 text-center transition-all"
               style={{
-                background: activeTab === tab.key ? isDark ? 'rgba(200,146,74,0.18)' : 'rgba(200,146,74,0.14)' : 'transparent',
-                border: activeTab === tab.key ? '1px solid rgba(200,146,74,0.30)' : '1px solid transparent',
+                background: activeTab === tab.key ? isDark ? 'rgba(197, 160, 89,0.18)' : 'rgba(197, 160, 89,0.14)' : 'transparent',
+                border: activeTab === tab.key ? '1px solid rgba(197, 160, 89,0.30)' : '1px solid transparent',
               }}>
               <p className="text-[12px] font-semibold" style={{ color: activeTab === tab.key ? h1 : muted }}>
                 {tab.label}
@@ -142,7 +142,7 @@ export default function ShieldsClient({ streak, totalJapaSessions, userName }: P
             </div>
             <div className="h-2 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}>
               <motion.div className="h-full rounded-full"
-                style={{ background: 'linear-gradient(90deg,rgba(200,146,74,0.75),rgba(212,100,20,0.88))' }}
+                style={{ background: 'linear-gradient(90deg,rgba(197, 160, 89,0.75),rgba(212,100,20,0.88))' }}
                 initial={{ width: 0 }} animate={{ width: `${progress}%` }}
                 transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }} />
             </div>
@@ -187,13 +187,13 @@ export default function ShieldsClient({ streak, totalJapaSessions, userName }: P
                           transition={{ duration: 0.35, delay: idx * 0.06 }}
                           style={{
                             background: earned
-                              ? isDark ? 'rgba(200,146,74,0.20)' : 'rgba(200,146,74,0.14)'
+                              ? isDark ? 'rgba(197, 160, 89,0.20)' : 'rgba(197, 160, 89,0.14)'
                               : isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
                             border: earned
-                              ? '1.5px solid rgba(200,146,74,0.45)'
+                              ? '1.5px solid rgba(197, 160, 89,0.45)'
                               : `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
                             filter: earned ? 'none' : 'grayscale(1) opacity(0.28)',
-                            boxShadow: earned ? '0 0 14px rgba(200,146,74,0.18)' : 'none',
+                            boxShadow: earned ? '0 0 14px rgba(197, 160, 89,0.18)' : 'none',
                           }}
                         >
                           {shield.emoji}
@@ -254,7 +254,7 @@ export default function ShieldsClient({ streak, totalJapaSessions, userName }: P
 
                     {/* Separator */}
                     {idx < shields.length - 1 && (
-                      <div className="mt-3 h-px" style={{ background: isDark ? 'rgba(200,146,74,0.06)' : 'rgba(0,0,0,0.05)' }} />
+                      <div className="mt-3 h-px" style={{ background: isDark ? 'rgba(197, 160, 89,0.06)' : 'rgba(0,0,0,0.05)' }} />
                     )}
                   </motion.div>
                 );

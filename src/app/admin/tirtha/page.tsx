@@ -38,7 +38,7 @@ export default function MandaliRegistry() {
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] pb-24 font-outfit">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-[rgba(200,146,74,0.15)] px-6 py-4">
+      <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-[rgba(197, 160, 89,0.15)] px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/admin" className="p-2 rounded-xl hover:bg-black/5 text-[var(--brand-muted)] transition-all">
@@ -87,7 +87,7 @@ export default function MandaliRegistry() {
                   <div className="p-4 rounded-2xl bg-[var(--premium-gold-soft)] text-[var(--premium-gold)]">
                     <Compass size={24} />
                   </div>
-                  <button className="p-2 rounded-xl hover:bg-black/5 text-[var(--brand-muted)]">
+                  <button className="p-2 rounded-xl hover:bg-black/5 text-[var(--brand-muted)]" aria-label="More options">
                     <MoreVertical size={20} />
                   </button>
                 </div>

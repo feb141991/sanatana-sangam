@@ -180,7 +180,7 @@ export default function FestivalManagement() {
     <div className="min-h-screen bg-[var(--divine-bg)] pb-24 font-outfit">
 
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-[rgba(200,146,74,0.15)] px-6 py-4">
+      <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-[rgba(197, 160, 89,0.15)] px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/admin" className="p-2 rounded-xl bg-black/5 hover:bg-black/10 transition-colors">
@@ -401,14 +401,14 @@ export default function FestivalManagement() {
                         disabled
                         className="p-2 rounded-xl bg-black/5 text-[var(--brand-muted)] opacity-50 cursor-not-allowed"
                         title="Editing is staged; this admin surface is currently review-first."
-                      >
+                       aria-label="Action">
                         <Edit2 size={16} />
                       </button>
                       <button
                         disabled
                         className="p-2 rounded-xl bg-black/5 text-[var(--brand-muted)] opacity-50 cursor-not-allowed"
                         title="Deletion is staged; this admin surface is currently review-first."
-                      >
+                       aria-label="Delete">
                         <Trash2 size={16} />
                       </button>
                     </div>

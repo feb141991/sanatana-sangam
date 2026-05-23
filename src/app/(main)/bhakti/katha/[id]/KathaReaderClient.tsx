@@ -12,9 +12,11 @@ import type { Katha } from '@/lib/katha-library';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 import { resolveReadablePreferences } from '@/lib/readable-preferences';
 import { trackReaderEvent } from '@/lib/analytics/reader-events';
-import { useReaderControls } from '@/hooks/useReaderControls';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useReaderDisplayPreferences } from '@/lib/i18n/reader-display';
+import { useReaderControls } from '@/hooks/useReaderControls';
 import type { AppContentLanguage } from '@/lib/language-runtime';
+import ReaderShell from '@/components/reader/ReaderShell';
 
 interface Props {
   katha: Katha;
@@ -304,100 +306,29 @@ export default function KathaReaderClient({
   }
 
   return (
-    <div className="relative min-h-screen pb-36 overflow-x-hidden bg-[var(--divine-bg)] text-[var(--text-main)] font-outfit selection:bg-[#C5A059]/30">
-      {/* Ambient glow */}
-      <div
-        className="fixed top-0 left-0 w-96 h-96 blur-[140px] rounded-full -translate-y-1/2 -translate-x-1/2 pointer-events-none -z-10 opacity-25 dark:opacity-20"
-        style={{ background: tradColor }}
-      />
-
-      {/* ── Header ── */}
-      <div className="sticky top-0 z-40 px-6 pt-12 pb-4 backdrop-blur-xl bg-[var(--divine-bg)]/80 border-b border-[var(--divine-border)]/10">
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => router.back()}
-            className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 text-[var(--text-main)] transition-all hover:bg-[var(--surface-base)]/40 active:scale-90"
-          >
-            <ChevronLeft size={18} color={THEME.gold} />
-          </button>
-          <div className="text-center">
-            <p className="text-[10px] font-bold uppercase tracking-[0.5em]" style={{ color: tradColor }}>
-              {trad.termKatha}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={speakKatha}
-              disabled={readerControls.state.isGeneratingTTS}
-              className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-90 disabled:opacity-40"
-              title={speaking ? labels.stopReading : labels.listen}
-            >
-              {readerControls.state.isGeneratingTTS
-                ? <Loader2 size={14} color={THEME.gold} className="animate-spin" />
-                : speaking
-                  ? <VolumeX size={14} color={THEME.gold} />
-                  : <Volume2 size={14} color={THEME.gold} />
-              }
-            </button>
-            <button
-              onClick={copyToClipboard}
-              className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-90"
-              title={labels.copy}
-            >
-              {readerControls.state.isCopied ? <Check size={14} color="#2D9E4A" /> : <Copy size={14} color={THEME.gold} />}
-            </button>
-            <button
-              onClick={shareKatha}
-              className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-90"
-              title={labels.share}
-            >
-              <Share2 size={14} color={THEME.gold} />
-            </button>
-          </div>
-        </div>
-
-        {/* ── Dynamic Controls Bar ── */}
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[var(--divine-border)]/5">
-          {/* Font Presets */}
-          <div className="flex items-center gap-1.5 bg-[var(--surface-base)]/10 px-2 py-1 rounded-full border border-[var(--divine-border)]/5">
-            <span className="text-[10px] uppercase font-bold tracking-wider px-1 text-[var(--text-dim)]">{labels.textSize}:</span>
-            {fontPresets.map((step, idx) => (
-              <button
-                key={idx}
-                onClick={() => setFontStep(idx)}
-                className={`px-2 py-1 rounded-full text-[10px] font-bold flex items-center justify-center transition-all ${
-                  fontStep === idx
-                    ? 'bg-[#C5A059] text-black shadow-md shadow-[#C5A059]/20'
-                    : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'
-                }`}
-              >
-                {step.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-1.5 bg-[var(--surface-base)]/10 px-2 py-1 rounded-full border border-[var(--divine-border)]/5">
-            <span className="text-[10px] uppercase font-bold tracking-wider px-1 text-[var(--text-dim)]">{labels.language}:</span>
-            {languages
-              .filter(l => l.code === 'en' || (l.code === 'hi' && hasHindi) || (l.code === 'pa' && hasPunjabi))
-              .map(l => (
-                <button
-                  key={l.code}
-                  onClick={() => {
-                    setLang(l.code);
-                    trackReaderEvent('language_toggled', { content_type: 'katha', source: `katha:${katha.id}`, tradition: katha.tradition, language: l.code });
-                  }}
-                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all ${lang === l.code ? 'bg-[#C5A059] text-black shadow-md shadow-[#C5A059]/20' : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'}`}
-                >
-                  {l.label}
-                </button>
-              ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Katha Body ── */}
-      <section className="px-6 mt-8 space-y-6">
+    <ReaderShell
+      title={titleToShow}
+      subtitle={trad.termKatha}
+      fallbackBackUrl="/bhakti/katha"
+      themeColor={tradColor}
+      ambientGlowColor={tradColor}
+      fontPresets={fontPresets}
+      fontStep={fontStep}
+      setFontStep={setFontStep}
+      languages={languages.filter(l => l.code === 'en' || (l.code === 'hi' && hasHindi) || (l.code === 'pa' && hasPunjabi))}
+      currentLanguage={lang}
+      setLanguage={(l) => {
+        setLang(l);
+        trackReaderEvent('language_toggled', { content_type: 'katha', source: `katha:${katha.id}`, tradition: katha.tradition, language: l });
+      }}
+      onTTS={speakKatha}
+      isSpeaking={speaking}
+      isTTSGenerating={readerControls.state.isGeneratingTTS}
+      onCopy={copyToClipboard}
+      isCopied={readerControls.state.isCopied}
+      onShare={shareKatha}
+      contentClassName="px-6 space-y-6 pt-8 pb-36"
+    >
         {bodyToShow.map((para, idx) => (
           <motion.p
             key={`${lang}-${idx}`}
@@ -413,8 +344,6 @@ export default function KathaReaderClient({
             {para}
           </motion.p>
         ))}
-      </section>
-
       {/* ── Phal (Fruit / Moral) ── */}
       <section className="px-6 mt-12">
         <motion.button
@@ -515,6 +444,6 @@ export default function KathaReaderClient({
           <span>{liked ? labels.jaiShriHari : labels.appreciateThisKatha}</span>
         </motion.button>
       </section>
-    </div>
+    </ReaderShell>
   );
 }

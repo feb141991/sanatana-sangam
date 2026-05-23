@@ -80,13 +80,13 @@ export default function ThreadDetailClient({
       </button>
 
       {/* Thread */}
-      <div className="rounded-2xl border p-5 space-y-4" style={{ background: 'rgba(26, 22, 16, 0.95)', borderColor: 'rgba(200, 146, 74, 0.14)' }}>
+      <div className="rounded-2xl border p-5 space-y-4" style={{ background: 'rgba(26, 22, 16, 0.95)', borderColor: 'rgba(197, 160, 89, 0.14)' }}>
         <div className="flex items-center gap-2">
           <span className="text-xs px-2 py-0.5 rounded-full font-medium border" style={{ background: 'var(--brand-primary-soft)', color: 'var(--brand-primary)', borderColor: 'rgba(123, 26, 26, 0.16)' }}>
             {cat?.emoji} {cat?.label}
           </span>
           {threadState.is_answered && (
-            <span className="text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1 border" style={{ background: 'rgba(200,146,74,0.12)', color: '#C8924A', borderColor: 'rgba(200,146,74,0.28)' }}>
+            <span className="text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1 border" style={{ background: 'rgba(197, 160, 89,0.12)', color: '#C5A059', borderColor: 'rgba(197, 160, 89,0.28)' }}>
               <CheckCircle size={10} /> Answered
             </span>
           )}
@@ -108,7 +108,7 @@ export default function ThreadDetailClient({
         {threadState.tags.length > 0 && (
           <div className="flex gap-1.5 flex-wrap">
             {threadState.tags.map((tag) => (
-              <span key={tag} className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(200,146,74,0.08)', color: 'rgba(200,146,74,0.65)', border: '1px solid rgba(200,146,74,0.15)' }}>#{tag}</span>
+              <span key={tag} className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(197, 160, 89,0.08)', color: 'rgba(197, 160, 89,0.65)', border: '1px solid rgba(197, 160, 89,0.15)' }}>#{tag}</span>
             ))}
           </div>
         )}
@@ -191,7 +191,7 @@ export default function ThreadDetailClient({
             value={replyBody}
             onChange={(e) => setReplyBody(e.target.value)}
             rows={3}
-            className="w-full px-4 py-3 rounded-xl border border-[rgba(200,146,74,0.2)] focus:border-[color:var(--brand-primary)] outline-none resize-none text-sm"
+            className="w-full px-4 py-3 rounded-xl border border-[rgba(197, 160, 89,0.2)] focus:border-[color:var(--brand-primary)] outline-none resize-none text-sm"
           />
           <div className="flex justify-end">
             <button
@@ -228,11 +228,11 @@ function ReplyCard({
 
   return (
     <div className="rounded-2xl border p-4 space-y-2" style={{
-      background: reply.is_accepted ? 'rgba(200,146,74,0.06)' : 'rgba(22, 18, 12, 0.92)',
-      borderColor: reply.is_accepted ? 'rgba(200,146,74,0.28)' : 'rgba(255,255,255,0.07)',
+      background: reply.is_accepted ? 'rgba(197, 160, 89,0.06)' : 'rgba(22, 18, 12, 0.92)',
+      borderColor: reply.is_accepted ? 'rgba(197, 160, 89,0.28)' : 'rgba(255,255,255,0.07)',
     }}>
       {reply.is_accepted && (
-        <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: '#C8924A' }}>
+        <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: '#C5A059' }}>
           <CheckCircle size={13} /> Accepted Answer
         </div>
       )}

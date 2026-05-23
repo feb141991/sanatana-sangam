@@ -41,7 +41,7 @@ const STAGE_ICONS: Record<LifeStage, SacredIconName> = {
 
 const STAGE_ACCENTS: Record<LifeStage, string> = {
   brahmacharya: '#7CB9E8',   // sky blue — open, receptive mind
-  grihastha:    '#C8924A',   // amber — warmth, responsibility
+  grihastha:    '#C5A059',   // amber — warmth, responsibility
   vanaprastha:  '#6BAE75',   // forest green — nature, withdrawal
   sannyasa:     '#B8A4C8',   // soft violet — liberation, spirit
 };

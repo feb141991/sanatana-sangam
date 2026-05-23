@@ -310,7 +310,7 @@ function MarkForm({
       transition={{ duration: 0.3 }}
       className="overflow-hidden"
     >
-      <div className="mt-3 space-y-3 rounded-xl p-4" style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.15)' }}>
+      <div className="mt-3 space-y-3 rounded-xl p-4" style={{ background: 'rgba(197, 160, 89,0.06)', border: '1px solid rgba(197, 160, 89,0.15)' }}>
         <p className="text-xs font-semibold text-amber-200/70">Record this sanskara</p>
         <div className="grid grid-cols-2 gap-2">
           <div>
@@ -347,7 +347,7 @@ function MarkForm({
               value={expectedDate}
               onChange={e => setExpectedDate(e.target.value)}
               className="mt-1 w-full rounded-lg px-3 py-2 text-sm outline-none"
-              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(200,146,74,0.25)', color: 'rgba(245,220,150,0.9)' }}
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(197, 160, 89,0.25)', color: 'rgba(245,220,150,0.9)' }}
             />
             <p className="mt-1 text-[10px]" style={{ color: 'rgba(245,210,130,0.35)' }}>
               We&apos;ll send gentle reminders for upcoming milestone sanskaras 🙏
@@ -386,7 +386,7 @@ function MarkForm({
             }}
             disabled={saving}
             className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold transition"
-            style={{ background: 'linear-gradient(135deg, rgba(212,120,20,0.9), rgba(200,146,74,0.8))', color: '#1c1208' }}
+            style={{ background: 'linear-gradient(135deg, rgba(212,120,20,0.9), rgba(197, 160, 89,0.8))', color: '#1c1208' }}
           >
             {saving ? 'Saving…' : <><Check size={12} /> Mark complete</>}
           </button>
@@ -431,7 +431,7 @@ function SanskaraCard({
       className="rounded-2xl overflow-hidden relative"
       style={{
         background: done ? 'rgba(80,200,100,0.06)' : 'var(--surface-raised)',
-        border: `1px solid ${done ? 'rgba(80,200,100,0.2)' : 'rgba(200,146,74,0.10)'}`,
+        border: `1px solid ${done ? 'rgba(80,200,100,0.2)' : 'rgba(197, 160, 89,0.10)'}`,
         opacity: locked ? 0.7 : 1,
       }}
     >
@@ -439,10 +439,10 @@ function SanskaraCard({
       {locked && (
         <div
           className="absolute top-3 right-3 flex items-center gap-1 rounded-full px-2 py-0.5 z-10"
-          style={{ background: 'rgba(200,146,74,0.12)', border: '1px solid rgba(200,146,74,0.2)' }}
+          style={{ background: 'rgba(197, 160, 89,0.12)', border: '1px solid rgba(197, 160, 89,0.2)' }}
         >
-          <Lock size={8} style={{ color: 'rgba(200,146,74,0.6)' }} />
-          <span className="text-[9px] font-semibold" style={{ color: 'rgba(200,146,74,0.6)' }}>Pro</span>
+          <Lock size={8} style={{ color: 'rgba(197, 160, 89,0.6)' }} />
+          <span className="text-[9px] font-semibold" style={{ color: 'rgba(197, 160, 89,0.6)' }}>Pro</span>
         </div>
       )}
 
@@ -453,7 +453,7 @@ function SanskaraCard({
           if (locked) {
             toast('🔒 Upgrade to Shoonaya Pro to track all 16 Sanskaras', {
               duration: 3000,
-              style: { background: '#1c1208', color: '#f5dfa0', border: '1px solid rgba(200,146,74,0.3)' },
+              style: { background: '#1c1208', color: '#f5dfa0', border: '1px solid rgba(197, 160, 89,0.3)' },
             });
             return;
           }
@@ -464,9 +464,9 @@ function SanskaraCard({
         <div
           className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold mt-0.5"
           style={{
-            background: done ? 'rgba(80,200,100,0.18)' : 'rgba(200,146,74,0.1)',
-            border: `1.5px solid ${done ? 'rgba(80,200,100,0.4)' : 'rgba(200,146,74,0.2)'}`,
-            color: done ? '#60c060' : 'rgba(200,146,74,0.7)',
+            background: done ? 'rgba(80,200,100,0.18)' : 'rgba(197, 160, 89,0.1)',
+            border: `1.5px solid ${done ? 'rgba(80,200,100,0.4)' : 'rgba(197, 160, 89,0.2)'}`,
+            color: done ? '#60c060' : 'rgba(197, 160, 89,0.7)',
           }}
         >
           {done ? <Check size={16} strokeWidth={2.5} /> : s.number}
@@ -526,7 +526,7 @@ function SanskaraCard({
                     <p className="text-xs mt-0.5" style={{ color: 'rgba(245,220,150,0.65)' }}>{s.deity}</p>
                   </div>
                 </div>
-                <div className="rounded-xl px-3 py-2.5" style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.12)' }}>
+                <div className="rounded-xl px-3 py-2.5" style={{ background: 'rgba(197, 160, 89,0.06)', border: '1px solid rgba(197, 160, 89,0.12)' }}>
                   <p className="text-[10px] text-amber-200/50 uppercase tracking-wider flex items-center gap-1">
                     <Info size={10} /> Significance
                   </p>
@@ -548,7 +548,7 @@ function SanskaraCard({
                 <button
                   onClick={() => setMarking(true)}
                   className="flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-semibold transition"
-                  style={{ background: 'rgba(200,146,74,0.1)', border: '1px solid rgba(200,146,74,0.22)', color: '#d4a030' }}
+                  style={{ background: 'rgba(197, 160, 89,0.1)', border: '1px solid rgba(197, 160, 89,0.22)', color: '#d4a030' }}
                 >
                   <Check size={13} /> Mark as completed
                 </button>
@@ -609,8 +609,8 @@ function MemberSelector({
               onClick={() => onChange(o.id)}
               className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs transition"
               style={{
-                background: active ? 'rgba(200,146,74,0.15)' : 'var(--card-bg)',
-                border: `1px solid ${active ? 'rgba(200,146,74,0.4)' : 'rgba(255,255,255,0.08)'}`,
+                background: active ? 'rgba(197, 160, 89,0.15)' : 'var(--card-bg)',
+                border: `1px solid ${active ? 'rgba(197, 160, 89,0.4)' : 'rgba(255,255,255,0.08)'}`,
                 color: active ? 'rgba(245,220,150,0.9)' : 'rgba(245,210,130,0.5)',
               }}
             >
@@ -676,7 +676,7 @@ function ProNudgeCard() {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       className="rounded-2xl p-4"
-      style={{ background: 'linear-gradient(135deg, rgba(212,120,20,0.12), rgba(200,146,74,0.08))', border: '1px solid rgba(200,146,74,0.22)' }}
+      style={{ background: 'linear-gradient(135deg, rgba(212,120,20,0.12), rgba(197, 160, 89,0.08))', border: '1px solid rgba(197, 160, 89,0.22)' }}
     >
       <div className="flex items-center gap-3">
         <Sparkles size={18} style={{ color: '#d4a030' }} className="flex-shrink-0" />
@@ -686,7 +686,7 @@ function ProNudgeCard() {
             Garbhadhana is free. Upgrade to Shoonaya Pro to track the complete lifecycle — for you and your family.
           </p>
         </div>
-        <ChevronRight size={14} style={{ color: 'rgba(200,146,74,0.5)' }} className="flex-shrink-0" />
+        <ChevronRight size={14} style={{ color: 'rgba(197, 160, 89,0.5)' }} className="flex-shrink-0" />
       </div>
     </motion.div>
   );
@@ -704,7 +704,7 @@ function AiNudgeCard({
 }) {
   const urgencyStyle = {
     now:   { bg: 'rgba(212,80,60,0.12)',  border: 'rgba(212,80,60,0.25)',  text: '#e0604a', dot: '#e05040' },
-    soon:  { bg: 'rgba(200,146,74,0.1)',  border: 'rgba(200,146,74,0.25)', text: '#d4a030', dot: '#d4a030' },
+    soon:  { bg: 'rgba(197, 160, 89,0.1)',  border: 'rgba(197, 160, 89,0.25)', text: '#d4a030', dot: '#d4a030' },
     later: { bg: 'rgba(80,180,255,0.08)', border: 'rgba(80,180,255,0.2)',  text: '#60b0e0', dot: '#60b0e0' },
   }[urgency];
 
@@ -872,7 +872,7 @@ export default function SanskaraClient({
         className="rounded-[1.8rem] px-5 py-5"
         style={{
           background: 'var(--surface-raised)',
-          border: '1px solid rgba(200,146,74,0.15)',
+          border: '1px solid rgba(197, 160, 89,0.15)',
         }}
       >
         <div className="flex items-center gap-4">
@@ -881,11 +881,11 @@ export default function SanskaraClient({
             aria-label="Go back"
             className="w-9 h-9 rounded-full flex items-center justify-center transition-all flex-shrink-0"
             style={{
-              background: 'rgba(200,146,74,0.10)',
-              border: '1px solid rgba(200,146,74,0.20)',
+              background: 'rgba(197, 160, 89,0.10)',
+              border: '1px solid rgba(197, 160, 89,0.20)',
             }}
           >
-            <ChevronLeft size={18} style={{ color: 'rgba(200,146,74,0.80)' }} />
+            <ChevronLeft size={18} style={{ color: 'rgba(197, 160, 89,0.80)' }} />
           </button>
           <CircularProgress
             pct={pct}
@@ -917,7 +917,7 @@ export default function SanskaraClient({
       {familyMembers.length > 0 && (
         <div
           className="rounded-2xl px-4 py-3"
-          style={{ background: 'var(--surface-raised)', border: '1px solid rgba(200,146,74,0.10)' }}
+          style={{ background: 'var(--surface-raised)', border: '1px solid rgba(197, 160, 89,0.10)' }}
         >
           <MemberSelector
             familyMembers={familyMembers}

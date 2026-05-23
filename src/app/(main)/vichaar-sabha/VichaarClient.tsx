@@ -335,7 +335,7 @@ export default function VichaarClient({
         <button
           onClick={() => setShowCompose(true)}
           className="w-full flex items-center gap-3 rounded-2xl border border-dashed px-4 py-3 text-sm text-[color:var(--brand-muted)] transition hover:bg-black/5 dark:hover:bg-white/[0.04]"
-          style={{ borderColor: 'rgba(200,146,74,0.30)' }}
+          style={{ borderColor: 'rgba(197, 160, 89,0.30)' }}
         >
           <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
             style={{ background: 'var(--brand-primary-soft)' }}>
@@ -415,7 +415,7 @@ export default function VichaarClient({
           className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition ${
             activeTab === 'all'
               ? 'text-[#7B1A1A] border'
-              : 'border border-white/10 text-[color:var(--brand-muted)] hover:border-[rgba(200,146,74,0.25)] hover:text-[color:var(--brand-ink)]'
+              : 'border border-white/10 text-[color:var(--brand-muted)] hover:border-[rgba(197, 160, 89,0.25)] hover:text-[color:var(--brand-ink)]'
           }`}
           style={activeTab === 'all'
             ? { background: 'var(--brand-primary-soft)', borderColor: 'rgba(123, 26, 26, 0.16)' }
@@ -430,7 +430,7 @@ export default function VichaarClient({
             className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition ${
               activeTab === cat.value
                 ? 'text-[#7B1A1A] border'
-                : 'border border-white/10 text-[color:var(--brand-muted)] hover:border-[rgba(200,146,74,0.25)] hover:text-[color:var(--brand-ink)]'
+                : 'border border-white/10 text-[color:var(--brand-muted)] hover:border-[rgba(197, 160, 89,0.25)] hover:text-[color:var(--brand-ink)]'
             }`}
             style={activeTab === cat.value
               ? { background: 'var(--brand-primary-soft)', borderColor: 'rgba(123, 26, 26, 0.16)' }
@@ -525,8 +525,8 @@ function SearchAndFilters({
                     ? 'bg-amber-600 text-white'
                     : 'bg-[#7B1A1A] text-white'
                   : isQuality
-                    ? 'bg-[rgba(200,146,74,0.08)] text-[color:var(--brand-primary)] border border-[rgba(200,146,74,0.2)] hover:border-[rgba(200,146,74,0.35)]'
-                    : 'border border-white/10 text-[color:var(--brand-muted)] hover:border-[rgba(200,146,74,0.25)] hover:text-[color:var(--brand-ink)]'
+                    ? 'bg-[rgba(197, 160, 89,0.08)] text-[color:var(--brand-primary)] border border-[rgba(197, 160, 89,0.2)] hover:border-[rgba(197, 160, 89,0.35)]'
+                    : 'border border-white/10 text-[color:var(--brand-muted)] hover:border-[rgba(197, 160, 89,0.25)] hover:text-[color:var(--brand-ink)]'
               }`}
             >
               {filter.label}
@@ -606,7 +606,7 @@ function ComposeThreadModal({
                 <h2 className="font-display font-semibold text-lg text-[color:var(--text-cream)]">Start a Thread</h2>
                 <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">Ask clearly, add context, and help the right people find your question.</p>
               </div>
-              <button onClick={onClose} className="p-2 text-[color:var(--text-dim)] hover:text-[color:var(--text-muted-warm)] rounded-full hover:bg-[rgba(200,146,74,0.08)] transition">
+              <button onClick={onClose} className="p-2 text-[color:var(--text-dim)] hover:text-[color:var(--text-muted-warm)] rounded-full hover:bg-[rgba(197, 160, 89,0.08)] transition">
                 <X size={18} />
               </button>
             </div>
@@ -630,7 +630,7 @@ function ComposeThreadModal({
                       className={`text-left px-3 py-3 rounded-xl border text-xs transition ${
                         form.category === cat.value
                           ? 'text-[#7B1A1A] font-medium'
-                          : 'border-[rgba(200,146,74,0.2)] text-[color:var(--brand-muted)] hover:border-[rgba(123,26,26,0.18)]'
+                          : 'border-[rgba(197, 160, 89,0.2)] text-[color:var(--brand-muted)] hover:border-[rgba(123,26,26,0.18)]'
                       }`}
                       style={form.category === cat.value
                         ? { borderColor: 'rgba(123, 26, 26, 0.2)', background: 'var(--brand-primary-soft)' }
@@ -702,10 +702,10 @@ function ComposeThreadModal({
               </div>
             </div>
 
-            <div className="sticky bottom-0 px-5 py-4 border-t flex flex-col-reverse gap-3 sm:flex-row" style={{ background: 'var(--surface-raised)', borderColor: 'rgba(200,146,74,0.12)' }}>
+            <div className="sticky bottom-0 px-5 py-4 border-t flex flex-col-reverse gap-3 sm:flex-row" style={{ background: 'var(--surface-raised)', borderColor: 'rgba(197, 160, 89,0.12)' }}>
               <button
                 onClick={onClose}
-                className="flex-1 py-3 border border-[rgba(200,146,74,0.2)] text-[color:var(--brand-muted)] rounded-xl text-sm hover:border-[rgba(200,146,74,0.35)] transition"
+                className="flex-1 py-3 border border-[rgba(197, 160, 89,0.2)] text-[color:var(--brand-muted)] rounded-xl text-sm hover:border-[rgba(197, 160, 89,0.35)] transition"
               >
                 Cancel
               </button>
@@ -749,7 +749,7 @@ function ThreadCard({
 
   return (
     <Link href={`/vichaar-sabha/${thread.id}`}>
-      <div className="rounded-2xl border p-4 space-y-3 card-hover cursor-pointer motion-lift surface-soft-card" style={{ borderColor: 'rgba(200, 146, 74, 0.12)' }}>
+      <div className="rounded-2xl border p-4 space-y-3 card-hover cursor-pointer motion-lift surface-soft-card" style={{ borderColor: 'rgba(197, 160, 89, 0.12)' }}>
         {/* Category + answered badge */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap">

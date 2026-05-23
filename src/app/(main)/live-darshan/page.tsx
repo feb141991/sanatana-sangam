@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation';
 import LiveDarshanClient from './LiveDarshanClient';
 import { LIVE_STREAMS } from '@/lib/live-streams';
 
-export const dynamic = 'force-dynamic';
 
 export default async function LiveDarshanPage() {
   const supabase = await createServerSupabaseClient();

@@ -328,7 +328,7 @@ export default function VratClient({
           {/* Copy Button */}
           <button 
             onClick={handleCopy}
-            className="w-9 h-9 rounded-full flex items-center justify-center transition"
+            className="w-11 h-11 rounded-full flex items-center justify-center transition"
             style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
             title="Copy Vrat Details"
           >
@@ -338,10 +338,10 @@ export default function VratClient({
           {/* Share Button */}
           <button 
             onClick={handleShare}
-            className="w-9 h-9 rounded-full flex items-center justify-center transition"
+            className="w-11 h-11 rounded-full flex items-center justify-center transition"
             style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
             title="Share Vrat"
-          >
+           aria-label="Share">
             <Share2 size={16} />
           </button>
         </div>
@@ -356,8 +356,8 @@ export default function VratClient({
             animate={{ scale: 1, opacity: 1 }}
             className="w-24 h-24 mx-auto rounded-3xl flex items-center justify-center text-5xl shadow-2xl"
             style={{ 
-              background: `linear-gradient(135deg, rgba(200,146,74,0.2), rgba(200,146,74,0.05))`,
-              border: `1px solid rgba(200,146,74,0.4)`
+              background: `linear-gradient(135deg, rgba(197, 160, 89,0.2), rgba(197, 160, 89,0.05))`,
+              border: `1px solid rgba(197, 160, 89,0.4)`
             }}
           >
             {vrat.emoji}
@@ -389,7 +389,7 @@ export default function VratClient({
           </div>
 
           {/* Practice */}
-          <div className="rounded-[2rem] p-6 space-y-4" style={{ backgroundColor: 'rgba(200,146,74,0.05)', border: '1px solid rgba(200,146,74,0.1)' }}>
+          <div className="rounded-[2rem] p-6 space-y-4" style={{ backgroundColor: 'rgba(197, 160, 89,0.05)', border: '1px solid rgba(197, 160, 89,0.1)' }}>
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--brand-primary-strong)]">
               <Flame size={14} /> {translateFn(effectiveLang, 'howToObserve')}
             </div>
@@ -411,8 +411,8 @@ export default function VratClient({
                   onClick={speakMantra}
                   className="flex items-center gap-1.5 px-3 py-1 rounded-full border transition active:scale-95 font-semibold tracking-wider text-[9px]"
                   style={{
-                    backgroundColor: speaking ? 'rgba(200,146,74,0.15)' : 'transparent',
-                    borderColor: 'rgba(200,146,74,0.3)',
+                    backgroundColor: speaking ? 'rgba(197, 160, 89,0.15)' : 'transparent',
+                    borderColor: 'rgba(197, 160, 89,0.3)',
                     color: activeTheme.text,
                   }}
                 >

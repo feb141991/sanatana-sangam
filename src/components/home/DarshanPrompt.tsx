@@ -57,8 +57,8 @@ export default function DarshanPrompt({ darshan, isVisible, onOpen, onDismiss }:
               {/* Action */}
               <button
                 onClick={onOpen}
-                className="w-10 h-10 rounded-full bg-[#2A1B0A] text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
-              >
+                className="w-11 h-11 rounded-full bg-[#2A1B0A] text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+               aria-label="Next">
                 <ChevronRight size={20} />
               </button>
 

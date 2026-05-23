@@ -3,7 +3,6 @@ import { getKathaById } from '@/lib/katha-library';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import KathaReaderClient from './KathaReaderClient';
 
-export const dynamic = 'force-dynamic';
 
 interface Props {
   params: Promise<{ id: string }>;

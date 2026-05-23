@@ -102,7 +102,7 @@ export default function DailyMoodCard({ onSelectMood, userName, backendState }: 
         className="relative w-full max-w-sm p-6 rounded-3xl border overflow-hidden shadow-2xl"
         style={{
           background: 'var(--card-bg)',
-          borderColor: 'var(--card-border, rgba(200, 146, 74, 0.22))',
+          borderColor: 'var(--card-border, rgba(197, 160, 89, 0.22))',
         }}
       >
       <div className="flex items-start justify-between mb-4">
@@ -116,8 +116,8 @@ export default function DailyMoodCard({ onSelectMood, userName, backendState }: 
         </div>
         <button
           onClick={handleDismiss}
-          className="w-8 h-8 rounded-full flex items-center justify-center motion-press flex-shrink-0"
-          style={{ background: 'rgba(200, 146, 74, 0.10)' }}
+          className="w-11 h-11 rounded-full flex items-center justify-center motion-press flex-shrink-0"
+          style={{ background: 'rgba(197, 160, 89, 0.10)' }}
         >
           <X size={16} style={{ color: 'var(--text-muted-warm)' }} />
         </button>

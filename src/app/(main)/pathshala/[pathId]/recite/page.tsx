@@ -4,7 +4,6 @@ import { getTraditionMeta } from '@/lib/tradition-config';
 import { resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
 import ReciteClient from './ReciteClient';
 
-export const dynamic = 'force-dynamic';
 
 export default async function RecitePage({
   params,

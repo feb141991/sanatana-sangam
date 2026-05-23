@@ -76,7 +76,7 @@ function DayOfWeekChart({ data, isDark, amber }: {
             animate={{ height: `${(val / max) * 64}px` }}
             transition={{ duration: 0.5, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
           />
-          <span className="text-[10px] font-semibold" style={{ color: isDark ? 'rgba(200,146,74,0.55)' : 'rgba(100,65,25,0.55)' }}>
+          <span className="text-[10px] font-semibold" style={{ color: isDark ? 'rgba(197, 160, 89,0.55)' : 'rgba(100,65,25,0.55)' }}>
             {DAY_LABELS[i]}
           </span>
         </div>
@@ -94,7 +94,7 @@ function StatCard({ label, value, isDark, amber, sub }: {
       className="rounded-2xl p-4 border"
       style={{
         background: isDark ? 'var(--card-bg)' : 'rgba(255,255,255,0.90)',
-        borderColor: isDark ? 'rgba(200,146,74,0.12)' : 'rgba(0,0,0,0.07)',
+        borderColor: isDark ? 'rgba(197, 160, 89,0.12)' : 'rgba(0,0,0,0.07)',
         boxShadow: isDark ? 'none' : '0 1px 8px rgba(0,0,0,0.06)',
       }}
     >
@@ -198,11 +198,11 @@ function CalendarMonthView({ sessions, isDark, amber, text, sub, borderCol, surf
       <div className="rounded-2xl p-5 border" style={{ background: surface, borderColor: borderCol, boxShadow: isDark ? 'none' : '0 2px 12px rgba(0,0,0,0.06)' }}>
         {/* Month nav */}
         <div className="flex items-center justify-between mb-4">
-          <button onClick={prevMonth} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
+          <button onClick={prevMonth} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }} aria-label="Go back">
             <ChevronLeft size={16} style={{ color: amber }} />
           </button>
           <p className="text-[13px] font-semibold" style={{ color: text, fontFamily: 'var(--font-serif)' }}>{monthLabel}</p>
-          <button onClick={nextMonth} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
+          <button onClick={nextMonth} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }} aria-label="Next">
             <ChevronRight size={16} style={{ color: amber }} />
           </button>
         </div>
@@ -232,7 +232,7 @@ function CalendarMonthView({ sessions, isDark, amber, text, sub, borderCol, surf
                   background: isSelected
                     ? amber
                     : hasSession
-                      ? isDark ? 'rgba(200,146,74,0.35)' : 'rgba(200,146,74,0.22)'
+                      ? isDark ? 'rgba(197, 160, 89,0.35)' : 'rgba(197, 160, 89,0.22)'
                       : 'transparent',
                   color: isSelected
                     ? '#fff'
@@ -256,7 +256,7 @@ function CalendarMonthView({ sessions, isDark, amber, text, sub, borderCol, surf
               initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
               className="mt-4 rounded-xl p-3"
-              style={{ background: isDark ? 'rgba(200,146,74,0.10)' : 'rgba(200,146,74,0.08)' }}
+              style={{ background: isDark ? 'rgba(197, 160, 89,0.10)' : 'rgba(197, 160, 89,0.08)' }}
             >
               <p className="text-[11px] font-semibold mb-2" style={{ color: amber }}>
                 {new Date(selected + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
@@ -302,9 +302,9 @@ export default function InsightsClient({ sessions }: Props) {
   const bg    = isDark ? '#06060A' : '#F5F0E8';
   const surface = isDark ? 'rgba(14,12,8,0.94)' : 'rgba(255,255,255,0.92)';
   const text  = isDark ? 'rgba(245,225,185,0.97)' : '#1A1208';
-  const sub   = isDark ? 'rgba(200,146,74,0.58)' : 'rgba(80,50,15,0.60)';
-  const amber = isDark ? '#C8924A' : '#7A4A1E';
-  const borderCol = isDark ? 'rgba(200,146,74,0.12)' : 'rgba(0,0,0,0.07)';
+  const sub   = isDark ? 'rgba(197, 160, 89,0.58)' : 'rgba(80,50,15,0.60)';
+  const amber = isDark ? '#C5A059' : '#7A4A1E';
+  const borderCol = isDark ? 'rgba(197, 160, 89,0.12)' : 'rgba(0,0,0,0.07)';
 
   // Filter sessions by date range
   const days = FILTERS.find(f => f.key === filter)?.days ?? 30;
@@ -429,8 +429,8 @@ export default function InsightsClient({ sessions }: Props) {
             className="w-9 h-9 rounded-full flex items-center justify-center transition-all"
             style={{
               background: showCalendar
-                ? (isDark ? 'rgba(200,146,74,0.22)' : 'rgba(122,74,30,0.14)')
-                : (isDark ? 'rgba(200,146,74,0.10)' : 'rgba(122,74,30,0.08)'),
+                ? (isDark ? 'rgba(197, 160, 89,0.22)' : 'rgba(122,74,30,0.14)')
+                : (isDark ? 'rgba(197, 160, 89,0.10)' : 'rgba(122,74,30,0.08)'),
               border: showCalendar ? `1.5px solid ${amber}` : 'none',
             }}
             aria-label="Toggle calendar view"
@@ -452,7 +452,7 @@ export default function InsightsClient({ sessions }: Props) {
                 className="flex-1 py-2 rounded-xl text-[12px] font-semibold transition-all"
                 style={{
                   background: filter === f.key
-                    ? (isDark ? 'rgba(200,146,74,0.18)' : 'rgba(255,255,255,0.95)')
+                    ? (isDark ? 'rgba(197, 160, 89,0.18)' : 'rgba(255,255,255,0.95)')
                     : 'transparent',
                   color: filter === f.key ? amber : sub,
                   boxShadow: filter === f.key
@@ -502,7 +502,7 @@ export default function InsightsClient({ sessions }: Props) {
             <button
               onClick={() => router.push('/bhakti/mala')}
               className="mt-2 px-6 py-3 rounded-2xl font-semibold text-sm"
-              style={{ background: isDark ? 'rgba(200,146,74,0.14)' : 'rgba(122,74,30,0.10)', color: amber, border: `1px solid ${amber}30` }}
+              style={{ background: isDark ? 'rgba(197, 160, 89,0.14)' : 'rgba(122,74,30,0.10)', color: amber, border: `1px solid ${amber}30` }}
             >
               Begin Practice
             </button>
@@ -563,13 +563,13 @@ export default function InsightsClient({ sessions }: Props) {
                   <div className="h-2 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}>
                     <motion.div
                       className="h-full rounded-full"
-                      style={{ background: `linear-gradient(90deg, rgba(200,146,74,0.6), rgba(212,100,20,0.90))` }}
+                      style={{ background: `linear-gradient(90deg, rgba(197, 160, 89,0.6), rgba(212,100,20,0.90))` }}
                       initial={{ width: 0 }}
                       animate={{ width: `${consistency}%` }}
                       transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
                     />
                   </div>
-                  <p className="text-[10px] mt-1.5" style={{ color: isDark ? 'rgba(200,146,74,0.45)' : 'rgba(100,65,25,0.50)' }}>
+                  <p className="text-[10px] mt-1.5" style={{ color: isDark ? 'rgba(197, 160, 89,0.45)' : 'rgba(100,65,25,0.50)' }}>
                     {days > 0
                       ? `Practiced on ${Math.round((consistency / 100) * days)} of ${days} days`
                       : 'Select a time range'}
@@ -715,7 +715,7 @@ export default function InsightsClient({ sessions }: Props) {
                       </div>
 
                       {/* Divider */}
-                      <div className="w-px h-9 flex-shrink-0" style={{ background: isDark ? 'rgba(200,146,74,0.15)' : 'rgba(0,0,0,0.08)' }} />
+                      <div className="w-px h-9 flex-shrink-0" style={{ background: isDark ? 'rgba(197, 160, 89,0.15)' : 'rgba(0,0,0,0.08)' }} />
 
                       {/* Stats */}
                       <div className="flex-1">

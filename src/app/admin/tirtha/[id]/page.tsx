@@ -65,7 +65,7 @@ export default function ChapterManagement({ params }: { params: Promise<{ id: st
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] pb-24 font-outfit">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-[rgba(200,146,74,0.15)] px-6 py-4">
+      <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-[rgba(197, 160, 89,0.15)] px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/admin/tirtha" className="p-2 rounded-xl hover:bg-black/5 text-[var(--brand-muted)] transition-all">
@@ -152,13 +152,13 @@ export default function ChapterManagement({ params }: { params: Promise<{ id: st
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <button className="p-2 rounded-xl hover:bg-black/10 text-[var(--brand-muted)] opacity-0 group-hover:opacity-100 transition-all">
+                      <button className="p-2 rounded-xl hover:bg-black/10 text-[var(--brand-muted)] opacity-0 group-hover:opacity-100 transition-all" aria-label="Action">
                         <Mail size={16} />
                       </button>
-                      <button className="p-2 rounded-xl hover:bg-black/10 text-[var(--brand-muted)] opacity-0 group-hover:opacity-100 transition-all">
+                      <button className="p-2 rounded-xl hover:bg-black/10 text-[var(--brand-muted)] opacity-0 group-hover:opacity-100 transition-all" aria-label="Action">
                         <Shield size={16} />
                       </button>
-                      <button className="p-2 rounded-xl hover:bg-rose-500/10 text-rose-500 opacity-0 group-hover:opacity-100 transition-all">
+                      <button className="p-2 rounded-xl hover:bg-rose-500/10 text-rose-500 opacity-0 group-hover:opacity-100 transition-all" aria-label="Delete">
                         <Trash2 size={16} />
                       </button>
                     </div>

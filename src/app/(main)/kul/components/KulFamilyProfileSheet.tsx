@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { X } from 'lucide-react';
 import { MemberRow } from '../types';
 
@@ -33,8 +34,7 @@ export function KulFamilyProfileSheet({
           <div className="flex items-center gap-4 min-w-0">
              <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-slate-100 to-slate-200 border border-white/20 shadow-inner flex items-center justify-center">
                 {profile?.avatar_url ? (
-                   // eslint-disable-next-line @next/next/no-img-element
-                   <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+                   <Image width={120} height={120} src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
                 ) : (
                    <span className="text-xl font-bold text-slate-400">{(profile?.full_name || profile?.username || '?')[0].toUpperCase()}</span>
                 )}
@@ -50,7 +50,7 @@ export function KulFamilyProfileSheet({
           <button
             type="button"
             onClick={onClose}
-            className="w-10 h-10 rounded-full glass-panel border border-white/10 flex items-center justify-center theme-muted hover:theme-ink transition-colors"
+            className="w-11 h-11 rounded-full glass-panel border border-white/10 flex items-center justify-center theme-muted hover:theme-ink transition-colors"
           >
             <X size={18} />
           </button>

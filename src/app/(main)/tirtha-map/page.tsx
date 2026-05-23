@@ -48,7 +48,7 @@ const TirthaMapComponent = nextDynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-full w-full items-center justify-center rounded-[1.5rem] border border-[rgba(200,146,74,0.18)] bg-[var(--surface-raised)]">
+      <div className="flex h-full w-full items-center justify-center rounded-[1.5rem] border border-[rgba(197, 160, 89,0.18)] bg-[var(--surface-raised)]">
         <Compass size={28} className="animate-pulse text-[color:var(--brand-primary)]" />
       </div>
     ),
@@ -102,7 +102,6 @@ function safeErrorMessage(error: unknown) {
   return 'Something went wrong.';
 }
 
-export const dynamic = 'force-dynamic';
 
 export default function TirthaMapPage() {
   const router = useRouter();
@@ -356,7 +355,7 @@ export default function TirthaMapPage() {
   return (
     <div className="relative -mx-3 min-h-screen overflow-hidden bg-[var(--divine-bg)] px-3 pb-32 pt-2 sm:-mx-4 sm:px-4">
       <div className="pointer-events-none absolute inset-0 opacity-70">
-        <div className="absolute -top-20 right-[-5rem] h-72 w-72 rounded-full bg-[rgba(200,146,74,0.10)] blur-3xl" />
+        <div className="absolute -top-20 right-[-5rem] h-72 w-72 rounded-full bg-[rgba(197, 160, 89,0.10)] blur-3xl" />
         <div className="absolute left-[-7rem] top-72 h-80 w-80 rounded-full bg-[rgba(133,79,11,0.08)] blur-3xl" />
       </div>
 
@@ -365,16 +364,16 @@ export default function TirthaMapPage() {
           <button
             onClick={() => router.back()}
             aria-label="Go back"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(200,146,74,0.18)] bg-[var(--surface-raised)]"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(197, 160, 89,0.18)] bg-[var(--surface-raised)]"
           >
             <ChevronLeft size={18} className="text-[color:var(--brand-primary)]" />
           </button>
-          <span className="rounded-full border border-[rgba(200,146,74,0.16)] bg-[var(--surface-raised)] px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">
+          <span className="rounded-full border border-[rgba(197, 160, 89,0.16)] bg-[var(--surface-raised)] px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">
             Tirtha companion
           </span>
         </div>
 
-        <section className="relative overflow-hidden rounded-[2.2rem] border border-[rgba(200,146,74,0.16)] bg-[var(--surface-raised)] px-5 py-6 shadow-card">
+        <section className="relative overflow-hidden rounded-[2.2rem] border border-[rgba(197, 160, 89,0.16)] bg-[var(--surface-raised)] px-5 py-6 shadow-card">
           <div className="absolute right-4 top-4 opacity-10">
             <Compass size={92} />
           </div>
@@ -400,7 +399,7 @@ export default function TirthaMapPage() {
                 { label: 'Visited', value: passport.visited },
                 { label: 'Nearby', value: filtered.length },
               ].map((item) => (
-                <div key={item.label} className="rounded-[1.25rem] border border-[rgba(200,146,74,0.14)] bg-white/[0.04] px-3 py-3 text-center">
+                <div key={item.label} className="rounded-[1.25rem] border border-[rgba(197, 160, 89,0.14)] bg-white/[0.04] px-3 py-3 text-center">
                   <p className="type-metric">{item.value}</p>
                   <p className="type-card-label mt-1">{item.label}</p>
                 </div>
@@ -417,7 +416,7 @@ export default function TirthaMapPage() {
               </button>
               <button
                 onClick={() => setSmartFilter('saved')}
-                className="flex items-center justify-center rounded-full border border-[rgba(200,146,74,0.18)] bg-[var(--surface-base)] px-4 py-3 text-sm text-[color:var(--text-muted)]"
+                className="flex items-center justify-center rounded-full border border-[rgba(197, 160, 89,0.18)] bg-[var(--surface-base)] px-4 py-3 text-sm text-[color:var(--text-muted)]"
               >
                 Passport
               </button>
@@ -425,9 +424,9 @@ export default function TirthaMapPage() {
           </div>
         </section>
 
-        <section className="rounded-[1.7rem] border border-[rgba(200,146,74,0.16)] bg-[var(--surface-raised)] p-4">
+        <section className="rounded-[1.7rem] border border-[rgba(197, 160, 89,0.16)] bg-[var(--surface-raised)] p-4">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(200,146,74,0.12)] text-[color:var(--brand-primary)]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(197, 160, 89,0.12)] text-[color:var(--brand-primary)]">
               <CalendarDays size={18} />
             </div>
             <div className="min-w-0 flex-1">
@@ -435,7 +434,7 @@ export default function TirthaMapPage() {
               <p className="mt-1 text-xs leading-relaxed text-[color:var(--text-muted)]">{seasonalCue.description}</p>
               <button
                 onClick={() => setSmartFilter(seasonalCue.filterHint)}
-                className="mt-3 rounded-full border border-[rgba(200,146,74,0.18)] px-3 py-1.5 text-[11px] font-medium text-[color:var(--brand-primary)]"
+                className="mt-3 rounded-full border border-[rgba(197, 160, 89,0.18)] px-3 py-1.5 text-[11px] font-medium text-[color:var(--brand-primary)]"
               >
                 Show relevant places
               </button>
@@ -475,7 +474,7 @@ export default function TirthaMapPage() {
                 }`}
                 style={{
                   background: smartFilter === filter.id ? 'var(--brand-primary)' : 'var(--surface-raised)',
-                  borderColor: 'rgba(200,146,74,0.16)',
+                  borderColor: 'rgba(197, 160, 89,0.16)',
                 }}
               >
                 {filter.label}
@@ -494,7 +493,7 @@ export default function TirthaMapPage() {
                 }`}
                 style={{
                   background: radius === option.value ? 'var(--brand-primary)' : 'var(--surface-raised)',
-                  borderColor: 'rgba(200,146,74,0.16)',
+                  borderColor: 'rgba(197, 160, 89,0.16)',
                 }}
               >
                 {option.label}
@@ -504,7 +503,7 @@ export default function TirthaMapPage() {
         </section>
 
         {notice && (
-          <div className="rounded-[1.1rem] border border-[rgba(200,146,74,0.16)] bg-[var(--surface-raised)] px-4 py-3 text-sm text-[color:var(--text-muted)]">
+          <div className="rounded-[1.1rem] border border-[rgba(197, 160, 89,0.16)] bg-[var(--surface-raised)] px-4 py-3 text-sm text-[color:var(--text-muted)]">
             {notice}
           </div>
         )}
@@ -515,11 +514,11 @@ export default function TirthaMapPage() {
           </div>
         )}
 
-        <div className="h-[285px] overflow-hidden rounded-[1.75rem] border border-[rgba(200,146,74,0.16)] shadow-card">
+        <div className="h-[285px] overflow-hidden rounded-[1.75rem] border border-[rgba(197, 160, 89,0.16)] shadow-card">
           <TirthaMapComponent temples={filtered} center={center} loading={loading} />
         </div>
 
-        <section className="rounded-[1.7rem] border border-[rgba(200,146,74,0.16)] bg-[var(--surface-raised)] p-4">
+        <section className="rounded-[1.7rem] border border-[rgba(197, 160, 89,0.16)] bg-[var(--surface-raised)] p-4">
           <div className="mb-3 flex items-center justify-between">
             <div>
               <p className="type-card-label">Tirtha Passport</p>
@@ -553,7 +552,7 @@ export default function TirthaMapPage() {
           </div>
 
           {searched && filtered.length === 0 && (
-            <div className="rounded-[1.6rem] border border-[rgba(200,146,74,0.16)] bg-[var(--surface-raised)] p-5 text-sm text-[color:var(--text-muted)]">
+            <div className="rounded-[1.6rem] border border-[rgba(197, 160, 89,0.16)] bg-[var(--surface-raised)] p-5 text-sm text-[color:var(--text-muted)]">
               No places found for this filter. Try a larger radius or clear the smart chip.
             </div>
           )}
@@ -573,19 +572,19 @@ export default function TirthaMapPage() {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.36, delay: Math.min(index * 0.035, 0.18), ease: [0.22, 1, 0.36, 1] }}
-                className="overflow-hidden rounded-[1.75rem] border border-[rgba(200,146,74,0.16)] bg-[var(--surface-raised)] shadow-card"
+                className="overflow-hidden rounded-[1.75rem] border border-[rgba(197, 160, 89,0.16)] bg-[var(--surface-raised)] shadow-card"
               >
                 <button
                   onClick={() => setSelected(temple)}
                   className="w-full p-4 text-left"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.1rem] bg-[rgba(200,146,74,0.12)] text-xl">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.1rem] bg-[rgba(197, 160, 89,0.12)] text-xl">
                       {meta.mapPinEmoji}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="mb-1 flex flex-wrap items-center gap-1.5">
-                        <span className="rounded-full border border-[rgba(200,146,74,0.16)] bg-[var(--chip-fill)] px-2 py-0.5 text-[10px] font-medium text-[color:var(--brand-primary)]">
+                        <span className="rounded-full border border-[rgba(197, 160, 89,0.16)] bg-[var(--chip-fill)] px-2 py-0.5 text-[10px] font-medium text-[color:var(--brand-primary)]">
                           {meta.badgeLabel}
                         </span>
                         {open !== null && (
@@ -593,7 +592,7 @@ export default function TirthaMapPage() {
                             {open ? 'Open now' : 'May be closed'}
                           </span>
                         )}
-                        {visited && <span className="rounded-full bg-[rgba(200,146,74,0.13)] px-2 py-0.5 text-[10px] font-medium text-[color:var(--brand-primary)]">Visited</span>}
+                        {visited && <span className="rounded-full bg-[rgba(197, 160, 89,0.13)] px-2 py-0.5 text-[10px] font-medium text-[color:var(--brand-primary)]">Visited</span>}
                       </div>
                       <h3 className="type-card-heading leading-tight">{temple.name}</h3>
                       <p className="mt-1 line-clamp-1 text-xs text-[color:var(--text-muted)]">
@@ -608,7 +607,7 @@ export default function TirthaMapPage() {
                   </div>
                 </button>
 
-                <div className="grid grid-cols-4 border-t border-[rgba(200,146,74,0.10)]">
+                <div className="grid grid-cols-4 border-t border-[rgba(197, 160, 89,0.10)]">
                   <button onClick={() => toggleSave(temple)} disabled={savingPlace === placeId} className="flex flex-col items-center gap-1 px-2 py-3 text-[10px] text-[color:var(--text-muted)]">
                     <Bookmark size={15} fill={saved ? 'currentColor' : 'none'} className={saved ? 'text-[color:var(--brand-primary)]' : ''} />
                     {saved ? 'Saved' : 'Save'}
@@ -655,7 +654,7 @@ export default function TirthaMapPage() {
               animate={{ y: 0 }}
               exit={{ y: 40 }}
               transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-              className="max-h-[92dvh] w-full overflow-y-auto rounded-t-[2rem] border border-[rgba(200,146,74,0.16)] bg-[var(--surface-base)] p-5 pb-[calc(env(safe-area-inset-bottom,0px)+2rem)]"
+              className="max-h-[92dvh] w-full overflow-y-auto rounded-t-[2rem] border border-[rgba(197, 160, 89,0.16)] bg-[var(--surface-base)] p-5 pb-[calc(env(safe-area-inset-bottom,0px)+2rem)]"
             >
               <div className="mx-auto max-w-2xl space-y-5">
                 <div className="flex items-start justify-between gap-4">
@@ -664,7 +663,7 @@ export default function TirthaMapPage() {
                     <h2 className="type-card-heading mt-1">{checkInTemple.name}</h2>
                     <p className="mt-1 text-xs text-[color:var(--text-muted)]">Private by default. Share only when you choose.</p>
                   </div>
-                  <button onClick={() => setCheckInTemple(null)} className="rounded-full border border-[rgba(200,146,74,0.16)] p-2">
+                  <button onClick={() => setCheckInTemple(null)} className="rounded-full border border-[rgba(197, 160, 89,0.16)] p-2">
                     <X size={16} />
                   </button>
                 </div>
@@ -679,7 +678,7 @@ export default function TirthaMapPage() {
                         className={`rounded-[1.2rem] border px-3 py-3 text-left ${checkInMood === mood.id ? 'text-[#1c1c1a]' : 'text-[color:var(--text-muted)]'}`}
                         style={{
                           background: checkInMood === mood.id ? 'var(--brand-primary)' : 'var(--surface-raised)',
-                          borderColor: 'rgba(200,146,74,0.16)',
+                          borderColor: 'rgba(197, 160, 89,0.16)',
                         }}
                       >
                         <span className="text-sm font-medium">{mood.label}</span>
@@ -696,7 +695,7 @@ export default function TirthaMapPage() {
                       <button
                         key={option.id}
                         onClick={() => setCheckInPrivacy(option.id)}
-                        className="flex w-full items-center justify-between gap-3 rounded-[1.15rem] border border-[rgba(200,146,74,0.14)] bg-[var(--surface-raised)] px-3 py-3 text-left"
+                        className="flex w-full items-center justify-between gap-3 rounded-[1.15rem] border border-[rgba(197, 160, 89,0.14)] bg-[var(--surface-raised)] px-3 py-3 text-left"
                       >
                         <span>
                           <span className="block text-sm font-medium text-[color:var(--text-cream)]">{option.label}</span>
@@ -729,7 +728,7 @@ export default function TirthaMapPage() {
                   <textarea value={reflection} onChange={(event) => setReflection(event.target.value)} placeholder="A private note for your Tirtha Passport." className="surface-input min-h-[96px] px-3 py-3 text-sm" />
                 </label>
 
-                <div className="rounded-[1.2rem] border border-[rgba(200,146,74,0.14)] bg-[var(--surface-raised)] p-3 text-xs text-[color:var(--text-muted)]">
+                <div className="rounded-[1.2rem] border border-[rgba(197, 160, 89,0.14)] bg-[var(--surface-raised)] p-3 text-xs text-[color:var(--text-muted)]">
                   <Camera size={14} className="mb-1 text-[color:var(--brand-primary)]" />
                   Photo memories are planned for the next media-storage pass. This check-in stores the visit, mood, privacy, and journal now.
                 </div>
@@ -780,14 +779,14 @@ function PlaceDetailSheet({
         animate={{ y: 0 }}
         exit={{ y: 44 }}
         transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
-        className="max-h-[92dvh] w-full overflow-y-auto rounded-t-[2rem] border border-[rgba(200,146,74,0.18)] bg-[var(--surface-base)] pb-[calc(env(safe-area-inset-bottom,0px)+2rem)]"
+        className="max-h-[92dvh] w-full overflow-y-auto rounded-t-[2rem] border border-[rgba(197, 160, 89,0.18)] bg-[var(--surface-base)] pb-[calc(env(safe-area-inset-bottom,0px)+2rem)]"
       >
         <div className="mx-auto max-w-2xl">
           <div className="relative overflow-hidden rounded-t-[2rem] bg-[var(--surface-raised)] px-5 pb-6 pt-5">
             <div className="absolute right-4 top-4 text-8xl opacity-[0.06]">{meta.mapPinEmoji}</div>
             <div className="relative flex items-start justify-between gap-4">
               <div>
-                <span className="rounded-full border border-[rgba(200,146,74,0.16)] bg-[var(--chip-fill)] px-2.5 py-1 text-[10px] font-medium text-[color:var(--brand-primary)]">
+                <span className="rounded-full border border-[rgba(197, 160, 89,0.16)] bg-[var(--chip-fill)] px-2.5 py-1 text-[10px] font-medium text-[color:var(--brand-primary)]">
                   {meta.badgeLabel}
                 </span>
                 <h2 className="mt-3 font-serif text-[2rem] leading-none text-[color:var(--text-cream)]">{temple.name}</h2>
@@ -795,36 +794,36 @@ function PlaceDetailSheet({
                   {getDistanceLabel(center, temple)} mi away {temple.address ? `· ${temple.address}` : ''}
                 </p>
               </div>
-              <button onClick={onClose} className="rounded-full border border-[rgba(200,146,74,0.16)] bg-[var(--surface-base)] p-2">
+              <button onClick={onClose} className="rounded-full border border-[rgba(197, 160, 89,0.16)] bg-[var(--surface-base)] p-2">
                 <X size={16} />
               </button>
             </div>
 
             <div className="relative mt-5 grid grid-cols-4 gap-2">
-              <button onClick={onSave} className="rounded-[1.15rem] border border-[rgba(200,146,74,0.14)] bg-white/[0.04] px-2 py-3 text-center text-[10px] text-[color:var(--text-muted)]">
+              <button onClick={onSave} className="rounded-[1.15rem] border border-[rgba(197, 160, 89,0.14)] bg-white/[0.04] px-2 py-3 text-center text-[10px] text-[color:var(--text-muted)]">
                 <Bookmark size={16} fill={saved ? 'currentColor' : 'none'} className="mx-auto mb-1 text-[color:var(--brand-primary)]" /> {saved ? 'Saved' : 'Save'}
               </button>
-              <button onClick={onCheckIn} className="rounded-[1.15rem] border border-[rgba(200,146,74,0.14)] bg-white/[0.04] px-2 py-3 text-center text-[10px] text-[color:var(--text-muted)]">
+              <button onClick={onCheckIn} className="rounded-[1.15rem] border border-[rgba(197, 160, 89,0.14)] bg-white/[0.04] px-2 py-3 text-center text-[10px] text-[color:var(--text-muted)]">
                 <CheckCircle2 size={16} className="mx-auto mb-1 text-[color:var(--brand-primary)]" /> {visited ? 'Visited' : 'I visited'}
               </button>
-              <a href={`https://maps.google.com/?q=${temple.lat},${temple.lon}`} target="_blank" rel="noreferrer" className="rounded-[1.15rem] border border-[rgba(200,146,74,0.14)] bg-white/[0.04] px-2 py-3 text-center text-[10px] text-[color:var(--text-muted)]">
+              <a href={`https://maps.google.com/?q=${temple.lat},${temple.lon}`} target="_blank" rel="noreferrer" className="rounded-[1.15rem] border border-[rgba(197, 160, 89,0.14)] bg-white/[0.04] px-2 py-3 text-center text-[10px] text-[color:var(--text-muted)]">
                 <Navigation size={16} className="mx-auto mb-1 text-[color:var(--brand-primary)]" /> Route
               </a>
-              <button onClick={onShare} className="rounded-[1.15rem] border border-[rgba(200,146,74,0.14)] bg-white/[0.04] px-2 py-3 text-center text-[10px] text-[color:var(--text-muted)]">
+              <button onClick={onShare} className="rounded-[1.15rem] border border-[rgba(197, 160, 89,0.14)] bg-white/[0.04] px-2 py-3 text-center text-[10px] text-[color:var(--text-muted)]">
                 <Share2 size={16} className="mx-auto mb-1 text-[color:var(--brand-primary)]" /> Share
               </button>
             </div>
           </div>
 
           <div className="space-y-4 p-5">
-            <section className="rounded-[1.45rem] border border-[rgba(200,146,74,0.14)] bg-[var(--surface-raised)] p-4">
+            <section className="rounded-[1.45rem] border border-[rgba(197, 160, 89,0.14)] bg-[var(--surface-raised)] p-4">
               <div className="mb-3 flex items-center gap-2">
                 <Clock size={15} className="text-[color:var(--brand-primary)]" />
                 <h3 className="text-sm font-medium text-[color:var(--text-cream)]">Visit rhythm</h3>
               </div>
               <div className="flex flex-wrap gap-2">
                 {prep.rhythm.map((item) => (
-                  <span key={item} className="rounded-full border border-[rgba(200,146,74,0.16)] px-2.5 py-1 text-xs text-[color:var(--brand-primary)]">{item}</span>
+                  <span key={item} className="rounded-full border border-[rgba(197, 160, 89,0.16)] px-2.5 py-1 text-xs text-[color:var(--brand-primary)]">{item}</span>
                 ))}
                 {open !== null && (
                   <span className={`rounded-full px-2.5 py-1 text-xs ${open ? 'bg-green-500/12 text-green-400' : 'bg-red-500/12 text-red-300'}`}>
@@ -835,7 +834,7 @@ function PlaceDetailSheet({
               {temple.opening && <p className="mt-3 text-xs text-[color:var(--text-muted)]">{temple.opening}</p>}
             </section>
 
-            <section className="rounded-[1.45rem] border border-[rgba(200,146,74,0.14)] bg-[var(--surface-raised)] p-4">
+            <section className="rounded-[1.45rem] border border-[rgba(197, 160, 89,0.14)] bg-[var(--surface-raised)] p-4">
               <h3 className="text-sm font-medium text-[color:var(--text-cream)]">{prep.title}</h3>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 <GuidanceList title="Etiquette" items={prep.etiquette} />
@@ -845,7 +844,7 @@ function PlaceDetailSheet({
               </div>
             </section>
 
-            <section className="rounded-[1.45rem] border border-[rgba(200,146,74,0.14)] bg-[var(--surface-raised)] p-4">
+            <section className="rounded-[1.45rem] border border-[rgba(197, 160, 89,0.14)] bg-[var(--surface-raised)] p-4">
               <div className="mb-2 flex items-center gap-2">
                 <Sparkles size={15} className="text-[color:var(--brand-primary)]" />
                 <h3 className="text-sm font-medium text-[color:var(--text-cream)]">Community signal</h3>
@@ -853,7 +852,7 @@ function PlaceDetailSheet({
               <p className="text-xs leading-relaxed text-[color:var(--text-muted)]">
                 Verified community notes, family visits, accessibility, and practical updates will appear here as Shoonaya members save and review this place.
               </p>
-              <button className="mt-3 inline-flex items-center gap-2 rounded-full border border-[rgba(200,146,74,0.16)] px-3 py-1.5 text-xs text-[color:var(--brand-primary)]">
+              <button className="mt-3 inline-flex items-center gap-2 rounded-full border border-[rgba(197, 160, 89,0.16)] px-3 py-1.5 text-xs text-[color:var(--brand-primary)]">
                 <Send size={12} /> Suggest an update
               </button>
             </section>

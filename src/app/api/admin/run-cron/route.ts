@@ -14,8 +14,8 @@ const ALLOWED_CRONS = [
   '/api/cron/brahma-muhurta',
 ] as const;
 
-export async function POST(request: Request) {
-  const authError = checkAdminAuth(request as any);
+export async function POST(request: NextRequest) {
+  const authError = checkAdminAuth(request);
   if (authError) return authError;
 
   const admin = await requireAdminAccess();

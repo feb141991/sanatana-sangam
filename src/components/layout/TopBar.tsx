@@ -192,7 +192,7 @@ export default function TopBar({
             style={{
               zIndex: 9999,
               background: 'linear-gradient(180deg, rgba(28,26,22,0.99) 0%, rgba(22,20,17,0.99) 100%)',
-              border: '1px solid rgba(200,146,74,0.14)',
+              border: '1px solid rgba(197, 160, 89,0.14)',
               borderBottom: 'none',
               maxHeight: '85dvh',
               paddingBottom: 'env(safe-area-inset-bottom, 0px)',
@@ -204,7 +204,7 @@ export default function TopBar({
           >
             {/* Drag handle */}
             <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
-              <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(200,146,74,0.25)' }} />
+              <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(197, 160, 89,0.25)' }} />
             </div>
 
             {/* Header row */}
@@ -222,7 +222,7 @@ export default function TopBar({
                   <button
                     onClick={markAllRead}
                     className="text-xs font-semibold px-3 py-1.5 rounded-xl transition"
-                    style={{ background: 'rgba(200,146,74,0.12)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(200,146,74,0.2)' }}
+                    style={{ background: 'rgba(197, 160, 89,0.12)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(197, 160, 89,0.2)' }}
                   >
                     {t('markAllRead')}
                   </button>
@@ -243,7 +243,7 @@ export default function TopBar({
             {/* Push permission prompt */}
             {shouldShowPushPrompt && (
               <div className="mx-4 mt-4 flex-shrink-0 rounded-2xl px-4 py-3.5 flex items-start gap-3"
-                style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.18)' }}>
+                style={{ background: 'rgba(197, 160, 89,0.08)', border: '1px solid rgba(197, 160, 89,0.18)' }}>
                 <span className="text-xl mt-0.5">{isIosSafariNonPwa ? '📲' : '🔔'}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-[color:var(--brand-ink)]">
@@ -349,7 +349,7 @@ export default function TopBar({
                       key={n.id}
                       variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.2 } } }}
                       className="px-5 py-4 flex items-start gap-3.5 cursor-pointer active:opacity-80 transition-opacity"
-                      style={{ background: !n.read ? 'rgba(200,146,74,0.05)' : 'transparent' }}
+                      style={{ background: !n.read ? 'rgba(197, 160, 89,0.05)' : 'transparent' }}
                       onClick={async () => {
                         if (!n.read) await markOneReadMutation.mutateAsync(n.id);
                         if (!n.action_url) return;
@@ -359,7 +359,7 @@ export default function TopBar({
                       }}
                     >
                       <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl flex-shrink-0"
-                        style={{ background: 'rgba(200,146,74,0.1)', border: '1px solid rgba(200,146,74,0.15)' }}>
+                        style={{ background: 'rgba(197, 160, 89,0.1)', border: '1px solid rgba(197, 160, 89,0.15)' }}>
                         {n.emoji}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -408,8 +408,8 @@ export default function TopBar({
                       href={item.href}
                       className="flex h-7 items-center justify-center rounded-full px-3 text-xs font-semibold transition whitespace-nowrap"
                       style={{
-                        background: active ? 'rgba(200,146,74,0.18)' : 'rgba(200,146,74,0.07)',
-                        border: `1px solid ${active ? 'rgba(200,146,74,0.32)' : 'rgba(200,146,74,0.12)'}`,
+                        background: active ? 'rgba(197, 160, 89,0.18)' : 'rgba(197, 160, 89,0.07)',
+                        border: `1px solid ${active ? 'rgba(197, 160, 89,0.32)' : 'rgba(197, 160, 89,0.12)'}`,
                         color: active ? 'var(--brand-primary-strong)' : 'var(--brand-muted)',
                       }}
                     >
@@ -430,7 +430,7 @@ export default function TopBar({
 
             {/* Language picker — always visible, all 3 langs */}
             <div className="flex items-center rounded-full p-0.5"
-              style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.14)' }}>
+              style={{ background: 'rgba(197, 160, 89,0.08)', border: '1px solid rgba(197, 160, 89,0.14)' }}>
               {LANG_OPTIONS.map(({ value, label }) => (
                 <button
                   key={value}
@@ -467,7 +467,7 @@ export default function TopBar({
                   <button
                     onClick={handleBellClick}
                     aria-label="Notifications"
-                    className="w-9 h-9 rounded-full transition flex items-center justify-center relative text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary-strong)]"
+                    className="w-11 h-11 rounded-full transition flex items-center justify-center relative text-[color:var(--brand-muted)] hover:text-[color:var(--brand-primary-strong)]"
                     style={{ background: 'rgba(212, 166, 70, 0.08)' }}
                   >
                     <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -493,8 +493,8 @@ export default function TopBar({
                     width: 38,
                     height: 38,
                     background: 'linear-gradient(135deg, var(--card-bg), rgba(43,43,40,0.94))',
-                    border: avatarUrl && !avatarFailed ? '2px solid rgba(200,146,74,0.55)' : '1.5px solid rgba(200,146,74,0.22)',
-                    boxShadow: avatarUrl && !avatarFailed ? '0 0 0 1px rgba(200,146,74,0.15)' : 'none',
+                    border: avatarUrl && !avatarFailed ? '2px solid rgba(197, 160, 89,0.55)' : '1.5px solid rgba(197, 160, 89,0.22)',
+                    boxShadow: avatarUrl && !avatarFailed ? '0 0 0 1px rgba(197, 160, 89,0.15)' : 'none',
                   }}
                 >
                   {avatarUrl && !avatarFailed ? (
@@ -550,7 +550,7 @@ function NotificationsEmptyState({ userId, onNotificationSent }: { userId: strin
   return (
     <div className="flex flex-col items-center justify-center px-6 py-12 text-center gap-5">
       <div className="w-16 h-16 rounded-3xl flex items-center justify-center text-3xl"
-        style={{ background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.15)' }}>
+        style={{ background: 'rgba(197, 160, 89,0.08)', border: '1px solid rgba(197, 160, 89,0.15)' }}>
         <SacredIcon name="bell" size={26} />
       </div>
       <div>
@@ -563,7 +563,7 @@ function NotificationsEmptyState({ userId, onNotificationSent }: { userId: strin
         onClick={sendTest}
         disabled={sending}
         className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition disabled:opacity-50"
-        style={{ background: 'rgba(200,146,74,0.1)', border: '1px solid rgba(200,146,74,0.22)', color: 'var(--brand-primary-strong)' }}
+        style={{ background: 'rgba(197, 160, 89,0.1)', border: '1px solid rgba(197, 160, 89,0.22)', color: 'var(--brand-primary-strong)' }}
       >
         <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />

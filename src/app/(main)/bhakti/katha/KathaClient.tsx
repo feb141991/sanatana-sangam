@@ -251,7 +251,7 @@ export default function KathaClient({
                 animate={{ opacity: 1, y: 0 }}
                 whileTap={{ scale: 0.985 }}
                 className="group relative rounded-3xl overflow-hidden border border-[var(--card-border)] bg-[var(--card-bg)]"
-                style={{ background: 'linear-gradient(135deg, rgba(200,146,74,0.12) 0%, var(--card-bg) 65%)' }}
+                style={{ background: 'linear-gradient(135deg, rgba(197, 160, 89,0.12) 0%, var(--card-bg) 65%)' }}
               >
                 {/* Subtle radial glow */}
                 <div className="absolute top-0 right-0 w-48 h-48 bg-[var(--brand-primary)]/[0.07] blur-[60px] rounded-full pointer-events-none" />

@@ -16,6 +16,7 @@ import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-
 import { useReaderControls } from '@/hooks/useReaderControls';
 import { trackReaderEvent } from '@/lib/analytics/reader-events';
 import { useReaderDisplayPreferences } from '@/lib/i18n/reader-display';
+import ReaderShell from '@/components/reader/ReaderShell';
 
 // ─── Direct Translations for Major Stotrams & Mantras ─────────────────────────
 const STOTRAM_TRANSLATIONS: Record<string, Record<number, { hi: string; pa: string }>> = {
@@ -184,7 +185,7 @@ function AudioPanel({ trackId, autoplay, accentColor }: {
 
   if (!track?.audioUrl) return (
     <div className="rounded-2xl px-4 py-4 text-center text-[11px]"
-      style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.12)', color: 'rgba(200,146,74,0.5)' }}>
+      style={{ background: 'rgba(197, 160, 89,0.06)', border: '1px solid rgba(197, 160, 89,0.12)', color: 'rgba(197, 160, 89,0.5)' }}>
       Audio not available for this stotram.
     </div>
   );
@@ -204,7 +205,7 @@ function AudioPanel({ trackId, autoplay, accentColor }: {
             <Repeat size={12} style={{ color: loop ? accentColor : `${accentColor}55` }} />
           </button>
           <button onClick={togglePlay}
-            className="w-10 h-10 rounded-full flex items-center justify-center shadow-md"
+            className="w-11 h-11 rounded-full flex items-center justify-center shadow-md"
             style={{ background: `linear-gradient(135deg,${accentColor},${accentColor}cc)` }}>
             {playing ? <Pause size={16} color="#fff" /> : <Play size={16} color="#fff" className="ml-0.5" />}
           </button>
@@ -240,7 +241,7 @@ function StotramReader({ id }: { id: string }) {
 
   const stotram = getStotramById(id);
   const deityMeta = stotram ? (DEITY_META[stotram.deity] ?? DEITY_META.universal) : null;
-  const accentColor = deityMeta?.color ?? '#C8924A';
+  const accentColor = deityMeta?.color ?? '#C5A059';
   const { t, lang: contextLang } = useLanguage();
 
   const [activeVerse, setActiveVerse] = useState<number | null>(null);
@@ -479,128 +480,55 @@ function StotramReader({ id }: { id: string }) {
   );
 
   return (
-    <div className="min-h-screen pb-28 font-outfit" style={{ background: pageBg }}>
-      {/* Ambient glow */}
-      <div className="pointer-events-none fixed inset-0"
-        style={{ background: `radial-gradient(ellipse 60% 40% at 50% 0%, ${accentColor}12, transparent 70%)` }} />
-
-      <div style={{ height: 'max(env(safe-area-inset-top,0px),16px)' }} />
-
-      {/* Header */}
-      <div className="sticky top-0 z-40 px-4 pb-4 pt-12 backdrop-blur-xl border-b border-[var(--divine-border)]/10 flex flex-col gap-3"
-        style={{ background: isDark ? 'rgba(14,10,6,0.85)' : 'rgba(253,246,238,0.85)' }}>
-        <div className="flex items-center justify-between gap-3">
-          <button onClick={() => router.back()} className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-90"
-            style={{ border: `1px solid ${accentColor}25` }}>
-            <ChevronLeft size={18} style={{ color: accentColor }} />
-          </button>
-          <div className="min-w-0 flex-1 text-center">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: `${accentColor}70` }}>
-              {deityMeta?.emoji} {stotram.deity !== 'universal' ? deityMeta?.label : 'Universal'}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={copyFullStotram}
-              className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-90"
-              title="Copy Full Stotram"
-            >
-              {copied ? <Check size={14} color="#2D9E4A" /> : <Copy size={14} color={accentColor} />}
-            </button>
-            <button
-              onClick={shareStotram}
-              className="w-9 h-9 rounded-full border border-[var(--divine-border)]/10 flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-90"
-              title="Share Stotram"
-            >
-              <Share2 size={14} color={accentColor} />
-            </button>
-          </div>
-        </div>
-
-
-        {/* ── Action Bar ── */}
-        <div className="flex flex-wrap items-center justify-between gap-4 px-6 pb-4">
-          <div className="flex items-center gap-1.5 bg-[var(--surface-base)]/30 px-2 py-1.5 rounded-full border border-[var(--divine-border)]/5">
-            <span className="text-[10px] uppercase font-bold tracking-wider px-1 text-[var(--text-dim)]">{labels.textSize}:</span>
-            {fontPresets.map((step, idx) => (
-              <button
-                key={idx}
-                onClick={() => setFontStep(idx)}
-                className={`px-2 py-1 rounded-full text-[10px] font-bold flex items-center justify-center transition-all ${
-                  fontStep === idx
-                    ? 'text-[#1c1c1a] shadow-md'
-                    : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'
-                }`}
-                style={{
-                  background: fontStep === idx ? accentColor : 'transparent',
-                }}
-              >
-                {step.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-1 bg-[var(--surface-base)]/10 px-2 py-0.5 rounded-full border border-[var(--divine-border)]/5">
-            {baseReadableContent.capabilities.canToggleTransliteration ? (
-              <button
-                onClick={() => {
-                  readerControls.handlers.toggleTransliteration();
-                  trackReaderEvent('transliteration_toggled', {
-                    content_type: 'stotram',
-                    source: stotram.title,
-                    tradition: stotram.tradition === 'all' ? 'generic' : stotram.tradition,
-                    language: lang,
-                    has_transliteration: true,
-                  });
-                }}
-                className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all ${shouldShowTransliteration ? 'text-black shadow-sm' : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'}`}
-                style={{ backgroundColor: shouldShowTransliteration ? accentColor : 'transparent' }}
-              >
-                {labels.transliteration}
-              </button>
-            ) : null}
-            {baseReadableContent.capabilities.canShowMeaning ? (
-              <button
-                onClick={() => {
-                  readerControls.handlers.toggleMeaning();
-                  trackReaderEvent('language_toggled', {
-                    content_type: 'stotram',
-                    source: stotram.title,
-                    tradition: stotram.tradition === 'all' ? 'generic' : stotram.tradition,
-                    language: lang,
-                    has_meaning: true,
-                  });
-                }}
-                className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all ${shouldShowMeaning ? 'text-black shadow-sm' : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'}`}
-                style={{ backgroundColor: shouldShowMeaning ? accentColor : 'transparent' }}
-              >
-                {labels.meaning}
-              </button>
-            ) : null}
-          </div>
-
-          <div className="flex items-center gap-1 bg-[var(--surface-base)]/10 px-2 py-0.5 rounded-full border border-[var(--divine-border)]/5">
-            {languages.map(l => (
-              <button
-                key={l.code}
-                onClick={() => {
-                  setLang(l.code);
-                  trackReaderEvent('language_toggled', {
-                    content_type: 'stotram',
-                    source: stotram?.title ?? '',
-                    tradition: stotram?.tradition === 'all' ? 'generic' : stotram?.tradition ?? 'generic',
-                    language: l.code,
-                  });
-                }}
-                className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all ${lang === l.code ? 'text-black shadow-sm' : 'text-[var(--text-dim)] hover:text-[var(--text-main)]'}`}
-                style={{ backgroundColor: lang === l.code ? accentColor : 'transparent' }}
-              >
-                {l.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+    <ReaderShell
+      title={stotram.title}
+      subtitle={stotram.deity !== 'universal' ? deityMeta?.label : 'Universal'}
+      fallbackBackUrl="/bhakti"
+      themeColor={accentColor}
+      ambientGlowColor={`${accentColor}12`}
+      fontPresets={fontPresets}
+      fontStep={fontStep}
+      setFontStep={setFontStep}
+      languages={languages}
+      currentLanguage={lang}
+      setLanguage={(l) => {
+        setLang(l);
+        trackReaderEvent('language_toggled', {
+          content_type: 'stotram',
+          source: stotram?.title ?? '',
+          tradition: stotram?.tradition === 'all' ? 'generic' : stotram?.tradition ?? 'generic',
+          language: l,
+        });
+      }}
+      showTransliterationToggle={baseReadableContent.capabilities.canToggleTransliteration}
+      isTransliterationOn={shouldShowTransliteration}
+      onToggleTransliteration={() => {
+        readerControls.handlers.toggleTransliteration();
+        trackReaderEvent('transliteration_toggled', {
+          content_type: 'stotram',
+          source: stotram.title,
+          tradition: stotram.tradition === 'all' ? 'generic' : stotram.tradition,
+          language: lang,
+          has_transliteration: true,
+        });
+      }}
+      showMeaningToggle={baseReadableContent.capabilities.canShowMeaning}
+      isMeaningOn={shouldShowMeaning}
+      onToggleMeaning={() => {
+        readerControls.handlers.toggleMeaning();
+        trackReaderEvent('language_toggled', {
+          content_type: 'stotram',
+          source: stotram.title,
+          tradition: stotram.tradition === 'all' ? 'generic' : stotram.tradition,
+          language: lang,
+          has_meaning: true,
+        });
+      }}
+      onCopy={copyFullStotram}
+      isCopied={copied}
+      onShare={shareStotram}
+      contentClassName="px-4 space-y-4 mt-6 pb-28"
+    >
 
       <div className="px-4 space-y-4 mt-6">
 
@@ -738,11 +666,10 @@ function StotramReader({ id }: { id: string }) {
           {stotram.source}
         </p>
       </div>
-    </div>
+    </ReaderShell>
   );
 }
 
-export const dynamic = 'force-dynamic';
 
 export default function StotramPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);

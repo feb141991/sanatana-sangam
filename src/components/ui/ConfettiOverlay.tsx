@@ -27,7 +27,7 @@ interface Particle {
 
 const SACRED_COLORS = [
   '#E88C35', // saffron
-  '#C8924A', // gold
+  '#C5A059', // gold
   '#F0A830', // amber
   '#D4784A', // terracotta
   '#F2EAD6', // cream

@@ -2,7 +2,6 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import InsightsClient from '../../../japa/insights/InsightsClient';
 
-export const dynamic = 'force-dynamic';
 
 export default async function MalaInsightsPage() {
   const supabase = await createServerSupabaseClient();

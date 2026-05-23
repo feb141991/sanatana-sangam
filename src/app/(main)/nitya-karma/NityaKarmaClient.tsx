@@ -224,9 +224,9 @@ function heatStyle(count: number): React.CSSProperties {
   if (count === 2)  return { background: 'rgba(210,140,40,0.70)',  border: '1px solid rgba(220,150,40,0.35)' };
   // 3+
   return {
-    background: 'linear-gradient(135deg, #f0c060 0%, #C8924A 55%, #a06520 100%)',
+    background: 'linear-gradient(135deg, #f0c060 0%, #C5A059 55%, #a06520 100%)',
     border:     '1px solid rgba(240,180,60,0.4)',
-    boxShadow:  '0 0 6px rgba(200,146,74,0.3)',
+    boxShadow:  '0 0 6px rgba(197, 160, 89,0.3)',
   };
 }
 
@@ -323,7 +323,7 @@ function NityaCustomSheet({
         style={{
           zIndex: 9999,
           background: 'var(--surface-raised)',
-          border: '1px solid rgba(200,146,74,0.18)',
+          border: '1px solid rgba(197, 160, 89,0.18)',
           borderBottom: 'none',
           maxHeight: '90dvh',
           paddingBottom: 'env(safe-area-inset-bottom, 16px)',
@@ -347,7 +347,7 @@ function NityaCustomSheet({
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+            className="w-11 h-11 rounded-full flex items-center justify-center transition-colors"
             style={{ background: 'rgba(0,0,0,0.04)' }}
           >
             <X size={15} style={{ color: 'var(--brand-muted)' }} />
@@ -365,7 +365,7 @@ function NityaCustomSheet({
             </div>
             <div
               className="flex items-center gap-3 rounded-2xl px-4 py-3"
-              style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.12)' }}
+              style={{ background: 'rgba(197, 160, 89,0.06)', border: '1px solid rgba(197, 160, 89,0.12)' }}
             >
               <Bell size={16} style={{ color: accent }} />
               <div className="flex-1">
@@ -377,9 +377,9 @@ function NityaCustomSheet({
                 onChange={e => setDraft(prev => ({ ...prev, alertTime: e.target.value }))}
                 className="rounded-xl px-3 py-1.5 text-sm font-semibold border focus:outline-none focus:ring-1"
                 style={{
-                  background: 'rgba(200,146,74,0.12)',
+                  background: 'rgba(197, 160, 89,0.12)',
                   color: accent,
-                  borderColor: 'rgba(200,146,74,0.25)',
+                  borderColor: 'rgba(197, 160, 89,0.25)',
                 }}
               />
             </div>
@@ -399,7 +399,7 @@ function NityaCustomSheet({
                 <div
                   key={step.id}
                   className="flex items-center gap-3 rounded-2xl px-4 py-3"
-                  style={{ background: 'rgba(200,146,74,0.05)', border: '1px solid rgba(200,146,74,0.1)' }}
+                  style={{ background: 'rgba(197, 160, 89,0.05)', border: '1px solid rgba(197, 160, 89,0.1)' }}
                 >
                   <SacredIcon name={step.icon as SacredIconName} size={20} strokeWidth={1.7} style={{ color: 'var(--brand-primary)' }} />
                   <div className="flex-1 min-w-0">
@@ -413,7 +413,7 @@ function NityaCustomSheet({
                       className="w-full rounded-lg px-2.5 py-1.5 text-sm border focus:outline-none focus:ring-1 bg-transparent"
                       style={{
                         color: 'var(--brand-ink)',
-                        borderColor: 'rgba(200,146,74,0.2)',
+                        borderColor: 'rgba(197, 160, 89,0.2)',
                       }}
                     />
                   </div>
@@ -436,7 +436,7 @@ function NityaCustomSheet({
                   <div
                     key={es.id}
                     className="flex items-center gap-3 rounded-xl px-3 py-2.5"
-                    style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.12)' }}
+                    style={{ background: 'rgba(197, 160, 89,0.06)', border: '1px solid rgba(197, 160, 89,0.12)' }}
                   >
                     <SacredIcon name={es.icon as SacredIconName} size={20} strokeWidth={1.7} style={{ color: 'var(--brand-primary)' }} />
                     <span className="flex-1 text-sm" style={{ color: 'var(--brand-ink)' }}>{es.label}</span>
@@ -452,7 +452,7 @@ function NityaCustomSheet({
             {/* Add new step form */}
             <div
               className="rounded-2xl px-4 py-4 space-y-3"
-              style={{ background: 'rgba(200,146,74,0.05)', border: '1px solid rgba(200,146,74,0.1)' }}
+              style={{ background: 'rgba(197, 160, 89,0.05)', border: '1px solid rgba(197, 160, 89,0.1)' }}
             >
               <div className="flex gap-2">
                 <input
@@ -462,7 +462,7 @@ function NityaCustomSheet({
                   onChange={e => setNewStepIcon(e.target.value)}
                   maxLength={4}
                   className="w-16 rounded-xl px-2 py-2 text-center text-lg border focus:outline-none bg-transparent"
-                  style={{ borderColor: 'rgba(200,146,74,0.2)', color: 'var(--brand-ink)' }}
+                  style={{ borderColor: 'rgba(197, 160, 89,0.2)', color: 'var(--brand-ink)' }}
                 />
                 <input
                   type="text"
@@ -471,7 +471,7 @@ function NityaCustomSheet({
                   onChange={e => setNewStepLabel(e.target.value)}
                   maxLength={50}
                   className="flex-1 rounded-xl px-3 py-2 text-sm border focus:outline-none bg-transparent"
-                  style={{ borderColor: 'rgba(200,146,74,0.2)', color: 'var(--brand-ink)' }}
+                  style={{ borderColor: 'rgba(197, 160, 89,0.2)', color: 'var(--brand-ink)' }}
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -482,7 +482,7 @@ function NityaCustomSheet({
                   value={newStepMins}
                   onChange={e => setNewStepMins(Number(e.target.value))}
                   className="w-16 rounded-xl px-2 py-1.5 text-sm text-center border focus:outline-none bg-transparent"
-                  style={{ borderColor: 'rgba(200,146,74,0.2)', color: 'var(--brand-ink)' }}
+                  style={{ borderColor: 'rgba(197, 160, 89,0.2)', color: 'var(--brand-ink)' }}
                 />
                 <button
                   onClick={addExtraStep}
@@ -504,9 +504,9 @@ function NityaCustomSheet({
             whileTap={{ scale: 0.97 }}
             className="w-full py-4 rounded-2xl font-bold text-base"
             style={{
-              background: 'linear-gradient(135deg, #C8924A 0%, #D4784A 50%, #b07040 100%)',
+              background: 'linear-gradient(135deg, #C5A059 0%, #D4784A 50%, #b07040 100%)',
               color: '#1c1c1a',
-              boxShadow: '0 4px 24px rgba(200,146,74,0.3)',
+              boxShadow: '0 4px 24px rgba(197, 160, 89,0.3)',
             }}
           >
             Save Customisation
@@ -561,14 +561,14 @@ function ProUpgradeSheet({ onClose, accent }: { onClose: () => void; accent: str
         className="w-full max-w-2xl mx-auto rounded-t-3xl p-6 space-y-4"
         style={{
           background: 'linear-gradient(180deg,#1a1408 0%,#110e04 100%)',
-          border: '1px solid rgba(200,146,74,0.22)',
+          border: '1px solid rgba(197, 160, 89,0.22)',
         }}
         onClick={e => e.stopPropagation()}
       >
         {/* Handle + close */}
         <div className="flex items-center justify-between">
           <div className="w-10 h-1 rounded-full bg-white/15 mx-auto" />
-          <button onClick={onClose} className="absolute right-5 top-5 w-8 h-8 rounded-full flex items-center justify-center"
+          <button onClick={onClose} className="absolute right-5 top-5 w-11 h-11 rounded-full flex items-center justify-center"
             style={{ background: 'rgba(255,255,255,0.08)' }}>
             <X size={16} className="text-white/50" />
           </button>
@@ -1269,8 +1269,8 @@ export default function NityaKarmaClient({
       <div className="flex items-center gap-3 px-4 pt-4 pb-3">
         <button
           onClick={onBack}
-          className="w-9 h-9 rounded-full glass-panel border border-white/10 flex items-center justify-center"
-        >
+          className="w-11 h-11 rounded-full glass-panel border border-white/10 flex items-center justify-center"
+         aria-label="Go back">
           <ChevronLeft size={20} style={{ color: accent }} />
         </button>
         <div className="flex-1">
@@ -1940,7 +1940,7 @@ export default function NityaKarmaClient({
                               className="aspect-square rounded-md transition-all"
                               style={{
                                 ...heatStyle(slot.count),
-                                outline: isToday ? `2px solid rgba(200,146,74,0.55)` : undefined,
+                                outline: isToday ? `2px solid rgba(197, 160, 89,0.55)` : undefined,
                                 outlineOffset: '1px',
                               }}
                             />

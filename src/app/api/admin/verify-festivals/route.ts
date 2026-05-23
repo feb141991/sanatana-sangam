@@ -33,8 +33,8 @@ function isMissingObservanceModel(error: unknown): boolean {
   return /observance_occurrences|observance_definitions/i.test(message);
 }
 
-export async function POST(req: Request) {
-  const authError = checkAdminAuth(req as any);
+export async function POST(req: NextRequest) {
+  const authError = checkAdminAuth(req);
   if (authError) return authError;
 
   const adminCheck = await requireAdminAccess();

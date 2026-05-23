@@ -48,7 +48,7 @@ function ProBlur({ onUpgrade }: { onUpgrade: () => void }) {
       <button
         onClick={onUpgrade}
         className="px-4 py-2 rounded-full text-xs font-bold"
-        style={{ background: 'linear-gradient(135deg, #C8924A, #e0a85a)', color: '#1a0c04' }}
+        style={{ background: 'linear-gradient(135deg, #C5A059, #e0a85a)', color: '#1a0c04' }}
       >
         Upgrade to Pro
       </button>
@@ -70,7 +70,7 @@ export default function InsightsClient({ isPro, planData, totalDaysCompleted, pl
           onClick={() => router.back()}
           className="w-9 h-9 rounded-full glass-panel border border-white/10 flex items-center justify-center"
         >
-          <ChevronLeft size={20} style={{ color: '#C8924A' }} />
+          <ChevronLeft size={20} style={{ color: '#C5A059' }} />
         </button>
         <div className="flex-1">
           <h1 className="font-bold text-lg" style={{ color: 'var(--brand-ink)' }}>Sadhana Insights</h1>
@@ -90,7 +90,7 @@ export default function InsightsClient({ isPro, planData, totalDaysCompleted, pl
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
             className="glass-panel rounded-[1.2rem] border border-white/8 p-4 flex flex-col items-center text-center"
           >
-            <Flame size={20} className="mb-1.5" style={{ color: '#C8924A' }} />
+            <Flame size={20} className="mb-1.5" style={{ color: '#C5A059' }} />
             <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.7rem', fontWeight: 700, color: 'var(--brand-ink)', lineHeight: 1 }}>
               {currentStreak}
             </p>
@@ -196,7 +196,7 @@ export default function InsightsClient({ isPro, planData, totalDaysCompleted, pl
                 className="relative rounded-[1.4rem] overflow-hidden"
                 style={{
                   background: 'var(--surface-raised)',
-                  border: `1px solid ${status === 'active' ? plan.borderColor : 'rgba(200,146,74,0.10)'}`,
+                  border: `1px solid ${status === 'active' ? plan.borderColor : 'rgba(197, 160, 89,0.10)'}`,
                 }}
               >
                 <div className="p-4">
@@ -293,7 +293,7 @@ export default function InsightsClient({ isPro, planData, totalDaysCompleted, pl
               <button
                 onClick={() => router.back()}
                 className="mt-3 px-5 py-2.5 rounded-full text-xs font-semibold"
-                style={{ background: 'rgba(200,146,74,0.18)', color: 'var(--brand-ink)', border: '1px solid rgba(200,146,74,0.28)' }}
+                style={{ background: 'rgba(197, 160, 89,0.18)', color: 'var(--brand-ink)', border: '1px solid rgba(197, 160, 89,0.28)' }}
               >
                 Browse Plans
               </button>

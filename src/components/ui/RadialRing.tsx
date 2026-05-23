@@ -9,7 +9,7 @@
  *   --font-serif         centre numeral typeface
  *
  * Usage examples:
- *   <RadialRing pct={72} accent="#C8924A" size={80} showPct label="Japa" href="/japa" />
+ *   <RadialRing pct={72} accent="#C5A059" size={80} showPct label="Japa" href="/japa" />
  *   <RadialRing pct={50} accentEnd="#D4784A" gradientId="nitya-ring" size={80} />
  *   <RadialRing pct={100} size={44} strokeWidth={4} label={<CheckIcon />} />
  */

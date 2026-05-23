@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { UserPlus, Crown, Mail } from 'lucide-react';
 import { MemberRow } from '../types';
@@ -84,8 +85,7 @@ function Avatar({ name, url, size }: { name: string; url: string | null | undefi
       style={{ width: size * 4, height: size * 4 }}
     >
       {url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={url} alt={name} className="w-full h-full object-cover" />
+        <Image width={120} height={120} src={url} alt={name} className="w-full h-full object-cover" />
       ) : (
         <span className="text-slate-500 font-bold tracking-tight" style={{ fontSize: size * 1.5 }}>{initials}</span>
       )}

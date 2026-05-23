@@ -15,7 +15,7 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ reportId: string }> }
 ) {
-  const authError = checkAdminAuth(request as any);
+  const authError = checkAdminAuth(request);
   if (authError) return authError;
 
   const admin = await requireAdminAccess();

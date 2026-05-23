@@ -101,7 +101,7 @@ export default function HindiGeneratorPage() {
         <div className="h-2 rounded-full bg-white/10 overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-500"
-            style={{ width: `${pct}%`, background: '#c8924a' }}
+            style={{ width: `${pct}%`, background: '#C5A059' }}
           />
         </div>
       </div>
@@ -111,13 +111,13 @@ export default function HindiGeneratorPage() {
         <button
           onClick={run}
           className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-[#1c1c1a]"
-          style={{ background: '#c8924a' }}
+          style={{ background: '#C5A059' }}
         >
           <Play size={16} /> Start Generation
         </button>
       )}
       {status === 'running' && (
-        <button disabled className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-[#1c1c1a] opacity-70" style={{ background: '#c8924a' }}>
+        <button disabled className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-[#1c1c1a] opacity-70" style={{ background: '#C5A059' }}>
           <Loader2 size={16} className="animate-spin" /> Generating…
         </button>
       )}
@@ -134,7 +134,7 @@ export default function HindiGeneratorPage() {
           <button
             onClick={run}
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-[#1c1c1a]"
-            style={{ background: '#c8924a' }}
+            style={{ background: '#C5A059' }}
           >
             Retry from beginning
           </button>

@@ -91,7 +91,7 @@ function buildFestivalAdminStats(festivals: Festival[]): FestivalAdminStats {
 }
 
 export async function GET(request: NextRequest) {
-  const authError = checkAdminAuth(request as any);
+  const authError = checkAdminAuth(request);
   if (authError) return authError;
 
   const admin = await requireAdminAccess();

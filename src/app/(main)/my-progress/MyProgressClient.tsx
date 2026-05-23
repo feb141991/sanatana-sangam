@@ -60,7 +60,7 @@ function monthName(iso: string) {
 
 // ── 28-day Sparkline line graph ───────────────────────────────────────────────
 function SparklineView({ days, isDark }: { days: Props['heatmap']; isDark: boolean }) {
-  const amber   = 'rgba(200,146,74,';
+  const amber   = 'rgba(197, 160, 89,';
   const sub     = isDark ? 'rgba(245,210,130,0.35)' : 'rgba(100,60,10,0.40)';
 
   // Build 28-day japa presence array (oldest → newest)
@@ -157,7 +157,7 @@ function SparklineView({ days, isDark }: { days: Props['heatmap']; isDark: boole
           { val: `${Math.round((sorted.filter(d => d.japa).length / Math.max(sorted.length, 1)) * 100)}%`, label: 'consistency' },
         ].map(({ val, label }) => (
           <div key={label} className="flex-1 text-center rounded-xl py-1.5"
-            style={{ background: isDark ? 'rgba(200,146,74,0.07)' : 'rgba(200,146,74,0.06)' }}>
+            style={{ background: isDark ? 'rgba(197, 160, 89,0.07)' : 'rgba(197, 160, 89,0.06)' }}>
             <p className="text-[13px] font-bold" style={{ color: isDark ? '#f5dfa0' : '#1a0a02' }}>{val}</p>
             <p className="text-[8px] mt-0.5" style={{ color: sub }}>{label}</p>
           </div>
@@ -186,7 +186,7 @@ function InteractiveCalendar({
     return { year: now.getFullYear(), month: now.getMonth() };
   });
 
-  const amber = 'rgba(200,146,74,';
+  const amber = 'rgba(197, 160, 89,';
   const green = 'rgba(140,180,100,';
   const dimBg = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
   const sub   = isDark ? 'rgba(245,210,130,0.38)' : 'rgba(100,60,10,0.45)';
@@ -198,7 +198,7 @@ function InteractiveCalendar({
       <motion.div
         initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
         className="mt-3 rounded-xl px-4 py-2.5 text-center text-xs"
-        style={{ background: isDark ? 'rgba(200,146,74,0.10)' : 'rgba(200,146,74,0.08)' }}
+        style={{ background: isDark ? 'rgba(197, 160, 89,0.10)' : 'rgba(197, 160, 89,0.08)' }}
       >
         <span style={{ color: isDark ? '#f5dfa0' : '#2a1002', fontWeight: 600 }}>
           {new Date(iso + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
@@ -329,13 +329,13 @@ function DowChart({ counts, isDark }: { counts: number[]; isDark: boolean }) {
         <div key={i} className="flex-1 flex flex-col items-center gap-1">
           <motion.div
             className="w-full rounded-t-[4px]"
-            style={{ background: 'rgba(200,146,74,0.55)' }}
+            style={{ background: 'rgba(197, 160, 89,0.55)' }}
             initial={{ height: 0 }}
             animate={{ height: `${(v / max) * 48}px` }}
             transition={{ duration: 0.5, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
           />
           <span className="text-[10px] font-semibold"
-            style={{ color: isDark ? 'rgba(200,146,74,0.45)' : 'rgba(100,65,20,0.50)' }}>
+            style={{ color: isDark ? 'rgba(197, 160, 89,0.45)' : 'rgba(100,65,20,0.50)' }}>
             {DAY_LABELS[i]}
           </span>
         </div>
@@ -393,7 +393,7 @@ function ShieldBadgesPreview({
   const cardBg  = isDark
     ? 'linear-gradient(150deg, rgba(44,36,20,0.98) 0%, rgba(34,28,16,0.96) 100%)'
     : 'linear-gradient(150deg, rgba(255,246,220,0.97) 0%, rgba(250,235,195,0.99) 100%)';
-  const cardBdr = isDark ? 'rgba(200,146,74,0.22)' : 'rgba(200,146,74,0.24)';
+  const cardBdr = isDark ? 'rgba(197, 160, 89,0.22)' : 'rgba(197, 160, 89,0.24)';
 
   const streakEarned  = STREAK_SHIELDS.filter(s => streak >= s.threshold).length;
   const sessionEarned = SESSION_SHIELDS.filter(s => totalSessions >= s.threshold).length;
@@ -489,7 +489,7 @@ function ShieldBadgesPreview({
             </div>
             <div className="h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)' }}>
               <motion.div className="h-full rounded-full"
-                style={{ background: 'linear-gradient(90deg,rgba(200,146,74,0.75),rgba(212,100,20,0.85))' }}
+                style={{ background: 'linear-gradient(90deg,rgba(197, 160, 89,0.75),rgba(212,100,20,0.85))' }}
                 initial={{ width: 0 }} animate={{ width: `${pct}%` }}
                 transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} />
             </div>
@@ -497,7 +497,7 @@ function ShieldBadgesPreview({
         );
       })()}
       {!nextStreak && !nextSession && (
-        <p className="text-center text-sm" style={{ color: 'rgba(200,146,74,0.70)', fontFamily: 'var(--font-serif)' }}>
+        <p className="text-center text-sm" style={{ color: 'rgba(197, 160, 89,0.70)', fontFamily: 'var(--font-serif)' }}>
           सर्वसिद्धि — All shields earned! 🙏
         </p>
       )}
@@ -545,7 +545,7 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
 
   const bg     = isDark ? '#130e08' : '#fdf6ec';
   const card   = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.92)';
-  const border = isDark ? 'rgba(200,146,74,0.14)' : 'rgba(180,120,40,0.14)';
+  const border = isDark ? 'rgba(197, 160, 89,0.14)' : 'rgba(180,120,40,0.14)';
   const h1     = isDark ? '#f5dfa0' : '#1a0a02';
   const muted  = isDark ? 'rgba(245,210,130,0.45)' : 'rgba(100,55,10,0.50)';
 
@@ -592,8 +592,8 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
             A beautiful monthly summary of your entire practice — all pillars, trends, highlights — available with Shoonaya Pro.
           </p>
           <div className="mt-5 flex flex-col gap-2">
-            <Lock size={14} className="mx-auto" style={{ color: 'rgba(200,146,74,0.6)' }} />
-            <p className="text-xs" style={{ color: 'rgba(200,146,74,0.7)' }}>Premium Feature</p>
+            <Lock size={14} className="mx-auto" style={{ color: 'rgba(197, 160, 89,0.6)' }} />
+            <p className="text-xs" style={{ color: 'rgba(197, 160, 89,0.7)' }}>Premium Feature</p>
           </div>
           <button onClick={onClose} className="mt-4 text-xs" style={{ color: muted }}>Close</button>
         </motion.div>
@@ -617,16 +617,16 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
             style={{ background: isDark ? 'linear-gradient(160deg,rgba(60,28,8,0.9),rgba(30,16,6,0.95))' : 'linear-gradient(160deg,rgba(255,235,200,0.98),rgba(250,220,175,0.99))' }}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] tracking-[0.18em] uppercase" style={{ color: 'rgba(200,146,74,0.65)' }}>Sadhana Report</p>
+                <p className="text-[10px] tracking-[0.18em] uppercase" style={{ color: 'rgba(197, 160, 89,0.65)' }}>Sadhana Report</p>
                 <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 600, color: h1, lineHeight: 1.2 }}>
                   {monthName(report.curMonthStart)}
                 </h2>
               </div>
               <div className="flex items-center gap-2">
                 <button onClick={handleShare}
-                  className="w-9 h-9 rounded-full flex items-center justify-center"
-                  style={{ background: isDark ? 'rgba(200,146,74,0.12)' : 'rgba(200,146,74,0.10)', border: `1px solid ${border}` }}>
-                  <Share2 size={15} style={{ color: 'rgba(200,146,74,0.75)' }} />
+                  className="w-11 h-11 rounded-full flex items-center justify-center"
+                  style={{ background: isDark ? 'rgba(197, 160, 89,0.12)' : 'rgba(197, 160, 89,0.10)', border: `1px solid ${border}` }} aria-label="Share">
+                  <Share2 size={15} style={{ color: 'rgba(197, 160, 89,0.75)' }} />
                 </button>
                 <div className="text-3xl">🕉️</div>
               </div>
@@ -682,7 +682,7 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
                 { label: 'Nitya',    value: `${nityaRate}%`             },
               ].map(({ label, value }) => (
                 <div key={label} className="rounded-xl px-3 py-1.5 text-center"
-                  style={{ background: isDark ? 'rgba(200,146,74,0.12)' : 'rgba(200,146,74,0.10)', border: `1px solid ${border}` }}>
+                  style={{ background: isDark ? 'rgba(197, 160, 89,0.12)' : 'rgba(197, 160, 89,0.10)', border: `1px solid ${border}` }}>
                   <p className="text-base font-bold" style={{ color: h1 }}>{value}</p>
                   <p className="text-[10px]" style={{ color: muted }}>{label}</p>
                 </div>
@@ -697,11 +697,11 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
               style={{ background: card, border: `1px solid ${border}` }}
               onClick={() => japaAi.explain(`This user's japa practice this month: ${report.curSessions} sessions, ${report.curRounds} rounds, ${report.curBeads} beads${report.topMantra ? `, favourite mantra: ${report.topMantra}` : ''}. Last month was ${report.prevSessions} sessions, ${report.prevRounds} rounds, ${report.prevBeads} beads. Current streak: ${streak} days. Interpret this data as a spiritual guide.`)}>
               <div className="flex items-center justify-between mb-3">
-                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(200,146,74,0.7)' }}>🪷 Japa Practice</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(197, 160, 89,0.7)' }}>🪷 Japa Practice</p>
                 <div className="flex items-center gap-2">
                   <Link href="/bhakti/mala/insights" onClick={e => e.stopPropagation()}
                     className="flex items-center gap-1 text-[10px] rounded-full px-2 py-0.5"
-                    style={{ color: 'rgba(200,146,74,0.6)', background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.14)' }}>
+                    style={{ color: 'rgba(197, 160, 89,0.6)', background: 'rgba(197, 160, 89,0.08)', border: '1px solid rgba(197, 160, 89,0.14)' }}>
                     <ExternalLink size={9} /> Insights
                   </Link>
                   <span className="text-[10px]" style={{ color: muted }}>Tap for AI ✨</span>
@@ -757,11 +757,11 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
               style={{ background: card, border: `1px solid ${border}` }}
               onClick={() => nityaAi.explain(`This user completed Nitya Karma (daily dharmic duties) on ${report.curNityaDays} out of ${report.curDaysElapsed} days this month (${nityaRate}% completion rate). Their overall streak is ${streak} days. Interpret this as a spiritual guide.`)}>
               <div className="flex items-center justify-between mb-3">
-                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(200,146,74,0.7)' }}>🌅 Nitya Karma</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(197, 160, 89,0.7)' }}>🌅 Nitya Karma</p>
                 <div className="flex items-center gap-2">
                   <Link href="/nitya-karma/insights" onClick={e => e.stopPropagation()}
                     className="flex items-center gap-1 text-[10px] rounded-full px-2 py-0.5"
-                    style={{ color: 'rgba(200,146,74,0.6)', background: 'rgba(200,146,74,0.08)', border: '1px solid rgba(200,146,74,0.14)' }}>
+                    style={{ color: 'rgba(197, 160, 89,0.6)', background: 'rgba(197, 160, 89,0.08)', border: '1px solid rgba(197, 160, 89,0.14)' }}>
                     <ExternalLink size={9} /> Insights
                   </Link>
                   <span className="text-[10px]" style={{ color: muted }}>Tap for AI ✨</span>
@@ -815,7 +815,7 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
                   <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
                     className="mt-3 pt-3" style={{ borderTop: `1px solid ${border}` }}>
                     {nityaAi.loading
-                      ? <div className="flex items-center gap-2"><motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}><Sparkles size={12} style={{ color: 'rgba(200,146,74,0.6)' }} /></motion.div><span className="text-[11px]" style={{ color: muted }}>Interpreting…</span></div>
+                      ? <div className="flex items-center gap-2"><motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}><Sparkles size={12} style={{ color: 'rgba(197, 160, 89,0.6)' }} /></motion.div><span className="text-[11px]" style={{ color: muted }}>Interpreting…</span></div>
                       : <p className="text-[12px] leading-relaxed italic" style={{ color: isDark ? 'rgba(245,215,160,0.80)' : '#3a1a06' }}>{nityaAi.text}</p>
                     }
                   </motion.div>
@@ -826,7 +826,7 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
             {/* ── Highlights ── */}
             <div className="rounded-[1.2rem] p-4" style={{ background: card, border: `1px solid ${border}` }}>
               <p className="text-[11px] font-semibold uppercase tracking-wider mb-3"
-                style={{ color: 'rgba(200,146,74,0.7)' }}>✨ Highlights</p>
+                style={{ color: 'rgba(197, 160, 89,0.7)' }}>✨ Highlights</p>
               <ul className="space-y-2">
                 {highlights.map((h, i) => (
                   <li key={i} className="text-sm leading-snug" style={{ color: isDark ? 'rgba(245,215,160,0.85)' : '#2a1002' }}>
@@ -838,7 +838,7 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
 
             {/* ── Sanskrit encouragement ── */}
             <div className="text-center py-2">
-              <p className="text-sm" style={{ fontFamily: 'var(--font-serif)', color: 'rgba(200,146,74,0.55)', fontStyle: 'italic' }}>
+              <p className="text-sm" style={{ fontFamily: 'var(--font-serif)', color: 'rgba(197, 160, 89,0.55)', fontStyle: 'italic' }}>
                 योगः कर्मसु कौशलम् — Excellence in action is yoga.
               </p>
             </div>
@@ -849,7 +849,7 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
             <button
               onClick={handlePrint}
               className="flex-1 flex items-center justify-center gap-2 rounded-full py-3 text-sm font-medium"
-              style={{ background: 'linear-gradient(135deg,rgba(212,100,20,0.9),rgba(200,146,74,0.85))', color: '#1c1208' }}>
+              style={{ background: 'linear-gradient(135deg,rgba(212,100,20,0.9),rgba(197, 160, 89,0.85))', color: '#1c1208' }}>
               <Download size={14} />
               Save as PDF
             </button>
@@ -904,14 +904,14 @@ export default function MyProgressClient({
   const h1      = isDark ? '#f5dfa0' : '#1a0a02';
   const muted   = isDark ? 'rgba(245,210,130,0.45)' : 'rgba(100,55,10,0.50)';
   const dimText = isDark ? 'rgba(245,210,130,0.30)' : 'rgba(100,55,10,0.35)';
-  const amber   = 'rgba(200,146,74,0.70)';
+  const amber   = 'rgba(197, 160, 89,0.70)';
 
   // ── Per-card sanctuary gradients (mirrors HOME_THEMES) ────────────────────
   // Calendar — panchang: dawn amber
   const cardCalBg  = isDark
     ? 'linear-gradient(150deg, rgba(52,42,28,0.97) 0%, rgba(38,32,22,0.96) 100%)'
     : 'linear-gradient(150deg, rgba(255,246,232,0.97) 0%, rgba(250,236,210,0.99) 100%)';
-  const cardCalBdr = isDark ? 'rgba(200,146,74,0.22)' : 'rgba(200,146,74,0.22)';
+  const cardCalBdr = isDark ? 'rgba(197, 160, 89,0.22)' : 'rgba(197, 160, 89,0.22)';
 
   // Japa — bhakti: soft terracotta
   const cardJapaBg  = isDark
@@ -929,7 +929,7 @@ export default function MyProgressClient({
   const cardPathBg  = isDark
     ? 'linear-gradient(150deg, rgba(30,30,28,0.99) 0%, rgba(24,24,22,0.97) 100%)'
     : 'linear-gradient(150deg, rgba(235,238,248,0.97) 0%, rgba(225,228,240,0.99) 100%)';
-  const cardPathBdr = isDark ? 'rgba(200,146,74,0.18)' : 'rgba(130,130,200,0.22)';
+  const cardPathBdr = isDark ? 'rgba(197, 160, 89,0.18)' : 'rgba(130,130,200,0.22)';
 
   // Bhakti mini — warm rose-terracotta
   const cardBhaktiBg  = isDark
@@ -1119,7 +1119,7 @@ export default function MyProgressClient({
 
               {/* Stat pills */}
               <div className="flex items-center gap-1.5">
-                <div className="rounded-lg px-2 py-1 text-center" style={{ background: isDark ? 'rgba(200,146,74,0.12)' : 'rgba(200,146,74,0.10)', border: `1px solid rgba(200,146,74,0.18)` }}>
+                <div className="rounded-lg px-2 py-1 text-center" style={{ background: isDark ? 'rgba(197, 160, 89,0.12)' : 'rgba(197, 160, 89,0.10)', border: `1px solid rgba(197, 160, 89,0.18)` }}>
                   <p className="text-[13px] font-bold leading-none" style={{ color: h1 }}>{activeDays}</p>
                   <p className="text-[8px] mt-0.5" style={{ color: muted }}>active</p>
                 </div>
@@ -1134,7 +1134,7 @@ export default function MyProgressClient({
                 <button
                   onClick={() => setCalView('calendar')}
                   className="w-6 h-6 rounded-full flex items-center justify-center transition-all"
-                  style={{ background: calView === 'calendar' ? 'rgba(200,146,74,0.22)' : 'transparent' }}
+                  style={{ background: calView === 'calendar' ? 'rgba(197, 160, 89,0.22)' : 'transparent' }}
                   aria-label="Month calendar"
                 >
                   <Calendar size={12} style={{ color: amber }} />
@@ -1142,7 +1142,7 @@ export default function MyProgressClient({
                 <button
                   onClick={() => setCalView('sparkline')}
                   className="w-6 h-6 rounded-full flex items-center justify-center transition-all"
-                  style={{ background: calView === 'sparkline' ? 'rgba(200,146,74,0.22)' : 'transparent' }}
+                  style={{ background: calView === 'sparkline' ? 'rgba(197, 160, 89,0.22)' : 'transparent' }}
                   aria-label="Activity graph"
                 >
                   <Activity size={12} style={{ color: amber }} />
@@ -1436,7 +1436,7 @@ export default function MyProgressClient({
           <motion.section
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.40 }}
             className="rounded-[2rem] p-5 text-center"
-            style={{ background: isDark ? 'linear-gradient(140deg,rgba(50,28,8,0.95),rgba(28,16,6,0.98))' : 'linear-gradient(140deg,rgba(255,238,210,0.98),rgba(245,222,185,0.99))', border: '1px solid rgba(200,146,74,0.22)' }}>
+            style={{ background: isDark ? 'linear-gradient(140deg,rgba(50,28,8,0.95),rgba(28,16,6,0.98))' : 'linear-gradient(140deg,rgba(255,238,210,0.98),rgba(245,222,185,0.99))', border: '1px solid rgba(197, 160, 89,0.22)' }}>
             <p className="text-2xl mb-2">📊</p>
             <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 600, color: h1 }}>
               Monthly Sadhana Report
@@ -1449,10 +1449,10 @@ export default function MyProgressClient({
               className="w-full rounded-full py-3 text-sm font-medium flex items-center justify-center gap-2"
               style={{
                 background: isPro
-                  ? 'linear-gradient(135deg,rgba(212,100,20,0.92),rgba(200,146,74,0.88))'
-                  : 'rgba(200,146,74,0.10)',
-                color: isPro ? '#1c1208' : 'rgba(200,146,74,0.8)',
-                border: isPro ? 'none' : '1px solid rgba(200,146,74,0.28)',
+                  ? 'linear-gradient(135deg,rgba(212,100,20,0.92),rgba(197, 160, 89,0.88))'
+                  : 'rgba(197, 160, 89,0.10)',
+                color: isPro ? '#1c1208' : 'rgba(197, 160, 89,0.8)',
+                border: isPro ? 'none' : '1px solid rgba(197, 160, 89,0.28)',
               }}>
               {!isPro && <Lock size={13} />}
               {isPro ? 'Generate Report' : 'Upgrade to Pro'}

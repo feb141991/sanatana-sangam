@@ -164,7 +164,7 @@ export default function DarshanOverlay({ darshans, initialIndex, isOpen, onClose
                         <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">
                           Sacred Mantra
                         </span>
-                        <p className="text-[#C8924A] font-medium tracking-wide text-sm">
+                        <p className="text-[#C5A059] font-medium tracking-wide text-sm">
                           {darshan.mantra}
                         </p>
                       </div>
@@ -173,7 +173,7 @@ export default function DarshanOverlay({ darshans, initialIndex, isOpen, onClose
                     {/* Offer Aarti Button */}
                     <button
                       onClick={() => setShowAartiMode(true)}
-                      className="flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm tracking-wide active:scale-95 transition-transform shadow-[0_4px_20px_rgba(200,146,74,0.3)] mt-2"
+                      className="flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm tracking-wide active:scale-95 transition-transform shadow-[0_4px_20px_rgba(197, 160, 89,0.3)] mt-2"
                       style={{ background: 'linear-gradient(135deg, var(--divine-saffron) 0%, #D4784A 100%)', color: '#1c1c1a' }}
                     >
                       <Flame size={16} />
@@ -215,13 +215,13 @@ export default function DarshanOverlay({ darshans, initialIndex, isOpen, onClose
                 <button
                   onClick={handleShare}
                   className="p-4 rounded-full bg-white/10 backdrop-blur-xl border border-white/10 text-white motion-press"
-                >
+                 aria-label="Share">
                   <Share2 size={22} />
                 </button>
                 <button
                   onClick={handleDownload}
                   className="p-4 rounded-full bg-white/10 backdrop-blur-xl border border-white/10 text-white motion-press"
-                >
+                 aria-label="Download">
                   <Download size={22} />
                 </button>
                 <button

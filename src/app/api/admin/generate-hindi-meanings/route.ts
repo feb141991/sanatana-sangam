@@ -13,7 +13,7 @@ import { emitEvent, emitError } from '@/lib/monitoring/events';
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
-  const authError = checkAdminAuth(req as any);
+  const authError = checkAdminAuth(req);
   if (authError) return authError;
 
   const admin = await requireAdminAccess();

@@ -7,8 +7,8 @@ import { getPanchangTimes, getTithiReminder } from '@/lib/panchang';
 // Returns live Panchang engine output for a given coordinate pair.
 // Used by the admin Notifications tab to verify the engine is computing correctly.
 
-export async function GET(request: Request) {
-  const authError = checkAdminAuth(request as any);
+export async function GET(request: NextRequest) {
+  const authError = checkAdminAuth(request);
   if (authError) return authError;
 
   const admin = await requireAdminAccess();

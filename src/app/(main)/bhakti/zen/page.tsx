@@ -410,7 +410,6 @@ function EnvParticles({ env }: { env: EnvId }) {
 }
 
 // ─── Main Page ─────────────────────────────────────────────────────────────
-export const dynamic = 'force-dynamic';
 
 export default function SattvicModePage() {
   const router = useRouter();
@@ -623,7 +622,7 @@ export default function SattvicModePage() {
 
         {/* Background mandala */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-30">
-          <SacredMandala color="rgba(200,146,74,1)" size={320} />
+          <SacredMandala color="rgba(197, 160, 89,1)" size={320} />
         </div>
 
         <div className="relative px-5 pt-5 pb-6 space-y-4">
@@ -657,7 +656,7 @@ export default function SattvicModePage() {
           ) : (
             <div className="text-center py-3">
               <motion.p className="font-mono font-light"
-                style={{ color: textPrimary, fontSize: '3.2rem', textShadow: '0 0 28px rgba(200,146,74,0.25)' }}
+                style={{ color: textPrimary, fontSize: '3.2rem', textShadow: '0 0 28px rgba(197, 160, 89,0.25)' }}
                 animate={{ opacity: running ? [0.85, 1, 0.85] : 1 }}
                 transition={{ duration: 4, repeat: running ? Infinity : 0 }}>
                 {formatClock(remaining)}
@@ -690,7 +689,7 @@ export default function SattvicModePage() {
                 <button key={v} onClick={() => { setDuration(v); setShowCustom(false); }}
                   className="rounded-full px-4 py-1.5 text-xs font-medium transition-all"
                   style={duration === v && !showCustom
-                    ? { background: 'linear-gradient(135deg,rgba(212,100,20,0.9),rgba(200,146,74,0.85))', color: '#1c1208' }
+                    ? { background: 'linear-gradient(135deg,rgba(212,100,20,0.9),rgba(197, 160, 89,0.85))', color: '#1c1208' }
                     : { background: pillBgInact, color: textSecond, border: `1px solid ${pillBdrInact}` }}>
                   {v} min
                 </button>
@@ -736,7 +735,7 @@ export default function SattvicModePage() {
             {/* Progress bar */}
             <div className="h-0.5 overflow-hidden rounded-full" style={{ background: progressBg }}>
               <motion.div className="h-full rounded-full"
-                style={{ background: 'linear-gradient(90deg,rgba(212,100,20,0.9),rgba(200,146,74,1))' }}
+                style={{ background: 'linear-gradient(90deg,rgba(212,100,20,0.9),rgba(197, 160, 89,1))' }}
                 animate={{ width: `${progress}%` }} transition={{ duration: 0.6 }} />
             </div>
           </div>
@@ -746,21 +745,21 @@ export default function SattvicModePage() {
             <motion.button onClick={toggleRunning} whileTap={{ scale: 0.95 }}
               className="rounded-full px-7 py-3 text-sm font-medium transition-all"
               style={{
-                background: running ? pillBgAct : 'linear-gradient(135deg,rgba(212,100,20,0.9),rgba(200,146,74,0.85))',
+                background: running ? pillBgAct : 'linear-gradient(135deg,rgba(212,100,20,0.9),rgba(197, 160, 89,0.85))',
                 color: running ? textPrimary : '#1c1208',
-                border: '1px solid rgba(200,146,74,0.3)',
+                border: '1px solid rgba(197, 160, 89,0.3)',
                 boxShadow: running ? 'none' : '0 4px 24px rgba(212,120,20,0.3)',
               }}>
               {running ? 'Pause' : 'Begin'}
             </motion.button>
             <button onClick={enterFocus}
               className="rounded-full px-5 py-3 text-sm font-medium transition-all"
-              style={{ background: 'rgba(200,146,74,0.08)', color: 'rgba(200,146,74,0.8)', border: '1px solid rgba(200,146,74,0.22)' }}>
+              style={{ background: 'rgba(197, 160, 89,0.08)', color: 'rgba(197, 160, 89,0.8)', border: '1px solid rgba(197, 160, 89,0.22)' }}>
               Focus
             </button>
             <button onClick={reset}
               className="rounded-full px-4 py-3 text-sm transition-all"
-              style={{ color: textSecond, border: `1px solid ${pillBdrInact}` }}>
+              style={{ color: textSecond, border: `1px solid ${pillBdrInact}` }} aria-label="Action">
               <RotateCcw size={15} />
             </button>
           </div>
@@ -776,7 +775,7 @@ export default function SattvicModePage() {
             <button key={id} onClick={() => setEnv(id)}
               className="rounded-full px-3 py-1.5 text-xs whitespace-nowrap transition-all flex-shrink-0"
               style={focusEnv === id
-                ? { background: pillBgAct, color: textPrimary, border: `1px solid ${pillBdrAct}`, boxShadow: '0 0 10px rgba(200,146,74,0.1)' }
+                ? { background: pillBgAct, color: textPrimary, border: `1px solid ${pillBdrAct}`, boxShadow: '0 0 10px rgba(197, 160, 89,0.1)' }
                 : { background: pillBgInact, color: textSecond, border: `1px solid ${pillBdrInact}` }}>
               <span className="inline-flex items-center gap-1.5"><SacredIcon name={env.icon} size={12} />{env.label}</span>
             </button>
@@ -852,14 +851,14 @@ export default function SattvicModePage() {
             <div key={label} className="rounded-[1rem] px-3 py-3 text-center"
               style={{ background: isDark ? 'rgba(28,18,10,0.6)' : 'rgba(240,220,190,0.7)', border: `1px solid ${pillBdrInact}` }}>
               <p className="text-lg font-semibold leading-tight" style={{ color: textPrimary }}>{value}</p>
-              <p className="text-[10px] mt-0.5 font-medium uppercase tracking-wide" style={{ color: 'rgba(200,146,74,0.75)' }}>{label}</p>
+              <p className="text-[10px] mt-0.5 font-medium uppercase tracking-wide" style={{ color: 'rgba(197, 160, 89,0.75)' }}>{label}</p>
               <p className="text-[9px] mt-0.5" style={{ color: textMuted }}>{sub}</p>
             </div>
           ))}
         </div>
         {sessionMins === 0 && (
           <p className="text-center text-[11px] mt-3" style={{ color: textMuted }}>
-            Press <span style={{ color: 'rgba(200,146,74,0.85)' }}>Begin</span> to start tracking your session.
+            Press <span style={{ color: 'rgba(197, 160, 89,0.85)' }}>Begin</span> to start tracking your session.
           </p>
         )}
       </section>

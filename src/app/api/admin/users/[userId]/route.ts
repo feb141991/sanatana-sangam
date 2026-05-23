@@ -6,7 +6,7 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
 ) {
-  const authError = checkAdminAuth(request as any);
+  const authError = checkAdminAuth(request);
   if (authError) return authError;
 
   const admin = await requireAdminAccess();
@@ -42,7 +42,7 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
 ) {
-  const authError = checkAdminAuth(_request as any);
+  const authError = checkAdminAuth(_request);
   if (authError) return authError;
 
   const admin = await requireAdminAccess();

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
@@ -183,7 +184,7 @@ export function KulHub({
         {kul.cover_url && (
           <div className="pointer-events-none absolute inset-x-0 top-0 h-28 opacity-25">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={kul.cover_url} alt="" className="h-full w-full object-cover" />
+            <Image width={120} height={120} src={kul.cover_url} alt="" className="h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[var(--card-bg)]" />
           </div>
         )}
@@ -226,8 +227,7 @@ export function KulHub({
             className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[1.6rem] border border-[var(--brand-primary)]/20 bg-[var(--brand-primary)]/10 shadow-inner"
           >
             {kul.cover_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={kul.cover_url} alt="Kul" className="h-full w-full object-cover" />
+              <Image width={120} height={120} src={kul.cover_url} alt="Kul" className="h-full w-full object-cover" />
             ) : (
               <span className="text-[34px] leading-none">{kul.avatar_emoji}</span>
             )}

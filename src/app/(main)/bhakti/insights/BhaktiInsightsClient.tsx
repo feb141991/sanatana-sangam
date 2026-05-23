@@ -188,7 +188,7 @@ export default function BhaktiInsightsClient({ sessions, shlokaStreak, sevaScore
   const isDark = resolvedTheme === 'dark';
 
   const rose   = '#C4789A';   // rose/devotional colour
-  const amber  = '#C8924A';
+  const amber  = '#C5A059';
   const text   = isDark ? 'rgba(245,225,185,0.97)' : '#1A1208';
   const sub    = isDark ? 'rgba(200,165,110,0.55)'  : 'rgba(100,65,25,0.55)';
   const border = isDark ? 'rgba(196,120,154,0.15)'  : 'rgba(0,0,0,0.07)';
@@ -259,8 +259,8 @@ export default function BhaktiInsightsClient({ sessions, shlokaStreak, sevaScore
           <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: `${rose}99` }}>Bhakti</p>
           <h1 className="text-lg font-semibold" style={{ fontFamily: 'var(--font-serif)', color: text }}>Devotion Insights</h1>
         </div>
-        <button onClick={handleShare} className="w-9 h-9 rounded-full flex items-center justify-center"
-          style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
+        <button onClick={handleShare} className="w-11 h-11 rounded-full flex items-center justify-center"
+          style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }} aria-label="Share">
           <Share2 size={16} style={{ color: rose }} />
         </button>
       </div>

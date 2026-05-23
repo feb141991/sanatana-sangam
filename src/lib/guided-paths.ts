@@ -57,8 +57,8 @@ export const GUIDED_PLANS: GuidedPlan[] = [
     difficulty: 'beginner',
     tagline: 'Build your Dincharya one step at a time — wake up, add one practice, repeat.',
     description: 'This plan teaches the 7-step Dincharya (daily routine) by adding one new practice each morning. Day 1 you only wake up early. Day 2 you add Snana. Day 3, Tilak. By Day 7 you are doing all 7 steps in sequence — the full Nitya Karma routine — as one flowing practice. Start here if the full routine feels overwhelming.',
-    accentColor: '#C8924A',
-    borderColor: 'rgba(200,146,74,0.22)',
+    accentColor: '#C5A059',
+    borderColor: 'rgba(197, 160, 89,0.22)',
     days: [
       { day: 1, title: 'The Sacred Rise',      focus: 'Waking ✦ Step 1',        practice: 'Set your alarm for Brahma Muhurta (90 minutes before sunrise). When it rings, sit upright in bed and say your deity\'s name or chosen mantra three times before touching your phone. That is all for today.', duration: 5 },
       { day: 2, title: 'Snana Added',          focus: 'Purification ✦ Step 2',  practice: 'Wake at Brahma Muhurta (step 1 ✓). Now add: cold or cool water snana (bath) with intention. Before entering the water, set one sankalpa — one purpose — for this day.', duration: 15 },

@@ -4,7 +4,7 @@ import { requireAdminAccess } from '@/lib/admin';
 import { materializeOccurrencesForYears } from '@/lib/calendar/materialize';
 
 export async function POST(req: NextRequest) {
-  const authError = checkAdminAuth(req as any);
+  const authError = checkAdminAuth(req);
   if (authError) return authError;
 
   const adminCheck = await requireAdminAccess();
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const authError = checkAdminAuth(req as any);
+  const authError = checkAdminAuth(req);
   if (authError) return authError;
 
   return POST(req);

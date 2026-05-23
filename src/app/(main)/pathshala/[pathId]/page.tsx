@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation';
 
-export const dynamic = 'force-dynamic';
 
 interface Props {
   params: Promise<{ pathId: string }>;
